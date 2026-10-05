@@ -1,20 +1,28 @@
-// Eclipse Access capture. Serves this folder on 127.0.0.1 (port 3177 unless --port=N; never 3173, capture.mjs's, 3174,
-// reserved, or 3176, Activity log's), renders the Access frames with the worktree's Playwright chromium (a fresh context
-// per frame, reduced motion), checks each one, and writes them numbered the same way in both languages. It never writes
-// into this repository: the output folder is required and must be outside it.
-//   node design-research/owner-composition-exploration-r04/directions/eclipse/access-capture.mjs <outDir> [--port=3177] [--only=1,2,3,4,5] [--lang=ar|en] [--match=<part of a frame's name>]
+// Eclipse Access capture, the fix round (DECISIONS item 34). Serves this folder on 127.0.0.1 (port 3176 unless
+// --port=N; never 3173, capture.mjs's, or 3174, reserved), renders the Access frames with the worktree's Playwright
+// chromium (a fresh context per frame, reduced motion), checks each one, and writes them numbered the same way in both
+// languages. It never writes into this repository: the output folder is required and must be outside it.
+//   node design-research/owner-composition-exploration-r04/directions/eclipse/access-capture.mjs <outDir> [--port=3176] [--only=1,2,3,4,5] [--lang=ar|en] [--match=<part of a frame's name>]
 // Writes <outDir>/crops/<n>-<nn>-<what>-<size>-<lang>.png and <outDir>/access-log.json:
-//   1-  the page at rest at each designed size (1440 x 900, 768 x 1024, 390 x 844), the first screen and the whole page
-//   2-  each state: loading and its arrival, error (first load) and its retry, the PIN never set and deactivated, one
-//       active owner, many owners; every action's confirmation, working, done, failure and each refusal (1440)
-//   3-  the range, cropped to the element with a strip of its neighbours, at the three designed sizes
-//   4-  the phone's flows step by step (390 x 844, touch): every dialog as the phone shows it
-//   5-  the checked sizes: 320 x 568, 1024 x 768, the 200% zoom of 1440 x 900 (720 x 450 at 2x), and file://
+//   1-  the page at rest at each size: 1440 x 900, 1024 x 768, 768 x 1024 and 390 x 844 (the first screen), and the
+//       whole page at 1440 and 390
+//   2-  each changed element against its range, at 1440, 1024, 768 and 390: the access records card (its records, a
+//       change's record on top, none yet, its own failure, loading, the longest names; on a phone the way to the
+//       records instead), the front desk's card in each state of its code, the owners (actions under each name; one
+//       active, the longest and shortest names), the page's loading arrival (no shift) and first-load error with the
+//       two halves, the quiet button (hover, focus), the code field (empty, typed, each
+//       refusal), the one-time view (the shortest code, sixteen mixed and sixteen of the widest characters, copied, not
+//       copied, saving, failed, refused), and every dialog as the phone shows it
+//   3-  the code's change step by step at 1440 and 390: typed, the one-time view, copied, "I've saved it" (saving, then
+//       done with the record on top), and "Cancel change" (nothing changed); then the same for creating a code
+//   4-  deactivate and reactivate among eight owners, before and after, at 1440, 768 and 390: the row keeps its place
+//   5-  the checked sizes: 320 x 568, the 200% zoom of 1440 x 900 (720 x 450 at 2x), 721 x 1024 and file://, with the
+//       dialogs that change most with width
 // It exits 1 if a check fails: a console message or page error, a font file fetched twice in one load, a request off
 // the page's origin, a layout shift after the first paint before any input, a sideways page scroll, an element outside
-// the viewport's width, a box whose content spills, an interactive target under 44 px, or a secret left behind: the PIN
-// still anywhere in the page (the DOM, the hooks, the URL) once its view closed, or a password still in a field or the
-// DOM once its change succeeded.
+// the viewport's width, a box whose content spills, an interactive target under 44 px, a row that moved, a record not
+// on top, a cancel that changed something, or a secret left behind: the typed code anywhere in the page (the DOM, the
+// hooks, the URL, a field) once its view closed, or a password still in a field or the DOM once its change succeeded.
 import { createServer } from "node:http";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, extname, join, normalize, resolve, sep } from "node:path";
@@ -26,8 +34,8 @@ const OUT_ARG = process.argv.slice(2).find((a) => !a.startsWith("--"));
 if (!OUT_ARG) throw new Error("access-capture.mjs needs an output folder outside the repository");
 const OUT = resolve(OUT_ARG);
 if ((OUT + sep).toLowerCase().startsWith(resolve(HERE, "../../../..").toLowerCase() + sep)) throw new Error("the output folder must be outside the repository worktree");
-const PORT = Number((process.argv.find((a) => a.startsWith("--port=")) || "--port=3177").slice(7));
-if ([3173, 3174, 3176].includes(PORT)) throw new Error("ports 3173, 3174 and 3176 belong to other captures and writers");
+const PORT = Number((process.argv.find((a) => a.startsWith("--port=")) || "--port=3176").slice(7));
+if ([3173, 3174].includes(PORT)) throw new Error("ports 3173 and 3174 belong to other captures");
 const ONLY = (process.argv.find((a) => a.startsWith("--only=")) || "").slice(7).split(",").filter(Boolean);
 const want = (n) => !ONLY.length || ONLY.includes(String(n));
 const LANGS_ARG = (process.argv.find((a) => a.startsWith("--lang=")) || "").slice(7);
@@ -65,10 +73,14 @@ const PROBLEMS = () => {
     const r = el.getBoundingClientRect();
     if (r.width && (r.right > vw + 0.5 || r.left < -0.5)) out.push(`outside the viewport: ${el.id ? "#" + el.id : el.className?.baseVal ?? el.className ?? el.tagName} ${Math.round(r.left)}..${Math.round(r.right)}`);
   }
-  for (const el of document.querySelectorAll(".head, .acc-tools, .acc-head, .acc-id, .acc-title, .acc-acts, .prs, .prs-id, .prs-line, .prs-mail, .prs-acts, .done, .acc-alert, .acc-msg, .dlg-panel, .dlg-head, .dlg-body, .dlg-foot, .acc-sec, .acc-digits, .acc-field, .acc-box, .alert")) {
+  for (const el of document.querySelectorAll(".head, .acc-tools, .acc-grid, .acc-keys, .acc-head, .acc-id, .acc-title, .acc-acts, .prs, .prs-id, .prs-line, .prs-mail, .prs-acts, .rec-list, .rec-a, .rec-txt, .done, .acc-alert, .acc-msg, .dlg-panel, .dlg-head, .dlg-body, .dlg-foot, .acc-sec, .acc-code, .acc-field, .acc-box, .alert")) {
     if (el.closest("[hidden], dialog:not([open])")) continue;
     if (el.matches(".dlg-body")) continue;                  // a dialog's body may scroll inside a short sheet
-    if (el.scrollWidth > el.clientWidth + 1) out.push(`spills: ${el.className} by ${el.scrollWidth - el.clientWidth}px`);
+    if (getComputedStyle(el).display === "none" || !el.getClientRects().length) continue;
+    // The records' links reach 12 px past the text on each side by design ("View all" and each row's hover and ring),
+    // into the card's 24 px padding; anything beyond that is a spill.
+    const allow = el.matches(".rec-head, .rec-list") ? 12 : 0;
+    if (el.scrollWidth > el.clientWidth + allow + 1) out.push(`spills: ${el.className} by ${el.scrollWidth - el.clientWidth}px`);
   }
   const scope = document.querySelector("dialog[open]") || document;
   for (const el of scope.querySelectorAll("button, a[href], select, input:not([type=hidden]), textarea")) {
@@ -82,8 +94,9 @@ const PROBLEMS = () => {
   return [...new Set(out)].slice(0, 12);
 };
 
-async function open(q, { width = 1440, height = 900, scale = 1, phone = false, file = false } = {}) {
+async function open(q, { width = 1440, height = 900, scale = 1, phone = false, file = false, clipboard = false } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, isMobile: phone, hasTouch: phone, reducedMotion: "reduce", colorScheme: "dark" });
+  if (clipboard && !file) await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: ORIGIN });
   await context.addInitScript(INIT);
   const page = await context.newPage();
   const errors = [], fonts = new Map(), off = [];
@@ -100,14 +113,14 @@ async function open(q, { width = 1440, height = 900, scale = 1, phone = false, f
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(120);
   const cls0 = await page.evaluate(() => +window.__cls.toFixed(5));
-  return { context, page, errors, fonts, off, cls0, secrets: [], checks: [] };
+  return { context, page, errors, fonts, off, cls0, secrets: [], checks: [], notes: {} };
 }
 async function finish(name, o, extra = {}, { problems = true } = {}) {
-  const { page, errors, fonts, off, cls0, secrets, checks } = o;
+  const { page, errors, fonts, off, cls0, secrets, checks, notes } = o;
   const found = problems ? await page.evaluate(PROBLEMS) : [];
   const cls = await page.evaluate(() => +window.__cls.toFixed(5));
   const maxFont = Math.max(0, ...fonts.values());
-  const rec = { errors, maxFontFetch: maxFont, offOrigin: off, clsAtRest: cls0, clsAfter: cls, problems: found, secrets, checks, ...extra };
+  const rec = { errors, maxFontFetch: maxFont, offOrigin: off, clsAtRest: cls0, clsAfter: cls, problems: found, secrets, checks, notes, ...extra };
   log.frames[name] = rec;
   const bad = [];
   if (errors.length) bad.push("errors: " + errors.join(" / "));
@@ -123,8 +136,9 @@ async function finish(name, o, extra = {}, { problems = true } = {}) {
 }
 const path = (name) => join(CROPS, name + ".png");
 const SIZES = {
-  1440: { width: 1440, height: 900 }, 768: { width: 768, height: 1024 }, 390: { width: 390, height: 844, scale: 2, phone: true },
-  320: { width: 320, height: 568, scale: 2, phone: true }, 1024: { width: 1024, height: 768 }, zoom: { width: 720, height: 450, scale: 2 },
+  1440: { width: 1440, height: 900 }, 1024: { width: 1024, height: 768 }, 768: { width: 768, height: 1024 },
+  390: { width: 390, height: 844, scale: 2, phone: true }, 320: { width: 320, height: 568, scale: 2, phone: true },
+  zoom: { width: 720, height: 450, scale: 2 },
 };
 async function shot(name, q, { act, full = false, clip, problems = true, clsMustBeZero = false, ...opts } = {}) {
   if (MATCH && !MATCH.split(",").some((m) => name.includes(m))) return null;
@@ -139,17 +153,16 @@ async function shot(name, q, { act, full = false, clip, problems = true, clsMust
   await o.context.close();
   return rec;
 }
-// A crop of an element in page coordinates (so a tall one is never cut at the viewport), with a strip of what stands
-// around it: pad px on every side, within the page.
+// A crop of elements in page coordinates (so a tall one is never cut at the viewport), with a strip of what stands
+// around them: pad px on every side, within the page.
 const around = (sel, pad = 24) => async (page) => page.evaluate(([s, p]) => {
-  const els = s.split("||").map((x) => document.querySelector(x)).filter(Boolean);
+  const els = s.split("||").map((x) => document.querySelector(x)).filter((e) => e && e.getClientRects().length);
   if (!els.length) throw new Error("no element for " + s);
   const rs = els.map((e) => e.getBoundingClientRect());
   const x0 = Math.max(0, Math.min(...rs.map((r) => r.left)) - p), x1 = Math.min(document.documentElement.clientWidth, Math.max(...rs.map((r) => r.right)) + p);
   const y0 = Math.max(0, Math.min(...rs.map((r) => r.top)) + scrollY - p), y1 = Math.max(...rs.map((r) => r.bottom)) + scrollY + p;
   return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }, [sel, pad]);
-
 // A crop of a dialog's panel in viewport coordinates: the dialog is fixed, and a full-page capture enlarges the
 // viewport, which moves a bottom sheet away from the box measured before it.
 const aroundFixed = (sel, pad = 16) => async (page) => page.evaluate(([s, p]) => {
@@ -159,24 +172,27 @@ const aroundFixed = (sel, pad = 16) => async (page) => page.evaluate(([s, p]) =>
   const x0 = Math.max(0, r.left - p), y0 = Math.max(0, r.top - p), x1 = Math.min(vw, r.right + p), y1 = Math.min(vh, r.bottom + p);
   return { x: x0, y: y0, width: x1 - x0, height: y1 - y0, viewport: true };
 }, [sel, pad]);
+const PANEL = "dialog[open] .dlg-panel:not([hidden])";
 
 /* ---- steps */
 const wait = (p, ms) => p.waitForTimeout(ms);
 const press = async (p, sel, phone) => { if (phone) await p.tap(sel); else await p.click(sel); };
-// After an action: the synthetic answer arrives at 700 ms; the one-time view ignores a press in its first 700 ms.
+// After an action: the synthetic answer arrives at 700 ms; "I've saved it" ignores a press in the view's first 700 ms.
 const ANSWER = 1000, VIEW_GUARD = 800;
-const REASON = {
-  ar: "انتهى عقد موظف الفترة المسائية اليوم، وكان يعرف رمز مكتب الاستقبال الحالي، فعطّلته على الفور حتى لا يُستخدم بعد أن يغادر. سأنشئ رمزًا جديدًا صباح الغد وأسلّمه بنفسي لموظفي الاستقبال، وحتى ذلك الحين لا يدخل أحد إلى شاشة المكتب إلا عبر حسابي.",
-  en: "The evening employee's contract ended today and he knew the current front desk PIN, so I turned it off right away so it can't be used after he leaves. I will create a new PIN tomorrow morning and give it to the desk staff myself, in person.",
-};
 const SHORT = { ar: "عادت إلى الدراسة", en: "Back to university" };
 const NEWBIE = { name: { ar: "سارة", en: "سارة" }, email: "sara.alotaibi@example.com" };
 const PW = "correct-horse-battery-staple";
 const NEW_PW = "a-new-password-for-noura";
-// The secret checks: read the PIN while its view shows (its one view), then, once it closed, look for it everywhere.
-const readPin = (p) => p.evaluate(() => (document.querySelector("#pin-say")?.textContent || "").replace(/\D/g, ""));
-async function pinGone(o, pin) {
-  if (!/^\d{8}$/.test(pin)) { o.secrets.push(`the view showed no 8-digit PIN (${pin.length})`); return; }
+// The codes: the shortest the field takes, a usual one, sixteen mixed, sixteen of the widest letters.
+const CODE = { short: "desk2026", usual: "Fitway2026", mixed16: "FitwayRiyadh2026", wide16: "WWWWWWWWWWWWWWWW" };
+// The code's two steps: typed, then the one-time view.
+async function typeCode(p, code, ph, mode = "change") {
+  await press(p, `[data-key="${mode === "create" ? "pinCreate" : "pinChange"}"]`, ph);
+  await p.fill("#pin-code", code);
+}
+async function toView(p, code, ph, mode) { await typeCode(p, code, ph, mode); await press(p, "#pin-confirm .acc-do", ph); }
+// Once the view closed, the typed code is nowhere: not in the DOM, the hooks, the URL or a field.
+async function codeGone(o, code) {
   const left = await o.page.evaluate((x) => {
     const where = [];
     if (document.documentElement.outerHTML.includes(x) || document.body.innerText.includes(x)) where.push("DOM");
@@ -184,163 +200,157 @@ async function pinGone(o, pin) {
     if (location.href.includes(x)) where.push("URL");
     if ([...document.querySelectorAll("input, textarea")].some((i) => i.value.includes(x))) where.push("a field");
     return where;
-  }, pin);
-  if (left.length) o.secrets.push(`PIN still in ${left.join(", ")}`);
+  }, code);
+  if (left.length) o.secrets.push(`code still in ${left.join(", ")}`);
 }
 async function passwordGone(o, pw) {
   const left = await o.page.evaluate((x) => [...document.querySelectorAll("input, textarea")].some((i) => i.value === x) || document.documentElement.outerHTML.includes(x), pw);
   if (left) o.secrets.push("a password is still in the page after its change succeeded");
 }
+// A row's place among the owners, before and after a change: it must not move.
+const rowIndex = (p, id) => p.evaluate((x) => window.__access.owners.findIndex((o) => o.id === x), id);
+const rowTop = (p, id) => p.evaluate((x) => Math.round(document.querySelector(`.prs[data-id="${x}"]`).getBoundingClientRect().top + scrollY), id);
 
 try {
-  /* ---- 1: the page at rest at each designed size */
+  /* ---- 1: the page at rest at each size */
   if (want(1)) for (const lang of LANGS) {
-    for (const [n, size] of [["01", 1440], ["02", 768], ["03", 390]]) await shot(`1-${n}-rest-${size}-${lang}`, `lang=${lang}`, SIZES[size]);
-    for (const [n, size] of [["04", 1440], ["05", 768], ["06", 390]]) await shot(`1-${n}-rest-full-${size}-${lang}`, `lang=${lang}`, { ...SIZES[size], scale: 1, full: true });
+    const L = `lang=${lang}`;
+    for (const [n, size] of [["01", 1440], ["02", 1024], ["03", 768], ["04", 390]]) await shot(`1-${n}-rest-${size}-${lang}`, L, SIZES[size]);
+    await shot(`1-05-rest-full-1440-${lang}`, L, { ...SIZES[1440], full: true });
+    await shot(`1-06-rest-full-390-${lang}`, L, { ...SIZES[390], scale: 1, full: true });
   }
 
-  /* ---- 2: each state. The page's own states at 1440 and 390; every action's steps at 1440 (4 has the phone's). */
+  /* ---- 2: each changed element against its range */
   if (want(2)) for (const lang of LANGS) {
     const L = `lang=${lang}`;
-    for (const size of [1440, 390]) {
+    for (const size of [1440, 1024, 768, 390]) {
       const S = SIZES[size], ph = Boolean(S.phone);
-      await shot(`2-01-loading-${size}-${lang}`, `${L}&state=loading`, { ...S, act: (p) => wait(p, 450) });
-      await shot(`2-02-loading-arrived-${size}-${lang}`, `${L}&state=loading&arrive=700`, { ...S, act: (p) => wait(p, 1400), clsMustBeZero: true });
-      await shot(`2-03-error-${size}-${lang}`, `${L}&state=error`, S);
-      await shot(`2-04-error-retrying-${size}-${lang}`, `${L}&state=error`, { ...S, act: async (p) => { await press(p, "#retry", ph); await wait(p, 300); } });
-      await shot(`2-05-error-retried-${size}-${lang}`, `${L}&state=error`, { ...S, act: async (p) => { await p.keyboard.press("Enter"); await wait(p, 1500); } });
-      await shot(`2-06-pin-never-set-${size}-${lang}`, `${L}&pin=none`, S);
-      await shot(`2-07-pin-deactivated-${size}-${lang}`, `${L}&pin=off`, S);
-      await shot(`2-08-one-active-owner-${size}-${lang}`, `${L}&owners=last`, S);
-      await shot(`2-09-many-owners-${size}-${lang}`, `${L}&owners=many`, { ...S, scale: 1, full: true });
+      const rec = around("#records", 16), desk = around("#desk", 16), owners = around("#owners", 16), panel = aroundFixed(PANEL, 16);
+      // The records card (from 721 px); on a phone the way to the records under the header instead.
+      if (!ph) {
+        await shot(`2-01-records-${size}-${lang}`, L, { ...S, clip: rec });
+        await shot(`2-02-records-after-a-change-${size}-${lang}`, L, { ...S, act: async (p, o) => { await press(p, '[data-key="off:o2"]', ph); await p.fill("#off-reason", SHORT[lang]); await press(p, "#off .acc-do", ph); await wait(p, ANSWER); await p.mouse.move(0, 0); const r = await p.evaluate(() => window.__access.records); if (r.acts[0] !== "off" || r.ids.length !== 8) o.checks.push(`the change's record is not on top: ${JSON.stringify(r)}`); }, clip: around("#records||#owners", 16) });
+        await shot(`2-03-records-none-${size}-${lang}`, `${L}&records=none`, { ...S, clip: rec });
+        await shot(`2-04-records-error-${size}-${lang}`, `${L}&records=error`, { ...S, clip: rec });
+        await shot(`2-05-records-retried-${size}-${lang}`, `${L}&records=error`, { ...S, act: async (p) => { await p.click("#rec-retry"); await wait(p, 1500); await p.mouse.move(0, 0); }, clip: rec });
+        await shot(`2-06-records-loading-${size}-${lang}`, `${L}&state=loading`, { ...S, act: (p) => wait(p, 450) });
+        await shot(`2-07-records-longest-names-${size}-${lang}`, `${L}&case=long`, { ...S, clip: rec });
+        await shot(`2-08-records-row-hover-${size}-${lang}`, L, { ...S, act: async (p) => { await p.hover('.rec-a[data-record="42"]'); }, clip: rec });
+        await shot(`2-09-records-row-focus-${size}-${lang}`, L, { ...S, act: async (p) => { await p.focus("#rec-all"); await p.keyboard.press("Tab"); }, clip: rec });
+      } else {
+        await shot(`2-01-records-link-${size}-${lang}`, L, { ...S, clip: around(".head||#tools", 16) });
+      }
+      // The front desk's card in each state of its code: the quiet button's box beside "Change code"; "Create code".
+      await shot(`2-10-desk-active-${size}-${lang}`, L, { ...S, clip: desk });
+      await shot(`2-11-desk-never-set-${size}-${lang}`, `${L}&pin=none`, { ...S, clip: desk });
+      await shot(`2-12-desk-deactivated-${size}-${lang}`, `${L}&pin=off`, { ...S, clip: desk });
+      // The owners: each person's actions under the name; the quiet button's box on every active row.
+      await shot(`2-13-owners-${size}-${lang}`, L, { ...S, clip: owners });
+      await shot(`2-14-owners-one-active-${size}-${lang}`, `${L}&owners=last`, { ...S, clip: owners });
+      await shot(`2-15-owners-longest-${size}-${lang}`, `${L}&case=long`, { ...S, clip: owners });
+      await shot(`2-16-owners-shortest-${size}-${lang}`, `${L}&case=short`, { ...S, clip: owners });
+      // The page's own states with the two halves: the loading's arrival moves nothing; the first load's failure is one
+      // message in place of both halves, and its retry arrives.
+      await shot(`2-19-loading-arrived-${size}-${lang}`, `${L}&state=loading&arrive=700`, { ...S, act: (p) => wait(p, 1400), clsMustBeZero: true });
+      await shot(`2-27-page-error-${size}-${lang}`, `${L}&state=error`, S);
+      await shot(`2-28-page-error-retried-${size}-${lang}`, `${L}&state=error`, { ...S, act: async (p) => { await p.keyboard.press("Enter"); await wait(p, 1500); } });
+      // The quiet button: hover (not on touch) and the keyboard's ring.
+      if (!ph) await shot(`2-17-quiet-hover-${size}-${lang}`, L, { ...S, act: (p) => p.hover('[data-key="off:o2"]'), clip: around('.prs[data-id="o2"]', 16) });
+      await shot(`2-18-quiet-focus-${size}-${lang}`, L, { ...S, act: async (p) => { await p.focus('[data-key="reset:o2"]'); await p.keyboard.press("Tab"); }, clip: around('.prs[data-id="o2"]', 16) });
+      // The code field: empty, typed, each refusal; the create form's title.
+      await shot(`2-20-code-empty-${size}-${lang}`, L, { ...S, act: (p) => press(p, '[data-key="pinChange"]', ph), clip: panel });
+      await shot(`2-21-code-typed-${size}-${lang}`, L, { ...S, act: (p) => typeCode(p, CODE.usual, ph), clip: panel });
+      await shot(`2-22-code-refused-empty-${size}-${lang}`, L, { ...S, act: async (p) => { await press(p, '[data-key="pinChange"]', ph); await press(p, "#pin-confirm .acc-do", ph); }, clip: panel });
+      await shot(`2-23-code-refused-letters-${size}-${lang}`, L, { ...S, act: async (p) => { await typeCode(p, "رمز2026abc", ph); await press(p, "#pin-confirm .acc-do", ph); }, clip: panel });
+      await shot(`2-24-code-refused-short-${size}-${lang}`, L, { ...S, act: async (p) => { await typeCode(p, "abc12", ph); await press(p, "#pin-confirm .acc-do", ph); }, clip: panel });
+      await shot(`2-25-code-arabic-digits-${size}-${lang}`, L, { ...S, act: async (p, o) => { await press(p, '[data-key="pinChange"]', ph); await p.locator("#pin-code").pressSequentially("desk٢٠٢٦"); const v = await p.inputValue("#pin-code"); if (v !== "desk2026") o.checks.push(`Arabic-Indic digits not made Western: ${v}`); }, clip: panel });
+      await shot(`2-26-code-create-${size}-${lang}`, `${L}&pin=none`, { ...S, act: (p) => typeCode(p, CODE.usual, ph, "create"), clip: panel });
+      // The one-time view across the codes' range, and its states.
+      for (const [n, k] of [["30", "short"], ["31", "usual"], ["32", "mixed16"], ["33", "wide16"]]) {
+        await shot(`2-${n}-view-${k}-${size}-${lang}`, L, { ...S, act: async (p, o) => { await toView(p, CODE[k], ph); o.notes.codeFont = await p.evaluate(() => { const e = document.querySelector("#pin-code-shown"); return [getComputedStyle(e).fontSize, Math.round(e.getBoundingClientRect().height)]; }); }, clip: panel });
+      }
+      await shot(`2-34-view-copied-${size}-${lang}`, L, { ...S, clipboard: true, act: async (p, o) => { await toView(p, CODE.usual, ph); await press(p, "#pin-copy", ph); await wait(p, 150); const got = await p.evaluate(() => navigator.clipboard.readText().catch(() => "?")); if (got !== CODE.usual) o.checks.push(`the clipboard holds ${got}`); }, clip: panel });
+      await shot(`2-35-view-not-copied-${size}-${lang}`, L, { ...S, act: async (p) => { await toView(p, CODE.usual, ph); await p.evaluate(() => { navigator.clipboard.writeText = () => Promise.reject(new Error("denied")); document.execCommand = () => false; }); await press(p, "#pin-copy", ph); await wait(p, 150); }, clip: panel });
+      await shot(`2-36-view-saving-${size}-${lang}`, `${L}&hold=1`, { ...S, act: async (p) => { await toView(p, CODE.usual, ph); await wait(p, VIEW_GUARD); await press(p, "#pin-saved", ph); }, clip: panel });
+      await shot(`2-37-view-failed-${size}-${lang}`, `${L}&fail=1`, { ...S, act: async (p) => { await toView(p, CODE.usual, ph); await wait(p, VIEW_GUARD); await press(p, "#pin-saved", ph); await wait(p, ANSWER); }, clip: panel });
+      await shot(`2-38-view-refused-${size}-${lang}`, `${L}&refuse=staff_pin_not_active`, { ...S, act: async (p) => { await toView(p, CODE.usual, ph); await wait(p, VIEW_GUARD); await press(p, "#pin-saved", ph); await wait(p, ANSWER); }, clip: panel });
+      await shot(`2-39-view-create-${size}-${lang}`, `${L}&pin=none`, { ...S, act: (p) => toView(p, CODE.usual, ph, "create"), clip: panel });
     }
-    const S = SIZES[1440];
-    // The PIN: change (a confirmation, working, the one-time view, done); create (working, the view, done); deactivate
-    // (the confirmation with its reason: empty, refused for no reason, typed, working, done).
-    await shot(`2-10-pin-change-confirm-1440-${lang}`, L, { ...S, act: (p) => p.click('[data-key="pinChange"]') });
-    await shot(`2-11-pin-change-working-1440-${lang}`, `${L}&hold=1`, { ...S, act: async (p) => { await p.click('[data-key="pinChange"]'); await p.click("#pin-confirm .acc-do"); } });
-    await shot(`2-12-pin-view-after-change-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="pinChange"]'); await p.click("#pin-confirm .acc-do"); await wait(p, ANSWER); } });
-    await shot(`2-13-pin-change-done-1440-${lang}`, L, { ...S, act: async (p, o) => { await p.click('[data-key="pinChange"]'); await p.click("#pin-confirm .acc-do"); await wait(p, ANSWER); const pin = await readPin(p); await p.keyboard.press("Escape"); await p.keyboard.press("Escape"); await p.mouse.click(40, 860); await wait(p, VIEW_GUARD); if (!(await p.evaluate(() => window.__access.viewOpen && document.querySelector("#dlg-pin").open))) o.checks.push("the one-time view closed without I've saved it"); await p.click("#pin-saved"); await wait(p, 200); await pinGone(o, pin); } });
-    await shot(`2-14-pin-create-working-1440-${lang}`, `${L}&pin=none&hold=1`, { ...S, act: (p) => p.click('[data-key="pinCreate"]') });
-    await shot(`2-15-pin-view-after-create-1440-${lang}`, `${L}&pin=none`, { ...S, act: async (p) => { await p.click('[data-key="pinCreate"]'); await wait(p, ANSWER); } });
-    await shot(`2-16-pin-create-done-1440-${lang}`, `${L}&pin=none`, { ...S, act: async (p, o) => { await p.click('[data-key="pinCreate"]'); await wait(p, ANSWER); const pin = await readPin(p); await wait(p, VIEW_GUARD); await p.click("#pin-saved"); await wait(p, 200); await pinGone(o, pin); } });
-    await shot(`2-17-pin-off-confirm-1440-${lang}`, L, { ...S, act: (p) => p.click('[data-key="pinOff"]') });
-    await shot(`2-18-pin-off-no-reason-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="pinOff"]'); await p.click("#pinoff .acc-do"); } });
-    await shot(`2-19-pin-off-working-1440-${lang}`, `${L}&hold=1`, { ...S, act: async (p) => { await p.click('[data-key="pinOff"]'); await p.fill("#pinoff-reason", SHORT[lang]); await p.click("#pinoff .acc-do"); } });
-    await shot(`2-20-pin-off-done-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="pinOff"]'); await p.fill("#pinoff-reason", SHORT[lang]); await p.click("#pinoff .acc-do"); await wait(p, ANSWER); } });
-    // The owners: add (empty, every field refused, typed with the password shown, working, done); reset; deactivate;
-    // reactivate; change my password.
-    await shot(`2-21-add-empty-1440-${lang}`, L, { ...S, act: (p) => p.click('[data-key="add"]') });
-    await shot(`2-22-add-invalid-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="add"]'); await p.fill("#add-email", "sara@"); await p.fill("#add-pw", "short"); await p.click("#add .acc-do"); } });
-    const typeNew = async (p) => { await p.click('[data-key="add"]'); await p.fill("#add-name", NEWBIE.name[lang]); await p.fill("#add-email", NEWBIE.email); await p.fill("#add-pw", PW); };
-    await shot(`2-23-add-typed-shown-1440-${lang}`, L, { ...S, act: async (p) => { await typeNew(p); await p.click("#add .pw-eye"); } });
-    await shot(`2-24-add-working-1440-${lang}`, `${L}&hold=1`, { ...S, act: async (p) => { await typeNew(p); await p.click("#add .acc-do"); } });
-    await shot(`2-25-add-done-1440-${lang}`, L, { ...S, act: async (p, o) => { await typeNew(p); await p.click("#add .acc-do"); await wait(p, ANSWER); await passwordGone(o, PW); } });
-    await shot(`2-26-reset-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="reset:o2"]'); await p.fill("#reset-pw", NEW_PW); } });
-    await shot(`2-27-reset-done-1440-${lang}`, L, { ...S, act: async (p, o) => { await p.click('[data-key="reset:o2"]'); await p.fill("#reset-pw", NEW_PW); await p.click("#reset .acc-do"); await wait(p, ANSWER); await passwordGone(o, NEW_PW); } });
-    await shot(`2-28-off-typed-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); } });
-    await shot(`2-29-off-working-1440-${lang}`, `${L}&hold=1`, { ...S, act: async (p) => { await p.click('[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); await p.click("#off .acc-do"); } });
-    await shot(`2-30-off-done-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); await p.click("#off .acc-do"); await wait(p, ANSWER); } });
-    await shot(`2-31-on-confirm-1440-${lang}`, L, { ...S, act: (p) => p.click('[data-key="on:o3"]') });
-    await shot(`2-32-on-done-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="on:o3"]'); await p.click("#on .acc-do"); await wait(p, ANSWER); } });
-    await shot(`2-33-mine-1440-${lang}`, L, { ...S, act: async (p) => { await p.click('[data-key="mine:o1"]'); await p.fill("#mine-current", PW); await p.fill("#mine-new", NEW_PW); } });
-    await shot(`2-34-mine-done-1440-${lang}`, L, { ...S, act: async (p, o) => { await p.click('[data-key="mine:o1"]'); await p.fill("#mine-current", PW); await p.fill("#mine-new", NEW_PW); await p.click("#mine .acc-do"); await wait(p, ANSWER); await passwordGone(o, NEW_PW); await passwordGone(o, PW); } });
-    await shot(`2-35-failed-1440-${lang}`, `${L}&fail=1`, { ...S, act: async (p) => { await p.click('[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); await p.click("#off .acc-do"); await wait(p, ANSWER); } });
-    await shot(`2-36-create-failed-1440-${lang}`, `${L}&pin=none&fail=1`, { ...S, act: async (p) => { await p.click('[data-key="pinCreate"]'); await wait(p, ANSWER); } });
-    // Each refusal the contract can return, in its own words; the form kept as typed.
-    const R = (code) => `${L}&refuse=${code}`;
-    await shot(`2-40-refuse-pin-already-active-1440-${lang}`, `${R("staff_pin_already_active")}&pin=none`, { ...S, act: async (p) => { await p.click('[data-key="pinCreate"]'); await wait(p, ANSWER); } });
-    await shot(`2-41-refuse-pin-not-active-change-1440-${lang}`, R("staff_pin_not_active"), { ...S, act: async (p) => { await p.click('[data-key="pinChange"]'); await p.click("#pin-confirm .acc-do"); await wait(p, ANSWER); } });
-    await shot(`2-42-refuse-pin-not-active-off-1440-${lang}`, R("staff_pin_not_active"), { ...S, act: async (p) => { await p.click('[data-key="pinOff"]'); await p.fill("#pinoff-reason", SHORT[lang]); await p.click("#pinoff .acc-do"); await wait(p, ANSWER); } });
-    const offWith = (code) => shot(`2-${{ owner_self_deactivation: 43, owner_last_active: 44, owner_already_inactive: 45, not_an_owner: 51, reason_required: 52 }[code]}-refuse-${code.replaceAll("_", "-")}-1440-${lang}`, R(code), { ...S, act: async (p) => { await p.click('[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); await p.click("#off .acc-do"); await wait(p, ANSWER); } });
-    for (const code of ["owner_self_deactivation", "owner_last_active", "owner_already_inactive", "not_an_owner", "reason_required"]) await offWith(code);
-    await shot(`2-46-refuse-owner-already-inactive-reset-1440-${lang}`, R("owner_already_inactive"), { ...S, act: async (p) => { await p.click('[data-key="reset:o2"]'); await p.fill("#reset-pw", NEW_PW); await p.click("#reset .acc-do"); await wait(p, ANSWER); } });
-    await shot(`2-47-refuse-owner-already-active-1440-${lang}`, R("owner_already_active"), { ...S, act: async (p) => { await p.click('[data-key="on:o3"]'); await p.click("#on .acc-do"); await wait(p, ANSWER); } });
-    const addAs = (email) => async (p) => { await p.click('[data-key="add"]'); await p.fill("#add-name", NEWBIE.name[lang]); await p.fill("#add-email", email); await p.fill("#add-pw", PW); await p.click("#add .acc-do"); await wait(p, ANSWER); };
-    await shot(`2-48-refuse-email-taken-active-1440-${lang}`, L, { ...S, act: addAs("Noura@example.com") });
-    await shot(`2-49-refuse-email-taken-deactivated-1440-${lang}`, L, { ...S, act: addAs("omar.alharbi@example.com") });
-    await shot(`2-50-refuse-email-taken-elsewhere-1440-${lang}`, R("owner_email_taken"), { ...S, act: addAs(NEWBIE.email) });
-    await shot(`2-53-refuse-current-password-1440-${lang}`, R("current_password_incorrect"), { ...S, act: async (p) => { await p.click('[data-key="mine:o1"]'); await p.fill("#mine-current", "not-my-password"); await p.fill("#mine-new", NEW_PW); await p.click("#mine .acc-do"); await wait(p, ANSWER); } });
+    // Every dialog as the phone shows it (390 x 844, touch), whole screen.
+    const S = SIZES[390], tap = (p, sel) => p.tap(sel);
+    await shot(`2-40-phone-code-form-390-${lang}`, L, { ...S, act: (p) => typeCode(p, CODE.usual, true) });
+    await shot(`2-41-phone-code-view-390-${lang}`, L, { ...S, act: (p) => toView(p, CODE.usual, true) });
+    await shot(`2-42-phone-pin-off-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="pinOff"]'); await p.fill("#pinoff-reason", SHORT[lang]); } });
+    await shot(`2-43-phone-add-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="add"]'); await p.fill("#add-name", NEWBIE.name[lang]); await p.fill("#add-email", NEWBIE.email); await p.fill("#add-pw", PW); } });
+    await shot(`2-44-phone-reset-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="reset:o2"]'); await p.fill("#reset-pw", NEW_PW); } });
+    await shot(`2-45-phone-off-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); } });
+    await shot(`2-46-phone-on-390-${lang}`, L, { ...S, act: (p) => tap(p, '[data-key="on:o3"]') });
+    await shot(`2-47-phone-mine-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="mine:o1"]'); await p.fill("#mine-current", PW); await p.fill("#mine-new", NEW_PW); } });
+    await shot(`2-48-phone-code-create-390-${lang}`, `${L}&pin=none`, { ...S, act: (p) => typeCode(p, CODE.usual, true, "create") });
+    await shot(`2-49-phone-added-390-${lang}`, L, { ...S, act: async (p, o) => { await tap(p, '[data-key="add"]'); await p.fill("#add-name", NEWBIE.name[lang]); await p.fill("#add-email", NEWBIE.email); await p.fill("#add-pw", PW); await tap(p, "#add .acc-do"); await wait(p, ANSWER); await passwordGone(o, PW); } });
   }
 
-  /* ---- 3: the range, each element against its whole range, cropped with a strip of its neighbours */
-  if (want(3)) for (const lang of LANGS) for (const size of [1440, 768, 390]) {
-    const S = SIZES[size], L = `lang=${lang}`, ph = Boolean(S.phone);
-    const desk = around("#desk", 16), owners = around("#owners", 16), panel = aroundFixed("dialog[open] .dlg-panel:not([hidden])", 16);
-    await shot(`3-01-pin-never-set-${size}-${lang}`, `${L}&pin=none`, { ...S, clip: desk });
-    await shot(`3-02-pin-active-${size}-${lang}`, L, { ...S, clip: desk });
-    await shot(`3-03-pin-deactivated-${size}-${lang}`, `${L}&pin=off`, { ...S, clip: desk });
-    await shot(`3-04-pin-view-${size}-${lang}`, `${L}&pin=none`, { ...S, act: async (p) => { await press(p, '[data-key="pinCreate"]', ph); await wait(p, ANSWER); }, clip: panel });
-    await shot(`3-05-owners-one-active-${size}-${lang}`, `${L}&owners=last`, { ...S, clip: owners });
-    await shot(`3-06-owners-several-${size}-${lang}`, L, { ...S, clip: owners });
-    await shot(`3-07-owners-many-${size}-${lang}`, `${L}&owners=many`, { ...S, clip: owners });
-    await shot(`3-08-longest-names-emails-${size}-${lang}`, `${L}&case=long`, { ...S, clip: owners });
-    await shot(`3-09-shortest-names-emails-${size}-${lang}`, `${L}&case=short`, { ...S, clip: owners });
-    await shot(`3-10-reason-240-${size}-${lang}`, L, { ...S, act: async (p) => { await press(p, '[data-key="pinOff"]', ph); await p.fill("#pinoff-reason", REASON[lang]); }, clip: panel });
-    await shot(`3-11-reason-left-${size}-${lang}`, L, { ...S, act: async (p) => { await press(p, '[data-key="off:o2"]', ph); await p.fill("#off-reason", REASON[lang].slice(0, 228)); }, clip: panel });
-    await shot(`3-12-done-longest-name-${size}-${lang}`, `${L}&case=long`, { ...S, act: async (p) => { await press(p, '[data-key="off:o2"]', ph); await p.fill("#off-reason", SHORT[lang]); await press(p, "#off .acc-do", ph); await wait(p, ANSWER); }, clip: around('.prs[data-id="o2"]', 16) });
-    await shot(`3-13-dialog-longest-name-${size}-${lang}`, `${L}&case=long`, { ...S, act: async (p) => { await press(p, '[data-key="reset:o2"]', ph); await p.fill("#reset-pw", NEW_PW); await press(p, "#reset .pw-eye", ph); }, clip: panel });
-    await shot(`3-14-refusal-longest-name-${size}-${lang}`, `${L}&case=long&refuse=owner_already_inactive`, { ...S, act: async (p) => { await press(p, '[data-key="off:o2"]', ph); await p.fill("#off-reason", SHORT[lang]); await press(p, "#off .acc-do", ph); await wait(p, ANSWER); }, clip: panel });
-    await shot(`3-15-done-pin-${size}-${lang}`, `${L}&pin=none`, { ...S, act: async (p) => { await press(p, '[data-key="pinCreate"]', ph); await wait(p, ANSWER + VIEW_GUARD); await press(p, "#pin-saved", ph); await wait(p, 200); }, clip: desk });
-    if (!ph) {
-      // Keyboard: the ring on a row's quiet removal, and on the done sentence that focus moves to after a change by key.
-      await shot(`3-16-focus-quiet-button-${size}-${lang}`, L, { ...S, act: async (p) => { await p.focus('[data-key="reset:o2"]'); await p.keyboard.press("Tab"); }, clip: around('.prs[data-id="o2"]', 16) });
-      await shot(`3-17-focus-done-by-key-${size}-${lang}`, L, { ...S, act: async (p) => { await p.focus('[data-key="on:o3"]'); await p.keyboard.press("Enter"); await wait(p, 100); await p.keyboard.press("Tab"); await p.keyboard.press("Enter"); await wait(p, ANSWER); }, clip: around('.prs[data-id="o3"]', 16) });
-      await shot(`3-18-focus-pin-view-by-key-${size}-${lang}`, L, { ...S, act: async (p) => { await p.focus('[data-key="pinChange"]'); await p.keyboard.press("Enter"); await wait(p, 100); await p.keyboard.press("Tab"); await p.keyboard.press("Enter"); await wait(p, ANSWER); await p.keyboard.press("Enter"); await p.keyboard.press("Tab"); }, clip: panel });
-    }
+  /* ---- 3: the code's change step by step, at 1440 and 390 */
+  if (want(3)) for (const lang of LANGS) for (const size of [1440, 390]) {
+    const S = SIZES[size], ph = Boolean(S.phone), L = `lang=${lang}`;
+    const viewOpen = (p) => p.evaluate(() => window.__access.viewOpen && document.querySelector("#dlg-pin").open);
+    await shot(`3-01-change-typed-${size}-${lang}`, L, { ...S, act: (p) => typeCode(p, CODE.usual, ph) });
+    // The view: Escape (twice) and a tap or click outside leave it open, the code still there.
+    await shot(`3-02-change-view-${size}-${lang}`, L, { ...S, act: async (p, o) => { await toView(p, CODE.usual, ph); await p.keyboard.press("Escape"); await p.keyboard.press("Escape"); if (ph) await p.touchscreen.tap(195, 60); else await p.mouse.click(40, 860); await wait(p, 150); if (!(await viewOpen(p))) o.checks.push("the view closed without one of its actions"); } });
+    await shot(`3-03-change-copied-${size}-${lang}`, L, { ...S, clipboard: true, act: async (p) => { await toView(p, CODE.usual, ph); await press(p, "#pin-copy", ph); await wait(p, 150); } });
+    await shot(`3-04-change-saving-${size}-${lang}`, `${L}&hold=1`, { ...S, act: async (p) => { await toView(p, CODE.usual, ph); await wait(p, VIEW_GUARD); await press(p, "#pin-saved", ph); } });
+    await shot(`3-05-change-saved-${size}-${lang}`, L, { ...S, act: async (p, o) => { await toView(p, CODE.usual, ph); await wait(p, VIEW_GUARD); await press(p, "#pin-saved", ph); await wait(p, ANSWER); await codeGone(o, CODE.usual); const r = await p.evaluate(() => window.__access.records.acts[0]); if (r !== "pinChange") o.checks.push(`the change's record is not on top (${r})`); await p.mouse.move(0, 0); } });
+    await shot(`3-06-change-cancelled-${size}-${lang}`, L, { ...S, act: async (p, o) => { await toView(p, CODE.usual, ph); await press(p, "#pin-undo", ph); await wait(p, 300); await codeGone(o, CODE.usual); const st = await p.evaluate(() => ({ open: document.querySelector("#dlg-pin").open, notice: window.__access.notice, top: window.__access.records.ids[0], desk: window.__access.desk, focus: document.activeElement?.dataset?.key })); if (st.open || st.notice || st.top !== 54 || st.desk !== "active") o.checks.push(`cancel changed something: ${JSON.stringify(st)}`); o.notes.focus = st.focus; } });
+    await shot(`3-07-create-typed-${size}-${lang}`, `${L}&pin=none`, { ...S, act: (p) => typeCode(p, CODE.short, ph, "create") });
+    await shot(`3-08-create-view-${size}-${lang}`, `${L}&pin=none`, { ...S, act: (p) => toView(p, CODE.short, ph, "create") });
+    await shot(`3-09-create-saved-${size}-${lang}`, `${L}&pin=none`, { ...S, act: async (p, o) => { await toView(p, CODE.short, ph, "create"); await wait(p, VIEW_GUARD); await press(p, "#pin-saved", ph); await wait(p, ANSWER); await codeGone(o, CODE.short); await p.mouse.move(0, 0); } });
+    await shot(`3-10-create-cancelled-${size}-${lang}`, `${L}&pin=none`, { ...S, act: async (p, o) => { await toView(p, CODE.short, ph, "create"); await press(p, "#pin-undo", ph); await wait(p, 300); await codeGone(o, CODE.short); const d = await p.evaluate(() => window.__access.desk); if (d !== "none") o.checks.push(`cancel created a code (${d})`); } });
   }
 
-  /* ---- 4: the phone's flows, step by step (390 x 844, touch): every dialog as the phone shows it */
-  if (want(4)) for (const lang of LANGS) {
-    const S = SIZES[390], L = `lang=${lang}`;
-    const tap = (p, sel) => p.tap(sel);
-    // Change the PIN: the confirmation, working, the one-time view (a tap outside does nothing), done.
-    await shot(`4-01-pin-change-confirm-390-${lang}`, L, { ...S, act: (p) => tap(p, '[data-key="pinChange"]') });
-    await shot(`4-02-pin-change-working-390-${lang}`, `${L}&hold=1`, { ...S, act: async (p) => { await tap(p, '[data-key="pinChange"]'); await tap(p, "#pin-confirm .acc-do"); } });
-    await shot(`4-03-pin-view-390-${lang}`, L, { ...S, act: async (p, o) => { await tap(p, '[data-key="pinChange"]'); await tap(p, "#pin-confirm .acc-do"); await wait(p, ANSWER); await p.touchscreen.tap(195, 120); await wait(p, 150); if (!(await p.evaluate(() => window.__access.viewOpen && document.querySelector("#dlg-pin").open))) o.checks.push("a tap outside closed the one-time view"); } });
-    await shot(`4-04-pin-change-done-390-${lang}`, L, { ...S, act: async (p, o) => { await tap(p, '[data-key="pinChange"]'); await tap(p, "#pin-confirm .acc-do"); await wait(p, ANSWER); const pin = await readPin(p); await wait(p, VIEW_GUARD); await tap(p, "#pin-saved"); await wait(p, 200); await pinGone(o, pin); } });
-    // Create a PIN when none is active: working, then the view as the phone shows it.
-    await shot(`4-05-pin-create-working-390-${lang}`, `${L}&pin=none&hold=1`, { ...S, act: (p) => tap(p, '[data-key="pinCreate"]') });
-    await shot(`4-06-pin-create-view-390-${lang}`, `${L}&pin=none`, { ...S, act: async (p) => { await tap(p, '[data-key="pinCreate"]'); await wait(p, ANSWER); } });
-    // Deactivate the PIN: the sheet, the reason refused while empty, typed, done.
-    await shot(`4-07-pin-off-sheet-390-${lang}`, L, { ...S, act: (p) => tap(p, '[data-key="pinOff"]') });
-    await shot(`4-08-pin-off-no-reason-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="pinOff"]'); await tap(p, "#pinoff .acc-do"); } });
-    await shot(`4-09-pin-off-typed-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="pinOff"]'); await p.fill("#pinoff-reason", REASON[lang]); } });
-    await shot(`4-10-pin-off-done-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="pinOff"]'); await p.fill("#pinoff-reason", SHORT[lang]); await tap(p, "#pinoff .acc-do"); await wait(p, ANSWER); } });
-    // Add an owner: the sheet, every field refused, typed with the password shown, a taken email, done.
-    await shot(`4-11-add-sheet-390-${lang}`, L, { ...S, act: (p) => tap(p, '[data-key="add"]') });
-    await shot(`4-12-add-invalid-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="add"]'); await tap(p, "#add .acc-do"); } });
-    await shot(`4-13-add-typed-shown-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="add"]'); await p.fill("#add-name", NEWBIE.name[lang]); await p.fill("#add-email", NEWBIE.email); await p.fill("#add-pw", PW); await tap(p, "#add .pw-eye"); } });
-    await shot(`4-14-add-email-taken-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="add"]'); await p.fill("#add-name", NEWBIE.name[lang]); await p.fill("#add-email", "omar.alharbi@example.com"); await p.fill("#add-pw", PW); await tap(p, "#add .acc-do"); await wait(p, ANSWER); } });
-    await shot(`4-15-add-done-390-${lang}`, L, { ...S, act: async (p, o) => { await tap(p, '[data-key="add"]'); await p.fill("#add-name", NEWBIE.name[lang]); await p.fill("#add-email", NEWBIE.email); await p.fill("#add-pw", PW); await tap(p, "#add .acc-do"); await wait(p, ANSWER); await passwordGone(o, PW); } });
-    // A row's dialogs: reset, deactivate (and a refusal the form cannot fix), reactivate, change my password.
-    await shot(`4-16-reset-sheet-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="reset:o2"]'); await p.fill("#reset-pw", NEW_PW); } });
-    await shot(`4-17-reset-done-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="reset:o2"]'); await p.fill("#reset-pw", NEW_PW); await tap(p, "#reset .acc-do"); await wait(p, ANSWER); } });
-    await shot(`4-18-off-sheet-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); } });
-    await shot(`4-19-off-working-390-${lang}`, `${L}&hold=1`, { ...S, act: async (p) => { await tap(p, '[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); await tap(p, "#off .acc-do"); } });
-    await shot(`4-20-off-refused-390-${lang}`, `${L}&refuse=owner_already_inactive`, { ...S, act: async (p) => { await tap(p, '[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); await tap(p, "#off .acc-do"); await wait(p, ANSWER); } });
-    await shot(`4-21-off-failed-390-${lang}`, `${L}&fail=1`, { ...S, act: async (p) => { await tap(p, '[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); await tap(p, "#off .acc-do"); await wait(p, ANSWER); } });
-    await shot(`4-22-off-done-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="off:o2"]'); await p.fill("#off-reason", SHORT[lang]); await tap(p, "#off .acc-do"); await wait(p, ANSWER); } });
-    await shot(`4-23-on-sheet-390-${lang}`, L, { ...S, act: (p) => tap(p, '[data-key="on:o3"]') });
-    await shot(`4-24-on-done-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="on:o3"]'); await tap(p, "#on .acc-do"); await wait(p, ANSWER); } });
-    await shot(`4-25-mine-sheet-390-${lang}`, L, { ...S, act: async (p) => { await tap(p, '[data-key="mine:o1"]'); await p.fill("#mine-current", PW); await p.fill("#mine-new", NEW_PW); } });
-    await shot(`4-26-mine-refused-390-${lang}`, `${L}&refuse=current_password_incorrect`, { ...S, act: async (p) => { await tap(p, '[data-key="mine:o1"]'); await p.fill("#mine-current", "not-my-password"); await p.fill("#mine-new", NEW_PW); await tap(p, "#mine .acc-do"); await wait(p, ANSWER); } });
-    await shot(`4-27-mine-done-390-${lang}`, L, { ...S, act: async (p, o) => { await tap(p, '[data-key="mine:o1"]'); await p.fill("#mine-current", PW); await p.fill("#mine-new", NEW_PW); await tap(p, "#mine .acc-do"); await wait(p, ANSWER); await passwordGone(o, NEW_PW); } });
+  /* ---- 4: deactivate and reactivate among eight owners, before and after: the row keeps its place */
+  if (want(4)) for (const lang of LANGS) for (const size of [1440, 768, 390]) {
+    const S = SIZES[size], ph = Boolean(S.phone), L = `lang=${lang}&owners=many`;
+    const full = { ...S, scale: 1, full: true };
+    await shot(`4-01-eight-before-${size}-${lang}`, L, full);
+    await shot(`4-02-deactivate-dialog-${size}-${lang}`, L, { ...S, act: async (p) => { await p.locator('[data-key="off:o5"]').scrollIntoViewIfNeeded(); await press(p, '[data-key="off:o5"]', ph); await p.fill("#off-reason", SHORT[lang]); } });
+    await shot(`4-03-deactivated-after-${size}-${lang}`, L, { ...full, act: async (p, o) => {
+      const i0 = await rowIndex(p, "o5"), y0 = await rowTop(p, "o5");
+      await p.locator('[data-key="off:o5"]').scrollIntoViewIfNeeded(); await press(p, '[data-key="off:o5"]', ph); await p.fill("#off-reason", SHORT[lang]); await press(p, "#off .acc-do", ph); await wait(p, ANSWER);
+      const i1 = await rowIndex(p, "o5"), y1 = await rowTop(p, "o5");
+      if (i0 !== i1 || y0 !== y1) o.checks.push(`the row moved: index ${i0}->${i1}, y ${y0}->${y1}`);
+      o.notes.row = { i0, i1, y0, y1 };
+      // The whole page from its top, so the fixed rail and bar stand where they do at rest.
+      await p.mouse.move(0, 0);
+      await p.evaluate(() => scrollTo(0, 0));
+    } });
+    await shot(`4-04-deactivated-after-view-${size}-${lang}`, L, { ...S, act: async (p) => { await p.locator('[data-key="off:o5"]').scrollIntoViewIfNeeded(); await press(p, '[data-key="off:o5"]', ph); await p.fill("#off-reason", SHORT[lang]); await press(p, "#off .acc-do", ph); await wait(p, ANSWER); await p.mouse.move(0, 0); } });
+    await shot(`4-05-reactivated-after-${size}-${lang}`, L, { ...full, act: async (p, o) => {
+      const i0 = await rowIndex(p, "o7"), y0 = await rowTop(p, "o7");
+      await p.locator('[data-key="on:o7"]').scrollIntoViewIfNeeded(); await press(p, '[data-key="on:o7"]', ph); await press(p, "#on .acc-do", ph); await wait(p, ANSWER);
+      const i1 = await rowIndex(p, "o7"), y1 = await rowTop(p, "o7");
+      if (i0 !== i1 || y0 !== y1) o.checks.push(`the row moved: index ${i0}->${i1}, y ${y0}->${y1}`);
+      o.notes.row = { i0, i1, y0, y1 };
+      // The whole page from its top, so the fixed rail and bar stand where they do at rest.
+      await p.mouse.move(0, 0);
+      await p.evaluate(() => scrollTo(0, 0));
+    } });
+    await shot(`4-06-reactivated-after-view-${size}-${lang}`, L, { ...S, act: async (p) => { await p.locator('[data-key="on:o7"]').scrollIntoViewIfNeeded(); await press(p, '[data-key="on:o7"]', ph); await press(p, "#on .acc-do", ph); await wait(p, ANSWER); await p.mouse.move(0, 0); } });
   }
 
   /* ---- 5: the checked sizes, and file:// */
   if (want(5)) for (const lang of LANGS) {
     const L = `lang=${lang}`;
     await shot(`5-01-rest-320-${lang}`, L, { ...SIZES[320], scale: 1, full: true });
-    await shot(`5-02-rest-1024-${lang}`, L, SIZES[1024]);
-    await shot(`5-03-rest-zoom200-${lang}`, L, { ...SIZES.zoom, full: true, scale: 1 });
-    await shot(`5-04-rest-file-1440-${lang}`, L, { ...SIZES[1440], file: true });
-    await shot(`5-05-pin-view-320-${lang}`, `${L}&pin=none`, { ...SIZES[320], act: async (p) => { await p.tap('[data-key="pinCreate"]'); await wait(p, ANSWER); } });
-    await shot(`5-06-reason-240-320-${lang}`, L, { ...SIZES[320], act: async (p) => { await p.tap('[data-key="pinOff"]'); await p.fill("#pinoff-reason", REASON[lang]); } });
-    await shot(`5-07-add-invalid-zoom200-${lang}`, L, { ...SIZES.zoom, act: async (p) => { await p.click('[data-key="add"]'); await p.click("#add .acc-do"); } });
-    await shot(`5-08-longest-320-${lang}`, `${L}&case=long`, { ...SIZES[320], scale: 1, full: true });
-    await shot(`5-09-offline-320-${lang}`, `${L}&ops=offline`, { ...SIZES[320], clip: { x: 0, y: 0, width: 320, height: 140 } });
-    await shot(`5-10-pin-view-file-1440-${lang}`, `${L}&pin=none`, { ...SIZES[1440], file: true, act: async (p) => { await p.click('[data-key="pinCreate"]'); await wait(p, ANSWER); } });
+    await shot(`5-02-rest-zoom200-${lang}`, L, { ...SIZES.zoom, full: true, scale: 1 });
+    await shot(`5-03-rest-file-1440-${lang}`, L, { ...SIZES[1440], file: true });
+    await shot(`5-04-rest-721-${lang}`, L, { width: 721, height: 1024 });
+    await shot(`5-05-code-form-refused-320-${lang}`, L, { ...SIZES[320], act: async (p) => { await typeCode(p, "abc12", true); await p.tap("#pin-confirm .acc-do"); } });
+    await shot(`5-06-view-wide16-320-${lang}`, L, { ...SIZES[320], act: (p) => toView(p, CODE.wide16, true) });
+    await shot(`5-07-view-mixed16-320-${lang}`, L, { ...SIZES[320], act: (p) => toView(p, CODE.mixed16, true) });
+    await shot(`5-08-view-zoom200-${lang}`, L, { ...SIZES.zoom, act: (p) => toView(p, CODE.usual, false) });
+    await shot(`5-09-view-copied-file-1440-${lang}`, L, { ...SIZES[1440], file: true, act: async (p, o) => { await toView(p, CODE.usual, false); await p.click("#pin-copy"); await wait(p, 150); const st = await p.evaluate(() => document.querySelector("#pin-copy").dataset.state); if (st !== "1") o.checks.push(`copy from file:// did not report copied (${st})`); } });
+    await shot(`5-10-saved-file-1440-${lang}`, L, { ...SIZES[1440], file: true, act: async (p, o) => { await toView(p, CODE.usual, false); await wait(p, VIEW_GUARD); await p.click("#pin-saved"); await wait(p, ANSWER); await codeGone(o, CODE.usual); await p.mouse.move(0, 0); } });
+    await shot(`5-11-eight-owners-320-${lang}`, `${L}&owners=many`, { ...SIZES[320], scale: 1, full: true });
   }
 } finally {
   await browser.close();

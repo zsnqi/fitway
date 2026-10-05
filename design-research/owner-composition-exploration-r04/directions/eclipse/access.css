@@ -1,12 +1,15 @@
 /* Eclipse Access: the fourth Eclipse page. Loaded after style.css (the language and the frame) and reports.css (the
  * table, form and dialog system the Owner pages share); every rule here is scoped to the Access body (.acc) or to a
  * class only this page uses. Concept only, synthetic data.
- * C (§4.4): the header (the title and the frame's status), the way to the access records under it, then who can get
- * in: the front desk's one shared PIN, then the owners, each a card whose head says what that key can do. Every
- * change sits on the row it changes. Nothing is lit: the page wash only (LGT-6 allows none).
+ * C (§4.4): the header (the title and the frame's status), then two halves from 721 px: who can get in (the front
+ * desk's one shared code, then the owners, each a card whose head says what that key can do, each key's actions under
+ * its name) and the latest access records, with the way to all of them. On a phone one column, the way to the records
+ * under the header, as built first. Every change sits on the row it changes. Nothing is lit: the page wash only (LGT-6
+ * allows none).
  * The components first drawn here, for every later screen (ACCESS-SPEC.md marks them for §3): the mark (a state word in
- * a badge), the person row, the quiet button (a removal's trigger), the destructive button (a removal's commit), the
- * password field with show and hide, the reason field, the one-time view of a secret, and the done sentence. */
+ * a badge), the person row, the record row, the quiet button (a removal's trigger), the destructive button (a removal's
+ * commit), the password field with show and hide, the code field, the reason field, the one-time view of a secret with
+ * its copy control, and the done sentence. */
 
 html:has(> body.acc) {
   color-scheme: dark;
@@ -28,17 +31,29 @@ html:has(> body.acc) {
 .acc .nw { white-space: nowrap; }
 
 /* ------------------------------------------------------------------ page
- * The header, the way to the log, the front desk, the owners; one 16 px gutter (SPC-5). */
+ * The header, then the two halves (the way to the log under the header on a phone); one 16 px gutter (SPC-5).
+ * From 721 px (the rail's sizes, 1024 and up and 721-1023 alike) the halves are equal: who can get in at the start, the
+ * latest access records at the end, both from the same line under the header. Each half keeps its own height, so eight
+ * owners lengthen their half and never stretch the records card; with the usual three the two end about level. */
 .acc .main { display: flex; flex-direction: column; gap: 16px; padding-block: 8px 24px; }
 .acc-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.acc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.acc-keys { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+@media (min-width: 721px) { .acc-tools { display: none; } }
+@media (max-width: 720px) {
+  .acc-grid { grid-template-columns: minmax(0, 1fr); }
+  .acc-rec { display: none; }
+}
 
 /* ------------------------------------------------------------------ a card of who can get in
  * SRF-1's card, padding 24 (16 on a phone). Its head: the name in heading type, what that key can do in label type
- * --ink-3 under it, and the card's own actions at the inline end, centred on the two lines; where they do not fit
- * beside the name they take the next line, at its start. */
+ * --ink-3 under it. A key's actions stand under its name, 12 below, at its start, at every width (the front desk's
+ * here; an owner's in the person row), so a name and what can be done to it are read together. A list's action stands
+ * at its head's inline end, centred on the head: "Add owner" on the owners, "View all" on the records. */
 .acc-card { padding: 24px; container: acccard / inline-size; }
 .acc-card:focus { outline: none; }
 .acc-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; }
+#desk .acc-head { row-gap: 12px; }
 .acc-id { flex: 1 1 auto; min-width: 0; }
 .acc-title { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 19px; line-height: 28.5px; font-weight: 500; color: var(--ink); }
 .acc-title:focus, .prs-name:focus { outline: none; }
@@ -46,10 +61,47 @@ html:has(> body.acc) {
 .acc-cap { margin-block-start: 4px; font-size: 13.5px; line-height: 20px; color: var(--ink-3); }
 .acc-cap .sep { margin-inline: 8px; opacity: 1; }
 .acc-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-/* Under 460 px of card (a phone) the front desk's actions always take the line under its name, in every state of its
- * PIN, as an owner's actions do under the person; the owners' "Add owner" keeps its place beside their title. */
-@container acccard (max-width: 459.98px) { #desk .acc-acts { flex-basis: 100%; } }
+#desk .acc-acts { flex-basis: 100%; }
+/* In a narrow card (a phone, or a half from 721 to about 800 px) a key's buttons take 12 px inside, so its pair keeps one
+ * line now that the quiet one has its box (BTN-11): down to 320 px, and in English at 768. */
+@container acccard (max-width: 299.98px) { .prs-acts .rbtn, #desk .acc-acts .rbtn { padding-inline: 12px; } }
 .acc-history svg { width: 17px; height: 17px; }
+
+/* ------------------------------------------------------------------ the access records card (new, OWN-C15)
+ * The latest eight access records, newest first, in the log's own words, each a record row (REC-1): what was done in
+ * label type chalk, who did it and when under it in caption type --ink-3, and a chevron at the row's end, since the
+ * whole row opens that record in Activity log. Rows ruled as the person rows are; the link's hover and its ring sit
+ * inside the rules, 12 px past the text at each side. "View all" at the head's end: label type --ink-2 and a chevron,
+ * its target 44 px, its words on the card's content edge. */
+/* The head takes the title's line only, so the title stands level with the front desk's; "View all" (44 px) is centred
+ * on it, reaching into the padding above and the gap below. Both fit on one line from the narrowest card the halves
+ * make (229 px inside at 721); narrower than that (never in this frame), "View all" would take the next line at the
+ * start, its words on the start edge. */
+.rec-head { flex-wrap: nowrap; min-height: 44px; margin-block: -7.75px; gap: 0 16px; }
+@container acccard (max-width: 215.98px) { .rec-head { flex-direction: column; align-items: flex-start; margin-block: 0 -8px; } }
+.rec-head .acc-title { min-width: 0; }
+.acc-all { display: inline-flex; flex: none; align-items: center; gap: 4px; height: 44px; margin-inline: -12px; padding-inline: 12px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.acc-all svg, .rec-go { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.acc-all:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.acc-all:focus-visible, .rec-a:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.rec-list { margin: 18px 0 0; padding: 0; list-style: none; }
+.rec-row { border-block-start: 1px solid var(--row-line); }
+.rec-a { display: flex; align-items: center; gap: 16px; min-height: 44px; margin: 4px -12px; padding: 13px 12px; border-radius: 12px; color: var(--ink-3); text-decoration: none; }
+.rec-row:last-child .rec-a { margin-block-end: -13px; }
+.rec-a:hover { background: rgba(255, 255, 255, 0.04); color: var(--ink); }
+.rec-txt { display: flex; flex: 1 1 auto; flex-direction: column; gap: 3px; min-width: 0; }
+.rec-what { font-size: 13.5px; line-height: 20px; color: var(--ink); overflow-wrap: anywhere; }
+.rec-meta { font-size: 12px; line-height: 18px; color: var(--ink-3); overflow-wrap: anywhere; }
+.rec-meta .sep { margin-inline: 6px; }
+.rec-row.is-ph .rec-a { pointer-events: none; }
+.rec-row.is-ph .rec-what { line-height: 20px; }
+.rec-row.is-ph .rec-meta { line-height: 18px; }
+/* No record yet, and the records' own failure (the rest of the page loaded): one line under the head, the failure's
+ * retry under its sentence, at its start. */
+.rec-none { margin: 18px 0 0; padding-block-start: 16px; border-block-start: 1px solid var(--row-line); font-size: 13.5px; line-height: 20px; color: var(--ink-3); }
+.rec-msg { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-block-start: 18px; padding-block-start: 16px; border-block-start: 1px solid var(--row-line); }
+.rec-say { display: flex; align-items: flex-start; gap: 8px; margin: 0; font-size: 13.5px; line-height: 20px; color: var(--ink); }
+.rec-say .ico-err { width: 16px; height: 16px; flex: none; margin-block-start: 2px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; color: var(--err); }
 
 /* The mark (new, CHP-10): a state word in CHP-4's badge, 26 tall, caption type; never a control. The state that lets
  * someone in, and "You", are chalk; a state that keeps someone out is --ink-3 (7.89:1). The word carries the state;
@@ -62,9 +114,9 @@ html:has(> body.acc) {
  * A person per row: the name (body type at 500, chalk) with its marks, the email under it (label type --ink-2, left to
  * right, breaking only after its "@" and dots, and anywhere as a last resort), and the row's actions at its end. Rows
  * are ruled off with TBL-2's row line; nothing on a row is a control but its buttons, so it has no hover lift. A
- * deactivated owner is quieter: the name --ink-2 at 400, the email --ink-3, its mark. The row's form follows the card's
- * width (a container query): from 460 px of card the person at the start and the actions at the end, centred on it;
- * under that the actions under the person, at its start edge. */
+ * deactivated owner is quieter: the name --ink-2 at 400, the email --ink-3, its mark. The actions stand under the
+ * person, 12 below, at its start edge, at every width (DECISIONS item 34, the skeleton: at 1440 they once sat about
+ * 1000 px from the name). A row keeps its place after a change until the page loads again (access.js "order"). */
 .ppl { margin: 16px 0 0; padding: 0; list-style: none; }
 .prs { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 24px; row-gap: 12px; padding-block: 16px; border-block-start: 1px solid var(--row-line); }
 .prs:last-child { padding-block-end: 0; }
@@ -77,18 +129,14 @@ html:has(> body.acc) {
 .prs.is-off .prs-name { color: var(--ink-2); font-weight: 400; }
 .prs.is-off .prs-mail { color: var(--ink-3); }
 .prs > .done, .prs > .acc-alert { grid-column: 1 / -1; }
-@container acccard (min-width: 460px) {
-  .prs { grid-template-columns: minmax(0, 1fr) max-content; align-items: center; row-gap: 4px; }
-  .prs-acts { justify-content: flex-end; }
-}
 
 /* ------------------------------------------------------------------ buttons
- * The quiet button (new, BTN-11): the trigger of a removal on the page. BTN-1's 44 px height and radius with no box at
- * rest (BTN-5's form) and an 8 px inline padding (its box shows only on hover, so its words keep their pair on one line
- * down to 320 px), --ink-2; hover chalk on 5% white, at once. A removal is always on the page, never prominent: its
- * commit, in its confirmation, carries the destructive form. */
-.rbtn-quiet { padding-inline: 8px; border-color: transparent; background: none; color: var(--ink-2); }
-.rbtn-quiet:hover { border-color: transparent; background: rgba(255, 255, 255, 0.05); color: var(--ink); }
+ * The quiet button (new, BTN-11): the trigger of a removal on the page. BTN-1's box at every size (DECISIONS item 34:
+ * without one it read oddly), quieter than its secondary neighbour: the words --ink-2, the edge the page's faint
+ * --line, and no fill; hover takes the secondary's edge and fill and chalk words, at once. A removal is always on the
+ * page, never prominent: its commit, in its confirmation, carries the destructive form. */
+.rbtn-quiet { border-color: var(--line); background: none; color: var(--ink-2); }
+.rbtn-quiet:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); color: var(--ink); }
 /* The destructive button (new, BTN-10): the commit of a removal, only inside its confirmation. BTN-1's form in the
  * error tone (COL-18), never FITWAY red (BTN-6, COL-21): text --err at 500 (6.0:1 on its fill over the panel), a 1 px
  * --err .5 edge and an 8% fill; hover .14 fill and a .75 edge. Working takes BTN-9's form like any primary. */
@@ -109,9 +157,10 @@ html:has(> body.acc) {
  * After a change, one quiet sentence where it happened: a check (16 px, --ink-2), the sentence in label type --ink-2,
  * in the log's own words, and the way to the record, a text link in chalk with a quiet underline whose target is the
  * line's full 44 px. It stays until the next action; focus moves to it, with its ring. */
-/* One paragraph: its single line centred in 44 px; where it wraps (a long name, a phone), its lines hang after the
- * check, and the link, never broken, keeps a 44 px target from its own vertical padding. */
-.done { width: fit-content; max-width: 100%; margin: 0; padding-block: 12px; padding-inline-start: 24px; text-indent: -24px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); border-radius: 12px; overflow-wrap: anywhere; }
+/* One paragraph, start-aligned (Reports' own ".done" centres its text): its single line centred in 44 px; where it wraps
+ * (a long name, a phone), its lines hang after the check, and the link, never broken, keeps a 44 px target from its
+ * own vertical padding. */
+.done { width: fit-content; max-width: 100%; margin: 0; padding-block: 12px; text-align: start; padding-inline-start: 24px; text-indent: -24px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); border-radius: 12px; overflow-wrap: anywhere; }
 .done-ico { display: inline-block; width: 16px; height: 16px; margin-inline-end: 8px; vertical-align: -3px; fill: none; stroke: var(--ink-2); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .done-a { display: inline-block; margin-inline-start: 12px; padding-block: 12px; margin-block: -12px; line-height: 20px; text-indent: 0; border-radius: 6px; color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(245, 243, 242, 0.42); text-underline-offset: 4px; white-space: nowrap; }
 .done-a:hover { text-decoration-color: var(--ink); }
@@ -166,15 +215,32 @@ html[dir="ltr"] .acc-field.is-pw .field-input { padding-right: 44px; padding-lef
 .acc .acc-reason { display: block; height: auto; min-height: 96px; max-height: 248px; padding-block: 11px; resize: none; field-sizing: content; line-height: 24px; font-variant-numeric: normal; text-align: start; overflow-wrap: anywhere; }
 .acc-left { margin: 8px 0 0; font-size: 12px; line-height: 18px; color: var(--ink-3); }
 
-/* The one-time view (new, DLG-9): the secret on a recessed plate (the page's #070707 under a 1 px --line edge, radius
- * 16), in display type at 500, tabular, two groups of four with 24 px between, left to right in both languages; not
- * selectable, so it is never copied. Under it, one sentence in chalk with a clock: shown now, never again. No close
- * button, and neither Escape nor a tap outside closes it: only "I've saved it" (DECISIONS item 33). */
-.acc .dlg-panel.acc-sec-panel { width: min(412px, 100%); }
-.acc-sec { display: flex; justify-content: center; margin-block-start: 8px; padding: 24px 16px; border-radius: 16px; background: #070707; box-shadow: inset 0 0 0 1px var(--line); }
-.acc-digits { display: flex; gap: 24px; direction: ltr; font-size: 46px; line-height: 46px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; -webkit-user-select: none; user-select: none; }
+/* The code field (new, FLD-10): FLD-1's field for the code the owner types, left to right like an email (in Arabic its
+ * text keeps the right edge, FLD-1), never corrected or capitalised, 16 characters at most; the hint names its one rule
+ * («من 8 إلى 16 حرفًا إنجليزيًا أو رقمًا») and steps aside while a message stands. Shown as typed: it is shown in full a
+ * step later anyway. */
+.acc-field.is-code .field-input { font-variant-numeric: normal; letter-spacing: 0.04em; }
+
+/* The one-time view (new, DLG-9): the code on a recessed plate (the page's #070707 under a 1 px --line edge, radius 16),
+ * as typed, in display type at 500, left to right in both languages, at the plate's start, on one line: it is set at
+ * 40 px and made smaller to fit the plate's width (access.js "fitCode", down to 22 px, so sixteen mixed characters keep
+ * one line at 320 px); a code that would need less (sixteen of the widest letters on a phone) takes two even lines,
+ * broken only at its middle, never a lone character on a line of its own. The copy control (BTN-1,
+ * "Copy" then "Copied" with a check) under the code at the plate's start, so a long code never shares its line. Under
+ * the plate, the sentence in chalk with a clock (shown now, never again), then what "I've saved it" does. No close
+ * button, and neither Escape nor a tap outside closes it: only its two actions, "Cancel change" (nothing changes) and
+ * "I've saved it" (DECISIONS items 33, 34). */
+.acc-sec { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-block-start: 8px; padding: 16px 20px 20px; border-radius: 16px; background: #070707; box-shadow: inset 0 0 0 1px var(--line); }
+.acc-code { display: block; align-self: stretch; min-width: 0; direction: ltr; text-align: start; font-size: 40px; line-height: 1.3; font-weight: 500; letter-spacing: 0.02em; color: var(--ink); overflow-wrap: anywhere; -webkit-user-select: all; user-select: all; }
+/* In Arabic the code keeps the right edge, as a left-to-right value in a field does (FLD-1), above its copy control. */
+[dir="rtl"] .acc-code { text-align: right; }
+.acc-copy { flex: none; }
+.acc-copy .cp-ico { width: 17px; height: 17px; }
+.acc-copy .cp-done, .acc-copy[data-state="1"] .cp-copy { display: none; }
+.acc-copy[data-state="1"] .cp-done { display: block; }
 .acc-sec-note { display: flex; align-items: flex-start; gap: 8px; margin: 16px 0 0; font-size: 13.5px; line-height: 20px; color: var(--ink); }
 .acc-sec-note .sec-ico { width: 16px; height: 16px; flex: none; margin-block-start: 2px; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.acc .acc-sec-commit { margin: 8px 0 0; padding-inline-start: 24px; }
 
 /* ------------------------------------------------------------------ the page's states
  * Loading (STA-10, PH-1…3): the cards' names, what each can do and the way to the log are real; the PIN's state is

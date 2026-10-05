@@ -1,22 +1,29 @@
 /* Eclipse Access: FITWAY Owner Access concept (the fourth Eclipse page). Synthetic data only; not production.
- * It answers "who can get in, and how do I change that safely": the front desk's one shared PIN (view only), then the
- * owner accounts (full access). Every change sits on the row it changes; the two removals (deactivating the PIN or an
- * owner) ask for a reason (at most 240 characters, what the log stores); changing the PIN says it signs the front desk
- * out at once; a new PIN is shown once, and only "I've saved it" closes that view (DECISIONS item 33). After a change,
- * one quiet sentence on that row says it is done and links to Activity log; a refusal says exactly what happened and
- * keeps the form as typed. Complete at first paint: no intro, no rolling digits (item 4). Nothing is lit (LGT-6 allows
- * none): the page holds who can get in, not a reading.
- * The data follows the owner access contract (packages/api/src/access/contracts.ts): one shared front-desk principal
- * (its PIN never set, active or deactivated; system-generated, 8 Western digits, revealed once, never readable again),
- * and owner principals (a display name stored once, shown the same in both languages; an email; active or not). The
- * signed-in owner is the session's principal (admin.session), so the page marks their row without a new field.
- * Secrets: the PIN exists only inside its one-time view and is removed from the page when the view closes; a password
- * is never shown once a change succeeds, and no hash, session or staff email exists anywhere on the page.
- * Query: lang=ar|en; state=loading|error; arrive=<ms>|never (with state=loading); pin=none|off (the PIN never set, or
+ * It answers "who can get in, and how do I change that safely": the front desk's one shared code (view only), then the
+ * owner accounts (full access), and from 721 px, beside them, the latest access records with the way to all of them in
+ * Activity log (DECISIONS item 34, the skeleton). Every change sits on the row it changes, its buttons under its name;
+ * a row keeps its place after a change until the page loads again, so the done sentence stands where the owner acted.
+ * The two removals (deactivating the code or an owner) ask for a reason (at most 240 characters, what the log stores).
+ * The owner types the front desk's code (8 to 16 English letters or digits; no generator, no weak-code rule), and it
+ * changes in two steps: the code typed, then its one-time view with a copy control, where the old code keeps working;
+ * only "I've saved it" makes the new one take effect and signs the front desk out, and "Cancel change" leaves the old
+ * code as it was (DECISIONS items 33, 34). After a change, one quiet sentence on that row says it is done and links to
+ * Activity log, and the change's record tops the records card; a refusal says exactly what happened and keeps the form
+ * as typed. Complete at first paint: no intro, no rolling digits (item 4). Nothing is lit (LGT-6 allows none): the page
+ * holds who can get in, not a reading.
+ * The data follows the owner access contract (packages/api/src/access/contracts.ts) with the amendments ACCESS-SPEC.md
+ * names: one shared front-desk principal (its code never set, active or deactivated; typed by an owner, shown once,
+ * never readable again), and owner principals (a display name stored once, shown the same in both languages; an email;
+ * active or not). The signed-in owner is the session's principal (admin.session), so the page marks their row without
+ * a new field. The access records are Activity log's (activity.js), with its record ids.
+ * Secrets: a typed code exists only in its field and its one-time view, and leaves the page when the view closes; a
+ * password is never shown once a change succeeds, and no hash, session or staff email exists anywhere on the page.
+ * Query: lang=ar|en; state=loading|error; arrive=<ms>|never (with state=loading); pin=none|off (the code never set, or
  * deactivated; default active); owners=last|many (only the signed-in owner active; eight owners); case=long|short (the
- * longest name and email the contract allows, or short ones); refuse=<code> (the first action that can return that
- * refusal returns it); fail=1 (the first action fails); hold=1 (an action keeps working); ops=delayed|closed|offline
- * (the frame's status, for review); motion=off.
+ * longest name and email the contract allows, or short ones); records=none|error (no access record yet; the records
+ * could not be loaded); refuse=<code> (the first action that can return that refusal returns it); fail=1 (the first
+ * action fails); hold=1 (an action keeps working); ops=delayed|closed|offline (the frame's status, for review);
+ * motion=off.
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules
  * and no fetch), so the page works from file:// too. */
 (() => {
@@ -56,14 +63,33 @@
       title: "الوصول",
       history: "سجل الوصول",
       historyName: "سجل الوصول في سجل النشاط",
-      // The front desk: one shared principal; its PIN is its only way in.
+      // The access records card (from 721 px): the latest access records, each opening its own record in Activity log.
+      recTitle: "سجل الوصول",
+      recAll: "عرض الكل",
+      recAllName: "عرض كل سجلات الوصول في سجل النشاط",
+      recEmpty: "لا سجلات وصول بعد",
+      recError: "تعذّر تحميل سجل الوصول",
+      today: "اليوم",
+      yesterday: "أمس",
+      months: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+      // A record in the log's own words (activity.js); the change of one's own password is an amendment (AMD-C1).
+      rec: {
+        pinCreate: () => "إنشاء رمز مكتب الاستقبال",
+        pinChange: () => "تغيير رمز مكتب الاستقبال",
+        pinOff: () => "تعطيل رمز مكتب الاستقبال",
+        add: (n) => `إنشاء حساب ${n}`,
+        off: (n) => `تعطيل حساب ${n}`,
+        on: (n) => `إعادة تفعيل حساب ${n}`,
+        reset: (n) => `إعادة تعيين بيانات دخول ${n}`,
+        mine: (n) => `تغيير كلمة مرور ${n}`,
+      },
+      // The front desk: one shared principal; its code is its only way in.
       desk: "مكتب الاستقبال",
       deskCap: ["مشاهدة فقط", "رمز مشترك"],
       pinState: { active: "مفعّل", off: "معطّل", none: "لم يُنشأ بعد" },
       pinChange: "تغيير الرمز",
       pinOff: "تعطيل الرمز",
       pinCreate: "إنشاء رمز",
-      pinCreating: "جارٍ الإنشاء…",
       // The owners.
       owners: "المالكون",
       ownersCap: "كل الصلاحيات",
@@ -77,16 +103,34 @@
       // The dialogs.
       cancel: "إلغاء",
       close: "إغلاق",
-      pinChangeTitle: "تغيير رمز مكتب الاستقبال؟",
-      pinChangeDesc: "ينتهي دخول مكتب الاستقبال فورًا، ثم يدخل بالرمز الجديد.",
+      // The code: the owner types it (8 to 16 English letters or digits), then sees it once, with a copy control; the
+      // change takes effect only at "I've saved it" (DECISIONS item 34).
+      codeChangeTitle: "تغيير رمز مكتب الاستقبال",
+      codeCreateTitle: "إنشاء رمز لمكتب الاستقبال",
+      codeKeeps: "يبقى الرمز الحالي يعمل حتى تحفظ الجديد.",
+      codeNew: "الرمز الجديد",
+      codeField: "الرمز",
+      codeHint: "من 8 إلى 16 حرفًا إنجليزيًا أو رقمًا",
+      next: "متابعة",
       changing: "جارٍ التغيير…",
       pinOffTitle: "تعطيل رمز مكتب الاستقبال؟",
       pinOffDesc: "ينتهي دخول مكتب الاستقبال فورًا، ولا يعمل الرمز بعدها.",
       offing: "جارٍ التعطيل…",
       viewTitle: "الرمز الجديد لمكتب الاستقبال",
       viewNote: "احفظ الرمز الآن، فلن يظهر مرة أخرى.",
+      viewCommitChange: "عند «حفظتُ الرمز» يعمل الرمز الجديد ويُسجَّل خروج مكتب الاستقبال.",
+      viewCommitCreate: "عند «حفظتُ الرمز» يعمل الرمز.",
       viewSaved: "حفظتُ الرمز",
+      viewSaving: "جارٍ الحفظ…",
+      viewUndoChange: "إلغاء التغيير",
+      viewUndoCreate: "إلغاء",
+      // The code, read character by character to assistive technology.
       viewPinSay: (d) => `الرمز: ${d}`,
+      copy: "نسخ",
+      copied: "نُسخ",
+      copyName: "نسخ الرمز",
+      copySay: "نُسخ الرمز",
+      copyFail: "تعذّر النسخ",
       addTitle: "إضافة مالك",
       name: "الاسم",
       email: "البريد الإلكتروني",
@@ -119,6 +163,9 @@
         pwShort: "اكتب 12 حرفًا على الأقل",
         current: "اكتب كلمة المرور الحالية",
         reason: "اكتب سبب التعطيل",
+        code: "اكتب الرمز",
+        codeShort: "اكتب 8 أحرف أو أرقام على الأقل",
+        codeChars: "استخدم حروفًا إنجليزية وأرقامًا فقط",
       },
       // Each refusal the contract can return, in the words of the action it answers (packages/auth/src/access.ts).
       refuse: {
@@ -177,13 +224,32 @@
       title: "Access",
       history: "Access history",
       historyName: "Access history in the Activity log",
+      recTitle: "Access history",
+      recAll: "View all",
+      recAllName: "View all access records in the Activity log",
+      recEmpty: "No access records yet",
+      recError: "Couldn't load the access history",
+      today: "Today",
+      yesterday: "Yesterday",
+      months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      // The log's words, with DECISIONS item 34's English pair (Deactivate / Reactivate) and "code", since it may hold
+      // letters; Activity log's English follows in its own round.
+      rec: {
+        pinCreate: () => "Front desk code created",
+        pinChange: () => "Front desk code changed",
+        pinOff: () => "Front desk code deactivated",
+        add: (n) => `Account created for ${n}`,
+        off: (n) => `Account deactivated for ${n}`,
+        on: (n) => `Account reactivated for ${n}`,
+        reset: (n) => `Sign-in details reset for ${n}`,
+        mine: (n) => `Password changed by ${n}`,
+      },
       desk: "Front desk",
-      deskCap: ["View only", "Shared PIN"],
+      deskCap: ["View only", "Shared code"],
       pinState: { active: "Active", off: "Deactivated", none: "Not created yet" },
-      pinChange: "Change PIN",
-      pinOff: "Deactivate PIN",
-      pinCreate: "Create PIN",
-      pinCreating: "Creating…",
+      pinChange: "Change code",
+      pinOff: "Deactivate code",
+      pinCreate: "Create code",
       owners: "Owners",
       ownersCap: "Full access",
       add: "Add owner",
@@ -194,16 +260,31 @@
       actSr: (act, n) => (act === "reset" ? ` for ${n}` : ` the account for ${n}`),
       cancel: "Cancel",
       close: "Close",
-      pinChangeTitle: "Change the front desk PIN?",
-      pinChangeDesc: "The front desk is signed out at once, then signs in with the new PIN.",
+      codeChangeTitle: "Change the front desk code",
+      codeCreateTitle: "Create a front desk code",
+      codeKeeps: "The current code keeps working until you save the new one.",
+      codeNew: "New code",
+      codeField: "Code",
+      codeHint: "8 to 16 English letters or digits",
+      next: "Continue",
       changing: "Changing…",
-      pinOffTitle: "Deactivate the front desk PIN?",
-      pinOffDesc: "The front desk is signed out at once, and the PIN stops working.",
+      pinOffTitle: "Deactivate the front desk code?",
+      pinOffDesc: "The front desk is signed out at once, and the code stops working.",
       offing: "Deactivating…",
-      viewTitle: "New front desk PIN",
-      viewNote: "Save this PIN now. It won't be shown again.",
+      viewTitle: "New front desk code",
+      viewNote: "Save this code now. It won't be shown again.",
+      viewCommitChange: "“I've saved it” turns on the new code and signs the front desk out.",
+      viewCommitCreate: "“I've saved it” turns on the code.",
       viewSaved: "I've saved it",
-      viewPinSay: (d) => `PIN: ${d}`,
+      viewSaving: "Saving…",
+      viewUndoChange: "Cancel change",
+      viewUndoCreate: "Cancel",
+      viewPinSay: (d) => `Code: ${d}`,
+      copy: "Copy",
+      copied: "Copied",
+      copyName: "Copy the code",
+      copySay: "Code copied",
+      copyFail: "Couldn't copy",
       addTitle: "Add an owner",
       name: "Name",
       email: "Email",
@@ -234,10 +315,13 @@
         pwShort: "Use at least 12 characters",
         current: "Enter your current password",
         reason: "Enter the reason",
+        code: "Enter the code",
+        codeShort: "Use at least 8 letters or digits",
+        codeChars: "Use only English letters and digits",
       },
       refuse: {
-        staff_pin_already_active: () => "The front desk already has an active PIN. Change it instead of creating one.",
-        staff_pin_not_active: (a) => (a === "pinOff" ? "The front desk PIN is already deactivated." : "The front desk no longer has an active PIN. Create a new one."),
+        staff_pin_already_active: () => "The front desk already has an active code. Change it instead of creating one.",
+        staff_pin_not_active: (a) => (a === "pinOff" ? "The front desk code is already deactivated." : "The front desk no longer has an active code. Create a new one."),
         owner_self_deactivation: () => "You can't deactivate your own account. Another active owner can.",
         owner_last_active: () => "This is the last active owner account. Deactivating it would leave no one to manage the gym.",
         owner_already_inactive: (a) => (a === "reset" ? "This account is deactivated. Reactivate it first, then set the password." : "This account is already deactivated."),
@@ -249,9 +333,9 @@
       },
       failed: "Couldn't make the change. Nothing was changed.",
       done: {
-        pinCreate: () => "Front desk PIN created.",
-        pinChange: () => "Front desk PIN changed.",
-        pinOff: () => "Front desk PIN deactivated.",
+        pinCreate: () => "Front desk code created.",
+        pinChange: () => "Front desk code changed.",
+        pinOff: () => "Front desk code deactivated.",
         add: (n) => `Account created for ${n}.`,
         off: (n) => `Account deactivated for ${n}.`,
         on: (n) => `Account reactivated for ${n}.`,
@@ -277,7 +361,7 @@
    * the one string the owner typed, shown the same in both languages (DECISIONS item 32); emails are Latin and on the
    * reserved example domains. ?case=long gives the longest values the contract allows (a 120-character name in each
    * script, a 254-character email); ?case=short short ones. ?owners=last leaves the signed-in owner the only active one;
-   * ?owners=many shows eight. The front desk's PIN: active by default; ?pin=none never set; ?pin=off deactivated. */
+   * ?owners=many shows eight. The front desk's code: active by default; ?pin=none never set; ?pin=off deactivated. */
   const ME = "o1";
   const LONG_AR = "نورة بنت عبد الله بن عبد الرحمن العبد اللطيف، مديرة العمليات والمرافق في فرعي شمال الرياض والدرعية وفرع الخرج للنساء فقط";
   const LONG_EN = "Abdulrahman bin Abdulaziz Alqahtani, Operations and Facilities Manager, the North Riyadh, Diriyah, and Al Kharj branches";
@@ -301,8 +385,38 @@
   };
   const ownerOf = (id) => data.owners.find((o) => o.id === id);
   const activeCount = () => data.owners.filter((o) => o.active).length;
-  // The signed-in owner first, then the other active owners as created, then the deactivated ones, quieter, at the end.
-  const ordered = () => [ownerOf(ME), ...data.owners.filter((o) => o.id !== ME && o.active), ...data.owners.filter((o) => o.id !== ME && !o.active)].filter(Boolean);
+  // As loaded: the signed-in owner first, then the other active owners as created, then the deactivated ones, quieter,
+  // at the end. A row keeps its place after a change until the page loads again (review V15), so a deactivated or
+  // reactivated owner never jumps away from the click, and its done sentence stands where the owner acted; a new owner
+  // takes the place it will have on the next load, after the active ones.
+  const sorted = () => [ownerOf(ME), ...data.owners.filter((o) => o.id !== ME && o.active), ...data.owners.filter((o) => o.id !== ME && !o.active)].filter(Boolean);
+  let order = sorted().map((o) => o.id);
+  const ordered = () => order.map(ownerOf).filter(Boolean);
+  function placeNew(id) {
+    const shown = ordered();
+    let at = 0;
+    shown.forEach((o, i) => { if (o.active) at = i + 1; });
+    order.splice(at, 0, id);
+  }
+
+  /* The access records (Activity log's, activity.js): the owners' changes to access, newest first, with the record ids
+   * Activity log gives them, so a record here opens the same record there (?record=<id>; Activity log's arrival by id
+   * is AMD-C2). The front desk writes no record (ADR-008). A change made on this page writes its record, which tops the
+   * card at once. ?records=none: no access record yet; ?records=error: the records could not be loaded. */
+  const REC_N = 8;                             // the card's records: the latest eight
+  const RECORDS_MODE = ["none", "error"].includes(params.get("records")) ? params.get("records") : "ok";
+  const RECORDS0 = [
+    [54, "2026-09-22", 555, "o1", "pinCreate"], [52, "2026-09-21", 1082, "o1", "pinOff"], [42, "2026-09-14", 800, "o2", "pinChange"],
+    [34, "2026-09-07", 571, "o1", "reset", "o2"], [33, "2026-09-07", 568, "o1", "on", "o2"], [20, "2026-08-27", 843, "o1", "off", "o2"],
+    [9, "2026-08-17", 614, "o1", "pinChange"], [6, "2026-06-01", 588, "o1", "pinChange"], [3, "2025-12-30", 1265, "o1", "add", "o2"],
+    [1, "2025-12-28", 972, "o1", "pinCreate"],
+  ].map(([id, date, mins, by, act, target]) => ({ id, date, mins, by, act, target }));
+  const LOG_NAMES = { o1: "فهد", o2: "نورة" };  // the names the log stores (activity.js), as typed
+  // The records agree with the code's state the page shows: a code never set has no code records; a deactivated one
+  // was last deactivated (21 September), not created again.
+  const loadedRecords = () => RECORDS0.filter((r) => (data.desk.state === "none" ? !r.act.startsWith("pin") : data.desk.state === "off" ? r.id !== 54 : true));
+  const records = { phase: RECORDS_MODE === "error" ? "error" : "ready", list: RECORDS_MODE === "none" ? [] : loadedRecords() };
+  let nextRecordId = 57;                       // after the log's last record (activity.js numbers 56)
   // A stored name, isolated so it keeps its own direction in either language; an email, left to right, breakable only
   // after its "@" and dots (and anywhere, as a last resort, for the longest the contract allows).
   const nm = (o) => bdi(esc(o.name));
@@ -560,11 +674,14 @@
     eyeOff: svg("pw-ico eye-off", '<path d="M2.8 12s3.4-6.2 9.2-6.2 9.2 6.2 9.2 6.2-3.4 6.2-9.2 6.2S2.8 12 2.8 12Z"/><circle cx="12" cy="12" r="2.8"/><path d="M4.5 19.5 19.5 4.5"/>'),
     // The one-time view's note: shown now, never again.
     once: svg("sec-ico", '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.6V12l2.8 1.8"/>'),
+    // Copy (two sheets), and copied (a check) in its place.
+    copy: svg("cp-ico cp-copy", '<rect x="8.6" y="8.6" width="11" height="11" rx="2.6"/><path d="M15.4 5.6A2.4 2.4 0 0 0 13 4.4H6.8a2.4 2.4 0 0 0-2.4 2.4V13a2.4 2.4 0 0 0 1.2 2.1"/>'),
+    copied: svg("cp-ico cp-done", '<path d="M5.5 12.5 10 17l8.5-9.5"/>'),
   };
 
   /* ---------------------------------------------------------------- the page's state */
   // One notice at a time (DECISIONS item 33): after a change, its done sentence on the row it changed; on the front
-  // desk card, an alert when creating its PIN was refused or failed. A new action takes it away.
+  // desk card, (unused since the code is typed in a dialog) an alert. A new action takes it away.
   let notice = null;          // { at: "desk" | <owner id>, kind: "done" | "alert", html }
   const stack = (a, b, showB) => `<span class="rb-stack"><span class="rb-l"${showB ? ' aria-hidden="true"' : ""}>${a}</span><span class="rb-l"${showB ? "" : ' aria-hidden="true"'}>${b}</span></span>`;
   function noticeHTML(at) {
@@ -573,10 +690,9 @@
     return `<p class="done" id="notice" tabindex="-1">${ICON.check}<span class="done-t">${notice.html}</span> <a class="done-a" href="${LOG_HREF}">${L.doneLink}</a></p>`;
   }
 
-  /* ---- the front desk: its name, what it can do, its PIN's state, and the actions that state allows. The PIN itself
-   * is never on the page (the server keeps only a hash); a new one is shown once, in its own view. */
-  const deskEl = $("#desk"), ownersEl = $("#owners");
-  let creating = false;
+  /* ---- the front desk: its name, what it can do, its code's state, and the actions that state allows, under its name.
+   * The code itself is never on the page (the server keeps only a hash); a new one is shown once, in its own view. */
+  const deskEl = $("#desk"), ownersEl = $("#owners"), recEl = $("#records"), gridEl = $("#grid");
   function deskHTML() {
     const s = data.desk.state, loading = phase === "loading";
     const mark = loading ? `<i class="ph-box acc-ph-mk" aria-hidden="true"></i>` : `<span class="mk ${s === "active" ? "mk-on" : "mk-off"}">${L.pinState[s]}</span>`;
@@ -585,7 +701,7 @@
       acts = s === "active"
         ? `<button class="rbtn" type="button" data-act="pinChange" data-key="pinChange" aria-haspopup="dialog">${L.pinChange}</button>` +
           `<button class="rbtn rbtn-quiet" type="button" data-act="pinOff" data-key="pinOff" aria-haspopup="dialog">${L.pinOff}</button>`
-        : `<button class="rbtn rbtn-primary acc-create" type="button" data-act="pinCreate" data-key="pinCreate"${creating ? ' aria-disabled="true" aria-busy="true"' : ""}>${stack(L.pinCreate, L.pinCreating, creating)}</button>`;
+        : `<button class="rbtn rbtn-primary" type="button" data-act="pinCreate" data-key="pinCreate" aria-haspopup="dialog">${L.pinCreate}</button>`;
     }
     return `<div class="acc-head">
       <div class="acc-id">
@@ -639,16 +755,75 @@
     <ul class="ppl" id="people"${loading ? ' aria-hidden="true"' : ""}>${loading ? skeletonRows() : ordered().map(rowHTML).join("")}</ul>`;
   }
 
-  /* ---- the first load failed (Reports' option C, Activity log's form): one message in place of both cards, the mark,
+  /* ---- the access records card (OWN-C15, from 721 px): its title and the way to every access record at its head's
+   * end, as "Add owner" stands at the owners' (a list's action in the list's head; a key's actions under its name). Then
+   * the latest eight records, newest first, each in the log's words over who did it and when, and each opening its own
+   * record in Activity log. Its states: loading (the rows' bars), none yet, and its own failure with a retry. */
+  const DAY0 = Date.UTC(2026, 8, 23) / 864e5;                  // the concept's today: 23 September 2026 (Daily's)
+  const dayOf = (iso) => Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5;
+  function whenHTML(r) {
+    const d = dayOf(r.date), t = timeText(r.mins);
+    if (d === DAY0) return nw(`${L.today} ${t}`);
+    if (d === DAY0 - 1) return nw(`${L.yesterday} ${t}`);
+    const y = +r.date.slice(0, 4), m = +r.date.slice(5, 7) - 1, day = +r.date.slice(8, 10);
+    return nw(`${bdi(day)} ${L.months[m]}${y !== 2026 ? ` ${bdi(y)}` : ""}`);
+  }
+  const nameIn = (id) => esc(ownerOf(id)?.name ?? LOG_NAMES[id] ?? "");
+  const recHref = (id) => `activity.html?kind=access&record=${id}&${keep}`;
+  function recordHTML(r) {
+    const what = L.rec[r.act](r.target ? bdi(nameIn(r.target)) : bdi(nameIn(r.by)));
+    return `<li class="rec-row"><a class="rec-a" href="${recHref(r.id)}" data-record="${r.id}">` +
+      `<span class="rec-txt"><span class="rec-what">${what}</span>` +
+      `<span class="rec-meta">${SR_SEP}${bdi(nameIn(r.by))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(r)}</span></span>` +
+      `<svg class="rec-go mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg></a></li>`;
+  }
+  function recSkeleton() {
+    const W = RTL ? [[168, 96], [150, 88], [176, 96], [196, 92], [160, 88], [150, 96], [176, 88], [150, 96]] : [[176, 104], [168, 96], [184, 104], [204, 100], [176, 96], [168, 104], [184, 96], [168, 104]];
+    return W.map(([a, b]) => `<li class="rec-row is-ph"><span class="rec-a"><span class="rec-txt"><span class="rec-what">${ph("ph-name", a)}</span><span class="rec-meta">${ph("ph-mail", b)}</span></span></span></li>`).join("");
+  }
+  function recordsHTML() {
+    const loading = phase === "loading";
+    const head = `<div class="acc-head rec-head">
+      <h2 class="acc-title" id="rec-title" tabindex="-1"><span class="acc-name">${L.recTitle}</span></h2>
+      <a class="acc-all" id="rec-all" href="${LOG_HREF}" aria-label="${L.recAllName}"><span>${L.recAll}</span><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg></a>
+    </div>`;
+    if (loading) return `${head}<ol class="rec-list" aria-hidden="true">${recSkeleton()}</ol>`;
+    if (records.phase === "error" || records.phase === "retrying") {
+      const trying = records.phase === "retrying";
+      return `${head}<div class="rec-msg"><p class="rec-say">${SVG_ERR}<span>${L.recError}</span></p>` +
+        `<button class="rbtn" id="rec-retry" type="button"${trying ? ' aria-disabled="true" aria-busy="true"' : ""}>${stack(L.retry, L.retrying, trying)}</button></div>`;
+    }
+    if (!records.list.length) return `${head}<p class="rec-none">${L.recEmpty}</p>`;
+    return `${head}<ol class="rec-list">${records.list.slice(0, REC_N).map(recordHTML).join("")}</ol>`;
+  }
+  // A change made here writes its record: it tops the card at once, as the log has it (today, now, by the signed-in owner).
+  function addRecord(act, target) {
+    records.list.unshift({ id: nextRecordId++, date: "2026-09-23", mins: NOW_MIN, by: ME, act, target });
+  }
+  function recRetry() {
+    if (records.phase !== "error") return;
+    records.phase = "retrying";
+    recEl.innerHTML = recordsHTML();
+    $("#rec-retry").focus();
+    setTimeout(() => {
+      records.phase = "ready";
+      records.list = loadedRecords();
+      const hadFocus = document.activeElement?.id === "rec-retry";
+      recEl.innerHTML = recordsHTML();
+      if (hadFocus) $("#rec-title").focus({ preventScroll: true });
+    }, LOAD.retry);
+  }
+  document.addEventListener("click", (e) => { if (e.target.closest("#rec-retry") && e.target.closest("#rec-retry").getAttribute("aria-disabled") !== "true") recRetry(); });
+
+  /* ---- the first load failed (Reports' option C, Activity log's form): one message in place of the cards, the mark,
    * one sentence that names what is missing, and the one retry, focused. */
   let retryBtn = null, focusAlert = phase === "error";
   function paintError() {
-    deskEl.hidden = true;
-    ownersEl.hidden = true;
+    gridEl.hidden = true;
     let msg = $("#page-msg");
     if (!msg) {
       msg = Object.assign(document.createElement("section"), { className: "card acc-msg", id: "page-msg" });
-      ownersEl.after(msg);
+      gridEl.after(msg);
     }
     const trying = phase === "retrying";
     msg.innerHTML = `<p class="acc-say" aria-hidden="true">${SVG_ERR}<span>${L.errorFull}</span></p><span class="sr-only" id="err-say" role="alert"></span>` +
@@ -662,11 +837,11 @@
   function renderCards() {
     if (phase === "error" || phase === "retrying") { paintError(); return; }
     $("#page-msg")?.remove();
-    deskEl.hidden = false;
-    ownersEl.hidden = false;
+    gridEl.hidden = false;
     deskEl.innerHTML = deskHTML();
     ownersEl.innerHTML = ownersHTML();
-    for (const el of [deskEl, ownersEl]) el.toggleAttribute("aria-busy", phase === "loading");
+    recEl.innerHTML = recordsHTML();
+    for (const el of [deskEl, ownersEl, recEl]) el.toggleAttribute("aria-busy", phase === "loading");
   }
   function renderAll() {
     renderCards();
@@ -682,7 +857,7 @@
 
   /* ---------------------------------------------------------------- the dialog system (Reports')
    * showModal (the page behind is inert), a scrim and a panel; a bottom sheet at 720 px and below (DLG-5). Tab wraps;
-   * Escape and the scrim close it, except the PIN's one-time view, which only "I've saved it" closes; focus returns to
+   * Escape and the scrim close it, except the code's one-time view, which only its two actions close; focus returns to
    * the control that opened it, or to the change's done sentence. */
   const dlgRun = { anims: [] };
   const isSheet = () => mqPhone.matches;
@@ -754,11 +929,11 @@
       </footer>
     </${tag}>`;
   }
-  function fieldHTML({ id, label, type = "text", ltr = false, auto = "off", hint = "", max = 0, pw = false }) {
-    return `<div class="field acc-field${pw ? " is-pw" : ""}" data-field="${id}">
+  function fieldHTML({ id, label, type = "text", ltr = false, auto = "off", hint = "", max = 0, pw = false, code = false }) {
+    return `<div class="field acc-field${pw ? " is-pw" : ""}${code ? " is-code" : ""}" data-field="${id}">
       <label class="field-label" for="${id}">${label}</label>
       <div class="acc-box">
-        <input class="field-input" id="${id}" name="${id}" type="${pw ? "password" : type}"${ltr ? ' dir="ltr"' : ""} autocomplete="${auto}" spellcheck="false" autocapitalize="none"${max ? ` maxlength="${max}"` : ""}${hint ? ` aria-describedby="${id}-hint"` : ""}>
+        <input class="field-input" id="${id}" name="${id}" type="${pw ? "password" : type}"${ltr ? ' dir="ltr"' : ""} autocomplete="${auto}" spellcheck="false" autocapitalize="none"${code ? ' autocorrect="off"' : ""}${max ? ` maxlength="${max}"` : ""}${hint ? ` aria-describedby="${id}-hint"` : ""}>
         ${pw ? `<button class="icon-btn pw-eye" type="button" aria-controls="${id}" aria-pressed="false" aria-label="${L.show}">${ICON.eye}${ICON.eyeOff}</button>` : ""}
       </div>
       <p class="field-err" id="${id}-err" hidden></p>
@@ -777,17 +952,27 @@
     off: $("#dlg-off"), on: $("#dlg-on"), mine: $("#dlg-mine"),
   };
   const scrimHTML = `<div class="dlg-scrim" data-close></div>`;
-  // The PIN's dialog: the confirmation to change it, and the one-time view, in one dialog, so the view takes the
-  // confirmation's place without the scrim leaving.
+  // The code's dialog, two panels in one dialog, so the view takes the form's place without the scrim leaving: the code
+  // the owner types (to create the front desk's code, or to change it; the current one keeps working), then its
+  // one-time view, with a copy control, where "I've saved it" makes it take effect and "Cancel change" (or "Cancel"
+  // when creating) leaves everything as it was (DECISIONS item 34).
   D.pin.innerHTML = scrimHTML +
-    panelHTML({ id: "pin-confirm", title: 1, desc: 1, act: [L.pinChange, L.changing] }) +
+    panelHTML({ id: "pin-confirm", title: 1, desc: 1,
+      body: fieldHTML({ id: "pin-code", label: L.codeNew, ltr: true, auto: "off", hint: L.codeHint, max: 16, code: true }),
+      act: [L.next, L.next] }) +
     `<div class="dlg-panel acc-panel acc-sec-panel" id="pin-view" hidden>
       <header class="dlg-head"><h2 id="pin-view-title" tabindex="-1"></h2></header>
       <div class="dlg-body">
         <div class="acc-sec" id="pin-secret"></div>
+        <p class="field-err acc-copy-fail" id="pin-copy-fail" hidden>${ICON.alert}<span>${L.copyFail}</span></p>
         <p class="acc-sec-note" id="pin-view-note">${ICON.once}<span></span></p>
+        <p class="dlg-desc acc-sec-commit" id="pin-view-desc"></p>
+        <div class="alert acc-dlg-alert" id="pin-view-alert" role="alert" hidden></div>
       </div>
-      <footer class="dlg-foot"><button class="rbtn rbtn-primary acc-saved" type="button" id="pin-saved"></button></footer>
+      <footer class="dlg-foot">
+        <button class="rbtn acc-cancel acc-undo" type="button" id="pin-undo">${stack(L.viewUndoChange, L.close, false)}</button>
+        <button class="rbtn rbtn-primary acc-do acc-saved" type="button" id="pin-saved">${stack(L.viewSaved, L.viewSaving, false)}</button>
+      </footer>
     </div>`;
   D.pinoff.innerHTML = scrimHTML + panelHTML({ id: "pinoff", title: 1, desc: 1, body: reasonHTML("pinoff-reason"), act: [L.pinOff, L.offing], actCls: "rbtn-danger" });
   D.add.innerHTML = scrimHTML + panelHTML({
@@ -809,19 +994,18 @@
     act: [L.act.mine, L.changing],
   });
   // The words the dialogs never change.
-  for (const [dlg, panel, title, desc] of [[D.pin, "pin-confirm", L.pinChangeTitle, L.pinChangeDesc], [D.pinoff, "pinoff", L.pinOffTitle, L.pinOffDesc], [D.add, "add", L.addTitle, ""], [D.on, "on", "", L.onDesc], [D.mine, "mine", L.mineTitle, L.mineDesc]]) {
+  for (const [dlg, panel, title, desc] of [[D.pinoff, "pinoff", L.pinOffTitle, L.pinOffDesc], [D.add, "add", L.addTitle, ""], [D.on, "on", "", L.onDesc], [D.mine, "mine", L.mineTitle, L.mineDesc]]) {
     if (title) $(`#${panel}-title`, dlg).textContent = title;
     if (desc) $(`#${panel}-desc`, dlg).textContent = desc;
   }
   $("#pin-view-title").textContent = L.viewTitle;
   $("#pin-view-note span").textContent = L.viewNote;
-  $("#pin-saved").textContent = L.viewSaved;
 
   // Each dialog's accessible name and description follow its visible panel.
   function labelDialog(dlg) {
     const p = panelOf(dlg);
     dlg.setAttribute("aria-labelledby", `${p.id}-title`);
-    const desc = [$(`#${p.id}-desc`, p), p.id === "pin-view" ? $("#pin-say") : null, p.id === "pin-view" ? $("#pin-view-note") : null].filter(Boolean).map((e) => e.id).join(" ");
+    const desc = (p.id === "pin-view" ? [$("#pin-say"), $("#pin-view-note"), $("#pin-view-desc")] : [$(`#${p.id}-desc`, p)]).filter((e) => e && !e.hidden).map((e) => e.id).join(" ");
     if (desc) dlg.setAttribute("aria-describedby", desc); else dlg.removeAttribute("aria-describedby");
     if (p.id === "pin-view") dlg.setAttribute("role", "alertdialog"); else dlg.removeAttribute("role");
   }
@@ -938,13 +1122,17 @@
       if (e.shiftKey && (document.activeElement === first || !dlg.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && (document.activeElement === last || !dlg.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
     });
-    // The one-time view never closes but by "I've saved it": should the browser close it anyway (a second Escape that
-    // the page did not see), it opens again at once, with the PIN still there.
-    dlg.addEventListener("close", () => { if (isLocked(dlg)) { dlg.showModal(); dlg.classList.add("is-open"); $("#pin-view-title").focus(); } });
+    // The one-time view never closes but by its two actions: should the browser close it anyway (a second Escape that
+    // the page did not see), it opens again at once, with the code still there. Any other close of the code's dialog
+    // (after a refusal lifted the lock) takes the code off the page.
+    dlg.addEventListener("close", () => {
+      if (isLocked(dlg)) { dlg.showModal(); dlg.classList.add("is-open"); $("#pin-view-title").focus(); return; }
+      if (dlg === D.pin) { $("#pin-secret").textContent = ""; $("#pin-code").value = ""; pin = null; }
+    });
   });
   // Escape is never the view's: it is stopped before the browser's own dialog handling sees it.
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && (isLocked(D.pin) || (openDlg && isBusy(openDlg.dlg)))) { e.preventDefault(); e.stopPropagation(); } }, true);
-  // Leaving the page while the PIN shows would lose it: the browser asks first.
+  // Leaving the page while the code shows would drop it (nothing changes): the browser asks first.
   window.addEventListener("beforeunload", (e) => { if (isLocked(D.pin)) { e.preventDefault(); e.returnValue = ""; } });
 
   /* ---------------------------------------------------------------- the actions
@@ -992,94 +1180,189 @@
   }
   const FIELD_REFUSALS = { owner_email_taken: "add-email", reason_required: null, current_password_incorrect: "mine-current" };
 
-  /* ---- the PIN: create (no question: nothing is signed out, and the view is the answer), change (a confirmation that
-   * says the front desk is signed out at once), deactivate (a confirmation with the required reason). */
-  let pin = null, viewShownAt = 0, viewAfter = null;
-  function newPin() {
-    // As the server's generator: 8 Western digits by rejection sampling, so every digit is equally likely.
-    const out = [];
-    while (out.length < 8) {
-      for (const b of crypto.getRandomValues(new Uint8Array(8))) { if (b >= 250) continue; out.push(b % 10); if (out.length === 8) break; }
-    }
-    return out.join("");
+  /* ---- the code: create or change it in two steps (DECISIONS item 34), and deactivate it (a confirmation with its
+   * reason). Step one, the owner types the code (8 to 16 English letters or digits; Arabic-Indic digits become Western
+   * as they are typed). Step two, its one-time view: the code with a copy control, and the two ways out. Until
+   * "I've saved it" nothing has been sent, so the current code keeps working and an accident (a closed browser, a lost
+   * connection) changes nothing; "I've saved it" sends the code, which takes effect at once and, on a change, signs the
+   * front desk out; "Cancel change" closes the view and changes nothing. Neither Escape nor a tap outside closes the
+   * view: a code the owner may already have handed to the desk is never thrown away by accident. */
+  let pin = null, viewShownAt = 0, viewAfter = null, codeMode = null;
+  const CODE_OK = /^[A-Za-z0-9]+$/;
+  const CODE_MIN = 8, CODE_MAX = 16;
+  const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
+  function openCode(mode, opener) {
+    clearNotice();
+    renderCards();
+    codeMode = mode;
+    const p = $("#pin-confirm"), desc = $("#pin-confirm-desc");
+    clearDialog(p);
+    resetFields(p);
+    $("#pin-confirm-title").textContent = mode === "create" ? L.codeCreateTitle : L.codeChangeTitle;
+    desc.textContent = mode === "change" ? L.codeKeeps : "";
+    desc.hidden = mode !== "change";
+    $('label[for="pin-code"]').textContent = mode === "create" ? L.codeField : L.codeNew;
+    p.hidden = false;
+    $("#pin-view").hidden = true;
+    $("#pin-secret").textContent = "";
+    D.pin.dataset.locked = "false";
+    labelDialog(D.pin);
+    openDialog(D.pin, byKey(mode === "create" ? "pinCreate" : "pinChange") || opener, $("#pin-code"));
   }
-  function showPinView(after) {
-    pin = newPin();
+  $("#pin-confirm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (isBusy(D.pin)) return;
+    const p = $("#pin-confirm"), f = $("#pin-code");
+    clearDialog(p);
+    const v = f.value;
+    const err = !v ? L.err.code : !CODE_OK.test(v) ? L.err.codeChars : v.length < CODE_MIN ? L.err.codeShort : "";
+    if (err) { setFieldError(f, err); f.focus(); return; }
+    showPinView(v, codeMode === "create" ? "pinCreate" : "pinChange");
+    // The code leaves its field: from here it lives only in the view, and leaves the page with it.
+    f.value = "";
+    $("#pin-view-title").focus();
+  });
+  // Arabic-Indic digits typed into the code become Western digits at once (Western digits only, NUM-1).
+  $("#pin-code").addEventListener("input", (e) => {
+    const t = e.target, w = toWestern(t.value);
+    if (w !== t.value) { const at = t.selectionStart; t.value = w; t.setSelectionRange(at, at); }
+  });
+
+  // The copy control's two words share one cell, so it keeps its width: Copy, then Copied with a check.
+  const copyHTML = () => `<button class="rbtn acc-copy" type="button" id="pin-copy" data-state="0">${ICON.copy}${ICON.copied}` +
+    `<span class="rb-stack"><span class="rb-l">${L.copy}</span><span class="rb-l" aria-hidden="true">${L.copied}</span></span></button>`;
+  function setCopy(state) {
+    const b = $("#pin-copy");
+    if (!b) return;
+    b.dataset.state = String(state);
+    b.querySelectorAll(".rb-l").forEach((l, i) => { if (i === state) l.removeAttribute("aria-hidden"); else l.setAttribute("aria-hidden", "true"); });
+  }
+  function showPinView(code, after) {
+    pin = code;
     viewAfter = after;
-    // The PIN, read digit by digit to assistive technology; drawn in two groups of four, never selectable or copied.
-    $("#pin-secret").innerHTML = `<span class="sr-only" id="pin-say">${L.viewPinSay(pin.split("").join(" "))}</span>` +
-      `<span class="acc-digits" aria-hidden="true" dir="ltr"><span class="acc-g">${pin.slice(0, 4)}</span><span class="acc-g">${pin.slice(4)}</span></span>`;
+    // The code as typed, left to right in both languages, in display type sized to its length; read character by
+    // character to assistive technology.
+    $("#pin-secret").innerHTML = `<span class="sr-only" id="pin-say">${L.viewPinSay(esc(code.split("").join(" ")))}</span>` +
+      `<span class="acc-code" id="pin-code-shown" aria-hidden="true" dir="ltr" style="--n:${code.length}">${esc(code)}</span>${copyHTML()}` +
+      `<span class="sr-only" id="pin-copy-say" aria-live="polite"></span>`;
+    $("#pin-copy-fail").hidden = true;
+    $("#pin-view-note").hidden = false;
+    $("#pin-view-desc").hidden = false;
+    $("#pin-view-desc").textContent = after === "pinCreate" ? L.viewCommitCreate : L.viewCommitChange;
+    $("#pin-undo").innerHTML = stack(after === "pinCreate" ? L.viewUndoCreate : L.viewUndoChange, L.close, false);
+    clearDialog($("#pin-view"));
     $("#pin-confirm").hidden = true;
     $("#pin-view").hidden = false;
+    fitCode();
     D.pin.dataset.locked = "true";
     D.pin.dataset.busy = "false";
     labelDialog(D.pin);
     viewShownAt = performance.now();
   }
-  function savedPin() {
-    // A press that comes too soon after the view appeared (a double click that began on the action before it) does
-    // nothing: the PIN must be seen before it can be dismissed.
-    if (performance.now() - viewShownAt < 700) return;
+  // The code on one line: measured at 40 px and set smaller to fit the plate, before the view's first paint; again when
+  // the plate's width changes (a phone turned). Where one line would need less than 22 px (the widest letters on a
+  // phone), it takes two even lines instead, broken only at its middle, each as large as fits: never a lone character
+  // on a second line. A copy by selection keeps it one word (the break is a <wbr>).
+  const CODE_MIN_PX = 22;
+  function fitCode() {
+    const el = $("#pin-code-shown");
+    if (!el || !el.getClientRects().length || !pin) return;
+    // A text's width on one line at 40 px, measured out of the flow (a line that cannot wrap would widen the sheet).
+    const width40 = (text) => {
+      const m = document.createElement("span");
+      m.textContent = text;
+      m.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-size:40px;letter-spacing:0.02em";
+      el.append(m);
+      const w = m.getBoundingClientRect().width;
+      m.remove();
+      return w;
+    };
+    const room = el.clientWidth - 2;
+    const fit = (need) => Math.min(40, Math.floor((40 * room) / need));
+    el.textContent = pin;
+    const one = fit(width40(pin));
+    if (one >= CODE_MIN_PX) { el.style.fontSize = `${one}px`; return; }
+    const mid = Math.ceil(pin.length / 2), a = pin.slice(0, mid), b = pin.slice(mid);
+    el.innerHTML = `${esc(a)}<wbr>${esc(b)}`;
+    el.style.fontSize = `${Math.max(16, fit(Math.max(width40(a), width40(b))))}px`;
+  }
+  new ResizeObserver(() => fitCode()).observe($("#pin-secret"));
+  async function copyCode() {
+    const b = $("#pin-copy");
+    if (!pin || !b || isBusy(D.pin) || b.getAttribute("aria-disabled") === "true") return;
+    let ok = false;
+    try { await navigator.clipboard.writeText(pin); ok = true; }
+    catch {
+      // Without the clipboard's API (a browser that refuses it here), the older command, from inside the dialog.
+      try {
+        const ta = Object.assign(document.createElement("textarea"), { value: pin, readOnly: true });
+        ta.style.cssText = "position:fixed;inset-block-start:0;opacity:0;pointer-events:none";
+        panelOf(D.pin).append(ta);
+        ta.select();
+        ok = document.execCommand("copy");
+        ta.remove();
+        b.focus();
+      } catch { ok = false; }
+    }
+    // Copied: the control says so, with a check. Not copied (a browser that allows neither way): the control stays, a
+    // line under the plate says so, and the code is selected, ready for the system's own copy.
+    setCopy(ok ? 1 : 0);
+    $("#pin-copy-fail").hidden = ok;
+    if (!ok) { const r = document.createRange(); r.selectNodeContents($("#pin-code-shown")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+    const s = $("#pin-copy-say");
+    if (s) { s.textContent = ""; requestAnimationFrame(() => { s.textContent = ok ? L.copySay : L.copyFail; }); }
+  }
+  // Closing the view: the code leaves the page.
+  function dropCode() {
     $("#pin-secret").textContent = "";
+    $("#pin-copy-fail").hidden = true;
     pin = null;
     D.pin.dataset.locked = "false";
     D.pin.removeAttribute("aria-describedby");
-    const html = L.done[viewAfter]();
-    const back = finishWithDone("desk", html, viewAfter);
-    closeDialog(D.pin, { back });
   }
-  $("#pin-saved").addEventListener("click", savedPin);
-
-  function pinCreate(btn) {
-    if (creating || data.desk.state === "active") return;
-    clearNotice();
-    creating = true;
-    renderCards();
-    byKey("pinCreate").focus();
-    const started = performance.now();
-    if (HOLD) return;
-    setTimeout(() => {
-      const r = answer("pinCreate");
-      creating = false;
+  function savedPin() {
+    // A press that comes too soon after the view appeared (a double click that began on "Continue", which stood where
+    // this button stands) does nothing: the code must be seen before it takes effect.
+    if (performance.now() - viewShownAt < 700 || isBusy(D.pin) || !pin) return;
+    const after = viewAfter;
+    clearDialog($("#pin-view"));
+    setWorking(D.pin, true);
+    $("#pin-copy")?.setAttribute("aria-disabled", "true");
+    run(() => {
+      const r = answer(after);
+      setWorking(D.pin, false);
+      $("#pin-copy")?.removeAttribute("aria-disabled");
       if (r.refuse) {
-        notice = { at: "desk", kind: "alert", html: L.refuse[r.refuse]("pinCreate") };
-        applyTruth(r.refuse, "pinCreate");
-        $("#notice").focus();
+        // The state changed under the view: the code can no longer be used as asked. The view's lock lifts, the copy
+        // control and the action step aside, and Close is the way on.
+        applyTruth(r.refuse, after);
+        D.pin.dataset.locked = "false";
+        $("#pin-copy")?.remove();
+        // What the view promised ("save it now", what "I've saved it" does) no longer holds: only the refusal stays.
+        $("#pin-view-note").hidden = true;
+        $("#pin-view-desc").hidden = true;
+        labelDialog(D.pin);
+        showAlert(D.pin, L.refuse[r.refuse](after), { moot: true });
         return;
       }
-      if (r.fail) { notice = { at: "desk", kind: "alert", html: L.failed }; renderCards(); byKey("pinCreate").focus(); return; }
-      data.desk.state = "active";
-      renderCards();
-      $("#pin-confirm").hidden = true;
-      showPinView("pinCreate");
-      openDialog(D.pin, byKey("pinChange"), $("#pin-view-title"));
-    }, Math.max(LATENCY, 400 - (performance.now() - started)));
-  }
-  function openPinChange(opener) {
-    clearNotice();
-    renderCards();
-    const p = $("#pin-confirm");
-    clearDialog(p);
-    p.hidden = false;
-    $("#pin-view").hidden = true;
-    D.pin.dataset.locked = "false";
-    labelDialog(D.pin);
-    openDialog(D.pin, byKey("pinChange") || opener, $(".acc-cancel", p));
-  }
-  $("#pin-confirm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (isBusy(D.pin)) return;
-    clearDialog($("#pin-confirm"));
-    setWorking(D.pin, true);
-    run(() => {
-      const r = answer("pinChange");
-      setWorking(D.pin, false);
-      if (r.refuse) { applyTruth(r.refuse, "pinChange"); showAlert(D.pin, L.refuse[r.refuse]("pinChange"), { moot: true }); return; }
+      // Nothing was changed: the code stays shown, and "I've saved it" again is the retry.
       if (r.fail) { showAlert(D.pin, L.failed); return; }
-      showPinView("pinChange");
-      $("#pin-view-title").focus();
+      data.desk.state = "active";
+      addRecord(after);
+      dropCode();
+      const back = finishWithDone("desk", L.done[after](), after);
+      closeDialog(D.pin, { back });
     });
-  });
+  }
+  function undoCode() {
+    if (isBusy(D.pin) || $("#pin-undo").getAttribute("aria-disabled") === "true") return;
+    dropCode();
+    closeDialog(D.pin);
+  }
+  $("#pin-saved").addEventListener("click", savedPin);
+  $("#pin-undo").addEventListener("click", undoCode);
+  document.addEventListener("click", (e) => { if (e.target.closest("#pin-copy")) copyCode(); });
+
   function openPinOff(opener) {
     clearNotice();
     renderCards();
@@ -1103,6 +1386,7 @@
       if (r.refuse) { applyTruth(r.refuse, "pinOff"); showAlert(D.pinoff, L.refuse[r.refuse]("pinOff"), { moot: true }); return; }
       if (r.fail) { showAlert(D.pinoff, L.failed); return; }
       data.desk.state = "off";
+      addRecord("pinOff");
       resetFields(p);
       const back = finishWithDone("desk", L.done.pinOff(), "pinOff");
       closeDialog(D.pinoff, { back });
@@ -1148,6 +1432,8 @@
       const id = `n${data.owners.length + 1}`;
       // A display name is trimmed and stored as typed (1-120 characters); an email as typed, trimmed.
       data.owners.push({ id, name: name.value.trim(), email: email.value.trim(), active: true });
+      placeNew(id);
+      addRecord("add", id);
       const html = L.done.add(nm(ownerOf(id)));
       resetFields(p);
       const back = finishWithDone(id, html, `reset:${id}`);
@@ -1197,6 +1483,7 @@
         if (r.refuse) { applyTruth(r.refuse, act, id); showAlert(dlg, L.refuse[r.refuse](act, nm(o)), { moot: true }); return; }
         if (r.fail) { showAlert(dlg, L.failed); return; }
         after(o);
+        addRecord(act, id);
         resetFields(p);
         const back = finishWithDone(id, L.done[act](nm(o)), `${act === "off" ? "on" : act === "on" ? "reset" : act}:${id}`);
         closeDialog(dlg, { back });
@@ -1220,8 +1507,8 @@
     const b = e.target.closest("[data-act]");
     if (!b || !document.querySelector("#main").contains(b) || b.disabled || b.getAttribute("aria-disabled") === "true") return;
     const act = b.dataset.act;
-    if (act === "pinCreate") pinCreate(b);
-    else if (act === "pinChange") openPinChange(b);
+    if (act === "pinCreate") openCode("create", b);
+    else if (act === "pinChange") openCode("change", b);
     else if (act === "pinOff") openPinOff(b);
     else if (act === "add") openAdd(b);
     else openRow(act, b.dataset.id, b);
@@ -1289,7 +1576,7 @@
   /* ---------------------------------------------------------------- start */
   renderAll();
   if (phase === "loading") startLoading(ARRIVE);
-  // Hooks for the capture script. They expose state and open the dialogs; never the PIN, and never a password.
+  // Hooks for the capture script. They expose state; never the code, and never a password.
   window.__access = {
     ready: true,
     get phase() { return phase; },
@@ -1297,6 +1584,7 @@
     get notice() { return notice ? { at: notice.at, kind: notice.kind } : null; },
     get desk() { return data.desk.state; },
     get owners() { return ordered().map((o) => ({ id: o.id, active: o.active, me: o.id === ME })); },
+    get records() { return { phase: records.phase, ids: records.list.slice(0, REC_N).map((r) => r.id), acts: records.list.slice(0, REC_N).map((r) => r.act) }; },
     arrive, fail, retry,
   };
 })();

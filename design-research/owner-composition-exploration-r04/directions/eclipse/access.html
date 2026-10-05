@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FITWAY Eclipse Access</title>
-  <meta name="description" content="FITWAY Owner Access page concept, Eclipse direction: the shared front desk PIN and the owner accounts. Exploration concept with synthetic data. Not production.">
+  <meta name="description" content="FITWAY Owner Access page concept, Eclipse direction: the shared front desk code, the owner accounts and the latest access records. Exploration concept with synthetic data. Not production.">
   <script>
     // Language and page state before first paint: ?lang=ar|en (default ar); ?state=loading|error draws a page state
     // (access.js "the page's states"). Without a page state the page is the loaded one.
@@ -147,7 +147,8 @@
         </div>
       </header>
 
-      <!-- The page's controls (HDR-7): one, the way to every access change in Activity log. -->
+      <!-- The page's controls (HDR-7) on a phone (720 px and below): one, the way to every access change in Activity log.
+           From 721 px the access history card takes its place (OWN-C15). -->
       <div class="acc-tools" id="tools">
         <a class="rbtn acc-history" id="history-link" href="activity.html?kind=access">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg>
@@ -155,9 +156,15 @@
         </a>
       </div>
 
-      <!-- Who can get in: the front desk's one shared PIN, then the owners. access.js draws both cards. -->
-      <section class="card acc-card" id="desk" aria-labelledby="desk-title"></section>
-      <section class="card acc-card" id="owners" aria-labelledby="owners-title"></section>
+      <!-- Two halves from 721 px (OWN-C3): who can get in (the front desk's one shared code, then the owners), and the
+           latest access records. On a phone one column, without the records card. access.js draws the cards. -->
+      <div class="acc-grid" id="grid">
+        <div class="acc-keys">
+          <section class="card acc-card" id="desk" aria-labelledby="desk-title"></section>
+          <section class="card acc-card" id="owners" aria-labelledby="owners-title"></section>
+        </div>
+        <section class="card acc-card acc-rec" id="records" aria-labelledby="rec-title"></section>
+      </div>
 
       <p class="sr-only" id="say" aria-live="polite" aria-atomic="true"></p>
     </main>
@@ -190,8 +197,8 @@
   </div>
 
   <!-- The dialogs (DLG-1…6; a bottom sheet at 720 px and below). access.js writes their words and fields. Each confirms
-       one change; the PIN's dialog has two panels: the confirmation to change it, and the PIN's one-time view, which
-       only "I've saved it" closes (DECISIONS item 33). -->
+       one change; the code's dialog has two panels: the code the owner types, and its one-time view, which only
+       "I've saved it" (the change takes effect) or "Cancel change" (nothing changes) closes (DECISIONS items 33, 34). -->
   <dialog class="dlg" id="dlg-pin"></dialog>
   <dialog class="dlg" id="dlg-pinoff"></dialog>
   <dialog class="dlg" id="dlg-add"></dialog>
