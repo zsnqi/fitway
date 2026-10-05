@@ -355,6 +355,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       case-insensitive proposal in AMD-C4; the code stays 8-16 English letters or digits.
     - **The code shows in a monospace face** that tells I from l and O from 0, in its one-time view and its field
       only (the user): a named exception to Readex only (TYP-1), self-hosted or a system face (item 6).
+    - **The copy control sits beside the code on the computer** (the user, «اي», after asking why it sat under the
+      code unlike the skeleton): at the code's end on the same line from the computer's widths, under it on the
+      phone. Built with the monospace face, which makes the widest code predictable; the designer checks it against
+      the widest sixteen characters and reports the measurements if it does not fit.
     Coordinator, applying rules already decided: the records card stays off the phone, which keeps its link (the
     designer's composition); 16 stays the maximum.
 
