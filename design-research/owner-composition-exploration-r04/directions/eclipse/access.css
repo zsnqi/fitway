@@ -249,6 +249,9 @@ html[dir="ltr"] .acc-field.is-pw .field-input { padding-right: 44px; padding-lef
 /* Each of the control's two labels holds its own icon (the two sheets, the check), so the icon and the word roll
  * together when "Copy" becomes "Copied" (motion.js); the two share one cell, so the control keeps its width. */
 .acc-copy .cp-ico { width: 17px; height: 17px; }
+/* Keep the icon column fixed and centre each word in the reserved text cell, as before the label roll. */
+.acc-copy .rb-l { display: grid; grid-template-columns: 17px 1fr; justify-self: stretch; }
+.acc-copy .rb-l > span { justify-self: center; }
 .acc-sec-note { display: flex; align-items: flex-start; gap: 8px; margin: 16px 0 0; font-size: 13.5px; line-height: 20px; color: var(--ink); }
 .acc-sec-note .sec-ico { width: 16px; height: 16px; flex: none; margin-block-start: 2px; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .acc .acc-sec-commit { margin: 8px 0 0; padding-inline-start: 24px; }
