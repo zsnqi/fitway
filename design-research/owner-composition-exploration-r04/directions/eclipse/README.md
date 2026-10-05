@@ -603,6 +603,13 @@ stroke, as the intro draws the line). Timings are in the table above.
   `pathLength`, a CSS keyframe would do).
 - **Review:** `EclipseMotion.capture.freeze()` holds every new movement on its first frame, `seek(ms)` moves them and
   `release()` lets them go; `motion-capture.mjs` uses them for its filmstrips (see "Open and capture").
+- **Variants for the user's choice** (DECISIONS item 38, MOT-19): Reports and Access show a small trial switch, a tool
+  and not the design (`EclipseMotion.trial`), kept across reloads: Reports' «نهاية التصدير» / "Export done" picks the
+  export's done moment as built (0), with the mark drawing while the window shrinks (1), or with the calendar cut away by
+  the window's moving edge (2) (MOT-16; `?done=0|1|2`); Access's «تغيّر الصف» / "Row change" picks the row changing under
+  the leaving window as built, or once it has gone (MOT-17; `?row=0|1`). The parameter chooses for one load without
+  keeping it and hides the switch; with reduced motion every variant is the page as built and no switch shows.
+  `motion-capture.mjs --only=9,10` records them.
 
 ## Open and capture
 
