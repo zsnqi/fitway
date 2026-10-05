@@ -21,10 +21,12 @@
 
 ## Running now
 
-- Access's fix round, the visual part: a fresh `owner-direction-designer` (xhigh) from
-  `design-research/owner-composition-exploration-r04/directions/briefs/designer-access-fix.md` on
-  `owner-followup-r04-build` at `8a8d5e2` (frames in `D:/fitway-temp/owner-r04-access-fix/`). If this session ended
-  before its report, relaunch it from the same brief on a clean worktree; never resume it.
+- Access's designer round is done: `a0c6c76` on `owner-followup-r04-build` (report saved as
+  `D:/fitway-temp/owner-r04-access-fix/REPORT.md`; the coordinator looked at the rest, code-view and phone frames).
+- Codex (`high`) from `briefs/codex-access-fix.md` at `f261b25`: run folder `D:/fitway-temp/codex-runs/owner-access-fix/`,
+  held-out rows `D:/fitway-grader/owner-r04/access-fix-heldout.md` (H1-H8). If this session ended before it
+  reported, resume its thread (`last-message.md`, `events.jsonl`) rather than starting over.
+- Asked the user: the code's letters ignoring case, and a monospace face for the code (Readex draws I and l alike).
 
 ## Next steps
 
