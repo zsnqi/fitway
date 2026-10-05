@@ -398,6 +398,16 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       not support RTL or non-Latin digits). Magic UI, Animate UI and Motion Primitives are not used: they hard-code
       left and right (coordinator, from the digest).
 
+38. **The motion round, after the user tried it** (`0c43c90`, the user on the live site and the frame strips, 2026-10-05):
+    - The timings stay: the window's 340 ms opening and about 0.9 s from file ready to the finished check («ممتازة»).
+    - The export's check draws on the phone too, as built.
+    - The export's done state stays as built: the window shrinking empty for about a third of a second before the
+      check is liked («اشوفها ممتازة»), so the review's O1 is not fixed.
+    - Access's row after a (de)activation (O2): try changing the row only once the window has closed, without a
+      noticeable wait («المفروض ما تتأخر جدا»); the user judges whether it is better.
+    - Access's «سجل الوصول» card: the user asks how a new record would arrive with motion; show it before building.
+    - Speak to the user of «النافذة», not «الحوار», and describe a moment step by step as they see it.
+
 ## How this milestone's rounds run
 
 ## How this milestone's rounds run

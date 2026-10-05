@@ -30,16 +30,12 @@ Nothing. The user asked to stop editing and save (2026-10-05): they are switchin
 
 ## Next steps
 
-0. **Waiting on the user first** (they are trying the motion on the live site and the frame strips):
-   - Q2: should a new record in Access's «سجل الوصول» card arrive with motion (now instant, one movement at a time)?
-   - Q3: are the dialog's 340 ms and about 0.9 s from file ready to the finished check too slow?
-   - Q1 answered (the user, 2026-10-05: «اي على الجوال بعد اكيد»): the export's check draws on the phone too, as built.
-   - Say "window" («النافذة»), not «الحوار», to the user; describe a moment by what they see, step by step.
-1. **Finish the motion round before showing it again** (rounds item 11): a fresh designer (xhigh) fixes O1 (the
-   export's done state opens on a blank panel about 650 px tall that collapses for about 340 ms before the ring;
-   suspect MOT-15 "one that leaves leaves at once") and O2 (Access's row shows its new state while the dialog still
-   folds), plus the user's answers; F1, F2, O3, O4 (measurable, no taste; fixed now too, item 11) to Codex or a fixer; one verifier-high
-   check; then republish and show the user the live site (`eclipse-build` preview, 3174) and frame strips.
+0. **The user's answers are in DECISIONS 38.** Open: show the user, step by step on the live site, how a new record
+   would arrive in Access's «سجل الوصول» card (the user asked for a step-by-step walk-through on the site).
+1. **Finish the motion round** (rounds item 11): O2 per DECISIONS 38 (a designer, xhigh, small brief), the records
+   card's motion if the user wants it; F1, F2, O3, O4 (measurable, no taste) to Codex or a fixer; O1 stays (DECISIONS
+   38). One verifier-high check, every error it finds fixed, then republish and show the live site (`eclipse-build`
+   preview, 3174) and frame strips.
 2. **The remaining Owner screens,** in order Settings, Operations (the header status's details), Monitoring, each per
    rounds items 6, 8, 9, 10 and 11, built with the motion. Codex briefs: read each outcome against the limits before
    launch and state the purpose of anything an outcome replaces.
