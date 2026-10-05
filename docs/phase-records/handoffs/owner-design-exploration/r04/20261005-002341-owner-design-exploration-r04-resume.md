@@ -30,7 +30,7 @@
   `35051c9`; output `D:/fitway-temp/owner-r04-done-variants/`; designer picks variant 2 and row option 1).
 - A designer (xhigh) on `directions/briefs/designer-records-arrival.md` (`8f1d381`): a new access record arrives
   with motion (DECISIONS 38). Output `D:/fitway-temp/owner-r04-records-arrival/` (`NOTES.md`; replace, never resume).
-- Next: Codex `high` on the drafted brief in the session scratchpad `codex-motion-lows.md` (F2, O3, O4; held-out rows
+- Next: Codex `high` on the drafted brief `D:/fitway-temp/owner-r04-motion-lows/brief-draft.md` (F2, O3, O4; held-out rows
   `D:/fitway-grader/owner-r04/motion-lows-heldout.md`), then one verifier-high check of all three rounds, every error
   fixed, then republish and show the user the variants to pick.
 
