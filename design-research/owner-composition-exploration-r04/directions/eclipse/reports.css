@@ -407,8 +407,9 @@ html:has(#dlg-export[open]) { overflow: hidden; }
 .alert .ico { width: 17px; height: 17px; margin-block-start: 1.5px; color: var(--err); }
 .done { padding-block: 8px 0; text-align: center; }
 /* The done mark: a 1 px ring (--line-3) and the check (chalk, 1.8 at the icon's 22 px), drawn in one 44 px SVG so
- * motion.js can draw both strokes: the ring from its top in the reading direction, then the check. */
-.done-mark { display: inline-grid; place-items: center; width: 44px; height: 44px; }
+ * motion.js can draw both strokes: the ring from its top in the reading direction, then the check. A centred block of
+ * its own, so no text line (and its baseline's descent) adds to the 12 px between the mark and the words (DLG-4). */
+.done-mark { display: grid; place-items: center; width: 44px; height: 44px; margin-inline: auto; }
 .done-mark svg { width: 44px; height: 44px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .done-mark .m-ring { stroke: var(--line-3); stroke-width: 1; transform: rotate(-90deg); transform-origin: 22px 22px; }
 [dir="rtl"] .done-mark .m-ring { transform: rotate(90deg) scaleX(-1); }
