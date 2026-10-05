@@ -21,7 +21,10 @@
 
 ## Running now
 
-Nothing.
+- Access's fix round, the visual part: a fresh `owner-direction-designer` (xhigh) from
+  `design-research/owner-composition-exploration-r04/directions/briefs/designer-access-fix.md` on
+  `owner-followup-r04-build` at `8a8d5e2` (frames in `D:/fitway-temp/owner-r04-access-fix/`). If this session ended
+  before its report, relaunch it from the same brief on a clean worktree; never resume it.
 
 ## Next steps
 
