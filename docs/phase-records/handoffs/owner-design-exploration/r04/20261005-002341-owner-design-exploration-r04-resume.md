@@ -1,92 +1,73 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that adds this file, 2026-10-05 00:23 +03:00; `owner-followup-r04-build` at `78e0bdf`
+- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-05 evening +03:00;
+  `owner-followup-r04-build` at `d8e272f`
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261004-160300-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (new today: 37, and
+  rounds items 10 and 11), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
-- **Daily, Reports and Activity log** are built on `owner-followup-r04-build`. The Codex follow-up (`31e9dd9`, DECISIONS
-  32's last bullets: the picker in the minute export, the sheet's date specimens, one stored owner name) is graded in
-  `codex-rounds.md` and merged (fast-forward). Its lows wait for the last round (DECISIONS 32, last bullet).
-- **Access's first build** (`2fa0792`, max-effort designer) is reviewed (`D:/fitway-temp/owner-r04-access-review/REPORT.md`:
-  all pass but V8 low) and merged into `owner-followup-r04-build` at `6ec9591`. The user tried it and left notes
-  (DECISIONS 34). Its computer skeleton (`D:/fitway-temp/owner-r04-access-skeleton/`) is **agreed** (DECISIONS 34,
-  "The skeleton, agreed").
-- **Process:** brief rule B10 (check every named source exists before launch); a skeleton before every new screen
-  (DECISIONS rounds item 8); briefs carry what and why, never form or colour (WORKING_AGREEMENTS "Delegation").
-- **`access-reason-cap-r01`** (the production 240-character reason fix) is paused by the user; its own handoff says how
-  to resume. Note DECISIONS 34 now makes the reason optional, which that milestone's scope does not cover yet.
+- **Daily, Reports, Activity log and Access** are built on `owner-followup-r04-build` (worktree
+  `D:/Projects/fitway-worktrees/owner-followup-r04-s04`).
+- **The interaction-motion round (DECISIONS 36)** is built and reviewed: designer `0c43c90` (one shared `motion.js`;
+  report `D:/fitway-temp/owner-r04-motion/REPORT.md`, frames and videos there; the designer reached about 584k
+  tokens and was resumed once after an API limit, which led to rounds item 10), verifier-high review
+  `D:/fitway-temp/owner-r04-motion-review/REPORT.md` (all pass but V11: F1, F2 lows; notes O1 medium, O2-O4 low).
+  Briefs: `directions/briefs/designer-motion.md`, `verifier-motion.md`.
+- **Production motion and components** decided (DECISIONS 37), from `D:/fitway-temp/owner-r04-motion-research/REPORT.md`.
+- **Published** on the current account (the old RKEf… link belongs to the previous account and cannot be updated):
+  https://claude.ai/artifact/BqN1pBc36nsuaf3SSvw5nR (version 1, `0c43c90` staged without `tuner.js` in the session
+  scratchpad `.../scratchpad/eclipse-pub/`; a new account cannot update it either; publish a new copy and give the
+  user the link). Publishing needed the user's explicit approval: the auto-mode classifier refused it once as data
+  exfiltration.
+- **`access-reason-cap-r01`** stays paused by the user (its own handoff says how to resume).
 
 ## Running now
 
-Nothing. Done this session:
-
-- Access's fix round is done on `owner-followup-r04-build` at `54b2737`: designer `a0c6c76`, Codex `376c845`
-  (held-out 8 of 8, `codex-rounds.md`), builder `4637c53`, fixer `5c2106b` (the review's F1 and F2). Review
-  `D:/fitway-temp/owner-r04-access-fix-review/REPORT.md`. Published for the user (all four pages, links wired):
-  https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS (version 2; staged from `5c2106b` without `tuner.js` in this
-  session's scratchpad). The 34ZE… and Gog3… links do not open on the current account.
-- Waiting for Access's last round (low, rounds item 7): N1 one name for the reset («تعيين» vs «إعادة تعيين»); N2 the
-  done link lands on «هذا السجل غير موجود في هذه العينة.» (hand the new record to Activity log); N3 the records card
-  sparse at 1440; N4 the field's zero dot at 1x; N5 721 EN pairs wrap; N6 lone last words; N7 mono loads on every
-  visit; fixer notes: a tapped Retry leaves the desk title's ring, OWN-C9's "programmatic focus always shows its
-  ring" is stale, `.acc :focus-visible` beats `.rail-item:focus-visible { outline: none }`.
-- Decision 35 (dialog buttons at the inline start, Cancel first) built by a fixer at `54b2737`; republished as
-  version 3 of the same link. The export's centred done state stays as it is (the user; DECISIONS 35).
+Nothing. The user asked to stop editing and save (2026-10-05): they are switching accounts.
 
 ## Next steps
 
-The user (2026-10-05): continue with the remaining screens, in a new session started from «كمّل».
-
-0. **First, the interaction-motion round** (DECISIONS 36, agreed): a fresh `owner-direction-designer` (xhigh),
-   Impeccable's animate, on the build branch; the brief carries what the user wants (chosen moments that raise the
-   quality, the export's done check as the user's example, the list in item 36) and why, never the motion itself.
-   Cause of today's stillness: only MOT-9's 14 px dialog rise exists. Alongside it, a `sonnet-researcher` digest on
-   the production motion library and component sources (Motion first; HextaUI and similar for RTL-safe components;
-   what practitioners recommend), for the coordinator's proposal to the user. The same digest covers, at the
-   user's request, people's experience with Opus 5.5 for UI animation: the prompts and briefs they use and what
-   produced good motion, so the designer's brief can draw on it (still what and why, never the motion itself).
-1. **The remaining Owner screens,** one pass each, in this order: Settings, Operations (the header status's
-   details), Monitoring. For each (rounds items 6, 8 and 9): a `sonnet-researcher` digest of its contract and open
-   questions; all its questions to the user at once in plain words; a skeleton (designer, xhigh) the user agrees;
-   the one-pass build (designer); Codex for what has no taste in it; one `owner-direction-verifier-high` review;
-   the coordinator's frames; a republish to https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS. Build on
-   `owner-followup-r04-build` (worktree `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, HEAD `54b2737`), or a
-   new worktree cut from it. Codex briefs: read each outcome against the limits before launch and state the purpose
-   of anything an outcome replaces (B8 failed three times in the Access round); give a Codex run the harness's
-   2-hour background limit in mind.
-2. **Daily and Reports' last round:** the user's open artifact comment on Reports' «معدّل الموجودين» card (`#fig-avg`,
-   "البطاقة احسها فارغة و مب متناسقة مع الباقي", 2026-10-05, the second time; DECISIONS 30), redrawn by a designer and
-   shown before it is built; fix-3's open findings (`D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`); the waiting lows.
-   The comment thread is not sent to Claude, so it stays open until the user resolves it.
-3. **Access's last round:** the lows under "Running now".
-
-## Waiting on the user
-
-Nothing; the user starts the next session from «كمّل».
+0. **Waiting on the user first** (they are trying the motion on the live site and the frame strips):
+   - Q2: should a new record in Access's «سجل الوصول» card arrive with motion (now instant, one movement at a time)?
+   - Q3: are the dialog's 340 ms and about 0.9 s from file ready to the finished check too slow?
+   - Q1 was not understood; ask it again plainly: on the phone, the export's check draws itself like on the computer;
+     keep that, or show it at once on the phone?
+1. **Finish the motion round before showing it again** (rounds item 11): a fresh designer (xhigh) fixes O1 (the
+   export's done state opens on a blank panel about 650 px tall that collapses for about 340 ms before the ring;
+   suspect MOT-15 "one that leaves leaves at once") and O2 (Access's row shows its new state while the dialog still
+   folds), plus the user's answers; F1, F2, O3, O4 (measurable, no taste) to Codex or a fixer; one verifier-high
+   check; then republish and show the user the live site (`eclipse-build` preview, 3174) and frame strips.
+2. **The remaining Owner screens,** in order Settings, Operations (the header status's details), Monitoring, each per
+   rounds items 6, 8, 9, 10 and 11, built with the motion. Codex briefs: read each outcome against the limits before
+   launch and state the purpose of anything an outcome replaces.
+3. **Daily and Reports' last round:** the user's open comment on Reports' «معدّل الموجودين» card (`#fig-avg`, DECISIONS
+   30) on the old artifact, redrawn by a designer and shown before it is built; fix-3's open findings
+   (`D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`); the waiting lows.
+4. **Access's last round:** N1 one name for the reset («تعيين» vs «إعادة تعيين»); N2 the done link lands on «هذا السجل
+   غير موجود في هذه العينة.»; N3 the records card sparse at 1440; N4 the field's zero dot at 1x; N5 721 EN pairs wrap;
+   N6 lone last words; N7 mono loads on every visit; a tapped Retry leaves the desk title's ring; OWN-C9's "programmatic
+   focus always shows its ring" is stale; `.acc :focus-visible` beats `.rail-item:focus-visible { outline: none }`.
 
 ## Known risks
 
-- The published concept is a staged copy without `tuner.js`, with Access's links wired in the staged copy only:
-  https://claude.ai/artifact/34ZEAW6e9xJmAbr4WmG2VM (staging in this session's scratchpad; rebuild from the build
-  branch after the fix round). Artifacts are per account; the account changed on 2026-10-04 and older links no
-  longer open.
-- Claude's auto-mode classifier refuses changes to the frontier preservation guard even with the user's approval in
-  this session; such a step needs a session in the prompting permission mode (`access-reason-cap-r01` handoff).
+- Artifacts are per account; links from an earlier account do not open or update on a later one.
+- Claude's auto-mode classifier refuses changes to the frontier preservation guard, and refused one artifact publish
+  until the user approved it in chat.
 - Pinch, iOS long-press and a flick are proved on a device only by the user's informal try (DECISIONS 30).
 - «مساءً», «ظهرًا», «ليلًا» on the busiest-time card are a deliberate exception to `DESIGN_GUIDE.md` §9; carry it to the
-  later ADR. The same ADR lists every Product/Spec amendment the concept made (DECISIONS 33, 34).
-- **Lighter sessions in this worktree** (the user, 2026-10-05): its untracked `.claude/settings.local.json` turns off
-  the account-synced plugins (engineering, design, cowork) and the claude.ai connectors (Notion, Figma, Claude Docs,
-  visualize) for this worktree only. Confirm at startup with the session's connector status; delete the file to undo.
-- Ports: 3174 is the user's preview; 3176-3177 are for builders, verifiers and Codex; 3178-3179 are for reviewers.
+  later ADR with every Product/Spec amendment the concept made (DECISIONS 33, 34).
+- The motion's smoothness was measured headless only (V10); a real GPU and phone are the user's try.
+- **Lighter sessions in this worktree:** its untracked `.claude/settings.local.json` turns off account-synced plugins
+  and claude.ai connectors for this worktree only.
+- Ports: 3174 is the user's preview; 3176-3177 builders, verifiers and Codex; 3178-3179 reviewers.
 
 ## Pointers
 
-- Build worktree: `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, branch `owner-followup-r04-build`.
-- Access: designer `D:/fitway-temp/owner-r04-access/REPORT.md`, research `D:/fitway-temp/owner-r04-access-questions/REPORT.md`,
-  review `D:/fitway-temp/owner-r04-access-review/REPORT.md`, skeleton `D:/fitway-temp/owner-r04-access-skeleton/REPORT.md`.
-- Codex runs: `D:/fitway-temp/codex-runs/owner-activity-followup/` (`report.md`, attempt 1 kept beside it).
+- Motion: designer `D:/fitway-temp/owner-r04-motion/` (`_watch/` contact sheets, `_coord-done-rows.png`), review
+  `D:/fitway-temp/owner-r04-motion-review/` (watch first `runs/vid/2-export-run-1440-ar-anim.webm`,
+  `6-row-1440-ar-anim.webm`), research `D:/fitway-temp/owner-r04-motion-research/REPORT.md`.
+- Access: `D:/fitway-temp/owner-r04-access-fix-review/REPORT.md`, skeleton `D:/fitway-temp/owner-r04-access-skeleton/`.
 - Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
