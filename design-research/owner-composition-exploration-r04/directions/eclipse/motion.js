@@ -136,6 +136,21 @@
     return s;
   }
 
+  // A surface that grows under a clip from its old bottom loses its lower border to the clip while it moves: its lower
+  // line and corners are drawn, under its content, at the clip's line (d above its bottom edge), riding down with it.
+  function capOf(box, d) {
+    const cs = getComputedStyle(box), bb = parseFloat(cs.borderBottomWidth) || 0;
+    const c = document.createElement("i");
+    c.className = "m-cap";
+    c.setAttribute("aria-hidden", "true");
+    c.style.cssText = `position:absolute;display:block;pointer-events:none;z-index:-1;box-sizing:border-box;background:none;` +
+      `left:${px(-(parseFloat(cs.borderLeftWidth) || 0))};right:${px(-(parseFloat(cs.borderRightWidth) || 0))};bottom:${px(d - bb)};` +
+      `height:${px(Math.max(parseFloat(cs.borderBottomLeftRadius) || 0, parseFloat(cs.borderBottomRightRadius) || 0) + bb)};` +
+      `border:${cs.borderBottomWidth} solid ${cs.borderBottomColor};border-top:0;border-radius:0 0 ${cs.borderBottomRightRadius} ${cs.borderBottomLeftRadius}`;
+    box.append(c);
+    return c;
+  }
+
   /* ------------------------------------------------------------------ dialogs (MOT-9, DLG-1, DLG-5)
    * From 721 px a dialog unfolds from its title: its bottom edge runs down from the title's line and uncovers the body
    * and the actions in reading order, while the panel rises 12 px into place; the scrim and the panel's shadow fade
@@ -438,12 +453,19 @@
       ]);
       const key = {};
       flipKey = key;
+      const caps = [];
       own(key, [
         ...holding,
         ...move.map((m) => anim(m.el, [{ transform: `translate(${px(m.rx)}, ${px(m.ry)})` }, { transform: "translate(0px, 0px)" }], o)),
-        // A held block that grew: its bottom edge, with its corners, slides down to its new place with the blocks below.
-        ...grown.map((g) => { const R = roundOf(g.el); return anim(g.el, [{ clipPath: `inset(0px 0px ${px(g.d)} 0px ${R})` }, { clipPath: `inset(0px 0px 0px 0px ${R})` }], { ...o, fill: "none" }); }),
-      ], () => { held.forEach((h) => h.g.remove()); if (flipKey === key) flipKey = null; });
+        // A held block that grew: its bottom edge, with its corners and its line, slides down to its new place with the
+        // blocks below (the cap stays hidden with its block until the swap).
+        ...grown.flatMap((g) => {
+          const R = roundOf(g.el), c = capOf(g.el, g.d);
+          caps.push(c);
+          return [anim(g.el, [{ clipPath: `inset(0px 0px ${px(g.d)} 0px ${R})` }, { clipPath: `inset(0px 0px 0px 0px ${R})` }], { ...o, fill: "none" }),
+            anim(c, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(g.d)})` }], { ...o, fill: "both" })];
+        }),
+      ], () => { held.forEach((h) => h.g.remove()); caps.forEach((c) => c.remove()); if (flipKey === key) flipKey = null; });
     });
   }
 
@@ -454,11 +476,12 @@
    * the row below it, so nothing crosses a rule); its words rise into place on the done line's own timing (from 150 ms,
    * or 100 ms after a held change). The oldest row leaves at the box's bottom edge: an inert copy rides down with the
    * rows and is cut by a line inside the box's bottom padding, where its rule ends, so it is gone as the rows settle.
-   * When the new row and the leaving one differ in height (a record that wraps) the box's bottom edge moves with them:
-   * a clip lets it down when it grows; a copy of its lower corners, under the rows, carries it up when it shrinks. A
-   * first row into an empty list replaces the "none yet" line, whose words roll up out of their line as the row's rise
-   * in (the label roll's way, MOT-14). Rows still moving from a previous arrival keep moving from where they are seen;
-   * a copy still leaving goes on leaving. Nothing fades.
+   * When the new row and the leaving one differ in height (a record that wraps) the box's bottom edge moves with them,
+   * and the line that cuts the leaving copy with it: a clip lets the edge down when it grows (its line and corners drawn
+   * at the clip's line); a copy of its lower corners, under the rows, carries it up when it shrinks. A first row into an
+   * empty list replaces the "none yet" line, whose words roll up out of their line as the row's rise in, the same
+   * distance on the same curve (the label roll's way, MOT-14). Rows still moving from a previous arrival keep moving
+   * from where they are seen; a copy still leaving goes on leaving. Nothing fades.
    * list: { box (the card; its bottom edge cuts), rows: () => [[key, row]] newest first, words: the selector of a
    * row's parts that rise, empty: the selector of the "none yet" line }. */
   const LISTS = new WeakMap();            // box -> { key, edge(), ghosts }
@@ -484,7 +507,8 @@
       const ib = insetBottom(el);
       rows.set(k, { el, top: r.top + scrollY, left: r.left + scrollX, w: r.width, h: r.height, ty: w ? tyOf(w) : 0, win: ib == null ? null : r.height - ib });
     }
-    const emptyEl = list.empty ? box.querySelector(list.empty) : null;
+    // (Its copy still rolling out of a previous arrival is not the line.)
+    const emptyEl = list.empty ? box.querySelector(`${list.empty}:not(.m-ghost)`) : null;
     const st = LISTS.get(box);
     const b = box.getBoundingClientRect();
     // The "none yet" line's words start below its rule and padding (measured now: it is gone after the change).
@@ -531,33 +555,34 @@
           }
           if (m.s.ty) m.el.querySelectorAll(list.words).forEach((w) => anims.push(anim(w, [{ transform: `translateY(${px(m.s.ty)})` }, { transform: "translateY(0px)" }], o)));
         }
+        // The words' timing (the done line's). Into an empty list the "none yet" line's place is the window: the first
+        // row's window, and the box's bottom edge with it, open from that line's lower edge on the words' timing, so the
+        // line and the row's words roll through one window (a label's roll, MOT-14) while the box makes room for the row.
+        const ro = { duration: T.lineRise, delay: wordsAt, easing: EASE.roll, fill: "backwards" };
+        const eo = emptyGone ? ro : o;
+        let dRise = 0;
         for (const e of enter) {
-          // Its window opens from its top (its rule drawn by the row it pushes down until then; by itself into an empty
-          // list, where the "none yet" line's copy keeps no rule) to the top of the row below it, as that row slides.
-          const n = next(e.i), w0 = n ? n.s.top - e.top : emptyGone ? 1 : 0, w1 = n ? n.top - e.top : e.h;
-          anims.push(anim(e.el, [{ clipPath: `inset(0px -16px ${px(e.h - w0)} -16px)` }, { clipPath: `inset(0px -16px ${px(e.h - w1)} -16px)` }], o));
+          // Its window opens from its top (its rule drawn by the row it pushes down until then) to the top of the row
+          // below it, as that row slides; into an empty list, from the "none yet" line's lower edge (the line's copy keeps
+          // no rule: the row draws it) to its own.
+          const n = next(e.i), w1 = n ? n.top - e.top : e.h;
+          const w0 = n ? n.s.top - e.top : emptyGone ? emptyGone.r.bottom + scrollY - e.top : 0;
+          anims.push(anim(e.el, [{ clipPath: `inset(0px -16px ${px(e.h - w0)} -16px)` }, { clipPath: `inset(0px -16px ${px(e.h - w1)} -16px)` }], eo));
           const rb = e.el.getBoundingClientRect(), parts = [...e.el.querySelectorAll(list.words)];
-          // The row's parts rise as one piece, from just under its window.
-          const d = Math.ceil(Math.max(0, ...parts.map((w) => rb.bottom + 8 - w.getBoundingClientRect().top)));
-          const ro = { duration: T.lineRise, delay: wordsAt, easing: EASE.roll, fill: "backwards" };
+          // The row's parts rise as one piece, from just under its window as it is when they start.
+          const under = emptyGone ? rb.top + w0 : rb.bottom;
+          const d = Math.ceil(Math.max(0, ...parts.map((w) => under + 8 - w.getBoundingClientRect().top)));
+          dRise = Math.max(dRise, d);
           parts.forEach((w) => anims.push(anim(w, [{ transform: `translateY(${d}px)` }, { transform: "translateY(0px)" }], ro)));
         }
-        // The "none yet" line: a copy where it stood, without its rule; its words roll up out of their line.
-        if (emptyGone) {
-          const r = emptyGone.r, g = ghostOf(emptyGone.el), top = emptyGone.top;
-          g.innerHTML = `<span class="m-roll-out" style="display:block">${g.innerHTML}</span>`;
-          g.style.cssText += `;position:absolute;left:${px(r.left + scrollX - B.left)};top:${px(r.top + scrollY - B.top)};width:${px(r.width)};height:${px(r.height)};` +
-            `margin:0;box-sizing:border-box;border-color:transparent;clip-path:inset(${px(top - 3)} -12px -3px -12px)`;
-          box.append(g);
-          made.push(g);
-          const lh = r.height - top;
-          anims.push(anim(g.firstChild, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(-(lh + 6))})` }],
-            { duration: T.lineRise, delay: wordsAt, easing: EASE.roll, fill: "both" }));
-        }
-        // The box's bottom edge, when the list's height changes.
+        // The box's bottom edge, when the list's height changes: growing, a clip lets it down, its line and corners
+        // drawn at the clip's line (capOf); shrinking, a copy of its lower corners under the rows carries it up.
         let edgeNow = () => 0;
         if (edge > 0.5) {
-          anims.push(anim(box, [{ clipPath: `inset(0px 0px ${px(edge)} 0px ${R})` }, { clipPath: `inset(0px 0px 0px 0px ${R})` }], o));
+          const c = capOf(box, edge);
+          made.push(c);
+          anims.push(anim(box, [{ clipPath: `inset(0px 0px ${px(edge)} 0px ${R})` }, { clipPath: `inset(0px 0px 0px 0px ${R})` }], eo),
+            anim(c, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(edge)})` }], { ...eo, fill: "both" }));
           edgeNow = () => -(insetBottom(box) || 0);
         } else if (edge < -0.5) {
           const sk = document.createElement("i"), cs = getComputedStyle(box), d = -edge;
@@ -570,7 +595,7 @@
             `border-radius:0 0 ${cs.borderBottomRightRadius} ${cs.borderBottomLeftRadius};background:${cs.backgroundColor};border:${cs.borderBottomWidth} solid ${cs.borderBottomColor};border-top:0`;
           box.append(sk);
           made.push(sk);
-          anims.push(anim(sk, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(-d)})` }], { ...o, fill: "both" }));
+          anims.push(anim(sk, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(-d)})` }], { ...eo, fill: "both" }));
           edgeNow = () => (sk.isConnected ? d + tyOf(sk) : 0);
         }
         const key = {};
@@ -578,19 +603,37 @@
         // The state goes once its own movement and every copy still leaving have ended.
         const tidy = () => { const cur = LISTS.get(box); if (cur && !cur.key && !cur.ghosts.size) LISTS.delete(box); };
         // The rows that leave: each a copy in a window from where it was drawn down to the line its rule reaches, riding
-        // down with the rows; a movement of its own, so a later arrival does not cut it short.
+        // down with the rows; a movement of its own, so a later arrival does not cut it short. When the box's bottom edge
+        // moves, that line moves with it (the window's lower edge, by a clip), so the copy is cut the same distance inside
+        // the edge all the way and is gone as the rows settle.
         for (const s of leave) {
           // A plain block that takes the list's look (no marker), so the copy is drawn exactly as the row was.
           const win = document.createElement("div"), g = ghostOf(s.el), travel = Math.max(1, shift);
           win.className = "m-edge";
           win.setAttribute("aria-hidden", "true");
-          win.style.cssText = `position:absolute;left:0px;right:0px;top:${px(s.top - B.top)};height:${px(travel)};overflow:clip;pointer-events:none;list-style:none`;
+          win.style.cssText = `position:absolute;left:0px;right:0px;top:${px(s.top - B.top)};height:${px(travel + Math.max(0, -edge))};overflow:clip;pointer-events:none;list-style:none`;
           g.style.cssText += `;position:absolute;left:${px(s.left - B.left)};top:0px;width:${px(s.w)};height:${px(s.h)};margin:0;box-sizing:border-box`;
           win.append(g);
           box.append(win);
           state.ghosts.add(win);
-          own(win, [anim(g, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(travel)})` }], { ...o, fill: "both" })],
-            () => { win.remove(); state.ghosts.delete(win); tidy(); });
+          const ride = [anim(g, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(travel)})` }], { ...o, fill: "both" })];
+          if (Math.abs(edge) > 0.5) {
+            ride.push(anim(win, [{ clipPath: `inset(0px 0px ${px(Math.max(0, edge))} 0px)` }, { clipPath: `inset(0px 0px ${px(Math.max(0, -edge))} 0px)` }], { ...o, fill: "both" }));
+          }
+          own(win, ride, () => { win.remove(); state.ghosts.delete(win); tidy(); });
+        }
+        // The "none yet" line: a copy where it stood, without its rule; its words roll up out of their line, the same
+        // distance as the first row's words rise, on the same curve, so the two move as one. A movement of its own too.
+        if (emptyGone) {
+          const r = emptyGone.r, g = ghostOf(emptyGone.el), top = emptyGone.top;
+          g.innerHTML = `<span class="m-roll-out" style="display:block">${g.innerHTML}</span>`;
+          g.style.cssText += `;position:absolute;left:${px(r.left + scrollX - B.left)};top:${px(r.top + scrollY - B.top)};width:${px(r.width)};height:${px(r.height)};` +
+            `margin:0;box-sizing:border-box;border-color:transparent;clip-path:inset(${px(top - 3)} -12px -3px -12px)`;
+          box.append(g);
+          state.ghosts.add(g);
+          const lh = r.height - top;
+          own(g, [anim(g.firstChild, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(-Math.max(lh + 6, dRise))})` }],
+            { duration: T.lineRise, delay: wordsAt, easing: EASE.roll, fill: "both" })], () => { g.remove(); state.ghosts.delete(g); tidy(); });
         }
         LISTS.set(box, state);
         if (!anims.length) { made.forEach((m) => m.remove()); state.key = null; tidy(); return; }
