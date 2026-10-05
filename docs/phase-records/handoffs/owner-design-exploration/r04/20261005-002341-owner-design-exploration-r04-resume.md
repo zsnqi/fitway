@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-05 evening +03:00;
-  `owner-followup-r04-build` at `d8e272f`
+- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-06 about 02:00 +03:00;
+  `owner-followup-r04-build` at `48ff52b` (pushed)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261004-160300-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (new today: 37, and
   rounds items 10 and 11), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -26,32 +26,36 @@
 
 ## Running now
 
-Nothing. The user asked to save and stop (2026-10-05, evening): they are switching accounts.
+Nothing. The user stopped for the day (2026-10-06, about 02:00) and continues tomorrow.
 
 - **Variants round built** (`2dbf25c` F1, `02c92bb` export variants `?done=0|1|2`, `d3b45d7` Access `?row=0|1`,
   `35051c9`; output `D:/fitway-temp/owner-r04-done-variants/`; designer and coordinator both lean to variant 2 and row
   option 1; the user has been told and picks on the live site after the review).
-- **Records arrival** (brief `directions/briefs/designer-records-arrival.md`, `8f1d381`): stopped mid-round as a WIP
-  commit `69b1517`. Built: the slide, the rise, the oldest cut at the bottom, both row options, `?records=none`.
-  Left (its `D:/fitway-temp/owner-r04-records-arrival/NOTES.md`): the capture moment in `motion-capture.mjs`, the
-  shrink case, each kind of change, 1024, reduced-motion end states, README and MOT-17, MOT-18, OWN-C15. A **fresh**
-  designer (xhigh) finishes it from `69b1517` and the notes, never the same one resumed (rounds item 10).
-- **Then:** Codex `high` on `D:/fitway-temp/owner-r04-motion-lows/brief-draft.md` (F2, O3, O4; fill HEAD and the
-  environment block, commit it as `directions/briefs/codex-motion-lows.md`; held-out rows
-  `D:/fitway-grader/owner-r04/motion-lows-heldout.md`, never named in a brief); then one verifier-high check of the
-  three rounds, every error fixed; then a new published copy and the live site for the user to pick.
+- **Records arrival finished** by a second designer from the WIP (brief `designer-records-arrival-finish.md`,
+  `7a897f8`; commits `203e02d`, `53178d8` capture moment 11, `285dd84` docs; output and NOTES
+  `D:/fitway-temp/owner-r04-records-arrival/`, videos `capture/11-records-v0-1440-ar.webm`, `-v1-`). Coordinator
+  looked at the 1440 AR strips for both row options: as described. Known: with `row=0` the open slot shows about 80 ms
+  before the record rises (the done line's own rhythm).
+- **Codex motion lows** (brief `codex-motion-lows.md`, `602c62e`, run `D:/fitway-temp/owner-r04-motion-lows/run-1/`):
+  `4850e58` M2-M5 PASS. M1 stopped on the brief's own error: L1 allowed only "sub-pixel" moves, the real offset is
+  6.328 px (English Copy's icon). The coordinator's correction was resumed on the thread, and Codex hit its usage
+  limit mid-check. Its edit is saved unverified as WIP `48ff52b` (`access.css`, three lines). A fixer (brief
+  `fixer-copy-label.md`, `eaa7629`) was stopped for the day before reporting (partial output in `.../fixer/`).
+  Record in `codex-rounds.md` after grading: B8 was followed, but the allowance's bound came from the review's
+  reading (about 2 px) instead of a measure at the HEAD; Codex rightly stopped (B3).
+- **Permissions:** auto mode refused `codex exec --approve-for-me` as an unsafe agent; with the user's approval,
+  `Bash(codex exec:*)` is allowed in this worktree's untracked `.claude/settings.local.json` (untested yet).
 
 ## Next steps
 
-0. **The user's answers are in DECISIONS 38.** Open, waiting on the user: (a) whether Access's «سجل الوصول» card
-   should show a new record arriving with motion (the user looks at the live site themselves; no walk-through);
-   (b) the export's empty moment (O1): the user wants to see both ideas (DECISIONS 38); a designer (xhigh) builds
-   them as switchable variants beside the current one, then the user picks on the live site. The user asked not to
-   start edits before switching accounts; this is the first build of the next session, with O2 in the same brief.
-1. **Finish the motion round** (rounds item 11): O2 per DECISIONS 38 (a designer, xhigh, small brief), the records
-   card's motion if the user wants it; F1, F2, O3, O4 (measurable, no taste) to Codex or a fixer; O1 stays (DECISIONS
-   38). One verifier-high check, every error it finds fixed, then republish and show the live site (`eclipse-build`
-   preview, 3174) and frame strips.
+0. **Finish M1:** a fresh `owner-direction-fixer` on `fixer-copy-label.md`, told that the edit it describes as
+   uncommitted is now WIP `48ff52b` (verify it and commit the result on top). Codex's limit was to reset at 03:40.
+1. **Review the three rounds:** a fresh `owner-direction-verifier-high` from the draft
+   `D:/fitway-temp/owner-r04-three-rounds-review/brief-draft.md` (fill HEAD and the environment block, paste the
+   held-out rows from `D:/fitway-grader/owner-r04/motion-lows-heldout.md` into V9 — they go to the verifier, never
+   to Codex — and commit it as `directions/briefs/verifier-three-rounds.md`). Every error it finds fixed (rounds item
+   11), then a new published copy and the live site (`eclipse-build` preview, 3174) with frame strips; the user picks
+   `?done` and `?row` there.
 2. **The remaining Owner screens,** in order Settings, Operations (the header status's details), Monitoring, each per
    rounds items 6, 8, 9, 10 and 11, built with the motion. Codex briefs: read each outcome against the limits before
    launch and state the purpose of anything an outcome replaces.
