@@ -376,7 +376,7 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
 .field-hint { margin-block-start: 8px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
 
 /* ------------------------------------------------ the export dialog's states (DLG-4, STA-9, EMP-2, EMP-4) */
-html:has(#dlg-export[open]) { overflow: hidden; }
+html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 #dlg-export .dlg-body { overscroll-behavior: contain; }
 .export-picker { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
 .export-picker.dp { padding-block-start: 8px; }

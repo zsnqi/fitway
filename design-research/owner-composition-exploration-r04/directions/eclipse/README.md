@@ -636,7 +636,7 @@ The interaction motion (Motion, 12) has its own capture, which writes each momen
 reduced-motion comparison into a folder outside the repository and exits 1 on a failed check (its header lists them):
 
 ```
-node design-research/owner-composition-exploration-r04/directions/eclipse/motion-capture.mjs <outDir> [--only=1,3] [--lang=ar|en] [--size=d,t,p,z] [--video=0] [--file=0]
+node design-research/owner-composition-exploration-r04/directions/eclipse/motion-capture.mjs <outDir> [--only=1,3] [--lang=ar|en] [--size=d,t,p,z,l] [--video=0] [--file=0]
 ```
 
 It serves the folder on `127.0.0.1:3176`.

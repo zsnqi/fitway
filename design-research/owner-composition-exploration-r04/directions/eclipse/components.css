@@ -245,12 +245,8 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-dlg[open] { display: grid; place-items: center; }
 .cx-dlg .dlg-scrim { position: absolute; inset: 0; background: rgba(4, 4, 5, 0.66); backdrop-filter: blur(3px); }
 @media (prefers-reduced-motion: no-preference) {
-  html:not([data-motion="off"]) .cx-dlg[open] .dlg-panel { animation: cx-rise 240ms var(--ease-open); }
-  html:not([data-motion="off"]) .cx-dlg[open] .dlg-scrim { animation: cx-fade 240ms var(--ease-open); }
   html:not([data-motion="off"]) .cx-thumb { transition: transform 200ms var(--ease-state); }
 }
-@keyframes cx-rise { from { transform: translateY(14px); } to { transform: none; } }
-@keyframes cx-fade { from { opacity: 0; } to { opacity: 1; } }
 @media (max-width: 720px) {
   .cx-dlg { padding: 0; }
   .cx-dlg[open] { place-items: end stretch; }
@@ -535,7 +531,7 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-dialogs .dlg-panel, .cx-picker-specimens .dlg-panel { max-width: 100%; }
 .cx-frame > .dlg-panel { position: absolute; inset: auto 0 0; width: 100%; max-height: 100%; border-radius: 24px 24px 0 0; border-block-end: 0; }
 .cx-frame > .dlg-panel .dlg-foot .rbtn { flex: 1 1 0; min-width: 0; }
-html:has(#cx-dlg[open]) { overflow: hidden; }
+html:has(#cx-dlg[open]:not(.m-ghost)) { overflow: hidden; }
 .cx-dlg .dlg-body { overscroll-behavior: contain; }
 @media (max-width: 400px) {
   .cx-dialogs, .cx-picker-specimens { margin-inline: -16px; }
