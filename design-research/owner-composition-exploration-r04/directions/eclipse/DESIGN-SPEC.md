@@ -497,7 +497,7 @@ TYP-3, accepted (user 2026-09-30):
 | Id | L | Entry | Src |
 | --- | --- | --- | --- |
 | DLG-1 | R | `<dialog>` with `showModal`: the page behind is inert; Tab and Shift+Tab stay inside; Escape and the scrim close it; focus returns to the control that opened it. | Keep, `README.md`, "Reports" → "The table, form and dialog system" |
-| DLG-2 | R | Panel SRF-4, at most 468 wide (the date dialog 412, PCK-1); head: title in heading type and a 44 px close button; body: text in label type `--ink-2`, line height 1.6; foot: actions at the inline end, the primary last. | G.* |
+| DLG-2 | R | Panel SRF-4, at most 468 wide (the date dialog 412, PCK-1); head: title in heading type and a 44 px close button; body: text in label type `--ink-2`, line height 1.6; foot: actions at the inline start (the right in Arabic, the left in English), Cancel first, then the primary (DECISIONS item 35). | G.* |
 | DLG-3 | R | Intentional initial focus (`DESIGN_GUIDE` §11), by the dialog's job (Q8): a dialog that asks the owner to choose focuses its first field, or the date picker's chosen end (the range dialog, PCK-7); one that asks to confirm focuses its primary action (the minute-data export dialog, even with the shared picker inside; its dates open on the period shown, clamped to the picker’s bounds). | G initialFocus; Q8; user 2026-09-30 |
 | DLG-4 | R | States: ready, invalid, working (STA-9, focus to Cancel), done (focus to the result's action, announced), failed (EMP-2). | `README.md`, "Reports" → "The table, form and dialog system" |
 | DLG-5 | R | At 720 px and below: a bottom sheet, full width, radius 24 at the top only, no bottom border, actions sharing the width, the safe-area inset below them. | r:373-379 |

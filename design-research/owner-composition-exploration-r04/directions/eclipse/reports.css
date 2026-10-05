@@ -342,7 +342,7 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
 .dlg-head h2 { font-size: 19px; line-height: 28.5px; font-weight: 500; }
 .dlg-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 8px 24px 0; }
 .dlg-desc { font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
-.dlg-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 24px; }
+.dlg-foot { display: flex; justify-content: flex-start; gap: 8px; padding: 24px; }
 
 /* ------------------------------------------------------------------- field
  * FLD-1…6: a label above (8 to the field), a 44 px input, padding 16, body type; the message 8 under it. */
