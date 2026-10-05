@@ -244,3 +244,9 @@ checks live outside the repository and never appear here or in a brief.
 - **Environment:** the harness background limit (2 h) killed the run after its final checks, before the commit; the
   coordinator resumed the same thread, which committed and reported. Launch such runs with the limit in mind.
 - **Repeat fault:** B8 (twice). Codex surfaced every conflict instead of working around it (B3, B7 held).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/access-fix-heldout.md`, 8 of 8 (H7 with a note: «سجّل الدخول», sign in
+  again, is the right use of the word). Graded by `D:/fitway-temp/owner-r04-access-fix-review/REPORT.md` (verifier at
+  `high`), which confirms A1-A9 and finds one regression: F1 (medium), Access's focus ring on every mouse click and
+  tap, from a blanket `:focus`. Cause, brief: A8 said "every element that takes focus programmatically shows the
+  ring" without its intent (keyboard users see where focus went); Codex met the literal text the only way it could.
+  B8 again: three B8 faults in one round. Fixed by an `owner-direction-fixer` (`fixer-access-focus.md`).
