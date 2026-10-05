@@ -384,6 +384,20 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     what practitioners recommend (Motion is the first candidate; HextaUI and the like only for components that pass
     RTL), and proposes one (the user: «شوف وش المناسب انت»).
 
+37. **Motion and components for production** (the user, 2026-10-05: «ممتاز» on each of the three points; research
+    digest `D:/fitway-temp/owner-r04-motion-research/REPORT.md`). For the move to production, not the concept:
+    - The simple moments (a dialog's open and close, popovers, tooltips) are CSS transitions on Base UI's
+      `data-starting-style` / `data-ending-style`, with no added library. Why: Base UI's own guidance, no bundle cost,
+      and a transition can be interrupted midway.
+    - The finer moments (a button from its label to Working to done, the done check, a row that changes after a
+      deactivation) use Motion (MIT), its light form (`LazyMotion` + `m` + `domAnimation`), and only there. Reduced
+      motion is honoured by the code itself, since Motion's setting leaves opacity and colour moving; any slide is
+      mirrored by hand, since Motion is not direction-aware.
+    - Components stay shadcn on Base UI with `rtl: true`. HextaUI (Base UI, MIT, days old on 2026-10-05) is a source
+      to copy from (its button states, its number roller) only after an Arabic test. NumberFlow is not used (it does
+      not support RTL or non-Latin digits). Magic UI, Animate UI and Motion Primitives are not used: they hard-code
+      left and right (coordinator, from the digest).
+
 ## How this milestone's rounds run
 
 ## How this milestone's rounds run
