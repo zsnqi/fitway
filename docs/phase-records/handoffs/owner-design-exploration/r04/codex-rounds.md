@@ -224,3 +224,23 @@ checks live outside the repository and never appear here or in a brief.
 - **Environment:** Codex also asked to write three `.impeccable/config.json` ignores for detector flags (the masked
   lighting, a legend swatch); automatic approval review refused and nothing was written. Left standing.
 - **Repeat fault:** B7 applied (P1's conflict surfaced as a report, not a workaround); attempt 1 is a new fault (B10).
+
+## access-fix: `design-research/owner-composition-exploration-r04/directions/briefs/codex-access-fix.md`, result `376c845` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** Access's fix round after the designer's visual part (`a0c6c76`): the optional reason, the sign-out
+  wording, Reactivate's confirmation, passwords emptied on close, arrival at a record by id, one set of words on
+  Access and Activity log, the deactivated owner's records, the review's lows (F1, F5, the 700 ms silence), the rail
+  and bar links, ACCESS-SPEC merged as §4.4 and INDEX.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/access-fix-heldout.md` (H1-H8), written before the run; graded by
+  the review that follows the builder round (`builder-access-code.md`).
+- **Brief rows, as Codex graded them:** A1-A9 and L1-L3, L5, L6 PASS (about 4,800 checks per mode, 114 crops).
+  A10 FAIL: INDEX does not list `access.js`, because the generator's file list is in `tools/build-index.mjs`, which
+  the brief's scope left read-only. L4 FAIL on its literal text: "no password once submitted" contradicts A4 and
+  DECISIONS 33 (a refused form keeps its masked password while open); Codex followed A4 and said so.
+- **Failure causes:** A10, brief: scope omitted the file the outcome needs (a B10 kind: the brief named an outcome
+  without checking where it lives). L4, brief: B8 (two outcomes not read together). A8, brief: "within one frame"
+  removed the commit's 700 ms guard, whose purpose (a double tap on Continue landing on «حفظتُ الرمز») the brief did not
+  state; Codex reported it. B8 again: an outcome's intent must name the purpose of what it replaces.
+- **Environment:** the harness background limit (2 h) killed the run after its final checks, before the commit; the
+  coordinator resumed the same thread, which committed and reported. Launch such runs with the limit in mind.
+- **Repeat fault:** B8 (twice). Codex surfaced every conflict instead of working around it (B3, B7 held).
