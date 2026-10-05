@@ -26,10 +26,13 @@
 
 ## Running now
 
-A designer (xhigh) on brief `directions/briefs/designer-done-variants.md` (`b38459c` on `owner-followup-r04-build`):
-the export's done moment as variants 1 and 2 beside 0 behind a switch, Access's row after the window closes (O2) as an
-option, and F1. Output `D:/fitway-temp/owner-r04-done-variants/` (its `NOTES.md` if it is cut off; replace, never
-resume). Next after it: a Codex or fixer round on F2, O3, O4, then one verifier-high check.
+- The variants round is built (`2dbf25c` F1, `02c92bb` export variants `?done=0|1|2`, `d3b45d7` Access `?row=0|1`,
+  `35051c9`; output `D:/fitway-temp/owner-r04-done-variants/`; designer picks variant 2 and row option 1).
+- A designer (xhigh) on `directions/briefs/designer-records-arrival.md` (`8f1d381`): a new access record arrives
+  with motion (DECISIONS 38). Output `D:/fitway-temp/owner-r04-records-arrival/` (`NOTES.md`; replace, never resume).
+- Next: Codex `high` on the drafted brief in the session scratchpad `codex-motion-lows.md` (F2, O3, O4; held-out rows
+  `D:/fitway-grader/owner-r04/motion-lows-heldout.md`), then one verifier-high check of all three rounds, every error
+  fixed, then republish and show the user the variants to pick.
 
 ## Next steps
 
