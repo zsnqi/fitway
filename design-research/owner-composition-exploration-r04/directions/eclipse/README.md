@@ -230,6 +230,7 @@ and only while live.
 | A button's label | its words change: Working, Try again, Close, Copied | transform: the old label rolls up out of its line, the new one in from below | 280 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
 | The export's done state | the file is ready | the ring draws from its top in the reading direction, then the check; «الملف جاهز» rises into its line; the file line glides from where it stood | ring 380 ms from 140 ms, check 260 ms from 400 ms, words 300 ms from 280 ms | `cubic-bezier(0.65, 0, 0.35, 1)` (the strokes), `cubic-bezier(0.25, 1, 0.5, 1)` (the words) |
 | A done line on the page (Access) | a change succeeded and its dialog left | its words rise into their line, then its check draws; the cards and rows below slide to their new places | from 150 ms: words 300 ms, check 260 ms from 230 ms; blocks 300-420 ms | as above; blocks `cubic-bezier(0.3, 0.75, 0.2, 1)` |
+| A new access record (Access's records card) | with the done line, in the same movement | transform and clip: the records below slide down, the new row is uncovered as the space opens and its words rise as one piece; the oldest rides down and is cut inside the card's bottom edge; a height change moves that edge | rows with the blocks (300-420 ms); words 300 ms from 150 ms, or 100 ms after a held change | rows `cubic-bezier(0.3, 0.75, 0.2, 1)`; words `cubic-bezier(0.25, 1, 0.5, 1)` |
 
 The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
 hover colours of the rail tiles and buttons, Daily's details chevron, and the jump to "View details" are all instant.
@@ -582,13 +583,21 @@ stroke, as the intro draws the line). Timings are in the table above.
   stroke to its long one, while «الملف جاهز» rises into its line. Access's done line arrives once its dialog's scrim has
   mostly gone: its words rise into the line where the change was made, then its check ticks; the cards and rows below
   slide to their new places (`flip`) instead of jumping. Focus, the words and the announcement are final at once.
+  The change's record arrives on Access's records card in the same movement (`flip`'s list, DECISIONS item 38), so the
+  owner sees in the history the record their action wrote: the records below slide with the blocks, the new row is
+  uncovered as the space opens (its window's lower edge rides on the row below, so nothing crosses a rule) and its words
+  rise as one piece when the done line's do; the oldest of the eight rides down and is cut by a line inside the card's
+  bottom padding, gone as the rows settle. A record that wraps moves the card's bottom edge and that line with the rows
+  (growing under a clip whose line and corners are drawn at the clip, `capOf`; shrinking with a copy of the lower
+  corners). Into an empty card the first record rolls in through the "none yet" line's window as the line rolls out.
+  The card is drawn again only when what it shows changed, so opening another window does not cut an arrival short,
+  and a second change continues from where the rows are seen. Cancel change and the card's own failure move nothing.
 - **A popover** (MOT-12) unrolls from its control and rolls back up; the status's chevron turns with it. One header
   panel replacing the other closes at once, so the two never overlap while one leaves.
 - **Left instant, by choice:** what the keyboard repeats or the owner does often: the chart's keys (MOT-5 has its own
   follow), the picker's days and months (PCK-10), a menu's arrows, Tab; Activity's filters and Reports' period; the
-  reason's remaining characters while typing; the records card's new record (the done line, beside the change, is the
-  moment; a second movement at the card would split the eye); Activity's loaded line and its refresh; a breakpoint
-  crossing; hover colours.
+  reason's remaining characters while typing; Activity's loaded line and its refresh; a breakpoint crossing; hover
+  colours.
 - **The truth:** the done state and the done line play only after the work really finished (the export's file exists,
   the synthetic answer arrived). Working never moves after its roll: it is no spinner (the skeleton never moves either,
   MOT-13). A progress line, once shown, stays at least 400 ms, and a file built in less than 300 ms shows none, so the
@@ -597,19 +606,21 @@ stroke, as the intro draws the line). Timings are in the table above.
   ending where the movement would; nothing `motion.js` adds stays at rest.
 - **For production** (React, Tailwind, shadcn on Base UI): the dialog's unfold and fold, the sheet, the popovers and
   the scrim are CSS transitions on `clip-path`, `transform` and `opacity` from `data-starting-style` and to
-  `data-ending-style` (Base UI keeps the popup mounted while it leaves, so no copy is needed there). Three moments need
+  `data-ending-style` (Base UI keeps the popup mounted while it leaves, so no copy is needed there). Four moments need
   more than a transition: the reflow (a layout animation: Motion's `layout`, or this file's three-piece surface), the
-  label roll (two absolutely placed labels with `AnimatePresence`, or a small hook), and the done mark (SVG
-  `pathLength`, a CSS keyframe would do).
+  page's blocks and the records card making room (Motion's `layout` on each block and row, with `AnimatePresence` for
+  the record that leaves under the card's edge), the label roll (two absolutely placed labels with `AnimatePresence`,
+  or a small hook), and the done mark (SVG `pathLength`, a CSS keyframe would do).
 - **Review:** `EclipseMotion.capture.freeze()` holds every new movement on its first frame, `seek(ms)` moves them and
   `release()` lets them go; `motion-capture.mjs` uses them for its filmstrips (see "Open and capture").
 - **Variants for the user's choice** (DECISIONS item 38, MOT-19): Reports and Access show a small trial switch, a tool
   and not the design (`EclipseMotion.trial`), kept across reloads: Reports' «نهاية التصدير» / "Export done" picks the
   export's done moment as built (0), with the mark drawing while the window shrinks (1), or with the calendar cut away by
   the window's moving edge (2) (MOT-16; `?done=0|1|2`); Access's «تغيّر الصف» / "Row change" picks the row changing under
-  the leaving window as built, or once it has gone (MOT-17; `?row=0|1`). The parameter chooses for one load without
-  keeping it and hides the switch; with reduced motion every variant is the page as built and no switch shows.
-  `motion-capture.mjs --only=9,10` records them.
+  the leaving window as built, or once it has gone (MOT-17; `?row=0|1`); the records card's new record follows it. The
+  parameter chooses for one load without keeping it and hides the switch; with reduced motion every variant is the page
+  as built and no switch shows.
+  `motion-capture.mjs --only=9,10` records them, and `--only=11` the records card's arrival in both options.
 
 ## Open and capture
 
