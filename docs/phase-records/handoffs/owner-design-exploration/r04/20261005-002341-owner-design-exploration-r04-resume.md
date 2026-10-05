@@ -21,14 +21,13 @@
 
 ## Running now
 
-- Access's fix round so far on `owner-followup-r04-build`: designer `a0c6c76`, Codex `376c845` (graded in
-  `codex-rounds.md`, "access-fix"; held-out rows H1-H8 wait for the review).
-- A fresh `owner-direction-builder` (high) from `briefs/builder-access-code.md` at `8e5ad1b`: the code's monospace
-  face, the copy control beside it on the computer, the code's case, a double tap never committing, INDEX with
-  `access.js` (DECISIONS 34's last bullets). Frames in `D:/fitway-temp/owner-r04-access-code/`. If this session
-  ended before its report, relaunch from the same brief on a clean worktree.
-- Then one `owner-direction-verifier-high` review of `78e0bdf..` the builder's commit (reading direction included,
-  H1-H8 graded), the coordinator's frames, and a republish for the user.
+- Access's fix round is built on `owner-followup-r04-build`: designer `a0c6c76`, Codex `376c845` (graded in
+  `codex-rounds.md`, "access-fix"), builder `4637c53` (report `D:/fitway-temp/owner-r04-access-code/REPORT.md`).
+- A fresh `owner-direction-verifier-high` from `briefs/verifier-access-fix.md` at `5f84c98` reviews `78e0bdf..4637c53`
+  and grades H1-H8; evidence in `D:/fitway-temp/owner-r04-access-fix-review/`. If this session ended before its
+  report, relaunch from the same brief. Then the coordinator's frames and a republish for the user.
+- Coordinator's own note for the review's aftermath: the code view's title wears a visible focus ring each time it
+  opens (focus starts on the title).
 
 ## Next steps
 
