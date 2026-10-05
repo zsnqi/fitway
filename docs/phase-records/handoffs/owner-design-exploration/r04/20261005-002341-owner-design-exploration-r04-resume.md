@@ -26,13 +26,20 @@
 
 ## Running now
 
-- The variants round is built (`2dbf25c` F1, `02c92bb` export variants `?done=0|1|2`, `d3b45d7` Access `?row=0|1`,
-  `35051c9`; output `D:/fitway-temp/owner-r04-done-variants/`; designer picks variant 2 and row option 1).
-- A designer (xhigh) on `directions/briefs/designer-records-arrival.md` (`8f1d381`): a new access record arrives
-  with motion (DECISIONS 38). Output `D:/fitway-temp/owner-r04-records-arrival/` (`NOTES.md`; replace, never resume).
-- Next: Codex `high` on the drafted brief `D:/fitway-temp/owner-r04-motion-lows/brief-draft.md` (F2, O3, O4; held-out rows
-  `D:/fitway-grader/owner-r04/motion-lows-heldout.md`), then one verifier-high check of all three rounds, every error
-  fixed, then republish and show the user the variants to pick.
+Nothing. The user asked to save and stop (2026-10-05, evening): they are switching accounts.
+
+- **Variants round built** (`2dbf25c` F1, `02c92bb` export variants `?done=0|1|2`, `d3b45d7` Access `?row=0|1`,
+  `35051c9`; output `D:/fitway-temp/owner-r04-done-variants/`; designer and coordinator both lean to variant 2 and row
+  option 1; the user has been told and picks on the live site after the review).
+- **Records arrival** (brief `directions/briefs/designer-records-arrival.md`, `8f1d381`): stopped mid-round as a WIP
+  commit `69b1517`. Built: the slide, the rise, the oldest cut at the bottom, both row options, `?records=none`.
+  Left (its `D:/fitway-temp/owner-r04-records-arrival/NOTES.md`): the capture moment in `motion-capture.mjs`, the
+  shrink case, each kind of change, 1024, reduced-motion end states, README and MOT-17, MOT-18, OWN-C15. A **fresh**
+  designer (xhigh) finishes it from `69b1517` and the notes, never the same one resumed (rounds item 10).
+- **Then:** Codex `high` on `D:/fitway-temp/owner-r04-motion-lows/brief-draft.md` (F2, O3, O4; fill HEAD and the
+  environment block, commit it as `directions/briefs/codex-motion-lows.md`; held-out rows
+  `D:/fitway-grader/owner-r04/motion-lows-heldout.md`, never named in a brief); then one verifier-high check of the
+  three rounds, every error fixed; then a new published copy and the live site for the user to pick.
 
 ## Next steps
 
