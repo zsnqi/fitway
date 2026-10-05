@@ -246,9 +246,9 @@ html[dir="ltr"] .acc-field.is-pw .field-input { padding-right: 44px; padding-lef
   .acc-sec:not(.is-under) { flex-direction: row; align-items: center; gap: 16px; padding-block: 16px; }
   .acc-sec:not(.is-under) .acc-code { flex: 1 1 0; align-self: center; }
 }
+/* Each of the control's two labels holds its own icon (the two sheets, the check), so the icon and the word roll
+ * together when "Copy" becomes "Copied" (motion.js); the two share one cell, so the control keeps its width. */
 .acc-copy .cp-ico { width: 17px; height: 17px; }
-.acc-copy .cp-done, .acc-copy[data-state="1"] .cp-copy { display: none; }
-.acc-copy[data-state="1"] .cp-done { display: block; }
 .acc-sec-note { display: flex; align-items: flex-start; gap: 8px; margin: 16px 0 0; font-size: 13.5px; line-height: 20px; color: var(--ink); }
 .acc-sec-note .sec-ico { width: 16px; height: 16px; flex: none; margin-block-start: 2px; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .acc .acc-sec-commit { margin: 8px 0 0; padding-inline-start: 24px; }

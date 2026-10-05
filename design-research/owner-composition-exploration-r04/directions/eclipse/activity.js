@@ -386,7 +386,9 @@
   const motionOn = () => !URL_OFF && !mqReduce.matches;
   root.dataset.motion = motionOn() ? "on" : "off";
   const EASE = { rail: "cubic-bezier(0.22, 1, 0.36, 1)", railClose: "cubic-bezier(0.4, 0, 0.2, 1)" };
-  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12, dlgOpen: 240, dlgClose: 200 };
+  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12 };
+  // The interaction motion (dialogs, popovers, labels) is motion.js's, every Owner page's (DECISIONS item 36).
+  const M = window.EclipseMotion;
   const f2 = (n) => n.toFixed(2);
 
   /* ---------------------------------------------------------------- shell */
@@ -513,18 +515,22 @@
   const layers = { ops: { btn: $("#ops-btn"), pop: $("#ops-pop") }, menu: { btn: $("#menu-btn"), pop: $("#menu-pop") } };
   let openLayer = null;
   const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
+  // Each unrolls from its control and rolls back up (motion.js); focus moves at once either way.
   function showLayer(name, focus = "first") {
-    if (openLayer && openLayer !== name) hideLayer(openLayer, false);
+    // One panel replacing another: the old one goes at once, so the two never overlap while one leaves.
+    if (openLayer && openLayer !== name) hideLayer(openLayer, false, true);
     const { btn, pop } = layers[name];
     openLayer = name;
     pop.hidden = false;
     btn.setAttribute("aria-expanded", "true");
     if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
     else pop.focus();
+    M.popOpen(pop);
   }
-  function hideLayer(name, returnFocus) {
+  function hideLayer(name, returnFocus, instant = false) {
     const { btn, pop } = layers[name];
     if (pop.hidden) return;
+    if (!instant) M.popClose(pop);
     pop.hidden = true;
     btn.setAttribute("aria-expanded", "false");
     if (openLayer === name) openLayer = null;
@@ -553,9 +559,10 @@
   document.addEventListener("pointerdown", (e) => {
     if (!openLayer) return;
     const { btn, pop } = layers[openLayer];
-    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false);
+    // A press on the other panel's control replaces this one: it goes at once, so the two never overlap.
+    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false, Object.values(layers).some((l) => l.btn.contains(e.target)));
   });
-  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false); };
+  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false, true); };
   mqTablet.addEventListener("change", onFrameChange);
   mqPhone.addEventListener("change", onFrameChange);
   layers.menu.btn.setAttribute("aria-label", L.more);
@@ -1088,51 +1095,30 @@
   /* ---------------------------------------------------------------- the dialog system (Reports')
    * showModal (the page behind is inert), a scrim and a panel; a bottom sheet at 720 px and below (DLG-5). Initial
    * focus on the first field (DLG-3: a dialog that asks the owner to choose). Tab wraps; Escape and the scrim close it;
-   * focus returns to the control that opened it. */
-  const dlgRun = { anims: [] };
-  const isSheet = () => matchMedia("(max-width: 720px)").matches;
+   * focus returns to the control that opened it. The movement is motion.js's (MOT-9): focus moves in and out at once,
+   * and a closing dialog is closed at once while its picture leaves as an inert copy. */
   const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
     .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length);
-  function finishDlgAnims() { dlgRun.anims.forEach((a) => a.cancel()); dlgRun.anims = []; }
   function openDialog(dlg, opener, first) {
     if (openDlg) closeDialog(openDlg.dlg, true);
     if (railOpen) setRail(false);
     openDlg = { dlg, opener };
     dlg.showModal();
     dlg.classList.add("is-open");
-    finishDlgAnims();
-    if (motionOn()) {
-      const panel = $(".dlg-panel", dlg), sc = $(".dlg-scrim", dlg);
-      const o = { duration: T.dlgOpen, easing: EASE.rail };
-      dlgRun.anims = [
-        sc.animate([{ opacity: 0 }, { opacity: 1 }], o),
-        panel.animate(isSheet() ? [{ transform: "translateY(100%)" }, { transform: "none" }] : [{ transform: "translateY(14px)" }, { transform: "none" }], o),
-      ];
-      const run = dlgRun.anims;
-      Promise.all(run.map((a) => a.finished)).then(() => { if (dlgRun.anims === run) finishDlgAnims(); }).catch(() => {});
-    }
-    (first || focusables($(".dlg-panel", dlg))[0]).focus();
+    // Focus moves first, while nothing is moving yet: a focus into a panel still being moved could scroll the dialog
+    // to reach it and cancel the movement out. first may be the element, or a function that moves focus (the picker).
+    if (typeof first === "function") first(); else (first || focusables($(".dlg-panel", dlg))[0]).focus();
+    M.dialogOpen(dlg);
   }
   function closeDialog(dlg, instant = false, back = null) {
     if (!openDlg || openDlg.dlg !== dlg) return;
     const { opener } = openDlg;
     openDlg = null;
-    finishDlgAnims();
-    const done = () => {
-      finishDlgAnims();
-      dlg.classList.remove("is-open");
-      if (dlg.open) dlg.close();
-      const to = back || (opener && opener.isConnected ? opener : $("#main"));
-      to.focus();
-    };
-    if (instant || !motionOn()) { done(); return; }
-    const panel = $(".dlg-panel", dlg), sc = $(".dlg-scrim", dlg);
-    const o = { duration: T.dlgClose, easing: EASE.railClose, fill: "forwards" };
-    dlgRun.anims = [
-      sc.animate([{ opacity: 1 }, { opacity: 0 }], o),
-      panel.animate(isSheet() ? [{ transform: "none" }, { transform: "translateY(100%)" }] : [{ transform: "none" }, { transform: "translateY(10px)" }], o),
-    ];
-    Promise.all(dlgRun.anims.map((a) => a.finished)).then(done).catch(done);
+    M.dialogClose(dlg, { instant });
+    dlg.classList.remove("is-open");
+    if (dlg.open) dlg.close();
+    const to = back || (opener && opener.isConnected ? opener : $("#main"));
+    to.focus();
   }
   $$(".dlg").forEach((dlg) => {
     dlg.addEventListener("cancel", (e) => { e.preventDefault(); closeDialog(dlg); });
@@ -1159,8 +1145,7 @@
   function openDatesDialog() {
     picker.set(F.a == null ? null : { a: F.a, b: F.b });
     datesClear.hidden = F.a == null;
-    openDialog(dlgDates, datesBtn, null);
-    picker.focus();
+    openDialog(dlgDates, datesBtn, () => picker.focus());
   }
   datesBtn.addEventListener("click", openDatesDialog);
   $("#dates-form").addEventListener("submit", (e) => {

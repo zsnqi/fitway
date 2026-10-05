@@ -406,8 +406,13 @@ html:has(#dlg-export[open]) { overflow: hidden; }
 .alert { display: flex; align-items: flex-start; gap: 8px; margin-block-start: 16px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--err-line); background: rgba(255, 107, 125, 0.06); font-size: 13.5px; line-height: 20px; color: var(--ink); }
 .alert .ico { width: 17px; height: 17px; margin-block-start: 1.5px; color: var(--err); }
 .done { padding-block: 8px 0; text-align: center; }
-.done-mark { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-3); }
-.done-mark svg { width: 22px; height: 22px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* The done mark: a 1 px ring (--line-3) and the check (chalk, 1.8 at the icon's 22 px), drawn in one 44 px SVG so
+ * motion.js can draw both strokes: the ring from its top in the reading direction, then the check. */
+.done-mark { display: inline-grid; place-items: center; width: 44px; height: 44px; }
+.done-mark svg { width: 44px; height: 44px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.done-mark .m-ring { stroke: var(--line-3); stroke-width: 1; transform: rotate(-90deg); transform-origin: 22px 22px; }
+[dir="rtl"] .done-mark .m-ring { transform: rotate(90deg) scaleX(-1); }
+.done-mark .m-check { stroke: var(--ink); stroke-width: 1.65; }
 .done-title { margin-block-start: 12px; font-size: 15px; line-height: 22.5px; color: var(--ink); }
 .done .file-line { text-align: start; }
 

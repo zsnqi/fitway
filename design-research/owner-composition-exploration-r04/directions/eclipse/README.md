@@ -197,12 +197,15 @@ the areas). Recommended's middle, 14.3, is above A's 13.0 on the same method.
 is complete at first paint, and something moves only when the data really changes or the owner acts. The first-open
 intro (11 below) reveals the readings inside the still surfaces once per tab, on their first eligible arrival.
 
-The motion lives in the "motion" section of `app.js`, which uses the Web Animations API. The few pieces it needs are
-in the motion section of `style.css`. No glyph ever changes opacity, anywhere:
+Daily's data motion lives in the "motion" section of `app.js`; the interaction motion every Owner page shares (dialogs,
+popovers, a button's label, a dialog that settles, a done state) lives in `motion.js` (12 below), which every page
+loads before its own script. Both use the Web Animations API, and the few pieces they need are in the motion section of
+`style.css`. No glyph ever changes opacity, anywhere:
 - numbers roll inside a clip;
-- words swap at once;
+- a word that replaces a word on a button rolls through its line (12); other words swap at once;
 - the tooltip appears, changes and leaves at once;
-- the rail's names are uncovered, never faded.
+- the rail's names, a dialog's and a popover's words are uncovered by a moving edge, never faded; a done line's words
+  rise into their line.
 
 At rest no inline style, attribute or extra element from the motion remains. The one exception is the live pulse,
 and only while live.
@@ -220,9 +223,16 @@ and only while live.
 | Intro: the answers | a tab's first eligible Daily reading reveal (rule 11) | transform: each answer's value enters its final place from below, inside the digits' ink box (the digit roll) | 400 ms, from the start | `cubic-bezier(0.25, 1, 0.5, 1)` |
 | Intro: the line | the same | `stroke-dasharray` of today's line parts, by minutes since open; one clip uncovers the fine lines under it | 914 ms, from the start | `cubic-bezier(0.3, 0.2, 0.4, 1)` |
 | Intro: the end point and the peak | the same, when the line arrives | SVG transform: the live end point and its halo, and the peak ring, scale from 0.34 to 1; the peak's drop and label appear at once | 257 ms, from 914 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
+| A dialog (from 721 px), every page | opened, closed | clip-path: it unfolds from its title (its bottom edge runs down from the title's line), the panel rises 12 px; closing folds it back into the title's line as it sinks 8 px; the scrim and a copy of the shadow fade | 340 ms open, 220 ms close | `cubic-bezier(0.3, 0.75, 0.2, 1)` open, `cubic-bezier(0.4, 0, 0.2, 1)` close |
+| A bottom sheet (720 px and below) | opened, closed | transform: it slides up from the screen's bottom edge and back down; the scrim fades | 340 ms open, 240 ms close | `cubic-bezier(0.32, 0.72, 0, 1)` open, `cubic-bezier(0.4, 0, 0.2, 1)` close |
+| A dialog's content changes | the export's progress line, its done state, its failure; an alert; a field's message; the code's second step | the panel's edges settle around the new content (three surface pieces, transforms only); the title with the top edge, the actions with the bottom edge, other blocks slide, a new block is uncovered | 300-420 ms by distance | `cubic-bezier(0.3, 0.75, 0.2, 1)` |
+| A popover | the status's details, the phone's menu: opened, closed | clip-path: it unrolls from its control, dropping 6 px; closing rolls it back up; the status's chevron turns with it | 200 ms open, 140 ms close; chevron 180 ms | `cubic-bezier(0.22, 1, 0.36, 1)` open, `cubic-bezier(0.4, 0, 0.2, 1)` close |
+| A button's label | its words change: Working, Try again, Close, Copied | transform: the old label rolls up out of its line, the new one in from below | 280 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
+| The export's done state | the file is ready | the ring draws from its top in the reading direction, then the check; «الملف جاهز» rises into its line; the file line glides from where it stood | ring 380 ms from 140 ms, check 260 ms from 400 ms, words 300 ms from 280 ms | `cubic-bezier(0.65, 0, 0.35, 1)` (the strokes), `cubic-bezier(0.25, 1, 0.5, 1)` (the words) |
+| A done line on the page (Access) | a change succeeded and its dialog left | its words rise into their line, then its check draws; the cards and rows below slide to their new places | from 150 ms: words 300 ms, check 260 ms from 230 ms; blocks 300-420 ms | as above; blocks `cubic-bezier(0.3, 0.75, 0.2, 1)` |
 
 The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
-hover colours of the rail tiles and buttons, the details chevron, and the jump to "View details" are all instant.
+hover colours of the rail tiles and buttons, Daily's details chevron, and the jump to "View details" are all instant.
 
 **1. Load: the first-open intro only.**
 
@@ -460,7 +470,9 @@ Marker choice: `HISTORY.md`, "Motion", rule 6.
 the Motion switch, (Round 7 step 2) the hover speed and (Round 7 step 3) the intro speed and "Replay intro".
 
 **10. Motion off.** Motion is off with `prefers-reduced-motion: reduce`, with `?motion=off`, or with the tuner's
-Motion switch; every change is then instant, and there is no intro. See `HISTORY.md`, "Evidence", for the static guard.
+Motion switch; every change is then instant, and there is no intro. The interaction motion (12) follows the same three
+gates on every page (the tuner's switch on Daily only, where the tuner is). See `HISTORY.md`, "Evidence", for the static
+guard.
 
 **11. The first-open intro.** It is "the first-open intro" part of the motion section in `app.js`.
 Decision: `HISTORY.md`, "Motion", rule 11.
@@ -540,6 +552,58 @@ on an initially ready page.
 - **Tuner:** intro speed (0.5× to 2×) divides every duration; "Replay intro" replays a ready page with a reading.
   See "Light tuner" for the motion gates and no-op states.
 
+**12. Interaction motion (DECISIONS item 36, 2026-10-05).** One shared file, `motion.js` (`window.EclipseMotion`),
+that Daily, Reports, Activity log, Access and the component sheet load before their own script; the screens still to
+come take it the same way. It moves only what the owner's own action changes, with three verbs the pages already used:
+*uncover* (a surface opens from the edge it belongs to and its words are uncovered by the moving edge, as the rail's
+names are), *roll* (a word that replaces a word rolls through its line, as digits do) and *draw* (a done mark draws its
+stroke, as the intro draws the line). Timings are in the table above.
+
+- **A dialog** (MOT-9) unfolds from its title from 721 px and folds back into it; on a phone the sheet slides up from
+  the bottom edge and back down. Pages call `dialogOpen` right after `showModal` and `dialogClose` right before `close`:
+  focus moves into the dialog first (a page whose focus goes to the date picker passes a function), then the panel
+  moves: a focus into a panel still off its place would scroll the dialog and cancel the movement. Focus leaves at once
+  too, and a closing dialog is closed at once while its picture leaves as
+  an inert, unseen copy (`.m-ghost`), which copies no password and keeps a code's box without its text
+  (`data-m-secret`). A dialog closed while it opens, or opened while it closes, continues from where it is.
+- **A label** (BTN-9) rolls when it changes: every button whose words change holds them in one cell (`.rb-stack`), so
+  it keeps its width (the export's button now holds "Export CSV", "Preparing…" and "Try again"; Daily's retry its two),
+  and pages only switch `aria-hidden` on the labels; a MutationObserver in `motion.js` rolls them. «نسخ» becomes «نُسخ»
+  this way, its icon (two sheets, then the check) rolling with its word. When the dialog's panel settles at the same
+  moment (below), its labels change with it at once: one movement per moment.
+- **A dialog whose content changes** (`reflow`) settles its edges around the new content instead of jumping at both
+  edges: its surface is drawn for the movement by three pieces (the rail's technique), the panel's own box starts where
+  its top edge was, the title stays with the top edge and the actions with the bottom edge, blocks that stay slide, a
+  new block is uncovered as the space opens, one that leaves leaves at once. A body that scrolls (a short sheet) changes
+  at once. Used for the export's progress line, done and failure; every alert and field message on submit; the code's
+  second step.
+- **Done** (`done`): the export's done state settles (the file line glides up from where it stood under the calendar),
+  then its ring draws from the top in the reading direction (counter-clockwise in Arabic) and the check from its short
+  stroke to its long one, while «الملف جاهز» rises into its line. Access's done line arrives once its dialog's scrim has
+  mostly gone: its words rise into the line where the change was made, then its check ticks; the cards and rows below
+  slide to their new places (`flip`) instead of jumping. Focus, the words and the announcement are final at once.
+- **A popover** (MOT-12) unrolls from its control and rolls back up; the status's chevron turns with it. One header
+  panel replacing the other closes at once, so the two never overlap while one leaves.
+- **Left instant, by choice:** what the keyboard repeats or the owner does often: the chart's keys (MOT-5 has its own
+  follow), the picker's days and months (PCK-10), a menu's arrows, Tab; Activity's filters and Reports' period; the
+  reason's remaining characters while typing; the records card's new record (the done line, beside the change, is the
+  moment; a second movement at the card would split the eye); Activity's loaded line and its refresh; a breakpoint
+  crossing; hover colours.
+- **The truth:** the done state and the done line play only after the work really finished (the export's file exists,
+  the synthetic answer arrived). Working never moves after its roll: it is no spinner (the skeleton never moves either,
+  MOT-13). A progress line, once shown, stays at least 400 ms, and a file built in less than 300 ms shows none, so the
+  dialog never grows and shrinks again at once.
+- **Off:** reduced motion, `?motion=off` and Daily's tuner switch (`EclipseMotion.setGate`) make every change instant,
+  ending where the movement would; nothing `motion.js` adds stays at rest.
+- **For production** (React, Tailwind, shadcn on Base UI): the dialog's unfold and fold, the sheet, the popovers and
+  the scrim are CSS transitions on `clip-path`, `transform` and `opacity` from `data-starting-style` and to
+  `data-ending-style` (Base UI keeps the popup mounted while it leaves, so no copy is needed there). Three moments need
+  more than a transition: the reflow (a layout animation: Motion's `layout`, or this file's three-piece surface), the
+  label roll (two absolutely placed labels with `AnimatePresence`, or a small hook), and the done mark (SVG
+  `pathLength`, a CSS keyframe would do).
+- **Review:** `EclipseMotion.capture.freeze()` holds every new movement on its first frame, `seek(ms)` moves them and
+  `release()` lets them go; `motion-capture.mjs` uses them for its filmstrips (see "Open and capture").
+
 ## Open and capture
 
 Open `index.html` directly or through an HTTP preview. Fonts load from `fonts/` in either case; the inline script starts
@@ -550,7 +614,16 @@ from PowerShell at the worktree root:
 node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir]
 ```
 
-It serves the folder on `127.0.0.1:3173` and uses a fresh Playwright chromium context per frame. Frames are at
+The interaction motion (Motion, 12) has its own capture, which writes each moment's real-time video, filmstrip and
+reduced-motion comparison into a folder outside the repository and exits 1 on a failed check (its header lists them):
+
+```
+node design-research/owner-composition-exploration-r04/directions/eclipse/motion-capture.mjs <outDir> [--only=1,3] [--lang=ar|en] [--size=d,t,p,z] [--video=0] [--file=0]
+```
+
+It serves the folder on `127.0.0.1:3176`.
+
+`capture.mjs` serves the folder on `127.0.0.1:3173` and uses a fresh Playwright chromium context per frame. Frames are at
 deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "reduce", and the motion part uses
 "no-preference". It writes the frames described in `HISTORY.md`, "Evidence", and `capture-log.json` into `outDir`
 (default `evidence/`), and takes about five minutes. It exits with code 1 if any check below fails.
@@ -776,8 +849,8 @@ day's bars print their values; closed and missing runs are worded. Keyboard and 
 Contrast measurements from the Reports round: `HISTORY.md`, "Reports (run `owner_reports_r04_s10`)", "The table, form and dialog system".
 
 
-**Motion:** no load motion and no intro. The dialog's panel rises 14 px (a phone sheet slides up) in 240 ms on the rail's
-opening easing and leaves in 200 ms on its closing easing; the scrim fades; no glyph changes opacity. The switch's thumb
+**Motion:** no load motion and no intro. A dialog, a popover, a button's label, the export's progress line, failure and
+done state move as every Owner page's do (Motion, 12; DECISIONS item 36); no glyph changes opacity. The switch's thumb
 slides 200 ms. The rail is the Daily page's, unchanged. Under reduced motion or `?motion=off` nothing animates.
 
 **Loading (out of scope on Reports):** a later skeleton must hold the current responsive form: the week

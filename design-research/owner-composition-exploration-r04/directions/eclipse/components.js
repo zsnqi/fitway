@@ -786,7 +786,7 @@
     const idle = `<div class="dlg-panel is-dates">${panelHead(L.exportTitle)}<div class="dlg-body">${pickerHost()}${fileLine()}</div>${panelFoot(`${ico("save")}${L.exportGo}`)}</div>`;
     const working = `<div class="dlg-panel is-dates" aria-busy="true">${panelHead(L.exportTitle)}<div class="dlg-body">${pickerHost("range", true)}${fileLine()}<div class="progress" role="status"><p class="progress-text">${L.working} ${L.progress}</p><span class="progress-bar" aria-hidden="true"><i style="transform:scaleX(.43)"></i></span></div></div>${panelFoot(L.working, "cancel", true)}</div>`;
     const failed = `<div class="dlg-panel is-dates">${panelHead(L.exportTitle)}<div class="dlg-body">${pickerHost()}${fileLine()}<div class="alert" role="alert">${ico("alert")}<p>${L.failed}</p></div></div>${panelFoot(L.retry)}</div>`;
-    const done = `<div class="dlg-panel is-dates">${panelHead(L.exportTitle)}<div class="dlg-body"><div class="done"><span class="done-mark" aria-hidden="true">${ico("check")}</span><p class="done-title">${L.ready}</p>${fileLine()}</div></div>${panelFoot(`${ico("save")}${L.save}`, "primary", false, true)}</div>`;
+    const done = `<div class="dlg-panel is-dates">${panelHead(L.exportTitle)}<div class="dlg-body"><div class="done"><span class="done-mark" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false"><circle class="m-ring" cx="22" cy="22" r="21.5"/><path class="m-check" d="M16.96 22.37l3.3 3.3 6.78-6.97"/></svg></span><p class="done-title">${L.ready}</p>${fileLine()}</div></div>${panelFoot(`${ico("save")}${L.save}`, "primary", false, true)}</div>`;
     const sheet = `<div class="cx-frame"><div class="cx-frame-page" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="cx-scrim"></div>${ready}</div>`;
     return section("dialog", "dialog", "DLG-1…6 · EMP-2 · STA-9 · PCK-1…10", `<div class="cx-grid cx-dialogs" style="--min:360px">
       ${fig(ready, L.dlgStates.ready, "DLG-2 · DLG-3 · PCK-7")}${fig(idle, L.exportIdle, "DLG-3 · PCK-1")}
@@ -808,16 +808,19 @@
       livePicker = window.EclipsePicker.create($("#cx-dlg-picker"), { lang: LANG, min: dn("2026-08-02"), max: dn("2026-09-22"), today: dn("2026-09-23"), maxSpan: 366, value: specimenRange });
       dlg.showModal();
       livePicker.focus();
+      window.EclipseMotion.dialogOpen(dlg);
     });
   }
   function wireDialogOnce() {
     const dlg = $("#cx-dlg"), form = $("#cx-dlg-form");
-    dlg.addEventListener("click", (e) => { if (e.target.closest("[data-close]")) dlg.close(); });
+    const close = () => { window.EclipseMotion.dialogClose(dlg); dlg.close(); };
+    dlg.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
+    dlg.addEventListener("click", (e) => { if (e.target.closest("[data-close]")) close(); });
     dlg.addEventListener("close", () => { if (opener && opener.isConnected) opener.focus(); });
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const v = livePicker.validate();
-      if (v.error || v.empty) livePicker.focus(); else dlg.close();
+      if (v.error || v.empty) livePicker.focus(); else close();
     });
   }
 
@@ -900,8 +903,8 @@
       for (const a of $$("a", box)) a.addEventListener("click", (e) => e.preventDefault());
       let open = null;
       const items = () => $$('[role="menuitem"]', pops.menu);
-      const show = (k, where = "first") => { if (open && open !== k) hide(open, false); open = k; pops[k].hidden = false; btns[k].setAttribute("aria-expanded", "true"); if (k === "menu") { const it = items(); (where === "last" ? it[it.length - 1] : it[0]).focus(); } else pops[k].focus(); };
-      const hide = (k, back) => { if (pops[k].hidden) return; pops[k].hidden = true; btns[k].setAttribute("aria-expanded", "false"); if (open === k) open = null; if (back) btns[k].focus(); };
+      const show = (k, where = "first") => { if (open && open !== k) hide(open, false, true); open = k; pops[k].hidden = false; btns[k].setAttribute("aria-expanded", "true"); if (k === "menu") { const it = items(); (where === "last" ? it[it.length - 1] : it[0]).focus(); } else pops[k].focus(); window.EclipseMotion.popOpen(pops[k]); };
+      const hide = (k, back, instant = false) => { if (pops[k].hidden) return; if (!instant) window.EclipseMotion.popClose(pops[k]); pops[k].hidden = true; btns[k].setAttribute("aria-expanded", "false"); if (open === k) open = null; if (back) btns[k].focus(); };
       for (const k of ["ops", "menu"]) {
         btns[k].addEventListener("click", () => (pops[k].hidden ? show(k) : hide(k, true)));
         pops[k].addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); hide(k, true); } });

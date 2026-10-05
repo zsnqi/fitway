@@ -604,13 +604,15 @@
 
   /* ------------------------------------------------------------ motion settings
    * Reports has no load motion. Motion is on unless the system asks for reduced motion or the URL says ?motion=off;
-   * then every change (the rail, a dialog, the switch) is instant. */
+   * then every change (the rail, a dialog, the switch) is instant. The interaction motion (dialogs, popovers, labels,
+   * the export's done state) is motion.js's, shared by every Owner page (DECISIONS item 36). */
   const URL_OFF = params.get("motion") === "off";
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
   const motionOn = () => !URL_OFF && !mqReduce.matches;
+  const M = window.EclipseMotion;
   root.dataset.motion = motionOn() ? "on" : "off";
   const EASE = { rail: "cubic-bezier(0.22, 1, 0.36, 1)", railClose: "cubic-bezier(0.4, 0, 0.2, 1)" };
-  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12, dlgOpen: 240, dlgClose: 200 };
+  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12 };
   const f2 = (n) => n.toFixed(2);
 
   /* ---------------------------------------------------------------- the range
@@ -764,18 +766,22 @@
   const layers = { ops: { btn: $("#ops-btn"), pop: $("#ops-pop") }, menu: { btn: $("#menu-btn"), pop: $("#menu-pop") } };
   let openLayer = null;
   const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
+  // Each unrolls from its control and rolls back up (motion.js); focus moves at once either way.
   function showLayer(name, focus = "first") {
-    if (openLayer && openLayer !== name) hideLayer(openLayer, false);
+    // One panel replacing another: the old one goes at once, so the two never overlap while one leaves.
+    if (openLayer && openLayer !== name) hideLayer(openLayer, false, true);
     const { btn, pop } = layers[name];
     openLayer = name;
     pop.hidden = false;
     btn.setAttribute("aria-expanded", "true");
     if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
     else pop.focus();
+    M.popOpen(pop);
   }
-  function hideLayer(name, returnFocus) {
+  function hideLayer(name, returnFocus, instant = false) {
     const { btn, pop } = layers[name];
     if (pop.hidden) return;
+    if (!instant) M.popClose(pop);
     pop.hidden = true;
     btn.setAttribute("aria-expanded", "false");
     if (openLayer === name) openLayer = null;
@@ -804,10 +810,11 @@
   document.addEventListener("pointerdown", (e) => {
     if (!openLayer) return;
     const { btn, pop } = layers[openLayer];
-    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false);
+    // A press on the other panel's control replaces this one: it goes at once, so the two never overlap.
+    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false, Object.values(layers).some((l) => l.btn.contains(e.target)));
   });
   // Crossing a breakpoint closes whatever the frame has open.
-  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false); };
+  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false, true); };
   mqTablet.addEventListener("change", onFrameChange);
   mqPhone.addEventListener("change", onFrameChange);
   layers.menu.btn.setAttribute("aria-label", L.more);
@@ -1659,54 +1666,33 @@
   /* ---------------------------------------------------------------- the dialog system
    * One pattern for every dialog: <dialog> opened with showModal (the page behind is inert), a scrim and a panel.
    * Initial focus is chosen per dialog; Tab and Shift+Tab wrap inside the panel; Escape and the scrim close it (Escape
-   * also stops a running export); focus returns to the control that opened it. Opening, the panel rises 14 px (a
-   * bottom sheet on a phone slides up) and the scrim fades; no glyph changes opacity. Instant without motion. */
+   * also stops a running export); focus returns to the control that opened it. The movement is motion.js's (MOT-9):
+   * from 721 px the panel unfolds from its title and folds back; a phone's sheet slides up and back down. Focus moves
+   * into the dialog and back out at once; a closing dialog is closed at once and its picture leaves as an inert copy. */
   let openDlg = null;
-  const dlgRun = { anims: [] };
-  const isSheet = () => matchMedia("(max-width: 720px)").matches;
   const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
     .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length);
-  function finishDlgAnims() { dlgRun.anims.forEach((a) => a.cancel()); dlgRun.anims = []; }
   function openDialog(dlg, opener, first) {
     if (openDlg) closeDialog(openDlg.dlg, true);
     if (railOpen) setRail(false);
     openDlg = { dlg, opener, onClose: dlg._onClose };
     dlg.showModal();
     dlg.classList.add("is-open");
-    finishDlgAnims();
-    if (motionOn()) {
-      const panel = $(".dlg-panel", dlg), scrim = $(".dlg-scrim", dlg);
-      const o = { duration: T.dlgOpen, easing: EASE.rail };
-      dlgRun.anims = [
-        scrim.animate([{ opacity: 0 }, { opacity: 1 }], o),
-        panel.animate(isSheet() ? [{ transform: "translateY(100%)" }, { transform: "none" }] : [{ transform: "translateY(14px)" }, { transform: "none" }], o),
-      ];
-      const run = dlgRun.anims;
-      Promise.all(run.map((a) => a.finished)).then(() => { if (dlgRun.anims === run) finishDlgAnims(); }).catch(() => {});
-    }
-    (first || focusables($(".dlg-panel", dlg))[0]).focus();
+    // Focus moves first, while nothing is moving yet: a focus into a panel still being moved could scroll the dialog
+    // to reach it and cancel the movement out. first may be the element, or a function that moves focus (the picker).
+    if (typeof first === "function") first(); else (first || focusables($(".dlg-panel", dlg))[0]).focus();
+    M.dialogOpen(dlg);
   }
   function closeDialog(dlg, instant = false) {
     if (!openDlg || openDlg.dlg !== dlg) return;
     const { opener, onClose } = openDlg;
     openDlg = null;
+    M.dialogClose(dlg, { instant });
     if (onClose) onClose();
-    finishDlgAnims();
-    const done = () => {
-      finishDlgAnims();
-      dlg.classList.remove("is-open");
-      if (dlg.open) dlg.close();
-      const back = opener && opener.isConnected ? opener : $("#main");
-      back.focus();
-    };
-    if (instant || !motionOn()) { done(); return; }
-    const panel = $(".dlg-panel", dlg), scrim = $(".dlg-scrim", dlg);
-    const o = { duration: T.dlgClose, easing: EASE.railClose, fill: "forwards" };
-    dlgRun.anims = [
-      scrim.animate([{ opacity: 1 }, { opacity: 0 }], o),
-      panel.animate(isSheet() ? [{ transform: "none" }, { transform: "translateY(100%)" }] : [{ transform: "none" }, { transform: "translateY(10px)" }], o),
-    ];
-    Promise.all(dlgRun.anims.map((a) => a.finished)).then(done).catch(done);
+    dlg.classList.remove("is-open");
+    if (dlg.open) dlg.close();
+    const back = opener && opener.isConnected ? opener : $("#main");
+    back.focus();
   }
   $$(".dlg").forEach((dlg) => {
     dlg.addEventListener("cancel", (e) => { e.preventDefault(); closeDialog(dlg); });
@@ -1729,8 +1715,7 @@
   $("#dlg-range-desc").innerHTML = L.rangeDlgDesc(dateText(HIST_START, true), dateText(LAST_FULL, true));
   function openRangeDialog(opener) {
     picker.set({ a: Math.max(HIST_START, range.a), b: Math.min(LAST_FULL, range.b) });
-    openDialog(dlgRange, opener, null);
-    picker.focus();
+    openDialog(dlgRange, opener, () => picker.focus());
   }
   $("#range-form").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1782,6 +1767,17 @@
     el.innerHTML = `${ICON.file}<span class="file-name" dir="ltr">${fileNameHTML(v.a, v.b)}</span><span class="file-rows">${rowsText((v.b - v.a + 1) * 1440)}</span>`;
   }
   function progressHTML() { return `${L.working} ${L.progress(Math.min(ex.progress + 1, ex.total), ex.total)}`; }
+  // The two buttons keep their width whatever they say (BTN-9): each holds its labels in one cell, only the current one
+  // seen and read; a label that changes rolls (motion.js). Export: "Export CSV", "Preparing…", "Try again"; Cancel:
+  // "Cancel", "Done".
+  const labels = (list, i) => `<span class="rb-stack">${list.map((l, k) => `<span class="rb-l"${k === i ? "" : ' aria-hidden="true"'}>${l}</span>`).join("")}</span>`;
+  const showLabel = (btn, i) => btn.querySelectorAll(":scope > .rb-stack > .rb-l").forEach((l, k) => {
+    if (k === i) l.removeAttribute("aria-hidden"); else if (l.getAttribute("aria-hidden") !== "true") l.setAttribute("aria-hidden", "true");
+  });
+  $("#export-go").innerHTML = labels([`${ICON.down2}<span>${L.exportGo}</span>`, L.working, L.retry], 0);
+  $("#export-cancel").innerHTML = labels([L.cancel, L.done], 0);
+  // The done state's mark is drawn (motion.js draws its ring, then its check); its words rise into their line.
+  const DONE_MARK = `<span class="done-mark" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false"><circle class="m-ring" cx="22" cy="22" r="21.5"/><path class="m-check" d="M16.96 22.37l3.3 3.3 6.78-6.97"/></svg></span>`;
   function renderExport() {
     const s = ex.state, foot = $("#export-foot");
     $("#export-edit").hidden = s === "done";
@@ -1799,16 +1795,15 @@
     alert.innerHTML = s === "failed" ? `${ICON.alert}<p>${L.failed}</p>` : "";
     const done = $("#export-done");
     done.hidden = s !== "done";
-    done.innerHTML = s === "done" ? `<span class="done-mark" aria-hidden="true">${ICON.check}</span><p class="done-title">${L.doneTitle}</p>
+    done.innerHTML = s === "done" ? `${DONE_MARK}<p class="done-title"><span class="m-rise">${L.doneTitle}</span></p>
         <p class="file-line">${ICON.file}<span class="file-name" dir="ltr">${fileNameHTML(ex.a, ex.b)}</span><span class="file-rows">${rowsText(ex.rows)}</span></p>` : "";
     // The footer's controls persist and change in place, so focus is never dropped with a replaced button.
     const cancel = $("#export-cancel", foot), go = $("#export-go", foot), save = $("#export-save", foot);
-    cancel.textContent = s === "done" ? L.done : L.cancel;
+    showLabel(cancel, s === "done" ? 1 : 0);
     go.hidden = s === "done";
     go.disabled = s === "working";
     go.setAttribute("aria-busy", String(s === "working"));
-    const goHTML = s === "working" ? `<span>${L.working}</span>` : s === "failed" ? `<span>${L.retry}</span>` : `${ICON.down2}<span>${L.exportGo}</span>`;
-    if (go.innerHTML !== goHTML) go.innerHTML = goHTML;
+    showLabel(go, s === "working" ? 1 : s === "failed" ? 2 : 0);
     save.hidden = s !== "done";
     if (s === "done") {
       save.href = ex.url;
@@ -1835,18 +1830,31 @@
     openDialog(dlgExport, opener, $("#export-go"));
   }
   dlgExport._onClose = () => { if (ex.state === "working") say(L.canceledSay); resetExport(); };
+  // The progress line, once the work has run 300 ms (ex.revealDelay; a review can hold it): the panel settles around it.
+  ex.revealDelay = 300;
+  function revealProgress() {
+    if (ex.state !== "working" || ex.showProgress) return;
+    ex.shownAt = performance.now();
+    M.reflow(dlgExport, () => { ex.showProgress = true; renderExport(); });
+  }
   exportBtn.addEventListener("click", () => openExportDialog(exportBtn));
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   async function runExport(a, b) {
     const run = ++ex.run;
-    Object.assign(ex, { state: "working", a, b, rows: (b - a + 1) * 1440, progress: 0, total: b - a + 1, showProgress: false });
-    renderExport();
+    // A retry's alert steps aside as it starts: the panel settles; otherwise only the label rolls (motion.js).
+    M.reflow(dlgExport, () => {
+      Object.assign(ex, { state: "working", a, b, rows: (b - a + 1) * 1440, progress: 0, total: b - a + 1, showProgress: false });
+      renderExport();
+    });
     // Keep focus inside the panel while the primary button is busy.
     $("#export-foot [data-close]").focus();
     const t0 = performance.now();
-    // The busy state shows at once on the button; the progress line only after 300 ms (Loading behaviour), and a shown
-    // working state stays at least 400 ms in all, so it never flickers.
-    const reveal = setTimeout(() => { if (ex.run === run && ex.state === "working") { ex.showProgress = true; renderExport(); } }, 300);
+    // The busy state shows at once on the button; the progress line only after 300 ms of work (Loading behaviour), and
+    // once shown it stays at least 400 ms (DESIGN_GUIDE §6), so the dialog never grows and shrinks again at once; a
+    // working state stays at least 400 ms in all, so it never flickers. The wait for that minimum is not work: a file
+    // built in less than 300 ms shows no progress line.
+    ex.shownAt = null;
+    const reveal = setTimeout(() => { if (ex.run === run) revealProgress(); }, Math.min(ex.revealDelay, 2e9));
     const parts = ["﻿" + CSV_HEAD + "\r\n"];
     for (let dn = a; dn <= b; dn++) {
       if (ex.run !== run) { clearTimeout(reveal); return; }
@@ -1859,22 +1867,25 @@
       if (ex.hold) await new Promise((r) => { ex.release = r; });
       else if ((dn - a) % 7 === 6) await wait(0);
     }
+    clearTimeout(reveal);
     const spent = performance.now() - t0;
     if (spent < 400) await wait(400 - spent);
-    clearTimeout(reveal);
+    if (ex.shownAt != null) { const shown = performance.now() - ex.shownAt; if (shown < 400) await wait(400 - shown); }
     if (ex.run !== run) return;
     if (ex.failNext) {
       ex.failNext = false;
-      ex.state = "failed";
-      renderExport();
+      M.reflow(dlgExport, () => { ex.state = "failed"; renderExport(); });
       $("#export-go").focus();
       return;
     }
     ex.url = URL.createObjectURL(new Blob(parts, { type: "text/csv;charset=utf-8" }));
-    ex.state = "done";
-    renderExport();
+    // Done: the dialog settles around its result (the file line glides from where it stood), then the mark draws and
+    // the words rise (motion.js). Focus and the announcement come at once.
+    const doneEl = $("#export-done");
+    M.reflow(dlgExport, () => { ex.state = "done"; renderExport(); }, { own: [doneEl], pairs: [[$("#export-file"), () => $(".file-line", doneEl)]] });
     $("#export-save").focus();
     say(L.readySay(plain(L.rows(ex.rows))));
+    M.done(doneEl, { delay: M.T.doneAfterReflow });
   }
   $("#export-form").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1927,6 +1938,10 @@
       set hold(v) { ex.hold = Boolean(v); if (!v && ex.release) { const r = ex.release; ex.release = null; r(); } },
       step() { if (ex.release) { const r = ex.release; ex.release = null; r(); } },
       failNext() { ex.failNext = true; },
+      // For review (motion-capture.mjs): when the progress line may show, and showing it now.
+      set revealDelay(v) { ex.revealDelay = Number(v); },
+      reveal: () => revealProgress(),
+      get run() { return ex.run; },
     },
     showCell: (wd, c) => focusCell(wd, c),
     // Below 1280 px: the weekday the pattern shows, and the day list shown whole.

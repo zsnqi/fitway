@@ -1272,6 +1272,36 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
 [dir="rtl"] .rail-surface { --rs-o: right; }
 [dir="ltr"] .rail-surface { --rs-o: left; }
 
+/* Interaction motion (motion.js, DECISIONS item 36): the few pieces its movements use. Each exists only while its
+ * movement runs; at rest none is in the page.
+ * A button's labels share one cell, so it keeps its width whatever it says (BTN-9); only the current label is seen and
+ * read. While a label rolls, both are seen inside the line's own window, a few pixels taller for Arabic's marks. */
+.rb-stack { display: inline-grid; -webkit-user-select: none; user-select: none; }
+.rb-stack > .rb-l { grid-area: 1 / 1; justify-self: center; display: inline-flex; align-items: center; gap: 8px; }
+.rb-stack > .rb-l[aria-hidden="true"] { visibility: hidden; }
+.rb-stack.m-rolling { clip-path: inset(-3px -12px); }
+.rb-stack.m-rolling > .rb-l.m-roll { visibility: visible !important; }
+/* A shadow that a clip would cut is drawn, while its surface moves, by a copy under it that fades and grows with it. */
+.m-shade { position: absolute; pointer-events: none; }
+.m-noshadow { box-shadow: none !important; }
+/* A closing dialog or popover leaves as an inert copy: the real one is closed at once. */
+.m-ghost { pointer-events: none !important; }
+.dlg.m-ghost-dlg { z-index: 2147483000; }
+/* A dialog whose content changes: its surface is drawn for the movement by three pieces that move with transforms
+ * only (the top with its corners, the middle, the bottom with its corners), over a copy of its shadow. */
+.dlg-panel.m-reflow { background: transparent; border-color: transparent; box-shadow: none; }
+.dlg-panel.m-reflow > .dlg-body { overflow: visible; }
+.m-surface { position: absolute; pointer-events: none; }
+.m-surface > i { position: absolute; left: 0; right: 0; background: var(--m-bg); border: 1px solid var(--m-line); }
+.m-surface > .m-sh { top: 0; bottom: 0; border: 0; background: none; border-radius: var(--m-rt) var(--m-rt) var(--m-rb) var(--m-rb); box-shadow: var(--m-shadow); transform-origin: 50% 0; }
+.m-surface > .m-top { top: 0; height: var(--m-rt); border-bottom: 0; border-radius: var(--m-rt) var(--m-rt) 0 0; }
+.m-surface > .m-mid { top: calc(var(--m-rt) - 1px); height: calc(100% - var(--m-rt) - var(--m-rb) + 2px); border-block: 0; transform-origin: 50% 0; }
+.m-surface > .m-bot { bottom: 0; height: var(--m-rb); border-top: 0; border-bottom-width: var(--m-bb); border-radius: 0 0 var(--m-rb) var(--m-rb); }
+/* Words that rise into their line (a done state): the window is their own box, and they move inside it. */
+.m-rise { display: block; }
+/* The status's chevron turns with its details (BDG-1), on the popover's timing. */
+.hb-chev { transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1); }
+
 /* Live: a calm ping from the line's end point, only while live (never while delayed). One thin ring every 5 s, from
  * inside the end point to just past its halo, at 40% at most. An HTML layer above the chart, so it is composited and
  * never repaints the chart. */

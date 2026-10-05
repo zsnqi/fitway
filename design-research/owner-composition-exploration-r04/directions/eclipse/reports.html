@@ -29,7 +29,9 @@
         .catch(function () { /* Failed faces keep the existing fallback. */ });
     }
   </script>
-  <!-- picker.js: the one date picker every Owner page shares (the custom period's dates). -->
+  <!-- motion.js: the interaction motion every Owner page shares. picker.js: the one date picker every Owner page shares
+       (the custom period's dates). -->
+  <script src="motion.js" defer blocking="render"></script>
   <script src="picker.js" defer blocking="render"></script>
   <script src="reports.js" defer blocking="render"></script>
 </head>

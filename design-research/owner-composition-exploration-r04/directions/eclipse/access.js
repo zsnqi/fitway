@@ -426,7 +426,9 @@
   const motionOn = () => !URL_OFF && !mqReduce.matches;
   root.dataset.motion = motionOn() ? "on" : "off";
   const EASE = { rail: "cubic-bezier(0.22, 1, 0.36, 1)", railClose: "cubic-bezier(0.4, 0, 0.2, 1)" };
-  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12, dlgOpen: 240, dlgClose: 200 };
+  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12 };
+  // The interaction motion (dialogs, popovers, labels, done lines) is motion.js's, every Owner page's (DECISIONS 36).
+  const M = window.EclipseMotion;
   const f2 = (n) => n.toFixed(2);
 
   /* ---------------------------------------------------------------- shell */
@@ -556,18 +558,22 @@
   const layers = { ops: { btn: $("#ops-btn"), pop: $("#ops-pop") }, menu: { btn: $("#menu-btn"), pop: $("#menu-pop") } };
   let openLayer = null;
   const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
+  // Each unrolls from its control and rolls back up (motion.js); focus moves at once either way.
   function showLayer(name, focus = "first") {
-    if (openLayer && openLayer !== name) hideLayer(openLayer, false);
+    // One panel replacing another: the old one goes at once, so the two never overlap while one leaves.
+    if (openLayer && openLayer !== name) hideLayer(openLayer, false, true);
     const { btn, pop } = layers[name];
     openLayer = name;
     pop.hidden = false;
     btn.setAttribute("aria-expanded", "true");
     if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
     else pop.focus();
+    M.popOpen(pop);
   }
-  function hideLayer(name, returnFocus) {
+  function hideLayer(name, returnFocus, instant = false) {
     const { btn, pop } = layers[name];
     if (pop.hidden) return;
+    if (!instant) M.popClose(pop);
     pop.hidden = true;
     btn.setAttribute("aria-expanded", "false");
     if (openLayer === name) openLayer = null;
@@ -596,9 +602,10 @@
   document.addEventListener("pointerdown", (e) => {
     if (!openLayer) return;
     const { btn, pop } = layers[openLayer];
-    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false);
+    // A press on the other panel's control replaces this one: it goes at once, so the two never overlap.
+    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false, Object.values(layers).some((l) => l.btn.contains(e.target)));
   });
-  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false); };
+  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false, true); };
   mqTablet.addEventListener("change", onFrameChange);
   mqPhone.addEventListener("change", onFrameChange);
   layers.menu.btn.setAttribute("aria-label", L.more);
@@ -665,7 +672,7 @@
   const ICON = {
     plus: svg("", '<path d="M12 5.5v13M5.5 12h13"/>'),
     close: svg("", '<path d="M7 7l10 10M17 7 7 17"/>'),
-    check: svg("done-ico", '<path d="M5.5 12.5 10 17l8.5-9.5"/>'),
+    check: svg("done-ico", '<path class="m-check" d="M5.5 12.5 10 17l8.5-9.5"/>'),
     alert: svg("ico", '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/>'),
     // Show and hide a password: the eye, and the eye struck through (it shows a password is visible now).
     eye: svg("pw-ico eye", '<path d="M2.8 12s3.4-6.2 9.2-6.2 9.2 6.2 9.2 6.2-3.4 6.2-9.2 6.2S2.8 12 2.8 12Z"/><circle cx="12" cy="12" r="2.8"/>'),
@@ -685,8 +692,11 @@
   function noticeHTML(at) {
     if (!notice || notice.at !== at) return "";
     if (notice.kind === "alert") return `<div class="alert acc-alert" id="notice" role="alert" tabindex="-1">${ICON.alert}<span>${notice.html}</span></div>`;
-    return `<p class="done" id="notice" tabindex="-1">${ICON.check}<span class="done-t">${notice.html}</span> <a class="done-a" href="${recHref(notice.recordId)}">${L.doneLink}</a></p>`;
+    // Its words sit in one block that rises into the line, the check drawing as it comes (motion.js, the done line).
+    return `<p class="done" id="notice" tabindex="-1"><span class="m-rise">${ICON.check}<span class="done-t">${notice.html}</span> <a class="done-a" href="${recHref(notice.recordId)}">${L.doneLink}</a></span></p>`;
   }
+  // The done line arrives once its dialog has mostly left, where the owner made the change (DECISIONS item 36).
+  const revealDone = (el) => { if (el && el.id === "notice") M.done(el, { line: true, delay: M.T.lineAfterClose }); };
 
   /* ---- the front desk: its name, what it can do, its code's state, and the actions that state allows, under its name.
    * The code itself is never on the page (the server keeps only a hash); a new one is shown once, in its own view. */
@@ -863,55 +873,32 @@
   /* ---------------------------------------------------------------- the dialog system (Reports')
    * showModal (the page behind is inert), a scrim and a panel; a bottom sheet at 720 px and below (DLG-5). Tab wraps;
    * Escape and the scrim close it, except the code's one-time view, which only its two actions close; focus returns to
-   * the control that opened it, or to the change's done sentence. */
-  const dlgRun = { anims: [] };
-  const isSheet = () => mqPhone.matches;
+   * the control that opened it, or to the change's done sentence. The movement is motion.js's (MOT-9): focus moves in
+   * and out at once, and a closing dialog is closed at once while its picture leaves as an inert copy. */
   const panelOf = (dlg) => $$(".dlg-panel", dlg).find((p) => !p.hidden);
   const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
     .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length && x.getAttribute("type") !== "hidden" && !x.classList.contains("acc-user"));
-  function finishDlgAnims() { dlgRun.anims.forEach((a) => a.cancel()); dlgRun.anims = []; }
-  function openDialog(dlg, opener, first, { animate = true } = {}) {
+  function openDialog(dlg, opener, first) {
     if (openDlg) closeDialog(openDlg.dlg, { instant: true, back: null, quiet: true });
     if (railOpen) setRail(false);
     if (openLayer) hideLayer(openLayer, false);
     openDlg = { dlg, opener };
     dlg.showModal();
     dlg.classList.add("is-open");
-    finishDlgAnims();
-    if (animate && motionOn()) {
-      const panel = panelOf(dlg), sc = $(".dlg-scrim", dlg);
-      const o = { duration: T.dlgOpen, easing: EASE.rail };
-      dlgRun.anims = [
-        sc.animate([{ opacity: 0 }, { opacity: 1 }], o),
-        panel.animate(isSheet() ? [{ transform: "translateY(100%)" }, { transform: "none" }] : [{ transform: "translateY(14px)" }, { transform: "none" }], o),
-      ];
-      const run = dlgRun.anims;
-      Promise.all(run.map((a) => a.finished)).then(() => { if (dlgRun.anims === run) finishDlgAnims(); }).catch(() => {});
-    }
     (first || focusables(panelOf(dlg))[0]).focus();
+    M.dialogOpen(dlg);
   }
   function closeDialog(dlg, { instant = false, back = null, quiet = false } = {}) {
     if (!openDlg || openDlg.dlg !== dlg) return;
+    M.dialogClose(dlg, { instant });
     clearPasswords(dlg);
     const { opener } = openDlg;
     openDlg = null;
-    finishDlgAnims();
-    const done = () => {
-      finishDlgAnims();
-      dlg.classList.remove("is-open");
-      if (dlg.open) dlg.close();
-      if (quiet) return;
-      const to = back || (opener && opener.isConnected ? opener : backTo(opener?.dataset?.key, opener?.dataset?.id));
-      (to || $("#main")).focus();
-    };
-    if (instant || !motionOn()) { done(); return; }
-    const panel = panelOf(dlg), sc = $(".dlg-scrim", dlg);
-    const o = { duration: T.dlgClose, easing: EASE.railClose, fill: "forwards" };
-    dlgRun.anims = [
-      sc.animate([{ opacity: 1 }, { opacity: 0 }], o),
-      panel.animate(isSheet() ? [{ transform: "none" }, { transform: "translateY(100%)" }] : [{ transform: "none" }, { transform: "translateY(10px)" }], o),
-    ];
-    Promise.all(dlgRun.anims.map((a) => a.finished)).then(done).catch(done);
+    dlg.classList.remove("is-open");
+    if (dlg.open) dlg.close();
+    if (quiet) return;
+    const to = back || (opener && opener.isConnected ? opener : backTo(opener?.dataset?.key, opener?.dataset?.id));
+    (to || $("#main")).focus();
   }
   const isLocked = (dlg) => dlg.dataset.locked === "true";
   const isBusy = (dlg) => dlg.dataset.busy === "true";
@@ -939,7 +926,7 @@
     return `<div class="field acc-field${pw ? " is-pw" : ""}${code ? " is-code" : ""}" data-field="${id}">
       <label class="field-label" for="${id}">${label}</label>
       <div class="acc-box">
-        <input class="field-input" id="${id}" name="${id}" type="${pw ? "password" : type}"${ltr ? ' dir="ltr"' : ""} autocomplete="${auto}" spellcheck="false" autocapitalize="none"${code ? ' autocorrect="off"' : ""}${max ? ` maxlength="${max}"` : ""}${hint ? ` aria-describedby="${id}-hint"` : ""}>
+        <input class="field-input" id="${id}" name="${id}" type="${pw ? "password" : type}"${code ? " data-m-secret" : ""}${ltr ? ' dir="ltr"' : ""} autocomplete="${auto}" spellcheck="false" autocapitalize="none"${code ? ' autocorrect="off"' : ""}${max ? ` maxlength="${max}"` : ""}${hint ? ` aria-describedby="${id}-hint"` : ""}>
         ${pw ? `<button class="icon-btn pw-eye" type="button" aria-controls="${id}" aria-pressed="false" aria-label="${L.show}">${ICON.eye}${ICON.eyeOff}</button>` : ""}
       </div>
       <p class="field-err" id="${id}-err" hidden></p>
@@ -969,7 +956,7 @@
     `<div class="dlg-panel acc-panel acc-sec-panel" id="pin-view" hidden>
       <header class="dlg-head"><h2 id="pin-view-title" tabindex="-1"></h2></header>
       <div class="dlg-body">
-        <div class="acc-sec" id="pin-secret"></div>
+        <div class="acc-sec" id="pin-secret" data-m-secret></div>
         <p class="field-err acc-copy-fail" id="pin-copy-fail" hidden>${ICON.alert}<span>${L.copyFail}</span></p>
         <p class="acc-sec-note" id="pin-view-note">${ICON.once}<span></span></p>
         <p class="dlg-desc acc-sec-commit" id="pin-view-desc"></p>
@@ -1172,11 +1159,22 @@
     if (FAIL && !failUsed) { failUsed = true; return { fail: true }; }
     return { ok: true };
   }
-  const run = (fn) => { if (HOLD) return; setTimeout(fn, LATENCY); };
+  // An answer comes after the latency; a review may hold it (?hold=1, or __access.hold) and release it when it wants.
+  let held = HOLD, pending = null;
+  const run = (fn) => {
+    pending = fn;
+    if (held) return;
+    setTimeout(() => { if (pending === fn && !held) { pending = null; fn(); } }, LATENCY);
+  };
+  const releaseAnswer = () => { const f = pending; pending = null; if (f) f(); };
   const clearNotice = () => { notice = null; };
+  // A done line that arrives or leaves adds or takes away a line: the cards and rows below slide to their new places
+  // instead of jumping (motion.js, flip), while the line arrives in the space as it opens.
+  const blocks = () => [["desk", deskEl], ["owners", ownersEl], ["records", recEl], ...$$(".prs[data-id]", ownersEl).map((r) => [`row:${r.dataset.id}`, r])];
+  const renderMoving = () => M.flip(blocks, renderCards);
   function finishWithDone(at, html, key) {
     notice = { at, kind: "done", html, recordId: records.list[0].id };
-    renderCards();
+    renderMoving();
     const n = $("#notice");
     return n || backTo(key, at === "desk" ? null : at);
   }
@@ -1205,7 +1203,7 @@
   const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
   function openCode(mode, opener) {
     clearNotice();
-    renderCards();
+    renderMoving();
     codeMode = mode;
     const p = $("#pin-confirm"), desc = $("#pin-confirm-desc");
     clearDialog(p);
@@ -1225,14 +1223,17 @@
     e.preventDefault();
     if (isBusy(D.pin)) return;
     const p = $("#pin-confirm"), f = $("#pin-code");
-    clearDialog(p);
     const v = f.value;
     const err = !v ? L.err.code : !CODE_OK.test(v) ? L.err.codeChars : v.length < CODE_MIN ? L.err.codeShort : "";
-    if (err) { setFieldError(f, err); f.focus(); return; }
-    showPinView(v, codeMode === "create" ? "pinCreate" : "pinChange");
-    // The code leaves its field: from here it lives only in the view, and leaves the page with it.
-    f.value = "";
-    $("#pin-view-title").focus();
+    // The panel settles around a message, or around the view that takes the form's place (motion.js, reflow).
+    M.reflow(D.pin, () => {
+      clearDialog(p);
+      if (err) { setFieldError(f, err); f.focus(); return; }
+      showPinView(v, codeMode === "create" ? "pinCreate" : "pinChange");
+      // The code leaves its field: from here it lives only in the view, and leaves the page with it.
+      f.value = "";
+      $("#pin-view-title").focus();
+    });
   });
   // Arabic-Indic digits typed into the code become Western digits at once (Western digits only, NUM-1).
   $("#pin-code").addEventListener("input", (e) => {
@@ -1241,8 +1242,8 @@
   });
 
   // The copy control's two words share one cell, so it keeps its width: Copy, then Copied with a check.
-  const copyHTML = () => `<button class="rbtn acc-copy" type="button" id="pin-copy" data-state="0">${ICON.copy}${ICON.copied}` +
-    `<span class="rb-stack"><span class="rb-l">${L.copy}</span><span class="rb-l" aria-hidden="true">${L.copied}</span></span></button>`;
+  const copyHTML = () => `<button class="rbtn acc-copy" type="button" id="pin-copy" data-state="0">` +
+    `<span class="rb-stack"><span class="rb-l">${ICON.copy}<span>${L.copy}</span></span><span class="rb-l" aria-hidden="true">${ICON.copied}<span>${L.copied}</span></span></span></button>`;
   function setCopy(state) {
     const b = $("#pin-copy");
     if (!b) return;
@@ -1359,39 +1360,49 @@
     // the view's title, so Continue's Enter cannot submit the next step.
     if (isBusy(D.pin) || !pin) return;
     const after = viewAfter;
-    clearDialog($("#pin-view"));
-    setWorking(D.pin, true);
-    $("#pin-copy")?.setAttribute("aria-disabled", "true");
+    // A failure's alert from a press before steps aside, and the panel settles; otherwise only the label rolls.
+    M.reflow(D.pin, () => {
+      clearDialog($("#pin-view"));
+      setWorking(D.pin, true);
+      $("#pin-copy")?.setAttribute("aria-disabled", "true");
+    });
     run(() => {
       const r = answer(after);
-      setWorking(D.pin, false);
-      $("#pin-copy")?.removeAttribute("aria-disabled");
       if (r.refuse) {
         // The state changed under the view: the code can no longer be used as asked. The view's lock lifts, the copy
         // control and the action step aside, and Close is the way on.
         applyTruth(r.refuse, after);
-        D.pin.dataset.locked = "false";
-        $("#pin-copy")?.remove();
-        // What the view promised ("save it now", what "I've saved it" does) no longer holds: only the refusal stays.
-        $("#pin-view-note").hidden = true;
-        $("#pin-view-desc").hidden = true;
-        labelDialog(D.pin);
-        showAlert(D.pin, L.refuse[r.refuse](after), { moot: true });
+        M.reflow(D.pin, () => {
+          setWorking(D.pin, false);
+          D.pin.dataset.locked = "false";
+          $("#pin-copy")?.remove();
+          // What the view promised ("save it now", what "I've saved it" does) no longer holds: only the refusal stays.
+          $("#pin-view-note").hidden = true;
+          $("#pin-view-desc").hidden = true;
+          labelDialog(D.pin);
+          showAlert(D.pin, L.refuse[r.refuse](after), { moot: true });
+        });
         return;
       }
       // Nothing was changed: the code stays shown, and "I've saved it" again is the retry.
-      if (r.fail) { showAlert(D.pin, L.failed); return; }
+      if (r.fail) {
+        M.reflow(D.pin, () => { setWorking(D.pin, false); $("#pin-copy")?.removeAttribute("aria-disabled"); showAlert(D.pin, L.failed); });
+        return;
+      }
       data.desk.state = "active";
       addRecord(after);
-      dropCode();
       const back = finishWithDone("desk", L.done[after](), after);
+      // The view leaves as it was, saving (its picture keeps no code: data-m-secret); then the code leaves the page.
       closeDialog(D.pin, { back });
+      dropCode();
+      setWorking(D.pin, false);
+      revealDone(back);
     });
   }
   function undoCode() {
     if (isBusy(D.pin) || $("#pin-undo").getAttribute("aria-disabled") === "true") return;
-    dropCode();
     closeDialog(D.pin);
+    dropCode();
   }
   $("#pin-saved").addEventListener("click", onSaved);
   $("#pin-undo").addEventListener("click", undoCode);
@@ -1399,7 +1410,7 @@
 
   function openPinOff(opener) {
     clearNotice();
-    renderCards();
+    renderMoving();
     const p = $("#pinoff");
     clearDialog(p);
     resetFields(p);
@@ -1410,18 +1421,18 @@
     e.preventDefault();
     if (isBusy(D.pinoff)) return;
     const p = $("#pinoff"), reason = $("#pinoff-reason");
-    clearDialog(p);
-    setWorking(D.pinoff, true);
+    M.reflow(D.pinoff, () => { clearDialog(p); setWorking(D.pinoff, true); });
     run(() => {
       const r = answer("pinOff");
-      setWorking(D.pinoff, false);
-      if (r.refuse) { applyTruth(r.refuse, "pinOff"); showAlert(D.pinoff, L.refuse[r.refuse]("pinOff"), { moot: true }); return; }
-      if (r.fail) { showAlert(D.pinoff, L.failed); return; }
+      if (r.refuse) { applyTruth(r.refuse, "pinOff"); M.reflow(D.pinoff, () => { setWorking(D.pinoff, false); showAlert(D.pinoff, L.refuse[r.refuse]("pinOff"), { moot: true }); }); return; }
+      if (r.fail) { M.reflow(D.pinoff, () => { setWorking(D.pinoff, false); showAlert(D.pinoff, L.failed); }); return; }
       data.desk.state = "off";
       addRecord("pinOff", undefined, reason.value.trim());
-      resetFields(p);
       const back = finishWithDone("desk", L.done.pinOff(), "pinOff");
       closeDialog(D.pinoff, { back });
+      resetFields(p);
+      setWorking(D.pinoff, false);
+      revealDone(back);
     });
   });
 
@@ -1430,7 +1441,7 @@
   let target = null;            // the owner a row's dialog is about
   function openAdd(opener) {
     clearNotice();
-    renderCards();
+    renderMoving();
     const p = $("#add");
     clearDialog(p);
     resetFields(p);
@@ -1442,35 +1453,43 @@
     e.preventDefault();
     if (isBusy(D.add)) return;
     const p = $("#add"), name = $("#add-name"), email = $("#add-email"), pw = $("#add-pw");
-    clearDialog(p);
     const bad = [];
-    if (!name.value.trim()) { setFieldError(name, L.err.name); bad.push(name); }
-    if (!email.value.trim()) { setFieldError(email, L.err.email); bad.push(email); }
-    else if (!EMAIL_OK.test(email.value.trim())) { setFieldError(email, L.err.emailBad); bad.push(email); }
-    if (pw.value.length < 12) { setFieldError(pw, L.err.pwShort); bad.push(pw); }
-    $$(".pw-eye", p).forEach((b) => setEye(b, false));
-    if (bad.length) { bad[0].focus(); return; }
+    // The panel settles around its messages (motion.js, reflow); focus goes to the first at once.
+    M.reflow(D.add, () => {
+      clearDialog(p);
+      if (!name.value.trim()) { setFieldError(name, L.err.name); bad.push(name); }
+      if (!email.value.trim()) { setFieldError(email, L.err.email); bad.push(email); }
+      else if (!EMAIL_OK.test(email.value.trim())) { setFieldError(email, L.err.emailBad); bad.push(email); }
+      if (pw.value.length < 12) { setFieldError(pw, L.err.pwShort); bad.push(pw); }
+      $$(".pw-eye", p).forEach((b) => setEye(b, false));
+      if (bad.length) bad[0].focus();
+    });
+    if (bad.length) return;
     setWorking(D.add, true);
     run(() => {
       const r = answer("add", { email: email.value.trim() });
-      setWorking(D.add, false);
       if (r.refuse === "owner_email_taken") {
         const hit = r.hit;
-        setFieldError(email, L.refuse.owner_email_taken("add", hit ? nm(hit) : null, hit && !hit.active));
-        email.focus();
+        M.reflow(D.add, () => {
+          setWorking(D.add, false);
+          setFieldError(email, L.refuse.owner_email_taken("add", hit ? nm(hit) : null, hit && !hit.active));
+          email.focus();
+        });
         return;
       }
-      if (r.refuse) { showAlert(D.add, L.refuse[r.refuse]("add"), { moot: true }); return; }
-      if (r.fail) { showAlert(D.add, L.failed); return; }
+      if (r.refuse) { M.reflow(D.add, () => { setWorking(D.add, false); showAlert(D.add, L.refuse[r.refuse]("add"), { moot: true }); }); return; }
+      if (r.fail) { M.reflow(D.add, () => { setWorking(D.add, false); showAlert(D.add, L.failed); }); return; }
       const id = `n${data.owners.length + 1}`;
       // A display name is trimmed and stored as typed (1-120 characters); an email as typed, trimmed.
       data.owners.push({ id, name: name.value.trim(), email: email.value.trim(), active: true });
       placeNew(id);
       addRecord("add", id);
       const html = L.done.add(nm(ownerOf(id)));
-      resetFields(p);
       const back = finishWithDone(id, html, `reset:${id}`);
       closeDialog(D.add, { back });
+      resetFields(p);
+      setWorking(D.add, false);
+      revealDone(back);
     });
   });
   function openRow(act, id, opener) {
@@ -1478,7 +1497,7 @@
     if (!o) return;
     target = id;
     clearNotice();
-    renderCards();
+    renderMoving();
     const dlg = { reset: D.reset, off: D.off, on: D.on, mine: D.mine }[act];
     const p = panelOf(dlg);
     clearDialog(p);
@@ -1497,29 +1516,34 @@
     p.addEventListener("submit", (e) => {
       e.preventDefault();
       if (isBusy(dlg)) return;
-      clearDialog(p);
-      const firstBad = check(p);
-      $$(".pw-eye", p).forEach((b) => setEye(b, false));
-      if (firstBad) { firstBad.focus(); return; }
+      let firstBad = null;
+      M.reflow(dlg, () => {
+        clearDialog(p);
+        firstBad = check(p);
+        $$(".pw-eye", p).forEach((b) => setEye(b, false));
+        if (firstBad) firstBad.focus();
+      });
+      if (firstBad) return;
       setWorking(dlg, true);
       const id = target;
       run(() => {
         const r = answer(act);
-        setWorking(dlg, false);
         const o = ownerOf(id);
         if (r.refuse && r.refuse in FIELD_REFUSALS) {
           const f = $(`#${FIELD_REFUSALS[r.refuse]}`);
-          setFieldError(f, L.refuse[r.refuse](act, nm(o)));
-          f.focus();
+          M.reflow(dlg, () => { setWorking(dlg, false); setFieldError(f, L.refuse[r.refuse](act, nm(o))); f.focus(); });
           return;
         }
-        if (r.refuse) { applyTruth(r.refuse, act, id); showAlert(dlg, L.refuse[r.refuse](act, nm(o)), { moot: true }); return; }
-        if (r.fail) { showAlert(dlg, L.failed); return; }
+        if (r.refuse) { applyTruth(r.refuse, act, id); M.reflow(dlg, () => { setWorking(dlg, false); showAlert(dlg, L.refuse[r.refuse](act, nm(o)), { moot: true }); }); return; }
+        if (r.fail) { M.reflow(dlg, () => { setWorking(dlg, false); showAlert(dlg, L.failed); }); return; }
         after(o);
         addRecord(act, id, act === "off" ? $("#off-reason").value.trim() : "");
-        resetFields(p);
         const back = finishWithDone(id, L.done[act](nm(o)), `${act === "off" ? "on" : act === "on" ? "reset" : act}:${id}`);
+        // The dialog leaves as it was, working; the done line then arrives on the row the change was made to.
         closeDialog(dlg, { back });
+        resetFields(p);
+        setWorking(dlg, false);
+        revealDone(back);
       });
     });
   }
@@ -1619,5 +1643,8 @@
     get owners() { return ordered().map((o) => ({ id: o.id, active: o.active, me: o.id === ME })); },
     get records() { return { phase: records.phase, ids: records.list.slice(0, REC_N).map((r) => r.id), acts: records.list.slice(0, REC_N).map((r) => r.act) }; },
     arrive, fail, retry,
+    // For review (motion-capture.mjs): hold the next answer, and give it when asked.
+    set hold(v) { held = Boolean(v); },
+    answer: () => releaseAnswer(),
   };
 })();

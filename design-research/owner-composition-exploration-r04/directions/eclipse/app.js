@@ -520,6 +520,10 @@
   })();
   const motionOn = () => opts.motion && !URL_OFF && !mqReduce.matches;
   root.dataset.motion = motionOn() ? "on" : "off";
+  // The interaction motion every Owner page shares (motion.js: the status's details, the phone's menu, a label) follows
+  // the tuner's Motion switch too.
+  const Motion = window.EclipseMotion;
+  Motion.setGate(() => opts.motion);
 
   /* ---------------------------------------------------------------- shell */
   document.title = L.docTitle;
@@ -613,18 +617,22 @@
   };
   let openLayer = null;
   const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
+  // Each unrolls from its control and rolls back up (motion.js); focus moves at once either way.
   function showLayer(name, focus = "first") {
-    if (openLayer && openLayer !== name) hideLayer(openLayer, false);
+    // One panel replacing another: the old one goes at once, so the two never overlap while one leaves.
+    if (openLayer && openLayer !== name) hideLayer(openLayer, false, true);
     const { btn, pop } = layers[name];
     openLayer = name;
     pop.hidden = false;
     btn.setAttribute("aria-expanded", "true");
     if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
     else pop.focus();
+    Motion.popOpen(pop);
   }
-  function hideLayer(name, returnFocus) {
+  function hideLayer(name, returnFocus, instant = false) {
     const { btn, pop } = layers[name];
     if (pop.hidden) return;
+    if (!instant) Motion.popClose(pop);
     pop.hidden = true;
     btn.setAttribute("aria-expanded", "false");
     if (openLayer === name) openLayer = null;
@@ -656,13 +664,14 @@
   document.addEventListener("pointerdown", (e) => {
     if (!openLayer) return;
     const { btn, pop } = layers[openLayer];
-    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false);
+    // A press on the other panel's control replaces this one: it goes at once, so the two never overlap.
+    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false, Object.values(layers).some((l) => l.btn.contains(e.target)));
   });
   // Crossing a breakpoint closes whatever is open, so no layer outlives the frame it belongs to.
   const onFrameChange = () => {
     if (railOpen) setRail(false);
     setRailModal(false);
-    if (openLayer) hideLayer(openLayer, false);
+    if (openLayer) hideLayer(openLayer, false, true);
   };
   mqTablet.addEventListener("change", onFrameChange);
   mqPhone.addEventListener("change", onFrameChange);
@@ -895,7 +904,8 @@
     value.after(box);
     errSay = $("#err-say", box);
     retryBtn = $("#retry", box);
-    retryBtn.textContent = L.retry;
+    // Its two labels share one cell, so it keeps its width while it runs (BTN-9); the new label rolls in (motion.js).
+    retryBtn.innerHTML = `<span class="rb-stack"><span class="rb-l">${L.retry}</span><span class="rb-l" aria-hidden="true">${L.retrying}</span></span>`;
     retryBtn.addEventListener("click", retry);
   }
   // The page's cards as it opens: the payload's values, a closed or unavailable page, or (loading, error) the states'
@@ -3047,6 +3057,12 @@
     say(L.say(occ[M.last], L.levels[levelOf(occ[M.last])], M.entries));
     return true;
   }
+  // The retry's current label: "Try again", or "Trying again…" while it runs (the other is unseen and unread).
+  function retryLabel(trying) {
+    const [idle, busyL] = retryBtn.querySelectorAll(".rb-l");
+    if (trying) { idle.setAttribute("aria-hidden", "true"); busyL.removeAttribute("aria-hidden"); }
+    else { idle.removeAttribute("aria-hidden"); busyL.setAttribute("aria-hidden", "true"); }
+  }
   // Error: the alert is written a moment after its region is in place, so it is announced once; the retry takes focus.
   function showError(focus) {
     if (!retryBtn) errorCards();
@@ -3057,7 +3073,7 @@
     setDetails(false);
     hit.hidden = true;
     busy(false);
-    retryBtn.textContent = L.retry;
+    retryLabel(false);
     retryBtn.removeAttribute("aria-disabled");
     retryBtn.removeAttribute("aria-busy");
     $("#chart-summary").textContent = summary();
@@ -3081,7 +3097,7 @@
     if (phase !== "error") return false;
     setPhase("retrying");
     load.retryAt = performance.now();
-    retryBtn.textContent = L.retrying;
+    retryLabel(true);
     retryBtn.setAttribute("aria-disabled", "true");
     retryBtn.setAttribute("aria-busy", "true");
     busy(true);
