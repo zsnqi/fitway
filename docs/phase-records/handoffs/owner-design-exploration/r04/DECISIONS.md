@@ -362,6 +362,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     Coordinator, applying rules already decided: the records card stays off the phone, which keeps its link (the
     designer's composition); 16 stays the maximum.
 
+35. **A dialog's buttons start where its text starts** (the user, 2026-10-05, «موافق يلا», after two research digests
+    `D:/fitway-temp/owner-r04-dialog-side/REPORT.md` and `REPORT-2.md` and the frames `compare-1440-*.png` there).
+    Every dialog's actions sit at the inline start (the right in Arabic, the left in English), under the title, text
+    and fields they finish, Cancel first and the primary after it, so a destructive primary is not the first thing
+    the eye reaches. This replaces DLG-2's "actions at the inline end, the primary last". Why: the dialogs are text
+    and fields hung on the start edge (form-like); the one measured study (Wroblewski, in-page forms) and GOV.UK,
+    HashiCorp Helios and Fluent's mirroring favour the start; the end's strongest reason is platform habit (Apple,
+    Material). On the phone the two buttons fill the width, unchanged.
+
 ## How this milestone's rounds run
 
 ## How this milestone's rounds run
