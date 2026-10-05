@@ -26,7 +26,10 @@
 
 ## Running now
 
-Nothing. The user asked to stop editing and save (2026-10-05): they are switching accounts.
+A designer (xhigh) on brief `directions/briefs/designer-done-variants.md` (`b38459c` on `owner-followup-r04-build`):
+the export's done moment as variants 1 and 2 beside 0 behind a switch, Access's row after the window closes (O2) as an
+option, and F1. Output `D:/fitway-temp/owner-r04-done-variants/` (its `NOTES.md` if it is cut off; replace, never
+resume). Next after it: a Codex or fixer round on F2, O3, O4, then one verifier-high check.
 
 ## Next steps
 
