@@ -32,9 +32,9 @@ Nothing. The user asked to stop editing and save (2026-10-05): they are switchin
 
 0. **The user's answers are in DECISIONS 38.** Open, waiting on the user: (a) whether Access's «سجل الوصول» card
    should show a new record arriving with motion (the user looks at the live site themselves; no walk-through);
-   (b) the coordinator's two ideas for the export's empty moment (O1), offered at the user's request: the check
-   starts drawing while the window shrinks, or the calendar is cut away by the shrinking edge instead of vanishing
-   first. If the user wants one, a designer draws it beside the current one on the site before it is kept.
+   (b) the export's empty moment (O1): the user wants to see both ideas (DECISIONS 38); a designer (xhigh) builds
+   them as switchable variants beside the current one, then the user picks on the live site. The user asked not to
+   start edits before switching accounts; this is the first build of the next session, with O2 in the same brief.
 1. **Finish the motion round** (rounds item 11): O2 per DECISIONS 38 (a designer, xhigh, small brief), the records
    card's motion if the user wants it; F1, F2, O3, O4 (measurable, no taste) to Codex or a fixer; O1 stays (DECISIONS
    38). One verifier-high check, every error it finds fixed, then republish and show the live site (`eclipse-build`

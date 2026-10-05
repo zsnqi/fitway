@@ -401,8 +401,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 38. **The motion round, after the user tried it** (`0c43c90`, the user on the live site and the frame strips, 2026-10-05):
     - The timings stay: the window's 340 ms opening and about 0.9 s from file ready to the finished check («ممتازة»).
     - The export's check draws on the phone too, as built.
-    - The export's done state stays as built: the window shrinking empty for about a third of a second before the
-      check is liked («اشوفها ممتازة»), so the review's O1 is not fixed.
+    - The export's done state: the user liked it as built («اشوفها ممتازة»), then asked for the coordinator's ideas
+      for its empty third of a second and wants to see both («بنشوف الاثنين»): (1) the check starts drawing while
+      the window shrinks; (2) the calendar is not removed first but cut away by the shrinking bottom edge, then the
+      check. A designer builds both as switchable variants beside the current one on the live site; the user picks.
     - Access's row after a (de)activation (O2): try changing the row only once the window has closed, without a
       noticeable wait («المفروض ما تتأخر جدا»); the user judges whether it is better.
     - Access's «سجل الوصول» card: the user asks how a new record would arrive with motion; show it before building.
