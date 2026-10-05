@@ -374,6 +374,16 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     centred over start-aligned buttons; a status moment is not text that flows from the start, and not everything
     belongs on one edge. Built at `54b2737` (fixer report in `D:/fitway-temp/owner-r04-dialog-start/`).
 
+36. **Interaction motion gets its own round, before the remaining screens** (the user, 2026-10-05: «اتفق معك»).
+    What the user means: motion in chosen moments that raise the design's quality and beauty, not everywhere; for
+    example the check in the export's done state could arrive with a fine animation. The round covers, for every
+    page: a dialog's open and close, a button from its label to Working to done, the done line appearing, popovers,
+    «نسخ» to «نُسخ», a row that changes after a deactivation; reduced motion honoured; the bans on load motion (DO-NOT,
+    MOT-1) still hold. The remaining screens are then built with it. For the move to production (React, Tailwind,
+    shadcn with Base UI already): the coordinator researches which motion library and component sources fit, from
+    what practitioners recommend (Motion is the first candidate; HextaUI and the like only for components that pass
+    RTL), and proposes one (the user: «شوف وش المناسب انت»).
+
 ## How this milestone's rounds run
 
 ## How this milestone's rounds run
