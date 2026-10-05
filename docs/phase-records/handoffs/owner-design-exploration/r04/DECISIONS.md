@@ -408,6 +408,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - Access's row after a (de)activation (O2): try changing the row only once the window has closed, without a
       noticeable wait («المفروض ما تتأخر جدا»); the user judges whether it is better.
     - Access's «سجل الوصول» card: the user asks how a new record would arrive with motion; show it before building.
+      Answered (2026-10-05, «اي يدخل بحركة», on the coordinator's description: the new record appears at the top,
+      the lines below move down to make room, its words rise into place without fading): a new record arrives with
+      motion. Built by a fresh designer after the variants round, in its own small brief.
     - Speak to the user of «النافذة», not «الحوار», and describe a moment step by step as they see it.
 
 ## How this milestone's rounds run
