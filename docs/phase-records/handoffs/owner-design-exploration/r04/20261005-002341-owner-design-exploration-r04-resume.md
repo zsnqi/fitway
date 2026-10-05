@@ -40,6 +40,18 @@ Nothing. Done this session:
 
 The user (2026-10-05): continue with the remaining screens, in a new session started from «كمّل».
 
+0. **First, the user's open question: an interaction-motion round, before or after the remaining screens.** The user
+   (2026-10-05) sees no motion where something responds: dialogs and sheets appearing (export and the like), a save
+   or change completing. Cause: DO-NOT and MOT-1 ban load motion only; interaction motion is allowed
+   (`DESIGN_GUIDE.md` §10, "short, property-specific transitions for hover, focus, press, drawer, and dialog
+   feedback") but never had its own round: only MOT-9's 14 px dialog rise exists, and the rest changes at once.
+   Coordinator's proposal: one designer round (Impeccable's animate) that sets interaction motion for every page
+   (dialog open and close, a button's Working and done, the done line, popovers, «نُسخ», a changed row), reduced motion
+   honoured, before the remaining screens so they inherit it; ask the user before or after. The user asked about
+   https://hextaui.com/ (MIT, a shadcn/ui registry for React and Tailwind, copy-in components; no RTL stated): a
+   reference for feel only in the vanilla concept; at the move to production it fits `packages/ui` (shadcn,
+   `components.json`, Base UI) and `apps/web` (React, Tailwind 4), with Motion (motion.dev) as the coordinator's
+   proposed animation library; any copied component must pass RTL.
 1. **The remaining Owner screens,** one pass each, in this order: Settings, Operations (the header status's
    details), Monitoring. For each (rounds items 6, 8 and 9): a `sonnet-researcher` digest of its contract and open
    questions; all its questions to the user at once in plain words; a skeleton (designer, xhigh) the user agrees;
