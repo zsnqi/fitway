@@ -405,7 +405,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
    user decides. The user sees exact rendered crops, numbered for comparison; the coordinator starts any preview
    itself.
-2. **Agents** follow the table in `CLAUDE.md`; a long-context designer is never resumed.
+2. **Agents** follow the table in `CLAUDE.md`; a long-context designer is never resumed, not even one cut off
+   mid-round (item 10).
 3. **Codex** is GPT-6.1 Sol at the level the task calls for (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation";
    Eclipse defects are `high`), run by the coordinator with `codex exec --approve-for-me`
    (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
@@ -473,3 +474,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    into production code with tests. Coordinator's reading of `codex-rounds.md`: Codex is thorough and honest (it
    measures far more than asked, stops on a missing source, reports a conflict instead of working around it) but
    follows a brief to the letter, so its failures trace mostly to the brief, and it has no eye for composition.
+10. **Rounds sized so a designer's context stays small** (the user, 2026-10-05, «اي مابي المشكلة تتكرر», after the
+    motion designer reached about 584k tokens and was resumed after an API session limit instead of replaced):
+    - **Commit at natural checkpoints**, not after every step: when a working unit is done (the shared file with its
+      first moments, then each group of moments or each page), with a short notes file in the round's temp folder
+      saying what is decided and what is left. A cut-off designer is then replaced by a fresh one that reads the
+      brief, the last commit and the notes, never resumed.
+    - **The designer judges; the full matrix goes elsewhere.** The designer looks at its work at 1440 and 390 in
+      Arabic; English, 768, 200% zoom, `file://` and reduced motion are rendered by Codex or measured by the
+      verifier. Images and videos are what fill a designer's context.
+    - **A large round is split in two:** the foundation first (the shared parts and the first moments or
+      components), then a fresh designer for the per-page work on top of its commit.
+    - The usage limit does not shape the rounds: the user switches accounts when one runs out (the user, 2026-10-05).
