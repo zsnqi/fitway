@@ -52,7 +52,7 @@
     doneWithSettle: { ringEase: EASE.settle, riseAt: 80, checkAt: 200 },  // the done mark with the settling (variant 1)
     lineCheck: 260, lineCheckAt: 80, lineRise: 300,     // a done line on the page
     lineAfterClose: 150,                                // ...which waits until its dialog's scrim has mostly gone
-    lineAfterHold: 100,                                 // ...or, held until the window has gone, until the rows below have mostly made room
+    lineAfterHold: 100,                                 // ...or after a held change, once the rows below mostly made room
   };
 
   /* ---- bookkeeping. Every animation goes through anim(), so a review can freeze them on their first frame and seek
@@ -340,8 +340,8 @@
       else if (Math.abs(m.dx) > 0.5 || Math.abs(m.dy - dTop) > 0.5) anims.push(anim(m.el, [{ transform: `translate(${px(m.dx)}, ${px(m.dy - dTop)})` }, { transform: "translate(0px, 0px)" }], o));
     }
     // The cut: each leaving block's copy sits in the panel where the block was, and its cutting edge has passed all of
-    // it at T.cutBy of the movement (90%), so no sliver of it lingers in the settling's slow end. Every edge and place is linear in the movement's eased progress, so each is one
-    // keyframe pair on the movement's own curve.
+    // it at T.cutBy of the movement (90%), so no sliver of it lingers in the settling's slow end. Every edge and place
+    // is linear in the movement's eased progress, so each is one keyframe pair on the movement's own curve.
     const ghosts = [];
     if (cutPlan) {
       const { D0, D1, riders, still } = cutPlan, E = T.cutBy;
@@ -581,9 +581,10 @@
    * Where the user compares variants of a moment on the live site, the page shows a small switch: a working tool, not
    * part of the design (as the light tuner on Daily): neutral greys, a dashed edge, fixed in the window's bottom
    * inline-end corner (on a phone, at the end of the page, so it never covers the moment it switches), in the page's
-   * language, with one line saying what the chosen variant does. The choice is kept in localStorage (store); ?<param>=<value> chooses for one load without keeping it and
-   * shows no switch, for captures. While motion is off every variant is the first (the page as built) and the switch
-   * is not shown. options: [{ value, label, note }], the first the page as built. */
+   * language, with one line saying what the chosen variant does. The choice is kept in localStorage (store);
+   * ?<param>=<value> chooses for one load without keeping it and shows no switch, for captures. While motion is off
+   * every variant is the first (the page as built) and the switch is not shown. options: [{ value, label, note }], the
+   * first the page as built. */
   function trial({ id, param, store, label, options }) {
     const values = options.map((o) => o.value);
     const q = params.get(param);
