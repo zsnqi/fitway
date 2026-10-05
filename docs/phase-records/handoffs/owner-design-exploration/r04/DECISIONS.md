@@ -370,6 +370,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     and fields hung on the start edge (form-like); the one measured study (Wroblewski, in-page forms) and GOV.UK,
     HashiCorp Helios and Fluent's mirroring favour the start; the end's strongest reason is platform habit (Apple,
     Material). On the phone the two buttons fill the width, unchanged.
+    **A centred moment stays centred** (the user, 2026-10-05): the export's done state keeps its check and «الملف جاهز»
+    centred over start-aligned buttons; a status moment is not text that flows from the start, and not everything
+    belongs on one edge. Built at `54b2737` (fixer report in `D:/fitway-temp/owner-r04-dialog-start/`).
 
 ## How this milestone's rounds run
 

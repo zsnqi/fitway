@@ -21,6 +21,8 @@
 
 ## Running now
 
+Nothing. Done this session:
+
 - Access's fix round is done on `owner-followup-r04-build` at `54b2737`: designer `a0c6c76`, Codex `376c845`
   (held-out 8 of 8, `codex-rounds.md`), builder `4637c53`, fixer `5c2106b` (the review's F1 and F2). Review
   `D:/fitway-temp/owner-r04-access-fix-review/REPORT.md`. Published for the user (all four pages, links wired):
@@ -32,32 +34,26 @@
   visit; fixer notes: a tapped Retry leaves the desk title's ring, OWN-C9's "programmatic focus always shows its
   ring" is stale, `.acc :focus-visible` beats `.rail-item:focus-visible { outline: none }`.
 - Decision 35 (dialog buttons at the inline start, Cancel first) built by a fixer at `54b2737`; republished as
-  version 3 of the same link. Open: the export dialog's done state centres its body while the buttons now sit at the
-  start (fixer's observation; a design call for the last round).
+  version 3 of the same link. The export's centred done state stays as it is (the user; DECISIONS 35).
 
 ## Next steps
 
-1. **Access's fix round, split by kind** (the user, 2026-10-05: design stays with Claude; Codex where the coordinator
-   judges it fits, from its rounds). On `owner-followup-r04-build` (worktree
-   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, HEAD `78e0bdf`), in this order, from DECISIONS 33-34:
-   - **First, a fresh `owner-direction-designer` (xhigh)** builds what is visual: the agreed skeleton on the computer
-     (two halves, buttons under each name, the «سجل الوصول» card); the owner-typed code (letters and digits, a minimum
-     length, copy in the one-time view); the two-step change with «إلغاء التغيير»; the quiet removal box at every size;
-     the row that jumps groups.
-   - **Then Codex (`high`)**, a tracked brief on top of the designer's commit (B1-B10, each item with its intent and
-     its check): the optional reason (240 at most); the sign-out wording «يُسجَّل خروج»; no confirmation on creating a
-     code; Reactivate asks; passwords emptied on close; the done link opening the exact record (an Activity log
-     arrival by id); Deactivate / Reactivate in English on both pages; one's own password change ending other
-     sessions; the review's F1, F2, F5 and the 700 ms silence; the rail and bar links on every page; `ACCESS-SPEC.md`
-     merged as DESIGN-SPEC §4.4; INDEX with `access.js`; every amendment named in the spec. Anything visual it meets is
-     reported, not decided.
-   - Then one `owner-direction-verifier-high` review of both (reading direction included), the coordinator's frames,
-     a republish for the user, and the Codex part graded in `codex-rounds.md`.
-2. **The remaining Owner screens,** one pass each with the skeleton first (rounds items 6 and 8): Settings,
-   Operations (the header status's details), Monitoring. Before each, a `sonnet-researcher` digest of its contract
-   and open questions, then all its questions to the user at once in plain words.
-3. **Daily and Reports' last round:** the «معدّل الموجودين» card redrawn by a designer and shown before Codex builds it
-   (DECISIONS 30); fix-3's open findings (`D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`); the waiting lows.
+The user (2026-10-05): continue with the remaining screens, in a new session started from «كمّل».
+
+1. **The remaining Owner screens,** one pass each, in this order: Settings, Operations (the header status's
+   details), Monitoring. For each (rounds items 6, 8 and 9): a `sonnet-researcher` digest of its contract and open
+   questions; all its questions to the user at once in plain words; a skeleton (designer, xhigh) the user agrees;
+   the one-pass build (designer); Codex for what has no taste in it; one `owner-direction-verifier-high` review;
+   the coordinator's frames; a republish to https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS. Build on
+   `owner-followup-r04-build` (worktree `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, HEAD `54b2737`), or a
+   new worktree cut from it. Codex briefs: read each outcome against the limits before launch and state the purpose
+   of anything an outcome replaces (B8 failed three times in the Access round); give a Codex run the harness's
+   2-hour background limit in mind.
+2. **Daily and Reports' last round:** the user's open artifact comment on Reports' «معدّل الموجودين» card (`#fig-avg`,
+   "البطاقة احسها فارغة و مب متناسقة مع الباقي", 2026-10-05, the second time; DECISIONS 30), redrawn by a designer and
+   shown before it is built; fix-3's open findings (`D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`); the waiting lows.
+   The comment thread is not sent to Claude, so it stays open until the user resolves it.
+3. **Access's last round:** the lows under "Running now".
 
 ## Waiting on the user
 
