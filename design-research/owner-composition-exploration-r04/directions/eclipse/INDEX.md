@@ -296,7 +296,7 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - DESIGN-SPEC.md:503 — DLG-5 — At 720 px and below: a bottom sheet, full width, radius 24 at the top only, no bottom…
 - DESIGN-SPEC.md:504 — DLG-6 — Inset 24, close button side 12, foot gap 8 (measured 16 / 24 / 0 with a 14 side, body…
 - DESIGN-SPEC.md:505 — DLG-7 — A confirmation of a change to someone's access (DLG-2): the title asks it as a…
-- DESIGN-SPEC.md:506 — DLG-8 — A confirmation with a required reason: DLG-7 with FLD-9 under its sentence, focused,…
+- DESIGN-SPEC.md:506 — DLG-8 — A confirmation with an optional reason: DLG-7 with FLD-9 under its sentence, focused,…
 - DESIGN-SPEC.md:507 — DLG-9 — The one-time view of a secret (DECISIONS items 33, 34): role="alertdialog", DLG-1's…
 - DESIGN-SPEC.md:508 — DLG-10 — A refusal the form cannot fix (the state changed under it): the alert (EMP-2) under…
 - DESIGN-SPEC.md:509 — DLG-11 — A secret typed in two steps (DECISIONS item 34): DLG-2's dialog with its title, what…
@@ -909,88 +909,88 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 
 ## activity.js
 
-- activity.js:22 — $ — function constant
-- activity.js:23 — $$ — function constant
-- activity.js:35 — bdi — function constant
-- activity.js:36 — ltr — function constant
-- activity.js:37 — nw — function constant
-- activity.js:209 — fmtInt — function constant
-- activity.js:211 — signed — function constant
-- activity.js:213 — fmtClock — function constant
-- activity.js:217 — timeText — function constant
-- activity.js:219 — range2 — function constant
-- activity.js:226 — toDn — function constant
-- activity.js:227 — isoOf — function constant
-- activity.js:228 — partsOf — function constant
-- activity.js:229 — monthOf — function constant
-- activity.js:230 — dateBare — function constant
-- activity.js:231 — dateText — function constant
-- activity.js:232 — plain — function constant
-- activity.js:258 — R — function constant
-- activity.js:294 — mulberry32 — function
-- activity.js:302 — buildLog — function
-- activity.js:343 — query — function
-- activity.js:360 — parseIso — function constant
-- activity.js:369 — filtered — function constant
-- activity.js:370 — urlFor — function
-- activity.js:384 — motionOn — function constant
-- activity.js:388 — f2 — function constant
-- activity.js:415 — syncUrl — function
-- activity.js:427 — finishRail — function
-- activity.js:437 — animateRail — function
-- activity.js:478 — railFocusables — function constant
-- activity.js:480 — setRailModal — function constant
-- activity.js:493 — setRail — function constant
-- activity.js:513 — menuItems — function constant
-- activity.js:514 — showLayer — function
-- activity.js:523 — hideLayer — function
-- activity.js:556 — onFrameChange — function constant
-- activity.js:593 — renderStatus — function
-- activity.js:612 — say — function constant
-- activity.js:629 — nameOf — function constant
-- activity.js:631 — whoOf — function constant
-- activity.js:632 — actText — function
-- activity.js:649 — name — function constant
-- activity.js:650 — figHTML — function
-- activity.js:658 — whyHTML — function
-- activity.js:663 — recHTML — function
-- activity.js:678 — dayHeading — function
-- activity.js:686 — daysHTML — function
-- activity.js:703 — clockNow — function constant
-- activity.js:704 — loadFirst — function
-- activity.js:735 — rangeLabel — function
-- activity.js:746 — fitSelect — function
-- activity.js:756 — renderControls — function
-- activity.js:777 — renderLoaded — function
-- activity.js:799 — stackLabels — function constant
-- activity.js:800 — endHTML — function
-- activity.js:810 — emptyHTML — function
-- activity.js:816 — ph — function constant
-- activity.js:817 — skeletonHTML — function
-- activity.js:824 — renderList — function
-- activity.js:837 — wireList — function
-- activity.js:849 — fitFigs — function
-- activity.js:855 — renderAll — function
-- activity.js:865 — apply — function
-- activity.js:890 — closeFind — function constant
-- activity.js:899 — commitReason — function constant
-- activity.js:923 — older — function
-- activity.js:963 — refresh — function
-- activity.js:1000 — later — function constant
-- activity.js:1001 — clearTimers — function constant
-- activity.js:1003 — periodSentence — function
-- activity.js:1010 — paintError — function
-- activity.js:1027 — startLoading — function
-- activity.js:1042 — arrive — function
-- activity.js:1063 — fail — function
-- activity.js:1072 — retry — function
-- activity.js:1091 — isSheet — function constant
-- activity.js:1092 — focusables — function constant
-- activity.js:1094 — finishDlgAnims — function
-- activity.js:1095 — openDialog — function
-- activity.js:1114 — closeDialog — function
-- activity.js:1157 — openDatesDialog — function
-- activity.js:1184 — focusArrival — function
+- activity.js:24 — $ — function constant
+- activity.js:25 — $$ — function constant
+- activity.js:37 — bdi — function constant
+- activity.js:38 — ltr — function constant
+- activity.js:39 — nw — function constant
+- activity.js:211 — fmtInt — function constant
+- activity.js:213 — signed — function constant
+- activity.js:215 — fmtClock — function constant
+- activity.js:219 — timeText — function constant
+- activity.js:221 — range2 — function constant
+- activity.js:228 — toDn — function constant
+- activity.js:229 — isoOf — function constant
+- activity.js:230 — partsOf — function constant
+- activity.js:231 — monthOf — function constant
+- activity.js:232 — dateBare — function constant
+- activity.js:233 — dateText — function constant
+- activity.js:234 — plain — function constant
+- activity.js:260 — R — function constant
+- activity.js:296 — mulberry32 — function
+- activity.js:304 — buildLog — function
+- activity.js:345 — query — function
+- activity.js:362 — parseIso — function constant
+- activity.js:371 — filtered — function constant
+- activity.js:372 — urlFor — function
+- activity.js:386 — motionOn — function constant
+- activity.js:390 — f2 — function constant
+- activity.js:417 — syncUrl — function
+- activity.js:429 — finishRail — function
+- activity.js:439 — animateRail — function
+- activity.js:480 — railFocusables — function constant
+- activity.js:482 — setRailModal — function constant
+- activity.js:495 — setRail — function constant
+- activity.js:515 — menuItems — function constant
+- activity.js:516 — showLayer — function
+- activity.js:525 — hideLayer — function
+- activity.js:558 — onFrameChange — function constant
+- activity.js:595 — renderStatus — function
+- activity.js:614 — say — function constant
+- activity.js:631 — nameOf — function constant
+- activity.js:633 — whoOf — function constant
+- activity.js:634 — actText — function
+- activity.js:651 — name — function constant
+- activity.js:652 — figHTML — function
+- activity.js:660 — whyHTML — function
+- activity.js:665 — recHTML — function
+- activity.js:680 — dayHeading — function
+- activity.js:688 — daysHTML — function
+- activity.js:705 — clockNow — function constant
+- activity.js:706 — loadFirst — function
+- activity.js:737 — rangeLabel — function
+- activity.js:748 — fitSelect — function
+- activity.js:758 — renderControls — function
+- activity.js:779 — renderLoaded — function
+- activity.js:801 — stackLabels — function constant
+- activity.js:802 — endHTML — function
+- activity.js:812 — emptyHTML — function
+- activity.js:818 — ph — function constant
+- activity.js:819 — skeletonHTML — function
+- activity.js:826 — renderList — function
+- activity.js:839 — wireList — function
+- activity.js:851 — fitFigs — function
+- activity.js:857 — renderAll — function
+- activity.js:867 — apply — function
+- activity.js:892 — closeFind — function constant
+- activity.js:901 — commitReason — function constant
+- activity.js:925 — older — function
+- activity.js:965 — refresh — function
+- activity.js:1002 — later — function constant
+- activity.js:1003 — clearTimers — function constant
+- activity.js:1005 — periodSentence — function
+- activity.js:1012 — paintError — function
+- activity.js:1029 — startLoading — function
+- activity.js:1044 — arrive — function
+- activity.js:1065 — fail — function
+- activity.js:1074 — retry — function
+- activity.js:1093 — isSheet — function constant
+- activity.js:1094 — focusables — function constant
+- activity.js:1096 — finishDlgAnims — function
+- activity.js:1097 — openDialog — function
+- activity.js:1116 — closeDialog — function
+- activity.js:1159 — openDatesDialog — function
+- activity.js:1186 — focusArrival — function
 
 ## access.js
 

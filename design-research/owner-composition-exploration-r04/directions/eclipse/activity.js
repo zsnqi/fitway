@@ -9,12 +9,14 @@
  * The data follows the owner-only audit read contract (packages/api/src/audit/list.ts) and ADR-008: no one changes the
  * count by hand, so the count's only records are the automatic reset after each closing; access and settings records
  * are written by an owner, named by the actor's displayName (two owner accounts); an optional reason of at most 240
- * characters (required for the two deactivations); a prior count that may be "not recorded" (never 0); gym-local
- * times, newest first, keyset pages of 25 with no total.
+ * characters (the two deactivations' too, DECISIONS item 34); a prior count that may be "not recorded" (never 0);
+ * gym-local times, newest first, keyset pages of 25 with no total.
  * Query: lang=ar|en; kind=count|access|settings; person=o1|o2|system (an owner principal, or the automatic system);
  * from, to=YYYY-MM-DD; reason=<words>; find=1 (the search open); state=loading|error|empty; arrive=<ms>|never (with
  * state=loading); older=fail|hold (the first "Show older" fails, or keeps working); refresh=fail|hold; case=wide (the
- * widest counts the contract allows); ops=delayed|closed|offline (the frame's status, for review); motion=off.
+ * widest counts the contract allows); record=<id> (the record Access's done sentence links to, which the log opens
+ * at; with case=long|short, Access's name-range fixtures); ops=delayed|closed|offline (the frame's status, for review);
+ * motion=off.
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules
  * and no fetch), so the page works from file:// too. */
 (() => {

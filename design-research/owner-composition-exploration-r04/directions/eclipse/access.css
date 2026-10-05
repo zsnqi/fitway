@@ -16,8 +16,8 @@ html:has(> body.acc) {
   scrollbar-gutter: stable;
   scrollbar-color: rgba(245, 243, 242, 0.2) #070707;
 }
-.acc :focus, .acc #main:focus { outline: 2px solid var(--ink); outline-offset: 3px; }
-.acc .fw-mi:focus, .acc .h-status:focus { outline-offset: -4px; }
+.acc :focus-visible, .acc #main:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.acc .fw-mi:focus-visible, .acc .h-status:focus-visible { outline-offset: -4px; }
 .acc {
   --err: #ff6b7d;        /* error text and borders: 6.9:1 on the panel */
   --err-line: rgba(255, 107, 125, 0.5);
@@ -53,12 +53,12 @@ html:has(> body.acc) {
  * here; an owner's in the person row), so a name and what can be done to it are read together. A list's action stands
  * at its head's inline end, centred on the head: "Add owner" on the owners, "View all" on the records. */
 .acc-card { padding: 24px; container: acccard / inline-size; }
-.acc-card:focus { outline: 2px solid var(--ink); outline-offset: 3px; }
+.acc-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .acc-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; }
 #desk .acc-head { row-gap: 12px; }
 .acc-id { flex: 1 1 auto; min-width: 0; }
 .acc-title { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 19px; line-height: 28.5px; font-weight: 500; color: var(--ink); }
-.acc-title:focus, .prs-name:focus { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
+.acc-title:focus-visible, .prs-name:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
 .acc-cap { margin-block-start: 4px; font-size: 13.5px; line-height: 20px; color: var(--ink-3); }
 .acc-cap .sep { margin-inline: 8px; opacity: 1; }
 .acc-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -166,7 +166,7 @@ html:has(> body.acc) {
 .done-a { display: inline-block; margin-inline-start: 12px; padding-block: 12px; margin-block: -12px; line-height: 20px; text-indent: 0; border-radius: 6px; color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(245, 243, 242, 0.42); text-underline-offset: 4px; white-space: nowrap; }
 .done-a:hover { text-decoration-color: var(--ink); }
 .done-a:focus-visible { outline-offset: 0; }
-.done:focus, .acc-alert:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
+.done:focus-visible, .acc-alert:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 /* On the front desk's card it stands under the head; on a row, under the person. */
 .acc-card > .done { margin-block-start: 4px; }
 .acc-card > .acc-alert { width: fit-content; max-width: 100%; margin-block-start: 16px; }
@@ -181,7 +181,7 @@ html:has(> body.acc) {
 .acc .dlg-head { align-items: flex-start; }
 .acc .dlg-x { margin-block-start: -8px; }
 .acc .dlg-head h2 { min-width: 0; overflow-wrap: anywhere; }
-.acc .dlg-head h2:focus { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
+.acc .dlg-head h2:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
 .acc .dlg-desc { margin-block-end: 4px; overflow-wrap: anywhere; }
 .acc-field { margin-block-start: 16px; }
 .acc .dlg-desc + .acc-field { margin-block-start: 16px; }
@@ -267,7 +267,7 @@ html[dir="ltr"] .acc-field.is-pw .field-input { padding-right: 44px; padding-lef
  * name where they will stand beside it, on a line of their own where they will wrap (a phone). */
 .acc .acc-acts.is-ph { min-height: 44px; min-width: 240px; }
 .acc-msg { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; }
-.acc-msg:focus { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
+.acc-msg:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
 .acc-say { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 52ch; margin: 0; font-size: 15px; line-height: 22.5px; color: var(--ink); }
 .acc-say .ico-err { width: 22px; height: 22px; color: var(--err); }
 
