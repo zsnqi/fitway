@@ -45,7 +45,9 @@ The user (2026-10-05): continue with the remaining screens, in a new session sta
    quality, the export's done check as the user's example, the list in item 36) and why, never the motion itself.
    Cause of today's stillness: only MOT-9's 14 px dialog rise exists. Alongside it, a `sonnet-researcher` digest on
    the production motion library and component sources (Motion first; HextaUI and similar for RTL-safe components;
-   what practitioners recommend), for the coordinator's proposal to the user.
+   what practitioners recommend), for the coordinator's proposal to the user. The same digest covers, at the
+   user's request, people's experience with Opus 5.5 for UI animation: the prompts and briefs they use and what
+   produced good motion, so the designer's brief can draw on it (still what and why, never the motion itself).
 1. **The remaining Owner screens,** one pass each, in this order: Settings, Operations (the header status's
    details), Monitoring. For each (rounds items 6, 8 and 9): a `sonnet-researcher` digest of its contract and open
    questions; all its questions to the user at once in plain words; a skeleton (designer, xhigh) the user agrees;
