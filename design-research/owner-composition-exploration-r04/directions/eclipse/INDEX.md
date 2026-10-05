@@ -1046,63 +1046,64 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - access.js:787 — recordHTML — function
 - access.js:794 — recSkeleton — function
 - access.js:798 — recordsHTML — function
-- access.js:814 — addRecord — function
-- access.js:819 — recRetry — function
-- access.js:837 — paintError — function
-- access.js:853 — renderCards — function
-- access.js:862 — renderAll — function
-- access.js:869 — byKey — function constant
-- access.js:870 — backTo — function
-- access.js:879 — panelOf — function constant
-- access.js:880 — focusables — function constant
-- access.js:882 — openDialog — function
-- access.js:892 — closeDialog — function
-- access.js:904 — isLocked — function constant
-- access.js:905 — isBusy — function constant
-- access.js:911 — panelHTML — function
-- access.js:926 — fieldHTML — function
-- access.js:937 — reasonHTML — function constant
-- access.js:999 — labelDialog — function
-- access.js:1013 — syncDescribed — function
-- access.js:1018 — setFieldError — function
-- access.js:1029 — clearDialog — function
-- access.js:1037 — resetFields — function
-- access.js:1042 — clearPasswords — function
-- access.js:1047 — setLabels — function constant
-- access.js:1053 — setWorking — function
-- access.js:1065 — showAlert — function
-- access.js:1080 — setEye — function
-- access.js:1154 — answer — function
-- access.js:1165 — run — function constant
-- access.js:1170 — releaseAnswer — function constant
-- access.js:1171 — clearNotice — function constant
-- access.js:1174 — blocks — function constant
-- access.js:1175 — renderMoving — function constant
-- access.js:1188 — closeTime — function constant
-- access.js:1189 — finishWithDone — function
-- access.js:1196 — applyTruth — function
-- access.js:1217 — toWestern — function constant
-- access.js:1218 — openCode — function
-- access.js:1259 — copyHTML — function constant
-- access.js:1261 — setCopy — function
-- access.js:1267 — showPinView — function
-- access.js:1296 — fitCode — function
-- access.js:1323 — copyCode — function
-- access.js:1349 — dropCode — function
-- access.js:1364 — onSaved — function
-- access.js:1372 — savedPin — function
-- access.js:1416 — undoCode — function
-- access.js:1425 — openPinOff — function
-- access.js:1456 — openAdd — function
-- access.js:1509 — openRow — function
-- access.js:1528 — rowSubmit — function
-- access.js:1566 — needPw — function constant
-- access.js:1600 — later — function constant
-- access.js:1601 — clearTimers — function constant
-- access.js:1602 — startLoading — function
-- access.js:1613 — arrive — function
-- access.js:1627 — fail — function
-- access.js:1636 — retry — function
+- access.js:816 — paintRecords — function
+- access.js:824 — addRecord — function
+- access.js:829 — recRetry — function
+- access.js:847 — paintError — function
+- access.js:863 — renderCards — function
+- access.js:872 — renderAll — function
+- access.js:879 — byKey — function constant
+- access.js:880 — backTo — function
+- access.js:889 — panelOf — function constant
+- access.js:890 — focusables — function constant
+- access.js:892 — openDialog — function
+- access.js:902 — closeDialog — function
+- access.js:914 — isLocked — function constant
+- access.js:915 — isBusy — function constant
+- access.js:921 — panelHTML — function
+- access.js:936 — fieldHTML — function
+- access.js:947 — reasonHTML — function constant
+- access.js:1009 — labelDialog — function
+- access.js:1023 — syncDescribed — function
+- access.js:1028 — setFieldError — function
+- access.js:1039 — clearDialog — function
+- access.js:1047 — resetFields — function
+- access.js:1052 — clearPasswords — function
+- access.js:1057 — setLabels — function constant
+- access.js:1063 — setWorking — function
+- access.js:1075 — showAlert — function
+- access.js:1090 — setEye — function
+- access.js:1164 — answer — function
+- access.js:1175 — run — function constant
+- access.js:1180 — releaseAnswer — function constant
+- access.js:1181 — clearNotice — function constant
+- access.js:1186 — blocks — function constant
+- access.js:1189 — renderMoving — function constant
+- access.js:1202 — closeTime — function constant
+- access.js:1203 — finishWithDone — function
+- access.js:1210 — applyTruth — function
+- access.js:1231 — toWestern — function constant
+- access.js:1232 — openCode — function
+- access.js:1273 — copyHTML — function constant
+- access.js:1275 — setCopy — function
+- access.js:1281 — showPinView — function
+- access.js:1310 — fitCode — function
+- access.js:1337 — copyCode — function
+- access.js:1363 — dropCode — function
+- access.js:1378 — onSaved — function
+- access.js:1386 — savedPin — function
+- access.js:1430 — undoCode — function
+- access.js:1439 — openPinOff — function
+- access.js:1470 — openAdd — function
+- access.js:1523 — openRow — function
+- access.js:1542 — rowSubmit — function
+- access.js:1580 — needPw — function constant
+- access.js:1614 — later — function constant
+- access.js:1615 — clearTimers — function constant
+- access.js:1616 — startLoading — function
+- access.js:1627 — arrive — function
+- access.js:1641 — fail — function
+- access.js:1650 — retry — function
 
 ## picker.js
 

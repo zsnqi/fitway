@@ -810,7 +810,17 @@
     if (!records.list.length) return `${head}<p class="rec-none">${L.recEmpty}</p>`;
     return `${head}<ol class="rec-list">${records.list.slice(0, REC_N).map(recordHTML).join("")}</ol>`;
   }
-  // A change made here writes its record: it tops the card at once, as the log has it (today, now, by the signed-in owner).
+  // The card is drawn again only when what it shows changed, so a record still arriving (motion.js, flip's list) goes on
+  // arriving while another action opens its window.
+  let recShown = null;
+  function paintRecords() {
+    const html = recordsHTML();
+    if (html === recShown && recEl.firstChild) return;
+    recEl.innerHTML = html;
+    recShown = html;
+  }
+  // A change made here writes its record: it tops the card at once, as the log has it (today, now, by the signed-in
+  // owner), and arrives there with the change's done line (renderMoving's list).
   function addRecord(act, target, reason = "") {
     // Activity log reserves these two ids for Omar's older sample records.
     while ([1001, 1002].includes(nextRecordId)) nextRecordId++;
@@ -819,13 +829,13 @@
   function recRetry() {
     if (records.phase !== "error") return;
     records.phase = "retrying";
-    recEl.innerHTML = recordsHTML();
+    paintRecords();
     $("#rec-retry").focus();
     setTimeout(() => {
       records.phase = "ready";
       records.list = loadedRecords();
       const hadFocus = document.activeElement?.id === "rec-retry";
-      recEl.innerHTML = recordsHTML();
+      paintRecords();
       if (hadFocus) $("#rec-title").focus({ preventScroll: true });
     }, LOAD.retry);
   }
@@ -856,7 +866,7 @@
     gridEl.hidden = false;
     deskEl.innerHTML = deskHTML();
     ownersEl.innerHTML = ownersHTML();
-    recEl.innerHTML = recordsHTML();
+    paintRecords();
     for (const el of [deskEl, ownersEl, recEl]) el.toggleAttribute("aria-busy", phase === "loading");
   }
   function renderAll() {
@@ -1170,14 +1180,18 @@
   const releaseAnswer = () => { const f = pending; pending = null; if (f) f(); };
   const clearNotice = () => { notice = null; };
   // A done line that arrives or leaves adds or takes away a line: the cards and rows below slide to their new places
-  // instead of jumping (motion.js, flip), while the line arrives in the space as it opens.
+  // instead of jumping (motion.js, flip), while the line arrives in the space as it opens. The change's record arrives
+  // in the same movement (flip's list, DECISIONS item 38): the records below slide down, the new one is uncovered and its
+  // words rise as the done line's do, and the oldest of the eight leaves under the card's bottom edge.
   const blocks = () => [["desk", deskEl], ["owners", ownersEl], ["records", recEl], ...$$(".prs[data-id]", ownersEl).map((r) => [`row:${r.dataset.id}`, r])];
-  const renderMoving = (opts) => M.flip(blocks, renderCards, opts);
+  const recList = { box: recEl, rows: () => $$(".rec-list > .rec-row:not(.is-ph)", recEl).map((li) => [li.querySelector(".rec-a").dataset.record, li]),
+    words: ".rec-txt, .rec-go", empty: ".rec-none" };
+  const renderMoving = (opts) => M.flip(blocks, renderCards, { ...opts, list: recList });
   // For review (DECISIONS item 38): after a deactivation or a reactivation, the row changes under the leaving window as
   // built (0), or only once the window has gone (1): the change is made at once (focus and the announcement come at
-  // once), but the owners and records cards keep their picture until the window's close has ended (motion.js, flip's
-  // hold), then the row changes, its done line arrives and the rows below slide. A tool, not the design (motion.js,
-  // trial); ?row=0|1 for captures.
+  // once), but the owners card keeps its picture until the window's close has ended (motion.js, flip's hold), and the
+  // records card its own (its record's movement waits as long), then the row changes, its done line and its record
+  // arrive and the rows below slide. A tool, not the design (motion.js, trial); ?row=0|1 for captures.
   const rowTrial = M.trial({ id: "trial-row", param: "row", store: "fitway.eclipse.v3.trial.access-row",
     label: RTL ? "تغيّر الصف" : "Row change",
     options: [
@@ -1188,7 +1202,7 @@
   const closeTime = () => (M.on() ? (matchMedia("(max-width: 720px)").matches ? M.T.sheetOut : M.T.dlgOut) : 0);
   function finishWithDone(at, html, key, held = 0) {
     notice = { at, kind: "done", html, recordId: records.list[0].id };
-    renderMoving(held ? { wait: held, hold: [ownersEl, recEl] } : undefined);
+    renderMoving(held ? { wait: held, hold: [ownersEl] } : undefined);
     const n = $("#notice");
     return n || backTo(key, at === "desk" ? null : at);
   }
