@@ -119,7 +119,7 @@ html:has(> body.ac) {
 /* Focus that the page moves (the first record that "Show older" brought, or after a retry the first record or the empty
  * sentence) always shows its ring (the review's F2): FOC-2's inset ring, 2 px chalk, 4 px inside the row, so it keeps
  * 8 px from the row's words. */
-.ac .rec:focus, .ac .ac-empty p:focus { outline: 2px solid var(--ink); outline-offset: -4px; border-radius: 12px; }
+.ac .rec:focus, .ac .rec.is-arrival, .ac .ac-empty p:focus { outline: 2px solid var(--ink); outline-offset: -4px; border-radius: 12px; }
 .ac .ac-empty p:focus { outline-offset: 4px; border-radius: 8px; }
 .ac-body ol { margin: 0; padding: 0; list-style: none; }
 /* A day: its heading in label type at 500, the relative word chalk and the date --ink-2; more space above it than
@@ -133,7 +133,9 @@ html:has(> body.ac) {
  * 500, its figures in chalk, the other cells --ink-2), each cell's first line 20 px, so every line of a row shares
  * one baseline. */
 .rec { display: grid; padding: 14px 12px; border-block-start: 1px solid rgba(255, 255, 255, 0.055); font-size: 13.5px; line-height: 20px; align-items: start; }
-.rec:focus { background: rgba(255, 255, 255, 0.04); }
+.rec:focus, .rec.is-arrival { background: rgba(255, 255, 255, 0.04); }
+.ac-arrival-note { margin: 14px 12px; color: var(--ink-2); font-size: 13.5px; line-height: 20px; }
+.ac-arrival-note:focus { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 8px; }
 @media (hover: hover) { .rec:not(.is-ph):hover { background: rgba(255, 255, 255, 0.04); } }
 .rec-t { color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .rec-who { color: var(--ink-2); min-width: 0; }

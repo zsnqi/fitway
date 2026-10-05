@@ -3,7 +3,7 @@
  * owner accounts (full access), and from 721 px, beside them, the latest access records with the way to all of them in
  * Activity log (DECISIONS item 34, the skeleton). Every change sits on the row it changes, its buttons under its name;
  * a row keeps its place after a change until the page loads again, so the done sentence stands where the owner acted.
- * The two removals (deactivating the code or an owner) ask for a reason (at most 240 characters, what the log stores).
+ * The two removals offer an optional reason (at most 240 characters, what the log stores).
  * The owner types the front desk's code (8 to 16 English letters or digits; no generator, no weak-code rule), and it
  * changes in two steps: the code typed, then its one-time view with a copy control, where the old code keeps working;
  * only "I've saved it" makes the new one take effect and signs the front desk out, and "Cancel change" leaves the old
@@ -11,7 +11,7 @@
  * Activity log, and the change's record tops the records card; a refusal says exactly what happened and keeps the form
  * as typed. Complete at first paint: no intro, no rolling digits (item 4). Nothing is lit (LGT-6 allows none): the page
  * holds who can get in, not a reading.
- * The data follows the owner access contract (packages/api/src/access/contracts.ts) with the amendments ACCESS-SPEC.md
+ * The data follows the owner access contract (packages/api/src/access/contracts.ts) with the amendments DESIGN-SPEC.md §4.4
  * names: one shared front-desk principal (its code never set, active or deactivated; typed by an owner, shown once,
  * never readable again), and owner principals (a display name stored once, shown the same in both languages; an email;
  * active or not). The signed-in owner is the session's principal (admin.session), so the page marks their row without
@@ -23,7 +23,7 @@
  * longest name and email the contract allows, or short ones); records=none|error (no access record yet; the records
  * could not be loaded); refuse=<code> (the first action that can return that refusal returns it); fail=1 (the first
  * action fails); hold=1 (an action keeps working); ops=delayed|closed|offline (the frame's status, for review);
- * motion=off.
+ * motion=off; refuse=unauthorized simulates a 401 when the owner's session ended elsewhere.
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules
  * and no fetch), so the page works from file:// too. */
 (() => {
@@ -80,7 +80,7 @@
         add: (n) => `إنشاء حساب ${n}`,
         off: (n) => `تعطيل حساب ${n}`,
         on: (n) => `إعادة تفعيل حساب ${n}`,
-        reset: (n) => `إعادة تعيين بيانات دخول ${n}`,
+        reset: (n) => `إعادة تعيين كلمة مرور ${n}`,
         mine: (n) => `تغيير كلمة مرور ${n}`,
       },
       // The front desk: one shared principal; its code is its only way in.
@@ -114,7 +114,7 @@
       next: "متابعة",
       changing: "جارٍ التغيير…",
       pinOffTitle: "تعطيل رمز مكتب الاستقبال؟",
-      pinOffDesc: "ينتهي دخول مكتب الاستقبال فورًا، ولا يعمل الرمز بعدها.",
+      pinOffDesc: "يُسجَّل خروج مكتب الاستقبال فورًا، ولا يعمل الرمز بعدها.",
       offing: "جارٍ التعطيل…",
       viewTitle: "الرمز الجديد لمكتب الاستقبال",
       viewNote: "احفظ الرمز الآن، فلن يظهر مرة أخرى.",
@@ -143,17 +143,17 @@
       adding: "جارٍ الإضافة…",
       resetTitle: (n) => `كلمة مرور جديدة لحساب ${n}`,
       // The title names the person; the sentence says what happens to the account, so a long name is never said twice.
-      resetDesc: () => "ينتهي دخول الحساب فورًا، ولا تعمل كلمة المرور السابقة.",
+      resetDesc: () => "يُسجَّل خروج الحساب فورًا، ولا تعمل كلمة المرور السابقة.",
       resetDo: "حفظ كلمة المرور",
       saving: "جارٍ الحفظ…",
       offTitle: (n) => `تعطيل حساب ${n}؟`,
-      offDesc: () => "ينتهي دخول الحساب فورًا، ولا يعمل حتى يُعاد تفعيله.",
+      offDesc: () => "يُسجَّل خروج الحساب فورًا، ولا يعمل حتى يُعاد تفعيله.",
       onTitle: (n) => `إعادة تفعيل حساب ${n}؟`,
       onDesc: "يعود الحساب للعمل فورًا بكلمة المرور السابقة.",
       oning: "جارٍ التفعيل…",
       mineTitle: "تغيير كلمة المرور",
-      mineDesc: "ينتهي دخولك على أجهزتك الأخرى، ويبقى على هذا الجهاز.",
-      reason: "سبب التعطيل",
+      mineDesc: "يُسجَّل خروجك من أجهزتك الأخرى، وتبقى مسجّلًا على هذا الجهاز.",
+      reason: "السبب (اختياري)",
       // The reason's remaining characters, from 200 typed (the log keeps 240).
       left: (n) => (n === 0 ? "لم يبق أي حرف" : n === 1 ? "بقي حرف واحد" : n === 2 ? "بقي حرفان" : n <= 10 ? `بقيت ${n} أحرف` : `بقي ${n} حرفًا`),
       err: {
@@ -162,7 +162,6 @@
         emailBad: `اكتب بريدًا إلكترونيًا صحيحًا، مثل ${bdi("name@example.com")}`,
         pwShort: "اكتب 12 حرفًا على الأقل",
         current: "اكتب كلمة المرور الحالية",
-        reason: "اكتب سبب التعطيل",
         code: "اكتب الرمز",
         codeShort: "اكتب 8 أحرف أو أرقام على الأقل",
         codeChars: "استخدم حروفًا إنجليزية وأرقامًا فقط",
@@ -178,7 +177,7 @@
         owner_already_active: () => "هذا الحساب مفعّل بالفعل.",
         owner_email_taken: (a, n, off) => (n ? (off ? `هذا البريد لحساب ${n} المعطّل. أعد تفعيله بدل إضافة حساب جديد.` : `هذا البريد لحساب ${n}.`) : "هذا البريد مستخدم في حساب مالك آخر."),
         not_an_owner: () => "هذا الحساب ليس حساب مالك، فلا يُطبّق عليه هذا الإجراء.",
-        reason_required: () => "اكتب سبب التعطيل قبل التأكيد.",
+        unauthorized: () => "سُجّل خروجك. سجّل الدخول مجددًا للمتابعة.",
         // An amendment beyond the contract ("Change my password"): its one refusal.
         current_password_incorrect: () => "كلمة المرور الحالية غير صحيحة.",
       },
@@ -241,7 +240,7 @@
         add: (n) => `Account created for ${n}`,
         off: (n) => `Account deactivated for ${n}`,
         on: (n) => `Account reactivated for ${n}`,
-        reset: (n) => `Sign-in details reset for ${n}`,
+        reset: (n) => `Password reset for ${n}`,
         mine: (n) => `Password changed by ${n}`,
       },
       desk: "Front desk",
@@ -306,7 +305,7 @@
       oning: "Reactivating…",
       mineTitle: "Change your password",
       mineDesc: "You're signed out on your other devices; this one stays signed in.",
-      reason: "Reason",
+      reason: "Reason (optional)",
       left: (n) => (n === 0 ? "No characters left" : n === 1 ? "1 character left" : `${n} characters left`),
       err: {
         name: "Enter a name",
@@ -314,7 +313,6 @@
         emailBad: "Enter an email address like name@example.com",
         pwShort: "Use at least 12 characters",
         current: "Enter your current password",
-        reason: "Enter the reason",
         code: "Enter the code",
         codeShort: "Use at least 8 letters or digits",
         codeChars: "Use only English letters and digits",
@@ -327,8 +325,8 @@
         owner_already_inactive: (a) => (a === "reset" ? "This account is deactivated. Reactivate it first, then set the password." : "This account is already deactivated."),
         owner_already_active: () => "This account is already active.",
         owner_email_taken: (a, n, off) => (n ? (off ? `This email belongs to the deactivated account for ${n}. Reactivate it instead of adding a new one.` : `This email belongs to the account for ${n}.`) : "Another owner account already uses this email."),
-        not_an_owner: () => "This isn't an owner account, so this can't be applied to it.",
-        reason_required: () => "Enter the reason before you confirm.",
+        not_an_owner: () => "This account isn't an owner account. Only owner accounts can be changed here.",
+        unauthorized: () => "You've been signed out. Sign in again to continue.",
         current_password_incorrect: () => "That isn't your current password.",
       },
       failed: "Couldn't make the change. Nothing was changed.",
@@ -340,7 +338,7 @@
         off: (n) => `Account deactivated for ${n}.`,
         on: (n) => `Account reactivated for ${n}.`,
         reset: (n) => `Password reset for ${n}.`,
-        mine: () => "Your password is changed.",
+        mine: () => "Your password was changed.",
       },
       doneLink: "View in Activity log",
       errorWord: "Error",
@@ -416,7 +414,7 @@
   // was last deactivated (21 September), not created again.
   const loadedRecords = () => RECORDS0.filter((r) => (data.desk.state === "none" ? !r.act.startsWith("pin") : data.desk.state === "off" ? r.id !== 54 : true));
   const records = { phase: RECORDS_MODE === "error" ? "error" : "ready", list: RECORDS_MODE === "none" ? [] : loadedRecords() };
-  let nextRecordId = 57;                       // after the log's last record (activity.js numbers 56)
+  let nextRecordId = 57;                       // after the original sample's 1-56; reserved historical ids are skipped
   // A stored name, isolated so it keeps its own direction in either language; an email, left to right, breakable only
   // after its "@" and dots (and anywhere, as a last resort, for the longest the contract allows).
   const nm = (o) => bdi(esc(o.name));
@@ -687,7 +685,7 @@
   function noticeHTML(at) {
     if (!notice || notice.at !== at) return "";
     if (notice.kind === "alert") return `<div class="alert acc-alert" id="notice" role="alert" tabindex="-1">${ICON.alert}<span>${notice.html}</span></div>`;
-    return `<p class="done" id="notice" tabindex="-1">${ICON.check}<span class="done-t">${notice.html}</span> <a class="done-a" href="${LOG_HREF}">${L.doneLink}</a></p>`;
+    return `<p class="done" id="notice" tabindex="-1">${ICON.check}<span class="done-t">${notice.html}</span> <a class="done-a" href="${recHref(notice.recordId)}">${L.doneLink}</a></p>`;
   }
 
   /* ---- the front desk: its name, what it can do, its code's state, and the actions that state allows, under its name.
@@ -769,7 +767,12 @@
     return nw(`${bdi(day)} ${L.months[m]}${y !== 2026 ? ` ${bdi(y)}` : ""}`);
   }
   const nameIn = (id) => esc(ownerOf(id)?.name ?? LOG_NAMES[id] ?? "");
-  const recHref = (id) => `activity.html?kind=access&record=${id}&${keep}`;
+  const recHref = (id) => {
+    const p = new URLSearchParams(keep);
+    // Name-range review fixtures must describe the same stored names on both sides of this link.
+    if (["long", "short"].includes(params.get("case"))) p.set("case", params.get("case"));
+    return `activity.html?kind=access&record=${id}&${p}`;
+  };
   function recordHTML(r) {
     const what = L.rec[r.act](r.target ? bdi(nameIn(r.target)) : bdi(nameIn(r.by)));
     return `<li class="rec-row"><a class="rec-a" href="${recHref(r.id)}" data-record="${r.id}">` +
@@ -797,8 +800,10 @@
     return `${head}<ol class="rec-list">${records.list.slice(0, REC_N).map(recordHTML).join("")}</ol>`;
   }
   // A change made here writes its record: it tops the card at once, as the log has it (today, now, by the signed-in owner).
-  function addRecord(act, target) {
-    records.list.unshift({ id: nextRecordId++, date: "2026-09-23", mins: NOW_MIN, by: ME, act, target });
+  function addRecord(act, target, reason = "") {
+    // Activity log reserves these two ids for Omar's older sample records.
+    while ([1001, 1002].includes(nextRecordId)) nextRecordId++;
+    records.list.unshift({ id: nextRecordId++, date: "2026-09-23", mins: NOW_MIN, by: ME, act, target, reason: reason || null });
   }
   function recRetry() {
     if (records.phase !== "error") return;
@@ -887,6 +892,7 @@
   }
   function closeDialog(dlg, { instant = false, back = null, quiet = false } = {}) {
     if (!openDlg || openDlg.dlg !== dlg) return;
+    clearPasswords(dlg);
     const { opener } = openDlg;
     openDlg = null;
     finishDlgAnims();
@@ -1045,6 +1051,10 @@
     $$(".acc-left", panel).forEach((l) => { l.hidden = true; l.textContent = ""; });
     $$("input.field-input, textarea", panel).forEach((i) => { i.value = ""; i.readOnly = false; delete i.dataset.said; syncDescribed(i); });
   }
+  function clearPasswords(dlg) {
+    $$(".pw-eye", dlg).forEach((b) => setEye(b, false));
+    $$(".is-pw input", dlg).forEach((i) => { i.value = ""; });
+  }
   // A button's two labels share one cell (its width is the wider's); only the current one is seen and read.
   const setLabels = (btn, second) => {
     const [a, b] = btn.querySelectorAll(".rb-l");
@@ -1056,7 +1066,7 @@
     const panel = panelOf(dlg), doBtn = $(".acc-do", panel), cancel = $(".acc-cancel", panel);
     dlg.dataset.busy = String(on);
     setLabels(doBtn, on);
-    doBtn.toggleAttribute("aria-busy", on);
+    if (on) doBtn.setAttribute("aria-busy", "true"); else doBtn.removeAttribute("aria-busy");
     if (on) doBtn.setAttribute("aria-disabled", "true"); else doBtn.removeAttribute("aria-disabled");
     if (cancel) { if (on) cancel.setAttribute("aria-disabled", "true"); else cancel.removeAttribute("aria-disabled"); }
     $$(".dlg-x", panel).forEach((x) => { if (on) x.setAttribute("aria-disabled", "true"); else x.removeAttribute("aria-disabled"); });
@@ -1127,6 +1137,7 @@
     // (after a refusal lifted the lock) takes the code off the page.
     dlg.addEventListener("close", () => {
       if (isLocked(dlg)) { dlg.showModal(); dlg.classList.add("is-open"); $("#pin-view-title").focus(); return; }
+      clearPasswords(dlg);
       if (dlg === D.pin) { $("#pin-secret").textContent = ""; $("#pin-code").value = ""; pin = null; }
     });
   });
@@ -1143,9 +1154,9 @@
   const CAN = {
     pinCreate: ["staff_pin_already_active"],
     pinChange: ["staff_pin_not_active"],
-    pinOff: ["staff_pin_not_active", "reason_required"],
+    pinOff: ["staff_pin_not_active"],
     add: ["owner_email_taken"],
-    off: ["owner_self_deactivation", "owner_already_inactive", "owner_last_active", "not_an_owner", "reason_required"],
+    off: ["owner_self_deactivation", "owner_already_inactive", "owner_last_active", "not_an_owner"],
     on: ["owner_already_active", "not_an_owner"],
     reset: ["owner_already_inactive", "not_an_owner"],
     mine: ["current_password_incorrect"],
@@ -1157,14 +1168,14 @@
       const hit = data.owners.find((o) => o.email.toLowerCase() === extra.email.toLowerCase());
       if (hit) return { refuse: "owner_email_taken", hit };
     }
-    if (REFUSE && !refuseUsed && CAN[act].includes(REFUSE)) { refuseUsed = true; return { refuse: REFUSE }; }
+    if (REFUSE && !refuseUsed && (REFUSE === "unauthorized" || CAN[act].includes(REFUSE))) { refuseUsed = true; return { refuse: REFUSE }; }
     if (FAIL && !failUsed) { failUsed = true; return { fail: true }; }
     return { ok: true };
   }
   const run = (fn) => { if (HOLD) return; setTimeout(fn, LATENCY); };
   const clearNotice = () => { notice = null; };
   function finishWithDone(at, html, key) {
-    notice = { at, kind: "done", html };
+    notice = { at, kind: "done", html, recordId: records.list[0].id };
     renderCards();
     const n = $("#notice");
     return n || backTo(key, at === "desk" ? null : at);
@@ -1178,7 +1189,7 @@
     if (o && code === "owner_already_active") o.active = true;
     renderCards();
   }
-  const FIELD_REFUSALS = { owner_email_taken: "add-email", reason_required: null, current_password_incorrect: "mine-current" };
+  const FIELD_REFUSALS = { owner_email_taken: "add-email", current_password_incorrect: "mine-current" };
 
   /* ---- the code: create or change it in two steps (DECISIONS item 34), and deactivate it (a confirmation with its
    * reason). Step one, the owner types the code (8 to 16 English letters or digits; Arabic-Indic digits become Western
@@ -1187,7 +1198,7 @@
    * connection) changes nothing; "I've saved it" sends the code, which takes effect at once and, on a change, signs the
    * front desk out; "Cancel change" closes the view and changes nothing. Neither Escape nor a tap outside closes the
    * view: a code the owner may already have handed to the desk is never thrown away by accident. */
-  let pin = null, viewShownAt = 0, viewAfter = null, codeMode = null;
+  let pin = null, viewAfter = null, codeMode = null;
   const CODE_OK = /^[A-Za-z0-9]+$/;
   const CODE_MIN = 8, CODE_MAX = 16;
   const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
@@ -1257,7 +1268,6 @@
     D.pin.dataset.locked = "true";
     D.pin.dataset.busy = "false";
     labelDialog(D.pin);
-    viewShownAt = performance.now();
   }
   // The code on one line: measured at 40 px and set smaller to fit the plate, before the view's first paint; again when
   // the plate's width changes (a phone turned). Where one line would need less than 22 px (the widest letters on a
@@ -1321,9 +1331,9 @@
     D.pin.removeAttribute("aria-describedby");
   }
   function savedPin() {
-    // A press that comes too soon after the view appeared (a double click that began on "Continue", which stood where
-    // this button stands) does nothing: the code must be seen before it takes effect.
-    if (performance.now() - viewShownAt < 700 || isBusy(D.pin) || !pin) return;
+    // Every Save begins Working in the same frame. Busy prevents repeated submits; opening focus remains on
+    // the view's title, so Continue's Enter cannot submit the next step.
+    if (isBusy(D.pin) || !pin) return;
     const after = viewAfter;
     clearDialog($("#pin-view"));
     setWorking(D.pin, true);
@@ -1377,16 +1387,14 @@
     if (isBusy(D.pinoff)) return;
     const p = $("#pinoff"), reason = $("#pinoff-reason");
     clearDialog(p);
-    if (!reason.value.trim()) { setFieldError(reason, L.err.reason); reason.focus(); return; }
     setWorking(D.pinoff, true);
     run(() => {
       const r = answer("pinOff");
       setWorking(D.pinoff, false);
-      if (r.refuse === "reason_required") { setFieldError(reason, L.refuse.reason_required()); reason.focus(); return; }
       if (r.refuse) { applyTruth(r.refuse, "pinOff"); showAlert(D.pinoff, L.refuse[r.refuse]("pinOff"), { moot: true }); return; }
       if (r.fail) { showAlert(D.pinoff, L.failed); return; }
       data.desk.state = "off";
-      addRecord("pinOff");
+      addRecord("pinOff", undefined, reason.value.trim());
       resetFields(p);
       const back = finishWithDone("desk", L.done.pinOff(), "pinOff");
       closeDialog(D.pinoff, { back });
@@ -1428,6 +1436,7 @@
         email.focus();
         return;
       }
+      if (r.refuse) { showAlert(D.add, L.refuse[r.refuse]("add"), { moot: true }); return; }
       if (r.fail) { showAlert(D.add, L.failed); return; }
       const id = `n${data.owners.length + 1}`;
       // A display name is trimmed and stored as typed (1-120 characters); an email as typed, trimmed.
@@ -1475,7 +1484,7 @@
         setWorking(dlg, false);
         const o = ownerOf(id);
         if (r.refuse && r.refuse in FIELD_REFUSALS) {
-          const f = act === "off" ? $("#off-reason") : $(`#${FIELD_REFUSALS[r.refuse]}`);
+          const f = $(`#${FIELD_REFUSALS[r.refuse]}`);
           setFieldError(f, L.refuse[r.refuse](act, nm(o)));
           f.focus();
           return;
@@ -1483,7 +1492,7 @@
         if (r.refuse) { applyTruth(r.refuse, act, id); showAlert(dlg, L.refuse[r.refuse](act, nm(o)), { moot: true }); return; }
         if (r.fail) { showAlert(dlg, L.failed); return; }
         after(o);
-        addRecord(act, id);
+        addRecord(act, id, act === "off" ? $("#off-reason").value.trim() : "");
         resetFields(p);
         const back = finishWithDone(id, L.done[act](nm(o)), `${act === "off" ? "on" : act === "on" ? "reset" : act}:${id}`);
         closeDialog(dlg, { back });
@@ -1492,7 +1501,7 @@
   }
   const needPw = (sel) => (p) => { const f = $(sel, p); if (f.value.length < 12) { setFieldError(f, L.err.pwShort); return f; } return null; };
   rowSubmit("reset", D.reset, needPw("#reset-pw"), () => {});
-  rowSubmit("off", D.off, (p) => { const f = $("#off-reason", p); if (!f.value.trim()) { setFieldError(f, L.err.reason); return f; } return null; }, (o) => { o.active = false; });
+  rowSubmit("off", D.off, () => null, (o) => { o.active = false; });
   rowSubmit("on", D.on, () => null, (o) => { o.active = true; });
   rowSubmit("mine", D.mine, (p) => {
     const cur = $("#mine-current", p), nu = $("#mine-new", p);

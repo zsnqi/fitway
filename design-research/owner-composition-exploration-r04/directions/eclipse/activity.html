@@ -72,7 +72,7 @@
             <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg></span>
             <span class="rail-name"></span>
           </a></li>
-          <li><a class="rail-item" href="#" data-nav="access" data-inert>
+          <li><a class="rail-item" href="access.html" data-nav="access">
             <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
             <span class="rail-name"></span>
           </a></li>
@@ -220,7 +220,7 @@
           <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg></span>
           <span class="tb-name"></span>
         </a></li>
-        <li><a class="tb-item" href="#" data-tab="access" data-inert>
+        <li><a class="tb-item" href="access.html" data-tab="access">
           <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
           <span class="tb-name"></span>
         </a></li>
@@ -255,5 +255,15 @@
       </footer>
     </form>
   </dialog>
+  <script>
+    // Access keeps the language and motion switch, as the other page links do.
+    (function () {
+      var p = new URLSearchParams({ lang: document.documentElement.lang });
+      if (new URLSearchParams(location.search).get("motion") === "off") p.set("motion", "off");
+      document.querySelectorAll('[data-nav="access"], [data-tab="access"]').forEach(function (a) {
+        a.setAttribute("href", "access.html?" + p);
+      });
+    })();
+  </script>
 </body>
 </html>

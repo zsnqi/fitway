@@ -82,7 +82,7 @@
       acctCreated: (n) => `إنشاء حساب ${n}`,
       acctOff: (n) => `تعطيل حساب ${n}`,
       acctOn: (n) => `إعادة تفعيل حساب ${n}`,
-      signin: (n) => `إعادة تعيين بيانات دخول ${n}`,
+      signin: (n) => `إعادة تعيين كلمة مرور ${n}`,
       settings: "تحديث الإعدادات",
       resetAfter: "تصفير بعد الإغلاق",
       notRecorded: "غير مسجّل",
@@ -159,13 +159,13 @@
       adjBy: (d) => `Count adjusted by ${d}`,
       setTo: (n) => `Count set to ${n}`,
       reset: "Count reset to 0",
-      pinCreated: "Front desk PIN created",
-      pinChanged: "Front desk PIN changed",
-      pinOff: "Front desk PIN turned off",
+      pinCreated: "Front desk code created",
+      pinChanged: "Front desk code changed",
+      pinOff: "Front desk code deactivated",
       acctCreated: (n) => `Account created for ${n}`,
-      acctOff: (n) => `Account turned off for ${n}`,
-      acctOn: (n) => `Account turned back on for ${n}`,
-      signin: (n) => `Sign-in details reset for ${n}`,
+      acctOff: (n) => `Account deactivated for ${n}`,
+      acctOn: (n) => `Account reactivated for ${n}`,
+      signin: (n) => `Password reset for ${n}`,
       settings: "Settings updated",
       resetAfter: "Reset after closing",
       notRecorded: "Not recorded",
@@ -246,14 +246,21 @@
    * system. An access or settings record is always written by an owner (the contract), and no one changes the count by
    * hand (ADR-008), so the shared front desk writes no record: it is the target of the PIN records only. The concept
    * shows each stored name unchanged in either language. */
-  const OWNERS = { o1: "فهد", o2: "نورة" };
+  const BASE_NAMES = { o1: "فهد", o2: "نورة", o3: "Omar Alharbi" };
+  const OWNERS = { ...BASE_NAMES };
+  // Record arrivals carry Access's name-range fixtures. Arrivals without record= keep the original log sample.
+  if (params.has("record") && params.get("case") === "long") {
+    OWNERS.o2 = "نورة بنت عبد الله بن عبد الرحمن العبد اللطيف، مديرة العمليات والمرافق في فرعي شمال الرياض والدرعية وفرع الخرج للنساء فقط";
+    OWNERS.o3 = "Abdulrahman bin Abdulaziz Alqahtani, Operations and Facilities Manager, the North Riyadh, Diriyah, and Al Kharj branches";
+  }
+  if (params.has("record") && params.get("case") === "short") { OWNERS.o2 = "لين"; OWNERS.o3 = "Bo"; }
   const PERSONS = ["o1", "o2", "system"];
   const R = (ar, en) => ({ ar, en });
-  // The longest reason the contract allows: exactly 240 characters (AUDIT_REASON_MAX_LENGTH), on a deactivation, one of
-  // the two actions whose reason is required.
+  // The Arabic reason fills the contract's 240-character cap (AUDIT_REASON_MAX_LENGTH); English says the same thing,
+  // the two actions whose reason is optional (DECISIONS item 34).
   const LONG = R(
     "انتهى عقد موظف الفترة المسائية اليوم، وكان يعرف رمز مكتب الاستقبال الحالي، فعطّلته على الفور حتى لا يُستخدم بعد أن يغادر. سأنشئ رمزًا جديدًا صباح الغد وأسلّمه بنفسي لموظفي الاستقبال، وحتى ذلك الحين لا يدخل أحد إلى شاشة المكتب إلا عبر حسابي.",
-    "The evening employee's contract ended today and he knew the current front desk PIN, so I turned it off right away so it can't be used after he leaves. I will create a new PIN tomorrow morning and give it to the desk staff myself, in person.",
+    "The evening employee's contract ended today and he knew the current front desk code, so I deactivated it right away so it can't be used after he leaves. I'll create a new code tomorrow morning and give it to the desk staff myself.",
   );
   /* The owners' records. A reason is stored as it was typed; the concept writes most of them in the page's language so
    * each page reads naturally, and keeps two as typed in the other language (22 March, Noura's Arabic; 14 September, her
@@ -277,8 +284,12 @@
     // After midnight: a calendar day's record, under Saturday (the business day would have put it under Friday).
     ["2026-09-19", "00:22:10", "o2", "settings_updated", { ver: 8 }, R("ساعات نهاية الأسبوع", "Weekend hours")],
     ["2026-09-21", "18:02:46", "o1", "staff_pin_deactivated", {}, LONG],
-    ["2026-09-22", "09:15:30", "o1", "staff_pin_provisioned", {}, R("رمز جديد بعد إيقاف القديم", "A new PIN after turning off the old one")],
+    ["2026-09-22", "09:15:30", "o1", "staff_pin_provisioned", {}, R("رمز جديد بعد إيقاف القديم", "A new code after deactivating the old one")],
     ["2026-09-23", "11:32:17", "o1", "settings_updated", { ver: 9 }, R("الإغلاق يوم الخميس الساعة 2 ص", "Thursday closing moved to 2 AM")],
+    // Older than the card's eighth record. Reserve ids so adding history never renumbers existing links or
+    // uses Access's session-local sequence (57 onward, skipping these two reservations).
+    ["2026-01-10", "10:12:00", "o1", "owner_provisioned", { target: "o3", id: 1001 }, null],
+    ["2026-02-01", "12:30:00", "o1", "owner_deactivated", { target: "o3", id: 1002 }, null],
   ];
   function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
   /* The scheduled reset (SPEC, ADR-008): the automatic system zeroes the count five minutes after each closing, from
@@ -296,6 +307,7 @@
       const t = at(date, time);
       const cls = COMMAND.includes(action) ? "command" : ACCESS.includes(action) ? "access" : "settings";
       const r = { ...t, actor: "owner", principal: actor, actorKind: "owner", action, cls, reason, prior: null, eff: null, delta: null };
+      if (v.id) r.id = v.id;
       if (v.target) r.target = v.target;
       if (action.startsWith("staff_pin")) r.target = "desk";
       rows.push(r);
@@ -311,13 +323,19 @@
     // The server instant (createdAtUtc) and the keyset order: newest first, a tie broken by the id.
     for (const r of rows) r.ms = (r.dn * 1440 + r.mins - UTC_OFFSET) * 60000 + r.sec * 1000;
     rows.sort((a, b) => a.ms - b.ms);
-    rows.forEach((r, i) => { r.id = i + 1; r.utc = new Date(r.ms).toISOString(); });
+    let nextId = 1;
+    rows.forEach((r) => { if (!r.id) r.id = nextId++; r.utc = new Date(r.ms).toISOString(); });
     // The search looks in what the page shows (the review's O5): a person's reason as it reads; never the reset's
     // machine string, which the page never shows.
     for (const r of rows) r.shown = r.machine ? null : (r.reason ? (r.reason.raw ?? r.reason[LANG]) : null);
     return rows.reverse();
   }
   const LOG = buildLog();
+  let arrivalId = params.get("record");
+  let arrivalPending = arrivalId !== null;
+  const arrivalRecord = LOG.find((r) => String(r.id) === arrivalId);
+  const arrivalMissing = RTL ? "هذا السجل غير موجود في هذه العينة." : "This record isn't in this sample.";
+  const arrivalName = RTL ? "السجل الذي وصلت إليه" : "The record you arrived at";
 
   /* The read contract's list: the filters (an owner principal or the system's actor kind, actions, the occurred range,
    * the reason), newest first, a keyset page of 25, and the next cursor only while more rows exist. There is no total.
@@ -347,6 +365,7 @@
     const reason = (params.get("reason") || "").trim().slice(0, 240);
     return { kind: KIND_ACTIONS[k] ? k : "all", person: PERSONS.includes(p) ? p : "all", a, b, reason };
   })();
+  if (arrivalId !== null) Object.assign(F, { kind: arrivalRecord?.cls === "command" ? "count" : arrivalRecord?.cls ?? "access", person: "all", a: null, b: null, reason: "" });
   const filtered = () => F.kind !== "all" || F.person !== "all" || F.a != null || Boolean(F.reason);
   function urlFor(extra = {}) {
     const p = new URLSearchParams(location.search);
@@ -649,11 +668,12 @@
     // said in plain words as part of what happened, so it has no reason of a person's beside it.
     // Counts of seven digits or more (the contract allows up to 9,007,199,254,740,991) take their own line on a phone.
     const long = r.cls === "command" && Math.max(r.prior ?? 0, r.eff ?? 0) >= 1e6;
+    const arrived = String(r.id) === arrivalId;
     if (r.actor === "system") {
       const act = `<span class="rec-what">${ICON.command}<span class="rec-act">${L.resetAfter}</span></span>`;
-      return `<li class="rec is-auto${long ? " is-long" : ""}" data-id="${r.id}">${t}<div class="rec-main">${who}${act}</div>${figHTML(r)}</li>`;
+      return `<li class="rec is-auto${long ? " is-long" : ""}${arrived ? " is-arrival" : ""}" data-id="${r.id}"${arrived ? ' tabindex="-1" aria-current="true"' : ""}>${arrived ? `<span class="sr-only">${arrivalName}: </span>` : ""}${t}<div class="rec-main">${who}${act}</div>${figHTML(r)}</li>`;
     }
-    return `<li class="rec${long ? " is-long" : ""}" data-id="${r.id}">${t}<div class="rec-main">${who}${what}</div>${figHTML(r)}${whyHTML(r)}</li>`;
+    return `<li class="rec${long ? " is-long" : ""}${arrived ? " is-arrival" : ""}" data-id="${r.id}"${arrived ? ' tabindex="-1" aria-current="true"' : ""}>${arrived ? `<span class="sr-only">${arrivalName}: </span>` : ""}${t}<div class="rec-main">${who}${what}</div>${figHTML(r)}${whyHTML(r)}</li>`;
   }
   function dayHeading(dn) {
     const p = partsOf(dn);
@@ -685,6 +705,11 @@
     const page = query(F);
     view.entries = page.entries;
     view.next = page.next;
+    while (arrivalPending && arrivalRecord && !view.entries.some((r) => r.id === arrivalRecord.id) && view.next) {
+      const more = query(F, view.next);
+      view.entries.push(...more.entries);
+      view.next = more.next;
+    }
     view.older = "idle";
     view.loadedAt = clockNow();
   }
@@ -804,7 +829,8 @@
       return;
     }
     if (phase === "error" || phase === "retrying") { paintError(); return; }
-    bodyEl.innerHTML = view.entries.length ? daysHTML(view.entries) + endHTML() : emptyHTML();
+    const missing = arrivalId !== null && !arrivalRecord ? `<p class="ac-arrival-note" id="arrival-note" tabindex="-1">${arrivalMissing}</p>` : "";
+    bodyEl.innerHTML = missing + (view.entries.length ? daysHTML(view.entries) + endHTML() : emptyHTML());
     wireList();
     fitFigs();
   }
@@ -837,6 +863,15 @@
 
   /* ---------------------------------------------------------------- filtering */
   function apply(announce = true) {
+    if (arrivalId !== null) {
+      arrivalId = null;
+      arrivalPending = false;
+      Object.assign(OWNERS, BASE_NAMES);
+      for (const key of ["o1", "o2"]) $(`option[value="${key}"]`, personSel).textContent = `\u2068${OWNERS[key]}\u2069`;
+      const current = new URL(location.href);
+      current.searchParams.delete("record");
+      history.replaceState(null, "", current);
+    }
     syncUrl();
     view.refresh = "idle";
     $("#refresh-alert").textContent = "";
@@ -1021,6 +1056,7 @@
       const first = $(".rec", bodyEl) || $(".ac-empty p", bodyEl);
       if (first) { first.tabIndex = -1; first.focus({ preventScroll: true }); }
     }
+    focusArrival();
     say(view.entries.length ? L.listSay : filtered() ? L.noMatch : L.noRecords);
     return true;
   }
@@ -1145,7 +1181,15 @@
   renderAll();
   if (phase === "loading") startLoading(ARRIVE);
   // Font metrics change the figures' widths: measure again once the faces are in.
-  document.fonts.ready.then(() => { fitSelect(); renderLoaded(); if (phase === "ready") fitFigs(); });
+  function focusArrival() {
+    if (!arrivalPending || phase !== "ready") return;
+    const el = arrivalRecord ? $(`.rec[data-id="${arrivalRecord.id}"]`, bodyEl) : $("#arrival-note");
+    if (!el) return;
+    arrivalPending = false;
+    el.focus({ preventScroll: true });
+    el.scrollIntoView({ block: "center", behavior: "instant" });
+  }
+  document.fonts.ready.then(() => { fitSelect(); renderLoaded(); if (phase === "ready") { fitFigs(); focusArrival(); } });
   // Hooks for the capture script.
   window.__activity = {
     ready: true,
