@@ -250,3 +250,22 @@ checks live outside the repository and never appear here or in a brief.
   tap, from a blanket `:focus`. Cause, brief: A8 said "every element that takes focus programmatically shows the
   ring" without its intent (keyboard users see where focus went); Codex met the literal text the only way it could.
   B8 again: three B8 faults in one round. Fixed by an `owner-direction-fixer` (`fixer-access-focus.md`).
+
+## motion-lows: `design-research/owner-composition-exploration-r04/directions/briefs/codex-motion-lows.md`, result `4850e58` and WIP `48ff52b` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** the motion review's measurable lows (F2, O3, O4) and two lines the records round left untrue: M1 a
+  label's place at rest, M2 the widths MOT-14 gives written down, M3 the component sheet's dead dialog animation,
+  M4 the scroll lock lifting on the close, M5 OWN-C9 and README's capture sizes.
+- **Brief rows, as Codex graded them:** M2-M5 and L1-L5 PASS (576 close-path checks, 240 rest pages pixel-identical,
+  246 motion cases each side). M1 stopped: English "Copy"'s icon sits 6.328 px from its place at `54b2737`, and L1
+  allowed only "sub-pixel" moves. Codex found a correction with 0 px error and left it unapplied (B3, right).
+- **Failure cause:** brief, B8 kind: L1's bound came from the review's reading (about 2 px) instead of a measure at
+  the HEAD the brief named. The coordinator's correction was resumed on the thread; Codex hit its usage limit while
+  checking it, the edit was saved as WIP `48ff52b`, and an `owner-direction-fixer` (`fixer-copy-label.md`) verified it
+  unchanged against M1's four targets (`cd7a27c`, an empty commit; 48 measures, 0 px).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/motion-lows-heldout.md`, 8 of 8, graded by
+  `D:/fitway-temp/owner-r04-three-rounds-review/` (verifier at `high`, `verifier-three-rounds.md`). H1 with a note:
+  the row said "centred", but at `54b2737` English "Copy" sits 3.16 px off true centre; M1's target (its old place)
+  is the right one, and the row's wording was the grader's error. That review's F6 (low): MOT-14 lists all 20 cells
+  without saying which are wider at rest than their visible label, so M2's outcome holds only in part.
+- **Repeat fault:** B8 again (a bound in a limit taken from a reading, not a measure). B3 and B7 held.
