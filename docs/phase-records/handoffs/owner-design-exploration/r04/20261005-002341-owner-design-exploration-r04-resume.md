@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-06 about 02:00 +03:00;
-  `owner-followup-r04-build` at `48ff52b` (pushed)
+- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-06 about 14:30 +03:00;
+  `owner-followup-r04-build` at `06f3bbf` (pushed)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261004-160300-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (new today: 37, and
   rounds items 10 and 11), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -26,36 +26,24 @@
 
 ## Running now
 
-Nothing. The user stopped for the day (2026-10-06, about 02:00) and continues tomorrow.
+- **Codex `high` on `directions/briefs/codex-three-rounds-fix.md`** (`06f3bbf`, over `8104b3e`), run
+  `D:/fitway-temp/owner-r04-three-rounds-fix/run-1/` (thread `01a110d7-f886-77e0-8a6a-7c3bec73be5c`; resume it if the
+  app dies). Fixes the review's F1 (medium: variant 2's file line runs over the calendar copy in real time; the cut is
+  a main-thread `clip-path`), F2 (low: the trial switch covers the records card on short windows; it now ends the page
+  at every width) and F6 (MOT-14 marks the cells wider than their label). Held-out rows, never in a brief:
+  `D:/fitway-grader/owner-r04/three-rounds-fix-heldout.md`. The `Bash(codex exec:*)` allow rule worked.
 
-- **Variants round built** (`2dbf25c` F1, `02c92bb` export variants `?done=0|1|2`, `d3b45d7` Access `?row=0|1`,
-  `35051c9`; output `D:/fitway-temp/owner-r04-done-variants/`; designer and coordinator both lean to variant 2 and row
-  option 1; the user has been told and picks on the live site after the review).
-- **Records arrival finished** by a second designer from the WIP (brief `designer-records-arrival-finish.md`,
-  `7a897f8`; commits `203e02d`, `53178d8` capture moment 11, `285dd84` docs; output and NOTES
-  `D:/fitway-temp/owner-r04-records-arrival/`, videos `capture/11-records-v0-1440-ar.webm`, `-v1-`). Coordinator
-  looked at the 1440 AR strips for both row options: as described. Known: with `row=0` the open slot shows about 80 ms
-  before the record rises (the done line's own rhythm).
-- **Codex motion lows** (brief `codex-motion-lows.md`, `602c62e`, run `D:/fitway-temp/owner-r04-motion-lows/run-1/`):
-  `4850e58` M2-M5 PASS. M1 stopped on the brief's own error: L1 allowed only "sub-pixel" moves, the real offset is
-  6.328 px (English Copy's icon). The coordinator's correction was resumed on the thread, and Codex hit its usage
-  limit mid-check. Its edit is saved unverified as WIP `48ff52b` (`access.css`, three lines). A fixer (brief
-  `fixer-copy-label.md`, `eaa7629`) was stopped for the day before reporting (partial output in `.../fixer/`).
-  Record in `codex-rounds.md` after grading: B8 was followed, but the allowance's bound came from the review's
-  reading (about 2 px) instead of a measure at the HEAD; Codex rightly stopped (B3).
-- **Permissions:** auto mode refused `codex exec --approve-for-me` as an unsafe agent; with the user's approval,
-  `Bash(codex exec:*)` is allowed in this worktree's untracked `.claude/settings.local.json` (untested yet).
+Done today: M1 finished (`cd7a27c`, an empty commit verifying Codex's WIP `48ff52b`; 48 measures, 0 px); the
+three rounds reviewed by verifier-high (`verifier-three-rounds.md`, `8104b3e`; evidence
+`D:/fitway-temp/owner-r04-three-rounds-review/`): V1-V14 PASS, H1-H8 PASS; F3 (variant 2 still opens on an empty
+space), F4 (row=1 hides the focus ring 220 ms) and F5 are inherent observations for the user's pick; the Codex
+motion-lows round graded in `codex-rounds.md`.
 
 ## Next steps
 
-0. **Finish M1:** a fresh `owner-direction-fixer` on `fixer-copy-label.md`, told that the edit it describes as
-   uncommitted is now WIP `48ff52b` (verify it and commit the result on top). Codex's limit was to reset at 03:40.
-1. **Review the three rounds:** a fresh `owner-direction-verifier-high` from the draft
-   `D:/fitway-temp/owner-r04-three-rounds-review/brief-draft.md` (fill HEAD and the environment block, paste the
-   held-out rows from `D:/fitway-grader/owner-r04/motion-lows-heldout.md` into V9 — they go to the verifier, never
-   to Codex — and commit it as `directions/briefs/verifier-three-rounds.md`). Every error it finds fixed (rounds item
+1. **Check Codex's result** against the brief, then one verifier-high on the fix with the held-out rows (rounds item
    11), then a new published copy and the live site (`eclipse-build` preview, 3174) with frame strips; the user picks
-   `?done` and `?row` there.
+   `?done` and `?row` there (tell them F3 and F4 with the options).
 2. **The remaining Owner screens,** in order Settings, Operations (the header status's details), Monitoring, each per
    rounds items 6, 8, 9, 10 and 11, built with the motion. Codex briefs: read each outcome against the limits before
    launch and state the purpose of anything an outcome replaces.
