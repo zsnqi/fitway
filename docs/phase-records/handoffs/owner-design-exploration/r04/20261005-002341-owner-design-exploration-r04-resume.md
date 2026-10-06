@@ -37,7 +37,7 @@ the variants and switches (graded in `codex-rounds.md`, checked by the coordinat
 
 ## Next steps
 
-1. **Publish a new copy** of `e74ca06` (staged without `tuner.js`), with the user's approval in chat, and give the link.
+1. **No new published copy for now:** the user uses the live site (2026-10-07, «الموقع شغال عندي»).
 2. **The remaining Owner screens,** in order Settings, Operations (the header status's details), Monitoring, each per
    rounds items 6, 8, 9, 10 and 11, built with the motion. Codex briefs: read each outcome against the limits before
    launch and state the purpose of anything an outcome replaces.
