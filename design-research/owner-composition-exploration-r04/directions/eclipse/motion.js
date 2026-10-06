@@ -336,10 +336,17 @@
     }
     // A pair's new block inside a block of its own (the file line inside the done state) slides from its pair too.
     for (const [b, a] of pairOf) {
-      if (moves.some((m) => m.el === b) || !visible(b) || !before.has(a)) continue;
+      if (moves.some((m) => m.el === b) || !visible(b) || (!before.has(a) && !cutPlan?.still)) continue;
       const r0 = before.get(a), r1 = b.getBoundingClientRect();
-      const dx = r0.left - r1.left, dy = r0.top - r1.top;
-      moves.push({ el: b, dx, dy });
+      const dx = r0 ? r0.left - r1.left : 0, dy = r0 ? r0.top - r1.top : 0;
+      // On a short sheet the old file may be outside its scrolling body, so it has no visible start.
+      // Even a visible start can cross the calendar before the descending cut clears it. Keep the file
+      // below the copy through cutBy of the eased progress: y(cutBy) >= D0 + 8. Once the copy is gone,
+      // it rises into the cleared space on the same curve and clock. This extra travel does not set the duration.
+      const clearDy = cutPlan?.still ? Math.max(dy, (cutPlan.D0 + 8 - r1.top) / (1 - T.cutBy)) : dy;
+      // Extra travel may start below the body: its lower edge also cuts the file, so it cannot cross the actions.
+      const clearBottom = clearDy > dy ? r1.bottom - p1.querySelector(":scope > .dlg-body").getBoundingClientRect().bottom : null;
+      moves.push({ el: b, dx, dy, clearDy, clearBottom });
     }
     if (Math.abs(dTop) < 0.5 && Math.abs(dBot) < 0.5 && !moves.some((m) => !m.reveal && (Math.abs(m.dx) > 0.5 || Math.abs(m.dy) > 0.5))) {
       // Nothing moved: a new block is still uncovered, quickly, where it stands.
@@ -384,7 +391,17 @@
     ];
     for (const m of moves) {
       if (m.reveal) anims.push(anim(m.el, [{ clipPath: `inset(-4px -8px ${px(m.h + 4)} -8px)` }, { clipPath: "inset(-4px -8px -4px -8px)" }], o));
-      else if (Math.abs(m.dx) > 0.5 || Math.abs(m.dy - dTop) > 0.5) anims.push(anim(m.el, [{ transform: `translate(${px(m.dx)}, ${px(m.dy - dTop)})` }, { transform: "translate(0px, 0px)" }], o));
+      else {
+        const dy = m.clearDy ?? m.dy;
+        if (Math.abs(m.dx) > 0.5 || Math.abs(dy - dTop) > 0.5) {
+          const from = { transform: `translate(${px(m.dx)}, ${px(dy - dTop)})` }, to = { transform: "translate(0px, 0px)" };
+          if (m.clearBottom != null) {
+            from.clipPath = `inset(0px -8px ${px(m.clearBottom + dy)} -8px)`;
+            to.clipPath = `inset(0px -8px ${px(m.clearBottom)} -8px)`;
+          }
+          anims.push(anim(m.el, [from, to], o));
+        }
+      }
     }
     // The cut: each leaving block's copy sits in the panel where the block was, and its cutting edge has passed all of
     // it at T.cutBy of the movement (90%), so no sliver of it lingers in the settling's slow end. Every edge and place

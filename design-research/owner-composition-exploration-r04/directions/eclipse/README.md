@@ -625,7 +625,10 @@ stroke, as the intro draws the line). Timings are in the table above.
   parameter chooses for one load without keeping it and hides the switch; with reduced motion or `?motion=off` every
   variant is the page as built and no switch shows. Variant 2's straight calendar cut uses a translated overflow window
   and a counter-translated copy sampled with the panel, surface and riders on that shared main-thread frame clock,
-  so a long frame holds them together; on the sheet the copy stays still on screen.
+  so a long frame holds them together; on the sheet the copy stays still on screen. On a short sheet the file line
+  starts far enough below the remaining copy to stay below it until the cut clears it, then rises into the cleared
+  space on the same curve and timing, clipped at the body’s lower edge so it never crosses the actions. A file
+  outside the old scrolling body has no visible start to preserve.
   `motion-capture.mjs --only=9,10` records them, and `--only=11` the records card's arrival in both options.
 
 ## Open and capture
