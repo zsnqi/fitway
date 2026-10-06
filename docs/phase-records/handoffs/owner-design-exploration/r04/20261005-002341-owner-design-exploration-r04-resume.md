@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-06 about 16:30 +03:00;
-  `owner-followup-r04-build` at `dbee42d` (pushed)
+- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-06 evening +03:00;
+  `owner-followup-r04-build` at `8e2a7fc` (pushed)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261004-160300-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (new today: 37, and
   rounds items 10 and 11), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -26,22 +26,16 @@
 
 ## Running now
 
-Nothing. The user stopped the work (2026-10-06, about 16:30).
-
-- **Codex `high` on `directions/briefs/codex-one-clock.md`** (`75f42f1`, over `aef7437`) was stopped mid-run; its
-  edit (`motion.js`, `DESIGN-SPEC.md`, `README.md`) is saved unverified as WIP `dbee42d`. Its last words: the final
-  matrix passing so far (0 px displacement at matching progress, via a rendered clock barcode; no text overlap; 48
-  instant and interruption cases clean); one no-load end capture 12 px off by one RGB level. It had not finished,
-  regenerated INDEX or reported. Run and thread: `D:/fitway-temp/owner-r04-one-clock/run-1/events.jsonl` (thread
-  `01a11147-5302-7f92-b33a-c248f62d6725`).
-- **Why that round:** the review of Codex's `ce3f07e` (`verifier-three-rounds-fix.md`; evidence
-  `D:/fitway-temp/owner-r04-three-rounds-fix-review/`) passed F1-F3 and H1-H8 (H6 partial: it could not reach Copy)
-  but found F-a (the phone sheet's copy jumps ~32 px under 4x CPU: the panel settles on the main thread, the new cut
-  on the compositor), F-b (under a stall the panel's content lags its surface, also at the baseline; the docs say
-  "compositor") and F-c (the «22» mark 1 px off). Held-out rows: `D:/fitway-grader/owner-r04/one-clock-heldout.md`.
-- **Not yet graded** in `codex-rounds.md`: the three-rounds-fix round (`ce3f07e`; its two literal FAILs were the
-  brief's wording: "no other element's box", strict pixel equality; F-a is a regression the brief did not guard, as
-  it named no load for the sheet's stillness) and the one-clock round.
+- **Codex `high` on `directions/briefs/codex-narrow-sheet.md`** (`8e2a7fc`, over `bad6e90`), run
+  `D:/fitway-temp/owner-r04-narrow-sheet/run-1/` (resume its thread from `events.jsonl` line 1 if the app dies): at
+  320 x 568 variant 2's file line glides over the still calendar copy (60-80 ms, seen at 1x, present before the motion
+  rounds). Held-out rows: `D:/fitway-grader/owner-r04/narrow-sheet-heldout.md`.
+- **The one-clock round is done and graded:** Codex `809aa09` over WIP `dbee42d`; verifier-high
+  (`verifier-one-clock.md`, `bad6e90`; evidence `D:/fitway-temp/owner-r04-one-clock-review/`) every row PASS.
+  Report-only, unchanged, under load only: the dialogs' shade and clip, the popover and the records card's clip split
+  across threads under a planted stall (Codex measured dialog opening 6.29 px, popover 3.85 px, records 144 px against
+  a frozen 1x reference); rounds item 11 to decide whether they are errors on a real machine.
+- **Parked by the user:** the pixel-character pane mod and the usage-band redesign (`D:/fitway-temp/claude-pixel-crew/`).
 
 Done today: M1 finished (`cd7a27c`, an empty commit verifying Codex's WIP `48ff52b`; 48 measures, 0 px); the
 three rounds reviewed by verifier-high (`verifier-three-rounds.md`, `8104b3e`; evidence
