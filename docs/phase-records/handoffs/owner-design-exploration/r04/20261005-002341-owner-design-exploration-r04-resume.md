@@ -26,12 +26,15 @@
 
 ## Running now
 
-- **Codex `high` on `directions/briefs/codex-three-rounds-fix.md`** (`06f3bbf`, over `8104b3e`), run
-  `D:/fitway-temp/owner-r04-three-rounds-fix/run-1/` (thread `01a110d7-f886-77e0-8a6a-7c3bec73be5c`; resume it if the
-  app dies). Fixes the review's F1 (medium: variant 2's file line runs over the calendar copy in real time; the cut is
-  a main-thread `clip-path`), F2 (low: the trial switch covers the records card on short windows; it now ends the page
-  at every width) and F6 (MOT-14 marks the cells wider than their label). Held-out rows, never in a brief:
-  `D:/fitway-grader/owner-r04/three-rounds-fix-heldout.md`. The `Bash(codex exec:*)` allow rule worked.
+- **Codex `high` on `directions/briefs/codex-one-clock.md`** (`75f42f1`, over `aef7437`), run
+  `D:/fitway-temp/owner-r04-one-clock/run-1/` (resume its thread from `events.jsonl` line 1 if the app dies). The
+  export's settle on one clock: the review of Codex's `ce3f07e` (`verifier-three-rounds-fix.md`; evidence
+  `D:/fitway-temp/owner-r04-three-rounds-fix-review/`) passed F1-F3 and H1-H8 (H6 partial: it could not reach Copy)
+  but found F-a (the phone sheet's copy jumps ~32 px under 4x CPU: the panel settles on the main thread, the new cut
+  on the compositor), F-b (under a stall the panel's content lags its surface, also at the baseline; the docs say
+  "compositor") and F-c (the «22» mark 1 px off). Held-out rows: `D:/fitway-grader/owner-r04/one-clock-heldout.md`.
+  Not yet graded in `codex-rounds.md`: the three-rounds-fix round (`ce3f07e`; its two literal FAILs were the brief's
+  wording: "no other element's box", strict pixel equality) and this one.
 
 Done today: M1 finished (`cd7a27c`, an empty commit verifying Codex's WIP `48ff52b`; 48 measures, 0 px); the
 three rounds reviewed by verifier-high (`verifier-three-rounds.md`, `8104b3e`; evidence
