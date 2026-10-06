@@ -230,7 +230,7 @@ and only while live.
 | A button's label | its words change: Working, Try again, Close, Copied | transform: the old label rolls up out of its line, the new one in from below | 280 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
 | The export's done state | the file is ready | the ring draws from its top in the reading direction, then the check; «الملف جاهز» rises into its line; the file line glides from where it stood | ring 380 ms from 140 ms, check 260 ms from 400 ms, words 300 ms from 280 ms | `cubic-bezier(0.65, 0, 0.35, 1)` (the strokes), `cubic-bezier(0.25, 1, 0.5, 1)` (the words) |
 | A done line on the page (Access) | a change succeeded and its dialog left | its words rise into their line, then its check draws; the cards and rows below slide to their new places | from 150 ms: words 300 ms, check 260 ms from 230 ms; blocks 300-420 ms | as above; blocks `cubic-bezier(0.3, 0.75, 0.2, 1)` |
-| A new access record (Access's records card) | with the done line, in the same movement | transform and clip: the records below slide down, the new row is uncovered as the space opens and its words rise as one piece; the oldest rides down and is cut inside the card's bottom edge; a height change moves that edge | rows with the blocks (300-420 ms); words 300 ms from 150 ms, or 100 ms after a held change | rows `cubic-bezier(0.3, 0.75, 0.2, 1)`; words `cubic-bezier(0.25, 1, 0.5, 1)` |
+| A new access record (Access's records card) | with the done line, in the same movement | transform and clip: the records below slide down, the new row is uncovered as the space opens and its words rise as one piece; the oldest rides down and is cut inside the card's bottom edge; a height change moves that edge | rows with the blocks (300-420 ms); words 300 ms from 150 ms | rows `cubic-bezier(0.3, 0.75, 0.2, 1)`; words `cubic-bezier(0.25, 1, 0.5, 1)` |
 
 The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
 hover colours of the rail tiles and buttons, Daily's details chevron, and the jump to "View details" are all instant.
@@ -578,7 +578,7 @@ stroke, as the intro draws the line). Timings are in the table above.
   new block is uncovered as the space opens, one that leaves leaves at once. A body that scrolls (a short sheet) changes
   at once. Used for the export's progress line, done and failure; every alert and field message on submit; the code's
   second step. The export's done moment samples its paused Web Animations effects on one main-thread frame clock:
-  surface, panel transform and clip, blocks, cut, riders and done drawing all receive the same elapsed time in one
+  surface, panel transform and clip, blocks and done drawing all receive the same elapsed time in one
   animation-frame callback. A stall holds the whole moment at its last painted progress; it resumes on the same
   curves, with fewer frames. Other reflows and moments keep their existing clocks.
 - **Done** (`done`): the export's done state settles (the file line glides up from where it stood under the calendar),
@@ -616,20 +616,10 @@ stroke, as the intro draws the line). Timings are in the table above.
   or a small hook), and the done mark (SVG `pathLength`, a CSS keyframe would do).
 - **Review:** `EclipseMotion.capture.freeze()` holds every new movement on its first frame, `seek(ms)` moves them and
   `release()` lets them go; `motion-capture.mjs` uses them for its filmstrips (see "Open and capture").
-- **Variants for the user's choice** (DECISIONS item 38, MOT-19): Reports and Access show a small trial switch, a tool
-  and not the design (`EclipseMotion.trial`), at the end of the page in flow at every width, after its content and
-  in the same tab order, kept across reloads: Reports' «نهاية التصدير» / "Export done" picks the
-  export's done moment as built (0), with the mark drawing while the window shrinks (1), or with the calendar cut away by
-  the window's moving edge (2) (MOT-16; `?done=0|1|2`); Access's «تغيّر الصف» / "Row change" picks the row changing under
-  the leaving window as built, or once it has gone (MOT-17; `?row=0|1`); the records card's new record follows it. The
-  parameter chooses for one load without keeping it and hides the switch; with reduced motion or `?motion=off` every
-  variant is the page as built and no switch shows. Variant 2's straight calendar cut uses a translated overflow window
-  and a counter-translated copy sampled with the panel, surface and riders on that shared main-thread frame clock,
-  so a long frame holds them together; on the sheet the copy stays still on screen. On a short sheet the file line
-  starts far enough below the remaining copy to stay below it until the cut clears it, then rises into the cleared
-  space on the same curve and timing, clipped at the body’s lower edge so it never crosses the actions. A file
-  outside the old scrolling body has no visible start to preserve.
-  `motion-capture.mjs --only=9,10` records them, and `--only=11` the records card's arrival in both options.
+- **One behavior per moment** (DECISIONS item 39): the export settles before its mark draws, and Access's row
+  changes under the leaving window; its new record arrives with the done line. The two export alternatives, the held
+  row change and their trial switches are retired. Old comparison links and stored choices are silently ignored.
+  `motion-capture.mjs --only=9,10` records the retained moments, and `--only=11` the records card's arrival and range.
 
 ## Open and capture
 

@@ -16,12 +16,10 @@
 //              done line arrives on the row; 1440 and 390
 //   7-retry    Daily's first load failed: "Try again" → "Trying again…"; 1440 and 390
 //   8-activity Activity log: the dates dialog opens and closes; "Show older" → "Loading older…"; 1440 and 390
-//   9-export   the export's done moment in its three variants (?done=0|1|2, DECISIONS item 38), and
-//   10-row     Access's row after a deactivation and a reactivation in its two options (?row=0|1): see "9 and 10" below
-//              (moments 1-8 run with ?done=0 and ?row=0, the pages as built)
-//   11-records Access's records card: a new record arrives with the done line, in both row options, and its range (every
-//              kind of change, a record that wraps, the first record, the card's failure, Cancel change, a second change
-//              before the first has settled): see "11" below
+//   9-export   the retained export done moment (DECISIONS item 39)
+//   10-row     Access's retained row change after a deactivation and a reactivation
+//   11-records Access's records arrival and range: every kind of change, wrapping, first record, failure,
+//              Cancel change and a second change before the first settles. See 9, 10 and 11 below.
 // For each moment, size and language it writes to <outDir>:
 //   N-<moment>-<size>-<lang>.webm  recorded in real time (the page's own timing, with every wait it needs)
 //   N-<moment>-<size>-<lang>.png   a filmstrip per beat: every movement frozen on its first frame (motion.js
@@ -99,7 +97,8 @@ const LEFTOVERS = () => {
 async function open(size, lang, url, { video = false, reduced = false, file = false } = {}) {
   const S = SIZES[size];
   const ctx = await browser.newContext({
-    viewport: { width: S.w, height: S.h }, deviceScaleFactor: S.s, reducedMotion: reduced ? "reduce" : "no-preference",
+    viewport: { width: S.w, height: S.h }, deviceScaleFactor: S.s, hasTouch: S.w <= 390, isMobile: S.w <= 390,
+    reducedMotion: reduced ? "reduce" : "no-preference",
     ...(video ? { recordVideo: { dir: VID_TMP, size: { width: Math.min(S.w, 1440), height: Math.min(S.h, 1024) } } } : {}),
   });
   await ctx.addInitScript(INIT);
@@ -162,7 +161,7 @@ const STEPS = {
 const isPhone = (size) => size === "p" || size === "z";
 
 const MOMENTS = {
-  1: { name: "dialog", page: "reports.html?done=0", sizes: ["d", "t", "p", "z"], beats: (size) => [
+  1: { name: "dialog", page: "reports.html", sizes: ["d", "t", "p", "z"], beats: (size) => [
     { label: "open", focus0: "#dlg-export:not(.m-ghost) *", trigger: (p) => p.click("#export-btn"), steps: isPhone(size) ? STEPS.sheetIn : STEPS.dlgIn, clip: dlgClip,
       check: async (p) => (await p.evaluate(() => document.activeElement && document.activeElement.id)) },
     { label: "close (Escape)", focus0: "#export-btn", trigger: (p) => p.keyboard.press("Escape"), steps: isPhone(size) ? STEPS.sheetOut : STEPS.dlgOut, clip: dlgClip,
@@ -178,7 +177,7 @@ const MOMENTS = {
     { label: "the period dialog (the date picker, focus on a day) opens", focus0: "#dlg-range .dp-day", trigger: (p) => p.click('#range-seg [data-range="custom"]'), steps: isPhone(size) ? STEPS.sheetIn : STEPS.dlgIn, clip: dlgClip },
     { label: "and closes (Escape)", trigger: (p) => p.keyboard.press("Escape"), steps: isPhone(size) ? STEPS.sheetOut : STEPS.dlgOut, clip: dlgClip },
   ] },
-  2: { name: "button", page: "reports.html?export=fail&done=0", sizes: ["d", "p"], beats: () => [
+  2: { name: "button", page: "reports.html?export=fail", sizes: ["d", "p"], beats: () => [
     { label: "press: Export CSV → Preparing…", setup: async (p) => { await p.click("#export-btn"); await p.waitForTimeout(450); await p.evaluate(() => { const e = window.__reports.export; e.hold = true; e.revealDelay = 2e9; }); },
       trigger: (p) => p.click("#export-go"), steps: STEPS.roll, clip: dlgClip,
       check: async (p) => { const s = await p.evaluate(() => window.__reports.export.state); return s === "working" ? null : `state ${s} after the press`; } },
@@ -194,14 +193,14 @@ const MOMENTS = {
       trigger: async (p) => { await p.evaluate(() => { window.__reports.export.hold = false; }); await p.waitForFunction(() => window.__reports.export.state === "done"); },
       steps: STEPS.done, clip: dlgClip },
   ] },
-  3: { name: "done", page: "reports.html?done=0", sizes: ["d", "t", "p", "z"], beats: () => [
+  3: { name: "done", page: "reports.html", sizes: ["d", "t", "p", "z"], beats: () => [
     { label: "the export finishes", focus0: "#export-save", setup: async (p) => { await p.click("#export-btn"); await p.waitForTimeout(450); await p.evaluate(() => { window.__reports.export.revealDelay = 2e9; }); await p.click("#export-go"); await p.waitForTimeout(150); },
       trigger: async (p) => { await p.waitForFunction(() => window.__reports.export.state === "done"); },
       steps: STEPS.done, clip: dlgClip,
       check: async (p) => { const f = await p.evaluate(() => document.activeElement.id); return f === "export-save" ? null : `focus on ${f}, not the file's Save`; } },
     { label: "closed with Done", trigger: (p) => p.click("#export-cancel"), steps: STEPS.dlgOut, clip: dlgClip },
   ] },
-  4: { name: "popover", page: "reports.html?done=0", sizes: ["d", "p"], beats: (size) => (size === "d" ? [
+  4: { name: "popover", page: "reports.html", sizes: ["d", "p"], beats: (size) => (size === "d" ? [
     { label: "the status's details open (pointer)", trigger: (p) => p.click("#ops-btn"), steps: STEPS.pop, clip: region(0, 0, 760, 340) },
     { label: "and close (Escape)", focus0: "#ops-btn", trigger: (p) => p.keyboard.press("Escape"), steps: STEPS.popOut, clip: region(0, 0, 760, 340),
       check: async (p) => { const f = await p.evaluate(() => document.activeElement.id); return f === "ops-btn" ? null : `focus on ${f} after Escape`; } },
@@ -214,7 +213,7 @@ const MOMENTS = {
     { label: "the status badge's details", trigger: (p) => p.click("#ops-btn"), steps: STEPS.pop, clip: topBand(330) },
     { label: "the menu while the details are open: one closes, one opens", trigger: (p) => p.click("#menu-btn"), steps: STEPS.pop, clip: topBand(330) },
   ]) },
-  5: { name: "copy", page: "access.html?row=0", sizes: ["d", "p"], beats: () => [
+  5: { name: "copy", page: "access.html", sizes: ["d", "p"], beats: () => [
     { label: "Continue: the view takes the form's place", setup: async (p) => { await p.click('[data-act="pinChange"]'); await p.waitForTimeout(450); await p.fill("#pin-code", "Desk2026Front"); },
       trigger: (p) => p.click("#pin-confirm .acc-do"), steps: STEPS.reflow, clip: dlgClip },
     { label: "Copy → Copied («نسخ» → «نُسخ»)", setup: async (p) => { await p.waitForTimeout(600); },
@@ -227,7 +226,7 @@ const MOMENTS = {
       trigger: async (p) => { await p.evaluate(() => { window.__access.hold = false; window.__access.answer(); }); }, steps: STEPS.line, clip: [dlgClip, noticeClip],
       check: async (p) => { const f = await p.evaluate(() => [document.activeElement.id, document.body.innerHTML.includes("Desk2026Front")]); return f[0] === "notice" && !f[1] ? null : `focus ${f[0]}, code left in the page: ${f[1]}`; } },
   ] },
-  6: { name: "row", page: "access.html?row=0", sizes: ["d", "p"], beats: () => [
+  6: { name: "row", page: "access.html", sizes: ["d", "p"], beats: () => [
     { label: "Deactivate → Deactivating…", setup: async (p) => { await p.click('[data-act="off"][data-id="o2"]'); await p.waitForTimeout(450); await p.evaluate(() => { window.__access.hold = true; }); },
       trigger: (p) => p.click("#off .acc-do"), steps: STEPS.roll, clip: dlgClip },
     { label: "done: the dialog leaves, the row has changed under it, its done line arrives", focus0: "#notice", setup: async (p) => { await p.waitForTimeout(200); },
@@ -394,26 +393,14 @@ async function runMoment(n, size, lang, { file = false } = {}) {
   }
 }
 
-/* ---- 9 and 10 (DECISIONS item 38): the variants the user compares on the live site, each chosen by its URL parameter
- * (which also hides the page's trial switch):
- *   9-export   the export's done moment: ?done=0 as built, 1 the mark draws while the window shrinks, 2 the calendar is
- *              cut away by the window's moving edge, then the mark draws as built
- *   10-row     Access's row after a deactivation (off) and a reactivation (on): ?row=0 as built, 1 the row changes once
- *              the window has gone
- * At 1440 and 390 in Arabic: each variant's real-time video (N-<moment>-v<V>-<size>-ar.webm, the moment from the press
- * to its rest), one sheet comparing the variants frame by frame every 50 ms from the press of Export or of the
- * confirmation to 200 ms after the last movement (N-<moment>[-<act>]-<size>-ar.png; the file is ready at 400 ms and the
- * answer comes at 700 ms, as the sample's own timing has them), and R-N-... the reduced-motion end state beside each
- * variant's animated end; for the export also the range sheet (N-export-range-<size>-ar.png: a failure and its retry,
- * the window closed 100 ms into the movement, the widest file line). In English, and at 768 in both languages, stills
- * only: two frames into the result and the end (N-<moment>[-<act>]-<size>-<lang>.png). It fails a variant whose end
- * differs from variant 0's, a reduced-motion end that differs from the animated one, the trial switch or an animation
- * with reduced motion, focus not moved on the result's own first frame, a done state shown before the file exists, a
- * layout shift while anything moves, anything left at rest, and a console message. */
-const VARIANTS = {
-  9: { name: "export", values: ["0", "1", "2"], param: "done", page: "reports.html", at: 400, until: 1250, acts: [null] },
-  10: { name: "row", values: ["0", "1"], param: "row", page: "access.html", at: 700, until: 1600, acts: ["off", "on"] },
-  11: { name: "records", values: ["0", "1"], param: "row", page: "access.html", at: 700, until: 1600, acts: ["off"] },
+/* ---- 9 and 10 (DECISIONS item 39): the retained export done and Access row moments.
+ * Arabic at 1440 and 390: every 50 ms from the press to rest, video and reduced-motion comparison.
+ * English and 768: two frames into the result and its end. Export's range covers failure/retry, Escape midway
+ * and the widest file line. Checks cover focus, honest completion, layout shifts, cleanup and console errors. */
+const RESULTS = {
+  9: { name: "export", page: "reports.html", at: 400, until: 1250, acts: [null] },
+  10: { name: "row", page: "access.html", at: 700, until: 1600, acts: ["off", "on"] },
+  11: { name: "records", page: "access.html", at: 700, until: 1600, acts: ["off"] },
 };
 const ROW_ID = { off: "o2", on: "o3" };
 const vScale = (size, n) => (size === "p" ? 0.5 : n === "10" ? 0.3 : n === "11" ? 0.5 : 0.4);
@@ -450,12 +437,12 @@ const recClip = async (p) => p.evaluate(() => {
   return { x, y, width: Math.min(vw, Math.ceil(r.right + 16)) - x, height: Math.min(vh, Math.ceil(r.bottom + 24)) - y };
 });
 
-// One variant's moment, frozen and seeked: frames at the given steps from the press (before `at`, the press's own
+// The retained moment, frozen and seeked: frames at the given steps from the press (before `at`, the press's own
 // movements; from `at`, the result's), then its rest. Returns the frames, the end and the region.
-async function vTimeline(n, size, lang, v, act, steps, { url = null } = {}) {
-  const V = VARIANTS[n];
-  const key = `${n}-${V.name}${act ? `-${act}` : ""}-v${v}-${SIZES[size].name}-${lang}${url ? " (" + url + ")" : ""}`;
-  const { ctx, page, errors } = await open(size, lang, url || `${V.page}?${V.param}=${v}`);
+async function vTimeline(n, size, lang, act, steps, { url = null } = {}) {
+  const V = RESULTS[n];
+  const key = `${n}-${V.name}${act ? `-${act}` : ""}-${SIZES[size].name}-${lang}${url ? " (" + url + ")" : ""}`;
+  const { ctx, page, errors } = await open(size, lang, url || V.page);
   await vSetup(page, n, act);
   const clip = await vClip(page, n, size);
   await freeze(page);
@@ -489,11 +476,11 @@ async function vTimeline(n, size, lang, v, act, steps, { url = null } = {}) {
   await ctx.close();
   return { frames, end, clip, w: clip.width * SIZES[size].s };
 }
-// A variant in real time, from the press to its rest (both actions on Access).
-async function vVideo(n, size, lang, v) {
-  const V = VARIANTS[n];
-  const key = `${n}-${V.name}-v${v}-${SIZES[size].name}-${lang}`;
-  const { ctx, page, errors } = await open(size, lang, `${V.page}?${V.param}=${v}`, { video: true });
+// The retained moment in real time, from the press to its rest (both actions on Access).
+async function vVideo(n, size, lang) {
+  const V = RESULTS[n];
+  const key = `${n}-${V.name}-${SIZES[size].name}-${lang}`;
+  const { ctx, page, errors } = await open(size, lang, V.page, { video: true });
   for (const act of V.acts) {
     if (n === "9") { await page.click("#export-btn"); await page.waitForTimeout(700); await page.evaluate(() => { window.__reports.export.revealDelay = 2e9; }); await page.click("#export-go"); }
     else { await page.click(`[data-act="${act}"][data-id="${ROW_ID[act]}"]`); await page.waitForTimeout(700); await page.click(`#${act} .acc-do`); }
@@ -504,10 +491,10 @@ async function vVideo(n, size, lang, v) {
   await rename(vpath, join(OUT, `${key}.webm`));
   if (errors.length) fail(key, `video run console: ${errors.join(" | ")}`);
 }
-// A variant's end with reduced motion (every variant is then the page as built, with no switch).
-async function vReduced(n, size, lang, v, act, clip) {
-  const V = VARIANTS[n], key = `R-${n}-${V.name}-v${v}-${SIZES[size].name}-${lang}`;
-  const { ctx, page, errors } = await open(size, lang, `${V.page}?${V.param}=${v}`, { reduced: true });
+// The retained moment's end with reduced motion.
+async function vReduced(n, size, lang, act, clip) {
+  const V = RESULTS[n], key = `R-${n}-${V.name}-${SIZES[size].name}-${lang}`;
+  const { ctx, page, errors } = await open(size, lang, V.page, { reduced: true });
   await vSetup(page, n, act);
   await vPress(page, n, act);
   await page.waitForTimeout(100);
@@ -520,16 +507,6 @@ async function vReduced(n, size, lang, v, act, clip) {
   await ctx.close();
   return png;
 }
-// Without the parameter, the trial switch is shown, and not with reduced motion.
-async function vSwitch(n, size, lang) {
-  const V = VARIANTS[n], key = `${n}-${V.name}-switch-${SIZES[size].name}-${lang}`;
-  for (const reduced of [false, true]) {
-    const { ctx, page } = await open(size, lang, V.page, { reduced });
-    const shown = await page.evaluate(() => { const s = document.querySelector(".m-trial"); return Boolean(s && !s.hidden && s.getClientRects().length); });
-    if (shown === reduced) fail(key, `the trial switch ${shown ? "shown" : "not shown"}${reduced ? " with reduced motion" : ""}`);
-    await ctx.close();
-  }
-}
 const steps50 = (to) => Array.from({ length: Math.floor(to / 50) + 1 }, (_, i) => i * 50);
 async function vSame(key, what, a, b) {
   const d = await pixelDiff(a, b), k = d ? d.n : 0;
@@ -537,49 +514,42 @@ async function vSame(key, what, a, b) {
   return k;
 }
 
-async function runVariants(n) {
-  const V = VARIANTS[n];
+async function runResults(n) {
+  const V = RESULTS[n];
   for (const lang of LANGS) for (const size of ["d", "p", "t"]) {
     if (!SIZE_KEYS.includes(size)) continue;
     const full = lang === "ar" && size !== "t";
     for (const act of V.acts) {
       const base = `${n}-${V.name}${act ? `-${act}` : ""}-${SIZES[size].name}-${lang}`;
       console.log(base);
-      // Arabic at 1440 and 390: every 50 ms; English and 768: two frames into the result, and the end.
       const steps = full ? steps50(V.until) : [V.at + 150, V.at + 300];
-      const runs = {};
-      for (const v of V.values) runs[v] = await vTimeline(n, size, lang, v, act, steps);
-      for (const v of V.values.slice(1)) await vSame(base, `${V.param}=${v}'s end against ${V.param}=${V.values[0]}'s`, runs[V.values[0]].end, runs[v].end);
-      // The sheet: the variants in rows, in blocks of up to 13 steps, so a column is one moment in every variant.
-      const all = (v) => [...runs[v].frames, { t: "200 ms after", png: runs[v].end, w: runs[v].w, s: vScale(size, n) }];
-      const per = full ? 13 : steps.length + 1, rows = [];
-      for (let i = 0; i < all(V.values[0]).length; i += per) for (const v of V.values) rows.push({ label: `${V.param}=${v}`, frames: all(v).slice(i, i + per) });
+      const r = await vTimeline(n, size, lang, act, steps);
+      const all = [...r.frames, { t: "200 ms after", png: r.end, w: r.w, s: vScale(size, n) }];
+      const per = full ? 13 : all.length, rows = [];
+      for (let i = 0; i < all.length; i += per) rows.push({ label: "As built", frames: all.slice(i, i + per) });
       await compose(join(OUT, `${base}.png`), rows);
       if (!full) continue;
-      const rrows = [];
-      for (const v of V.values) {
-        const red = await vReduced(n, size, lang, v, act, runs[v].clip);
-        const k = await vSame(`R-${base}`, `${V.param}=${v}: the reduced-motion end against the animated end`, runs[v].end, red);
-        rrows.push({ label: `${V.param}=${v}: animated end (left), reduced motion (right), ${k} px differ`, frames: [{ t: "animated, 200 ms after", png: runs[v].end, w: runs[v].w, s: vScale(size, n) }, { t: "reduced motion, at once", png: red, w: runs[v].w, s: vScale(size, n) }] });
-      }
-      await compose(join(OUT, `R-${base}.png`), rrows);
+      const red = await vReduced(n, size, lang, act, r.clip);
+      const k = await vSame(`R-${base}`, "the reduced-motion end against the animated end", r.end, red);
+      await compose(join(OUT, `R-${base}.png`), [{ label: `animated end (left), reduced motion (right), ${k} px differ`, frames: [
+        { t: "animated, 200 ms after", png: r.end, w: r.w, s: vScale(size, n) },
+        { t: "reduced motion, at once", png: red, w: r.w, s: vScale(size, n) }] }]);
     }
     if (!full) continue;
-    await vSwitch(n, size, lang);
-    if (VIDEO) for (const v of V.values) await vVideo(n, size, lang, v);
+    if (VIDEO) await vVideo(n, size, lang);
     if (n === "9") await runExportRange(size, lang);
   }
 }
 
-// The export's range, per variant: a failure and its retry, the window closed 100 ms into the movement (Escape), and
+// The export's range: a failure and its retry, the window closed 100 ms into the movement (Escape), and
 // the widest file line (the whole history, 74,880 rows).
 async function runExportRange(size, lang) {
-  const V = VARIANTS[9], key = `9-export-range-${SIZES[size].name}-${lang}`;
+  const V = RESULTS[9], key = `9-export-range-${SIZES[size].name}-${lang}`;
   console.log(key);
   const rows = [], doneSteps = [0, 50, 100, 150, 200, 300, 450, 700];
-  for (const v of V.values) {
+  {
     {
-      const { ctx, page, errors } = await open(size, lang, `reports.html?export=fail&done=${v}`);
+      const { ctx, page, errors } = await open(size, lang, "reports.html?export=fail");
       await page.click("#export-btn");
       await page.waitForTimeout(500);
       const clip = await vClip(page, "9", size);
@@ -597,13 +567,13 @@ async function runExportRange(size, lang) {
       await vRest(page);
       frames.push(await vFrame(page, "200 ms after", clip, size, "9"));
       const left = await page.evaluate(LEFTOVERS);
-      if (left.length) fail(key, `done=${v}, the retry: left at rest: ${left.join("; ")}`);
-      if (errors.length) fail(key, `done=${v}, the retry: console: ${errors.join(" | ")}`);
-      rows.push({ label: `done=${v}: a failure, then Try again (ms from the file being ready)`, frames });
+      if (left.length) fail(key, `the retry: left at rest: ${left.join("; ")}`);
+      if (errors.length) fail(key, `the retry: console: ${errors.join(" | ")}`);
+      rows.push({ label: `a failure, then Try again (ms from the file being ready)`, frames });
       await ctx.close();
     }
     {
-      const { ctx, page, errors } = await open(size, lang, `reports.html?done=${v}`);
+      const { ctx, page, errors } = await open(size, lang, "reports.html");
       await vSetup(page, "9");
       const clip = await vClip(page, "9", size);
       await vPress(page, "9");
@@ -617,33 +587,25 @@ async function runExportRange(size, lang) {
       await vRest(page);
       frames.push(await vFrame(page, "200 ms after", clip, size, "9"));
       const f = await page.evaluate(() => document.activeElement && document.activeElement.id), left = await page.evaluate(LEFTOVERS);
-      if (f !== "export-btn") fail(key, `done=${v}, closed mid-movement: focus on ${f}, not the export button`);
-      if (left.length) fail(key, `done=${v}, closed mid-movement: left at rest: ${left.join("; ")}`);
-      if (errors.length) fail(key, `done=${v}, closed mid-movement: console: ${errors.join(" | ")}`);
-      rows.push({ label: `done=${v}: closed with Escape 100 ms after the file is ready`, frames });
+      if (f !== "export-btn") fail(key, `closed mid-movement: focus on ${f}, not the export button`);
+      if (left.length) fail(key, `closed mid-movement: left at rest: ${left.join("; ")}`);
+      if (errors.length) fail(key, `closed mid-movement: console: ${errors.join(" | ")}`);
+      rows.push({ label: `closed with Escape 100 ms after the file is ready`, frames });
       await ctx.close();
     }
     {
-      const r = await vTimeline("9", size, lang, v, null, doneSteps.map((t) => V.at + t), { url: `reports.html?from=2026-08-02&to=2026-09-22&done=${v}` });
-      rows.push({ label: `done=${v}: the widest file line (2 August to 22 September, 74,880 rows; ms from the file being ready)`, frames: [...r.frames.map((f) => ({ ...f, t: `${parseInt(f.t, 10) - V.at} ms` })), { t: "200 ms after", png: r.end, w: r.w, s: vScale(size, "9") }] });
+      const r = await vTimeline("9", size, lang, null, doneSteps.map((t) => V.at + t), { url: "reports.html?from=2026-08-02&to=2026-09-22" });
+      rows.push({ label: `the widest file line (2 August to 22 September, 74,880 rows; ms from the file being ready)`, frames: [...r.frames.map((f) => ({ ...f, t: `${parseInt(f.t, 10) - V.at} ms` })), { t: "200 ms after", png: r.end, w: r.w, s: vScale(size, "9") }] });
     }
   }
   await compose(join(OUT, `${key}.png`), rows);
 }
 
-/* ---- 11 (DECISIONS item 38): Access's records card. A change writes its record, which arrives at the top of the card
- * in the same movement as the done line: the records below slide down, the new one is uncovered and its words rise when
- * the done line's do, the oldest of the eight leaves under the card's bottom edge. It follows the row option (?row=0|1).
- * At 1440 in Arabic: a deactivation in each row option, frame by frame every 50 ms from the press of the confirmation
- * to 200 ms after the last movement (11-records-off-1440-ar.png; the answer comes at 700 ms), each option's real-time
- * video (11-records-v<V>-1440-ar.webm, the whole page), and R-11-... the reduced-motion end beside each animated end;
- * then the range (11-records-range-1440-ar.png, ms from the answer): every kind of change, a record that wraps (the card
- * grows), a wrapped record leaving (it shrinks), the first record into an empty card, the card's own failure and Cancel
- * change (nothing in the card moves, its end equals its start), and a second change landing 150 ms into the first. In
- * English at 1440, and at 1024 in both languages, end states only (the deactivation's two options and the range).
- * It fails: an end that differs between the options or from its reduced-motion end, focus not on the done line on the
- * result's first frame (on the code's button after Cancel change), records that are not the ones the change wrote, any
- * movement in the card where nothing arrives, a layout shift, anything left at rest, a console message. */
+/* ---- 11 (DECISIONS items 38, 39): Access's retained records arrival and range.
+ * Arabic at 1440: every 50 ms from confirmation, video and reduced-motion comparison. English at 1440 and both
+ * languages at 1024: end states. The range covers every change, wrapping/growing/shrinking, first record, failure,
+ * Cancel change and a second change at 150 ms. Checks cover focus, record identity, stillness where nothing arrives,
+ * layout shifts, cleanup, reduced-motion equality and console errors. */
 const REC_CASES = [
   { id: "pinCreate", label: "a code created (?pin=none: four records, the card grows by one)", q: "pin=none", act: "pinCreate" },
   { id: "pinChange", label: "the code changed", act: "pinChange" },
@@ -651,15 +613,15 @@ const REC_CASES = [
   { id: "add", label: "an owner added", act: "add" },
   { id: "reset", label: "a password reset", act: "reset:o2" },
   { id: "mine", label: "one's own password changed", act: "mine:o1" },
-  { id: "on", label: "an owner reactivated", act: "on:o3", rows: true },
-  { id: "grow", label: "a record that wraps (?case=long): the card grows", q: "case=long", act: "off:o2", rows: true },
-  { id: "shrink", label: "a wrapped record leaves (?case=long, after two changes made at once): the card shrinks", q: "case=long", pre: ["add", "pinOff"], act: "off:n4", rows: true },
-  { id: "none", label: "?records=none: the first record replaces the \"none yet\" line", q: "records=none", act: "off:o2", rows: true },
-  { id: "error", label: "?records=error: nothing arrives, the card is unchanged", q: "records=error", act: "off:o2", rows: true, still: true },
+  { id: "on", label: "an owner reactivated", act: "on:o3" },
+  { id: "grow", label: "a record that wraps (?case=long): the card grows", q: "case=long", act: "off:o2" },
+  { id: "shrink", label: "a wrapped record leaves (?case=long, after two changes made at once): the card shrinks", q: "case=long", pre: ["add", "pinOff"], act: "off:n4" },
+  { id: "none", label: "?records=none: the first record replaces the \"none yet\" line", q: "records=none", act: "off:o2" },
+  { id: "error", label: "?records=error: nothing arrives, the card is unchanged", q: "records=error", act: "off:o2", still: true },
   { id: "cancel", label: "Cancel change in the code's view: no record, nothing moves", act: "pinChange", cancel: true, still: true },
   { id: "second", label: "a second change (Reactivate) lands 150 ms into the first (the review's hold allows it)", act: "off:o2", then: "on:o3", at: 150 },
 ];
-const REC_STEPS = { 0: [0, 100, 150, 200, 250, 300, 400], 1: [0, 220, 300, 350, 400, 500, 600] };
+const REC_STEPS = [0, 100, 150, 200, 250, 300, 400];
 // A change as the owner makes it: its window opened and filled; returns the confirming press.
 async function recPrepare(p, spec) {
   const [act, id] = spec.split(":");
@@ -676,10 +638,10 @@ async function recSecond(p, spec) {
   const sel = await recPrepare(p, spec);
   await p.evaluate((s) => { window.__access.hold = true; document.querySelector(s).click(); window.__access.hold = false; window.__access.answer(); }, sel);
 }
-// One case in one row option: frames from the answer (none for an end state), its end, and its checks.
-async function recCase(c, size, lang, v, steps, { reduced = false } = {}) {
-  const key = `11-records-${c.id}-v${v}-${SIZES[size].name}-${lang}${reduced ? "-reduced" : ""}`;
-  const { ctx, page, errors } = await open(size, lang, `access.html?row=${v}${c.q ? `&${c.q}` : ""}`, { reduced });
+// One retained records case: frames from the answer (none for an end state), its end, and its checks.
+async function recCase(c, size, lang, steps, { reduced = false } = {}) {
+  const key = `11-records-${c.id}-${SIZES[size].name}-${lang}${reduced ? "-reduced" : ""}`;
+  const { ctx, page, errors } = await open(size, lang, `access.html${c.q ? `?${c.q}` : ""}`, { reduced });
   // Earlier changes at once (motion off for them only).
   for (const spec of c.pre || []) {
     await page.evaluate(() => window.EclipseMotion.setGate(() => false));
@@ -751,40 +713,38 @@ async function recCase(c, size, lang, v, steps, { reduced = false } = {}) {
   return { frames, end, clip, w: clip.width * SIZES[size].s };
 }
 async function runRecords() {
-  const V = VARIANTS[11];
+  const V = RESULTS[11];
   for (const lang of LANGS) for (const size of ["d", "l"]) {
     if (!SIZE_KEYS.includes(size)) continue;
     const full = lang === "ar" && size === "d";
     const base = `11-records-off-${SIZES[size].name}-${lang}`;
     console.log(base);
-    // The deactivation in each row option: every 50 ms in Arabic at 1440, else two frames into the result and the end.
+    // The retained deactivation: every 50 ms in Arabic at 1440, else two frames into the result and the end.
     const steps = full ? steps50(V.until) : [V.at + 150, V.at + 300];
-    const runs = {};
-    for (const v of V.values) runs[v] = await vTimeline("11", size, lang, v, "off", steps);
-    await vSame(base, "row=1's end against row=0's", runs["0"].end, runs["1"].end);
-    const all = (v) => [...runs[v].frames, { t: "200 ms after", png: runs[v].end, w: runs[v].w, s: vScale(size, "11") }];
+    const r = await vTimeline("11", size, lang, "off", steps);
+    const all = [...r.frames, { t: "200 ms after", png: r.end, w: r.w, s: vScale(size, "11") }];
     const per = full ? 13 : steps.length + 1, rows = [];
-    for (let i = 0; i < all("0").length; i += per) for (const v of V.values) rows.push({ label: `row=${v}`, frames: all(v).slice(i, i + per) });
+    for (let i = 0; i < all.length; i += per) rows.push({ label: "As built", frames: all.slice(i, i + per) });
     await compose(join(OUT, `${base}.png`), rows);
     const rrows = [];
-    for (const v of V.values) {
-      const red = await vReduced("11", size, lang, v, "off", runs[v].clip);
-      const k = await vSame(`R-${base}`, `row=${v}: the reduced-motion end against the animated end`, runs[v].end, red);
-      rrows.push({ label: `row=${v}: animated end (left), reduced motion (right), ${k} px differ`, frames: [{ t: "animated, 200 ms after", png: runs[v].end, w: runs[v].w, s: vScale(size, "11") }, { t: "reduced motion, at once", png: red, w: runs[v].w, s: vScale(size, "11") }] });
+    {
+      const red = await vReduced("11", size, lang, "off", r.clip);
+      const k = await vSame(`R-${base}`, `the reduced-motion end against the animated end`, r.end, red);
+      rrows.push({ label: `animated end (left), reduced motion (right), ${k} px differ`, frames: [{ t: "animated, 200 ms after", png: r.end, w: r.w, s: vScale(size, "11") }, { t: "reduced motion, at once", png: red, w: r.w, s: vScale(size, "11") }] });
     }
     await compose(join(OUT, `R-${base}.png`), rrows);
-    if (full && VIDEO) for (const v of V.values) await vVideo("11", size, lang, v);
+    if (full && VIDEO) await vVideo("11", size, lang);
     // The range: in Arabic at 1440 frame by frame; elsewhere its ends.
     const key = `11-records-range-${SIZES[size].name}-${lang}`;
     console.log(key);
     const rangeRows = [], redRows = [];
-    for (const c of REC_CASES) for (const v of c.rows ? V.values : ["0"]) {
-      const r = await recCase(c, size, lang, v, full ? (c.then ? [0, 100, 200, 250, 300, 400, 500, 650] : REC_STEPS[v]) : []);
-      const red = await recCase(c, size, lang, v, [], { reduced: true });
+    for (const c of REC_CASES) {
+      const r = await recCase(c, size, lang, full ? (c.then ? [0, 100, 200, 250, 300, 400, 500, 650] : REC_STEPS) : []);
+      const red = await recCase(c, size, lang, [], { reduced: true });
       const same = r.clip.width === red.clip.width && r.clip.height === red.clip.height;
-      if (!same) fail(`R-${key}`, `${c.id}, row=${v}: the reduced-motion end's region differs from the animated one's`);
-      const k = same ? await vSame(`R-${key}`, `${c.id}, row=${v}: the reduced-motion end against the animated end`, r.end, red.end) : "-";
-      const label = `${c.label}${c.rows ? `, row=${v}` : ""}`;
+      if (!same) fail(`R-${key}`, `${c.id}, the reduced-motion end's region differs from the animated one's`);
+      const k = same ? await vSame(`R-${key}`, `${c.id}, the reduced-motion end against the animated end`, r.end, red.end) : "-";
+      const label = c.label;
       rangeRows.push({ label: full ? `${label} (ms from the answer)` : label, frames: [...r.frames, { t: full ? "200 ms after" : label.slice(0, 44), png: r.end, w: r.w, s: full ? 0.4 : 0.32 }] });
       redRows.push({ label: `${label}: animated end (left), reduced motion (right), ${k} px differ`, frames: [{ t: "animated", png: r.end, w: r.w, s: 0.32 }, { t: "reduced motion", png: red.end, w: red.w, s: 0.32 }] });
     }
@@ -808,7 +768,7 @@ try {
       for (const lang of LANGS) await runMoment(n, size, lang);
     }
   }
-  for (const n of Object.keys(VARIANTS)) if (n !== "11" && (!ONLY.length || ONLY.includes(n))) await runVariants(n);
+  for (const n of Object.keys(RESULTS)) if (n !== "11" && (!ONLY.length || ONLY.includes(n))) await runResults(n);
   if (!ONLY.length || ONLY.includes("11")) await runRecords();
   if (FILE_RUN) for (const n of ["1", "3", "6"]) {
     if (ONLY.length && !ONLY.includes(n)) continue;

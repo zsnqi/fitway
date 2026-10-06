@@ -48,11 +48,8 @@
     reflowMin: 300, reflowMax: 420,                     // a dialog's edges settling around changed content
     ring: 380, check: 260, checkAt: 260, rise: 300, riseAt: 140,  // the done mark and its words (the export's done)
     doneAfterReflow: 140,                               // ...once its dialog has mostly settled
-    cutBy: 0.9,                                         // a block cut away is gone at 90% of the settling (variant 2)
-    doneWithSettle: { ringEase: EASE.settle, riseAt: 80, checkAt: 200 },  // the done mark with the settling (variant 1)
     lineCheck: 260, lineCheckAt: 80, lineRise: 300,     // a done line on the page
     lineAfterClose: 150,                                // ...which waits until its dialog's scrim has mostly gone
-    lineAfterHold: 100,                                 // ...or after a held change, once the rows below mostly made room
   };
 
   /* ---- bookkeeping. Every animation goes through anim(), so a review can freeze them on their first frame and seek
@@ -260,14 +257,8 @@
    * actions with the bottom edge; a block that stays slides to its new place; a block that is new is uncovered as the
    * space opens; one that leaves leaves at once. pairs: [[before, after]] lets one block stand for another (the
    * export's file line, which stays the file the owner asked for). own: blocks with their own entrance (the done
-   * state). The mutation runs at once: focus, text and announcements are final before anything moves.
-   * cut (the export's done, variant 2 of DECISIONS item 38): { leave, into, ride }. The blocks in leave (before the
-   * change) do not leave at once: an inert copy keeps their picture in place and the window's moving edges cut it away,
-   * uncovering in reverse. The lower edge is the top of what follows them (into, after the change): it rises from
-   * their bottom to into's top, and the blocks in ride (into's first lines, the done mark and its words) rise with it.
-   * On a bottom sheet (the bottom edge still) the copy stays still and the top edge coming down cuts it away; from
-   * 721 px it rides with the top edge and the rising lower edge cuts it away. */
-  function reflow(dlg, mutate, { own: owned = [], pairs = [], cut = null } = {}) {
+   * state). The mutation runs at once: focus, text and announcements are final before anything moves. */
+  function reflow(dlg, mutate, { own: owned = [], pairs = [] } = {}) {
     const p0 = dlg.open ? panelOf(dlg) : null;
     if (!on() || !p0) { finish(REFLOWS.get(dlg)); mutate(); return; }
     finish(dlg);                                          // an opening ends first: its edges are where this starts
@@ -295,9 +286,6 @@
     const before = new Map();
     for (const b of blocksOf(p0)) if (visible(b.el)) { const r = b.el.getBoundingClientRect(); if (b.edge !== "body" || inSight(r)) before.set(b.el, r); }
     pairs.forEach(([a]) => { if (visible(a)) { const r = a.getBoundingClientRect(); if (inSight(r)) before.set(a, r); } });
-    // Blocks cut away instead of leaving at once: their picture, taken as seen now.
-    const leaving = cut ? (cut.leave || []).map((f) => (typeof f === "function" ? f() : f)).filter((el) => visible(el) && inSight(el.getBoundingClientRect()))
-      .map((el) => ({ r: el.getBoundingClientRect(), g: ghostOf(el) })) : [];
     finish(prevKey);
     mutate();
     const p1 = panelOf(dlg);
@@ -308,16 +296,6 @@
     if (!p1 || scrolls(p1)) return;
     const A = p1.getBoundingClientRect();
     const dTop = B.top - A.top, dBot = B.bottom - A.bottom;
-    // The cut's lower edge: from the leaving blocks' bottom (D0) to the top of what follows them (D1), measured before
-    // anything moves; the blocks that ride with it, by where they end.
-    let cutPlan = null;
-    if (leaving.length) {
-      const into = typeof cut.into === "function" ? cut.into() : cut.into;
-      if (into && visible(into)) {
-        const riders = (typeof cut.ride === "function" ? cut.ride() : cut.ride || []).filter((el) => el && visible(el));
-        cutPlan = { D0: Math.max(...leaving.map((l) => l.r.bottom)), D1: into.getBoundingClientRect().top, riders, still: Math.abs(dBot) < 0.5 };
-      }
-    }
     const ownedEls = owned.map((o) => (typeof o === "function" ? o() : o)).filter(Boolean);
     owned = ownedEls;
     const pairOf = new Map(pairs.map(([a, b]) => [typeof b === "function" ? b() : b, a]).filter(([b]) => b));
@@ -336,17 +314,10 @@
     }
     // A pair's new block inside a block of its own (the file line inside the done state) slides from its pair too.
     for (const [b, a] of pairOf) {
-      if (moves.some((m) => m.el === b) || !visible(b) || (!before.has(a) && !cutPlan?.still)) continue;
+      if (moves.some((m) => m.el === b) || !visible(b) || !before.has(a)) continue;
       const r0 = before.get(a), r1 = b.getBoundingClientRect();
       const dx = r0 ? r0.left - r1.left : 0, dy = r0 ? r0.top - r1.top : 0;
-      // On a short sheet the old file may be outside its scrolling body, so it has no visible start.
-      // Even a visible start can cross the calendar before the descending cut clears it. Keep the file
-      // below the copy through cutBy of the eased progress: y(cutBy) >= D0 + 8. Once the copy is gone,
-      // it rises into the cleared space on the same curve and clock. This extra travel does not set the duration.
-      const clearDy = cutPlan?.still ? Math.max(dy, (cutPlan.D0 + 8 - r1.top) / (1 - T.cutBy)) : dy;
-      // Extra travel may start below the body: its lower edge also cuts the file, so it cannot cross the actions.
-      const clearBottom = clearDy > dy ? r1.bottom - p1.querySelector(":scope > .dlg-body").getBoundingClientRect().bottom : null;
-      moves.push({ el: b, dx, dy, clearDy, clearBottom });
+      moves.push({ el: b, dx, dy });
     }
     if (Math.abs(dTop) < 0.5 && Math.abs(dBot) < 0.5 && !moves.some((m) => !m.reveal && (Math.abs(m.dx) > 0.5 || Math.abs(m.dy) > 0.5))) {
       // Nothing moved: a new block is still uncovered, quickly, where it stands.
@@ -392,60 +363,16 @@
     for (const m of moves) {
       if (m.reveal) anims.push(anim(m.el, [{ clipPath: `inset(-4px -8px ${px(m.h + 4)} -8px)` }, { clipPath: "inset(-4px -8px -4px -8px)" }], o));
       else {
-        const dy = m.clearDy ?? m.dy;
+        const dy = m.dy;
         if (Math.abs(m.dx) > 0.5 || Math.abs(dy - dTop) > 0.5) {
           const from = { transform: `translate(${px(m.dx)}, ${px(dy - dTop)})` }, to = { transform: "translate(0px, 0px)" };
-          if (m.clearBottom != null) {
-            from.clipPath = `inset(0px -8px ${px(m.clearBottom + dy)} -8px)`;
-            to.clipPath = `inset(0px -8px ${px(m.clearBottom)} -8px)`;
-          }
           anims.push(anim(m.el, [from, to], o));
         }
       }
     }
-    // The cut: each leaving block's copy sits in the panel where the block was, and its cutting edge has passed all of
-    // it at T.cutBy of the movement (90%), so no sliver of it lingers in the settling's slow end. Every edge and place
-    // is linear in the movement's eased progress, so each is one keyframe pair on the movement's own curve.
-    const ghosts = [];
-    if (cutPlan) {
-      const { D0, D1, riders, still } = cutPlan, E = T.cutBy;
-      for (const { r, g } of leaving) {
-        // A translated overflow window and its counter-translated picture keep the straight cut's choreography.
-        // In the export's done moment these effects share the panel and surface's main-thread frame clock.
-        // The window extends 24 px on each side (the old clip's allowance); only its horizontal edge cuts the copy.
-        const window = document.createElement("div");
-        window.className = "m-cut-window";
-        window.setAttribute("aria-hidden", "true");
-        window.inert = true;
-        window.style.cssText = `position:absolute;display:block;overflow:hidden;pointer-events:none;` +
-          `left:${px(r.left - A.left - p1.clientLeft - 24)};top:${px(r.top - A.top - dTop - p1.clientTop)};` +
-          `width:${px(r.width + 48)};height:${px(r.height)};will-change:transform`;
-        g.classList.add("m-cut");
-        g.style.cssText += `;position:absolute;left:24px;top:0;` +
-          `width:${px(r.width)};height:${px(r.height)};margin:0;box-sizing:border-box;will-change:transform`;
-        window.append(g);
-        p1.append(window);
-        ghosts.push(window);
-        const travel = r.height / E;
-        if (still) {
-          // A sheet: the copy keeps its place on screen (the panel carries it by -dTop, it moves back by dTop) and the top
-          // edge coming down cuts it away from above, to its last line (so its last sliver is the calendar's quiet last
-          // row, not the chosen day's white mark where the two edges would meet).
-          anims.push(anim(window, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(dTop + travel)})` }], o),
-            anim(g, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(-travel)})` }], o));
-        } else {
-          // From 721 px: the copy rides with the top edge (as the title does); the rising lower edge cuts it.
-          anims.push(anim(window, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(-travel)})` }], o),
-            anim(g, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(travel)})` }], o));
-        }
-      }
-      // What rides with the lower edge starts D0 - D1 below where it ends (the panel carries it by dTop meanwhile); it
-      // keeps at least 8 px below the cut.
-      for (const el of riders) anims.push(anim(el, [{ transform: `translateY(${px(D0 - D1 - dTop)})` }, { transform: "translateY(0px)" }], o));
-    } else leaving.forEach((l) => l.g.remove());
     const key = {};
     REFLOWS.set(dlg, key);
-    own(key, anims, () => { s.remove(); ghosts.forEach((g) => g.remove()); p1.classList.remove("m-reflow"); if (REFLOWS.get(dlg) === key) REFLOWS.delete(dlg); },
+    own(key, anims, () => { s.remove(); p1.classList.remove("m-reflow"); if (REFLOWS.get(dlg) === key) REFLOWS.delete(dlg); },
       dlg.id === "dlg-export" && ownedEls.some((el) => el.id === "export-done") ? true : null);
   }
 
@@ -455,32 +382,17 @@
    * transforms only, while the new line arrives in the space as it opens. collect() names the blocks, as [key, element]
    * pairs, before and after the change (a re-render makes new elements: the key pairs them). A block inside another
    * moving block moves only by the difference.
-   * wait and hold (Access's row, option 1 of DECISIONS item 38): the change is made at once (focus and announcements are
-   * final), but the blocks in hold keep their old picture, as an inert copy over each, for wait ms (until the window has
-   * gone); the changed blocks are hidden meanwhile. Then the copies go, the changed blocks show, the blocks that moved
-   * slide from where they were, and a held block that grew has its bottom edge slide down with them.
    * list (Access's records card, DECISIONS item 38): a list whose newest row arrives at its top in the same movement
    * (listSeen and listPlan below). */
   let flipKey = null;
   // Positions in the document (a scroll between the two measurements moves nothing).
   const docRect = (el) => { const r = el.getBoundingClientRect(); return { left: r.left + scrollX, top: r.top + scrollY }; };
-  function flip(collect, mutate, { wait = 0, hold = [], list = null } = {}) {
+  function flip(collect, mutate, { list = null } = {}) {
     if (!on()) { finish(flipKey); if (list) endList(list.box); mutate(); return; }
     const before = new Map();
     for (const [k, el] of collect()) if (visible(el)) before.set(k, docRect(el));
     const seen = list ? listSeen(list) : null;
     finish(flipKey);
-    // The held blocks' pictures, placed over them before the change (an absolutely placed copy takes no room).
-    const held = wait > 0 ? hold.filter(visible).map((el) => {
-      const r = el.getBoundingClientRect(), g = ghostOf(el);
-      g.classList.add("m-held");
-      g.style.cssText += `;position:absolute;left:0px;top:0px;width:${px(r.width)};height:${px(r.height)};margin:0;box-sizing:border-box`;
-      el.after(g);
-      const at = g.getBoundingClientRect();
-      g.style.left = px(r.left - at.left);
-      g.style.top = px(r.top - at.top);
-      return { el, g, h: r.height };
-    }) : [];
     mutate();
     // The slide starts once the change's own task is over: a focus that moves into the changed place (and the scroll it
     // may take) lands where it would without motion.
@@ -499,36 +411,17 @@
         m.ry = m.dy - (anc ? anc.dy : 0);
       }
       const move = moves.filter((m) => Math.abs(m.rx) > 0.5 || Math.abs(m.ry) > 0.5);
-      const grown = held.map((h) => ({ el: h.el, d: h.el.getBoundingClientRect().height - h.h })).filter((g) => g.d > 0.5);
       const plan = seen ? listPlan(list, seen) : null;
-      if (!move.length && !held.length && !plan) return;
-      const dist = Math.max(0, ...move.map((m) => Math.abs(m.ry)), ...grown.map((g) => g.d), plan ? plan.dist : 0);
-      // Held, the slide starts as the copies go (a block outside the held ones keeps its old place until then).
-      const o = { duration: Math.round(Math.min(T.reflowMax, Math.max(T.reflowMin, 260 + dist * 0.5))), easing: EASE.settle, ...(wait ? { delay: wait, fill: "backwards" } : {}) };
+      if (!move.length && !plan) return;
+      const dist = Math.max(0, ...move.map((m) => Math.abs(m.ry)), plan ? plan.dist : 0);
+      const o = { duration: Math.round(Math.min(T.reflowMax, Math.max(T.reflowMin, 260 + dist * 0.5))), easing: EASE.settle };
       // The list's new row says its words when the done line says its own (MOT-17): one moment in two places.
-      if (plan) plan.start(o, wait ? wait + T.lineAfterHold : T.lineAfterClose);
-      // The swap at wait, inside each animation's time (so a review that seeks through it sees it): the copy is cut away
-      // whole and the changed block shown whole, in one frame.
-      const all = wait + o.duration, f = wait / all, swap = "steps(1, start)";
-      const holding = held.flatMap(({ el, g }) => [
-        anim(el, [{ offset: 0, clipPath: "inset(50%)" }, { offset: f, clipPath: "inset(50%)", easing: swap }, { offset: 1, clipPath: "inset(-200px)" }], { duration: all }),
-        anim(g, [{ offset: 0, clipPath: "inset(0px)" }, { offset: f, clipPath: "inset(0px)", easing: swap }, { offset: 1, clipPath: "inset(50%)" }], { duration: all, fill: "forwards" }),
-      ]);
+      if (plan) plan.start(o, T.lineAfterClose);
       const key = {};
       flipKey = key;
-      const caps = [];
       own(key, [
-        ...holding,
         ...move.map((m) => anim(m.el, [{ transform: `translate(${px(m.rx)}, ${px(m.ry)})` }, { transform: "translate(0px, 0px)" }], o)),
-        // A held block that grew: its bottom edge, with its corners and its line, slides down to its new place with the
-        // blocks below (the cap stays hidden with its block until the swap).
-        ...grown.flatMap((g) => {
-          const R = roundOf(g.el), c = capOf(g.el, g.d);
-          caps.push(c);
-          return [anim(g.el, [{ clipPath: `inset(0px 0px ${px(g.d)} 0px ${R})` }, { clipPath: `inset(0px 0px 0px 0px ${R})` }], { ...o, fill: "none" }),
-            anim(c, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(g.d)})` }], { ...o, fill: "both" })];
-        }),
-      ], () => { held.forEach((h) => h.g.remove()); caps.forEach((c) => c.remove()); if (flipKey === key) flipKey = null; });
+      ], () => { if (flipKey === key) flipKey = null; });
     });
   }
 
@@ -536,8 +429,8 @@
    * A change that writes a record shows it at the top of its list in the same movement as the change's done line, so
    * the owner sees the record their action wrote while the done line stands on the row they changed. The rows below
    * slide down to make room; the new row is uncovered as the space opens (its window's lower edge rides on the top of
-   * the row below it, so nothing crosses a rule); its words rise into place on the done line's own timing (from 150 ms,
-   * or 100 ms after a held change). The oldest row leaves at the box's bottom edge: an inert copy rides down with the
+   * the row below it, so nothing crosses a rule); its words rise into place on the done line's own timing (from 150 ms).
+   * The oldest row leaves at the box's bottom edge: an inert copy rides down with the
    * rows and is cut by a line inside the box's bottom padding, where its rule ends, so it is gone as the rows settle.
    * When the new row and the leaving one differ in height (a record that wraps) the box's bottom edge moves with them,
    * and the line that cuts the leaving copy with it: a clip lets the edge down when it grows (its line and corners drawn
@@ -820,11 +713,11 @@
       anim(inner, [{ transform: `translateY(${d}px)` }, { transform: "translateY(0px)" }], { duration, delay, easing: EASE.roll, fill: "backwards" }),
     ];
   }
-  function done(el, { line = false, delay = 0, times = null } = {}) {
+  function done(el, { line = false, delay = 0 } = {}) {
     if (!on() || !visible(el)) return;
     finish(el);
     const anims = [];
-    const t = times ? { ...T, ...times } : T;
+    const t = T;
     const ring = el.querySelector(".m-ring"), check = el.querySelector(".m-check");
     if (line) {
       const inner = el.querySelector(".m-rise");
@@ -832,55 +725,13 @@
       const a = check && stroke(check, delay + t.lineCheckAt, t.lineCheck);
       if (a) anims.push(a);
     } else {
-      const a = ring && stroke(ring, delay, t.ring, t.ringEase || EASE.draw);
+      const a = ring && stroke(ring, delay, t.ring, EASE.draw);
       if (a) anims.push(a);
       const b = check && stroke(check, delay + t.checkAt, t.check);
       if (b) anims.push(b);
       el.querySelectorAll(".m-rise").forEach((inner) => anims.push(...rise(inner.closest(".m-win") || inner.parentElement, inner, delay + t.riseAt, t.rise)));
     }
     if (anims.length) own(el, anims, null, runs.get(REFLOWS.get(el.closest("dialog")))?.clock || null);
-  }
-
-  /* ------------------------------------------------------------------ for review: a trial switch (DECISIONS item 38)
-   * Where the user compares variants of a moment on the live site, the page shows a small switch: a working tool, not
-   * part of the design (as the light tuner on Daily): neutral greys, a dashed edge, at the end of the page in flow
-   * at every width, so it never covers the moment it switches, in the page's
-   * language, with one line saying what the chosen variant does. The choice is kept in localStorage (store);
-   * ?<param>=<value> chooses for one load without keeping it and shows no switch, for captures. While motion is off
-   * every variant is the first (the page as built) and the switch is not shown. options: [{ value, label, note }], the
-   * first the page as built. */
-  function trial({ id, param, store, label, options }) {
-    const values = options.map((o) => o.value);
-    const q = params.get(param);
-    const forced = q == null ? null : values.includes(q) ? q : values[0];
-    let value = forced;
-    if (value == null) { try { const s = localStorage.getItem(store); value = values.includes(s) ? s : values[0]; } catch (e) { value = values[0]; } }
-    const api = { get value() { return on() ? value : values[0]; } };
-    if (forced != null || !document.body) return api;
-    const box = document.createElement("div");
-    box.className = "m-trial";
-    box.id = id;
-    box.setAttribute("role", "group");
-    box.setAttribute("aria-labelledby", `${id}-label`);
-    box.innerHTML = `<div class="m-trial-row"><span class="m-trial-label" id="${id}-label">${label}</span><span class="m-trial-seg">${options
-      .map((o) => `<button type="button" data-v="${o.value}">${o.label}</button>`).join("")}</span></div><p class="m-trial-note" aria-live="polite"></p>`;
-    const paint = () => {
-      box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === value)));
-      box.querySelector(".m-trial-note").textContent = options.find((o) => o.value === value).note;
-    };
-    box.addEventListener("click", (e) => {
-      const b = e.target.closest("button[data-v]");
-      if (!b || b.dataset.v === value) return;
-      value = b.dataset.v;
-      try { localStorage.setItem(store, value); } catch (e2) { /* storage unavailable: kept for this load */ }
-      paint();
-    });
-    const show = () => { box.hidden = !on(); };
-    mqReduce.addEventListener("change", show);
-    paint();
-    show();
-    (document.getElementById("main") || document.body).append(box);
-    return api;
   }
 
   /* ------------------------------------------------------------------ for review: freeze and seek every movement */
@@ -918,7 +769,7 @@
     on,
     setGate(fn) { pageGate = typeof fn === "function" ? fn : () => true; },
     EASE, T,
-    dialogOpen, dialogClose, reflow, flip, popOpen, popClose, done, trial,
+    dialogOpen, dialogClose, reflow, flip, popOpen, popClose, done,
     settle: settleAll,
     get running() { return runs.size; },
     capture: {

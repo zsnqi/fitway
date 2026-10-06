@@ -1830,16 +1830,6 @@
     openDialog(dlgExport, opener, $("#export-go"));
   }
   dlgExport._onClose = () => { if (ex.state === "working") say(L.canceledSay); resetExport(); };
-  // For review (DECISIONS item 38): the export's done moment as built (0), or one of the two ideas the user compares on
-  // the live site: 1, the mark starts drawing while the window shrinks; 2, the calendar stays and the window's moving
-  // edge cuts it away, then the mark draws as built. A tool, not the design (motion.js, trial); ?done=0|1|2 for captures.
-  const doneTrial = M.trial({ id: "trial-done", param: "done", store: "fitway.eclipse.v3.trial.export-done",
-    label: RTL ? "نهاية التصدير" : "Export done",
-    options: [
-      { value: "0", label: RTL ? "الحالية" : "Current", note: RTL ? "كما بُنيت: النافذة تنكمش، ثم تُرسم العلامة" : "As built: the window shrinks, then the check draws" },
-      { value: "1", label: "1", note: RTL ? "العلامة تُرسم والنافذة تنكمش" : "The check draws while the window shrinks" },
-      { value: "2", label: "2", note: RTL ? "حافة النافذة تقص التقويم، ثم تُرسم العلامة" : "The window's edge cuts the calendar away, then the check" },
-    ] });
   // The progress line, once the work has run 300 ms (ex.revealDelay; a review can hold it): the panel settles around it.
   ex.revealDelay = 300;
   function revealProgress() {
@@ -1891,16 +1881,11 @@
     ex.url = URL.createObjectURL(new Blob(parts, { type: "text/csv;charset=utf-8" }));
     // Done: the dialog settles around its result (the file line glides from where it stood), then the mark draws and
     // the words rise (motion.js). Focus and the announcement come at once.
-    const doneEl = $("#export-done"), variant = doneTrial.value;
-    // Variant 2: the calendar's picture stays and is cut away by the window's moving edge; the mark and its words rise
-    // with the lower edge into the space it opens.
-    const cut = variant === "2" ? { leave: [$("#export-picker")], into: doneEl, ride: () => [$(".done-mark", doneEl), $(".done-title", doneEl)] } : null;
-    M.reflow(dlgExport, () => { ex.state = "done"; renderExport(); }, { own: [doneEl], pairs: [[$("#export-file"), () => $(".file-line", doneEl)]], cut });
+    const doneEl = $("#export-done");
+    M.reflow(dlgExport, () => { ex.state = "done"; renderExport(); }, { own: [doneEl], pairs: [[$("#export-file"), () => $(".file-line", doneEl)]] });
     $("#export-save").focus();
     say(L.readySay(plain(L.rows(ex.rows))));
-    // Variant 1: the mark starts with the window's settling instead of once it has mostly settled: its ring closes on
-    // the settling's own curve, the words rise as the window slows, and the check is drawn as the ring closes.
-    M.done(doneEl, variant === "1" ? { delay: 0, times: M.T.doneWithSettle } : { delay: M.T.doneAfterReflow });
+    M.done(doneEl, { delay: M.T.doneAfterReflow });
   }
   $("#export-form").addEventListener("submit", (e) => {
     e.preventDefault();

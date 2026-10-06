@@ -696,8 +696,7 @@
     return `<p class="done" id="notice" tabindex="-1"><span class="m-rise">${ICON.check}<span class="done-t">${notice.html}</span> <a class="done-a" href="${recHref(notice.recordId)}">${L.doneLink}</a></span></p>`;
   }
   // The done line arrives once its dialog has mostly left, where the owner made the change (DECISIONS item 36).
-  // Held until the window has gone (option 1 below), it arrives once the rows below have mostly made room for it.
-  const revealDone = (el, held = 0) => { if (el && el.id === "notice") M.done(el, { line: true, delay: held ? held + M.T.lineAfterHold : M.T.lineAfterClose }); };
+  const revealDone = (el) => { if (el && el.id === "notice") M.done(el, { line: true, delay: M.T.lineAfterClose }); };
 
   /* ---- the front desk: its name, what it can do, its code's state, and the actions that state allows, under its name.
    * The code itself is never on the page (the server keeps only a hash); a new one is shown once, in its own view. */
@@ -1186,23 +1185,10 @@
   const blocks = () => [["desk", deskEl], ["owners", ownersEl], ["records", recEl], ...$$(".prs[data-id]", ownersEl).map((r) => [`row:${r.dataset.id}`, r])];
   const recList = { box: recEl, rows: () => $$(".rec-list > .rec-row:not(.is-ph)", recEl).map((li) => [li.querySelector(".rec-a").dataset.record, li]),
     words: ".rec-txt, .rec-go", empty: ".rec-none" };
-  const renderMoving = (opts) => M.flip(blocks, renderCards, { ...opts, list: recList });
-  // For review (DECISIONS item 38): after a deactivation or a reactivation, the row changes under the leaving window as
-  // built (0), or only once the window has gone (1): the change is made at once (focus and the announcement come at
-  // once), but the owners card keeps its picture until the window's close has ended (motion.js, flip's hold), and the
-  // records card its own (its record's movement waits as long), then the row changes, its done line and its record
-  // arrive and the rows below slide. A tool, not the design (motion.js, trial); ?row=0|1 for captures.
-  const rowTrial = M.trial({ id: "trial-row", param: "row", store: "fitway.eclipse.v3.trial.access-row",
-    label: RTL ? "تغيّر الصف" : "Row change",
-    options: [
-      { value: "0", label: RTL ? "الحالي" : "Current", note: RTL ? "كما بُني: يتغيّر الصف والنافذة تُغلق" : "As built: the row changes while the window closes" },
-      { value: "1", label: RTL ? "بعد الإغلاق" : "After close", note: RTL ? "يتغيّر الصف بعد أن تُغلق النافذة" : "The row changes once the window has closed" },
-    ] });
-  // How long a closing window takes to go (MOT-9), for a change held until then; 0 while motion is off.
-  const closeTime = () => (M.on() ? (matchMedia("(max-width: 720px)").matches ? M.T.sheetOut : M.T.dlgOut) : 0);
-  function finishWithDone(at, html, key, held = 0) {
+  const renderMoving = () => M.flip(blocks, renderCards, { list: recList });
+  function finishWithDone(at, html, key) {
     notice = { at, kind: "done", html, recordId: records.list[0].id };
-    renderMoving(held ? { wait: held, hold: [ownersEl] } : undefined);
+    renderMoving();
     const n = $("#notice");
     return n || backTo(key, at === "desk" ? null : at);
   }
@@ -1566,14 +1552,12 @@
         if (r.fail) { M.reflow(dlg, () => { setWorking(dlg, false); showAlert(dlg, L.failed); }); return; }
         after(o);
         addRecord(act, id, act === "off" ? $("#off-reason").value.trim() : "");
-        // Option 1 (rowTrial): a deactivation or a reactivation changes the page only once the window has gone.
-        const held = rowTrial.value === "1" && (act === "off" || act === "on") ? closeTime() : 0;
-        const back = finishWithDone(id, L.done[act](nm(o)), `${act === "off" ? "on" : act === "on" ? "reset" : act}:${id}`, held);
+        const back = finishWithDone(id, L.done[act](nm(o)), `${act === "off" ? "on" : act === "on" ? "reset" : act}:${id}`);
         // The dialog leaves as it was, working; the done line then arrives on the row the change was made to.
         closeDialog(dlg, { back });
         resetFields(p);
         setWorking(dlg, false);
-        revealDone(back, held);
+        revealDone(back);
       });
     });
   }

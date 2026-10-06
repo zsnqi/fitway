@@ -703,34 +703,3 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 @container rp-acts (max-width: 149.98px) {
   .rp[data-frame] .head-acts .hbadge { padding-inline: 8px; }
 }
-
-/* ------------------------------------------------- a trial switch (motion.js, trial; DECISIONS item 38)
- * A working tool for the user's comparison of motion variants on the live site, not part of the design (as the light
- * tuner on Daily): neutral greys, a dashed edge, no red, small type; it ends the page in flow at every width,
- * so it never covers the row or the done line it switches. Reports and Access load this
- * file. */
-.m-trial {
-  position: static;
-  width: max-content;
-  margin-block-start: 24px;
-  display: grid;
-  gap: 4px;
-  max-width: calc(100vw - 32px);
-  padding: 6px 8px 7px;
-  border-radius: 10px;
-  border: 1px dashed rgba(255, 255, 255, 0.24);
-  background: rgba(14, 14, 16, 0.9);
-  font-family: var(--font);
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--ink-3);
-}
-.m-trial[hidden] { display: none; }
-.m-trial-row { display: flex; align-items: center; gap: 8px; }
-.m-trial-label { white-space: nowrap; }
-.m-trial-seg { display: flex; gap: 2px; padding: 2px; border-radius: 7px; border: 1px solid rgba(255, 255, 255, 0.12); }
-.m-trial-seg button { min-width: 28px; height: 22px; padding-inline: 7px; border-radius: 5px; font: inherit; color: var(--ink-3); white-space: nowrap; }
-.m-trial-seg button:hover { color: var(--ink); }
-.m-trial-seg button[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); color: var(--ink); }
-.m-trial-seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
-.m-trial-note { font-size: 11px; line-height: 16px; color: #8d8789; }
