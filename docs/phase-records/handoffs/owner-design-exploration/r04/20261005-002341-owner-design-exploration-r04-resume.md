@@ -26,16 +26,22 @@
 
 ## Running now
 
-- **Codex `high` on `directions/briefs/codex-narrow-sheet.md`** (`8e2a7fc`, over `bad6e90`), run
-  `D:/fitway-temp/owner-r04-narrow-sheet/run-1/` (resume its thread from `events.jsonl` line 1 if the app dies): at
-  320 x 568 variant 2's file line glides over the still calendar copy (60-80 ms, seen at 1x, present before the motion
-  rounds). Held-out rows: `D:/fitway-grader/owner-r04/narrow-sheet-heldout.md`.
-- **The one-clock round is done and graded:** Codex `809aa09` over WIP `dbee42d`; verifier-high
-  (`verifier-one-clock.md`, `bad6e90`; evidence `D:/fitway-temp/owner-r04-one-clock-review/`) every row PASS.
-  Report-only, unchanged, under load only: the dialogs' shade and clip, the popover and the records card's clip split
-  across threads under a planted stall (Codex measured dialog opening 6.29 px, popover 3.85 px, records 144 px against
-  a frozen 1x reference); rounds item 11 to decide whether they are errors on a real machine.
+- **Codex `high` on `directions/briefs/codex-variants-removal.md`** (`42191ca`, over `2996d7a`), run
+  `D:/fitway-temp/owner-r04-variants-removal/run-1/` (resume its thread from `events.jsonl` line 1 if the app dies):
+  the user kept both moments as built (DECISIONS 39, `?done=0`, `?row=0`); remove variants 1-2, row option 1 and the
+  trial switches. Held-out rows: `D:/fitway-grader/owner-r04/variants-removal-heldout.md`.
+- **The narrow-sheet round** (`b6d6a5c`, brief `codex-narrow-sheet.md`): Codex PASS on every row; its review
+  (`verifier-narrow-sheet.md`) was stopped as moot after the pick: its open observations (an empty tenth of a second
+  at sheet heights 560-620, a partly visible file line restarting from below, the cut line not on the sheet's edge)
+  concern variant 2 only. Not yet graded in `codex-rounds.md`.
+- **Report-only, under load only:** the dialogs', popover's and records card's parts split across threads under a
+  planted stall; rounds item 11 to decide whether they are errors on a real machine.
 - **Parked by the user:** the pixel-character pane mod and the usage-band redesign (`D:/fitway-temp/claude-pixel-crew/`).
+
+## Next after this
+
+One verifier-high on the removal with its held-out rows; then a new published copy and the live site; the round is
+done. Then the remaining Owner screens (Settings first).
 
 Done today: M1 finished (`cd7a27c`, an empty commit verifying Codex's WIP `48ff52b`; 48 measures, 0 px); the
 three rounds reviewed by verifier-high (`verifier-three-rounds.md`, `8104b3e`; evidence
