@@ -291,3 +291,22 @@ checks live outside the repository and never appear here or in a brief.
   F-b (the panel's content lags its surface under a stall, also at the baseline) and F-c (the «22» mark 1 px off)
   went to the one-clock round (`codex-one-clock.md`).
 - **Repeat fault:** B8 (the brief's). B3 and B7 held.
+
+## one-clock: `design-research/owner-composition-exploration-r04/directions/briefs/codex-one-clock.md`, WIP `dbee42d` and result `809aa09` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** the review of three-rounds-fix's F-a, F-b, F-c: the export's settle holding together under load (C1), the
+  chosen day's mark under the cut (C2), the docs (C3); report-only, other moments split across threads.
+- **Run:** stopped by the user mid-run; the edit was saved as WIP `dbee42d` and the thread resumed, which finished its
+  checks and committed `809aa09` on top.
+- **Brief rows, as Codex graded them:** C1, C3, L2-L4 PASS (96 load cases, 2,296 frames, 0 px at matched progress;
+  mechanism: paused Web Animations effects driven by one main-thread frame clock). C2 FAIL and a literal conflict with
+  L1: the «22» mark's 1 px raster offset already existed at `aef7437`, and L1 forbade changing it. L1 FAIL on 12 px by
+  one level.
+- **Failure causes:** C2 was the brief's: its bound came from the review's frame without checking whether the baseline
+  already had it (B8 kind, a bound from a reading). L1's noise floor again (as in three-rounds-fix).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/one-clock-heldout.md`, 6 of 6 (H2 a report: the dialogs' shade and
+  clip separate under a stall, unchanged by the round). Graded by `D:/fitway-temp/owner-r04-one-clock-review/`
+  (verifier at `high`, `verifier-one-clock.md`), every row PASS. Its observation 1 (medium, present at `aef7437`): at
+  320 x 568 variant 2's file line glides across the still calendar copy at 60-80 ms, glyphs on glyphs, seen at 1x; to
+  the narrow-sheet round (`codex-narrow-sheet.md`).
+- **Repeat fault:** B8 (the brief's). B3 and B7 held: both conflicts reported, not worked around.
