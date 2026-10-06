@@ -412,6 +412,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       the lines below move down to make room, its words rise into place without fading): a new record arrives with
       motion. Built by a fresh designer after the variants round, in its own small brief.
     - Speak to the user of «النافذة», not «الحوار», and describe a moment step by step as they see it.
+39. **The variants, picked** (the user on the live site at `2996d7a`, 2026-10-06): the export's done state stays as built,
+    `?done=0` («افضل الحالية»), and Access's row stays as built, `?row=0` («الحالي افضل خلاص»). Coordinator: the trial
+    switches have done their work; the next build removes variants 1 and 2, row option 1 and the switches (MOT-19),
+    keeping what the motion rounds made true for every variant (one frame clock, the narrow sheet's file line). The
+    narrow-sheet review was stopped as moot: its open observations concern variant 2 only.
 
 ## How this milestone's rounds run
 
