@@ -310,3 +310,30 @@ checks live outside the repository and never appear here or in a brief.
   320 x 568 variant 2's file line glides across the still calendar copy at 60-80 ms, glyphs on glyphs, seen at 1x; to
   the narrow-sheet round (`codex-narrow-sheet.md`).
 - **Repeat fault:** B8 (the brief's). B3 and B7 held: both conflicts reported, not worked around.
+
+## narrow-sheet: `design-research/owner-composition-exploration-r04/directions/briefs/codex-narrow-sheet.md`, result `b6d6a5c` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** variant 2's file line running over the still calendar copy on the 320 x 568 sheet (one-clock review,
+  observation 1).
+- **Brief rows, as Codex graded them:** N1, N2, L1-L5 PASS (48 real-time runs, 1,570 frames, 0 overlaps; control 6
+  frames at 320). Cause found: at 320 the old file line lay outside the scrolling body, so its pair was skipped and the
+  panel carried it. Codex caught its own first fix's defect by looking (the long path crossing the actions) and fixed it.
+  `motion-capture.mjs` ran on moment 9 only, though L4 named it whole.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/narrow-sheet-heldout.md`, partly graded: the review
+  (`verifier-narrow-sheet.md`) was stopped when the user kept variant 0 (DECISIONS 39); its settled rows passed H1
+  (72 sheet heights, 0 overlap; control flags 36) and H2 (0 px). Its open observations concerned variant 2 only.
+- **Repeat fault:** none from the brief. L4's scope was narrowed without saying so (a new kind, low).
+
+## variants-removal: `design-research/owner-composition-exploration-r04/directions/briefs/codex-variants-removal.md`, result `e74ca06` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** remove export variants 1-2, Access's row option 1 and the trial switches after the user's pick
+  (DECISIONS 39).
+- **Brief rows, as Codex graded them:** R1-R4, L1-L4 PASS (1,024 export and 2,048 row frames within measured noise;
+  240 rest frames and 336 legacy-link loads exact; full `motion-capture.mjs`). It noted that `b6d6a5c`'s guard applied
+  to variant 2 only, so the kept moment is unchanged.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/variants-removal-heldout.md`. No verifier (the user: not needed for a
+  cleanup). The coordinator checked H1-H3 itself: a fresh browser over HTTP with stale stored choices and old links
+  loads both pages as built, no switch, no errors; no trial code left (only decision 20's comments mention a trial).
+  A stale browser cache serving the old `reports.js` throws `M.trial is not a function` until a hard reload; the
+  preview server sends no cache headers.
+- **Repeat fault:** none.
