@@ -706,14 +706,13 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 
 /* ------------------------------------------------- a trial switch (motion.js, trial; DECISIONS item 38)
  * A working tool for the user's comparison of motion variants on the live site, not part of the design (as the light
- * tuner on Daily): neutral greys, a dashed edge, no red, small type; fixed in the window's bottom inline-end corner; on a
- * phone it ends the page instead, so it never covers the row or the done line it switches. Reports and Access load this
+ * tuner on Daily): neutral greys, a dashed edge, no red, small type; it ends the page in flow at every width,
+ * so it never covers the row or the done line it switches. Reports and Access load this
  * file. */
 .m-trial {
-  position: fixed;
-  z-index: 60;
-  inset-inline-end: 16px;
-  bottom: 16px;
+  position: static;
+  width: max-content;
+  margin-block-start: 24px;
   display: grid;
   gap: 4px;
   max-width: calc(100vw - 32px);
@@ -735,6 +734,3 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 .m-trial-seg button[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); color: var(--ink); }
 .m-trial-seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
 .m-trial-note { font-size: 11px; line-height: 16px; color: #8d8789; }
-@media (max-width: 720px) {
-  .m-trial { position: static; width: max-content; margin-block-start: 24px; }
-}

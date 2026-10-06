@@ -361,20 +361,33 @@
     if (cutPlan) {
       const { D0, D1, riders, still } = cutPlan, E = T.cutBy;
       for (const { r, g } of leaving) {
+        // A translated overflow window and its counter-translated picture make the cut on the compositor, just as
+        // the riders move there. An animated clip-path can lag their transforms during a long main-thread frame.
+        // The window extends 24 px on each side (the old clip's allowance); only its horizontal edge cuts the copy.
+        const window = document.createElement("div");
+        window.className = "m-cut-window";
+        window.setAttribute("aria-hidden", "true");
+        window.inert = true;
+        window.style.cssText = `position:absolute;display:block;overflow:hidden;pointer-events:none;` +
+          `left:${px(r.left - A.left - p1.clientLeft - 24)};top:${px(r.top - A.top - dTop - p1.clientTop)};` +
+          `width:${px(r.width + 48)};height:${px(r.height)};will-change:transform`;
         g.classList.add("m-cut");
-        g.style.cssText += `;position:absolute;left:${px(r.left - A.left - p1.clientLeft)};top:${px(r.top - A.top - dTop - p1.clientTop)};` +
-          `width:${px(r.width)};height:${px(r.height)};margin:0;box-sizing:border-box`;
-        p1.append(g);
-        ghosts.push(g);
+        g.style.cssText += `;position:absolute;left:24px;top:0;` +
+          `width:${px(r.width)};height:${px(r.height)};margin:0;box-sizing:border-box;will-change:transform`;
+        window.append(g);
+        p1.append(window);
+        ghosts.push(window);
+        const travel = r.height / E;
         if (still) {
           // A sheet: the copy keeps its place on screen (the panel carries it by -dTop, it moves back by dTop) and the top
           // edge coming down cuts it away from above, to its last line (so its last sliver is the calendar's quiet last
           // row, not the chosen day's white mark where the two edges would meet).
-          anims.push(anim(g, [{ transform: "translateY(0px)", clipPath: "inset(0px -24px 0px -24px)" },
-            { transform: `translateY(${px(dTop)})`, clipPath: `inset(${px(r.height / E)} -24px 0px -24px)` }], o));
+          anims.push(anim(window, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(dTop + travel)})` }], o),
+            anim(g, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(-travel)})` }], o));
         } else {
           // From 721 px: the copy rides with the top edge (as the title does); the rising lower edge cuts it.
-          anims.push(anim(g, [{ clipPath: "inset(0px -24px 0px -24px)" }, { clipPath: `inset(0px -24px ${px(r.height / E)} -24px)` }], o));
+          anims.push(anim(window, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(-travel)})` }], o),
+            anim(g, [{ transform: "translateY(0px)" }, { transform: `translateY(${px(travel)})` }], o));
         }
       }
       // What rides with the lower edge starts D0 - D1 below where it ends (the panel carries it by dTop meanwhile); it
@@ -780,8 +793,8 @@
 
   /* ------------------------------------------------------------------ for review: a trial switch (DECISIONS item 38)
    * Where the user compares variants of a moment on the live site, the page shows a small switch: a working tool, not
-   * part of the design (as the light tuner on Daily): neutral greys, a dashed edge, fixed in the window's bottom
-   * inline-end corner (on a phone, at the end of the page, so it never covers the moment it switches), in the page's
+   * part of the design (as the light tuner on Daily): neutral greys, a dashed edge, at the end of the page in flow
+   * at every width, so it never covers the moment it switches, in the page's
    * language, with one line saying what the chosen variant does. The choice is kept in localStorage (store);
    * ?<param>=<value> chooses for one load without keeping it and shows no switch, for captures. While motion is off
    * every variant is the first (the page as built) and the switch is not shown. options: [{ value, label, note }], the
