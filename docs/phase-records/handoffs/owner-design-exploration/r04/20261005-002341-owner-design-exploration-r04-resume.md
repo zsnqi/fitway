@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-06 about 14:30 +03:00;
-  `owner-followup-r04-build` at `06f3bbf` (pushed)
+- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-06 about 16:30 +03:00;
+  `owner-followup-r04-build` at `dbee42d` (pushed)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261004-160300-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (new today: 37, and
   rounds items 10 and 11), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -26,15 +26,22 @@
 
 ## Running now
 
-- **Codex `high` on `directions/briefs/codex-one-clock.md`** (`75f42f1`, over `aef7437`), run
-  `D:/fitway-temp/owner-r04-one-clock/run-1/` (resume its thread from `events.jsonl` line 1 if the app dies). The
-  export's settle on one clock: the review of Codex's `ce3f07e` (`verifier-three-rounds-fix.md`; evidence
+Nothing. The user stopped the work (2026-10-06, about 16:30).
+
+- **Codex `high` on `directions/briefs/codex-one-clock.md`** (`75f42f1`, over `aef7437`) was stopped mid-run; its
+  edit (`motion.js`, `DESIGN-SPEC.md`, `README.md`) is saved unverified as WIP `dbee42d`. Its last words: the final
+  matrix passing so far (0 px displacement at matching progress, via a rendered clock barcode; no text overlap; 48
+  instant and interruption cases clean); one no-load end capture 12 px off by one RGB level. It had not finished,
+  regenerated INDEX or reported. Run and thread: `D:/fitway-temp/owner-r04-one-clock/run-1/events.jsonl` (thread
+  `01a11147-5302-7f92-b33a-c248f62d6725`).
+- **Why that round:** the review of Codex's `ce3f07e` (`verifier-three-rounds-fix.md`; evidence
   `D:/fitway-temp/owner-r04-three-rounds-fix-review/`) passed F1-F3 and H1-H8 (H6 partial: it could not reach Copy)
   but found F-a (the phone sheet's copy jumps ~32 px under 4x CPU: the panel settles on the main thread, the new cut
   on the compositor), F-b (under a stall the panel's content lags its surface, also at the baseline; the docs say
   "compositor") and F-c (the «22» mark 1 px off). Held-out rows: `D:/fitway-grader/owner-r04/one-clock-heldout.md`.
-  Not yet graded in `codex-rounds.md`: the three-rounds-fix round (`ce3f07e`; its two literal FAILs were the brief's
-  wording: "no other element's box", strict pixel equality) and this one.
+- **Not yet graded** in `codex-rounds.md`: the three-rounds-fix round (`ce3f07e`; its two literal FAILs were the
+  brief's wording: "no other element's box", strict pixel equality; F-a is a regression the brief did not guard, as
+  it named no load for the sheet's stillness) and the one-clock round.
 
 Done today: M1 finished (`cd7a27c`, an empty commit verifying Codex's WIP `48ff52b`; 48 measures, 0 px); the
 three rounds reviewed by verifier-high (`verifier-three-rounds.md`, `8104b3e`; evidence
@@ -44,9 +51,13 @@ motion-lows round graded in `codex-rounds.md`.
 
 ## Next steps
 
-1. **Check Codex's result** against the brief, then one verifier-high on the fix with the held-out rows (rounds item
-   11), then a new published copy and the live site (`eclipse-build` preview, 3174) with frame strips; the user picks
-   `?done` and `?row` there (tell them F3 and F4 with the options).
+0. **Finish the one-clock round:** resume Codex's thread on WIP `dbee42d` (flags before `resume`; tell it the edit is
+   now committed as WIP and to commit its result on top), or a fresh Codex run from the brief told the same. Then
+   grade both rounds.
+1. **One verifier-high on the result** with the held-out rows (rounds item 11), then a new published copy and the
+   live site (`eclipse-build` preview, 3174) with frame strips; the user picks `?done` and `?row` there (tell them F3
+   and F4 of the first review with the options: variant 2 still opens on an empty space; row=1 hides the focus ring
+   220 ms).
 2. **The remaining Owner screens,** in order Settings, Operations (the header status's details), Monitoring, each per
    rounds items 6, 8, 9, 10 and 11, built with the motion. Codex briefs: read each outcome against the limits before
    launch and state the purpose of anything an outcome replaces.
