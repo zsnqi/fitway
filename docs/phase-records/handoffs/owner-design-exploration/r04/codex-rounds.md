@@ -269,3 +269,25 @@ checks live outside the repository and never appear here or in a brief.
   is the right one, and the row's wording was the grader's error. That review's F6 (low): MOT-14 lists all 20 cells
   without saying which are wider at rest than their visible label, so M2's outcome holds only in part.
 - **Repeat fault:** B8 again (a bound in a limit taken from a reading, not a measure). B3 and B7 held.
+
+## three-rounds-fix: `design-research/owner-composition-exploration-r04/directions/briefs/codex-three-rounds-fix.md`, result `ce3f07e` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** the three rounds' review findings: F1 (medium) variant 2's file line ran over the calendar copy in real
+  time; F2 (low) the trial switch covered the records card on short windows; F3 (low) MOT-14 to mark the cells wider
+  at rest than their label.
+- **Brief rows, as Codex graded them:** F1 overlap, timing and cleanup PASS (cause confirmed: a main-thread
+  `clip-path` cut lagging compositor riders; a translated overflow window now cuts), F3 PASS, L3-L5 PASS. Literal
+  FAILs, each reported rather than worked around (B7): F2's "no other element's box" (containing elements, and the
+  phone's fixed bar over the switch while scrolling), and L1/L2's strict pixel equality (raster noise also present
+  between two baseline captures).
+- **Failure causes:** both literal FAILs are brief wording: a rule stated without its noise floor or its exceptions.
+  The review found a regression no brief row guarded: on the phone sheet under 4x CPU the copy now jumps about 32 px
+  (F-a), because the cut moved to the compositor while the panel it sits in still settles on the main thread. The
+  brief asked for no text over text under load but not for the moment's other promises (the sheet's copy stays
+  still) under load; B8 kind: an outcome that replaces a mechanism must name every promise the old one kept.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/three-rounds-fix-heldout.md`, 8 of 8 (H6 partial: the verifier could
+  not reach the Copy view; the M1 fixer had measured it). Graded by
+  `D:/fitway-temp/owner-r04-three-rounds-fix-review/` (verifier at `high`, `verifier-three-rounds-fix.md`); its F-a,
+  F-b (the panel's content lags its surface under a stall, also at the baseline) and F-c (the «22» mark 1 px off)
+  went to the one-clock round (`codex-one-clock.md`).
+- **Repeat fault:** B8 (the brief's). B3 and B7 held.
