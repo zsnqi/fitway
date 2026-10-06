@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-06 evening +03:00;
-  `owner-followup-r04-build` at `8e2a7fc` (pushed)
+- **As of:** `codex/owner-redesign-r04` at the commit that adds this text, 2026-10-07 +03:00;
+  `owner-followup-r04-build` at `e74ca06` (pushed)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261004-160300-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (new today: 37, and
   rounds items 10 and 11), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -26,38 +26,18 @@
 
 ## Running now
 
-- **Codex `high` on `directions/briefs/codex-variants-removal.md`** (`42191ca`, over `2996d7a`), run
-  `D:/fitway-temp/owner-r04-variants-removal/run-1/` (resume its thread from `events.jsonl` line 1 if the app dies):
-  the user kept both moments as built (DECISIONS 39, `?done=0`, `?row=0`); remove variants 1-2, row option 1 and the
-  trial switches. Held-out rows: `D:/fitway-grader/owner-r04/variants-removal-heldout.md`.
-- **The narrow-sheet round** (`b6d6a5c`, brief `codex-narrow-sheet.md`): Codex PASS on every row; its review
-  (`verifier-narrow-sheet.md`) was stopped as moot after the pick: its open observations (an empty tenth of a second
-  at sheet heights 560-620, a partly visible file line restarting from below, the cut line not on the sheet's edge)
-  concern variant 2 only. Not yet graded in `codex-rounds.md`.
+Nothing. **The motion round is done** at `e74ca06`: the user kept both moments as built (DECISIONS 39), Codex removed
+the variants and switches (graded in `codex-rounds.md`, checked by the coordinator; no verifier, the user's call).
+
 - **Report-only, under load only:** the dialogs', popover's and records card's parts split across threads under a
   planted stall; rounds item 11 to decide whether they are errors on a real machine.
 - **Parked by the user:** the pixel-character pane mod and the usage-band redesign (`D:/fitway-temp/claude-pixel-crew/`).
-
-## Next after this
-
-One verifier-high on the removal with its held-out rows; then a new published copy and the live site; the round is
-done. Then the remaining Owner screens (Settings first).
-
-Done today: M1 finished (`cd7a27c`, an empty commit verifying Codex's WIP `48ff52b`; 48 measures, 0 px); the
-three rounds reviewed by verifier-high (`verifier-three-rounds.md`, `8104b3e`; evidence
-`D:/fitway-temp/owner-r04-three-rounds-review/`): V1-V14 PASS, H1-H8 PASS; F3 (variant 2 still opens on an empty
-space), F4 (row=1 hides the focus ring 220 ms) and F5 are inherent observations for the user's pick; the Codex
-motion-lows round graded in `codex-rounds.md`.
+- **Browser cache:** the preview server sends no cache headers; after a build, a stale `reports.js` can throw until a
+  hard reload.
 
 ## Next steps
 
-0. **Finish the one-clock round:** resume Codex's thread on WIP `dbee42d` (flags before `resume`; tell it the edit is
-   now committed as WIP and to commit its result on top), or a fresh Codex run from the brief told the same. Then
-   grade both rounds.
-1. **One verifier-high on the result** with the held-out rows (rounds item 11), then a new published copy and the
-   live site (`eclipse-build` preview, 3174) with frame strips; the user picks `?done` and `?row` there (tell them F3
-   and F4 of the first review with the options: variant 2 still opens on an empty space; row=1 hides the focus ring
-   220 ms).
+1. **Publish a new copy** of `e74ca06` (staged without `tuner.js`), with the user's approval in chat, and give the link.
 2. **The remaining Owner screens,** in order Settings, Operations (the header status's details), Monitoring, each per
    rounds items 6, 8, 9, 10 and 11, built with the motion. Codex briefs: read each outcome against the limits before
    launch and state the purpose of anything an outcome replaces.
