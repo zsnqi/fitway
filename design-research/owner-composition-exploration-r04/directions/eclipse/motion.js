@@ -65,16 +65,48 @@
     return a;
   }
   const runs = new Map();                 // key -> { anims, end }
-  function own(key, anims, end) {
-    const run = { anims, end };
+  // The export's done moment samples every effect on one main-thread frame clock. Paused WAAPI effects still
+  // supply the exact curves and clips, but none can advance on the compositor while another waits for paint.
+  // The done drawing joins the settle's clock; other pages and moments keep their existing animation clocks.
+  function frameClock(clock) {
+    if (clock.frame || cap.freeze || !clock.keys.size) return;
+    clock.frame = requestAnimationFrame((t) => {
+      clock.frame = 0;
+      if (clock.start == null) clock.start = t;
+      const elapsed = Math.max(0, t - clock.start);
+      for (const key of [...clock.keys]) {
+        const run = runs.get(key);
+        if (!run) continue;
+        let end = 0;
+        for (const a of run.anims) {
+          const until = a.effect.getComputedTiming().endTime;
+          end = Math.max(end, until);
+          a.currentTime = Math.min(elapsed, until);
+        }
+        if (elapsed >= end) finish(key);
+      }
+      frameClock(clock);
+    });
+  }
+  function own(key, anims, end, clock = null) {
+    if (clock === true) clock = { keys: new Set(), start: null, frame: 0 };
+    const run = { anims, end, clock };
     runs.set(key, run);
-    Promise.all(anims.map((a) => a.finished)).then(() => { if (runs.get(key) === run) finish(key); }).catch(() => {});
+    if (clock) {
+      anims.forEach((a) => { a.pause(); a.currentTime = 0; });
+      clock.keys.add(key);
+      frameClock(clock);
+    } else Promise.all(anims.map((a) => a.finished)).then(() => { if (runs.get(key) === run) finish(key); }).catch(() => {});
     return run;
   }
   function finish(key) {
     const run = key && runs.get(key);
     if (!run) return;
     runs.delete(key);
+    if (run.clock) {
+      run.clock.keys.delete(key);
+      if (!run.clock.keys.size) { cancelAnimationFrame(run.clock.frame); run.clock.frame = 0; }
+    }
     run.anims.forEach((a) => a.cancel());
     if (run.end) run.end();
   }
@@ -361,8 +393,8 @@
     if (cutPlan) {
       const { D0, D1, riders, still } = cutPlan, E = T.cutBy;
       for (const { r, g } of leaving) {
-        // A translated overflow window and its counter-translated picture make the cut on the compositor, just as
-        // the riders move there. An animated clip-path can lag their transforms during a long main-thread frame.
+        // A translated overflow window and its counter-translated picture keep the straight cut's choreography.
+        // In the export's done moment these effects share the panel and surface's main-thread frame clock.
         // The window extends 24 px on each side (the old clip's allowance); only its horizontal edge cuts the copy.
         const window = document.createElement("div");
         window.className = "m-cut-window";
@@ -396,7 +428,8 @@
     } else leaving.forEach((l) => l.g.remove());
     const key = {};
     REFLOWS.set(dlg, key);
-    own(key, anims, () => { s.remove(); ghosts.forEach((g) => g.remove()); p1.classList.remove("m-reflow"); if (REFLOWS.get(dlg) === key) REFLOWS.delete(dlg); });
+    own(key, anims, () => { s.remove(); ghosts.forEach((g) => g.remove()); p1.classList.remove("m-reflow"); if (REFLOWS.get(dlg) === key) REFLOWS.delete(dlg); },
+      dlg.id === "dlg-export" && ownedEls.some((el) => el.id === "export-done") ? true : null);
   }
 
   /* ------------------------------------------------------------------ the page's blocks make room (FLIP)
@@ -788,7 +821,7 @@
       if (b) anims.push(b);
       el.querySelectorAll(".m-rise").forEach((inner) => anims.push(...rise(inner.closest(".m-win") || inner.parentElement, inner, delay + t.riseAt, t.rise)));
     }
-    if (anims.length) own(el, anims, null);
+    if (anims.length) own(el, anims, null, runs.get(REFLOWS.get(el.closest("dialog")))?.clock || null);
   }
 
   /* ------------------------------------------------------------------ for review: a trial switch (DECISIONS item 38)
@@ -845,7 +878,21 @@
     cap.frozen = cap.frozen.filter((a) => a.playState !== "idle");
     cap.frozen.forEach((a) => { const end = a.effect.getComputedTiming().endTime || 0; a.currentTime = Math.max(0, Math.min((a.currentTime || 0) + ms, end - 0.01)); });
   }
-  function release() { const f = cap.frozen.splice(0).filter((a) => a.playState !== "idle"); cap.freeze = false; f.forEach((a) => a.play()); }
+  function release() {
+    const f = cap.frozen.splice(0).filter((a) => a.playState !== "idle");
+    cap.freeze = false;
+    const held = new Set(), clocks = new Set();
+    for (const run of runs.values()) if (run.clock) {
+      run.anims.forEach((a) => held.add(a));
+      clocks.add(run.clock);
+    }
+    f.forEach((a) => { if (!held.has(a)) a.play(); });
+    for (const clock of clocks) {
+      const elapsed = Math.max(0, ...[...clock.keys].flatMap((k) => runs.get(k).anims.map((a) => a.currentTime || 0)));
+      clock.start = document.timeline.currentTime - elapsed;
+      frameClock(clock);
+    }
+  }
   function settleAll() { [...runs.keys()].forEach(finish); }
   // Leaving the tab ends every movement at once.
   document.addEventListener("visibilitychange", () => { if (document.hidden) settleAll(); });

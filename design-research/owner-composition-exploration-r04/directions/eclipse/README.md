@@ -577,7 +577,10 @@ stroke, as the intro draws the line). Timings are in the table above.
   its top edge was, the title stays with the top edge and the actions with the bottom edge, blocks that stay slide, a
   new block is uncovered as the space opens, one that leaves leaves at once. A body that scrolls (a short sheet) changes
   at once. Used for the export's progress line, done and failure; every alert and field message on submit; the code's
-  second step.
+  second step. The export's done moment samples its paused Web Animations effects on one main-thread frame clock:
+  surface, panel transform and clip, blocks, cut, riders and done drawing all receive the same elapsed time in one
+  animation-frame callback. A stall holds the whole moment at its last painted progress; it resumes on the same
+  curves, with fewer frames. Other reflows and moments keep their existing clocks.
 - **Done** (`done`): the export's done state settles (the file line glides up from where it stood under the calendar),
   then its ring draws from the top in the reading direction (counter-clockwise in Arabic) and the check from its short
   stroke to its long one, while «الملف جاهز» rises into its line. Access's done line arrives once its dialog's scrim has
@@ -621,7 +624,8 @@ stroke, as the intro draws the line). Timings are in the table above.
   the leaving window as built, or once it has gone (MOT-17; `?row=0|1`); the records card's new record follows it. The
   parameter chooses for one load without keeping it and hides the switch; with reduced motion or `?motion=off` every
   variant is the page as built and no switch shows. Variant 2's straight calendar cut uses a translated overflow window
-  and a counter-translated copy on the riders' compositor curve, so the cut cannot lag their glyphs during a long frame.
+  and a counter-translated copy sampled with the panel, surface and riders on that shared main-thread frame clock,
+  so a long frame holds them together; on the sheet the copy stays still on screen.
   `motion-capture.mjs --only=9,10` records them, and `--only=11` the records card's arrival in both options.
 
 ## Open and capture
