@@ -355,6 +355,8 @@ function elapsedSeconds(started) {
 function fastSteps() {
 	return [
 		["Repository invariants", ["check:repository"]],
+		["Verification map drift", ["check:verification-map"]],
+		["Verification CLI contracts", ["test:verification"]],
 		["Biome check", ["check"]],
 		[
 			"Owner token fidelity",
