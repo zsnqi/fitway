@@ -32,7 +32,12 @@
 
 ## Running now
 
-Nothing.
+- Codex round 4 (the verification path, xhigh) in the r03 worktree, brief r03/briefs/round-4.md (commit `10ba2815`
+  on agent-environment-r03), thread `01a116c6-829b-7361-886b-7fb9a2beaf3b`, run folder
+  D:/fitway-temp/r03-round4/. Held-out rows are in D:/fitway-grader/. If this session stopped, resume the thread
+  (WORKING_AGREEMENTS "Delegation") rather than relaunching.
+- Next, drafted: round 5, one command that launches and resumes a Codex round (high), after round 4 lands.
+- A Sonnet researcher looks for the past round on which to test the B8 and B9 brief fields.
 
 ## Next steps
 
