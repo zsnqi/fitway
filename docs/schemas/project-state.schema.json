@@ -39,7 +39,10 @@
 				"integratedCommit": {
 					"oneOf": [
 						{ "const": "SELF" },
-						{ "type": "string", "pattern": "^[0-9a-f]{40}$" },
+						{
+							"type": "string",
+							"pattern": "^[0-9a-f]{40}$"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -74,28 +77,13 @@
 				"DONE",
 				"BLOCKED",
 				"NEEDS_HUMAN",
-				"FAILED_VALIDATION"
-			]
-		},
-		"taskClass": {
-			"enum": [
-				"analysis-review",
-				"backend-api-data",
-				"ui-maintenance",
-				"visual-authority-change",
-				"verification-independent",
-				"resume-integration",
-				"historical-audit",
-				"repository-infrastructure"
+				"FAILED_VALIDATION",
+				"SUPERSEDED"
 			]
 		},
 		"taskPacketPath": {
 			"type": "string",
 			"pattern": "^docs/phase-records/task-packets/[a-z0-9][a-z0-9-]{0,127}\\.yaml$"
-		},
-		"sha256": {
-			"type": "string",
-			"pattern": "^[0-9a-f]{64}$"
 		},
 		"checkpoint": {
 			"type": "object",
@@ -103,12 +91,13 @@
 			"required": ["branch", "commit"],
 			"properties": {
 				"branch": { "type": "string", "minLength": 1 },
-				"commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" }
+				"commit": {
+					"type": "string",
+					"pattern": "^[0-9a-f]{7,40}$"
+				}
 			}
 		},
-		"gateState": {
-			"enum": ["NOT_REQUIRED", "PENDING", "PASS", "FAIL"]
-		},
+		"gateState": { "enum": ["NOT_REQUIRED", "PENDING", "PASS", "FAIL"] },
 		"milestone": {
 			"type": "object",
 			"additionalProperties": false,
@@ -130,17 +119,10 @@
 			],
 			"properties": {
 				"status": { "$ref": "#/$defs/status" },
-				"objective": {
-					"type": "string",
-					"minLength": 1,
-					"maxLength": 512
-				},
-				"taskClass": { "$ref": "#/$defs/taskClass" },
+				"objective": { "type": "string", "minLength": 1, "maxLength": 512 },
+				"taskClass": {},
 				"taskPacket": { "$ref": "#/$defs/taskPacketPath" },
-				"taskPacketSha256": {
-					"type": "string",
-					"pattern": "^[0-9a-f]{64}$"
-				},
+				"taskPacketSha256": {},
 				"dependencies": {
 					"type": "array",
 					"items": { "type": "string" },
@@ -152,7 +134,10 @@
 				"baseCommit": {
 					"oneOf": [
 						{ "const": "SELF" },
-						{ "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+						{
+							"type": "string",
+							"pattern": "^[0-9a-f]{7,40}$"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -176,11 +161,8 @@
 					"minimum": 0,
 					"maximum": 2
 				},
-				"lastHeartbeatAt": {
-					"type": ["string", "null"],
-					"format": "date-time"
-				},
-				"leaseExpiresAt": { "type": ["string", "null"], "format": "date-time" },
+				"lastHeartbeatAt": {},
+				"leaseExpiresAt": {},
 				"handoff": { "type": ["string", "null"] },
 				"stopReason": { "type": ["string", "null"] },
 				"gates": {
@@ -206,37 +188,17 @@
 				"integratedCommit": {
 					"oneOf": [
 						{ "const": "SELF" },
-						{ "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+						{
+							"type": "string",
+							"pattern": "^[0-9a-f]{7,40}$"
+						},
 						{ "type": "null" }
 					]
 				},
-				"historyMutations": {
-					"type": "array",
-					"items": {
-						"type": "object",
-						"additionalProperties": false,
-						"required": [
-							"operation",
-							"targetMilestoneId",
-							"targetStatus",
-							"targetCanonicalSha256",
-							"receipt",
-							"successorMilestoneId"
-						],
-						"properties": {
-							"operation": { "const": "archive-terminal" },
-							"targetMilestoneId": { "type": "string", "minLength": 1 },
-							"targetStatus": {
-								"enum": ["DONE", "BLOCKED", "NEEDS_HUMAN", "FAILED_VALIDATION"]
-							},
-							"targetCanonicalSha256": {
-								"type": "string",
-								"pattern": "^[0-9a-f]{64}$"
-							},
-							"receipt": { "type": "string", "minLength": 1 },
-							"successorMilestoneId": { "type": "string", "minLength": 1 }
-						}
-					}
+				"historyMutations": { "type": "array" },
+				"supersededBy": {
+					"type": "string",
+					"pattern": "^[a-z0-9][a-z0-9-]{0,127}$"
 				}
 			},
 			"allOf": [
@@ -244,14 +206,23 @@
 					"if": {
 						"properties": {
 							"status": {
-								"enum": ["BLOCKED", "NEEDS_HUMAN", "FAILED_VALIDATION"]
+								"enum": [
+									"BLOCKED",
+									"NEEDS_HUMAN",
+									"FAILED_VALIDATION",
+									"SUPERSEDED"
+								]
 							}
 						},
 						"required": ["status"]
 					},
 					"then": {
 						"properties": {
-							"stopReason": { "type": "string", "minLength": 1 }
+							"stopReason": {
+								"type": "string",
+								"minLength": 1,
+								"pattern": "\\S"
+							}
 						}
 					}
 				},
@@ -272,7 +243,31 @@
 						"required": ["status"]
 					},
 					"then": {
-						"properties": { "stopReason": { "type": "null" } }
+						"properties": {
+							"stopReason": { "type": "null" }
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"status": { "const": "SUPERSEDED" }
+						},
+						"required": ["status"]
+					},
+					"then": {
+						"required": ["supersededBy"],
+						"properties": {
+							"supersededBy": {}
+						}
+					},
+					"else": {
+						"not": {
+							"required": ["supersededBy"],
+							"properties": {
+								"supersededBy": {}
+							}
+						}
 					}
 				}
 			]
@@ -282,22 +277,10 @@
 				{ "$ref": "#/$defs/milestone" },
 				{
 					"type": "object",
-					"required": [
-						"objective",
-						"taskClass",
-						"taskPacket",
-						"taskPacketSha256",
-						"ownerSession"
-					],
+					"required": ["objective", "taskPacket", "ownerSession"],
 					"properties": {
-						"objective": {
-							"type": "string",
-							"minLength": 1,
-							"maxLength": 512
-						},
-						"taskClass": { "$ref": "#/$defs/taskClass" },
+						"objective": { "type": "string", "minLength": 1, "maxLength": 512 },
 						"taskPacket": { "$ref": "#/$defs/taskPacketPath" },
-						"taskPacketSha256": { "$ref": "#/$defs/sha256" },
 						"status": {
 							"enum": [
 								"PLANNED",

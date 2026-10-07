@@ -231,7 +231,6 @@ describe("P5: shared token decisions through both validators", () => {
 			);
 	});
 	it.each([
-		"Previous resume point",
 		"Standing decisions",
 	])("P3: keeps bare paths checked on the %s header", async (header) => {
 		await expect(

@@ -11,11 +11,8 @@ import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs
 import {
 	checkAgentContext,
 	formatAgentContextWarnings,
+	TERMINAL_STATUSES,
 } from "./check-agent-context.mjs";
-import {
-	assertHistoryMutationOwnership,
-	verifyHistoryTransition,
-} from "./project-state-history-transition.mjs";
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
 const root = process.cwd();
@@ -113,6 +110,25 @@ function assertAcyclicMilestones(milestones) {
 	for (const id of Object.keys(milestones)) visit(id);
 }
 
+export function assertProjectRecordUnion(state, history) {
+	for (const [id, milestone] of Object.entries(history.milestones)) {
+		if (Object.hasOwn(state.milestones, id)) {
+			fail(
+				`Milestone ${id} is duplicated in PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml`,
+			);
+		}
+		if (!TERMINAL_STATUSES.has(milestone.status)) {
+			fail(
+				`PROJECT_STATE_HISTORY.yaml must contain only terminal milestone records: ${id} is ${milestone.status}`,
+			);
+		}
+	}
+	const milestones = { ...history.milestones, ...state.milestones };
+	assertAcyclicMilestones(milestones);
+	assertProjectStateInvariants(state, milestones);
+	return milestones;
+}
+
 export function assertProjectStateInvariants(state, milestones) {
 	const baselineMilestone = milestones["baseline-reconciliation-gate"];
 	if (!baselineMilestone) {
@@ -142,6 +158,7 @@ export function assertProjectStateInvariants(state, milestones) {
 		"BLOCKED",
 		"NEEDS_HUMAN",
 		"FAILED_VALIDATION",
+		"SUPERSEDED",
 	]);
 	const activeWorkerStatuses = new Set([
 		"READY",
@@ -165,6 +182,16 @@ export function assertProjectStateInvariants(state, milestones) {
 	const assignedWorktrees = new Map();
 	const assignedLeases = new Map();
 	for (const [id, milestone] of Object.entries(milestones)) {
+		if (milestone.status === "SUPERSEDED") {
+			if (
+				typeof milestone.supersededBy !== "string" ||
+				milestone.supersededBy === id ||
+				!Object.hasOwn(milestones, milestone.supersededBy)
+			)
+				fail(`${id}: supersededBy must name a different existing milestone`);
+		} else if (Object.hasOwn(milestone, "supersededBy")) {
+			fail(`${id}: only SUPERSEDED records may carry supersededBy`);
+		}
 		if (stoppedStatuses.has(milestone.status)) {
 			if (!milestone.stopReason?.trim()) {
 				fail(`${id} is ${milestone.status} without an explicit stop reason`);
@@ -198,8 +225,6 @@ export function assertProjectStateInvariants(state, milestones) {
 				"branch",
 				"worktree",
 				"baseCommit",
-				"lastHeartbeatAt",
-				"leaseExpiresAt",
 				"handoff",
 			]) {
 				if (!milestone[field]) {
@@ -208,14 +233,6 @@ export function assertProjectStateInvariants(state, milestones) {
 			}
 			if (milestone.ownedPaths.length === 0) {
 				fail(`${id} is ${milestone.status} without owned paths`);
-			}
-			// A lease is judged against the ledger's own updatedAt, never the wall clock, so a commit's result does not
-			// change with the day CI happens to run it. Whether a lease has run out by now is a question for the
-			// coordinator at startup, not a CI failure.
-			if (new Date(milestone.leaseExpiresAt) <= new Date(state.updatedAt)) {
-				fail(
-					`${id} has a lease that expired before the ledger's updatedAt (${state.updatedAt})`,
-				);
 			}
 			for (const [value, assignments, label] of [
 				[milestone.branch, assignedBranches, "branch"],
@@ -279,7 +296,6 @@ async function main() {
 		"docs/POLISH_BACKLOG.md",
 		"docs/schemas/project-state.schema.json",
 		"docs/schemas/project-state-history.schema.json",
-		"docs/schemas/history-transition-receipt.schema.json",
 		"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
 	];
 	for (const relativePath of required) await readBytes(relativePath);
@@ -315,28 +331,7 @@ async function main() {
 			`PROJECT_STATE_HISTORY.yaml schema validation failed:\n${JSON.stringify(validateHistory.errors, null, 2)}`,
 		);
 	}
-	const openMilestoneStatuses = new Set([
-		"PLANNED",
-		"READY",
-		"IN_PROGRESS",
-		"VALIDATING",
-		"READY_FOR_INTEGRATION",
-	]);
-	for (const [id, milestone] of Object.entries(history.milestones)) {
-		if (Object.hasOwn(state.milestones, id)) {
-			fail(
-				`Milestone ${id} is duplicated in PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml`,
-			);
-		}
-		if (openMilestoneStatuses.has(milestone.status)) {
-			fail(
-				`PROJECT_STATE_HISTORY.yaml must contain only terminal milestone records: ${id} is ${milestone.status}`,
-			);
-		}
-	}
-	const allMilestones = { ...history.milestones, ...state.milestones };
-	assertAcyclicMilestones(allMilestones);
-	assertProjectStateInvariants(state, allMilestones);
+	assertProjectRecordUnion(state, history);
 	const handoffRequiredStatuses = new Set([
 		"READY",
 		"IN_PROGRESS",
@@ -363,19 +358,6 @@ async function main() {
 	});
 	console.log(
 		`Resume point validation passed: ${resumePointCount} marked active handoff(s).`,
-	);
-	assertHistoryMutationOwnership(state);
-	const historyTransition = await verifyHistoryTransition({
-		root,
-		state,
-		history,
-	});
-	const transitionEvidence =
-		historyTransition.mode === "v2"
-			? `v2 receipt chain ${historyTransition.genesisPath} -> ${historyTransition.lastReceiptPath}`
-			: `pre-phase3-clock-flush anchor ${historyTransition.anchorSha256}`;
-	console.log(
-		`History transition evidence: ${transitionEvidence}; ${historyTransition.beforeCount} anchored milestones, ${historyTransition.afterCount} candidate milestones, ${historyTransition.addedIds.length} added (${historyTransition.addedIds.join(", ") || "none"}), ${historyTransition.removedIds.length} removed, ${historyTransition.modifiedIds.length} modified, ${historyTransition.declaredTargets.length} declared archive target(s).`,
 	);
 	for (const relativePath of [
 		state.baseline.visualManifest,

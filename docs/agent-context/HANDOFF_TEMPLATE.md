@@ -7,9 +7,10 @@ it from the startup route: `PROJECT_STATE.yaml` names the milestone's `handoff`,
 
 ## Writing one
 
-1. Run `pnpm handoff:new --milestone <id>`. It creates the next file,
-   `<YYYYMMDD-HHMMSS>-<id>-resume.md`, from the current one (or from the block below), moves the state pointer and the packet's
-   `continuity.currentHandoff` to it, refreshes the packet hash, and renews the lease.
+1. Run `pnpm handoff:new --milestone <id>`. It uses `<id>-resume.md` in the current handoff's
+   directory (or `--dir`), creates it from the block below if absent, and otherwise changes
+   only its As of line. The ledger names the file; the packet and other ledger fields stay
+   untouched. Git history is the chain.
 2. Rewrite every section from the current truth. Carry forward only what is still true; a step
    that a later decision replaced is deleted, not annotated.
 3. Put any decision that outlives this round in the milestone's `DECISIONS.md` (see below), and
@@ -25,9 +26,10 @@ arrives (`D:/fitway-temp/<run>/REPORT.md`, outside the repository), and the resu
 file instead of summarising the findings. (coordinator, 2026-10-04, after the user asked why a
 session searched an old transcript: the resume point had cut the findings to one line each)
 
-Rules the checker enforces: at most 12 KB; the three header lines and six sections below, in
+Rules the checker enforces: at most 12 KB; the two required header lines and six sections below, in
 order; every repository path in backticks exists; no session ids (`local_…`), because they change
-when the app restarts. Name a session by its title instead.
+when the app restarts. Name a session by its title instead. Older timestamped handoffs still
+pass; an optional Previous resume point header is ignored by path validation.
 
 Leave out reasoning and narrative. Evidence lives in commits, evidence receipts and phase records.
 
@@ -36,7 +38,6 @@ Leave out reasoning and narrative. Evidence lives in commits, evidence receipts 
 # <milestone-id>: resume point
 
 - **As of:** `<branch>` at `<short sha>`, <YYYY-MM-DD HH:MM> +03:00
-- **Previous resume point:** `<repo path>` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `<repo path to the milestone's DECISIONS.md>`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State

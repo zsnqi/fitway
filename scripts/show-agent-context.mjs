@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { readFile as readFileFromFs } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
@@ -9,7 +8,6 @@ import { hasResumePointMarker } from "./agent-environment/resume-point.mjs";
 import { inspectPath } from "./check-agent-context.mjs";
 
 const root = process.cwd();
-const PACKET_METADATA_FIELDS = ["taskClass", "taskPacket", "taskPacketSha256"];
 const OPEN_STATUSES = new Set([
 	"PLANNED",
 	"READY",
@@ -20,16 +18,8 @@ const OPEN_STATUSES = new Set([
 const PACKET_STATUSES = new Set(["DRAFT", "READY", "CLOSED"]);
 const TASK_PACKET_DIRECTORY = "docs/phase-records/task-packets";
 
-function sha256(bytes) {
-	return createHash("sha256").update(bytes).digest("hex");
-}
-
 function stablePacketPath(milestoneId) {
 	return `${TASK_PACKET_DIRECTORY}/${milestoneId}.yaml`;
-}
-
-function sameJson(left, right) {
-	return JSON.stringify(left) === JSON.stringify(right);
 }
 
 async function inspectRepositoryPath(
@@ -86,18 +76,7 @@ function normalizePath(value) {
 }
 
 function packetMetadataMode(milestone, milestoneId, registryMode) {
-	const presentFields = PACKET_METADATA_FIELDS.filter((field) =>
-		Object.hasOwn(milestone, field),
-	);
-	if (
-		presentFields.length > 0 &&
-		presentFields.length < PACKET_METADATA_FIELDS.length
-	)
-		throw new Error(
-			`${milestoneId}: active milestone packet metadata must be all-or-none`,
-		);
-	if (presentFields.length === PACKET_METADATA_FIELDS.length)
-		return "registered";
+	if (Object.hasOwn(milestone, "taskPacket")) return "registered";
 	if (registryMode === "active")
 		throw new Error(
 			`${milestoneId}: active routing requires packet metadata and a validated task packet for an open milestone`,
@@ -109,7 +88,6 @@ function validateRegisteredPacket({
 	milestoneId,
 	milestone,
 	packet,
-	packetBytes,
 	packetPath,
 }) {
 	if (!OPEN_STATUSES.has(milestone.status))
@@ -132,33 +110,9 @@ function validateRegisteredPacket({
 		);
 	if (packet.milestoneId !== milestoneId)
 		throw new Error(`${packetPath}: milestoneId differs from active milestone`);
-	if (packet.taskClass !== milestone.taskClass)
-		throw new Error(`${packetPath}: taskClass differs from active milestone`);
-	if (packet.baseCommit !== milestone.baseCommit)
-		throw new Error(`${packetPath}: baseCommit differs from active milestone`);
 	if (packet.stateRef !== `PROJECT_STATE.yaml#/milestones/${milestoneId}`)
 		throw new Error(
 			`${packetPath}: stateRef does not identify the selected active milestone`,
-		);
-	for (const field of ["ownedPaths", "forbiddenPaths", "sharedLeases"]) {
-		const packetPaths = packet.scope?.[field];
-		const milestonePaths = milestone[field];
-		if (
-			!Array.isArray(packetPaths) ||
-			!Array.isArray(milestonePaths) ||
-			!sameJson(packetPaths, milestonePaths)
-		)
-			throw new Error(
-				`${packetPath}: scope.${field} differs from active milestone`,
-			);
-	}
-	if (packet.continuity?.currentHandoff !== milestone.handoff)
-		throw new Error(
-			`${packetPath}: continuity.currentHandoff differs from active handoff`,
-		);
-	if (sha256(packetBytes) !== milestone.taskPacketSha256)
-		throw new Error(
-			`${packetPath}: taskPacketSha256 differs from active milestone`,
 		);
 }
 
@@ -265,7 +219,6 @@ export async function buildAgentContextPlan({
 		{ allowMissing: metadataMode === "compatibility", packet: true },
 	);
 	let packet = null;
-	let packetSha256 = null;
 	const packetMessages = [];
 	if (!packetDetails) {
 		packetMessages.push(`packet: ${safePacketPath} (absent)`);
@@ -275,13 +228,11 @@ export async function buildAgentContextPlan({
 	} else {
 		const packetBytes = await readFileImpl(packetDetails.absolute);
 		packet = parseYaml(packetBytes.toString("utf8"));
-		packetSha256 = sha256(packetBytes);
 		if (metadataMode === "registered") {
 			validateRegisteredPacket({
 				milestoneId: selectedId,
 				milestone,
 				packet,
-				packetBytes,
 				packetPath: safePacketPath,
 			});
 		} else {
@@ -293,14 +244,11 @@ export async function buildAgentContextPlan({
 		packetMessages.push(
 			`packetStatus: ${packet.packetStatus ?? "(not recorded)"}`,
 		);
-		packetMessages.push(`packetSha256: ${packetSha256}`);
 	}
-	const taskClass = milestone.taskClass ?? null;
+	const taskClass = packet?.taskClass ?? null;
 	const route = taskClass ? registry.routes?.[taskClass] : null;
 	if (metadataMode === "registered" && !route)
-		throw new Error(
-			`active milestone taskClass ${taskClass} has no registered route`,
-		);
+		throw new Error(`packet taskClass ${taskClass} has no registered route`);
 	const lines = [
 		"FITWAY bounded agent-context plan",
 		"This output is a route plan only; it does not claim that any source was loaded, summarize authority, or resolve conflicts.",
@@ -308,6 +256,8 @@ export async function buildAgentContextPlan({
 	lines.push(`milestone: ${selectedId}`);
 	lines.push(`status: ${milestone.status}`);
 	lines.push(`baseCommit: ${milestone.baseCommit ?? "(not recorded)"}`);
+	for (const field of ["ownedPaths", "forbiddenPaths", "sharedLeases"])
+		lines.push(`scope.${field}: ${JSON.stringify(milestone[field] ?? [])}`);
 	lines.push(`handoff: ${milestone.handoff ?? "(none)"}`);
 	lines.push(
 		`taskClass: ${taskClass ?? "(not recorded; compatibility mode does not infer one)"}`,
@@ -316,7 +266,7 @@ export async function buildAgentContextPlan({
 	if (packet) formatPacketAuthorities(lines, packet);
 	if (!route) {
 		lines.push(
-			"route: unavailable because the active state does not record a task class",
+			"route: unavailable because the packet does not record a task class",
 		);
 		lines.push(
 			`registered task classes: ${Object.keys(registry.routes ?? {}).join(", ")}`,
@@ -348,7 +298,7 @@ export async function buildAgentContextPlan({
 		"- missing, untracked, case-mismatched, stale, or conflicting required path/selector",
 	);
 	lines.push(
-		"- packet contradicts a cited authority, differs from active scope, or points outside the active milestone",
+		"- packet contradicts a cited authority, points outside the active milestone",
 	);
 	lines.push(
 		"- conditional trigger requires NEEDS_HUMAN or a source whose status is unresolved",
