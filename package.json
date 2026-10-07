@@ -30,6 +30,7 @@
 		"context:show": "node scripts/show-agent-context.mjs",
 		"handoff:new": "node scripts/agent-environment/new-handoff.mjs",
 		"brief:check": "node scripts/agent-environment/check-brief.mjs",
+		"codex:round": "node scripts/agent-environment/codex-round.mjs",
 		"check:design-context": "node scripts/check-design-context.mjs",
 		"check:verification-map": "node .agents/skills/verify-fitway/cli.mjs drift-tree",
 		"test:verification": "node --test .agents/skills/verify-fitway/cli.test.mjs",
