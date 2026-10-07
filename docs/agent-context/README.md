@@ -4,21 +4,8 @@ This directory is routing and process infrastructure. It is not a Product, Spec,
 privacy, data, accessibility, or visual-authority source, and it cannot override any of those
 sources.
 
-The precedence order is:
-
-1. `AGENTS.md` — repository-wide safety, ownership, conflict, and stop rules.
-2. `FITWAY_PRODUCT.md` and `SPEC.md` — product identity, surface boundaries, security, privacy,
-   data, interfaces, and acceptance; a conflict between them stops the work.
-3. Reviewed migrations, schemas, and DTOs — implementation conformance.
-4. The approved visual-authority chain — Paper where ADR-007 keeps it active, `DESIGN_GUIDE.md`,
-   the approval manifest, and named human decisions that supersede them for a surface.
-5. `PHASES.md` for durable dependency and acceptance scope, and `PROJECT_STATE.yaml` for the
-   coordinator-owned active frontier.
-6. `docs/WORKFLOW.md` for execution and verification procedure.
-7. A task packet for the bounded assignment and exact selectors, only insofar as it agrees with the
-   sources above.
-8. `PROJECT_STATE_HISTORY.yaml`, handoffs, archives, and other phase records only when a named
-   decision, predecessor, incident, or audit requires them.
+Precedence is `AGENTS.md`, "Source-of-truth order". A task packet sits below every source it cites and
+only insofar as it agrees with them; history, handoffs and archives are read only through a named pointer.
 
 `AGENTS.md` is checked against a documented 120,000-byte cumulative instruction cap; growth above a
 conservative 24,000-byte warning threshold is reported but is not itself a failure.
@@ -37,9 +24,6 @@ exactly one validated packet, and a milestone may not reach `READY` without it. 
 packet blocks both `check-agent-context` and `context:show`. The repository-wide checker
 validates schema, tracking, sources and lifecycle; `context:show` checks the selected packet's
 identity, state reference, route and lifecycle.
-`compatibility` mode is the documented one-release fallback for the legacy broad route; it warns
-instead of failing when an open milestone has no packet, while every evaluable path, case,
-tracking, schema, selector, active pointer, and lifecycle violation still fails.
 
 At startup, use the bounded route and continuity check:
 
@@ -53,8 +37,9 @@ path, packet identity, state reference, task class route, and lifecycle before p
 `baseCommit`, scope (`ownedPaths`, `forbiddenPaths`, `sharedLeases`), and the current handoff
 live in the ledger; `taskClass` lives in the packet. Old copies may remain as provenance but
 are neither compared nor used. Packet hashes, heartbeat dates, and lease expiry dates have no
-effect on validation, and tools do not refresh them. It does not open history, concatenate authority files, claim those sources
-were read, summarize an authority, or resolve a conflict automatically. The CLI then opens the
+effect on validation, and tools do not refresh them. It does not open history, concatenate
+authority files, claim those sources were read, summarize an authority, or resolve a conflict
+automatically. The CLI then opens the
 selected current handoff to print its resume instruction.
 
 For repository-wide mechanical validation, run:

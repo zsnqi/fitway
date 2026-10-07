@@ -1,13 +1,13 @@
-# agent-environment-r01: decisions in force
+# agent-environment: decisions in force
 
 Decisions for the agent-environment work. Edit an entry in place when it changes. Decisions are the user's unless
 marked "coordinator". Agreements on how the user and agents work are in `docs/agent-context/WORKING_AGREEMENTS.md`.
 
 1. **Scope (2026-10-02).** The user approved every proposal of the 2026-10-02 retrospective and left the environment
    decisions to the coordinator; the user's settings and security stay the user's to approve.
-2. **Resume points (2026-10-02).** A fresh session reaches the current state from "كمّل" alone. Each resume point is
-   a new short file from `docs/agent-context/HANDOFF_TEMPLATE.md`; standing decisions live in one file per
-   milestone, edited in place; the 340 KB r04 activation log is frozen history.
+2. **Resume points (2026-10-02).** A fresh session reaches the current state from "كمّل" alone. Each milestone's
+   resume point is one short file (item 10); standing decisions live in one file per milestone, edited in place; the
+   340 KB r04 activation log is frozen history.
 3. **The least sufficient context (2026-10-02).** Agents read the smallest context that is still enough for the
    task. Two conditions keep it from becoming missing context: everything a brief cites exists and is current in
    the agent's worktree, and an agent that finds a gap stops and reports it instead of guessing.
@@ -32,8 +32,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    `codex exec --approve-for-me` (command in `WORKING_AGREEMENTS.md`): everything else stays in the workspace-write
    sandbox, and each escalation is reviewed for exfiltration, credential probing, security weakening and destructive
    actions. `-s danger-full-access` is the fallback for a round the reviewer blocks. `config.toml` stays unchanged.
-   Each brief forbids pushing and writing outside its worktree, and after the round the coordinator checks the
-   diff, `git status` in every worktree involved, and the remote branch.
+   Each brief forbids pushing and writing outside its worktree; the coordinator's check after a round is in
+   `WORKING_AGREEMENTS.md`.
 8. **Usage panel (2026-10-02).** A Claude Code mod shows the subscription limits as its main element: the five-hour
    window with its reset time, and the weekly limit. The context window is a separate element with a different
    look from Anthropic's `token-weather` sample; its appearance changes at thresholds. Be inventive. Built
@@ -44,9 +44,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 9. **Evaluation loop (2026-10-02).** The method of Anthropic's "Automating eval design and hillclimbing" applies to
    Codex's brief template, the verifier (planted defects) and Sonnet `medium` against `high`; taste and design
    quality stay with the user.
-10. **Resume-point name (2026-10-03, coordinator).** `handoff:new` writes `<YYYYMMDD-HHMMSS>-<milestone-id>-resume.md`
-    and nothing else; an active handoff with exactly that name must carry the marker; older handoffs keep their
-    names and pass as before.
+10. **Resume-point name (2026-10-03, coordinator; revised 2026-10-07).** Each milestone resumes from one file,
+    `<milestone-id>-resume.md`, which `handoff:new` creates once and later refreshes in place; git history is the
+    chain. Older timestamped handoffs keep their names and pass as before.
 11. **Sonnet definitions (2026-10-03).** The user keeps both copies: the global ones in `~/.claude/agents/` serve
     every project, and the tracked ones in `.claude/agents/` serve cloud sessions, which see only committed files.
 12. **The environment phase (the user, 2026-10-07).** The user widened the coordinator's mandate for this phase: old
@@ -94,3 +94,14 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - each pass gives one report and at most one bounded, verified change, or says the environment is clean;
       removals of policy go to the coordinator; it never touches product semantics, design decisions or evidence a
       record points to.
+17. **Records and evidence (coordinator, 2026-10-07, under item 12).**
+    - The records keep only what a reader or a check uses (r03 Codex round 2): a milestone a successor carries closes
+      as `SUPERSEDED` with `supersededBy`; no heartbeat, lease expiry or packet pin is kept or read; a milestone's
+      scope, base and handoff live in the ledger and its task class in the packet; closing is one commit that moves
+      the record, with no receipt; closed records are checked for shape and never followed into.
+    - The verification a record cites is the green CI run on the pushed commit, and CI runs the local fast ladder
+      (r03 Codex round 3). The Vitest provenance layer and its "authoritative" local run, built 2026-09-19 and used
+      once, are retired with `check:frontier`, whose tree snapshot closed in September.
+    - Each rule has one home: the rules in `AGENTS.md`, the procedure in `docs/WORKFLOW.md`, the agreements with the
+      user in `docs/agent-context/WORKING_AGREEMENTS.md`, the brief rules B1-B10 in the checklist of
+      `docs/agent-context/briefs/codex.md`; decisions files keep decisions and point to those homes.

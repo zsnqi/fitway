@@ -126,7 +126,7 @@ routes:
       - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
       - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
     required:
-      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Clean-session startup" }, reason: "Follow the resume and lease checks." }
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "After startup" }, reason: "Follow the resume and lease checks." }
       - { role: contract, path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Resolve the current active milestone and handoff." }
       - { role: test, path: scripts/verify-repository.mjs, selector: { kind: whole-file, value: "" }, reason: "Confirm state and repository invariants before integration." }
     conditional:

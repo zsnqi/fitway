@@ -1,8 +1,9 @@
 # FITWAY Long-Running Agent Workflow
 
-This is the operational procedure for multiple long-running agent sessions, whichever tool runs
-them. `AGENTS.md` is the concise policy; `PROJECT_STATE.yaml` is the coordinator-owned live
-ledger; phase records preserve accepted evidence.
+This is the operational procedure for long-running agent sessions, whichever tool runs them.
+`AGENTS.md` holds the rules (startup, ownership, records, git, CI and verification); this file holds
+how to carry them out. `PROJECT_STATE.yaml` is the coordinator-owned ledger; phase records preserve
+accepted evidence.
 
 ## Roles
 
@@ -21,9 +22,9 @@ ledger; phase records preserve accepted evidence.
 ```text
 PLANNED → READY → IN_PROGRESS → VALIDATING → READY_FOR_INTEGRATION → DONE
                    │              │                    │
-                   ├──────────────┼──────────────┬─────┘
-                   ▼              ▼              ▼
-                BLOCKED       NEEDS_HUMAN   FAILED_VALIDATION
+                   ├──────────────┼──────────────┬─────┴────────┐
+                   ▼              ▼              ▼              ▼
+                BLOCKED       NEEDS_HUMAN   FAILED_VALIDATION  SUPERSEDED
 ```
 
 - `DONE`: integrated commit exists and every required gate plus independent verification passed.
@@ -33,19 +34,11 @@ PLANNED → READY → IN_PROGRESS → VALIDATING → READY_FOR_INTEGRATION → D
   shared-ownership conflict needs human authority.
 - `FAILED_VALIDATION`: the same gate remains red after two focused repair attempts or the fresh
   verifier rejects the result.
+- `SUPERSEDED`: a successor milestone carries the open work. The record names it in `supersededBy`
+  and says why in `stopReason`; it never satisfies a dependency, so a dependent names the successor.
 
-A successor attempt (a fresh attempt record with a reset repair budget) may open only after the
-terminal record of the failed lineage names the failure mode prior checks did not cover, the
-changed hypothesis or changed scope, and why that failure mode will not recur. Human
-authorization for a successor is required whenever any existing rule also requires it; the
-evidence gate above is a minimum, not a substitute.
-
-These states and the two-repair rule govern implementation and validation attempts. A plan whose
-deliverable is handed to the user or to an external executor ends at plan delivery: it may be
-recorded durably, but it is not registered as a milestone, carries no gates, and does not enter
-repair-budget or terminal machinery. Such a plan may still be reviewed when the human asks or when
-it will execute unattended without the human in the loop; findings are settled as ordinary plan
-edits before hand-off.
+The repair budget, the successor gate and plan deliveries are ruled in `AGENTS.md`, "Ownership and
+records". A successor needs human authorization whenever another rule also requires it.
 
 Only the coordinator changes states. The top-level baseline status/commit must match the
 `baseline-reconciliation-gate` milestone; repository verification rejects drift. A resumed
@@ -53,48 +46,35 @@ blocked/failed item receives a new attempt record; history is never overwritten.
 
 ## Active ledger and closed history
 
-`PROJECT_STATE.yaml` holds only open-status milestones in the active frontier. When a milestone
-reaches a terminal outcome, the coordinator appends its record to `PROJECT_STATE_HISTORY.yaml`
-with a transition receipt and removes it from `PROJECT_STATE.yaml` in the same transition.
-`PROJECT_STATE_HISTORY.yaml` holds only terminal records (`DONE`, `BLOCKED`, `NEEDS_HUMAN`,
-`FAILED_VALIDATION`), is append-only, is coordinator-owned, and is never rewritten.
-Open-status milestones may never be archived. Archived records stay dependency-resolvable and are
-mutable only through an explicit successor milestone whose own record carries the new attempt.
+`PROJECT_STATE.yaml` holds only open-status milestones. When a milestone reaches a terminal outcome,
+the coordinator closes it in one commit: the record moves from `PROJECT_STATE.yaml` to the end of
+`PROJECT_STATE_HISTORY.yaml`, its packet becomes `CLOSED`, and nothing else is written. History holds
+only terminal records, is append-only and coordinator-owned, and is never rewritten; review and git
+keep it so. Open-status milestones may never be archived. Archived records stay dependency-resolvable
+and change only through a successor milestone whose own record carries the new attempt.
 `pnpm check:repository` fails on duplicate ids, on any open status in history, on unknown
-dependencies across the union, and on `DONE` records missing commit/gates. Closed history is
-retrieved only when a decision requires it and is never read wholesale into a session. New
-transitions append v2 receipts under `docs/phase-records/history-transitions/`; legacy whole-file
-snapshot anchors remain immutable compatibility evidence and are never regenerated.
+dependencies across the union, on a misused `supersededBy`, and on `DONE` records missing commit or
+gates. Closed records are frozen: checks validate their shape and never follow a path inside them.
+History is retrieved only when a decision requires it and is never read wholesale into a session.
+The receipts under `docs/phase-records/history-transitions/` and the legacy anchor are frozen
+provenance from the earlier closure procedure; nothing reads them.
 
 ## Before creating a phase worktree
 
-1. Confirm BRG is `DONE` and use its integrated commit as the base.
+1. Base the worktree on the commit the ledger names as the milestone's `baseCommit`, normally the
+   head of `main`.
 2. Confirm every dependency is `DONE` in the union of the active ledger and closed history
    (`PROJECT_STATE.yaml` plus `PROJECT_STATE_HISTORY.yaml`).
-3. Define the outcome, acceptance criteria, owned paths, forbidden paths, shared leases, and
-   required verification commands.
+3. Record the outcome and acceptance criteria in the packet, and the owned paths, forbidden paths,
+   shared leases, branch, worktree and handoff in the ledger.
 4. Assign a unique lowercase `FITWAY_RUN_ID`, for example `p4_auth_s01`.
 5. Register the slice's focused verification profile and exact test paths before launch.
-6. Create a separate branch/worktree for each writer. Concurrent writers require disjoint owned
-   paths, exclusive leases for any shared files, and isolated runtime resources; stop if any
-   overlap or unsafe shared mutation remains. Never start from another worker's unintegrated branch.
-7. Prepare the new worktree before any agent or test work. `node_modules` is untracked, so a fresh
-   worktree starts without it, and a partial install leaves `node_modules/.bin` without the root
-   tool links. From the worktree root run `pnpm install --frozen-lockfile`; the frozen install and
-   a clean host-selected process start are setup preconditions, not defenses against hostile local
-   code, malicious same-user processes, compromised dependencies, or a compromised host/OS.
-   Authoritative evidence begins only when the host directly invokes an absolute Node path on
-   `scripts/check-test-runtime.mjs`, `scripts/run-vitest.mjs run ...`, or
-   `scripts/verify.mjs fast|phase --phase <name>|full` from that prepared worktree. Each direct
-   invocation acquires one repository-local Vitest runtime session, verifies the root lockfile
-   resolution and realpath containment in the worktree and the package, and revalidates a bounded
-   integrity set immediately before and after every Vitest launch; Vitest is never selected through
-   `PATH`, `node_modules/.bin`, or a package-manager shim. A failure means the local install is
-   incomplete or an unsafe Vitest resolution is being reported, and no test result from that
-   worktree is trustworthy. `pnpm check:test-runtime`, `pnpm test`, `pnpm test:integration`, and
-   `pnpm verify:*` remain developer conveniences whose exit status is corroboration only, never
-   reusable authority for another process. Repair only by reinstalling from the frozen lockfile;
-   never rewrite the lockfile to make a worktree resolve.
+6. Create a separate branch and worktree for each writer (`AGENTS.md`, "Ownership and records").
+   Never start from another worker's unintegrated branch.
+7. Prepare the new worktree before any agent or test work: from its root run
+   `pnpm install --frozen-lockfile` (with `CI=true` when no terminal is attached). `node_modules` is
+   untracked, so a fresh worktree starts without it. Repair a broken install only by reinstalling
+   from the frozen lockfile; never rewrite the lockfile to make a worktree resolve.
 8. Provision `apps/server/.env` in the worktree before any integration or `pnpm verify:full` run.
    It is untracked and absent from every new worktree; without it those runs fail on environment
    validation rather than on the change under test.
@@ -107,74 +87,26 @@ snapshot anchors remain immutable compatibility evidence and are never regenerat
    (valid but non-routable), `BETTER_AUTH_SECRET` and `CRON_SECRET` at 32+ non-secret characters,
    `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` non-secret placeholders,
    `BETTER_AUTH_URL=http://127.0.0.1:9/api/auth`, `CORS_ORIGIN=http://127.0.0.1:9`, and
-   `NODE_ENV=test`. A `pnpm verify:fast` failure in `apps/server/src/cron.test.ts` or
+   `NODE_ENV=test`. CI sets the same values in `.github/workflows/checks.yml`. A
+   `pnpm verify:fast` failure in `apps/server/src/cron.test.ts` or
    `apps/server/src/reference-gating.test.ts` caused by missing those values is an
    environment-provisioning gap, not a candidate defect, and consumes no repair budget. Real
    credentials, production databases, and `.env` contents are never exported into a unit process
    or written into any record.
-9. Record owner, branch, worktree, actual initial worker HEAD, lease expiry, and handoff path
-   before edits. `baseCommit: SELF` is allowed only when the activation commit itself is that HEAD.
 
-The BRG commit remains the immutable feature baseline. The coordinator may place one activation
-commit directly on top of it containing only live state, launch contracts, corrected execution
-dependencies, and verification profiles. When used, every phase record names both the BRG base
-and activation commit (`SELF` inside that commit), and every worker branch starts at the same
-activation commit. No feature implementation or speculative dependency change belongs in it.
-The baseline's `integratedCommit` remains the immutable BRG hash; `SELF` in an activated worker's
-`baseCommit` means the activation commit, not the BRG commit.
+## After startup
 
-## Clean-session startup
-
-`AGENTS.md` is loaded automatically and carries the repository-wide safety, ownership, and
-conflict rules. Startup then follows the bounded route in this order:
-
-1. **Root policy.** Read `AGENTS.md`. It is the only automatic instruction file.
-2. **Active state.** A session starting from this startup route runs `git fetch`, then reads
-   `PROJECT_STATE.yaml` for the active frontier. A delegated agent follows its brief's startup
-   and environment instructions. If no milestone is open, no task is assigned; do not infer one.
-3. **Assigned packet.** Run the bounded continuity check
-   `pnpm context:show --milestone <milestone-id>` (authoritative form:
-   `<absolute-node> scripts/show-agent-context.mjs --milestone <milestone-id>`). It validates the
-   stable packet path, state hash, packet identity, task class, base commit, scope, handoff, and
-   lifecycle, then prints the ordered required sources/selectors and conditional triggers. A
-   missing, stale, hash-mismatched, untracked, case-mismatched, or conflicting required packet is
-   a stop condition; the coordinator repairs the packet before any work continues.
-4. **Required sources.** Load exactly the packet's ordered required sources and selectors against
-   their canonical files. `docs/agent-context/ROUTES.yaml` names the minimum authority roles for
-   each task class; the packet supplies the exact paths, headings, keys, or pointers.
-5. **Conditional expansion.** Expand a conditional source only when its recorded trigger is
-   actually observed, and perform the recorded action (`READ`, or stop at `NEEDS_HUMAN`).
-6. **History stays out of startup.** `PROJECT_STATE_HISTORY.yaml`, `docs/archive/**`, phase
-   records, and unrelated handoffs are retrieved only through a named decision, predecessor,
-   incident, or audit pointer. Never read them by default.
-
-`context:show` never claims that a source was loaded, never summarizes an authority, and never
-resolves a conflict automatically. If a packet contradicts a cited authority, the authority
-governs and execution stops for packet repair.
-
-Legacy broad reading remains available only as a documented compatibility fallback: a session
-whose coordinator has explicitly authorized the legacy route may read the route's required
-authorities directly from `docs/agent-context/ROUTES.yaml` without a packet. The fallback is not
-the default, is not authorized by a green checker, and must never be used to skip a required
-packet on the active route.
-
-Then verify `git status --short`, `git rev-parse HEAD`, the worktree/branch, tool versions, the
-repository-local test runtime with the direct diagnostic
-`<absolute-node> scripts/check-test-runtime.mjs` from the worktree root (`pnpm check:test-runtime`
-is convenience corroboration only), required services, and the declared owned paths. If an
-activation commit is recorded, verify that the BRG base is its parent
-and that the worker starts at that exact activation commit.
-Check `leaseExpiresAt` against the current wall clock at startup and before every shared-file edit;
-an expired lease requires coordinator renewal and immediate `NEEDS_HUMAN`. Stop if the base,
-activation head, lease, or ownership differs.
+Startup itself is `AGENTS.md`, "Startup"; `docs/agent-context/README.md` describes what
+`context:show` checks and prints. Before editing, verify `git status --short`, `git rev-parse HEAD`,
+the worktree and branch, tool versions, required services, and the owned paths in the ledger. Stop
+if the base or the ownership differs from the ledger.
 
 ## Worker implementation loop
 
 1. Establish a focused failing test at a stable seam where practical.
 2. Make the smallest coherent change inside owned paths.
 3. Run the focused test/type check frequently.
-4. Run the authoritative fast ladder, `<absolute-node> scripts/verify.mjs fast`, before broad
-   integration checks; `pnpm verify:fast` is a convenience alias whose exit status is corroboration.
+4. Run the fast ladder, `pnpm verify:fast`, before broad integration checks.
 5. Run the phase-selected verification with a unique run ID and disposable resources.
 6. If a gate fails, record the command, concise failure, and artifact; make at most two focused
    repair attempts. Do not reset the count by changing sessions. A successor after
@@ -216,39 +148,25 @@ server or artifacts to obtain a green result.
 
 ## Verification ladder
 
-The authoritative ladder is the host-selected absolute Node directly invoking `scripts/verify.mjs`
-from the prepared worktree. Each direct invocation acquires one Vitest runtime session before its
-first Vitest step and revalidates that session's bounded integrity set around every Vitest launch;
-package scripts are developer conveniences whose exit status is corroboration only:
+`scripts/verify.mjs` runs three ladders; `pnpm verify:fast`, `pnpm verify:phase` and
+`pnpm verify:full` call them:
 
-- `<absolute-node> scripts/verify.mjs fast` — repository invariant checks, formatting/lint, types,
-  unit/component tests.
-- `<absolute-node> scripts/verify.mjs phase --phase <registered-name>` — fast ladder plus
-  phase-selected focused integration/browser checks.
-- `<absolute-node> scripts/verify.mjs full` — fast ladder plus full disposable-Postgres integration,
-  simulator, build, browser, automated accessibility, and visual comparison.
-- `pnpm verify:fast`, `pnpm verify:phase`, and `pnpm verify:full` — equivalent convenience aliases
-  for the same ladders; their exit status is corroboration, not the authoritative record.
+- `fast` — repository invariants, Biome, owner token fidelity, types, every unit and component
+  test, and the edge simulator tests. CI runs it on every push.
+- `phase --phase <registered-name>` — the fast ladder plus the phase's focused integration and
+  browser checks.
+- `full` — the fast ladder plus the full disposable-Postgres integration suite, build, browser,
+  automated accessibility, and visual comparison.
 
-The direct focused runner `<absolute-node> scripts/run-vitest.mjs run ...` is evidence only for the
-exact printed config path, SHA-256, and byte length with the requested focus/filter arguments, for
-repository-local Node/Vitest selection and the bounded integrity set, for bounded pre/post-launch
-integrity, and for unchanged repository content during that invocation. It does not prove the fast,
-phase, or full ladder, does not authenticate dependencies, and does not confine test code; package
-aliases remain developer conveniences whose own bootstrap is not authoritative. The session's
-coverage is bounded to its recorded Vitest provenance, lockfile resolution, realpath containment,
-and integrity set: it is not authentication, attestation, or a sandbox, it says nothing about bytes
-outside the bounded set, and native addons, forks/Workers, subprocesses, and external executables
-remain permitted runtime behavior.
-
-Commands may write ignored transient output only under the run-specific directories. A bare
-`pnpm verify:fast` in a fresh shell can fail `apps/server/src/cron.test.ts` and
-`apps/server/src/reference-gating.test.ts` until the synthetic unit environment above is exported;
-that is environment provisioning, not a candidate failure. A passing run must leave
-`git status --short` unchanged from its pre-run state. The coordinator records command, result,
-commit, run ID, timestamp, and artifact path in the phase record.
+The verification a record cites is the green CI run on the pushed commit (`AGENTS.md`); a local
+run with the same result is corroboration while the work is in progress. Commands may write ignored
+transient output only under the run-specific directories, and every ladder fails when a run leaves
+`git status --short` different from its pre-run state. The coordinator records command, result,
+commit, run ID, and artifact path in the phase record.
 
 ## Phase UI polish loop
+
+For production UI work. A concept-only milestone runs its rounds by its own `DECISIONS.md`.
 
 1. Inspect the affected route/state interactively with Browser.
 2. Run deterministic Playwright functional checks in Arabic RTL and English LTR.
@@ -400,19 +318,20 @@ changes Owner, Staff, or Public presentation, in addition to the gates above.
 
 ## Handoff format
 
-Two records carry work between sessions.
+- **Resume file.** Each milestone resumes from one file, `<milestone-id>-resume.md`, beside its
+  earlier handoffs or in the folder named with `--dir`. `pnpm handoff:new --milestone <id>` creates
+  it from `docs/agent-context/HANDOFF_TEMPLATE.md` and points the ledger at it; later runs refresh
+  only its "As of" line, and the coordinator rewrites its sections in place. Git history is the
+  chain; older timestamped handoffs stay as they are. Decisions that outlive a round live in the
+  milestone's `DECISIONS.md`, edited in place, and agreements about how the user and agents work
+  live in `docs/agent-context/WORKING_AGREEMENTS.md`.
+- **Round report.** A Codex round or a subagent reports in its brief's Report block, as its final
+  message; the coordinator saves the report verbatim as `REPORT.md` in the round's run folder
+  outside the repository and cites in the records only what decides something.
+- **Evidence receipt.** A worker's or verifier's handback at a milestone's closure, using
+  `docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md`.
 
-- **Resume point.** The coordinator's current state for the next session, written whole each time
-  from `docs/agent-context/HANDOFF_TEMPLATE.md` with `pnpm handoff:new`. The script stores it as
-  `docs/phase-records/handoffs/<phase>/<timestamp>-<run-id>.md` and points `PROJECT_STATE.yaml`
-  and the active packet's `continuity.currentHandoff` at it. Earlier resume points are history.
-  Decisions that outlive a round live in the milestone's `DECISIONS.md`, edited in place, and
-  agreements about how the user and agents work live in `docs/agent-context/WORKING_AGREEMENTS.md`.
-- **Evidence receipt.** A worker's or verifier's handback, using
-  `docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md`, which carries the canonical field contract,
-  the required evidence sections, and the current-repository-relative resume-command rule.
-
-Keep both concise and evidence-based.
+Keep them concise and evidence-based.
 
 Do not paste secrets, raw PINs/tokens, unbounded logs, screenshots containing sensitive data, or
 claims that were not independently observed.
@@ -438,9 +357,9 @@ The coordinator integrates candidates one at a time in the order defined by `PHA
 3. run focused checks after each shared-spine integration;
 4. run `pnpm verify:full` at the completed batch;
 5. confirm validation left the worktree clean;
-6. record integrated commit and evidence, append the `DONE` record and transition receipt to
-   closed history while removing it from the active ledger in one coordinator transition, then
-   release leases.
+6. record the integrated commit and evidence, then close the milestone in one commit (see
+   "Active ledger and closed history"), which also releases its scope and leases.
 
-A worker branch being green is `READY_FOR_INTEGRATION`, never `DONE`. Do not push, deploy, or
-provision external systems unless separately authorized.
+A worker branch being green is `READY_FOR_INTEGRATION`, never `DONE`. Pushing and the trunk follow
+`AGENTS.md`, "Git, CI and verification"; deploying or provisioning external systems needs the
+user's authorization.

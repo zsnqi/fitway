@@ -16,6 +16,10 @@ latest wording; never copy an entry into a resume point.
   (user, 2026-09-29, 2026-10-01 and 2026-10-02)
 - Inside an announced task, process, tooling and ordering are the coordinator's decisions; it
   reports them at the end. (user, 2026-10-02)
+- Housekeeping is the coordinator's to do and report, not to ask: pushing working branches (never
+  forcing), fast-forwarding `main` when CI passes, deleting merged branches, pruning dead worktree
+  registrations, and opening a successor milestone once its terminal record meets the successor gate
+  in `AGENTS.md`. (user, 2026-09-29 and 2026-10-07)
 
 ## Talking with the user
 
@@ -24,13 +28,14 @@ latest wording; never copy an entry into a resume point.
   ("Does the design round stay?"). Leave out pixel values and other measurements unless the user asks for them;
   name a screen by the device (on the phone, on a tablet, on a computer). The measurements stay in the records and in
   the agents' reports. (user, 2026-10-03, after a decision page that was hard to read)
+
 ## Sessions and resuming
 
 - The coordinator's own context stays small: fresh agents do the reading and building, and the
   coordinator reads their reports and the key frames. (user, 2026-10-02)
-- When the coordinator's context grows, the user asks it to record a resume point
-  (`docs/agent-context/HANDOFF_TEMPLATE.md`). The next session starts from the user's "كمّل"
-  alone. (user, 2026-10-02)
+- When the coordinator's context grows, the user asks it to bring the milestone's resume file up to
+  date (`pnpm handoff:new`, `docs/WORKFLOW.md` "Handoff format"). The next session starts from the
+  user's "كمّل" alone. (user, 2026-10-02)
 - Reply in Saudi-dialect Arabic when the user writes Arabic; code, paths, commit messages and
   repository documents stay in English. (user)
 
@@ -43,21 +48,34 @@ latest wording; never copy an entry into a resume point.
   recommends none of them. (user, 2026-10-04)
 - Codex takes frozen fixes and edits. Its reasoning level follows the task (user, 2026-10-03):
   `xhigh` when the cause is unknown or the change spans many files with tests and Windows or CI
-  behaviour (the brief checker, path rules, CI); `high` for a known defect in a known place with
-  a measurable outcome (Eclipse defects such as D3-D8); `medium` for mechanical edits from an
-  exact list (documents, a regenerated index, text replacements). The first round of each kind
-  at its lower level is graded like any other; a failure traced to the code moves that kind up a
-  level. Each round's record names its level. Before a launch, read `rate_limits` and avoid
-  running rounds side by side that the five-hour window cannot carry.
-  The coordinator runs it from a tracked brief file, in Codex's sandbox with
-  automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md`
+  behaviour; `high` for a known defect in a known place with a measurable outcome; `medium` for
+  mechanical edits from an exact list (documents, a regenerated index, text replacements). The first
+  round of each kind at its lower level is graded like any other; a failure traced to the code moves
+  that kind up a level. Each round's record names its level.
+- Usage limits do not shape rounds: when an account reaches its limit the user switches to another,
+  and a stopped run resumes on its thread. (user, 2026-10-05)
+- The coordinator launches Codex from a tracked brief that passes `pnpm brief:check`, in Codex's
+  sandbox with automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md`
   item 7), in a harness background shell (Git Bash, which has `<`):
   `{ printf 'Launch note: HEAD <sha> only adds this brief over the named HEAD.\n\n'; cat <brief>; } | codex exec --approve-for-me -C <worktree> -m gpt-6.1-sol -c model_reasoning_effort="<level>" --json -o <run>/last-message.md - > <run>/events.jsonl`.
-  The note is needed because the brief's own commit sits on the HEAD it names, and Codex rightly stops on a HEAD
-  it was not told about (2026-10-03, nav-5 and round 8).
-  The harness reports the exit; nothing polls. Each Codex round is judged as an evaluation:
-  brief rows, held-out rows kept out of Codex's reach, and the failure cause; the brief rules
-  live with the milestone's standing decisions. (user, 2026-10-02)
+  The note is needed because the brief's own commit sits on the HEAD it names, and Codex rightly stops
+  on a HEAD it was not told about. Claude Code's auto mode refuses this command unless the launching
+  worktree's `.claude/settings.local.json` allows `Bash(codex exec:*)`; that is the user's setting to
+  add. The harness reports the exit; nothing polls.
+- A run that stopped mid-change (the app exited, or a limit was reached) resumes on the same thread
+  instead of being reset: the same pipeline with
+  `--json -o <run>/last-message.md resume <thread_id> - > <run>/events-resume.jsonl`, where
+  `thread_id` is on the first line of `events.jsonl` and every exec flag comes before `resume`.
+- After a round, the coordinator checks the diff, `git status` in every worktree involved, and the
+  remote branch.
+- Each Codex round is judged as an evaluation: brief rows, held-out rows, and the failure cause,
+  recorded in `docs/phase-records/handoffs/agent-environment/codex-rounds.md`. Held-out suites live
+  in `D:/fitway-grader/`, carry planted-defect controls, and never appear in a brief. The numbers come
+  from executed checks, not from the implementer's report. A stop caused by the brief becomes a brief
+  rule (the checklist of `docs/agent-context/briefs/codex.md`). Models or levels are compared only
+  when a decision depends on it, by replaying one closed round on each with the same suite. Records
+  never bias the reader against the model and never record run time. (user, 2026-09-30 and
+  2026-10-02)
 - Every subagent is launched from a definition with a fixed effort; `CLAUDE.md` gives the choice
   between the Opus and Sonnet definitions. (user, 2026-10-02)
 - The Claude subscription is the scarce budget; Codex capacity is not (user, 2026-10-04). A round
