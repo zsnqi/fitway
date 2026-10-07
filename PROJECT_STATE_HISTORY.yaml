@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=./docs/schemas/project-state-history.schema.json
 # Milestone definitions are shared with project-state.schema.json via $ref.
 schemaVersion: 1
-updatedAt: "2026-09-18T01:27:45.312+03:00"
+updatedAt: "2026-10-07T18:00:00+03:00"
 
 milestones:
 
@@ -4467,3 +4467,42 @@ milestones:
       visual: NOT_REQUIRED
       independentReview: PASS
     integratedCommit: 47c44ba19ce390936e1d0292c229cdd003c02c38
+
+  agent-environment-r02:
+    status: SUPERSEDED
+    objective: >-
+      Improve the briefs and the coordinator's view of its own limits: find which brief faults cause Codex
+      rounds to fail, test template lines that remove them through the evaluation loop before they enter the
+      templates, and give the user a Claude Code panel for the subscription limits.
+    taskPacket: docs/phase-records/task-packets/agent-environment-r02.yaml
+    dependencies:
+      - agent-environment-r01
+    ownerSession: claude-code-desktop:coordinator-28297a9c
+    branch: agent-environment-r02
+    worktree: D:/Projects/fitway-worktrees/agent-environment-r02
+    baseCommit: 81ffd55fa6fe0c73061edc31f5e170b619a6ca93
+    ownedPaths:
+      - docs/phase-records/task-packets/agent-environment-r02.yaml
+    forbiddenPaths:
+      - apps/**, packages/**, tests/browser/** and migrations
+      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - CLAUDE.md and .claude/** (owned by agent-environment-r03)
+      - pnpm-lock.yaml and dependencies
+      - docs/archive/** and other milestones' handoffs and packets
+      - docs/agent-context/briefs/**, docs/agent-context/HANDOFF_TEMPLATE.md, docs/agent-context/WORKING_AGREEMENTS.md, docs/phase-records/handoffs/agent-environment/** and scripts/agent-environment/** (absorbed by agent-environment-r03 on 2026-10-07)
+    sharedLeases: []
+    validationRepairAttempts: 0
+    handoff: docs/phase-records/handoffs/agent-environment/20261004-015613-agent-environment-r02-resume.md
+    stopReason: >-
+      Superseded on 2026-10-07 by agent-environment-r03, which absorbed its paths and carries its open work (the brief templates and the brief-fault evaluations); its subscription-limits panel is parked by the user.
+    supersededBy: agent-environment-r03
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null

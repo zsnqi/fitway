@@ -3,7 +3,6 @@ milestoneId: agent-environment-r03
 taskClass: repository-infrastructure
 packetStatus: READY
 stateRef: PROJECT_STATE.yaml#/milestones/agent-environment-r03
-baseCommit: cf7758eb06b0a76f4f8b2bcea387d142847fc98e
 task:
   objective: >-
     Clean, simplify and improve the working environment itself: audit every rule, tool, check and record and keep,
@@ -23,54 +22,6 @@ task:
     - Owner concept design and code (design-research/**), which stays with owner-design-exploration-r04; this milestone reads it.
     - Acceptance thresholds, held-out checks and the grader (D:/fitway-grader), which never enter the repository or a brief.
     - Taste and visual acceptance, which stay with the user.
-scope:
-  ownedPaths:
-    - AGENTS.md
-    - CLAUDE.md
-    - .claude/agents/**
-    - .claude/skills/**
-    - .agents/**
-    - docs/WORKFLOW.md
-    - docs/agent-context/**
-    - docs/schemas/**
-    - docs/phase-records/handoffs/agent-environment/**
-    - docs/phase-records/history-transitions/**
-    - docs/phase-records/task-packets/agent-environment-r03.yaml
-    - scripts/agent-environment/**
-    - scripts/check-agent-context.mjs
-    - scripts/check-agent-context.test.ts
-    - scripts/check-design-context.mjs
-    - scripts/check-frontier-preservation.mjs
-    - scripts/check-frontier-preservation.test.ts
-    - scripts/check-owner-tokens.mjs
-    - scripts/check-test-runtime.mjs
-    - scripts/check-test-runtime.test.ts
-    - scripts/project-state-history-transition.mjs
-    - scripts/project-state-history-transition.test.ts
-    - scripts/project-state-history-v2.test.ts
-    - scripts/repository-fingerprint.mjs
-    - scripts/run-vitest.mjs
-    - scripts/show-agent-context.mjs
-    - scripts/show-agent-context.test.ts
-    - scripts/verify-repository.mjs
-    - scripts/verify-repository.schema.test.ts
-    - scripts/verify.mjs
-    - scripts/vitest-runtime.bootstrap.test.mjs
-    - scripts/vitest-runtime.mjs
-    - scripts/vitest-runtime.test.ts
-    - .github/workflows/**
-    - lefthook.yml
-    - biome.json
-    - package.json (the scripts section only; no dependency changes)
-  forbiddenPaths:
-    - apps/**, packages/**, edge/**, tests/** and migrations (product code and its tests; CI may run them)
-    - design-research/** (read only; owned by owner-design-exploration-r04)
-    - visual-direction-gate/**, docs/design/**, docs/adr/**, approval manifests, pinned hashes, scripts/visual-authority.mjs, scripts/visual-authority.test.ts and scripts/owner-supersession-policy.mjs
-    - FITWAY_PRODUCT.md, PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md and RESEARCH.md
-    - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-    - pnpm-lock.yaml and dependencies
-    - docs/archive/** and other milestones' handoffs and packets
-  sharedLeases: []
 authorities:
   required:
     - role: workflow
@@ -99,7 +50,6 @@ authorities:
 continuity:
   predecessorMilestones:
     - agent-environment-r02
-  currentHandoff: docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md
   unresolvedDecisions: []
 verification:
   profile: focused repository-infrastructure profile; unit tests for touched scripts, check:repository, check:agent-context, Biome, CI on the branch; the verify-fitway skill executed end to end; held-out grading of each Codex round
@@ -113,7 +63,6 @@ verification:
     - Independent verification against this packet's acceptance criteria before integration.
   independentReviewRequired: true
 evidence:
-  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
   requiredArtifacts:
     - The environment audit, with each item's class and evidence, and the change that closed it.
     - The verify-fitway skill's end-to-end run, with the evidence folder it names.
@@ -121,7 +70,7 @@ evidence:
     - For the B8 and B9 fields, the evaluation round that tested them, with brief and held-out results.
     - Each Codex round's brief rows, held-out rows and failure cause.
     - The gardener's first pass.
-    - Exact unit-test, check:repository and check:agent-context results with the packet SHA-256, and CI on the branch.
+    - Exact unit-test and check:repository results, and the green CI run on the branch's pushed commit.
     - The independent verifier's report.
 limitations:
   - Opened by the coordinator on 2026-10-07 under owner-design-exploration-r04 DECISIONS item 40 and agent-environment DECISIONS items 12-16, the user's wider mandate for this phase.

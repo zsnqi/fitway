@@ -43,23 +43,23 @@ stay as written.
 | Biome scope (B16, B26) | CI linted 3 folders; `biome check .` failed on design-research concepts | replace: `biome ci .`, design-research and machine-local config excluded | R1, done |
 | `check-owner-tokens` (B5) | in the local ladder only | add to CI | R1, done |
 | CI job (B24) | no concurrency or timeout | replace: one group per ref, 20 minutes | R1, done |
-| Types, all unit tests, edge Python tests (B §1) | local only; unit tests need placeholder env | add to CI with the placeholders built in | R2 |
-| `check:frontier` (B4, A52, C15) | guards a 2026-09-15 dirty-tree snapshot; fails on any dirty tree | remove the check, keep its evidence files | R2 (the classifier has refused edits to it: the user's word may be needed) |
-| `check:test-runtime` (B7) | a retired gate that AGENTS.md still names | remove it and its mentions | R2 |
-| `vitest-runtime.bootstrap.test.mjs` (B8) | nothing runs it | run it with `node --test` in CI, or delete it | R2 |
-| `verify.mjs` phase profiles (B1) | 31 profiles, many for closed phases | remove the closed ones | R2 |
+| Types, all unit tests, edge Python tests (B §1) | local only; unit tests need placeholder env | CI runs the fast ladder (`scripts/verify.mjs fast`) with the placeholders set in the workflow; a probe passed in 8 min 50 s | R2, Codex round 3 |
+| `check:frontier` (B4, A52, C15) | guards a 2026-09-15 dirty-tree snapshot; fails on any dirty tree | remove the check, keep its evidence files | R2, Codex round 3 (the user's 2026-10-07 mandate covers removing it) |
+| `check:test-runtime` (B7) | a retired gate that AGENTS.md still names | remove it with the Vitest provenance layer; the CI run on the pushed commit is the verification | R2, Codex round 3; the text in R3 |
+| `vitest-runtime.bootstrap.test.mjs` (B8) | nothing runs it | delete it with the provenance layer it tests | R2, Codex round 3 |
+| `verify.mjs` phase profiles (B1) | 31 profiles, many for closed phases | keep: they are focused test sets for product areas and cost nothing until run | none |
 
 ### Records
 
 | Item | Finding | Class | Round |
 | --- | --- | --- | --- |
-| Closure by succession (C §4) | no terminal status fits a milestone carried by a successor; 33 history entries overloaded FAILED_VALIDATION or NEEDS_HUMAN for it | add `SUPERSEDED` with `supersededBy`; close agent-environment-r02 with it | R2 |
-| Resume points (A35, C8) | a new timestamped file each time; only the newest is read; 26 files | replace: one resume file per milestone, edited in place, git history as the chain | R2 |
-| `lastHeartbeatAt` and leases (C1) | heartbeat read by nothing; leases renewed by hand | remove the heartbeat; a lease becomes an advisory note | R2 |
-| `taskPacketSha256` pin and duplicated scope (C6) | re-pinned on every packet edit; scope copied into the ledger | remove the pin; scope lives in the ledger, the packet keeps authorities and verification | R2 |
-| History receipts (C5) | recomputed from the history file; prove nothing git does not | stop writing new ones; the closing commit is the record; the 12 stay frozen | R2 |
-| `HISTORY_POINTER_EXCEPTIONS.yaml` (C13) | exists to excuse dead pointers | remove with its check for closed records | R2 |
-| Evidence-receipt template and field (C14) | required, never used | remove; packets keep `requiredArtifacts` | R2 |
+| Closure by succession (C §4) | no terminal status fits a milestone carried by a successor; 33 history entries overloaded FAILED_VALIDATION or NEEDS_HUMAN for it | add `SUPERSEDED` with `supersededBy`; close agent-environment-r02 with it | R2, done |
+| Resume points (A35, C8) | a new timestamped file each time; only the newest is read; 26 files | replace: one resume file per milestone, edited in place, git history as the chain | R2, done |
+| `lastHeartbeatAt` and leases (C1) | heartbeat read by nothing; leases renewed by hand | remove the heartbeat and the lease expiry; ownership stays in the ledger's scope | R2, done |
+| `taskPacketSha256` pin and duplicated scope (C6) | re-pinned on every packet edit; scope copied into the ledger | remove the pin; scope lives in the ledger, the packet keeps authorities and verification | R2, done |
+| History receipts (C5) | recomputed from the history file; prove nothing git does not | stop writing new ones; the closing commit is the record; the 12 stay frozen | R2, done |
+| `HISTORY_POINTER_EXCEPTIONS.yaml` (C13) | exists to excuse dead pointers | remove with its check for closed records | R2, done |
+| Evidence-receipt template and field (C14) | required, never used | the field is gone from the packets; the template is decided in R3 | R2, done; R3 |
 | DECISIONS files (A36, C9) | logs, not decisions in force; process rules mixed in | each keeps an "in force" list; process rules move to WORKING_AGREEMENTS and the briefs | R3 |
 | codex-rounds.md (C10) | no script reads it | keep: it is the eval log of the user's grading method | none |
 
@@ -102,8 +102,8 @@ item 9). It is built last, in R5, so its first pass checks the cleaned environme
 ## Rounds
 
 - **R1:** CI stops failing on its own records, plus the machine sweep. The code part is done in this commit.
-- **R2:** the record model (`SUPERSEDED` and the r02 closure, one resume file, no heartbeat, pin or receipts), CI
-  completed, legacy checks removed.
+- **R2:** the record model (`SUPERSEDED` and the r02 closure, one resume file, no heartbeat, pin or receipts), done in
+  Codex round 2; CI completed and the legacy checks removed, in Codex round 3.
 - **R3:** one home for each rule, the conflicts resolved, stale text removed, the memory trimmed.
 - **R4:** the verification path of r04 DECISIONS item 40 and the Codex launch command.
 - **R5:** the gardener and its first pass, then the closing review.

@@ -3,7 +3,6 @@ milestoneId: access-reason-cap-r01
 taskClass: backend-api-data
 packetStatus: READY
 stateRef: PROJECT_STATE.yaml#/milestones/access-reason-cap-r01
-baseCommit: 312bd861edb2ac642c1a5f27cc358015af3f3267
 task:
   objective: >-
     Cap the reason an owner gives when deactivating the front-desk PIN or an owner at the 240 characters the audit log
@@ -18,24 +17,6 @@ task:
     - Migrations (the database already enforces 240) and tests/browser/** canonicals and screenshots.
     - Any other access, audit or Owner behavior, copy or visual change.
     - Owner concept work under design-research/**.
-scope:
-  ownedPaths:
-    - packages/api/src/access/** and its tests
-    - apps/web/src/components/owner/access/** and its message files and tests
-    - "SPEC.md: one line recording the 240-character audit reason limit only"
-    - "apps/server/src/phase11-access.integration.test.ts: one added test block for the 241-character reason refusal only"
-    - "scripts/check-frontier-preservation.mjs and scripts/check-frontier-preservation.test.ts: only the recorded transition that excludes apps/web/src/components/owner/access/messages.ts, owner-access-view.tsx and owner-access-view.test.tsx (the source exclusion list and the pinned policy pointer)"
-    - "one new frontier policy pointer document (and its companion if required) under docs/phase-records/handoffs/coordinator/; the pinned snapshot, its companion, the baseline listing and every earlier pointer stay unchanged"
-    - docs/phase-records/handoffs/access-reason-cap/**
-    - docs/phase-records/task-packets/access-reason-cap-r01.yaml
-  forbiddenPaths:
-    - migrations, packages/db/** schema, pnpm-lock.yaml and dependencies
-    - tests/browser/** including canonicals and screenshots
-    - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
-    - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md, and all of SPEC.md except the one line above
-    - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-    - CLAUDE.md, .claude/** and other milestones' handoffs and packets
-  sharedLeases: []
 authorities:
   required:
     - role: product
@@ -75,7 +56,6 @@ authorities:
       actionIfTriggered: READ
 continuity:
   predecessorMilestones: []
-  currentHandoff: docs/phase-records/handoffs/access-reason-cap/20261004-213600-access-reason-cap-r01-activation.md
   unresolvedDecisions: []
 verification:
   profile: focused backend-api-data profile; unit and component tests for the touched packages through scripts/run-vitest.mjs; the integration reproduction only against the explicitly named disposable database
@@ -86,7 +66,6 @@ verification:
     - Independent verification against this packet's acceptance criteria before integration.
   independentReviewRequired: true
 evidence:
-  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
   requiredArtifacts:
     - The reproduction test's failing and passing runs.
     - Exact test results with the packet SHA-256.

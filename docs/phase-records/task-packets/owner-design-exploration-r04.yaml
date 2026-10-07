@@ -3,7 +3,6 @@ milestoneId: owner-design-exploration-r04
 taskClass: visual-authority-change
 packetStatus: READY
 stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-r04
-baseCommit: e5d5027ab67966c38612dd973f2f4bcb85f3441b
 task:
   objective: >-
     Continue user-directed, concept-only Owner design exploration with fresh visual directions.
@@ -21,26 +20,6 @@ task:
     - Selecting a direction, declaring visual acceptance, or promoting any concept on the user's behalf.
     - Canonical, Paper, manifest, token-baseline, authority-register, approval-hash, or production promotion changes.
     - Reworking Redline or copying prior r02, r03, or Redline composition, material, or tokens into a direction presented as fresh.
-scope:
-  ownedPaths:
-    - design-research/owner-composition-exploration-r04/directions/**
-    - docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
-    - docs/phase-records/handoffs/owner-design-exploration/r04/**
-    - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-    - SPEC.md
-  forbiddenPaths:
-    - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
-    - design-research/owner-visual-preferences/** (user-supplied reference; read only)
-    - design-research/owner-composition-exploration-r04/concept/** and design-research/owner-composition-exploration-r04/README.md (preserve Redline and its evidence)
-    - apps/** and packages/** production code, copy, behavior, and data semantics
-    - tests/browser/** including canonicals and screenshots
-    - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
-    - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-    - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits), and all of SPEC.md except the user-authorized 2026-09-24 entries-framing wording
-    - docs/archive/**, prior handoffs, and unrelated phase records
-    - pnpm-lock.yaml, dependencies, and migrations
-    - CLAUDE.md, .claude/agents/**, .claude/skills/** and biome.json (owned by agent-environment-r03 since 2026-10-07)
-  sharedLeases: []
 authorities:
   required:
     - role: product
@@ -113,7 +92,6 @@ authorities:
 continuity:
   predecessorMilestones:
     - owner-design-exploration-r03
-  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/r04/20261007-134500-owner-design-exploration-r04-resume.md
   unresolvedDecisions:
     - The user has requested fresh visual directions and plans to use Opus 5.5, but has not chosen a direction, style, or attempt count.
     - Owner composition authority remains vacant until the user selects a concept and it passes the explicit perceptual and authority-promotion gates.
@@ -130,7 +108,6 @@ verification:
     - Record the user's choose, revise, request-more, or pause decision without implying approval or production promotion.
   independentReviewRequired: true
 evidence:
-  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
   requiredArtifacts:
     - Exact context:show and check:agent-context results with packet SHA-256.
     - Impeccable design-context PASS from the authorized host context.

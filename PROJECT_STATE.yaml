@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-07T13:45:00+03:00
+updatedAt: 2026-10-07T18:00:00+03:00
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; agent-environment-r03 (the environment phase, which absorbs agent-environment-r02) and Owner r04 (concept-only Eclipse work) are IN_PROGRESS, access-reason-cap-r01 is paused by the user, and agent-environment-r01 is DONE and archived.
+  owner: Primary coordinator and integrator for FITWAY; agent-environment-r03 (the environment phase) and Owner r04 (concept-only Eclipse work) are IN_PROGRESS, access-reason-cap-r01 is paused by the user, agent-environment-r01 is DONE and agent-environment-r02 is SUPERSEDED by r03, both archived.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -25,9 +25,7 @@ milestones:
       Continue user-directed, concept-only Owner design exploration with fresh visual directions.
       Show reviewable directions early, preserve Redline unchanged and unselected, and leave
       production, canonical, Paper, and visual-authority state unchanged.
-    taskClass: visual-authority-change
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-    taskPacketSha256: d1bde63f8000b114390f59c6bc77809f3abf6773d08eeeb47129649affa8ae9f
     dependencies: []
     ownerSession: claude-code-desktop:local_47dd1bf2-be3b-442a-8532-a8cfbeba5014
     branch: codex/owner-redesign-r04
@@ -53,9 +51,7 @@ milestones:
       - CLAUDE.md, .claude/agents/**, .claude/skills/** and biome.json (owned by agent-environment-r03 since 2026-10-07)
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-07T13:45:00+03:00
-    leaseExpiresAt: 2026-10-10T13:45:00+03:00
-    handoff: docs/phase-records/handoffs/owner-design-exploration/r04/20261007-134500-owner-design-exploration-r04-resume.md
+    handoff: docs/phase-records/handoffs/owner-design-exploration/r04/owner-design-exploration-r04-resume.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
@@ -65,54 +61,12 @@ milestones:
       visual: PENDING
       independentReview: PENDING
     integratedCommit: null
-  agent-environment-r02:
-    status: IN_PROGRESS
-    objective: >-
-      Improve the briefs and the coordinator's view of its own limits: find which brief faults cause Codex
-      rounds to fail, test template lines that remove them through the evaluation loop before they enter the
-      templates, and give the user a Claude Code panel for the subscription limits.
-    taskClass: repository-infrastructure
-    taskPacket: docs/phase-records/task-packets/agent-environment-r02.yaml
-    taskPacketSha256: 1ca105a994e00ca8abc3bebef656360c7c47f5639c1ef517cc7017c4cd5f3685
-    dependencies:
-      - agent-environment-r01
-    ownerSession: claude-code-desktop:coordinator-28297a9c
-    branch: agent-environment-r02
-    worktree: D:/Projects/fitway-worktrees/agent-environment-r02
-    baseCommit: 81ffd55fa6fe0c73061edc31f5e170b619a6ca93
-    ownedPaths:
-      - docs/phase-records/task-packets/agent-environment-r02.yaml
-    forbiddenPaths:
-      - apps/**, packages/**, tests/browser/** and migrations
-      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
-      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
-      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-      - CLAUDE.md and .claude/** (owned by agent-environment-r03)
-      - pnpm-lock.yaml and dependencies
-      - docs/archive/** and other milestones' handoffs and packets
-      - docs/agent-context/briefs/**, docs/agent-context/HANDOFF_TEMPLATE.md, docs/agent-context/WORKING_AGREEMENTS.md, docs/phase-records/handoffs/agent-environment/** and scripts/agent-environment/** (absorbed by agent-environment-r03 on 2026-10-07)
-    sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-07T14:00:00+03:00
-    leaseExpiresAt: 2026-10-14T14:00:00+03:00
-    handoff: docs/phase-records/handoffs/agent-environment/20261004-015613-agent-environment-r02-resume.md
-    stopReason: null
-    gates:
-      unit: PENDING
-      integration: NOT_REQUIRED
-      browser: NOT_REQUIRED
-      accessibility: NOT_REQUIRED
-      visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
   access-reason-cap-r01:
     status: IN_PROGRESS
     objective: >-
       Cap the reason an owner gives when deactivating the front-desk PIN or an owner at the 240 characters the audit
       log stores, so a longer reason is refused with its own message instead of failing on the audit write.
-    taskClass: backend-api-data
     taskPacket: docs/phase-records/task-packets/access-reason-cap-r01.yaml
-    taskPacketSha256: c2f018f15382f5eb048f17021e790bfefbf55f90f51ef8cbc8b3564654ec06cc
     dependencies: []
     ownerSession: claude-code-desktop:task_fdc69808
     branch: claude/busy-bartik-858366
@@ -136,9 +90,7 @@ milestones:
       - CLAUDE.md, .claude/** and other milestones' handoffs and packets
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-07T10:39:55+03:00
-    leaseExpiresAt: 2026-10-10T10:39:55+03:00
-    handoff: docs/phase-records/handoffs/access-reason-cap/20261004-213600-access-reason-cap-r01-activation.md
+    handoff: docs/phase-records/handoffs/access-reason-cap/access-reason-cap-r01-resume.md
     stopReason: null
     gates:
       unit: PENDING
@@ -155,9 +107,7 @@ milestones:
       merge, replace or remove each on evidence; deliver the verification path (verify-fitway skill, generated
       feature map, CLI, no-store preview, Codex launch command, tested B8 and B9 fields, the two checker faults); and
       leave a permanent gardener that keeps it clean.
-    taskClass: repository-infrastructure
     taskPacket: docs/phase-records/task-packets/agent-environment-r03.yaml
-    taskPacketSha256: a7febfa62eb4b6f78b22412c9b0be7b420386f9cce74889920614635c6a4da42
     dependencies: []
     ownerSession: claude-code-desktop:coordinator-ad094a60
     branch: agent-environment-r03
@@ -211,9 +161,7 @@ milestones:
       - docs/archive/** and other milestones' handoffs and packets
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-07T14:00:00+03:00
-    leaseExpiresAt: 2026-10-10T14:00:00+03:00
-    handoff: docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md
+    handoff: docs/phase-records/handoffs/agent-environment/r03/agent-environment-r03-resume.md
     stopReason: null
     gates:
       unit: PENDING

@@ -1,9 +1,8 @@
 schemaVersion: 1
 milestoneId: agent-environment-r02
 taskClass: repository-infrastructure
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/agent-environment-r02
-baseCommit: 81ffd55fa6fe0c73061edc31f5e170b619a6ca93
 task:
   objective: >-
     Improve the briefs and the coordinator's view of its own limits: find which brief faults cause Codex rounds to
@@ -19,19 +18,6 @@ task:
     - Any change to locked product, security, privacy, accessibility, visual-authority or design decisions.
     - Owner concept work, CLAUDE.md and .claude/**, which stay with owner-design-exploration-r04; the Owner milestone's brief rules (its DECISIONS.md B1-B7) change only through that milestone.
     - Taste and design quality, which stay with the user (agent-environment DECISIONS item 9).
-scope:
-  ownedPaths:
-    - docs/phase-records/task-packets/agent-environment-r02.yaml
-  forbiddenPaths:
-    - apps/**, packages/**, tests/browser/** and migrations
-    - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
-    - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
-    - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-    - CLAUDE.md and .claude/** (owned by agent-environment-r03)
-    - pnpm-lock.yaml and dependencies
-    - docs/archive/** and other milestones' handoffs and packets
-    - docs/agent-context/briefs/**, docs/agent-context/HANDOFF_TEMPLATE.md, docs/agent-context/WORKING_AGREEMENTS.md, docs/phase-records/handoffs/agent-environment/** and scripts/agent-environment/** (absorbed by agent-environment-r03 on 2026-10-07)
-  sharedLeases: []
 authorities:
   required:
     - role: workflow
@@ -60,7 +46,6 @@ authorities:
 continuity:
   predecessorMilestones:
     - agent-environment-r01
-  currentHandoff: docs/phase-records/handoffs/agent-environment/20261004-015613-agent-environment-r02-resume.md
   unresolvedDecisions: []
 verification:
   profile: focused repository-infrastructure profile; script unit tests for touched scripts, check:repository, check:agent-context, Biome; held-out grading of each evaluation round
@@ -72,7 +57,6 @@ verification:
     - Independent verification against this packet's acceptance criteria before integration.
   independentReviewRequired: true
 evidence:
-  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
   requiredArtifacts:
     - The per-round failure classification with citations.
     - For each adopted template line, the evaluation round that tested it, with brief and held-out results.
