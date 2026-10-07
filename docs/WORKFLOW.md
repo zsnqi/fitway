@@ -77,7 +77,12 @@ provenance from the earlier closure procedure; nothing reads them.
    from the frozen lockfile; never rewrite the lockfile to make a worktree resolve.
 8. Provision `apps/server/.env` in the worktree before any integration or `pnpm verify:full` run.
    It is untracked and absent from every new worktree; without it those runs fail on environment
-   validation rather than on the change under test.
+   validation rather than on the change under test (first in `apps/server/src/phase2.integration.test.ts`,
+   on `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` and `CORS_ORIGIN`). Where only the integration suite needs
+   them, a gitignored `.env.integration.local` at the worktree root with loopback test-only values (a
+   32+ character `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=http://127.0.0.1/api/auth`,
+   `CORS_ORIGIN=http://127.0.0.1`) is enough: `tests/integration/setup.ts` loads it after
+   `apps/server/.env`, and shell values still win.
 
    The ignored `apps/server/.env` does not by itself reach the unit test process in every shell.
    `pnpm verify:fast` additionally requires process-local synthetic NON-SECRET values for every key

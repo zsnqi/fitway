@@ -16,6 +16,10 @@ latest wording; never copy an entry into a resume point.
   (user, 2026-09-29, 2026-10-01 and 2026-10-02)
 - Inside an announced task, process, tooling and ordering are the coordinator's decisions; it
   reports them at the end. (user, 2026-10-02)
+- The user sees a round only when it is finished: every finding the coordinator would fix anyway,
+  and every fix that applies an existing rule or decision, is made and checked first; only real
+  choices go to the user. The user prefers the running site and frame strips to file paths. (user,
+  2026-10-04 and 2026-10-05)
 - Housekeeping is the coordinator's to do and report, not to ask: pushing working branches (never
   forcing), fast-forwarding `main` when CI passes, deleting merged branches, pruning dead worktree
   registrations, and opening a successor milestone once its terminal record meets the successor gate
