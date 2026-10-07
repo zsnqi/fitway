@@ -16,6 +16,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
+import { pathKey, samePath } from "./path-identity.mjs";
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const script = path.join(
@@ -194,6 +195,27 @@ function expectedArgs(
 	];
 }
 
+// Only -C and -o carry paths; keep flags, order and other values exact.
+async function argumentKeys(args: string[]) {
+	return Promise.all(
+		args.map((value, index) =>
+			index === 3 || index === 10 ? pathKey(value) : value,
+		),
+	);
+}
+
+async function captureKeys(capture: {
+	args: string[];
+	cwd: string;
+	input: string;
+}) {
+	return {
+		...capture,
+		args: await argumentKeys(capture.args),
+		cwd: await pathKey(capture.cwd),
+	};
+}
+
 function refused(
 	f: ReturnType<typeof fixture>,
 	result: ReturnType<ReturnType<typeof fixture>["invoke"]>,
@@ -216,19 +238,21 @@ describe("L1 launch", () => {
 		);
 		expect(existsSync(f.run)).toBe(false);
 	});
-	it("keeps exact HEAD input, argument order, events, last message, run folder and thread id", () => {
+	it("keeps exact HEAD input, argument order, events, last message, run folder and thread id", async () => {
 		const f = fixture();
 		const result = f.invoke();
 		expect(result.status, result.output).toBe(0);
 		expect(result.stdout).toContain("PASS brief:check");
 		expect(result.stdout.match(/Run folder: /g)).toHaveLength(1);
-		expect(result.stdout).toContain(`Run folder: ${f.run}`);
+		const reportedRun = result.stdout.match(/^Run folder: (.+)\r?$/m)?.[1];
+		expect(reportedRun).toBeDefined();
+		expect(await samePath(reportedRun, f.run)).toBe(true);
 		expect(result.stdout.match(/Thread id: /g)).toHaveLength(1);
 		expect(result.stdout).toContain(`Thread id: ${thread}`);
-		expect(f.captured().args).toEqual(expectedArgs(f, "last-message.md"));
-		expect(realpathSync.native(f.captured().cwd)).toBe(
-			realpathSync.native(f.worktree),
+		expect(await argumentKeys(f.captured().args)).toEqual(
+			await argumentKeys(expectedArgs(f, "last-message.md")),
 		);
+		expect(await samePath(f.captured().cwd, f.worktree)).toBe(true);
 		expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
 		expect(readFileSync(path.join(f.run, "input.md"))).toEqual(f.bytes);
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
@@ -262,7 +286,7 @@ describe("L1 launch", () => {
 });
 
 describe("L2 resume", () => {
-	it("resumes the first-line thread with all flags before resume and preserves earlier captures", () => {
+	it("resumes the first-line thread with all flags before resume and preserves earlier captures", async () => {
 		const f = fixture();
 		f.laterHead();
 		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
@@ -276,8 +300,8 @@ describe("L2 resume", () => {
 		for (let attempt = 0; attempt < 2; attempt += 1) {
 			const result = f.invoke(["resume", f.run], { ROUND_EXIT: "19" });
 			expect(result.status, result.output).toBe(19);
-			expect(f.captured().args).toEqual(
-				expectedArgs(f, "last-message.md", true),
+			expect(await argumentKeys(f.captured().args)).toEqual(
+				await argumentKeys(expectedArgs(f, "last-message.md", true)),
 			);
 			expect(Buffer.from(f.captured().input, "base64")).toEqual(input);
 		}
@@ -293,14 +317,16 @@ describe("L2 resume", () => {
 		"",
 		"توقف بسبب حد الاستخدام؛ تبدّل الحساب «كما هو» & %PATH% ! ^",
 		"  العربية\r\nresumed\n ",
-	])("sends the exact optional resume message %j instead of the launch input", (message) => {
+	])("sends the exact optional resume message %j instead of the launch input", async (message) => {
 		const f = fixture();
 		f.laterHead();
 		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
 		const input = readFileSync(path.join(f.run, "input.md"));
 		const result = f.invoke(["resume", f.run, "--message", message]);
 		expect(result.status, result.output).toBe(0);
-		expect(f.captured().args).toEqual(expectedArgs(f, "last-message.md", true));
+		expect(await argumentKeys(f.captured().args)).toEqual(
+			await argumentKeys(expectedArgs(f, "last-message.md", true)),
+		);
 		expect(Buffer.from(f.captured().input, "base64")).toEqual(
 			Buffer.from(message, "utf8"),
 		);
@@ -461,7 +487,7 @@ describe("L4 shell and byte parity", () => {
 	});
 	it.skipIf(process.platform !== "win32")(
 		"gives the same launch in PowerShell and Git Bash",
-		() => {
+		async () => {
 			const f = fixture("\r\n");
 			// An executable stand-in and the WSL launcher both precede Git Bash.
 			const impostor = path.join(f.bin, "bash.exe");
@@ -477,9 +503,11 @@ describe("L4 shell and byte parity", () => {
 			})
 				.trim()
 				.split(/\r?\n/)[0];
-			expect(firstBash).toBe(impostor);
+			// where.exe expands short TEMP aliases; vary case and slashes too.
+			const impostorAlias = impostor.toUpperCase().replaceAll("\\", "/");
+			expect(await samePath(firstBash, impostorAlias)).toBe(true);
 			const gitBash = findGitBash(env.PATH);
-			expect(gitBash).not.toBe(impostor);
+			expect(await samePath(gitBash, impostorAlias)).toBe(false);
 			const args = [process.execPath, script, f.brief, "high", "--run", f.run];
 			const psQuote = (value: string) => `'${value.replaceAll("'", "''")}'`;
 			const ps = spawnSync(
@@ -504,7 +532,7 @@ describe("L4 shell and byte parity", () => {
 				{ cwd: f.coordinator, env, encoding: "utf8", windowsHide: true },
 			);
 			expect(bash.status, bash.stdout + bash.stderr).toBe(0);
-			expect(f.captured()).toEqual(first);
+			expect(await captureKeys(f.captured())).toEqual(await captureKeys(first));
 		},
 	);
 	it.skipIf(process.platform !== "win32")(
@@ -520,12 +548,17 @@ describe("L4 shell and byte parity", () => {
 	);
 	it.skipIf(process.platform !== "win32")(
 		"keeps shell metacharacters in run paths as data for .cmd shims",
-		() => {
+		async () => {
 			const f = fixture();
 			const run = path.join(f.root, "run & %PATH% !literal! ^ (space)");
 			const result = f.invoke([f.brief, "high", "--run", run]);
 			expect(result.status, result.output).toBe(0);
-			expect(f.captured().args[10]).toBe(path.join(run, "last-message.md"));
+			expect(
+				await samePath(
+					f.captured().args[10],
+					path.join(run, "last-message.md"),
+				),
+			).toBe(true);
 			expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
 		},
 	);
