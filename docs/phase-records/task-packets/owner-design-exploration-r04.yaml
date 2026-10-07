@@ -28,10 +28,6 @@ scope:
     - docs/phase-records/handoffs/owner-design-exploration/r04/**
     - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
     - SPEC.md
-    - biome.json
-    - CLAUDE.md
-    - .claude/agents/**
-    - .claude/skills/**
   forbiddenPaths:
     - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
     - design-research/owner-visual-preferences/** (user-supplied reference; read only)
@@ -43,6 +39,7 @@ scope:
     - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits), and all of SPEC.md except the user-authorized 2026-09-24 entries-framing wording
     - docs/archive/**, prior handoffs, and unrelated phase records
     - pnpm-lock.yaml, dependencies, and migrations
+    - CLAUDE.md, .claude/agents/**, .claude/skills/** and biome.json (owned by agent-environment-r03 since 2026-10-07)
   sharedLeases: []
 authorities:
   required:

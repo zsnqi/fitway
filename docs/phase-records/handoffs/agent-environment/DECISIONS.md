@@ -49,3 +49,48 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     names and pass as before.
 11. **Sonnet definitions (2026-10-03).** The user keeps both copies: the global ones in `~/.claude/agents/` serve
     every project, and the tracked ones in `.claude/agents/` serve cloud sessions, which see only committed files.
+12. **The environment phase (the user, 2026-10-07).** The user widened the coordinator's mandate for this phase: old
+    rules, workflows, tools and records are not constraints to keep when they prove stale, conflicting, wasteful or in
+    the way of a cleaner environment; the coordinator may reorganize, replace, move ownership, remove or merge
+    duplicated tools, and change CI, the brief workflow and the work records when that is the right fix («الهدف في هذه
+    المرحلة هو تنظيف وتبسيط وتحسين بيئة العمل نفسها»). Locked product, security, privacy, content, accessibility,
+    visual-authority and data-semantic decisions stay in force (AGENTS.md). agent-environment-r03 opens for it, from
+    main at cf7758eb.
+13. **What the phase delivers (coordinator, 2026-10-07).**
+    - An audit of every rule, workflow, tool, check, record type and machine resource, each kept, merged, replaced or
+      removed on cited evidence, saved before the first removal.
+    - The tooling round of owner-design-exploration-r04 DECISIONS item 40: a verify-fitway skill both tools read, a
+      feature map of the Owner concept generated from its code and spec, a verification CLI on the Eclipse probe kit
+      and ui-forensics, a no-store preview, one command that launches a Codex round, and the B8 and B9 brief fields
+      through the evaluation loop. pstack's create-verification-skill and maintain-verification-skill are tried.
+    - The two checker faults of the r04 resume point of 2026-10-07: resume-point paths and branch names judged
+      against what the CI checkout has, and a lease check that does not fail a branch only because the wall clock
+      passed a lease it carries.
+    - A permanent gardener (item 16).
+14. **Ownership (coordinator, 2026-10-07).** agent-environment-r03 owns the environment: AGENTS.md, CLAUDE.md,
+    .claude/agents/**, .claude/skills/**, .agents/**, docs/WORKFLOW.md, docs/agent-context/**, docs/schemas/**, the
+    repository's check, ledger and test-runner scripts, .github/workflows/**, lefthook.yml, biome.json and the scripts
+    section of package.json. It absorbs agent-environment-r02, whose work is all on main (by patch): every path but
+    its packet moves here, with its open items (C4, C5, C2d, the closing review); r02 closes once the records can
+    express a closure by succession (r03 acceptance criterion 3). CLAUDE.md, .claude/agents/**, .claude/skills/** and
+    biome.json move from owner-design-exploration-r04, which keeps the Owner concept and its records. Both sides say
+    so in their packets and forbiddenPaths, because no check compares owned paths across milestones.
+15. **Where the tools live and what they drive (coordinator, 2026-10-07).**
+    - The verify-fitway skill is committed at .agents/skills/verify-fitway/, where Codex finds repository skills;
+      .claude/skills/verify-fitway/SKILL.md points Claude to it, so the content has one copy.
+    - ui-forensics stays the user's machine-level skill (1.1.0 since 2026-10-07): the CLI uses it on this machine, and
+      the skill's doctor reports when it is missing; cloud sessions cannot run the browser verification.
+    - The live Owner concept is the Eclipse build on owner-followup-r04-build, 134 commits ahead of main, which holds
+      an early Eclipse and no probe kit. Until the user approves the build, the skill, the CLI and the feature map
+      take the Eclipse folder as an input and run against the build's; nothing from the build is copied to main.
+16. **A permanent gardener (the user asked, 2026-10-07; coordinator design).** None existed: maintain-verification-skill
+    keeps only the verification map honest, and CI only blocks regressions in rules already encoded. The phase
+    builds a gardener that keeps the environment clean after it:
+    - a skill both tools read, with a fixed checklist: a correction seen twice becomes a lint, test, check or template
+      field (or a recorded reason why not); drift between docs, maps, indexes and code; sediment (dead files and
+      scripts, duplicate tools, stale handoffs, branches, worktrees and temp folders); gate gaps (checks that run
+      only locally, twice, or never fail); rules nothing needs any more;
+    - a weekly schedule, plus a pass when a milestone closes and when a review repeats a known finding class;
+    - each pass gives one report and at most one bounded, verified change, or says the environment is clean;
+      removals of policy go to the coordinator; it never touches product semantics, design decisions or evidence a
+      record points to.

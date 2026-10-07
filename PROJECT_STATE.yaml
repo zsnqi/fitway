@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-07T10:39:55+03:00
+updatedAt: 2026-10-07T14:00:00+03:00
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-environment-r02 (brief evaluation loop and usage panel) are IN_PROGRESS; agent-environment-r01 is DONE and archived.
+  owner: Primary coordinator and integrator for FITWAY; agent-environment-r03 (the environment phase, which absorbs agent-environment-r02) and Owner r04 (concept-only Eclipse work) are IN_PROGRESS, access-reason-cap-r01 is paused by the user, and agent-environment-r01 is DONE and archived.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -27,7 +27,7 @@ milestones:
       production, canonical, Paper, and visual-authority state unchanged.
     taskClass: visual-authority-change
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-    taskPacketSha256: 4eaebfca86025978ad70c072680c20d65347a99660d4efacf1c2b144fd413110
+    taskPacketSha256: e6634d3020e47fe028b9b75c31ea9298ce914af43cea5ba5f90da048386abbc6
     dependencies: []
     ownerSession: claude-code-desktop:local_47dd1bf2-be3b-442a-8532-a8cfbeba5014
     branch: codex/owner-redesign-r04
@@ -39,10 +39,6 @@ milestones:
       - docs/phase-records/handoffs/owner-design-exploration/r04/**
       - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
       - SPEC.md
-      - biome.json
-      - CLAUDE.md
-      - .claude/agents/**
-      - .claude/skills/**
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
       - design-research/owner-visual-preferences/** (user-supplied reference; read only)
@@ -54,6 +50,7 @@ milestones:
       - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits), and all of SPEC.md except the user-authorized 2026-09-24 entries-framing wording
       - docs/archive/**, prior handoffs, and unrelated phase records
       - pnpm-lock.yaml, dependencies, and migrations
+      - CLAUDE.md, .claude/agents/**, .claude/skills/** and biome.json (owned by agent-environment-r03 since 2026-10-07)
     sharedLeases: []
     validationRepairAttempts: 0
     lastHeartbeatAt: 2026-10-07T10:39:55+03:00
@@ -76,7 +73,7 @@ milestones:
       templates, and give the user a Claude Code panel for the subscription limits.
     taskClass: repository-infrastructure
     taskPacket: docs/phase-records/task-packets/agent-environment-r02.yaml
-    taskPacketSha256: d2e15352552dd87caf15b75386e589a2d958293854d527936d1544cd9e643d55
+    taskPacketSha256: 1ca105a994e00ca8abc3bebef656360c7c47f5639c1ef517cc7017c4cd5f3685
     dependencies:
       - agent-environment-r01
     ownerSession: claude-code-desktop:coordinator-28297a9c
@@ -84,24 +81,20 @@ milestones:
     worktree: D:/Projects/fitway-worktrees/agent-environment-r02
     baseCommit: 81ffd55fa6fe0c73061edc31f5e170b619a6ca93
     ownedPaths:
-      - docs/agent-context/briefs/**
-      - docs/agent-context/HANDOFF_TEMPLATE.md
-      - docs/agent-context/WORKING_AGREEMENTS.md
-      - docs/phase-records/handoffs/agent-environment/**
       - docs/phase-records/task-packets/agent-environment-r02.yaml
-      - scripts/agent-environment/**
     forbiddenPaths:
       - apps/**, packages/**, tests/browser/** and migrations
       - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
       - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
       - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-      - CLAUDE.md and .claude/** (owned by owner-design-exploration-r04)
+      - CLAUDE.md and .claude/** (owned by agent-environment-r03)
       - pnpm-lock.yaml and dependencies
       - docs/archive/** and other milestones' handoffs and packets
+      - docs/agent-context/briefs/**, docs/agent-context/HANDOFF_TEMPLATE.md, docs/agent-context/WORKING_AGREEMENTS.md, docs/phase-records/handoffs/agent-environment/** and scripts/agent-environment/** (absorbed by agent-environment-r03 on 2026-10-07)
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-07T10:39:55+03:00
-    leaseExpiresAt: 2026-10-10T10:39:55+03:00
+    lastHeartbeatAt: 2026-10-07T14:00:00+03:00
+    leaseExpiresAt: 2026-10-14T14:00:00+03:00
     handoff: docs/phase-records/handoffs/agent-environment/20261004-015613-agent-environment-r02-resume.md
     stopReason: null
     gates:
@@ -150,6 +143,81 @@ milestones:
     gates:
       unit: PENDING
       integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+  agent-environment-r03:
+    status: IN_PROGRESS
+    objective: >-
+      Clean, simplify and improve the working environment itself: audit every rule, tool, check and record and keep,
+      merge, replace or remove each on evidence; deliver the verification path (verify-fitway skill, generated
+      feature map, CLI, no-store preview, Codex launch command, tested B8 and B9 fields, the two checker faults); and
+      leave a permanent gardener that keeps it clean.
+    taskClass: repository-infrastructure
+    taskPacket: docs/phase-records/task-packets/agent-environment-r03.yaml
+    taskPacketSha256: a7febfa62eb4b6f78b22412c9b0be7b420386f9cce74889920614635c6a4da42
+    dependencies: []
+    ownerSession: claude-code-desktop:coordinator-ad094a60
+    branch: agent-environment-r03
+    worktree: D:/Projects/fitway-worktrees/agent-environment-r03
+    baseCommit: cf7758eb06b0a76f4f8b2bcea387d142847fc98e
+    ownedPaths:
+      - AGENTS.md
+      - CLAUDE.md
+      - .claude/agents/**
+      - .claude/skills/**
+      - .agents/**
+      - docs/WORKFLOW.md
+      - docs/agent-context/**
+      - docs/schemas/**
+      - docs/phase-records/handoffs/agent-environment/**
+      - docs/phase-records/history-transitions/**
+      - docs/phase-records/task-packets/agent-environment-r03.yaml
+      - scripts/agent-environment/**
+      - scripts/check-agent-context.mjs
+      - scripts/check-agent-context.test.ts
+      - scripts/check-design-context.mjs
+      - scripts/check-frontier-preservation.mjs
+      - scripts/check-frontier-preservation.test.ts
+      - scripts/check-owner-tokens.mjs
+      - scripts/check-test-runtime.mjs
+      - scripts/check-test-runtime.test.ts
+      - scripts/project-state-history-transition.mjs
+      - scripts/project-state-history-transition.test.ts
+      - scripts/project-state-history-v2.test.ts
+      - scripts/repository-fingerprint.mjs
+      - scripts/run-vitest.mjs
+      - scripts/show-agent-context.mjs
+      - scripts/show-agent-context.test.ts
+      - scripts/verify-repository.mjs
+      - scripts/verify-repository.schema.test.ts
+      - scripts/verify.mjs
+      - scripts/vitest-runtime.bootstrap.test.mjs
+      - scripts/vitest-runtime.mjs
+      - scripts/vitest-runtime.test.ts
+      - .github/workflows/**
+      - lefthook.yml
+      - biome.json
+      - package.json (the scripts section only; no dependency changes)
+    forbiddenPaths:
+      - apps/**, packages/**, edge/**, tests/** and migrations (product code and its tests; CI may run them)
+      - design-research/** (read only; owned by owner-design-exploration-r04)
+      - visual-direction-gate/**, docs/design/**, docs/adr/**, approval manifests, pinned hashes, scripts/visual-authority.mjs, scripts/visual-authority.test.ts and scripts/owner-supersession-policy.mjs
+      - FITWAY_PRODUCT.md, PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md and RESEARCH.md
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - pnpm-lock.yaml and dependencies
+      - docs/archive/** and other milestones' handoffs and packets
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-10-07T14:00:00+03:00
+    leaseExpiresAt: 2026-10-10T14:00:00+03:00
+    handoff: docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED

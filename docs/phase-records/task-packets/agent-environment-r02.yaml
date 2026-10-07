@@ -21,20 +21,16 @@ task:
     - Taste and design quality, which stay with the user (agent-environment DECISIONS item 9).
 scope:
   ownedPaths:
-    - docs/agent-context/briefs/**
-    - docs/agent-context/HANDOFF_TEMPLATE.md
-    - docs/agent-context/WORKING_AGREEMENTS.md
-    - docs/phase-records/handoffs/agent-environment/**
     - docs/phase-records/task-packets/agent-environment-r02.yaml
-    - scripts/agent-environment/**
   forbiddenPaths:
     - apps/**, packages/**, tests/browser/** and migrations
     - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
     - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
     - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-    - CLAUDE.md and .claude/** (owned by owner-design-exploration-r04)
+    - CLAUDE.md and .claude/** (owned by agent-environment-r03)
     - pnpm-lock.yaml and dependencies
     - docs/archive/** and other milestones' handoffs and packets
+    - docs/agent-context/briefs/**, docs/agent-context/HANDOFF_TEMPLATE.md, docs/agent-context/WORKING_AGREEMENTS.md, docs/phase-records/handoffs/agent-environment/** and scripts/agent-environment/** (absorbed by agent-environment-r03 on 2026-10-07)
   sharedLeases: []
 authorities:
   required:
@@ -85,3 +81,4 @@ evidence:
 limitations:
   - Opened by the coordinator on 2026-10-03 as the successor that agent-environment-r01's packet named ("later work"), under agent-environment DECISIONS items 1, 6, 8 and 9.
   - Installing a mod changes the user's Claude Code configuration and needs the user's approval (given 2026-10-03 for the usage panel).
+  - Absorbed by agent-environment-r03 on 2026-10-07 under agent-environment DECISIONS items 12 and 14. Its work is all on main by patch; every path but this packet moved there with its open items (C4, C5, C2d, the closing review), and this milestone closes once the records can express a closure by succession.
