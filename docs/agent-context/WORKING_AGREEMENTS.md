@@ -79,8 +79,9 @@ latest wording; never copy an entry into a resume point.
   when a decision depends on it, by replaying one closed round on each with the same suite. Records
   never bias the reader against the model and never record run time. (user, 2026-09-30 and
   2026-10-02)
-- Every subagent is launched from a definition with a fixed effort; `CLAUDE.md` gives the choice
-  between the Opus and Sonnet definitions. (user, 2026-10-02)
+- Every subagent is launched from a definition, at the definition's effort unless `CLAUDE.md` names
+  the case for another; `CLAUDE.md` gives the choice between the Opus, Sonnet and Haiku definitions.
+  (user, 2026-10-02 and 2026-10-08)
 - The Claude subscription is the scarce budget; Codex capacity is not (user, 2026-10-04). A round
   of small fixes gets one Claude review, the verifier at `high`, which also reads the changed
   elements in both directions; the separate reading-direction review is kept for a whole screen or

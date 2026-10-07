@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: verifier -->
 # Verifier brief: <title> (<milestone-id>)
 
-For a fresh `owner-direction-verifier-high` (Opus, high). Verify independently: do not read the implementer's
+For a fresh `owner-direction-verifier` (Opus, high). Verify independently: do not read the implementer's
 rationale or handoff before recording your own result, and never edit what you verify. (CLAUDE.md)
 
 - **Worktree:** `D:/Projects/fitway-worktrees/<worktree>`, branch `<branch>`, HEAD `<short-sha>`

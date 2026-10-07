@@ -45,26 +45,45 @@ Report findings as hypotheses with file and line evidence, and never repair what
   (Arabic interface copy, MIT). They are unchanged apart from trailing whitespace; see
   `.claude/skills/SOURCES.md`.
 - **`.claude/agents/`** holds Impeccable's shipped agents, the Owner-direction definitions, a reading-direction
-  reviewer, and two Sonnet research definitions.
+  reviewer, two Sonnet research definitions and a Haiku lookup definition.
 
-Each definition fixes one model and one effort level, and the coordinator picks by task:
+Each definition sets one model and a default effort level, and the coordinator picks by task:
 
 | Definition | Model | Effort | Use |
 | --- | --- | --- | --- |
 | `owner-direction-designer` | Opus | `xhigh` | new visual design and taste judgment |
-| `owner-direction-designer-max` | Opus | `max` | a whole Owner screen in one pass |
 | `owner-direction-builder` | Opus | `high` | implementing an agreed, precisely specified decision |
-| `owner-direction-verifier` | Opus | `xhigh` | independent verification, only where evidence shows `high` misses something |
-| `owner-direction-verifier-high` | Opus | `high` | independent verification (the default) |
+| `owner-direction-verifier` | Opus | `high` | independent verification |
 | `owner-direction-fixer` | Opus | `medium` | a mechanical edit with a frozen target |
 | `rtl-ltr-reviewer` | Opus | `high` | reading-direction review of Arabic and English frames, after a layout, table or copy round |
 | `sonnet-researcher` | Sonnet | `high` | read-only research across several sources, returning a cited digest |
-| `sonnet-scout` | Sonnet | `medium` | one quick read-only lookup |
+| `sonnet-scout` | Sonnet | `medium` | a lookup `haiku-scout` could not answer from a source it cited |
+| `haiku-scout` | Haiku 5.5 | `medium` | one quick read-only lookup with named places to look |
 
-Effort decides cost more than the model does. A subagent whose definition sets no `effort:` (the built-in
-`general-purpose`, `Explore` and `Plan`) inherits this session's effort, so launch a definition instead.
-Sonnet 5.5 at `medium` or `high` uses far less than Opus; at `xhigh` or `max` it thinks longer and uses as much or
-more. Cache reads cost the same on both models, so keep agent loops short. Run each definition on its own model.
+The Agent tool's `effort` (Claude Code 2.1.292 and later) overrides a definition's level for one call. Pass it
+only in these cases:
+- `owner-direction-designer` at `max` for a whole Owner screen in one pass (the user's trial,
+  `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` item 6);
+- `owner-direction-verifier` at `xhigh` where evidence shows `high` misses something;
+- `haiku-scout` at `high` for an extract across several named files;
+- the built-in `claude-code-guide`, which runs Haiku 5.5, at `medium`.
+
+A subagent with no effort in its definition or its call (the built-in `general-purpose`, `Explore`, `Plan` and
+`claude-code-guide`) runs at this session's effort, so launch a definition or pass one of the cases above. Do not
+pass `model` at call time except in a recorded comparison: the call keeps the definition's effort, which may not
+suit the other model.
+
+Haiku 5.5 is for narrow lookups whose answer can be checked against the source it cites. It is not for images or
+frames, taste, Arabic copy, synthesis across sources, or an answer a decision rests on without a check. Before
+using a Haiku answer, reproduce at least one source it cites; an answer that does not reproduce goes to
+`sonnet-scout`, and a second such failure in the same kind of question moves that kind to Sonnet. Above a
+100K-token prompt Haiku costs five times as much, so a lookup that needs that much reading is a
+`sonnet-researcher` task. `haiku-scout` names `claude-haiku-5-5` because Claude Code before 2.1.293 resolves
+`haiku` to Haiku 4.5.
+
+Effort decides cost more than the model does. Sonnet 5.5 at `medium` or `high` uses far less than Opus; at `xhigh`
+or `max` it thinks longer and uses as much or more. Cache reads cost less on Sonnet than on Opus and least on
+Haiku, but long agent loops still add up, so keep them short.
 
 The rest of `.claude/` is untracked and differs between worktrees. Nothing in `.claude/` is normative. Where a
 local skill or an agent definition disagrees with the root policy, the root policy and the files it names win.

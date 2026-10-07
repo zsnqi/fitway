@@ -105,3 +105,22 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - Each rule has one home: the rules in `AGENTS.md`, the procedure in `docs/WORKFLOW.md`, the agreements with the
       user in `docs/agent-context/WORKING_AGREEMENTS.md`, the brief rules B1-B10 in the checklist of
       `docs/agent-context/briefs/codex.md`; decisions files keep decisions and point to those homes.
+18. **Haiku 5.5 and call-time effort (the user agreed, 2026-10-08; coordinator design).**
+    - Haiku 5.5 (released 2026-10-07; `haiku` in Claude Code 2.1.293) answers narrow lookups through `haiku-scout`
+      (`claude-haiku-5-5`, `medium`, five read-only tools). Sonnet keeps research, audits, grading, cold reads and
+      the gardener's pass; Opus keeps design, building, verification and reading-direction review. `CLAUDE.md`
+      holds the rules: what Haiku is not for, the source check before using its answer, and the move to Sonnet.
+    - Evidence: on 12 lookups with known answers, three of them traps, Haiku and Sonnet at `medium` both scored 12
+      of 12 with no invented answer; Haiku found one correct detail the expected answer missed
+      (D:/fitway-temp/evals/haiku-scout-20261008/REPORT.md). Moving all Sonnet subagent work of 2026-09-20 to
+      2026-10-07 to Haiku would have saved about 4% of that period's input tokens' list price: the spend is Opus,
+      which stays. Haiku's use is keeping lookups out of the coordinator's Opus context.
+    - Since Claude Code 2.1.292 the Agent tool takes `effort`, and a call's level overrides the definition's
+      (probed 2026-10-07). The effort-only variants `owner-direction-designer-max` and
+      `owner-direction-verifier-high` therefore merge into their base definitions (13 definitions become 12), and
+      `CLAUDE.md` names the cases for a call-time level. The user's max-effort trial (r04 DECISIONS item 6)
+      continues as the designer at `max`.
+    - The advisor tool stays off: in Anthropic's measurement a Haiku 5.5 executor consulted an Opus advisor on none
+      of 198 questions, and every subagent would inherit it. The gardener's scheduled pass pins
+      `--model claude-sonnet-5-5 --effort high`, because a headless run otherwise takes the user's saved Opus at
+      `xhigh`; the terminal Claude Code is 2.1.293 (updated by the user, 2026-10-08).
