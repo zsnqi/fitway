@@ -24,14 +24,15 @@ const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
 const MODEL = "gpt-6.1-sol";
 const LEVELS = new Set(["medium", "high", "xhigh"]);
 const HELP = `Usage: pnpm codex:round [--] <brief> <level> [--run <folder>]
-       pnpm codex:round [--] resume <folder>
+       pnpm codex:round [--] resume <folder> [--message <text>]
        node <repository>/scripts/agent-environment/codex-round.mjs <brief> <level> [--run <folder>]
-       node <repository>/scripts/agent-environment/codex-round.mjs resume <folder>
+       node <repository>/scripts/agent-environment/codex-round.mjs resume <folder> [--message <text>]
 
 Levels: medium, high, xhigh (WORKING_AGREEMENTS.md, Delegation).
 Relative brief and run paths start at the repository root, in either shell.
 Default run folder: ${process.platform === "win32" ? "D:/fitway-temp" : tmpdir()}/codex-round-<id>.
-Resume allows unfinished changes, keeps each event stream, and updates last-message.md.`;
+Resume allows unfinished changes, keeps each event stream, and updates last-message.md.
+--message sends the exact text instead of the saved launch input.`;
 
 function resolvePath(value) {
 	return path.resolve(repositoryRoot, value.replaceAll("\\", "/"));
@@ -41,15 +42,21 @@ function parseArgs(input) {
 	const args = input[0] === "--" ? input.slice(1) : input;
 	if (args.length === 1 && ["--help", "-h"].includes(args[0]))
 		return { help: true };
-	if (args[0] === "resume" && args.length === 2)
-		return { resume: true, run: resolvePath(args[1]) };
+	if (args[0] === "resume") {
+		if (
+			![2, 4].includes(args.length) ||
+			(args.length === 4 && args[2] !== "--message")
+		)
+			throw new Error("expected resume <folder> [--message <text>]");
+		return { resume: true, run: resolvePath(args[1]), message: args[3] };
+	}
 	if (
 		![2, 4].includes(args.length) ||
 		(args.length === 4 && args[2] !== "--run") ||
 		args[0]?.startsWith("-")
 	)
 		throw new Error(
-			"expected <brief> <level> [--run <folder>] or resume <folder>",
+			"expected <brief> <level> [--run <folder>] or resume <folder> [--message <text>]",
 		);
 	return {
 		brief: resolvePath(args[0]),
@@ -235,7 +242,10 @@ async function prepareResume(options) {
 		throw new Error("invalid run metadata");
 	return {
 		metadata,
-		input: await readFile(path.join(options.run, "input.md")),
+		input:
+			options.message === undefined
+				? await readFile(path.join(options.run, "input.md"))
+				: Buffer.from(options.message, "utf8"),
 		thread: await firstThread(options.run),
 		executable: await findCodex(),
 	};

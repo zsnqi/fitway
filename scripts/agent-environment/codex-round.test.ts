@@ -1,6 +1,7 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import {
 	chmodSync,
+	copyFileSync,
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
@@ -27,6 +28,25 @@ const environment = readFileSync(
 );
 const roots: string[] = [];
 const thread = "fixture-thread-123";
+
+function findGitBash(searchPath = process.env.PATH ?? "") {
+	// Find Bash in Git's installation, never the unrelated bash first on PATH.
+	for (const entry of searchPath.split(path.delimiter)) {
+		if (!entry) continue;
+		const executable = path.resolve(entry.replace(/^"|"$/g, ""), "git.exe");
+		if (!existsSync(executable)) continue;
+		let directory = path.dirname(realpathSync.native(executable));
+		// Git exposes git.exe through cmd, bin, or mingw{32,64}/bin.
+		for (let depth = 0; depth < 3; depth += 1) {
+			const bash = path.join(directory, "usr", "bin", "bash.exe");
+			if (existsSync(bash)) return bash;
+			directory = path.dirname(directory);
+		}
+	}
+	throw new Error(
+		"Git for Windows Bash is missing (required for shell parity)",
+	);
+}
 
 function git(root: string, ...args: string[]) {
 	return execFileSync("git", args, {
@@ -244,8 +264,10 @@ describe("L1 launch", () => {
 describe("L2 resume", () => {
 	it("resumes the first-line thread with all flags before resume and preserves earlier captures", () => {
 		const f = fixture();
+		f.laterHead();
 		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
 		const original = readFileSync(path.join(f.run, "events.jsonl"));
+		const input = readFileSync(path.join(f.run, "input.md"));
 		writeFileSync(
 			path.join(f.worktree, "unfinished.ts"),
 			"// interrupted round\n",
@@ -257,7 +279,7 @@ describe("L2 resume", () => {
 			expect(f.captured().args).toEqual(
 				expectedArgs(f, "last-message.md", true),
 			);
-			expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
+			expect(Buffer.from(f.captured().input, "base64")).toEqual(input);
 		}
 		expect(readFileSync(path.join(f.run, "events.jsonl"))).toEqual(original);
 		expect(
@@ -266,6 +288,39 @@ describe("L2 resume", () => {
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
 			"stand-in resumed message\n",
 		);
+	});
+	it.each([
+		"",
+		"توقف بسبب حد الاستخدام؛ تبدّل الحساب «كما هو» & %PATH% ! ^",
+		"  العربية\r\nresumed\n ",
+	])("sends the exact optional resume message %j instead of the launch input", (message) => {
+		const f = fixture();
+		f.laterHead();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		const input = readFileSync(path.join(f.run, "input.md"));
+		const result = f.invoke(["resume", f.run, "--message", message]);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toEqual(expectedArgs(f, "last-message.md", true));
+		expect(Buffer.from(f.captured().input, "base64")).toEqual(
+			Buffer.from(message, "utf8"),
+		);
+		expect(readFileSync(path.join(f.run, "input.md"))).toEqual(input);
+		const fallback = f.invoke(["resume", f.run]);
+		expect(fallback.status, fallback.output).toBe(0);
+		expect(Buffer.from(f.captured().input, "base64")).toEqual(input);
+	});
+	it.each([
+		[["--message"]],
+		[["--unknown", "text"]],
+		[["--message", "text", "extra"]],
+	])("refuses malformed resume options %j without starting Codex", (options) => {
+		const f = fixture();
+		refused(
+			f,
+			f.invoke(["resume", f.run, ...options]),
+			"expected resume <folder> [--message <text>]",
+		);
+		expect(existsSync(f.run)).toBe(false);
 	});
 	it("refuses a run whose first event has no thread", () => {
 		const f = fixture();
@@ -408,12 +463,29 @@ describe("L4 shell and byte parity", () => {
 		"gives the same launch in PowerShell and Git Bash",
 		() => {
 			const f = fixture("\r\n");
+			// An executable stand-in and the WSL launcher both precede Git Bash.
+			const impostor = path.join(f.bin, "bash.exe");
+			copyFileSync(process.execPath, impostor);
+			const env = {
+				...f.env,
+				PATH: `${f.bin}${path.delimiter}${path.join(process.env.SystemRoot ?? "C:/Windows", "System32")}${path.delimiter}${process.env.PATH}`,
+			};
+			const firstBash = execFileSync("where.exe", ["bash.exe"], {
+				env,
+				encoding: "utf8",
+				windowsHide: true,
+			})
+				.trim()
+				.split(/\r?\n/)[0];
+			expect(firstBash).toBe(impostor);
+			const gitBash = findGitBash(env.PATH);
+			expect(gitBash).not.toBe(impostor);
 			const args = [process.execPath, script, f.brief, "high", "--run", f.run];
 			const psQuote = (value: string) => `'${value.replaceAll("'", "''")}'`;
 			const ps = spawnSync(
 				"powershell.exe",
 				["-NoProfile", "-Command", `& ${args.map(psQuote).join(" ")}`],
-				{ cwd: f.root, env: f.env, encoding: "utf8", windowsHide: true },
+				{ cwd: f.root, env, encoding: "utf8", windowsHide: true },
 			);
 			expect(ps.status, ps.stdout + ps.stderr).toBe(0);
 			const first = f.captured();
@@ -422,17 +494,28 @@ describe("L4 shell and byte parity", () => {
 			const bashQuote = (value: string) =>
 				`'${value.replaceAll("'", "'\\''")}'`;
 			const bash = spawnSync(
-				"bash.exe",
+				gitBash,
 				[
 					"--noprofile",
 					"--norc",
 					"-c",
 					args.map((arg) => bashQuote(arg.replaceAll("\\", "/"))).join(" "),
 				],
-				{ cwd: f.coordinator, env: f.env, encoding: "utf8", windowsHide: true },
+				{ cwd: f.coordinator, env, encoding: "utf8", windowsHide: true },
 			);
 			expect(bash.status, bash.stdout + bash.stderr).toBe(0);
 			expect(f.captured()).toEqual(first);
+		},
+	);
+	it.skipIf(process.platform !== "win32")(
+		"names missing Git for Windows Bash in one line",
+		() => {
+			const f = fixture();
+			copyFileSync(process.execPath, path.join(f.bin, "git.exe"));
+			copyFileSync(process.execPath, path.join(f.bin, "bash.exe"));
+			expect(() => findGitBash(f.bin)).toThrow(
+				/^Git for Windows Bash is missing \(required for shell parity\)$/,
+			);
 		},
 	);
 	it.skipIf(process.platform !== "win32")(
@@ -455,6 +538,11 @@ it("prints the command's usage without starting Codex", () => {
 	expect(result.stdout).toContain(
 		"Usage: pnpm codex:round [--] <brief> <level> [--run <folder>]",
 	);
-	expect(result.stdout).toContain("pnpm codex:round [--] resume <folder>");
+	expect(result.stdout).toContain(
+		"pnpm codex:round [--] resume <folder> [--message <text>]",
+	);
+	expect(result.stdout).toContain(
+		"--message sends the exact text instead of the saved launch input.",
+	);
 	expect(existsSync(f.capture)).toBe(false);
 });
