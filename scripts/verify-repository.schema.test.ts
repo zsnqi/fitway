@@ -3,8 +3,10 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
 import {
+	assertGardenerReport,
 	assertProjectRecordUnion,
 	assertProjectStateInvariants,
+	verifyGardenerRecord,
 } from "./verify-repository.mjs";
 
 const stateSchema = JSON.parse(
@@ -119,6 +121,73 @@ function withoutStopReason(record: Record<string, unknown>) {
 }
 
 describe("project-state schemas", () => {
+	it("checks the optional gardener report once even when there are no open milestones", async () => {
+		const gardener = {
+			date: "2026-09-15",
+			outcome: "blocked",
+			report: ".agents/skills/gardener/REPORT.md",
+		};
+		const state = activeState({ milestones: {}, gardener });
+		let reads = 0;
+		await verifyGardenerRecord(state, async (file: string) => {
+			reads++;
+			expect(file).toBe(gardener.report);
+			return Buffer.from("---\ndate: '2026-09-15'\noutcome: blocked\n---\n");
+		});
+		expect(reads).toBe(1);
+		await expect(
+			verifyGardenerRecord(state, async () => {
+				throw new Error("ENOENT");
+			}),
+		).rejects.toThrow("ENOENT");
+		await verifyGardenerRecord(activeState({ milestones: {} }), async () => {
+			throw new Error("should not read");
+		});
+	});
+	it("accepts one optional gardener entry and rejects malformed entries", () => {
+		const gardener = {
+			date: "2026-09-15",
+			outcome: "blocked",
+			report: ".agents/skills/gardener/REPORT.md",
+		};
+		expect(validateState(activeState())).toBe(true);
+		for (const outcome of ["clean", "changed", "blocked"]) {
+			expect(
+				validateState(activeState({ gardener: { ...gardener, outcome } })),
+			).toBe(true);
+		}
+		for (const bad of [
+			null,
+			[],
+			[gardener],
+			{ ...gardener, date: "2026-02-30" },
+			{ ...gardener, outcome: "PASS" },
+			{ ...gardener, report: "../REPORT.md" },
+			{ ...gardener, report: "D:/fitway-temp/report.md" },
+			{ ...gardener, extra: true },
+			{ date: gardener.date, outcome: gardener.outcome },
+		]) {
+			expect(validateState(activeState({ gardener: bad }))).toBe(false);
+		}
+		expect(validateHistory(historyState({ gardener }))).toBe(false);
+	});
+	it("validates the rolling report's date and outcome against the ledger", () => {
+		const entry = { date: "2026-09-15", outcome: "blocked" };
+		const text = "---\ndate: '2026-09-15'\noutcome: blocked\n---\n# Report\n";
+		expect(() => assertGardenerReport(entry, text, UPDATED_AT)).not.toThrow();
+		for (const bad of [
+			"# Report",
+			text.replace("blocked", "clean"),
+			text.replace("2026-09-15", "2026-09-14"),
+		]) {
+			expect(() => assertGardenerReport(entry, bad, UPDATED_AT)).toThrow(
+				/Gardener/,
+			);
+		}
+		expect(() =>
+			assertGardenerReport(entry, text, "2026-09-14T00:00:00Z"),
+		).toThrow(/later/);
+	});
 	it("accepts a valid active-shaped document and rejects it in the history schema", () => {
 		expect(validateState(activeState())).toBe(true);
 		expect(validateHistory(activeState())).toBe(false);
