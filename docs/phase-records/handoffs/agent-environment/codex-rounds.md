@@ -194,4 +194,3 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the brief. It named the files to delete but not the live records that cite them; the checklist
   line on live artifacts now names that search. Follow-up for a later round: strip a standalone `--` in
   `scripts/run-vitest.mjs`, so `pnpm test -- <file>` keeps its filter.
-
