@@ -239,3 +239,31 @@ held-out checks live outside the repository and never appear here or in a brief.
   (`C:\Users\RUNNER~1\...`) and `where` returns the long form, which the test compares as text.
 - **Failure cause:** the code (its own test), on a condition neither the brief nor a local run showed. Round 5c is the
   first focused repair (AGENTS.md).
+
+## Evaluation B8 and B9 (agent-environment-r03): card-1 and touch-1 rerun with and without the fields (level high)
+
+- **Set-up:** the Codex template with two outcome fields, "Intent" (B8: what the outcome is for; an allowance names
+  its bound; literally reachable) and "Widest" (B9: the widest value it must hold, measured on the baseline), against
+  the template without B8 and B9; arms named x and y, the key kept outside the eval folder. Four blind Sonnet writers
+  rewrote card-1's and touch-1's briefs from `bd8bada` with the DECISIONS of the time; Codex ran each brief in its own
+  clone holding only `bd8bada`'s history; two blind Sonnet graders graded X and Y on the rounds' held-out rows plus
+  one target row each, set with the adoption rule before any writer returned. Every run stopped once on a usage limit
+  and resumed on its thread.
+- **What the fields changed in the briefs:** the touch-1 writer with them bounded the trail ("at most 4 stops ... on
+  the finger's stop within 700 ms of the last report") and wrote "Widest: 40 stops"; the writer without them kept "It
+  may trail the finger". Both card-1 writers named the data's own hour as the widest value, and both wrote that a
+  range across noon or midnight cannot occur.
+- **Held-out rows, card-1 (target: the widest hour):** identical. Both pass H1 and H3-H8 and fail H2 and H10: a range
+  across noon keeps the short form («11 ص – 12 م»), and in English at 320 the hours overlap the average by 24.6 px.
+- **Held-out rows, touch-1 (target: a bounded trail):** the arm with the fields passes H10 (on the finger's stop 1-21 ms
+  after a 1000 px/s drag); the arm without them fails it (22 and 27 stops behind, no catch-up), as the original round
+  did. H3 as worded (one change per touchmove) fails the arm with them and passes the other, but H3 and H10 cannot
+  both hold for a fast drag; by its intent (no leap: every change is to the next stop) both pass. The arm without the
+  fields also changed a file outside its scope (`.impeccable/config.json`) and left MOT-11 stale; the arm with them
+  stops the top slide when a drag starts during it, leaving the band above the screen. Codex's own T1 failed in the
+  arm with the fields on exact zoom equality without a noise floor.
+- **Decision (the rule set before grading):** only touch-1 discriminates, so "Intent" is adopted as a field of the
+  template's outcome line and "Widest" is recorded as not shown. One sample per round; the held-out H3 was itself in
+  conflict with the target, a fault of the rows, not of either arm. Two lines sharpen on classes now seen twice: B9
+  names the widest value the code can produce, not the widest the current data shows (card-1, then both writers here);
+  B8 asks an equality measured in emulation for its noise floor (three-rounds-fix F2, then T1 here).

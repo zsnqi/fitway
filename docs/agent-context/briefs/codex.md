@@ -30,7 +30,8 @@
 
 ## Causes and required outcomes
 
-- **<X>1.** <The cause, with `path:line` or `path:start-end` evidence.> Outcome: <an observable result, not an approach>.
+- **<X>1.** <The cause, with `path:line` or `path:start-end` evidence.> Outcome: <an observable result, not an approach;
+  any allowance names its bound>. Intent: <what the outcome is for, so a literal reading that defeats it shows>.
 
 ## Scope
 
@@ -58,9 +59,11 @@ The brief rules B1-B10 live here. Codex follows a brief to the letter, so most f
       the baseline"; every command an outcome requires was run on the baseline in that scope first (`git ls-files
       -ci` lists the tracked `.claude/` files the local exclude covers).
 - [ ] B8. Each measurable outcome has its intent beside it, so a literal reading that defeats the purpose shows;
-      every outcome is literally reachable from the baseline; an allowance ("may trail") states its bound.
-      (user, 2026-10-04)
-- [ ] B9. An outcome about how a value fits names the widest value it can take, not only the current one.
+      every outcome is literally reachable from the baseline; an allowance ("may trail") states its bound; an
+      equality measured in emulation states its noise floor. (user, 2026-10-04; the Intent field since Evaluation
+      B8 and B9, 2026-10-07)
+- [ ] B9. An outcome about how a value fits names the widest value it can take, not only the current one: the widest
+      the code can produce, not the widest the current data shows. (A Widest field was not shown to help.)
 - [ ] B10. Every file, section and row the brief names exists at the named HEAD: `pnpm brief:check <this file>`
       passes against the worktree it names.
 - [ ] Every limit the result must keep is an outcome of its own: where the tool may run from, length or size caps,

@@ -17,18 +17,16 @@
   reader did two tasks with the CLI alone. Its corrections are round 6 (Next steps 1).
 - R4, the Codex launch: rounds 5 and 5b (`a40ba39`) deliver `pnpm codex:round <brief> <level>` and
   `pnpm codex:round resume <run folder> --message "<text>"`, proved by a real launch and two real resumes; the
-  agreements name it. CI fails on `a40ba39`: a new test compares the runner's 8.3 short TEMP path as text; round 5c
-  is the first focused repair.
+  agreements name it. CI failed on `a40ba39` (a test compared the runner's 8.3 short TEMP path as text); round 5c
+  (`b80c3ad`), the first focused repair, compares paths as files.
+- Evaluation B8 and B9 is recorded in codex-rounds.md: the Intent field is adopted in the Codex template; a Widest
+  field was not shown to help, and B9 and B8 sharpen on classes seen twice.
 - The concept defect round 4 found: on the phone, in English, the tuner's «الإضاءة» toggle sits outside the screen,
   so no tap reaches it (the r04 backlog's tuner item; the user's call).
 
 ## Running now
 
-- The B8 and B9 evaluation (packet criterion 4): the C3 method on card-1 (Widest) and touch-1 (Intent and bounds) from
-  bd8bada. Four blind writers' briefs are in D:/fitway-temp/evals/b8b9/; Codex ran each at high in its own clone
-  (D:/Projects/fitway-worktrees/eval-b89-card-x, -card-y, -touch-x, -touch-y; reports in
-  D:/fitway-temp/codex-runs/eval-b89-*); two blind Sonnet graders grade arms X and Y. The key, the extra rows and the
-  adoption rule are in D:/fitway-grader/agent-environment/b8b9/.
+Nothing.
 
 ## Next steps
 
@@ -38,7 +36,8 @@
    foreign listener on any address, the doctor's fix commands, readable evidence and checkout-independent paths.
 2. After round 6: merge main into owner-followup-r04-build, commit the build's recipe file there, and point the
    machine-local launch configuration (ports 3174 and 3180) at the no-store preview.
-3. The B8 and B9 decision from the graders' rows, recorded in codex-rounds.md, and the template changed or not.
+3. Remove the evaluation's test material: the four eval-b89 clones, the worktree eval-b89-base and the branch
+   eval-b89-base (the decision is recorded: Intent adopted, Widest not shown).
 4. R5, the gardener (DECISIONS item 16, brief drafted) and its first pass; its deletions of machine folders are
    scripts for the user to run (rmdir /s /q with the \\?\ prefix reaches a folder named "evidence.").
 5. Follow-ups for a Codex round: name the field when `supersededBy` is misplaced; strip a standalone `--` in
