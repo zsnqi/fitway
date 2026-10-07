@@ -34,10 +34,17 @@
 
 - Codex round 4 (the verification path, xhigh) in the r03 worktree, brief r03/briefs/round-4.md (commit `10ba2815`
   on agent-environment-r03), thread `01a116c6-829b-7361-886b-7fb9a2beaf3b`, run folder
-  D:/fitway-temp/r03-round4/. Held-out rows are in D:/fitway-grader/. If this session stopped, resume the thread
+  D:/fitway-temp/r03-round4/. It stopped at 18:24 when the app exited and was resumed on its thread at 18:31
+  (events-resume.jsonl). Held-out rows are in D:/fitway-grader/. If this session stops, resume the thread again
   (WORKING_AGREEMENTS "Delegation") rather than relaunching.
+- The B8 and B9 evaluation (packet criterion 4), the C3 method on two past rounds from bd8bada: card-1 (Widest) and
+  touch-1 (Intent and bounds). Four blind Sonnet writers rewrote the two briefs, with and without the fields
+  (D:/fitway-temp/evals/b8b9/); Codex runs each at high in its own clone holding only bd8bada's history
+  (D:/Projects/fitway-worktrees/eval-b89-card-x, -card-y, -touch-x, -touch-y; runs in
+  D:/fitway-temp/codex-runs/eval-b89-*). The key, the extra held-out rows and the adoption rule, set before any writer
+  returned, are in D:/fitway-grader/agent-environment/b8b9/. The read-only base for the writers is the worktree
+  eval-b89-base.
 - Next, drafted: round 5, one command that launches and resumes a Codex round (high), after round 4 lands.
-- A Sonnet researcher looks for the past round on which to test the B8 and B9 brief fields.
 
 ## Next steps
 
