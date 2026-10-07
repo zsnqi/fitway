@@ -417,18 +417,6 @@ Keep both concise and evidence-based.
 Do not paste secrets, raw PINs/tokens, unbounded logs, screenshots containing sensitive data, or
 claims that were not independently observed.
 
-### External worker data boundary
-
-Native delegation is the default, and no native-versus-external route comparison is required
-before delegating work. The two 2026-08-21 external-worker authorization records
-(`docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md`
-and
-`docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md`)
-remain historical provenance only and grant nothing under native delegation. Any future external
-processing of FITWAY material requires a new explicit human authorization. Secrets, credentials,
-API keys, `.env` contents, personal/private data, and artifacts prohibited elsewhere by repository
-policy are never transferred.
-
 ## Independent verification
 
 The verifier receives outcome, base/candidate commits, owned scope, acceptance criteria, commands,
