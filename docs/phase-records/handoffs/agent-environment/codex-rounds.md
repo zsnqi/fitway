@@ -103,3 +103,63 @@ held-out checks live outside the repository and never appear here or in a brief.
   launches stopped on the brief's own commit sitting on the named HEAD, before the launch note existed.
 - **Side finding:** a file-name pattern that contains an exact template token, such as `<branch>-resume.md`, is
   rejected as a placeholder (`scripts/agent-environment/resume-point.mjs:25`).
+
+## Evaluation C2 (agent-environment-r02): round 5 rerun with and without line C2, results `ece0794` and `ad51e1a`
+
+- **Set-up:** line C2 of `brief-failure-causes.md`. Two blind Sonnet writers rewrote round 5's brief from the Codex
+  template, one with C2 in the checklist and one without (`D:/fitway-temp/evals/c2/`); Codex ran each on `d333762`
+  in its own worktree; one Sonnet grader graded both commits as X and Y without knowing which had the line.
+- **Brief rows:** both arms report F1-F5 pass.
+- **Held-out rows:** identical, 12 of 13 each; S6 partial in both, with the same two false failures as round 5 had:
+  the npm name `@playwright/test` in nav-3's brief and the folder-relative `tools/` in the K-02 designer's brief are
+  read as repository paths.
+- **Failure cause:** the line, not the code. With C2 the writer defined "path" with real examples, but drew them from
+  the files the round would act on; the boundary cases lived in the real briefs the checker would later read, which
+  neither writer sampled. **C2 is not adopted.** Next hypothesis (C2b): test a rule against a sample of the real
+  inputs it will judge (for a brief checker, the last real briefs) and list each one it would misclassify.
+
+## Evaluation C2b (agent-environment-r02): the brief only, no Codex run
+
+- **Set-up:** line C2b ("each rule an outcome states is tried on a sample of the real inputs it will judge, and the
+  brief lists every sampled input the rule as written would misjudge, with where the boundary falls"), one blind
+  Sonnet writer on round 5's draft at `d333762` (`D:/fitway-temp/evals/c2b/`).
+- **Result:** the writer sampled 17 real briefs and templates and listed the misjudged inputs, `@playwright/test` from
+  the builder template among them, with the boundary at the `/`. It then kept the draft's rule and wrote that such
+  tokens "keep failing". Codex was not run: the brief itself requires the false S6 failure, so the held-out result
+  is fixed by its text. The writer also dropped outcome F5 (a writer error, not the line's).
+- **Failure cause:** the line finds the boundary but asks for no decision on it. Next hypothesis (C2c): every input
+  the rule would misjudge gets a decision in the brief, the rule changed to cover it or a stated reason it stays.
+
+## Evaluation C2c (agent-environment-r02): round 5 rerun with line C2c, result `66052a6` (level xhigh)
+
+- **Set-up:** line C2c (C2b plus "every sampled input the rule as written would misjudge gets a decision in the
+  brief: the rule changes to judge it right, or the brief says why it stays"), one blind Sonnet writer at `d333762`
+  (`D:/fitway-temp/evals/c2c/`), Codex on its brief, one Sonnet grader. Control: C2's arm without a line (`ad51e1a`).
+- **Brief rows:** 5 of 5 by Codex's report.
+- **Held-out rows:** 12 of 13; S6 partial with one false failure where the control had two. The writer had decided
+  that a token starting with `@` is a package name, so nav-3's `@playwright/test` now passes; the K-02 designer's
+  folder-relative `tools/` still fails: that brief was not in the writer's sample. S4 passes with a caveat: the
+  workflow sets `core.longpaths` through job-level `GIT_CONFIG_*` variables, unverified on a hosted runner.
+- **Failure cause:** the line's reach, not the code: it decided what it sampled, and the sample missed a kind of
+  input (folder-relative paths). By the rule set before the test (`brief-failure-causes.md`), C2c is **not adopted**;
+  it is the best candidate so far. Next (C2d, lower priority): the sample spans every folder where that kind of input
+  lives, not the ones nearest the task.
+
+## Evaluation C3 (agent-environment-r02): OW nav-1 rerun with and without line C3, results `0f669f0` and `9accd86` (level xhigh)
+
+- **Set-up:** line C3 of `brief-failure-causes.md` in the Codex template's checklist (`D:/fitway-temp/evals/c3/`,
+  templates named A and B so the writers could not tell them apart). Two blind Sonnet writers rewrote nav-1's brief
+  from the read-only base `4b8a5ff`; Codex ran each in its own worktree (`eval-c3-with`, `eval-c3-without`); one
+  Sonnet grader graded X (without) and Y (with) on nav-1's held-out rows K1-K7. The writers' own briefs fail
+  `brief:check` on relative and to-be-created paths (the checker's known S6 kind); they ran as written.
+- **What the line changed in the brief:** the writer with C3 added "no text kept twice" (no 40+ character line in both
+  files), "what reads the folder still passes" (`node --check`, the spec lint's exact baseline) and "one commit, clean
+  tree". Neither writer set a README length, and both kept `Open and capture` in the contract, as nav-1's brief did.
+- **Brief rows:** all pass by Codex's report in both arms (N1-N6 without, N1-N8 with).
+- **Held-out rows:** Y 7 of 7; X 6 of 7, K2 partial (one 40+ character line in both files; no whole paragraph). K6
+  passes in both (README 655 and 639 lines against nav-1's 821), with no length in either brief: Codex cut deeper this
+  time, so K6 does not discriminate.
+- **Failure cause:** none in the code. By the rule set before the test, C3 is **adopted**: the arm with it clears K2
+  and K6, the arm without it misses K2, and it adds no held-out failure. The margin is one line and one sample, and
+  the line's "length or size caps" clause was not exercised. The grader also found Y's README keeps more round
+  labels in headings ("(Round 7 step 2/3)"), which K3's sample does not catch.

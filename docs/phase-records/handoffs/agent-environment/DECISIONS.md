@@ -36,8 +36,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    diff, `git status` in every worktree involved, and the remote branch.
 8. **Usage panel (2026-10-02).** A Claude Code mod shows the subscription limits as its main element: the five-hour
    window with its reset time, and the weekly limit. The context window is a separate element with a different
-   look from Anthropic's `token-weather` sample; its appearance changes at thresholds. Be inventive. The user
-   updates the desktop app (mods need Claude Code 2.1.287 or later) once the current work is done.
+   look from Anthropic's `token-weather` sample; its appearance changes at thresholds. Be inventive. Built
+   2026-10-03 as `usage-panel` (coordinator design) in `C:/Users/Pc Force/.claude/mods/usage-panel`; the engine
+   API it needs (`$.session.usage()`, `session.measure`) is already in 2.1.286, so no newer version was needed. The
+   user declined the session's hot-reload question, then approved loading it through `CLAUDE_CODE_PLUGIN_DIRS` in
+   `~/.claude/settings.json` (2026-10-03).
 9. **Evaluation loop (2026-10-02).** The method of Anthropic's "Automating eval design and hillclimbing" applies to
    Codex's brief template, the verifier (planted defects) and Sonnet `medium` against `high`; taste and design
    quality stay with the user.

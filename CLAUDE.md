@@ -44,18 +44,20 @@ Report findings as hypotheses with file and line evidence, and never repair what
 - **`.claude/skills/`** holds copies of Impeccable (FITWAY's single design skill, Apache-2.0) and `ux-araby`
   (Arabic interface copy, MIT). They are unchanged apart from trailing whitespace; see
   `.claude/skills/SOURCES.md`.
-- **`.claude/agents/`** holds Impeccable's shipped agents, the Owner-direction definitions, and two Sonnet research
-  definitions.
+- **`.claude/agents/`** holds Impeccable's shipped agents, the Owner-direction definitions, a reading-direction
+  reviewer, and two Sonnet research definitions.
 
 Each definition fixes one model and one effort level, and the coordinator picks by task:
 
 | Definition | Model | Effort | Use |
 | --- | --- | --- | --- |
 | `owner-direction-designer` | Opus | `xhigh` | new visual design and taste judgment |
+| `owner-direction-designer-max` | Opus | `max` | the user's trial (2026-10-03): a whole Owner screen in one pass |
 | `owner-direction-builder` | Opus | `high` | implementing an agreed, precisely specified decision |
 | `owner-direction-verifier` | Opus | `xhigh` | independent verification, only where evidence shows `high` misses something |
 | `owner-direction-verifier-high` | Opus | `high` | independent verification (the default) |
 | `owner-direction-fixer` | Opus | `medium` | a mechanical edit with a frozen target |
+| `rtl-ltr-reviewer` | Opus | `high` | reading-direction review of Arabic and English frames, after a layout, table or copy round |
 | `sonnet-researcher` | Sonnet | `high` | read-only research across several sources, returning a cited digest |
 | `sonnet-scout` | Sonnet | `medium` | one quick read-only lookup |
 

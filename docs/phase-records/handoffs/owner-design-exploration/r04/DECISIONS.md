@@ -18,6 +18,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    After that move, the user shows a demo to the gym's owner (informal; a family friend) to win funding and an
    agreement. Demo polish (convincing synthetic data, no dead links, a clean link) waits for then, as do the demo's
    materials: device mock-ups, a motion-graphics video and an explanatory PDF, each researched first. Not now.
+   The gym already runs an older internal system that handles payments and is wired to the entry/exit turnstile,
+   with no public crowd page; the user believes https://finityloops.com/ built it. FITWAY complements it, not
+   replaces it, with better features and interface (the user, 2026-10-04). Research done: Opus 5.5 motion-graphics
+   examples and tools; the incumbent system (confirmed by the user: Finityloops, `ug1.finityloops.com`) and
+   positioning. Both saved in
+   `docs/phase-records/handoffs/owner-design-exploration/r04/demo-research/` (read its README first).
 3. **The user's bans.** `DO-NOT.md`, read in full before any design or copy work.
 4. **Motion.** Lights are static and the page is complete at first paint. Digits roll only on a live change. The
    intro plays on first open only, about 1.17 s, with the font wait capped at 200 ms. Reports has no intro and no
@@ -255,13 +261,186 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **Review:** `owner-direction-verifier-high` (Opus, high), reading direction included, after the user switches
       accounts (the user: "كويس"). The components sheet waits for the end of the remaining screens, by an xhigh
       designer or a builder; max only if that result disappoints (the user agrees).
+    - **The fix round** (`e72e5fe`, designer report `D:/fitway-temp/owner-r04-activity-fix-1/REPORT.md`) built all six
+      and every review finding; published https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS (the user's earlier links
+      do not open under the current account). Coordinator answers to its questions, each applying a rule already
+      decided: Reports' export dialog takes the picker too (this item: every page with dates); the front desk leaves
+      "Who" (ADR-008: it writes no record); the components sheet's date specimens show the picker; an owner's name is
+      one stored string, shown the same in both languages (truthful data). These go to one small follow-up.
+    - **The picker is the one way to choose dates, everywhere** (the user, after trying `e72e5fe`: "ممتاز", the
+      picker's motion praised): the minute-data export too (it lives on Reports, TBL-10; Daily has no export), and
+      every later screen with a date. The follow-up goes to Codex (frozen edits applying the built picker), then the
+      coordinator inspects its frames. Brief `codex-activity-followup.md` (`7f8d2dd` on `owner-r04-activity`), level
+      `high`; an owner's one stored name is «فهد» / «نورة» on both pages (coordinator). Built at `31e9dd9`, merged into
+      `owner-followup-r04-build`; published https://claude.ai/artifact/C6yiDVgdAnFN5wzwuzHdoD (Daily, Reports, Activity log).
+      Two notes on it, delegated by the user to the screen's last round (designer or reviewer decides): the English page
+      shows the stored Arabic name beside an English reason that names "Noura"; at 320 px the export's file line sits
+      below the sheet's first view.
+
+33. **Access, the answers before its one pass** (2026-10-04; research digest
+    `D:/fitway-temp/owner-r04-access-questions/REPORT.md`). Access holds the one shared front-desk PIN and the owner
+    accounts only.
+    - **The new PIN** is shown once, with no copy control, and the view closes only by an explicit "I have saved it"
+      action, never by Escape or a tap outside: closing by accident forces a new PIN and signs the desk out again.
+    - **Changing the PIN** asks for a confirmation that says it signs the front desk out at once.
+    - **Deactivating** the PIN or an owner asks for a confirmation with the required reason (at most 240 characters,
+      what the log stores). Its look is the designer's (the user: the coordinator proposes no forms or colours).
+    - **Creating an owner and resetting a sign-in:** email, name and a password the owner types (12-200 characters)
+      with show and hide; no strength meter, no generator, and no line about handing the password over.
+    - **The owner's own row** is marked as theirs, with no deactivate and no reset; the last active owner's
+      deactivate is unavailable with its reason in words.
+    - **"Change my password"** is added, though no contract has it (the user: an excellent feature or change missing
+      from the specification may be added). The design names each such addition as a Product/Spec amendment for the
+      move to production; privacy and security limits still bind.
+    - **The PIN changes in two steps** (the user, 2026-10-04, after the first build; coordinator's proposal): the new
+      PIN is shown while the old one keeps working; only «حفظتُ الرمز» makes the new one take effect and signs the
+      front desk out. An accident before it (a closed browser, a lost connection) changes nothing. A Product/Spec
+      amendment (the contract rotates in one step today); built in Access's fix round.
+    - **The specification may change where a change is better** (the user, 2026-10-04), not only gain missing
+      features; each change is still named as a Product/Spec amendment for the move to production, and privacy and
+      security limits bind.
+    - **Deactivated owners** stay in the same list, quieter, with "Reactivate".
+    - **After an action:** one quiet sentence that it is done, with a link to the record in Activity log; a failure
+      shows its specific refusal and keeps the form as typed.
+    - **The page's composition** (order, grouping, where each row's actions sit, what each person shows, the link to
+      the log) is the designer's alone; the coordinator recommends none of it (the user, 2026-10-04).
+    - **The reason's length** (the user: "fix it"): production's form accepts 500 characters while the log stores 240, so
+      a long reason fails on saving. The concept caps the field at 240; production's contract is fixed outside this
+      concept milestone (production paths are forbidden here).
+
+34. **Access, after the max-effort build** (`2fa0792` on `owner-r04-access`, 2026-10-04; designer report
+    `D:/fitway-temp/owner-r04-access/REPORT.md`; review `D:/fitway-temp/owner-r04-access-review/REPORT.md`, all checks
+    pass but V8 low). Published with the other three pages, links wired in the staged copy only:
+    https://claude.ai/artifact/34ZEAW6e9xJmAbr4WmG2VM (the account changed; earlier links no longer open).
+    Coordinator answers to the designer's questions, each applying a rule already decided:
+    - Creating a PIN asks nothing first (it signs no one out; item 33 asks only before a change).
+    - Reactivating asks first, as built (the account works again at once with its old password).
+    - A typed password stays masked while its dialog is open after a refusal (item 33: the form is kept) and is emptied
+      when the dialog closes (review F2).
+    - The done link opens the exact record (AMD-C2 built: Activity log arrives on one record by its id; item 33 "a
+      link to the record" and the user's "specification may change where better").
+    - One English pair on both pages: Deactivate / Reactivate (item 33's words); Activity log changes with it.
+    - Changing one's own password ends one's other sessions, as drawn (the usual security rule).
+    The fix round, by an `owner-direction-designer` (xhigh) on the integrated build branch: the two-step PIN change
+    (item 33), the computer's composition (designer and review: at 1440 a row's actions sit about 1000 px from its
+    name, half the screen empty), the sign-out wording («دخول» means visitors' entries here, review F4), and the
+    review's lows (F1, F2, F5, the 700 ms silence, the row that jumps groups); plus the rail and bar links, the spec
+    fragment merged as §4.4, and INDEX. Access merged into `owner-followup-r04-build` at `6ec9591`.
+    **The user's notes on the published page** (artifact comments and answers, 2026-10-04), which revise item 33:
+    - **The sign-out wording** «ينتهي دخول …» is wrong (the user agrees): «دخول» is visitors' entries here.
+    - **The quiet removal buttons** («تعطيل الرمز», «تعطيل الحساب») read oddly without a box on the computer; on the
+      phone they read well and stay.
+    - **The reason is optional** for both deactivations: the field stays, at most 240 characters, never required. A
+      Product/Spec and contract amendment (the contract requires it today).
+    - **The front-desk code:** the owner either lets the system generate it or types one; it may hold letters as well
+      as digits (the user: a mixed code lowers the risk), with a copy control in its one-time view. This reverses
+      item 33's "no copy control" and the generated-only, digits-only PIN; a Product/Spec and contract amendment. The
+      user declined a weak-code rule ("معليك"); the coordinator keeps only a minimum length.
+    - **The computer's arrangement is shown first as a simple skeleton** (the user): the designer proposes the
+      arrangement in plain blocks before building it, and the user agrees before the full fix round.
+    **The skeleton, agreed** (2026-10-05; `D:/fitway-temp/owner-r04-access-skeleton/`, report `REPORT.md` there,
+    https://claude.ai/artifact/Gog3geQcM3pruLW59DfmXM; the user: "اعجبتني … واضحة ومرتبه"):
+    - Two halves on the computer: the front desk and the owners, each person's buttons under the name; and a new
+      «سجل الوصول» card with the latest access records and «عرض الكل». The user accepts the new content (the
+      requirements still improve during development; anything bad is changed later).
+    - **The removal buttons get their quiet box on the phone too** (the user), revising the earlier note.
+    - **The owner always types the front-desk code**; the system no longer generates one (the user), revising the
+      generate-or-type choice above. Letters and digits, a minimum length, a copy control in its one-time view.
+    - **«إلغاء التغيير»** in the one-time view (the user: "ممتاز"): safe with the two-step change, since the old code
+      works until «حفظتُ الرمز». This revises item 33's "closes only by «حفظتُ الرمز»".
+    - «السبب (اختياري)» confirmed.
+    **After the fix round's design part** (`a0c6c76`, 2026-10-05; report `D:/fitway-temp/owner-r04-access-fix/REPORT.md`),
+    the user's answers to two of the designer's questions:
+    - **The code's letters keep their case** (the user: «نفرّق»): A and a differ. This reverses the designer's
+      case-insensitive proposal in AMD-C4; the code stays 8-16 English letters or digits.
+    - **The code shows in a monospace face** that tells I from l and O from 0, in its one-time view and its field
+      only (the user): a named exception to Readex only (TYP-1), self-hosted or a system face (item 6).
+    - **The copy control sits beside the code on the computer** (the user, «اي», after asking why it sat under the
+      code unlike the skeleton): at the code's end on the same line from the computer's widths, under it on the
+      phone. Built with the monospace face, which makes the widest code predictable; the designer checks it against
+      the widest sixteen characters and reports the measurements if it does not fit.
+    Coordinator, applying rules already decided: the records card stays off the phone, which keeps its link (the
+    designer's composition); 16 stays the maximum.
+
+35. **A dialog's buttons start where its text starts** (the user, 2026-10-05, «موافق يلا», after two research digests
+    `D:/fitway-temp/owner-r04-dialog-side/REPORT.md` and `REPORT-2.md` and the frames `compare-1440-*.png` there).
+    Every dialog's actions sit at the inline start (the right in Arabic, the left in English), under the title, text
+    and fields they finish, Cancel first and the primary after it, so a destructive primary is not the first thing
+    the eye reaches. This replaces DLG-2's "actions at the inline end, the primary last". Why: the dialogs are text
+    and fields hung on the start edge (form-like); the one measured study (Wroblewski, in-page forms) and GOV.UK,
+    HashiCorp Helios and Fluent's mirroring favour the start; the end's strongest reason is platform habit (Apple,
+    Material). On the phone the two buttons fill the width, unchanged.
+    **A centred moment stays centred** (the user, 2026-10-05): the export's done state keeps its check and «الملف جاهز»
+    centred over start-aligned buttons; a status moment is not text that flows from the start, and not everything
+    belongs on one edge. Built at `54b2737` (fixer report in `D:/fitway-temp/owner-r04-dialog-start/`).
+
+36. **Interaction motion gets its own round, before the remaining screens** (the user, 2026-10-05: «اتفق معك»).
+    What the user means: motion in chosen moments that raise the design's quality and beauty, not everywhere; for
+    example the check in the export's done state could arrive with a fine animation. The round covers, for every
+    page: a dialog's open and close, a button from its label to Working to done, the done line appearing, popovers,
+    «نسخ» to «نُسخ», a row that changes after a deactivation; reduced motion honoured; the bans on load motion (DO-NOT,
+    MOT-1) still hold. The remaining screens are then built with it. For the move to production (React, Tailwind,
+    shadcn with Base UI already): the coordinator researches which motion library and component sources fit, from
+    what practitioners recommend (Motion is the first candidate; HextaUI and the like only for components that pass
+    RTL), and proposes one (the user: «شوف وش المناسب انت»).
+
+37. **Motion and components for production** (the user, 2026-10-05: «ممتاز» on each of the three points; research
+    digest `D:/fitway-temp/owner-r04-motion-research/REPORT.md`). For the move to production, not the concept:
+    - The simple moments (a dialog's open and close, popovers, tooltips) are CSS transitions on Base UI's
+      `data-starting-style` / `data-ending-style`, with no added library. Why: Base UI's own guidance, no bundle cost,
+      and a transition can be interrupted midway.
+    - The finer moments (a button from its label to Working to done, the done check, a row that changes after a
+      deactivation) use Motion (MIT), its light form (`LazyMotion` + `m` + `domAnimation`), and only there. Reduced
+      motion is honoured by the code itself, since Motion's setting leaves opacity and colour moving; any slide is
+      mirrored by hand, since Motion is not direction-aware.
+    - Components stay shadcn on Base UI with `rtl: true`. HextaUI (Base UI, MIT, days old on 2026-10-05) is a source
+      to copy from (its button states, its number roller) only after an Arabic test. NumberFlow is not used (it does
+      not support RTL or non-Latin digits). Magic UI, Animate UI and Motion Primitives are not used: they hard-code
+      left and right (coordinator, from the digest).
+
+38. **The motion round, after the user tried it** (`0c43c90`, the user on the live site and the frame strips, 2026-10-05):
+    - The timings stay: the window's 340 ms opening and about 0.9 s from file ready to the finished check («ممتازة»).
+    - The export's check draws on the phone too, as built.
+    - The export's done state: the user liked it as built («اشوفها ممتازة»), then asked for the coordinator's ideas
+      for its empty third of a second and wants to see both («بنشوف الاثنين»): (1) the check starts drawing while
+      the window shrinks; (2) the calendar is not removed first but cut away by the shrinking bottom edge, then the
+      check. A designer builds both as switchable variants beside the current one on the live site; the user picks.
+    - Access's row after a (de)activation (O2): try changing the row only once the window has closed, without a
+      noticeable wait («المفروض ما تتأخر جدا»); the user judges whether it is better.
+    - Access's «سجل الوصول» card: the user asks how a new record would arrive with motion; show it before building.
+      Answered (2026-10-05, «اي يدخل بحركة», on the coordinator's description: the new record appears at the top,
+      the lines below move down to make room, its words rise into place without fading): a new record arrives with
+      motion. Built by a fresh designer after the variants round, in its own small brief.
+    - Speak to the user of «النافذة», not «الحوار», and describe a moment step by step as they see it.
+39. **The variants, picked** (the user on the live site at `2996d7a`, 2026-10-06): the export's done state stays as built,
+    `?done=0` («افضل الحالية»), and Access's row stays as built, `?row=0` («الحالي افضل خلاص»). Coordinator: the trial
+    switches have done their work; the next build removes variants 1 and 2, row option 1 and the switches (MOT-19),
+    keeping what the motion rounds made true for every variant (one frame clock, the narrow sheet's file line). The
+    narrow-sheet review was stopped as moot: its open observations concern variant 2 only.
+40. **Verification tooling before Settings, and `main` as the trunk** (the user, 2026-10-07, after the discussion of
+    Lauren Tan's talk on agent-friendly codebases; the four digests are in `D:/fitway-temp/verification-discussion-20261007/`):
+    - The whole coordinator line merges into `main`, which becomes the repository's truth for tools, policy and
+      finished code. The concept's research files come along as reference only (ADR-009 keeps Owner composition
+      vacant); the live Eclipse build stays on `owner-followup-r04-build` until the user approves it. The merge takes
+      main's 2026-09-24 removal of the retired external-worker section from `docs/WORKFLOW.md`, the later decision.
+      Coordinator: from then on `main` is fast-forwarded to the coordinator line whenever CI passes on it, at least at
+      every resume point.
+    - One tooling round runs before Settings, as its own milestone cut from the new `main`: a verification CLI built
+      on the existing probe kit and ui-forensics (it measures; acceptance thresholds and held-out checks stay in
+      `D:/fitway-grader`), a feature map of the Owner concept generated from its code and spec, a `verify-fitway`
+      skill that Claude and Codex both read, the brief fields for B8 and B9 (through agent-environment-r02's
+      evaluation loop), a preview that sends no-store, and one command that launches a Codex round.
+    - pstack's `create-verification-skill` and `maintain-verification-skill` (Lauren Tan, MIT) are installed
+      user-level, unmodified from `cursor/plugins` at `df58112`, and tried in that round; their `.cursor/skills/`
+      output goes to `.agents/skills/` and `.claude/skills/` instead.
 
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
    user decides. The user sees exact rendered crops, numbered for comparison; the coordinator starts any preview
    itself.
-2. **Agents** follow the table in `CLAUDE.md`; a long-context designer is never resumed.
+2. **Agents** follow the table in `CLAUDE.md`; a long-context designer is never resumed, not even one cut off
+   mid-round (item 10).
 3. **Codex** is GPT-6.1 Sol at the level the task calls for (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation";
    Eclipse defects are `high`), run by the coordinator with `codex exec --approve-for-me`
    (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
@@ -280,6 +459,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
      bound. (The user, 2026-10-04: GPT-6.1 Sol follows a brief to the letter; touch-1's L3 and T2.)
    - B9. An outcome about how a value fits names the widest value it can take, not only the current one
      (coordinator, 2026-10-04; card-1's L3).
+   - B10. Before launch, check that every file, section and row the brief names exists at the named HEAD
+     (coordinator, 2026-10-04; activity-followup attempt 1 named a missing "§8 Q-PCK").
 4. **Verifiers** follow these rules:
    - G1. Keep cap checks at least 30 ms from the cap (50, 150, 250 and 600 ms).
    - G2. Detect a removed pre-intro frame by holding fonts until first paint + 50 ms and + 100 ms.
@@ -315,3 +496,35 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    - **Every review opened a new round.** Each review's small findings became the next round. From now on only high
      and medium findings, or what the user sees, open a round; low findings wait for the screen's last round.
    - **Questions the rules already answer** go to no one: the coordinator decides and reports in a line.
+8. **A skeleton before every new screen** (the user, 2026-10-05, after Access's skeleton): after the questions and
+   before the one-pass build, a designer (xhigh) shows the screen's arrangement in plain blocks (no colour, no
+   finished components) at the computer and the phone, with the new dialogs; the user agrees, then the build starts.
+   Coordinator: it settles the arrangement for a fraction of a build (Access's skeleton took about a quarter of its
+   max-effort build's tokens) and would have caught Access's empty computer page before it was built.
+9. **Who builds what** (the user, 2026-10-05: design stays with Claude; Codex where its rounds show it fits). Claude's
+   designer builds anything visual: arrangement, a new or changed component, a form, a state's look. Codex takes what
+   has no taste in it, with a precise brief: wording, behaviour and logic fixes, links, accessibility fixes (focus,
+   clearing fields), spec and index upkeep, the measurable lows a review returns, and later the move of the concept
+   into production code with tests. Coordinator's reading of `codex-rounds.md`: Codex is thorough and honest (it
+   measures far more than asked, stops on a missing source, reports a conflict instead of working around it) but
+   follows a brief to the letter, so its failures trace mostly to the brief, and it has no eye for composition.
+10. **Rounds sized so a designer's context stays small** (the user, 2026-10-05, «اي مابي المشكلة تتكرر», after the
+    motion designer reached about 584k tokens and was resumed after an API session limit instead of replaced):
+    - **Commit at natural checkpoints**, not after every step: when a working unit is done (the shared file with its
+      first moments, then each group of moments or each page), with a short notes file in the round's temp folder
+      saying what is decided and what is left. A cut-off designer is then replaced by a fresh one that reads the
+      brief, the last commit and the notes, never resumed.
+    - **The designer judges; the full matrix goes elsewhere.** The designer looks at its work at 1440 and 390 in
+      Arabic; English, 768, 200% zoom, `file://` and reduced motion are rendered by Codex or measured by the
+      verifier. Images and videos are what fill a designer's context.
+    - **A large round is split in two:** the foundation first (the shared parts and the first moments or
+      components), then a fresh designer for the per-page work on top of its commit.
+    - The usage limit does not shape the rounds: the user switches accounts when one runs out (the user, 2026-10-05).
+11. **The user sees a round only when it is finished** (the user, 2026-10-05, after the motion round came back with
+    the export's empty-panel finding, O1, for the user to decide: «ليه ما تصلحها قبل ما ترجع لي»; and: «لو مر عليها
+    مراجع وشاف فيه اخطاء ف المفروض تتصلح»). Every error a review finds, low ones included, and every taste finding the
+    coordinator would recommend fixing anyway, is fixed (a fresh designer for taste, Codex or a fixer for the rest)
+    and checked before the user sees the round; this replaces item 7's "low findings wait for the screen's last
+    round" for new rounds; the user gets the finished result, the live site
+    (`eclipse-build` preview on 3174) and the published link, with motion shown as frame strips. Only real choices
+    go to the user, in plain words.

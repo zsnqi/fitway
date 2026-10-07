@@ -38,6 +38,9 @@ latest wording; never copy an entry into a resume point.
 
 - Visual design and taste judgments stay with Claude on the Opus definitions. Exact renders of
   every option go to the user for picks. (user, 2026-10-02)
+- The coordinator's questions to the user and its designer briefs carry what the owner must see and
+  be able to do, and why; the composition, forms and colours are the designer's, and the coordinator
+  recommends none of them. (user, 2026-10-04)
 - Codex takes frozen fixes and edits. Its reasoning level follows the task (user, 2026-10-03):
   `xhigh` when the cause is unknown or the change spans many files with tests and Windows or CI
   behaviour (the brief checker, path rules, CI); `high` for a known defect in a known place with

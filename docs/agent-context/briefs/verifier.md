@@ -42,7 +42,8 @@ cache header (r04 G1, G3, G4). Removed pre-intro frames are detected with fonts 
 ## Report
 
 The table with PASS, FAIL or NOT RUN and one line of evidence each; for each FAIL a hypothesis with `file:line`;
-what you could not run and why. At most 50 lines.
+what you could not run and why; anything that reads or behaves wrong though it passes its check or meets its rule,
+with the rule named as the suspect (WORKING_AGREEMENTS "Rules and findings"). At most 50 lines.
 
 ## Coordinator checklist (delete before launch)
 

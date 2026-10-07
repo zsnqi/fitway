@@ -206,10 +206,15 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		const line = lineAt(text, span.index);
 		const tail = source.slice(span.index + span[0].length);
 		const after = tail.match(/^\s*§"([^"]+)"/);
-		const reference = await resolver.reference(span[2]);
+		// Markdown reads a line break inside a code span as a space.
+		const split = /[\r\n]/.test(span[2]);
+		const reference = await resolver.reference(
+			span[2].replace(/(?:\r\n|[\r\n])[ \t]*/g, " "),
+		);
 		if (!reference) continue;
 		references.push({
 			...reference,
+			split,
 			lineNumber: line,
 			heading: reference.heading ?? after?.[1],
 			isNew: /^[ \t]+\(new\)(?=\s|[.,;:]|$)/.test(tail),
@@ -245,7 +250,7 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		}
 		if (!details) {
 			const inCommandRepository = path.resolve(repositoryRoot, reference.file);
-			const hint = resolver.missingPathHint(reference.file);
+			const hint = `${reference.split ? "; this code span breaks across lines, which Markdown reads as a space" : ""}${resolver.missingPathHint(reference.file)}`;
 			if (
 				!path.isAbsolute(reference.file) &&
 				(await exists(inCommandRepository))

@@ -31,7 +31,8 @@ function pathReference(value, { allowBare = false } = {}) {
 		/^@[^@/\s]+\/[^@/\s]+(?:@[^/\r\n]+)?$/.test(normalized)
 	)
 		return null;
-	const match = normalized.match(/^(.*?)(?::(\d+))?(?:\s+§"([^"]+)")?$/);
+	// With `s`, no character in the value can make the match fail.
+	const match = normalized.match(/^(.*?)(?::(\d+))?(?:\s+§"([^"]+)")?$/s);
 	const file = match[1];
 	// Bare names are mentions except in the two explicit resume-point path headers.
 	// A single leading slash also occurs in API routes such as `/api`.

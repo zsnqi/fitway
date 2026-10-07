@@ -4413,3 +4413,57 @@ milestones:
       visual: PENDING
       independentReview: PENDING
     integratedCommit: null
+  agent-environment-r01:
+    status: DONE
+    objective: "Make the agent environment resumable, navigable and cheap to start:
+      a short current resume point reached from the startup route, standing
+      decisions in one place, briefs checked against the agent's worktree, and
+      quieter, guarded tooling."
+    taskClass: repository-infrastructure
+    taskPacket: docs/phase-records/task-packets/agent-environment-r01.yaml
+    taskPacketSha256: 79107a80bc27897caa6eb8f1efd989443e3abec1da8e224f12fc20539c840264
+    dependencies: []
+    ownerSession: claude-code-desktop:coordinator-16da798e
+    branch: agent-environment-r01
+    worktree: D:/Projects/fitway-worktrees/agent-environment-r01
+    baseCommit: ad49c8afe85d7acc86dd909eff7a3e33de93dabe
+    ownedPaths:
+      - AGENTS.md
+      - docs/WORKFLOW.md
+      - docs/agent-context/**
+      - docs/phase-records/handoffs/agent-environment/**
+      - docs/phase-records/task-packets/agent-environment-r01.yaml
+      - scripts/show-agent-context.mjs
+      - scripts/show-agent-context.test.ts
+      - scripts/verify-repository.mjs
+      - scripts/verify-repository.schema.test.ts
+      - scripts/check-agent-context.mjs
+      - scripts/check-agent-context.test.ts
+      - scripts/agent-environment/**
+      - package.json
+      - lefthook.yml
+      - .gitignore
+      - .github/workflows/**
+    forbiddenPaths:
+      - apps/**, packages/**, tests/browser/** and migrations
+      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/**
+        and approval manifests
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - CLAUDE.md and .claude/** (owned by owner-design-exploration-r04)
+      - pnpm-lock.yaml and dependencies
+      - docs/archive/** and other milestones' handoffs and packets
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-10-03T11:40:53.123+03:00
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/agent-environment/20261003-113917-agent-environment-r01-done.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PASS
+    integratedCommit: 47c44ba19ce390936e1d0292c229cdd003c02c38
