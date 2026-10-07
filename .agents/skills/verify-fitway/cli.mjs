@@ -13,6 +13,7 @@ import { createRequire } from "node:module";
 import { createConnection } from "node:net";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { compare } from "./compare.mjs";
 import {
 	assertOutsideGit,
 	canonical,
@@ -22,36 +23,57 @@ import {
 	ownedSession,
 	portAvailable,
 	preview,
+	verificationPort,
 } from "./core.mjs";
-import { drive } from "./drive.mjs";
-import { checkCommittedMaps, drift, generateMap, repository } from "./map.mjs";
+import {
+	checkCommittedMaps,
+	coverageProblems,
+	drift,
+	generateMap,
+	repository,
+} from "./map.mjs";
+import { drive } from "./runner.mjs";
 
 const self = fileURLToPath(import.meta.url);
 export const help = `verify-fitway: node <absolute-skill-folder>/cli.mjs <command> [options]
 Commands:
   help
-  map --concept <folder> [--out <evidence-folder>]
-  drift --concept <folder> [--map <verification-map.json>]
+  map --concept <folder> [--recipes <file>] [--out <evidence-folder>]
+  list --concept <folder> [--recipes <file>] [--map <file>] [--page <page>|all]
+  drift --concept <folder> [--recipes <file>] [--map <verification-map.json>]
   drift-tree [--root <repository>]
   launch --concept <folder> [--port 3176] [--out <evidence-folder>] [--lan]
-  doctor --concept <folder> [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff]
-  drive --concept <folder> [--map <file>] [--session <launch-folder>] [--out <evidence-folder>]
+  doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff]
+  drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>]
         [--page index.html|all] [--feature page|all] [--states default|all|switch=value,...]
         [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone]
         [--inputs mouse,touch] [--motions reduce,full] [--transports http,file] [--port 3176]
         [--cache no-store|none]
         [--probes daily]
+  compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>]
+          [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
+          [all drive page/feature/state/axis options] [--out <evidence-folder>]
   measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>
   cleanup --session <launch-folder>
-Map defaults to <concept>/verification-map.json. map writes <out>/verification-map.json.
+Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
+Every use rediscovers source facts; --map is an optional prior map for drift provenance.
+map writes <out>/verification-map.json; generated maps are evidence, never committed.
 Output defaults to a fresh D:/fitway-temp/verify-fitway-*; git trees/links into them are refused.
 Sizes: desktop=1440x900, boundary=1024x900, tablet=768x1024, phone=390x844,
        narrow=320x844, zoom=1440x900 at 200% (720x450 CSS px, phone frame).
-States all sweeps one switch value at a time; --query explicitly requests combinations.
+--page and --feature select one path; the remaining axes multiply its frames.
+States all sweeps every discovered switch value/sample; dependencies are applied or refused.
+Use --states 'state=live,state=loading,...' for only the page's data states.
+list prints features, states, switches, dependencies, reach and observable proof.
+PASS requires state and feature proof. NOT-REACHABLE is a distinct result; PROBLEM names a measuring error.
+Items have a short *-summary.json beside the full record; filenames include feature and state.
+compare repeats differing items in fresh contexts, with exact pixel regions and diff images.
+Known limits: CSS-only openings and some dynamic/delegated opener relationships are not exhaustively discovered.
+Doctor can block when a missing standalone input has no authoritative recovery source.
 Open numeric/text domains have representative samples in the map; --query accepts other values.
 Touch uses hasTouch/coarse pointer and real taps; full means no-preference.
 measure calls the installed ui-forensics tool; its own --help describes further arguments.
-Ports 3174,3178,3179 are other people's previews. Use 3176-3177 for verification.
+Only ports 3176-3177 are accepted. Ports 3174 and 3178-3185 belong to other previews.
 --forensics <folder> overrides the machine-level ui-forensics location.
 Git Bash: use Windows D:/ absolute paths and quote --query; no /api-style arguments cross shells.
 `;
@@ -78,16 +100,9 @@ function parse(argv) {
 	return { command, options };
 }
 
-export function playwright(concept) {
-	let enclosing = concept;
-	while (!existsSync(resolve(enclosing, "package.json"))) {
-		if (dirname(enclosing) === enclosing)
-			throw new Error(
-				"Concept has no enclosing package.json; use its build worktree.",
-			);
-		enclosing = dirname(enclosing);
-	}
-	const req = createRequire(resolve(enclosing, "package.json"));
+export function playwright(_concept) {
+	// Tools belong to this checkout. Inputs may be an archive or a plain folder.
+	const req = createRequire(resolve(repository, "package.json"));
 	const pw = req("@playwright/test");
 	return {
 		pw,
@@ -163,18 +178,31 @@ export async function child(
 
 function mapFor(options, concept) {
 	const path = options.map || resolve(concept, "verification-map.json");
-	if (!existsSync(path))
+	const saved = existsSync(path)
+		? JSON.parse(readFileSync(path, "utf8"))
+		: undefined;
+	if (saved && saved.schema !== 2)
 		throw new Error(
-			`Map missing: ${path}; run map --concept <folder> --out <evidence-folder>, then pass --map <output>/verification-map.json.`,
+			`Stale map schema: ${path}; regenerate this map from the current source and recipes.`,
 		);
-	const map = JSON.parse(readFileSync(path, "utf8"));
-	const problems = drift(map, concept);
-	if (problems.length)
-		throw new Error(`Stale map; regenerate/review:\n${problems.join("\n")}`);
-	return { map, path };
+	const recipes =
+		options.recipes ||
+		(existsSync(resolve(concept, "verification-recipes.json"))
+			? resolve(concept, "verification-recipes.json")
+			: saved?.recipePath);
+	const map = generateMap(concept, recipes);
+	const problems = saved
+		? drift(saved, concept, recipes)
+		: coverageProblems(map, concept);
+	if (problems.length) throw new Error(`Recipe drift:\n${problems.join("\n")}`);
+	return {
+		map,
+		path: saved ? path : `fresh source discovery; recipes ${map.recipePath}`,
+	};
 }
 
-export async function doctor(options) {
+async function doctorChecks(options) {
+	verificationPort(options.port || 3176);
 	const concept = canonical(options.concept);
 	if (!existsSync(resolve(concept, "tools/probes/lib.mjs")))
 		throw new Error(
@@ -221,9 +249,54 @@ export async function doctor(options) {
 	return { concept, map, tools, loaded };
 }
 
+export function doctorFix(options, error) {
+	const quote = (value) => `'${String(value).replaceAll("'", "''")}'`;
+	const concept = options.concept;
+	const args = `--concept ${quote(concept)}${options.recipes ? ` --recipes ${quote(options.recipes)}` : ""}`;
+	const command = `node ${quote(self)}`;
+	if (/Stale map schema/.test(error.message)) {
+		const out = freshOutput();
+		return `${command} map ${args} --out ${quote(out)}; ${command} doctor ${args} --map ${quote(resolve(out, "verification-map.json"))}`;
+	}
+	if (/Recipes missing/.test(error.message))
+		return "BLOCKED: provide the concept branch's verification-recipes.json with --recipes; no authoritative recipe file was found.";
+	if (/Invalid recipes|Recipe drift|No observable/.test(error.message))
+		return `${command} map ${args} --out ${quote(freshOutput())}`;
+	if (/Chromium missing/.test(error.message))
+		return `node ${quote(resolve(repository, "node_modules/@playwright/test/cli.js"))} install chromium`;
+	if (/ui-forensics missing/.test(error.message))
+		return `${command} doctor ${args} --forensics ${quote(forensicsPath({}))}`;
+	if (/Probe kit missing/.test(error.message)) {
+		for (let folder = resolve(concept); ; folder = dirname(folder)) {
+			if (existsSync(resolve(folder, ".git")))
+				return `git -C ${quote(concept)} restore -- tools/probes/lib.mjs tools/probes/geom.mjs tools/probes/a11y.mjs`;
+			if (folder === dirname(folder)) break;
+		}
+		return "BLOCKED: restore the missing probe kit from an authoritative concept revision; this standalone folder has no git recovery source.";
+	}
+	if (/Python/.test(error.message)) return "py -m pip install numpy Pillow";
+	if (/port|Port|Session/.test(error.message))
+		return `${command} launch --concept ${quote(concept)} --port ${Number(options.port || 3176) === 3176 ? 3177 : 3176} --out ${quote(freshOutput())}`;
+	if (/Cannot find module/.test(error.message))
+		return `pnpm --dir ${quote(repository)} install --frozen-lockfile`;
+	return `${command} doctor ${args}`;
+}
+
+export async function doctor(options) {
+	try {
+		return await doctorChecks(options);
+	} catch (error) {
+		const fix = doctorFix(options, error);
+		console.error(
+			`DOCTOR FAIL: ${error.message}\nFIX${fix.startsWith("BLOCKED:") ? " " : ": "}${fix}`,
+		);
+		throw error;
+	}
+}
+
 async function launch(options) {
 	const concept = canonical(options.concept);
-	const port = Number(options.port || 3176);
+	const port = verificationPort(options.port || 3176);
 	await portAvailable(port);
 	const out = options.out || freshOutput();
 	assertOutsideGit(out);
@@ -313,6 +386,17 @@ async function launch(options) {
 }
 
 async function cleanup(folder) {
+	if (!existsSync(resolve(folder, "session.json")))
+		return console.log(
+			`CLEANUP PASS: no owned preview started; evidence retained at ${folder}`,
+		);
+	const record = JSON.parse(
+		readFileSync(resolve(folder, "session.json"), "utf8"),
+	);
+	if (record.stopped)
+		return console.log(
+			`CLEANUP PASS: owned port ${record.port} already stopped; evidence retained at ${folder}`,
+		);
 	const session = await ownedSession(folder);
 	await fetch(`http://127.0.0.1:${session.port}/__verify/stop`, {
 		method: "POST",
@@ -336,6 +420,7 @@ async function cleanup(folder) {
 	console.log(
 		`CLEANUP PASS: owned port ${session.port} stopped; evidence retained at ${folder}`,
 	);
+	await jsonOutput(folder, "session.json", { ...session, stopped: true });
 }
 
 async function main() {
@@ -355,7 +440,7 @@ async function main() {
 	}
 	if (command === "drift-tree")
 		return console.log(
-			`DRIFT PASS: ${checkCommittedMaps(options.root || repository)} maps found and checked.`,
+			`DRIFT PASS: ${checkCommittedMaps(options.root || repository)} recipe files found and checked.`,
 		);
 	if (command === "cleanup") return cleanup(options.session);
 	if (command === "measure") {
@@ -454,8 +539,10 @@ async function main() {
 	if (command === "map") {
 		const out = options.out || freshOutput();
 		assertOutsideGit(out);
-		const map = generateMap(canonical(options.concept));
+		const map = generateMap(canonical(options.concept), options.recipes);
 		await jsonOutput(out, "verification-map.json", map);
+		const problems = coverageProblems(map, canonical(options.concept));
+		if (problems.length) throw new Error(problems.join("\n"));
 		return console.log(
 			`MAP PASS: ${map.pages.length} pages, ${map.pages.reduce((sum, page) => sum + page.features.length, 0)} feature recipes; ${out}/verification-map.json`,
 		);
@@ -463,9 +550,35 @@ async function main() {
 	if (command === "drift") {
 		const { map } = mapFor(options, canonical(options.concept));
 		return console.log(
-			`DRIFT PASS: ${map.pages.length} pages; switches, recipes, readiness and source fingerprints current.`,
+			`DRIFT PASS: ${map.pages.length} pages; discovered openings covered and recipe selectors/markers present; source rediscovered.`,
 		);
 	}
+	if (command === "list") {
+		const { map } = mapFor(options, canonical(options.concept));
+		for (const page of map.pages.filter(
+			(p) => !options.page || options.page === "all" || p.page === options.page,
+		)) {
+			console.log(`PAGE ${page.page}; readiness ${page.ready}`);
+			for (const item of page.switches)
+				console.log(
+					`SWITCH ${item.name}: ${[...new Set([...item.values, ...item.samples])].join(", ") || "<open domain>"}${item.dependencies.length ? `; dependencies ${JSON.stringify(item.dependencies)}` : ""}`,
+				);
+			for (const state of page.states)
+				console.log(
+					`STATE ${JSON.stringify(state.when || {})}${state.language ? ` ${state.language}` : ""}: ${state.shows}`,
+				);
+			for (const feature of page.features)
+				console.log(
+					`FEATURE ${feature.id}: ${feature.what || feature.id}; ${feature.reach || feature.actions.join(" -> ") || "open page"}; proof ${JSON.stringify(feature.proof)}`,
+				);
+		}
+		return;
+	}
+	if (command === "compare")
+		return compare(
+			{ ...options, out: options.out || freshOutput() },
+			{ doctor, child },
+		);
 	if (command === "launch") return launch(options);
 	if (command === "doctor") return doctor(options);
 	if (command === "drive") {

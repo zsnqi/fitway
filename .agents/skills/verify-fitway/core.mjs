@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { existsSync, lstatSync, readlinkSync, realpathSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -104,6 +105,7 @@ export async function preview({
 	if (!Number.isInteger(port) || port < 1 || port > 65535)
 		throw new Error(`Invalid port: ${port}`);
 	const root = realpathSync(concept);
+	await portAvailable(port);
 	const sockets = new Set();
 	const server = createServer(async (req, res) => {
 		if (cache === "no-store") res.setHeader("Cache-Control", "no-store");
@@ -192,6 +194,13 @@ export async function preview({
 }
 
 export async function portAvailable(port) {
+	if (process.platform === "win32") {
+		const owners = portOwners(port);
+		if (owners.length)
+			throw new Error(
+				`Port ${port} held by a process this CLI did not start (${owners.map((o) => `${o.address} pid=${o.pid}`).join(", ")}); use a free port.`,
+			);
+	}
 	const listener = createServer();
 	await new Promise((done, reject) => {
 		listener.once("error", () =>
@@ -201,9 +210,32 @@ export async function portAvailable(port) {
 				),
 			),
 		);
-		listener.listen(port, "127.0.0.1", done);
+		listener.listen({ port, host: "::", exclusive: true }, done);
 	});
 	await new Promise((done) => listener.close(done));
+}
+
+export function portOwners(port) {
+	if (process.platform !== "win32") return [];
+	return execFileSync("netstat", ["-ano", "-p", "tcp"], {
+		encoding: "utf8",
+		windowsHide: true,
+	})
+		.split(/\r?\n/)
+		.flatMap((line) => {
+			const m = /^\s*TCP\s+(\S+):(\d+)\s+\S+\s+LISTENING\s+(\d+)/.exec(line);
+			return m && Number(m[2]) === port
+				? [{ address: m[1], pid: Number(m[3]) }]
+				: [];
+		});
+}
+
+export function verificationPort(port) {
+	if (![3176, 3177].includes(Number(port)))
+		throw new Error(
+			`Port ${port} is outside the verification allocation; choose 3176 or 3177. Ports 3174 and 3178-3185 belong to other previews.`,
+		);
+	return Number(port);
 }
 
 export async function ownedSession(folder) {
@@ -230,5 +262,12 @@ export async function ownedSession(folder) {
 		identity.pid !== session.pid
 	)
 		throw new Error("Session identity mismatch; refuse cleanup.");
+	const foreign = portOwners(session.port).filter(
+		(owner) => owner.pid !== session.pid,
+	);
+	if (foreign.length)
+		throw new Error(
+			`Port ${session.port} also held by foreign pid ${foreign.map((o) => o.pid)}; refuse this session.`,
+		);
 	return session;
 }

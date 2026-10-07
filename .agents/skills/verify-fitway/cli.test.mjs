@@ -14,118 +14,463 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { child } from "./cli.mjs";
+import { child, doctorFix, playwright } from "./cli.mjs";
 import {
 	assertOutsideGit,
 	outputFile,
 	portAvailable,
 	preview,
+	verificationPort,
 } from "./core.mjs";
-import { stateCases } from "./drive.mjs";
-import { controlRecipes, drift, extractSwitches, generateMap } from "./map.mjs";
+import {
+	coverageProblems,
+	discoverElements,
+	drift,
+	extractDependencies,
+	extractSwitches,
+	generateMap,
+} from "./map.mjs";
+import { sourceProbe } from "./probes.mjs";
+import { itemSummary, resolveQuery, stateCases } from "./runner.mjs";
 
 let scratch;
 let concept;
+let recipes;
+const html =
+	'<main>Fixture</main><button id="ops-btn" aria-controls="ops-pop">Status</button><div id="ops-pop" role="dialog" hidden></div><script src="app.js"></script>';
+const js =
+	'const params=new URLSearchParams(location.search);const state=params.get("state")||"live";if(["live","loading","error"].includes(state)){};window.__fixture={ready:true};';
+const authored = () => ({
+	schema: 1,
+	pages: {
+		"index.html": {
+			features: [
+				{
+					id: "status",
+					marker: "ops-btn",
+					source: { file: "index.html", line: 1 },
+					actions: ["activate:#ops-btn"],
+					proof: { selector: "#ops-pop", visible: true },
+					covers: ["#ops-pop"],
+				},
+			],
+			states: [
+				{
+					when: {},
+					shows: "Visible fixture",
+					proof: { selector: "main", visible: true },
+				},
+			],
+		},
+	},
+});
 before(async () => {
 	scratch = await mkdtemp(resolve(tmpdir(), "verify-fitway-unit-"));
 	concept = resolve(scratch, "concept");
+	recipes = resolve(concept, "verification-recipes.json");
 	await mkdir(concept);
-	await writeFile(
-		resolve(concept, "index.html"),
-		'<!doctype html><script>const p = new URLSearchParams(location.search); const lang=p.get("lang")==="en"?"en":"ar";</script><button id="ops-btn">Status</button><div id="ops-pop"></div><script src="app.js"></script>',
-	);
-	await writeFile(
-		resolve(concept, "app.js"),
-		'const params=new URLSearchParams(location.search); const state=params.get("state")||"live"; if (["live","loading","error"].includes(state)) console.log(state); window.__fixture={}; window.__fixture.ready=true;',
-	);
-	await writeFile(
-		resolve(concept, "DESIGN-SPEC.md"),
-		"BRK-1 | 1440×900, 768×1024, 390×844, 320, 1024, 200% zoom",
-	);
+	await writeFile(resolve(concept, "index.html"), html);
+	await writeFile(resolve(concept, "app.js"), js);
+	await writeFile(recipes, JSON.stringify(authored()));
 });
 after(async () => {
 	if (scratch) await rm(scratch, { recursive: true, force: true });
 });
 
-test("map derives pages, switch branches, source lines, readiness, user recipe and proof", () => {
+test("source derives pages, readiness, domains, openings and opener source; recipes prove coverage", () => {
 	const map = generateMap(concept);
-	assert.equal(map.pages[0].page, "index.html");
-	assert.equal(map.pages[0].ready, "window.__fixture?.ready === true");
-	assert.deepEqual(
-		map.pages[0].switches.find((item) => item.name === "state").values,
-		["error", "live", "loading"],
-	);
+	const page = map.pages[0];
+	assert.equal(page.ready, "window.__fixture?.ready === true");
+	assert.deepEqual(page.switches.find((s) => s.name === "state").values, [
+		"error",
+		"live",
+		"loading",
+	]);
 	assert.equal(
-		map.pages[0].features.find((item) => item.id === "status").actions[0],
-		"activate:#ops-btn",
-	);
-	assert.equal(
-		map.pages[0].features.find((item) => item.id === "status").proof.selector,
-		"#ops-pop",
+		page.openings.find((o) => o.selector === "#ops-pop").openers[0].selector,
+		"#ops-btn",
 	);
 	assert.deepEqual(drift(map, concept), []);
 });
-
-test("switch scanner ignores unrelated Map.get and notices has and inline constructor", () => {
+test("switch scanner follows lexical scope and ignores unrelated Map.get", () => {
 	const found = extractSwitches(
-		'const p=new URLSearchParams(location.search); p.has("find"); new URLSearchParams(location.search).get("lang"); const cache=new Map();cache.get("not-a-switch");',
-		"inline.js",
-	);
-	assert.deepEqual(
-		found.map((item) => item.name),
-		["find", "lang"],
-	);
-});
-
-test("planted code-only switch fails with source line; restored source has no drift", async () => {
-	const map = generateMap(concept);
-	const file = resolve(concept, "app.js");
-	const original = await readFile(file, "utf8");
-	try {
-		await writeFile(file, `${original}\nparams.get("new-switch");`);
-		assert.ok(
-			drift(map, concept).some(
-				(item) => item.includes("app.js:2") && item.includes("new-switch"),
-			),
-		);
-	} finally {
-		await writeFile(file, original);
-	}
-});
-
-test("switch values follow lexical scope instead of unrelated shadowed names", () => {
-	const found = extractSwitches(
-		'const p=new URLSearchParams(location.search); const value=p.get("kind"); if(["all","count"].includes(value)){}; function other(){const value="unrelated";if(value==="not-a-kind"){};const p=new Map();p.get("not-a-switch")}',
+		'const p=new URLSearchParams(location.search);const v=p.get("kind");if(["all","count"].includes(v)){};function other(){const v="else";if(v==="wrong"){};const p=new Map();p.get("not-a-switch")}',
 		"scope.js",
 	);
 	assert.deepEqual(
-		found.map((item) => item.name),
+		found.map((s) => s.name),
 		["kind"],
 	);
 	assert.deepEqual(found[0].values, ["all", "count"]);
 });
-
-test("generated tuner controls have a user path, CSS side effect proof and source line", () => {
-	const found = controlRecipes(
-		'const CONTROLS=[\n{key:"glow",v:"--glow",en:"Glow",min:0,max:1,step:0.1}];',
+test("source dependency is applied with a default or refused with its source reason; wide is independent", () => {
+	const deps = extractDependencies(
+		'const p=new URLSearchParams(location.search);\nif(p.has("record") && p.get("case")==="long"){};\nif(p.get("case")==="wide"){}',
+		"activity.js",
 	);
-	assert.equal(found[0].id, "tuner-control-glow");
-	assert.equal(found[0].source.line, 2);
-	assert.deepEqual(found[0].actions, [
-		"activate:.tuner-toggle",
-		"focus:#t-glow",
-		"press:Home",
-		"press:ArrowUp",
+	assert.deepEqual(deps, [
+		{
+			switch: "case",
+			value: "long",
+			requires: [{ name: "record", present: true }],
+			source: { file: "activity.js", line: 2 },
+		},
 	]);
-	assert.equal(found[0].proof.cssPropertyChanged, "--glow");
+	const page = {
+		page: "activity.html",
+		switches: [
+			{ name: "case", values: ["long", "wide"], dependencies: deps },
+			{ name: "record", values: [] },
+		],
+		defaults: { record: "1001" },
+	};
+	assert.deepEqual(resolveQuery(page, { case: "long" }).query, {
+		case: "long",
+		record: "1001",
+	});
+	assert.deepEqual(resolveQuery(page, { case: "wide" }).query, {
+		case: "wide",
+	});
+	assert.deepEqual(resolveQuery(page, { case: "long", record: "1002" }).query, {
+		case: "long",
+		record: "1002",
+	});
+	assert.throws(
+		() => resolveQuery({ ...page, defaults: {} }, { case: "long" }),
+		/activity.js:2: case=long needs record/,
+	);
+	assert.ok(
+		stateCases(page, { states: "all" }).some(
+			(s) => s.name === "case=long&record=1001",
+		),
+	);
+	assert.throws(
+		() => stateCases(page, { query: "retired=1" }),
+		/unmapped query switch retired/,
+	);
 });
-
-test("interrupted delegated Node tool completes its own cleanup before the parent returns", async () => {
+test("value dependencies reject conflicts instead of changing an explicit request", () => {
+	const page = {
+		page: "fixture",
+		switches: [
+			{
+				name: "arrive",
+				dependencies: [
+					{
+						switch: "arrive",
+						value: "500",
+						requires: [{ name: "state", value: "loading" }],
+						source: { file: "fixture.js", line: 3 },
+					},
+				],
+			},
+			{ name: "state" },
+		],
+	};
+	assert.deepEqual(resolveQuery(page, { arrive: "500" }).query, {
+		arrive: "500",
+		state: "loading",
+	});
+	assert.throws(
+		() => resolveQuery(page, { arrive: "500", state: "error" }),
+		/needs state=loading; conflicting value error/,
+	);
+});
+test("planted dialog fails by name, file, line and opener; adding a recipe restores coverage", async () => {
+	const map = generateMap(concept);
+	const file = resolve(concept, "index.html");
+	try {
+		await writeFile(
+			file,
+			`${html}\n<button id="novel-open" aria-controls="novel-dialog">Open</button><dialog id="novel-dialog"></dialog>`,
+		);
+		assert.match(
+			drift(map, concept).join("\n"),
+			/index.html:2: uncovered dialog #novel-dialog; openers: #novel-open/,
+		);
+		const r = authored();
+		r.pages["index.html"].features.push({
+			id: "novel",
+			marker: "novel-dialog",
+			actions: ["activate:#novel-open"],
+			proof: { selector: "#novel-dialog", visible: true },
+			covers: ["#novel-dialog"],
+		});
+		await writeFile(recipes, JSON.stringify(r));
+		assert.deepEqual(drift(map, concept), []);
+	} finally {
+		await writeFile(file, html);
+		await writeFile(recipes, JSON.stringify(authored()));
+	}
+});
+test("JS factory dialog discovery includes opener and ignores comment markup", () => {
+	const found = discoverElements([
+		{
+			file: "factory.js",
+			text: '// <dialog id="comment-only">\nconst el=(tag,attrs)=>{};const button=el("button",{id:"drawer-open","aria-controls":"drawer"});const panel=el("section",{id:"drawer",role:"dialog",hidden:""});',
+		},
+	]);
+	assert.equal(
+		found.openings.some((o) => o.selector === "#comment-only"),
+		false,
+	);
+	assert.ok(
+		found.openings.some(
+			(o) =>
+				o.selector === "#drawer" &&
+				o.source.line === 2 &&
+				o.openers[0].selector === "#drawer-open",
+		),
+	);
+});
+test("native JS-created dialog and dynamically assigned role are named, with their opening controls", () => {
+	const d = discoverElements([
+		{
+			file: "new.js",
+			text: 'const dlg=document.createElement("dialog");\ndlg.id="native-dialog";\nconst open=document.querySelector("#open");open.addEventListener("click",()=>dlg.showModal());\nconst pop=document.createElement("div");pop.id="native-pop";pop.setAttribute("role","dialog");',
+		},
+	]);
+	assert.ok(
+		d.openings.some(
+			(o) =>
+				o.selector === "#native-dialog" &&
+				o.openers.some((op) => op.selector === "#open"),
+		),
+	);
+	assert.ok(d.openings.some((o) => o.selector === "#native-pop"));
+});
+test("recipe selector attribute values and nested state proofs cannot disappear unnoticed", async () => {
+	const file = resolve(concept, "index.html");
+	const r = authored();
+	r.pages["index.html"].features.push({
+		id: "custom",
+		actions: ['activate:[data-range="custom"]'],
+		proof: { selector: "main", visible: true },
+	});
+	r.pages["index.html"].states.push({
+		when: { state: "loading" },
+		proof: { allOf: [{ selector: "#gone-state", visible: true }] },
+	});
+	try {
+		await writeFile(file, `${html}<button data-range="7d">Seven</button>`);
+		await writeFile(recipes, JSON.stringify(r));
+		const findings = coverageProblems(generateMap(concept), concept).join("\n");
+		assert.match(findings, /selector gone: \[data-range="custom"\]/);
+		assert.match(findings, /selector gone: #gone-state/);
+	} finally {
+		await writeFile(file, html);
+		await writeFile(recipes, JSON.stringify(authored()));
+	}
+});
+test("exact source probe exports work without running a checkout-dependent bootstrap", async () => {
+	const file = resolve(scratch, "source-probe.mjs");
+	await writeFile(
+		file,
+		'throw new Error("bootstrap must not run");\nexport const pure=(value)=>value+1;',
+	);
+	const p = sourceProbe(file, "pure");
+	assert.equal(p.fn(4), 5);
+	assert.equal(p.source.line, 2);
+	assert.throws(() => sourceProbe(file, "missing"), /update the probe adapter/);
+});
+test("shared dialog helpers retain the source-derived opener relationship", () => {
+	const found = discoverElements([
+		{
+			file: "shared.html",
+			text: '<button id="export-btn"></button><dialog id="export-dialog"></dialog>',
+		},
+		{
+			file: "shared.js",
+			text: 'const dialog=document.querySelector("#export-dialog");const button=document.querySelector("#export-btn");function open(target){target.showModal();}button.addEventListener("click",()=>open(dialog));',
+		},
+	]);
+	assert.ok(
+		found.openings
+			.find((o) => o.selector === "#export-dialog")
+			.openers.some(
+				(o) => o.selector === "#export-btn" && o.source.file === "shared.js",
+			),
+	);
+});
+test("vanished selector and marker fail even with a fresh map; renamed dialog is uncovered", async () => {
+	const file = resolve(concept, "index.html");
+	try {
+		await writeFile(file, html.replace('id="ops-pop"', 'id="renamed-pop"'));
+		const findings = coverageProblems(generateMap(concept), concept).join("\n");
+		assert.match(findings, /uncovered dialog #renamed-pop/);
+		assert.match(findings, /recipe status selector gone: #ops-pop/);
+		await writeFile(file, html.replace("ops-btn", "retired-btn"));
+		assert.match(
+			coverageProblems(generateMap(concept), concept).join("\n"),
+			/recipe status marker gone: ops-btn/,
+		);
+	} finally {
+		await writeFile(file, html);
+	}
+});
+test("unrelated source edits and line shifts pass coverage drift", async () => {
+	const map = generateMap(concept);
+	const file = resolve(concept, "app.js");
+	try {
+		await writeFile(file, `// harmless\n${js}`);
+		assert.deepEqual(drift(map, concept), []);
+	} finally {
+		await writeFile(file, js);
+	}
+});
+test("recipes are required, never inferred from a maintained CLI catalog", async () => {
+	const r = await readFile(recipes, "utf8");
+	try {
+		await rm(recipes);
+		assert.throws(() => generateMap(concept), /Recipes missing/);
+	} finally {
+		await writeFile(recipes, r);
+	}
+});
+test("Playwright resolves from the skill checkout for a package-free concept", () => {
+	const loaded = playwright(concept);
+	assert.match(loaded.resolved, /@playwright/);
+	assert.ok(loaded.pw.chromium);
+});
+test("short summary preserves axes, state, result and measuring error without bulk geometry", () => {
+	const e = {
+		feature: "page",
+		state: "case=long&record=1001",
+		query: { case: "long", record: "1001" },
+		language: "ar",
+		size: "narrow",
+		input: "touch",
+		motion: "reduce",
+		transport: "http",
+		status: "problem",
+		problems: ["geometry: planted throw"],
+		geometry: Array(1000).fill("detail"),
+		files: ["frame.png"],
+	};
+	const s = itemSummary(e);
+	assert.equal(s.result, "problem");
+	assert.deepEqual(s.problems, e.problems);
+	assert.equal(s.geometry, undefined);
+	assert.ok(JSON.stringify(s).length < 500);
+});
+test("doctor gives portable concrete repair commands; verification ports are restricted", () => {
+	const opts = { concept, recipes };
+	assert.match(
+		doctorFix(opts, new Error("Recipe drift")),
+		/node '.*cli.mjs' map --concept/,
+	);
+	assert.match(
+		doctorFix(opts, new Error("Chromium missing")),
+		/cli.js' install chromium/,
+	);
+	for (const port of [3174, 3180, 3185])
+		assert.throws(() => verificationPort(port), /choose 3176 or 3177/);
+	assert.equal(verificationPort("3176"), 3176);
+});
+function fetchRaw(port, path, method = "GET") {
+	return new Promise((done, reject) => {
+		const req = request({ host: "127.0.0.1", port, path, method }, (res) => {
+			const chunks = [];
+			res.on("data", (c) => chunks.push(c));
+			res.on("end", () =>
+				done({
+					status: res.statusCode,
+					headers: res.headers,
+					body: Buffer.concat(chunks),
+				}),
+			);
+		});
+		req.once("error", reject);
+		req.end();
+	});
+}
+test("foreign wildcard port is refused; launch never passes; cleanup after refusal retains the foreign server", async () => {
+	const server = createServer((_, res) => res.end("foreign wildcard"));
+	await new Promise((done) => server.listen(3177, "0.0.0.0", done));
+	const cli = fileURLToPath(new URL("./cli.mjs", import.meta.url));
+	const folder = resolve(scratch, "refused-launch");
+	try {
+		await assert.rejects(portAvailable(3177), /did not start/);
+		const result = spawnSync(
+			process.execPath,
+			[cli, "launch", "--concept", concept, "--port", "3177", "--out", folder],
+			{ encoding: "utf8", windowsHide: true },
+		);
+		assert.equal(result.status, 1);
+		assert.doesNotMatch(result.stdout, /LAUNCH PASS/);
+		assert.match(result.stderr, /did not start/);
+		const cleanup = spawnSync(
+			process.execPath,
+			[cli, "cleanup", "--session", folder],
+			{ encoding: "utf8", windowsHide: true },
+		);
+		assert.equal(cleanup.status, 0);
+		assert.match(cleanup.stdout, /CLEANUP PASS: no owned preview started/);
+		assert.equal(
+			(await fetchRaw(3177, "/")).body.toString(),
+			"foreign wildcard",
+		);
+	} finally {
+		await new Promise((done) => server.close(done));
+	}
+	await portAvailable(3177);
+});
+test("preview no-store covers every response class, HEAD/query and containment; only owned resources close", async () => {
+	for (const name of ["style.css", "font.woff2", "image.png", "data.json"])
+		await writeFile(resolve(concept, name), "fixture");
+	const outside = resolve(scratch, "outside.txt");
+	await writeFile(outside, "SECRET OUTSIDE");
+	await symlink(outside, resolve(concept, "escape.txt"));
+	const server = await preview({ concept, port: 3177 });
+	try {
+		for (const path of [
+			"/",
+			"/app.js",
+			"/style.css",
+			"/font.woff2",
+			"/image.png",
+			"/data.json",
+			"/missing",
+			"/index.html?lang=en",
+			"/escape.txt",
+			"/%2e%2e%2foutside.txt",
+			"/%00",
+		])
+			for (const method of ["GET", "HEAD"]) {
+				const result = await fetchRaw(server.port, path, method);
+				assert.equal(result.headers["cache-control"], "no-store");
+				assert.ok(!result.body.toString().includes("SECRET OUTSIDE"));
+				if (method === "HEAD") assert.equal(result.body.length, 0);
+			}
+		await assert.rejects(
+			preview({ concept, port: 3177 }),
+			/held by a process|busy/,
+		);
+		assert.equal((await fetchRaw(3177, "/__verify/stop", "POST")).status, 403);
+	} finally {
+		await server.close();
+	}
+	await portAvailable(3177);
+});
+test("output refuses git worktrees, junction aliases and escaping paths before writes", async () => {
+	const tree = resolve(scratch, "tree");
+	await mkdir(tree);
+	await writeFile(resolve(tree, ".git"), "gitdir: D:/elsewhere");
+	const link = resolve(scratch, "alias");
+	await symlink(tree, link, process.platform === "win32" ? "junction" : "dir");
+	for (const root of [tree, link])
+		assert.throws(
+			() => assertOutsideGit(resolve(root, "never-created")),
+			/Refusing output/,
+		);
+	await assert.rejects(outputFile(scratch, "../escaped.json"), /escapes/);
+});
+test("delegated tool interruption finishes its own cleanup before the parent returns", async () => {
 	const helper = resolve(scratch, "cancel-fixture.mjs");
 	const cleaned = resolve(scratch, "cleaned.txt");
 	await writeFile(
 		helper,
-		'import {writeFileSync} from "node:fs"; import {resolve} from "node:path"; process.once("SIGINT",()=>{writeFileSync(resolve(process.cwd(),"cleaned.txt"),"owned resources closed"); process.exit(130)});writeFileSync(resolve(process.cwd(),"ready.txt"),"ready"); setInterval(()=>{},1000);',
+		'import {writeFileSync} from "node:fs";import {resolve} from "node:path";process.once("SIGINT",()=>{writeFileSync(resolve(process.cwd(),"cleaned.txt"),"cleaned");process.exit(130)});writeFileSync(resolve(process.cwd(),"ready.txt"),"ready");setInterval(()=>{},1000);',
 	);
 	const ready = new Promise((done, reject) => {
 		const watcher = watch(scratch, (_, name) => {
@@ -149,202 +494,5 @@ test("interrupted delegated Node tool completes its own cleanup before the paren
 	} finally {
 		controller.abort();
 	}
-	assert.equal(await readFile(cleaned, "utf8"), "owned resources closed");
-});
-
-test("delegated tools reject equals-form destinations and server-bearing specs before launch", async () => {
-	const cli = fileURLToPath(new URL("./cli.mjs", import.meta.url));
-	const run = (args) =>
-		spawnSync(process.execPath, [cli, ...args], {
-			cwd: scratch,
-			encoding: "utf8",
-			windowsHide: true,
-		});
-	for (const forbidden of [
-		"--html",
-		"--out",
-		"--serve",
-		"--ref-serve",
-		"--refServe",
-	]) {
-		const result = run([
-			"measure",
-			"--tool",
-			"sheet",
-			"--out",
-			resolve(scratch, "guard"),
-			"--",
-			`${forbidden}=${concept}/should-not-exist`,
-		]);
-		assert.notEqual(result.status, 0);
-		assert.match(result.stderr, /Pass output only/);
-	}
-	const spec = resolve(scratch, "server-spec.json");
-	await writeFile(spec, JSON.stringify({ target: { serve: concept } }));
-	const result = run([
-		"measure",
-		"--tool",
-		"probe",
-		"--out",
-		resolve(scratch, "spec-guard"),
-		"--",
-		"--spec",
-		spec,
-	]);
-	assert.notEqual(result.status, 0);
-	assert.match(result.stderr, /Tool spec starts a server/);
-});
-
-test("planted map-only page, switch and selector fail with their exact names", () => {
-	const map = generateMap(concept);
-	map.pages[0].switches.push({
-		name: "retired",
-		source: { file: "app.js", line: 1 },
-	});
-	map.pages[0].features.push({
-		id: "retired-dialog",
-		proof: { selector: "#gone" },
-		source: { file: "app.js", line: 1 },
-	});
-	map.pages.push({ page: "gone.html" });
-	const result = drift(map, concept).join("\n");
-	for (const name of ["retired", "retired-dialog", "gone.html"])
-		assert.ok(result.includes(name));
-});
-
-test("changed proof selectors and removed fixture classes are named with source lines", async () => {
-	const fixtureFolder = resolve(scratch, "concept");
-	const fixtureHtml = resolve(fixtureFolder, "index.html");
-	assertOutsideGit(fixtureFolder);
-	const original = await readFile(fixtureHtml, "utf8");
-	try {
-		await writeFile(
-			fixtureHtml,
-			`${original}\n<button class="old-control">control</button>`,
-		);
-		const map = generateMap(fixtureFolder);
-		map.pages[0].features.find((item) => item.id === "status").proof.selector =
-			".wrong-proof";
-		assert.ok(
-			drift(map, fixtureFolder).some((line) => line.includes(".wrong-proof")),
-		);
-		await writeFile(
-			fixtureHtml,
-			`${original}\n<button class="new-control">control</button>`,
-		);
-		const findings = drift(map, fixtureFolder).join("\n");
-		assert.match(findings, /index.html:2: removed class class="old-control/);
-		assert.match(findings, /index.html:2: unmapped class class="new-control/);
-	} finally {
-		await writeFile(fixtureHtml, original);
-	}
-});
-
-test("output rejects normal/linked git worktrees and junction aliases before writing", async () => {
-	const tree = resolve(scratch, "tree");
-	await mkdir(tree);
-	await writeFile(resolve(tree, ".git"), "gitdir: D:/elsewhere");
-	assert.throws(
-		() => assertOutsideGit(resolve(tree, "never-created", "output")),
-		/Refusing output/,
-	);
-	const link = resolve(scratch, "alias");
-	await symlink(tree, link, process.platform === "win32" ? "junction" : "dir");
-	assert.throws(
-		() => assertOutsideGit(resolve(link, "never-created")),
-		/Refusing output/,
-	);
-	await assert.rejects(outputFile(scratch, "../escaped.json"), /escapes/);
-	assert.equal(
-		assertOutsideGit(resolve(scratch, "safe")),
-		resolve(scratch, "safe"),
-	);
-});
-
-test("all states expands independent values; combinations require explicit query", () => {
-	const page = generateMap(concept).pages[0];
-	const cases = stateCases(page, { states: "all" });
-	assert.ok(
-		cases.slice(1).every((item) => Object.keys(item.query).length === 1),
-	);
-	assert.throws(() => stateCases(page, { query: "done=0" }), /unmapped/);
-});
-
-function fetchRaw(port, path, method = "GET") {
-	return new Promise((done, reject) => {
-		const req = request({ host: "127.0.0.1", port, path, method }, (res) => {
-			const chunks = [];
-			res.on("data", (chunk) => chunks.push(chunk));
-			res.on("end", () =>
-				done({
-					status: res.statusCode,
-					headers: res.headers,
-					body: Buffer.concat(chunks),
-				}),
-			);
-		});
-		req.once("error", reject);
-		req.end();
-	});
-}
-
-test("preview no-store covers every response class, HEAD/query, containment, and stop", async () => {
-	for (const name of ["style.css", "font.woff2", "image.png", "data.json"])
-		await writeFile(resolve(concept, name), "fixture");
-	const outside = resolve(scratch, "outside.txt");
-	await writeFile(outside, "SECRET OUTSIDE");
-	await symlink(outside, resolve(concept, "escape.txt"));
-	const server = await preview({ concept, port: 0 + 3177 });
-	try {
-		for (const path of [
-			"/",
-			"/app.js",
-			"/style.css",
-			"/font.woff2",
-			"/image.png",
-			"/data.json",
-			"/missing",
-			"/index.html?lang=en",
-			"/escape.txt",
-			"/%2e%2e%2foutside.txt",
-			"/%00",
-		]) {
-			for (const method of ["GET", "HEAD"]) {
-				const result = await fetchRaw(server.port, path, method);
-				assert.equal(
-					result.headers["cache-control"],
-					"no-store",
-					`${method} ${path}`,
-				);
-				assert.ok(!result.body.toString().includes("SECRET OUTSIDE"));
-				if (method === "HEAD") assert.equal(result.body.length, 0);
-			}
-		}
-		assert.equal((await fetchRaw(server.port, "/escape.txt")).status, 403);
-		await assert.rejects(
-			preview({ concept, port: server.port }),
-			/Port 3177 busy/,
-		);
-		assert.equal(
-			(await fetchRaw(server.port, "/__verify/stop", "POST")).status,
-			403,
-		);
-	} finally {
-		await server.close();
-	}
-	await portAvailable(server.port);
-});
-
-test("doctor port check refuses other people's server without stopping it", async () => {
-	const server = createServer((_, res) => res.end("user preview"));
-	await new Promise((done) => server.listen(0, "127.0.0.1", done));
-	try {
-		await assert.rejects(portAvailable(server.address().port), /did not start/);
-		assert.equal(
-			(await fetchRaw(server.address().port, "/")).body.toString(),
-			"user preview",
-		);
-	} finally {
-		await new Promise((done) => server.close(done));
-	}
+	assert.equal(await readFile(cleaned, "utf8"), "cleaned");
 });
