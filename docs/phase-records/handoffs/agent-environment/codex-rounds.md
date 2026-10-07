@@ -177,3 +177,21 @@ held-out checks live outside the repository and never appear here or in a brief.
   name `Previous resume point` and `evidence.receiptTemplate` only to say they are optional, which M7 allows.
 - **Failure cause:** none in the code. Follow-up for a later round: report a misplaced `supersededBy` by the field's
   name.
+
+## agent-environment-r03 round 3: `r03/briefs/round-3.md`, result `eb87d09` (level xhigh)
+
+- **Set-up:** the brief's commit `97a2ecd` over HEAD `1d4e99a`. Held-out rows K1-K10 ran from a coordinator script in a
+  scratch clone, on the result plus the coordinator's records fix (`aa6a847`); scope rows on the result itself.
+- **Brief rows:** 2 of 3 as delivered. N2 and N3 pass. N1 fails: the repository check rejects two resume points
+  that cite `scripts/check-frontier-preservation.test.ts`, which the round deleted; both were outside Codex's scope, and
+  Codex stopped and reported them. After the coordinator's fix, N1 holds: CI green on `bbafa71`, the ladder in 5 min
+  4 s of a 6 min 28 s job. The round deleted 7,750 lines and added 195.
+- **Held-out rows:** 10 of 10 on behaviour. Three of the script's first readings were the grader's own faults, fixed
+  and rerun: a `run:` key under `defaults` counted as a step; plants that Biome rejected before their step; the last
+  `==>` line read as the failing step, though the mutation guard always runs last. A write into the repository is
+  caught by the runner's own check, inside the unit-test step, before the final guard. `pnpm test -- <file>` loses
+  its filter and runs every test, before and after the round alike.
+- **Failure cause:** the brief. It named the files to delete but not the live records that cite them; the checklist
+  line on live artifacts now names that search. Follow-up for a later round: strip a standalone `--` in
+  `scripts/run-vitest.mjs`, so `pnpm test -- <file>` keeps its filter.
+

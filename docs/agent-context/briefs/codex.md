@@ -64,6 +64,8 @@ The brief rules B1-B10 live here. Codex follows a brief to the letter, so most f
 - [ ] B10. Every file, section and row the brief names exists at the named HEAD: `pnpm brief:check <this file>`
       passes against the worktree it names.
 - [ ] Every limit the result must keep is an outcome of its own: where the tool may run from, length or size caps,
-      no text kept twice, and every live artifact the change can reach still passing (evaluation C3).
+      no text kept twice, and every live artifact the change can reach still passing (evaluation C3). For a file the
+      round deletes or renames, `git grep` its path in the open records (resume files, briefs, packets) first, and
+      fix them before launch or name them as in scope (r03 round 3).
 - [ ] A test suite that needs a clean tree is run after the commit.
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.
