@@ -153,6 +153,7 @@ const tokens = [
 	["P5", "docs\\missing.md", true],
 	["P5", "docs/missing file.md", true],
 	["P5", "docs/missing.md:10", true],
+	["P5", "docs/missing.md:10-12", true],
 	["P5", 'docs/missing.md §"Heading"', true],
 	["P5", "../outside.md", true],
 	["P5", "/api", false],
@@ -221,6 +222,13 @@ describe("P5: shared token decisions through both validators", () => {
 		await expect(validate("feature/build")).resolves.toBe(true);
 		const result = await check("docs/branch.md:999");
 		expect(formatBriefResult(result)).toContain("exceeds file length");
+	});
+	it("B1: checks both ends of a line range", async () => {
+		expect((await check("docs/branch.md:1-1")).problems).toEqual([]);
+		for (const token of ["docs/branch.md:1-999", "docs/branch.md:2-1"])
+			expect(formatBriefResult(await check(token))).toContain(
+				`${token} exceeds file length`,
+			);
 	});
 	it.each([
 		"Previous resume point",

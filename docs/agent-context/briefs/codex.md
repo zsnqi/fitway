@@ -30,7 +30,7 @@
 
 ## Causes and required outcomes
 
-- **<X>1.** <The cause, with `path:line` evidence.> Outcome: <an observable result, not an approach>.
+- **<X>1.** <The cause, with `path:line` or `path:start-end` evidence.> Outcome: <an observable result, not an approach>.
 
 ## Scope
 

@@ -36,13 +36,21 @@ function pathReference(value, { allowBare = false } = {}) {
 	)
 		return null;
 	// With `s`, no character in the value can make the match fail.
-	const match = normalized.match(/^(.*?)(?::(\d+))?(?:\s+§"([^"]+)")?$/s);
+	const match = normalized.match(
+		/^(.*?)(?::(\d+)(?:-(\d+))?)?(?:\s+§"([^"]+)")?$/s,
+	);
 	const file = match[1];
 	// Bare names are mentions except in the two explicit resume-point path headers.
 	// A single leading slash also occurs in API routes such as `/api`.
 	if (!allowBare && !file.includes("/", file.startsWith("/") ? 1 : 0))
 		return null;
-	return { file, line: match[2] ? Number(match[2]) : null, heading: match[3] };
+	// A line selector is `:line` or a range `:start-end`.
+	return {
+		file,
+		line: match[2] ? Number(match[2]) : null,
+		endLine: match[3] ? Number(match[3]) : null,
+		heading: match[4],
+	};
 }
 
 export function createPathReferenceResolver(repositoryRoot, git = readGit) {
