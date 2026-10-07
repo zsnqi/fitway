@@ -1,0 +1,3668 @@
+{
+  "schema": 1,
+  "pages": {
+    "access.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "access.html",
+            "line": 119
+          },
+          "covers": [
+            "#ops-pop"
+          ],
+          "unreachable": [
+            {
+              "when": {
+                "state": "loading"
+              },
+              "reason": "Status details are unavailable while the first payload is loading; its button is hidden by design.",
+              "proof": {
+                "selector": "#ops-btn",
+                "hidden": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "access.html",
+            "line": 141
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "access.html",
+            "line": 53
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "language",
+          "marker": "lang-link",
+          "actions": [
+            "activate:#lang-link"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "wide",
+          "what": "language",
+          "reach": "activate:#lang-link",
+          "source": {
+            "file": "access.html",
+            "line": 92
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "phone-language",
+          "marker": "menu-lang",
+          "actions": [
+            "activate:#menu-btn",
+            "activate:#menu-lang"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "phone",
+          "what": "phone-language",
+          "reach": "activate:#menu-btn → activate:#menu-lang",
+          "source": {
+            "file": "access.html",
+            "line": 149
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "pinCreate",
+          "marker": "data-act=\"pinCreate\"",
+          "actions": [
+            "activate:[data-act=\"pinCreate\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-pin[open]",
+            "visible": true
+          },
+          "query": {
+            "pin": "none"
+          },
+          "what": "pinCreate",
+          "reach": "access.html?pin=none",
+          "source": {
+            "file": "access.js",
+            "line": 712
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "pinChange",
+          "marker": "data-act=\"pinChange\"",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-pin[open]",
+            "visible": true
+          },
+          "what": "pinChange",
+          "reach": "activate:[data-act=\"pinChange\"]",
+          "source": {
+            "file": "access.js",
+            "line": 710
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "pinOff",
+          "marker": "data-act=\"pinOff\"",
+          "actions": [
+            "activate:[data-act=\"pinOff\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-pinoff[open]",
+            "visible": true
+          },
+          "what": "pinOff",
+          "reach": "activate:[data-act=\"pinOff\"]",
+          "source": {
+            "file": "access.js",
+            "line": 711
+          },
+          "covers": [
+            "#dlg-pin",
+            "#dlg-pinoff"
+          ]
+        },
+        {
+          "id": "add",
+          "marker": "data-act=\"add\"",
+          "actions": [
+            "activate:[data-act=\"add\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-add[open]",
+            "visible": true
+          },
+          "what": "add",
+          "reach": "activate:[data-act=\"add\"]",
+          "source": {
+            "file": "access.js",
+            "line": 761
+          },
+          "covers": [
+            "#dlg-add"
+          ]
+        },
+        {
+          "id": "reset",
+          "marker": "\"reset\"",
+          "actions": [
+            "activate:[data-act=\"reset\"][data-id=\"o2\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-reset[open]",
+            "visible": true
+          },
+          "what": "reset",
+          "reach": "activate:[data-act=\"reset\"][data-id=\"o2\"]",
+          "source": {
+            "file": "access.js",
+            "line": 176
+          },
+          "covers": [
+            "#dlg-reset"
+          ]
+        },
+        {
+          "id": "off",
+          "marker": "\"off\"",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-off[open]",
+            "visible": true
+          },
+          "what": "off",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"]",
+          "source": {
+            "file": "motion.js",
+            "line": 26
+          },
+          "covers": [
+            "#dlg-off"
+          ]
+        },
+        {
+          "id": "on",
+          "marker": "\"on\"",
+          "actions": [
+            "activate:[data-act=\"on\"][data-id=\"o3\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-on[open]",
+            "visible": true
+          },
+          "what": "on",
+          "reach": "activate:[data-act=\"on\"][data-id=\"o3\"]",
+          "source": {
+            "file": "access.js",
+            "line": 408
+          },
+          "covers": [
+            "#dlg-on"
+          ]
+        },
+        {
+          "id": "mine",
+          "marker": "\"mine\"",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-mine[open]",
+            "visible": true
+          },
+          "what": "mine",
+          "reach": "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+          "source": {
+            "file": "access.js",
+            "line": 728
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "pin-view",
+          "marker": "pin-view",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-pin[data-locked=\"true\"]",
+            "visible": true
+          },
+          "what": "pin-view",
+          "reach": "activate:[data-act=\"pinChange\"] → type:#pin-code=Verify123 → activate:#pin-confirm .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 966
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "pin-cancel",
+          "marker": "pin-undo",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "activate:#pin-undo"
+          ],
+          "proof": {
+            "selector": "#dlg-pin",
+            "hidden": true
+          },
+          "what": "pin-cancel",
+          "reach": "activate:[data-act=\"pinChange\"] → type:#pin-code=Verify123 → activate:#pin-confirm .acc-do → activate:#pin-undo",
+          "source": {
+            "file": "access.js",
+            "line": 976
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "pin-commit",
+          "marker": "pin-saved",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "pin-commit",
+          "reach": "activate:[data-act=\"pinChange\"] → type:#pin-code=Verify123 → activate:#pin-confirm .acc-do → wait:600 → activate:#pin-saved",
+          "source": {
+            "file": "access.js",
+            "line": 977
+          },
+          "covers": []
+        },
+        {
+          "id": "pin-failure",
+          "marker": "pin-view-alert",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#pin-view-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "fail": "1"
+          },
+          "what": "pin-failure",
+          "reach": "access.html?fail=1",
+          "source": {
+            "file": "access.js",
+            "line": 973
+          },
+          "covers": [
+            "#pin-view"
+          ]
+        },
+        {
+          "id": "pin-working",
+          "marker": "pin-saved",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#dlg-pin",
+            "attribute": "data-busy",
+            "value": "true"
+          },
+          "query": {
+            "hold": "1"
+          },
+          "what": "pin-working",
+          "reach": "access.html?hold=1",
+          "source": {
+            "file": "access.js",
+            "line": 977
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "password-reveal",
+          "marker": "pw-eye",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "activate:#dlg-mine .pw-eye"
+          ],
+          "proof": {
+            "selector": "#dlg-mine .pw-eye",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "password-reveal",
+          "reach": "activate:[data-act=\"mine\"][data-id=\"o1\"] → activate:#dlg-mine .pw-eye",
+          "source": {
+            "file": "access.js",
+            "line": 940
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "validate-pinChange",
+          "marker": "\"pinChange\"",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "activate:#dlg-pin .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-pin [aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "validate-pinChange",
+          "reach": "activate:[data-act=\"pinChange\"] → activate:#dlg-pin .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 407
+          },
+          "covers": [
+            "#dlg-pin",
+            ".field-err"
+          ]
+        },
+        {
+          "id": "validate-add",
+          "marker": "\"add\"",
+          "actions": [
+            "activate:[data-act=\"add\"]",
+            "activate:#dlg-add .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-add [aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "validate-add",
+          "reach": "activate:[data-act=\"add\"] → activate:#dlg-add .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 409
+          },
+          "covers": [
+            "#dlg-add"
+          ]
+        },
+        {
+          "id": "validate-reset",
+          "marker": "\"reset\"",
+          "actions": [
+            "activate:[data-act=\"reset\"][data-id=\"o2\"]",
+            "activate:#dlg-reset .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-reset [aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "validate-reset",
+          "reach": "activate:[data-act=\"reset\"][data-id=\"o2\"] → activate:#dlg-reset .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 176
+          },
+          "covers": [
+            "#dlg-reset"
+          ]
+        },
+        {
+          "id": "validate-mine",
+          "marker": "\"mine\"",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "activate:#dlg-mine .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-mine [aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "validate-mine",
+          "reach": "activate:[data-act=\"mine\"][data-id=\"o1\"] → activate:#dlg-mine .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 728
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "confirm-pinOff",
+          "marker": "\"pinOff\"",
+          "actions": [
+            "activate:[data-act=\"pinOff\"]",
+            "activate:#dlg-pinoff .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "confirm-pinOff",
+          "reach": "activate:[data-act=\"pinOff\"] → activate:#dlg-pinoff .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 172
+          },
+          "covers": [
+            "#dlg-pin",
+            "#dlg-pinoff"
+          ]
+        },
+        {
+          "id": "confirm-off",
+          "marker": "\"off\"",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "confirm-off",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] → activate:#dlg-off .acc-do",
+          "source": {
+            "file": "motion.js",
+            "line": 26
+          },
+          "covers": [
+            "#dlg-off"
+          ]
+        },
+        {
+          "id": "confirm-on",
+          "marker": "\"on\"",
+          "actions": [
+            "activate:[data-act=\"on\"][data-id=\"o3\"]",
+            "activate:#dlg-on .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "confirm-on",
+          "reach": "activate:[data-act=\"on\"][data-id=\"o3\"] → activate:#dlg-on .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 408
+          },
+          "covers": [
+            "#dlg-on"
+          ]
+        },
+        {
+          "id": "page-retry",
+          "marker": "retry",
+          "actions": [
+            "activate:#retry"
+          ],
+          "proof": {
+            "selector": "#retry",
+            "hidden": true
+          },
+          "query": {
+            "state": "error"
+          },
+          "what": "page-retry",
+          "reach": "access.html?state=error",
+          "source": {
+            "file": "access.js",
+            "line": 40
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "add-owner",
+          "marker": "add-name",
+          "actions": [
+            "activate:[data-act=\"add\"]",
+            "type:#add-name=Verification owner",
+            "type:#add-email=verification@example.test",
+            "type:#add-pw=VerifyPassword123!",
+            "activate:#dlg-add .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "add-owner",
+          "reach": "activate:[data-act=\"add\"] → type:#add-name=Verification owner → type:#add-email=verification@example.test → type:#add-pw=VerifyPassword123! → activate:#dlg-add .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 983
+          },
+          "covers": [
+            "#dlg-add"
+          ]
+        },
+        {
+          "id": "add-owner-retry",
+          "marker": "add-name",
+          "actions": [
+            "activate:[data-act=\"add\"]",
+            "type:#add-name=Verification owner",
+            "type:#add-email=verification@example.test",
+            "type:#add-pw=VerifyPassword123!",
+            "activate:#dlg-add .acc-do",
+            "waitFor:#dlg-add .acc-dlg-alert:not([hidden])",
+            "activate:#dlg-add .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "query": {
+            "fail": "1"
+          },
+          "what": "add-owner-retry",
+          "reach": "access.html?fail=1",
+          "source": {
+            "file": "access.js",
+            "line": 983
+          },
+          "covers": [
+            "#dlg-add"
+          ]
+        },
+        {
+          "id": "reset-password",
+          "marker": "reset-pw",
+          "actions": [
+            "activate:[data-act=\"reset\"][data-id=\"o2\"]",
+            "type:#reset-pw=VerifyPassword123!",
+            "activate:#dlg-reset .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "reset-password",
+          "reach": "activate:[data-act=\"reset\"][data-id=\"o2\"] → type:#reset-pw=VerifyPassword123! → activate:#dlg-reset .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 988
+          },
+          "covers": [
+            "#dlg-reset"
+          ]
+        },
+        {
+          "id": "reset-password-retry",
+          "marker": "reset-pw",
+          "actions": [
+            "activate:[data-act=\"reset\"][data-id=\"o2\"]",
+            "type:#reset-pw=VerifyPassword123!",
+            "activate:#dlg-reset .acc-do",
+            "waitFor:#dlg-reset .acc-dlg-alert:not([hidden])",
+            "activate:#dlg-reset .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "query": {
+            "fail": "1"
+          },
+          "what": "reset-password-retry",
+          "reach": "access.html?fail=1",
+          "source": {
+            "file": "access.js",
+            "line": 988
+          },
+          "covers": [
+            "#dlg-reset"
+          ]
+        },
+        {
+          "id": "my-password",
+          "marker": "mine-new",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "type:#mine-current=CurrentSynthetic",
+            "type:#mine-new=VerifyPassword123!",
+            "activate:#dlg-mine .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "my-password",
+          "reach": "activate:[data-act=\"mine\"][data-id=\"o1\"] → type:#mine-current=CurrentSynthetic → type:#mine-new=VerifyPassword123! → activate:#dlg-mine .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 996
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "my-password-retry",
+          "marker": "mine-new",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "type:#mine-current=CurrentSynthetic",
+            "type:#mine-new=VerifyPassword123!",
+            "activate:#dlg-mine .acc-do",
+            "waitFor:#dlg-mine .acc-dlg-alert:not([hidden])",
+            "activate:#dlg-mine .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "query": {
+            "fail": "1"
+          },
+          "what": "my-password-retry",
+          "reach": "access.html?fail=1",
+          "source": {
+            "file": "access.js",
+            "line": 996
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "records-retry",
+          "marker": "rec-retry",
+          "actions": [
+            "activate:#rec-retry"
+          ],
+          "proof": {
+            "selector": "#rec-retry",
+            "hidden": true
+          },
+          "query": {
+            "records": "error"
+          },
+          "what": "records-retry",
+          "reach": "access.html?records=error",
+          "source": {
+            "file": "access.js",
+            "line": 807
+          },
+          "covers": []
+        },
+        {
+          "id": "record-navigation",
+          "marker": "rec-a",
+          "actions": [
+            "activate:.rec-a"
+          ],
+          "proof": {
+            "path": "activity.html",
+            "selector": ".rec:focus",
+            "visible": true
+          },
+          "what": "record-navigation",
+          "reach": "activate:.rec-a",
+          "source": {
+            "file": "access.js",
+            "line": 788
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "pin-copy",
+          "marker": "pin-copy",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "activate:#pin-copy"
+          ],
+          "proof": {
+            "oneOf": [
+              {
+                "selector": "#pin-copy[data-state=\"1\"]",
+                "visible": true
+              },
+              {
+                "selector": "#pin-copy-fail",
+                "visible": true
+              }
+            ]
+          },
+          "what": "pin-copy",
+          "reach": "activate:[data-act=\"pinChange\"] → type:#pin-code=Verify123 → activate:#pin-confirm .acc-do → activate:#pin-copy",
+          "source": {
+            "file": "access.js",
+            "line": 970
+          },
+          "covers": [
+            "#pin-copy-fail"
+          ]
+        },
+        {
+          "id": "pin-refused",
+          "marker": "pin-view-alert",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#pin-view-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "refuse": "staff_pin_not_active"
+          },
+          "what": "pin-refused",
+          "reach": "access.html?refuse=staff_pin_not_active",
+          "source": {
+            "file": "access.js",
+            "line": 973
+          },
+          "covers": [
+            "#pin-view"
+          ]
+        },
+        {
+          "id": "password-refused",
+          "marker": "mine-current",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "type:#mine-current=CurrentSynthetic",
+            "type:#mine-new=VerifyPassword123!",
+            "activate:#dlg-mine .acc-do"
+          ],
+          "proof": {
+            "selector": "#mine-current[aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "query": {
+            "refuse": "current_password_incorrect"
+          },
+          "what": "password-refused",
+          "reach": "access.html?refuse=current_password_incorrect",
+          "source": {
+            "file": "access.js",
+            "line": 995
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      }
+    },
+    "activity.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "activity.html",
+            "line": 115
+          },
+          "covers": [
+            "#ops-pop"
+          ],
+          "unreachable": [
+            {
+              "when": {
+                "state": "loading"
+              },
+              "reason": "Status details are unavailable while the first payload is loading; its button is hidden by design.",
+              "proof": {
+                "selector": "#ops-btn",
+                "hidden": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "activity.html",
+            "line": 137
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "activity.html",
+            "line": 49
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "language",
+          "marker": "lang-link",
+          "actions": [
+            "activate:#lang-link"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "wide",
+          "what": "language",
+          "reach": "activate:#lang-link",
+          "source": {
+            "file": "activity.html",
+            "line": 88
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "phone-language",
+          "marker": "menu-lang",
+          "actions": [
+            "activate:#menu-btn",
+            "activate:#menu-lang"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "phone",
+          "what": "phone-language",
+          "reach": "activate:#menu-btn → activate:#menu-lang",
+          "source": {
+            "file": "activity.html",
+            "line": 145
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "kind-all",
+          "marker": "kind-seg",
+          "actions": [
+            "activate:#kind-seg [data-kind=\"all\"]"
+          ],
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"all\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "kind-all",
+          "reach": "activate:#kind-seg [data-kind=\"all\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 158
+          },
+          "covers": []
+        },
+        {
+          "id": "kind-count",
+          "marker": "kind-seg",
+          "actions": [
+            "activate:#kind-seg [data-kind=\"count\"]"
+          ],
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"count\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "kind-count",
+          "reach": "activate:#kind-seg [data-kind=\"count\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 158
+          },
+          "covers": []
+        },
+        {
+          "id": "kind-access",
+          "marker": "kind-seg",
+          "actions": [
+            "activate:#kind-seg [data-kind=\"access\"]"
+          ],
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"access\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "kind-access",
+          "reach": "activate:#kind-seg [data-kind=\"access\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 158
+          },
+          "covers": []
+        },
+        {
+          "id": "kind-settings",
+          "marker": "kind-seg",
+          "actions": [
+            "activate:#kind-seg [data-kind=\"settings\"]"
+          ],
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"settings\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "kind-settings",
+          "reach": "activate:#kind-seg [data-kind=\"settings\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 158
+          },
+          "covers": []
+        },
+        {
+          "id": "person-all",
+          "marker": "id=\"person\"",
+          "actions": [
+            "select:#person=all"
+          ],
+          "proof": {
+            "selector": "#person",
+            "inputValue": "all"
+          },
+          "what": "person-all",
+          "reach": "select:#person=all",
+          "source": {
+            "file": "activity.html",
+            "line": 168
+          },
+          "covers": []
+        },
+        {
+          "id": "person-o1",
+          "marker": "id=\"person\"",
+          "actions": [
+            "select:#person=o1"
+          ],
+          "proof": {
+            "selector": "#person",
+            "inputValue": "o1"
+          },
+          "what": "person-o1",
+          "reach": "select:#person=o1",
+          "source": {
+            "file": "activity.html",
+            "line": 168
+          },
+          "covers": []
+        },
+        {
+          "id": "person-o2",
+          "marker": "id=\"person\"",
+          "actions": [
+            "select:#person=o2"
+          ],
+          "proof": {
+            "selector": "#person",
+            "inputValue": "o2"
+          },
+          "what": "person-o2",
+          "reach": "select:#person=o2",
+          "source": {
+            "file": "activity.html",
+            "line": 168
+          },
+          "covers": []
+        },
+        {
+          "id": "person-system",
+          "marker": "id=\"person\"",
+          "actions": [
+            "select:#person=system"
+          ],
+          "proof": {
+            "selector": "#person",
+            "inputValue": "system"
+          },
+          "what": "person-system",
+          "reach": "select:#person=system",
+          "source": {
+            "file": "activity.html",
+            "line": 168
+          },
+          "covers": []
+        },
+        {
+          "id": "dates",
+          "marker": "dates-btn",
+          "actions": [
+            "activate:#dates-btn"
+          ],
+          "proof": {
+            "selector": "#dlg-dates[open]",
+            "visible": true
+          },
+          "what": "dates",
+          "reach": "activate:#dates-btn",
+          "source": {
+            "file": "activity.html",
+            "line": 172
+          },
+          "covers": [
+            "#dlg-dates"
+          ]
+        },
+        {
+          "id": "search",
+          "marker": "find-btn",
+          "actions": [
+            "activate:#find-btn"
+          ],
+          "proof": {
+            "selector": "#reason",
+            "visible": true
+          },
+          "what": "search",
+          "reach": "activate:#find-btn",
+          "source": {
+            "file": "activity.html",
+            "line": 176
+          },
+          "covers": [
+            "#find"
+          ]
+        },
+        {
+          "id": "search-reason",
+          "marker": "reason-clear",
+          "actions": [
+            "activate:#find-btn",
+            "type:#reason=verification",
+            "press:Enter"
+          ],
+          "proof": {
+            "query": {
+              "reason": "verification"
+            }
+          },
+          "what": "search-reason",
+          "reach": "activate:#find-btn → type:#reason=verification → press:Enter",
+          "source": {
+            "file": "activity.html",
+            "line": 186
+          },
+          "covers": [
+            "#find"
+          ]
+        },
+        {
+          "id": "clear-search",
+          "marker": "reason-clear",
+          "actions": [
+            "activate:#reason-clear"
+          ],
+          "proof": {
+            "selector": "#reason",
+            "inputValue": ""
+          },
+          "query": {
+            "find": "1",
+            "reason": "verification"
+          },
+          "what": "clear-search",
+          "reach": "activity.html?find=1&reason=verification",
+          "source": {
+            "file": "activity.html",
+            "line": 186
+          },
+          "covers": [
+            "#reason-clear"
+          ]
+        },
+        {
+          "id": "older",
+          "marker": "id=\"older\"",
+          "actions": [
+            "activate:#older"
+          ],
+          "proof": {
+            "countIncreased": ".rec"
+          },
+          "what": "older",
+          "reach": "activate:#older",
+          "source": {
+            "file": "activity.js",
+            "line": 817
+          },
+          "covers": []
+        },
+        {
+          "id": "older-failure",
+          "marker": "older-retry",
+          "actions": [
+            "activate:#older"
+          ],
+          "proof": {
+            "selector": "#older-retry",
+            "visible": true
+          },
+          "query": {
+            "older": "fail"
+          },
+          "what": "older-failure",
+          "reach": "activity.html?older=fail",
+          "source": {
+            "file": "activity.js",
+            "line": 814
+          },
+          "covers": []
+        },
+        {
+          "id": "older-working",
+          "marker": "older-retry",
+          "actions": [
+            "activate:#older"
+          ],
+          "proof": {
+            "selector": "#older",
+            "attribute": "aria-busy",
+            "value": "true"
+          },
+          "query": {
+            "older": "hold"
+          },
+          "what": "older-working",
+          "reach": "activity.html?older=hold",
+          "source": {
+            "file": "activity.js",
+            "line": 814
+          },
+          "covers": []
+        },
+        {
+          "id": "refresh",
+          "marker": "refresh-alert",
+          "actions": [
+            "activate:#refresh"
+          ],
+          "proof": {
+            "selector": "#refresh",
+            "attribute": "aria-busy",
+            "value": null
+          },
+          "what": "refresh",
+          "reach": "activate:#refresh",
+          "source": {
+            "file": "activity.html",
+            "line": 199
+          },
+          "covers": []
+        },
+        {
+          "id": "refresh-failure",
+          "marker": "refresh-alert",
+          "actions": [
+            "activate:#refresh"
+          ],
+          "proof": {
+            "selector": "#refresh-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "refresh": "fail"
+          },
+          "what": "refresh-failure",
+          "reach": "activity.html?refresh=fail",
+          "source": {
+            "file": "activity.html",
+            "line": 199
+          },
+          "covers": []
+        },
+        {
+          "id": "refresh-working",
+          "marker": "refresh-alert",
+          "actions": [
+            "activate:#refresh"
+          ],
+          "proof": {
+            "selector": "#refresh",
+            "attribute": "aria-busy",
+            "value": ""
+          },
+          "query": {
+            "refresh": "hold"
+          },
+          "what": "refresh-working",
+          "reach": "activity.html?refresh=hold",
+          "source": {
+            "file": "activity.html",
+            "line": 199
+          },
+          "covers": []
+        },
+        {
+          "id": "page-retry",
+          "marker": "retry",
+          "actions": [
+            "activate:#retry"
+          ],
+          "proof": {
+            "selector": "#retry",
+            "hidden": true
+          },
+          "query": {
+            "state": "error"
+          },
+          "what": "page-retry",
+          "reach": "activity.html?state=error",
+          "source": {
+            "file": "activity.js",
+            "line": 33
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "older-retry",
+          "marker": "older-retry",
+          "actions": [
+            "activate:#older",
+            "waitFor:#older-retry",
+            "activate:#older-retry"
+          ],
+          "proof": {
+            "countIncreased": ".rec"
+          },
+          "query": {
+            "older": "fail"
+          },
+          "what": "older-retry",
+          "reach": "activity.html?older=fail",
+          "source": {
+            "file": "activity.js",
+            "line": 814
+          },
+          "covers": []
+        },
+        {
+          "id": "picker-dates-choose",
+          "marker": "dlg-dates",
+          "actions": [
+            "activate:#dates-btn",
+            "activate:#dlg-dates .dp-day[aria-disabled=\"false\"]",
+            "activate:#dlg-dates .dp-day[aria-disabled=\"false\"]",
+            "activate:#dates-form [type=\"submit\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-dates",
+            "hidden": true
+          },
+          "what": "picker-dates-choose",
+          "reach": "activate:#dates-btn → activate:#dlg-dates .dp-day[aria-disabled=\"false\"] → activate:#dlg-dates .dp-day[aria-disabled=\"false\"] → activate:#dates-form [type=\"submit\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 239
+          },
+          "covers": [
+            "#dlg-dates"
+          ]
+        },
+        {
+          "id": "picker-dates-keyboard",
+          "marker": "dlg-dates",
+          "actions": [
+            "activate:#dates-btn",
+            "focus:#dlg-dates .dp-day[tabindex=\"0\"]",
+            "press:PageUp",
+            "press:PageDown",
+            "press:Home",
+            "press:ArrowDown",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#dlg-dates .dp-day[tabindex=\"0\"]",
+            "focused": true
+          },
+          "what": "picker-dates-keyboard",
+          "reach": "activate:#dates-btn → focus:#dlg-dates .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
+          "source": {
+            "file": "activity.html",
+            "line": 239
+          },
+          "covers": [
+            "#dlg-dates",
+            ".dp-err"
+          ]
+        },
+        {
+          "id": "picker-dates-month",
+          "marker": "dlg-dates",
+          "actions": [
+            "activate:#dates-btn",
+            "activate:#dlg-dates .dp-step[data-step=\"-1\"]",
+            "activate:#dlg-dates .dp-step[data-step=\"1\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-dates .dp-day[tabindex=\"0\"]",
+            "visible": true
+          },
+          "what": "picker-dates-month",
+          "reach": "activate:#dates-btn → activate:#dlg-dates .dp-step[data-step=\"-1\"] → activate:#dlg-dates .dp-step[data-step=\"1\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 239
+          },
+          "covers": [
+            "#dlg-dates"
+          ]
+        },
+        {
+          "id": "picker-dates-dismiss",
+          "marker": "dlg-dates",
+          "actions": [
+            "activate:#dates-btn",
+            "press:Escape"
+          ],
+          "proof": {
+            "selector": "#dlg-dates",
+            "hidden": true
+          },
+          "what": "picker-dates-dismiss",
+          "reach": "activate:#dates-btn → press:Escape",
+          "source": {
+            "file": "activity.html",
+            "line": 239
+          },
+          "covers": [
+            "#dlg-dates"
+          ]
+        },
+        {
+          "id": "dates-clear",
+          "marker": "dates-clear",
+          "actions": [
+            "activate:#dates-btn",
+            "activate:#dlg-dates .dp-day[aria-disabled=\"false\"]",
+            "activate:#dates-clear"
+          ],
+          "proof": {
+            "selector": "#dates-clear",
+            "hidden": true
+          },
+          "what": "dates-clear",
+          "reach": "activate:#dates-btn → activate:#dlg-dates .dp-day[aria-disabled=\"false\"] → activate:#dates-clear",
+          "source": {
+            "file": "activity.html",
+            "line": 245
+          },
+          "covers": [
+            "#dlg-dates",
+            "#dates-clear"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "case": "long"
+          },
+          "shows": "Long Arabic and Latin owner names wrap in visible Activity records",
+          "proof": {
+            "expression": "Array.from(document.querySelectorAll('.rec')).some(el=>(el.textContent.includes('Abdulrahman bin Abdulaziz') || el.textContent.includes('???? ??? ??? ????')) && el.getBoundingClientRect().bottom>0 && el.getBoundingClientRect().top<innerHeight)"
+          }
+        },
+        {
+          "when": {
+            "record": "1001"
+          },
+          "shows": "Arrival record 1001 is focused in the activity stream",
+          "proof": {
+            "selector": ".rec:focus",
+            "visible": true
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      },
+      "defaults": {
+        "record": "1001"
+      }
+    },
+    "components.html": {
+      "features": [
+        {
+          "id": "date-dialog",
+          "marker": "open-dlg",
+          "actions": [
+            "activate:#open-dlg"
+          ],
+          "proof": {
+            "selector": "#cx-dlg[open]",
+            "visible": true
+          },
+          "what": "date-dialog",
+          "reach": "activate:#open-dlg",
+          "source": {
+            "file": "components.js",
+            "line": 795
+          },
+          "covers": [
+            "#cx-dlg"
+          ]
+        },
+        {
+          "id": "numbers",
+          "marker": "numbers",
+          "actions": [
+            "activate:#numbers"
+          ],
+          "proof": {
+            "selector": "#numbers",
+            "attribute": "aria-checked",
+            "value": "true"
+          },
+          "what": "numbers",
+          "reach": "activate:#numbers",
+          "source": {
+            "file": "picker.js",
+            "line": 15
+          },
+          "covers": []
+        },
+        {
+          "id": "language-ar",
+          "marker": "lang-seg",
+          "actions": [
+            "activate:#lang-seg [data-lang=\"ar\"]"
+          ],
+          "proof": {
+            "language": "ar"
+          },
+          "what": "language-ar",
+          "reach": "activate:#lang-seg [data-lang=\"ar\"]",
+          "source": {
+            "file": "components.html",
+            "line": 45
+          },
+          "covers": []
+        },
+        {
+          "id": "language-en",
+          "marker": "lang-seg",
+          "actions": [
+            "activate:#lang-seg [data-lang=\"en\"]"
+          ],
+          "proof": {
+            "language": "en"
+          },
+          "what": "language-en",
+          "reach": "activate:#lang-seg [data-lang=\"en\"]",
+          "source": {
+            "file": "components.html",
+            "line": 45
+          },
+          "covers": []
+        },
+        {
+          "id": "heat",
+          "marker": "heat-tip",
+          "actions": [
+            "activate:#heat .cx-hc"
+          ],
+          "proof": {
+            "selector": "#heat-tip",
+            "visible": true
+          },
+          "what": "heat",
+          "reach": "activate:#heat .cx-hc",
+          "source": {
+            "file": "components.js",
+            "line": 597
+          },
+          "covers": [
+            "#heat-tip"
+          ]
+        },
+        {
+          "id": "header-ops",
+          "marker": "data-layer",
+          "actions": [
+            "activate:.cx-live-frame [data-layer=\"ops\"]"
+          ],
+          "proof": {
+            "selector": ".cx-live-frame [data-pop=\"ops\"]",
+            "visible": true
+          },
+          "what": "header-ops",
+          "reach": "activate:.cx-live-frame [data-layer=\"ops\"]",
+          "source": {
+            "file": "components.js",
+            "line": 878
+          },
+          "covers": [
+            ".fw-pop.ops-pop"
+          ]
+        },
+        {
+          "id": "header-menu",
+          "marker": "data-layer",
+          "actions": [
+            "activate:.cx-live-frame [data-layer=\"menu\"]"
+          ],
+          "proof": {
+            "selector": ".cx-live-frame [data-pop=\"menu\"]",
+            "visible": true
+          },
+          "what": "header-menu",
+          "reach": "activate:.cx-live-frame [data-layer=\"menu\"]",
+          "source": {
+            "file": "components.js",
+            "line": 878
+          },
+          "covers": [
+            ".fw-pop.menu-pop"
+          ]
+        },
+        {
+          "id": "picker-specimen-choose",
+          "marker": "cx-dlg",
+          "actions": [
+            "activate:#open-dlg",
+            "activate:#cx-dlg .dp-day[aria-disabled=\"false\"]",
+            "activate:#cx-dlg .dp-day[aria-disabled=\"false\"]",
+            "activate:#cx-dlg-form [type=\"submit\"]"
+          ],
+          "proof": {
+            "selector": "#cx-dlg",
+            "hidden": true
+          },
+          "what": "picker-specimen-choose",
+          "reach": "activate:#open-dlg → activate:#cx-dlg .dp-day[aria-disabled=\"false\"] → activate:#cx-dlg .dp-day[aria-disabled=\"false\"] → activate:#cx-dlg-form [type=\"submit\"]",
+          "source": {
+            "file": "components.html",
+            "line": 60
+          },
+          "covers": [
+            "#cx-dlg"
+          ]
+        },
+        {
+          "id": "picker-specimen-keyboard",
+          "marker": "cx-dlg",
+          "actions": [
+            "activate:#open-dlg",
+            "focus:#cx-dlg .dp-day[tabindex=\"0\"]",
+            "press:PageUp",
+            "press:PageDown",
+            "press:Home",
+            "press:ArrowDown",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#cx-dlg .dp-day[tabindex=\"0\"]",
+            "focused": true
+          },
+          "what": "picker-specimen-keyboard",
+          "reach": "activate:#open-dlg → focus:#cx-dlg .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
+          "source": {
+            "file": "components.html",
+            "line": 60
+          },
+          "covers": [
+            "#cx-dlg",
+            ".dp-err"
+          ]
+        },
+        {
+          "id": "picker-specimen-month",
+          "marker": "cx-dlg",
+          "actions": [
+            "activate:#open-dlg",
+            "activate:#cx-dlg .dp-step[data-step=\"-1\"]",
+            "activate:#cx-dlg .dp-step[data-step=\"1\"]"
+          ],
+          "proof": {
+            "selector": "#cx-dlg .dp-day[tabindex=\"0\"]",
+            "visible": true
+          },
+          "what": "picker-specimen-month",
+          "reach": "activate:#open-dlg → activate:#cx-dlg .dp-step[data-step=\"-1\"] → activate:#cx-dlg .dp-step[data-step=\"1\"]",
+          "source": {
+            "file": "components.html",
+            "line": 60
+          },
+          "covers": [
+            "#cx-dlg"
+          ]
+        },
+        {
+          "id": "picker-specimen-dismiss",
+          "marker": "cx-dlg",
+          "actions": [
+            "activate:#open-dlg",
+            "press:Escape"
+          ],
+          "proof": {
+            "selector": "#cx-dlg",
+            "hidden": true
+          },
+          "what": "picker-specimen-dismiss",
+          "reach": "activate:#open-dlg → press:Escape",
+          "source": {
+            "file": "components.html",
+            "line": 60
+          },
+          "covers": [
+            "#cx-dlg"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      }
+    },
+    "index.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "index.html",
+            "line": 120
+          },
+          "covers": [
+            "#ops-pop"
+          ],
+          "unreachable": [
+            {
+              "when": {
+                "state": "loading"
+              },
+              "reason": "Status details are unavailable while the first payload is loading; its button is hidden by design.",
+              "proof": {
+                "selector": "#ops-btn",
+                "hidden": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "index.html",
+            "line": 142
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "index.html",
+            "line": 49
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "language",
+          "marker": "lang-link",
+          "actions": [
+            "activate:#lang-link"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "wide",
+          "what": "language",
+          "reach": "activate:#lang-link",
+          "source": {
+            "file": "index.html",
+            "line": 88
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "phone-language",
+          "marker": "menu-lang",
+          "actions": [
+            "activate:#menu-btn",
+            "activate:#menu-lang"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "phone",
+          "what": "phone-language",
+          "reach": "activate:#menu-btn → activate:#menu-lang",
+          "source": {
+            "file": "index.html",
+            "line": 150
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "details",
+          "marker": "details-btn",
+          "actions": [
+            "activate:#details-btn"
+          ],
+          "proof": {
+            "selector": "#details",
+            "visible": true
+          },
+          "what": "details",
+          "reach": "activate:#details-btn",
+          "source": {
+            "file": "index.html",
+            "line": 212
+          },
+          "covers": [
+            "#details"
+          ]
+        },
+        {
+          "id": "chart",
+          "marker": "plot-hit",
+          "actions": [
+            "activate:#plot-hit",
+            "focus:#plot-hit",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#plot-hit",
+            "attribute": "aria-valuetext",
+            "nonempty": true
+          },
+          "what": "chart",
+          "reach": "activate:#plot-hit → focus:#plot-hit → press:End",
+          "source": {
+            "file": "index.html",
+            "line": 222
+          },
+          "covers": [
+            "#tip",
+            "#band",
+            "#band-acts"
+          ]
+        },
+        {
+          "id": "page-retry",
+          "marker": "retry",
+          "actions": [
+            "activate:#retry"
+          ],
+          "proof": {
+            "selector": "#retry",
+            "hidden": true
+          },
+          "query": {
+            "state": "error"
+          },
+          "what": "page-retry",
+          "reach": "index.html?state=error",
+          "source": {
+            "file": "app.js",
+            "line": 24
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "tuner",
+          "what": "Light tuner",
+          "reach": "tap Lights",
+          "actions": [
+            "activate:.tuner-toggle"
+          ],
+          "proof": {
+            "selector": "#tuner-panel",
+            "visible": true
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 141
+          },
+          "covers": [
+            "#tuner-panel"
+          ]
+        },
+        {
+          "id": "tuner-control-nowInt",
+          "what": "Intensity",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowInt",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowInt",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-int"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 61
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowHue",
+          "what": "Core colour",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowHue",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowHue",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-core"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 62
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowDiscSize",
+          "what": "Disc size",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowDiscSize",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowDiscSize",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-disc-size"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 63
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowDiscX",
+          "what": "Disc position",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowDiscX",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowDiscX",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-disc-x"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 64
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowSoft",
+          "what": "Edge softness",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowSoft",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowSoft",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-soft"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 65
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowRim",
+          "what": "Rim thickness",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowRim",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowRim",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-rim"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 66
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowHot",
+          "what": "Lit-corner glow",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowHot",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowHot",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-hot"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 67
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowHotSize",
+          "what": "Glow size",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowHotSize",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowHotSize",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-hot-size"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 68
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowFar",
+          "what": "Far-corner glow",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowFar",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowFar",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-far"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 69
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-nowEnd",
+          "what": "Ring-end fade",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-nowEnd",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-nowEnd",
+            "rangeStep": true,
+            "cssPropertyChanged": "--now-end"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 70
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-chartInt",
+          "what": "Intensity",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-chartInt",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-chartInt",
+            "rangeStep": true,
+            "cssPropertyChanged": "--chart-int"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 71
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-chartFade",
+          "what": "Fade distance",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-chartFade",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-chartFade",
+            "rangeStep": true,
+            "cssPropertyChanged": "--chart-fade"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 72
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-chartSide",
+          "what": "Side height",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-chartSide",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-chartSide",
+            "rangeStep": true,
+            "cssPropertyChanged": "--chart-side"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 73
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-chartBalance",
+          "what": "Corner balance",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-chartBalance",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-chartBalance",
+            "rangeStep": true,
+            "cssPropertyChanged": "--chart-balance"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 74
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-chartSoft",
+          "what": "Edge softness",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-chartSoft",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-chartSoft",
+            "rangeStep": true,
+            "cssPropertyChanged": "--chart-soft"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 75
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-washInt",
+          "what": "Page wash",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-washInt",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-washInt",
+            "rangeStep": true,
+            "cssPropertyChanged": "--wash-int"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 76
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-control-grain",
+          "what": "Grain",
+          "reach": "Lights → control",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-grain",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-grain",
+            "rangeStep": true,
+            "cssPropertyChanged": "--grain-o"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 77
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-close",
+          "marker": "tuner-x",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:.tuner-x"
+          ],
+          "proof": {
+            "selector": "#tuner-panel",
+            "hidden": true
+          },
+          "what": "tuner-close",
+          "reach": "activate:.tuner-toggle → activate:.tuner-x",
+          "source": {
+            "file": "tuner.js",
+            "line": 146
+          },
+          "covers": [
+            "#tuner-panel"
+          ]
+        },
+        {
+          "id": "tuner-copy",
+          "marker": "Copy values",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:.tuner-actions button:has-text(\"Copy values\")"
+          ],
+          "proof": {
+            "selector": ".tuner-status",
+            "nonemptyText": true
+          },
+          "what": "tuner-copy",
+          "reach": "activate:.tuner-toggle → activate:.tuner-actions button:has-text(\"Copy values\")",
+          "source": {
+            "file": "tuner.js",
+            "line": 264
+          },
+          "covers": [
+            ".tuner-json"
+          ]
+        },
+        {
+          "id": "tuner-reset",
+          "marker": "Reset to Recommended",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:#tuner-panel [data-preset=\"v2\"]",
+            "activate:.tuner-actions button:has-text(\"Reset to Recommended\")"
+          ],
+          "proof": {
+            "selector": "#tuner-panel [data-preset=\"recommended\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "tuner-reset",
+          "reach": "activate:.tuner-toggle → activate:#tuner-panel [data-preset=\"v2\"] → activate:.tuner-actions button:has-text(\"Reset to Recommended\")",
+          "source": {
+            "file": "tuner.js",
+            "line": 265
+          },
+          "covers": [
+            "#tuner-panel"
+          ]
+        },
+        {
+          "id": "tuner-move",
+          "marker": "tuner-grip",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:.tuner-grip",
+            "press:ArrowDown"
+          ],
+          "proof": {
+            "selector": ".tuner",
+            "moved": true
+          },
+          "what": "tuner-move",
+          "reach": "activate:.tuner-toggle → focus:.tuner-grip → press:ArrowDown",
+          "source": {
+            "file": "tuner.js",
+            "line": 147
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-drag",
+          "marker": "tuner-grip",
+          "actions": [
+            "activate:.tuner-toggle",
+            "gesture:.tuner-grip@0,30,300"
+          ],
+          "proof": {
+            "selector": ".tuner",
+            "moved": true
+          },
+          "what": "tuner-drag",
+          "reach": "activate:.tuner-toggle → gesture:.tuner-grip@0,30,300",
+          "source": {
+            "file": "tuner.js",
+            "line": 147
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-motion",
+          "marker": "t-mo-motion",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:#t-mo-motion"
+          ],
+          "proof": {
+            "selector": "#t-mo-motion",
+            "checked": false
+          },
+          "fullMotion": true,
+          "what": "tuner-motion",
+          "reach": "activate:.tuner-toggle → activate:#t-mo-motion",
+          "source": {
+            "file": "tuner.js",
+            "line": 200
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-replay",
+          "marker": "t-mo-replay",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:#t-mo-replay"
+          ],
+          "proof": {
+            "selector": "#t-mo-replay",
+            "visible": true
+          },
+          "fullMotion": true,
+          "settleIntro": true,
+          "what": "tuner-replay",
+          "reach": "activate:.tuner-toggle → activate:#t-mo-replay",
+          "source": {
+            "file": "tuner.js",
+            "line": 230
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-new-reading",
+          "marker": "New reading",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:.tuner-motion button:has-text(\"New reading\")"
+          ],
+          "proof": {
+            "selector": ".t-latest",
+            "textChanged": true
+          },
+          "what": "tuner-new-reading",
+          "reach": "activate:.tuner-toggle → activate:.tuner-motion button:has-text(\"New reading\")",
+          "source": {
+            "file": "tuner.js",
+            "line": 192
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-level-up",
+          "marker": "Level up",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:.tuner-motion button:has-text(\"Level up\")"
+          ],
+          "proof": {
+            "selector": ".t-latest",
+            "textChanged": true
+          },
+          "what": "tuner-level-up",
+          "reach": "activate:.tuner-toggle → activate:.tuner-motion button:has-text(\"Level up\")",
+          "source": {
+            "file": "tuner.js",
+            "line": 197
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-level-down",
+          "marker": "Level down",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:.tuner-motion button:has-text(\"Level down\")"
+          ],
+          "proof": {
+            "selector": ".t-latest",
+            "textChanged": true
+          },
+          "what": "tuner-level-down",
+          "reach": "activate:.tuner-toggle → activate:.tuner-motion button:has-text(\"Level down\")",
+          "source": {
+            "file": "tuner.js",
+            "line": 198
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-reset-readings",
+          "marker": "Reset readings",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:.tuner-motion button:has-text(\"New reading\")",
+            "activate:.tuner-motion button:has-text(\"Reset readings\")"
+          ],
+          "proof": {
+            "selector": ".tuner-motion button:has-text(\"Reset readings\")",
+            "disabled": true
+          },
+          "what": "tuner-reset-readings",
+          "reach": "activate:.tuner-toggle → activate:.tuner-motion button:has-text(\"New reading\") → activate:.tuner-motion button:has-text(\"Reset readings\")",
+          "source": {
+            "file": "tuner.js",
+            "line": 193
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-speed-speed",
+          "marker": "t-mo-speed",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-mo-speed",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-mo-speed",
+            "rangeStep": true
+          },
+          "what": "tuner-speed-speed",
+          "reach": "activate:.tuner-toggle → focus:#t-mo-speed → press:Home → press:ArrowUp",
+          "source": {
+            "file": "tuner.js",
+            "line": 207
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-speed-reset",
+          "marker": "t-mo-speed",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-mo-speed",
+            "press:Home",
+            "activate:#t-mo-speed >> xpath=.. >> button"
+          ],
+          "proof": {
+            "selector": "#t-mo-speed",
+            "inputValue": "1"
+          },
+          "what": "tuner-speed-reset",
+          "reach": "activate:.tuner-toggle → focus:#t-mo-speed → press:Home → activate:#t-mo-speed >> xpath=.. >> button",
+          "source": {
+            "file": "tuner.js",
+            "line": 207
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-intro-speed",
+          "marker": "t-mo-intro",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-mo-intro",
+            "press:Home",
+            "press:ArrowUp"
+          ],
+          "proof": {
+            "selector": "#t-mo-intro",
+            "rangeStep": true
+          },
+          "what": "tuner-intro-speed",
+          "reach": "activate:.tuner-toggle → focus:#t-mo-intro → press:Home → press:ArrowUp",
+          "source": {
+            "file": "tuner.js",
+            "line": 220
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-intro-reset",
+          "marker": "t-mo-intro",
+          "actions": [
+            "activate:.tuner-toggle",
+            "focus:#t-mo-intro",
+            "press:Home",
+            "activate:#t-mo-intro >> xpath=.. >> button"
+          ],
+          "proof": {
+            "selector": "#t-mo-intro",
+            "inputValue": "1"
+          },
+          "what": "tuner-intro-reset",
+          "reach": "activate:.tuner-toggle → focus:#t-mo-intro → press:Home → activate:#t-mo-intro >> xpath=.. >> button",
+          "source": {
+            "file": "tuner.js",
+            "line": 220
+          },
+          "covers": []
+        },
+        {
+          "id": "tuner-preset-v2",
+          "what": "Choose v2 light preset",
+          "reach": "Lights → preset",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:#tuner-panel [data-preset=\"v2\"]"
+          ],
+          "proof": {
+            "selector": "#tuner-panel [data-preset=\"v2\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 102
+          },
+          "covers": [
+            "#tuner-panel"
+          ]
+        },
+        {
+          "id": "tuner-preset-aLike",
+          "what": "Choose aLike light preset",
+          "reach": "Lights → preset",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:#tuner-panel [data-preset=\"aLike\"]"
+          ],
+          "proof": {
+            "selector": "#tuner-panel [data-preset=\"aLike\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 102
+          },
+          "covers": [
+            "#tuner-panel"
+          ]
+        },
+        {
+          "id": "tuner-preset-recommended",
+          "what": "Choose recommended light preset",
+          "reach": "Lights → preset",
+          "actions": [
+            "activate:.tuner-toggle",
+            "activate:#tuner-panel [data-preset=\"recommended\"]"
+          ],
+          "proof": {
+            "selector": "#tuner-panel [data-preset=\"recommended\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "source": {
+            "file": "tuner.js",
+            "line": 102
+          },
+          "covers": [
+            "#tuner-panel"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "state": "live"
+          },
+          "shows": "Live badge and a visible current numeric reading",
+          "proof": {
+            "expression": "!document.querySelector('#now-v').hidden && /^\\d+$/.test(document.querySelector('#now-v').textContent.trim()) && !document.querySelector('#ops-btn').classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "state": "delayed"
+          },
+          "shows": "Delayed badge and the retained numeric reading",
+          "proof": {
+            "expression": "!document.querySelector('#now-v').hidden && /^\\d+$/.test(document.querySelector('#now-v').textContent.trim()) && document.querySelector('#ops-btn').classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "state": "nohistory"
+          },
+          "shows": "Current reading remains; historical comparison is absent",
+          "proof": {
+            "expression": "!document.querySelector('#now-v').hidden && /^\\d+$/.test(document.querySelector('#now-v').textContent.trim()) && document.querySelector('#entries-usual').textContent.trim()===''"
+          }
+        },
+        {
+          "when": {
+            "state": "loading"
+          },
+          "shows": "Loading word, hidden status button, flat placeholders instead of readings",
+          "proof": {
+            "allOf": [
+              {
+                "selector": ".hb-load",
+                "visible": true
+              },
+              {
+                "selector": "#card-now .ph-slot",
+                "visible": true
+              },
+              {
+                "selector": "#ops-btn",
+                "hidden": true
+              },
+              {
+                "expression": "document.documentElement.dataset.phase==='loading' && document.querySelector('#now-v').hidden && document.documentElement.dataset.load==='shown'"
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "state": "closed"
+          },
+          "shows": "Closed word replaces current reading; peak and entries are still ahead",
+          "proof": {
+            "allOf": [
+              {
+                "selector": "#card-now .stat-word",
+                "visible": true
+              },
+              {
+                "selector": "#card-peak .stat-say",
+                "visible": true
+              },
+              {
+                "selector": "#now-v",
+                "hidden": true
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "state": "unavailable"
+          },
+          "shows": "No current count; peak and entries are pending; history remains",
+          "proof": {
+            "allOf": [
+              {
+                "selector": "#card-now .stat-say",
+                "visible": true
+              },
+              {
+                "selector": "#card-entries .stat-say",
+                "visible": true
+              },
+              {
+                "selector": "#now-v",
+                "hidden": true
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "state": "error"
+          },
+          "shows": "Error message and a visible retry replace readings",
+          "proof": {
+            "allOf": [
+              {
+                "selector": "#retry",
+                "visible": true
+              },
+              {
+                "selector": "#err-say",
+                "visible": true
+              },
+              {
+                "selector": "#now-v",
+                "hidden": true
+              }
+            ]
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      }
+    },
+    "reports.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "reports.html",
+            "line": 120
+          },
+          "covers": [
+            "#ops-pop"
+          ],
+          "unreachable": [
+            {
+              "when": {
+                "state": "loading"
+              },
+              "reason": "Status details are unavailable while the first payload is loading; its button is hidden by design.",
+              "proof": {
+                "selector": "#ops-btn",
+                "hidden": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "reports.html",
+            "line": 142
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "reports.html",
+            "line": 51
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "language",
+          "marker": "lang-link",
+          "actions": [
+            "activate:#lang-link"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "wide",
+          "what": "language",
+          "reach": "activate:#lang-link",
+          "source": {
+            "file": "reports.html",
+            "line": 90
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "phone-language",
+          "marker": "menu-lang",
+          "actions": [
+            "activate:#menu-btn",
+            "activate:#menu-lang"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "phone",
+          "what": "phone-language",
+          "reach": "activate:#menu-btn → activate:#menu-lang",
+          "source": {
+            "file": "reports.html",
+            "line": 150
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "range",
+          "marker": "dlg-range",
+          "actions": [],
+          "proof": {
+            "selector": "#dlg-range[open]",
+            "visible": true
+          },
+          "query": {
+            "dialog": "range"
+          },
+          "what": "range",
+          "reach": "reports.html?dialog=range",
+          "source": {
+            "file": "reports.html",
+            "line": 296
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "export",
+          "marker": "dlg-export",
+          "actions": [],
+          "proof": {
+            "selector": "#dlg-export[open]",
+            "visible": true
+          },
+          "query": {
+            "dialog": "export"
+          },
+          "what": "export",
+          "reach": "reports.html?dialog=export",
+          "source": {
+            "file": "reports.html",
+            "line": 317
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        },
+        {
+          "id": "period-7d",
+          "marker": "range-seg",
+          "actions": [
+            "activate:#range-seg [data-range=\"7d\"]"
+          ],
+          "proof": {
+            "selector": "#range-seg [data-range=\"7d\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "period-7d",
+          "reach": "activate:#range-seg [data-range=\"7d\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 164
+          },
+          "covers": []
+        },
+        {
+          "id": "period-28d",
+          "marker": "range-seg",
+          "actions": [
+            "activate:#range-seg [data-range=\"28d\"]"
+          ],
+          "proof": {
+            "selector": "#range-seg [data-range=\"28d\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "period-28d",
+          "reach": "activate:#range-seg [data-range=\"28d\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 164
+          },
+          "covers": []
+        },
+        {
+          "id": "custom-period",
+          "marker": "range-form",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-range[open]",
+            "visible": true
+          },
+          "what": "custom-period",
+          "reach": "activate:#range-seg [data-range=\"custom\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 298
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "export-open",
+          "marker": "export-btn",
+          "actions": [
+            "activate:#export-btn"
+          ],
+          "proof": {
+            "selector": "#dlg-export[open]",
+            "visible": true
+          },
+          "what": "export-open",
+          "reach": "activate:#export-btn",
+          "source": {
+            "file": "reports.html",
+            "line": 170
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        },
+        {
+          "id": "export-ready",
+          "marker": "export-go",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#export-go"
+          ],
+          "proof": {
+            "selector": "#export-save",
+            "visible": true
+          },
+          "what": "export-ready",
+          "reach": "activate:#export-btn → activate:#export-go",
+          "source": {
+            "file": "reports.html",
+            "line": 340
+          },
+          "covers": [
+            "#export-save",
+            "#export-progress",
+            "#export-done"
+          ]
+        },
+        {
+          "id": "export-failure",
+          "marker": "export-alert",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#export-go"
+          ],
+          "proof": {
+            "selector": "#export-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "export": "fail"
+          },
+          "what": "export-failure",
+          "reach": "reports.html?export=fail",
+          "source": {
+            "file": "reports.html",
+            "line": 335
+          },
+          "covers": [
+            "#export-alert"
+          ]
+        },
+        {
+          "id": "minute-download",
+          "marker": "export-save",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#export-go",
+            "download:#export-save"
+          ],
+          "proof": {
+            "download": true
+          },
+          "what": "minute-download",
+          "reach": "activate:#export-btn → activate:#export-go → download:#export-save",
+          "source": {
+            "file": "reports.html",
+            "line": 341
+          },
+          "covers": [
+            "#export-save"
+          ]
+        },
+        {
+          "id": "table-download",
+          "marker": "table-export",
+          "actions": [
+            "download:#table-export"
+          ],
+          "proof": {
+            "download": true
+          },
+          "what": "table-download",
+          "reach": "download:#table-export",
+          "source": {
+            "file": "reports.html",
+            "line": 251
+          },
+          "covers": []
+        },
+        {
+          "id": "numbers",
+          "marker": "numbers",
+          "actions": [
+            "activate:#numbers"
+          ],
+          "proof": {
+            "selector": "#numbers",
+            "attribute": "aria-checked",
+            "value": "true"
+          },
+          "minWidth": 1280,
+          "what": "numbers",
+          "reach": "activate:#numbers",
+          "source": {
+            "file": "reports.html",
+            "line": 227
+          },
+          "covers": []
+        },
+        {
+          "id": "pattern-grid",
+          "marker": "heat-tip",
+          "actions": [
+            "activate:#heat .hc"
+          ],
+          "proof": {
+            "selector": "#heat-tip",
+            "visible": true
+          },
+          "minWidth": 1280,
+          "what": "pattern-grid",
+          "reach": "activate:#heat .hc",
+          "source": {
+            "file": "reports.html",
+            "line": 239
+          },
+          "covers": [
+            "#heat-tip"
+          ]
+        },
+        {
+          "id": "pattern-day",
+          "marker": "wk-b",
+          "actions": [
+            "activate:#pday [data-wd=\"0\"]"
+          ],
+          "proof": {
+            "selector": "#pday [data-wd=\"0\"]",
+            "attribute": "aria-checked",
+            "value": "true"
+          },
+          "maxWidth": 1279,
+          "what": "pattern-day",
+          "reach": "activate:#pday [data-wd=\"0\"]",
+          "source": {
+            "file": "reports.js",
+            "line": 1079
+          },
+          "covers": [
+            "#pday"
+          ]
+        },
+        {
+          "id": "sort-table",
+          "marker": "data-sort",
+          "actions": [
+            "activate:#days-table [data-sort=\"peak\"]"
+          ],
+          "proof": {
+            "selector": "#days-table th:has([data-sort=\"peak\"])",
+            "attribute": "aria-sort",
+            "nonempty": true
+          },
+          "minWidth": 721,
+          "what": "sort-table",
+          "reach": "activate:#days-table [data-sort=\"peak\"]",
+          "source": {
+            "file": "reports.js",
+            "line": 1292
+          },
+          "covers": []
+        },
+        {
+          "id": "sort-list",
+          "marker": "dl-sort",
+          "actions": [
+            "select:#dl-sort=peak-desc"
+          ],
+          "proof": {
+            "selector": "#dl-sort",
+            "inputValue": "peak-desc"
+          },
+          "maxWidth": 720,
+          "what": "sort-list",
+          "reach": "select:#dl-sort=peak-desc",
+          "source": {
+            "file": "reports.js",
+            "line": 1376
+          },
+          "covers": []
+        },
+        {
+          "id": "expand-days",
+          "marker": "dl-all",
+          "actions": [
+            "activate:#dl-all"
+          ],
+          "proof": {
+            "selector": "#dl-all",
+            "attribute": "aria-expanded",
+            "value": "true"
+          },
+          "maxWidth": 720,
+          "what": "expand-days",
+          "reach": "activate:#dl-all",
+          "source": {
+            "file": "reports.js",
+            "line": 1378
+          },
+          "covers": [
+            "#day-list",
+            "#dlist"
+          ]
+        },
+        {
+          "id": "page-retry",
+          "marker": "retry",
+          "actions": [
+            "activate:#retry"
+          ],
+          "proof": {
+            "selector": "#retry",
+            "hidden": true
+          },
+          "query": {
+            "state": "error"
+          },
+          "what": "page-retry",
+          "reach": "reports.html?state=error",
+          "source": {
+            "file": "reports.js",
+            "line": 98
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "export-retry",
+          "marker": "export-go",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#export-go",
+            "waitFor:#export-alert:not([hidden])",
+            "activate:#export-go"
+          ],
+          "proof": {
+            "selector": "#export-save",
+            "visible": true
+          },
+          "query": {
+            "export": "fail"
+          },
+          "what": "export-retry",
+          "reach": "reports.html?export=fail",
+          "source": {
+            "file": "reports.html",
+            "line": 340
+          },
+          "covers": [
+            "#export-alert",
+            "#export-save"
+          ]
+        },
+        {
+          "id": "picker-range-choose",
+          "marker": "dlg-range",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]",
+            "activate:#dlg-range .dp-day[aria-disabled=\"false\"]",
+            "activate:#dlg-range .dp-day[aria-disabled=\"false\"]",
+            "activate:#range-form [type=\"submit\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-range",
+            "hidden": true
+          },
+          "what": "picker-range-choose",
+          "reach": "activate:#range-seg [data-range=\"custom\"] → activate:#dlg-range .dp-day[aria-disabled=\"false\"] → activate:#dlg-range .dp-day[aria-disabled=\"false\"] → activate:#range-form [type=\"submit\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 296
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "picker-range-keyboard",
+          "marker": "dlg-range",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]",
+            "focus:#dlg-range .dp-day[tabindex=\"0\"]",
+            "press:PageUp",
+            "press:PageDown",
+            "press:Home",
+            "press:ArrowDown",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#dlg-range .dp-day[tabindex=\"0\"]",
+            "focused": true
+          },
+          "what": "picker-range-keyboard",
+          "reach": "activate:#range-seg [data-range=\"custom\"] → focus:#dlg-range .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
+          "source": {
+            "file": "reports.html",
+            "line": 296
+          },
+          "covers": [
+            "#dlg-range",
+            ".dp-err"
+          ]
+        },
+        {
+          "id": "picker-range-month",
+          "marker": "dlg-range",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]",
+            "activate:#dlg-range .dp-step[data-step=\"-1\"]",
+            "activate:#dlg-range .dp-step[data-step=\"1\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-range .dp-day[tabindex=\"0\"]",
+            "visible": true
+          },
+          "what": "picker-range-month",
+          "reach": "activate:#range-seg [data-range=\"custom\"] → activate:#dlg-range .dp-step[data-step=\"-1\"] → activate:#dlg-range .dp-step[data-step=\"1\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 296
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "picker-range-dismiss",
+          "marker": "dlg-range",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]",
+            "press:Escape"
+          ],
+          "proof": {
+            "selector": "#dlg-range",
+            "hidden": true
+          },
+          "what": "picker-range-dismiss",
+          "reach": "activate:#range-seg [data-range=\"custom\"] → press:Escape",
+          "source": {
+            "file": "reports.html",
+            "line": 296
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "picker-export-choose",
+          "marker": "dlg-export",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#dlg-export .dp-day[aria-disabled=\"false\"]",
+            "activate:#dlg-export .dp-day[aria-disabled=\"false\"]",
+            "activate:#export-form [type=\"submit\"]"
+          ],
+          "proof": {
+            "selector": "#export-save",
+            "visible": true
+          },
+          "what": "picker-export-choose",
+          "reach": "activate:#export-btn → activate:#dlg-export .dp-day[aria-disabled=\"false\"] → activate:#dlg-export .dp-day[aria-disabled=\"false\"] → activate:#export-form [type=\"submit\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 317
+          },
+          "covers": [
+            "#dlg-export",
+            "#export-save"
+          ]
+        },
+        {
+          "id": "picker-export-keyboard",
+          "marker": "dlg-export",
+          "actions": [
+            "activate:#export-btn",
+            "focus:#dlg-export .dp-day[tabindex=\"0\"]",
+            "press:PageUp",
+            "press:PageDown",
+            "press:Home",
+            "press:ArrowDown",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#dlg-export .dp-day[tabindex=\"0\"]",
+            "focused": true
+          },
+          "what": "picker-export-keyboard",
+          "reach": "activate:#export-btn → focus:#dlg-export .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
+          "source": {
+            "file": "reports.html",
+            "line": 317
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        },
+        {
+          "id": "picker-export-month",
+          "marker": "dlg-export",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#dlg-export .dp-step[data-step=\"-1\"]",
+            "activate:#dlg-export .dp-step[data-step=\"1\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-export .dp-day[tabindex=\"0\"]",
+            "visible": true
+          },
+          "what": "picker-export-month",
+          "reach": "activate:#export-btn → activate:#dlg-export .dp-step[data-step=\"-1\"] → activate:#dlg-export .dp-step[data-step=\"1\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 317
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        },
+        {
+          "id": "picker-export-dismiss",
+          "marker": "dlg-export",
+          "actions": [
+            "activate:#export-btn",
+            "press:Escape"
+          ],
+          "proof": {
+            "selector": "#dlg-export",
+            "hidden": true
+          },
+          "what": "picker-export-dismiss",
+          "reach": "activate:#export-btn → press:Escape",
+          "source": {
+            "file": "reports.html",
+            "line": 317
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      }
+    }
+  }
+}
