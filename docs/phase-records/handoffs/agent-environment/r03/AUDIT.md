@@ -87,12 +87,12 @@ stay as written.
 
 | Item | Finding | Class | Round |
 | --- | --- | --- | --- |
-| Dead worktree registrations (D §1) | 4 point at missing folders | prune | R1-machine |
-| Merged local branches (D §2) | 15 merged and named by no record | delete | R1-machine |
-| agent-environment-r01 worktree | merged, clean, closed | remove | R1-machine |
-| `D:/fitway-temp` (D §3) | 47 GB; temp and Playwright leftovers; held-out run copies | sweep the leftovers; keep REPORT files and anything a record names | R1-machine |
+| Dead worktree registrations (D §1) | 4 point at missing folders | prune | R1-machine, done |
+| Merged local branches (D §2) | 15 merged and named by no record | delete | R1-machine, done |
+| agent-environment-r01 worktree | merged, clean, closed | remove | R1-machine, done |
+| `D:/fitway-temp` (D §3) | 47 GB; temp and Playwright leftovers; held-out run copies | sweep the leftovers; keep REPORT files and anything a record names | R1-machine, done (17.7 GB) |
 | eval worktrees (D §1) | C4 and C5 may still need them | keep until the evaluation loop decides | later |
-| D:/fitway-scratch, D:/codex-worktrees-archive, C: Codex sessions (7 GB) | untracked records and the user's history | the user: not needed (2026-10-07); deleted by the user's script, which keeps two days of Codex logs | R1-machine |
+| D:/fitway-scratch, D:/codex-worktrees-archive, C: Codex sessions (7 GB) | untracked records and the user's history | the user: not needed (2026-10-07); deleted by the user's script, which keeps two days of Codex logs | R1-machine, done (38.4 GB) |
 
 ### Gardener
 

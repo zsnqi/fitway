@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** `agent-environment-r03` at `59c79d4b`, 2026-10-07 16:49 +03:00
+- **As of:** `agent-environment-r03` at `3a8f19d2`, 2026-10-07 17:07 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-16,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -25,6 +25,10 @@
   WORKFLOW.md the procedure, WORKING_AGREEMENTS the agreements (including those that lived only in memory), the
   Codex template's checklist the brief rules B1-B10. Six machine-local memory notes moved to
   D:/fitway-temp/memory-retired-20261007/ (their content is in the repository).
+- The machine cleanup is done (the user ran the scripts, 2026-10-07): about 56 GB freed (D:/fitway-temp leftovers
+  and the closed held-out runs 17.7 GB, D:/codex-worktrees-archive with its 14 worktrees 15.5 GB, D:/fitway-scratch
+  16.5 GB, Codex session logs older than two days 6.4 GB on drive C, which now has 19 GB free); the r01 worktree is
+  removed and git holds no stale worktree record.
 
 ## Running now
 
@@ -36,6 +40,9 @@ Nothing.
    skill at .agents/skills/verify-fitway with a .claude pointer, the feature map generated from the Eclipse folder,
    a CLI on ui-forensics and the probe kit, a no-store preview, and one command that launches a Codex round.
 2. R5, the gardener (DECISIONS item 16) and its first pass, then the closing receipt and the independent review.
+   Its sweep deletes with rmdir /s /q and the \\?\ prefix: a folder named with a trailing dot ("evidence.",
+   2026-10-07) is unreachable through ordinary Windows paths, and a PowerShell script on `Stop` halts on rmdir's
+   error output.
 3. Follow-ups for a Codex round: name the field when `supersededBy` is misplaced; strip a standalone `--` in
    `scripts/run-vitest.mjs`; remove the routes' compatibility mode and the four unused task classes; separate the
    brief checker's rule ids from B1-B10 (audit A, C13); read the Impeccable path in `scripts/check-design-context.mjs`
@@ -43,12 +50,7 @@ Nothing.
 
 ## Waiting on the user
 
-- The user approved both cleanups (2026-10-07) and runs them; each is a dry run without -Apply:
-  powershell -ExecutionPolicy Bypass -File D:\fitway-temp\env-cleanup-20261007.ps1 -Apply -IncludeHeldoutRuns -IncludeR01Worktree
-  powershell -ExecutionPolicy Bypass -File D:\fitway-temp\env-cleanup-folders-20261007.ps1 -Apply
-  The second deletes D:/fitway-scratch, D:/codex-worktrees-archive (14 archived worktrees, then git prune) and Codex
-  session logs older than two days; its log is D:/fitway-temp/env-cleanup-folders-20261007.log. Next session: check
-  the freed space and `git worktree list`.
+Nothing.
 
 ## Known risks
 
