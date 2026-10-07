@@ -56,20 +56,19 @@ latest wording; never copy an entry into a resume point.
   mechanical edits from an exact list (documents, a regenerated index, text replacements). The first
   round of each kind at its lower level is graded like any other; a failure traced to the code moves
   that kind up a level. Each round's record names its level.
-- Usage limits do not shape rounds: when an account reaches its limit the user switches to another,
-  and a stopped run resumes on its thread. (user, 2026-10-05)
-- The coordinator launches Codex from a tracked brief that passes `pnpm brief:check`, in Codex's
-  sandbox with automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md`
-  item 7), in a harness background shell (Git Bash, which has `<`):
-  `{ printf 'Launch note: HEAD <sha> only adds this brief over the named HEAD.\n\n'; cat <brief>; } | codex exec --approve-for-me -C <worktree> -m gpt-6.1-sol -c model_reasoning_effort="<level>" --json -o <run>/last-message.md - > <run>/events.jsonl`.
-  The note is needed because the brief's own commit sits on the HEAD it names, and Codex rightly stops
-  on a HEAD it was not told about. Claude Code's auto mode refuses this command unless the launching
-  worktree's `.claude/settings.local.json` allows `Bash(codex exec:*)`; that is the user's setting to
-  add. The harness reports the exit; nothing polls.
-- A run that stopped mid-change (the app exited, or a limit was reached) resumes on the same thread
-  instead of being reset: the same pipeline with
-  `--json -o <run>/last-message.md resume <thread_id> - > <run>/events-resume.jsonl`, where
-  `thread_id` is on the first line of `events.jsonl` and every exec flag comes before `resume`.
+- Usage limits do not shape rounds: when a Codex account reaches its limit, the coordinator tells the
+  user at once, the user switches accounts, and each stopped run resumes on its thread. (user,
+  2026-10-05 and 2026-10-07)
+- The coordinator launches Codex from a tracked brief with `pnpm codex:round <brief> <level>` in a
+  harness background shell. The command runs `pnpm brief:check` first and launches nothing on a
+  failure, adds the launch note when the brief's own commit sits on the HEAD it names (Codex rightly
+  stops on a HEAD it was not told about), and starts `codex exec --approve-for-me` in Codex's sandbox
+  with automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7),
+  keeping the events and the last message in a run folder outside the repository. The harness reports
+  the exit; nothing polls.
+- A run that stopped mid-change (the app exited, or a limit was reached) resumes on its thread instead
+  of being reset: `pnpm codex:round resume <run folder> --message "<one line on what happened>"`;
+  without a message, resume sends the brief again.
 - After a round, the coordinator checks the diff, `git status` in every worktree involved, and the
   remote branch.
 - Each Codex round is judged as an evaluation: brief rows, held-out rows, and the failure cause,

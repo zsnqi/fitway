@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-07T18:00:00+03:00
+updatedAt: 2026-10-07T20:25:00+03:00
 coordinator:
   owner: Primary coordinator and integrator for FITWAY; agent-environment-r03 (the environment phase) and Owner r04 (concept-only Eclipse work) are IN_PROGRESS, access-reason-cap-r01 is paused by the user, agent-environment-r01 is DONE and agent-environment-r02 is SUPERSEDED by r03, both archived.
   stateFilePolicy: coordinator-only
@@ -160,7 +160,7 @@ milestones:
       - pnpm-lock.yaml and dependencies
       - docs/archive/** and other milestones' handoffs and packets
     sharedLeases: []
-    validationRepairAttempts: 0
+    validationRepairAttempts: 1
     handoff: docs/phase-records/handoffs/agent-environment/r03/agent-environment-r03-resume.md
     stopReason: null
     gates:

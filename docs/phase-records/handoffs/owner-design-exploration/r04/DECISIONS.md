@@ -442,14 +442,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 2. **Agents** follow the table in `CLAUDE.md`; a long-context designer is never resumed, not even one cut off
    mid-round (item 10).
 3. **Codex** is GPT-6.1 Sol at the level the task calls for (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation";
-   Eclipse defects are `high`), run by the coordinator with `codex exec --approve-for-me`
+   Eclipse defects are `high`), launched by the coordinator with `pnpm codex:round`
    (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
    briefs follow the brief rules B1-B10 in the checklist of `docs/agent-context/briefs/codex.md`.
-4. **Verifiers** follow these rules:
-   - G1. Keep cap checks at least 30 ms from the cap (50, 150, 250 and 600 ms).
-   - G2. Detect a removed pre-intro frame by holding fonts until first paint + 50 ms and + 100 ms.
-   - G3. Run load checks under `no-store` and under no cache header.
-   - G4. Every movement check runs until at least 500 ms after `endedAt`.
+4. **Verifiers** use the verify-fitway skill (`.agents/skills/verify-fitway/SKILL.md`), which holds the verifier
+   rules G1-G4, and its CLI instead of their own scripts (agent-environment-r03 round 4, 2026-10-07).
 5. **Claude Design** is paused (2026-10-02). It stays available for open visual questions; its output is reference
    until built in Eclipse's files.
 6. **The remaining Owner screens, one pass each** (the user, 2026-10-03): Activity log, Access, Settings and

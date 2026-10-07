@@ -194,3 +194,48 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the brief. It named the files to delete but not the live records that cite them; the checklist
   line on live artifacts now names that search. Follow-up for a later round: strip a standalone `--` in
   `scripts/run-vitest.mjs`, so `pnpm test -- <file>` keeps its filter.
+
+## agent-environment-r03 round 4: `r03/briefs/round-4.md`, result `7c7a768` (level xhigh)
+
+- **Set-up:** the brief's commit `10ba2815` over HEAD `82c34b0e`. The run stopped once when the app that launched it
+  exited and twice on usage limits; each time it resumed on its thread. Held-out rows P1-P21: P1 by a fresh Sonnet
+  agent that read only the skill; P2-P19 and P21 by two Sonnet graders in scratch clones; P20 from CI.
+- **Brief rows, as Codex graded them:** 6 of 8. V1 and V4-V8 pass. V2 fails: the English phone tuner's «الإضاءة»
+  toggle sits outside the viewport, so no tap reaches it (a concept defect the CLI found), and the probe kit's Daily
+  geometry probe throws while loading. V3 fails: the features come from about 630 lines of recipes kept in the CLI,
+  not from the concept's code. CI green on `7c7a768`; the ladder runs the map drift check and the CLI's tests. The
+  round added 3,032 lines.
+- **Held-out rows:** 17 of 20 graded pass; P20 passes on the CI listing (no plant run). P9 is partial: a new switch, a
+  removed switch and a renamed selector fail with file and line, but a new dialog fails only as "source changed". P10
+  fails: the doctor names a stale map without the command that fixes it. P14 fails: a foreign server bound to all
+  addresses on the CLI's port goes unnoticed (LAUNCH PASS beside it, then a failed cleanup). P1 did both tasks with CLI
+  calls only; Activity's long-name case needed a second try, because `case=long` takes effect only with `record=` and
+  the first frame passed without showing it.
+- **Failure cause:** brief and code. V3 asked for features generated from code, which cannot tell how a user reaches a
+  feature or what proves it, so it was not literally reachable as written (B8). The code misses a wildcard listener,
+  never checks that a frame shows the state it asked for, and resolves Playwright only from the concept's own checkout,
+  so a baseline extracted with `git archive` cannot be driven. Round 6 takes all of them.
+
+## agent-environment-r03 round 5: `r03/briefs/round-5.md`, result `34f472e` (level high)
+
+- **Set-up:** the brief's commit `e6820ba8` over HEAD `7c7a768f`. Held-out rows Q1-Q10: Q1 and Q2 by a real launch and
+  resume of a one-line brief in a scratch clone, Q3-Q10 by a Sonnet grader with a stand-in `codex`.
+- **Brief rows:** 5 of 5 (21 tests).
+- **Held-out rows:** 10 of 10. The launch note names the full HEAD sha, as the agreements write it (`<sha>`; the row's
+  "short" was the coordinator's). The real launch printed the thread id and Codex committed; the real resume kept the
+  thread and left the first event file byte-identical.
+- **Failure cause:** the code, outside the rows. One of its tests starts whichever `bash` comes first on PATH, the WSL
+  launcher on this machine, so it fails from PowerShell (1 of 21) while it passes in Git Bash. Resume re-sent the whole
+  brief. Round 5b fixes both.
+
+## agent-environment-r03 round 5b: `r03/briefs/round-5b.md`, result `a40ba39` (level high)
+
+- **Set-up:** launched with round 5's own command, the brief's commit `d454ce04` over HEAD `34f472e4`.
+- **Brief rows:** 3 of 3 (28 tests, from PowerShell and Git Bash).
+- **Held-out rows:** 4 of 5. R1: 28 tests pass from PowerShell here, where `bash` is the WSL launcher. R2: a real
+  resume with a one-line Arabic message reached the thread, which did the extra task it asked for; the earlier event
+  files stayed byte-identical. R3: by the tests. R5: two files. R4 fails: CI on `a40ba39` fails the new test that puts
+  a stand-in `bash` first on PATH, because the runner names its TEMP folder by its 8.3 short form
+  (`C:\Users\RUNNER~1\...`) and `where` returns the long form, which the test compares as text.
+- **Failure cause:** the code (its own test), on a condition neither the brief nor a local run showed. Round 5c is the
+  first focused repair (AGENTS.md).

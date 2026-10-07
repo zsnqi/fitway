@@ -51,10 +51,6 @@ Nothing.
 
 ## Known risks
 
-- **The resume-point checker on CI:** a backticked machine-local absolute path (other than D:/fitway-temp) or a
-  slashed branch name that is not a local branch on the runner fails `scripts/agent-environment/resume-point.mjs`, and
-  `pnpm handoff:new` itself writes the branch backticked in "As of". Write both as plain text until
-  agent-environment-r03 fixes it.
 - **The build branch's CI:** owner-followup-r04-build still carries the old wall-clock lease check, which main has
   dropped (agent-environment-r03), and fails CI on a push after 2026-10-10: merge main into it before its next push.
 - main has no branch protection (a private repository on GitHub's free plan); nothing found deploys on a push to main.

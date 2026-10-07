@@ -71,17 +71,17 @@ stay as written.
 | Push and trunk (A46, C2) | WORKFLOW forbids pushing; the trunk rule requires it | replace: the coordinator pushes working branches, never forces, and fast-forwards main on green CI | R3 |
 | Conflicts C1, C3-C14 (A §1) | | resolve each, keeping the newer user decision | R3 |
 | Stale text (A §2) | the compatibility fallback, BRG and `SELF` as the base, the responsibility map, CLAUDE.md's trial labels | remove | R3 |
-| Brief rules B1-B10 and verifier rules G1-G5 (A31, A32) | in an Owner decisions file; B8 and B9 missing from the template | B1-B10 into the Codex brief template; G5 into the environment block; G1-G4 into the verify-fitway skill | R3 and R4 |
+| Brief rules B1-B10 and verifier rules G1-G5 (A31, A32) | in an Owner decisions file; B8 and B9 missing from the template | B1-B10 into the Codex brief template; G5 into the environment block; G1-G4 into the verify-fitway skill | R3; R4, done (round 4) |
 | Memory notes that restate the repository (A §4) | caches, some stale | trim the user's machine-local memory to machine facts | R3 |
 
 ### Tools
 
 | Item | Finding | Class | Round |
 | --- | --- | --- | --- |
-| Verification paved path (B §4) | ui-forensics, the probe kit, 8 Eclipse capture scripts and round scripts overlap | ui-forensics is the engine; a repository CLI with the generated feature map drives it | R4 |
+| Verification paved path (B §4) | ui-forensics, the probe kit, 8 Eclipse capture scripts and round scripts overlap | ui-forensics is the engine; a repository CLI with the generated feature map drives it | R4: round 4 (`7c7a768`); its corrections in round 6 |
 | Eclipse capture scripts (B44, B45) | one per page or round, each with its own server | retire once the CLI covers them (they belong to owner-design-exploration-r04) | after R4 |
 | `scripts/owner-review.ts` (B13) | serves the pre-Eclipse Owner; nothing names it | retire or re-aim with the product milestone (outside this milestone's paths) | later |
-| Codex launch (A29, C14) | hand-built; the allow rule exists in one worktree only | one launch command with the resume procedure and `brief:check` | R4 |
+| Codex launch (A29, C14) | hand-built; the allow rule exists in one worktree only | one launch command with the resume procedure and `brief:check` | R4: rounds 5, 5b and 5c |
 
 ### Machine and git
 
