@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # access-reason-cap-r01: activation
 
-- **As of:** `claude/busy-bartik-858366` at `312bd86`, 2026-10-04 21:36 +03:00
+- **As of:** claude/busy-bartik-858366 at `312bd86`, 2026-10-04 21:36 +03:00
 - **Previous resume point:** none
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` item 33 (the reason's length)
 
@@ -14,7 +14,7 @@ audit log stores at most 240 (`packages/api/src/audit/list.ts` (lines 72), the d
 
 ## Running now
 
-Nothing. **Paused by the user (2026-10-04, "بنأجلها").** The candidate is on `claude/busy-bartik-858366`:
+Nothing. **Paused by the user (2026-10-04, "بنأجلها").** The candidate is on claude/busy-bartik-858366:
 fix `dbc7431`, receipt `c7cd8cb` (the evidence receipt 20261004-221500, on that branch only),
 reproduced red and green on unit and integration. `verify:fast` fails only at `check:frontier`: the fix changes three
 files the pinned 2026-09-15 frontier snapshot protects. The user authorized a narrow recorded transition for exactly

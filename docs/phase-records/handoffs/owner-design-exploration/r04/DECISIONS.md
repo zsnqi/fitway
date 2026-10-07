@@ -417,8 +417,22 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     switches have done their work; the next build removes variants 1 and 2, row option 1 and the switches (MOT-19),
     keeping what the motion rounds made true for every variant (one frame clock, the narrow sheet's file line). The
     narrow-sheet review was stopped as moot: its open observations concern variant 2 only.
-
-## How this milestone's rounds run
+40. **Verification tooling before Settings, and `main` as the trunk** (the user, 2026-10-07, after the discussion of
+    Lauren Tan's talk on agent-friendly codebases; the four digests are in `D:/fitway-temp/verification-discussion-20261007/`):
+    - The whole coordinator line merges into `main`, which becomes the repository's truth for tools, policy and
+      finished code. The concept's research files come along as reference only (ADR-009 keeps Owner composition
+      vacant); the live Eclipse build stays on `owner-followup-r04-build` until the user approves it. The merge takes
+      main's 2026-09-24 removal of the retired external-worker section from `docs/WORKFLOW.md`, the later decision.
+      Coordinator: from then on `main` is fast-forwarded to the coordinator line whenever CI passes on it, at least at
+      every resume point.
+    - One tooling round runs before Settings, as its own milestone cut from the new `main`: a verification CLI built
+      on the existing probe kit and ui-forensics (it measures; acceptance thresholds and held-out checks stay in
+      `D:/fitway-grader`), a feature map of the Owner concept generated from its code and spec, a `verify-fitway`
+      skill that Claude and Codex both read, the brief fields for B8 and B9 (through agent-environment-r02's
+      evaluation loop), a preview that sends no-store, and one command that launches a Codex round.
+    - pstack's `create-verification-skill` and `maintain-verification-skill` (Lauren Tan, MIT) are installed
+      user-level, unmodified from `cursor/plugins` at `df58112`, and tried in that round; their `.cursor/skills/`
+      output goes to `.agents/skills/` and `.claude/skills/` instead.
 
 ## How this milestone's rounds run
 
