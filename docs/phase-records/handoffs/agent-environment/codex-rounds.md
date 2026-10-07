@@ -1,4 +1,4 @@
-# agent-environment-r01: Codex rounds as evaluations
+# agent-environment: Codex rounds as evaluations
 
 One entry per round: the brief, brief rows passed, held-out rows passed, and the failure cause. The
 held-out checks live outside the repository and never appear here or in a brief.
@@ -163,3 +163,17 @@ held-out checks live outside the repository and never appear here or in a brief.
   and K6, the arm without it misses K2, and it adds no held-out failure. The margin is one line and one sample, and
   the line's "length or size caps" clause was not exercised. The grader also found Y's README keeps more round
   labels in headings ("(Round 7 step 2/3)"), which K3's sample does not catch.
+
+## agent-environment-r03 round 2: `r03/briefs/round-2.md`, result `5848607` (level xhigh)
+
+- **Set-up:** the brief's commit `82143f13` over HEAD `1756dc7e`. Held-out rows H1-H12 (24 sub-rows) ran from a
+  coordinator script in a scratch clone of the result and of the coordinator's record cleanup on top of it (`1d4e99a`);
+  the Sonnet grader first launched stopped on the Claude usage limit before grading.
+- **Brief rows:** 7 of 7 (M1-M7). Confirmed: CI green on `5848607` and on `1d4e99a`; the scripts suite passes on the
+  committed, clean tree (653 tests). The round deleted 5,496 lines and added 894.
+- **Held-out rows:** 12 of 12 on behaviour. Three readings needed judgment: a `supersededBy` on a `DONE` record is
+  rejected by the schema with Ajv's generic "must NOT be valid" naming the milestone, not the field (a diagnostics
+  gap, not a wrong result); `fixtures.ts` keeps the old fields as test input; the README and the handoff template
+  name `Previous resume point` and `evidence.receiptTemplate` only to say they are optional, which M7 allows.
+- **Failure cause:** none in the code. Follow-up for a later round: report a misplaced `supersededBy` by the field's
+  name.

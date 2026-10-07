@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** `agent-environment-r03` at `58486075`, 2026-10-07 18:05 +03:00
+- **As of:** `agent-environment-r03` at `1d4e99a2`, 2026-10-07 15:45 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-16,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -14,7 +14,8 @@
 - Codex round 2 (records, xhigh, `docs/phase-records/handoffs/agent-environment/r03/briefs/round-2.md`) is committed at `58486075`, CI green: `SUPERSEDED` with
   `supersededBy`; no heartbeat, lease or packet pin is read; scope, baseCommit and the handoff live in the ledger and
   `taskClass` in the packet; one resume file per milestone; closing needs no receipt; closed records are checked for
-  shape only. It removed 4,602 lines.
+  shape only. It removed 4,602 lines. Graded 12 of 12 held-out rows; recorded in
+  `docs/phase-records/handoffs/agent-environment/codex-rounds.md`.
 - After it, the coordinator stripped the unread fields and the packet copies, closed agent-environment-r02 as
   `SUPERSEDED` by r03, and moved r03, r04 and access-reason-cap-r01 to stable resume files.
 - A CI probe (branch ci-probe-verify-fast, run 37613695315) ran `node scripts/verify.mjs fast` on windows-latest with
@@ -22,22 +23,22 @@
 
 ## Running now
 
-- A Sonnet grader is grading round 2 on held-out rows H1-H12 in a scratch clone (D:/fitway-temp/r03-r2-grade/);
-  save its final message as D:/fitway-temp/r03-r2-grade/REPORT.md.
+- Codex round 3 (xhigh) in this worktree, from `docs/phase-records/handoffs/agent-environment/r03/briefs/round-3.md`;
+  its run folder is D:/fitway-temp/codex-r03-round3/ (events.jsonl, last-message.md). Write nothing in this worktree
+  until it ends.
+- R3, the rules round, by the coordinator in the worktree D:/Projects/fitway-worktrees/agent-environment-r03-rules,
+  branch agent-environment-r03-rules (disjoint paths; merged into this branch after round 3).
 
 ## Next steps
 
-1. Record round 2 in `docs/phase-records/handoffs/agent-environment/codex-rounds.md`: brief rows, held-out rows,
-   failure cause. A held-out failure traced to the code gets a repair brief first.
-2. Codex round 3 (xhigh): CI runs the fast ladder, each check once; `check:frontier` and the Vitest provenance layer
-   go. Draft: D:/fitway-temp/codex-r03-round3/round-3.md; copy it into the briefs folder as round-3.md, set the
-   HEAD, run `pnpm brief:check`, commit, launch. Held-out rows: D:/fitway-grader/agent-environment/r03-round3-heldout.md.
-3. R3 (coordinator, in a second worktree while round 3 runs, disjoint paths): one home per rule in `AGENTS.md`,
-   `docs/WORKFLOW.md`, `docs/agent-context/WORKING_AGREEMENTS.md` and `CLAUDE.md`; conflicts C1-C14 and the stale text
-   of audit A; the verification rule becomes "the CI run on the pushed commit"; B1-B10 into
-   `docs/agent-context/briefs/codex.md`, G5 into the environment block; delete
-   `docs/agent-context/AGENTS_RESPONSIBILITY_MAP.md`. Then trim the user's machine-local memory to machine facts.
-4. R4, the verification path (r04 DECISIONS item 40), then R5, the gardener (DECISIONS item 16) and the closing review.
+1. When round 3 ends: grade it on D:/fitway-grader/agent-environment/r03-round3-heldout.md in a scratch clone, record
+   it in the rounds log, push, and check CI is green inside its timeout; then delete the probe branch
+   ci-probe-verify-fast on origin.
+2. Finish R3 (one home per rule in `AGENTS.md`, `docs/WORKFLOW.md`, `docs/agent-context/WORKING_AGREEMENTS.md`,
+   `CLAUDE.md` and `docs/agent-context/briefs/codex.md`; conflicts C1-C14 and the stale text of audit A; the
+   verification rule becomes the CI run on the pushed commit), merge it, then trim the user's machine-local memory to
+   machine facts.
+3. R4, the verification path (r04 DECISIONS item 40), then R5, the gardener (DECISIONS item 16) and the closing review.
 
 ## Waiting on the user
 
