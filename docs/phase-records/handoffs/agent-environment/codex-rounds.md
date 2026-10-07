@@ -240,6 +240,14 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the code (its own test), on a condition neither the brief nor a local run showed. Round 5c is the
   first focused repair (AGENTS.md).
 
+## agent-environment-r03 round 5c: `r03/briefs/round-5c.md`, result `b80c3ad` (level high)
+
+- **Set-up:** the first focused repair of CI's failure on `a40ba39` (AGENTS.md), launched with `pnpm codex:round`.
+- **Brief rows:** 1 of 1: the test file passes with TEMP in its 8.3 short form and its long form, from both shells
+  (drive D has no 8.3 names; the short form came from drive C), and the fast ladder passes.
+- **Held-out rows:** CI green on `76caf6c` (the result plus the coordinator's records).
+- **Failure cause:** none.
+
 ## Evaluation B8 and B9 (agent-environment-r03): card-1 and touch-1 rerun with and without the fields (level high)
 
 - **Set-up:** the Codex template with two outcome fields, "Intent" (B8: what the outcome is for; an allowance names
