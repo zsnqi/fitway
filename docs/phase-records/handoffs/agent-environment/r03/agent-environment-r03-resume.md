@@ -53,8 +53,6 @@
   user switches accounts and the run resumes on its thread (flags before `resume`).
 - `codex exec --approve-for-me` is allowed only from the coordinator session in the owner-design-exploration-r04
   worktree (a machine-local allow rule); launch with `-C` from there.
-- Until round 3, `scripts/check-frontier-preservation.test.ts` fails whenever the tree holds any uncommitted file:
-  judge the scripts suite on a committed, clean tree.
 - Branch owner-followup-r04-build still carries the old lease check and fails CI on a push after 2026-10-10: merge
   main into it before its next push.
 - Delete the probe branch ci-probe-verify-fast on origin once round 3's CI is green.

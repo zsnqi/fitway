@@ -55,16 +55,13 @@ Nothing.
   slashed branch name that is not a local branch on the runner fails `scripts/agent-environment/resume-point.mjs`, and
   `pnpm handoff:new` itself writes the branch backticked in "As of". Write both as plain text until
   agent-environment-r03 fixes it.
-- **Leases on CI:** the lease check reads the wall clock, so a branch carrying an older `PROJECT_STATE.yaml` fails CI
-  once a lease in it passes; merging main into that branch refreshes it. agent-environment-r03 scopes the check.
-- **The frontier test locally:** `scripts/check-frontier-preservation.test.ts` picks its dirty mode whenever
-  `git status` is not empty, so run the scripts suite on a committed, clean tree.
+- **The build branch's CI:** owner-followup-r04-build still carries the old wall-clock lease check, which main has
+  dropped (agent-environment-r03), and fails CI on a push after 2026-10-10: merge main into it before its next push.
 - main has no branch protection (a private repository on GitHub's free plan); nothing found deploys on a push to main.
   The main checkout D:/Projects/fitway keeps its local main at `bbb51709` and an uncommitted one-line AGENTS.md change
   from 2026-09-06; it was left untouched.
-- Artifacts are per account. Claude's auto-mode classifier refuses changes to the frontier preservation guard, refused
-  one artifact publish until the user approved it in chat, and refused a commit that moved milestone ownership until
-  the user granted the wider mandate (2026-10-07).
+- Artifacts are per account. Claude's auto-mode classifier refused one artifact publish until the user approved it in
+  chat, and a commit that moved milestone ownership until the user granted the wider mandate (2026-10-07).
 - Pinch, iOS long-press and a flick are proved on a device only by the user's informal try (DECISIONS 30); the motion's
   smoothness was measured headless only (V10).
 - «مساءً», «ظهرًا», «ليلًا» on the busiest-time card are a deliberate exception to DESIGN_GUIDE.md §9; carry it to the
