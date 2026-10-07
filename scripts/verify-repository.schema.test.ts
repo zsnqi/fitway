@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
+import { assertProjectStateInvariants } from "./verify-repository.mjs";
 
 const stateSchema = JSON.parse(
 	readFileSync(
@@ -428,6 +429,70 @@ describe("project-state schemas", () => {
 				previousReceiptSha256: null,
 			}),
 		).toBe(true);
+	});
+});
+
+describe("lease invariant", () => {
+	const gates = {
+		unit: "PASS",
+		integration: "PASS",
+		browser: "PASS",
+		accessibility: "PASS",
+		visual: "PASS",
+		independentReview: "PASS",
+	};
+	function ledgerWithLease(leaseExpiresAt: string) {
+		const baseline = {
+			status: "DONE",
+			dependencies: [],
+			stopReason: null,
+			integratedCommit: "abc1234",
+			gates,
+		};
+		const milestone = {
+			status: "IN_PROGRESS",
+			dependencies: [],
+			stopReason: null,
+			ownerSession: "claude-code-desktop:test",
+			branch: "lease-fixture",
+			worktree: "D:/fixture",
+			baseCommit: "abc1234",
+			lastHeartbeatAt: UPDATED_AT,
+			leaseExpiresAt,
+			handoff: "docs/fixture.md",
+			ownedPaths: ["docs/fixture/**"],
+			sharedLeases: [],
+			gates: { ...gates, unit: "PENDING" },
+			integratedCommit: null,
+		};
+		const state = {
+			updatedAt: UPDATED_AT,
+			baseline: {
+				status: "DONE",
+				integratedCommit: "abc1234",
+				validationRecord: "docs/validation.md",
+				independentVerification: "docs/verification.md",
+			},
+			milestones: { "lease-fixture": milestone },
+		};
+		return {
+			state,
+			milestones: {
+				"baseline-reconciliation-gate": baseline,
+				"lease-fixture": milestone,
+			},
+		};
+	}
+	it("accepts a lease that was current when the ledger was written, whatever the wall clock says", () => {
+		// The lease ends a day after the ledger's updatedAt and long before today: CI must still pass.
+		const { state, milestones } = ledgerWithLease("2026-09-16T14:35:00+03:00");
+		expect(() => assertProjectStateInvariants(state, milestones)).not.toThrow();
+	});
+	it("rejects a lease that had already expired when the ledger was written", () => {
+		const { state, milestones } = ledgerWithLease("2026-09-14T14:35:00+03:00");
+		expect(() => assertProjectStateInvariants(state, milestones)).toThrow(
+			/expired before the ledger's updatedAt/,
+		);
 	});
 });
 

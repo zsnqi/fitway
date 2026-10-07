@@ -135,6 +135,7 @@ const tokens = [
 	["P2", "origin/feature/remote", false],
 	["P2", "remotes/origin/feature/remote", false],
 	["P2", "refs/remotes/origin/feature/remote", false],
+	["P2", "feature/remote", false],
 	["P2", "refs/heads/feature/build", false],
 	["P2", "feature/unknown", true],
 	["P2", "feature/command-only", true],
@@ -158,6 +159,10 @@ const tokens = [
 	["P5", "https://example.invalid/file.md", false],
 	["P5", "docs/<run>/missing.md", false],
 	["P5", "D:/fitway-temp/missing.md", false],
+	["P5", "D:/Projects/fitway-worktrees/missing-worktree", false],
+	["P5", "C:/Users/someone/missing.md", false],
+	["P5", "//server/share/missing.md", false],
+	["P5", "~/missing.md", false],
 	["P5", "pnpm biome ci apps/packages/scripts", false],
 	["P5", "pwsh scripts/missing.ps1", false],
 	["P5", "1.0.0-beta.1", false],
@@ -182,9 +187,9 @@ describe("P5: shared token decisions through both validators", () => {
 		"docs/missing-folder",
 		"docs/missing-folder/",
 		"docs/missing-folder/**/*.md",
-		path.join(repository, "scripts/missing-folder").replaceAll("\\", "/"),
-		`${path.join(repository, "scripts/missing-folder").replaceAll("\\", "/")}/`,
-		`${path.join(repository, "scripts/missing-folder").replaceAll("\\", "/")}/**/*.md`,
+		"scripts/missing-folder",
+		"scripts/missing-folder/",
+		"scripts/missing-folder/**/*.md",
 	])("Q1: both validators reject missing folder %s", async (token) => {
 		expect((await check(token)).ok).toBe(false);
 		await expect(validate(token)).rejects.toThrow("missing-folder");
@@ -240,12 +245,12 @@ describe("P5: shared token decisions through both validators", () => {
 	])("P4: rejects %s with root guidance and one tracked suffix", async (token, suggestion) => {
 		const result = await check(token);
 		const message = result.problems[0]?.message;
-		expect(message).toContain("repository root or as absolute paths");
+		expect(message).toContain("written from the repository root");
 		expect(message).toContain(
 			`tracked suffix match: ${path.resolve(worktree, suggestion)}`,
 		);
 		await expect(validate(token)).rejects.toThrow(
-			"repository root or as absolute paths",
+			"written from the repository root",
 		);
 		await expect(validate(token)).rejects.toThrow(
 			`tracked suffix match: ${path.resolve(worktree, suggestion)}`,
@@ -262,15 +267,15 @@ describe("P5: shared token decisions through both validators", () => {
 		);
 		await expect(validate(token)).rejects.not.toThrow("tracked suffix match:");
 	});
-	it("P5: agrees on existing and missing absolute paths", async () => {
+	it("P5: leaves machine-local absolute paths unjudged, existing or missing", async () => {
 		const existing = script.replaceAll("\\", "/");
 		const missing = path
 			.join(repository, "scripts/agent-environment/missing.md")
 			.replaceAll("\\", "/");
 		expect((await check(existing)).ok).toBe(true);
 		await expect(validate(existing)).resolves.toBe(true);
-		expect((await check(missing)).ok).toBe(false);
-		await expect(validate(missing)).rejects.toThrow("missing.md");
+		expect((await check(missing)).ok).toBe(true);
+		await expect(validate(missing)).resolves.toBe(true);
 	});
 	it("P1/P2: Node CLI resolves refs in the named worktree from either repository", () => {
 		const briefPath = path.join(foreignRepository, "cli.md");

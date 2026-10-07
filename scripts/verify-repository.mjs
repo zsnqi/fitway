@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
@@ -112,7 +113,7 @@ function assertAcyclicMilestones(milestones) {
 	for (const id of Object.keys(milestones)) visit(id);
 }
 
-function assertProjectStateInvariants(state, milestones) {
+export function assertProjectStateInvariants(state, milestones) {
 	const baselineMilestone = milestones["baseline-reconciliation-gate"];
 	if (!baselineMilestone) {
 		fail(
@@ -208,8 +209,13 @@ function assertProjectStateInvariants(state, milestones) {
 			if (milestone.ownedPaths.length === 0) {
 				fail(`${id} is ${milestone.status} without owned paths`);
 			}
-			if (new Date(milestone.leaseExpiresAt) <= new Date()) {
-				fail(`${id} has an expired lease at the current wall-clock time`);
+			// A lease is judged against the ledger's own updatedAt, never the wall clock, so a commit's result does not
+			// change with the day CI happens to run it. Whether a lease has run out by now is a question for the
+			// coordinator at startup, not a CI failure.
+			if (new Date(milestone.leaseExpiresAt) <= new Date(state.updatedAt)) {
+				fail(
+					`${id} has a lease that expired before the ledger's updatedAt (${state.updatedAt})`,
+				);
 			}
 			for (const [value, assignments, label] of [
 				[milestone.branch, assignedBranches, "branch"],
@@ -449,7 +455,12 @@ async function main() {
 	);
 }
 
-main().catch((error) => {
-	console.error(`FAILED_VALIDATION: ${error.message}`);
-	process.exitCode = 1;
-});
+if (
+	process.argv[1] &&
+	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+	main().catch((error) => {
+		console.error(`FAILED_VALIDATION: ${error.message}`);
+		process.exitCode = 1;
+	});
+}

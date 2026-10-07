@@ -22,10 +22,14 @@ export function referenceTarget(file) {
 
 function pathReference(value, { allowBare = false } = {}) {
 	const normalized = value.trim().replaceAll("\\", "/");
+	// Machine-local absolute paths (a drive letter, a UNC share or a home folder) are not judged: they exist on one
+	// machine only, and these files are read on others (CI, cloud sessions). Repository paths are written from the root.
 	if (
 		/<[^>]*>/.test(normalized) ||
 		/^v?\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?$/.test(normalized) ||
-		/^D:\/fitway-temp(?:\/|$)/i.test(normalized) ||
+		/^[a-z]:\//i.test(normalized) ||
+		/^\/\/[^/]/.test(normalized) ||
+		/^~\//.test(normalized) ||
 		/^(?:pnpm|npm|node|git|npx|powershell|pwsh)\s/i.test(normalized) ||
 		/^[a-z][a-z\d+.-]*:\/\//i.test(normalized) ||
 		/^@[^@/\s]+\/[^@/\s]+(?:@[^/\r\n]+)?$/.test(normalized)
@@ -69,6 +73,8 @@ export function createPathReferenceResolver(repositoryRoot, git = readGit) {
 				ref,
 				ref.slice("refs/".length),
 				ref.replace(/^refs\/(?:heads|remotes)\//, ""),
+				// A remote-tracking branch also by its plain name: CI checks out one branch and fetches the rest as remotes.
+				ref.replace(/^refs\/remotes\/[^/]+\//, ""),
 			]),
 		);
 		return branches.has(candidate.file) ? null : candidate;
@@ -95,7 +101,7 @@ export function createPathReferenceResolver(repositoryRoot, git = readGit) {
 			if (matches.length === 1)
 				suggestion = `; tracked suffix match: ${path.resolve(repositoryRoot, matches[0])}`;
 		}
-		return `; paths must be written from the repository root or as absolute paths${suggestion}`;
+		return `; repository paths are written from the repository root${suggestion}`;
 	}
 	return { reference, missingPathHint };
 }
