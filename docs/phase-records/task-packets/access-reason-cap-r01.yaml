@@ -62,7 +62,7 @@ verification:
   orderedGates:
     - Validate the READY packet with context:show.
     - Write the failing reproduction test, then the fix.
-    - Run the touched packages' tests through the absolute-Node authoritative commands of docs/WORKFLOW.md; git status unchanged by the runs.
+    - Run the touched packages' tests with the ladder of docs/WORKFLOW.md and push; CI is green on the pushed commit, and git status is unchanged by the runs.
     - Independent verification against this packet's acceptance criteria before integration.
   independentReviewRequired: true
 evidence:

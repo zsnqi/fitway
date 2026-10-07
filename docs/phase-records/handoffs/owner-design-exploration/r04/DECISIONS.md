@@ -444,30 +444,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 3. **Codex** is GPT-6.1 Sol at the level the task calls for (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation";
    Eclipse defects are `high`), run by the coordinator with `codex exec --approve-for-me`
    (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
-   briefs follow these rules:
-   - B1. Name every supported way to open and run the artifact (HTTP, `file://`, sizes, reduced motion) and which
-     ones the harness checks.
-   - B2. Before requiring equality to a baseline, check the baseline does not carry the defect being removed.
-   - B3. When an outcome is unmet, do not work around it: measure the rest, then stop and report.
-   - B4. State the goal, the cause and the outcomes; leave the approach open.
-   - B5. Never put the verifier's probes, thresholds or held-out checks in a brief.
-   - B6. One change per round, aimed at a cause.
-   - B7. Before requiring an outcome under any condition, check the baseline meets it there; a condition where it
-     fails is pre-existing and out of scope, required "unchanged from the baseline".
-   - B8. Write each measurable outcome's intent beside it, so a literal text that contradicts the purpose shows,
-     and check that every outcome is literally reachable from the baseline; an allowance ("may trail") states its
-     bound. (The user, 2026-10-04: GPT-6.1 Sol follows a brief to the letter; touch-1's L3 and T2.)
-   - B9. An outcome about how a value fits names the widest value it can take, not only the current one
-     (coordinator, 2026-10-04; card-1's L3).
-   - B10. Before launch, check that every file, section and row the brief names exists at the named HEAD
-     (coordinator, 2026-10-04; activity-followup attempt 1 named a missing "§8 Q-PCK").
+   briefs follow the brief rules B1-B10 in the checklist of `docs/agent-context/briefs/codex.md`.
 4. **Verifiers** follow these rules:
    - G1. Keep cap checks at least 30 ms from the cap (50, 150, 250 and 600 ms).
    - G2. Detect a removed pre-intro frame by holding fonts until first paint + 50 ms and + 100 ms.
    - G3. Run load checks under `no-store` and under no cache header.
    - G4. Every movement check runs until at least 500 ms after `endedAt`.
-   - G5. A verifier writes only in its own temp folder; afterwards the coordinator checks `git status` in every
-     worktree involved.
 5. **Claude Design** is paused (2026-10-02). It stays available for open visual questions; its output is reference
    until built in Eclipse's files.
 6. **The remaining Owner screens, one pass each** (the user, 2026-10-03): Activity log, Access, Settings and
@@ -493,8 +475,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    - **Decisions arrived after their brief.** A decision made while a round ran (item 26 for the computer) produced a
      conflict the next review had to find. The questions are settled first; a late decision waits for the next round.
    - **Briefs were read literally.** Most Codex failures traced to the brief (`codex-rounds.md`); B8 and B9 apply.
-   - **Every review opened a new round.** Each review's small findings became the next round. From now on only high
-     and medium findings, or what the user sees, open a round; low findings wait for the screen's last round.
+   - **Every review opened a new round.** Each review's small findings became the next round; item 11 now settles
+     what happens to a review's findings.
    - **Questions the rules already answer** go to no one: the coordinator decides and reports in a line.
 8. **A skeleton before every new screen** (the user, 2026-10-05, after Access's skeleton): after the questions and
    before the one-pass build, a designer (xhigh) shows the screen's arrangement in plain blocks (no colour, no
@@ -519,12 +501,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       verifier. Images and videos are what fill a designer's context.
     - **A large round is split in two:** the foundation first (the shared parts and the first moments or
       components), then a fresh designer for the per-page work on top of its commit.
-    - The usage limit does not shape the rounds: the user switches accounts when one runs out (the user, 2026-10-05).
 11. **The user sees a round only when it is finished** (the user, 2026-10-05, after the motion round came back with
     the export's empty-panel finding, O1, for the user to decide: «ليه ما تصلحها قبل ما ترجع لي»; and: «لو مر عليها
     مراجع وشاف فيه اخطاء ف المفروض تتصلح»). Every error a review finds, low ones included, and every taste finding the
     coordinator would recommend fixing anyway, is fixed (a fresh designer for taste, Codex or a fixer for the rest)
-    and checked before the user sees the round; this replaces item 7's "low findings wait for the screen's last
-    round" for new rounds; the user gets the finished result, the live site
+    and checked before the user sees the round; the user gets the finished result, the live site
     (`eclipse-build` preview on 3174) and the published link, with motion shown as frame strips. Only real choices
     go to the user, in plain words.

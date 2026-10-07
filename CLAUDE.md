@@ -52,7 +52,7 @@ Each definition fixes one model and one effort level, and the coordinator picks 
 | Definition | Model | Effort | Use |
 | --- | --- | --- | --- |
 | `owner-direction-designer` | Opus | `xhigh` | new visual design and taste judgment |
-| `owner-direction-designer-max` | Opus | `max` | the user's trial (2026-10-03): a whole Owner screen in one pass |
+| `owner-direction-designer-max` | Opus | `max` | a whole Owner screen in one pass |
 | `owner-direction-builder` | Opus | `high` | implementing an agreed, precisely specified decision |
 | `owner-direction-verifier` | Opus | `xhigh` | independent verification, only where evidence shows `high` misses something |
 | `owner-direction-verifier-high` | Opus | `high` | independent verification (the default) |
@@ -62,7 +62,7 @@ Each definition fixes one model and one effort level, and the coordinator picks 
 | `sonnet-scout` | Sonnet | `medium` | one quick read-only lookup |
 
 Effort decides cost more than the model does. A subagent whose definition sets no `effort:` (the built-in
-`general-purpose`, `Explore` and `Plan`) inherits this session's effort, xhigh, so launch a definition instead.
+`general-purpose`, `Explore` and `Plan`) inherits this session's effort, so launch a definition instead.
 Sonnet 5.5 at `medium` or `high` uses far less than Opus; at `xhigh` or `max` it thinks longer and uses as much or
 more. Cache reads cost the same on both models, so keep agent loops short. Run each definition on its own model.
 
