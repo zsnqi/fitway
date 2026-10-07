@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** `agent-environment-r03` at `bbafa712`, 2026-10-07 16:18 +03:00
+- **As of:** `agent-environment-r03` at `59c79d4b`, 2026-10-07 16:49 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-16,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -43,10 +43,12 @@ Nothing.
 
 ## Waiting on the user
 
-- Run the cleanup script: powershell -ExecutionPolicy Bypass -File D:\fitway-temp\env-cleanup-20261007.ps1 (a dry run;
-  add -Apply to delete; -IncludeHeldoutRuns also frees 17.6 GB of closed r01 evaluation runs).
-- Keep or delete: D:/fitway-scratch (17.7 GB), D:/codex-worktrees-archive (16.7 GB), C:/Users/Pc Force/.codex/sessions
-  (7 GB on the full drive C).
+- The user approved both cleanups (2026-10-07) and runs them; each is a dry run without -Apply:
+  powershell -ExecutionPolicy Bypass -File D:\fitway-temp\env-cleanup-20261007.ps1 -Apply -IncludeHeldoutRuns -IncludeR01Worktree
+  powershell -ExecutionPolicy Bypass -File D:\fitway-temp\env-cleanup-folders-20261007.ps1 -Apply
+  The second deletes D:/fitway-scratch, D:/codex-worktrees-archive (14 archived worktrees, then git prune) and Codex
+  session logs older than two days; its log is D:/fitway-temp/env-cleanup-folders-20261007.log. Next session: check
+  the freed space and `git worktree list`.
 
 ## Known risks
 
