@@ -31,9 +31,13 @@ Two Codex rounds, launched from the previous session's background shells. They s
 threads and their uncommitted work survive.
 - Round 6 (the verification path's corrections, xhigh) in the r03 worktree, brief r03/briefs/round-6.md, thread
   `01a11777-f85f-7160-8ec9-4c76347ee877`, run folder D:/fitway-temp/r03-round6/. Held-out rows T1-T10.
-- Round 7 (the gardener, xhigh) in D:/Projects/fitway-worktrees/agent-environment-r03-gardener, branch
-  agent-environment-r03-gardener (paths disjoint from round 6), thread `01a1177a-d9ab-77d3-8898-694965893eb6`, run
-  folder D:/fitway-temp/r03-round7/. Held-out rows U1-U8.
+- Round 7 (the gardener) has landed: `a36e97fe` on agent-environment-r03-gardener (pushed), in
+  D:/Projects/fitway-worktrees/agent-environment-r03-gardener; G1-G5 pass by Codex's report (D:/fitway-temp/r03-round7/REPORT.md).
+  Its survey of this machine (D:/fitway-temp/gardener-r7-20261007/survey-final/REPORT.md): 429 temp folders no open
+  record names, 401 deletion proposals (18.92 GB, never run; review the list before the user sees it: it may name
+  folders still in use, such as D:/fitway-temp/claude), 16 rule lines kept twice, 4 dead-path mentions, 3 checks
+  outside the fast ladder. Its rolling report (.agents/skills/gardener/REPORT.md) marks the first pass blocked on the
+  coordinator's housekeeping and the ledger line. Held-out rows U1-U8 are not yet graded.
 - Is a run alive? A `codex.exe` process whose command line holds `approve-for-me` and the run's worktree is running;
   otherwise the newest events file in its run folder ends with `turn.completed` (done: last-message.md is the report)
   or `turn.failed` (stopped: on a usage limit, tell the user to switch accounts first). Resume a stopped run with
