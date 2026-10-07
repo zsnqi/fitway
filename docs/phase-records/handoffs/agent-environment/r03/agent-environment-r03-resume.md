@@ -26,8 +26,12 @@
 
 ## Running now
 
-Nothing.
-
+- Codex round 6 (the verification path's corrections, xhigh) in the r03 worktree, brief r03/briefs/round-6.md,
+  thread `01a11777-f85f-7160-8ec9-4c76347ee877`, run folder D:/fitway-temp/r03-round6/.
+- Codex round 7 (the gardener, xhigh) in its own worktree D:/Projects/fitway-worktrees/agent-environment-r03-gardener,
+  branch agent-environment-r03-gardener (merged into agent-environment-r03 when it lands; paths disjoint from round 6),
+  thread `01a1177a-d9ab-77d3-8898-694965893eb6`, run folder D:/fitway-temp/r03-round7/.
+- If a run stops on a usage limit: tell the user, then `pnpm codex:round resume <run folder> --message "<text>"`.
 ## Next steps
 
 1. Round 6, the verification path's corrections (draft ready): a pass only when the frame shows the asked state,
