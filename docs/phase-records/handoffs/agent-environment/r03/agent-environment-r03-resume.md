@@ -51,16 +51,21 @@ threads and their uncommitted work survive.
    and point the machine-local launch configuration (ports 3174 and 3180) at the no-store preview; drop its dead
    entries (gap-mock, lane-before: D:/fitway-scratch is gone).
 4. The user answered (2026-10-07): fix the tuner's «الإضاءة» toggle (an r04 Codex fix on the build branch: the toggle
-   inside the screen on the phone in English, by tap and keyboard); and yes to a weekly gardener run. Proposed to the
-   user: Codex runs the gardener once a week from a Windows scheduled task on this machine (a missed run starts at the
-   next boot), writes one report and at most one proposed change on its own branch, deletes nothing and pushes
-   nothing; the coordinator reviews it at the next session. Day and time are the user's to name.
+   inside the screen on the phone in English, by tap and keyboard); and a weekly gardener run, set up with the user:
+   Claude runs it (the user's choice over Codex), every Friday at 14:00, from a Windows scheduled task on this machine
+   (a missed run starts at the next boot); it writes one report and at most one proposed change on its own branch,
+   deletes nothing (folders go into a script the user runs) and pushes nothing; the coordinator reviews it at the next
+   session. It also runs when a milestone closes and when a review repeats a known finding class. Creating the
+   scheduled task is the user's approval to give at setup.
 5. The user asked for an interactive web page in the new session (2026-10-07): the environment in simple Arabic, how
    it is now and the shape it should reach, with diagrams, animation and examples, not text alone; its Arabic follows
    ASD-STE100 at about 80% (short sentences, one idea each, active voice, one word for one thing); built by an Opus 5.5
-   designer subagent at the effort the coordinator judges, published as a private claude.ai artifact like the
-   discussion page (https://claude.ai/artifact/88rd7XwoWHvnYhqbtxA1dm). The coordinator gathers the facts first (the
-   audit, the rounds, the tools, the gardener) and gives the designer only those.
+   designer subagent at xhigh, published as a new private claude.ai artifact (not the discussion page). The coordinator
+   gathers the facts first (the audit, the rounds, the tools, the gardener) and gives the designer only those. The user
+   approved five sections: the environment today as a map whose parts open on a click; before and after in numbers;
+   a round animated from brief to main with a real example; the gardener, what it checks and never touches; the
+   target shape on the trust ladder (impossible, then a check, then a written rule, then human review), with where each
+   part of FITWAY sits. Start it in the new session, not before.
 6. Follow-ups for a Codex round: name the field when `supersededBy` is misplaced; strip a standalone `--` in
    `scripts/run-vitest.mjs`; remove the routes' compatibility mode and the four unused task classes; separate the
    brief checker's rule ids from B1-B10 (audit A, C13); read the Impeccable path in `scripts/check-design-context.mjs`
