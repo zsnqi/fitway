@@ -478,3 +478,27 @@ held-out checks live outside the repository and never appear here or in a brief.
     a shared file).
 - **Failure cause:** the brief. R7 said an overlap passes "unless a `sharedLeases` entry names that path" without
   saying a lease has one holder, and it left the scope-line rule to the round. Repair attempt 1 is round 10b.
+
+## agent-environment-r03 round 12: `r03/briefs/round-12.md`, result `db995501` (level high)
+
+- **Set-up:** the brief's commit `9f28df01` over HEAD `70bc51c1`, on branch `agent-environment-r03-gardener`, launched
+  with rounds 10, 11 and 13. Held-out rows S1-S5 by a Sonnet grader in a disposable worktree at the result, a scratch
+  clone with a planted 10-day-old worktree, scratch temp roots and planted folders. Before launch the coordinator
+  changed G2 to keep the ledger's `gardener` outcome values, whose schema was round 10's scope.
+- **Brief rows, as Codex graded them:** 5 of 5 (G1-G5); 35 gardener tests; ladder passed.
+- **Held-out rows:** 4 of 5 pass, 1 partial.
+  - S2: the planted worktree appears under "Worktrees awaiting review" with path, branch, date and status, is not
+    proposed, the console counts it, and the implied ledger entry passes `check:repository`; with the other findings
+    neutralised the outcome is `clean`.
+  - S3: the weekly path is a literal only in `config.json`; `FITWAY_GARDENER_WORKTREE` relocates it and the relocated
+    worktree is no longer proposed; this machine's `gardener` worktree is not proposed. S4: the skill's closing order
+    matches `docs/WORKFLOW.md`. S5: diff in scope, 35 tests with TEMP on D: and in 8.3 form, round 8b's Z4, Z5, Z7 and
+    Z8 re-run; reverting `cleanup.mjs` fails the G1 test.
+  - S1 is partial: a `gardener`-entry edit or removal leaves the script runnable and a report edit is refused, but an
+    edited or added milestone is refused naming `PROJECT_STATE.yaml`, not the milestone.
+- **Also found:** `updatedAt` is outside the exemption, and `check:repository` fails a `gardener` date after it, so a
+  real entry written after a later pass also bumps `updatedAt` and voids the old script; the workflow's rerun of the
+  final survey still hands the user a working one. At `70bc51c1` the resume point's bare `FACTS.md` beside "briefs"
+  read as an open brief and blocked every survey; the coordinator line no longer has it. `docs/WORKFLOW.md` still
+  names the weekly path in prose.
+- **Failure cause:** none in the rows but S1's wording ("the record" read as the file).
