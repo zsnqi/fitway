@@ -355,3 +355,27 @@ checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the brief. It set no limit on the page's motion cost with the tuner on, and T3 (no control under
   the toggle at any scroll position) left a moving toggle as the literal reading. Repair attempt 1:
   `codex-tuner-reach-fix-1.md` (F1 cost, F2 the jump), from `1d3539a3`.
+
+## tuner-reach fix-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-tuner-reach-fix-1.md`, result `ec314ce2` on `owner-followup-r04-build`, level `high`
+
+- **Run:** stopped at 16:40 on the old Codex account's limit; resumed on its thread on the new account with its HTTP
+  checks moved to 3177 (tuner-reach's own preview still held 3176); stopped twice more on "Selected model is at
+  capacity", the second time after its last measurement, so its verdicts come from its event stream.
+- **Brief rows, as Codex graded them:** F2, T1-T3 and L1-L5 PASS (256 HTTP and 256 `file://` contract checks, 120
+  pixel comparisons); F1 FAIL: 4 of 12 groups outside the baseline's three-run spread, by p95 16.8 against 16.7 ms
+  and one 50 ms frame in one of three intro runs, with box reads equal to the baseline.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/tuner-reach/ROWS.md`, by the coordinator, on a `git archive` of
+  `ec314ce2`. 126 of 136 pass in `grade.cjs`; H11 and H13 pass; H10 looked at (390 Arabic, closed and open: the
+  dashed toggle stays put, the panel opens below it, neutral greys).
+  - H12 and H6 now pass at every size and language (the toggle's box is the same before, while and after opening).
+  - H11: a one-second sweep over Daily's chart reads 100 boxes, as the baseline (tuner-reach read about 11,300); the
+    intro reads about 25 more once; frames over 20 ms within the baseline's run-to-run range; the phone 0.
+  - H3 is partial: the 10 failures (390, 360, 412, 320 and 600, both languages, `#menu-btn` and `#ops-btn` at scroll
+    0) came from a run with four other jobs on the machine. Unloaded, after a jump to the top from a scrolled page
+    the toggle covers the header buttons for two frames in 4 of 10 tries, against 0 at tuner-reach and the baseline:
+    the repair moves the toggle when an IntersectionObserver reports a control under it, one frame or more after
+    paint, where tuner-reach placed it in the scroll handler.
+- **Failure cause:** F1's "within the run-to-run spread" was too strict for frame times quantised at 16.7 ms (the
+  brief's fault); H3's transient is the price of observing instead of measuring on scroll. The coordinator accepts
+  the result without a second repair: a flash of one or two frames over the header on a jump to the top, on a
+  concept-only tool.
