@@ -32,9 +32,9 @@
   `docs/phase-records/handoffs/agent-environment/r03/briefs/round-8b.md`), level high; run folder
   D:/fitway-temp/r03-round8b; held-out rows r03-round8b-heldout.md. Round 8 (`3003f7ff`) is graded 9 of 11 in
   codex-rounds.md.
-- Round 9 (verify-fitway) landed as `f32d4cca` on agent-environment-r03 (Codex: 5 of 5). Its grader runs on rows
-  Y2-Y6 (D:/fitway-temp/r03-r9-grade/, worktree grade-r9); Y1 (a cold agent driving by keyboard) runs after it,
-  because both need ports 3176-3177.
+- Round 9 (verify-fitway) is graded 6 of 6 and merged (`f32d4cca`, codex-rounds.md). Its recipe additions for the
+  build are D:/fitway-temp/r03-round9/verification-recipes.json; they go on owner-followup-r04-build with Next
+  steps 4.
 - A stopped run resumes on its thread (`pnpm codex:round resume <run folder>`). Disposable worktrees grade-r8-g,
   grade-r8-u1a, grade-r8-u1b and grade-r9 go with the closing cleanup.
 
@@ -59,7 +59,9 @@
    brief checker's rule ids from B1-B10; read the Impeccable path in `scripts/check-design-context.mjs` from the
    environment; a check that open milestones' owned paths do not overlap (A7); a lint for the concept's CSS
    (`:hover` outside a hover media query, `transition: all`, `ease-in`, `outline: none` with no focus style in its
-   place), from the good-css review (`docs/phase-records/handoffs/owner-design-exploration/r04/good-css-review.md`).
+   place), from the good-css review (`docs/phase-records/handoffs/owner-design-exploration/r04/good-css-review.md`);
+   verify-fitway's round 9 findings (codex-rounds.md, round 9 "Also found"); `check:verification-map` reports
+   "0 recipe files" as a pass on main until the build's recipes land there.
 6. Remove the grading worktrees grade-r6, grade-r7-u1a, grade-r7-u1b and grade-r7-g (disposable, detached), and the
    evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then the
    closing review and the milestone's closure. The Owner screens resume after.

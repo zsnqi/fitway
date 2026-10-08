@@ -365,3 +365,25 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the brief and the tests. H2 (written by the coordinator) made anything the rolling report cites
   safe, without separating its evidence from its proposals; the brief let two rounds share a port; the H6 test
   compares paths as text. Round 8b takes these and the findings above.
+
+## agent-environment-r03 round 9: `r03/briefs/round-9.md`, result `f32d4cca` (level xhigh)
+
+- **Set-up:** the brief's commit `aa75a137` over HEAD `d05b9ec9`, alongside round 8. Held-out rows Y1-Y6: Y2-Y6 by a
+  Sonnet grader in a disposable worktree with planted copies of the concept; Y1 by a fresh Sonnet agent that read only
+  the skill, on two copies of the concept (one with the PIN opener taken out of the tab order); CI by the coordinator.
+- **Brief rows, as Codex graded them:** 5 of 5 (K1-K5). CI green on `f32d4cca`; its 33 contract tests run in the
+  ladder's verification-contracts step, which already existed.
+- **Held-out rows:** 6 of 6 pass.
+  - Y1: the PIN dialog opens in Arabic at the tablet width by keyboard in 12 Tabs and Enter, focus ending in the new
+    PIN field (the coordinator looked at the frame); the planted copy is reported unreachable by keyboard, naming the
+    body where the Tab cycle repeated.
+  - Y2: an `aria-haspopup="menu"` opener with no target fails drift by file and line, `"false"` does not; the build
+    passes with the round's recipe additions, and the specimens are covered by recipe entries, not by a rule that
+    also hides a live opener. Negative control: without the `aria-haspopup` discovery, 6 of 33 tests fail.
+  - Y3: the doctor's repair command drops the stale recipes and adds marked drafts; drift then names only the drafts;
+    the concept is unchanged. Y4, Y5 and Y6 pass.
+- **Also found:** commands that need dependencies still fail with a raw module error in a clone without node_modules
+  (only `help` names the install step); the doctor prints its problem block twice; a keyboard-unreachable item is
+  counted as a problem, not as "not reachable", in the drive summary; the summary's proof field does not repeat the
+  dialog-open proof; every focus step carries the activation's label.
+- **Failure cause:** none in the rows. The findings above go to the follow-up list.
