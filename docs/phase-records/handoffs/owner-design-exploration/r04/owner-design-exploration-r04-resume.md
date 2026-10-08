@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** codex/owner-redesign-r04 at `94a556f7`, 2026-10-08 16:30 +03:00
+- **As of:** codex/owner-redesign-r04 at `090a272b`, 2026-10-08 18:25 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (item 40), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 12-16, the environment phase), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -43,14 +43,15 @@
    DECISIONS 30), redrawn by a designer and shown before it is built; fix-3's open findings
    (`D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`); the waiting lows.
 4. **Access's last round:** the items in Next steps 4 of the 2026-10-05 resume point (N1-N7, the Retry ring, OWN-C9,
-   the rail's focus ring); and the tuner toggle above, if the user wants it handled.
+   the rail's focus ring).
 5. **After each resume point,** fast-forward main to this line once CI passes on it (DECISIONS 40), and update the
    discussion page.
 6. **CSS findings from the good-css review** (2026-10-08, `docs/phase-records/handoffs/owner-design-exploration/r04/good-css-review.md`,
    counts re-checked by the coordinator): 5 of the concept's 77 `:hover` rules sit behind a hover media query, so hover
    sticks after a tap on the phone and tablet (gate with `(hover: hover)` only, not `pointer: fine`, because of the
    tablet band); 12 `outline: none` rules to check against a visible focus; no `forced-colors` support; no
-   `viewport-fit=cover`, so the safe-area insets are inert. A Codex fix round on the build. With it, DECISIONS 41
+   `viewport-fit=cover`, so the safe-area insets are inert. A Codex fix round on the build, proved with `pnpm check:concept-css -- <the build's eclipse folder>` (round 13 of
+   the environment phase; 87 findings at `1d3539a3`). With it, DECISIONS 41
    (the user said yes, 2026-10-08): press feedback on every pressable control (its form drawn by a designer first)
    and field text of at least 16 px. The
    skill is not installed; it goes in slash-only, as a reference, at the production (apps/web) stage (the user,
@@ -62,9 +63,9 @@ Nothing.
 
 ## Known risks
 
-- **The build's local commits:** owner-followup-r04-build took main (`cea05c06`, CI green, pushed at `ad8f80c2`);
-  the tuner round and its repair brief (`f3c19d15`, `1305c0ee`, `1d3539a3`) stay local until the repair is graded
-  (agent-environment-r03 resume point, Next steps 3).
+- **The build** is pushed at `ec314ce2` (2026-10-08): the tuner's repair, graded and accepted; its one open finding is a
+  flash of one or two frames where the closed toggle covers the phone header's buttons after a jump to the top
+  (`codex-rounds.md`, tuner-reach fix-1).
 - main has no branch protection (a private repository on GitHub's free plan); nothing found deploys on a push to main.
   The main checkout D:/Projects/fitway keeps its local main at `bbb51709` and an uncommitted one-line AGENTS.md change
   from 2026-09-06; it was left untouched.
@@ -81,9 +82,8 @@ Nothing.
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `94a556f7`).
-- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `1d3539a3`
-  plus the repair's commit, if it finished.
+  commit that adds this text (parent `090a272b`).
+- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `ec314ce2`.
 - The environment phase: `docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md`.
 - Motion: designer `D:/fitway-temp/owner-r04-motion/`, review `D:/fitway-temp/owner-r04-motion-review/`, research
   `D:/fitway-temp/owner-r04-motion-research/REPORT.md`.
