@@ -76,7 +76,7 @@ try {
 	} else {
 		$survey = "$run/survey".Replace('\', '/')
 		$prompt = @"
-This is FITWAY's scheduled weekly gardener pass (docs/phase-records/handoffs/agent-environment/DECISIONS.md items 16 and 19). Read .agents/skills/gardener/SKILL.md in this checkout and run one pass as it says, with the survey's output folder $survey. The user's rules for this run: delete nothing (no folder, branch, worktree or registration), push nothing, never edit PROJECT_STATE.yaml or PROJECT_STATE_HISTORY.yaml, and never run a generated cleanup script. Commit the rolling report and at most one bounded change on the current branch $branch, nothing else. End with one line: OUTCOME: clean, changed or blocked.
+This is FITWAY's scheduled weekly gardener pass (docs/phase-records/handoffs/agent-environment/DECISIONS.md items 16 and 19). Read .agents/skills/gardener/SKILL.md in this checkout and run one pass as it says, with the survey's output folder $survey. The user's rules for this run: delete nothing (no folder, branch, worktree or registration), push nothing, never edit PROJECT_STATE.yaml or PROJECT_STATE_HISTORY.yaml, and never run a generated cleanup script. Commit the rolling report and at most one bounded change on the current branch $branch, nothing else. Nobody will answer a question during this run: work through every step of the skill without stopping to check in, add nothing the skill does not ask for (no extra tests or documents), and verify with the project's real checks. End with one line: OUTCOME: clean, changed or blocked.
 "@
 		$effort = 'high'
 	}

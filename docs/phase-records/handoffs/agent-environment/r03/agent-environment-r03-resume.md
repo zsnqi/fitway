@@ -54,7 +54,9 @@
 5. Follow-ups for a Codex round: name the field when `supersededBy` is misplaced; strip a standalone `--` in
    `scripts/run-vitest.mjs`; remove the routes' compatibility mode and the four unused task classes; separate the
    brief checker's rule ids from B1-B10; read the Impeccable path in `scripts/check-design-context.mjs` from the
-   environment; a check that open milestones' owned paths do not overlap (A7).
+   environment; a check that open milestones' owned paths do not overlap (A7); a lint for the concept's CSS
+   (`:hover` outside a hover media query, `transition: all`, `ease-in`, `outline: none` with no focus style in its
+   place), from the good-css review (`docs/phase-records/handoffs/owner-design-exploration/r04/good-css-review.md`).
 6. Remove the grading worktrees grade-r6, grade-r7-u1a, grade-r7-u1b and grade-r7-g (disposable, detached), and the
    evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then the
    closing review and the milestone's closure. The Owner screens resume after.
