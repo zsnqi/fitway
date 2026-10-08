@@ -203,7 +203,6 @@ describe("O5: marked active resume point validation", () => {
 	});
 	it.each([
 		"As of",
-		"Previous resume point",
 		"Standing decisions",
 	])("rejects missing or duplicate %s header lines", async (name) => {
 		const root = fixture();
@@ -217,6 +216,30 @@ describe("O5: marked active resume point validation", () => {
 		await expect(
 			validate(root, valid.replace(line, `${line}\n${line}`)),
 		).rejects.toThrow(/header lines in order/);
+	});
+	it("M4: accepts both header formats and never follows the previous resume pointer", async () => {
+		const root = fixture();
+		await expect(validate(root, valid)).resolves.toBe(true);
+		await expect(
+			validate(
+				root,
+				valid.replace(
+					"- **Standing decisions:**",
+					"- **Previous resume point:** `gone/previous.md`\n- **Standing decisions:**",
+				),
+			),
+		).resolves.toBe(true);
+	});
+	it("M4: the stable filename also requires a resume marker", async () => {
+		const root = fixture();
+		await expect(
+			validateResumePoint({
+				repositoryRoot: root,
+				handoffPath: "fixture-r01-resume.md",
+				milestoneId: "fixture-r01",
+				bytes: Buffer.from(valid.replace(RESUME_POINT_MARKER, "")),
+			}),
+		).rejects.toThrow(/missing required marker/);
 	});
 	it("rejects reordered or misplaced headers", async () => {
 		const root = fixture();

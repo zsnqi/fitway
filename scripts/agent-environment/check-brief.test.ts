@@ -226,7 +226,7 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 		);
 	});
 
-	it("reports drift with both repositories and fails missing relative and absolute paths", async () => {
+	it("reports drift with both repositories, fails missing repository paths and leaves machine-local paths unjudged", async () => {
 		const f = fixture();
 		put(f.commandRepository, "docs/coordinator-only.md", "# Drift\n");
 		const absent = path
@@ -235,7 +235,12 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 		const result = await f.check(
 			`${f.valid}\n\`docs/coordinator-only.md\`\n\`docs/missing.md\`\n\`${absent}\`\n`,
 		);
-		expect(result.problems).toHaveLength(3);
+		expect(result.problems).toHaveLength(2);
+		expect(
+			result.problems.some((problem: { message: string }) =>
+				problem.message.includes("fitway-absent-brief-fixture"),
+			),
+		).toBe(false);
 		const drift = result.problems.find((problem: { message: string }) =>
 			problem.message.startsWith("drift:"),
 		);

@@ -20,7 +20,6 @@ import {
 	checkAgentContext,
 	formatAgentContextResult,
 	formatAgentContextWarnings,
-	validateReceiptChain,
 } from "./check-agent-context.mjs";
 import {
 	formatPacketAuthorities,
@@ -39,10 +38,8 @@ const CONTEXT_FILES = [
 	"docs/agent-context/ROUTES.yaml",
 	"docs/agent-context/TASK_PACKET_TEMPLATE.yaml",
 	"docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md",
-	"docs/agent-context/HISTORY_POINTER_EXCEPTIONS.yaml",
 	"docs/schemas/agent-context-routes.schema.json",
 	"docs/schemas/task-packet.schema.json",
-	"docs/schemas/history-transition-receipt.schema.json",
 ];
 const FIXTURE_MILESTONES = [
 	"agent-context-architecture-migration-r01",
@@ -316,40 +313,7 @@ function isolateFixtureHistory(root: string): void {
 	const history = parseYaml(readFileSync(historyPath, "utf8")) as JsonObject;
 	history.milestones = {};
 	writeFileSync(historyPath, stringifyYaml(history), "utf8");
-	writeFixtureFile(
-		root,
-		"docs/agent-context/HISTORY_POINTER_EXCEPTIONS.yaml",
-		stringifyYaml({ schemaVersion: 1, exceptions: [] }),
-	);
 	copyFixtureFile(root, activeHandoffPath());
-}
-
-function isolateFixtureToHistoricalPointer(
-	root: string,
-	handoff: string,
-): void {
-	isolateFixtureHistory(root);
-	const historyPath = path.resolve(root, "PROJECT_STATE_HISTORY.yaml");
-	const history = parseYaml(readFileSync(historyPath, "utf8")) as JsonObject;
-	history.milestones = { "phase10-ui-csv": { handoff } };
-	writeFileSync(historyPath, stringifyYaml(history), "utf8");
-	writeFixtureFile(
-		root,
-		"docs/agent-context/HISTORY_POINTER_EXCEPTIONS.yaml",
-		stringifyYaml({
-			schemaVersion: 1,
-			exceptions: [
-				{
-					recordPath:
-						"PROJECT_STATE_HISTORY.yaml#/milestones/phase10-ui-csv/handoff",
-					brokenTarget: handoff,
-					reason: "Test historical pointer exception.",
-					disposition: "Preserve the immutable record.",
-					reviewer: "test",
-				},
-			],
-		}),
-	);
 }
 
 function fixtureRoute(
@@ -734,67 +698,6 @@ describe("check-agent-context", () => {
 		expect(result.ok).toBe(true);
 	});
 
-	it("blocks every partial active packet-metadata combination and suppresses compatibility warnings", async () => {
-		const metadata = {
-			taskClass: "repository-infrastructure",
-			taskPacket:
-				"docs/phase-records/task-packets/agent-context-architecture-migration-r01.yaml",
-			taskPacketSha256: "a".repeat(64),
-		};
-		const fields = Object.keys(metadata) as Array<keyof typeof metadata>;
-		for (let mask = 1; mask < 1 << fields.length; mask += 1) {
-			const root = makeFixture();
-			isolateFixtureHistory(root);
-			const fixture = basePacket(root);
-			for (const [index, field] of fields.entries()) {
-				if (mask & (1 << index))
-					fixture.state.milestones[fixture.packet.milestoneId][field] =
-						metadata[field];
-			}
-			writeFixtureState(root, fixture.state);
-			const result = await checkAgentContext({ root, checkTracked: false });
-			expect(result.ok, `metadata mask ${mask}`).toBe(false);
-			expect(
-				result.errors.some(
-					(error) =>
-						error.includes("packet metadata must be all-or-none") ||
-						error.includes("active packet metadata points to no packet"),
-				),
-			).toBe(true);
-			expect(
-				result.warnings.some((warning) =>
-					warning.includes("no active task packet"),
-				),
-			).toBe(false);
-		}
-	});
-
-	it("blocks partial packet metadata on a terminal active-ledger milestone", async () => {
-		const root = makeFixture();
-		isolateFixtureHistory(root);
-		const fixture = basePacket(root);
-		const milestone = fixture.state.milestones[fixture.packet.milestoneId];
-		milestone.status = "DONE";
-		delete milestone.taskClass;
-		delete milestone.taskPacket;
-		delete milestone.taskPacketSha256;
-		milestone.taskClass = fixture.packet.taskClass;
-		writeFixtureState(root, fixture.state);
-
-		const result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some((error) =>
-				error.includes("packet metadata must be all-or-none"),
-			),
-		).toBe(true);
-		expect(
-			result.warnings.some((warning) =>
-				warning.includes("no active task packet"),
-			),
-		).toBe(false);
-	});
-
 	it("blocks missing packets for terminal active-ledger metadata and still rejects an existing packet", async () => {
 		const root = makeFixture();
 		isolateFixtureHistory(root);
@@ -887,73 +790,6 @@ describe("check-agent-context", () => {
 		expect(
 			result.errors.some(
 				(error) => error.includes("untracked") && error.includes("README.md"),
-			),
-		).toBe(true);
-	});
-
-	it("requires historical pointer exceptions to match the two known missing targets", async () => {
-		const root = makeFixture();
-		const exceptionsPath = path.resolve(
-			root,
-			"docs/agent-context/HISTORY_POINTER_EXCEPTIONS.yaml",
-		);
-		const exceptions = parseYaml(
-			readFileSync(exceptionsPath, "utf8"),
-		) as unknown as { schemaVersion: number; exceptions: Array<JsonObject> };
-		exceptions.exceptions.shift();
-		writeFileSync(exceptionsPath, stringifyYaml(exceptions), "utf8");
-		const result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some(
-				(error) =>
-					error.includes("phase10-ui-csv/handoff") &&
-					error.includes("no exception"),
-			),
-		).toBe(true);
-	});
-
-	it("admits an existing but untracked historical target through its exception", async () => {
-		const root = makeFixture();
-		const target =
-			"docs/phase-records/handoffs/phase10-ui-csv/20260816-153500-p10_ui_csv_b02-failure-diagnosis-correction.md";
-		isolateFixtureToHistoricalPointer(root, target);
-		const fixture = basePacket(root);
-		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
-		initTrackedFixture(root);
-		writeFixtureFile(root, target, "# Protected historical handoff\n");
-		const result = await checkAgentContext({ root, checkTracked: true });
-		expect(result.errors).toEqual([]);
-		expect(result.ok).toBe(true);
-		expect(
-			result.warnings.some(
-				(warning) =>
-					warning.includes("admitted for untracked target") &&
-					warning.includes("phase10-ui-csv/handoff"),
-			),
-		).toBe(true);
-		expect(
-			result.errors.some((error) =>
-				error.includes("historical pointer exception is stale"),
-			),
-		).toBe(false);
-	});
-
-	it("marks a historical pointer exception stale once its target is tracked", async () => {
-		const root = makeFixture();
-		const target =
-			"docs/phase-records/handoffs/phase10-ui-csv/20260816-153500-p10_ui_csv_b02-failure-diagnosis-correction.md";
-		isolateFixtureToHistoricalPointer(root, target);
-		initTrackedFixture(root);
-		writeFixtureFile(root, target, "# Tracked historical handoff\n");
-		execFileSync("git", ["add", "--", target], { cwd: root, stdio: "ignore" });
-		const result = await checkAgentContext({ root, checkTracked: true });
-		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some(
-				(error) =>
-					error.includes("historical pointer exception is stale") &&
-					error.includes(target),
 			),
 		).toBe(true);
 	});
@@ -1155,20 +991,111 @@ describe("check-agent-context", () => {
 		).toBe(true);
 	});
 
-	it("requires packet continuity to carry the exact active handoff", async () => {
+	it("M2/M3/M6: validates an active packet with no pin, ledger task class, copies or receipt template", async () => {
 		const root = makeFixture();
-		const { state, packet, packetPath } = basePacket(root);
-		packet.continuity.currentHandoff = null;
-		materializePacket(root, state, packet, packetPath);
+		isolateFixtureHistory(root);
+		const f = basePacket(root);
+		const milestone = f.state.milestones[f.packet.milestoneId];
+		delete milestone.taskClass;
+		delete milestone.taskPacketSha256;
+		delete milestone.lastHeartbeatAt;
+		delete milestone.leaseExpiresAt;
+		delete (f.packet as JsonObject).baseCommit;
+		delete (f.packet as JsonObject).scope;
+		delete (f.packet.continuity as JsonObject).currentHandoff;
+		delete (f.packet.evidence as JsonObject).receiptTemplate;
+		materializePacket(root, f.state, f.packet, f.packetPath, {
+			recordHash: false,
+		});
+		delete milestone.taskClass;
+		writeFixtureState(root, f.state);
 		const result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
+		expect(result.errors).toEqual([]);
+		(f.packet as JsonObject).scope = {};
+		materializePacket(root, f.state, f.packet, f.packetPath, {
+			recordHash: false,
+		});
+		delete milestone.taskClass;
+		writeFixtureState(root, f.state);
 		expect(
-			result.errors.some((error) =>
-				error.includes("continuity.currentHandoff differs from active handoff"),
+			(await checkAgentContext({ root, checkTracked: false })).errors,
+		).toEqual([]);
+	});
+	it("M2/M3: ignores obsolete milestone fields and conflicting packet copies", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		const f = basePacket(root);
+		materializePacket(root, f.state, f.packet, f.packetPath);
+		f.state.milestones[f.packet.milestoneId].taskClass = "analysis-review";
+		f.state.milestones[f.packet.milestoneId].taskPacketSha256 =
+			"old unused pin";
+		f.state.milestones[f.packet.milestoneId].leaseExpiresAt =
+			"1900-01-01T00:00:00Z";
+		f.packet.baseCommit = "abcdef0";
+		f.packet.scope.ownedPaths = ["old-copy/**"];
+		f.packet.continuity.currentHandoff = "gone/old.md";
+		materializePacket(root, f.state, f.packet, f.packetPath, {
+			recordHash: false,
+		});
+		f.state.milestones[f.packet.milestoneId].taskClass = "analysis-review";
+		writeFixtureState(root, f.state);
+		expect(
+			(await checkAgentContext({ root, checkTracked: false })).errors,
+		).toEqual([]);
+	});
+	it("M6: closed records keep shape and identity without opening embedded paths", async () => {
+		const root = makeFixture();
+		const f = makeVisualPacket(root);
+		const history = materializeClosedPacketFixture(root, f, "SUPERSEDED");
+		const record = (history.milestones as Record<string, JsonObject>)[
+			f.packet.milestoneId
+		];
+		record.supersededBy = "successor";
+		record.handoff = "gone/closed-handoff.md";
+		delete record.taskClass;
+		delete record.taskPacket;
+		delete record.taskPacketSha256;
+		writeFixtureHistory(root, history);
+		for (const source of [
+			...f.packet.authorities.required,
+			...f.packet.authorities.conditional,
+		])
+			source.path = "gone/authority.md";
+		if (!f.packet.visual) throw new Error("Missing visual fixture");
+		f.packet.visual.currentFrames = [
+			{ path: "gone/frame.png", sha256: "a".repeat(64) },
+		];
+		f.packet.continuity.currentHandoff = "gone/packet-handoff.md";
+		f.packet.evidence.receiptTemplate = "gone/receipt.md";
+		writeFixtureFile(root, f.packetPath, stringifyYaml(f.packet));
+		expect(
+			(await checkAgentContext({ root, checkTracked: false })).errors,
+		).toEqual([]);
+		f.packet.stateRef = "PROJECT_STATE.yaml#/milestones/wrong";
+		writeFixtureFile(root, f.packetPath, stringifyYaml(f.packet));
+		expect(
+			(await checkAgentContext({ root, checkTracked: false })).errors.some(
+				(error) => error.includes("stateRef"),
+			),
+		).toBe(true);
+		delete (f.packet as JsonObject).task;
+		writeFixtureFile(root, f.packetPath, stringifyYaml(f.packet));
+		expect(
+			(await checkAgentContext({ root, checkTracked: false })).errors.some(
+				(error) => error.includes("schema validation failed"),
 			),
 		).toBe(true);
 	});
-
+	it("M6: an optional active receipt template is never resolved", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		const f = basePacket(root);
+		f.packet.evidence.receiptTemplate = "gone/receipt.md";
+		materializePacket(root, f.state, f.packet, f.packetPath);
+		expect(
+			(await checkAgentContext({ root, checkTracked: false })).errors,
+		).toEqual([]);
+	});
 	it("formats the packet's exact authority entries for context:show", () => {
 		const lines: string[] = [];
 		formatPacketAuthorities(lines, {
@@ -1285,127 +1212,18 @@ describe("check-agent-context", () => {
 		).toBe(true);
 	});
 
-	it("fails packet hash drift and an active milestone routed to a CLOSED packet", async () => {
+	it("rejects an active milestone routed to a CLOSED packet", async () => {
 		const root = makeFixture();
-		const fixture = basePacket(root);
-		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
-		writeFileSync(
-			path.resolve(root, fixture.packetPath),
-			stringifyYaml({
-				...fixture.packet,
-				task: { ...fixture.packet.task, objective: "tampered" },
-			}),
-			"utf8",
-		);
-		let result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
+		isolateFixtureHistory(root);
+		const f = basePacket(root);
+		f.packet.packetStatus = "CLOSED";
+		materializePacket(root, f.state, f.packet, f.packetPath);
 		expect(
-			result.errors.some((error) => error.includes("taskPacketSha256 differs")),
-		).toBe(true);
-
-		const closedFixture = basePacket(root);
-		closedFixture.packet.packetStatus = "CLOSED";
-		materializePacket(
-			root,
-			closedFixture.state,
-			closedFixture.packet,
-			closedFixture.packetPath,
-		);
-		result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some((error) =>
-				error.includes("cannot route a CLOSED packet"),
+			(await checkAgentContext({ root, checkTracked: false })).errors.some(
+				(error) => error.includes("cannot route a CLOSED packet"),
 			),
 		).toBe(true);
 	});
-
-	it("rejects stale packet base, class, scope, handoff, and pointer updates", async () => {
-		const cases: Array<{
-			label: string;
-			mutate: (fixture: ReturnType<typeof basePacket>) => void;
-			expected: string;
-		}> = [
-			{
-				label: "stateRef",
-				mutate: ({ packet }) => {
-					packet.stateRef = "PROJECT_STATE.yaml#/milestones/other";
-				},
-				expected: "stateRef does not identify its milestone",
-			},
-			{
-				label: "base",
-				mutate: ({ packet }) => {
-					packet.baseCommit = "abcdef1";
-				},
-				expected: "baseCommit differs from active milestone",
-			},
-			{
-				label: "class",
-				mutate: ({ state, packet }) => {
-					state.milestones[packet.milestoneId].taskClass = "analysis-review";
-				},
-				expected: "taskClass differs from active milestone",
-			},
-			{
-				label: "scope",
-				mutate: ({ packet }) => {
-					const scope = packet.scope as JsonObject;
-					scope.ownedPaths = [...(scope.ownedPaths as string[]), "scope-drift"];
-				},
-				expected: "scope.ownedPaths differs from active milestone",
-			},
-			{
-				label: "handoff",
-				mutate: ({ packet }) => {
-					packet.continuity.currentHandoff =
-						"docs/phase-records/handoffs/drift.md";
-				},
-				expected: "continuity.currentHandoff differs from active handoff",
-			},
-		];
-		for (const testCase of cases) {
-			const root = makeFixture();
-			const fixture = basePacket(root);
-			materializePacket(
-				root,
-				fixture.state,
-				fixture.packet,
-				fixture.packetPath,
-			);
-			testCase.mutate(fixture);
-			writeFileSync(
-				path.resolve(root, fixture.packetPath),
-				stringifyYaml(fixture.packet),
-				"utf8",
-			);
-			writeFixtureState(root, fixture.state);
-			const result = await checkAgentContext({ root, checkTracked: false });
-			expect(result.ok, testCase.label).toBe(false);
-			expect(
-				result.errors.some((error) => error.includes(testCase.expected)),
-			).toBe(true);
-		}
-
-		const root = makeFixture();
-		const fixture = basePacket(root);
-		fixture.state.milestones[fixture.packet.milestoneId].taskPacket =
-			"docs/phase-records/task-packets/missing.yaml";
-		writeFixtureState(root, fixture.state);
-		const result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some((error) =>
-				error.includes("active packet metadata points to no packet"),
-			),
-		).toBe(true);
-		expect(
-			result.warnings.some((warning) =>
-				warning.includes("no active task packet"),
-			),
-		).toBe(false);
-	});
-
 	it("requires CLOSED packets to leave active state and match terminal history and stable path", async () => {
 		const root = makeFixture();
 		const fixture = basePacket(root);
@@ -1449,117 +1267,6 @@ describe("check-agent-context", () => {
 					error.includes("must be terminal"),
 			),
 		).toBe(true);
-	});
-
-	it("enforces CLOSED packet stateRef, base, scope, class, path, hash, and handoff equality", async () => {
-		const cases: Array<{
-			label: string;
-			mutate: (
-				fixture: ReturnType<typeof basePacket>,
-				historyRecord: JsonObject,
-			) => void;
-			expected: string;
-			writePacket?: boolean;
-		}> = [
-			{
-				label: "stateRef",
-				mutate: ({ packet }) => {
-					packet.stateRef = "PROJECT_STATE.yaml#/milestones/other";
-				},
-				expected: "stateRef does not identify its milestone",
-				writePacket: true,
-			},
-			{
-				label: "baseCommit",
-				mutate: (_fixture, historyRecord) => {
-					historyRecord.baseCommit = "abcdef1";
-				},
-				expected: "baseCommit differs from closed history milestone",
-			},
-			{
-				label: "scope",
-				mutate: (_fixture, historyRecord) => {
-					historyRecord.ownedPaths = [
-						...(historyRecord.ownedPaths as string[]),
-						"scope-drift",
-					];
-				},
-				expected: "scope.ownedPaths differs from closed history milestone",
-			},
-			{
-				label: "taskClass",
-				mutate: (_fixture, historyRecord) => {
-					historyRecord.taskClass = "analysis-review";
-				},
-				expected: "taskClass differs from closed history milestone",
-			},
-			{
-				label: "missing taskClass",
-				mutate: (_fixture, historyRecord) => {
-					delete historyRecord.taskClass;
-				},
-				expected: "CLOSED packet history is missing taskClass",
-			},
-			{
-				label: "taskPacket",
-				mutate: (_fixture, historyRecord) => {
-					historyRecord.taskPacket =
-						"docs/phase-records/task-packets/other.yaml";
-				},
-				expected: "CLOSED packet history taskPacket must be the stable path",
-			},
-			{
-				label: "missing taskPacket",
-				mutate: (_fixture, historyRecord) => {
-					delete historyRecord.taskPacket;
-				},
-				expected: "CLOSED packet history is missing taskPacket",
-			},
-			{
-				label: "missing hash",
-				mutate: (_fixture, historyRecord) => {
-					delete historyRecord.taskPacketSha256;
-				},
-				expected: "CLOSED packet history is missing taskPacketSha256",
-			},
-			{
-				label: "bad hash",
-				mutate: (_fixture, historyRecord) => {
-					historyRecord.taskPacketSha256 = "b".repeat(64);
-				},
-				expected: "taskPacketSha256 differs from closed history milestone",
-			},
-			{
-				label: "current handoff",
-				mutate: (_fixture, historyRecord) => {
-					historyRecord.handoff = "docs/phase-records/handoffs/drift.md";
-				},
-				expected:
-					"continuity.currentHandoff differs from closed history handoff",
-			},
-		];
-
-		for (const testCase of cases) {
-			const root = makeFixture();
-			const fixture = basePacket(root);
-			const history = materializeClosedPacketFixture(root, fixture);
-			const historyRecord = (history.milestones as JsonObject)[
-				fixture.packet.milestoneId
-			] as JsonObject;
-			testCase.mutate(fixture, historyRecord);
-			if (testCase.writePacket)
-				writeFileSync(
-					path.resolve(root, fixture.packetPath),
-					stringifyYaml(fixture.packet),
-					"utf8",
-				);
-			writeFixtureHistory(root, history);
-			const result = await checkAgentContext({ root, checkTracked: false });
-			expect(result.ok, testCase.label).toBe(false);
-			expect(
-				result.errors.some((error) => error.includes(testCase.expected)),
-			).toBe(true);
-		}
 	});
 
 	it("requires ADR-009 for Owner visual packets and rejects superseded composition as acceptance authority", async () => {
@@ -1771,38 +1478,6 @@ describe("check-agent-context", () => {
 		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
 		const result = await checkAgentContext({ root, checkTracked: false });
 		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some((error) =>
-				error.includes("accessibility gate is not PASS"),
-			),
-		).toBe(true);
-		expect(
-			result.errors.some((error) =>
-				error.includes("perceptual gate is not PASS"),
-			),
-		).toBe(true);
-	});
-
-	it("requires PASS design, accessibility, and perceptual gates for CLOSED DONE UI packets", async () => {
-		const root = makeFixture();
-		const fixture = makeVisualPacket(root);
-		const visual = fixture.packet.visual as JsonObject;
-		visual.surfaceKey = "login";
-		visual.authorityStatus = "ACTIVE";
-		visual.authorityKey = "login";
-		visual.acceptanceAuthority = "NONE";
-		(fixture.packet.designContextCheck as JsonObject).status = "PENDING";
-		(fixture.packet.accessibilityGate as JsonObject).status = "PENDING";
-		(visual.perceptualGate as JsonObject).status = "PENDING";
-		(visual.promotionGate as JsonObject).status = "NOT_REQUIRED";
-		materializeClosedPacketFixture(root, fixture, "DONE");
-		const result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some((error) =>
-				error.includes("design-context check is not PASS"),
-			),
-		).toBe(true);
 		expect(
 			result.errors.some((error) =>
 				error.includes("accessibility gate is not PASS"),
@@ -2185,93 +1860,6 @@ describe("check-agent-context", () => {
 		).toBe(true);
 	});
 
-	it("checks child packet and receipt symlinks before reading or hashing", async () => {
-		const root = makeFixture();
-		const outside = mkdtempSync(
-			path.join(tmpdir(), "fitway-discovered-outside-"),
-		);
-		fixtureRoots.push(outside);
-		writeFixtureFile(outside, "packet.yaml", "schemaVersion: 1\n");
-		writeFixtureFile(outside, "receipt.json", "{}\n");
-		mkdirSync(path.resolve(root, "docs/phase-records/task-packets"), {
-			recursive: true,
-		});
-		mkdirSync(path.resolve(root, "docs/phase-records/history-transitions"), {
-			recursive: true,
-		});
-		try {
-			symlinkSync(
-				path.resolve(outside, "packet.yaml"),
-				path.resolve(root, "docs/phase-records/task-packets/escape.yaml"),
-				"file",
-			);
-			symlinkSync(
-				path.resolve(outside, "receipt.json"),
-				path.resolve(
-					root,
-					"docs/phase-records/history-transitions/escape.json",
-				),
-				"file",
-			);
-		} catch (error) {
-			if (
-				error &&
-				typeof error === "object" &&
-				"code" in error &&
-				["EPERM", "EACCES", "EINVAL"].includes(String(error.code))
-			)
-				return;
-			throw error;
-		}
-		const result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some(
-				(error) =>
-					error.includes("docs/phase-records/task-packets/escape.yaml") &&
-					error.includes("resolves outside the repository"),
-			),
-		).toBe(true);
-		expect(
-			result.errors.some(
-				(error) =>
-					error.includes(
-						"docs/phase-records/history-transitions/escape.json",
-					) && error.includes("resolves outside the repository"),
-			),
-		).toBe(true);
-	});
-
-	it("fails active packet/state scope or class mismatch", async () => {
-		const root = makeFixture();
-		const { state, packet, packetPath } = basePacket(root);
-		state.milestones[packet.milestoneId].taskClass = "analysis-review";
-		state.milestones[packet.milestoneId].taskPacket = packetPath;
-		mkdirSync(path.dirname(path.resolve(root, packetPath)), {
-			recursive: true,
-		});
-		writeFileSync(
-			path.resolve(root, packetPath),
-			stringifyYaml(packet),
-			"utf8",
-		);
-		const packetBytes = readFileSync(path.resolve(root, packetPath));
-		state.milestones[packet.milestoneId].taskPacketSha256 =
-			hashBytes(packetBytes);
-		writeFileSync(
-			path.resolve(root, "PROJECT_STATE.yaml"),
-			stringifyYaml(state),
-			"utf8",
-		);
-		const result = await checkAgentContext({ root, checkTracked: false });
-		expect(result.ok).toBe(false);
-		expect(
-			result.errors.some((error) =>
-				error.includes("taskClass differs from active milestone"),
-			),
-		).toBe(true);
-	});
-
 	it("rejects a UI packet without the required visual and design gates", async () => {
 		const root = makeFixture();
 		const { state, packet, packetPath } = basePacket(root);
@@ -2303,99 +1891,24 @@ describe("check-agent-context", () => {
 			),
 		).toBe(true);
 	});
-
-	it("rejects a receipt chain that starts with a transition or is tampered", async () => {
-		const root = makeFixture();
-		const receiptPath =
-			"docs/phase-records/history-transitions/20260919-transition.json";
-		const receipt = {
-			schemaVersion: 1,
-			kind: "history-transition-receipt",
-			recordedAt: "2026-09-19T10:00:00.000Z",
-			previousReceiptSha256: null,
-			beforeHistorySha256: "a".repeat(64),
-			afterHistorySha256: "b".repeat(64),
-			addedTerminal: {
-				milestoneId: "closed",
-				status: "DONE",
-				digest: "c".repeat(64),
-			},
-			closedPacketSha256: "d".repeat(64),
-			removedActiveMilestoneId: "active",
-			coordinatorRun: "test-run",
-		};
-		writeFixtureFile(root, receiptPath, JSON.stringify(receipt, null, 2));
-		const errors: string[] = [];
-		await validateReceiptChain({ root, checkTracked: false, errors });
-		expect(
-			errors.some((error) =>
-				error.includes("must begin with a genesis receipt"),
-			),
-		).toBe(true);
-	});
 });
 
-describe("agent-context diagnostic output", () => {
-	const admitted = [
-		"historical pointer exception admitted: record -> missing.md",
-		"historical pointer exception admitted for untracked target: record -> untracked.md",
-		"historical pointer exception admitted without tracking classification: record -> unknown.md",
-	];
-	const otherWarnings = [
-		"Git tracking checks are unavailable outside a Git worktree",
-		"historical pointer exception admission problem",
-	];
-	const result = {
-		ok: true,
-		warnings: [
-			admitted[0],
-			otherWarnings[0],
-			...admitted.slice(1),
-			otherWarnings[1],
-		],
-		errors: [],
-	};
-
-	it("summarizes admitted exceptions while retaining every other warning", () => {
+describe("agent-context warnings", () => {
+	it("preserves warnings and errors without historical exception machinery", () => {
+		const result = {
+			ok: false,
+			warnings: ["active warning"],
+			errors: ["active error"],
+		};
 		expect(formatAgentContextWarnings(result)).toEqual([
-			...otherWarnings.map((warning) => `WARNING: ${warning}`),
-			"Historical pointer exceptions admitted: 3 (use --verbose to list).",
+			"WARNING: active warning",
 		]);
-	});
-
-	it("lists all admitted exceptions in their original order with --verbose", () => {
-		expect(formatAgentContextWarnings(result, { verbose: true })).toEqual([
-			...result.warnings.map((warning) => `WARNING: ${warning}`),
-			"Historical pointer exceptions admitted: 3.",
-		]);
-	});
-
-	it("keeps every warning and error on failure", () => {
 		expect(
-			formatAgentContextResult({
-				...result,
-				ok: false,
-				errors: ["missing packet", "invalid selector"],
+			formatAgentContextWarnings(result, {
+				warningPrefix: "Repository warning: ",
 			}),
-		).toBe(
-			[
-				...result.warnings.map((warning) => `WARNING: ${warning}`),
-				"check-agent-context FAILED:",
-				"- missing packet",
-				"- invalid selector",
-			].join("\n"),
-		);
-	});
-
-	it("preserves the repository warning prefix and avoids an empty summary", () => {
-		expect(
-			formatAgentContextWarnings(
-				{ ok: true, warnings: otherWarnings },
-				{ warningPrefix: "Agent context warning: " },
-			),
-		).toEqual(
-			otherWarnings.map((warning) => `Agent context warning: ${warning}`),
-		);
+		).toEqual(["Repository warning: active warning"]);
+		expect(formatAgentContextResult(result)).toContain("active error");
 	});
 });
 

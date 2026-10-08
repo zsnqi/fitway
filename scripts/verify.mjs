@@ -1,12 +1,5 @@
 import { spawn } from "node:child_process";
 import { repositoryFingerprint } from "./repository-fingerprint.mjs";
-import {
-	acquireVitestRuntimeSession,
-	describeVitestRuntimeSession,
-	normalizeVitestInvocation,
-	revalidateVitestRuntimeSession,
-	runVitest,
-} from "./vitest-runtime.mjs";
 
 const phases = {
 	"login-paper-adoption": {
@@ -273,14 +266,6 @@ phase  The fast ladder plus the selected phase's integration/browser tests.
        This is focused evidence and never replaces verify:full before integration.
 full   Every fast, integration, browser, accessibility, build, and mutation gate.
 
-The authoritative form invokes this file with the host-selected absolute Node:
-  <absolute-node> scripts/verify.mjs fast
-  <absolute-node> scripts/verify.mjs phase --phase <registered-name>
-  <absolute-node> scripts/verify.mjs full
-The package aliases above are developer conveniences; their exit status is
-corroboration only. One direct invocation acquires exactly one Vitest runtime
-session and revalidates its bounded integrity set around every Vitest launch.
-
 Integration safety requires all three values:
   FITWAY_RUN_ID=<unique_lowercase_run_id>
   TEST_DATABASE_URL=postgresql://.../fitway_integration_<FITWAY_RUN_ID>
@@ -333,16 +318,7 @@ function parseArguments() {
 
 async function runStep(label, args) {
 	console.log(`\n==> ${label}`);
-	if (typeof args === "function") {
-		try {
-			await args();
-		} catch (error) {
-			throw new Error(
-				`${label} failed: ${error instanceof Error ? error.message : String(error)}`,
-			);
-		}
-		return;
-	}
+	const started = performance.now();
 	await new Promise((resolve, reject) => {
 		const command =
 			process.platform === "win32"
@@ -369,66 +345,25 @@ async function runStep(label, args) {
 			);
 		});
 	});
+	console.log(`<== ${label} (${elapsedSeconds(started)}s)`);
 }
 
-// Every Vitest launch in one direct invocation runs through the one runtime
-// session acquired by the first ladder step. The session is never re-resolved
-// after acquisition, and no package alias on this route acquires another one.
-const INTEGRATION_ARGS = ["run", "--config", "vitest.integration.config.ts"];
-
-let vitestSession = null;
-
-async function runVitestArgs(args, configPath) {
-	if (vitestSession === null) {
-		throw new Error(
-			"the Vitest runtime session was not acquired before a Vitest launch",
-		);
-	}
-	const invocation = normalizeVitestInvocation(vitestSession, args, {
-		configPath,
-	});
-	const result = await runVitest(vitestSession, invocation.argv, {
-		configPath: invocation.config === null ? null : invocation.config.path,
-		stdio: "inherit",
-	});
-	if (result.status === 0) return;
-	throw new Error(
-		result.signal !== null
-			? `vitest exited with signal ${result.signal}`
-			: `vitest exited with code ${result.status}`,
-	);
+function elapsedSeconds(started) {
+	return ((performance.now() - started) / 1000).toFixed(2);
 }
 
-// In-process replacement for the retired `check:test-runtime` child gate. It
-// acquires the one session this invocation owns, prints its provenance, and
-// discloses exactly what the session does and does not cover.
-function acquireProvenanceStep(callerIdentity) {
-	return () => {
-		vitestSession = acquireVitestRuntimeSession(process.cwd(), callerIdentity);
-		console.log(describeVitestRuntimeSession(vitestSession));
-		revalidateVitestRuntimeSession(vitestSession, "diagnostic");
-		console.log(
-			"Vitest runtime disclosure: this session covers only the listed Vitest provenance and bounded integrity properties for its own launches; non-Vitest pnpm, Biome, TypeScript, Python, Playwright, browser, database, and build steps rely on the prepared host environment and their existing checks, and a green overall ladder is project verification evidence, not cryptographic authentication of those external tools.",
-		);
-	};
-}
-
-function fastSteps(callerIdentity) {
+function fastSteps() {
 	return [
-		[
-			"Vitest runtime session provenance",
-			acquireProvenanceStep(callerIdentity),
-		],
 		["Repository invariants", ["check:repository"]],
-		["Agent context", ["check:agent-context"]],
-		["Frontier preservation evidence", ["check:frontier"]],
+		["Verification map drift", ["check:verification-map"]],
+		["Verification CLI contracts", ["test:verification"]],
 		["Biome check", ["check"]],
 		[
 			"Owner token fidelity",
 			["exec", "node", "scripts/check-owner-tokens.mjs"],
 		],
 		["Type checks", ["check-types"]],
-		["Unit tests", () => runVitestArgs(["run"], "vitest.config.ts")],
+		["Unit tests", ["test"]],
 		["Python simulator tests", ["test:simulator"]],
 	];
 }
@@ -437,18 +372,11 @@ function focusedSteps(phase) {
 	const profile = phases[phase];
 	const steps = [];
 	if (profile.integrationFiles === null) {
-		steps.push([
-			"All integration tests",
-			() => runVitestArgs(INTEGRATION_ARGS, "vitest.integration.config.ts"),
-		]);
+		steps.push(["All integration tests", ["test:integration"]]);
 	} else if (profile.integrationFiles.length > 0) {
 		steps.push([
 			`${profile.label} integration tests`,
-			() =>
-				runVitestArgs(
-					[...INTEGRATION_ARGS, ...profile.integrationFiles],
-					"vitest.integration.config.ts",
-				),
+			["test:integration", ...profile.integrationFiles],
 		]);
 	}
 	if (profile.browserFiles === null) {
@@ -464,9 +392,9 @@ function focusedSteps(phase) {
 
 async function main() {
 	const { mode, phase } = parseArguments();
-	const callerIdentity = `scripts/verify.mjs ${mode}${phase ? ` --phase ${phase}` : ""}`;
+	const started = performance.now();
 	const before = await repositoryFingerprint();
-	const steps = fastSteps(callerIdentity);
+	const steps = fastSteps();
 	if (mode === "phase") {
 		console.log(
 			`Focused profile: ${phases[phase].label}. Build and non-profile integration/browser tests are intentionally deferred to verify:full.`,
@@ -476,10 +404,7 @@ async function main() {
 	if (mode === "full") {
 		steps.push(
 			["Build", ["build"]],
-			[
-				"All integration tests",
-				() => runVitestArgs(INTEGRATION_ARGS, "vitest.integration.config.ts"),
-			],
+			["All integration tests", ["test:integration"]],
 			["All browser and accessibility tests", ["test:browser"]],
 		);
 	}
@@ -492,6 +417,7 @@ async function main() {
 	}
 
 	console.log("\n==> Repository mutation guard");
+	const guardStarted = performance.now();
 	const after = await repositoryFingerprint();
 	if (before !== after) {
 		await new Promise((resolve) => {
@@ -507,9 +433,14 @@ async function main() {
 		);
 		failure ??= mutationFailure;
 	}
+	console.log(
+		`<== Repository mutation guard (${elapsedSeconds(guardStarted)}s)`,
+	);
 
 	if (failure) throw failure;
-	console.log(`\nVerification ${mode} passed without repository mutation.`);
+	console.log(
+		`\nVerification ${mode} passed without repository mutation (${elapsedSeconds(started)}s).`,
+	);
 	if (mode === "phase") {
 		console.log("Run the full ladder before integration or DONE.");
 	}

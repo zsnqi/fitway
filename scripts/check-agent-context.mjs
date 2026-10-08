@@ -31,6 +31,7 @@ export const TERMINAL_STATUSES = new Set([
 	"BLOCKED",
 	"NEEDS_HUMAN",
 	"FAILED_VALIDATION",
+	"SUPERSEDED",
 ]);
 export const TASK_CLASSES = [
 	"analysis-review",
@@ -51,18 +52,12 @@ const CONTEXT_FILES = [
 	"docs/agent-context/ROUTES.yaml",
 	"docs/agent-context/TASK_PACKET_TEMPLATE.yaml",
 	"docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md",
-	"docs/agent-context/HISTORY_POINTER_EXCEPTIONS.yaml",
 	"docs/schemas/agent-context-routes.schema.json",
 	"docs/schemas/task-packet.schema.json",
-	"docs/schemas/history-transition-receipt.schema.json",
 ];
 const HISTORY_FILE = "PROJECT_STATE_HISTORY.yaml";
 const PACKET_DIRECTORY = "docs/phase-records/task-packets";
-const RECEIPT_DIRECTORY = "docs/phase-records/history-transitions";
-const TASK_PACKET_PATH_PATTERN =
-	/^docs\/phase-records\/task-packets\/[a-z0-9][a-z0-9-]{0,127}\.yaml$/;
 const UI_TASK_CLASSES = new Set(["ui-maintenance", "visual-authority-change"]);
-const PACKET_METADATA_FIELDS = ["taskClass", "taskPacket", "taskPacketSha256"];
 const HISTORICAL_PREFIXES = [
 	"docs/archive/",
 	"docs/phase-records/",
@@ -95,29 +90,6 @@ function sha256(bytes) {
 
 function stablePacketPath(milestoneId) {
 	return `${PACKET_DIRECTORY}/${milestoneId}.yaml`;
-}
-
-function isValidTaskClass(value) {
-	return typeof value === "string" && TASK_CLASSES.includes(value);
-}
-
-function isValidTaskPacketPath(value) {
-	return typeof value === "string" && TASK_PACKET_PATH_PATTERN.test(value);
-}
-
-function isValidSha256(value) {
-	return typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
-}
-
-function isValidBaseCommit(value) {
-	return (
-		value === "SELF" ||
-		(typeof value === "string" && /^[0-9a-f]{7,40}$/.test(value))
-	);
-}
-
-function equalJson(left, right) {
-	return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function normalizeHeading(value) {
@@ -503,141 +475,6 @@ async function validateRouteRegistry({ root, registry, checkTracked, errors }) {
 	}
 }
 
-function validateExceptionShape(exceptions, errors) {
-	if (
-		exceptions?.schemaVersion !== 1 ||
-		!Array.isArray(exceptions.exceptions)
-	) {
-		errors.push(
-			"HISTORY_POINTER_EXCEPTIONS.yaml: expected schemaVersion 1 and exceptions array",
-		);
-		return [];
-	}
-	const seen = new Set();
-	for (const [index, exception] of exceptions.exceptions.entries()) {
-		const label = `HISTORY_POINTER_EXCEPTIONS.yaml exception ${index}`;
-		for (const field of [
-			"recordPath",
-			"brokenTarget",
-			"reason",
-			"disposition",
-			"reviewer",
-		]) {
-			if (
-				typeof exception?.[field] !== "string" ||
-				exception[field].trim() === ""
-			) {
-				errors.push(`${label}: missing non-empty ${field}`);
-			}
-		}
-		if (
-			exception?.replacement !== undefined &&
-			typeof exception.replacement !== "string"
-		) {
-			errors.push(`${label}: replacement must be a path string when present`);
-		}
-		if (seen.has(exception?.recordPath))
-			errors.push(`${label}: duplicate recordPath ${exception.recordPath}`);
-		seen.add(exception?.recordPath);
-	}
-	return exceptions.exceptions;
-}
-
-async function checkHistoricalPointers({
-	root,
-	history,
-	exceptions,
-	checkTracked,
-	errors,
-	warnings,
-}) {
-	const exceptionByRecord = new Map(
-		exceptions.map((entry) => [entry.recordPath, entry]),
-	);
-	const seenBroken = new Set();
-	for (const [milestoneId, milestone] of Object.entries(
-		history?.milestones ?? {},
-	)) {
-		if (
-			typeof milestone?.handoff !== "string" ||
-			milestone.handoff.trim() === ""
-		)
-			continue;
-		const recordPath = `${HISTORY_FILE}#/milestones/${milestoneId}/handoff`;
-		const details = await inspectPath(root, milestone.handoff);
-		const exception = exceptionByRecord.get(recordPath);
-		if (!checkTracked && details.exists && exception) {
-			seenBroken.add(recordPath);
-			warnings.push(
-				`historical pointer exception admitted without tracking classification: ${recordPath} -> ${milestone.handoff}`,
-			);
-			continue;
-		}
-		const targetIsTracked =
-			details.exists &&
-			(!checkTracked || trackedPath(root, details.normalized));
-		if (targetIsTracked) {
-			// Historical records are immutable provenance. A target that is present in the
-			// candidate index keeps the current stale-exception behavior. When tracking checks
-			// are disabled, existence is the only meaningful fixture signal.
-			continue;
-		}
-		if (!exception) {
-			const targetState = details.exists
-				? "untracked target"
-				: "missing target";
-			errors.push(
-				`historical handoff ${recordPath}: ${targetState} ${milestone.handoff} has no exception`,
-			);
-			continue;
-		}
-		seenBroken.add(recordPath);
-		if (
-			exception.brokenTarget !== details.normalized &&
-			exception.brokenTarget !== milestone.handoff
-		) {
-			errors.push(
-				`${recordPath}: exception target does not match ${milestone.handoff}`,
-			);
-		}
-		warnings.push(
-			`${details.exists ? "historical pointer exception admitted for untracked target" : "historical pointer exception admitted"}: ${recordPath} -> ${milestone.handoff}`,
-		);
-		if (exception.replacement) {
-			await validatePathReference({
-				root,
-				relativePath: exception.replacement,
-				selector: { kind: "whole-file", value: "" },
-				label: `${recordPath} replacement`,
-				checkTracked,
-				errors,
-				allowHistorical: true,
-			});
-		}
-	}
-	for (const exception of exceptions) {
-		if (seenBroken.has(exception.recordPath)) continue;
-		const match =
-			/^PROJECT_STATE_HISTORY\.yaml#\/milestones\/([^/]+)\/handoff$/.exec(
-				exception.recordPath,
-			);
-		if (!match || !Object.hasOwn(history?.milestones ?? {}, match[1])) {
-			errors.push(
-				`historical pointer exception points to no history record: ${exception.recordPath}`,
-			);
-			continue;
-		}
-		const target = history.milestones[match[1]]?.handoff;
-		const details = await inspectPath(root, target);
-		const targetIsTracked =
-			checkTracked && details.exists && trackedPath(root, details.normalized);
-		if (targetIsTracked)
-			errors.push(
-				`historical pointer exception is stale; target now exists: ${target}`,
-			);
-	}
-}
-
 function routeForPacket(registry, taskClass) {
 	return registry?.routes?.[taskClass] ?? null;
 }
@@ -778,7 +615,6 @@ async function validatePacket({
 	root,
 	packet,
 	packetPath,
-	packetAbsolutePath,
 	state,
 	history,
 	registry,
@@ -790,171 +626,50 @@ async function validatePacket({
 	const expectedStateRef = `PROJECT_STATE.yaml#/milestones/${packet.milestoneId}`;
 	if (packet.stateRef !== expectedStateRef)
 		errors.push(`${packetPath}: stateRef does not identify its milestone`);
+	if (packet.packetStatus === "CLOSED") {
+		if (milestone)
+			errors.push(
+				`${packetPath}: active milestone ${packet.milestoneId} cannot route a CLOSED packet`,
+			);
+		else if (!historyMilestone)
+			errors.push(
+				`${packetPath}: CLOSED packet requires a matching terminal history milestone ${packet.milestoneId}`,
+			);
+		else if (!TERMINAL_STATUSES.has(historyMilestone.status))
+			errors.push(
+				`${packetPath}: CLOSED packet history milestone ${packet.milestoneId} must be terminal, got ${historyMilestone.status}`,
+			);
+		// Frozen records retain their shape and identity, not live filesystem obligations.
+		return;
+	}
 	const route = routeForPacket(registry, packet.taskClass);
 	if (!route) {
 		errors.push(`${packetPath}: taskClass ${packet.taskClass} has no route`);
 		return;
 	}
 	if (!milestone) {
-		if (packet.packetStatus !== "CLOSED") {
-			errors.push(`${packetPath}: packet points to no active milestone`);
-		} else if (!historyMilestone) {
-			errors.push(
-				`${packetPath}: CLOSED packet requires a matching terminal history milestone ${packet.milestoneId}`,
-			);
-		} else if (!TERMINAL_STATUSES.has(historyMilestone.status)) {
-			errors.push(
-				`${packetPath}: CLOSED packet history milestone ${packet.milestoneId} must be terminal, got ${historyMilestone.status}`,
-			);
-		} else {
-			for (const field of [
-				"taskClass",
-				"taskPacket",
-				"taskPacketSha256",
-				"baseCommit",
-				"ownedPaths",
-				"forbiddenPaths",
-				"sharedLeases",
-				"handoff",
-			]) {
-				if (!Object.hasOwn(historyMilestone, field))
-					errors.push(
-						`${packetPath}: CLOSED packet history is missing ${field}`,
-					);
-			}
-			const expectedPacketPath = stablePacketPath(packet.milestoneId);
-			if (!isValidTaskClass(historyMilestone.taskClass))
-				errors.push(
-					`${packetPath}: CLOSED packet history taskClass is invalid or missing`,
-				);
-			if (!isValidTaskPacketPath(historyMilestone.taskPacket))
-				errors.push(
-					`${packetPath}: CLOSED packet history taskPacket is invalid or missing`,
-				);
-			if (historyMilestone.taskPacket !== expectedPacketPath)
-				errors.push(
-					`${packetPath}: CLOSED packet history taskPacket must be the stable path ${expectedPacketPath}`,
-				);
-			if (historyMilestone.taskPacket !== packetPath)
-				errors.push(
-					`${packetPath}: taskPacket differs from closed history milestone`,
-				);
-			if (!isValidSha256(historyMilestone.taskPacketSha256))
-				errors.push(
-					`${packetPath}: CLOSED packet history taskPacketSha256 is invalid or missing`,
-				);
-			else if (
-				sha256(await readFile(packetAbsolutePath)) !==
-				historyMilestone.taskPacketSha256
-			)
-				errors.push(
-					`${packetPath}: taskPacketSha256 differs from closed history milestone`,
-				);
-			if (packet.taskClass !== historyMilestone.taskClass)
-				errors.push(
-					`${packetPath}: taskClass differs from closed history milestone`,
-				);
-			if (!isValidBaseCommit(historyMilestone.baseCommit))
-				errors.push(
-					`${packetPath}: CLOSED packet history baseCommit is invalid or missing`,
-				);
-			if (packet.baseCommit !== historyMilestone.baseCommit)
-				errors.push(
-					`${packetPath}: baseCommit differs from closed history milestone`,
-				);
-			for (const field of ["ownedPaths", "forbiddenPaths", "sharedLeases"]) {
-				if (!Array.isArray(historyMilestone[field]))
-					errors.push(
-						`${packetPath}: CLOSED packet history ${field} is invalid or missing`,
-					);
-				else if (!equalJson(packet.scope[field], historyMilestone[field]))
-					errors.push(
-						`${packetPath}: scope.${field} differs from closed history milestone`,
-					);
-			}
-			if (
-				!Object.hasOwn(historyMilestone, "handoff") ||
-				packet.continuity.currentHandoff !== historyMilestone.handoff
-			)
-				errors.push(
-					`${packetPath}: continuity.currentHandoff differs from closed history handoff`,
-				);
-		}
-	} else {
-		if (!OPEN_STATUSES.has(milestone.status)) {
-			errors.push(
-				`${packetPath}: packet is routed by a terminal active milestone ${packet.milestoneId}`,
-			);
-		}
-		if (packet.packetStatus === "CLOSED") {
-			errors.push(
-				`${packetPath}: active milestone ${packet.milestoneId} cannot route a CLOSED packet`,
-			);
-		}
-		if (packet.packetStatus === "DRAFT" && milestone.status !== "PLANNED") {
-			errors.push(
-				`${packetPath}: DRAFT packet is only valid while active milestone is PLANNED`,
-			);
-		}
-		const presentMetadataFields = PACKET_METADATA_FIELDS.filter((field) =>
-			Object.hasOwn(milestone, field),
-		);
-		if (
-			presentMetadataFields.length > 0 &&
-			presentMetadataFields.length < PACKET_METADATA_FIELDS.length
-		)
-			errors.push(
-				`${packetPath}: active milestone packet metadata must be all-or-none`,
-			);
-		if (milestone.status !== "PLANNED" && packet.packetStatus !== "READY") {
-			errors.push(
-				`${packetPath}: active milestone status ${milestone.status} requires a READY packet`,
-			);
-		}
-		if (!isValidTaskClass(milestone.taskClass))
-			errors.push(
-				`${packetPath}: active milestone taskClass must be one of the registered task classes`,
-			);
-		if (!isValidTaskPacketPath(milestone.taskPacket))
-			errors.push(
-				`${packetPath}: active milestone must record a stable taskPacket path`,
-			);
-		if (!isValidSha256(milestone.taskPacketSha256))
-			errors.push(
-				`${packetPath}: active milestone must record a lowercase taskPacketSha256`,
-			);
-		const expectedPacketPath = stablePacketPath(packet.milestoneId);
-		if (milestone.taskPacket !== expectedPacketPath)
-			errors.push(
-				`${packetPath}: active milestone taskPacket must be the stable path ${expectedPacketPath}`,
-			);
-		if (packet.baseCommit !== milestone.baseCommit)
-			errors.push(`${packetPath}: baseCommit differs from active milestone`);
-		if (
-			packet.taskClass !== milestone.taskClass &&
-			milestone.taskClass !== undefined
-		)
-			errors.push(`${packetPath}: taskClass differs from active milestone`);
-		for (const field of ["ownedPaths", "forbiddenPaths", "sharedLeases"]) {
-			if (!equalJson(packet.scope[field], milestone[field]))
-				errors.push(
-					`${packetPath}: scope.${field} differs from active milestone`,
-				);
-		}
-		if (milestone.taskPacket && milestone.taskPacket !== packetPath)
-			errors.push(`${packetPath}: active milestone taskPacket pointer differs`);
-		if (isValidSha256(milestone.taskPacketSha256)) {
-			const actual = sha256(await readFile(packetAbsolutePath));
-			if (actual !== milestone.taskPacketSha256)
-				errors.push(
-					`${packetPath}: taskPacketSha256 differs from active milestone`,
-				);
-		}
-		if (packet.continuity.currentHandoff !== milestone.handoff)
-			errors.push(
-				`${packetPath}: continuity.currentHandoff differs from active handoff`,
-			);
+		errors.push(`${packetPath}: packet points to no active milestone`);
+		return;
 	}
+	if (!OPEN_STATUSES.has(milestone.status))
+		errors.push(
+			`${packetPath}: packet is routed by a terminal active milestone ${packet.milestoneId}`,
+		);
+	if (packet.packetStatus === "DRAFT" && milestone.status !== "PLANNED")
+		errors.push(
+			`${packetPath}: DRAFT packet is only valid while active milestone is PLANNED`,
+		);
+	if (milestone.status !== "PLANNED" && packet.packetStatus !== "READY")
+		errors.push(
+			`${packetPath}: active milestone status ${milestone.status} requires a READY packet`,
+		);
+	const expectedPacketPath = stablePacketPath(packet.milestoneId);
+	if (milestone.taskPacket !== expectedPacketPath)
+		errors.push(
+			`${packetPath}: active milestone taskPacket must be the stable path ${expectedPacketPath}`,
+		);
+	if (milestone.taskPacket && milestone.taskPacket !== packetPath)
+		errors.push(`${packetPath}: active milestone taskPacket pointer differs`);
 	validateRequiredAuthoritySet({
 		packetPath,
 		routeRequired: route.required,
@@ -1241,7 +956,6 @@ async function validatePackets({
 			root,
 			packet,
 			packetPath,
-			packetAbsolutePath: packetDetails.absolute,
 			state,
 			history,
 			registry,
@@ -1252,16 +966,6 @@ async function validatePackets({
 	for (const [milestoneId, milestone] of Object.entries(
 		state?.milestones ?? {},
 	)) {
-		const presentMetadataFields = PACKET_METADATA_FIELDS.filter((field) =>
-			Object.hasOwn(milestone, field),
-		);
-		if (
-			presentMetadataFields.length > 0 &&
-			presentMetadataFields.length < PACKET_METADATA_FIELDS.length
-		)
-			errors.push(
-				`${milestoneId}: active milestone packet metadata must be all-or-none`,
-			);
 		const expectedPacketPath = stablePacketPath(milestoneId);
 		const packetPath = milestone.taskPacket ?? expectedPacketPath;
 		if (milestone.taskPacket && milestone.taskPacket !== expectedPacketPath)
@@ -1269,7 +973,7 @@ async function validatePackets({
 				`${milestoneId}: active taskPacket pointer must be the stable path ${expectedPacketPath}`,
 			);
 		if (!packets.has(milestoneId)) {
-			if (presentMetadataFields.length > 0)
+			if (milestone.taskPacket !== undefined)
 				errors.push(
 					`${milestoneId}: active packet metadata points to no packet: ${packetPath}`,
 				);
@@ -1285,88 +989,6 @@ async function validatePackets({
 			}
 		}
 	}
-}
-
-export async function validateReceiptChain({
-	root,
-	checkTracked = true,
-	errors = [],
-}) {
-	const details = await inspectPath(root, RECEIPT_DIRECTORY);
-	if (details.escape) {
-		errors.push(
-			`${RECEIPT_DIRECTORY}: path resolves outside the repository: ${details.resolved}`,
-		);
-		return { receiptPaths: [], errors };
-	}
-	if (details.unsafe) {
-		errors.push(`${RECEIPT_DIRECTORY}: ${details.unsafe}`);
-		return { receiptPaths: [], errors };
-	}
-	if (!details.exists) return { receiptPaths: [], errors };
-	if (!details.isDirectory) {
-		errors.push(`${RECEIPT_DIRECTORY}: expected a directory`);
-		return { receiptPaths: [], errors };
-	}
-	const receiptPaths = (await readdir(details.absolute))
-		.filter((name) => name.endsWith(".json"))
-		.sort()
-		.map((name) => `${RECEIPT_DIRECTORY}/${name}`);
-	const schema = JSON.parse(
-		await readText(root, "docs/schemas/history-transition-receipt.schema.json"),
-	);
-	const ajv = makeAjv();
-	const validate = ajv.compile(schema);
-	let previousPath = null;
-	let previousHash = null;
-	for (const receiptPath of receiptPaths) {
-		const receiptDetails = await inspectPath(root, receiptPath);
-		if (receiptDetails.escape) {
-			errors.push(
-				`${receiptPath}: path resolves outside the repository: ${receiptDetails.resolved}`,
-			);
-			continue;
-		}
-		if (receiptDetails.unsafe) {
-			errors.push(`${receiptPath}: ${receiptDetails.unsafe}`);
-			continue;
-		}
-		if (!receiptDetails.exists) {
-			errors.push(
-				`${receiptPath}: discovered receipt is missing or case-mismatched`,
-			);
-			continue;
-		}
-		if (receiptDetails.isDirectory) {
-			errors.push(`${receiptPath}: discovered receipt must be a file`);
-			continue;
-		}
-		if (checkTracked && !trackedPath(root, receiptDetails.normalized))
-			errors.push(`${receiptPath}: untracked receipt`);
-		let receipt;
-		let bytes;
-		try {
-			bytes = await readFile(receiptDetails.absolute);
-			receipt = JSON.parse(bytes.toString("utf8"));
-		} catch (error) {
-			errors.push(`${receiptPath}: JSON parse failed: ${asError(error)}`);
-			continue;
-		}
-		if (!validate(receipt))
-			errors.push(schemaErrors(receiptPath, validate.errors));
-		const currentHash = sha256(bytes);
-		if (previousPath === null && receipt.kind !== "history-genesis-receipt")
-			errors.push(
-				`${receiptPath}: receipt chain must begin with a genesis receipt`,
-			);
-		if (previousPath !== null && receipt.previousReceiptSha256 !== previousHash)
-			errors.push(
-				`${receiptPath}: previousReceiptSha256 does not match ${previousPath}`,
-			);
-		previousPath = receiptPath;
-		previousHash = currentHash;
-	}
-	return { receiptPaths, errors };
 }
 
 export async function checkAgentContext({
@@ -1388,7 +1010,6 @@ export async function checkAgentContext({
 	let registry = null;
 	let state = null;
 	let history = null;
-	let exceptions = [];
 	for (const relativePath of CONTEXT_FILES) {
 		const details = await inspectPath(repositoryRoot, relativePath);
 		if (!details.exists) {
@@ -1429,21 +1050,6 @@ export async function checkAgentContext({
 	} catch (error) {
 		errors.push(`${HISTORY_FILE} parse failed: ${asError(error)}`);
 	}
-	try {
-		exceptions = validateExceptionShape(
-			parseYaml(
-				await readText(
-					repositoryRoot,
-					"docs/agent-context/HISTORY_POINTER_EXCEPTIONS.yaml",
-				),
-			),
-			errors,
-		);
-	} catch (error) {
-		errors.push(
-			`HISTORY_POINTER_EXCEPTIONS.yaml parse failed: ${asError(error)}`,
-		);
-	}
 	const agentsDetails = await inspectPath(repositoryRoot, "AGENTS.md");
 	if (agentsDetails.exists && !agentsDetails.isDirectory) {
 		const agentsText = await readText(repositoryRoot, "AGENTS.md");
@@ -1474,15 +1080,6 @@ export async function checkAgentContext({
 			checkTracked,
 			errors,
 		});
-	if (history)
-		await checkHistoricalPointers({
-			root: repositoryRoot,
-			history,
-			exceptions,
-			checkTracked,
-			errors,
-			warnings,
-		});
 	if (state && registry)
 		await validatePackets({
 			root: repositoryRoot,
@@ -1493,7 +1090,6 @@ export async function checkAgentContext({
 			errors,
 			warnings,
 		});
-	await validateReceiptChain({ root: repositoryRoot, checkTracked, errors });
 	if (milestoneId && state && !state.milestones?.[milestoneId])
 		errors.push(
 			`requested milestone does not exist in active state: ${milestoneId}`,
@@ -1512,25 +1108,9 @@ export async function checkAgentContext({
 
 export function formatAgentContextWarnings(
 	result,
-	{ verbose = false, warningPrefix = "WARNING: " } = {},
+	{ warningPrefix = "WARNING: " } = {},
 ) {
-	const lines = [];
-	let admittedCount = 0;
-	for (const warning of result.warnings ?? []) {
-		const admitted =
-			/^historical pointer exception admitted(?::| for untracked target:| without tracking classification:)/.test(
-				warning,
-			);
-		if (admitted) admittedCount += 1;
-		if (!admitted || verbose || !result.ok)
-			lines.push(`${warningPrefix}${warning}`);
-	}
-	if (result.ok && admittedCount > 0) {
-		lines.push(
-			`Historical pointer exceptions admitted: ${admittedCount}${verbose ? "." : " (use --verbose to list)."}`,
-		);
-	}
-	return lines;
+	return (result.warnings ?? []).map((warning) => `${warningPrefix}${warning}`);
 }
 
 export function formatAgentContextResult(result, options = {}) {

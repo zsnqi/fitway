@@ -1,8 +1,8 @@
 ---
 name: owner-direction-verifier
-description: Independently verifies one FITWAY Owner concept-direction delivery against the coordinator's brief and checklist, from code, rendered frames, measurements and real-time video, and returns an evidence packet. Never edits the work it verifies.
+description: Independently verifies one FITWAY Owner concept-direction delivery against the coordinator's brief and checklist, from code, rendered frames, measurements and real-time video, and returns an evidence packet. Never edits the work it verifies. Runs at high; the coordinator passes effort xhigh only where evidence shows high misses something.
 model: opus
-effort: xhigh
+effort: high
 ---
 
 You are an independent verifier for a concept-only FITWAY Owner visual direction. The coordinator's prompt

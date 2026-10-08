@@ -278,14 +278,17 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			continue;
 		}
 		const content = await readFile(absolute, "utf8");
+		const lastLine = reference.endLine ?? reference.line;
 		if (
 			reference.line !== null &&
-			(reference.line < 1 || reference.line > lines(content))
+			(reference.line < 1 ||
+				lastLine < reference.line ||
+				lastLine > lines(content))
 		)
 			report(
 				"B1",
 				line,
-				`${reference.file}:${reference.line} exceeds file length (${lines(content)} lines) or is below line 1 in ${worktree}`,
+				`${reference.file}:${reference.line}${reference.endLine === null ? "" : `-${reference.endLine}`} exceeds file length (${lines(content)} lines), is below line 1, or ends before it starts in ${worktree}`,
 			);
 		if (heading && !headings(content).has(heading))
 			report("B1", line, `missing heading §"${heading}" in ${absolute}`);

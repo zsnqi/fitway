@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
@@ -8,7 +7,6 @@ import { buildAgentContextPlan } from "../show-agent-context.mjs";
 import { behindUpstreamWarning, readGit } from "./git-context.mjs";
 import { samePath } from "./path-identity.mjs";
 import {
-	hasResumePointMarker,
 	RESUME_POINT_MARKER,
 	repositoryPath,
 	resumePointFilename,
@@ -24,7 +22,6 @@ export function parseHandoffArgs(inputArgs) {
 	const names = new Map([
 		["--milestone", "milestoneId"],
 		["--dir", "directory"],
-		["--lease-hours", "leaseHours"],
 		["--now", "now"],
 	]);
 	for (let index = 0; index < args.length; index += 1) {
@@ -115,14 +112,10 @@ function parseNow(value) {
 
 export function localTimestamp(now) {
 	const pad = (value) => String(value).padStart(2, "0");
-	const date = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
-	const time = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 	const offset = -now.getTimezoneOffset();
 	const zone = `${offset >= 0 ? "+" : "-"}${pad(Math.floor(Math.abs(offset) / 60))}:${pad(Math.abs(offset) % 60)}`;
 	return {
-		filename: `${date}-${time}`,
 		label: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())} ${zone}`,
-		iso: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}${zone}`,
 	};
 }
 
@@ -137,7 +130,6 @@ export async function createResumePoint({
 	repositoryRoot = readGit(process.cwd(), ["rev-parse", "--show-toplevel"]),
 	milestoneId,
 	directory,
-	leaseHours = 72,
 	now: nowValue,
 	git = readGit,
 	writeFileImpl = writeFile,
@@ -145,47 +137,20 @@ export async function createResumePoint({
 	if (!ID_PATTERN.test(milestoneId ?? ""))
 		throw new Error("--milestone requires a lowercase milestone id");
 	const now = parseNow(nowValue);
-	const hours = Number(leaseHours);
-	const expiry = new Date(now.getTime() + hours * 3_600_000);
-	if (
-		!Number.isFinite(hours) ||
-		hours <= 0 ||
-		!Number.isFinite(expiry.getTime())
-	)
-		throw new Error("--lease-hours must be a positive finite number");
 	const stateDetails = await repositoryPath(repositoryRoot, STATE_PATH);
 	const stateText = await readFile(stateDetails.absolute, "utf8");
 	const state = yamlDocument(stateText, STATE_PATH).toJS();
 	const milestone = state.milestones?.[milestoneId];
 	if (!milestone) throw new Error(`Unknown active milestone: ${milestoneId}`);
-	if (!milestone.taskPacket || !milestone.taskPacketSha256)
+	if (!milestone.taskPacket)
 		throw new Error(`${milestoneId}: a registered task packet is required`);
-	// Fail before writing on stale hashes, identity, continuity, scope or lifecycle.
+	// Validate the active packet identity and lifecycle before writing.
 	await buildAgentContextPlan({ repositoryRoot, milestoneId });
-	const packetDetails = await repositoryPath(
-		repositoryRoot,
-		milestone.taskPacket,
-	);
-	const packetText = await readFile(packetDetails.absolute, "utf8");
 	const handoffDetails = await repositoryPath(
 		repositoryRoot,
 		milestone.handoff,
 	);
 	const oldHandoff = handoffDetails.normalized;
-	const current = await readFile(handoffDetails.absolute, "utf8");
-	let content = current;
-	if (!hasResumePointMarker(current)) {
-		const templateDetails = await repositoryPath(repositoryRoot, TEMPLATE_PATH);
-		const template = await readFile(templateDetails.absolute, "utf8");
-		const blocks = [
-			...template.matchAll(
-				/<!-- template:start -->\r?\n([\s\S]*?)<!-- template:end -->/g,
-			),
-		];
-		if (blocks.length !== 1 || !blocks[0][1].startsWith(RESUME_POINT_MARKER))
-			throw new Error(`${TEMPLATE_PATH}: missing or invalid template block`);
-		content = blocks[0][1];
-	}
 	const targetDirectory = directory ?? path.posix.dirname(oldHandoff);
 	const directoryDetails = await repositoryPath(
 		repositoryRoot,
@@ -197,13 +162,29 @@ export async function createResumePoint({
 	const timestamp = localTimestamp(now);
 	const newPath = path.posix.join(
 		directoryDetails.normalized,
-		resumePointFilename(timestamp.filename, milestoneId),
+		resumePointFilename(milestoneId),
 	);
 	const newDetails = await repositoryPath(repositoryRoot, newPath, {
 		allowMissing: true,
 	});
-	if (newDetails.exists)
-		throw new Error(`Refusing to overwrite resume point: ${newPath}`);
+	if (newDetails.isDirectory)
+		throw new Error(`Resume point must be a file: ${newPath}`);
+	const original = newDetails.exists
+		? await readFile(newDetails.absolute, "utf8")
+		: null;
+	let content = original;
+	if (content === null) {
+		const templateDetails = await repositoryPath(repositoryRoot, TEMPLATE_PATH);
+		const template = await readFile(templateDetails.absolute, "utf8");
+		const blocks = [
+			...template.matchAll(
+				/<!-- template:start -->\r?\n([\s\S]*?)<!-- template:end -->/g,
+			),
+		];
+		if (blocks.length !== 1 || !blocks[0][1].startsWith(RESUME_POINT_MARKER))
+			throw new Error(`${TEMPLATE_PATH}: missing or invalid template block`);
+		content = blocks[0][1].replaceAll("<milestone-id>", milestoneId);
+	}
 	let branch;
 	try {
 		branch = git(repositoryRoot, [
@@ -220,80 +201,66 @@ export async function createResumePoint({
 			"A branch must be checked out before creating a resume point.",
 		);
 	const head = git(repositoryRoot, ["rev-parse", "--short", "HEAD"]);
-	content = content.replaceAll("<milestone-id>", milestoneId);
 	content = replaceHeader(
 		content,
 		"As of",
 		`\`${branch}\` at \`${head}\`, ${timestamp.label}`,
 	);
-	content = replaceHeader(
-		content,
-		"Previous resume point",
-		`\`${oldHandoff}\` (history; open it only where a pointer below names a section)`,
-	);
-	const newPacket = replaceYamlScalars(
-		packetText,
-		[[["continuity", "currentHandoff"], newPath]],
-		milestone.taskPacket,
-	);
-	const packetHash = createHash("sha256").update(newPacket).digest("hex");
 	const newState = replaceYamlScalars(
 		stateText,
-		[
-			[["milestones", milestoneId, "handoff"], newPath],
-			[["milestones", milestoneId, "taskPacketSha256"], packetHash],
-			[["milestones", milestoneId, "lastHeartbeatAt"], timestamp.iso],
-			[
-				["milestones", milestoneId, "leaseExpiresAt"],
-				localTimestamp(expiry).iso,
-			],
-			[["updatedAt"], timestamp.iso],
-		],
+		[[["milestones", milestoneId, "handoff"], newPath]],
 		STATE_PATH,
 	);
-	// Detect a coordinator update during preparation rather than overwriting it.
+	// Avoid overwriting concurrent coordinator edits.
 	if (
 		(await readFile(stateDetails.absolute, "utf8")) !== stateText ||
-		(await readFile(packetDetails.absolute, "utf8")) !== packetText
-	)
+		(original !== null &&
+			(await readFile(newDetails.absolute, "utf8")) !== original)
+	) {
 		throw new Error(
-			"State or packet changed while preparing the resume point; retry from the current state",
+			"State or resume point changed while preparing the update; retry from the current state",
 		);
-	const absoluteNewPath = path.resolve(repositoryRoot, newPath);
+	}
+	const absoluteNewPath =
+		newDetails.absolute ?? path.resolve(repositoryRoot, newPath);
 	await mkdir(path.dirname(absoluteNewPath), { recursive: true });
-	await writeFileImpl(absoluteNewPath, content, { flag: "wx" });
 	try {
-		await writeFileImpl(packetDetails.absolute, newPacket);
-		await writeFileImpl(stateDetails.absolute, newState);
+		await writeFileImpl(
+			absoluteNewPath,
+			content,
+			original === null ? { flag: "wx" } : undefined,
+		);
 	} catch (error) {
-		const restore = async (absolute, original) => {
-			if ((await readFile(absolute, "utf8")) !== original)
-				await writeFileImpl(absolute, original);
+		// A failed exclusive create must never remove somebody else's file.
+		if (original !== null) await writeFileImpl(absoluteNewPath, original);
+		throw error;
+	}
+	try {
+		if (newState !== stateText)
+			await writeFileImpl(stateDetails.absolute, newState);
+	} catch (error) {
+		const restoreState = async () => {
+			if ((await readFile(stateDetails.absolute, "utf8")) !== stateText)
+				await writeFileImpl(stateDetails.absolute, stateText);
 		};
 		const rollback = await Promise.allSettled([
-			restore(packetDetails.absolute, packetText),
-			restore(stateDetails.absolute, stateText),
+			restoreState(),
+			original === null
+				? unlink(absoluteNewPath)
+				: writeFileImpl(absoluteNewPath, original),
 		]);
-		const rollbackErrors = rollback
+		const failures = rollback
 			.filter((result) => result.status === "rejected")
 			.map((result) => result.reason);
-		if (rollbackErrors.length)
+		if (failures.length)
 			throw new AggregateError(
-				[error, ...rollbackErrors],
-				`Resume point update and rollback failed; inspect ledger and packet. File retained: ${newPath}`,
+				[error, ...failures],
+				`Resume point update and rollback failed; inspect ledger and ${newPath}`,
 			);
-		try {
-			await unlink(absoluteNewPath);
-		} catch (cleanupError) {
-			throw new AggregateError(
-				[error, cleanupError],
-				`Resume point update failed; original pointers restored but cleanup failed: ${newPath}`,
-			);
-		}
 		throw error;
 	}
 	const lines = [
-		`Created resume point: ${newPath}`,
+		`${original === null ? "Created" : "Updated"} resume point: ${newPath}`,
 		`Next actions: fill every section; git add "${newPath}"; run pnpm check:repository; commit; push.`,
 	];
 	const warning = behindUpstreamWarning(repositoryRoot, git);
@@ -309,7 +276,7 @@ if (
 		const options = parseHandoffArgs(process.argv.slice(2));
 		if (options.help)
 			console.log(
-				"Usage: pnpm handoff:new [--] --milestone <milestone-id> [--dir <repo-relative dir>] [--lease-hours <n>] [--now <ISO-8601>] (writes <YYYYMMDD-HHMMSS>-<milestone-id>-resume.md)",
+				"Usage: pnpm handoff:new [--] --milestone <milestone-id> [--dir <repo-relative dir>] [--now <ISO-8601>] (writes <milestone-id>-resume.md)",
 			);
 		else console.log((await createResumePoint(options)).output);
 	} catch (error) {

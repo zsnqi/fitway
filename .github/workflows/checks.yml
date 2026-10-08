@@ -4,12 +4,17 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   checks:
     runs-on: windows-latest
+    timeout-minutes: 20
     defaults:
       run:
         shell: pwsh
@@ -25,7 +30,14 @@ jobs:
           package-manager-cache: false
       - uses: pnpm/action-setup@v6.1.0
       - run: pnpm install --frozen-lockfile
-      - run: pnpm biome ci apps packages scripts
-      - run: node scripts/check-agent-context.mjs
-      - run: node scripts/verify-repository.mjs
-      - run: node scripts/run-vitest.mjs run scripts
+      - name: Fast verification ladder
+        run: pnpm verify:fast
+        env:
+          DATABASE_URL: postgresql://unit_test:unit_test@127.0.0.1:1/fitway_unit_placeholder
+          BETTER_AUTH_SECRET: fitway_unit_placeholder_auth_secret_32_chars
+          CRON_SECRET: fitway_unit_placeholder_cron_secret_32_chars
+          TELEGRAM_BOT_TOKEN: fitway_unit_placeholder_bot_token
+          TELEGRAM_CHAT_ID: fitway_unit_placeholder_chat_id
+          BETTER_AUTH_URL: http://127.0.0.1:9/api/auth
+          CORS_ORIGIN: http://127.0.0.1:9
+          NODE_ENV: test

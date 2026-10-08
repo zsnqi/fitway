@@ -1,0 +1,79 @@
+schemaVersion: 1
+milestoneId: agent-environment-r03
+taskClass: repository-infrastructure
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/agent-environment-r03
+task:
+  objective: >-
+    Clean, simplify and improve the working environment itself: audit every rule, tool, check and record and keep,
+    merge, replace or remove each on evidence; deliver the verification path (verify-fitway skill, generated feature
+    map, CLI, no-store preview, Codex launch command, tested B8 and B9 fields, the two checker faults); and leave a
+    permanent gardener that keeps it clean.
+  acceptanceCriteria:
+    - An environment audit lists every rule, workflow, tool, check, record type and machine resource in use, classifies each as keep, merge, replace or remove with cited evidence (duplication, conflict, staleness, waste, or a recent round that needed it), and is saved before the first removal.
+    - The audit's changes are made, each naming the audit item it closes; duplicated tools end as one paved path, stale or conflicting rules are replaced or removed, records cost no more than they return, and CI runs every check the repository depends on, once each.
+    - agent-environment-r02 is closed by a closure the records support, with its integrated work and its open items (C4, C5, C2d, the closing review) carried here.
+    - The verification path of owner-design-exploration-r04 DECISIONS item 40 exists - a verify-fitway skill both tools read, run end to end once; a feature map generated from the concept's code and spec with a drift check; a CLI that drives any mapped feature across states, languages, sizes, touch and zoom and writes evidence outside the repository; a no-store preview; one command that launches a Codex round; the B8 and B9 brief fields after the evaluation loop tested them.
+    - The resume-point checker judges backticked paths and branch names against what the CI checkout has, and no check fails a branch only because the wall clock passed a lease it carries; both have unit tests.
+    - A permanent gardener exists (agent-environment DECISIONS item 16) - a skill both tools read, its fixed checklist, a schedule and event triggers, one report and at most one bounded change per pass - and its first pass is recorded.
+  explicitExclusions:
+    - Product code, copy, behavior and data semantics (apps/**, packages/**, edge/** and their tests), dependencies and migrations.
+    - Locked product, security, privacy, content, accessibility, visual-authority and data-semantic decisions, which stay in force (AGENTS.md).
+    - Owner concept design and code (design-research/**), which stays with owner-design-exploration-r04; this milestone reads it.
+    - Acceptance thresholds, held-out checks and the grader (D:/fitway-grader), which never enter the repository or a brief.
+    - Taste and visual acceptance, which stay with the user.
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: Preserve coordinator, worker, and verifier ownership.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Inspect current state invariants before additive infrastructure work.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Keep the repository ladder and mutation guards intact.
+  conditional:
+    - trigger: the infrastructure can affect a Product or Spec guarantee
+      role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Canonical detail" }
+      actionIfTriggered: READ
+    - trigger: the infrastructure changes a design-context bridge
+      role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Design" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones:
+    - agent-environment-r02
+  unresolvedDecisions: []
+verification:
+  profile: focused repository-infrastructure profile; unit tests for touched scripts, check:repository, check:agent-context, Biome, CI on the branch; the verify-fitway skill executed end to end; held-out grading of each Codex round
+  orderedGates:
+    - Validate the READY packet and ledger with context:show and check:agent-context.
+    - Save the environment audit before the first removal, and name the audit item each change closes.
+    - Grade every Codex round on held-out rows kept outside the brief, and record brief rows, held-out rows and the failure cause.
+    - Run the verify-fitway skill end to end (launch, doctor, one mapped feature, cleanup) and keep its evidence outside the repository.
+    - Add or update unit tests for every touched script and run them with scripts/run-vitest.mjs; CI passes on the branch.
+    - Run check:repository, check:agent-context and Biome on the changed files; git status must be unchanged by the runs.
+    - Independent verification against this packet's acceptance criteria before integration.
+  independentReviewRequired: true
+evidence:
+  requiredArtifacts:
+    - The environment audit, with each item's class and evidence, and the change that closed it.
+    - The verify-fitway skill's end-to-end run, with the evidence folder it names.
+    - The feature map, the command that regenerates it, and its drift check's result.
+    - For the B8 and B9 fields, the evaluation round that tested them, with brief and held-out results.
+    - Each Codex round's brief rows, held-out rows and failure cause.
+    - The gardener's first pass.
+    - Exact unit-test and check:repository results, and the green CI run on the branch's pushed commit.
+    - The independent verifier's report.
+limitations:
+  - Opened by the coordinator on 2026-10-07 under owner-design-exploration-r04 DECISIONS item 40 and agent-environment DECISIONS items 12-16, the user's wider mandate for this phase.
+  - It absorbs agent-environment-r02 (all its paths but its packet) and takes CLAUDE.md, .claude/agents/**, .claude/skills/** and biome.json from owner-design-exploration-r04 (DECISIONS item 14); both sides record the move.
+  - package.json is owned for its scripts section only; any dependency change is out of scope.
+  - ui-forensics is the user's machine-level skill, and the live Owner concept is on owner-followup-r04-build, not on main (DECISIONS item 15).
