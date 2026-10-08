@@ -22,7 +22,7 @@
   Agent tool's `effort` overrides a definition (Claude Code 2.1.292). CLAUDE.md names the call-time cases.
 - The environment page: built by an Opus designer from a cited facts file
   (`D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/06eea6dd-7c5b-44ad-b20d-f63072729f39/scratchpad/env-page/`);
-  its brief is `r03/briefs/env-page.md`. See Next steps 1 for its publication.
+  its brief is `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`; Next steps 1.
 - The concept defect round 4 found: on the phone, in English, the tuner's «الإضاءة» toggle sits outside the screen,
   so no tap reaches it (the user said yes to the fix, 2026-10-07).
 
