@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** codex/owner-redesign-r04 at `16733852`, 2026-10-07 13:45 +03:00
+- **As of:** codex/owner-redesign-r04 at `94a556f7`, 2026-10-08 16:30 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (item 40), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 12-16, the environment phase), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -16,8 +16,10 @@
   gardener. It absorbed agent-environment-r02, and took CLAUDE.md, .claude/agents/**, .claude/skills/** and
   biome.json from this milestone, which keeps the Owner concept and its records.
 - **ui-forensics 1.1.0** (the user's machine-level skill), reviewed and extended for the phase; report, patch and a
-  focus trial on the build: `D:/fitway-temp/ui-forensics-1.1.0/REPORT.md`. The trial left one observation for this
-  milestone: on the phone, the tuner's «الإضاءة» toggle takes keyboard focus while offscreen.
+  focus trial on the build: `D:/fitway-temp/ui-forensics-1.1.0/REPORT.md`. Its observation (on the phone the tuner's
+  «الإضاءة» toggle takes keyboard focus while offscreen) is Codex round tuner-reach and its repair (`codex-rounds.md`).
+- **SPEC.md** is no longer in this milestone's owned paths (the user said yes, 2026-10-08): its one wording landed in
+  `4851cccf`; a later Product/Spec amendment opens separately.
 - **main is the trunk** (DECISIONS 40), fast-forwarded to this line whenever CI passes on it.
 - **pstack skills installed** user-level and unmodified (cursor/plugins at `df58112`, MIT): create-verification-skill
   and maintain-verification-skill, with a LICENSE and SOURCE.md beside each.
@@ -60,8 +62,9 @@ Nothing.
 
 ## Known risks
 
-- **The build branch's CI:** owner-followup-r04-build still carries the old wall-clock lease check, which main has
-  dropped (agent-environment-r03), and fails CI on a push after 2026-10-10: merge main into it before its next push.
+- **The build's local commits:** owner-followup-r04-build took main (`cea05c06`, CI green, pushed at `ad8f80c2`);
+  the tuner round and its repair brief (`f3c19d15`, `1305c0ee`, `1d3539a3`) stay local until the repair is graded
+  (agent-environment-r03 resume point, Next steps 3).
 - main has no branch protection (a private repository on GitHub's free plan); nothing found deploys on a push to main.
   The main checkout D:/Projects/fitway keeps its local main at `bbb51709` and an uncommitted one-line AGENTS.md change
   from 2026-09-06; it was left untouched.
@@ -78,8 +81,9 @@ Nothing.
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `16733852`).
-- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `a474fe30`.
+  commit that adds this text (parent `94a556f7`).
+- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `1d3539a3`
+  plus the repair's commit, if it finished.
 - The environment phase: `docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md`.
 - Motion: designer `D:/fitway-temp/owner-r04-motion/`, review `D:/fitway-temp/owner-r04-motion-review/`, research
   `D:/fitway-temp/owner-r04-motion-research/REPORT.md`.

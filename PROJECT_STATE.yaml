@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-08T16:30:00+03:00
+updatedAt: 2026-10-08T16:25:00+03:00
 gardener:
   date: '2026-10-08'
   outcome: blocked
@@ -40,7 +40,6 @@ milestones:
       - docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
       - docs/phase-records/handoffs/owner-design-exploration/r04/**
       - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-      - SPEC.md
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
       - design-research/owner-visual-preferences/** (user-supplied reference; read only)
@@ -49,7 +48,7 @@ milestones:
       - tests/browser/** including canonicals and screenshots
       - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
       - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-      - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits), and all of SPEC.md except the user-authorized 2026-09-24 entries-framing wording
+      - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits), and SPEC.md (the user-authorized 2026-09-24 entries-framing wording landed in 4851cccf; a later Product/Spec amendment opens separately)
       - docs/archive/**, prior handoffs, and unrelated phase records
       - pnpm-lock.yaml, dependencies, and migrations
       - CLAUDE.md, .claude/agents/**, .claude/skills/** and biome.json (owned by agent-environment-r03 since 2026-10-07)
@@ -133,8 +132,6 @@ milestones:
       - scripts/check-agent-context.mjs
       - scripts/check-agent-context.test.ts
       - scripts/check-design-context.mjs
-      - scripts/check-frontier-preservation.mjs
-      - scripts/check-frontier-preservation.test.ts
       - scripts/check-owner-tokens.mjs
       - scripts/check-test-runtime.mjs
       - scripts/check-test-runtime.test.ts

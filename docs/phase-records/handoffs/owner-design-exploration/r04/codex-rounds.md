@@ -337,3 +337,21 @@ checks live outside the repository and never appear here or in a brief.
   A stale browser cache serving the old `reports.js` throws `M.trial is not a function` until a hard reload; the
   preview server sends no cache headers.
 - **Repeat fault:** none.
+
+## tuner-reach: `design-research/owner-composition-exploration-r04/directions/briefs/codex-tuner-reach.md`, result `1305c0ee` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** the light tuner reachable on the phone and the tablet (the user said yes, 2026-10-07): on the phone its
+  toggle lay off the screen in both languages while Tab still focused it; on the tablet the open panel ran off the
+  screen and the toggle covered the header status button.
+- **Brief rows, as Codex graded them:** T1-T3, L1-L5 PASS.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/tuner-reach/ROWS.md`, by the coordinator. 112 of 114 pass; the two
+  failures (H6, a tap after a drag) are a harness fault: after CDP touch events the next tap gives no click to any
+  element, the page's own menu button included; a fresh context passes. Planted control: the baseline fails 46 rows
+  where the defect is. Two findings the rows did not cover, measured after: with the tuner closed, `place()` reads
+  every page control's box on every page change, about 11,300 reads during a one-second pointer sweep over Daily's
+  chart against about 100 at the baseline, with frames over 20 ms in 2 of 3 runs (H11); on the phone and the tablet
+  the toggle jumps across the screen when the panel opens (H12). Escape with a page layer open still closes the
+  layer first (H13).
+- **Failure cause:** the brief. It set no limit on the page's motion cost with the tuner on, and T3 (no control under
+  the toggle at any scroll position) left a moving toggle as the literal reading. Repair attempt 1:
+  `codex-tuner-reach-fix-1.md` (F1 cost, F2 the jump), from `1d3539a3`.
