@@ -453,7 +453,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    Operations are each aimed to be finished in one round, now that the look, the components, the states and the
    references are settled. Before a screen starts, the coordinator asks all its open questions at once, in plain
    words; then one design-and-build round and one review, not a series of option rounds.
-   **The max-effort trial** (the user, 2026-10-03): `owner-direction-designer-max` designs one whole screen once, the
+   **The max-effort trial** (the user, 2026-10-03): `owner-direction-designer` at effort `max` (until 2026-10-08 the
+   separate `owner-direction-designer-max`; agent-environment DECISIONS item 18) designs one whole screen once, the
    first of these (Activity log), and its result is judged before it is used again. Not for small fixes such as the
    busiest-time card. Rules are not rigid (WORKING_AGREEMENTS "Rules and findings"): its brief states the question
    and the hard limits (product, privacy, truthful states, the user's bans) and leaves the composition to the
