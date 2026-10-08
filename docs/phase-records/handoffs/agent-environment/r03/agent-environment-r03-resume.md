@@ -28,7 +28,7 @@
   its brief is `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`; published (Next steps 1).
 - Next steps 3, done on 2026-10-08: main merged into owner-followup-r04-build (`cea05c06`) with round 9's recipe
   additions (`ad8f80c2`; drift passes, and names 10 uncovered openers with the `6df156bd` file); CI green, pushed.
-  The machine-local launch configuration of this worktree (`.claude/launch.json`) runs `eclipse-build` (3174) and
+  The machine-local launch configuration of this worktree (.claude/launch.json, untracked) runs `eclipse-build` (3174) and
   `eclipse-build-lan` (3180, `--lan`) on verify-fitway's no-store server (`cli.mjs _serve`); 3174 answered
   `Cache-Control: no-store`. Its dead entries (gap-mock, lane-before, lane-after, the stale `eclipse`) are gone.
 - The tuner's «الإضاءة» toggle (the user said yes, 2026-10-07): Codex round tuner-reach (`1305c0ee`) brought it on
