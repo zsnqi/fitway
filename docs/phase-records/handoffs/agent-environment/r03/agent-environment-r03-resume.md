@@ -72,8 +72,10 @@
    closing review and the milestone's closure. The Owner screens resume after.
 ## Waiting on the user
 
-- The discussion of DECISIONS item 20 continues on Friday 2026-10-09 (its open points). The agreed next work is the
-  Owner CSS round on the build (Owner resume point, Next steps 6), not started: the user asked to continue tomorrow.
+- The next session continues the discussion of DECISIONS item 20 (its open points) with the user, reads the two
+  research digests named there first, and ends in a plan the user agrees; execution follows the day after. The
+  agreed Owner CSS round (Owner resume point, Next steps 6) is not started. The weekly gardener pass runs Friday
+  2026-10-09 14:00 (Next steps 2).
 
 ## Known risks
 

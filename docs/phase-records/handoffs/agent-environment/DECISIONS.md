@@ -173,9 +173,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       permanent blind-spots section; a check is shown with the proof that it fails on a planted defect; no single
       health score, a short list of what needs the user instead; generated from repository data, never written by
       hand; audited against reality by an independent agent from time to time.
-    - **Open, for the next discussion:** when the first generated status page is built (the user said both "later,
-      at the move to production" and "now, if it is simple and cheap"); how to measure that the environment improves
-      (the user's measures: fewer attempts per feature, fewer defects reaching the final grade, fewer interventions
-      per round, a fresh agent productive without a long explanation, fewer regressions), which needs a structured
-      one-line-per-round record; and giving each agent the least correct and sufficient context (delegated briefs
-      already name two or three sources; the coordinator's startup reads far more).
+    - **Agreed (the user, later the same evening).** The coordinator's heavy session start is the problem to solve
+      first: measure how much each role reads at start, and lighten the coordinator's until its resume file is
+      enough. The verification CLI stays the place to invest (Lauren Tan). Before designing a change to the
+      environment, a Sonnet researcher gathers what experienced engineers have written on it, as references, not as
+      truth. The status page is built only when the user asks for it explicitly.
+    - **Open, for the next session's discussion, which ends in a plan; execution follows the day after:** how to
+      measure that the environment improves (the user's measures: fewer attempts per feature, fewer defects reaching
+      the final grade, fewer interventions per round, a fresh agent productive without a long explanation, fewer
+      regressions), which needs a structured one-line-per-round record; and how to give each role the least correct
+      and sufficient context. Research for it: `D:/fitway-temp/agent-env-vision-research/matt-skills.md` (Matt
+      Pocock's skills against these problems) and `D:/fitway-temp/agent-env-vision-research/context-health-metrics.md`
+      (experienced engineers on context, code health, measures and status pages).
