@@ -6,6 +6,7 @@ import {
 	outputFile,
 	ownedSession,
 	preview,
+	ReportedFailure,
 	shortFinding,
 	verificationPort,
 } from "./core.mjs";
@@ -129,6 +130,7 @@ export function itemSummary(entry) {
 		result: entry.status,
 		problems: entry.problems,
 		proof: entry.stateProof,
+		featureProof: entry.featureProof,
 		dependencies: entry.dependencies,
 		files: entry.files,
 	};
@@ -465,6 +467,7 @@ export async function drive(options) {
 													await prove(current.page, rule.proof, language);
 											// A flow may change a state (retry/navigation). Its end proof owns that result;
 											// the requested state was proved before the first user action.
+											entry.featureProof = actionRecipe.proof;
 											entry.status = "pass";
 										}
 										for (const [name, measure] of [
@@ -588,15 +591,22 @@ export async function drive(options) {
 		await jsonOutput(out, "summary.json", manifest.items.map(itemSummary));
 		const failed = manifest.items.filter(
 			(item) =>
-				!["pass", "not-reachable"].includes(item.status) ||
-				item.measurementProblems?.length,
+				!["pass", "not-reachable", "keyboard-unreachable"].includes(
+					item.status,
+				) || item.measurementProblems?.length,
 		);
+		const keyboardUnreachable = manifest.items.filter(
+			(item) => item.status === "keyboard-unreachable",
+		);
+		const hasFindings = failed.length || keyboardUnreachable.length;
 		if (!options.quiet)
 			console.log(
-				`DRIVE ${failed.length ? "FAIL" : "PASS"}: ${manifest.items.length} items; ${manifest.items.filter((i) => i.status === "not-reachable").length} not reachable; ${failed.length} problems; evidence ${out}/manifest.json`,
+				`DRIVE ${hasFindings ? "FAIL" : "PASS"}: ${manifest.items.length} items; ${manifest.items.filter((i) => i.status === "not-reachable").length} not reachable; ${keyboardUnreachable.length} keyboard unreachable${keyboardUnreachable.length ? ` (${keyboardUnreachable.map((item) => `${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport}`).join(", ")})` : ""}; ${failed.length} problems; evidence ${out}/manifest.json`,
 			);
-		if (failed.length)
-			throw new Error("Items have findings; inspect summary.json");
+		if (hasFindings)
+			throw new (options.quiet ? Error : ReportedFailure)(
+				"Items have findings; inspect summary.json",
+			);
 		return manifest;
 	} finally {
 		await Promise.allSettled([browser?.close(), server?.close()]);

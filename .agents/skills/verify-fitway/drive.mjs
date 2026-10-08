@@ -165,7 +165,12 @@ export async function keyboardStep(page, key, entry, action) {
 	await page.keyboard.press(key);
 	const after = await focusedElement(page);
 	entry.focusSteps ||= [];
-	entry.focusSteps.push({ action, key, before, after });
+	entry.focusSteps.push({
+		action: key === "Tab" ? `Tab move to ${after.selector}` : action,
+		key,
+		before,
+		after,
+	});
 }
 
 export async function reachByKeyboard(page, selector, entry, action) {

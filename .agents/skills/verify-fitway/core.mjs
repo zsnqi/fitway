@@ -13,6 +13,9 @@ import {
 	sep,
 } from "node:path";
 
+// A command already printed this failure's outcome block; callers still fail.
+export class ReportedFailure extends Error {}
+
 export const inside = (root, target) => {
 	const rel = relative(root, target);
 	return !isAbsolute(rel) && rel !== ".." && !rel.startsWith(`..${sep}`);

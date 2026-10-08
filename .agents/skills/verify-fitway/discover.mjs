@@ -3,15 +3,25 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const repository = fileURLToPath(new URL("../../../", import.meta.url));
+export function requireDependency(name) {
+	try {
+		return createRequire(resolve(repository, "package.json"))(name);
+	} catch (error) {
+		if (error.code !== "MODULE_NOT_FOUND") throw error;
+		const missing =
+			/Cannot find module '([^']+)'/.exec(error.message)?.[1] || name;
+		const failure = new Error(`Missing dependency: ${missing}.`);
+		failure.fix = `pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile`;
+		throw failure;
+	}
+}
 // Help and preview lifecycle commands also work in a checkout without dependencies.
 let compiler;
 export const ts = new Proxy(
 	{},
 	{
 		get(_target, key) {
-			compiler ??= createRequire(resolve(repository, "package.json"))(
-				"typescript",
-			);
+			compiler ??= requireDependency("typescript");
 			return compiler[key];
 		},
 	},
