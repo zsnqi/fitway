@@ -39,6 +39,8 @@
 
 1. The environment page is published, private: https://claude.ai/artifact/Kx1hDDw4Z67niKMmkgwRzY (2026-10-08). Update
    it from the run folder above by republishing to that URL.
+   Steps 3, 4 and 5 do not wait for the weekly pass; start with 3. Step 2 begins after the first pass, Friday
+   2026-10-09 14:00.
 2. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
    `gardener/<date>` branch, merge what is accepted, write the ledger's `gardener` entry, rerun the report's final
    survey, and show the user the folder list before they run the new cleanup script. The list so far: 13 folders of
