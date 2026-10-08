@@ -123,7 +123,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - The advisor tool stays off: in Anthropic's measurement a Haiku 5.5 executor consulted an Opus advisor on none
       of 198 questions, and every subagent would inherit it. The gardener's scheduled pass pins
       `--model claude-sonnet-5-5 --effort high`, because a headless run otherwise takes the user's saved Opus at
-      `xhigh`; the terminal Claude Code is 2.1.293 (updated by the user, 2026-10-08).
+      `xhigh`; the terminal Claude Code is 2.1.293 (updated by the user, 2026-10-08). Kept over Opus 5.5 at `high`
+      when the user asked (2026-10-08): on the shared agentic benchmarks the two are within about three points
+      (Sonnet ahead on Terminal-Bench 4.0), Anthropic's Claude Code help says Opus "costs several times more per
+      turn", and two Sonnet passes reached identical findings in round 7; `high`, not `medium`, because Sonnet 5.5
+      may check in before finishing at `medium`, which ends a headless run
+      (`docs/phase-records/handoffs/agent-environment/r03/model-choice-gardener.md`). A miss traced to the model
+      moves the pass to Opus.
 19. **Recipes beside the concept, and the rounds 6-7 follow-up (coordinator, 2026-10-08).**
     - What the concept's code can tell (pages, switches, values, dependencies, the elements a user opens) is derived
       each time the map is used; what it cannot tell (how a user reaches a feature, what proves it, sample values for

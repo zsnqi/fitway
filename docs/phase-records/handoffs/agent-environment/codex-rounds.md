@@ -336,3 +336,54 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the code, and one row. No test ran `cleanup.mjs`'s command, which is how the quoting fault
   passed; the survey's merged check was not told which `main`. A follow-up round takes U2, U3, U5 and the cold
   agents' findings before the weekly schedule starts.
+
+## agent-environment-r03 round 8: `r03/briefs/round-8.md`, result `3003f7ff` (level xhigh)
+
+- **Set-up:** the brief's commit `aa75a137` over HEAD `d05b9ec9`, on branch `agent-environment-r03-gardener`, alongside
+  round 9 in the other worktree. Held-out rows X1-X11: X1-X8 by a Sonnet grader in a disposable worktree and a scratch
+  clone; X9 by two fresh Sonnet agents that read only the skill, each in its own disposable worktree at `3003f7ff`;
+  X10 and X11 by the coordinator from CI and the diff.
+- **Brief rows, as Codex graded them:** 9 of 10. H10 fails: the fast ladder stopped on the verify-fitway contract
+  tests, which bind port 3177, held by round 9. A brief fault: two concurrent rounds shared a port through the ladder.
+- **Held-out rows:** 9 of 11 pass, 1 partial, 1 fails.
+  - X1 passes, with its negative control: without verbatim arguments the round's own deletion test fails ("The
+    specified path is invalid"). X3-X8 and X11 pass; the coordinator re-ran X3's branch list.
+  - X2 is partial: a path cited at the end of a sentence (`foo-bar.`), before a colon or in bold, or written
+    `fitway-temp/x` or `/d/fitway-temp/x`, is not taken as a citation, so that folder would be proposed; the minimum
+    age is in the skill but has no line in the report.
+  - X9 passes on its row: both agents ended `blocked` with the same counts in every class (504 temp folders, 13
+    proposed, 3 branches, 3 worktrees, 16 duplicated lines), deleted nothing and pushed nothing. Both found that the
+    final survey cannot give a usable cleanup script: the report must name its proposals, a name in the report
+    protects them, and the report's new date fails `check:repository` until the coordinator writes the ledger, so the
+    final survey is blocked.
+  - X10 fails: CI on `3003f7ff` fails H6's test, which compares the checkout path as text where the runner's TEMP is
+    the 8.3 short path `RUNNER~1` (the fault recorded above under Round 6, `codex-r6-path-tokens.md`).
+- **Also found:** the survey proposes removing the gardener's own worktree each week; worktrees not merged into
+  `origin/main` are never measured, so old evaluation worktrees are never seen; a finished but ungraded round's brief
+  fails `brief:check` and blocks the pass; `pass.ps1` points TEMP at the inventoried root; pnpm's pre-run dependency
+  check tries an install when node_modules is stale.
+- **Failure cause:** the brief and the tests. H2 (written by the coordinator) made anything the rolling report cites
+  safe, without separating its evidence from its proposals; the brief let two rounds share a port; the H6 test
+  compares paths as text. Round 8b takes these and the findings above.
+
+## agent-environment-r03 round 9: `r03/briefs/round-9.md`, result `f32d4cca` (level xhigh)
+
+- **Set-up:** the brief's commit `aa75a137` over HEAD `d05b9ec9`, alongside round 8. Held-out rows Y1-Y6: Y2-Y6 by a
+  Sonnet grader in a disposable worktree with planted copies of the concept; Y1 by a fresh Sonnet agent that read only
+  the skill, on two copies of the concept (one with the PIN opener taken out of the tab order); CI by the coordinator.
+- **Brief rows, as Codex graded them:** 5 of 5 (K1-K5). CI green on `f32d4cca`; its 33 contract tests run in the
+  ladder's verification-contracts step, which already existed.
+- **Held-out rows:** 6 of 6 pass.
+  - Y1: the PIN dialog opens in Arabic at the tablet width by keyboard in 12 Tabs and Enter, focus ending in the new
+    PIN field (the coordinator looked at the frame); the planted copy is reported unreachable by keyboard, naming the
+    body where the Tab cycle repeated.
+  - Y2: an `aria-haspopup="menu"` opener with no target fails drift by file and line, `"false"` does not; the build
+    passes with the round's recipe additions, and the specimens are covered by recipe entries, not by a rule that
+    also hides a live opener. Negative control: without the `aria-haspopup` discovery, 6 of 33 tests fail.
+  - Y3: the doctor's repair command drops the stale recipes and adds marked drafts; drift then names only the drafts;
+    the concept is unchanged. Y4, Y5 and Y6 pass.
+- **Also found:** commands that need dependencies still fail with a raw module error in a clone without node_modules
+  (only `help` names the install step); the doctor prints its problem block twice; a keyboard-unreachable item is
+  counted as a problem, not as "not reachable", in the drive summary; the summary's proof field does not repeat the
+  dialog-open proof; every focus step carries the activation's label.
+- **Failure cause:** none in the rows. The findings above go to the follow-up list.

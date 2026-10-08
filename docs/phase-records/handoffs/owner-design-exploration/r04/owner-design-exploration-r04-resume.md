@@ -44,6 +44,14 @@
    the rail's focus ring); and the tuner toggle above, if the user wants it handled.
 5. **After each resume point,** fast-forward main to this line once CI passes on it (DECISIONS 40), and update the
    discussion page.
+6. **CSS findings from the good-css review** (2026-10-08, `docs/phase-records/handoffs/owner-design-exploration/r04/good-css-review.md`,
+   counts re-checked by the coordinator): 5 of the concept's 77 `:hover` rules sit behind a hover media query, so hover
+   sticks after a tap on the phone and tablet (gate with `(hover: hover)` only, not `pointer: fine`, because of the
+   tablet band); 12 `outline: none` rules to check against a visible focus; no `forced-colors` support; no
+   `viewport-fit=cover`, so the safe-area insets are inert. A Codex fix round on the build. Press feedback (`:active`,
+   none today) and 16 px field text against iOS zoom are the user's to decide, asked when the screens resume. The
+   skill is not installed; it goes in slash-only, as a reference, at the production (apps/web) stage (the user,
+   2026-10-08).
 
 ## Waiting on the user
 
