@@ -410,3 +410,71 @@ held-out checks live outside the repository and never appear here or in a brief.
   until the coordinator acts; the weekly worktree's path is fixed in `facts.mjs`.
 - **Failure cause:** none in the code for the rows; Z5's listing is the round's reading of "listed". Follow-ups:
   a named section for worktrees awaiting review; the final survey rerun after the ledger entry (docs/WORKFLOW.md).
+
+## agent-environment-r03 round 13: `r03/briefs/round-13.md`, result `644e8abc` (level high)
+
+- **Set-up:** the brief's commit `ae89c7a9` over HEAD `70bc51c1`, on branch `agent-environment-r03-css`, launched with
+  rounds 10-12 side by side. Held-out rows T1-T5 by a Sonnet grader in a disposable worktree at the result, on a
+  `git archive` of the build's Eclipse folder at `1d3539a3` and planted fixtures; T3 reproduced by the coordinator.
+- **Brief rows, as Codex graded them:** 3 of 3 (C1-C3); 68 tests; the fast ladder passed on its clean tree.
+- **Held-out rows:** 4 of 5 pass, 1 partial.
+  - T1: on the build's folder the lint exits 1 with 87 findings: 76 ungated hover selectors (80 less 4 gated, as the
+    review and the facts scan found), 0 `transition: all`, 0 `ease-in`, 11 outline removals without a ring. The grader
+    opened all 11: none is a false positive; 5 have no ring anywhere and 6 move it to a child or parent (no declared
+    ring comment exists yet). The twelfth, `style.css:941` `.fw-pop`, passes on its own border and shadow.
+  - T2, T4 and T5 pass: the planted gating, `all`, `ease-in` and `cubic-bezier` cases; a folder outside the repository
+    and one named with a space and Arabic letters; no CSS is `NO_CSS ... not a pass`, exit 2; hashes and times
+    unchanged; diff in scope, not in the ladder; breaking the hover gate fails 5 tests, the ease-in check 7.
+  - T3 is partial: a `focus-ring:` comment naming a missing selector is flagged, but the finding does not name it.
+- **Also found:** `outline: 0 none` and `outline-style: none` are not seen as removals; `@media not all and (hover:
+  hover)` counts as gated; the finding does not tell a moved ring from no ring; a decorative border or shadow counts
+  as a ring (`.fw-pop`).
+- **Failure cause:** none in the rows but T3's wording; the findings above go to the follow-up list with the other
+  rounds'.
+
+## agent-environment-r03 round 11: `r03/briefs/round-11.md`, result `c7e0e404` (level high)
+
+- **Set-up:** the brief's commit `35e2ed33` over HEAD `70bc51c1`, on branch `agent-environment-r03-verify`, launched with
+  rounds 10, 12 and 13. Held-out rows Q1-Q7 by a Sonnet grader in a disposable worktree at the result, on a
+  `git archive` of the build's Eclipse folder at `1d3539a3`, planted copies and a clone without node_modules; Q1
+  reproduced by the coordinator. Before launch the coordinator added to V1 that the fast ladder runs
+  `check:verification-map` and must still pass with no recipe file.
+- **Brief rows, as Codex graded them:** 7 of 7 (V1-V7); 39 contract tests, six failing on the base; ladder passed.
+- **Held-out rows:** 7 of 7 pass.
+  - Q1: no recipe file prints `DRIFT SKIP: no recipe file was found; nothing checked.`, exit 0; with the build's file
+    `DRIFT PASS: 1 recipe files found and checked.`; a gone selector still fails.
+  - Q2-Q3: without node_modules, map, list and drift name typescript and the install line, doctor and compare name
+    `@playwright/test`, no stack, exit 1; each failure prints once.
+  - Q4-Q6: Access's PIN opener out of the tab order reads `1 keyboard unreachable (access.html/pinChange ...); 0
+    problems`, exit 1, and a failing state proof stays a problem; the summary carries `featureProof`
+    (`#dlg-pin[open]`) beside the state proof; the 12 Tab steps read `Tab move to <selector>` and only Enter carries
+    the activation. The grader looked at the 768 frame: the Arabic PIN dialog open, focus on the new-code field.
+  - Q7: round 9's PIN drive and Daily's compare (42 equal) pass; drift passes on the build; diff in scope; reverting
+    the V1 branch fails its test.
+- **Also found:** the keyboard-unreachable text quotes the whole body's text as where focus stopped; "not reachable"
+  and "keyboard unreachable" read alike; `featureProof` records the recipe's declared proof, not a measured value; the
+  CLI accepts only ports 3176-3177 (`core.mjs:295`), so a grader cannot move off the builders' ports.
+- **Failure cause:** none.
+
+## agent-environment-r03 round 10: `r03/briefs/round-10.md`, result `d8945397` (level high)
+
+- **Set-up:** the brief's commit `95cc46c2` over HEAD `70bc51c1`, on branch `agent-environment-r03`, launched with
+  rounds 11-13. Held-out rows P1-P7 by a Sonnet grader in a disposable worktree at the result, with scratch ledgers,
+  packets and homes; the lease finding confirmed by the coordinator in the diff.
+- **Brief rows, as Codex graded them:** 7 of 7 (R1-R7); ladder passed.
+- **Held-out rows:** 5 of 7 pass, 2 partial; one unrequested regression.
+  - P2, P4, P5 and P7 pass: `pnpm test [--] <file>` runs one file in both shells and keeps `-t`; the checker's ids are
+    now `brief-format`, `brief-readiness`, `brief-references` and `brief-length`, and codex.md's B10 names
+    `brief-references`; the Impeccable fallback is found under any home in `.codex` or `.agents`; reverting
+    run-vitest's repair fails 2 of its 9 tests.
+  - P6 passes with gaps: file against glob, nested globs and bare against scoped `SPEC.md` fail naming both milestones;
+    disjoint globs, a lease and a closed record pass; the real ledger passes. But prose words are claimed as paths
+    (`tests` from "... and its tests"; "one new frontier policy pointer document"), and access-reason-cap-r01's folder
+    named inside prose (`docs/phase-records/handoffs/coordinator/`) is not claimed.
+  - P1 is partial: each misplaced `supersededBy` is named, but the check stops at the first fault, so one run names
+    only one of two. P3 is partial: a bad `taskClass` fails with a schema dump that omits the value.
+  - Regression: the check at `70bc51c1` that failed two open milestones sharing a lease string is gone; with the new
+    rule an overlap passes when either milestone's lease names the path, so both may hold it (AGENTS.md: a lease for
+    a shared file).
+- **Failure cause:** the brief. R7 said an overlap passes "unless a `sharedLeases` entry names that path" without
+  saying a lease has one holder, and it left the scope-line rule to the round. Repair attempt 1 is round 10b.
