@@ -76,7 +76,10 @@
 4. Step 4's four rounds (launched, Running now): grade each as it ends against its held-out rows, from a `git archive`
    of its result, in a disposable grading worktree; record each in `codex-rounds.md`; a failure allows two repairs
    (AGENTS.md). Then merge the four branches into agent-environment-r03 (disjoint files), and that into the
-   coordinator line and main once CI passes. FACTS.md in `D:/fitway-temp/r03-followup-drafts/` holds the cited causes.
+   coordinator line and main once CI passes. Their base `70bc51c1` fails CI's resume-point check (it named the
+   untracked launch configuration as a path; fixed in `7323b99c`): merge the coordinator line into each result before
+   its CI run. Until then each of the four worktrees holds a placeholder .claude/launch.json (git-excluded) so the
+   rounds' local ladders pass; delete those placeholders when the worktrees are removed. FACTS.md in `D:/fitway-temp/r03-followup-drafts/` holds the cited causes.
 5. Remove the disposable grading worktrees (grade-r6, grade-r7-*, grade-r8-*, grade-r8b-*, grade-r9) and the
    evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then the
    closing review and the milestone's closure. The Owner screens resume after.
