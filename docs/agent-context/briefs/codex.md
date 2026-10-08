@@ -64,7 +64,7 @@ The brief rules B1-B10 live here. Codex follows a brief to the letter, so most f
       B8 and B9, 2026-10-07)
 - [ ] B9. An outcome about how a value fits names the widest value it can take, not only the current one: the widest
       the code can produce, not the widest the current data shows. (A Widest field was not shown to help.)
-- [ ] B10. Every file, section and row the brief names exists at the named HEAD: `pnpm brief:check <this file>`
+- [ ] B10. Every file, section and row the brief names exists at the named HEAD (checker id `brief-references`): `pnpm brief:check <this file>`
       passes against the worktree it names.
 - [ ] Every limit the result must keep is an outcome of its own: where the tool may run from, length or size caps,
       no text kept twice, and every live artifact the change can reach still passing (evaluation C3). For a file the

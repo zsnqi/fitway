@@ -19,8 +19,8 @@ sources that may be promoted to required for a packet. Supplemental packet sourc
 affected files/selectors only under a role registered by that route; arbitrary or unauthorized
 historical authorities are rejected.
 
-`ROUTES.yaml` records the startup-routing mode. In `active` mode every open milestone must have
-exactly one validated packet, and a milestone may not reach `READY` without it. A missing
+Every open milestone must have exactly one validated packet, and a milestone may not reach
+`READY` without it. A missing
 packet blocks both `check-agent-context` and `context:show`. The repository-wide checker
 validates schema, tracking, sources and lifecycle; `context:show` checks the selected packet's
 identity, state reference, route and lifecycle.

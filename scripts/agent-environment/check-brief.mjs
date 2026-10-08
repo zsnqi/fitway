@@ -108,7 +108,7 @@ async function validateWorktree(text, report, git) {
 	);
 	if (headers.length !== 1 || !fields || /<[^>]*>/.test(fields[0])) {
 		report(
-			"B1",
+			"brief-references",
 			line,
 			"requires one filled Worktree line with path, branch and HEAD",
 		);
@@ -117,7 +117,7 @@ async function validateWorktree(text, report, git) {
 	const [, worktree, branch, head] = fields;
 	if (!path.isAbsolute(worktree) || !(await exists(worktree))?.isDirectory()) {
 		report(
-			"B1",
+			"brief-references",
 			line,
 			`worktree does not exist or is not absolute: ${worktree}`,
 		);
@@ -127,7 +127,7 @@ async function validateWorktree(text, report, git) {
 		const root = git(worktree, ["rev-parse", "--show-toplevel"]);
 		if (!(await samePath(root, worktree))) {
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`named worktree is not a Git worktree root: ${worktree}`,
 			);
@@ -146,12 +146,12 @@ async function validateWorktree(text, report, git) {
 		}
 		if (currentBranch !== branch)
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`branch mismatch in ${worktree}: expected ${branch}, found ${currentBranch}`,
 			);
 		if (!/^[a-f\d]{4,40}$/i.test(head)) {
-			report("B1", line, `HEAD must be a commit hash: ${head}`);
+			report("brief-references", line, `HEAD must be a commit hash: ${head}`);
 			return worktree;
 		}
 		let namedHead;
@@ -160,7 +160,7 @@ async function validateWorktree(text, report, git) {
 			git(worktree, ["merge-base", "--is-ancestor", namedHead, "HEAD"]);
 		} catch {
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`named HEAD ${head} is missing or is not an ancestor of HEAD in ${worktree}`,
 			);
@@ -186,14 +186,18 @@ async function validateWorktree(text, report, git) {
 			);
 			if (nonMarkdown.length)
 				report(
-					"B1",
+					"brief-references",
 					line,
 					`commit ${commit} after named HEAD ${head} changes non-Markdown paths: ${nonMarkdown.join(", ")}`,
 				);
 		}
 		return worktree;
 	} catch (error) {
-		report("B1", line, `cannot inspect worktree ${worktree}: ${error.message}`);
+		report(
+			"brief-references",
+			line,
+			`cannot inspect worktree ${worktree}: ${error.message}`,
+		);
 		return null;
 	}
 }
@@ -233,7 +237,12 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		const absolute = path.resolve(worktree, checkedPath);
 		const details = await exists(absolute);
 		if (reference.isNew) {
-			if (details) report("B1", line, `new path already exists: ${absolute}`);
+			if (details)
+				report(
+					"brief-references",
+					line,
+					`new path already exists: ${absolute}`,
+				);
 			const parent = path.dirname(absolute);
 			const parentDetails = await exists(parent);
 			if (
@@ -242,7 +251,7 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 					: !newPaths.has(await pathKey(parent))
 			)
 				report(
-					"B1",
+					"brief-references",
 					line,
 					`parent folder must exist or be declared (new): ${parent}`,
 				);
@@ -256,22 +265,30 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 				(await exists(inCommandRepository))
 			)
 				report(
-					"B1",
+					"brief-references",
 					line,
 					`drift: missing ${absolute} in worktree ${worktree}; present at ${inCommandRepository} in command repository ${repositoryRoot}${hint}`,
 				);
 			else
-				report("B1", line, `missing path in ${worktree}: ${absolute}${hint}`);
+				report(
+					"brief-references",
+					line,
+					`missing path in ${worktree}: ${absolute}${hint}`,
+				);
 			continue;
 		}
 		if (wildcard && !details.isDirectory()) {
-			report("B1", line, `glob folder is not a directory: ${absolute}`);
+			report(
+				"brief-references",
+				line,
+				`glob folder is not a directory: ${absolute}`,
+			);
 			continue;
 		}
 		if (!heading && reference.line === null) continue;
 		if (!details.isFile()) {
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`heading or line selector requires a file: ${absolute}`,
 			);
@@ -286,12 +303,16 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 				lastLine > lines(content))
 		)
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`${reference.file}:${reference.line}${reference.endLine === null ? "" : `-${reference.endLine}`} exceeds file length (${lines(content)} lines), is below line 1, or ends before it starts in ${worktree}`,
 			);
 		if (heading && !headings(content).has(heading))
-			report("B1", line, `missing heading §"${heading}" in ${absolute}`);
+			report(
+				"brief-references",
+				line,
+				`missing heading §"${heading}" in ${absolute}`,
+			);
 	}
 }
 
@@ -337,13 +358,13 @@ export async function checkBrief({
 	const role = text.match(FORMAT)?.[1];
 	if (!role)
 		report(
-			"B2",
+			"brief-format",
 			1,
 			"must start with <!-- brief-format: v1 role: codex|builder|designer|verifier --> using one role",
 		);
 	if (!block)
 		report(
-			"B2",
+			"brief-format",
 			1,
 			"requires one ordered pair of environment:start v1 and environment:end markers",
 		);
@@ -352,7 +373,7 @@ export async function checkBrief({
 		canonicalBlock.inner.replace(/\r\n/g, "\n")
 	)
 		report(
-			"B2",
+			"brief-format",
 			lineAt(text, block.start),
 			`environment block differs from ${ENVIRONMENT_PATH}${fillEnvironment ? "; --fill-environment only fills empty markers" : ""}`,
 		);
@@ -373,26 +394,31 @@ export async function checkBrief({
 		/^## Coordinator checklist(?:\s.*)?\r?$/gim,
 	))
 		report(
-			"B3",
+			"brief-readiness",
 			lineAt(text, checklist.index),
 			"remove the Coordinator checklist section before launch",
 		);
 	for (const placeholder of prose.matchAll(/<[^<>\r\n]+>/g))
 		report(
-			"B3",
+			"brief-readiness",
 			lineAt(text, placeholder.index),
 			`unfilled placeholder: ${text.slice(placeholder.index, placeholder.index + placeholder[0].length)}`,
 		);
 	if (role === "codex")
 		for (const forbidden of text.matchAll(/fitway-grader|held-out/gi))
 			report(
-				"B3",
+				"brief-readiness",
 				lineAt(text, forbidden.index),
 				`codex brief mentions forbidden text: ${forbidden[0]}`,
 			);
 	const lineCount = lines(text);
 	if (lineCount > 80)
-		report("B4", 81, `${lineCount} lines exceeds 80; warning only`, "WARNING");
+		report(
+			"brief-length",
+			81,
+			`${lineCount} lines exceeds 80; warning only`,
+			"WARNING",
+		);
 	const worktree = await validateWorktree(text, report, git);
 	if (worktree)
 		await validateReferences(text, worktree, repositoryRoot, report, git);
