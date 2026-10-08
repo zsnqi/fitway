@@ -179,7 +179,7 @@ describe("gardener fixture classifications", () => {
 		const folder = (name: string, change = {}) => ({
 			path: `D:/fitway-temp/${name}`,
 			bytes: 10,
-			modifiedAt: "2026-10-05T00:00:00Z",
+			modifiedAt: "2026-09-28T00:00:00Z",
 			errors: [],
 			...change,
 		});
@@ -202,7 +202,7 @@ describe("gardener fixture classifications", () => {
 		expect(
 			result.filter((item) => item.candidate).map((item) => item.path),
 		).toEqual(["D:/fitway-temp/old", "D:/fitway-temp/evidence."]);
-		expect(result[1].ageDays).toBe(2);
+		expect(result[1].ageDays).toBe(9);
 		expect(
 			classifyFolders(
 				[

@@ -1,6 +1,13 @@
 import path from "node:path";
 import ts from "typescript";
 
+export const MIN_FOLDER_AGE_DAYS = 7;
+export const TRUNK_REF = "origin/main";
+
+export function localDate(date = new Date()) {
+	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
 export function key(value) {
 	return value.replaceAll("\\", "/").replace(/\/+$/, "").toLowerCase();
 }
@@ -10,51 +17,84 @@ export function inside(parent, child) {
 }
 
 export function deletionTarget(candidate, base) {
-	if (!path.win32.isAbsolute(candidate) || !path.win32.isAbsolute(base))
+	const style = /^[a-z]:[\\/]|^\\\\/i.test(candidate) ? path.win32 : path.posix;
+	if (!style.isAbsolute(candidate) || !style.isAbsolute(base))
 		throw new Error(`Unsafe deletion path: ${candidate}`);
-	const resolved = path.win32.resolve(candidate);
+	const resolved = style.resolve(candidate);
 	if (
-		key(path.win32.dirname(resolved)) !== key(base) ||
+		(style === path.win32
+			? key(style.dirname(resolved)) !== key(base)
+			: style.dirname(resolved) !== style.resolve(base)) ||
 		!inside(base, resolved) ||
 		/[&|<>^%!"\r\n]/.test(resolved)
 	)
 		throw new Error(`Unsafe deletion path: ${candidate}`);
-	return `\\\\?\\${resolved}`;
+	return style === path.win32 ? style.toNamespacedPath(resolved) : resolved;
 }
 
 function escapeRegex(value) {
 	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export function references(value, records, { branch = false } = {}) {
+// Proposals in this explicit rolling-report section are not evidence citations.
+export function referenceText(record) {
+	if (
+		record.kind !== "gardener" &&
+		record.source !== ".agents/skills/gardener/REPORT.md"
+	)
+		return record.text;
+	return record.text.replace(
+		/^## Folder removal proposals\r?\n[\s\S]*?(?=^## |$(?![\s\S]))/gm,
+		(section) => section.replace(/[^\r\n]/g, " "),
+	);
+}
+
+export function references(value, records, { branch = false, tempRoot } = {}) {
 	const normalized = key(value);
 	const aliases = branch
 		? [
 				normalized,
 				normalized.replace(/^(?:(?:refs\/)?remotes\/[^/]+|origin)\//, ""),
 			]
-		: [normalized, path.posix.basename(normalized)];
+		: [];
 	return records.flatMap((record) => {
-		const lines = record.text.replaceAll("\\", "/").split(/\r?\n/);
+		const lines = referenceText(record).replaceAll("\\", "/").split(/\r?\n/);
 		return lines.flatMap((line, index) => {
-			const text = line.toLowerCase();
+			const text = line
+				.toLowerCase()
+				.replace(/(^|[^a-z0-9_./:-])(fitway-temp\/)/g, "$1d:/$2");
 			const named = aliases.some((alias) =>
 				new RegExp(
 					`(^|[^a-z0-9_.:/-])${escapeRegex(alias)}(?=$|[^a-z0-9_.-])`,
 				).test(text),
 			);
-			// A directory pointer protects its descendants too.
-			const ancestor =
+			// Only path citations protect folders, never a matching prose word.
+			// A pointer to an ancestor or to evidence below a folder protects it.
+			const cited =
 				!branch &&
-				[...text.matchAll(/[a-z]:\/[^\s`"'<>),;]+/g)].some((match) => {
-					const target = match[0].replace(/:\d+(?:-\d+)?$/, "");
-					return (
-						text[match.index + match[0].length] !== "<" &&
-						!/^d:\/fitway-temp\/?$/.test(target) &&
-						inside(target, normalized)
-					);
+				[
+					...text.matchAll(
+						/(?:[a-z]:\/|\/)[^\s`"'<>),;]+|[`"'<]((?:[a-z]:\/|\/)[^`"'<>\r\n]+)[`"'>]/g,
+					),
+				].some((match) => {
+					const raw = match[1] ?? match[0];
+					// Ambiguous sentence punctuation must also protect a folder
+					// whose real name ends in a dot; quoted spelling stays exact.
+					const targets = match[1] ? [raw] : [raw, raw.replace(/[.:*]+$/, "")];
+					return targets.some((value) => {
+						const target = value
+							.replace(/:\d+(?:-\d+)?$/, "")
+							.replace(/^\/([a-z])\//, "$1:/");
+						return (
+							text[match.index + match[0].length] !== "<" &&
+							!/[<*?]/.test(target) &&
+							key(target) !== key(tempRoot ?? "D:/fitway-temp") &&
+							key(target) !== key("D:/fitway-temp") &&
+							(inside(target, normalized) || inside(normalized, target))
+						);
+					});
 				});
-			return named || ancestor
+			return named || cited
 				? [{ source: record.source, line: index + 1, text: line.trim() }]
 				: [];
 		});
@@ -93,10 +133,31 @@ export function classifyWorktrees(worktrees, records, current) {
 				{ branch: true },
 			),
 		];
-		const clean = worktree.status === "";
+		const statusMeasured = typeof worktree.status === "string";
+		const clean = statusMeasured ? worktree.status === "" : null;
+		const ageDays = (Date.now() - Date.parse(worktree.lastCommitAt)) / 86400000;
+		const self =
+			key(worktree.path) === key(current) ||
+			key(worktree.path) === "d:/projects/fitway-worktrees/gardener" ||
+			worktree.branch?.startsWith("refs/heads/gardener/");
 		return {
 			...worktree,
+			status: worktree.status ?? null,
+			statusMeasured,
+			statusReason: statusMeasured
+				? null
+				: (worktree.statusReason ??
+					(worktree.exists === false
+						? "Registration path is missing"
+						: "Status was not measured")),
 			clean,
+			self,
+			coordinatorReview:
+				worktree.exists &&
+				worktree.merged === false &&
+				!self &&
+				!protectedBy.length &&
+				ageDays >= MIN_FOLDER_AGE_DAYS,
 			protectedBy,
 			missing: worktree.exists === false,
 			mergedClean: worktree.exists && worktree.merged && clean,
@@ -106,7 +167,7 @@ export function classifyWorktrees(worktrees, records, current) {
 				clean &&
 				!worktree.locked &&
 				!protectedBy.length &&
-				key(worktree.path) !== key(current) &&
+				!self &&
 				worktree.branch !== "refs/heads/main",
 		};
 	});
@@ -114,7 +175,8 @@ export function classifyWorktrees(worktrees, records, current) {
 
 export function classifyFolders(folders, records, worktrees, tempRoot, now) {
 	return folders.map((folder) => {
-		const protectedBy = references(folder.path, records);
+		const protectedBy = references(folder.path, records, { tempRoot });
+		const ageDays = (now - Date.parse(folder.modifiedAt)) / 86400000;
 		const containedWorktrees = worktrees.filter((worktree) =>
 			inside(folder.path, worktree.path),
 		);
@@ -127,19 +189,29 @@ export function classifyFolders(folders, records, worktrees, tempRoot, now) {
 					(worktree) => key(worktree.path) === key(gitRoot),
 				),
 		);
+		let deletionPathSafe = true;
+		try {
+			deletionTarget(folder.path, tempRoot);
+		} catch {
+			deletionPathSafe = false;
+		}
 		const safe =
+			deletionPathSafe &&
 			key(path.dirname(folder.path)) === key(tempRoot) &&
 			!folder.link &&
 			!(folder.skippedLinks > 0) &&
 			!folder.errors.length;
 		return {
 			...folder,
-			ageDays: Math.max(0, (now - Date.parse(folder.modifiedAt)) / 86400000),
+			ageDays: Number.isFinite(ageDays) ? Math.max(0, ageDays) : null,
+			minimumAgeDays: MIN_FOLDER_AGE_DAYS,
+			deletionPathSafe,
 			protectedBy,
 			worktrees: containedWorktrees.map((worktree) => worktree.path),
 			unknownGitRoots,
 			candidate:
 				safe &&
+				ageDays >= MIN_FOLDER_AGE_DAYS &&
 				!protectedBy.length &&
 				!unsafeWorktrees.length &&
 				!unknownGitRoots.length,
@@ -319,7 +391,26 @@ export function gateGaps(scripts, steps, calls = {}) {
 	};
 }
 
-export function openBriefs(records, briefs) {
+export function landedBriefSources(briefs, rounds) {
+	const landed = new Set();
+	for (const heading of rounds
+		.split(/\r?\n/)
+		.filter((line) => /^## /.test(line))) {
+		if (!/\bresults?\s+`[a-f0-9]{7,40}`/i.test(heading)) continue;
+		for (const mention of heading.matchAll(/`([^`]+\.md)`/g)) {
+			for (const brief of briefs) {
+				if (
+					brief.source === mention[1] ||
+					brief.source.endsWith(`/${mention[1]}`)
+				)
+					landed.add(brief.source);
+			}
+		}
+	}
+	return landed;
+}
+
+export function openBriefs(records, briefs, landed = new Set()) {
 	const selected = new Map();
 	for (const record of records.filter(
 		(item) => item.kind === "resume" || item.kind === "ledger",
@@ -329,6 +420,7 @@ export function openBriefs(records, briefs) {
 		const inspect = (text, line) => {
 			if (!text.trim()) return;
 			for (const brief of briefs) {
+				if (landed.has(brief.source)) continue;
 				const explicitlyNamed = text.includes(brief.source);
 				if (
 					brief.owners &&
