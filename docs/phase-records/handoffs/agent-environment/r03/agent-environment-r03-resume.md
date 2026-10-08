@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-08 17:35 +03:00 (after the account switch: the tuner repair resumed;
-  step 4's four rounds launched)
+- **As of:** codex/owner-redesign-r04, 2026-10-08 18:05 +03:00 (the tuner accepted; rounds 11 and 13 pass; 10b and
+  round 12's grade running)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-19,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -43,17 +43,12 @@
 - The weekly gardener pass is enabled: the Windows task "FITWAY gardener weekly", Fridays 14:00 (first run
   2026-10-09), `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener
   (detached at `origin/main`; each pass starts branch `gardener/<date>`). It ends with a Windows notification.
-- Codex repair attempt 1 of the tuner (Owner milestone), run folder `D:/fitway-temp/codex-round-tuner-reach-fix-1`.
-  It stopped at 16:40 on the old account's limit and was resumed on its thread at 17:07 on the new account
-  (`events-resume.jsonl`), told to run its HTTP checks on 3177: the previous round's preview (PID 12492) held 3176; the
-  user said yes and the coordinator stopped it at 17:30.
-- Step 4's four rounds at `high`, launched 17:30 from briefs on their branches (each brief's HEAD `70bc51c1`, the build
-  at `1d3539a3`): round 10 in agent-environment-r03 (brief commit `95cc46c2`), round 11 in agent-environment-r03-verify
-  (`35e2ed33`), round 12 in agent-environment-r03-gardener (`9f28df01`), round 13 in agent-environment-r03-css
-  (`ae89c7a9`). Run folders `D:/fitway-temp/codex-round-r03-round-<n>`; held-out rows
-  `D:/fitway-grader/agent-environment/r03-round<n>-heldout.md`. Two draft changes before launch: round 11's V1 says the
-  fast ladder (which runs `check:verification-map`) still passes with no recipe file; round 12's G2 keeps the ledger's
-  `gardener` outcome values, since their schema is round 10's scope.
+- Round 10b (repair attempt 1 of round 10), launched 18:00 from brief commit `a9f456fa` over `d8945397` in
+  agent-environment-r03, run folder `D:/fitway-temp/codex-round-r03-round-10b`, held-out rows
+  `D:/fitway-grader/agent-environment/r03-round10b-heldout.md`: one holder per lease, scope lines claim only their
+  paths, a bad task class named.
+- Round 12's grade: a Sonnet grader in the disposable worktree grade-r12 at `db995501`, report to
+  `D:/fitway-temp/r03-r12-grade/REPORT.md`.
 
 ## Next steps
 
@@ -67,20 +62,18 @@
    D:/fitway-temp (about 1 GB, round 8b's report); for the coordinator, the worktrees grade-r6, grade-r7-g and
    grade-r9 and three merged branches (codex/owner-demo-prep, codex/owner-distill-r01, owner-intro-r04-build). The
    main checkout keeps the user's uncommitted AGENTS.md edit of 2026-09-06 and a local `main` far behind.
-3. The tuner, last of step 3: when repair attempt 1 ends, grade it with `D:/fitway-grader/owner-r04/tuner-reach/`
-   (ROWS.md; grade.cjs H1-H12 against its base folder, perf.cjs H11 and escape.cjs H13; its r1 folder holds
-   `1305c0ee`), from a
-   `git archive` of the result. If it passes: record it in the Owner `codex-rounds.md`, push owner-followup-r04-build
-   (its local commits `f3c19d15`, `1305c0ee`, `1d3539a3` and the result), and restart the `eclipse-build` preview on
-   3174 for the user. A second failure allows one more repair (AGENTS.md).
-4. Step 4's four rounds (launched, Running now): grade each as it ends against its held-out rows, from a `git archive`
-   of its result, in a disposable grading worktree; record each in `codex-rounds.md`; a failure allows two repairs
-   (AGENTS.md). Then merge the four branches into agent-environment-r03 (disjoint files), and that into the
-   coordinator line and main once CI passes. Their base `70bc51c1` fails CI's resume-point check (it named the
-   untracked launch configuration as a path; fixed in `7323b99c`): merge the coordinator line into each result before
-   its CI run. Until then each of the four worktrees holds a placeholder .claude/launch.json (git-excluded) so the
-   rounds' local ladders pass; delete those placeholders when the worktrees are removed. FACTS.md in `D:/fitway-temp/r03-followup-drafts/` holds the cited causes.
-5. Remove the disposable grading worktrees (grade-r6, grade-r7-*, grade-r8-*, grade-r8b-*, grade-r9) and the
+3. Done 2026-10-08: the tuner's repair `ec314ce2` graded and accepted (Owner `codex-rounds.md`), owner-followup-r04-build
+   pushed at it; the 3174 preview serves it (no-store, nothing to restart).
+4. Step 4's rounds: 11 (`c7e0e404`, 7 of 7) and 13 (`644e8abc`, 4 of 5, T3 partial) are graded and pass; 10
+   (`d8945397`) is graded and repaired by 10b (Running now); 12 (`db995501`) is being graded. Grade 10b when it ends;
+   a second failure allows one more repair (AGENTS.md). Then merge the four branches into agent-environment-r03
+   (disjoint files; 10b is already on it), and that into the coordinator line and main once CI passes. Their base
+   `70bc51c1` fails CI's resume-point check (it named the untracked launch configuration as a path; fixed in
+   `7323b99c`): merge the coordinator line into each result before its CI run. Until then the four round worktrees
+   and grade-r10, grade-r12 hold a placeholder .claude/launch.json (git-excluded) so local ladders pass. Follow-ups
+   the grades found but no row failed (each round's "Also found" in `codex-rounds.md`) wait for a later round.
+5. Remove the disposable grading worktrees (grade-r6, grade-r7-*, grade-r8-*, grade-r8b-*, grade-r9, grade-r10 to
+   grade-r13) and the
    evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then the
    closing review and the milestone's closure. The Owner screens resume after.
 ## Waiting on the user
