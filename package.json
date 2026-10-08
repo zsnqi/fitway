@@ -26,6 +26,7 @@
 		"deploy:check": "vercel deploy --dry",
 		"check": "biome check .",
 		"check:repository": "node scripts/verify-repository.mjs",
+		"check:concept-css": "node scripts/check-concept-css.mjs",
 		"check:agent-context": "node scripts/check-agent-context.mjs",
 		"context:show": "node scripts/show-agent-context.mjs",
 		"handoff:new": "node scripts/agent-environment/new-handoff.mjs",
