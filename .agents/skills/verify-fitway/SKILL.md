@@ -25,6 +25,7 @@ node $cli list --concept $concept --recipes $recipes --page all
 After resolving `$cli`, commands work from any shell directory. Plain folders and `git archive` extractions need
 no enclosing package.json: Playwright comes from this skill's repository. No new dependencies are installed.
 `help` needs only Node. It prints the checkout's `pnpm install --frozen-lockfile` command for discovery and browser tools.
+Commands that need an absent dependency print its package name and that install command, without a stack trace.
 On this Windows machine run browser commands in PowerShell, with the brief's required escalation for child processes.
 Git Bash may rewrite browser paths; use PowerShell for the examples below. All JSON is UTF-8 without a BOM.
 
@@ -42,6 +43,8 @@ Coverage applies only to that declaration's opener, so a live control with the s
 
 Discovery is not yet exhaustive: CSS-only openings and some dynamic or delegated opener relationships remain
 unresolved. A drift pass proves coverage of the discovered openings; it does not prove a complete feature census.
+`drift-tree` prints `DRIFT SKIP` when no recipe file is found and exits successfully, so the fast ladder can
+continue without claiming coverage. Supply the concept's recipe file beside it or use `drift --recipes`.
 
 ```powershell
 node $cli map --concept $concept --recipes $recipes --out "$run/map"
@@ -94,6 +97,8 @@ For roving controls or a different activation key, recipes can supply `keyboardA
 steps. Each key's before/after focused element is recorded in the full item JSON, with initial/final focus.
 `FRAME KEYBOARD-UNREACHABLE` fails the run and names the target and focus stop after a repeated Tab cycle or bounded
 sequence. Unsupported pointer actions require authored keyboard steps. Inspect the recorded sequence before claiming reach.
+The drive summary counts keyboard-unreachable items separately from problems, names each item, and still fails.
+Tab evidence names the move and its focus destination; activation evidence retains the requested action.
 `--states all` sweeps discovered switch values and recipe samples; use explicit states or query for a narrower claim.
 
 These two tasks demonstrate finding the feature and applying its state:
@@ -129,8 +134,9 @@ results. A difference or problem makes the command fail. Inspect its frames and 
 
 Output must be an absolute folder outside every git tree, including links and junction aliases. File names carry
 feature/state/language/size/input/motion/transport. Read `summary.json` or the item's `*-summary.json` first; full
-JSON retains actions, readiness, geometry, overflow, ARIA, errors and each keyboard focus step. Compare prints one
-line per item and a summary; full diff measurements remain in `comparison.json` and the named diff JSON files.
+JSON retains actions, readiness, geometry, overflow, ARIA, errors and each keyboard focus step.
+Each summary retains `proof` for the reached state and `featureProof` for the successfully reached feature result.
+Compare prints one line per item and a summary; full diff measurements remain in `comparison.json` and the named diff JSON files.
 Before/after/error frames and language sheets remain after cleanup. Capture downloads when a feature claims them.
 Personally inspect exact named rendered frames
 at the required sizes and languages; logs/hashes do not establish visual quality or human acceptance.

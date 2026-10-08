@@ -4,6 +4,7 @@ import { watch } from "node:fs";
 import {
 	mkdir,
 	mkdtemp,
+	readdir,
 	readFile,
 	rm,
 	symlink,
@@ -13,7 +14,7 @@ import { createServer, request } from "node:http";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test } from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { child, doctorFix, playwright } from "./cli.mjs";
 import { diffStem } from "./compare.mjs";
 import {
@@ -901,4 +902,314 @@ test("delegated tool interruption finishes its own cleanup before the parent ret
 		controller.abort();
 	}
 	assert.equal(await readFile(cleaned, "utf8"), "cleaned");
+});
+
+const cliPath = fileURLToPath(new URL("./cli.mjs", import.meta.url));
+function runCli(args, cli = cliPath) {
+	return spawnSync(process.execPath, [cli, ...args], {
+		encoding: "utf8",
+		windowsHide: true,
+	});
+}
+
+test("V1: no recipe file is SKIP, while a checked recipe still passes", async () => {
+	const empty = resolve(scratch, "no-recipes");
+	await mkdir(empty);
+	const skipped = runCli(["drift-tree", "--root", empty]);
+	assert.equal(skipped.status, 0, skipped.stderr);
+	assert.match(skipped.stdout, /no recipe file was found/i);
+	assert.match(skipped.stdout, /verification-recipes.json/);
+	assert.doesNotMatch(skipped.stdout, /PASS/);
+	const checked = runCli(["drift-tree", "--root", concept]);
+	assert.equal(checked.status, 0, checked.stderr);
+	assert.match(
+		checked.stdout,
+		/DRIFT PASS: 1 recipe files found and checked\./,
+	);
+});
+
+test("V2: dependency-free discovery and browser commands name the package and install once", async () => {
+	const folder = resolve(scratch, "cold/.agents/skills/verify-fitway");
+	await mkdir(folder, { recursive: true });
+	for (const name of await readdir(
+		fileURLToPath(new URL(".", import.meta.url)),
+	)) {
+		if (!name.endsWith(".mjs") || name.endsWith(".test.mjs")) continue;
+		await writeFile(
+			resolve(folder, name),
+			await readFile(new URL(name, import.meta.url)),
+		);
+	}
+	const cli = resolve(folder, "cli.mjs");
+	for (const command of [
+		"map",
+		"list",
+		"drift",
+		"repair-recipes",
+		"drift-tree",
+	]) {
+		const result = runCli(
+			command === "drift-tree"
+				? [command, "--root", concept]
+				: [
+						command,
+						"--concept",
+						concept,
+						"--out",
+						resolve(scratch, `cold-${command}`),
+					],
+			cli,
+		);
+		assert.equal(result.status, 1, result.stdout);
+		assert.match(result.stderr, /Missing dependency: typescript/);
+		assert.match(
+			result.stderr,
+			/FIX: pnpm --dir '.*cold.*' install --frozen-lockfile/,
+		);
+		assert.doesNotMatch(
+			result.stderr,
+			/Cannot find module|Require stack|\n\s+at /,
+		);
+		assert.equal((result.stderr.match(/FAIL:/g) || []).length, 1);
+	}
+	const caller = resolve(scratch, "cold-playwright.mjs");
+	await writeFile(
+		caller,
+		`import {playwright} from ${JSON.stringify(pathToFileURL(cli).href)};
+try {playwright()} catch(error) {console.error(error.message + "\\nFIX: " + error.fix); process.exitCode=1}`,
+	);
+	const browser = spawnSync(process.execPath, [caller], {
+		encoding: "utf8",
+		windowsHide: true,
+	});
+	assert.equal(browser.status, 1);
+	assert.match(browser.stderr, /Missing dependency: @playwright\/test/);
+	assert.match(browser.stderr, /pnpm --dir .* install --frozen-lockfile/);
+	assert.doesNotMatch(
+		browser.stderr,
+		/Cannot find module|Require stack|\n\s+at /,
+	);
+});
+
+test("V3: doctor and drive setup failures print one fault block", () => {
+	for (const command of ["doctor", "drive", "compare"]) {
+		const result = runCli([
+			command,
+			"--concept",
+			concept,
+			"--baseline",
+			concept,
+			"--out",
+			resolve(scratch, `one-block-${command}`),
+		]);
+		assert.equal(result.status, 1);
+		assert.equal(
+			(result.stderr.match(/FAIL:/g) || []).length,
+			1,
+			result.stderr,
+		);
+		assert.equal(
+			(result.stderr.match(/Probe kit missing/g) || []).length,
+			1,
+			result.stderr,
+		);
+		assert.match(result.stderr, /DOCTOR FAIL:/);
+		assert.match(result.stderr, /FIX BLOCKED: restore the missing probe kit/);
+	}
+});
+
+// Exercise the runner's actual evidence/summary path through a deterministic UI
+// adapter. The fast ladder does not need a browser installation for these contracts.
+async function runnerFixture(name, features) {
+	const root = resolve(scratch, name);
+	const build = resolve(root, "concept");
+	const tools = resolve(root, "tools");
+	const out = resolve(root, "out");
+	await mkdir(resolve(build, "tools/probes"), { recursive: true });
+	await mkdir(resolve(tools, "scripts/web"), { recursive: true });
+	await writeFile(
+		resolve(build, "tools/probes/lib.mjs"),
+		"export const introSettled=async()=>{}; export const overflowProbe=()=>({hScroll:false});",
+	);
+	await writeFile(
+		resolve(build, "tools/probes/geom.mjs"),
+		"export const geometryProbe=()=>({});",
+	);
+	await writeFile(
+		resolve(build, "tools/probes/a11y.mjs"),
+		"export const accessibilityProbe=()=>({});",
+	);
+	await writeFile(
+		resolve(tools, "scripts/web/lib.mjs"),
+		`
+export const launchChromium=async()=>({close:async()=>{}});
+export async function newContext() {
+ let focus="body", open=false;
+ const page={setDefaultTimeout(){},
+  evaluate:async(fn)=>fn.toString().includes("matchMedia")
+   ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
+   : fn.toString().includes("document.activeElement") ? {selector:focus,text:focus} : {},
+  locator:(selector)=>({first(){return this},count:async()=>1,
+   evaluate:async()=>focus===selector,ariaSnapshot:async()=>"body",
+   waitFor:async()=>{if(selector==="#dialog"&&!open)throw new Error("dialog stayed closed")}}),
+  keyboard:{press:async(key)=>{if(key==="Tab")focus=focus==="body"?"#opener":"body";
+   if(key==="Enter"&&focus==="#opener"){open=true;focus="#field"}}}};
+ return {page,context:{close:async()=>{}},errors:[],emulation:{}};
+}
+export const withParams=(url)=>url;
+export const preparePage=async()=>({ready:true});
+export const screenshot=async()=>Buffer.from("fixture");
+export const twoFrames=async()=>{};
+export const injectProbe=async()=>{};
+export const renderSheet=async()=>{};
+`,
+	);
+	const caller = resolve(root, "caller.mjs");
+	await writeFile(
+		caller,
+		`import {drive} from ${JSON.stringify(new URL("./runner.mjs", import.meta.url).href)};
+import * as core from ${JSON.stringify(new URL("./core.mjs", import.meta.url).href)};
+try {await drive(${JSON.stringify({
+			concept: build,
+			tools,
+			out,
+			loaded: {},
+			map: {
+				sizes: { desktop: { width: 1440, height: 900 } },
+				pages: [
+					{
+						page: "fixture.html",
+						ready: "true",
+						switches: [],
+						features,
+						states: [
+							{
+								when: {},
+								shows: "Fixture state",
+								proof: { selector: "main", visible: true },
+							},
+						],
+					},
+				],
+			},
+			page: "fixture.html",
+			feature: "all",
+			languages: "en",
+			sizes: "desktop",
+			inputs: "keyboard",
+			motions: "reduce",
+			transports: "file",
+		})})}
+catch(error){if(!(core.ReportedFailure && error instanceof core.ReportedFailure))console.error("FAIL: "+error.message);process.exitCode=1}`,
+	);
+	return {
+		out,
+		result: spawnSync(process.execPath, [caller], {
+			encoding: "utf8",
+			windowsHide: true,
+		}),
+	};
+}
+
+test("V4: drive separates and names keyboard reach findings, and still fails", async () => {
+	const { result, out } = await runnerFixture("keyboard-summary", [
+		{
+			id: "open",
+			actions: ["activate:#opener"],
+			proof: { selector: "#dialog", visible: true },
+		},
+		{
+			id: "absent",
+			actions: [],
+			proof: { ready: true },
+			unreachable: [
+				{ when: {}, reason: "Absent by design", proof: { ready: true } },
+			],
+		},
+		{
+			id: "pointer-only",
+			actions: ["activate:#pointer-only"],
+			proof: { ready: true },
+		},
+	]);
+	assert.equal(result.status, 1, result.stdout);
+	assert.match(
+		result.stdout,
+		/DRIVE FAIL: 3 items; 1 not reachable; 1 keyboard unreachable \(fixture.html\/pointer-only default en desktop keyboard reduce file\); 0 problems/,
+	);
+	assert.equal(result.stderr, "", result.stderr);
+	const summary = JSON.parse(
+		await readFile(resolve(out, "summary.json"), "utf8"),
+	);
+	assert.deepEqual(
+		summary.map((item) => item.result),
+		["pass", "not-reachable", "keyboard-unreachable"],
+	);
+});
+
+test("V5: successful feature proof survives in both summaries beside state proof", async () => {
+	const proof = { selector: "#dialog", visible: true };
+	const { result, out } = await runnerFixture("feature-proof", [
+		{ id: "open", actions: ["activate:#opener"], proof },
+	]);
+	assert.equal(result.status, 0, result.stderr);
+	const [summary] = JSON.parse(
+		await readFile(resolve(out, "summary.json"), "utf8"),
+	);
+	assert.equal(summary.result, "pass");
+	assert.deepEqual(summary.proof, ["Fixture state"]);
+	assert.deepEqual(summary.featureProof, proof);
+	const itemFile = (await readdir(out)).find((file) =>
+		file.endsWith("-summary.json"),
+	);
+	assert.deepEqual(
+		JSON.parse(await readFile(resolve(out, itemFile), "utf8")).featureProof,
+		proof,
+	);
+	const { result: failed, out: failedOut } = await runnerFixture(
+		"unproved-feature",
+		[{ id: "closed", actions: ["focus:#opener"], proof }],
+	);
+	assert.equal(failed.status, 1);
+	const [unproved] = JSON.parse(
+		await readFile(resolve(failedOut, "summary.json"), "utf8"),
+	);
+	assert.equal(unproved.featureProof, undefined);
+});
+
+test("V6: Tab evidence names the move and focus destination; Enter names activation", async () => {
+	let focus = "body";
+	const page = {
+		evaluate: async () => ({ selector: focus }),
+		locator: () => ({
+			first() {
+				return this;
+			},
+			count: async () => 1,
+			evaluate: async () => focus === "#opener",
+		}),
+		keyboard: {
+			press: async (key) => {
+				focus = key === "Tab" ? "#opener" : "#field";
+			},
+		},
+	};
+	const entry = {};
+	await performAction(
+		{},
+		page,
+		"activate:#opener",
+		"keyboard",
+		scratch,
+		"labels",
+		entry,
+	);
+	assert.deepEqual(
+		entry.focusSteps.map((step) => step.action),
+		["Tab move to #opener", "activate:#opener"],
+	);
+	assert.deepEqual(
+		entry.focusSteps.map((step) => step.key),
+		["Tab", "Enter"],
+	);
 });

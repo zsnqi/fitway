@@ -25,8 +25,10 @@ import {
 	ownedSession,
 	portAvailable,
 	preview,
+	ReportedFailure,
 	verificationPort,
 } from "./core.mjs";
+import { requireDependency } from "./discover.mjs";
 import {
 	checkCommittedMaps,
 	coverageProblems,
@@ -112,7 +114,7 @@ function parse(argv) {
 export function playwright(_concept) {
 	// Tools belong to this checkout. Inputs may be an archive or a plain folder.
 	const req = createRequire(resolve(repository, "package.json"));
-	const pw = req("@playwright/test");
+	const pw = requireDependency("@playwright/test");
 	return {
 		pw,
 		from: "@playwright/test",
@@ -276,6 +278,7 @@ async function doctorChecks(options) {
 }
 
 export function doctorFix(options, error) {
+	if (error.fix) return error.fix;
 	const quote = (value) => `'${String(value).replaceAll("'", "''")}'`;
 	const concept = options.concept;
 	const args = `--concept ${quote(concept)}${options.recipes ? ` --recipes ${quote(options.recipes)}` : ""}`;
@@ -316,7 +319,7 @@ export async function doctor(options) {
 		console.error(
 			`DOCTOR FAIL: ${error.message}\nFIX${fix.startsWith("BLOCKED:") ? " " : ": "}${fix}`,
 		);
-		throw error;
+		throw new ReportedFailure(error.message, { cause: error });
 	}
 }
 
@@ -465,10 +468,14 @@ async function main() {
 		console.log(`READY ${server.origin} Cache-Control: no-store`);
 		return;
 	}
-	if (command === "drift-tree")
+	if (command === "drift-tree") {
+		const count = checkCommittedMaps(options.root || repository);
 		return console.log(
-			`DRIFT PASS: ${checkCommittedMaps(options.root || repository)} recipe files found and checked.`,
+			count
+				? `DRIFT PASS: ${count} recipe files found and checked.`
+				: "DRIFT SKIP: no recipe file was found; nothing checked. Provide verification-recipes.json beside the concept, or use drift --concept <folder> --recipes <absolute recipe file>.",
 		);
+	}
 	if (command === "cleanup") return cleanup(options.session);
 	if (command === "measure") {
 		assertOutsideGit(options.out);
@@ -636,7 +643,8 @@ async function main() {
 					await drive({ ...options, ...setup, page: page.page, out: pageOut });
 				} catch (error) {
 					failed = true;
-					console.error(`PAGE FAIL: ${page.page}: ${error.message}`);
+					if (!(error instanceof ReportedFailure))
+						console.error(`PAGE FAIL: ${page.page}: ${error.message}`);
 				}
 				if (existsSync(resolve(pageOut, "manifest.json"))) {
 					const result = JSON.parse(
@@ -663,6 +671,9 @@ async function main() {
 
 if (process.argv[1] && resolve(process.argv[1]) === self)
 	main().catch((error) => {
-		console.error(`FAIL: ${error.message}`);
+		if (!(error instanceof ReportedFailure))
+			console.error(
+				`FAIL: ${error.message}${error.fix ? `\nFIX: ${error.fix}` : ""}`,
+			);
 		process.exitCode = 1;
 	});

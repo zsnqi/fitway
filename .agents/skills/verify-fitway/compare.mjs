@@ -6,6 +6,7 @@ import {
 	jsonOutput,
 	outputFile,
 	portAvailable,
+	ReportedFailure,
 	shortFinding,
 	verificationPort,
 } from "./core.mjs";
@@ -271,7 +272,7 @@ export async function compare(options, { doctor, child }) {
 		`COMPARE ${counts.different || counts.problem ? "FAIL" : "PASS"}: ${counts.equal} equal; ${counts.different} different; ${counts["not-reachable"]} not reachable; ${counts.problem} problems; ${out}/comparison.json`,
 	);
 	if (counts.different || counts.problem)
-		throw new Error(
+		throw new ReportedFailure(
 			"Comparison has differences or problems; inspect comparison.json.",
 		);
 	return result;
