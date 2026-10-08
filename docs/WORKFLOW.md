@@ -59,6 +59,14 @@ History is retrieved only when a decision requires it and is never read wholesal
 The receipts under `docs/phase-records/history-transitions/` and the legacy anchor are frozen
 provenance from the earlier closure procedure; nothing reads them.
 
+The ledger's optional `gardener` entry names the last gardener pass the coordinator reviewed. The
+weekly pass runs from the Windows scheduled task `FITWAY gardener weekly` (Fridays 14:00; a missed
+run starts at the user's next logon): `scripts/agent-environment/gardener-weekly.ps1` fetches, starts
+`gardener/<date>` from `origin/main` in `D:/Projects/fitway-worktrees/gardener`, and runs
+`.agents/skills/gardener/SKILL.md` headless on Sonnet 5.5 at `high`. It deletes and pushes nothing,
+and a Windows notification reports its end. The coordinator reviews each `gardener/*` branch newer
+than the entry, merges what it accepts, then writes the entry.
+
 ## Before creating a phase worktree
 
 1. Base the worktree on the commit the ledger names as the milestone's `baseCommit`, normally the

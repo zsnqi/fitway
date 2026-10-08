@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** agent-environment-r03, 2026-10-08 04:30 +03:00 (rounds 6 and 7 graded and merged; Haiku 5.5 in place)
+- **As of:** agent-environment-r03, 2026-10-08 13:20 +03:00 (rounds 8 and 9 running; the weekly pass approved and set up)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-19,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -28,28 +28,35 @@
 
 ## Running now
 
-Nothing.
+- Round 8 (the gardener): `docs/phase-records/handoffs/agent-environment/r03/briefs/round-8.md`, level xhigh, in
+  worktree agent-environment-r03-gardener; run folder D:/fitway-temp/r03-round8.
+- Round 9 (verify-fitway): `docs/phase-records/handoffs/agent-environment/r03/briefs/round-9.md`, level xhigh, in
+  worktree agent-environment-r03; run folder D:/fitway-temp/r03-round9.
+- Both launched 2026-10-08 from the brief commit `aa75a137`; held-out rows are written (r03-round8-heldout.md,
+  r03-round9-heldout.md). A stopped run resumes on its thread (`pnpm codex:round resume <run folder>`).
 
 ## Next steps
 
 1. The environment page is published, private: https://claude.ai/artifact/Kx1hDDw4Z67niKMmkgwRzY (2026-10-08). Update
    it from the run folder above by republishing to that URL.
-2. Round 8 for Codex (DECISIONS item 19): the gardener's cleanup quoting and its test, an age and citation guard and a
-   chosen temp root, "merged" against `origin/main`, unknown `check:*` scripts run, the local date, `$root` from the
-   skill's location, landed briefs skipped, branch deletion only proposed; verify-fitway's keyboard input,
-   `aria-haspopup` openers, a repairing stale-recipe command and shorter output. Write held-out rows first.
-3. The gardener's weekly run, after round 8 (the user, 2026-10-07): Claude, every Friday at 14:00, from a Windows
-   scheduled task, pinned `--model claude-sonnet-5-5 --effort high`; a missed run starts at the next boot; one report
-   and at most one proposed change on its own branch; it deletes nothing and pushes nothing. Creating the task is the
-   user's approval to give at setup. Show the user the reviewed deletion list before any script runs; it includes the
-   main checkout's uncommitted AGENTS.md edit of 2026-09-06 and its local `main`, 486 commits behind.
+2. Grade rounds 8 and 9 on their held-out rows (X1-X11, Y1-Y6), record them in codex-rounds.md, merge both into
+   agent-environment-r03, then main. Round 9's recipe additions go on owner-followup-r04-build with Next steps 4.
+3. The gardener's weekly run (the user approved the set-up, 2026-10-08): `scripts/agent-environment/gardener-weekly.ps1`
+   from the Windows scheduled task "FITWAY gardener weekly" (Fridays 14:00, a missed run at the next logon), described
+   in `docs/WORKFLOW.md` §"Active ledger and closed history". The task is registered disabled; enable it
+   (`Enable-ScheduledTask 'FITWAY gardener weekly'`) once round 8 is merged into main. After each pass, review its
+   `gardener/<date>` branch and write the ledger's `gardener` entry. Show the user the reviewed deletion list before
+   any script runs; it includes the main checkout's uncommitted AGENTS.md edit of 2026-09-06 and its local `main`,
+   486 commits behind.
 4. The build: merge main into owner-followup-r04-build, then push it with the recipe commit; fix the tuner's
    «الإضاءة» toggle (an r04 Codex fix, inside the screen on the phone in English, by tap and keyboard); point the
    machine-local launch configuration (ports 3174 and 3180) at the no-store preview and drop its dead entries.
 5. Follow-ups for a Codex round: name the field when `supersededBy` is misplaced; strip a standalone `--` in
    `scripts/run-vitest.mjs`; remove the routes' compatibility mode and the four unused task classes; separate the
    brief checker's rule ids from B1-B10; read the Impeccable path in `scripts/check-design-context.mjs` from the
-   environment; a check that open milestones' owned paths do not overlap (A7).
+   environment; a check that open milestones' owned paths do not overlap (A7); a lint for the concept's CSS
+   (`:hover` outside a hover media query, `transition: all`, `ease-in`, `outline: none` with no focus style in its
+   place), from the good-css review (`docs/phase-records/handoffs/owner-design-exploration/r04/good-css-review.md`).
 6. Remove the grading worktrees grade-r6, grade-r7-u1a, grade-r7-u1b and grade-r7-g (disposable, detached), and the
    evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then the
    closing review and the milestone's closure. The Owner screens resume after.
