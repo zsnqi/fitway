@@ -3,8 +3,18 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const repository = fileURLToPath(new URL("../../../", import.meta.url));
-export const ts = createRequire(resolve(repository, "package.json"))(
-	"typescript",
+// Help and preview lifecycle commands also work in a checkout without dependencies.
+let compiler;
+export const ts = new Proxy(
+	{},
+	{
+		get(_target, key) {
+			compiler ??= createRequire(resolve(repository, "package.json"))(
+				"typescript",
+			);
+			return compiler[key];
+		},
+	},
 );
 export const lineAt = (text, offset) =>
 	text.slice(0, offset).split("\n").length;
@@ -13,7 +23,14 @@ const walk = (node, fn) => {
 	ts.forEachChild(node, (n) => walk(n, fn));
 };
 const literal = (node) =>
-	node && (ts.isStringLiteralLike(node) ? node.text : undefined);
+	node &&
+	(ts.isStringLiteralLike(node) || ts.isNumericLiteral(node)
+		? node.text
+		: node.kind === ts.SyntaxKind.TrueKeyword
+			? "true"
+			: node.kind === ts.SyntaxKind.FalseKeyword
+				? "false"
+				: undefined);
 
 // Static DOM vocabulary, including literal markup inside JS and element factories.
 // Locations refer to the input source, never a generated map.
@@ -25,15 +42,72 @@ export function discoverElements(texts) {
 	const targets = new Set();
 	const mutations = [];
 	const creations = new Map();
-	const add = (tag, attrs, file, line, binding) => {
+	const popupOpeners = new Map();
+	const add = (
+		tag,
+		rawAttrs,
+		file,
+		line,
+		binding,
+		recordPopup = true,
+		offset = undefined,
+	) => {
+		const attrs = rawAttrs.class
+			? {
+					...rawAttrs,
+					class: rawAttrs.class
+						.split(/\s+/)
+						.map((x) =>
+							x.includes("${") && x.split("${")[0].endsWith("-")
+								? ""
+								: x.split("${")[0],
+						)
+						.filter((x) => /^[a-zA-Z_][\w-]*$/.test(x))
+						.join(" "),
+				}
+			: rawAttrs;
+		const popup =
+			Object.hasOwn(attrs, "aria-haspopup") &&
+			attrs["aria-haspopup"] !== "false";
 		const selector =
 			attrs.id && !attrs.id.includes("${")
 				? `#${attrs.id}`
 				: attrs.class
 						?.split(/\s+/)
-						.filter((x) => x && !x.includes("${"))
+						.map((x) => x.split("${")[0])
+						.filter((x) => /^[a-zA-Z_][\w-]*$/.test(x))
 						.map((x) => `.${x}`)
-						.join("");
+						.join("") ||
+					(popup
+						? `${tag}[aria-haspopup="${attrs["aria-haspopup"]}"]`
+						: undefined);
+		if (popup && recordPopup) {
+			const openerSelector = attrs.id
+				? selector
+				: attrs["data-act"] && !attrs["data-act"].includes("${")
+					? `[data-act="${attrs["data-act"]}"]`
+					: `${tag}[aria-haspopup="${attrs["aria-haspopup"]}"]${attrs["data-layer"] ? `[data-layer="${attrs["data-layer"]}"]` : attrs["data-range"] ? `[data-range="${attrs["data-range"]}"]` : selector?.startsWith(".") ? selector : ""}`;
+			const sourceText = texts.find((t) => t.file === file)?.text || "";
+			const occurrence = `${offset ?? `${line}:${popupOpeners.size}`}:${openerSelector}`;
+			popupOpeners.set(
+				`${file}:${offset ?? `${line}:${popupOpeners.size}`}:${openerSelector}`,
+				{
+					selector: openerSelector,
+					kind: attrs["aria-haspopup"],
+					attrs,
+					source: {
+						file,
+						line,
+						occurrence,
+						offset,
+						column:
+							offset === undefined
+								? undefined
+								: offset - sourceText.lastIndexOf("\n", offset - 1),
+					},
+				},
+			);
+		}
 		if (!selector) {
 			if (
 				tag === "dialog" ||
@@ -95,6 +169,7 @@ export function discoverElements(texts) {
 		const properties = new Map();
 		const strings = new Set();
 		const parameterValues = new Map();
+		const functionRanges = [];
 		const ranges = [];
 		walk(ast, (n) => {
 			if (ts.isVariableDeclaration(n) && n.initializer)
@@ -108,6 +183,11 @@ export function discoverElements(texts) {
 			if (ts.isStringLiteralLike(n) || ts.isTemplateExpression(n))
 				ranges.push([n.getStart(ast), n.end]);
 			if (ts.isFunctionDeclaration(n) && n.name) {
+				functionRanges.push({
+					name: n.name.text,
+					start: n.getStart(ast),
+					end: n.end,
+				});
 				walk(ast, (call) => {
 					if (
 						ts.isCallExpression(call) &&
@@ -116,7 +196,7 @@ export function discoverElements(texts) {
 						for (const [i, p] of n.parameters.entries()) {
 							const value = literal(call.arguments[i]);
 							if (value !== undefined) {
-								const key = p.name.getText(ast);
+								const key = `${n.name.text}:${p.name.getText(ast)}`;
 								if (!parameterValues.has(key))
 									parameterValues.set(key, new Set());
 								parameterValues.get(key).add(value);
@@ -153,17 +233,19 @@ export function discoverElements(texts) {
 			}
 			return [];
 		};
-		const expand = (raw) => {
+		const expand = (raw, offset) => {
 			if (!raw.includes("${")) return [raw];
 			let result = [raw];
+			const enclosing = functionRanges
+				.filter((f) => f.start <= offset && f.end > offset)
+				.sort((a, b) => b.start - a.start)[0];
 			for (const m of raw.matchAll(/\$\{([\w.]+)\}/g)) {
+				const parameter = parameterValues.get(`${enclosing?.name}:${m[1]}`);
 				const possible = m[1].includes(".")
 					? [...(properties.get(m[1].split(".").at(-1)) || [])]
-					: [
-							...values(bindings.get(m[1])),
-							...(parameterValues.get(m[1]) || []),
-							...(properties.get(m[1]) || []),
-						];
+					: parameter?.size
+						? [...parameter]
+						: [...values(bindings.get(m[1])), ...(properties.get(m[1]) || [])];
 				if (!possible.length) return [];
 				result = result.flatMap((start) =>
 					possible.map((value) => start.replace(m[0], value)),
@@ -189,14 +271,39 @@ export function discoverElements(texts) {
 				/([\w-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g,
 			))
 				attrs[a[1]] = a[2] ?? a[3] ?? a[4] ?? "";
-			add(m[1].toLowerCase(), attrs, file, lineAt(text, m.index));
+			const expandedActions = attrs["data-act"]?.includes("${")
+				? expand(attrs["data-act"], m.index)
+				: [];
+			add(
+				m[1].toLowerCase(),
+				attrs,
+				file,
+				lineAt(text, m.index),
+				undefined,
+				!expandedActions.length,
+				m.index,
+			);
+			if (expandedActions.length)
+				for (const value of expandedActions)
+					add(
+						m[1].toLowerCase(),
+						{ ...attrs, "data-act": value },
+						file,
+						lineAt(text, m.index),
+						undefined,
+						true,
+						m.index,
+					);
 			if (attrs.id?.includes("${"))
-				for (const id of expand(attrs.id))
+				for (const id of expand(attrs.id, m.index))
 					add(
 						m[1].toLowerCase(),
 						{ ...attrs, id },
 						file,
 						lineAt(text, m.index),
+						undefined,
+						true,
+						m.index,
 					);
 		}
 		walk(ast, (node) => {
@@ -339,16 +446,29 @@ export function discoverElements(texts) {
 							file,
 							lineAt(text, node.getStart()),
 						);
-				if (left.name.text === "role") {
+				if (["role", "ariaHasPopup"].includes(left.name.text)) {
 					const sel = aliases.get(`${file}:${left.expression.getText(ast)}`);
 					const e = elements.get(sel);
 					if (e)
 						for (const role of values(node.right))
 							add(
 								e.tag,
-								{ ...e.attrs, role },
+								{
+									...e.attrs,
+									[left.name.text === "role" ? "role" : "aria-haspopup"]: role,
+								},
 								file,
 								lineAt(text, node.getStart()),
+							);
+					else if (left.name.text === "ariaHasPopup")
+						for (const value of values(node.right))
+							add(
+								creations.get(`${file}:${left.expression.getText(ast)}`)?.tag ||
+									"element",
+								{ "aria-haspopup": value },
+								file,
+								lineAt(text, node.getStart()),
+								left.expression.getText(ast),
 							);
 				}
 				if (
@@ -388,7 +508,7 @@ export function discoverElements(texts) {
 								lineAt(text, node.getStart()),
 								receiver,
 							);
-					if (["role", "popover"].includes(attribute)) {
+					if (["role", "popover", "aria-haspopup"].includes(attribute)) {
 						const sel = aliases.get(`${file}:${receiver}`);
 						const e = elements.get(sel);
 						if (e)
@@ -401,13 +521,14 @@ export function discoverElements(texts) {
 									receiver,
 								);
 						else if (
+							attribute === "aria-haspopup" ||
 							attribute === "popover" ||
 							["dialog", "menu", "alertdialog"].includes(
 								literal(node.arguments[1]),
 							)
 						)
 							add(
-								"element",
+								creations.get(`${file}:${receiver}`)?.tag || "element",
 								{ [attribute]: literal(node.arguments[1]) || "" },
 								file,
 								lineAt(text, node.getStart()),
@@ -524,6 +645,7 @@ export function discoverElements(texts) {
 	};
 	return {
 		elements: [...elements.values()],
+		openers: [...popupOpeners.values()],
 		openings: [...targets].map((selector) => {
 			const element = elements.get(selector);
 			const openers = [...elements.values()]

@@ -6,6 +6,7 @@ import {
 	jsonOutput,
 	outputFile,
 	portAvailable,
+	shortFinding,
 	verificationPort,
 } from "./core.mjs";
 import { drive } from "./runner.mjs";
@@ -21,9 +22,31 @@ const identity = (item) =>
 		item.motion,
 		item.transport,
 	]);
+export const diffStem = (item, index = 0) =>
+	`${String(index + 1).padStart(3, "0")}-${[
+		item.feature,
+		item.state,
+		item.language,
+		item.size,
+		item.input,
+		item.motion,
+		item.transport,
+	]
+		.map((value) =>
+			String(value)
+				.replace(/[^\w-]/g, "-")
+				.slice(0, 100),
+		)
+		.join("-")}`;
 async function capture(options, setup, out) {
 	try {
-		return await drive({ ...options, ...setup, session: undefined, out });
+		return await drive({
+			...options,
+			...setup,
+			session: undefined,
+			out,
+			quiet: true,
+		});
 	} catch (error) {
 		try {
 			return {
@@ -48,7 +71,12 @@ export async function compare(options, { doctor, child }) {
 		throw new Error("compare owns its previews; omit --session.");
 	if (!options.baseline)
 		throw new Error("compare requires --baseline <absolute concept folder>.");
-	const build = await doctor({ ...options, port: ports[0], tools: "diff" });
+	const build = await doctor({
+		...options,
+		port: ports[0],
+		tools: "diff",
+		quiet: true,
+	});
 	const baseline = await doctor({
 		...options,
 		concept: options.baseline,
@@ -56,6 +84,7 @@ export async function compare(options, { doctor, child }) {
 		recipes: options["baseline-recipes"] || options.recipes,
 		port: ports[1],
 		tools: "diff",
+		quiet: true,
 	});
 	const pages =
 		options.page === "all"
@@ -71,15 +100,21 @@ export async function compare(options, { doctor, child }) {
 		if (digest(await readFile(a)) === digest(await readFile(b)))
 			return { identical: true, bbox: null, changedPixels: 0 };
 		const json = await outputFile(out, `${prefix}.json`);
-		await child(process.platform === "win32" ? "py" : "python3", [
-			resolve(build.tools, "scripts/img/diff_map.py"),
-			a,
-			b,
-			"--out",
-			await outputFile(out, prefix),
-			"--json",
-			json,
-		]);
+		await child(
+			process.platform === "win32" ? "py" : "python3",
+			[
+				resolve(build.tools, "scripts/img/diff_map.py"),
+				a,
+				b,
+				"--out",
+				await outputFile(out, prefix),
+				"--json",
+				json,
+			],
+			undefined,
+			undefined,
+			true,
+		);
 		return JSON.parse(await readFile(json, "utf8"));
 	};
 	for (const page of pages) {
@@ -133,7 +168,7 @@ export async function compare(options, { doctor, child }) {
 						throw new Error(
 							`Capture problem: build=${item.status}, baseline=${other.status}; ${[...item.problems, ...other.problems].join("; ")}`,
 						);
-					const prefix = `${tag}-${String(index + 1).padStart(3, "0")}-${item.language}-${item.size}`;
+					const prefix = diffStem(item, index);
 					let measured = await diff(
 						entry.files.baseline,
 						entry.files.build,
@@ -202,7 +237,7 @@ export async function compare(options, { doctor, child }) {
 				entry.problems.push(error.message);
 			}
 			console.log(
-				`COMPARE ${entry.result.toUpperCase()}: ${entry.feature} ${entry.state} ${entry.language} ${entry.size} ${entry.input} ${entry.motion} ${entry.transport}${entry.region ? `; region ${JSON.stringify(entry.region)}; diff ${entry.diffPrefix}` : ""}${entry.repeated ? "; repeated in fresh contexts" : ""}${entry.problems.length ? `; ${entry.problems.join("; ")}` : ""}`,
+				`COMPARE ${entry.result.toUpperCase()}: ${entry.feature} ${entry.state} ${entry.language} ${entry.size} ${entry.input} ${entry.motion} ${entry.transport}${entry.region ? `; region ${JSON.stringify(entry.region)}; diff ${entry.diffPrefix}` : ""}${entry.repeated ? "; repeated in fresh contexts" : ""}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
 			);
 			await jsonOutput(out, "comparison.json", result);
 		}

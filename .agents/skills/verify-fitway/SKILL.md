@@ -24,6 +24,7 @@ node $cli list --concept $concept --recipes $recipes --page all
 
 After resolving `$cli`, commands work from any shell directory. Plain folders and `git archive` extractions need
 no enclosing package.json: Playwright comes from this skill's repository. No new dependencies are installed.
+`help` needs only Node. It prints the checkout's `pnpm install --frozen-lockfile` command for discovery and browser tools.
 On this Windows machine run browser commands in PowerShell, with the brief's required escalation for child processes.
 Git Bash may rewrite browser paths; use PowerShell for the examples below. All JSON is UTF-8 without a BOM.
 
@@ -32,8 +33,12 @@ Git Bash may rewrite browser paths; use PowerShell for the examples below. All J
 `list --page activity.html` prints feature ids, states, switches, dependencies, user reach and observable proof.
 `--page` and `--feature` select one path; language, size, input, motion and transport multiply its frames.
 Use `help` for the full command and axis inventory. Every consumer rediscovers the source, including openings and
-opener controls. A source edit alone is not drift. Uncovered openings and vanished recipe selectors/markers fail
+opener controls, including every `aria-haspopup` value except `false`. Specimens need explicit recipe coverage too.
+A source edit alone is not drift. Uncovered openings/openers and vanished recipe selectors/markers fail
 with their names and source file/line; repair the recipe or source on the concept branch, then run:
+
+An inert specimen can use `coversOpeners: [{selector, file, marker}]`, where `marker` names its source declaration.
+Coverage applies only to that declaration's opener, so a live control with the same classes still fails drift.
 
 Discovery is not yet exhaustive: CSS-only openings and some dynamic or delegated opener relationships remain
 unresolved. A drift pass proves coverage of the discovered openings; it does not prove a complete feature census.
@@ -44,7 +49,11 @@ node $cli drift --concept $concept --recipes $recipes --map "$run/map/verificati
 node $cli doctor --concept $concept --recipes $recipes --tools diff
 ```
 
-Doctor is read-only and prints `DOCTOR PASS` or the problem and a `FIX:` command. Missing standalone inputs without
+Doctor is read-only and prints `DOCTOR PASS` or the problem and a `FIX:` command. Recipe drift's `FIX` uses
+`repair-recipes`, which writes a copy outside the concept: vanished selector/marker recipes are dropped and uncovered
+elements get draft entries. Drift with that copy reports drafts to complete; author their user reach and observable
+proof, remove `draft`, and check again. A missing recipe file produces a draft skeleton, not recovered knowledge.
+Missing standalone inputs without
 an authoritative recovery source print `FIX BLOCKED`; not every doctor failure has an automatic repair command.
 It checks Chromium, the user's
 machine-level ui-forensics skill, the concept probe kit, recipe coverage, and port ownership; `--tools diff` adds
@@ -66,7 +75,8 @@ try {
 ```
 
 Every preview response sends `Cache-Control: no-store`; `--cache none` tests the no-header route. `--lan` makes an
-explicit preview reachable on the LAN on an allocated port. Session identity authenticates cleanup; retain
+explicit preview reachable on the LAN on an allocated port; use its printed network-interface URL on another device.
+Session identity authenticates cleanup; retain
 `session.json` privately. Cleanup after a refused launch or a previously cleaned session is safe and retains evidence.
 
 A `FRAME PASS` requires the requested state's visible proof and the feature's action/result proof. Unsupported
@@ -78,6 +88,12 @@ error. Each item's findings survive, and the run continues. Overall failure stil
 Use source-supported switches or real user actions. Read-only readiness/state observations are allowed; internal
 setters do not prove a user flow. Each item uses a fresh context, waits for readiness/fonts and Daily intro settlement.
 Touch uses a coarse pointer and actual taps. `--probes daily` adds the concept's geometry/accessibility measurements.
+`--inputs keyboard` reaches action targets with Tab and activates with Enter; `focus:` also traverses with Tab,
+never sets focus. `press:` sends the named key, `type:` types with keys, and native `select:` uses Home/ArrowDown/Enter.
+For roving controls or a different activation key, recipes can supply `keyboardActions` with `press:` and `focus:`
+steps. Each key's before/after focused element is recorded in the full item JSON, with initial/final focus.
+`FRAME KEYBOARD-UNREACHABLE` fails the run and names the target and focus stop after a repeated Tab cycle or bounded
+sequence. Unsupported pointer actions require authored keyboard steps. Inspect the recorded sequence before claiming reach.
 `--states all` sweeps discovered switch values and recipe samples; use explicit states or query for a narrower claim.
 
 These two tasks demonstrate finding the feature and applying its state:
@@ -87,6 +103,8 @@ node $cli list --concept $concept --recipes $recipes --page activity.html
 node $cli drive --concept $concept --recipes $recipes --page activity.html --feature page --query 'case=long' --languages ar --sizes narrow --inputs mouse --motions reduce --transports http --port 3176 --out "$run/activity-long"
 node $cli list --concept $concept --recipes $recipes --page reports.html
 node $cli drive --concept $concept --recipes $recipes --page reports.html --feature export-open --languages en --sizes phone --inputs touch --motions reduce --transports http --port 3176 --out "$run/reports-export"
+node $cli list --concept $concept --recipes $recipes --page access.html
+node $cli drive --concept $concept --recipes $recipes --page access.html --feature pinChange --languages ar --sizes tablet --inputs keyboard --motions reduce --transports http --port 3176 --out "$run/access-pin-keyboard"
 ```
 
 Activity's `case=long` needs `record`; this build's recipe applies `record=1001` and checks the visible long-name
@@ -111,8 +129,10 @@ results. A difference or problem makes the command fail. Inspect its frames and 
 
 Output must be an absolute folder outside every git tree, including links and junction aliases. File names carry
 feature/state/language/size/input/motion/transport. Read `summary.json` or the item's `*-summary.json` first; full
-JSON retains actions, readiness, geometry, overflow, ARIA and errors. Before/after/error frames and language sheets
-remain after cleanup. Capture downloads when a feature claims them. Personally inspect exact named rendered frames
+JSON retains actions, readiness, geometry, overflow, ARIA, errors and each keyboard focus step. Compare prints one
+line per item and a summary; full diff measurements remain in `comparison.json` and the named diff JSON files.
+Before/after/error frames and language sheets remain after cleanup. Capture downloads when a feature claims them.
+Personally inspect exact named rendered frames
 at the required sizes and languages; logs/hashes do not establish visual quality or human acceptance.
 
 `measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>` delegates to

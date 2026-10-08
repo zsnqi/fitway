@@ -17,8 +17,10 @@ import { compare } from "./compare.mjs";
 import {
 	assertOutsideGit,
 	canonical,
+	defaultLanAddresses,
 	freshOutput,
 	jsonOutput,
+	lanOrigins,
 	outputFile,
 	ownedSession,
 	portAvailable,
@@ -30,6 +32,7 @@ import {
 	coverageProblems,
 	drift,
 	generateMap,
+	repairRecipes,
 	repository,
 } from "./map.mjs";
 import { drive } from "./runner.mjs";
@@ -39,6 +42,7 @@ export const help = `verify-fitway: node <absolute-skill-folder>/cli.mjs <comman
 Commands:
   help
   map --concept <folder> [--recipes <file>] [--out <evidence-folder>]
+  repair-recipes --concept <folder> [--recipes <stale-file>] --out <evidence-folder>
   list --concept <folder> [--recipes <file>] [--map <file>] [--page <page>|all]
   drift --concept <folder> [--recipes <file>] [--map <verification-map.json>]
   drift-tree [--root <repository>]
@@ -47,7 +51,7 @@ Commands:
   drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>]
         [--page index.html|all] [--feature page|all] [--states default|all|switch=value,...]
         [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone]
-        [--inputs mouse,touch] [--motions reduce,full] [--transports http,file] [--port 3176]
+        [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176]
         [--cache no-store|none]
         [--probes daily]
   compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>]
@@ -56,6 +60,7 @@ Commands:
   measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>
   cleanup --session <launch-folder>
 Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
+repair-recipes drops vanished selectors/markers and writes draft entries outside the concept.
 Every use rediscovers source facts; --map is an optional prior map for drift provenance.
 map writes <out>/verification-map.json; generated maps are evidence, never committed.
 Output defaults to a fresh D:/fitway-temp/verify-fitway-*; git trees/links into them are refused.
@@ -72,10 +77,14 @@ Known limits: CSS-only openings and some dynamic/delegated opener relationships 
 Doctor can block when a missing standalone input has no authoritative recovery source.
 Open numeric/text domains have representative samples in the map; --query accepts other values.
 Touch uses hasTouch/coarse pointer and real taps; full means no-preference.
+Keyboard uses Tab and key presses only; full evidence records focus at every key.
+Unreached keyboard targets fail with the element where focus stopped; keyboardActions can supply roving keys.
 measure calls the installed ui-forensics tool; its own --help describes further arguments.
 Only ports 3176-3177 are accepted. Ports 3174 and 3178-3185 belong to other previews.
 --forensics <folder> overrides the machine-level ui-forensics location.
 Git Bash: use Windows D:/ absolute paths and quote --query; no /api-style arguments cross shells.
+help and preview lifecycle need only Node. For discovery/drive/compare/doctor, install checkout dependencies:
+  pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile
 `;
 
 function parse(argv) {
@@ -127,6 +136,7 @@ export async function child(
 	args,
 	cwd = repository,
 	signal = undefined,
+	quiet = false,
 ) {
 	await new Promise((done, reject) => {
 		const nodeTool = command === process.execPath;
@@ -141,10 +151,25 @@ export async function child(
 					TMP: "D:/fitway-temp",
 					PYTHONDONTWRITEBYTECODE: "1",
 				},
-				stdio: nodeTool ? ["inherit", "inherit", "inherit", "ipc"] : "inherit",
+				stdio: nodeTool
+					? [
+							"inherit",
+							quiet ? "ignore" : "inherit",
+							quiet ? "pipe" : "inherit",
+							"ipc",
+						]
+					: [
+							"inherit",
+							quiet ? "ignore" : "inherit",
+							quiet ? "pipe" : "inherit",
+						],
 				windowsHide: true,
 			},
 		);
+		let diagnostic = "";
+		processChild.stderr?.on("data", (bytes) => {
+			diagnostic = (diagnostic + bytes).slice(-8000);
+		});
 		const cancel = () => {
 			if (nodeTool && processChild.connected)
 				processChild.send("cancel", () => {});
@@ -169,7 +194,7 @@ export async function child(
 			else
 				reject(
 					new Error(
-						`${command} failed (${signal || code}); owned tool cleanup completed`,
+						`${command} failed (${signal || code}); owned tool cleanup completed${diagnostic ? `; ${diagnostic.trim()}` : ""}`,
 					),
 				);
 		});
@@ -243,9 +268,10 @@ async function doctorChecks(options) {
 				"Session serves a different concept; launch the supplied concept.",
 			);
 	} else await portAvailable(Number(options.port || 3176));
-	console.log(
-		`DOCTOR PASS: Chromium, ui-forensics, probe kit, ${map.pages.length} pages, current map ${path}, port owned/free.`,
-	);
+	if (!options.quiet)
+		console.log(
+			`DOCTOR PASS: Chromium, ui-forensics, probe kit, ${map.pages.length} pages, current map ${path}, port owned/free.`,
+		);
 	return { concept, map, tools, loaded };
 }
 
@@ -258,10 +284,10 @@ export function doctorFix(options, error) {
 		const out = freshOutput();
 		return `${command} map ${args} --out ${quote(out)}; ${command} doctor ${args} --map ${quote(resolve(out, "verification-map.json"))}`;
 	}
-	if (/Recipes missing/.test(error.message))
-		return "BLOCKED: provide the concept branch's verification-recipes.json with --recipes; no authoritative recipe file was found.";
-	if (/Invalid recipes|Recipe drift|No observable/.test(error.message))
-		return `${command} map ${args} --out ${quote(freshOutput())}`;
+	if (/Recipes missing|Recipe drift/.test(error.message))
+		return `${command} repair-recipes ${args} --out ${quote(freshOutput())}`;
+	if (/Invalid recipes|No observable/.test(error.message))
+		return "BLOCKED: repair the recipe schema or author the missing observable proof, then rerun doctor; automatic repair cannot supply that knowledge.";
 	if (/Chromium missing/.test(error.message))
 		return `node ${quote(resolve(repository, "node_modules/@playwright/test/cli.js"))} install chromium`;
 	if (/ui-forensics missing/.test(error.message))
@@ -298,6 +324,9 @@ async function launch(options) {
 	const concept = canonical(options.concept);
 	const port = verificationPort(options.port || 3176);
 	await portAvailable(port);
+	const origins = options.lan
+		? lanOrigins(port, undefined, defaultLanAddresses())
+		: [`http://127.0.0.1:${port}`];
 	const out = options.out || freshOutput();
 	assertOutsideGit(out);
 	const token = randomBytes(24).toString("hex");
@@ -373,9 +402,7 @@ async function launch(options) {
 		if (interrupted)
 			throw new Error("Launch interrupted; its owned preview was stopped.");
 		running.unref();
-		console.log(
-			`LAUNCH PASS: http://${options.lan ? "0.0.0.0" : "127.0.0.1"}:${port}; no-store; session ${out}`,
-		);
+		console.log(`LAUNCH PASS: ${origins.join(", ")}; no-store; session ${out}`);
 	} catch (error) {
 		running.kill();
 		throw error;
@@ -536,6 +563,21 @@ async function main() {
 		throw new Error(
 			"--concept requires the absolute Eclipse folder (the build is read-only).",
 		);
+	if (command === "repair-recipes") {
+		const out = options.out || freshOutput();
+		assertOutsideGit(out);
+		const concept = canonical(options.concept);
+		const repaired = repairRecipes(concept, options.recipes);
+		await jsonOutput(out, "verification-recipes.json", repaired.recipes);
+		await jsonOutput(out, "recipe-repair.json", repaired);
+		console.log(
+			`REPAIR PASS: ${repaired.dropped.length} stale findings dropped; ${repaired.drafts.length} draft entries added; ${out}/verification-recipes.json`,
+		);
+		console.log(
+			`NEXT: complete draft reach/proof, then node '${self.replaceAll("'", "''")}' drift --concept '${concept.replaceAll("'", "''")}' --recipes '${resolve(out, "verification-recipes.json").replaceAll("'", "''")}'`,
+		);
+		return;
+	}
 	if (command === "map") {
 		const out = options.out || freshOutput();
 		assertOutsideGit(out);

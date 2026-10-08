@@ -6,9 +6,16 @@ import {
 	outputFile,
 	ownedSession,
 	preview,
+	shortFinding,
 	verificationPort,
 } from "./core.mjs";
-import { performAction, prove } from "./drive.mjs";
+import {
+	focusedElement,
+	KeyboardReachError,
+	performAction,
+	prove,
+	proveFeature,
+} from "./drive.mjs";
 import { loadProbes } from "./probes.mjs";
 
 const axis = (value, fallback, allowed) => {
@@ -18,6 +25,8 @@ const axis = (value, fallback, allowed) => {
 			throw new Error(`Unsupported axis ${item}; choose ${allowed}`);
 	return items;
 };
+export const inputAxis = (value) =>
+	axis(value, "mouse,touch", ["mouse", "touch", "keyboard"]);
 
 export function resolveQuery(page, query) {
 	const result = { ...query };
@@ -145,7 +154,7 @@ export async function drive(options) {
 		"desktop,tablet,phone",
 		Object.keys(map.sizes),
 	);
-	const inputs = axis(options.inputs, "mouse,touch", ["mouse", "touch"]);
+	const inputs = inputAxis(options.inputs);
 	const motions = axis(options.motions, "reduce,full", ["reduce", "full"]);
 	const transports = axis(options.transports, "http,file", ["http", "file"]);
 	const cases = stateCases(selected, options);
@@ -270,6 +279,8 @@ export async function drive(options) {
 											readyJs: selected.ready,
 											timeout: 15000,
 										});
+										if (input === "keyboard")
+											entry.initialFocus = await focusedElement(current.page);
 										if (selected.page === "index.html")
 											await probes.introSettled(current.page);
 										entry.emulation = {
@@ -322,6 +333,15 @@ export async function drive(options) {
 											);
 											await save("after");
 										} else {
+											if (
+												input === "keyboard" &&
+												feature.id !== "page" &&
+												!(feature.keyboardActions || feature.actions || [])
+													.length
+											)
+												throw new KeyboardReachError(
+													`Not reachable by keyboard: ${feature.id} has no key sequence; focus stopped at ${(await focusedElement(current.page)).selector}`,
+												);
 											const actionRecipe =
 												feature.fullMotion && motion === "reduce"
 													? {
@@ -362,10 +382,16 @@ export async function drive(options) {
 													moved: feature.proof.moved,
 												},
 											);
-											for (const action of actionRecipe.actions || []) {
+											for (const action of (input === "keyboard"
+												? actionRecipe.keyboardActions || actionRecipe.actions
+												: actionRecipe.actions) || []) {
 												const resolvedAction = action.replace(
 													/^activate:/,
-													input === "touch" ? "tap:" : "click:",
+													input === "keyboard"
+														? "activate:"
+														: input === "touch"
+															? "tap:"
+															: "click:",
 												);
 												await performAction(
 													ui,
@@ -388,7 +414,12 @@ export async function drive(options) {
 													},
 												);
 											else
-												await prove(current.page, actionRecipe.proof, language);
+												await proveFeature(
+													current.page,
+													actionRecipe.proof,
+													language,
+													input,
+												);
 											if (feature.settleIntro && motion === "full")
 												await probes.introSettled(current.page);
 											if (
@@ -495,14 +526,27 @@ export async function drive(options) {
 												entry.status = "fail";
 										}
 									} catch (error) {
-										entry.status = "fail";
+										entry.status =
+											error instanceof KeyboardReachError
+												? "keyboard-unreachable"
+												: "fail";
 										entry.problems.push(error.message);
+										if (input === "keyboard") {
+											entry.finalFocus = await focusedElement(current.page);
+											entry.problems.push(
+												`Keyboard focus stopped at ${entry.finalFocus.selector} (${entry.finalFocus.text})`,
+											);
+										}
 										try {
 											await save("error");
 										} catch (captureError) {
 											entry.problems.push(`capture: ${captureError.message}`);
 										}
 									} finally {
+										if (input === "keyboard" && !entry.finalFocus)
+											entry.finalFocus = await focusedElement(
+												current.page,
+											).catch(() => ({ selector: "<page closed>" }));
 										await current.context.close();
 										await jsonOutput(out, `${stem}.json`, entry);
 										await jsonOutput(
@@ -510,9 +554,10 @@ export async function drive(options) {
 											`${stem}-summary.json`,
 											itemSummary(entry),
 										);
-										console.log(
-											`FRAME ${entry.status.toUpperCase()}: ${entry.feature} ${entry.state} ${language} ${size} ${input} ${motion} ${transport}${entry.problems.length ? `; ${entry.problems.join("; ")}` : ""}`,
-										);
+										if (!options.quiet)
+											console.log(
+												`FRAME ${entry.status.toUpperCase()}: ${entry.feature} ${entry.state} ${language} ${size} ${input} ${motion} ${transport}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
+											);
 										await jsonOutput(out, "manifest.json", manifest);
 									}
 								}
@@ -546,9 +591,10 @@ export async function drive(options) {
 				!["pass", "not-reachable"].includes(item.status) ||
 				item.measurementProblems?.length,
 		);
-		console.log(
-			`DRIVE ${failed.length ? "FAIL" : "PASS"}: ${manifest.items.length} items; ${manifest.items.filter((i) => i.status === "not-reachable").length} not reachable; ${failed.length} problems; evidence ${out}/manifest.json`,
-		);
+		if (!options.quiet)
+			console.log(
+				`DRIVE ${failed.length ? "FAIL" : "PASS"}: ${manifest.items.length} items; ${manifest.items.filter((i) => i.status === "not-reachable").length} not reachable; ${failed.length} problems; evidence ${out}/manifest.json`,
+			);
 		if (failed.length)
 			throw new Error("Items have findings; inspect summary.json");
 		return manifest;

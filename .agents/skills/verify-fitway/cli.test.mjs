@@ -15,13 +15,18 @@ import { resolve } from "node:path";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { child, doctorFix, playwright } from "./cli.mjs";
+import { diffStem } from "./compare.mjs";
 import {
 	assertOutsideGit,
+	lanOrigins,
 	outputFile,
+	parsePortOwners,
 	portAvailable,
 	preview,
+	shortFinding,
 	verificationPort,
 } from "./core.mjs";
+import { performAction, proveFeature, reachByKeyboard } from "./drive.mjs";
 import {
 	coverageProblems,
 	discoverElements,
@@ -29,9 +34,10 @@ import {
 	extractDependencies,
 	extractSwitches,
 	generateMap,
+	repairRecipes,
 } from "./map.mjs";
 import { sourceProbe } from "./probes.mjs";
-import { itemSummary, resolveQuery, stateCases } from "./runner.mjs";
+import { inputAxis, itemSummary, resolveQuery, stateCases } from "./runner.mjs";
 
 let scratch;
 let concept;
@@ -333,6 +339,9 @@ test("Playwright resolves from the skill checkout for a package-free concept", (
 	assert.ok(loaded.pw.chromium);
 });
 test("short summary preserves axes, state, result and measuring error without bulk geometry", () => {
+	assert.equal(shortFinding("one\n  two"), "one two");
+	assert.match(shortFinding("detail ".repeat(1000)), /… \(see record\)$/);
+	assert.ok(shortFinding("detail ".repeat(1000)).length < 260);
 	const e = {
 		feature: "page",
 		state: "case=long&record=1001",
@@ -357,7 +366,7 @@ test("doctor gives portable concrete repair commands; verification ports are res
 	const opts = { concept, recipes };
 	assert.match(
 		doctorFix(opts, new Error("Recipe drift")),
-		/node '.*cli.mjs' map --concept/,
+		/node '.*cli.mjs' repair-recipes --concept/,
 	);
 	assert.match(
 		doctorFix(opts, new Error("Chromium missing")),
@@ -366,6 +375,403 @@ test("doctor gives portable concrete repair commands; verification ports are res
 	for (const port of [3174, 3180, 3185])
 		assert.throws(() => verificationPort(port), /choose 3176 or 3177/);
 	assert.equal(verificationPort("3176"), 3176);
+});
+
+test("keyboard is an axis; Tab/Enter are the only reach input and each key records focus", async () => {
+	assert.deepEqual(inputAxis("keyboard"), ["keyboard"]);
+	const keys = [];
+	let focus = 0;
+	const stops = ["body", "#first", "#pin-change", "#pin-code"];
+	const page = {
+		evaluate: async () => ({ selector: stops[focus], text: stops[focus] }),
+		locator: (selector) => ({
+			first() {
+				return this;
+			},
+			count: async () => 1,
+			evaluate: async () => stops[focus] === selector,
+		}),
+		keyboard: {
+			press: async (key) => {
+				keys.push(key);
+				focus = key === "Enter" ? 3 : (focus + 1) % stops.length;
+			},
+		},
+	};
+	const entry = {};
+	await performAction(
+		{},
+		page,
+		"activate:#pin-change",
+		"keyboard",
+		scratch,
+		"test",
+		entry,
+	);
+	assert.deepEqual(keys, ["Tab", "Tab", "Enter"]);
+	assert.deepEqual(
+		entry.focusSteps.map((s) => s.after.selector),
+		["#first", "#pin-change", "#pin-code"],
+	);
+	await assert.rejects(
+		reachByKeyboard(page, "#pointer-only", entry, "focus:#pointer-only"),
+		/Not reachable by keyboard: #pointer-only; focus stopped at #pin-code.*cycle repeated/,
+	);
+});
+
+test("a focused control whose keys do not produce the feature reports keyboard unreachability", async () => {
+	const page = {
+		evaluate: async () => ({ selector: "#mouse-only" }),
+		locator: () => ({
+			first() {
+				return this;
+			},
+			waitFor: async () => {
+				throw new Error("dialog stayed closed");
+			},
+		}),
+	};
+	await assert.rejects(
+		proveFeature(
+			page,
+			{ selector: "#dialog", visible: true },
+			"ar",
+			"keyboard",
+		),
+		/Not reachable by keyboard via the recorded sequence: #dialog; focus stopped at #mouse-only; dialog stayed closed/,
+	);
+	await assert.rejects(
+		proveFeature(page, { selector: "#dialog", visible: true }, "ar", "mouse"),
+		/^Error: dialog stayed closed$/,
+	);
+});
+
+test("planted aria-haspopup openers without targets, ids or classes fail by name, including specimens", async () => {
+	const file = resolve(concept, "index.html");
+	try {
+		await writeFile(
+			file,
+			`${html}\n<button id="next-menu" aria-haspopup="menu">Next</button>\n<button aria-haspopup="true">Unnamed</button>\n<button id="closed" aria-haspopup="false">Closed</button>`,
+		);
+		const found = coverageProblems(generateMap(concept), concept).join("\n");
+		assert.match(found, /index.html:2: uncovered opener #next-menu/);
+		assert.match(
+			found,
+			/index.html:3: uncovered opener button\[aria-haspopup="true"\]/,
+		);
+		assert.doesNotMatch(found, /uncovered opener #closed/);
+		const specimen = discoverElements([
+			{
+				file: "components.js",
+				text: 'const specimen=`<button id="sample" tabindex="-1" aria-haspopup="menu"></button>`;const live=`<button id="live" aria-haspopup="menu"></button>`;',
+			},
+		]);
+		assert.deepEqual(
+			specimen.openers.map((o) => o.selector),
+			["#sample", "#live"],
+		);
+	} finally {
+		await writeFile(file, html);
+	}
+});
+
+test("repair removes stale feature and state selectors/markers, preserves good entries and leaves only drafts; source is unchanged", async () => {
+	const file = resolve(concept, "index.html");
+	const stale = authored();
+	stale.pages["index.html"].features.push({
+		id: "gone-marker",
+		marker: "retired",
+		actions: [],
+		proof: { ready: true },
+	});
+	stale.pages["index.html"].states.push({
+		when: { state: "old" },
+		proof: { selector: "#old-state", visible: true },
+	});
+	try {
+		const source = `${html.replaceAll("ops-pop", "new-pop")}\n<button id="new-menu" aria-haspopup="menu">New</button>`;
+		await writeFile(file, source);
+		await writeFile(recipes, JSON.stringify(stale));
+		const before = await readFile(recipes, "utf8");
+		const repaired = repairRecipes(concept);
+		assert.equal(repaired.dropped.length, 3);
+		assert.equal(
+			repaired.recipes.pages["index.html"].features.some(
+				(f) => f.id === "status" || f.id === "gone-marker",
+			),
+			false,
+		);
+		assert.equal(repaired.recipes.pages["index.html"].states.length, 1);
+		const copy = resolve(scratch, "repaired.json");
+		await writeFile(copy, JSON.stringify(repaired.recipes));
+		const findings = drift(generateMap(concept, copy), concept, copy);
+		assert.equal(findings.length, 2);
+		assert.ok(findings.every((p) => p.includes("draft recipe")));
+		assert.equal(await readFile(file, "utf8"), source);
+		assert.equal(await readFile(recipes, "utf8"), before);
+		for (const f of repaired.recipes.pages["index.html"].features) {
+			delete f.draft;
+			f.proof = { selector: "main", visible: true };
+		}
+		await writeFile(copy, JSON.stringify(repaired.recipes));
+		assert.deepEqual(drift(generateMap(concept, copy), concept, copy), []);
+	} finally {
+		await writeFile(file, html);
+		await writeFile(recipes, JSON.stringify(authored()));
+	}
+});
+
+test("missing recipes repair to drafts without touching concept inputs", async () => {
+	const missing = resolve(scratch, "no-recipes.json");
+	const result = repairRecipes(concept, missing);
+	assert.ok(result.drafts.length);
+	assert.equal(result.recipes.pages["index.html"].features[0].draft, true);
+});
+
+test("repaired duplicate selectors report only occurrence-bound drafts", async () => {
+	const file = resolve(concept, "index.html");
+	try {
+		await writeFile(
+			file,
+			`${html}\n<button class="same" aria-haspopup="menu"></button><button class="same" aria-haspopup="menu"></button>`,
+		);
+		const repaired = repairRecipes(concept);
+		assert.equal(repaired.drafts.length, 2);
+		const copy = resolve(scratch, "duplicate-drafts.json");
+		await writeFile(copy, JSON.stringify(repaired.recipes));
+		const findings = coverageProblems(generateMap(concept, copy), concept);
+		assert.equal(findings.length, 2);
+		assert.ok(findings.every((p) => p.includes("draft recipe")));
+	} finally {
+		await writeFile(file, html);
+	}
+});
+
+test("opener template parameters keep the enclosing function's literal call values", () => {
+	const d = discoverElements([
+		{
+			file: "scope.js",
+			// biome-ignore lint/suspicious/noTemplateCurlyInString: Fixture source intentionally contains a template expression.
+			text: 'function render(act){return `<button data-act="${act}" aria-haspopup="dialog"></button>`;}function other(act){};render("mine");render("off");other("add");',
+		},
+	]);
+	assert.deepEqual(
+		d.openers.map((o) => o.selector),
+		['[data-act="mine"]', '[data-act="off"]'],
+	);
+});
+
+test("specimen source coverage cannot cover a live opener with identical classes; comment shifts retain coverage", async () => {
+	const script = resolve(concept, "app.js");
+	const r = authored();
+	r.pages["index.html"].features.push({
+		id: "specimen",
+		actions: [],
+		proof: { ready: true },
+		coversOpeners: [
+			{
+				selector: 'button[aria-haspopup="menu"].same',
+				file: "app.js",
+				marker: "const specimen =",
+			},
+		],
+	});
+	const specimen =
+		'\nconst specimen = `<button class="same" aria-haspopup="menu" tabindex="-1"></button>`;';
+	try {
+		await writeFile(recipes, JSON.stringify(r));
+		await writeFile(script, js + specimen);
+		assert.deepEqual(coverageProblems(generateMap(concept), concept), []);
+		await writeFile(script, `// shifted\n${js}${specimen}`);
+		assert.deepEqual(coverageProblems(generateMap(concept), concept), []);
+		await writeFile(
+			script,
+			js +
+				specimen +
+				'\nconst live = `<button class="same" aria-haspopup="menu"></button>`;',
+		);
+		assert.match(
+			coverageProblems(generateMap(concept), concept).join("\n"),
+			/app.js:3: uncovered opener button\[aria-haspopup="menu"\].same/,
+		);
+		await writeFile(
+			script,
+			js +
+				specimen +
+				'const live = `<button class="same" aria-haspopup="menu"></button>`;',
+		);
+		const sameLine = generateMap(concept);
+		assert.equal(sameLine.pages[0].openers.length, 2);
+		assert.equal(
+			coverageProblems(sameLine, concept).filter((p) =>
+				p.includes("uncovered opener"),
+			).length,
+			1,
+		);
+		r.pages["index.html"].features.at(-1).coversOpeners = undefined;
+		r.pages["index.html"].features.at(-1).actions = ["activate:#known .same"];
+		await writeFile(recipes, JSON.stringify(r));
+		assert.equal(
+			coverageProblems(generateMap(concept), concept).filter((p) =>
+				p.includes("uncovered opener"),
+			).length,
+			2,
+		);
+	} finally {
+		await writeFile(script, js);
+		await writeFile(recipes, JSON.stringify(authored()));
+	}
+});
+
+test("JS-assigned aria-haspopup is discovered on native elements without ids", () => {
+	const d = discoverElements([
+		{
+			file: "dynamic.js",
+			text: 'const button=document.createElement("button");button.setAttribute("aria-haspopup","menu");\nconst second=document.createElement("button");second.ariaHasPopup="dialog";',
+		},
+	]);
+	assert.equal(d.openers.length, 2);
+	assert.equal(d.openers[0].selector, 'button[aria-haspopup="menu"]');
+	assert.equal(d.openers[1].selector, 'button[aria-haspopup="dialog"]');
+	const booleans = discoverElements([
+		{
+			file: "boolean.js",
+			text: 'const button=document.createElement("button");button.id="boolean-menu";button.setAttribute("aria-haspopup",true);const second=document.createElement("button");second.ariaHasPopup=true;',
+		},
+	]);
+	assert.deepEqual(
+		booleans.openers.map((o) => o.kind),
+		["true", "true"],
+	);
+});
+
+test("IPv6 listener refusal names :: and leaves its owner running", async () => {
+	const server = createServer((_, res) => res.end("foreign IPv6"));
+	await new Promise((done) => server.listen(3177, "::", done));
+	try {
+		const cli = fileURLToPath(new URL("./cli.mjs", import.meta.url));
+		const result = spawnSync(
+			process.execPath,
+			[
+				cli,
+				"launch",
+				"--concept",
+				concept,
+				"--port",
+				"3177",
+				"--out",
+				resolve(scratch, "ipv6-refusal"),
+			],
+			{ encoding: "utf8", windowsHide: true },
+		);
+		assert.equal(result.status, 1);
+		if (process.platform === "win32") assert.match(result.stderr, /:: pid=/);
+		assert.equal((await fetchRaw(3177, "/")).body.toString(), "foreign IPv6");
+	} finally {
+		await new Promise((done) => server.close(done));
+	}
+});
+
+test("listener parsing preserves IPv6 and IPv4 addresses; LAN URLs use real external interfaces", () => {
+	assert.deepEqual(
+		lanOrigins(
+			3176,
+			{
+				net: [
+					{ family: "IPv4", address: "169.254.1.2", internal: false },
+					{ family: "IPv4", address: "172.24.1.1", internal: false },
+					{ family: "IPv4", address: "192.168.1.8", internal: false },
+				],
+			},
+			["192.168.1.8"],
+		),
+		["http://192.168.1.8:3176"],
+	);
+	assert.deepEqual(
+		parsePortOwners(
+			"TCP [::]:3177 [::]:0 LISTENING 42\nTCP 0.0.0.0:3176 0.0.0.0:0 LISTENING 43",
+			3177,
+		),
+		[{ address: "::", pid: 42 }],
+	);
+	assert.deepEqual(
+		lanOrigins(3176, {
+			net: [{ family: "IPv4", address: "192.168.1.8", internal: false }],
+			local: [{ family: "IPv4", address: "127.0.0.1", internal: true }],
+		}),
+		["http://192.168.1.8:3176"],
+	);
+	assert.throws(() => lanOrigins(3176, {}), /No external IPv4 LAN address/);
+	assert.match(
+		diffStem({
+			feature: "access.html/pinChange",
+			state: "pin=none",
+			language: "ar",
+			size: "tablet",
+			input: "keyboard",
+			motion: "reduce",
+			transport: "http",
+		}),
+		/access-html-pinChange-pin-none-ar-tablet-keyboard-reduce-http/,
+	);
+});
+
+test("help in a dependency-free clone succeeds and names installation", async () => {
+	const folder = resolve(scratch, "clone/.agents/skills/verify-fitway");
+	await mkdir(folder, { recursive: true });
+	for (const name of [
+		"cli.mjs",
+		"core.mjs",
+		"compare.mjs",
+		"runner.mjs",
+		"drive.mjs",
+		"probes.mjs",
+		"map.mjs",
+		"discover.mjs",
+	])
+		await writeFile(
+			resolve(folder, name),
+			await readFile(fileURLToPath(new URL(`./${name}`, import.meta.url))),
+		);
+	const result = spawnSync(
+		process.execPath,
+		[resolve(folder, "cli.mjs"), "help"],
+		{ encoding: "utf8", windowsHide: true },
+	);
+	assert.equal(result.status, 0, result.stderr);
+	assert.match(result.stdout, /--inputs mouse,touch,keyboard/);
+	assert.match(result.stdout, /pnpm --dir .* install --frozen-lockfile/);
+	assert.doesNotMatch(result.stderr, /Cannot find module/);
+});
+
+test("quiet comparison children keep diff JSON and diagnostics off success output, and preserve failure diagnostics", async () => {
+	const noisy = resolve(scratch, "noisy-diff.mjs");
+	const caller = resolve(scratch, "quiet-caller.mjs");
+	await writeFile(
+		noisy,
+		'console.log(JSON.stringify({diff:Array(1000).fill("detail")}));console.error("diff_map: summary");',
+	);
+	await writeFile(
+		caller,
+		`import {child} from ${JSON.stringify(new URL("./cli.mjs", import.meta.url).href)};try{await child(process.execPath,[${JSON.stringify(noisy)}],${JSON.stringify(scratch)},undefined,true)}catch(error){console.error(error.message);process.exitCode=1}`,
+	);
+	const success = spawnSync(process.execPath, [caller], {
+		encoding: "utf8",
+		windowsHide: true,
+	});
+	assert.equal(success.status, 0);
+	assert.equal(success.stdout, "");
+	assert.equal(success.stderr, "");
+	await writeFile(
+		noisy,
+		'console.error("planted diff failure");process.exit(2);',
+	);
+	const failure = spawnSync(process.execPath, [caller], {
+		encoding: "utf8",
+		windowsHide: true,
+	});
+	assert.equal(failure.status, 1);
+	assert.match(failure.stderr, /planted diff failure/);
 });
 function fetchRaw(port, path, method = "GET") {
 	return new Promise((done, reject) => {

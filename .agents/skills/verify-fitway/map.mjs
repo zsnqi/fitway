@@ -197,8 +197,10 @@ export function readRecipes(
 	return { recipes, path };
 }
 
-export function generateMap(concept, recipePath) {
-	const { recipes, path } = readRecipes(concept, recipePath);
+export function generateMap(concept, recipePath, suppliedRecipes) {
+	const { recipes, path } = suppliedRecipes
+		? { recipes: suppliedRecipes, path: recipePath }
+		: readRecipes(concept, recipePath);
 	const sources = new Map();
 	const load = (file) => {
 		if (!sources.has(file))
@@ -327,17 +329,23 @@ function selectorAtoms(selector) {
 	].map((m) => m[0]);
 }
 
-export function coverageProblems(map, concept) {
+export function coverageProblems(map, concept, includeCoverage = true) {
 	const problems = [];
 	for (const page of map.pages) {
 		const texts = page.sourceFiles.map((file) => ({
 			file,
 			text: readFileSync(resolve(concept, file), "utf8"),
 		}));
-		for (const opening of page.openings) {
+		for (const opening of includeCoverage ? page.openings : []) {
 			if (!page.features.some((f) => f.covers?.includes(opening.selector)))
 				problems.push(
 					`${opening.source.file}:${opening.source.line}: uncovered ${opening.kind} ${opening.selector}; openers: ${opening.openers.map((o) => o.selector).join(", ") || "recipe required"}`,
+				);
+		}
+		for (const opener of includeCoverage ? page.openers || [] : []) {
+			if (!page.features.some((f) => coversOpener(f, opener, page, concept)))
+				problems.push(
+					`${opener.source.file}:${opener.source.line}: uncovered opener ${opener.selector} (aria-haspopup=${opener.kind})${opener.source.column ? `; column ${opener.source.column}` : ""}`,
 				);
 		}
 		const proofRecipes = [
@@ -355,10 +363,26 @@ export function coverageProblems(map, concept) {
 				file: "verification-recipes.json",
 				line: index + 1,
 			};
+			if (feature.draft) {
+				problems.push(
+					`${where.file}:${where.line}: draft recipe ${feature.id}: ${feature.draftReason || "complete user reach and observable proof"}`,
+				);
+				continue;
+			}
 			if (feature.marker && !texts.some((t) => t.text.includes(feature.marker)))
 				problems.push(
 					`${where.file}:${where.line}: recipe ${feature.id} marker gone: ${feature.marker}`,
 				);
+			for (const opener of feature.coversOpeners || []) {
+				if (
+					!texts.some(
+						(t) => t.file === opener.file && t.text.includes(opener.marker),
+					)
+				)
+					problems.push(
+						`${where.file}:${where.line}: recipe ${feature.id} marker gone: ${opener.marker}`,
+					);
+			}
 			const selectors = [];
 			const destination = feature.proof.path
 				? discoverElements(
@@ -389,7 +413,10 @@ export function coverageProblems(map, concept) {
 			};
 			visit(feature.proof);
 			for (const rule of feature.unreachable || []) visit(rule.proof);
-			for (const action of feature.actions || [])
+			for (const action of [
+				...(feature.actions || []),
+				...(feature.keyboardActions || []),
+			])
 				if (!/^(press|wait):/.test(action)) {
 					let selector = action
 						.slice(action.indexOf(":") + 1)
@@ -398,7 +425,11 @@ export function coverageProblems(map, concept) {
 						selector = selector.slice(0, selector.lastIndexOf("="));
 					selectors.push(selector);
 				}
-			for (const selector of [...selectors, ...(feature.covers || [])])
+			for (const selector of [
+				...selectors,
+				...(feature.covers || []),
+				...(feature.coversOpeners || []).map((o) => o.selector),
+			])
 				for (const atom of selectorAtoms(selector)) {
 					const attrMatch = /\[([\w-]+)(?:=["']([^"']*)["'])?\]/.exec(atom);
 					const found = [
@@ -440,6 +471,152 @@ export function coverageProblems(map, concept) {
 		}
 	}
 	return [...new Set(problems)];
+}
+
+function coversOpener(feature, opener, page, concept) {
+	if (
+		feature.draft &&
+		feature.source?.file === opener.source.file &&
+		feature.source?.occurrence === opener.source.occurrence &&
+		feature.actions?.includes(`activate:${opener.selector}`)
+	)
+		return true;
+	if (feature.coversOpeners)
+		return feature.coversOpeners.some((coverage) => {
+			if (
+				coverage.selector !== opener.selector ||
+				coverage.file !== opener.source.file
+			)
+				return false;
+			const source = readFileSync(resolve(concept, coverage.file), "utf8");
+			const offset = source.indexOf(coverage.marker);
+			if (offset < 0 || opener.source.offset === undefined) return false;
+			const ast = ts.createSourceFile(
+				coverage.file,
+				source,
+				ts.ScriptTarget.Latest,
+				true,
+				ts.ScriptKind.JS,
+			);
+			let range;
+			const find = (node) => {
+				if (
+					(ts.isVariableDeclaration(node) || ts.isFunctionDeclaration(node)) &&
+					node.getStart(ast) >= offset &&
+					node.getStart(ast) < offset + coverage.marker.length
+				)
+					range = node;
+				ts.forEachChild(node, find);
+			};
+			find(ast);
+			// A marker scopes coverage to this declaration, even beside another on the same line.
+			if (!range) return false;
+			return (
+				opener.source.offset >= range.getStart(ast) &&
+				opener.source.offset < range.end
+			);
+		});
+	const selectors = [
+		...(feature.covers || []),
+		...(feature.actions || []),
+		...(feature.keyboardActions || []),
+	].map((s) => s.replace(/^(activate|click|tap|focus|hover|download):/, ""));
+	const matches = (selector, candidate) => {
+		// An ancestor constraint is meaningful; static discovery does not prove DOM ancestry.
+		if (/[\s>+~]/.test(selector.replace(/\[[^\]]*\]/g, ""))) return false;
+		if (selector === candidate.selector) return true;
+		const atoms = selectorAtoms(selector);
+		const attrs = candidate.attrs || {};
+		return (
+			atoms.length &&
+			atoms.every((atom) => {
+				if (atom.startsWith("#")) return attrs.id === atom.slice(1);
+				if (atom.startsWith("."))
+					return attrs.class?.split(/\s+/).includes(atom.slice(1));
+				const match = /\[([\w-]+)(?:=["']([^"']*)["'])?\]/.exec(atom);
+				return (
+					match &&
+					Object.hasOwn(attrs, match[1]) &&
+					(match[2] === undefined || attrs[match[1]] === match[2])
+				);
+			})
+		);
+	};
+	return selectors.some(
+		(selector) =>
+			matches(selector, opener) &&
+			(page.openers || []).filter((candidate) => matches(selector, candidate))
+				.length === 1,
+	);
+}
+
+export function repairRecipes(concept, recipePath) {
+	const original = existsSync(
+		recipePath || resolve(concept, "verification-recipes.json"),
+	)
+		? readRecipes(concept, recipePath).recipes
+		: { schema: 1, pages: {} };
+	const recipes = structuredClone(original);
+	let map = generateMap(concept, recipePath, recipes);
+	const dropped = [];
+	for (const page of map.pages) {
+		recipes.pages[page.page] ||= {
+			features: [],
+			states: [],
+		};
+		const authored = recipes.pages[page.page];
+		for (const field of ["features", "states"]) {
+			authored[field] = (authored[field] || []).filter((entry) => {
+				const isolated = {
+					...map,
+					pages: [
+						{
+							...page,
+							features: field === "features" ? [entry] : [],
+							states: field === "states" ? [entry] : [],
+						},
+					],
+				};
+				const gone = coverageProblems(isolated, concept, false).filter((p) =>
+					/(?:selector|marker) gone:/.test(p),
+				);
+				if (gone.length) dropped.push(...gone);
+				return !gone.length;
+			});
+		}
+	}
+	for (const page of Object.keys(recipes.pages)) {
+		if (!map.pages.some((p) => p.page === page)) {
+			dropped.push(`${page}:1: removed page recipes`);
+			delete recipes.pages[page];
+		}
+	}
+	map = generateMap(concept, recipePath, recipes);
+	const drafts = [];
+	for (const page of map.pages) {
+		const features = recipes.pages[page.page].features;
+		const draft = (element, opener) => {
+			let id = `draft-${opener ? "opener" : "opening"}-${element.selector.replace(/[^\w-]/g, "-")}`;
+			while (features.some((f) => f.id === id)) id += "-new";
+			features.push({
+				id,
+				draft: true,
+				draftReason: `Complete reach and proof for ${element.selector}`,
+				source: element.source,
+				actions: opener ? [`activate:${element.selector}`] : [],
+				proof: {},
+				covers: opener ? [] : [element.selector],
+			});
+			drafts.push(`${page.page}/${id}`);
+		};
+		for (const opening of page.openings)
+			if (!features.some((f) => f.covers?.includes(opening.selector)))
+				draft(opening, false);
+		for (const opener of page.openers || [])
+			if (!features.some((f) => coversOpener(f, opener, page, concept)))
+				draft(opener, true);
+	}
+	return { recipes, dropped, drafts };
 }
 
 export function drift(map, concept, recipePath = map.recipePath) {

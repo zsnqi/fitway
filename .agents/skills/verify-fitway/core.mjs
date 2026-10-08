@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { existsSync, lstatSync, readlinkSync, realpathSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
+import { networkInterfaces } from "node:os";
 import {
 	dirname,
 	extname,
@@ -15,6 +16,11 @@ import {
 export const inside = (root, target) => {
 	const rel = relative(root, target);
 	return !isAbsolute(rel) && rel !== ".." && !rel.startsWith(`..${sep}`);
+};
+
+export const shortFinding = (value) => {
+	const line = String(value).replace(/\s+/g, " ").trim();
+	return line.length > 240 ? `${line.slice(0, 240)}… (see record)` : line;
 };
 
 export function canonical(target, seen = new Set()) {
@@ -217,17 +223,69 @@ export async function portAvailable(port) {
 
 export function portOwners(port) {
 	if (process.platform !== "win32") return [];
-	return execFileSync("netstat", ["-ano", "-p", "tcp"], {
+	return parsePortOwners(
+		execFileSync("netstat", ["-ano"], {
+			encoding: "utf8",
+			windowsHide: true,
+		}),
+		port,
+	);
+}
+
+export function parsePortOwners(output, port) {
+	return output.split(/\r?\n/).flatMap((line) => {
+		const m = /^\s*TCP\s+(\S+):(\d+)\s+\S+\s+LISTENING\s+(\d+)/.exec(line);
+		return m && Number(m[2]) === port
+			? [{ address: m[1].replace(/^\[|\]$/g, ""), pid: Number(m[3]) }]
+			: [];
+	});
+}
+
+export function defaultLanAddresses() {
+	if (process.platform !== "win32") return [];
+	const routes = execFileSync("route", ["PRINT", "-4"], {
 		encoding: "utf8",
 		windowsHide: true,
-	})
+	});
+	return routes
 		.split(/\r?\n/)
 		.flatMap((line) => {
-			const m = /^\s*TCP\s+(\S+):(\d+)\s+\S+\s+LISTENING\s+(\d+)/.exec(line);
-			return m && Number(m[2]) === port
-				? [{ address: m[1], pid: Number(m[3]) }]
-				: [];
-		});
+			const match =
+				/^\s*0\.0\.0\.0\s+0\.0\.0\.0\s+\S+\s+([\d.]+)\s+(\d+)\s*$/.exec(line);
+			return match ? [{ address: match[1], metric: Number(match[2]) }] : [];
+		})
+		.sort((a, b) => a.metric - b.metric)
+		.map((route) => route.address);
+}
+
+export function lanOrigins(
+	port,
+	interfaces = networkInterfaces(),
+	preferred = [],
+) {
+	const addresses = [
+		...new Set(
+			Object.values(interfaces)
+				.flat()
+				.filter(
+					(item) =>
+						item &&
+						!item.internal &&
+						(item.family === "IPv4" || item.family === 4) &&
+						item.address !== "0.0.0.0" &&
+						!item.address.startsWith("169.254."),
+				)
+				.map((item) => item.address),
+		),
+	].sort();
+	if (!addresses.length)
+		throw new Error(
+			"No external IPv4 LAN address; connect a network interface before launch --lan.",
+		);
+	const routed = preferred.find((address) => addresses.includes(address));
+	return (routed ? [routed] : addresses).map(
+		(address) => `http://${address}:${port}`,
+	);
 }
 
 export function verificationPort(port) {
