@@ -79,12 +79,14 @@ It is a working tool, not part of the design.
 - **Look and place:** a small dashed "الإضاءة · Lights" button at the top, 452px in from the inline-start
   edge where it fits, with the panel opening directly below it. On smaller screens the unit stays inside
   the viewport; the closed button moves clear of page controls as the page scrolls or changes, without
-  replacing the saved spot. It is Arabic-first and right-to-left, with short English secondary labels.
+  replacing the saved spot. Collision checks follow page controls entering the button's area or changing
+  geometry, not the chart's animation frames. It is Arabic-first and right-to-left, with short English
+  secondary labels.
 - **Moving the tuner:** decision: `HISTORY.md`, "Contract label provenance" → "Moving the tuner".
   - The button and the panel move together as one unit.
   - Drag the button, or drag the panel's header by its title or its ⠿ grip.
-  - Dragging never presses the button. Opening the panel near an edge pulls the unit back inside the
-    viewport.
+  - Dragging never presses the button. Opening and closing leave the button in exactly the same spot;
+    near an edge, the panel shifts independently to fit inside the viewport below the button.
   - The spot is kept in `localStorage` (`fitway.eclipse.v3.tuner-pos`), separate from the light values, and
     is measured from the page's inline-start edge.
   - On the grip, the arrow keys move the unit 12px, or 60px with Shift. Home, or a double-click on the

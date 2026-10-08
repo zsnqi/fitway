@@ -1156,6 +1156,9 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
 .tuner-toggle svg, .tuner-x svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .tuner .t-en { font-size: 10.5px; color: #8d8789; letter-spacing: 0.01em; }
 .tuner-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
   width: min(544px, calc(100vw - 8px));
   max-height: calc(100vh - 50px);
   overflow: auto;

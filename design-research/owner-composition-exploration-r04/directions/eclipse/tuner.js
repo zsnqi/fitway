@@ -299,7 +299,8 @@
   // Keep the requested spot separate from the displayed spot: scrolling around a page control must not
   // overwrite the user's saved position. Candidate edges cover every free rectangle between controls.
   function clearSpot(spot, width, height, v) {
-    const m = 4, maxX = v.w - width - m, maxY = v.h - height - m;
+    // A closed spot also reserves the gap, minimum panel height and bottom inset for a later opening.
+    const m = 4, maxX = v.w - width - m, maxY = v.h - height - 6 - 48 - 8;
     const clamp = (n, max) => Math.max(m, Math.min(n, max));
     const x = clamp(rtlPage ? v.w - spot.edge - width : spot.edge, maxX), y = clamp(spot.top, maxY);
     const boxes = [...document.querySelectorAll('button, a[href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"]), [role="button"]')]
@@ -315,18 +316,26 @@
     }
     return { edge: rtlPage ? v.w - best.x - width : best.x, top: best.y };
   }
+  function fitPanel() {
+    if (panel.hidden) return;
+    const v = viewport(), r = toggle.getBoundingClientRect(), m = 4;
+    panel.style.maxHeight = `${Math.max(48, v.h - r.bottom - 6 - 8)}px`;
+    const width = panel.offsetWidth;
+    const x = Math.max(m, Math.min(rtlPage ? r.right - width : r.left, v.w - width - m));
+    panel.style.left = `${x - r.left}px`;
+  }
   function place() {
     const v = viewport(), m = 4, requested = pos || { edge: 452, top: 8 };
-    // Reserve the toggle and gap before measuring the open unit. At the default desktop spot this is
-    // exactly the original 100vh - 50px; a moved panel gets the space remaining below its toggle.
-    const top = Math.max(m, Math.min(requested.top, v.h - toggle.offsetHeight - 6 - 48 - m));
-    panel.style.maxHeight = `${Math.max(48, v.h - top - toggle.offsetHeight - 6 - 8)}px`;
-    const r = wrap.getBoundingClientRect();
+    // Only the toggle owns the position. The panel fits independently, without moving the tapped button.
+    const top = Math.max(m, Math.min(requested.top, v.h - toggle.offsetHeight - 6 - 48 - 8));
+    const r = toggle.getBoundingClientRect();
     let displayed = { edge: Math.min(Math.max(m, requested.edge), Math.max(m, v.w - r.width - m)), top };
-    if (panel.hidden) displayed = clearSpot(displayed, r.width, r.height, v);
+    displayed = clearSpot(displayed, r.width, r.height, v);
     wrap.style.top = `${displayed.top}px`;
     wrap.style.setProperty(rtlPage ? "right" : "left", `${displayed.edge}px`);
     wrap.style.setProperty(rtlPage ? "left" : "right", "auto");
+    watchSpot(displayed, r.width, r.height, v);
+    fitPanel();
   }
   const moveBy = (dx, dy) => { const c = current(); pos = { edge: c.edge + (rtlPage ? -dx : dx), top: c.top + dy }; place(); savePos(); };
   const resetPos = () => { pos = null; place(); savePos(); };
@@ -371,15 +380,55 @@
     const k = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
     if (k) { e.preventDefault(); moveBy(...k); } else if (e.key === "Home") { e.preventDefault(); resetPos(); }
   });
-  addEventListener("resize", place);
-  addEventListener("scroll", () => { if (panel.hidden) place(); }, { passive: true, capture: true });
-  // Fonts, expanded page controls and dialogs can change their boxes without a viewport resize.
-  const pageGeometry = new ResizeObserver(() => { if (panel.hidden) place(); });
-  pageGeometry.observe(document.body);
-  const pageChanges = new MutationObserver((records) => {
-    if (panel.hidden && records.some((r) => !wrap.contains(r.target) && r.target !== root)) place();
+  const controlSelector = 'button, a[href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"]), [role="button"]';
+  let controls = [], spotObserver = null, spotKey = "", pendingPlace = 0;
+  const schedulePlace = () => {
+    if (panel.hidden && !pendingPlace) pendingPlace = requestAnimationFrame(() => { pendingPlace = 0; if (panel.hidden) place(); });
+  };
+  // The browser watches only the toggle's rectangle. Ordinary scrolls and chart animation do no tuner
+  // layout reads; a control entering that rectangle is the only scroll-related reason to find a new spot.
+  function watchSpot(spot, width, height, v) {
+    const x = rtlPage ? v.w - spot.edge - width : spot.edge;
+    const key = [x, spot.top, width, height, v.w, v.h].join(",");
+    if (key === spotKey) return;
+    spotKey = key;
+    if (spotObserver) spotObserver.disconnect();
+    spotObserver = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting && e.intersectionRect.width > 0 && e.intersectionRect.height > 0 && getComputedStyle(e.target).visibility !== "hidden")) schedulePlace();
+    }, { rootMargin: `${-spot.top}px ${-(v.w - x - width)}px ${-(v.h - spot.top - height)}px ${-x}px` });
+    controls.forEach((n) => spotObserver.observe(n));
+  }
+  const controlSizes = new WeakMap();
+  const controlAncestors = new Set();
+  const pageGeometry = new ResizeObserver((entries) => {
+    for (const e of entries) {
+      const size = `${e.contentRect.width},${e.contentRect.height}`, previous = controlSizes.get(e.target);
+      controlSizes.set(e.target, size);
+      if (previous !== undefined && previous !== size) schedulePlace();
+    }
   });
-  pageChanges.observe(document.body, { subtree: true, childList: true, attributes: true });
+  function refreshControls() {
+    controls.forEach((n) => pageGeometry.unobserve(n));
+    controls = [...document.querySelectorAll(controlSelector)].filter((n) => !wrap.contains(n));
+    controls.forEach((n) => pageGeometry.observe(n));
+    controlAncestors.clear();
+    controls.forEach((n) => { for (let a = n; a && a !== root; a = a.parentElement) controlAncestors.add(a); });
+    controlChanges.disconnect();
+    controlAncestors.forEach((n) => controlChanges.observe(n, { attributes: true, attributeFilter: ["class", "style", "hidden", "open", "tabindex", "href", "role"] }));
+    spotKey = "";
+  }
+  const hasControls = (n) => n.nodeType === 1 && !wrap.contains(n) && (n.matches(controlSelector) || n.querySelector(controlSelector));
+  const controlChanges = new MutationObserver(() => schedulePlace());
+  const pageChanges = new MutationObserver((records) => {
+    const changedControls = records.some((r) => !wrap.contains(r.target) && (r.type === "childList"
+      ? [...r.addedNodes, ...r.removedNodes].some(hasControls)
+      : ["tabindex", "href", "role"].includes(r.attributeName)));
+    if (changedControls) refreshControls();
+    if (changedControls) schedulePlace();
+  });
+  pageChanges.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["tabindex", "href", "role"] });
+  refreshControls();
+  addEventListener("resize", place);
   document.fonts.ready.then(place);
   place();
 
@@ -387,7 +436,7 @@
     panel.hidden = !open;
     toggle.setAttribute("aria-expanded", String(open));
     wrap.classList.toggle("is-open", open);
-    place(); // every opening, including the default spot, stays inside the viewport
+    fitPanel();
   };
   toggle.addEventListener("click", () => setOpen(panel.hidden));
   close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
