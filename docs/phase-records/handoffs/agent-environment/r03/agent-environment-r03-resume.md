@@ -28,8 +28,8 @@
 
 ## Running now
 
-- Round 8b (the gardener's repairs): its brief is committed only on agent-environment-r03-gardener (`eb705aef`,
-  `docs/phase-records/handoffs/agent-environment/r03/briefs/round-8b.md`), level high; run folder
+- Round 8b (the gardener's repairs): its brief, round-8b.md in the briefs folder, is committed only on branch
+  agent-environment-r03-gardener (`eb705aef`) until the round merges; level high; run folder
   D:/fitway-temp/r03-round8b; held-out rows r03-round8b-heldout.md. Round 8 (`3003f7ff`) is graded 9 of 11 in
   codex-rounds.md.
 - Round 9 (verify-fitway) is graded 6 of 6 and merged (`f32d4cca`, codex-rounds.md). Its recipe additions for the
