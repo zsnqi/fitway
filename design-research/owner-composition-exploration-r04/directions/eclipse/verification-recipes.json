@@ -218,7 +218,8 @@
             "line": 176
           },
           "covers": [
-            "#dlg-reset"
+            "#dlg-reset",
+            "[data-act=\"reset\"]"
           ]
         },
         {
@@ -238,7 +239,8 @@
             "line": 26
           },
           "covers": [
-            "#dlg-off"
+            "#dlg-off",
+            "[data-act=\"off\"]"
           ]
         },
         {
@@ -258,7 +260,8 @@
             "line": 408
           },
           "covers": [
-            "#dlg-on"
+            "#dlg-on",
+            "[data-act=\"on\"]"
           ]
         },
         {
@@ -278,7 +281,8 @@
             "line": 728
           },
           "covers": [
-            "#dlg-mine"
+            "#dlg-mine",
+            "[data-act=\"mine\"]"
           ]
         },
         {
@@ -1714,6 +1718,13 @@
           },
           "covers": [
             ".fw-pop.ops-pop"
+          ],
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"dialog\"][data-layer=\"ops\"]",
+              "file": "components.js",
+              "marker": "const hbadge ="
+            }
           ]
         },
         {
@@ -1734,6 +1745,13 @@
           },
           "covers": [
             ".fw-pop.menu-pop"
+          ],
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"menu\"][data-layer=\"menu\"]",
+              "file": "components.js",
+              "marker": "const hmenu ="
+            }
           ]
         },
         {
@@ -1827,6 +1845,99 @@
           },
           "covers": [
             "#cx-dlg"
+          ]
+        },
+        {
+          "id": "segment-popup-specimen",
+          "source": {
+            "file": "components.js",
+            "line": 726
+          },
+          "actions": [],
+          "proof": {
+            "selector": "button.cx-seg-b[aria-haspopup=\"dialog\"]",
+            "visible": true
+          },
+          "covers": [],
+          "unreachable": [
+            {
+              "when": {},
+              "reason": "Presentation specimen has no popup handler; live component controls have separate recipes.",
+              "proof": {
+                "selector": "button.cx-seg-b[aria-haspopup=\"dialog\"]",
+                "visible": true
+              }
+            }
+          ],
+          "reach": "Visible presentation specimen; no opening action in source",
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"dialog\"].cx-seg-b",
+              "file": "components.js",
+              "marker": "const seg ="
+            }
+          ]
+        },
+        {
+          "id": "wide-status-popup-specimen",
+          "source": {
+            "file": "components.js",
+            "line": 830
+          },
+          "actions": [],
+          "proof": {
+            "selector": "button.hbadge.cx-hstatus[aria-haspopup=\"dialog\"]",
+            "visible": true
+          },
+          "covers": [],
+          "unreachable": [
+            {
+              "when": {},
+              "reason": "Presentation specimen has no popup handler; live component controls have separate recipes.",
+              "proof": {
+                "selector": "button.hbadge.cx-hstatus[aria-haspopup=\"dialog\"]",
+                "visible": true
+              }
+            }
+          ],
+          "reach": "Visible presentation specimen; no opening action in source",
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"dialog\"].hbadge.cx-hstatus",
+              "file": "components.js",
+              "marker": "const hstatus ="
+            }
+          ]
+        },
+        {
+          "id": "state-status-popup-specimen",
+          "source": {
+            "file": "components.js",
+            "line": 956
+          },
+          "actions": [],
+          "proof": {
+            "selector": "button.hbadge[aria-haspopup=\"dialog\"][tabindex=\"-1\"]",
+            "visible": true
+          },
+          "covers": [],
+          "unreachable": [
+            {
+              "when": {},
+              "reason": "Presentation specimen has no popup handler; live component controls have separate recipes.",
+              "proof": {
+                "selector": "button.hbadge[aria-haspopup=\"dialog\"][tabindex=\"-1\"]",
+                "visible": true
+              }
+            }
+          ],
+          "reach": "Visible presentation specimen; no opening action in source",
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"dialog\"].hbadge",
+              "file": "components.js",
+              "marker": "const stBadge ="
+            }
           ]
         }
       ],
@@ -3160,7 +3271,8 @@
             "line": 298
           },
           "covers": [
-            "#dlg-range"
+            "#dlg-range",
+            "button[aria-haspopup=\"dialog\"][data-range=\"custom\"]"
           ]
         },
         {
