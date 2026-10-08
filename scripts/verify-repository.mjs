@@ -276,6 +276,27 @@ async function assertMissing(relativePath) {
 	}
 }
 
+export function assertGardenerReport(entry, text, updatedAt) {
+	const header = text.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+	if (!header) fail("Gardener report is missing its date/outcome frontmatter");
+	const metadata = parseYaml(header[1]);
+	if (metadata?.date !== entry.date || metadata?.outcome !== entry.outcome) {
+		fail("Gardener ledger date/outcome does not match the rolling report");
+	}
+	if (entry.date > updatedAt.slice(0, 10)) {
+		fail("Gardener pass date is later than PROJECT_STATE.yaml updatedAt");
+	}
+}
+
+export async function verifyGardenerRecord(state, read = readBytes) {
+	if (!state.gardener) return;
+	assertGardenerReport(
+		state.gardener,
+		(await read(state.gardener.report)).toString("utf8"),
+		state.updatedAt,
+	);
+}
+
 async function main() {
 	execFileSync("git", ["diff", "HEAD", "--check", "--"], {
 		cwd: root,
@@ -331,6 +352,11 @@ async function main() {
 			`PROJECT_STATE_HISTORY.yaml schema validation failed:\n${JSON.stringify(validateHistory.errors, null, 2)}`,
 		);
 	}
+	await verifyGardenerRecord(state);
+	if (state.gardener)
+		console.log(
+			`Gardener record passed: ${state.gardener.date} ${state.gardener.outcome} ${state.gardener.report}`,
+		);
 	assertProjectRecordUnion(state, history);
 	const handoffRequiredStatuses = new Set([
 		"READY",
