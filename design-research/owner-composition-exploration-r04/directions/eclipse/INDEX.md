@@ -1142,10 +1142,11 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - tuner.js:296 — savePos — function constant
 - tuner.js:297 — viewport — function constant
 - tuner.js:298 — current — function constant
-- tuner.js:299 — place — function
-- tuner.js:307 — moveBy — function constant
-- tuner.js:308 — resetPos — function constant
-- tuner.js:310 — startDrag — function
-- tuner.js:320 — moveDrag — function
-- tuner.js:332 — endDrag — function
-- tuner.js:353 — setOpen — function constant
+- tuner.js:301 — clearSpot — function
+- tuner.js:318 — place — function
+- tuner.js:331 — moveBy — function constant
+- tuner.js:332 — resetPos — function constant
+- tuner.js:334 — startDrag — function
+- tuner.js:344 — moveDrag — function
+- tuner.js:356 — endDrag — function
+- tuner.js:386 — setOpen — function constant

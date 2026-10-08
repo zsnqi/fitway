@@ -77,8 +77,9 @@ live on `<html>`.
 It is a working tool, not part of the design.
 
 - **Look and place:** a small dashed "الإضاءة · Lights" button at the top, 452px in from the inline-start
-  edge, with the panel opening directly below it. It is Arabic-first and right-to-left, with short English
-  secondary labels.
+  edge where it fits, with the panel opening directly below it. On smaller screens the unit stays inside
+  the viewport; the closed button moves clear of page controls as the page scrolls or changes, without
+  replacing the saved spot. It is Arabic-first and right-to-left, with short English secondary labels.
 - **Moving the tuner:** decision: `HISTORY.md`, "Contract label provenance" → "Moving the tuner".
   - The button and the panel move together as one unit.
   - Drag the button, or drag the panel's header by its title or its ⠿ grip.
@@ -87,9 +88,10 @@ It is a working tool, not part of the design.
   - The spot is kept in `localStorage` (`fitway.eclipse.v3.tuner-pos`), separate from the light values, and
     is measured from the page's inline-start edge.
   - On the grip, the arrow keys move the unit 12px, or 60px with Shift. Home, or a double-click on the
-    header, returns it to its original spot.
+    header, returns it to its original spot, constrained to the current screen and clear of page controls.
 - **Access:** keyboard operable, with native range inputs, labels and outputs. Escape closes the panel and
-  returns focus to the button.
+  returns focus to the button, including after moving it. The panel fits the viewport's width and remaining
+  height; narrow screens use one column, and its contents scroll so every control can be reached.
 - **Controls:**
   - Inside now: intensity, core colour, disc size, disc position, edge softness, rim thickness, lit-corner
     glow and its size, far-corner glow, and ring-end fade.

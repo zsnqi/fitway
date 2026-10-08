@@ -296,21 +296,45 @@
   const savePos = () => { try { if (pos) localStorage.setItem(POS_STORE, JSON.stringify(pos)); else localStorage.removeItem(POS_STORE); } catch (e) { /* storage unavailable */ } };
   const viewport = () => ({ w: root.clientWidth || innerWidth, h: root.clientHeight || innerHeight });
   const current = () => { const r = wrap.getBoundingClientRect(); return { edge: rtlPage ? viewport().w - r.right : r.left, top: r.top }; };
+  // Keep the requested spot separate from the displayed spot: scrolling around a page control must not
+  // overwrite the user's saved position. Candidate edges cover every free rectangle between controls.
+  function clearSpot(spot, width, height, v) {
+    const m = 4, maxX = v.w - width - m, maxY = v.h - height - m;
+    const clamp = (n, max) => Math.max(m, Math.min(n, max));
+    const x = clamp(rtlPage ? v.w - spot.edge - width : spot.edge, maxX), y = clamp(spot.top, maxY);
+    const boxes = [...document.querySelectorAll('button, a[href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"]), [role="button"]')]
+      .filter((n) => !wrap.contains(n) && n.getClientRects().length && getComputedStyle(n).visibility !== "hidden")
+      .map((n) => n.getBoundingClientRect()).filter((r) => r.width && r.height && r.bottom > 0 && r.top < v.h && r.right > 0 && r.left < v.w);
+    const free = (a, b) => !boxes.some((r) => a < r.right && a + width > r.left && b < r.bottom && b + height > r.top);
+    let best = { x, y }, distance = Infinity;
+    const xs = [x, m, maxX, ...boxes.flatMap((r) => [clamp(r.left - width - m, maxX), clamp(r.right + m, maxX)])];
+    const ys = [y, m, maxY, ...boxes.flatMap((r) => [clamp(r.top - height - m, maxY), clamp(r.bottom + m, maxY)])];
+    for (const a of xs) for (const b of ys) {
+      const d = (a - x) ** 2 + (b - y) ** 2;
+      if (d < distance && free(a, b)) { best = { x: a, y: b }; distance = d; }
+    }
+    return { edge: rtlPage ? v.w - best.x - width : best.x, top: best.y };
+  }
   function place() {
-    if (!pos) { wrap.style.removeProperty("left"); wrap.style.removeProperty("right"); wrap.style.removeProperty("top"); return; }
-    const r = wrap.getBoundingClientRect(), v = viewport(), m = 4;
-    pos = { edge: Math.round(Math.min(Math.max(m, pos.edge), Math.max(m, v.w - r.width - m))), top: Math.round(Math.min(Math.max(m, pos.top), Math.max(m, v.h - r.height - m))) };
-    wrap.style.top = `${pos.top}px`;
-    wrap.style.setProperty(rtlPage ? "right" : "left", `${pos.edge}px`);
+    const v = viewport(), m = 4, requested = pos || { edge: 452, top: 8 };
+    // Reserve the toggle and gap before measuring the open unit. At the default desktop spot this is
+    // exactly the original 100vh - 50px; a moved panel gets the space remaining below its toggle.
+    const top = Math.max(m, Math.min(requested.top, v.h - toggle.offsetHeight - 6 - 48 - m));
+    panel.style.maxHeight = `${Math.max(48, v.h - top - toggle.offsetHeight - 6 - 8)}px`;
+    const r = wrap.getBoundingClientRect();
+    let displayed = { edge: Math.min(Math.max(m, requested.edge), Math.max(m, v.w - r.width - m)), top };
+    if (panel.hidden) displayed = clearSpot(displayed, r.width, r.height, v);
+    wrap.style.top = `${displayed.top}px`;
+    wrap.style.setProperty(rtlPage ? "right" : "left", `${displayed.edge}px`);
     wrap.style.setProperty(rtlPage ? "left" : "right", "auto");
   }
-  const moveBy = (dx, dy) => { const c = pos || current(); pos = { edge: c.edge + (rtlPage ? -dx : dx), top: c.top + dy }; place(); savePos(); };
+  const moveBy = (dx, dy) => { const c = current(); pos = { edge: c.edge + (rtlPage ? -dx : dx), top: c.top + dy }; place(); savePos(); };
   const resetPos = () => { pos = null; place(); savePos(); };
   let drag = null, suppressClick = false;
   function startDrag(e) {
     if (e.button !== 0) return;
     if (e.currentTarget === head && e.target.closest("button:not(.tuner-grip)")) return;
-    const c = pos || current();
+    const c = current();
     drag = { x: e.clientX, y: e.clientY, edge: c.edge, top: c.top, moved: false, el: e.currentTarget, id: e.pointerId };
     // Follow the pointer wherever it goes until it is released, not only while it is over the handle.
     addEventListener("pointermove", moveDrag);
@@ -347,18 +371,27 @@
     const k = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
     if (k) { e.preventDefault(); moveBy(...k); } else if (e.key === "Home") { e.preventDefault(); resetPos(); }
   });
-  addEventListener("resize", () => { if (pos) place(); });
+  addEventListener("resize", place);
+  addEventListener("scroll", () => { if (panel.hidden) place(); }, { passive: true, capture: true });
+  // Fonts, expanded page controls and dialogs can change their boxes without a viewport resize.
+  const pageGeometry = new ResizeObserver(() => { if (panel.hidden) place(); });
+  pageGeometry.observe(document.body);
+  const pageChanges = new MutationObserver((records) => {
+    if (panel.hidden && records.some((r) => !wrap.contains(r.target) && r.target !== root)) place();
+  });
+  pageChanges.observe(document.body, { subtree: true, childList: true, attributes: true });
+  document.fonts.ready.then(place);
   place();
 
   const setOpen = (open) => {
     panel.hidden = !open;
     toggle.setAttribute("aria-expanded", String(open));
     wrap.classList.toggle("is-open", open);
-    if (pos) place(); // opening near an edge moves the tuner back inside the viewport
+    place(); // every opening, including the default spot, stays inside the viewport
   };
   toggle.addEventListener("click", () => setOpen(panel.hidden));
   close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
-  panel.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); toggle.focus(); } });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) { e.stopPropagation(); setOpen(false); toggle.focus(); } });
   resetBtn.addEventListener("click", () => { values = { ...RECOMMENDED }; apply(); sync(); save(); status.textContent = "عادت القيم المقترحة"; });
   copyBtn.addEventListener("click", () => {
     const text = JSON.stringify(snapshot(), null, 2);
