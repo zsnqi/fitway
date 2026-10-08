@@ -28,12 +28,15 @@
 
 ## Running now
 
-- Round 8 (the gardener): `docs/phase-records/handoffs/agent-environment/r03/briefs/round-8.md`, level xhigh, in
-  worktree agent-environment-r03-gardener; run folder D:/fitway-temp/r03-round8.
-- Round 9 (verify-fitway): `docs/phase-records/handoffs/agent-environment/r03/briefs/round-9.md`, level xhigh, in
-  worktree agent-environment-r03; run folder D:/fitway-temp/r03-round9.
-- Both launched 2026-10-08 from the brief commit `aa75a137`; held-out rows are written (r03-round8-heldout.md,
-  r03-round9-heldout.md). A stopped run resumes on its thread (`pnpm codex:round resume <run folder>`).
+- Round 8b (the gardener's repairs): its brief is committed only on agent-environment-r03-gardener (`eb705aef`,
+  `docs/phase-records/handoffs/agent-environment/r03/briefs/round-8b.md`), level high; run folder
+  D:/fitway-temp/r03-round8b; held-out rows r03-round8b-heldout.md. Round 8 (`3003f7ff`) is graded 9 of 11 in
+  codex-rounds.md.
+- Round 9 (verify-fitway) landed as `f32d4cca` on agent-environment-r03 (Codex: 5 of 5). Its grader runs on rows
+  Y2-Y6 (D:/fitway-temp/r03-r9-grade/, worktree grade-r9); Y1 (a cold agent driving by keyboard) runs after it,
+  because both need ports 3176-3177.
+- A stopped run resumes on its thread (`pnpm codex:round resume <run folder>`). Disposable worktrees grade-r8-g,
+  grade-r8-u1a, grade-r8-u1b and grade-r9 go with the closing cleanup.
 
 ## Next steps
 
