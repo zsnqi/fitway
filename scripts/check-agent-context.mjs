@@ -937,6 +937,16 @@ async function validatePackets({
 			errors.push(`${packetPath}: YAML parse failed: ${asError(error)}`);
 			continue;
 		}
+		if (
+			packet &&
+			Object.hasOwn(packet, "taskClass") &&
+			!TASK_CLASSES.includes(packet.taskClass)
+		) {
+			errors.push(
+				`${packetPath}: taskClass ${JSON.stringify(packet.taskClass)} has no route`,
+			);
+			continue;
+		}
 		if (!validate(packet)) {
 			errors.push(schemaErrors(packetPath, validate.errors));
 			continue;

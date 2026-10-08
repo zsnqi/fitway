@@ -143,17 +143,24 @@ function assertSupersededByFields(records, label) {
 	}
 }
 
-// Scope entries may qualify a path with ': prose', '(prose)', or 'and its tests'.
-// Only the leading paths claim ownership; references inside the prose do not.
-function scopePatterns(entries) {
-	return entries.flatMap((entry) =>
-		entry
-			.split(/:\s/)[0]
-			.split(/\s+and\s+/)
-			.map((part) => part.split(/\s+\(/)[0].trim().replaceAll("\\", "/"))
-			.filter((part) => part && !/^(?:its|the)\s/.test(part))
-			.map((part) => path.posix.normalize(part)),
-	);
+// Before ': ', only tokens containing a path or filename claim ownership.
+// A trailing slash explicitly claims the folder's entire subtree.
+export function scopePatterns(entries, label = "scope") {
+	return entries.flatMap((entry) => {
+		const patterns = entry
+			.split(": ")[0]
+			.split(/\s+/)
+			.map((token) =>
+				token.replace(/^[('"`]+|[.,;:)'"`]+$/g, "").replaceAll("\\", "/"),
+			)
+			.filter((token) => token.includes("/") || /\.[\w-]+$/.test(token))
+			.map((token) =>
+				path.posix.normalize(token.endsWith("/") ? `${token}**` : token),
+			);
+		if (!patterns.length)
+			fail(`${label}: no repository path in entry ${JSON.stringify(entry)}`);
+		return patterns;
+	});
 }
 
 const NON_SLASH = [
@@ -338,18 +345,32 @@ function unleasedIntersection(left, right, leases) {
 }
 
 function assertDisjointOwnedPaths(milestones) {
-	const open = Object.entries(milestones).filter(
-		([, record]) => !TERMINAL_STATUSES.has(record.status),
-	);
+	const open = Object.entries(milestones)
+		.filter(([, record]) => !TERMINAL_STATUSES.has(record.status))
+		.map(([id, record]) => [
+			id,
+			{
+				ownedPaths: scopePatterns(record.ownedPaths ?? [], `${id} ownedPaths`),
+				sharedLeases: scopePatterns(
+					record.sharedLeases ?? [],
+					`${id} sharedLeases`,
+				),
+			},
+		]);
 	for (let first = 0; first < open.length; first += 1) {
 		const [leftId, left] = open[first];
 		for (const [rightId, right] of open.slice(first + 1)) {
-			const leases = scopePatterns([
-				...(left.sharedLeases ?? []),
-				...(right.sharedLeases ?? []),
-			]);
-			for (const a of scopePatterns(left.ownedPaths ?? []))
-				for (const b of scopePatterns(right.ownedPaths ?? [])) {
+			for (const a of left.sharedLeases)
+				for (const b of right.sharedLeases) {
+					const witness = unleasedIntersection(a, b, []);
+					if (witness)
+						fail(
+							`${leftId} and ${rightId} have overlapping sharedLeases at ${witness} (${a}, ${b}); a lease must have one holder`,
+						);
+				}
+			const leases = [...left.sharedLeases, ...right.sharedLeases];
+			for (const a of left.ownedPaths)
+				for (const b of right.ownedPaths) {
 					const witness = unleasedIntersection(a, b, leases);
 					if (witness)
 						fail(

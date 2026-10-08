@@ -584,6 +584,20 @@ afterEach(() => {
 });
 
 describe("check-agent-context", () => {
+	it.each([
+		"unknown-task",
+		"analysis-review",
+	])("L3: names a bad packet taskClass %s on one line", async (taskClass) => {
+		const root = makeFixture();
+		const { state, packet, packetPath } = basePacket(root);
+		packet.taskClass = taskClass;
+		materializePacket(root, state, packet, packetPath);
+		const result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(false);
+		expect(result.errors).toContain(
+			`${packetPath}: taskClass ${JSON.stringify(taskClass)} has no route`,
+		);
+	});
 	it("isolates fixture active state to the milestones under test", () => {
 		const root = makeFixture();
 		const state = parseYaml(
