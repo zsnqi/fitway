@@ -191,3 +191,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       present). At the move to production it runs on each page as it moves, whatever it reads, with
       `domain-modeling` and a GLOSSARY.md provided first (the user). Replacing FITWAY's planning records with his
       pipeline is not proposed: lighten ours with his ideas.
+    - **Agreed trial (the user said yes, same evening):** the front of Matt Pocock's pipeline (questions that clear up
+      intent, then a written spec: `grill-with-docs` and `to-spec`, neither installed) writes the brief of the next
+      real task (the Owner CSS round or the press-feedback design), because most failed rows come from brief wording.
+      The back (`to-tickets`, `implement-spec`) is not tried: Codex rounds with independent grading cover it. The
+      coordinator answers technical questions and brings the user only product and taste ones. Compared with ordinary
+      rounds on repair attempts and brief-caused failed rows; one trial is a signal, not a verdict. Part of the plan
+      the next session closes.
