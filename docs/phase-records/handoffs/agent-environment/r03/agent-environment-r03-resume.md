@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-08 18:25 +03:00 (step 4 done: four rounds and one repair graded and
-  merged)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-20,
+- **As of:** codex/owner-redesign-r04, 2026-10-09 00:20 +03:00 (the discussion of DECISIONS item 20 closed in item
+  21, a plan the user agreed; its execution starts with the next session)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-21,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -68,13 +68,15 @@
 5. Remove the disposable grading worktrees (grade-r6, grade-r7-*, grade-r8-*, grade-r8b-*, grade-r9, grade-r10,
    grade-r10b, grade-r11, grade-r12, grade-r13; the merged round worktrees agent-environment-r03-verify, -gardener and
    -css) and the
-   evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then the
-   closing review and the milestone's closure. The Owner screens resume after.
+   evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then,
+   after DECISIONS item 21's seven steps, the closing review and the milestone's closure. The Owner screens resume
+   after.
 ## Waiting on the user
 
-- The next session continues the discussion of DECISIONS item 20 (its open points) with the user, reads the two
-  research digests named there first, and ends in a plan the user agrees; execution follows the day after. The
-  agreed Owner CSS round (Owner resume point, Next steps 6) is not started. The weekly gardener pass runs Friday
+- Nothing. The next session executes DECISIONS item 21 in its order, starting at (1): the scripts and baseline are in
+  `D:/fitway-temp/start-load-20261008/` (REPORT.md). The user runs `/retro` in that session. Downloading
+  `grill-with-docs` and `to-spec` (step 6) needs the user's yes at that point. The agreed Owner CSS round (Owner
+  resume point, Next steps 6) waits for step 6, whose trial writes its brief. The weekly gardener pass runs Friday
   2026-10-09 14:00 (Next steps 2).
 
 ## Known risks

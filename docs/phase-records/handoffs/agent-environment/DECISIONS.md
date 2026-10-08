@@ -178,7 +178,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       enough. The verification CLI stays the place to invest (Lauren Tan). Before designing a change to the
       environment, a Sonnet researcher gathers what experienced engineers have written on it, as references, not as
       truth. The status page is built only when the user asks for it explicitly.
-    - **Open, for the next session's discussion, which ends in a plan; execution follows the day after:** how to
+    - **Closed by item 21 (the discussion of 2026-10-08/09).** Was open: how to
       measure that the environment improves (the user's measures: fewer attempts per feature, fewer defects reaching
       the final grade, fewer interventions per round, a fresh agent productive without a long explanation, fewer
       regressions), which needs a structured one-line-per-round record; and how to give each role the least correct
@@ -198,3 +198,40 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       coordinator answers technical questions and brings the user only product and taste ones. Compared with ordinary
       rounds on repair attempts and brief-caused failed rows; one trial is a signal, not a verdict. Part of the plan
       the next session closes.
+21. **Measuring the environment and the least context per role (the user agreed every point, discussion of
+    2026-10-08/09; coordinator design).** Closes item 20's open points. Nothing below is built yet.
+    - **Evidence** (`D:/fitway-temp/start-load-20261008/REPORT.md`, from the transcripts of 25 coordinator sessions and
+      138 subagents): before reading a file the coordinator carries 68-74K tokens, the five-tool Sonnet definitions
+      16-17K, and the five Opus definitions without a tool list (designer, builder, verifier, fixer, rtl-ltr-reviewer)
+      52-61K. The coordinator's own start reads are 8-25K. At its first edit the designer's median is 185K
+      (designer-max 407K), above the 125-150K where Matt Pocock's dictionary places the quality drop (debated); one
+      designer read about 75K first, mostly the code it edited and one decisions file three times. The desktop app's
+      context panel (the user's screenshot, 2026-10-09, this coordinator session) splits the fixed load: built-in
+      tools 17.1K, MCP tools 11.9K, skills 9.1K, memory files 6K (3), system prompt 5K, custom agents 2K (21), MCP
+      server instructions 1K, about 52K; deferred tools (79K) do not load. Tools and skills (38K) match the 35-40K
+      an all-tools subagent pays over a five-tool one. The window is 1M, so the fixed load is about 5% of it; the
+      session's own tools and connectors stay as they are (the user).
+    - **Measures.** One TSV line per round, written by the coordinator at grading: the round, model and effort,
+      attempts until accepted, held-out rows passed of total, rows failed by brief wording, interventions during the
+      round, defects found after acceptance, and start load. Start load, interventions and attempts are computed; the
+      rest is the grader's judgment. Back-filled from both `codex-rounds.md` files, so the baseline exists on day one.
+      The findings list (item 20) is a line per side finding with its status and class, regressions being one class;
+      the gardener counts recurrences and a recurring class gets a check. A replay set of about ten frozen past tasks
+      with their held-out rows reruns on Codex after a material environment change, because rounds differ in
+      difficulty and N is small; it is the "fresh agent productive without a long explanation" measure. The gardener
+      reports the monthly trend with N beside each rate and no single score.
+    - **Least context.** The five Opus definitions get a tool list (Read, Write, Edit, Glob, Grep, Bash, PowerShell,
+      Skill), measured before and after; a tool an agent reports missing comes back. The designer's brief names the
+      files and lines it edits and carries the decisions in force (target: first edit under 125K). The coordinator's
+      resume file is enough on its own and names decision items by number; a packet's required sources are the
+      worker's, not the coordinator's start.
+    - **The question-and-spec trial (item 20).** `grill-with-docs` and `to-spec` install as slash-only skills. Their
+      descriptions cost little (the user's point, about a hundred tokens); slash-only is so they run only when the trial
+      calls them. By its description `grill-with-docs` writes ADRs and a GLOSSARY: its body is read before the trial
+      and its writes are kept out of `docs/adr/**`. Downloading them needs the user's yes at execution.
+    - **retro:** the user runs it in the first execution session.
+    - **Order, from the next session:** (1) the start-load script into `scripts/agent-environment/`, the 2026-10-08
+      numbers as the baseline; (2) the tool lists, measured; (3) the rounds and findings files, back-filled by a Sonnet
+      researcher and sampled by the coordinator; (4) the replay set and its first Codex baseline; (5) the coordinator's
+      start from the resume file alone, measured; (6) the trial on the Owner CSS round's brief; (7) the designer brief
+      template.
