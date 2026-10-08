@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** agent-environment-r03, 2026-10-08 13:20 +03:00 (rounds 8 and 9 running; the weekly pass approved and set up)
+- **As of:** agent-environment-r03, 2026-10-08 17:10 +03:00 (rounds 8, 8b and 9 graded and merged; the weekly pass enabled)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-19,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -16,7 +16,9 @@
   owner-followup-r04-build (`6df156bd`, not pushed: that branch must take main first, Known risks).
 - The gardener (round 7) is merged into agent-environment-r03 and the ledger carries its `gardener` line (first pass
   2026-10-07, blocked). Graded 5 of 8: two cold agents reached the same result (U1); its cleanup script fails on
-  Windows quoting and so deletes nothing (U5); "merged" is judged against a stale local `main` (U2).
+  Windows quoting and so deletes nothing (U5); "merged" is judged against a stale local `main` (U2). Rounds 8 and 8b
+  repaired it (9 of 11, then 8 of 9 held-out rows and one cold pass whose cleanup removed exactly its list); round 9
+  made verify-fitway drive by keyboard and find `aria-haspopup` openers (6 of 6).
 - Haiku 5.5 (DECISIONS item 18): `haiku-scout` is the lookup agent (12 of 12 on a replay, as Sonnet);
   `owner-direction-designer-max` and `owner-direction-verifier-high` merged into their base definitions, since the
   Agent tool's `effort` overrides a definition (Claude Code 2.1.292). CLAUDE.md names the call-time cases.
@@ -28,44 +30,36 @@
 
 ## Running now
 
-- Round 8b (the gardener's repairs): its brief, round-8b.md in the briefs folder, is committed only on branch
-  agent-environment-r03-gardener (`eb705aef`) until the round merges; level high; run folder
-  D:/fitway-temp/r03-round8b; held-out rows r03-round8b-heldout.md. Round 8 (`3003f7ff`) is graded 9 of 11 in
-  codex-rounds.md.
-- Round 9 (verify-fitway) is graded 6 of 6 and merged (`f32d4cca`, codex-rounds.md). Its recipe additions for the
-  build are D:/fitway-temp/r03-round9/verification-recipes.json; they go on owner-followup-r04-build with Next
-  steps 4.
-- A stopped run resumes on its thread (`pnpm codex:round resume <run folder>`). Disposable worktrees grade-r8-g,
-  grade-r8-u1a, grade-r8-u1b and grade-r9 go with the closing cleanup.
+- The weekly gardener pass is enabled: the Windows task "FITWAY gardener weekly", Fridays 14:00 (first run
+  2026-10-09), `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener
+  (detached at `origin/main`; each pass starts branch `gardener/<date>`). It ends with a Windows notification.
+- Nothing else. A stopped Codex run resumes on its thread (`pnpm codex:round resume <run folder>`).
 
 ## Next steps
 
 1. The environment page is published, private: https://claude.ai/artifact/Kx1hDDw4Z67niKMmkgwRzY (2026-10-08). Update
    it from the run folder above by republishing to that URL.
-2. Grade rounds 8 and 9 on their held-out rows (X1-X11, Y1-Y6), record them in codex-rounds.md, merge both into
-   agent-environment-r03, then main. Round 9's recipe additions go on owner-followup-r04-build with Next steps 4.
-3. The gardener's weekly run (the user approved the set-up, 2026-10-08): `scripts/agent-environment/gardener-weekly.ps1`
-   from the Windows scheduled task "FITWAY gardener weekly" (Fridays 14:00, a missed run at the next logon), described
-   in `docs/WORKFLOW.md` §"Active ledger and closed history". The task is registered disabled; enable it
-   (`Enable-ScheduledTask 'FITWAY gardener weekly'`) once round 8 is merged into main. After each pass, review its
-   `gardener/<date>` branch and write the ledger's `gardener` entry. Show the user the reviewed deletion list before
-   any script runs; it includes the main checkout's uncommitted AGENTS.md edit of 2026-09-06 and its local `main`,
-   486 commits behind.
-4. The build: merge main into owner-followup-r04-build, then push it with the recipe commit; fix the tuner's
-   «الإضاءة» toggle (an r04 Codex fix, inside the screen on the phone in English, by tap and keyboard); point the
-   machine-local launch configuration (ports 3174 and 3180) at the no-store preview and drop its dead entries.
-5. Follow-ups for a Codex round: name the field when `supersededBy` is misplaced; strip a standalone `--` in
+2. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
+   `gardener/<date>` branch, merge what is accepted, write the ledger's `gardener` entry, rerun the report's final
+   survey, and show the user the folder list before they run the new cleanup script. The list so far: 13 folders of
+   D:/fitway-temp (about 1 GB, round 8b's report); for the coordinator, the worktrees grade-r6, grade-r7-g and
+   grade-r9 and three merged branches (codex/owner-demo-prep, codex/owner-distill-r01, owner-intro-r04-build). The
+   main checkout keeps the user's uncommitted AGENTS.md edit of 2026-09-06 and a local `main` far behind.
+3. The build: merge main into owner-followup-r04-build, then push it with the recipe commit and round 9's recipe
+   additions (D:/fitway-temp/r03-round9/verification-recipes.json); fix the tuner's «الإضاءة» toggle (an r04 Codex
+   fix, inside the screen on the phone in English, by tap and keyboard); point the machine-local launch configuration
+   (ports 3174 and 3180) at the no-store preview and drop its dead entries.
+4. Follow-ups for a Codex round: name the field when `supersededBy` is misplaced; strip a standalone `--` in
    `scripts/run-vitest.mjs`; remove the routes' compatibility mode and the four unused task classes; separate the
    brief checker's rule ids from B1-B10; read the Impeccable path in `scripts/check-design-context.mjs` from the
    environment; a check that open milestones' owned paths do not overlap (A7); a lint for the concept's CSS
    (`:hover` outside a hover media query, `transition: all`, `ease-in`, `outline: none` with no focus style in its
    place), from the good-css review (`docs/phase-records/handoffs/owner-design-exploration/r04/good-css-review.md`);
-   verify-fitway's round 9 findings (codex-rounds.md, round 9 "Also found"); `check:verification-map` reports
-   "0 recipe files" as a pass on main until the build's recipes land there.
-6. Remove the grading worktrees grade-r6, grade-r7-u1a, grade-r7-u1b and grade-r7-g (disposable, detached), and the
+   verify-fitway's round 9 findings and the gardener's round 8b findings (codex-rounds.md, "Also found" of each);
+   `check:verification-map` reports "0 recipe files" as a pass on main until the build's recipes land there.
+5. Remove the disposable grading worktrees (grade-r6, grade-r7-*, grade-r8-*, grade-r8b-*, grade-r9) and the
    evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then the
    closing review and the milestone's closure. The Owner screens resume after.
-
 ## Waiting on the user
 
 Nothing.

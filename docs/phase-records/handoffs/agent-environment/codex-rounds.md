@@ -387,3 +387,26 @@ held-out checks live outside the repository and never appear here or in a brief.
   counted as a problem, not as "not reachable", in the drive summary; the summary's proof field does not repeat the
   dialog-open proof; every focus step carries the activation's label.
 - **Failure cause:** none in the rows. The findings above go to the follow-up list.
+
+## agent-environment-r03 round 8b: `r03/briefs/round-8b.md`, result `e0fcb90e` (level high)
+
+- **Set-up:** the brief's commit `eb705aef` over HEAD `8a47897b` (round 8's result merged with its grade), on branch
+  `agent-environment-r03-gardener`; the coordinator's ledger entry for the round's proof pass followed as `46194162`.
+  Held-out rows Z1-Z9: Z1 and Z3-Z9 by a Sonnet grader in a disposable worktree, scratch roots and a scratch clone;
+  Z2 by a fresh Sonnet agent that read only the skill, on a scratch temp root, its cleanup run by the coordinator.
+- **Brief rows, as Codex graded them:** 8 of 9. R9 failed only on the ledger's date against the new rolling report,
+  which is the coordinator's entry; CI green on `46194162`.
+- **Held-out rows:** 8 of 9 pass, 1 partial.
+  - Z2: the final cleanup script listed exactly the three folders the report proposed; run by the coordinator, it
+    removed them (one named "evidence.") and left the young folder and the survey folders. The agent's first attempt
+    stopped on the coordinator's prompt, which forbade writing the survey output inside the temp root, where the
+    skill puts it by design.
+  - Z1: the round's tests pass with TEMP in 8.3 form (a C: short path; D: has no 8.3 names); round 8's test fails under
+    the same TEMP. Z3, Z4, Z6, Z7, Z8 and Z9 pass; Z9 re-ran round 8's X1-X8 on the new code.
+  - Z5 is partial: every worktree is measured and the evaluation worktrees carry branch, date and status, but an old
+    unmerged worktree is flagged only as a field in the JSON, with no line naming it; none is old enough today.
+- **Also found:** writing the ledger entry changes an open record, so the cleanup script handed over before it no
+  longer runs ("Open records changed; run a fresh survey"); a flagged unmerged worktree keeps every pass blocked
+  until the coordinator acts; the weekly worktree's path is fixed in `facts.mjs`.
+- **Failure cause:** none in the code for the rows; Z5's listing is the round's reading of "listed". Follow-ups:
+  a named section for worktrees awaiting review; the final survey rerun after the ledger entry (docs/WORKFLOW.md).

@@ -65,7 +65,9 @@ run starts at the user's next logon): `scripts/agent-environment/gardener-weekly
 `gardener/<date>` from `origin/main` in `D:/Projects/fitway-worktrees/gardener`, and runs
 `.agents/skills/gardener/SKILL.md` headless on Sonnet 5.5 at `high`. It deletes and pushes nothing,
 and a Windows notification reports its end. The coordinator reviews each `gardener/*` branch newer
-than the entry, merges what it accepts, then writes the entry.
+than the entry, merges what it accepts, writes the entry, and then reruns the report's final survey
+command, because the entry changes an open record and the cleanup script the pass left no longer
+runs; the user gets the new script.
 
 ## Before creating a phase worktree
 
