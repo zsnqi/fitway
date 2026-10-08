@@ -185,3 +185,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       and sufficient context. Research for it: `D:/fitway-temp/agent-env-vision-research/matt-skills.md` (Matt
       Pocock's skills against these problems) and `D:/fitway-temp/agent-env-vision-research/context-health-metrics.md`
       (experienced engineers on context, code health, measures and status pages).
+    - **The user's view of Matt Pocock's skills (same evening):** `retro` is very good (a per-session review of the
+      environment, run by request; first trial proposed on the 2026-10-08 session); `improve-codebase-architecture`
+      looks excellent (its visual HTML report suits the user; it needs `domain-modeling` and a GLOSSARY.md, neither
+      present). Replacing FITWAY's planning records with his pipeline is not proposed: lighten ours with his ideas.
