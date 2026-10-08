@@ -29,25 +29,35 @@ Review every class, recording evidence or “none” for each:
 
 ## Survey
 
-From PowerShell, replace the checkout path if this skill has moved:
+From PowerShell in any FITWAY checkout, run this unchanged. The launcher resolves
+`$root` from its own `$PSScriptRoot`, rather than a machine-specific checkout:
 
 ```powershell
-$root = 'D:/Projects/fitway-worktrees/agent-environment-r03-gardener'
-$env:TEMP = 'D:/fitway-temp'
-$env:TMP = 'D:/fitway-temp'
-node "$root/.agents/skills/gardener/survey.mjs" --out D:/fitway-temp/gardener-pass
+& ./.agents/skills/gardener/pass.ps1
 ```
 
-Use a fresh run directory. `SURVEY PASS` means collection finished, not that the
+The launcher chooses a fresh output directory; use `-Out <absolute-fresh-run>`
+to name it and `-TempRoot <absolute-temp-root>` to choose the inventory root
+(default `D:/fitway-temp`). Folders qualify only when their newest modification
+is at least **7 days** old, no open record or rolling report cites them by path,
+and every link, readability and worktree guard passes. A prose word matching a
+folder name is not a citation. The report names the checkout and the local date.
+
+`SURVEY PASS` means collection finished, not that the
 environment is clean. `SURVEY BLOCKED` names incomplete collection. Read both
 `REPORT.md` and `survey.json` there. The command reads local Git state without
 fetching, follows the ledger's open resume files and packets and their named
-briefs, measures temp folders without traversing junctions, and executes each
-`check:*` plus `brief:check` for running/next briefs. Checks run serially; their
-exit codes and output are evidence. No dependencies or services are installed.
+briefs, measures temp folders without traversing junctions, and executes every
+`check:*` in package.json via pnpm, including newly added scripts, plus
+`brief:check` for running/next briefs without a recorded result in the environment
+round log. Checks run serially; their exit codes, output and per-check checkout
+status/content changes are evidence. A mutating check is named and blocks the
+pass. No dependencies or services are installed.
 The sole writes are its external report and proposed cleanup script; no
-housekeeping runs during the survey. Unknown check commands are blocked until
-their read-only behavior is established in this helper.
+housekeeping runs during the survey. Merged branches and worktrees are judged
+against **`origin/main` as last fetched**, with its exact commit in the report;
+the survey does not fetch or fall back to local main. Unmeasured worktree status
+is explicitly unknown with its reason, never described as dirty.
 
 ## Pass procedure
 
@@ -61,16 +71,17 @@ their read-only behavior is established in this helper.
    drift, sediment, gate gaps, then obsolete rules; within a class sort by
    repository path. Prefer the first proven, authorized fix. Record every
    deferred finding so two passes on the same state choose the same outcome.
-   Git housekeeping allowed by WORKING_AGREEMENTS may be that one change:
-   delete only merged, unreferenced branches with no registered worktree;
-   prune only confirmed missing registrations. Respect any narrower brief.
+   The pass deletes nothing: branch, worktree, registration and folder removals
+   are proposals with user/coordinator commands in the survey report. Preserve
+   all deferred findings so another pass on the same state has the same outcome.
 4. Verify the change with its focused check and required project gates; record
    command, exit code and proof line. A failed verification is **blocked**.
    For folders, only propose the generated `cleanup.mjs` for the user to run:
-   `node D:/fitway-temp/gardener-pass/cleanup.mjs`. Never run it yourself.
+   `node <survey-output>/cleanup.mjs`. Never run a real cleanup yourself.
    It uses `rmdir /s /q` with a `\\?\` absolute path, rechecks open records and
    worktree cleanliness, skips unsafe candidates, continues after failures,
    and reports each result. Folder age/size alone never authorizes deletion.
+   Its real deletion regression tests run only on disposable test-created folders.
 5. Replace `.agents/skills/gardener/REPORT.md` with the last pass's date,
    outcome, survey path and findings, the five-class assessment, change made
    or proposed, verification and items waiting for the coordinator. This is
