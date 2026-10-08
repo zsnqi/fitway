@@ -22,7 +22,7 @@
   Agent tool's `effort` overrides a definition (Claude Code 2.1.292). CLAUDE.md names the call-time cases.
 - The environment page: built by an Opus designer from a cited facts file
   (`D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/06eea6dd-7c5b-44ad-b20d-f63072729f39/scratchpad/env-page/`);
-  its brief is `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`; Next steps 1.
+  its brief is `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`; published (Next steps 1).
 - The concept defect round 4 found: on the phone, in English, the tuner's «الإضاءة» toggle sits outside the screen,
   so no tap reaches it (the user said yes to the fix, 2026-10-07).
 
@@ -32,8 +32,8 @@ Nothing.
 
 ## Next steps
 
-1. If the environment page is not yet a private claude.ai artifact, publish `index.html` from the run folder above
-   (icon "map") after looking at its frames, and give the user the link.
+1. The environment page is published, private: https://claude.ai/artifact/Kx1hDDw4Z67niKMmkgwRzY (2026-10-08). Update
+   it from the run folder above by republishing to that URL.
 2. Round 8 for Codex (DECISIONS item 19): the gardener's cleanup quoting and its test, an age and citation guard and a
    chosen temp root, "merged" against `origin/main`, unknown `check:*` scripts run, the local date, `$root` from the
    skill's location, landed briefs skipped, branch deletion only proposed; verify-fitway's keyboard input,
