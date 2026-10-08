@@ -124,3 +124,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       of 198 questions, and every subagent would inherit it. The gardener's scheduled pass pins
       `--model claude-sonnet-5-5 --effort high`, because a headless run otherwise takes the user's saved Opus at
       `xhigh`; the terminal Claude Code is 2.1.293 (updated by the user, 2026-10-08).
+19. **Recipes beside the concept, and the rounds 6-7 follow-up (coordinator, 2026-10-08).**
+    - What the concept's code can tell (pages, switches, values, dependencies, the elements a user opens) is derived
+      each time the map is used; what it cannot tell (how a user reaches a feature, what proves it, sample values for
+      open-domain switches) lives in `verification-recipes.json` beside the concept, on the branch that changes it
+      (the Eclipse build: `6df156bd`). Nothing generated is committed. The drift step fails on an element no recipe
+      covers and on a recipe whose selector is gone.
+    - The gardener's weekly pass deletes nothing (the user, 2026-10-07): folders go into a script the user runs after
+      reviewing its list, and merged branches are proposed. The skill's branch-deletion line is aligned in the
+      follow-up round.
+    - One Codex follow-up round takes, before the weekly schedule starts: the cleanup script's quoting and its test,
+      an age and citation guard and a chosen temp root for proposals, "merged" judged against `origin/main`, running
+      an unknown `check:*` script, the local date, a `$root` taken from the skill's own location, landed briefs left
+      out of the survey's next-brief checks; and for verify-fitway, keyboard as an input, `aria-haspopup` openers, a
+      stale-recipe command that repairs, and shorter output. W2's CSS-only opener stays a recipe entry.

@@ -275,3 +275,64 @@ held-out checks live outside the repository and never appear here or in a brief.
   conflict with the target, a fault of the rows, not of either arm. Two lines sharpen on classes now seen twice: B9
   names the widest value the code can produce, not the widest the current data shows (card-1, then both writers here);
   B8 asks an equality measured in emulation for its noise floor (three-rounds-fix F2, then T1 here).
+
+## agent-environment-r03 round 6: `r03/briefs/round-6.md`, result `8e520995` (level xhigh)
+
+- **Set-up:** the brief's commit `cd95a508` over HEAD `76caf6c3`, launched on HEAD `2bb94d24` (round 5c's record came
+  between). Held-out rows T1-T10: T1-T4 and T5-T8 by two Sonnet graders, one after the other because the CLI owns two
+  ports, in a disposable worktree at `8e520995` with plants in copies of the concept; T9 by a fresh Sonnet agent that
+  read only the skill; T10 by the coordinator from the diff and CI.
+- **Brief rows, as Codex graded them:** 5 of 7. W1, W3, W4, W6 and W7 pass. W2 fails: discovery from code misses two
+  openers in components.js and the rail's CSS-only tooltip. W5 fails: a copy without the probe kit gets "FIX BLOCKED",
+  not a command. CI green on `8e520995`.
+- **Held-out rows:** 7 of 10 pass, 3 partial.
+  - T3 is partial: a new dialog, a removed one and a renamed id fail by name with file and line, and a comment-only
+    change passes; a new button with `aria-haspopup="menu"` passes, because discovery never reads that attribute.
+  - T7 is partial: a foreign server on 3177, bound to 0.0.0.0 or ::, is refused by launch, drive and compare with the
+    port named, and survives cleanup; but the doctor prints no command for a missing recipe file, and its command for
+    a stale recipe repeats the drift errors instead of repairing them.
+  - T9 is partial: Reports' period dialog in English at 320 by touch worked on the first try; Access's PIN dialog
+    in Arabic at 768 by keyboard cannot be asked for, because keyboard is not an input of `drive`, and the skill does
+    not say so.
+  - T4 passes on its intent: nothing generated is committed, and the recipe file holds no switch the code can tell;
+    it holds sample values for open-domain switches (dates, a record, a reason), which the code cannot list.
+  - T6 passes: 42 of 42 equal against its own extraction; a planted colour change is found on the four computer items
+    with its region and a diff image. The repeat under load is in the code; no flaky difference occurred to show it.
+  - T1, T2, T5, T8 and T10 pass.
+- **Also found:** a clone without node_modules fails `help` with a raw module error; `compare` prints the whole diff
+  map JSON; diff image names carry no state or feature; the refusal names 0.0.0.0 for a listener on ::; `launch --lan`
+  prints `http://0.0.0.0:3176`; the skill's example expects the recipe file beside the concept, which the coordinator
+  committed on the build branch on 2026-10-08 (`6df156bd`).
+- **Failure cause:** the brief and the code. W2 asked a static scan for every element a user can open, which a CSS-only
+  tooltip or an `aria-haspopup` without a target does not reveal; a missing recipe file has no command to give, since
+  only the concept's branch holds it. The follow-up round takes `aria-haspopup`, keyboard input, the stale-recipe
+  command and the output noise; the CSS-only opener stays a recipe entry.
+
+## agent-environment-r03 round 7: `r03/briefs/round-7.md`, result `a36e97fe` (level xhigh)
+
+- **Set-up:** the brief's commit `e8963b39` over HEAD `2bb94d24`, on branch `agent-environment-r03-gardener`. Held-out
+  rows U1-U8: U1 by two fresh Sonnet agents that read only the skill, each in its own disposable worktree at
+  `a36e97fe`; U2-U6 by a Sonnet grader in a disposable worktree and a scratch clone; U7 and U8 by the coordinator from
+  CI and the diff.
+- **Brief rows, as Codex graded them:** 5 of 5 (G1-G5). CI green on `a36e97fe`; its 30 new tests ran in CI's unit step.
+- **Held-out rows:** 5 of 8 pass, 2 partial, 1 fails.
+  - U1 passes: both agents ended `blocked` with the same findings in each class (446 unreferenced temp folders, 418
+    proposals of 19.1 GB, the same two merged branches, three gates outside the ladder, 16 duplicated rule lines).
+  - U4 passes: the survey changed no worktree's status and no `D:/fitway-temp` entry outside the harness's folder and
+    the grader's own, and opened no server or network call. U6, U7 and U8 pass.
+  - U2 is partial: "merged" is judged against local `main`, 486 commits behind `origin/main`, so three merged branches
+    no record names and no worktree holds are missed. The row's eval-c* branches are not merged: a fault of the row.
+  - U3 is partial: four of five plants are found, two with file and line; a new failing `check:*` script is reported
+    "unknown check command" and never run.
+  - U5 fails: `cleanup.mjs` passes `rmdir /s /q "<path>"` through `execFileSync`, Node escapes the inner quotes, and
+    every deletion fails ("The specified path is invalid"), so nothing is deleted. With verbatim arguments it removes a
+    trailing-dot folder and a 328-character path and reports a locked file. Its temp root is fixed at `D:/fitway-temp`,
+    and a top-level folder named "evidence." is never proposed, because the reference search matches the prose word.
+- **Also found by both cold agents:** the skill's `$root` is a fixed path; the report's date is the UTC day; proposals
+  carry no age or citation guard, so folders hours old and a folder the rolling report cites are proposed; `clean`
+  is out of reach while landed briefs stay in the resume's next steps, where `brief:check` fails on them for good;
+  `survey.json` shows `status: null, clean: false` for worktrees it never measured; the skill lets a pass delete
+  merged branches, where the user's decision for the weekly pass is that it deletes nothing.
+- **Failure cause:** the code, and one row. No test ran `cleanup.mjs`'s command, which is how the quoting fault
+  passed; the survey's merged check was not told which `main`. A follow-up round takes U2, U3, U5 and the cold
+  agents' findings before the weekly schedule starts.
