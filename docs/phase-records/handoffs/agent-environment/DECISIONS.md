@@ -188,4 +188,6 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **The user's view of Matt Pocock's skills (same evening):** `retro` is very good (a per-session review of the
       environment, run by request; first trial proposed on the 2026-10-08 session); `improve-codebase-architecture`
       looks excellent (its visual HTML report suits the user; it needs `domain-modeling` and a GLOSSARY.md, neither
-      present). Replacing FITWAY's planning records with his pipeline is not proposed: lighten ours with his ideas.
+      present). At the move to production it runs on each page as it moves, whatever it reads, with
+      `domain-modeling` and a GLOSSARY.md provided first (the user). Replacing FITWAY's planning records with his
+      pipeline is not proposed: lighten ours with his ideas.
