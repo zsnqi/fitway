@@ -433,6 +433,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - pstack's `create-verification-skill` and `maintain-verification-skill` (Lauren Tan, MIT) are installed
       user-level, unmodified from `cursor/plugins` at `df58112`, and tried in that round; their `.cursor/skills/`
       output goes to `.agents/skills/` and `.claude/skills/` instead.
+41. **Press feedback and 16 px field text** (the user, 2026-10-08, «موافق عليها كلها», on the two questions the good-css
+    review raised, `good-css-review.md` in this folder):
+    - Every pressable control shows that it was pressed. The form is the designer's, within the motion rules
+      (DESIGN-SPEC §1.10 and DESIGN_GUIDE.md §10); today the concept has none.
+    - Text fields use at least 16 px text, so a phone does not zoom the page when a field is tapped; this replaces the
+      concept's 15 px field text (DESIGN-SPEC.md, the type roles).
+    - Both go with the CSS fix round of the resume point's Next steps 6, when the Owner screens resume.
 
 ## How this milestone's rounds run
 

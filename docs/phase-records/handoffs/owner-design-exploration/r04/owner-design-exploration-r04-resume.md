@@ -48,8 +48,9 @@
    counts re-checked by the coordinator): 5 of the concept's 77 `:hover` rules sit behind a hover media query, so hover
    sticks after a tap on the phone and tablet (gate with `(hover: hover)` only, not `pointer: fine`, because of the
    tablet band); 12 `outline: none` rules to check against a visible focus; no `forced-colors` support; no
-   `viewport-fit=cover`, so the safe-area insets are inert. A Codex fix round on the build. Press feedback (`:active`,
-   none today) and 16 px field text against iOS zoom are the user's to decide, asked when the screens resume. The
+   `viewport-fit=cover`, so the safe-area insets are inert. A Codex fix round on the build. With it, DECISIONS 41
+   (the user said yes, 2026-10-08): press feedback on every pressable control (its form drawn by a designer first)
+   and field text of at least 16 px. The
    skill is not installed; it goes in slash-only, as a reference, at the production (apps/web) stage (the user,
    2026-10-08).
 
