@@ -1,8 +1,67 @@
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import ts from "typescript";
+import { isMap, parseDocument } from "yaml";
 
 export const MIN_FOLDER_AGE_DAYS = 7;
 export const TRUNK_REF = "origin/main";
+export const config = JSON.parse(
+	readFileSync(new URL("./config.json", import.meta.url), "utf8"),
+);
+
+export function ledgerHash(text) {
+	const document = parseDocument(text);
+	if (document.errors.length) throw document.errors[0];
+	if (!isMap(document.contents))
+		throw new Error("Open ledger must be a mapping");
+	const entry = document.contents.items.find(
+		(item) => item.key.value === "gardener",
+	);
+	const openState = document.toJS();
+	delete openState.gardener;
+	let guarded = text;
+	if (entry) {
+		// Keep every other byte, including comments and whitespace in open records.
+		let start = entry.key.range[0];
+		let end =
+			entry.value?.range[document.contents.flow ? 1 : 2] ?? entry.key.range[2];
+		if (document.contents.flow) {
+			let next = end;
+			while (/\s/.test(text[next] ?? "")) next++;
+			if (text[next] === ",") {
+				end = next + 1;
+				while (/\s/.test(text[end] ?? "")) end++;
+			} else {
+				let previous = start - 1;
+				while (/\s/.test(text[previous] ?? "")) previous--;
+				if (text[previous] === ",") start = previous;
+			}
+		}
+		guarded = text.slice(0, start) + text.slice(end);
+	}
+	// An alias in an open field can resolve through gardener; guard that value too.
+	return createHash("sha256")
+		.update(guarded)
+		.update("\0")
+		.update(JSON.stringify(openState))
+		.digest("hex");
+}
+
+export function changedRecords(recorded, current) {
+	const before = new Map(
+		recorded.map(({ source, sha256 }) => [source, sha256]),
+	);
+	const after = new Map(current.map(({ source, sha256 }) => [source, sha256]));
+	return [...new Set([...before.keys(), ...after.keys()])]
+		.filter(
+			(source) =>
+				!before.has(source) ||
+				!after.has(source) ||
+				before.get(source) !== after.get(source),
+		)
+		.sort();
+}
 
 export function localDate(date = new Date()) {
 	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -123,7 +182,13 @@ export function classifyBranches(branches, records, worktrees) {
 	});
 }
 
-export function classifyWorktrees(worktrees, records, current) {
+export function classifyWorktrees(
+	worktrees,
+	records,
+	current,
+	weeklyWorktree = process.env.FITWAY_GARDENER_WORKTREE ??
+		config.weeklyWorktree,
+) {
 	return worktrees.map((worktree) => {
 		const protectedBy = [
 			...references(worktree.path, records),
@@ -138,7 +203,7 @@ export function classifyWorktrees(worktrees, records, current) {
 		const ageDays = (Date.now() - Date.parse(worktree.lastCommitAt)) / 86400000;
 		const self =
 			key(worktree.path) === key(current) ||
-			key(worktree.path) === "d:/projects/fitway-worktrees/gardener" ||
+			key(worktree.path) === key(weeklyWorktree) ||
 			worktree.branch?.startsWith("refs/heads/gardener/");
 		return {
 			...worktree,

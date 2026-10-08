@@ -19,6 +19,7 @@ import {
 	inside,
 	key,
 	landedBriefSources,
+	ledgerHash,
 	localDate,
 	MIN_FOLDER_AGE_DAYS,
 	openBriefs,
@@ -67,7 +68,8 @@ export async function collectRecords({
 	trackedFiles,
 	readGit = (args, cwd) => git(args, cwd),
 } = {}) {
-	const ledger = await load("PROJECT_STATE.yaml", "ledger");
+	const loadedLedger = await load("PROJECT_STATE.yaml", "ledger");
+	const ledger = { ...loadedLedger, sha256: ledgerHash(loadedLedger.text) };
 	const state = parseYaml(ledger.text);
 	const records = [ledger];
 	const tracked =
@@ -573,6 +575,16 @@ export function formatReport(report) {
 		`Counts: ${report.git?.worktrees.filter((item) => item.missing).length ?? 0} missing registrations; ${report.git?.worktrees.filter((item) => item.mergedClean).length ?? 0} merged clean worktrees; ${report.git?.branches.filter((item) => item.merged && !item.protectedBy.length && item.plain !== "main" && !item.symbolic).length ?? 0} unreferenced merged branches; ${report.folders?.filter((item) => !item.protectedBy.length).length ?? 0} unreferenced temp folders; ${report.gates?.missing.length ?? 0} gate gaps; ${report.gates?.duplicates.length ?? 0} duplicate gates; ${report.checks?.filter((item) => item.exitCode !== 0).length ?? 0} failing/blocked checks; ${report.rules?.duplicates.length ?? 0} duplicate rule lines; ${report.rules?.dead.length ?? 0} dead path mentions.`,
 		"",
 	];
+	lines.push("## Worktrees awaiting review", "");
+	const awaiting =
+		report.git?.worktrees.filter((item) => item.coordinatorReview) ?? [];
+	if (!awaiting.length) lines.push("None.", "");
+	for (const item of awaiting) {
+		lines.push(
+			`- Path: ${JSON.stringify(item.path)}; branch: ${JSON.stringify(item.branch ?? "<detached>")}; last commit date: ${item.lastCommitAt ?? "unknown"}; status: ${item.statusMeasured ? (item.status ? JSON.stringify(item.status) : "clean") : `unknown (${item.statusReason})`}`,
+		);
+	}
+	lines.push("");
 	for (const [name, value] of Object.entries(report).filter(
 		([name]) =>
 			!["date", "head", "complete", "repositoryUnchanged"].includes(name),
@@ -662,6 +674,27 @@ export function cleanupScript(snapshot, checkout = root) {
 
 function powershellQuote(value) {
 	return `'${value.replaceAll("'", "''")}'`;
+}
+
+export function surveyOutcome(report) {
+	return !report.complete ||
+		report.checks.some((item) => item.exitCode !== 0) ||
+		report.gates?.missing.length ||
+		report.gates?.duplicates.length ||
+		report.rules?.duplicates.length ||
+		report.rules?.dead.length ||
+		report.folders?.some((item) => item.candidate) ||
+		report.git?.branches.some((item) => item.candidate) ||
+		report.git?.worktrees.some(
+			(item) =>
+				item.candidate || item.missing || (item.exists && !item.statusMeasured),
+		)
+		? "blocked"
+		: "clean";
+}
+
+export function consoleSummary(report, out) {
+	return `SURVEY ${report.outcome.toUpperCase()}: ${path.join(out, "REPORT.md")} (collection=${report.complete ? "complete" : "blocked"}; ${report.git?.worktrees.filter((item) => item.coordinatorReview).length ?? 0} worktrees await coordinator review; ${report.checks.filter((item) => item.exitCode !== 0).length} failing/blocked checks; repository unchanged=${report.repositoryUnchanged})`;
 }
 
 async function main(args) {
@@ -770,25 +803,8 @@ async function main(args) {
 			"Some temp folder measurements are incomplete; see folder errors",
 		);
 	report.complete = report.errors.length === 0;
-	// Flags need coordinator judgment; collection success alone never means clean.
-	report.outcome =
-		!report.complete ||
-		report.checks.some((item) => item.exitCode !== 0) ||
-		report.gates?.missing.length ||
-		report.gates?.duplicates.length ||
-		report.rules?.duplicates.length ||
-		report.rules?.dead.length ||
-		report.folders?.some((item) => item.candidate) ||
-		report.git?.branches.some((item) => item.candidate) ||
-		report.git?.worktrees.some(
-			(item) =>
-				item.candidate ||
-				item.missing ||
-				item.coordinatorReview ||
-				(item.exists && !item.statusMeasured),
-		)
-			? "blocked"
-			: "clean";
+	// Review-only worktrees are explicitly deferred; other findings still block.
+	report.outcome = surveyOutcome(report);
 	report.proposals = {
 		folders: {
 			command: report.complete
@@ -864,9 +880,7 @@ async function main(args) {
 		cleanupScript(cleanupData),
 		"utf8",
 	);
-	console.log(
-		`SURVEY ${report.outcome.toUpperCase()}: ${path.join(out, "REPORT.md")} (collection=${report.complete ? "complete" : "blocked"}; ${report.checks.filter((item) => item.exitCode !== 0).length} failing/blocked checks; repository unchanged=${report.repositoryUnchanged})`,
-	);
+	console.log(consoleSummary(report, out));
 	process.exitCode = report.complete ? 0 : 1;
 }
 
