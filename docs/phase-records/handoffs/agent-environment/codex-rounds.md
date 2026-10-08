@@ -502,3 +502,22 @@ held-out checks live outside the repository and never appear here or in a brief.
   read as an open brief and blocked every survey; the coordinator line no longer has it. `docs/WORKFLOW.md` still
   names the weekly path in prose.
 - **Failure cause:** none in the rows but S1's wording ("the record" read as the file).
+
+## agent-environment-r03 round 10b: `r03/briefs/round-10b.md`, result `24aa82e9` (level high)
+
+- **Set-up:** repair attempt 1 of round 10: the brief's commit `a9f456fa` over `d8945397`, on branch
+  `agent-environment-r03`. Held-out rows PB1-PB5 by a Sonnet grader in a disposable worktree at the result, with
+  scratch ledgers and packets; PB1 reproduced by the coordinator in a scratch repository.
+- **Brief rows, as Codex graded them:** 4 of 4 (L1-L4); 11 of 13 new tests fail on `d8945397`; ladder passed. Its
+  report lists what every open milestone's entries claim.
+- **Held-out rows:** 5 of 5 pass.
+  - PB1: two open milestones holding `lib/foo.mjs`, or `lib/**` and `lib/foo.mjs`, fail with "a lease must have one
+    holder"; disjoint leases pass; an overlap passes with a lease on exactly one side; a closed record's lease does not
+    count.
+  - PB2: access-reason-cap-r01's prose line claims `docs/phase-records/handoffs/coordinator/**` and nothing else; no
+    prose word is claimed; an entry with no path before `: ` fails naming the milestone and the entry.
+  - PB3: `taskClass "historical-audit" has no route` names the packet. PB4: round 10's P2-P6 hold; diff in scope.
+    PB5: round 10's parser restored fails 6 of 7 L2 tests.
+- **Also found:** prose tokens such as "and/or" or "v1.2" before `: ` would be claimed (none in the ledger today); a
+  second, cascaded line in the task-class failure; the checks still stop at the first fault.
+- **Failure cause:** none.
