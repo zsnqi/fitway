@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, rmSync } from "node:fs";
 import path from "node:path";
-import { classifyFolders, key } from "./facts.mjs";
+import { changedRecords, classifyFolders, key } from "./facts.mjs";
 import {
 	collectGit,
 	collectRecords,
@@ -27,14 +27,11 @@ export async function cleanup(snapshot, { checkout = root } = {}) {
 				continue;
 			}
 			const context = await collectRecords({ checkout });
-			const hashes = context.records
-				.map(({ source, sha256 }) => `${source}:${sha256}`)
-				.sort();
-			const recorded = snapshot.records
-				.map(({ source, sha256 }) => `${source}:${sha256}`)
-				.sort();
-			if (JSON.stringify(hashes) !== JSON.stringify(recorded))
-				throw new Error("Open records changed; run a fresh survey");
+			const changed = changedRecords(snapshot.records, context.records);
+			if (changed.length)
+				throw new Error(
+					`Open records changed: ${changed.join(", ")}; run a fresh survey`,
+				);
 			const state = await collectGit(context.records, { current: checkout });
 			const measured = await measureFolder(candidate.path);
 			const [current] = classifyFolders(

@@ -10,7 +10,7 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { classifyWorktrees, references } from "./facts.mjs";
+import { classifyWorktrees, config, references } from "./facts.mjs";
 import {
 	briefLifecycle,
 	checkEnvironment,
@@ -57,11 +57,15 @@ describe("gardener round 8b", () => {
 	});
 	it("R3: excludes the invoking checkout and weekly worktree even without citations", () => {
 		const trees = classifyWorktrees(
-			["D:/current", "D:/Projects/fitway-worktrees/gardener", "D:/old"].map(
-				(value) => ({ path: value, exists: true, merged: true, status: "" }),
-			),
+			["D:/current", config.weeklyWorktree, "D:/old"].map((value) => ({
+				path: value,
+				exists: true,
+				merged: true,
+				status: "",
+			})),
 			[],
 			"D:/current",
+			config.weeklyWorktree,
 		);
 		expect(trees.map((tree) => tree.candidate)).toEqual([false, false, true]);
 		console.log(

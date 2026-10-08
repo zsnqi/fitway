@@ -68,6 +68,11 @@ is explicitly unknown with its reason, never described as dirty.
 Every registered worktree's status is attempted. Old unmerged, unreferenced worktrees
 include branch, last commit date and status for coordinator review, never removal.
 The invoking checkout and weekly gardener worktree are always excluded from removal.
+The weekly location is configured once in this directory's `config.json`;
+the scheduler's `-Worktree` override is inherited by the pass through
+`FITWAY_GARDENER_WORKTREE`. The report's **Worktrees awaiting review** section
+names old unmerged worktrees and the console counts them. Those review-only
+findings are deferred to the coordinator and do not by themselves block the pass.
 
 ## Pass procedure
 
@@ -132,11 +137,18 @@ The invoking checkout and weekly gardener worktree are always excluded from remo
    ledger/report date or outcome mismatch is reported as waiting for the coordinator;
    its failed check remains visible but does not block collection. Do not wait for
    the coordinator to write the ledger before producing the final script.
-   Give the user that final `cleanup.mjs`; any later record change invalidates it
-   and requires another survey. Do not edit the report after that survey.
+   The coordinator reviews and merges the accepted pass, writes its `gardener`
+   ledger entry, then reruns the report's final survey command with a fresh `-Out`
+   and the same `-FinalReport`, as `docs/WORKFLOW.md` prescribes. Give the user
+   that rerun's `cleanup.mjs`. Do not edit the report after its final survey.
+   A change only to the ledger's `gardener` entry leaves the earlier script
+   runnable; any other open-record change invalidates it and names the changed
+   source in the refusal. The coordinator still reruns to refresh checks and
+   safety evidence after integration and bookkeeping.
    Keep the report's referenced
-   initial evidence. The cleanup script checks every open-record hash as well
-   as current references, so it cannot use a stale proposal.
+   initial evidence. The cleanup script checks every open-record hash (excluding
+   only the ledger's `gardener` entry) as well as current references, so it
+   cannot use a stale proposal.
 
 ## Limits and outcomes
 
