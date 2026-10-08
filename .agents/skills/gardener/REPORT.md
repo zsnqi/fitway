@@ -1,61 +1,96 @@
 ---
-date: '2026-10-07'
+date: '2026-10-08'
 outcome: blocked
 ---
 
 # Last gardener pass
 
-Collection completed; housekeeping awaits the coordinator/user. No folder,
-branch or worktree was removed. This implementation round adds the gardener;
-the first survey pass makes no additional correction outside its authorized
-files. The ledger remains coordinator-owned and unchanged.
+Collection completed without repository mutation. This bounded correction repairs
+the gardener's proposal, citation, worktree and check guards. Cleanup and policy
+judgment await the coordinator/user; no real folder, branch or worktree is removed.
 
-Survey command:
-`node D:/Projects/fitway-worktrees/agent-environment-r03-gardener/.agents/skills/gardener/survey.mjs --out D:/fitway-temp/gardener-r7-20261007/survey-final`
+Initial skill command:
+`& D:/Projects/fitway-worktrees/agent-environment-r03-gardener/.agents/skills/gardener/pass.ps1 -Out D:/fitway-temp/gardener-r8b-20261008/survey-initial`
 
-Evidence: `D:/fitway-temp/gardener-r7-20261007/survey-final/REPORT.md` and
-`D:/fitway-temp/gardener-r7-20261007/survey-final/survey.json`.
-Proof: `SURVEY PASS` with `repository unchanged=true`; collection errors: none.
-The survey used local main without fetching. Its own run folder is excluded
-from the temp inventory. Folder byte counts exclude junction/symlink targets;
-skipped links and embedded Git roots are recorded and exclude unsafe proposals.
+Evidence: `D:/fitway-temp/gardener-r8b-20261008/survey-initial/REPORT.md`
+and `D:/fitway-temp/gardener-r8b-20261008/survey-initial/survey.json`.
+Proof: `SURVEY BLOCKED`, `collection=complete`, `0 failing/blocked checks`,
+`repository unchanged=true`. Actionable proposals and deferred findings remain.
+
+Final command, run after this report is finalized:
+`& D:/Projects/fitway-worktrees/agent-environment-r03-gardener/.agents/skills/gardener/pass.ps1 -Out D:/fitway-temp/gardener-r8b-20261008/survey-final-validated -FinalReport D:/Projects/fitway-worktrees/agent-environment-r03-gardener/.agents/skills/gardener/REPORT.md`
+
+Final evidence and user script: `D:/fitway-temp/gardener-r8b-20261008/survey-final-validated/REPORT.md`,
+`D:/fitway-temp/gardener-r8b-20261008/survey-final-validated/survey.json` and
+`D:/fitway-temp/gardener-r8b-20261008/survey-final-validated/cleanup.mjs`.
+The report is not edited afterward. The script rechecks and contains exactly the
+folder list below. A later open-record change, including the coordinator's ledger
+update, invalidates it and requires a fresh survey. The user reviews and runs it.
 
 ## Findings and five-class assessment
 
 | Class | Facts and disposition |
 | --- | --- |
-| Correction seen twice | The named environment audit records recurring record/check failures and rebuilt verification tools. This round delivers the permanent survey and fixture coverage; further gate/template corrections require coordinator scope. |
-| Drift | All four `check:*` scripts pass. Two open briefs were checked: round 6 passes; round 7 fails because its two `(new)` directories now exist. The brief remains listed as next work in the resume file; the coordinator should update the open-work record after accepting this round. |
-| Sediment | No missing registrations or merged clean worktrees. Two merged branches have no open reference, but both retain registered worktrees: `worktree-agent-a0737a694cf8ea107` and `worktree-agent-ae35c4f4ea09f42e3`; neither is a branch-deletion candidate. 468 temp folders measured, 429 unreferenced; 401 conservative folder proposals total 18,918,763,437 bytes (18.92 GB). Total measured temp bytes: 44,737,006,140. Sizes, newest modification dates, age, references and exclusions are in the survey JSON. |
-| Gate gaps | `deploy:check`, `brief:check` and `check:design-context` are outside the fast ladder. No duplicate gate execution found. Deployment preflight and task-specific design/brief checks need coordinator judgment; this pass does not add them to CI. |
-| Rules nothing needs | 16 long lines are duplicated across rule homes, mostly the shared brief environment/checklist. Four absent-path mentions: `apps/server/.env` in WORKFLOW lines 78, 85, 87, and the run-folder filename `REPORT.md` at line 334. The `.env` is intentionally untracked; `REPORT.md` describes generated external output. These flags do not establish obsolete policy. Policy removals remain proposals. |
+| Correction seen twice | Round 8's grading and cold passes identified citation, proposal sequencing and path-spelling regressions (`docs/phase-records/handoffs/agent-environment/codex-rounds.md:340-367`). This repair encodes them in regressions discovered by the existing fast ladder unit step. |
+| Drift | All four initial `check:*` commands pass. Round 9 has committed implementation and a clean worktree; it is reported as waiting for its round record. The coordinator must record it and review this pass's new ledger entry. |
+| Sediment | 520 temp folders measured; 483 unreferenced, including young or unsafe folders; exactly 13 proposed. Minimum age: 7 days since newest modification. All 28 registered worktree statuses measured, including unmerged work. No missing registrations; 3 branch and 2 worktree proposals in the initial survey. This checkout and the weekly gardener worktree are excluded. No unreferenced unmerged worktree meets the minimum age here; fixtures prove older examples are listed with branch, last commit date and status for coordinator review, never removal. |
+| Gate gaps | `deploy:check`, `brief:check` and `check:design-context` are outside the fast ladder; no duplicate execution. Their task-specific scope needs coordinator judgment. Dependency mismatches now stop collection with an explicit error; the survey never installs dependencies. |
+| Rules nothing needs | 16 duplicated long rule lines and 4 absent-path mentions remain for review. Three mentions are the intentionally untracked `apps/server/.env`; the fourth is the `gardener/*` branch pattern in WORKFLOW. These do not establish obsolete policy. No policy removal is made. |
 
-## Verification and proposal
+Trunk: last-fetched `origin/main`, `2755220a489b164329c6bdeaaf5e3c0fcd1b4998`.
+No fetch. Measurements do not traverse links. Scratch and compile-cache output
+stays inside the excluded survey subtree. Only the explicit proposal section
+below is ignored as folder evidence; survey evidence elsewhere stays protected.
 
-- Both skill frontmatter validators: `Skill is valid!`; canonical guide: 123 lines.
-- `pnpm test .agents/skills/gardener/facts.test.ts scripts/verify-repository.schema.test.ts`:
-  `Test Files 2 passed (2)` and `Tests 30 passed (30)`.
-- The existing fast ladder passed before the final record/brief refinements:
-  `Verification fast passed without repository mutation`; 91 unit files,
-  1,195 passed / 1 skipped, and 120 Python tests. Final validation on the
-  committed clean tree is handed back in the round's final message, with its
-  external log at `D:/fitway-temp/gardener-r7-20261007/fast-committed.log`.
-- The emitted `D:/fitway-temp/gardener-r7-20261007/survey-final/cleanup.mjs`
-  is a user-run proposal only. Extended-path generation, including `evidence.`,
-  long paths, traversal and shell metacharacter rejection, is fixture-tested.
-  Actual deletion has not been exercised; the gardener never runs it.
+## Folder removal proposals
 
-Waiting for the coordinator: review the findings, resolve stale open-work
-pointers, choose any policy/gate follow-up, and write the following optional
-ledger entry. After the ledger/report are final, rerun the survey to produce a
-fresh user cleanup proposal; changed record hashes invalidate the current one.
+- `D:/fitway-temp/fonts-r1-verify`
+- `D:/fitway-temp/fonts-verify`
+- `D:/fitway-temp/ListSync`
+- `D:/fitway-temp/review`
+- `D:/fitway-temp/scoped_dir18532_1041590699`
+- `D:/fitway-temp/scoped_dir21644_1264199295`
+- `D:/fitway-temp/scoped_dir22632_111970365`
+- `D:/fitway-temp/scoped_dir32988_535888083`
+- `D:/fitway-temp/scoped_dir34320_188129797`
+- `D:/fitway-temp/scoped_dir9260_1278865733`
+- `D:/fitway-temp/scoped_dir9684_1599089063`
+- `D:/fitway-temp/vscode-typescript`
+- `D:/fitway-temp/WSLDVCPlugin`
+
+## Verification
+
+- `pnpm test .agents/skills/gardener/facts.test.ts .agents/skills/gardener/regressions.test.ts .agents/skills/gardener/round8b.test.ts --disableConsoleIntercept --reporter=verbose`:
+  `Test Files 3 passed (3)`; `Tests 31 passed (31)`.
+  Proof lines: `D:/fitway-temp/gardener-r8b-20261008/focused.log`.
+- Disposable final-script proof: `CLEANUP PASS: 1 proposed folders, 0 failures`;
+  list equals rolling report, scratch absent from inventory, survey evidence protected.
+  Real stale-dependency fixture: `ERR_PNPM_VERIFY_DEPS_BEFORE_RUN`;
+  repository unchanged and dependency sentinel preserved. No real cleanup ran.
+- `node scripts/verify.mjs fast` with documented synthetic CI placeholders passes
+  before this report update: `Verification fast passed without repository mutation (89.60s)`.
+  Existing unit step: 93 files passed, 1,220 tests passed / 1 skipped;
+  120 Python tests and 20 verification CLI contracts passed.
+  Evidence: `D:/fitway-temp/gardener-r8b-20261008/fast-before-report-ci-env.log`.
+- The committed-tree command remains `node scripts/verify.mjs fast`;
+  its result and SHA are returned in the final message, with evidence at
+  `D:/fitway-temp/gardener-r8b-20261008/fast-committed.log`.
+  This October 8 report cannot satisfy the repository's identity gate while the
+  read-only ledger names October 7. The normal repository gate is kept intact.
+  The survey reports that expected mismatch as waiting for the coordinator and
+  still collects the final proposal.
+
+## Waiting for the coordinator
+
+Review this pass and its proposed removals; record round 9; decide deferred gate,
+branch/worktree and rule findings; write the optional ledger entry:
 
 ```yaml
 gardener:
-  date: '2026-10-07'
+  date: '2026-10-08'
   outcome: blocked
   report: .agents/skills/gardener/REPORT.md
 ```
 
-No push, fetch, deployment, global configuration change or machine cleanup was
-performed. The other verification round's CLI and ports were not used.
+Ledger, WORKFLOW and other tools remain outside scope. No push, fetch, deployment,
+global configuration change or real housekeeping is performed.

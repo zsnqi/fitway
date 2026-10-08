@@ -36,6 +36,19 @@ function escapeRegex(value) {
 	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+// Proposals in this explicit rolling-report section are not evidence citations.
+export function referenceText(record) {
+	if (
+		record.kind !== "gardener" &&
+		record.source !== ".agents/skills/gardener/REPORT.md"
+	)
+		return record.text;
+	return record.text.replace(
+		/^## Folder removal proposals\r?\n[\s\S]*?(?=^## |$(?![\s\S]))/gm,
+		(section) => section.replace(/[^\r\n]/g, " "),
+	);
+}
+
 export function references(value, records, { branch = false, tempRoot } = {}) {
 	const normalized = key(value);
 	const aliases = branch
@@ -45,9 +58,11 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 			]
 		: [];
 	return records.flatMap((record) => {
-		const lines = record.text.replaceAll("\\", "/").split(/\r?\n/);
+		const lines = referenceText(record).replaceAll("\\", "/").split(/\r?\n/);
 		return lines.flatMap((line, index) => {
-			const text = line.toLowerCase();
+			const text = line
+				.toLowerCase()
+				.replace(/(^|[^a-z0-9_./:-])(fitway-temp\/)/g, "$1d:/$2");
 			const named = aliases.some((alias) =>
 				new RegExp(
 					`(^|[^a-z0-9_.:/-])${escapeRegex(alias)}(?=$|[^a-z0-9_.-])`,
@@ -62,14 +77,22 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 						/(?:[a-z]:\/|\/)[^\s`"'<>),;]+|[`"'<]((?:[a-z]:\/|\/)[^`"'<>\r\n]+)[`"'>]/g,
 					),
 				].some((match) => {
-					const target = (match[1] ?? match[0]).replace(/:\d+(?:-\d+)?$/, "");
-					return (
-						text[match.index + match[0].length] !== "<" &&
-						!/[<*?]/.test(target) &&
-						key(target) !== key(tempRoot ?? "D:/fitway-temp") &&
-						key(target) !== key("D:/fitway-temp") &&
-						(inside(target, normalized) || inside(normalized, target))
-					);
+					const raw = match[1] ?? match[0];
+					// Ambiguous sentence punctuation must also protect a folder
+					// whose real name ends in a dot; quoted spelling stays exact.
+					const targets = match[1] ? [raw] : [raw, raw.replace(/[.:*]+$/, "")];
+					return targets.some((value) => {
+						const target = value
+							.replace(/:\d+(?:-\d+)?$/, "")
+							.replace(/^\/([a-z])\//, "$1:/");
+						return (
+							text[match.index + match[0].length] !== "<" &&
+							!/[<*?]/.test(target) &&
+							key(target) !== key(tempRoot ?? "D:/fitway-temp") &&
+							key(target) !== key("D:/fitway-temp") &&
+							(inside(target, normalized) || inside(normalized, target))
+						);
+					});
 				});
 			return named || cited
 				? [{ source: record.source, line: index + 1, text: line.trim() }]
@@ -112,6 +135,11 @@ export function classifyWorktrees(worktrees, records, current) {
 		];
 		const statusMeasured = typeof worktree.status === "string";
 		const clean = statusMeasured ? worktree.status === "" : null;
+		const ageDays = (Date.now() - Date.parse(worktree.lastCommitAt)) / 86400000;
+		const self =
+			key(worktree.path) === key(current) ||
+			key(worktree.path) === "d:/projects/fitway-worktrees/gardener" ||
+			worktree.branch?.startsWith("refs/heads/gardener/");
 		return {
 			...worktree,
 			status: worktree.status ?? null,
@@ -123,6 +151,13 @@ export function classifyWorktrees(worktrees, records, current) {
 						? "Registration path is missing"
 						: "Status was not measured")),
 			clean,
+			self,
+			coordinatorReview:
+				worktree.exists &&
+				worktree.merged === false &&
+				!self &&
+				!protectedBy.length &&
+				ageDays >= MIN_FOLDER_AGE_DAYS,
 			protectedBy,
 			missing: worktree.exists === false,
 			mergedClean: worktree.exists && worktree.merged && clean,
@@ -132,7 +167,7 @@ export function classifyWorktrees(worktrees, records, current) {
 				clean &&
 				!worktree.locked &&
 				!protectedBy.length &&
-				key(worktree.path) !== key(current) &&
+				!self &&
 				worktree.branch !== "refs/heads/main",
 		};
 	});

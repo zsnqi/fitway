@@ -12,6 +12,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { samePath } from "../../../scripts/agent-environment/path-identity.mjs";
 import {
 	classifyFolders,
 	classifyWorktrees,
@@ -176,10 +177,10 @@ describe("gardener round 8 regressions", () => {
 		expect(calls.flat()).not.toContain("main");
 		expect(calls.flat()).not.toContain("fetch");
 		expect(result.worktrees[1]).toMatchObject({
-			status: null,
-			clean: null,
-			statusMeasured: false,
-			statusReason: "HEAD is not merged into origin/main; status not measured",
+			status: "",
+			clean: true,
+			statusMeasured: true,
+			statusReason: null,
 		});
 		expect(result.worktrees[2]).toMatchObject({
 			clean: null,
@@ -295,7 +296,11 @@ describe("gardener round 8 regressions", () => {
 						windowsHide: true,
 					},
 				);
-				expect(output).toContain(`CHECKOUT=${f.checkout}`);
+				const reported = output.match(/^CHECKOUT=(.+)$/m)?.[1].trim();
+				expect(await samePath(reported, f.checkout)).toBe(true);
+				console.log(
+					"R1 PROOF: launcher checkout matches filesystem identity, independent of TEMP spelling",
+				);
 				expect(output).toContain(
 					JSON.stringify(["--out", out, "--temp-root", tempRoot]),
 				);

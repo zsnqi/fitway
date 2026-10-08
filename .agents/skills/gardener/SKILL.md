@@ -40,24 +40,34 @@ The launcher chooses a fresh output directory; use `-Out <absolute-fresh-run>`
 to name it and `-TempRoot <absolute-temp-root>` to choose the inventory root
 (default `D:/fitway-temp`). Folders qualify only when their newest modification
 is at least **7 days** old, no open record or rolling report cites them by path,
-and every link, readability and worktree guard passes. A prose word matching a
+and every link, readability and worktree guard passes. The rolling report's
+explicit `## Folder removal proposals` section is a proposal list, not evidence;
+citations elsewhere, including its survey folders, remain protected. A prose word matching a
 folder name is not a citation. The report names the checkout and the local date.
 
-`SURVEY PASS` means collection finished, not that the
-environment is clean. `SURVEY BLOCKED` names incomplete collection. Read both
+The console states the outcome first: `SURVEY CLEAN` or `SURVEY BLOCKED`, then
+whether collection completed. A blocked outcome may still have a usable proposal.
+Read both
 `REPORT.md` and `survey.json` there. The command reads local Git state without
 fetching, follows the ledger's open resume files and packets and their named
 briefs, measures temp folders without traversing junctions, and executes every
 `check:*` in package.json via pnpm, including newly added scripts, plus
 `brief:check` for running/next briefs without a recorded result in the environment
-round log. Checks run serially; their exit codes, output and per-check checkout
+round log. A clean worktree with committed implementation beyond its brief's launch
+HEAD is listed as waiting for its round record; an unlaunched or ambiguous brief
+still gets checked. Checks run serially; their exit codes, output and per-check checkout
 status/content changes are evidence. A mutating check is named and blocks the
-pass. No dependencies or services are installed.
+pass. pnpm's dependency preflight uses `error`, never `install`; a dependency
+mismatch names the blocker and withholds collection and cleanup. Scratch files live
+under the excluded output directory. No dependencies or services are installed.
 The sole writes are its external report and proposed cleanup script; no
 housekeeping runs during the survey. Merged branches and worktrees are judged
 against **`origin/main` as last fetched**, with its exact commit in the report;
 the survey does not fetch or fall back to local main. Unmeasured worktree status
 is explicitly unknown with its reason, never described as dirty.
+Every registered worktree's status is attempted. Old unmerged, unreferenced worktrees
+include branch, last commit date and status for coordinator review, never removal.
+The invoking checkout and weekly gardener worktree are always excluded from removal.
 
 ## Pass procedure
 
@@ -106,10 +116,25 @@ is explicitly unknown with its reason, never described as dirty.
      report: .agents/skills/gardener/REPORT.md
    ```
 
-   If proposing folder removals, run the same survey command once more with a
-   fresh output directory after the rolling report and coordinator ledger entry
-   are final. Give the user that final `cleanup.mjs`; any later record change
-   invalidates it and requires another survey. Keep the report's referenced
+   List proposed folders as one absolute path per bullet in this exact section:
+
+   ```markdown
+   ## Folder removal proposals
+   - `D:/fitway-temp/example-folder`
+   ```
+
+   Keep evidence citations outside that section. Finalize the rolling report,
+   including both survey output paths, before the final survey. Then run the
+   launcher with a fresh `-Out` and
+   `-FinalReport <absolute-checkout>/.agents/skills/gardener/REPORT.md`.
+   It rechecks safety and emits exactly the report's list; an unsafe listed folder
+   blocks collection. Newly eligible folders wait for the next pass. An expected
+   ledger/report date or outcome mismatch is reported as waiting for the coordinator;
+   its failed check remains visible but does not block collection. Do not wait for
+   the coordinator to write the ledger before producing the final script.
+   Give the user that final `cleanup.mjs`; any later record change invalidates it
+   and requires another survey. Do not edit the report after that survey.
+   Keep the report's referenced
    initial evidence. The cleanup script checks every open-record hash as well
    as current references, so it cannot use a stale proposal.
 

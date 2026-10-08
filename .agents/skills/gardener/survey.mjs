@@ -20,6 +20,7 @@ import {
 	key,
 	landedBriefSources,
 	localDate,
+	MIN_FOLDER_AGE_DAYS,
 	openBriefs,
 	parseFastSteps,
 	parseWorktreePorcelain,
@@ -64,6 +65,7 @@ export async function collectRecords({
 	checkout = root,
 	load = (source, kind) => record(source, kind, checkout),
 	trackedFiles,
+	readGit = (args, cwd) => git(args, cwd),
 } = {}) {
 	const ledger = await load("PROJECT_STATE.yaml", "ledger");
 	const state = parseYaml(ledger.text);
@@ -141,12 +143,72 @@ export async function collectRecords({
 	if (rounds) records.push(rounds);
 	const landed = landedBriefSources(briefs, rounds?.text ?? "");
 	const selected = openBriefs(records, briefs, landed);
+	const waitingBriefs = [];
+	const active = [];
+	for (const brief of selected) {
+		const lifecycle = briefLifecycle(brief, readGit);
+		if (lifecycle.waitingForRecord)
+			waitingBriefs.push({ source: brief.source, ...lifecycle });
+		else active.push(brief);
+	}
 	return {
 		records: [...records, ...selected],
-		briefs: selected,
+		briefs: active,
+		waitingBriefs,
 		landedBriefs: [...landed].sort(),
 		state,
 	};
+}
+
+export function briefLifecycle(brief, readGit = git) {
+	const fields = brief.text.match(
+		/^- \*\*Worktree:\*\* `([^`]+)`, branch `([^`]+)`, HEAD `([a-f0-9]{4,40})`\s*$/im,
+	);
+	if (!fields) return { waitingForRecord: false };
+	const [, checkout, branch, namedHead] = fields;
+	try {
+		if (
+			readGit(["symbolic-ref", "--quiet", "--short", "HEAD"], checkout) !==
+			branch
+		)
+			return { waitingForRecord: false };
+		readGit(["merge-base", "--is-ancestor", namedHead, "HEAD"], checkout);
+		const commits = readGit(["rev-list", `${namedHead}..HEAD`], checkout)
+			.split(/\r?\n/)
+			.filter(Boolean);
+		const implemented = commits.some((commit) =>
+			readGit(
+				[
+					"diff-tree",
+					"--no-commit-id",
+					"--name-only",
+					"--no-renames",
+					"-r",
+					"-m",
+					"-z",
+					commit,
+				],
+				checkout,
+			)
+				.split("\0")
+				.some((file) => file && !/\.(?:md|markdown)$/i.test(file)),
+		);
+		if (
+			implemented &&
+			!readGit(["status", "--porcelain=v1", "--untracked-files=all"], checkout)
+		)
+			return {
+				waitingForRecord: true,
+				checkout,
+				branch,
+				namedHead,
+				reason:
+					"Committed implementation beyond launch HEAD; clean worktree waiting for its round record",
+			};
+	} catch {
+		// Unlaunched, unavailable and ambiguous briefs still go through brief:check.
+	}
+	return { waitingForRecord: false };
 }
 
 export async function collectGit(
@@ -198,22 +260,33 @@ export async function collectGit(
 	for (const worktree of registrations) {
 		worktree.exists = exists(worktree.path);
 		if (worktree.exists) {
-			let status;
+			try {
+				worktree.lastCommitAt = readGit([
+					"show",
+					"-s",
+					"--format=%cI",
+					worktree.HEAD,
+				]);
+			} catch (error) {
+				worktree.commitDateReason = error.message;
+			}
 			try {
 				readGit(["merge-base", "--is-ancestor", worktree.HEAD, trunk.commit]);
 				worktree.merged = true;
 			} catch (error) {
-				if (error.status !== 1) throw error;
-				worktree.merged = false;
+				worktree.merged = error.status === 1 ? false : null;
+				if (error.status !== 1)
+					worktree.mergeReason = `Merge status unavailable: ${error.message}`;
 			}
-			if (worktree.merged)
-				status = readGit(
+			try {
+				worktree.status = readGit(
 					["status", "--porcelain=v1", "--untracked-files=all"],
 					worktree.path,
 				);
-			worktree.status = status ?? null;
-			if (!worktree.merged)
-				worktree.statusReason = `HEAD is not merged into ${trunk.ref}; status not measured`;
+			} catch (error) {
+				worktree.status = null;
+				worktree.statusReason = `Status could not be measured: ${error.message}`;
+			}
 		}
 	}
 	const worktrees = classifyWorktrees(registrations, records, current);
@@ -336,6 +409,35 @@ async function checkGraph(scripts) {
 	return calls;
 }
 
+export const surveyPnpmEnv = {
+	pnpm_config_verify_deps_before_run: "error",
+	pnpm_config_manage_package_manager_versions: "false",
+	pnpm_config_package_manager_strict_version: "true",
+};
+
+export function checkEnvironment(inherited, tempRoot) {
+	const overrides = {
+		...surveyPnpmEnv,
+		GIT_OPTIONAL_LOCKS: "0",
+		TEMP: tempRoot,
+		TMP: tempRoot,
+		NODE_COMPILE_CACHE: path.join(tempRoot, "node-compile-cache"),
+	};
+	const names = new Set(
+		Object.keys(overrides).map((name) => name.toLowerCase()),
+	);
+	// Windows child environments are case insensitive; remove inherited aliases
+	// before adding overrides (pnpm run exports an uppercase false preflight).
+	return {
+		...Object.fromEntries(
+			Object.entries(inherited).filter(
+				([name]) => !names.has(name.toLowerCase()),
+			),
+		),
+		...overrides,
+	};
+}
+
 function captureCheck(name, command, args, { cwd, tempRoot }) {
 	try {
 		const windows = process.platform === "win32";
@@ -350,12 +452,7 @@ function captureCheck(name, command, args, { cwd, tempRoot }) {
 				windowsHide: true,
 				timeout: 180000,
 				maxBuffer: 8 * 1024 * 1024,
-				env: {
-					...process.env,
-					GIT_OPTIONAL_LOCKS: "0",
-					TEMP: tempRoot,
-					TMP: tempRoot,
-				},
+				env: checkEnvironment(process.env, tempRoot),
 			},
 		);
 		return {
@@ -379,7 +476,12 @@ function captureCheck(name, command, args, { cwd, tempRoot }) {
 
 export async function runChecks(
 	scripts,
-	{ cwd = root, tempRoot = defaultTempRoot, briefs = [] } = {},
+	{
+		cwd = root,
+		tempRoot = defaultTempRoot,
+		briefs = [],
+		capture = captureCheck,
+	} = {},
 ) {
 	const checks = [];
 	const entries = Object.entries(scripts)
@@ -401,7 +503,7 @@ export async function runChecks(
 			cwd,
 		);
 		const before = await repositoryFingerprint({ cwd });
-		const result = captureCheck(entry.name, entry.command, entry.args, {
+		const result = capture(entry.name, entry.command, entry.args, {
 			cwd,
 			tempRoot,
 		});
@@ -418,7 +520,14 @@ export async function runChecks(
 			statusAfter,
 			statusChanged: statusBefore !== statusAfter,
 			repositoryChanged,
+			dependencyBlocker: /ERR_PNPM_VERIFY_DEPS_BEFORE_RUN/.test(result.output),
+			waitingForCoordinator:
+				entry.name === "check:repository" &&
+				/(?:Error:|FAILED_VALIDATION:) Gardener ledger date\/outcome does not match the rolling report/.test(
+					result.output,
+				),
 		});
+		if (checks.at(-1).dependencyBlocker) break;
 	}
 	return checks;
 }
@@ -457,7 +566,9 @@ export function formatReport(report) {
 		`HEAD: ${report.head}`,
 		`Trunk: ${report.git?.trunk.ref ?? TRUNK_REF} at ${report.git?.trunk.commit ?? "unavailable"} (as last fetched; survey does not fetch)`,
 		`Outcome: ${report.outcome}`,
+		`Minimum folder age: ${MIN_FOLDER_AGE_DAYS} days (newest modification)`,
 		`Repository unchanged: ${report.repositoryUnchanged}`,
+		`Proposed temp folders: ${report.proposals?.folders.paths.length ?? 0}; unreferenced temp folders include young and unsafe folders.`,
 		"",
 		`Counts: ${report.git?.worktrees.filter((item) => item.missing).length ?? 0} missing registrations; ${report.git?.worktrees.filter((item) => item.mergedClean).length ?? 0} merged clean worktrees; ${report.git?.branches.filter((item) => item.merged && !item.protectedBy.length && item.plain !== "main" && !item.symbolic).length ?? 0} unreferenced merged branches; ${report.folders?.filter((item) => !item.protectedBy.length).length ?? 0} unreferenced temp folders; ${report.gates?.missing.length ?? 0} gate gaps; ${report.gates?.duplicates.length ?? 0} duplicate gates; ${report.checks?.filter((item) => item.exitCode !== 0).length ?? 0} failing/blocked checks; ${report.rules?.duplicates.length ?? 0} duplicate rule lines; ${report.rules?.dead.length ?? 0} dead path mentions.`,
 		"",
@@ -482,19 +593,67 @@ export function parseOptions(args) {
 	const options = { tempRoot: defaultTempRoot };
 	for (let index = 0; index < args.length; index += 2) {
 		if (
-			!["--out", "--temp-root"].includes(args[index]) ||
+			!["--out", "--temp-root", "--final-report"].includes(args[index]) ||
 			!args[index + 1] ||
 			!path.isAbsolute(args[index + 1])
 		)
 			throw new Error(
 				"Usage: node <checkout>/.agents/skills/gardener/survey.mjs --out <absolute-fresh-run> [--temp-root <absolute-temp-root>]",
 			);
-		const field = args[index] === "--out" ? "out" : "tempRoot";
+		const field =
+			args[index] === "--out"
+				? "out"
+				: args[index] === "--final-report"
+					? "finalReport"
+					: "tempRoot";
 		if (field === "out" && options.out) throw new Error("Duplicate --out");
 		options[field] = path.resolve(args[index + 1]);
 	}
 	if (!options.out) throw new Error("--out is required");
 	return options;
+}
+
+export function finalFolderSelection(folders, rollingReport) {
+	const sections = [
+		...rollingReport.matchAll(
+			/^## Folder removal proposals\r?\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm,
+		),
+	];
+	if (sections.length !== 1)
+		throw new Error(
+			"Final rolling report requires one Folder removal proposals section",
+		);
+	const paths = [...sections[0][1].matchAll(/^- `([^`\r\n]+)`\s*$/gm)].map(
+		(match) => match[1],
+	);
+	if (
+		sections[0][1]
+			.split(/\r?\n/)
+			.some(
+				(line) =>
+					line.trim() &&
+					!/^- `[^`\r\n]+`\s*$/.test(line) &&
+					line.trim() !== "None.",
+			)
+	)
+		throw new Error(
+			"Final folder proposal section must contain only absolute path bullets or None.",
+		);
+	if (new Set(paths.map(key)).size !== paths.length)
+		throw new Error("Duplicate final folder proposal");
+	for (const target of paths)
+		if (
+			!folders.some(
+				(folder) => key(folder.path) === key(target) && folder.candidate,
+			)
+		)
+			throw new Error(`Final proposal is no longer safe: ${target}`);
+	return folders.map((folder) => ({
+		...folder,
+		candidate:
+			folder.candidate &&
+			paths.some((target) => key(target) === key(folder.path)),
+	}));
 }
 
 export function cleanupScript(snapshot, checkout = root) {
@@ -507,7 +666,7 @@ function powershellQuote(value) {
 
 async function main(args) {
 	process.env.GIT_OPTIONAL_LOCKS = "0";
-	const { out, tempRoot } = parseOptions(args);
+	const { out, tempRoot, finalReport } = parseOptions(args);
 	const registrations = parseWorktreePorcelain(
 		git(["worktree", "list", "--porcelain"]),
 	);
@@ -545,6 +704,20 @@ async function main(args) {
 			tempRoot,
 		),
 	);
+	if (finalReport && context && report.folders) {
+		report.folders = await attempt("final proposals", () => {
+			const rolling = context.records.find(
+				(item) =>
+					item.kind === "gardener" &&
+					key(path.resolve(root, item.source)) === key(finalReport),
+			);
+			if (!rolling)
+				throw new Error(
+					"--final-report must name the collected rolling gardener report",
+				);
+			return finalFolderSelection(report.folders, rolling.text);
+		});
+	}
 	const scripts = JSON.parse(
 		await readFile(path.join(root, "package.json"), "utf8"),
 	).scripts;
@@ -572,10 +745,16 @@ async function main(args) {
 	report.openBriefs =
 		context?.briefs.map(({ source, namedBy }) => ({ source, namedBy })) ?? [];
 	report.landedBriefs = context?.landedBriefs ?? [];
+	report.waitingBriefs = context?.waitingBriefs ?? [];
+	await mkdir(path.join(out, "scratch"), { recursive: true });
 	report.checks = await runChecks(scripts, {
-		tempRoot,
+		tempRoot: path.join(out, "scratch"),
 		briefs: context?.briefs ?? [],
 	});
+	for (const check of report.checks.filter((item) => item.dependencyBlocker))
+		report.errors.push(
+			`Dependency mismatch blocks collection: ${check.name}: ${check.output.trim()}`,
+		);
 	for (const check of report.checks.filter((item) => item.repositoryChanged))
 		report.errors.push(
 			`Check ${check.name}${check.source ? ` (${check.source})` : ""} changed checkout ${check.checkout}; status changed=${check.statusChanged}`,
@@ -601,7 +780,13 @@ async function main(args) {
 		report.rules?.dead.length ||
 		report.folders?.some((item) => item.candidate) ||
 		report.git?.branches.some((item) => item.candidate) ||
-		report.git?.worktrees.some((item) => item.candidate || item.missing)
+		report.git?.worktrees.some(
+			(item) =>
+				item.candidate ||
+				item.missing ||
+				item.coordinatorReview ||
+				(item.exists && !item.statusMeasured),
+		)
 			? "blocked"
 			: "clean";
 	report.proposals = {
@@ -638,13 +823,19 @@ async function main(args) {
 		registrations:
 			report.git?.worktrees
 				.filter(
-					(item) => item.missing && !item.locked && !item.protectedBy.length,
+					(item) =>
+						item.missing &&
+						!item.self &&
+						!item.locked &&
+						!item.protectedBy.length,
 				)
 				.map((item) => ({
 					path: item.path,
 					command: "git worktree prune --dry-run",
 					removalCommand: report.git.worktrees.some(
-						(item) => item.missing && (item.locked || item.protectedBy.length),
+						(item) =>
+							item.missing &&
+							(item.self || item.locked || item.protectedBy.length),
 					)
 						? null
 						: "git worktree prune",
@@ -674,7 +865,7 @@ async function main(args) {
 		"utf8",
 	);
 	console.log(
-		`SURVEY ${report.complete ? "PASS" : "BLOCKED"}: ${path.join(out, "REPORT.md")} (${report.checks.filter((item) => item.exitCode !== 0).length} failing/blocked checks; repository unchanged=${report.repositoryUnchanged}; outcome=${report.outcome})`,
+		`SURVEY ${report.outcome.toUpperCase()}: ${path.join(out, "REPORT.md")} (collection=${report.complete ? "complete" : "blocked"}; ${report.checks.filter((item) => item.exitCode !== 0).length} failing/blocked checks; repository unchanged=${report.repositoryUnchanged})`,
 	);
 	process.exitCode = report.complete ? 0 : 1;
 }
