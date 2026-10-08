@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-08 16:30 +03:00 (Next steps 3 mostly done; step 4 drafted as four
-  rounds; the user switches accounts and starts a new session)
+- **As of:** codex/owner-redesign-r04, 2026-10-08 17:35 +03:00 (after the account switch: the tuner repair resumed;
+  step 4's four rounds launched)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-19,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -44,9 +44,16 @@
   2026-10-09), `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener
   (detached at `origin/main`; each pass starts branch `gardener/<date>`). It ends with a Windows notification.
 - Codex repair attempt 1 of the tuner (Owner milestone), run folder `D:/fitway-temp/codex-round-tuner-reach-fix-1`.
-  The Codex account was under 11% of its five-hour limit at 16:20; if the run stopped, resume it on its thread after
-  the user's account switch: `pnpm codex:round resume D:/fitway-temp/codex-round-tuner-reach-fix-1 --message "<what
-  happened>"`.
+  It stopped at 16:40 on the old account's limit and was resumed on its thread at 17:07 on the new account
+  (`events-resume.jsonl`), told to run its HTTP checks on 3177: the previous round's preview (PID 12492) held 3176; the
+  user said yes and the coordinator stopped it at 17:30.
+- Step 4's four rounds at `high`, launched 17:30 from briefs on their branches (each brief's HEAD `70bc51c1`, the build
+  at `1d3539a3`): round 10 in agent-environment-r03 (brief commit `95cc46c2`), round 11 in agent-environment-r03-verify
+  (`35e2ed33`), round 12 in agent-environment-r03-gardener (`9f28df01`), round 13 in agent-environment-r03-css
+  (`ae89c7a9`). Run folders `D:/fitway-temp/codex-round-r03-round-<n>`; held-out rows
+  `D:/fitway-grader/agent-environment/r03-round<n>-heldout.md`. Two draft changes before launch: round 11's V1 says the
+  fast ladder (which runs `check:verification-map`) still passes with no recipe file; round 12's G2 keeps the ledger's
+  `gardener` outcome values, since their schema is round 10's scope.
 
 ## Next steps
 
@@ -66,16 +73,10 @@
    `git archive` of the result. If it passes: record it in the Owner `codex-rounds.md`, push owner-followup-r04-build
    (its local commits `f3c19d15`, `1305c0ee`, `1d3539a3` and the result), and restart the `eclipse-build` preview on
    3174 for the user. A second failure allows one more repair (AGENTS.md).
-4. Step 4, four rounds at `high`, one tool each, briefs drafted in `D:/fitway-temp/r03-followup-drafts/` (FACTS.md is
-   the Sonnet researcher's cited causes, spot-checked by the coordinator): round 10 the repository checks (R1-R5 and
-   R7, the A7 overlap check) in this worktree; round 11 verify-fitway in a new worktree
-   `agent-environment-r03-verify`; round 12 the gardener in `agent-environment-r03-gardener` (fast-forward it first);
-   round 13 the concept CSS lint (`pnpm check:concept-css`, report-and-fail, not in the ladder) in a new worktree
-   `agent-environment-r03-css`. The user approved working in these worktrees (2026-10-08). First fast-forward
-   agent-environment-r03 to the coordinator line (it carries the ledger edit); for each round fill `<sha>` (and
-   `<build sha>`), run `pnpm brief:check`, write held-out rows under `D:/fitway-grader/agent-environment/round-<n>/`,
-   commit the brief to `docs/phase-records/handoffs/agent-environment/r03/briefs/round-<n>.md` on its branch, launch.
-   Each brief tells the round to wait for ports 3176-3177 before the ladder, since the rounds run side by side.
+4. Step 4's four rounds (launched, Running now): grade each as it ends against its held-out rows, from a `git archive`
+   of its result, in a disposable grading worktree; record each in `codex-rounds.md`; a failure allows two repairs
+   (AGENTS.md). Then merge the four branches into agent-environment-r03 (disjoint files), and that into the
+   coordinator line and main once CI passes. FACTS.md in `D:/fitway-temp/r03-followup-drafts/` holds the cited causes.
 5. Remove the disposable grading worktrees (grade-r6, grade-r7-*, grade-r8-*, grade-r8b-*, grade-r9) and the
    evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then the
    closing review and the milestone's closure. The Owner screens resume after.
@@ -86,6 +87,8 @@ Nothing.
 ## Known risks
 
 - When a Codex account reaches its limit, tell the user at once; after the switch, resume each stopped run.
+- A round's own preview can outlive the round (tuner-reach's held 3176 until 2026-10-08 17:30); before a launch,
+  check that 3176-3177 are free and ask the user before stopping a process the coordinator did not start.
 - Claude Code's auto mode refuses to end Codex processes by hand ("interfere with workloads"); let a run stop on its
   own or ask the user.
 - Claude Code's auto mode refused a ledger edit and writes in another milestone's worktree as "Modify Shared
