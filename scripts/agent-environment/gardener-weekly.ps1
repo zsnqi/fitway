@@ -65,7 +65,7 @@ try {
 		'PowerShell(git branch -D:*)', 'PowerShell(git branch --delete:*)', 'PowerShell(git worktree remove:*)',
 		'PowerShell(git worktree prune:*)', 'PowerShell(git reset --hard:*)', 'PowerShell(Remove-Item:*)',
 		'PowerShell(rmdir:*)', 'PowerShell(node D:/fitway-temp:*)', 'Edit(PROJECT_STATE.yaml)',
-		'Edit(PROJECT_STATE_HISTORY.yaml)', 'Write(PROJECT_STATE.yaml)', 'Write(PROJECT_STATE_HISTORY.yaml)'
+		'Edit(PROJECT_STATE_HISTORY.yaml)'
 	)
 	$settings = Join-Path $run 'settings.json'
 	@{ permissions = @{ deny = $deny } } | ConvertTo-Json -Depth 4 | Out-File -Encoding ascii $settings
