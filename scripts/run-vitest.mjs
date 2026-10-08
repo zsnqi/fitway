@@ -6,8 +6,7 @@ import path from "node:path";
 import { repositoryFingerprint } from "./repository-fingerprint.mjs";
 
 async function main() {
-	const args = process.argv.slice(2);
-	if (args[0] === "--") args.shift();
+	const args = process.argv.slice(2).filter((argument) => argument !== "--");
 	const before = await repositoryFingerprint();
 	let launchError;
 	let result;

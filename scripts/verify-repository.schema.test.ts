@@ -1,11 +1,24 @@
-import { readFileSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import {
+	copyFileSync,
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
+import { parse as parseYaml } from "yaml";
 import {
 	assertGardenerReport,
 	assertProjectRecordUnion,
 	assertProjectStateInvariants,
+	scopePatterns,
 	verifyGardenerRecord,
 } from "./verify-repository.mjs";
 
@@ -415,6 +428,363 @@ describe("project-state schemas", () => {
 				),
 			).toBe(false);
 		}
+	});
+});
+
+describe("R1: check:repository supersededBy diagnostics before schema errors", () => {
+	it.each([
+		"ledger",
+		"history",
+	])("names the milestone and field in %s", (location) => {
+		const repository = fileURLToPath(new URL("../", import.meta.url));
+		const root = mkdtempSync(
+			path.join(tmpdir(), "fitway-repository-diagnostic-"),
+		);
+		try {
+			const required = [
+				"AGENTS.md",
+				"FITWAY_PRODUCT.md",
+				"SPEC.md",
+				"DESIGN_GUIDE.md",
+				"PHASES.md",
+				"RESEARCH.md",
+				"README.md",
+				"docs/WORKFLOW.md",
+				"docs/POLISH_BACKLOG.md",
+				"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
+			];
+			for (const file of required) {
+				mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
+				writeFileSync(path.join(root, file), "fixture\n");
+			}
+			for (const file of [
+				"docs/schemas/project-state.schema.json",
+				"docs/schemas/project-state-history.schema.json",
+			]) {
+				mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
+				copyFileSync(path.join(repository, file), path.join(root, file));
+			}
+			execFileSync("git", ["init", "-q"], { cwd: root, windowsHide: true });
+			execFileSync(
+				"git",
+				[
+					"-c",
+					"user.name=Fixture",
+					"-c",
+					"user.email=fixture@example.invalid",
+					"-c",
+					"commit.gpgsign=false",
+					"-c",
+					"core.hooksPath=disabled-hooks",
+					"commit",
+					"--allow-empty",
+					"-qm",
+					"fixture",
+				],
+				{ cwd: root, windowsHide: true },
+			);
+			for (const status of ["DONE", "SUPERSEDED"]) {
+				const record =
+					location === "ledger"
+						? activeMilestone({ status: "PLANNED", supersededBy: "successor" })
+						: milestone({ supersededBy: "successor" });
+				if (status === "SUPERSEDED") {
+					record.status = status;
+					record.stopReason = "Carried forward";
+					delete (record as Record<string, unknown>).supersededBy;
+				}
+				writeFileSync(
+					path.join(root, "PROJECT_STATE.yaml"),
+					JSON.stringify(
+						activeState({
+							milestones:
+								location === "ledger" ? { "faulty-milestone": record } : {},
+						}),
+					),
+				);
+				writeFileSync(
+					path.join(root, "PROJECT_STATE_HISTORY.yaml"),
+					JSON.stringify(
+						historyState({
+							milestones:
+								location === "history" ? { "faulty-milestone": record } : {},
+						}),
+					),
+				);
+				const result = spawnSync(
+					process.execPath,
+					[path.join(repository, "scripts/verify-repository.mjs")],
+					{ cwd: root, encoding: "utf8", windowsHide: true },
+				);
+				expect(result.status).toBe(1);
+				expect(result.stderr).toMatch(/faulty-milestone[^\r\n]*supersededBy/);
+			}
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+});
+
+describe("R5: Impeccable discovery uses the running user's home", () => {
+	it.each([
+		".codex",
+		".agents",
+	])("finds the native engine under %s with no override or PATH engine", (folder) => {
+		const repository = fileURLToPath(new URL("../", import.meta.url));
+		const root = mkdtempSync(path.join(tmpdir(), "fitway-design-home-"));
+		try {
+			const binary = path.join(
+				root,
+				folder,
+				"skills/impeccable/scripts/bin",
+				`${process.platform === "win32" ? "windows" : process.platform}-${process.arch}`,
+				process.platform === "win32" ? "impeccable.exe" : "impeccable",
+			);
+			mkdirSync(path.dirname(binary), { recursive: true });
+			// Node answers --version, which proves discovery without requiring a global engine.
+			copyFileSync(process.execPath, binary);
+			const result = spawnSync(
+				process.execPath,
+				[path.join(repository, "scripts/check-design-context.mjs")],
+				{
+					cwd: repository,
+					encoding: "utf8",
+					windowsHide: true,
+					env: {
+						...process.env,
+						HOME: root,
+						USERPROFILE: root,
+						PATH: root,
+						IMPECCABLE_BIN: "",
+					},
+				},
+			);
+			expect(result.stdout).toContain(binary);
+			expect(result.stdout).toContain("check:design-context: Impeccable");
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+	it("lists PATH and both home locations when nothing runs", () => {
+		const repository = fileURLToPath(new URL("../", import.meta.url));
+		const root = mkdtempSync(path.join(tmpdir(), "fitway-design-missing-"));
+		try {
+			const result = spawnSync(
+				process.execPath,
+				[path.join(repository, "scripts/check-design-context.mjs")],
+				{
+					cwd: repository,
+					encoding: "utf8",
+					windowsHide: true,
+					env: {
+						...process.env,
+						HOME: root,
+						USERPROFILE: root,
+						PATH: root,
+						IMPECCABLE_BIN: "",
+					},
+				},
+			);
+			expect(result.status).toBe(1);
+			expect(result.stderr).toContain("`impeccable` on PATH");
+			for (const folder of [".codex", ".agents"])
+				expect(result.stderr).toContain(
+					path.join(root, folder, "skills/impeccable/scripts/bin"),
+				);
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+});
+
+describe("R7: open milestone ownership intersections", () => {
+	function records(
+		left: string,
+		right: string,
+		leases: string[] = [],
+		status = "IN_PROGRESS",
+	) {
+		const worker = (id: string, claim: string) =>
+			activeMilestone({
+				status,
+				branch: id,
+				worktree: `D:/fixture/${id}`,
+				baseCommit: "abc1234",
+				handoff: "fixture.md",
+				ownedPaths: [claim],
+				sharedLeases: id === "first" ? leases : [],
+			});
+		const state = activeState({
+			baseline: {
+				...activeState().baseline,
+				validationRecord: "fixture.md",
+				independentVerification: "fixture.md",
+			},
+			milestones: {
+				first: worker("first", left),
+				second: worker("second", right),
+			},
+		});
+		const history = historyState({
+			milestones: {
+				"baseline-reconciliation-gate": milestone({
+					gates: {
+						unit: "PASS",
+						integration: "PASS",
+						browser: "PASS",
+						accessibility: "PASS",
+						visual: "PASS",
+						independentReview: "PASS",
+					},
+				}),
+			},
+		});
+		return { state, history };
+	}
+	it.each([
+		["scripts/file.ts", "scripts/file.ts", "scripts/file.ts"],
+		["scripts/*.ts", "scripts/check-*.ts", "scripts/check-"],
+		["docs/", "docs/new.md", "docs/new.md"],
+	])("L1: rejects two lease holders for %s and %s", (a, b, witness) => {
+		const { state, history } = records("first/file.ts", "second/file.ts", [a]);
+		state.milestones.second.sharedLeases = [b];
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(
+			/first.*second.*sharedLeases/,
+		);
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(witness);
+	});
+	it("L1: permits one holder on either side and ignores closed leases", () => {
+		for (const holder of ["first", "second"] as const) {
+			const { state, history } = records("scripts/file.ts", "scripts/**");
+			state.milestones[holder].sharedLeases = ["scripts/file.ts"];
+			(history.milestones as Record<string, unknown>).closed = milestone({
+				sharedLeases: ["scripts/**"],
+			});
+			expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+		}
+	});
+	it.each([
+		[
+			"one new document (and its companion) under docs/pointers/; earlier pointers stay unchanged",
+			"docs/pointers/new.md",
+			"docs/pointers/new.md",
+		],
+		[
+			"packages/api/src/access/**, and its tests",
+			"packages/api/src/access/new.ts",
+			"packages/api/src/access/new.ts",
+		],
+		["Edit (SPEC.md), plus docs/new.md;", "SPEC.md", "SPEC.md"],
+		["Edit (SPEC.md), plus docs/new.md;", "docs/new.md", "docs/new.md"],
+	])("L2: finds path tokens in %s", (left, right, witness) => {
+		const { state, history } = records(left, right);
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(witness);
+	});
+	it("L2: rejects an entry with no path and names the milestone and entry", () => {
+		const entry = "one new policy document and its tests";
+		const { state, history } = records(entry, "second/file.ts");
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(
+			/first.*ownedPaths.*no repository path/,
+		);
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(entry);
+		state.milestones.first.ownedPaths = ["first/file.ts"];
+		state.milestones.first.sharedLeases = [entry];
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(
+			/first.*sharedLeases.*no repository path/,
+		);
+	});
+	it("L2: extracts only whitespace-separated path tokens before colon-space", () => {
+		const { state, history } = records(
+			"future/my file.md",
+			"future/my other.md",
+		);
+		expect(() => assertProjectRecordUnion(state, history)).toThrow("future/my");
+		expect(
+			scopePatterns([
+				"packages/api/src/access/** and its tests",
+				"future/my file.md",
+				"one pointer (and its companion) under docs/pointers/; no other claim",
+				"scripts/a.mjs and scripts/b.test.ts: ignore docs/other.md",
+			]),
+		).toEqual([
+			"packages/api/src/access/**",
+			"future/my",
+			"file.md",
+			"docs/pointers/**",
+			"scripts/a.mjs",
+			"scripts/b.test.ts",
+		]);
+	});
+	it("L2: ignores paths after the first colon-space and prose words", () => {
+		const { state, history } = records(
+			"first/file.ts and its tests: docs/shared.md and second/file.ts",
+			"second/file.ts",
+		);
+		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+	});
+	it.each([
+		["future/my-file.md", "future/*.md", "future/my-file.md"],
+		["future/./my.md", "future/my.md", "future/my.md"],
+		["future/sub/../my.md", "future/my.md", "future/my.md"],
+		["scripts/new.mjs", "scripts/new.mjs", "scripts/new.mjs"],
+		["SPEC.md: one authorized line", "SPEC.md", "SPEC.md"],
+		["scripts/**", "scripts/new.mjs", "scripts/new.mjs"],
+		["scripts/*.mjs", "scripts/check-*.mjs", "scripts/check-"],
+		["new/**/tests/*.ts", "new/features/**", "new/features/"],
+		["scripts/check-?.mjs", "scripts/check-[a-c].mjs", "scripts/check-"],
+		["docs/{api,ui}/**", "docs/ui/*.md", "docs/ui/"],
+	])("rejects overlapping %s and %s with both ids and a witness", (left, right, witness) => {
+		const { state, history } = records(left, right);
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(
+			/first.*second|second.*first/,
+		);
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(witness);
+	});
+	it("also compares PLANNED claims", () => {
+		const { state, history } = records("new/file.ts", "new/**", [], "PLANNED");
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(
+			/first.*second|second.*first/,
+		);
+	});
+	it.each([
+		["scripts/*.mjs", "scripts/deep/file.mjs"],
+		["docs/api/**", "docs/ui/**"],
+		["scripts/a?.mjs", "scripts/b*.mjs"],
+		["future/my-file.md", "future/my-other.md"],
+	])("accepts disjoint %s and %s", (left, right) => {
+		const { state, history } = records(left, right);
+		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+	});
+	it("permits only leased shared paths, not unrelated leases or a single leased witness", () => {
+		for (const leases of [["scripts/file.ts"], ["scripts/**"]]) {
+			const { state, history } = records(
+				"scripts/file.ts",
+				"scripts/**",
+				leases,
+			);
+			expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+		}
+		for (const leases of [["unrelated.ts"], ["scripts/file.ts"]]) {
+			const { state, history } = records("scripts/**", "scripts/**", leases);
+			expect(() => assertProjectRecordUnion(state, history)).toThrow(
+				/first.*second|second.*first/,
+			);
+		}
+	});
+	it("ignores closed history claims and accepts the brief's ledger", () => {
+		const { state, history } = records("scripts/a.mjs", "scripts/b.mjs");
+		(history.milestones as Record<string, unknown>).closed = milestone({
+			ownedPaths: ["scripts/**"],
+		});
+		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+		const read = (name: string) =>
+			parseYaml(readFileSync(new URL(`../${name}`, import.meta.url), "utf8"));
+		expect(() =>
+			assertProjectRecordUnion(
+				read("PROJECT_STATE.yaml"),
+				read("PROJECT_STATE_HISTORY.yaml"),
+			),
+		).not.toThrow();
 	});
 });
 

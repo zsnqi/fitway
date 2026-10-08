@@ -20,6 +20,7 @@ import {
 	checkAgentContext,
 	formatAgentContextResult,
 	formatAgentContextWarnings,
+	TASK_CLASSES,
 } from "./check-agent-context.mjs";
 import {
 	formatPacketAuthorities,
@@ -48,6 +49,30 @@ const FIXTURE_BASE_COMMIT = "19e28f4f0874d96569bc6944e38ad94b89924b60";
 const FIXTURE_HANDOFF =
 	"docs/phase-records/handoffs/coordinator/20260920-182500-agent-context-architecture-migration-r01-m8-closure.md";
 const fixtureRoots: string[] = [];
+
+it("R3: exposes exactly the task classes used by packets and no startup mode", () => {
+	expect(TASK_CLASSES).toEqual([
+		"backend-api-data",
+		"ui-maintenance",
+		"visual-authority-change",
+		"repository-infrastructure",
+	]);
+	const registry = parseYaml(
+		readFileSync(
+			path.join(REAL_ROOT, "docs/agent-context/ROUTES.yaml"),
+			"utf8",
+		),
+	);
+	expect(Object.keys(registry.routes)).toEqual(TASK_CLASSES);
+	expect(registry).not.toHaveProperty("mode");
+	const schema = JSON.parse(
+		readFileSync(
+			path.join(REAL_ROOT, "docs/schemas/task-packet.schema.json"),
+			"utf8",
+		),
+	);
+	expect(schema.$defs.taskClass.enum).toEqual(TASK_CLASSES);
+});
 
 type JsonObject = Record<string, unknown>;
 type FixtureMilestone = JsonObject & {
@@ -115,19 +140,6 @@ function makeFixture(): string {
 	const root = mkdtempSync(path.join(tmpdir(), "fitway-agent-context-"));
 	fixtureRoots.push(root);
 	for (const relativePath of CONTEXT_FILES) copyFixtureFile(root, relativePath);
-	// The checker mechanics suite keeps the legacy compatibility route explicit; active-mode
-	// enforcement is covered by the real-repository and dedicated active-fixture tests below.
-	const fixtureRoutesPath = path.resolve(
-		root,
-		"docs/agent-context/ROUTES.yaml",
-	);
-	const fixtureRoutesText = readFileSync(fixtureRoutesPath, "utf8");
-	expect(fixtureRoutesText).toContain("mode: active");
-	writeFileSync(
-		fixtureRoutesPath,
-		fixtureRoutesText.replace("mode: active", "mode: compatibility"),
-		"utf8",
-	);
 	const registry = parseYaml(
 		readFileSync(
 			path.resolve(REAL_ROOT, "docs/agent-context/ROUTES.yaml"),
@@ -153,6 +165,8 @@ function makeFixture(): string {
 		),
 	);
 	copyFixtureFile(root, activeHandoffPath());
+	const f = basePacket(root);
+	materializePacket(root, f.state, f.packet, f.packetPath);
 	return root;
 }
 
@@ -570,6 +584,20 @@ afterEach(() => {
 });
 
 describe("check-agent-context", () => {
+	it.each([
+		"unknown-task",
+		"analysis-review",
+	])("L3: names a bad packet taskClass %s on one line", async (taskClass) => {
+		const root = makeFixture();
+		const { state, packet, packetPath } = basePacket(root);
+		packet.taskClass = taskClass;
+		materializePacket(root, state, packet, packetPath);
+		const result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(false);
+		expect(result.errors).toContain(
+			`${packetPath}: taskClass ${JSON.stringify(taskClass)} has no route`,
+		);
+	});
 	it("isolates fixture active state to the milestones under test", () => {
 		const root = makeFixture();
 		const state = parseYaml(
@@ -578,12 +606,12 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current active-mode registry with its live frontier and closed archived packets", async () => {
+	it("passes the current registry with its live frontier and closed archived packets", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
 		});
-		expect(result.registry?.mode).toBe("active");
+		expect(result.registry).not.toHaveProperty("mode");
 		const liveState = parseYaml(
 			readFileSync(path.resolve(REAL_ROOT, "PROJECT_STATE.yaml"), "utf8"),
 		);
@@ -638,20 +666,16 @@ describe("check-agent-context", () => {
 		).toBe(true);
 	});
 
-	it("blocks an open milestone with no packet once routing is active", async () => {
+	it("blocks an open milestone with no packet", async () => {
 		const root = makeFixture();
 		isolateFixtureHistory(root);
-		replaceOnce(
-			root,
-			"docs/agent-context/ROUTES.yaml",
-			"mode: compatibility",
-			"mode: active",
-		);
+
 		const fixture = basePacket(root);
 		const milestone = fixture.state.milestones[fixture.packet.milestoneId];
 		delete milestone.taskClass;
 		delete milestone.taskPacket;
 		delete milestone.taskPacketSha256;
+		rmSync(path.join(root, fixture.packetPath));
 		writeFixtureState(root, fixture.state);
 		const result = await checkAgentContext({ root, checkTracked: false });
 		expect(result.ok).toBe(false);
@@ -709,6 +733,7 @@ describe("check-agent-context", () => {
 		missingMilestone.taskPacket = missing.packetPath;
 		missingMilestone.taskPacketSha256 = "a".repeat(64);
 		writeFixtureState(root, missing.state);
+		rmSync(path.join(root, missing.packetPath));
 
 		let result = await checkAgentContext({ root, checkTracked: false });
 		expect(result.ok).toBe(false);
@@ -745,7 +770,7 @@ describe("check-agent-context", () => {
 		).toBe(true);
 	});
 
-	it("fails a case-mismatched required source even in compatibility mode", async () => {
+	it("fails a case-mismatched required source with mandatory packet routing", async () => {
 		const root = makeFixture();
 		replaceOnce(
 			root,
@@ -765,8 +790,8 @@ describe("check-agent-context", () => {
 		replaceOnce(
 			root,
 			"docs/agent-context/ROUTES.yaml",
-			"Product and success truth",
-			"Product and success truth drifted",
+			"Surface boundaries",
+			"Surface boundaries drifted",
 		);
 		const result = await checkAgentContext({ root, checkTracked: false });
 		expect(result.ok).toBe(false);
@@ -903,7 +928,18 @@ describe("check-agent-context", () => {
 
 	it("rejects arbitrary historical supplements even when history is a registered role", async () => {
 		const root = makeFixture();
-		const { state, packet, packetPath } = basePacket(root, "analysis-review");
+		const routesPath = path.join(root, "docs/agent-context/ROUTES.yaml");
+		const registry = parseYaml(readFileSync(routesPath, "utf8"));
+		registry.routes["backend-api-data"].conditional.push({
+			trigger: "a named predecessor is disputed",
+			role: "historical",
+			path: "PROJECT_STATE_HISTORY.yaml",
+			selector: { kind: "yaml-key", value: "milestones" },
+			actionIfTriggered: "READ",
+			reason: "Named predecessor only.",
+		});
+		writeFileSync(routesPath, stringifyYaml(registry), "utf8");
+		const { state, packet, packetPath } = basePacket(root, "backend-api-data");
 		packet.authorities.required.push({
 			role: "historical",
 			path: "docs/phase-records/phase-10-aggregate.md",
@@ -1026,7 +1062,7 @@ describe("check-agent-context", () => {
 		isolateFixtureHistory(root);
 		const f = basePacket(root);
 		materializePacket(root, f.state, f.packet, f.packetPath);
-		f.state.milestones[f.packet.milestoneId].taskClass = "analysis-review";
+		f.state.milestones[f.packet.milestoneId].taskClass = "backend-api-data";
 		f.state.milestones[f.packet.milestoneId].taskPacketSha256 =
 			"old unused pin";
 		f.state.milestones[f.packet.milestoneId].leaseExpiresAt =
@@ -1037,7 +1073,7 @@ describe("check-agent-context", () => {
 		materializePacket(root, f.state, f.packet, f.packetPath, {
 			recordHash: false,
 		});
-		f.state.milestones[f.packet.milestoneId].taskClass = "analysis-review";
+		f.state.milestones[f.packet.milestoneId].taskClass = "backend-api-data";
 		writeFixtureState(root, f.state);
 		expect(
 			(await checkAgentContext({ root, checkTracked: false })).errors,

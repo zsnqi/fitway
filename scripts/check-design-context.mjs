@@ -11,11 +11,12 @@
 //
 // This check is deliberately not part of `verify:fast`: it depends on a
 // locally installed Impeccable engine, which the verification ladder must not
-// require. It never prints environment values; IMPECCABLE_BIN only selects
+// require. It reports searched executable paths; IMPECCABLE_BIN only selects
 // the engine.
 
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
+import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,9 +24,6 @@ const repositoryRoot = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
 	"..",
 );
-
-const installedWindowsEngine =
-	"C:\\Users\\Pc Force\\.codex\\skills\\impeccable\\scripts\\bin\\windows-x64\\impeccable.exe";
 
 const resolutionTargets = [
 	{
@@ -92,10 +90,20 @@ function engineCandidates() {
 		});
 	}
 	candidates.push({ command: "impeccable", label: "`impeccable` on PATH" });
-	if (process.platform === "win32") {
+	for (const folder of [".codex", ".agents"]) {
+		const command = path.join(
+			homedir(),
+			folder,
+			"skills",
+			"impeccable",
+			"scripts",
+			"bin",
+			`${process.platform === "win32" ? "windows" : process.platform}-${process.arch}`,
+			process.platform === "win32" ? "impeccable.exe" : "impeccable",
+		);
 		candidates.push({
-			command: installedWindowsEngine,
-			label: "installed win32 helper",
+			command,
+			label: command,
 		});
 	}
 	return candidates;

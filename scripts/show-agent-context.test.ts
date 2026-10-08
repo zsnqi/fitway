@@ -52,7 +52,6 @@ type FixtureOptions = {
 	milestoneStatus?: string;
 	packetStatus?: string;
 	metadataFields?: PacketMetadataField[];
-	registryMode?: string;
 	editPacket?: (packet: Packet) => void;
 	editMilestone?: (milestone: Milestone) => void;
 	omitPacket?: boolean;
@@ -151,7 +150,6 @@ function createFixture(options: FixtureOptions = {}) {
 		ROUTES_PATH,
 		stringifyYaml({
 			schemaVersion: 1,
-			mode: options.registryMode ?? "compatibility",
 			routes: {
 				"backend-api-data": {
 					responsibility: "Review the bounded backend contract.",
@@ -231,7 +229,7 @@ describe("context:show bounded packet discovery", () => {
 	it("M2/M3: prints each fact from its home and ignores old copies and pin", async () => {
 		const { root, milestone } = createFixture({
 			editMilestone: (milestone) => {
-				milestone.taskClass = "analysis-review";
+				milestone.taskClass = "repository-infrastructure";
 				milestone.taskPacketSha256 = "ignored";
 			},
 			editPacket: (packet) => {
@@ -261,7 +259,6 @@ describe("context:show bounded packet discovery", () => {
 	});
 	it("M3: requires only a packet pointer in the ledger for active routing", async () => {
 		const { root } = createFixture({
-			registryMode: "active",
 			metadataFields: ["taskPacket"],
 		});
 		expect(
@@ -270,22 +267,6 @@ describe("context:show bounded packet discovery", () => {
 				milestoneId: MILESTONE_ID,
 			}),
 		).toContain("taskClass: backend-api-data");
-	});
-	it("keeps compatibility discovery explicit without inferring a ledger task class", async () => {
-		const { root } = createFixture({ metadataFields: [] });
-		expect(
-			await buildAgentContextPlan({
-				repositoryRoot: root,
-				milestoneId: MILESTONE_ID,
-			}),
-		).toContain("compatibility note:");
-		const absent = createFixture({ metadataFields: [], omitPacket: true });
-		expect(
-			await buildAgentContextPlan({
-				repositoryRoot: absent.root,
-				milestoneId: MILESTONE_ID,
-			}),
-		).toContain(`packet: ${PACKET_PATH} (absent)`);
 	});
 	it("rejects packet identity, state reference and an unregistered packet task class", async () => {
 		for (const [editPacket, expected] of [
@@ -334,7 +315,6 @@ describe("context:show bounded packet discovery", () => {
 
 	it("fails closed when active routing has no packet metadata", async () => {
 		const active = createFixture({
-			registryMode: "active",
 			metadataFields: [],
 		});
 		await expectBuildToFail(
@@ -343,7 +323,6 @@ describe("context:show bounded packet discovery", () => {
 		);
 
 		const activeOmit = createFixture({
-			registryMode: "active",
 			metadataFields: [],
 			omitPacket: true,
 		});
@@ -353,16 +332,8 @@ describe("context:show bounded packet discovery", () => {
 		);
 	});
 
-	it("rejects an unknown startup routing mode", async () => {
-		const unknown = createFixture({ registryMode: "legacy" });
-		await expectBuildToFail(
-			unknown.root,
-			/ROUTES\.yaml mode must be "compatibility" or "active"/,
-		);
-	});
-
-	it("fails closed on packet inspection errors in compatibility mode", async () => {
-		const { root } = createFixture({ metadataFields: [], omitPacket: true });
+	it("fails closed on packet inspection errors", async () => {
+		const { root } = createFixture({ omitPacket: true });
 		const failingInspectPath = async (
 			repositoryRoot: string,
 			relativePath: string,

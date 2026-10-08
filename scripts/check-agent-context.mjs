@@ -34,13 +34,9 @@ export const TERMINAL_STATUSES = new Set([
 	"SUPERSEDED",
 ]);
 export const TASK_CLASSES = [
-	"analysis-review",
 	"backend-api-data",
 	"ui-maintenance",
 	"visual-authority-change",
-	"verification-independent",
-	"resume-integration",
-	"historical-audit",
 	"repository-infrastructure",
 ];
 
@@ -895,7 +891,6 @@ async function validatePackets({
 	registry,
 	checkTracked,
 	errors,
-	warnings,
 }) {
 	await validateActiveHandoffs({ root, state, checkTracked, errors });
 	let packetPaths;
@@ -942,6 +937,16 @@ async function validatePackets({
 			errors.push(`${packetPath}: YAML parse failed: ${asError(error)}`);
 			continue;
 		}
+		if (
+			packet &&
+			Object.hasOwn(packet, "taskClass") &&
+			!TASK_CLASSES.includes(packet.taskClass)
+		) {
+			errors.push(
+				`${packetPath}: taskClass ${JSON.stringify(packet.taskClass)} has no route`,
+			);
+			continue;
+		}
 		if (!validate(packet)) {
 			errors.push(schemaErrors(packetPath, validate.errors));
 			continue;
@@ -978,14 +983,9 @@ async function validatePackets({
 					`${milestoneId}: active packet metadata points to no packet: ${packetPath}`,
 				);
 			else if (OPEN_STATUSES.has(milestone.status)) {
-				if (registry.mode === "active")
-					errors.push(
-						`${milestoneId}: active routing requires exactly one validated packet for an open milestone`,
-					);
-				else
-					warnings.push(
-						`${milestoneId}: no active task packet; compatibility mode skips packet validation`,
-					);
+				errors.push(
+					`${milestoneId}: active routing requires exactly one validated packet for an open milestone`,
+				);
 			}
 		}
 	}
@@ -1088,7 +1088,6 @@ export async function checkAgentContext({
 			registry,
 			checkTracked,
 			errors,
-			warnings,
 		});
 	if (milestoneId && state && !state.milestones?.[milestoneId])
 		errors.push(
@@ -1117,7 +1116,7 @@ export function formatAgentContextResult(result, options = {}) {
 	const lines = formatAgentContextWarnings(result, options);
 	if (result.ok) {
 		lines.push(
-			`check-agent-context passed: ${Object.keys(result.registry?.routes ?? {}).length} task classes; startup routing mode: ${result.registry?.mode ?? "unknown"}.`,
+			`check-agent-context passed: ${Object.keys(result.registry?.routes ?? {}).length} task classes.`,
 		);
 	} else {
 		lines.push("check-agent-context FAILED:");
