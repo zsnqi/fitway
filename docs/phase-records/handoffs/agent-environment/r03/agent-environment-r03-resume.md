@@ -3,7 +3,7 @@
 
 - **As of:** codex/owner-redesign-r04, 2026-10-08 18:25 +03:00 (step 4 done: four rounds and one repair graded and
   merged)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-19,
+- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-20,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -72,7 +72,8 @@
    closing review and the milestone's closure. The Owner screens resume after.
 ## Waiting on the user
 
-Nothing.
+- The discussion of DECISIONS item 20 continues on Friday 2026-10-09 (its open points). The agreed next work is the
+  Owner CSS round on the build (Owner resume point, Next steps 6), not started: the user asked to continue tomorrow.
 
 ## Known risks
 

@@ -145,3 +145,37 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       an unknown `check:*` script, the local date, a `$root` taken from the skill's own location, landed briefs left
       out of the survey's next-brief checks; and for verify-fitway, keyboard as an input, `aria-haspopup` openers, a
       stale-recipe command that repairs, and shorter output. W2's CSS-only opener stays a recipe entry.
+20. **Direction after the environment phase (the user and the coordinator, discussion of 2026-10-08).** Sources: the
+    user's points; Lauren Tan's (@poteto) talk, her two pstack guides and Matt Pocock's live stream with her
+    (digests `D:/fitway-temp/verification-discussion-20261007/REPORT-1-talk-and-skills.md` and
+    `D:/fitway-temp/agent-env-vision-research/REPORT.md`). Nothing below is built yet.
+    - **Agreed.** The user's role is the environment and the decisions, not reading code. The order of work is the
+      demo for the gym owner first (a contract, then funding); no refactor of the product code before then. The
+      concept is the reference production will copy, so its quality counts now; the product code's own checks come
+      at the move to production.
+    - **Agreed.** No further investment in process tooling (records, briefs, routes); rules are cut after evidence
+      shows which ones are used, through the gardener's "rules without need" class. Size of rules or records is not
+      an achievement; an agent that must read dozens of files for a small change is a cost.
+    - **Agreed.** A held-out row that proved useful becomes a permanent test, so grading costs fall over time. One
+      findings list: each side finding a grade reports becomes a line with a status, which the gardener counts.
+    - **Agreed.** Two levels: continuous checks run on every push and block known violations; the periodic gardener
+      surveys what a direct check cannot see and proposes, never editing architecture by itself. A finding class
+      that reaches zero gets its check into the fast ladder (first: `check:concept-css` after the Owner CSS round).
+    - **Agreed.** The gardener gains a code-health section, report only: giant files, boundary breaks, type escapes
+      (`any`, forced casts), repeated workarounds, with their trend, and one proposed improvement per pass; the
+      concept now, the product at the move to production.
+    - **Agreed, at the move to production:** checks that make product mistakes impossible (the web app imports no
+      server or database code; no per-visitor column; "live" only when fresh; `apps/web` as strict as the base
+      TypeScript config), the full ladder with the database and browser suites on a schedule, and the list of
+      one-way doors that always go to the user.
+    - **Agreed principles for any status page:** each value shows its source and age; old reads grey, unknown reads
+      unknown, nothing is green by default; "the agent says" is marked apart from "independently verified"; a
+      permanent blind-spots section; a check is shown with the proof that it fails on a planted defect; no single
+      health score, a short list of what needs the user instead; generated from repository data, never written by
+      hand; audited against reality by an independent agent from time to time.
+    - **Open, for the next discussion:** when the first generated status page is built (the user said both "later,
+      at the move to production" and "now, if it is simple and cheap"); how to measure that the environment improves
+      (the user's measures: fewer attempts per feature, fewer defects reaching the final grade, fewer interventions
+      per round, a fresh agent productive without a long explanation, fewer regressions), which needs a structured
+      one-line-per-round record; and giving each agent the least correct and sufficient context (delegated briefs
+      already name two or three sources; the coordinator's startup reads far more).
