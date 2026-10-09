@@ -523,3 +523,27 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Also found:** prose tokens such as "and/or" or "v1.2" before `: ` would be claimed (none in the ledger today); a
   second, cascaded line in the task-class failure; the checks still stop at the first fault.
 - **Failure cause:** none.
+
+## Replay baseline (agent-environment-r03 step 4, DECISIONS item 23): ten Owner rounds on the environment of `af13c16f`
+
+- **Set-up:** each round reran on Codex (`gpt-6.1-sol`, its original level; nav rounds at high) in a clone holding
+  only its base's history, with agent-environment-r03's owned paths from `af13c16f` laid over it and its original
+  brief edited only mechanically; three-rounds-fix replaces nav-3, whose inputs are gone. Method, clones and every
+  edit: `D:/fitway-grader/replay/README.md`; grades: `D:/fitway-grader/replay/<task>/GRADE.md`, one Sonnet grader
+  per task on the original held-out rows, blind to the original grades. One run per task.
+- **Held-out rows:** 72 of 82 pass, 7 partial, 3 fail (`rounds.tsv`, lines `replay:*`). The originals scored 69 of
+  83 with other graders, mostly Opus, and fix-1 counted H8 then: indicative only. By task (replay / original):
+  card-1 9/9 / 8/9, fix-2 9/11 / 9/11, nav-4 8/8 / 8/8, nav-1 6/7 / 5/7, three-rounds-fix 7/8 / 7/8, nav-5 7/7 / 6/7,
+  motion-lows 7/8 / 8/8, d3-d8 5/8 / 5/8, fix-3 8/8 / 6/8, fix-1 6/8 / 7/9.
+- **Start load:** 24.7K-27.3K input tokens in Codex's first request (`start-load.json`, all ten).
+- **Codex's self-grade against the graders:** wrong both ways. PASS on outcomes met by hiding the defect (d3-d8's
+  `overflow-x:hidden`, a value left to spill), on Arabic turned into `?` (motion-lows), on a ring tap broken at its
+  centre (fix-2), on a probe never run on the real pages (nav-4); literal FAILs that were existing design or capture
+  noise (fix-3, three-rounds-fix). The graders, not the self-grades, are the measure.
+- **Interventions:** five runs stopped at a Codex account's usage limit and resumed on their threads (fix-3,
+  three-rounds-fix, motion-lows, d3-d8, fix-1); one stale preview stopped with the user's yes.
+- **Contamination:** no command in any run read `D:/fitway-grader` or an original round's run folder; d3-d8 read a
+  tracked resume point that quotes its held-out path, as the original could.
+- **Also found:** F093-F099 (`findings.tsv`); F095-F098 are environment faults, fixed next (item 23, "No rush").
+- **Use:** after a material change to Codex's environment, rebuild the clones with `prepare.mjs` (`REPLAY_MAIN` set
+  to the new main) and rerun; compare by task, with N and one sample per task in mind.

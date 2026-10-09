@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-09 19:10 +03:00 (DECISIONS item 21's steps 1-3 done; the retro's fixes
-  committed, the last with `af13c16f`; step 4's replay: nine of ten graded, fix-1 running on Codex)
+- **As of:** codex/owner-redesign-r04, 2026-10-09 23:30 +03:00 (DECISIONS item 21's steps 1-4 done: the replay
+  baseline is the last entry of the environment `codex-rounds.md`)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-23,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -27,17 +27,15 @@
 
 ## Running now
 
-- The replay set (step 4; DECISIONS item 23): method, clones and every brief edit in `D:/fitway-grader/replay/README.md`.
-  Nine graded (`rounds.tsv` lines `replay:*`); fix-1 (xhigh) resumed on its thread after a usage limit.
 - The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (first run 2026-10-09),
   `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener (detached at
   `origin/main`; each pass starts branch `gardener/<date>`), ending with a Windows notification.
 
 ## Next steps
 
-1. Finish step 4: grade fix-1 as the other nine (`D:/fitway-grader/replay/grader-brief.mjs`), add its `rounds.tsv`
-   line, then the baseline's entry in the environment `codex-rounds.md`. Then F095-F099 (DECISIONS item 23, "No
-   rush"), then the Owner screens with steps 6 and 7 on them.
+1. F095-F098 in `findings.tsv` (DECISIONS item 23, "No rush"), small enough to one-shot and grade after; F099's class
+   (an outcome met by hiding the defect) becomes a held-out row in each later round. Then the Owner screens with
+   steps 6 and 7 on them.
 2. In the first new session: `pnpm start-load -- --since 2026-10-09T19:15+03:00` measures the coordinator's start from this
    file alone (step 5's first reading) and each Opus definition at its first launch (step 2's real figure).
 3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
