@@ -64,8 +64,9 @@ latest wording; never copy an entry into a resume point.
   failure, adds the launch note when the brief's own commit sits on the HEAD it names (Codex rightly
   stops on a HEAD it was not told about), and starts `codex exec --approve-for-me` in Codex's sandbox
   with automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7),
-  keeping the events and the last message in a run folder outside the repository. The harness reports
-  the exit; nothing polls.
+  keeping the events and the last message in a run folder outside the repository, with `start-load.json`:
+  the input tokens of Codex's first request, read from its session file, which is the round's start load.
+  The harness reports the exit; nothing polls.
 - A run that stopped mid-change (the app exited, or a limit was reached) resumes on its thread instead
   of being reset: `pnpm codex:round resume <run folder> --message "<one line on what happened>"`;
   without a message, resume sends the brief again.

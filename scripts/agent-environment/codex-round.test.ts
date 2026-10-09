@@ -130,10 +130,13 @@ process.stdin.on('end', () => {
 	}
 	const capture = path.join(root, "capture.json");
 	const run = path.join(root, "run");
+	// Never read the machine's own Codex sessions.
+	const codexHome = path.join(root, "codex-home");
 	const env = {
 		...process.env,
 		PATH: `${bin}${path.delimiter}${process.env.PATH}`,
 		ROUND_CAPTURE: capture,
+		CODEX_HOME: codexHome,
 	};
 	const invoke = (
 		args = [brief, "high", "--run", run],
@@ -166,11 +169,48 @@ process.stdin.on('end', () => {
 		bin,
 		capture,
 		run,
+		codexHome,
 		env,
 		invoke,
 		captured,
 		laterHead,
 	};
+}
+
+function tokenCount(input: number | null, total = input) {
+	return JSON.stringify({
+		type: "event_msg",
+		payload: {
+			type: "token_count",
+			info:
+				input === null
+					? null
+					: {
+							total_token_usage: {
+								input_tokens: total,
+								cached_input_tokens: 0,
+							},
+							last_token_usage: {
+								input_tokens: input,
+								cached_input_tokens: 7296,
+							},
+						},
+		},
+	});
+}
+
+function session(
+	f: ReturnType<typeof fixture>,
+	threadId: string,
+	lines: string[],
+	day = "2026/10/09",
+) {
+	const folder = path.join(f.codexHome, "sessions", ...day.split("/"));
+	mkdirSync(folder, { recursive: true });
+	writeFileSync(
+		path.join(folder, `rollout-2026-10-09T10-00-00-${threadId}.jsonl`),
+		`${lines.join("\n")}\n`,
+	);
 }
 
 function expectedArgs(
@@ -358,6 +398,72 @@ describe("L2 resume", () => {
 		);
 		refused(f, f.invoke(["resume", f.run]), "first event has no thread id");
 		expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(false);
+	});
+});
+
+describe("L5 start load", () => {
+	const record = (f: ReturnType<typeof fixture>) =>
+		JSON.parse(readFileSync(path.join(f.run, "start-load.json"), "utf8"));
+	it("records the thread's first counted request, never a later one or another thread's", async () => {
+		const f = fixture();
+		session(f, "other-thread", [tokenCount(99999)]);
+		session(
+			f,
+			thread,
+			[
+				'{"type":"session_meta","payload":{}}',
+				"not json",
+				tokenCount(null),
+				tokenCount(27063),
+				tokenCount(32109, 59172),
+			],
+			"2026/10/08",
+		);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(result.stdout).toContain(
+			"Start load: 27063 input tokens in the first request",
+		);
+		const saved = record(f);
+		expect(saved).toMatchObject({
+			thread,
+			input_tokens: 27063,
+			cached_input_tokens: 7296,
+		});
+		expect(
+			await samePath(
+				saved.session,
+				path.join(
+					f.codexHome,
+					"sessions/2026/10/08",
+					`rollout-2026-10-09T10-00-00-${thread}.jsonl`,
+				),
+			),
+		).toBe(true);
+	});
+	it("records nothing and keeps Codex's exit code without a session or a count", () => {
+		const f = fixture();
+		const result = f.invoke(undefined, { ROUND_EXIT: "37" });
+		expect(result.status, result.output).toBe(37);
+		expect(result.stdout).toContain(
+			`Start load: no session file for thread ${thread}`,
+		);
+		expect(existsSync(path.join(f.run, "start-load.json"))).toBe(false);
+		session(f, thread, [tokenCount(null)]);
+		const resumed = f.invoke(["resume", f.run]);
+		expect(resumed.status, resumed.output).toBe(0);
+		expect(resumed.stdout).toContain("Start load: no token count in");
+		expect(existsSync(path.join(f.run, "start-load.json"))).toBe(false);
+	});
+	it("fills a missing record on resume and never replaces one", () => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		session(f, thread, [tokenCount(27063)]);
+		expect(f.invoke(["resume", f.run]).status).toBe(0);
+		expect(record(f).input_tokens).toBe(27063);
+		session(f, thread, [tokenCount(11111)]);
+		expect(f.invoke(["resume", f.run]).status).toBe(0);
+		expect(record(f).input_tokens).toBe(27063);
 	});
 });
 

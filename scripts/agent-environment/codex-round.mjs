@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { constants } from "node:fs";
+import { constants, createReadStream } from "node:fs";
 import {
 	access,
 	mkdir,
@@ -11,7 +11,7 @@ import {
 	stat,
 	writeFile,
 } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import path from "node:path";
 import { createInterface } from "node:readline";
 import { finished } from "node:stream/promises";
@@ -32,7 +32,9 @@ Levels: medium, high, xhigh (WORKING_AGREEMENTS.md, Delegation).
 Relative brief and run paths start at the repository root, in either shell.
 Default run folder: ${process.platform === "win32" ? "D:/fitway-temp" : tmpdir()}/codex-round-<id>.
 Resume allows unfinished changes, keeps each event stream, and updates last-message.md.
---message sends the exact text instead of the saved launch input.`;
+--message sends the exact text instead of the saved launch input.
+After a run, start-load.json records the thread's first request (input tokens) from
+Codex's session file under CODEX_HOME (default ~/.codex), unless the folder has one.`;
 
 function resolvePath(value) {
 	return path.resolve(repositoryRoot, value.replaceAll("\\", "/"));
@@ -292,6 +294,67 @@ async function capture(run, resume) {
 	}
 }
 
+// The exec stream reports only the turn's total; Codex's session file has each
+// request, and the first one is what the run carried before reading anything.
+async function recordStartLoad(run, thread) {
+	const target = path.join(run, "start-load.json");
+	try {
+		await stat(target);
+		return;
+	} catch (error) {
+		if (error.code !== "ENOENT") throw error;
+	}
+	const sessions = path.join(
+		process.env.CODEX_HOME || path.join(homedir(), ".codex"),
+		"sessions",
+	);
+	let names = [];
+	try {
+		names = await readdir(sessions, { recursive: true });
+	} catch (error) {
+		if (error.code !== "ENOENT") throw error;
+	}
+	const name = names.find((entry) => {
+		const base = path.basename(entry);
+		return base.startsWith("rollout-") && base.endsWith(`-${thread}.jsonl`);
+	});
+	if (!name) {
+		console.log(`Start load: no session file for thread ${thread}`);
+		return;
+	}
+	const session = path.join(sessions, name);
+	const input = createReadStream(session);
+	try {
+		for await (const line of createInterface({ input })) {
+			let usage;
+			try {
+				const event = JSON.parse(line);
+				if (event.type === "event_msg" && event.payload?.type === "token_count")
+					usage = event.payload.info?.last_token_usage;
+			} catch {
+				continue;
+			}
+			if (!Number.isInteger(usage?.input_tokens)) continue;
+			const record = {
+				thread,
+				session,
+				input_tokens: usage.input_tokens,
+				cached_input_tokens: usage.cached_input_tokens ?? null,
+			};
+			await writeFile(target, `${JSON.stringify(record, null, 2)}\n`, {
+				flag: "wx",
+			});
+			console.log(
+				`Start load: ${usage.input_tokens} input tokens in the first request`,
+			);
+			return;
+		}
+	} finally {
+		input.destroy();
+	}
+	console.log(`Start load: no token count in ${session}`);
+}
+
 async function execute(options, prepared) {
 	const output = await capture(options.run, options.resume);
 	const { metadata, input, executable, thread } = prepared;
@@ -313,6 +376,7 @@ async function execute(options, prepared) {
 	console.log(`Run folder: ${options.run}`);
 	const stream = output.file.createWriteStream();
 	const child = startCodex(executable, args, metadata.worktree);
+	let started = thread;
 	let reported = false;
 	const lines = createInterface({ input: child.stdout });
 	lines.on("line", (line) => {
@@ -324,6 +388,7 @@ async function execute(options, prepared) {
 				typeof event.thread_id === "string"
 			) {
 				console.log(`Thread id: ${event.thread_id}`);
+				started ??= event.thread_id;
 				reported = true;
 			}
 		} catch {
@@ -341,15 +406,21 @@ async function execute(options, prepared) {
 		);
 	});
 	child.stdin.end(input);
+	let code;
 	try {
-		const [code] = await Promise.all([completion, finished(stream)]);
-		return code;
+		[code] = await Promise.all([completion, finished(stream)]);
 	} finally {
 		if (child.exitCode === null) child.kill();
 		lines.close();
 		stream.destroy();
 		await output.file.close();
 	}
+	// A missing measurement never changes the run's exit code.
+	if (started && /^[\w-]+$/.test(started))
+		await recordStartLoad(options.run, started).catch((error) =>
+			console.error(`codex-round: start load not recorded: ${error.message}`),
+		);
+	return code;
 }
 
 export async function main(args = process.argv.slice(2)) {
