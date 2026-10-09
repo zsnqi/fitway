@@ -56,6 +56,9 @@
 
 - The 2026-10-09 pass's cleanup script must not run: its list holds `reports-phone` (F104). The user was told the
   other three unclear folders are empty or one old log; a corrected script follows F104's fix.
+- The user agreed (2026-10-10) to move their Windows TEMP and TMP from `D:\fitway-temp` to `D:\Temp`, so other
+  programs' temp folders leave FITWAY's; the user runs `setx` (system settings stay the user's). After it takes
+  effect, check that FITWAY's scripts still write under `D:/fitway-temp` and update the drive-C memory.
 - Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
   agreed Owner CSS round (Owner resume point, Next steps 6) waits for that step, whose trial writes its brief.
 
