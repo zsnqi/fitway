@@ -32,12 +32,3 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Fast verification ladder
         run: pnpm verify:fast
-        env:
-          DATABASE_URL: postgresql://unit_test:unit_test@127.0.0.1:1/fitway_unit_placeholder
-          BETTER_AUTH_SECRET: fitway_unit_placeholder_auth_secret_32_chars
-          CRON_SECRET: fitway_unit_placeholder_cron_secret_32_chars
-          TELEGRAM_BOT_TOKEN: fitway_unit_placeholder_bot_token
-          TELEGRAM_CHAT_ID: fitway_unit_placeholder_chat_id
-          BETTER_AUTH_URL: http://127.0.0.1:9/api/auth
-          CORS_ORIGIN: http://127.0.0.1:9
-          NODE_ENV: test

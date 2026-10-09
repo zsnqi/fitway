@@ -94,18 +94,11 @@ runs; the user gets the new script.
    `CORS_ORIGIN=http://127.0.0.1`) is enough: `tests/integration/setup.ts` loads it after
    `apps/server/.env`, and shell values still win.
 
-   The ignored `apps/server/.env` does not by itself reach the unit test process in every shell.
-   `pnpm verify:fast` additionally requires process-local synthetic NON-SECRET values for every key
-   declared in `packages/env/src/server.ts`. Recorded runs use exactly these non-secret
-   placeholders:
-   `DATABASE_URL=postgresql://unit_test:unit_test@127.0.0.1:1/fitway_unit_placeholder`
-   (valid but non-routable), `BETTER_AUTH_SECRET` and `CRON_SECRET` at 32+ non-secret characters,
-   `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` non-secret placeholders,
-   `BETTER_AUTH_URL=http://127.0.0.1:9/api/auth`, `CORS_ORIGIN=http://127.0.0.1:9`, and
-   `NODE_ENV=test`. CI sets the same values in `.github/workflows/checks.yml`. A
-   `pnpm verify:fast` failure in `apps/server/src/cron.test.ts` or
-   `apps/server/src/reference-gating.test.ts` caused by missing those values is an
-   environment-provisioning gap, not a candidate defect, and consumes no repair budget. Real
+   The ignored `apps/server/.env` does not reach the unit test process. `pnpm verify:fast` gives
+   its unit step non-secret placeholders for every key declared in `packages/env/src/server.ts`
+   (`UNIT_TEST_ENV` in `scripts/verify.mjs`, the single source locally and in CI; the database URL
+   is valid but non-routable). A bare `pnpm test` lacks them, and then fails in
+   `apps/server/src/cron.test.ts` and `apps/server/src/reference-gating.test.ts`. Real
    credentials, production databases, and `.env` contents are never exported into a unit process
    or written into any record.
 

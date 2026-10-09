@@ -9,7 +9,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
-import { gitFixture } from "./fixtures";
+import { git, gitFixture } from "./fixtures";
 import {
 	MAX_RESUME_POINT_BYTES,
 	RESUME_POINT_MARKER,
@@ -306,6 +306,25 @@ describe("O5: marked active resume point validation", () => {
 		writeFileSync(path.join(root, "LICENSE"), "License.\n");
 		await expect(
 			validate(root, `${valid}\n\`docs/input file.md\` \`LICENSE\`\n`),
+		).resolves.toBe(true);
+	});
+	it("rejects a git-ignored file present on disk, and accepts a tracked file in an ignored folder", async () => {
+		const root = fixture();
+		gitFixture(root);
+		writeFileSync(path.join(root, ".gitignore"), ".env\nconfig/\n");
+		mkdirSync(path.join(root, "server"));
+		writeFileSync(path.join(root, "server/.env"), "SECRET=placeholder\n");
+		mkdirSync(path.join(root, "config"));
+		writeFileSync(path.join(root, "config/agent.md"), "Agent.\n");
+		git(root, "add", "-f", ".gitignore", "config/agent.md");
+		git(root, "commit", "-m", "tracked file in an ignored folder");
+		await expect(
+			validate(root, `${valid}\n- Local: \`server/.env\`\n`),
+		).rejects.toThrow(
+			/git-ignored path, present on this disk and absent in CI: server\/\.env/,
+		);
+		await expect(
+			validate(root, `${valid}\n- Tracked: \`config/agent.md\`\n`),
 		).resolves.toBe(true);
 	});
 	it("skips bare mentions, temp paths, placeholders, commands and hashes", async () => {

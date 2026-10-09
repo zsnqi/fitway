@@ -316,7 +316,20 @@ function parseArguments() {
 	return { mode, phase };
 }
 
-async function runStep(label, args) {
+// The unit step's server configuration, the same locally and in CI: placeholders that reach no service.
+const UNIT_TEST_ENV = {
+	DATABASE_URL:
+		"postgresql://unit_test:unit_test@127.0.0.1:1/fitway_unit_placeholder",
+	BETTER_AUTH_SECRET: "fitway_unit_placeholder_auth_secret_32_chars",
+	CRON_SECRET: "fitway_unit_placeholder_cron_secret_32_chars",
+	TELEGRAM_BOT_TOKEN: "fitway_unit_placeholder_bot_token",
+	TELEGRAM_CHAT_ID: "fitway_unit_placeholder_chat_id",
+	BETTER_AUTH_URL: "http://127.0.0.1:9/api/auth",
+	CORS_ORIGIN: "http://127.0.0.1:9",
+	NODE_ENV: "test",
+};
+
+async function runStep(label, args, env = {}) {
 	console.log(`\n==> ${label}`);
 	const started = performance.now();
 	await new Promise((resolve, reject) => {
@@ -328,7 +341,7 @@ async function runStep(label, args) {
 			process.platform === "win32" ? ["/d", "/s", "/c", "pnpm", ...args] : args;
 		const child = spawn(command, commandArgs, {
 			cwd: process.cwd(),
-			env: process.env,
+			env: { ...process.env, ...env },
 			stdio: "inherit",
 			windowsHide: true,
 		});
@@ -363,7 +376,7 @@ function fastSteps() {
 			["exec", "node", "scripts/check-owner-tokens.mjs"],
 		],
 		["Type checks", ["check-types"]],
-		["Unit tests", ["test"]],
+		["Unit tests", ["test"], UNIT_TEST_ENV],
 		["Python simulator tests", ["test:simulator"]],
 	];
 }
@@ -411,7 +424,7 @@ async function main() {
 
 	let failure;
 	try {
-		for (const [label, args] of steps) await runStep(label, args);
+		for (const [label, args, env] of steps) await runStep(label, args, env);
 	} catch (error) {
 		failure = error;
 	}

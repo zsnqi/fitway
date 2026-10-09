@@ -62,7 +62,8 @@ Each definition sets one model and a default effort level, and the coordinator p
 
 Every definition names its tools, so none loads the session's connectors (DECISIONS item 21 in
 `docs/phase-records/handoffs/agent-environment/DECISIONS.md`). The five Opus definitions work through files, shells
-and skills, not the Browser pane, and a tool one of them reports missing goes back on its list.
+and skills, not the Browser pane, and a tool one of them reports missing goes back on its list. An edit to a
+definition takes effect in a new session; try a change mid-session under a new, temporary name.
 
 The Agent tool's `effort` (Claude Code 2.1.292 and later) overrides a definition's level for one call. Pass it
 only in these cases:

@@ -167,6 +167,7 @@
 					"uniqueItems": true
 				},
 				"validationRepairAttempts": {
+					"description": "Focused repairs the milestone's latest validation failure took (AGENTS.md: at most two; a third recurrence is FAILED_VALIDATION). It counts per failure, not across the milestone: a new failure counts again from its own first repair.",
 					"type": "integer",
 					"minimum": 0,
 					"maximum": 2
