@@ -282,3 +282,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       replay found (F095-F099: the fast ladder's fixed ports, a preview left running, a misleading cleanup message,
       Arabic turned into `?` by a Windows PowerShell 5.1 pipe, outcomes met by hiding the defect), then the Owner
       screens; steps 6 and 7 are tried on them (the CSS round's brief; the Settings designer brief), not run apart.
+24. **The gardener's weight (the user agreed, 2026-10-10).** Lauren Tan's gardener weeds out anti-patterns before
+    agents copy them (delete debt, enforce the paved path, a lint rule for each bad pattern); ours spends most of its
+    pass on temp folders, branches and worktrees, and both harmful proposals of 2026-10-09/10 came from that part
+    (F100, F104). The phase's closing review moves its weight to the concept's code health and repeated anti-patterns
+    (item 20's code-health section) and keeps cleanup to what a check makes safe. The user's Windows TEMP and TMP
+    moved from `D:\fitway-temp` to `D:\Temp` the same night, so other programs' temp folders leave FITWAY's.

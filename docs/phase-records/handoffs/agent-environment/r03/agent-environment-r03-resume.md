@@ -48,17 +48,18 @@
    (brief `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`, a standing brief the gardener lists
    as open).
 5. Remove the remaining disposable worktrees (grade-r6, grade-r7-u1a, grade-r7-u1b, grade-r8-g, grade-r8-u1a,
-   grade-r8-u1b, grade-r8b-u, grade-r15; the merged round worktrees agent-environment-r03-verify, -gardener and
-   -css), the eval-b89 clones and the replay clones (`prepare.mjs` rebuilds them); unlink every junction first.
-   Then item 21's steps 5-7, the closing review and the milestone's closure. The Owner screens resume after.
+   grade-r8-u1b, grade-r8b-u; the merged round worktrees agent-environment-r03-verify, -gardener and -css), the
+   eval-b89 clones and the replay clones (`prepare.mjs` rebuilds them); unlink every junction first. Then item 21's
+   steps 5-7, the closing review (it moves the gardener's weight to code health, item 24) and the milestone's
+   closure. The Owner screens resume after.
+6. The user moved their Windows TEMP and TMP to `D:\Temp` on 2026-10-10 (the coordinator created the folder; it takes
+   effect after the next restart, item 24). Then check that FITWAY's scripts still write under `D:/fitway-temp` and
+   update the drive-C memory.
 
 ## Waiting on the user
 
 - The 2026-10-09 pass's cleanup script must not run: its list holds `reports-phone` (F104). The user was told the
   other three unclear folders are empty or one old log; a corrected script follows F104's fix.
-- The user agreed (2026-10-10) to move their Windows TEMP and TMP from `D:\fitway-temp` to `D:\Temp`, so other
-  programs' temp folders leave FITWAY's; the user runs `setx` (system settings stay the user's). After it takes
-  effect, check that FITWAY's scripts still write under `D:/fitway-temp` and update the drive-C memory.
 - Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
   agreed Owner CSS round (Owner resume point, Next steps 6) waits for that step, whose trial writes its brief.
 
