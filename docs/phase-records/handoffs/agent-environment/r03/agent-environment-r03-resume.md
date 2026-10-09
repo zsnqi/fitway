@@ -98,8 +98,10 @@
   Resources" until the user said yes in chat (2026-10-08); ask the user in plain words when it refuses again.
 - The gardener's cleanup script deletes nothing until round 8; never run a generated script before the user reviews
   its list.
-- This worktree has no `apps/server/.env`, so `pnpm verify:fast` fails locally on `cron.test.ts` and
-  `reference-gating.test.ts` (`DATABASE_URL`) while CI passes; the steps before unit tests and the simulator pass.
+- `pnpm verify:fast` fails locally on the server's cron and reference-gating tests unless the shell carries the eight
+  placeholder variables CI sets (`.github/workflows/checks.yml`, the ladder step's `env`); with them, all 96 unit
+  files pass (2026-10-09). The resume-point path check accepts a git-ignored file present on disk, which CI lacks: a
+  path that passes locally can fail in CI.
 
 ## Pointers
 
