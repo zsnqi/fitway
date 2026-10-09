@@ -27,32 +27,17 @@
 
 ## Running now
 
-- The replay set (step 4; DECISIONS item 23, its set-up bullet): ten clones `D:/Projects/fitway-worktrees/replay-<task>`
-  built by `D:/fitway-grader/replay/prepare.mjs`, whose README holds the method, the slots and every brief edit. Run
-  folders `D:/fitway-temp/codex-runs/replay-<task>`. Nine are graded (`rounds.tsv` lines `replay:*`; reports
-  `D:/fitway-grader/replay/<task>/GRADE.md`). The last, **fix-1** (xhigh, port 3177), launched 17:23 from the previous
-  session's background shell; it **stopped at the account's usage limit** (`turn.failed`, about 19:20) with 10
-  uncommitted files and its preview still serving port 3177 (F096). It resumes on its thread after the user switches
-  accounts (`last-message.md` appears in its run folder when a run ends normally):
-  `node D:/Projects/fitway-worktrees/replay-fix-1/scripts/agent-environment/codex-round.mjs resume D:/fitway-temp/codex-runs/replay-fix-1 --message "<one line>"`.
-  Its preview on 3177 may outlive it (F096): stop it with the CLI's `cleanup --session <its preview folder>` (the
-  folder, not `session.json`; F097) only after the user says yes.
+- The replay set (step 4; DECISIONS item 23): method, clones and every brief edit in `D:/fitway-grader/replay/README.md`.
+  Nine graded (`rounds.tsv` lines `replay:*`); fix-1 (xhigh) resumed on its thread after a usage limit.
 - The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (first run 2026-10-09),
   `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener (detached at
   `origin/main`; each pass starts branch `gardener/<date>`), ending with a Windows notification.
 
 ## Next steps
 
-1. Finish step 4. When fix-1 ends: check its diff, `git status`, and that no command in its events reads
-   `D:/fitway-grader` or `D:/fitway-temp/codex-runs/owner-*` (a path only quoted inside a tracked file it read is the
-   original's exposure too); its full report may be the longest `agent_message`, not `last-message.md`. Fill its
-   grader brief (`node D:/fitway-grader/replay/grader-brief.mjs fix-1 3183`), grade it with a `sonnet-researcher`
-   told to read that brief, save `fix-1/GRADE.md`, and add `replay:fix-1` to `rounds.tsv` (start load from
-   `start-load.json`; a resume after a limit is one intervention). Then write the baseline's entry in the environment
-   `codex-rounds.md` from the ten lines. Already seen: Codex's start load 24.7-27.3K; its self-grade disagreed with
-   the graders both ways (PASS on hidden or broken outcomes in d3-d8, motion-lows, fix-2, nav-4; literal FAILs that
-   were existing design or capture noise in fix-3, three-rounds-fix); four runs stopped on usage limits; no run read
-   a held-out file. Then F095-F099 (DECISIONS item 23, "No rush"), then the Owner screens with steps 6 and 7 on them.
+1. Finish step 4: grade fix-1 as the other nine (`D:/fitway-grader/replay/grader-brief.mjs`), add its `rounds.tsv`
+   line, then the baseline's entry in the environment `codex-rounds.md`. Then F095-F099 (DECISIONS item 23, "No
+   rush"), then the Owner screens with steps 6 and 7 on them.
 2. In the first new session: `pnpm start-load -- --since 2026-10-09T19:15+03:00` measures the coordinator's start from this
    file alone (step 5's first reading) and each Opus definition at its first launch (step 2's real figure).
 3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
@@ -69,9 +54,6 @@
 
 ## Waiting on the user
 
-- GitHub Actions starts no job since 2026-10-09 evening: "recent account payments have failed or your spending limit
-  needs to be increased" (the user's billing settings). Pushes still land; main stays at `3419a136` until a green CI
-  run on the branch head lets it fast-forward. Recheck with `gh run list --branch codex/owner-redesign-r04 --limit 3`.
 - Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
   agreed Owner CSS round (Owner resume point, Next steps 6) waits for that step, whose trial writes its brief.
 
