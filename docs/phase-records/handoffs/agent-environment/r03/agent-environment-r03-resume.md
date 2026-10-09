@@ -43,8 +43,8 @@
    resume a stopped run on its thread. Grade each finished run with a `sonnet-researcher` from
    `D:/fitway-grader/replay/GRADER.md` (ports 3183-3184), save its report as `<task>/GRADE.md`, and add the line
    `replay:<task>` to `rounds.tsv` (start load from the run's `start-load.json`) and its side findings to
-   `findings.tsv`. When all ten are graded, an environment `codex-rounds.md` entry gives the baseline. Only then, F095:
-   the verify-fitway CLI test binds 3176-3177, so `pnpm verify:fast` fails beside any round's preview.
+   `findings.tsv`. When all ten are graded, an environment `codex-rounds.md` entry gives the baseline. Then the faults
+   the replay found (DECISIONS item 23, "No rush"): F095-F099. After them the Owner screens, with steps 6 and 7 on them.
 2. In the first new session: `pnpm start-load -- --since 2026-10-10` measures the coordinator's start from this
    file alone (step 5's first reading) and each Opus definition at its first launch (step 2's real figure).
 3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its

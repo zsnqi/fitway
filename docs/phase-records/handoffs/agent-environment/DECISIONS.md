@@ -278,3 +278,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       files in `D:/fitway-scratch/` no longer exist. Brief edits are mechanical (the clone's path, output folders,
       ports for two runs at once, a decisions snapshot, and citations today's `brief:check` reads as repository
       paths); the method and every edit are in `D:/fitway-grader/replay/README.md` and its `prepare.mjs`.
+    - **No rush (the user, 2026-10-09; no demo date is set).** After the baseline come the environment faults the
+      replay found (F095-F099: the fast ladder's fixed ports, a preview left running, a misleading cleanup message,
+      Arabic turned into `?` by a Windows PowerShell 5.1 pipe, outcomes met by hiding the defect), then the Owner
+      screens; steps 6 and 7 are tried on them (the CSS round's brief; the Settings designer brief), not run apart.
