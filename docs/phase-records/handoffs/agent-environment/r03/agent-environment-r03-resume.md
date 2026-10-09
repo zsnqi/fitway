@@ -69,7 +69,10 @@
 
 ## Waiting on the user
 
-- Nothing. Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
+- GitHub Actions starts no job since 2026-10-09 evening: "recent account payments have failed or your spending limit
+  needs to be increased" (the user's billing settings). Pushes still land; main stays at `3419a136` until a green CI
+  run on the branch head lets it fast-forward. Recheck with `gh run list --branch codex/owner-redesign-r04 --limit 3`.
+- Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
   agreed Owner CSS round (Owner resume point, Next steps 6) waits for that step, whose trial writes its brief.
 
 ## Known risks
