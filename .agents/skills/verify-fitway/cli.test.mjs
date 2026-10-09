@@ -648,7 +648,9 @@ test("JS-assigned aria-haspopup is discovered on native elements without ids", (
 
 test("IPv6 listener refusal names :: and leaves its owner running", async () => {
 	const server = createServer((_, res) => res.end("foreign IPv6"));
-	await new Promise((done) => server.listen(3177, "::", done));
+	await new Promise((done) => server.listen(0, "::", done));
+	const port = server.address().port;
+	assert.ok(port >= 49152);
 	try {
 		const cli = fileURLToPath(new URL("./cli.mjs", import.meta.url));
 		const result = spawnSync(
@@ -658,8 +660,8 @@ test("IPv6 listener refusal names :: and leaves its owner running", async () => 
 				"launch",
 				"--concept",
 				concept,
-				"--port",
-				"3177",
+				"--isolated-port",
+				String(port),
 				"--out",
 				resolve(scratch, "ipv6-refusal"),
 			],
@@ -667,7 +669,8 @@ test("IPv6 listener refusal names :: and leaves its owner running", async () => 
 		);
 		assert.equal(result.status, 1);
 		if (process.platform === "win32") assert.match(result.stderr, /:: pid=/);
-		assert.equal((await fetchRaw(3177, "/")).body.toString(), "foreign IPv6");
+		assert.ok(result.stderr.includes(`Port ${port}`), result.stderr);
+		assert.equal((await fetchRaw(port, "/")).body.toString(), "foreign IPv6");
 	} finally {
 		await new Promise((done) => server.close(done));
 	}
@@ -793,19 +796,31 @@ function fetchRaw(port, path, method = "GET") {
 }
 test("foreign wildcard port is refused; launch never passes; cleanup after refusal retains the foreign server", async () => {
 	const server = createServer((_, res) => res.end("foreign wildcard"));
-	await new Promise((done) => server.listen(3177, "0.0.0.0", done));
+	await new Promise((done) => server.listen(0, "0.0.0.0", done));
+	const port = server.address().port;
+	assert.ok(port >= 49152);
 	const cli = fileURLToPath(new URL("./cli.mjs", import.meta.url));
 	const folder = resolve(scratch, "refused-launch");
 	try {
-		await assert.rejects(portAvailable(3177), /did not start/);
+		await assert.rejects(portAvailable(port), /did not start/);
 		const result = spawnSync(
 			process.execPath,
-			[cli, "launch", "--concept", concept, "--port", "3177", "--out", folder],
+			[
+				cli,
+				"launch",
+				"--concept",
+				concept,
+				"--isolated-port",
+				String(port),
+				"--out",
+				folder,
+			],
 			{ encoding: "utf8", windowsHide: true },
 		);
 		assert.equal(result.status, 1);
 		assert.doesNotMatch(result.stdout, /LAUNCH PASS/);
 		assert.match(result.stderr, /did not start/);
+		assert.ok(result.stderr.includes(`Port ${port}`), result.stderr);
 		const cleanup = spawnSync(
 			process.execPath,
 			[cli, "cleanup", "--session", folder],
@@ -814,13 +829,13 @@ test("foreign wildcard port is refused; launch never passes; cleanup after refus
 		assert.equal(cleanup.status, 0);
 		assert.match(cleanup.stdout, /CLEANUP PASS: no owned preview started/);
 		assert.equal(
-			(await fetchRaw(3177, "/")).body.toString(),
+			(await fetchRaw(port, "/")).body.toString(),
 			"foreign wildcard",
 		);
 	} finally {
 		await new Promise((done) => server.close(done));
 	}
-	await portAvailable(3177);
+	await portAvailable(port);
 });
 test("preview no-store covers every response class, HEAD/query and containment; only owned resources close", async () => {
 	for (const name of ["style.css", "font.woff2", "image.png", "data.json"])
@@ -828,7 +843,7 @@ test("preview no-store covers every response class, HEAD/query and containment; 
 	const outside = resolve(scratch, "outside.txt");
 	await writeFile(outside, "SECRET OUTSIDE");
 	await symlink(outside, resolve(concept, "escape.txt"));
-	const server = await preview({ concept, port: 3177 });
+	const server = await preview({ concept, port: 0 });
 	try {
 		for (const path of [
 			"/",
@@ -850,14 +865,17 @@ test("preview no-store covers every response class, HEAD/query and containment; 
 				if (method === "HEAD") assert.equal(result.body.length, 0);
 			}
 		await assert.rejects(
-			preview({ concept, port: 3177 }),
+			preview({ concept, port: server.port }),
 			/held by a process|busy/,
 		);
-		assert.equal((await fetchRaw(3177, "/__verify/stop", "POST")).status, 403);
+		assert.equal(
+			(await fetchRaw(server.port, "/__verify/stop", "POST")).status,
+			403,
+		);
 	} finally {
 		await server.close();
 	}
-	await portAvailable(3177);
+	await portAvailable(server.port);
 });
 test("output refuses git worktrees, junction aliases and escaping paths before writes", async () => {
 	const tree = resolve(scratch, "tree");
@@ -1212,4 +1230,199 @@ test("V6: Tab evidence names the move and focus destination; Enter names activat
 		entry.focusSteps.map((step) => step.key),
 		["Tab", "Enter"],
 	);
+});
+
+async function isolatedPort() {
+	const server = createServer();
+	await new Promise((done) => server.listen(0, "127.0.0.1", done));
+	const port = server.address().port;
+	await new Promise((done) => server.close(done));
+	assert.ok(port >= 49152, `Kernel allocated unsafe test port ${port}`);
+	return port;
+}
+
+async function launched(name, idle = 1500) {
+	const folder = resolve(scratch, name);
+	const result = runCli([
+		"launch",
+		"--concept",
+		concept,
+		"--isolated-port",
+		String(await isolatedPort()),
+		"--idle-timeout-ms",
+		String(idle),
+		"--out",
+		folder,
+	]);
+	assert.equal(result.status, 0, result.stderr);
+	const session = JSON.parse(
+		await readFile(resolve(folder, "session.json"), "utf8"),
+	);
+	return { folder, session };
+}
+
+async function waitForExit(session) {
+	const deadline = Date.now() + 5000;
+	while (true) {
+		try {
+			process.kill(session.pid, 0);
+		} catch (error) {
+			if (error.code === "ESRCH") break;
+			throw error;
+		}
+		assert.ok(
+			Date.now() < deadline,
+			`Preview pid ${session.pid} did not exit after idle timeout`,
+		);
+		await new Promise((done) => setTimeout(done, 50));
+	}
+	await portAvailable(session.port);
+}
+
+test("W1: port options keep other previews excluded, and help names isolation and idle bounds", () => {
+	for (const command of ["launch", "doctor", "drive", "compare"]) {
+		for (const port of [
+			0,
+			3174,
+			3175,
+			...Array.from({ length: 8 }, (_, i) => 3178 + i),
+			49152,
+		]) {
+			const result = runCli([
+				command,
+				"--concept",
+				concept,
+				"--baseline",
+				concept,
+				"--port",
+				String(port),
+			]);
+			assert.equal(result.status, 1);
+			assert.match(result.stderr, /choose 3176 or 3177/);
+		}
+	}
+	for (const port of [0, 3174, 3176, 3177, 3185, 49151, 65536]) {
+		const result = runCli([
+			"launch",
+			"--concept",
+			concept,
+			"--isolated-port",
+			String(port),
+		]);
+		assert.equal(result.status, 1);
+		assert.match(result.stderr, /49152-65535/);
+	}
+	const both = runCli([
+		"launch",
+		"--concept",
+		concept,
+		"--port",
+		"3180",
+		"--isolated-port",
+		"49152",
+	]);
+	assert.match(both.stderr, /choose 3176 or 3177/);
+	for (const idle of ["0", "-1", "1800001", "NaN"]) {
+		const result = runCli([
+			"launch",
+			"--concept",
+			concept,
+			"--idle-timeout-ms",
+			idle,
+		]);
+		assert.equal(result.status, 1);
+		assert.match(result.stderr, /at most 30 minutes/);
+	}
+	const help = runCli(["help"]);
+	assert.match(help.stdout, /--isolated-port.*49152-65535/);
+	assert.match(help.stdout, /30 minutes without a request/);
+});
+
+test("W2: detached idle preview exits, frees its port, cleans idempotently and sessions require relaunch", async () => {
+	const { folder, session } = await launched("idle-expiry");
+	try {
+		await waitForExit(session);
+		for (const command of ["doctor", "drive"]) {
+			const result = runCli([
+				command,
+				"--concept",
+				concept,
+				"--session",
+				folder,
+				"--out",
+				resolve(scratch, `expired-${command}`),
+			]);
+			assert.equal(result.status, 1);
+			assert.match(result.stderr, /Session preview.*stopped or is unreachable/);
+			assert.match(result.stderr, /FIX: .* launch .*--concept/);
+		}
+		const cleaned = runCli(["cleanup", "--session", folder]);
+		assert.equal(cleaned.status, 0, cleaned.stderr);
+		assert.match(cleaned.stdout, /CLEANUP PASS: .*already stopped/);
+	} finally {
+		runCli(["cleanup", "--session", folder]);
+	}
+});
+
+test("W2: requests renew the idle bound, then the detached preview leaves no process", async () => {
+	const { folder, session } = await launched("idle-renewal");
+	try {
+		const until = Date.now() + 3500;
+		while (Date.now() < until) {
+			assert.equal((await fetchRaw(session.port, "/index.html")).status, 200);
+			await new Promise((done) => setTimeout(done, 400));
+		}
+		assert.equal((await fetchRaw(session.port, "/index.html")).status, 200);
+		process.kill(session.pid, 0);
+		await waitForExit(session);
+	} finally {
+		runCli(["cleanup", "--session", folder]);
+	}
+});
+
+test("W3: cleanup accepts a session file and verifies stopped records", async () => {
+	const { folder, session } = await launched("cleanup-file", 10000);
+	try {
+		const path = resolve(folder, "session.json");
+		await writeFile(path, JSON.stringify({ ...session, stopped: true }));
+		const cleaned = runCli(["cleanup", "--session", path]);
+		assert.equal(cleaned.status, 0, cleaned.stderr);
+		assert.match(cleaned.stdout, /CLEANUP PASS: .* stopped;/);
+		await portAvailable(session.port);
+		const again = runCli(["cleanup", "--session", folder]);
+		assert.equal(again.status, 0, again.stderr);
+		assert.match(again.stdout, /already stopped/);
+	} finally {
+		await writeFile(resolve(folder, "session.json"), JSON.stringify(session));
+		runCli(["cleanup", "--session", folder]);
+	}
+});
+
+test("W3: cleanup rejects nonexistent paths by name", () => {
+	const missing = resolve(scratch, "nonexistent-session");
+	const result = runCli(["cleanup", "--session", missing]);
+	assert.equal(result.status, 1);
+	assert.ok(result.stderr.includes(missing));
+	assert.doesNotMatch(result.stdout, /PASS/);
+});
+
+test("W3: cleanup never stops a preview with a different session token", async () => {
+	const { folder, session } = await launched("cleanup-identity", 10000);
+	try {
+		const impostor = resolve(scratch, "impostor");
+		await mkdir(impostor);
+		await writeFile(
+			resolve(impostor, "session.json"),
+			JSON.stringify({ ...session, token: "wrong" }),
+		);
+		const result = runCli(["cleanup", "--session", impostor]);
+		assert.equal(result.status, 1);
+		assert.doesNotMatch(result.stdout, /PASS/);
+		assert.match(result.stderr, /not owned by this session/);
+		assert.equal((await fetchRaw(session.port, "/index.html")).status, 200);
+	} finally {
+		const cleaned = runCli(["cleanup", "--session", folder]);
+		assert.equal(cleaned.status, 0, cleaned.stderr);
+	}
+	await portAvailable(session.port);
 });

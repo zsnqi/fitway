@@ -64,8 +64,14 @@ Python/numpy/Pillow. Missing machine-level tools block browser verification in c
 
 ## Launch and drive
 
-Only **3176 and 3177** are accepted. 3174 and 3178-3185 belong to other previews. A listener on any address is busy;
+`--port` accepts only **3176 and 3177**. 3174 and 3178-3185 belong to other previews. A listener on any address is busy;
 never stop its owner. A run without `--session` starts and closes its own preview. Explicit launch is optional:
+
+Every preview stops after **30 minutes without a request** and frees its port; requests renew that timeout.
+An expired session needs a fresh launch before doctor or drive can use it. Cleanup accepts the launch folder
+or its `session.json` file and reports an expired preview as already stopped. A nonexistent path fails.
+For isolated lifecycle tests, `launch --isolated-port <49152-65535>` uses a separate high port;
+`--port` still accepts only 3176 or 3177. `--idle-timeout-ms <1-1800000>` shortens the idle bound for tests.
 
 ```powershell
 node $cli launch --concept $concept --port 3176 --out "$run/launch"

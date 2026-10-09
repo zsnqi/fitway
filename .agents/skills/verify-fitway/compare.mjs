@@ -67,7 +67,6 @@ export async function compare(options, { doctor, child }) {
 		verificationPort(options.port || 3176),
 		verificationPort(options["baseline-port"] || 3177),
 	];
-	for (const port of ports) await portAvailable(port);
 	if (options.session)
 		throw new Error("compare owns its previews; omit --session.");
 	if (!options.baseline)
@@ -87,6 +86,7 @@ export async function compare(options, { doctor, child }) {
 		tools: "diff",
 		quiet: true,
 	});
+	for (const port of ports) await portAvailable(port);
 	const pages =
 		options.page === "all"
 			? build.map.pages.map((p) => p.page)
