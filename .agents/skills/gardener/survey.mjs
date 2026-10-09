@@ -12,6 +12,7 @@ import {
 	classifyBranches,
 	classifyFolders,
 	classifyWorktrees,
+	config,
 	deadPaths,
 	deletionTarget,
 	duplicateRules,
@@ -483,12 +484,17 @@ export async function runChecks(
 		tempRoot = defaultTempRoot,
 		briefs = [],
 		capture = captureCheck,
+		notRunChecks = config.notRunChecks ?? {},
 	} = {},
 ) {
 	const checks = [];
 	const entries = Object.entries(scripts)
 		.filter(([name]) => name.startsWith("check:"))
 		.map(([name, command]) => ({ name, command, args: [] }));
+	for (const name of Object.keys(notRunChecks)) {
+		if (!entries.some((entry) => entry.name === name))
+			entries.push({ name, command: scripts[name], args: [] });
+	}
 	for (const brief of briefs)
 		entries.push({
 			name: "brief:check",
@@ -496,7 +502,34 @@ export async function runChecks(
 			args: [brief.source],
 			source: brief.source,
 		});
+	let dependencyBlocked = false;
 	for (const entry of entries) {
+		if (Object.hasOwn(notRunChecks, entry.name)) {
+			const reason = notRunChecks[entry.name];
+			if (typeof reason !== "string" || !reason.trim())
+				throw new Error(
+					`Not-run check ${entry.name} requires a reason in config.json`,
+				);
+			const defined = Object.hasOwn(scripts, entry.name);
+			const output = defined
+				? ""
+				: `Configured not-run check ${entry.name} is not defined in package.json`;
+			console.log(
+				`Survey check: ${entry.name}: ${defined ? "not run" : "missing"}; ${reason}${output ? `; ${output}` : ""}`,
+			);
+			checks.push({
+				name: entry.name,
+				command: entry.command,
+				checkout: cwd,
+				notRun: defined,
+				reason,
+				exitCode: null,
+				output,
+				error: defined ? null : "NOT_DEFINED",
+			});
+			continue;
+		}
+		if (dependencyBlocked) continue;
 		console.log(
 			`Survey check: ${entry.name}${entry.source ? ` ${entry.source}` : ""}`,
 		);
@@ -529,9 +562,13 @@ export async function runChecks(
 					result.output,
 				),
 		});
-		if (checks.at(-1).dependencyBlocker) break;
+		dependencyBlocked = checks.at(-1).dependencyBlocker;
 	}
 	return checks;
+}
+
+function checkFailed(check) {
+	return !check.notRun && check.exitCode !== 0;
 }
 
 function validateOutput(out, worktrees, tempRoot) {
@@ -572,7 +609,7 @@ export function formatReport(report) {
 		`Repository unchanged: ${report.repositoryUnchanged}`,
 		`Proposed temp folders: ${report.proposals?.folders.paths.length ?? 0}; unreferenced temp folders include young and unsafe folders.`,
 		"",
-		`Counts: ${report.git?.worktrees.filter((item) => item.missing).length ?? 0} missing registrations; ${report.git?.worktrees.filter((item) => item.mergedClean).length ?? 0} merged clean worktrees; ${report.git?.branches.filter((item) => item.merged && !item.protectedBy.length && item.plain !== "main" && !item.symbolic).length ?? 0} unreferenced merged branches; ${report.folders?.filter((item) => !item.protectedBy.length).length ?? 0} unreferenced temp folders; ${report.gates?.missing.length ?? 0} gate gaps; ${report.gates?.duplicates.length ?? 0} duplicate gates; ${report.checks?.filter((item) => item.exitCode !== 0).length ?? 0} failing/blocked checks; ${report.rules?.duplicates.length ?? 0} duplicate rule lines; ${report.rules?.dead.length ?? 0} dead path mentions.`,
+		`Counts: ${report.git?.worktrees.filter((item) => item.missing).length ?? 0} missing registrations; ${report.git?.worktrees.filter((item) => item.mergedClean).length ?? 0} merged clean worktrees; ${report.git?.branches.filter((item) => item.merged && !item.protectedBy.length && item.plain !== "main" && !item.symbolic).length ?? 0} unreferenced merged branches; ${report.folders?.filter((item) => !item.protectedBy.length).length ?? 0} unreferenced temp folders; ${report.gates?.missing.length ?? 0} gate gaps; ${report.gates?.duplicates.length ?? 0} duplicate gates; ${report.checks?.filter(checkFailed).length ?? 0} failing/blocked checks; ${report.checks?.filter((item) => item.notRun).length ?? 0} not-run checks; ${report.rules?.duplicates.length ?? 0} duplicate rule lines; ${report.rules?.dead.length ?? 0} dead path mentions.`,
 		"",
 	];
 	lines.push("## Worktrees awaiting review", "");
@@ -678,8 +715,13 @@ function powershellQuote(value) {
 
 export function surveyOutcome(report) {
 	return !report.complete ||
-		report.checks.some((item) => item.exitCode !== 0) ||
-		report.gates?.missing.length ||
+		report.checks.some(checkFailed) ||
+		report.gates?.missing.some(
+			(gate) =>
+				!report.checks.some(
+					(check) => check.name === gate.name && check.notRun,
+				),
+		) ||
 		report.gates?.duplicates.length ||
 		report.rules?.duplicates.length ||
 		report.rules?.dead.length ||
@@ -694,7 +736,7 @@ export function surveyOutcome(report) {
 }
 
 export function consoleSummary(report, out) {
-	return `SURVEY ${report.outcome.toUpperCase()}: ${path.join(out, "REPORT.md")} (collection=${report.complete ? "complete" : "blocked"}; ${report.git?.worktrees.filter((item) => item.coordinatorReview).length ?? 0} worktrees await coordinator review; ${report.checks.filter((item) => item.exitCode !== 0).length} failing/blocked checks; repository unchanged=${report.repositoryUnchanged})`;
+	return `SURVEY ${report.outcome.toUpperCase()}: ${path.join(out, "REPORT.md")} (collection=${report.complete ? "complete" : "blocked"}; ${report.git?.worktrees.filter((item) => item.coordinatorReview).length ?? 0} worktrees await coordinator review; ${report.checks.filter(checkFailed).length} failing/blocked checks; ${report.checks.filter((item) => item.notRun).length} not-run checks; repository unchanged=${report.repositoryUnchanged})`;
 }
 
 async function main(args) {
@@ -796,7 +838,7 @@ async function main(args) {
 		before === (await repositoryFingerprint({ cwd: root }));
 	if (!report.repositoryUnchanged)
 		report.errors.push("Repository changed during survey");
-	if (report.checks.some((item) => item.exitCode === null))
+	if (report.checks.some((item) => !item.notRun && item.exitCode === null))
 		report.errors.push("One or more checks could not finish");
 	if (report.folders?.some((item) => item.errors.length))
 		report.errors.push(

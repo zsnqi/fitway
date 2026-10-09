@@ -51,7 +51,10 @@ Read both
 `REPORT.md` and `survey.json` there. The command reads local Git state without
 fetching, follows the ledger's open resume files and packets and their named
 briefs, measures temp folders without traversing junctions, and executes every
-`check:*` in package.json via pnpm, including newly added scripts, plus
+`check:*` in package.json via pnpm, including newly added scripts, except those
+named in `config.json`'s `notRunChecks`. Each exception is reported as not run
+with its coordinator-maintained reason; a name missing from package.json is a
+reported blocker. Every executed nonzero exit remains a failure. The survey also runs
 `brief:check` for running/next briefs without a recorded result in the environment
 round log. A clean worktree with committed implementation beyond its brief's launch
 HEAD is listed as waiting for its round record; an unlaunched or ambiguous brief
