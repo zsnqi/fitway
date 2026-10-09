@@ -575,3 +575,32 @@ held-out checks live outside the repository and never appear here or in a brief.
   test covers doctor or compare refusing a held 3176-3177 (nor did one before).
 - **Failure cause:** none. During round 15 the coordinator's removal of eight grading worktrees emptied
   agent-environment-r03-gardener's `node_modules` through a junction (F100).
+
+## agent-environment-r03 round 15: `r03/briefs/round-15.md`, result `18e18b42` (level high)
+
+- **Set-up:** the brief's commit `452ef2b6` over HEAD `32ac00be`, on branch `agent-environment-r03-gardener`,
+  launched after round 14 finished; from the 2026-10-09 weekly pass's report (its "Correction seen twice" and "Gate
+  gaps" rows). Held-out rows X1-X5 by a Sonnet grader in a disposable worktree at the result with its own installed
+  dependencies, planted scripts and skip entries, and a survey on the base for comparison; the config and the test's
+  real-file read sampled by the coordinator.
+- **Brief rows, as Codex graded them:** 3 of 3 (G1-G3) after one resume; G3 first failed when the coordinator's
+  worktree removal emptied this worktree's `node_modules` (F100), and passed after the reinstall: 37 gardener tests,
+  the ladder, and a survey with `0 failing/blocked checks; 1 not-run checks; repository unchanged=true`.
+- **Held-out rows:** 2 of 4 pass, 2 partial; Codex's self-grade matches on G1-G3 (X5).
+  - X2-X3: the survey reports `check:concept-css` as not run with its reason, which lives only in `config.json`
+    (`notRunChecks`); planted checks exiting 1, or printing a usage line and exiting 2, block; a skip naming an
+    undefined script is reported and blocks; with the skip removed the check runs and fails as before.
+  - X1 partial: the test reads the real `scripts/verify.mjs`, fails with `fb8fd51e`'s hunk reverted and with a call,
+    computed label or template argument planted, and passes with an ordinary or environment-carrying step; the
+    failure says "non-literal step" without naming the step.
+  - X4 partial at grading only: scope, lockfile, 37 tests and the ladder hold; CI had not run on the unpushed result
+    (it runs on the merge).
+- **Survey outcome:** still blocked on the result, as on the base, by findings older than the round: three scripts
+  outside the fast ladder (`deploy:check`, `brief:check`, `check:design-context`), duplicated rule lines, absent-path
+  mentions and temp folders. `check:concept-css` is still counted among the gate gaps but exempt by name from the
+  block.
+- **Also found:** a skip naming an undefined script also marks collection blocked; the report shows not-run checks
+  only in its counts and JSON, with no prose line.
+- **Failure cause:** the brief, for one clause: G3 asked for G1's test to fail on `32ac00be`, which already held the
+  parser repair (B7); Codex reported it and proved G1 by reverting the repair. One intervention: the resume after
+  F100.
