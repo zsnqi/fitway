@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: verify-fitway previews free their ports (agent-environment-r03, round 14)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-verify`, branch `agent-environment-r03-verify`, HEAD `03c96437`
+- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-verify`, branch `agent-environment-r03-verify`, HEAD `7e1ff148`
 - **Milestone:** `agent-environment-r03`. Decisions: `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 15, 23.
 - **Read first, only these:** `docs/phase-records/handoffs/agent-environment/findings.tsv` rows F095-F097;
   `.agents/skills/verify-fitway/SKILL.md` §"Launch and drive", and the scripts beside it.
@@ -40,7 +40,7 @@ another process holds them.
 
 - **W1. The ladder needs 3176-3177 free.** `cli.test.mjs` binds the verification ports itself (`:649-674`,
   `:794-824`, `:825-861`; V3 at `:994-1019` reaches the port check), and the fast ladder runs these tests
-  (`scripts/verify.mjs:372`). On `03c96437`, with another process listening on 127.0.0.1 at 3176 and 3177,
+  (`scripts/verify.mjs:372`). On `7e1ff148`, with another process listening on 127.0.0.1 at 3176 and 3177,
   `pnpm test:verification` fails 4 of 39; with both free it passes 39. Outcome: `pnpm test:verification` and
   `node scripts/verify.mjs fast` pass while another process listens on 3176 and 3177, and every behaviour those four
   tests cover is still exercised in that condition. Limits, each its own outcome: no test binds 3174 or 3178-3185
@@ -57,13 +57,13 @@ another process holds them.
   shorten it. Intent: a preview someone forgot blocks the next round for at most the bound; a preview in use is never
   cut; the SKILL.md flow (launch, then commands with `--session`, then cleanup) still works.
 - **W3. Cleanup passes when it stopped nothing.** `cleanup` looks for `session.json` inside the path it is given
-  (`cli.mjs:418-422`) and prints `CLEANUP PASS: no owned preview started` when it is not there. On `03c96437`, after
+  (`cli.mjs:418-422`) and prints `CLEANUP PASS: no owned preview started` when it is not there. On `7e1ff148`, after
   `launch --port 3176`, both `cleanup --session <out>/session.json` and `cleanup --session <a path that does not
   exist>` print that PASS with 3176 still served. Outcome: `cleanup` prints PASS only when no preview its session
   started is still serving: given the session file it stops that preview or fails naming the folder to give; given a
   path that does not exist it fails naming the path; a launch folder with no session (a refused launch) and a cleaned
   session still pass as now. Intent: PASS means the session's port is free.
-- **W4. Proven.** Outcome: tests for W1-W3, each failing on `03c96437` and passing after, run in the fast ladder;
+- **W4. Proven.** Outcome: tests for W1-W3, each failing on `7e1ff148` and passing after, run in the fast ladder;
   `node scripts/verify.mjs fast` passes on your committed, clean tree, once with 3176-3177 free and once held by a
   process you start; on the build's Eclipse concept, `launch`, `doctor --session`, one `drive --session` and
   `cleanup` pass and the port is free after. Intent: the repairs are shown, not claimed.
