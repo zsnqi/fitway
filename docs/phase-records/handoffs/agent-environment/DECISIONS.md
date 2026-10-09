@@ -258,3 +258,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - The replay set (item 21, step 4) adds two or three product-like tasks run both ways (Codex writes and Claude
       reviews; Claude writes and Codex reviews), graded blind on held-out rows and a code-health rubric. One trial is a
       signal, not a verdict.
+23. **The 2026-10-09 retro and step 4 (the user agreed every point, 2026-10-09).**
+    - The replay set's first Codex baseline runs now, before any change to Codex's environment merges: a gardener
+      branch that touches it merges only after the baseline. The set is ten Owner concept tasks (nav-1, nav-3, nav-5,
+      d3-d8, fix-1, card-1, fix-2, fix-3, and nav-4 and motion-lows at full marks): each starts at its base commit with
+      the current environment (agent-environment-r03's owned paths) laid over it, runs its original brief and is graded
+      on its original held-out rows. Environment rounds stay out: the overlay would carry their own results.
+    - Item 22's product-like tasks wait for the move to production, where two or three tasks with real design are
+      chosen; access-reason-cap-r01 (a 240-character cap) does not test architecture and stays paused.
+    - The retro's fixes: the unit step's placeholder variables come from one source for `pnpm verify:fast` and CI; the
+      resume-point path check accepts only tracked files; the ledger schema says what `validationRepairAttempts`
+      counts; CLAUDE.md says an edited agent definition takes effect in a new session; `codex-round.mjs` records
+      Codex's start load (with step 4).

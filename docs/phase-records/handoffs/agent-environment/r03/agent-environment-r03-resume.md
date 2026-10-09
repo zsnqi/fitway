@@ -1,118 +1,83 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-09 12:55 +03:00 (DECISIONS item 21's steps 1 and 2 done; item 22, who
-  writes the code at the move to production, agreed)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-22,
+- **As of:** codex/owner-redesign-r04, 2026-10-09 13:50 +03:00 (DECISIONS item 21's steps 1-3 done; items 22 and 23,
+  the user's agreements of 2026-10-09, recorded; the retro's fixes committed)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-23,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
-- The audit is saved: `docs/phase-records/handoffs/agent-environment/r03/AUDIT.md` (rounds R1-R5). R1-R3 are done and
-  on main; the machine cleanup is done (about 56 GB freed by the user's scripts). Every round is in
-  `docs/phase-records/handoffs/agent-environment/codex-rounds.md`.
-- R4 is delivered: the verify-fitway skill and CLI (rounds 4 and 6), the Codex launch command (rounds 5 to 5c), the
-  B8 and B9 evaluation. Round 6 graded 7 of 10 held-out rows (3 partial: `aria-haspopup` openers, the doctor's recipe
-  commands, keyboard input). The build's recipe file is committed beside the Eclipse concept on
-  owner-followup-r04-build (`6df156bd`, not pushed: that branch must take main first, Known risks).
-- The gardener (round 7) is merged into agent-environment-r03 and the ledger carries its `gardener` line (first pass
-  2026-10-07, blocked). Graded 5 of 8: two cold agents reached the same result (U1); its cleanup script fails on
-  Windows quoting and so deletes nothing (U5); "merged" is judged against a stale local `main` (U2). Rounds 8 and 8b
-  repaired it (9 of 11, then 8 of 9 held-out rows and one cold pass whose cleanup removed exactly its list); round 9
-  made verify-fitway drive by keyboard and find `aria-haspopup` openers (6 of 6).
-- Haiku 5.5 (DECISIONS item 18): `haiku-scout` is the lookup agent (12 of 12 on a replay, as Sonnet);
-  `owner-direction-designer-max` and `owner-direction-verifier-high` merged into their base definitions, since the
-  Agent tool's `effort` overrides a definition (Claude Code 2.1.292). CLAUDE.md names the call-time cases.
-- The environment page: built by an Opus designer from a cited facts file
-  (`D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/06eea6dd-7c5b-44ad-b20d-f63072729f39/scratchpad/env-page/`);
-  its brief is `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`; published (Next steps 1).
-- Next steps 3, done on 2026-10-08: main merged into owner-followup-r04-build (`cea05c06`) with round 9's recipe
-  additions (`ad8f80c2`; drift passes, and names 10 uncovered openers with the `6df156bd` file); CI green, pushed.
-  The machine-local launch configuration of this worktree (.claude/launch.json, untracked) runs `eclipse-build` (3174) and
-  `eclipse-build-lan` (3180, `--lan`) on verify-fitway's no-store server (`cli.mjs _serve`); 3174 answered
-  `Cache-Control: no-store`. Its dead entries (gap-mock, lane-before, lane-after, the stale `eclipse`) are gone.
-- The tuner's «الإضاءة» toggle (the user said yes, 2026-10-07): Codex round tuner-reach (`1305c0ee`) brought it on
-  screen on the phone and the tablet; its grade and repair are in the Owner `codex-rounds.md`. Repair attempt 1 runs.
-- The ledger (the user said yes, 2026-10-08): owner-design-exploration-r04 no longer owns SPEC.md (its one wording
-  landed in `4851cccf`), and this milestone no longer owns the two deleted check-frontier-preservation scripts, so
-  round 10's owned-path check (A7) passes on its first day. access-reason-cap-r01 (paused) still names parts of those
-  deleted scripts: its scope is revisited when the user resumes it.
+- The audit is saved: `docs/phase-records/handoffs/agent-environment/r03/AUDIT.md` (rounds R1-R5). R1-R4 are done;
+  the machine cleanup is done. Every round is in `docs/phase-records/handoffs/agent-environment/codex-rounds.md`.
+- R4 delivered the verify-fitway skill and CLI, the Codex launch command `pnpm codex:round`, the B8 and B9
+  evaluation, and the gardener (rounds 7-9; first pass 2026-10-07, blocked). Haiku 5.5 is the lookup agent
+  (DECISIONS item 18). The environment page is published (Next steps 4).
+- DECISIONS item 21, 2026-10-09: (1) `pnpm start-load` (`--since <date>` keeps transcripts after a change, `--reads
+  <transcript>` lists one start's reads) with `scripts/agent-environment/start-load-baseline.json`, which reproduces
+  the 2026-10-08 role figures; this session started at 78K against 71K. (2) The five Opus definitions list Read,
+  Write, Edit, Glob, Grep, Bash, PowerShell, Skill, Monitor and TaskStop; a probe definition with that list started at
+  31K against 63-64K for all tools that day. Edits to a definition reload only in a new session. (3) `rounds.tsv` (50
+  rows) and `findings.tsv` (92, 34 open) beside the environment `codex-rounds.md`; the coordinator adds both lines at
+  grading. Empty means no source states it; `open` means no fix was found.
+- The retro (DECISIONS item 23): `scripts/verify.mjs` gives the unit step its placeholders (CI's copy is gone), the
+  resume-point check rejects git-ignored paths (F092 fixed), the ledger schema says what `validationRepairAttempts`
+  counts, and CLAUDE.md says when an edited definition takes effect.
 
 ## Running now
 
-- The weekly gardener pass is enabled: the Windows task "FITWAY gardener weekly", Fridays 14:00 (first run
-  2026-10-09), `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener
-  (detached at `origin/main`; each pass starts branch `gardener/<date>`). It ends with a Windows notification.
+- The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (first run 2026-10-09),
+  `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener (detached at
+  `origin/main`; each pass starts branch `gardener/<date>`), ending with a Windows notification.
 
 ## Next steps
 
-1. The environment page is published, private: https://claude.ai/artifact/Kx1hDDw4Z67niKMmkgwRzY (2026-10-08). Update
-   it from the run folder above by republishing to that URL.
-   Steps 3, 4 and 5 do not wait for the weekly pass; start with 3. Step 2 begins after the first pass, Friday
-   2026-10-09 14:00.
-2. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
-   `gardener/<date>` branch, merge what is accepted, write the ledger's `gardener` entry, rerun the report's final
-   survey, and show the user the folder list before they run the new cleanup script. The list so far: 13 folders of
-   D:/fitway-temp (about 1 GB, round 8b's report); for the coordinator, the worktrees grade-r6, grade-r7-g and
-   grade-r9 and three merged branches (codex/owner-demo-prep, codex/owner-distill-r01, owner-intro-r04-build). The
-   main checkout keeps the user's uncommitted AGENTS.md edit of 2026-09-06 and a local `main` far behind.
-3. Done 2026-10-08: the tuner's repair `ec314ce2` graded and accepted (Owner `codex-rounds.md`), owner-followup-r04-build
-   pushed at it; the 3174 preview serves it (no-store, nothing to restart).
-4. Done 2026-10-08: rounds 10 (with its repair 10b), 11, 12 and 13 graded and merged into the coordinator line
-   (`6353d416` with 11-13, on main; `090a272b` with 10 and 10b, main follows once CI passes). Grades in
-   `codex-rounds.md`. Follow-ups the grades found but no row failed wait for a later round: each round's "Also found"
-   (the CSS lint's `outline: 0 none` and the missing-selector name; verify-fitway's body-text dump and ports; the
-   gardener's `updatedAt` exemption and file-not-milestone message; checks that stop at the first fault). The round
-   worktrees agent-environment-r03-verify, -gardener and -css, and grade-r10, grade-r10b, grade-r12 hold a placeholder
-   .claude/launch.json (git-excluded) until they are removed.
-5. Remove the disposable grading worktrees (grade-r6, grade-r7-*, grade-r8-*, grade-r8b-*, grade-r9, grade-r10,
-   grade-r10b, grade-r11, grade-r12, grade-r13; the merged round worktrees agent-environment-r03-verify, -gardener and
-   -css) and the
-   evaluation's test material (the eval-b89 clones and eval-b89-base) with the gardener's reviewed cleanup; then,
-   after DECISIONS item 21's seven steps, the closing review and the milestone's closure. The Owner screens resume
-   after.
+1. Step 4, the replay set (DECISIONS item 23 names the ten Owner tasks and the method). Build it outside the
+   repository beside the held-out rows: per task the brief at its commit, the base commit (the Owner
+   `codex-rounds.md` entry's "over" commit), the held-out file in `D:/fitway-grader/owner-r04/`, and the original
+   level from `rounds.tsv` (nav rounds name none: use `high` and record it). Each runs in a disposable worktree at
+   its base with the current agent-environment-r03 owned paths copied from `origin/main`, through `pnpm codex:round`;
+   verify-fitway accepts only ports 3176-3177, so at most two run at once. A Sonnet grader per task grades the
+   original held-out rows. With it, the retro's last fix: `codex-round.mjs` writes Codex's first-turn input tokens
+   from its `--json` stream into the run folder, so `start_load` fills. Results go in `rounds.tsv` as `replay:<task>`.
+2. In the first new session: `pnpm start-load -- --since 2026-10-10` measures the coordinator's start from this
+   file alone (step 5's first reading) and each Opus definition at its first launch (step 2's real figure).
+3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
+   `gardener/<date>` branch, merge what is accepted (a change to Codex's environment only after the replay baseline),
+   write the ledger's `gardener` entry, rerun the report's final survey, and show the user the folder list before
+   they run the new cleanup script. The main checkout keeps the user's uncommitted AGENTS.md edit of 2026-09-06.
+4. The environment page, private: https://claude.ai/artifact/Kx1hDDw4Z67niKMmkgwRzY; republish to that URL from
+   `D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/06eea6dd-7c5b-44ad-b20d-f63072729f39/scratchpad/env-page/`
+   (brief `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`).
+5. Remove the disposable grading worktrees (grade-r6 to grade-r13 and their variants; the merged round worktrees
+   agent-environment-r03-verify, -gardener and -css) and the eval-b89 clones with the gardener's reviewed cleanup;
+   then item 21's steps 5-7, the closing review and the milestone's closure. The Owner screens resume after.
+
 ## Waiting on the user
 
-- Nothing. DECISIONS item 21 runs in its order; (1) is done: `pnpm start-load` (`--since <date>` measures only
-  transcripts after a change, `--reads <transcript>` lists one start's reads), its baseline
-  `scripts/agent-environment/start-load-baseline.json` reproduces the 2026-10-08 role figures exactly; this
-  coordinator session started at 78K against the baseline's 71K. (2) is committed: the five Opus definitions list
-  Read, Write, Edit, Glob, Grep, Bash, PowerShell, Skill, Monitor and TaskStop (the last two from their transcripts'
-  use; the Browser pane appeared in 3 of 107). A temporary probe definition with that list got exactly those tools
-  plus the harness's SubagentHandback, Monitor and TaskStop callable directly, and started at 31K, while the
-  unchanged definitions started at 63-64K that day (52-61K on 2026-10-08: the session had more connectors). Edits
-  to an existing definition do not reload mid-session, so the real definitions' start is measured in the next
-  session: `pnpm start-load -- --since 2026-10-10`. (3) is committed: `rounds.tsv` (50 rows) and `findings.tsv`
-  (92 rows, 34 open) beside the environment `codex-rounds.md`, back-filled by a Sonnet researcher from both round
-  records (brief and report in `D:/fitway-temp/rounds-backfill-20261009/`); the coordinator checked 7 rows and 5
-  findings against their sources. Empty means no source states it: `start_load` everywhere, `model` before r03
-  round 5b, the milestone of rounds 1-8b. An `open` finding means no fix was found, not that one was ruled out.
-  Next is (4), the replay set. The user runs `/retro` in an execution session. Downloading
-  `grill-with-docs` and `to-spec` (step 6) needs the user's yes at that point. The agreed Owner CSS round (Owner
-  resume point, Next steps 6) waits for step 6, whose trial writes its brief. The weekly gardener pass runs Friday
-  2026-10-09 14:00 (Next steps 2).
+- Nothing. Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
+  agreed Owner CSS round (Owner resume point, Next steps 6) waits for that step, whose trial writes its brief.
 
 ## Known risks
 
 - When a Codex account reaches its limit, tell the user at once; after the switch, resume each stopped run.
-- A round's own preview can outlive the round (tuner-reach's held 3176 until 2026-10-08 17:30); before a launch,
-  check that 3176-3177 are free and ask the user before stopping a process the coordinator did not start.
+- A round's own preview can outlive the round; before a launch, check that 3176-3177 are free and ask the user
+  before stopping a process the coordinator did not start.
 - Claude Code's auto mode refuses to end Codex processes by hand ("interfere with workloads"); let a run stop on its
   own or ask the user.
 - Claude Code's auto mode refused a ledger edit and writes in another milestone's worktree as "Modify Shared
   Resources" until the user said yes in chat (2026-10-08); ask the user in plain words when it refuses again.
-- The gardener's cleanup script deletes nothing until round 8; never run a generated script before the user reviews
-  its list.
-- `pnpm verify:fast` fails locally on the server's cron and reference-gating tests unless the shell carries the eight
-  placeholder variables CI sets (`.github/workflows/checks.yml`, the ladder step's `env`); with them, all 96 unit
-  files pass (2026-10-09). The resume-point path check accepts a git-ignored file present on disk, which CI lacks: a
-  path that passes locally can fail in CI.
+- Never run a generated cleanup script before the user reviews its list.
+- access-reason-cap-r01 (paused) still names parts of the deleted check-frontier-preservation scripts; its scope is
+  revisited when the user resumes it.
 
 ## Pointers
 
-- Worktree: D:/Projects/fitway-worktrees/agent-environment-r03 (branch agent-environment-r03); main and the
-  coordinator line codex/owner-redesign-r04 follow it whenever its CI passes.
+- Worktree: D:/Projects/fitway-worktrees/agent-environment-r03 (branch agent-environment-r03, now behind main). Round
+  results and the coordinator's own changes integrate on the coordinator line codex/owner-redesign-r04 (worktree
+  D:/Projects/fitway-worktrees/owner-design-exploration-r04), and main fast-forwards to it when CI passes.
 - Packet: `docs/phase-records/task-packets/agent-environment-r03.yaml`; briefs: `docs/phase-records/handoffs/agent-environment/r03/briefs/`.
 - Reports and grades: D:/fitway-temp/r03-round4/ to r03-round7/, D:/fitway-temp/r03-r6-grade/ and r03-r7-grade/
-  (REPORT.md each), D:/fitway-temp/evals/ (B8/B9 and haiku-scout-20261008); held-out rows in
-  D:/fitway-grader/agent-environment/.
+  (REPORT.md each), D:/fitway-temp/evals/ (B8/B9 and haiku-scout-20261008), D:/fitway-temp/start-load-20261008/ and
+  D:/fitway-temp/rounds-backfill-20261009/; held-out rows in D:/fitway-grader/agent-environment/ and
+  D:/fitway-grader/owner-r04/.
