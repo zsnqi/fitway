@@ -1,7 +1,9 @@
 # agent-environment: Codex rounds as evaluations
 
 One entry per round: the brief, brief rows passed, held-out rows passed, and the failure cause. The
-held-out checks live outside the repository and never appear here or in a brief.
+held-out checks live outside the repository and never appear here or in a brief. `rounds.tsv` and
+`findings.tsv` beside this file hold one line per round and per side finding, for this file and the Owner
+`docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md` (DECISIONS item 21).
 
 ## Round 1: `briefs/codex-r1-resume-tooling.md`, result `3b91b9d`
 

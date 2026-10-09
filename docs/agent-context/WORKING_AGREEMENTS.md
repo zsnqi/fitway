@@ -72,7 +72,10 @@ latest wording; never copy an entry into a resume point.
 - After a round, the coordinator checks the diff, `git status` in every worktree involved, and the
   remote branch.
 - Each Codex round is judged as an evaluation: brief rows, held-out rows, and the failure cause,
-  recorded in `docs/phase-records/handoffs/agent-environment/codex-rounds.md`. Held-out suites live
+  recorded in `docs/phase-records/handoffs/agent-environment/codex-rounds.md`. At grading the
+  coordinator also adds the round's line to `rounds.tsv` beside it and a line per side finding to
+  `findings.tsv`, whose status changes when a later round or commit fixes it; a value no source states
+  stays empty (DECISIONS item 21). Held-out suites live
   in `D:/fitway-grader/`, carry planted-defect controls, and never appear in a brief. The numbers come
   from executed checks, not from the implementer's report. A stop caused by the brief becomes a brief
   rule (the checklist of `docs/agent-context/briefs/codex.md`). Models or levels are compared only

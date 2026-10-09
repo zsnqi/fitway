@@ -82,7 +82,12 @@
   plus the harness's SubagentHandback, Monitor and TaskStop callable directly, and started at 31K, while the
   unchanged definitions started at 63-64K that day (52-61K on 2026-10-08: the session had more connectors). Edits
   to an existing definition do not reload mid-session, so the real definitions' start is measured in the next
-  session: `pnpm start-load -- --since 2026-10-10`. Next is (3). The user runs `/retro` in an execution session. Downloading
+  session: `pnpm start-load -- --since 2026-10-10`. (3) is committed: `rounds.tsv` (50 rows) and `findings.tsv`
+  (92 rows, 34 open) beside the environment `codex-rounds.md`, back-filled by a Sonnet researcher from both round
+  records (brief and report in `D:/fitway-temp/rounds-backfill-20261009/`); the coordinator checked 7 rows and 5
+  findings against their sources. Empty means no source states it: `start_load` everywhere, `model` before r03
+  round 5b, the milestone of rounds 1-8b. An `open` finding means no fix was found, not that one was ruled out.
+  Next is (4), the replay set. The user runs `/retro` in an execution session. Downloading
   `grill-with-docs` and `to-spec` (step 6) needs the user's yes at that point. The agreed Owner CSS round (Owner
   resume point, Next steps 6) waits for step 6, whose trial writes its brief. The weekly gardener pass runs Friday
   2026-10-09 14:00 (Next steps 2).

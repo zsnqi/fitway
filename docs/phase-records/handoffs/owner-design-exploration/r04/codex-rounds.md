@@ -4,7 +4,8 @@ One entry per round: the brief, brief rows passed, held-out rows passed, the fai
 whether a brief-caused failure was already covered by a brief rule (DECISIONS "How this milestone's rounds run" item 3)
 when the brief was written. A repeat means the rule failed or was not applied, and is a brief-rule defect to fix
 (the user, 2026-10-04: held-out pass rates track the task's kind, not round order, so only repeats test the rules). The held-out
-checks live outside the repository and never appear here or in a brief.
+checks live outside the repository and never appear here or in a brief. One line per round and per side finding:
+`docs/phase-records/handoffs/agent-environment/rounds.tsv` and `findings.tsv` beside it.
 
 ## nav-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-1-readme-split.md`, result `32958e1`
 
