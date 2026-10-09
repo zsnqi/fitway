@@ -60,6 +60,10 @@ Each definition sets one model and a default effort level, and the coordinator p
 | `sonnet-scout` | Sonnet | `medium` | a lookup `haiku-scout` could not answer from a source it cited |
 | `haiku-scout` | Haiku 5.5 | `medium` | one quick read-only lookup with named places to look |
 
+Every definition names its tools, so none loads the session's connectors (DECISIONS item 21 in
+`docs/phase-records/handoffs/agent-environment/DECISIONS.md`). The five Opus definitions work through files, shells
+and skills, not the Browser pane, and a tool one of them reports missing goes back on its list.
+
 The Agent tool's `effort` (Claude Code 2.1.292 and later) overrides a definition's level for one call. Pass it
 only in these cases:
 - `owner-direction-designer` at `max` for a whole Owner screen in one pass (the user's trial,

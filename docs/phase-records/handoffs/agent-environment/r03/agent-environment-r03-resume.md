@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-09 12:15 +03:00 (DECISIONS item 21's step 1 done; item 22, who
+- **As of:** codex/owner-redesign-r04, 2026-10-09 12:55 +03:00 (DECISIONS item 21's steps 1 and 2 done; item 22, who
   writes the code at the move to production, agreed)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-22,
   `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -76,8 +76,13 @@
 - Nothing. DECISIONS item 21 runs in its order; (1) is done: `pnpm start-load` (`--since <date>` measures only
   transcripts after a change, `--reads <transcript>` lists one start's reads), its baseline
   `scripts/agent-environment/start-load-baseline.json` reproduces the 2026-10-08 role figures exactly; this
-  coordinator session started at 78K against the baseline's 71K. Next is (2), the tool lists, measured with
-  `--since`. The user runs `/retro` in an execution session. Downloading
+  coordinator session started at 78K against the baseline's 71K. (2) is committed: the five Opus definitions list
+  Read, Write, Edit, Glob, Grep, Bash, PowerShell, Skill, Monitor and TaskStop (the last two from their transcripts'
+  use; the Browser pane appeared in 3 of 107). A temporary probe definition with that list got exactly those tools
+  plus the harness's SubagentHandback, Monitor and TaskStop callable directly, and started at 31K, while the
+  unchanged definitions started at 63-64K that day (52-61K on 2026-10-08: the session had more connectors). Edits
+  to an existing definition do not reload mid-session, so the real definitions' start is measured in the next
+  session: `pnpm start-load -- --since 2026-10-10`. Next is (3). The user runs `/retro` in an execution session. Downloading
   `grill-with-docs` and `to-spec` (step 6) needs the user's yes at that point. The agreed Owner CSS round (Owner
   resume point, Next steps 6) waits for step 6, whose trial writes its brief. The weekly gardener pass runs Friday
   2026-10-09 14:00 (Next steps 2).
@@ -93,6 +98,8 @@
   Resources" until the user said yes in chat (2026-10-08); ask the user in plain words when it refuses again.
 - The gardener's cleanup script deletes nothing until round 8; never run a generated script before the user reviews
   its list.
+- This worktree has no `apps/server/.env`, so `pnpm verify:fast` fails locally on `cron.test.ts` and
+  `reference-gating.test.ts` (`DATABASE_URL`) while CI passes; the steps before unit tests and the simulator pass.
 
 ## Pointers
 

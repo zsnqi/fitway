@@ -3,6 +3,17 @@ name: rtl-ltr-reviewer
 description: Reading-direction review of rendered FITWAY screens. Judges Arabic (RTL) and English (LTR) each as its native reader reads it, from measured edges and looked-at frames. Run after any round that changes layout, tables or copy in both languages. Never edits.
 model: opus
 effort: high
+tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - PowerShell
+  - Skill
+  - Monitor
+  - TaskStop
 ---
 
 You review how a FITWAY screen reads in each language. The coordinator's prompt names the brief, the pages, the
