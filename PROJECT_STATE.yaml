@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-08T16:25:00+03:00
+updatedAt: 2026-10-09T23:49:00+03:00
 gardener:
-  date: '2026-10-08'
+  date: '2026-10-09'
   outcome: blocked
   report: .agents/skills/gardener/REPORT.md
 coordinator:
