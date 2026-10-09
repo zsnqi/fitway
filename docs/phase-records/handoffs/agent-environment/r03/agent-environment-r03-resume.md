@@ -31,9 +31,9 @@
   built by `D:/fitway-grader/replay/prepare.mjs`, whose README holds the method, the slots and every brief edit. Run
   folders `D:/fitway-temp/codex-runs/replay-<task>`. Nine are graded (`rounds.tsv` lines `replay:*`; reports
   `D:/fitway-grader/replay/<task>/GRADE.md`). The last, **fix-1** (xhigh, port 3177), launched 17:23 from the previous
-  session's background shell; at 19:03 it had 8 uncommitted files and its account stood at 81% of the five-hour limit.
-  Its run has ended when `last-message.md` exists in its run folder; a `turn.failed` usage-limit event, or a run that
-  died with that session, resumes on its thread after the user switches accounts:
+  session's background shell; it **stopped at the account's usage limit** (`turn.failed`, about 19:20) with 10
+  uncommitted files and its preview still serving port 3177 (F096). It resumes on its thread after the user switches
+  accounts (`last-message.md` appears in its run folder when a run ends normally):
   `node D:/Projects/fitway-worktrees/replay-fix-1/scripts/agent-environment/codex-round.mjs resume D:/fitway-temp/codex-runs/replay-fix-1 --message "<one line>"`.
   Its preview on 3177 may outlive it (F096): stop it with the CLI's `cleanup --session <its preview folder>` (the
   folder, not `session.json`; F097) only after the user says yes.
