@@ -7,10 +7,10 @@ import {
 	openSync,
 	readdirSync,
 	readFileSync,
+	statSync,
 } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { createConnection } from "node:net";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compare } from "./compare.mjs";
@@ -49,6 +49,7 @@ Commands:
   drift --concept <folder> [--recipes <file>] [--map <verification-map.json>]
   drift-tree [--root <repository>]
   launch --concept <folder> [--port 3176] [--out <evidence-folder>] [--lan]
+         [--isolated-port <49152-65535>] [--idle-timeout-ms <1-1800000>]
   doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff]
   drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>]
         [--page index.html|all] [--feature page|all] [--states default|all|switch=value,...]
@@ -60,7 +61,7 @@ Commands:
           [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
           [all drive page/feature/state/axis options] [--out <evidence-folder>]
   measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>
-  cleanup --session <launch-folder>
+  cleanup --session <launch-folder|session.json>
 Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
 repair-recipes drops vanished selectors/markers and writes draft entries outside the concept.
 Every use rediscovers source facts; --map is an optional prior map for drift provenance.
@@ -82,7 +83,11 @@ Touch uses hasTouch/coarse pointer and real taps; full means no-preference.
 Keyboard uses Tab and key presses only; full evidence records focus at every key.
 Unreached keyboard targets fail with the element where focus stopped; keyboardActions can supply roving keys.
 measure calls the installed ui-forensics tool; its own --help describes further arguments.
-Only ports 3176-3177 are accepted. Ports 3174 and 3178-3185 belong to other previews.
+--port accepts only 3176-3177. Ports 3174 and 3178-3185 belong to other previews.
+launch --isolated-port selects a separate high port (49152-65535) for isolated tests.
+--port stays restricted to 3176-3177 even with --isolated-port; busy ports are always refused.
+Previews stop after 30 minutes without a request; requests renew the timeout.
+launch --idle-timeout-ms can shorten that bound for tests, never extend it.
 --forensics <folder> overrides the machine-level ui-forensics location.
 Git Bash: use Windows D:/ absolute paths and quote --query; no /api-style arguments cross shells.
 help and preview lifecycle need only Node. For discovery/drive/compare/doctor, install checkout dependencies:
@@ -231,6 +236,13 @@ function mapFor(options, concept) {
 async function doctorChecks(options) {
 	verificationPort(options.port || 3176);
 	const concept = canonical(options.concept);
+	if (options.session) {
+		const session = await ownedSession(options.session);
+		if (session.concept !== concept)
+			throw new Error(
+				"Session serves a different concept; launch the supplied concept.",
+			);
+	}
 	if (!existsSync(resolve(concept, "tools/probes/lib.mjs")))
 		throw new Error(
 			`Probe kit missing: ${concept}/tools/probes/lib.mjs; use the current Eclipse build (main does not have it).`,
@@ -263,13 +275,7 @@ async function doctorChecks(options) {
 			);
 		}
 	}
-	if (options.session) {
-		const session = await ownedSession(options.session);
-		if (session.concept !== concept)
-			throw new Error(
-				"Session serves a different concept; launch the supplied concept.",
-			);
-	} else await portAvailable(Number(options.port || 3176));
+	if (!options.session) await portAvailable(Number(options.port || 3176));
 	if (!options.quiet)
 		console.log(
 			`DOCTOR PASS: Chromium, ui-forensics, probe kit, ${map.pages.length} pages, current map ${path}, port owned/free.`,
@@ -325,13 +331,30 @@ export async function doctor(options) {
 
 async function launch(options) {
 	const concept = canonical(options.concept);
-	const port = verificationPort(options.port || 3176);
+	let port = verificationPort(options.port || 3176);
+	if (options["isolated-port"] !== undefined) {
+		port = Number(options["isolated-port"]);
+		if (!Number.isInteger(port) || port < 49152 || port > 65535)
+			throw new Error("--isolated-port requires a port in 49152-65535.");
+	}
+	if (options["idle-timeout-ms"] !== undefined) {
+		const idle = Number(options["idle-timeout-ms"]);
+		if (!Number.isInteger(idle) || idle < 1 || idle > 1800000)
+			throw new Error(
+				"Idle timeout must be 1-1800000 ms (at most 30 minutes).",
+			);
+	}
+	const out = options.out || freshOutput();
+	assertOutsideGit(out);
+	if (existsSync(resolve(out, "session.json")))
+		throw new Error(
+			`Launch folder already has a session; cleanup --session '${out}' and use a fresh folder.`,
+		);
+	await outputFile(out, "session.json");
 	await portAvailable(port);
 	const origins = options.lan
 		? lanOrigins(port, undefined, defaultLanAddresses())
 		: [`http://127.0.0.1:${port}`];
-	const out = options.out || freshOutput();
-	assertOutsideGit(out);
 	const token = randomBytes(24).toString("hex");
 	const log = openSync(await outputFile(out, "preview.log"), "a");
 	const running = spawn(
@@ -346,6 +369,9 @@ async function launch(options) {
 			"--token",
 			token,
 			...(options.lan ? ["--lan"] : []),
+			...(options["idle-timeout-ms"]
+				? ["--idle-timeout-ms", options["idle-timeout-ms"]]
+				: []),
 		],
 		{
 			cwd: dirname(self),
@@ -415,7 +441,17 @@ async function launch(options) {
 	}
 }
 
-async function cleanup(folder) {
+async function cleanup(path) {
+	let folder = path;
+	if (!folder || !existsSync(folder))
+		throw new Error(
+			`Cleanup session path does not exist: ${folder}; give the existing launch folder or session.json.`,
+		);
+	if (statSync(folder).isFile()) {
+		if (resolve(folder) !== resolve(dirname(folder), "session.json"))
+			throw new Error(`Give the launch folder: ${dirname(folder)}`);
+		folder = dirname(folder);
+	}
 	if (!existsSync(resolve(folder, "session.json")))
 		return console.log(
 			`CLEANUP PASS: no owned preview started; evidence retained at ${folder}`,
@@ -423,27 +459,46 @@ async function cleanup(folder) {
 	const record = JSON.parse(
 		readFileSync(resolve(folder, "session.json"), "utf8"),
 	);
-	if (record.stopped)
+	if (!Number.isInteger(record.port) || record.port < 1 || record.port > 65535)
+		throw new Error(
+			`Invalid session port in ${folder}/session.json; relaunch.`,
+		);
+	// A free port proves a detached preview has stopped, including idle expiry.
+	let free = false;
+	try {
+		await portAvailable(record.port);
+		free = true;
+	} catch {
+		// A busy port must authenticate before we can stop anything.
+	}
+	if (free) {
+		await jsonOutput(folder, "session.json", { ...record, stopped: true });
 		return console.log(
 			`CLEANUP PASS: owned port ${record.port} already stopped; evidence retained at ${folder}`,
 		);
+	}
 	const session = await ownedSession(folder);
-	await fetch(`http://127.0.0.1:${session.port}/__verify/stop`, {
-		method: "POST",
-		headers: { "x-verify-token": session.token },
-		signal: AbortSignal.timeout(1500),
-	});
+	const response = await fetch(
+		`http://127.0.0.1:${session.port}/__verify/stop`,
+		{
+			method: "POST",
+			headers: { "x-verify-token": session.token },
+			signal: AbortSignal.timeout(1500),
+		},
+	);
+	if (!response.ok)
+		throw new Error(`Preview refused stop on port ${session.port}.`);
 	await new Promise((done, reject) => {
 		const deadline = Date.now() + 3000;
-		const attempt = () => {
-			const socket = createConnection(session.port, "127.0.0.1");
-			socket.once("error", done);
-			socket.once("connect", () => {
-				socket.destroy();
+		const attempt = async () => {
+			try {
+				await portAvailable(session.port);
+				done();
+			} catch {
 				if (Date.now() > deadline)
 					reject(new Error(`Port ${session.port} still listening`));
 				else setTimeout(attempt, 50);
-			});
+			}
 		};
 		attempt();
 	});
@@ -462,6 +517,10 @@ async function main() {
 			port: Number(options.port),
 			lan: options.lan,
 			token: options.token,
+			idleTimeoutMs:
+				options["idle-timeout-ms"] === undefined
+					? undefined
+					: Number(options["idle-timeout-ms"]),
 		});
 		for (const signal of ["SIGINT", "SIGTERM"])
 			process.once(signal, () => server.close());

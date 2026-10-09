@@ -110,13 +110,26 @@ export async function preview({
 	lan = false,
 	token = randomBytes(24).toString("hex"),
 	cache = "no-store",
+	idleTimeoutMs = 30 * 60 * 1000,
 }) {
-	if (!Number.isInteger(port) || port < 1 || port > 65535)
+	if (!Number.isInteger(port) || port < 0 || port > 65535)
 		throw new Error(`Invalid port: ${port}`);
+	if (
+		!Number.isInteger(idleTimeoutMs) ||
+		idleTimeoutMs < 1 ||
+		idleTimeoutMs > 30 * 60 * 1000
+	)
+		throw new Error("Idle timeout must be 1-1800000 ms (at most 30 minutes).");
 	const root = realpathSync(concept);
-	await portAvailable(port);
+	if (port !== 0) await portAvailable(port);
 	const sockets = new Set();
+	let idleTimer;
+	const touch = () => {
+		clearTimeout(idleTimer);
+		idleTimer = setTimeout(() => close(), idleTimeoutMs);
+	};
 	const server = createServer(async (req, res) => {
+		touch();
 		if (cache === "no-store") res.setHeader("Cache-Control", "no-store");
 		const send = (code, body = "", type = "text/plain; charset=utf-8") => {
 			res.writeHead(code, {
@@ -174,6 +187,7 @@ export async function preview({
 	});
 	let closing;
 	function close() {
+		clearTimeout(idleTimer);
 		closing ??= new Promise((done) => {
 			server.close(done);
 			for (const socket of sockets) socket.destroy();
@@ -192,6 +206,15 @@ export async function preview({
 		);
 		server.listen(port, lan ? "0.0.0.0" : "127.0.0.1", done);
 	});
+	const assigned = server.address().port;
+	if (port === 0 && assigned < 49152) {
+		await close();
+		throw new Error(
+			`Kernel assigned port ${assigned} outside the isolated high-port range.`,
+		);
+	}
+	port = assigned;
+	touch();
 	return {
 		server,
 		close,
@@ -305,13 +328,21 @@ export async function ownedSession(folder) {
 	);
 	if (!Number.isInteger(session.port))
 		throw new Error("Invalid session port; relaunch.");
-	const response = await fetch(
-		`http://127.0.0.1:${session.port}/__verify/identity`,
-		{
-			headers: { "x-verify-token": session.token },
-			signal: AbortSignal.timeout(1500),
-		},
-	);
+	let response;
+	try {
+		response = await fetch(
+			`http://127.0.0.1:${session.port}/__verify/identity`,
+			{
+				headers: { "x-verify-token": session.token },
+				signal: AbortSignal.timeout(1500),
+			},
+		);
+	} catch (error) {
+		throw new Error(
+			`Session preview on port ${session.port} has stopped or is unreachable; relaunch.`,
+			{ cause: error },
+		);
+	}
 	if (!response.ok)
 		throw new Error(
 			`Port ${session.port} is not owned by this session; refuse cleanup.`,
