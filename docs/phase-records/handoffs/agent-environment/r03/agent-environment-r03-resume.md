@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-09 14:05 +03:00 (DECISIONS item 21's steps 1-3 done; the retro's fixes
-  committed, the last with `af13c16f`; step 4's replay set built and its first runs launched)
+- **As of:** codex/owner-redesign-r04, 2026-10-09 19:10 +03:00 (DECISIONS item 21's steps 1-3 done; the retro's fixes
+  committed, the last with `af13c16f`; step 4's replay: nine of ten graded, fix-1 running on Codex)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-23,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -29,23 +29,31 @@
 
 - The replay set (step 4; DECISIONS item 23, its set-up bullet): ten clones `D:/Projects/fitway-worktrees/replay-<task>`
   built by `D:/fitway-grader/replay/prepare.mjs`, whose README holds the method, the slots and every brief edit. Run
-  folders `D:/fitway-temp/codex-runs/replay-<task>`. Slot A (3176): card-1, fix-3, motion-lows, d3-d8, fix-1. Slot B:
-  fix-2, three-rounds-fix, nav-4, nav-1, nav-5. Launched 2026-10-09 13:59: card-1 (high) and fix-2 (xhigh).
+  folders `D:/fitway-temp/codex-runs/replay-<task>`. Nine are graded (`rounds.tsv` lines `replay:*`; reports
+  `D:/fitway-grader/replay/<task>/GRADE.md`). The last, **fix-1** (xhigh, port 3177), launched 17:23 from the previous
+  session's background shell; at 19:03 it had 8 uncommitted files and its account stood at 81% of the five-hour limit.
+  Its run has ended when `last-message.md` exists in its run folder; a `turn.failed` usage-limit event, or a run that
+  died with that session, resumes on its thread after the user switches accounts:
+  `node D:/Projects/fitway-worktrees/replay-fix-1/scripts/agent-environment/codex-round.mjs resume D:/fitway-temp/codex-runs/replay-fix-1 --message "<one line>"`.
+  Its preview on 3177 may outlive it (F096): stop it with the CLI's `cleanup --session <its preview folder>` (the
+  folder, not `session.json`; F097) only after the user says yes.
 - The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (first run 2026-10-09),
   `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener (detached at
   `origin/main`; each pass starts branch `gardener/<date>`), ending with a Windows notification.
 
 ## Next steps
 
-1. Step 4, the replay set, running (above). When a run exits: check its diff, `git status` and the events for reads
-   of `D:/fitway-grader`, `D:/fitway-temp/codex-runs/owner-*` or the original output folders; launch the slot's next
-   task (`node <clone>/scripts/agent-environment/codex-round.mjs <manifest brief> <level> --run <manifest run>`);
-   resume a stopped run on its thread. Grade each finished run with a `sonnet-researcher` from
-   `D:/fitway-grader/replay/GRADER.md` (ports 3183-3184), save its report as `<task>/GRADE.md`, and add the line
-   `replay:<task>` to `rounds.tsv` (start load from the run's `start-load.json`) and its side findings to
-   `findings.tsv`. When all ten are graded, an environment `codex-rounds.md` entry gives the baseline. Then the faults
-   the replay found (DECISIONS item 23, "No rush"): F095-F099. After them the Owner screens, with steps 6 and 7 on them.
-2. In the first new session: `pnpm start-load -- --since 2026-10-10` measures the coordinator's start from this
+1. Finish step 4. When fix-1 ends: check its diff, `git status`, and that no command in its events reads
+   `D:/fitway-grader` or `D:/fitway-temp/codex-runs/owner-*` (a path only quoted inside a tracked file it read is the
+   original's exposure too); its full report may be the longest `agent_message`, not `last-message.md`. Fill its
+   grader brief (`node D:/fitway-grader/replay/grader-brief.mjs fix-1 3183`), grade it with a `sonnet-researcher`
+   told to read that brief, save `fix-1/GRADE.md`, and add `replay:fix-1` to `rounds.tsv` (start load from
+   `start-load.json`; a resume after a limit is one intervention). Then write the baseline's entry in the environment
+   `codex-rounds.md` from the ten lines. Already seen: Codex's start load 24.7-27.3K; its self-grade disagreed with
+   the graders both ways (PASS on hidden or broken outcomes in d3-d8, motion-lows, fix-2, nav-4; literal FAILs that
+   were existing design or capture noise in fix-3, three-rounds-fix); four runs stopped on usage limits; no run read
+   a held-out file. Then F095-F099 (DECISIONS item 23, "No rush"), then the Owner screens with steps 6 and 7 on them.
+2. In the first new session: `pnpm start-load -- --since 2026-10-09T19:15+03:00` measures the coordinator's start from this
    file alone (step 5's first reading) and each Opus definition at its first launch (step 2's real figure).
 3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
    `gardener/<date>` branch, merge what is accepted (a change to Codex's environment only after the replay baseline),
