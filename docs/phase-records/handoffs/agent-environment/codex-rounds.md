@@ -547,3 +547,31 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Also found:** F093-F099 (`findings.tsv`); F095-F098 are environment faults, fixed next (item 23, "No rush").
 - **Use:** after a material change to Codex's environment, rebuild the clones with `prepare.mjs` (`REPLAY_MAIN` set
   to the new main) and rerun; compare by task, with N and one sample per task in mind.
+
+## agent-environment-r03 round 14: `r03/briefs/round-14.md`, result `bdbdd870` (level high)
+
+- **Set-up:** the brief's commit `1d0d21fd` over HEAD `7e1ff148`, on branch `agent-environment-r03-verify`, launched
+  alone. Before writing it the coordinator reproduced the three faults on `03c96437`
+  (verify-fitway identical): with 3176 and 3177 held, `pnpm test:verification` failed 4 of 39; cleanup given the
+  session file or a missing path printed PASS with 3176 still served. Held-out rows U1-U6 by a Sonnet grader in a
+  disposable worktree at the result, with its own installed dependencies, port holders on 127.0.0.1 and on the
+  wildcards, and the build's Eclipse folder from `git archive ec314ce2`; U4's evidence sampled by the coordinator.
+- **Brief rows, as Codex graded them:** 4 of 4 (W1-W4); 45 contract tests; the ladder passed with the ports free and
+  held.
+- **Held-out rows:** 5 of 5 pass; Codex's self-grade matches (U6).
+  - U1-U2: 45 of 45 with 3176-3177 held on 127.0.0.1, on `::` and `0.0.0.0` and swapped, skipped 0; the three port
+    tests now listen on ephemeral ports through a new `--isolated-port <49152-65535>`, named in `help`; every
+    assertion kept; `--port` still refuses all but 3176-3177, and the isolated route refuses 3174 and 3178-3185.
+  - U3: the default bound is 30 minutes in code, `help` and SKILL.md; shortened through `--idle-timeout-ms`, an idle
+    preview freed its port and process 4.04 s after a 4 s bound, one requested every second kept serving; after the
+    stop, doctor and drive say to relaunch and cleanup passes as already stopped.
+  - U4: cleanup of the session file stops the preview; a missing path fails naming it while the preview keeps
+    serving; a refused launch and a cleaned session pass as before; a foreign server on the session's port is refused.
+  - U5: launch, doctor, one drive and cleanup pass on the build's Eclipse; reverting the W2 or the W3 change fails 2
+    new tests each; scope and lockfile hold.
+- **Also found:** the relaunch FIX names `--port 3177` whatever port the session used (`cli.mjs:314`, older than the
+  round); cleanup refuses a foreign server on the session's port with a JSON parse error instead of "not owned"
+  (`core.mjs`, `ownedSession`); V3 passes with the ports held because compare now checks the concept first, so no
+  test covers doctor or compare refusing a held 3176-3177 (nor did one before).
+- **Failure cause:** none. During round 15 the coordinator's removal of eight grading worktrees emptied
+  agent-environment-r03-gardener's `node_modules` through a junction (F100).
