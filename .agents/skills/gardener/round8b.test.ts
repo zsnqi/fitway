@@ -154,6 +154,7 @@ describe("gardener round 8b", () => {
 		};
 		const mismatch = await runChecks(scripts, {
 			cwd: checkout,
+			notRunChecks: {},
 			capture: (name: string) => ({
 				name,
 				exitCode: 1,
@@ -168,6 +169,7 @@ describe("gardener round 8b", () => {
 		});
 		const dependency = await runChecks(scripts, {
 			cwd: checkout,
+			notRunChecks: {},
 			capture: (name: string) => ({
 				name,
 				exitCode: 1,
@@ -319,7 +321,11 @@ describe("gardener round 8b", () => {
 			]);
 			const scratch = path.join(base, "runtime");
 			mkdirSync(scratch, { recursive: true });
-			const checks = await runChecks(scripts, { cwd: run, tempRoot: scratch });
+			const checks = await runChecks(scripts, {
+				cwd: run,
+				tempRoot: scratch,
+				notRunChecks: {},
+			});
 			expect(checks[0]).toMatchObject({
 				dependencyBlocker: true,
 				repositoryChanged: false,

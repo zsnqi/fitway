@@ -1,3 +1,6 @@
 {
-	"weeklyWorktree": "D:/Projects/fitway-worktrees/gardener"
+	"weeklyWorktree": "D:/Projects/fitway-worktrees/gardener",
+	"notRunChecks": {
+		"check:concept-css": "Requires a concept folder; deferred by the coordinator until it enters the fast ladder after the Owner CSS round (agent-environment DECISIONS item 20)."
+	}
 }

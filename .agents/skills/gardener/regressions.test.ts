@@ -217,6 +217,7 @@ describe("gardener round 8 regressions", () => {
 			const checks = await runChecks(scripts, {
 				cwd: f.checkout,
 				tempRoot: f.run,
+				notRunChecks: {},
 			});
 			expect(checks.map((check) => check.name)).toEqual(Object.keys(scripts));
 			expect(checks[0].exitCode).toBe(9);
