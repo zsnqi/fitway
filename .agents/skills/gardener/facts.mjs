@@ -393,7 +393,14 @@ export function parseFastSteps(source) {
 	}
 	if (!statement?.expression)
 		throw new Error("fastSteps return array is missing");
-	return literal(statement.expression);
+	// A step may carry a trailing environment object; only its label and args matter.
+	if (!ts.isArrayLiteralExpression(statement.expression))
+		return literal(statement.expression);
+	return statement.expression.elements.map((step) =>
+		ts.isArrayLiteralExpression(step)
+			? [literal(step.elements[0]), literal(step.elements[1])]
+			: literal(step),
+	);
 }
 
 export function calledImports(source) {
