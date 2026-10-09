@@ -270,3 +270,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       resume-point path check accepts only tracked files; the ledger schema says what `validationRepairAttempts`
       counts; CLAUDE.md says an edited agent definition takes effect in a new session; `codex-round.mjs` records
       Codex's start load (with step 4).
+    - **The set-up (coordinator, 2026-10-09, under this item).** Codex's `--json` stream carries only the turn's
+      total, so the start load is the first request's input tokens from Codex's session file (`af13c16f`). Each task
+      runs in a clone holding only its base's history, not a worktree: a worktree shares every ref, and Codex could
+      read the round's own result and later fixes (the B8/B9 evaluation's method). The overlay leaves out the
+      milestone's records, which carry the original grades. nav-3 is replaced by three-rounds-fix: nav-3's four input
+      files in `D:/fitway-scratch/` no longer exist. Brief edits are mechanical (the clone's path, output folders,
+      ports for two runs at once, a decisions snapshot, and citations today's `brief:check` reads as repository
+      paths); the method and every edit are in `D:/fitway-grader/replay/README.md` and its `prepare.mjs`.
