@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-09 00:20 +03:00 (the discussion of DECISIONS item 20 closed in item
-  21, a plan the user agreed; its execution starts with the next session)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-21,
+- **As of:** codex/owner-redesign-r04, 2026-10-09 12:15 +03:00 (DECISIONS item 21's step 1 done; item 22, who
+  writes the code at the move to production, agreed)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-22,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -73,8 +73,11 @@
    after.
 ## Waiting on the user
 
-- Nothing. The next session executes DECISIONS item 21 in its order, starting at (1): the scripts and baseline are in
-  `D:/fitway-temp/start-load-20261008/` (REPORT.md). The user runs `/retro` in that session. Downloading
+- Nothing. DECISIONS item 21 runs in its order; (1) is done: `pnpm start-load` (`--since <date>` measures only
+  transcripts after a change, `--reads <transcript>` lists one start's reads), its baseline
+  `scripts/agent-environment/start-load-baseline.json` reproduces the 2026-10-08 role figures exactly; this
+  coordinator session started at 78K against the baseline's 71K. Next is (2), the tool lists, measured with
+  `--since`. The user runs `/retro` in an execution session. Downloading
   `grill-with-docs` and `to-spec` (step 6) needs the user's yes at that point. The agreed Owner CSS round (Owner
   resume point, Next steps 6) waits for step 6, whose trial writes its brief. The weekly gardener pass runs Friday
   2026-10-09 14:00 (Next steps 2).
