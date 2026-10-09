@@ -328,38 +328,54 @@ export async function ownedSession(folder) {
 	);
 	if (!Number.isInteger(session.port))
 		throw new Error("Invalid session port; relaunch.");
+	const refused = (cause) =>
+		new Error(
+			`Port ${session.port} is not owned by this session (not served by this session); refuse session.`,
+			{ cause },
+		);
 	let response;
 	try {
 		response = await fetch(
 			`http://127.0.0.1:${session.port}/__verify/identity`,
 			{
 				headers: { "x-verify-token": session.token },
+				redirect: "error",
 				signal: AbortSignal.timeout(1500),
 			},
 		);
 	} catch (error) {
+		try {
+			await portAvailable(session.port);
+		} catch {
+			throw refused(error);
+		}
 		throw new Error(
 			`Session preview on port ${session.port} has stopped or is unreachable; relaunch.`,
 			{ cause: error },
 		);
 	}
-	if (!response.ok)
-		throw new Error(
-			`Port ${session.port} is not owned by this session; refuse cleanup.`,
-		);
-	const identity = await response.json();
+	if (!response.ok) throw refused();
+	let identity;
+	try {
+		identity = await response.json();
+	} catch (error) {
+		throw refused(error);
+	}
 	if (
+		!identity ||
 		identity.token !== session.token ||
 		identity.concept !== session.concept ||
 		identity.pid !== session.pid
 	)
-		throw new Error("Session identity mismatch; refuse cleanup.");
+		throw refused();
 	const foreign = portOwners(session.port).filter(
 		(owner) => owner.pid !== session.pid,
 	);
 	if (foreign.length)
-		throw new Error(
-			`Port ${session.port} also held by foreign pid ${foreign.map((o) => o.pid)}; refuse this session.`,
+		throw refused(
+			new Error(
+				`Foreign pid ${foreign.map((o) => o.pid)} also holds the port.`,
+			),
 		);
 	return session;
 }
