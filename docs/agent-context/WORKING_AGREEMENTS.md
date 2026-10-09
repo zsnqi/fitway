@@ -33,6 +33,12 @@ latest wording; never copy an entry into a resume point.
   name a screen by the device (on the phone, on a tablet, on a computer). The measurements stay in the records and in
   the agents' reports. (user, 2026-10-03, after a decision page that was hard to read)
 
+## What stays out of the repository
+
+- The repository is public. Business plans (the demo, its audience and funding), personal notes and anything the
+  user calls private stay on the user's machine in `D:/fitway-private/`, never in a tracked file; held-out rows stay
+  in `D:/fitway-grader/`. (user, 2026-10-09)
+
 ## Sessions and resuming
 
 - The coordinator's own context stays small: fresh agents do the reading and building, and the

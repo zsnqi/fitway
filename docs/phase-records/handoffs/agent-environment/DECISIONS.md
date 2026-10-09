@@ -150,8 +150,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     (digests `D:/fitway-temp/verification-discussion-20261007/REPORT-1-talk-and-skills.md` and
     `D:/fitway-temp/agent-env-vision-research/REPORT.md`). Nothing below is built yet.
     - **Agreed.** The user's role is the environment and the decisions, not reading code. The order of work is the
-      demo for the gym owner first (a contract, then funding); no refactor of the product code before then. The
-      concept is the reference production will copy, so its quality counts now; the product code's own checks come
+      demo first; no refactor of the product code before then. The concept is the reference production will copy,
+      so its quality counts now; the product code's own checks come
       at the move to production.
     - **Agreed.** No further investment in process tooling (records, briefs, routes); rules are cut after evidence
       shows which ones are used, through the gardener's "rules without need" class. Size of rules or records is not
