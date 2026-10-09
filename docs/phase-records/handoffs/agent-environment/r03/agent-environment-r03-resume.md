@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-09 23:30 +03:00 (DECISIONS item 21's steps 1-4 done: the replay
+- **As of:** codex/owner-redesign-r04, 2026-10-09 23:15 +03:00 (DECISIONS item 21's steps 1-4 done: the replay
   baseline is the last entry of the environment `codex-rounds.md`)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-23,
   `docs/agent-context/WORKING_AGREEMENTS.md`
