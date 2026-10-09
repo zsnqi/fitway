@@ -234,4 +234,27 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       numbers as the baseline; (2) the tool lists, measured; (3) the rounds and findings files, back-filled by a Sonnet
       researcher and sampled by the coordinator; (4) the replay set and its first Codex baseline; (5) the coordinator's
       start from the resume file alone, measured; (6) the trial on the Owner CSS round's brief; (7) the designer brief
-      template.
+      template. Step (4)'s set also takes item 22's product-like tasks.
+22. **Who writes the code at the move to production (the user agreed, 2026-10-09; coordinator design).** Developer
+    forums say Claude writes the more maintainable code and Codex the faster solution. The rounds so far say less:
+    Codex meets its brief rows, and the held-out rows and "Also found" catch what the brief did not state (a fixed
+    `$root`, the UTC day, a raw module error without node_modules, Windows quoting, a stale local `main`). No round
+    compared the two on one task, and every round was tooling, not product code. Review sees the diff, not what is
+    missing (a helper not reused, logic repeated elsewhere, a seam not drawn), anchors on the solution in front of it,
+    and pays a whole round to reject working code; checks cover what can be stated (item 20's product checks), not
+    where a module boundary goes or which change comes next.
+    - Claude writes the contracts and the first example of each pattern (Zod schemas, DTOs, module interfaces; the
+      first API route, page data flow and migration), cross-cutting refactors and privacy-sensitive paths. Agents copy
+      the codebase's patterns, so the examples are the strongest brief.
+    - Codex writes later instances against a named example, features inside an established module, tests from a
+      spec, tooling and bulk work.
+    - The handoff is interface first: Claude writes the types, the interface, failing contract tests and the file
+      list; Codex implements.
+    - Review runs both ways, Codex reviewing Claude's code too: a different model does not share the writer's blind
+      spots.
+    - The reviewer may ask for a redesign, not only fixes. Each design finding enters the findings list (item 21) with
+      its class (duplication, missing abstraction, wrong seam); a class that recurs moves that kind of task to Claude
+      or becomes a check.
+    - The replay set (item 21, step 4) adds two or three product-like tasks run both ways (Codex writes and Claude
+      reviews; Claude writes and Codex reviews), graded blind on held-out rows and a code-health rubric. One trial is a
+      signal, not a verdict.
