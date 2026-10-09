@@ -34,8 +34,8 @@
 ## Next steps
 
 1. Open findings, one round per tool (B6), "No rush" (item 23): the gardener's F100 (its worktree proposals ignore
-   junctions; `git worktree remove` emptied a junction target) and F103 (the parser's error names no step);
-   verify-fitway's F101 and F102 (two misleading messages). Then the Owner screens with steps 6 and 7 on them.
+   junctions; `git worktree remove` emptied a junction target), F103 (the parser's error names no step) and F104
+   (it reads too few records: it proposed `reports-phone`, cited evidence); verify-fitway's F101 and F102 (two misleading messages). Then the Owner screens with steps 6 and 7 on them.
 2. Step 2's real figure: `pnpm start-load -- --since 2026-10-09T19:15+03:00` after each Opus definition's first
    launch in a new session.
 3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
@@ -54,7 +54,8 @@
 
 ## Waiting on the user
 
-- The 17 temp folders of the 2026-10-09 pass, before the user runs its cleanup script.
+- The 2026-10-09 pass's cleanup script must not run: its list holds `reports-phone` (F104). The user was told the
+  other three unclear folders are empty or one old log; a corrected script follows F104's fix.
 - Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
   agreed Owner CSS round (Owner resume point, Next steps 6) waits for that step, whose trial writes its brief.
 
