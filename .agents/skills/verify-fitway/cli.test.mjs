@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { watch } from "node:fs";
 import {
 	mkdir,
@@ -363,14 +363,14 @@ test("short summary preserves axes, state, result and measuring error without bu
 	assert.equal(s.geometry, undefined);
 	assert.ok(JSON.stringify(s).length < 500);
 });
-test("doctor gives portable concrete repair commands; verification ports are restricted", () => {
+test("doctor gives portable concrete repair commands; verification ports are restricted", async () => {
 	const opts = { concept, recipes };
 	assert.match(
-		doctorFix(opts, new Error("Recipe drift")),
+		await doctorFix(opts, new Error("Recipe drift")),
 		/node '.*cli.mjs' repair-recipes --concept/,
 	);
 	assert.match(
-		doctorFix(opts, new Error("Chromium missing")),
+		await doctorFix(opts, new Error("Chromium missing")),
 		/cli.js' install chromium/,
 	);
 	for (const port of [3174, 3180, 3185])
@@ -1338,6 +1338,146 @@ test("W1: port options keep other previews excluded, and help names isolation an
 	assert.match(help.stdout, /30 minutes without a request/);
 });
 
+test("R17 V1: relaunch checks availability, prefers the session port and blocks when both are held", async () => {
+	const folder = resolve(scratch, "relaunch-session");
+	await mkdir(folder);
+	for (const sessionPort of [3176, 3177]) {
+		await writeFile(
+			resolve(folder, "session.json"),
+			JSON.stringify({ port: sessionPort }),
+		);
+		for (const held of [[], [3176], [3177], [3176, 3177]]) {
+			const checked = [];
+			const available = async (port) => {
+				checked.push(port);
+				if (held.includes(port)) throw new Error(`Port ${port} held`);
+			};
+			const fix = await doctorFix(
+				{ concept, session: folder },
+				new Error(`Session preview on port ${sessionPort} has stopped`),
+				available,
+			);
+			const expected = [sessionPort, sessionPort === 3176 ? 3177 : 3176].find(
+				(port) => !held.includes(port),
+			);
+			if (expected) {
+				assert.match(fix, new RegExp(` launch .*--port ${expected} `));
+				assert.equal(checked.at(-1), expected);
+			} else {
+				assert.match(fix, /^BLOCKED:.*3176.*3177.*held/);
+				assert.doesNotMatch(fix, /--port|\bstop\b/i);
+			}
+			assert.equal(checked[0], sessionPort);
+		}
+	}
+	const checked = [];
+	const fix = await doctorFix(
+		{ concept, port: 3177 },
+		new Error("Port 3177 held"),
+		async (port) => {
+			checked.push(port);
+			if (port === 3177) throw new Error("held");
+		},
+	);
+	assert.deepEqual(checked, [3177, 3176]);
+	assert.match(fix, /--port 3176 /);
+});
+
+function runCliAsync(args) {
+	return new Promise((done, reject) => {
+		const child = spawn(process.execPath, [cliPath, ...args], {
+			windowsHide: true,
+			stdio: ["ignore", "pipe", "pipe"],
+		});
+		let stdout = "";
+		let stderr = "";
+		child.stdout.on("data", (bytes) => {
+			stdout += bytes;
+		});
+		child.stderr.on("data", (bytes) => {
+			stderr += bytes;
+		});
+		child.once("error", reject);
+		child.once("close", (status) => done({ status, stdout, stderr }));
+	});
+}
+
+test("R17 V2: foreign status, body and silence name the session port without stopping its owner", async () => {
+	const { folder, session } = await launched("foreign-session", 10000);
+	assert.equal(runCli(["cleanup", "--session", folder]).status, 0);
+	let mode;
+	let stops = 0;
+	const server = createServer((req, res) => {
+		if (req.url === "/__verify/stop") stops++;
+		if (req.url !== "/__verify/identity") return res.end("foreign alive");
+		if (mode === "silent") return;
+		if (mode === "body-timeout") {
+			res.writeHead(200);
+			res.flushHeaders();
+			return;
+		}
+		if (mode === "disconnect") return req.socket.destroy();
+		res.writeHead(
+			mode === "status"
+				? 503
+				: mode === "empty"
+					? 204
+					: mode === "redirect"
+						? 302
+						: 200,
+			mode === "redirect" ? { Location: "/" } : {},
+		);
+		res.end(
+			mode === "json" ? "{}" : mode === "null" ? "null" : "foreign 127.0.0.1",
+		);
+	});
+	await new Promise((done) => server.listen(session.port, "127.0.0.1", done));
+	try {
+		for (mode of [
+			"text",
+			"json",
+			"null",
+			"status",
+			"empty",
+			"redirect",
+			"silent",
+			"body-timeout",
+			"disconnect",
+		]) {
+			for (const command of ["cleanup", "doctor", "drive"]) {
+				const result = await runCliAsync([
+					command,
+					"--concept",
+					concept,
+					"--session",
+					folder,
+					"--out",
+					resolve(scratch, `foreign-${mode}-${command}`),
+				]);
+				assert.equal(result.status, 1, `${mode}/${command}: ${result.stdout}`);
+				assert.match(
+					result.stderr,
+					new RegExp(`Port ${session.port} is not owned by this session`),
+					`${mode}/${command}: ${result.stderr}`,
+				);
+				assert.doesNotMatch(
+					result.stderr,
+					/Unexpected token|JSON|SyntaxError|Cannot read properties/,
+				);
+				assert.equal(
+					(await fetchRaw(session.port, "/")).body.toString(),
+					"foreign alive",
+				);
+			}
+		}
+		assert.equal(stops, 0);
+	} finally {
+		server.closeAllConnections();
+		await new Promise((done) => server.close(done));
+	}
+	await portAvailable(session.port);
+});
+
 test("W2: detached idle preview exits, frees its port, cleans idempotently and sessions require relaunch", async () => {
 	const { folder, session } = await launched("idle-expiry");
 	try {
@@ -1354,7 +1494,10 @@ test("W2: detached idle preview exits, frees its port, cleans idempotently and s
 			]);
 			assert.equal(result.status, 1);
 			assert.match(result.stderr, /Session preview.*stopped or is unreachable/);
-			assert.match(result.stderr, /FIX: .* launch .*--concept/);
+			assert.match(
+				result.stderr,
+				/FIX(?:: .* launch .*--concept| BLOCKED:.*3176.*3177.*held)/,
+			);
 		}
 		const cleaned = runCli(["cleanup", "--session", folder]);
 		assert.equal(cleaned.status, 0, cleaned.stderr);

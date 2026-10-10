@@ -283,7 +283,7 @@ async function doctorChecks(options) {
 	return { concept, map, tools, loaded };
 }
 
-export function doctorFix(options, error) {
+export async function doctorFix(options, error, available = portAvailable) {
 	if (error.fix) return error.fix;
 	const quote = (value) => `'${String(value).replaceAll("'", "''")}'`;
 	const concept = options.concept;
@@ -310,8 +310,31 @@ export function doctorFix(options, error) {
 		return "BLOCKED: restore the missing probe kit from an authoritative concept revision; this standalone folder has no git recovery source.";
 	}
 	if (/Python/.test(error.message)) return "py -m pip install numpy Pillow";
-	if (/port|Port|Session/.test(error.message))
-		return `${command} launch --concept ${quote(concept)} --port ${Number(options.port || 3176) === 3176 ? 3177 : 3176} --out ${quote(freshOutput())}`;
+	if (/port|Port|Session/.test(error.message)) {
+		let preferred = Number(options.port || 3176);
+		if (options.session) {
+			try {
+				const session = JSON.parse(
+					await readFile(resolve(options.session, "session.json"), "utf8"),
+				);
+				preferred = session.port;
+			} catch {
+				// A missing or invalid record cannot supply a preferred port.
+			}
+		}
+		const ports = [...new Set([preferred, 3176, 3177])].filter((port) =>
+			[3176, 3177].includes(port),
+		);
+		for (const port of ports) {
+			try {
+				await available(port);
+			} catch {
+				continue;
+			}
+			return `${command} launch --concept ${quote(concept)} --port ${port} --out ${quote(freshOutput())}`;
+		}
+		return "BLOCKED: verification ports 3176 and 3177 are both held; retry when a verification port is free.";
+	}
 	if (/Cannot find module/.test(error.message))
 		return `pnpm --dir ${quote(repository)} install --frozen-lockfile`;
 	return `${command} doctor ${args}`;
@@ -321,7 +344,7 @@ export async function doctor(options) {
 	try {
 		return await doctorChecks(options);
 	} catch (error) {
-		const fix = doctorFix(options, error);
+		const fix = await doctorFix(options, error);
 		console.error(
 			`DOCTOR FAIL: ${error.message}\nFIX${fix.startsWith("BLOCKED:") ? " " : ": "}${fix}`,
 		);
