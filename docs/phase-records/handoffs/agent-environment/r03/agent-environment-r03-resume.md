@@ -44,7 +44,7 @@
   - The first result `1dde2ffd`: V1-V2 pass. In V3, Daily's status is equal 5 of 5 under full motion and a planted
     change is caught. V4 (F119) was not reproduced: the base passes with both ports held.
   - The repair (sent 01:55) asks that a blinking text caret never make a compare differ:
-    `access.html/validate-pinChange` and `my-password` differed under full motion only. The 34 capture problems are
+    Access's pin-change validation and my-password features differed under full motion only. The 34 capture problems are
     the concept's missing recipe proofs (F123, Owner).
   - If `last-message.md` there is older than the newest `events-resume-*.jsonl`, the run stopped: resume it on its
     thread with `pnpm codex:round resume D:/fitway-temp/codex-runs/r03-round-30` and a one-line message.
