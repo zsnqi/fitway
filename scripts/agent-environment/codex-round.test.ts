@@ -1,4 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
 	chmodSync,
 	copyFileSync,
@@ -107,6 +108,8 @@ const args = process.argv.slice(2);
 const chunks = [];
 process.stdin.on('data', chunk => chunks.push(chunk));
 process.stdin.on('end', () => {
+  if (process.env.ROUND_WRITE_PATH) fs.writeFileSync(process.env.ROUND_WRITE_PATH, Buffer.from(process.env.ROUND_WRITE_CONTENT, 'base64'));
+  if (process.env.ROUND_REMOVE_PATH) fs.unlinkSync(process.env.ROUND_REMOVE_PATH);
   fs.writeFileSync(process.env.ROUND_CAPTURE, JSON.stringify({args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64')}));
   fs.writeFileSync(args[args.indexOf('-o') + 1], args.includes('resume') ? 'stand-in resumed message\\n' : 'stand-in last message\\n');
   process.stdout.write('{"type":"thread.star');
@@ -266,6 +269,219 @@ function refused(
 	expect(result.stderr).toContain(reason);
 	expect(existsSync(f.capture)).toBe(false);
 }
+
+function requiredFixture(kind = "repository", marked = true) {
+	const f = fixture();
+	const target = path.join(
+		kind === "absolute" ? f.root : f.worktree,
+		"required.bin",
+	);
+	const before = Buffer.from([0, 255, 128, 1]);
+	writeFileSync(target, before);
+	if (kind === "folder") {
+		rmSync(target);
+		mkdirSync(target);
+		mkdirSync(path.join(target, "nested"));
+		writeFileSync(path.join(target, "nested", "file.bin"), before);
+		writeFileSync(path.join(target, "other.bin"), "unchanged");
+	}
+	git(f.worktree, "add", ".");
+	git(f.worktree, "commit", "--allow-empty", "-m", "required content");
+	const named =
+		kind === "absolute" ? target.replaceAll("\\", "/") : "required.bin";
+	const outcome = `- **Outcome C1:** Update \`${named}\`${marked ? " (must change)" : ""}.`;
+	const input = f.bytes
+		.toString("utf8")
+		.replace(
+			f.head.slice(0, 8),
+			git(f.worktree, "rev-parse", "--short=8", "HEAD"),
+		);
+	const brief = `${input}\n## Causes and required outcomes\n\n${outcome}\n`;
+	writeFileSync(f.brief, brief);
+	git(f.coordinator, "add", ".");
+	git(f.coordinator, "commit", "-m", "required outcome");
+	return {
+		...f,
+		target,
+		before,
+		named,
+		outcome,
+		line: brief.split("\n").indexOf(outcome) + 1,
+	};
+}
+
+function comparison(f: ReturnType<typeof requiredFixture>, suffix = "") {
+	return JSON.parse(
+		readFileSync(path.join(f.run, `required-changes${suffix}.json`), "utf8"),
+	);
+}
+
+describe("C1 required changes", () => {
+	it.each([
+		["repository", false],
+		["repository", true],
+		["absolute", false],
+		["absolute", true],
+	] as const)("records a marked %s file (changed: %s)", (kind, changed) => {
+		const f = requiredFixture(kind);
+		const result = f.invoke(
+			undefined,
+			changed
+				? {
+						ROUND_WRITE_PATH: f.target,
+						ROUND_WRITE_CONTENT: Buffer.from([0, 255, 128, 2]).toString(
+							"base64",
+						),
+					}
+				: {},
+		);
+		expect(result.status, result.output).toBe(0);
+		const [record] = comparison(f);
+		expect(record).toMatchObject({
+			path: f.named,
+			line: f.line,
+			outcome: f.outcome,
+			changed,
+		});
+		const baseline = JSON.parse(
+			readFileSync(path.join(f.run, "run.json"), "utf8"),
+		).requiredChanges[0];
+		expect(baseline.before).toEqual({
+			kind: "file",
+			sha256: createHash("sha256").update(f.before).digest("hex"),
+		});
+		const warning = `Required change unchanged: ${f.named} (brief line ${f.line}: ${f.outcome})`;
+		if (changed)
+			expect(result.stdout).not.toContain("Required change unchanged:");
+		else
+			expect(
+				result.stdout
+					.split(/\r?\n/)
+					.filter((line) => line.startsWith("Required change unchanged:")),
+			).toEqual([warning]);
+	});
+	it("treats a rewrite with identical bytes as unchanged", () => {
+		const f = requiredFixture("absolute");
+		const result = f.invoke(undefined, {
+			ROUND_WRITE_PATH: f.target,
+			ROUND_WRITE_CONTENT: f.before.toString("base64"),
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(comparison(f)[0].changed).toBe(false);
+		expect(result.stdout).toContain(`Required change unchanged: ${f.named}`);
+	});
+	it.each([
+		"modify",
+		"add",
+		"delete",
+	])("compares every file under a marked folder: %s", (operation) => {
+		const f = requiredFixture("folder");
+		const target = path.join(
+			f.target,
+			"nested",
+			operation === "add" ? "new.bin" : "file.bin",
+		);
+		const result = f.invoke(
+			undefined,
+			operation === "delete"
+				? { ROUND_REMOVE_PATH: target }
+				: {
+						ROUND_WRITE_PATH: target,
+						ROUND_WRITE_CONTENT: Buffer.from("changed").toString("base64"),
+					},
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(comparison(f)[0].changed).toBe(true);
+		expect(result.stdout).not.toContain("Required change unchanged:");
+		const baseline = JSON.parse(
+			readFileSync(path.join(f.run, "run.json"), "utf8"),
+		).requiredChanges[0].before;
+		expect(baseline.kind).toBe("directory");
+		expect(Object.keys(baseline.files)).toEqual([
+			"nested/file.bin",
+			"other.bin",
+		]);
+	});
+	it("refuses a marked missing absolute path at brief:check before launching", () => {
+		const f = requiredFixture("absolute");
+		rmSync(f.target);
+		refused(f, f.invoke(), "must change path does not exist:");
+		expect(existsSync(f.run)).toBe(false);
+	});
+	it("reports every unchanged marked path, including a folder, on its outcome line", () => {
+		const f = requiredFixture("folder");
+		const other = path.join(f.root, "other.bin").replaceAll("\\", "/");
+		writeFileSync(other, "other");
+		const outcome = `- **Outcome C2:** Update \`${other}\` (must change).`;
+		const brief = `${readFileSync(f.brief, "utf8")}${outcome}\n`;
+		writeFileSync(f.brief, brief);
+		git(f.coordinator, "add", ".");
+		git(f.coordinator, "commit", "-m", "second required path");
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(
+			comparison(f).map((record: { changed: boolean }) => record.changed),
+		).toEqual([false, false]);
+		expect(
+			result.stdout
+				.split(/\r?\n/)
+				.filter((line) => line.startsWith("Required change unchanged:")),
+		).toEqual([
+			`Required change unchanged: ${f.named} (brief line ${f.line}: ${f.outcome})`,
+			`Required change unchanged: ${other} (brief line ${brief.split("\n").indexOf(outcome) + 1}: ${outcome})`,
+		]);
+	});
+	it("checks still-unchanged paths after each resume against the launch baseline", () => {
+		const f = requiredFixture("absolute");
+		expect(f.invoke().status).toBe(0);
+		const original = readFileSync(path.join(f.run, "required-changes.json"));
+		writeFileSync(f.brief, "the launch outcome must be retained");
+		for (const suffix of ["-resume", "-resume-2"]) {
+			const result = f.invoke(["resume", f.run, "--message", "continue"], {
+				ROUND_EXIT: "19",
+			});
+			expect(result.status, result.output).toBe(19);
+			expect(comparison(f, suffix)[0]).toMatchObject({
+				changed: false,
+				outcome: f.outcome,
+				line: f.line,
+			});
+			expect(result.stdout).toContain(
+				`Required change unchanged: ${f.named} (brief line ${f.line}: ${f.outcome})`,
+			);
+		}
+		const result = f.invoke(["resume", f.run], {
+			ROUND_WRITE_PATH: f.target,
+			ROUND_WRITE_CONTENT: Buffer.from("changed").toString("base64"),
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(comparison(f, "-resume-3")[0].changed).toBe(true);
+		const again = f.invoke(["resume", f.run]);
+		expect(again.status, again.output).toBe(0);
+		expect(comparison(f, "-resume-4")[0].changed).toBe(true);
+		expect(again.stdout).not.toContain("Required change unchanged:");
+		expect(readFileSync(path.join(f.run, "required-changes.json"))).toEqual(
+			original,
+		);
+	});
+	it("removing the marker keeps launch and resume behavior exactly as before", () => {
+		const marked = requiredFixture("absolute");
+		expect(marked.invoke().status).toBe(0);
+		expect(comparison(marked)[0].changed).toBe(false);
+		const f = requiredFixture("absolute", false);
+		for (const args of [undefined, ["resume", f.run]]) {
+			const result = f.invoke(args);
+			expect(result.status, result.output).toBe(0);
+			expect(result.stdout).not.toContain("Required change");
+		}
+		expect(
+			JSON.parse(readFileSync(path.join(f.run, "run.json"), "utf8")),
+		).not.toHaveProperty("requiredChanges");
+		expect(
+			readdirSync(f.run).some((name) => name.startsWith("required-changes")),
+		).toBe(false);
+	});
+});
 
 describe("L1 launch", () => {
 	it("runs brief:check first and launches nothing for a failing brief", () => {
