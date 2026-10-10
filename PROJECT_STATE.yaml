@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-10T23:30:00+03:00
+updatedAt: 2026-10-11T00:50:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -131,6 +131,8 @@ milestones:
       - scripts/agent-environment/**
       - scripts/check-agent-context.mjs
       - scripts/check-agent-context.test.ts
+      - scripts/check-concept-css.mjs
+      - scripts/check-concept-css.test.ts
       - scripts/check-design-context.mjs
       - scripts/check-owner-tokens.mjs
       - scripts/check-test-runtime.mjs
