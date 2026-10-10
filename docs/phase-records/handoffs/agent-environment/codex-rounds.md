@@ -736,3 +736,28 @@ held-out checks live outside the repository and never appear here or in a brief.
   with both ports held; diff only in `core.mjs` and `cli.test.mjs`; the fast ladder passes on the clean tree. Z4:
   Codex's grades match.
 - **Failure cause:** none; round 17 had moved the pid into the error's cause, which the CLI does not print.
+
+## agent-environment-r03 round 20: `r03/briefs/round-20.md`, result `28a77408` (level high)
+
+- **Set-up:** the Owner CSS round's spec (build branch `ab504b28`, seam 3) needs forced-colours frames and ring
+  measurements. On `0d84bfbd` the CLI ignored an unknown `--colors` and printed `DRIVE PASS` in normal colours, and
+  ui-forensics 1.1.0 had no forced-colours option. Chromium's emulation was checked first: it renders the forced
+  palette (body to Canvas, box-shadow removed). The brief's commit `81cfa957` over HEAD `0d84bfbd` ran in a new
+  worktree, with a ui-forensics copy at `D:/fitway-temp/r03-r20-forensics/ui-forensics`. Held-out rows W1-W8 by the
+  coordinator; hashes of the machine-level skill were taken before launch.
+- **Brief rows, as Codex graded them:** V1-V3 pass:
+  - the colours axis on drive and compare, proved on the page by body background = Canvas;
+  - normal frames byte-identical, and an unknown value refused;
+  - the copy at 1.2.0, with the option in every browser tool and the self-test at 44 of 44;
+  - a refusal naming the version needed with 1.1.0;
+  - 51 verification tests, and the fast ladder with 3176-3177 free and held.
+- **Held-out rows:** W1-W8 pass (`D:/fitway-temp/r03-r20-grade/REPORT.md`):
+  - forced with touch, keyboard and file;
+  - compare EQUAL under forced;
+  - normal byte identity against the base CLI;
+  - probes under forced;
+  - the machine-level skill untouched;
+  - drive, measure and compare all refuse with 1.1.0;
+  - docs and `--help` updated, and the image self-test at 55 of 55;
+  - a planted copy that drops the option fails exactly the two new controls.
+- **Failure cause:** none. The copy is installed over the machine-level skill only with the user's yes.
