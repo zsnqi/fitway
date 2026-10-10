@@ -3,7 +3,7 @@
 
 - **As of:** codex/owner-redesign-r04 at `93ed2403`, 2026-10-10 21:30 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (item 40), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 12-16, the environment phase), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-43), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 12-16, the environment phase), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -70,8 +70,9 @@
       («كلشي تمام»), including a very fast tap on Android, so F3 needs no pointerdown class.
    3. F3, running: Codex high, `codex-press-hook.md` (`348ca375`), run folder `D:/fitway-temp/codex-runs/owner-r04-press-hook`,
       held-out rows Z1-Z7 in `D:/fitway-grader/owner-r04/press-hook-heldout.md`. Then one short verifier pass at high,
-      covering F3 and the css-review-fixes rows Y1, Y3, Y4 and Y6. Then the finished round goes to the user (item 11):
-      a plain summary, the link, and their acceptance.
+      covering F3 and the css-review-fixes rows Y1, Y3, Y4 and Y6. The user accepted the round on the phones
+      (DECISIONS 43): the close is reported to them in a line, with no further look, as long as every frame equals
+      `3b673daa`.
    5. F115 (the held press counts hover) goes to an agent-environment round. The concept CSS check joins the fast
       ladder only once the build is on the trunk.
 
