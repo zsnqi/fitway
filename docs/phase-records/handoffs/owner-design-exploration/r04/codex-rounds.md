@@ -466,3 +466,16 @@ checks live outside the repository and never appear here or in a brief. One line
   looks at that frame at full size. The brief left out a limit for the moments that move a control at full motion;
   the verifier pass checks them (V8).
 - **Held-out rows:** Z1-Z7 run in `verifier-press-hook.md` (`e217534d`), beside css-review-fixes' Y1, Y3, Y4 and Y6.
+- **The verifier pass** (`verifier-press-hook.md`, `e217534d`; `D:/fitway-temp/owner-r04-press-review/`): all twelve
+  checks pass, Z1-Z7 and Y1, Y3, Y4 and Y6 included. P3's release frame is equal when the transitions are seeked to
+  exact times. Its findings:
+  - F1: the `!important` animation drops any CSS animation a later screen gives a control;
+  - F2: the press relies on CSS nesting, `animation-composition` and `var()` in keyframes, unmeasured in Safari,
+    while the user accepted `3b673daa` on an iPhone;
+  - F3: the record leaves `tile`, `option` and Working open, and the markup holds no real `data-press` example;
+  - F4 and F5: two invisible computed and forced-colour differences.
+- **Coordinator's call:** the mechanism is replaced, not repaired. The changed hypothesis: keep the mechanism the user
+  tried, keep the one-step hook, and guard the omission with a check instead of a new mechanism. The successor is
+  `codex-press-hook-2.md` (`aa406fce`, held-out rows W1-W7 in `D:/fitway-grader/owner-r04/press-hook-2-heldout.md`).
+  F1 and F2 are the failure modes this round's rows did not cover, so the new brief makes both outcomes. It also
+  carries the forced-colours level chip's empty icon slot, which the review found and which was there before.
