@@ -659,3 +659,20 @@ held-out checks live outside the repository and never appear here or in a brief.
   the folder as protecting, but had no outcome that uncited folders stay proposable (B7's every-limit item), so
   Codex's fixture tests passed while the real survey proposed nothing; Codex's report stated the protection without
   the count. Repair 1 is round 16b.
+
+## agent-environment-r03 round 16b: `r03/briefs/round-16b.md`, result `eb5560d0` (level high, repair 1 of round 16's Y2)
+
+- **Set-up:** the brief's commits `6457d9bd` and `f61e3add` (the read-first heading on one line, after `brief:check`
+  failed on a wrapped heading) over HEAD `e0d00b5a`, launched alone. The coordinator listed before launch which of the
+  base survey's 38 folders tracked text cites (8) and which it does not (30). Graded by the coordinator from its own
+  survey of the result outside Codex's sandbox (`D:/fitway-temp/r03-r16b-coordinator/survey-1/`, 246 s, collection
+  complete): held-out row Y7 only; Y8-Y10 are graded on the repair-2 result, which carries this round's code.
+- **Brief rows, as Codex graded them:** R6 PASS (30 disposable proposals, one citation collection, 29 removed, a
+  late citation kept, 3.5 s); R5 and R7 FAIL: Codex's survey was blocked in its sandbox by
+  `[ERR_PNPM_VERIFY_DEPS_BEFORE_RUN] The value of the enableGlobalVirtualStore setting has changed` (F108), and it
+  reported the block without installing anything.
+- **Held-out rows:** Y7 partial. The survey proposes 31 folders, no binary file is a citation source, and 7 of the 8
+  cited folders are protected with their citations; `owner-r04-k02` is still proposed: its only citation is a path
+  written as a pattern (`D:/fitway-temp/owner-r04-k02/out/sheets/NN-<state>-<ar|en>.png`), which `references`
+  discards whole.
+- **Failure cause:** the code, for a case neither brief named: placeholders in a cited path. Repair 2 is round 16c.
