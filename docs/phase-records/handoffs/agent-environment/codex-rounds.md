@@ -919,3 +919,36 @@ held-out checks live outside the repository and never appear here or in a brief.
   - The coordinator ran the fast ladder once the ports were free: it passes without mutation (179 s).
 - **Failure cause:** none in the round. The ladder failure comes from concurrent rounds sharing the verification
   ports (F119).
+
+## agent-environment-r03 round 22: `r03/briefs/round-22.md`, result `7ab0a660` (level high, one repair)
+
+- **Set-up:** F115, found by the Owner CSS round's review: the held press counted a hover as a press, read only the
+  selected element, and refused a bare `release`.
+  - The brief's commit is `a798440e` over `eddee7b8`.
+  - A ui-forensics 1.3.0 copy is at `D:/fitway-temp/r03-r22-forensics/ui-forensics/`.
+  - The concept was read at `691d62d5` (no press) and `d1a01f3c` (press).
+  - Held-out rows Z1-Z10, plus Z11-Z12 added at grading.
+- **Result `60fbe943`:** P1-P5 pass as Codex graded them. With a mouse, the base is read after the hover settles,
+  and the control, its descendants and their `::before` and `::after` are compared. A bare `release` works, and
+  verify-fitway requires 1.3.1.
+- **Held-out** (Sonnet grader, `D:/fitway-temp/r03-r22-grade/REPORT.md`): 9 of 12 on the first attempt.
+  - Passed:
+    - Z1: at `691d62d5`, 8 controls in both languages read `no pressed style`, where the review had found 320 false
+      presses;
+    - Z2: at `d1a01f3c` the same controls read `shown`;
+    - Z3-Z5, Z10 and Z12: the fixtures;
+    - Z6: both release forms;
+    - Z7: the machine-level 1.3.0 is untouched and refused;
+    - Z8: the frames without a hold are byte-identical.
+  - Failed:
+    - Z9 and the P4 self-test: the copy's self-test was unchanged at 47 of 47 and caught neither planted defect;
+    - Z11: a touch press drawn by pointer events read `no pressed style`, a regression of round 21;
+    - the four new CLI press tests were skipped unless an unset variable named the copy.
+- **Repair 1 (`7ab0a660`):** the touch path keeps a base too. The copy's self-test gains planted controls (53 of 53;
+  the mutants give 52 and 51), and the CLI tests run without a copy (57 pass, 0 skipped).
+  - The coordinator reran the grader's fixtures on the repaired copy: touch `z11a` reads `shown`, and every other
+    case is unchanged.
+  - A copy planted with the pre-hover base fails the new P1 control.
+- **Failure cause:** the code, for Z11. Codex reported P4 as passing without the self-test change the brief named.
+- **Waiting on the user:** installing the 1.3.1 copy as the machine-level ui-forensics. Until then the CLI refuses a
+  held press with the machine-level 1.3.0 and names 1.3.1.
