@@ -812,3 +812,21 @@ held-out checks live outside the repository and never appear here or in a brief.
   an ordinary one (five causes in one pass, B6 relaxed). Where it helped: every question was settled before the
   briefs, no decision arrived mid-round except item 42, which the designer's own questions raised, and the review's
   checklist came straight from the spec's user stories and seams. One trial is a signal, not a verdict.
+
+## agent-environment-r03 round 23: `r03/briefs/round-23.md`, result `fda6416b` (level high, one repair)
+
+- **Set-up:** F116, `brief:check` passing a decision item the named file does not hold. The brief's commit `a798440e`
+  over `eddee7b8`, run beside round 22. On the base, a brief citing item 99 passed. Held-out rows Q1-Q9.
+- **Result `ef6c312a`:** D1-D3 pass as Codex graded them. Items after a backticked path are resolved in the named
+  worktree's copy, as a single item, a list, a range or a mixed list with `and`.
+- **Held-out** (`D:/fitway-temp/r03-r23-grade/`): 7 of 9 on the first attempt.
+  - Q1: the F116 case replayed on the build worktree, whose copy ends at item 41: 42 fails, 41 passes.
+  - Q2: all 50 landed briefs, pointed at the round's worktree, have no decision-item failure.
+  - Q3, Q5, Q7 and Q8 pass. A planted rule that never reports fails 7 tests.
+  - Q4 failed: a citation after an absolute path was never checked.
+  - Q6 failed: a numbered line inside a fenced block counted as an entry.
+- **Repair 1 (`fda6416b`):** absolute paths are read as written, and fenced lines are excluded. Q4 and Q6 pass, and
+  Q2 still has no failure: 9 of 9.
+- **Failure cause:** the brief, for Q4. Its D1 asked for absolute paths "as written" and also "as the existing path
+  check resolves it", which judges no absolute path (audit R1). B7 already asks that each case an outcome names be
+  checked on the base; this one was not. Q6 was not stated in the brief.
