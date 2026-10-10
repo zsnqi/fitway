@@ -117,8 +117,17 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 			]
 		: [];
 	return records.flatMap((record) => {
-		const lines = referenceText(record).replaceAll("\\", "/").split(/\r?\n/);
-		return lines.flatMap((line, index) => {
+		const cached =
+			!branch &&
+			record.referenceScope &&
+			key(record.referenceScope) === key(tempRoot ?? "D:/fitway-temp") &&
+			inside(record.referenceScope, value);
+		const lines = cached
+			? record.referenceLines
+			: referenceText(record).replaceAll("\\", "/").split(/\r?\n/);
+		return lines.flatMap((entry, index) => {
+			const line = cached ? entry.text : entry;
+			const lineNumber = cached ? entry.line : index + 1;
 			const text = line
 				.toLowerCase()
 				.replace(/(^|[^a-z0-9_./:-])(fitway-temp\/)/g, "$1d:/$2");
@@ -133,28 +142,42 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 				!branch &&
 				[
 					...text.matchAll(
-						/(?:[a-z]:\/|\/)[^\s`"'<>),;]+|[`"'<]((?:[a-z]:\/|\/)[^`"'<>\r\n]+)[`"'>]/g,
+						/[`"']((?:[a-z]:\/|\/)[^`"'\r\n]+)[`"']|<((?:[a-z]:\/|\/)(?:<[^<>\r\n]*>|[^<>\r\n])+)>|(?:[a-z]:\/|\/)(?:<[^<>\r\n]*>|[^\s`"'<>),;])+/g,
 					),
 				].some((match) => {
-					const raw = match[1] ?? match[0];
+					const quoted = match[1] ?? match[2];
+					let raw = quoted ?? match[0];
+					// Paired Markdown bold markers are formatting, not wildcards.
+					if (
+						!quoted &&
+						text.slice(Math.max(0, match.index - 2), match.index) === "**" &&
+						raw.endsWith("**")
+					)
+						raw = raw.slice(0, -2);
 					// Ambiguous sentence punctuation must also protect a folder
 					// whose real name ends in a dot; quoted spelling stays exact.
-					const targets = match[1] ? [raw] : [raw, raw.replace(/[.:*]+$/, "")];
+					const targets = quoted ? [raw] : [raw, raw.replace(/[.:]+$/, "")];
 					return targets.some((value) => {
-						const target = value
+						let target = value
 							.replace(/:\d+(?:-\d+)?$/, "")
 							.replace(/^\/([a-z])\//, "$1:/");
+						const placeholder = target.search(/[<*?{]/);
+						if (placeholder !== -1) {
+							// A pattern names only the complete segments before its
+							// first patterned segment, never a partial folder name.
+							target = target.slice(0, target.lastIndexOf("/", placeholder));
+							if (!inside(tempRoot ?? "D:/fitway-temp", target)) return false;
+						}
 						return (
 							text[match.index + match[0].length] !== "<" &&
-							!/[<*?]/.test(target) &&
-							key(target) !== key(tempRoot ?? "D:/fitway-temp") &&
+							!inside(target, tempRoot ?? "D:/fitway-temp") &&
 							key(target) !== key("D:/fitway-temp") &&
 							(inside(target, normalized) || inside(normalized, target))
 						);
 					});
 				});
 			return named || cited
-				? [{ source: record.source, line: index + 1, text: line.trim() }]
+				? [{ source: record.source, line: lineNumber, text: line.trim() }]
 				: [];
 		});
 	});
@@ -200,6 +223,10 @@ export function classifyWorktrees(
 		];
 		const statusMeasured = typeof worktree.status === "string";
 		const clean = statusMeasured ? worktree.status === "" : null;
+		const linksSafe =
+			worktree.linksMeasured === true &&
+			!worktree.linkErrors?.length &&
+			!worktree.links?.some((link) => link.outside || link.error);
 		const ageDays = (Date.now() - Date.parse(worktree.lastCommitAt)) / 86400000;
 		const self =
 			key(worktree.path) === key(current) ||
@@ -216,6 +243,7 @@ export function classifyWorktrees(
 						? "Registration path is missing"
 						: "Status was not measured")),
 			clean,
+			linksSafe,
 			self,
 			coordinatorReview:
 				worktree.exists &&
@@ -230,6 +258,7 @@ export function classifyWorktrees(
 				worktree.exists &&
 				worktree.merged &&
 				clean &&
+				linksSafe &&
 				!worktree.locked &&
 				!protectedBy.length &&
 				!self &&
@@ -384,23 +413,38 @@ export function parseFastSteps(source) {
 		(node) => ts.isFunctionDeclaration(node) && node.name?.text === "fastSteps",
 	);
 	const statement = fn?.body?.statements.find(ts.isReturnStatement);
-	function literal(node) {
-		if (ts.isStringLiteral(node)) return node.text;
-		if (ts.isArrayLiteralExpression(node)) return node.elements.map(literal);
-		throw new Error(
-			"fastSteps contains a non-literal step; cannot establish gate coverage",
-		);
-	}
 	if (!statement?.expression)
 		throw new Error("fastSteps return array is missing");
 	// A step may carry a trailing environment object; only its label and args matter.
 	if (!ts.isArrayLiteralExpression(statement.expression))
-		return literal(statement.expression);
-	return statement.expression.elements.map((step) =>
-		ts.isArrayLiteralExpression(step)
-			? [literal(step.elements[0]), literal(step.elements[1])]
-			: literal(step),
-	);
+		throw new Error(
+			"fastSteps return array is not literal; cannot establish gate coverage",
+		);
+	return statement.expression.elements.map((step, index) => {
+		const array = ts.isArrayLiteralExpression(step);
+		const label = array ? step.elements[0] : undefined;
+		const identity =
+			label && ts.isStringLiteral(label)
+				? `label ${JSON.stringify(label.text)}`
+				: `position ${index + 1} (1-based)`;
+		const fail = (part) => {
+			throw new Error(
+				`fastSteps step ${identity}: ${part} is not literal; cannot establish gate coverage`,
+			);
+		};
+		if (!array) fail("step");
+		if (!label || !ts.isStringLiteral(label)) fail("label");
+		const args = step.elements[1];
+		if (!args || !ts.isArrayLiteralExpression(args)) fail("arguments array");
+		return [
+			label.text,
+			args.elements.map((arg, argIndex) => {
+				if (!ts.isStringLiteral(arg))
+					fail(`argument ${argIndex + 1} (1-based)`);
+				return arg.text;
+			}),
+		];
+	});
 }
 
 export function calledImports(source) {

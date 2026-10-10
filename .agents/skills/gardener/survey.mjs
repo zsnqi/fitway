@@ -1,7 +1,15 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, lstatSync, realpathSync } from "node:fs";
-import { lstat, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import {
+	lstat,
+	mkdir,
+	readdir,
+	readFile,
+	readlink,
+	realpath,
+	writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parse as parseYaml } from "yaml";
@@ -26,6 +34,7 @@ import {
 	openBriefs,
 	parseFastSteps,
 	parseWorktreePorcelain,
+	references,
 	TRUNK_REF,
 } from "./facts.mjs";
 
@@ -163,6 +172,136 @@ export async function collectRecords({
 	};
 }
 
+// Let Git classify current tracked content, including .gitattributes overrides.
+// Comparing against an empty tree includes unchanged and newly staged files too.
+function binaryCitationSources(checkout) {
+	const emptyTree = git(["hash-object", "-t", "tree", "--stdin"], checkout);
+	return new Set(
+		git(
+			[
+				"diff",
+				"--numstat",
+				"-z",
+				"--no-renames",
+				"--no-ext-diff",
+				"--no-textconv",
+				emptyTree,
+				"--",
+			],
+			checkout,
+		)
+			.split("\0")
+			.filter((entry) => entry.startsWith("-\t-\t"))
+			.map((entry) => entry.slice(4)),
+	);
+}
+
+// Read tracked text for folder citations only: closed records are never instructions.
+export async function collectFolderRecords(
+	records,
+	{
+		checkout = root,
+		trackedFiles,
+		// Injected source lists belong to fixtures; real checkouts always use Git.
+		binaryFiles = trackedFiles ? new Set() : binaryCitationSources(checkout),
+		load = (source) => record(source, "tracked", checkout),
+		tempRoot,
+	} = {},
+) {
+	const all = new Map(
+		records
+			.filter((item) => !binaryFiles.has(item.source))
+			.map((item) => [item.source, item]),
+	);
+	const tracked =
+		trackedFiles ??
+		git(["ls-files", "-z"], checkout).split("\0").filter(Boolean);
+	for (const source of tracked) {
+		if (all.has(source) || binaryFiles.has(source)) continue;
+		try {
+			all.set(source, await load(source));
+		} catch (error) {
+			throw new Error(
+				`Cannot read tracked citation source ${source}: ${error.message}`,
+			);
+		}
+	}
+	// Any eligible citation related to a child of tempRoot is at or below tempRoot.
+	// Preserve original line numbers and reuse the same matcher to select lines once.
+	return [...all.values()].map((item) =>
+		tempRoot
+			? {
+					...item,
+					referenceScope: tempRoot,
+					referenceLines: references(tempRoot, [item], { tempRoot }),
+				}
+			: item,
+	);
+}
+
+export function plainPath(value) {
+	return value
+		.replace(/^\\\\\?\\UNC\\/i, "\\\\")
+		.replace(/^\\\\\?\\/, "")
+		.replaceAll("\\", "/");
+}
+
+export async function inspectWorktreeLinks(
+	absolute,
+	{ readLink = readlink } = {},
+) {
+	const base = path.resolve(absolute);
+	const result = { linksMeasured: true, links: [], linkErrors: [] };
+	async function visit(target) {
+		try {
+			const info = await lstat(filesystemPath(target));
+			if (info.isSymbolicLink()) {
+				const link = {
+					path: plainPath(target),
+					target: null,
+					resolvedTarget: null,
+					outside: null,
+					error: null,
+				};
+				result.links.push(link);
+				try {
+					link.target = plainPath(await readLink(filesystemPath(target)));
+					link.resolvedTarget = plainPath(
+						await realpath(filesystemPath(target)),
+					);
+					link.outside = !inside(base, link.resolvedTarget);
+				} catch (error) {
+					link.error = `${error.code ?? "ERROR"}: ${error.message}`;
+				}
+				return; // Never enter a junction or symlink, even an internal one.
+			}
+			if (info.isDirectory()) {
+				for (const entry of await readdir(filesystemPath(target)))
+					await visit(path.join(target, entry));
+			}
+		} catch (error) {
+			result.linksMeasured = false;
+			result.linkErrors.push(
+				`${plainPath(target)}: ${error.code ?? "ERROR"}: ${error.message}`,
+			);
+		}
+	}
+	try {
+		const resolved = plainPath(await realpath(filesystemPath(base)));
+		if (key(base) !== key(resolved))
+			result.linkErrors.push(
+				`${plainPath(base)}: worktree path aliases ${resolved}`,
+			);
+	} catch (error) {
+		result.linksMeasured = false;
+		result.linkErrors.push(
+			`${plainPath(base)}: ${error.code ?? "ERROR"}: ${error.message}`,
+		);
+	}
+	await visit(base);
+	return result;
+}
+
 export function briefLifecycle(brief, readGit = git) {
 	const fields = brief.text.match(
 		/^- \*\*Worktree:\*\* `([^`]+)`, branch `([^`]+)`, HEAD `([a-f0-9]{4,40})`\s*$/im,
@@ -220,6 +359,8 @@ export async function collectGit(
 		current = root,
 		readGit = (args, cwd = current) => git(args, cwd),
 		exists = existsSync,
+		inspectLinks = inspectWorktreeLinks,
+		worktreeRoot,
 	} = {},
 ) {
 	const trunk = {
@@ -261,6 +402,8 @@ export async function collectGit(
 		readGit(["worktree", "list", "--porcelain"]),
 	);
 	for (const worktree of registrations) {
+		// Cleanup needs fresh safety state only for worktrees inside this candidate.
+		if (worktreeRoot && !inside(worktreeRoot, worktree.path)) continue;
 		worktree.exists = exists(worktree.path);
 		if (worktree.exists) {
 			try {
@@ -291,6 +434,7 @@ export async function collectGit(
 				worktree.statusReason = `Status could not be measured: ${error.message}`;
 			}
 		}
+		Object.assign(worktree, await inspectLinks(worktree.path));
 	}
 	const worktrees = classifyWorktrees(registrations, records, current);
 	return {
@@ -348,7 +492,12 @@ export async function collectFolders(
 	worktrees,
 	out,
 	tempRoot = defaultTempRoot,
+	referenceOptions = {},
 ) {
+	const folderRecords = await collectFolderRecords(records, {
+		...referenceOptions,
+		tempRoot,
+	});
 	const folders = [];
 	for (const entry of await readdir(filesystemPath(tempRoot), {
 		withFileTypes: true,
@@ -360,7 +509,13 @@ export async function collectFolders(
 			console.log(`Survey folders measured: ${folders.length}`);
 		folders.push(await measureFolder(absolute));
 	}
-	return classifyFolders(folders, records, worktrees, tempRoot, Date.now());
+	return classifyFolders(
+		folders,
+		folderRecords,
+		worktrees,
+		tempRoot,
+		Date.now(),
+	);
 }
 
 async function ruleHomes() {
@@ -713,6 +868,10 @@ function powershellQuote(value) {
 	return `'${value.replaceAll("'", "''")}'`;
 }
 
+export function worktreeRemovalCommand(target, checkout = root) {
+	return `node ${powershellQuote(path.join(root, ".agents/skills/gardener/remove-worktree.mjs"))} --checkout ${powershellQuote(checkout)} --worktree ${powershellQuote(target)}`;
+}
+
 export function surveyOutcome(report) {
 	return !report.complete ||
 		report.checks.some(checkFailed) ||
@@ -876,7 +1035,7 @@ async function main(args) {
 				.filter((item) => item.candidate)
 				.map((item) => ({
 					path: item.path,
-					command: `git worktree remove ${powershellQuote(item.path)}`,
+					command: worktreeRemovalCommand(item.path),
 				})) ?? [],
 		registrations:
 			report.git?.worktrees

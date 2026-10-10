@@ -294,6 +294,7 @@ describe("gardener round 12", () => {
 				[],
 				path.join(run, "out"),
 				tempRoot,
+				{ checkout },
 			);
 			expect(folders.every((item) => item.candidate)).toBe(true);
 			const scripts = folders.map((folder, index) => {

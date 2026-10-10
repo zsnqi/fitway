@@ -146,7 +146,15 @@ describe("gardener fixture classifications", () => {
 		const trees = classifyWorktrees(
 			[
 				{ ...raw[0], exists: false },
-				{ ...raw[1], exists: true, merged: true, status: "" },
+				{
+					...raw[1],
+					exists: true,
+					merged: true,
+					status: "",
+					linksMeasured: true,
+					links: [],
+					linkErrors: [],
+				},
 				{ path: "D:/dirty", exists: true, merged: true, status: "?? new.txt" },
 				{ path: "D:/current", exists: true, merged: true, status: "" },
 				{
@@ -294,7 +302,7 @@ describe("gardener fixture classifications", () => {
 		expect(gaps.duplicates[0].trails).toHaveLength(2);
 		expect(() =>
 			parseFastSteps("function fastSteps(){return getSteps()}"),
-		).toThrow(/non-literal/);
+		).toThrow(/return array is not literal/);
 		expect(
 			calledImports(
 				'import { check } from "./context.mjs"; import { unused } from "./unused.mjs"; check();',
