@@ -32,7 +32,7 @@ Git Bash may rewrite browser paths; use PowerShell for the examples below. All J
 ## Discover and check
 
 `list --page activity.html` prints feature ids, states, switches, dependencies, user reach and observable proof.
-`--page` and `--feature` select one path; language, size, input, motion and transport multiply its frames.
+`--page` and `--feature` select one path; language, size, input, motion, transport and colours multiply its frames.
 Use `help` for the full command and axis inventory. Every consumer rediscovers the source, including openings and
 opener controls, including every `aria-haspopup` value except `false`. Specimens need explicit recipe coverage too.
 A source edit alone is not drift. Uncovered openings/openers and vanished recipe selectors/markers fail
@@ -121,6 +121,12 @@ node $cli drive --concept $concept --recipes $recipes --page access.html --featu
 Activity's `case=long` needs `record`; this build's recipe applies `record=1001` and checks the visible long-name
 record and arrival focus. If another build has no default, supply `--query 'case=long&record=<valid id>'`.
 
+`--colors normal,forced` adds the colours axis to drive and compare; omitting it selects normal.
+Forced requires ui-forensics **1.2.0 or later** (use `--forensics <copy>` until installed).
+Every forced item records the computed body background and Canvas palette colour and refuses a mismatch.
+Each manifest item and FRAME line names normal or forced. Normal keeps its existing filenames;
+forced filenames add `-forced`, so mixed runs cannot overwrite frames.
+
 ## Compare
 
 Extract the requested baseline revision once outside all git trees, then give its concept folder to `compare`.
@@ -148,7 +154,8 @@ Personally inspect exact named rendered frames
 at the required sizes and languages; logs/hashes do not establish visual quality or human acceptance.
 
 `measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>` delegates to
-ui-forensics. Read that tool's help for advanced measurements. Extend this path when an adapter is missing instead
+ui-forensics. `measure --colors forced` passes `--forced-colors active`; tool arguments can supply it directly.
+Forced requests in tool arguments and frame/probe matrices also require 1.2.0 before delegation. Read that tool's help for advanced measurements. Extend this path when an adapter is missing instead
 of writing another server, launcher or capture loop. The concept is synthetic; preserve privacy and data semantics.
 
 Verifier rules (one canonical statement):
