@@ -7,6 +7,7 @@ export const MEASURES = [
 	"typeEscapes",
 	"suppressions",
 	"repeatedWorkarounds",
+	"accessibilityOverrides",
 	"duplication",
 	"boundaryBreaks",
 ];
@@ -93,6 +94,9 @@ export function scanScope(files, { sharedFiles = [] } = {}) {
 		typeEscapes: source.flatMap((item) => item.typeEscapes),
 		suppressions: source.flatMap((item) => item.suppressions),
 		repeatedWorkarounds: source.flatMap((item) => item.repeatedWorkarounds),
+		accessibilityOverrides: source.flatMap(
+			(item) => item.accessibilityOverrides,
+		),
 		duplication: scanDuplication(files),
 		boundaryBreaks: scanBoundaryBreaks(files, sharedFiles),
 	};

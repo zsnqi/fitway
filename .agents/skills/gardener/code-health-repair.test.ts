@@ -228,3 +228,129 @@ describe("round 24 repair controls", () => {
 		});
 	});
 });
+
+describe("round 31 accessibility override controls", () => {
+	it.each([
+		"forced-colors: active",
+		"prefers-reduced-motion: reduce",
+		"prefers-contrast: more",
+	])("sets aside positive %s overrides with file and line evidence", (condition) => {
+		const result = scanScope([
+			{
+				file: "accessible.css",
+				text: `@media (${condition}) {\n.x { color: red !important; }\n}`,
+			},
+		]);
+		expect(result.repeatedWorkarounds.total).toBe(0);
+		expect(result.accessibilityOverrides).toEqual({
+			total: 1,
+			hits: [
+				{
+					file: "accessible.css",
+					line: 2,
+					detail: "!important accessibility override",
+				},
+			],
+		});
+	});
+
+	it("sets aside combined conditions and preserves top-level workarounds", () => {
+		const result = scanScope([
+			{
+				file: "combined.css",
+				text: [
+					".before { color: red !important; }",
+					"@MEDIA only screen and (min-width: 40rem) and (PREFERS-CONTRAST: MORE) {",
+					"  .x { color: blue ! IMPORTANT; }",
+					"}",
+					".after { color: green !important; }",
+				].join("\n"),
+			},
+		]);
+		expect(result.repeatedWorkarounds.hits).toEqual([
+			{ file: "combined.css", line: 1, detail: "!important" },
+			{ file: "combined.css", line: 5, detail: "!important" },
+		]);
+		expect(result.accessibilityOverrides.total).toBe(1);
+		expect(result.accessibilityOverrides.hits[0].line).toBe(3);
+	});
+
+	it("inherits accessibility context at any block nesting depth", () => {
+		const result = scanScope([
+			{
+				file: "nested.css",
+				text: [
+					"@supports (display: grid) {",
+					"  @media (min-width: 40rem) {",
+					"    @media (forced-colors: active) and (prefers-reduced-motion: reduce) {",
+					"      @supports (display: flex) {",
+					"        .outer { & .inner { color: red !important; } }",
+					"      }",
+					"      @media not (prefers-contrast: more) { .x { color: blue !important; } }",
+					"    }",
+					"    .after { color: green !important; }",
+					"  }",
+					"}",
+				].join("\n"),
+			},
+		]);
+		expect(result.repeatedWorkarounds.hits).toEqual([
+			{ file: "nested.css", line: 9, detail: "!important" },
+		]);
+		expect(result.accessibilityOverrides.total).toBe(2);
+		expect(result.accessibilityOverrides.hits.map((hit) => hit.line)).toEqual([
+			5, 7,
+		]);
+	});
+
+	it.each([
+		"@media not screen and (forced-colors: active)",
+		"@media not (prefers-reduced-motion: reduce)",
+		"@media screen and not (prefers-contrast: more)",
+		"@media (forced-colors: active) or (min-width: 40rem)",
+		"@media (prefers-contrast: more), screen",
+		"@media (forced-colors: none)",
+		"@media (prefers-reduced-motion: no-preference)",
+		"@media (prefers-contrast: less)",
+		"@supports (forced-colors: active)",
+	])("keeps %s declarations as workarounds", (query) => {
+		const result = scanScope([
+			{
+				file: "negative.css",
+				text: `${query} { .x { color: red !important; } }`,
+			},
+		]);
+		expect(result.repeatedWorkarounds.total).toBe(1);
+		expect(result.accessibilityOverrides?.total ?? 0).toBe(0);
+	});
+
+	it("prints the override count and locations from HTML styles", () => {
+		const measures = scanScope([
+			{
+				file: "page.html",
+				text: [
+					"<style>",
+					"/* @media (forced-colors: active) { */",
+					'.plain { content: "@media (forced-colors: active) {"; color: red !important; }',
+					"@media /* mode */ (prefers-reduced-motion: reduce) {",
+					'  .x { content: "} !important"; transition: none !important; }',
+					"}",
+					"</style>",
+					'<p style="color: red !important">Text</p>',
+				].join("\n"),
+			},
+		]);
+		expect(measures.repeatedWorkarounds.total).toBe(2);
+		expect(measures.accessibilityOverrides.total).toBe(1);
+		const printed = formatReport({
+			checks: [],
+			codeHealth: {
+				comparedWith: "older",
+				scopes: [{ name: "concept", status: "ok", measures }],
+			},
+		});
+		expect(printed).toContain("- accessibilityOverrides: 1");
+		expect(printed).toContain("page.html:5");
+		expect(printed).toContain("!important accessibility override");
+	});
+});

@@ -125,6 +125,19 @@ function script(text, offset, isTypeScript, add, addComment) {
 	});
 }
 
+function accessibilityMedia(prelude) {
+	const condition = prelude.match(/^\s*@media\b([\s\S]*)$/i)?.[1];
+	// Only positive conjunctions qualify. A negation or alternative cannot
+	// guarantee that the declarations apply in an accessibility mode.
+	return (
+		condition !== undefined &&
+		!/(?:\b(?:not|or)\b|,)/i.test(condition) &&
+		/\(\s*(?:forced-colors\s*:\s*active|prefers-reduced-motion\s*:\s*reduce|prefers-contrast\s*:\s*more)\s*\)/i.test(
+			condition,
+		)
+	);
+}
+
 function css(text, offset, add, addComment) {
 	let code = "";
 	let cursor = 0;
@@ -147,8 +160,30 @@ function css(text, offset, add, addComment) {
 			cursor += 2;
 		} else code += text[cursor++];
 	}
-	for (const match of code.matchAll(/!\s*important\b/gi))
-		add("repeatedWorkarounds", offset + match.index, "!important");
+	const blocks = [];
+	let preludeStart = 0;
+	let valueDepth = 0;
+	for (const match of code.matchAll(/[(){};[\]]|!\s*important\b/gi)) {
+		const token = match[0];
+		if (token.startsWith("!")) {
+			add(
+				blocks.at(-1) ? "accessibilityOverrides" : "repeatedWorkarounds",
+				offset + match.index,
+				blocks.at(-1) ? "!important accessibility override" : "!important",
+			);
+		} else if (token === "(" || token === "[") valueDepth++;
+		else if (token === ")" || token === "]")
+			valueDepth = Math.max(0, valueDepth - 1);
+		else if (valueDepth === 0) {
+			if (token === "{")
+				blocks.push(
+					Boolean(blocks.at(-1)) ||
+						accessibilityMedia(code.slice(preludeStart, match.index)),
+				);
+			else if (token === "}") blocks.pop();
+			preludeStart = match.index + token.length;
+		}
+	}
 }
 
 function html(text, add, addComment) {
@@ -186,7 +221,12 @@ function html(text, add, addComment) {
 }
 
 export function scanSource({ file, text }) {
-	const result = { typeEscapes: [], suppressions: [], repeatedWorkarounds: [] };
+	const result = {
+		typeEscapes: [],
+		suppressions: [],
+		repeatedWorkarounds: [],
+		accessibilityOverrides: [],
+	};
 	const add = (measure, index, detail) => {
 		result[measure].push({
 			file,
