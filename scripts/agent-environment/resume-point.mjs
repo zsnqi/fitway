@@ -37,10 +37,12 @@ const TEMPLATE_PLACEHOLDERS = [
 ].map(
 	(placeholder) =>
 		new RegExp(
-			placeholder
-				.split(/\s+/)
-				.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-				.join("\\s+"),
+			(placeholder.startsWith("<") ? "(?<![\\w./\\\\*?-])" : "") +
+				placeholder
+					.split(/\s+/)
+					.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+					.join("\\s+") +
+				(placeholder.startsWith("<") ? "(?![\\w./\\\\*?-])" : ""),
 		),
 );
 

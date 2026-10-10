@@ -594,9 +594,9 @@ describe("check-agent-context", () => {
 		materializePacket(root, state, packet, packetPath);
 		const result = await checkAgentContext({ root, checkTracked: false });
 		expect(result.ok).toBe(false);
-		expect(result.errors).toContain(
+		expect(result.errors).toEqual([
 			`${packetPath}: taskClass ${JSON.stringify(taskClass)} has no route`,
-		);
+		]);
 	});
 	it("isolates fixture active state to the milestones under test", () => {
 		const root = makeFixture();
@@ -606,16 +606,18 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current registry with its live frontier and closed archived packets", async () => {
+	it("K1: passes the current registry with its live frontier and closed archived packets", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
 		});
 		expect(result.registry).not.toHaveProperty("mode");
-		const liveState = parseYaml(
-			readFileSync(path.resolve(REAL_ROOT, "PROJECT_STATE.yaml"), "utf8"),
-		);
-		expect(result.state?.milestones).toEqual(liveState.milestones);
+		// This frontier is an independent expectation, not another ledger parse.
+		expect(Object.keys(result.state?.milestones ?? {}).sort()).toEqual([
+			"access-reason-cap-r01",
+			"agent-environment-r03",
+			"owner-design-exploration-r04",
+		]);
 		expect(
 			result.history?.milestones?.[
 				"owner-design-exploration-envelope-repair-r01"
