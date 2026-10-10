@@ -15,6 +15,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { runInNewContext } from "node:vm";
 import { child, doctorFix, playwright } from "./cli.mjs";
 import { measurementColors } from "./colors.mjs";
 import { diffStem } from "./compare.mjs";
@@ -28,7 +29,12 @@ import {
 	shortFinding,
 	verificationPort,
 } from "./core.mjs";
-import { performAction, proveFeature, reachByKeyboard } from "./drive.mjs";
+import {
+	focusedElement,
+	performAction,
+	proveFeature,
+	reachByKeyboard,
+} from "./drive.mjs";
 import {
 	coverageProblems,
 	discoverElements,
@@ -440,7 +446,7 @@ test("a focused control whose keys do not produce the feature reports keyboard u
 			"ar",
 			"keyboard",
 		),
-		/Not reachable by keyboard via the recorded sequence: #dialog; focus stopped at #mouse-only; dialog stayed closed/,
+		/Not reachable by keyboard via the recorded sequence: #dialog; focus stopped at #mouse-only \(element\); dialog stayed closed/,
 	);
 	await assert.rejects(
 		proveFeature(page, { selector: "#dialog", visible: true }, "ar", "mouse"),
@@ -1069,13 +1075,14 @@ async function runnerFixture(name, features, options = {}) {
 export const launchChromium=async()=>({close:async()=>{}});
 export async function newContext(browser, options) {
  let focus="body", open=false;
- const page={setDefaultTimeout(){},
+const page={setDefaultTimeout(){},
+context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
   evaluate:async(fn)=>fn.toString().includes("coarse")
    ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
-   : fn.toString().includes("document.activeElement") ? {selector:focus,text:focus} : {},
-  locator:(selector)=>({first(){return this},count:async()=>1,
-   evaluate:async()=>focus===selector,ariaSnapshot:async()=>"body",
+: fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : {},
+locator:(selector)=>({first(){return this},count:async()=>1,
+evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body":'- button "Open details"',
    waitFor:async()=>{if(selector==="#dialog"&&!open)throw new Error("dialog stayed closed")}}),
   keyboard:{press:async(key)=>{if(key==="Tab")focus=focus==="body"?"#opener":"body";
    if(key==="Enter"&&focus==="#opener"){open=true;focus="#field"}}}};
@@ -1553,7 +1560,7 @@ await writeFile(resolve(out,"tool-invoked.json"),JSON.stringify(args));`,
 	assert.equal(existsSync(resolve(oldOut, "measure-manifest.json")), false);
 });
 
-test("V4: drive separates and names keyboard reach findings, and still fails", async () => {
+test("R30 V1/V2: focus names the page or control and summaries distinguish absence from keyboard access", async () => {
 	const { result, out } = await runnerFixture("keyboard-summary", [
 		{
 			id: "open",
@@ -1577,8 +1584,18 @@ test("V4: drive separates and names keyboard reach findings, and still fails", a
 	assert.equal(result.status, 1, result.stdout);
 	assert.match(
 		result.stdout,
-		/DRIVE FAIL: 3 items; 1 not reachable; 1 keyboard unreachable \(fixture.html\/pointer-only default en desktop keyboard reduce file\); 0 problems/,
+		/DRIVE FAIL: 3 items; 1 state\/feature unavailable by recipe \(cannot be reached\); 1 pointer feature unreachable by keyboard \(fixture.html\/pointer-only default en desktop keyboard reduce file\); 0 problems/,
 	);
+	assert.match(
+		result.stdout,
+		/State\/feature cannot be reached: Absent by design/,
+	);
+	assert.match(result.stdout, /Pointer feature unreachable by keyboard/);
+	assert.match(
+		result.stdout,
+		/Keyboard focus stopped on the page itself: body \(document\)/,
+	);
+	assert.doesNotMatch(result.stdout, /Whole page text|\(body\)/);
 	assert.equal(result.stderr, "", result.stderr);
 	const summary = JSON.parse(
 		await readFile(resolve(out, "summary.json"), "utf8"),
@@ -1587,6 +1604,104 @@ test("V4: drive separates and names keyboard reach findings, and still fails", a
 		summary.map((item) => item.result),
 		["pass", "not-reachable", "keyboard-unreachable"],
 	);
+});
+
+test("R30 V1: focus uses the element's accessibility name or role without reading text content", async () => {
+	const focus = { selector: "#control", tag: "input", role: null };
+	const node = {
+		role: { value: "textbox" },
+		name: { value: "Name from associated label" },
+	};
+	const requests = [];
+	let detached = 0;
+	const page = {
+		evaluate: async () => focus,
+		context: () => ({
+			newCDPSession: async () => ({
+				send: async (method, options) => {
+					requests.push([method, options]);
+					return method === "Runtime.evaluate"
+						? { result: { objectId: "focus" } }
+						: method === "Accessibility.getPartialAXTree"
+							? { nodes: [node] }
+							: {};
+				},
+				detach: async () => {
+					detached++;
+				},
+			}),
+		}),
+	};
+	assert.equal((await focusedElement(page)).name, "Name from associated label");
+	assert.deepEqual(requests[1], [
+		"Accessibility.getPartialAXTree",
+		{ objectId: "focus", fetchRelatives: false },
+	]);
+	assert.equal(detached, 1);
+	assert.equal(requests.at(-1)[0], "Runtime.releaseObject");
+	delete node.name;
+	assert.equal((await focusedElement(page)).name, "");
+	assert.equal((await focusedElement(page)).role, "textbox");
+	focus.page = true;
+	focus.tag = "body";
+	const count = requests.length;
+	assert.equal((await focusedElement(page)).role, "document");
+	assert.equal((await focusedElement(page)).name, "");
+	assert.equal(requests.length, count);
+});
+
+test("R30 V3: comparison waits for finite motion and fixes the phase of persistent motion", async () => {
+	const { settleComparison } = await import("./runner.mjs");
+	const finite = {
+		playState: "running",
+		effect: { getComputedTiming: () => ({ endTime: 200 }) },
+		finish() {
+			assert.fail("finite motion must finish naturally");
+		},
+	};
+	const persistent = {
+		playState: "running",
+		currentTime: 187,
+		effect: {
+			getComputedTiming: () => ({ endTime: Number.POSITIVE_INFINITY }),
+		},
+		pause() {
+			this.playState = "paused";
+		},
+	};
+	const sandbox = { document: { getAnimations: () => [finite, persistent] } };
+	const run = (fn) => runInNewContext(`(${fn.toString()})()`, sandbox);
+	const page = {
+		waitForFunction: async (predicate, arg, options) => {
+			assert.equal(arg, undefined);
+			assert.equal(options.timeout, 5000);
+			assert.equal(
+				run(predicate),
+				false,
+				"capture must wait while the popover is opening",
+			);
+			assert.equal(persistent.currentTime, 187);
+			finite.playState = "finished";
+			assert.equal(run(predicate), true);
+		},
+		evaluate: async (fn) => run(fn),
+	};
+	await settleComparison(page);
+	assert.equal(persistent.playState, "paused");
+	assert.equal(persistent.currentTime, 0);
+	let captured = false;
+	await assert.rejects(
+		settleComparison({
+			waitForFunction: async () => {
+				throw new Error("finite movement never settled");
+			},
+			evaluate: async () => {
+				captured = true;
+			},
+		}),
+		/never settled/,
+	);
+	assert.equal(captured, false);
 });
 
 test("V5: successful feature proof survives in both summaries beside state proof", async () => {

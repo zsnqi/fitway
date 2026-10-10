@@ -12,6 +12,7 @@ import {
 	verificationPort,
 } from "./core.mjs";
 import {
+	focusDescription,
 	focusedElement,
 	KeyboardReachError,
 	performAction,
@@ -137,6 +138,31 @@ export function itemSummary(entry) {
 		dependencies: entry.dependencies,
 		files: entry.files,
 	};
+}
+
+// Comparison measures a reproducible picture after the user flow. Ordinary drive
+// keeps its original capture timing, including frames taken during movement.
+export async function settleComparison(page) {
+	await page.waitForFunction(
+		() =>
+			document
+				.getAnimations()
+				.every(
+					(animation) =>
+						["finished", "idle"].includes(animation.playState) ||
+						!Number.isFinite(animation.effect.getComputedTiming().endTime),
+				),
+		undefined,
+		{ timeout: 5000 },
+	);
+	await page.evaluate(() => {
+		for (const animation of document.getAnimations()) {
+			if (!Number.isFinite(animation.effect.getComputedTiming().endTime)) {
+				animation.pause();
+				animation.currentTime = 0;
+			}
+		}
+	});
 }
 
 export async function drive(options) {
@@ -268,6 +294,8 @@ export async function drive(options) {
 									});
 									current.page.setDefaultTimeout(5000);
 									const save = async (suffix) => {
+										if (options.comparisonCapture)
+											await settleComparison(current.page);
 										const name = `${stem}-${suffix}.png`;
 										await writeFile(
 											await outputFile(out, name),
@@ -371,8 +399,7 @@ export async function drive(options) {
 												await prove(current.page, absent.proof, language);
 											entry.status = "not-reachable";
 											entry.problems.push(
-												absent?.reason ||
-													`Feature path unavailable at ${cssWidth} CSS pixels by its recipe`,
+												`State/feature cannot be reached: ${absent?.reason || `Feature path unavailable at ${cssWidth} CSS pixels by its recipe`}`,
 											);
 											await save("after");
 										} else {
@@ -383,7 +410,7 @@ export async function drive(options) {
 													.length
 											)
 												throw new KeyboardReachError(
-													`Not reachable by keyboard: ${feature.id} has no key sequence; focus stopped at ${(await focusedElement(current.page)).selector}`,
+													`Not reachable by keyboard: ${feature.id} has no key sequence; focus stopped ${focusDescription(await focusedElement(current.page))}`,
 												);
 											const actionRecipe =
 												feature.fullMotion && motion === "reduce"
@@ -588,11 +615,15 @@ export async function drive(options) {
 											error instanceof KeyboardReachError
 												? "keyboard-unreachable"
 												: "fail";
-										entry.problems.push(error.message);
+										entry.problems.push(
+											error instanceof KeyboardReachError
+												? `Pointer feature unreachable by keyboard: ${error.message}`
+												: error.message,
+										);
 										if (input === "keyboard") {
 											entry.finalFocus = await focusedElement(current.page);
 											entry.problems.push(
-												`Keyboard focus stopped at ${entry.finalFocus.selector} (${entry.finalFocus.text})`,
+												`Keyboard focus stopped ${focusDescription(entry.finalFocus)}`,
 											);
 										}
 										try {
@@ -658,7 +689,7 @@ export async function drive(options) {
 		const hasFindings = failed.length || keyboardUnreachable.length;
 		if (!options.quiet)
 			console.log(
-				`DRIVE ${hasFindings ? "FAIL" : "PASS"}: ${manifest.items.length} items; ${manifest.items.filter((i) => i.status === "not-reachable").length} not reachable; ${keyboardUnreachable.length} keyboard unreachable${keyboardUnreachable.length ? ` (${keyboardUnreachable.map((item) => `${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport}`).join(", ")})` : ""}; ${failed.length} problems; evidence ${out}/manifest.json`,
+				`DRIVE ${hasFindings ? "FAIL" : "PASS"}: ${manifest.items.length} items; ${manifest.items.filter((i) => i.status === "not-reachable").length} state/feature unavailable by recipe (cannot be reached); ${keyboardUnreachable.length} pointer feature unreachable by keyboard${keyboardUnreachable.length ? ` (${keyboardUnreachable.map((item) => `${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport}`).join(", ")})` : ""}; ${failed.length} problems; evidence ${out}/manifest.json`,
 			);
 		if (hasFindings)
 			throw new (options.quiet ? Error : ReportedFailure)(

@@ -91,7 +91,8 @@ Session identity authenticates cleanup; retain
 A `FRAME PASS` requires the requested state's visible proof and the feature's action/result proof. Unsupported
 state combinations with no proof fail explicitly. Dependent switches are applied with the recipe default or refused
 with the source reason. `NOT-REACHABLE` means the recipe says the feature is absent by design and proves that absence
-(for example status details while loading); it is neither a pass nor a failure. `PROBLEM` names a measuring tool's
+(for example status details while loading); the message and summary say that the state/feature cannot be reached.
+It is neither a pass nor a failure. `PROBLEM` names a measuring tool's
 error. Each item's findings survive, and the run continues. Overall failure still has a manifest and frames.
 
 Use source-supported switches or real user actions. Read-only readiness/state observations are allowed; internal
@@ -113,6 +114,9 @@ For roving controls or a different activation key, recipes can supply `keyboardA
 steps. Each key's before/after focused element is recorded in the full item JSON, with initial/final focus.
 `FRAME KEYBOARD-UNREACHABLE` fails the run and names the target and focus stop after a repeated Tab cycle or bounded
 sequence. Unsupported pointer actions require authored keyboard steps. Inspect the recorded sequence before claiming reach.
+Focus messages name the selector and accessible name (or role if unnamed), and explicitly identify focus on the page
+itself. `KEYBOARD-UNREACHABLE` means the pointer feature's recorded keyboard path failed; it differs from a recipe's
+designed absence (`NOT-REACHABLE`). Both manifest status values retain their existing meaning.
 The drive summary counts keyboard-unreachable items separately from problems, names each item, and still fails.
 Tab evidence names the move and its focus destination; activation evidence retains the requested action.
 `--states all` sweeps discovered switch values and recipe samples; use explicit states or query for a narrower claim.
@@ -143,6 +147,10 @@ Extract the requested baseline revision once outside all git trees, then give it
 The baseline can use the same recipe file with `--baseline-recipes`, or its own adjacent recipe file. Both sides
 run the same items and axes. Differences are captured again in fresh contexts before the final exact pixel result;
 no tolerance is added. Each differing item has a region, diff JSON and images in `comparison.json`.
+Only compare waits up to five seconds for finite Web Animations/CSS transitions to finish naturally before each
+capture, under both motion modes. Persistent animations are paused at time zero for an exact, reproducible phase.
+An unsettled finite animation is a capture problem. Ordinary drive retains its original motion and capture timing.
+Compare checks these settled pictures; use motion measurements for the movement's timing and intermediate frames.
 
 ```powershell
 $baseline = '<absolute extracted concept folder>'
