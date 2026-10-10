@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: accessibility overrides are not workarounds (agent-environment-r03, round 31)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-r31`, branch `agent-environment-r03-r31`, HEAD `8e547456`
+- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-r31`, branch `agent-environment-r03-r31`, HEAD `e0b199df`
 - **Milestone:** `agent-environment-r03`. Decisions: `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 20, 24.
 - **Read first, only these:**
   - `.agents/skills/gardener/code-health.mjs`, `.agents/skills/gardener/code-health-source.mjs` and their tests;

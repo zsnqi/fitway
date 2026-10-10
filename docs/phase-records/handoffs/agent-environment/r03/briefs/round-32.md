@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: a round's required changes are checked after it runs (agent-environment-r03, round 32)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-r32`, branch `agent-environment-r03-r32`, HEAD `8e547456`
+- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-r32`, branch `agent-environment-r03-r32`, HEAD `e0b199df`
 - **Milestone:** `agent-environment-r03`. Decisions: `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 6, 16.
 - **Read first, only these:**
   - `scripts/agent-environment/codex-round.mjs`, `scripts/agent-environment/check-brief.mjs` and their tests;
@@ -41,7 +41,7 @@ learns it from the launch command itself, before grading.
 
 - **C1. Nothing compares a round's required changes with what changed (F121).**
   - **Cause.** Twice on 2026-10-11 Codex reported an outcome PASS while a file it had to change was untouched (round
-    22's self-test file, outside git). Only held-out grading noticed. `codex-round.mjs` records the run's events,
+    22's self-test file, outside git). Only the grading noticed. `codex-round.mjs` records the run's events,
     last message and start load, nothing about the files the brief requires to change.
   - **Outcome.** A brief can mark a path an outcome requires to change by writing ` (must change)` right after its
     backticked path, as it writes ` (new)` today. `brief:check` accepts the marker on an existing file or folder
