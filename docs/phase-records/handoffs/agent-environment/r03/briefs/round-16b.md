@@ -3,8 +3,8 @@
 
 - **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-gardener`, branch `agent-environment-r03-gardener`, HEAD `e0d00b5a`
 - **Milestone:** `agent-environment-r03`. Decisions: `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 16, 24.
-- **Read first, only these:** `docs/phase-records/handoffs/agent-environment/r03/briefs/round-16.md` §"Causes and
-  required outcomes" (R2, your round 16); `.agents/skills/gardener/SKILL.md` and the scripts beside it.
+- **Read first, only these:** `docs/phase-records/handoffs/agent-environment/r03/briefs/round-16.md`
+  §"Causes and required outcomes" (R2, your round 16); `.agents/skills/gardener/SKILL.md` and the scripts beside it.
 
 <!-- environment:start v1 -->
 ## Environment
