@@ -617,7 +617,7 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 .dl-sort:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .rp .dl-sort .sort-ico { position: absolute; inset-inline-start: 14px; display: block; opacity: 1; pointer-events: none; }
 .dl-sort::after { content: ""; position: absolute; top: 17px; inset-inline-end: 17px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.dl-sort select { height: 44px; padding-inline: 38px 38px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: 2px solid transparent; cursor: pointer; }
+.dl-sort select { height: 44px; padding-inline: 38px 38px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: .dl-sort:has(select:focus-visible) */ cursor: pointer; }
 .dl-sort select option { background: #121112; color: var(--ink); }
 .day-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
 .dli { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "day pk" "more pt" "note note"; align-items: baseline; column-gap: 16px; row-gap: 2px; padding: 12px 8px; border-block-end: 1px solid rgba(255, 255, 255, 0.055); }

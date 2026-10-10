@@ -110,7 +110,7 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   gap: 24px;
   padding: 16px;
 }
-.main { min-width: 0; outline: 2px solid transparent; }
+.main { min-width: 0; outline: none; } /* #main is a programmatic target, tabindex=-1. */
 /* The first screen: header, cards and the chart. Its height is fixed to the viewport so the chart keeps its
  * geometry whether or not the details panel is open below it. */
 .fold {
@@ -942,8 +942,9 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   -webkit-backdrop-filter: blur(22px);
   backdrop-filter: blur(22px);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-  outline: 2px solid transparent;
 }
+/* Only the programmatically focused status panel suppresses its default outline. */
+.fw-pop[tabindex="-1"] { outline: none; }
 .fw-pop[hidden] { display: none; }
 .ops-pop { width: min(288px, calc(100vw - 32px)); }
 .menu-pop { min-width: 200px; }
@@ -1401,6 +1402,10 @@ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea {
     opacity: 1 !important;
   }
   :where(:disabled, [aria-disabled="true"], .is-disabled) * { color: inherit !important; }
+  /* Native lists have one edge and one focus ring, both drawn by their wrapper. */
+  .ac-sel select { border: 0 !important; background: transparent !important; outline: none !important; /* focus-ring: .ac-sel:has(select:focus-visible) */ }
+  .dl-sort select { border: 0 !important; background: transparent !important; outline: none !important; /* focus-ring: .dl-sort:has(select:focus-visible) */ }
+  .ac-sel:has(select:focus-visible), .dl-sort:has(select:focus-visible) { outline: 2px solid CanvasText; outline-offset: 3px; }
   /* Control glyphs follow their system text colour, including the logo and explicit chalk strokes. */
   .brand .mk, .cx-brand-mk .mk, .hb-chev, .fw-mi svg { stroke: currentColor !important; }
   .brand .mk-dot, .cx-brand-mk .mk-dot { fill: currentColor !important; }

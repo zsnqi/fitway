@@ -44,7 +44,7 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-index { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 16px 8px 0; font: var(--t-caption); }
 .cx-index a { color: var(--ink-3); text-decoration: underline; text-decoration-color: rgba(245, 243, 242, 0.25); text-underline-offset: 3px; }
 @media (hover: hover) { .cx-index a:hover { color: var(--ink); } }
-.cx-main { outline: 2px solid transparent; }
+.cx-main { outline: none; } /* #main is a programmatic target, tabindex=-1. */
 
 .cx-sec { margin-block-start: 48px; padding-block-start: 24px; border-block-start: 1px solid var(--line); }
 .cx-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-inline: 8px; }
