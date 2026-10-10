@@ -365,8 +365,8 @@
       </div>
       <div class="cx-row cx-row-2">
         <div class="card cx-stage"><p class="cx-stage-title">${L.f.focus}</p><div class="cx-grid" style="--min:180px">
-          ${fig(`<button class="cx-btn is-focus" type="button">${L.cancel}</button>`, L.focusCaps.ring, "FOC-1")}
-          ${fig(`<div class="cx-seg"><button class="cx-seg-b is-focus" type="button" aria-pressed="false">${L.seg["7d"]}</button><button class="cx-seg-b" type="button" aria-pressed="true">${L.seg["28d"]}</button></div>`, L.focusCaps.inset, "FOC-2")}
+          ${fig(`<button data-press="dark" class="cx-btn is-focus" type="button">${L.cancel}</button>`, L.focusCaps.ring, "FOC-1")}
+          ${fig(`<div class="cx-seg"><button data-press="option" class="cx-seg-b is-focus" type="button" aria-pressed="false">${L.seg["7d"]}</button><button data-press="option" class="cx-seg-b" type="button" aria-pressed="true">${L.seg["28d"]}</button></div>`, L.focusCaps.inset, "FOC-2")}
         </div></div>
         <div class="card cx-stage"><p class="cx-stage-title">${L.f.icons}</p><div class="cx-icons">${iconsRow}</div>
           <p class="cx-cap" style="margin-block-start:16px"><b>${L.iconCaps.mirror}</b><span>${b("ICO-5")}</span></p></div>
@@ -413,7 +413,7 @@
     // Q1 (user 2026-10-01): a third entry names the ring, which marks a single reading.
     const legend = (hist) => `<ul class="cx-legend">${`<li><i class="sw-line"></i>${L.keyLine}</li>`}${hist ? `<li><i class="sw-usual"></i>${L.keyUsual}</li>` : `<li>${ico("info")}${L.noHistory}</li>`}<li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`;
     const main = `<figure class="cx-fig" style="align-items:stretch"><section class="card lit lit-chart cx-chart" aria-label="${L.chartTitle}">${LAMP}
-      <header class="cx-chart-head"><h3>${L.chartTitle}</h3><div class="cx-chart-tools">${legend(true)}<button class="cx-btn" type="button" tabindex="-1">${L.details}${ico("chevron")}</button></div></header>
+      <header class="cx-chart-head"><h3>${L.chartTitle}</h3><div class="cx-chart-tools">${legend(true)}<button data-press="dark" class="cx-btn" type="button" tabindex="-1">${L.details}${ico("chevron")}</button></div></header>
       ${plotHost("plot-main", "live", "latest", 440)}</section>${cap(L.chartMain, "CHT-1…15 · CHT-18…20 · LGT-9", false)}</figure>`;
     const vars = [["peak", "live"], ["line", "live"], ["gap", "live"], ["ahead", "live"], ["latest", "delayed"], ["ahead", "nohistory"]].map(([sel, st], i) => {
       const title = st === "delayed" ? L.vars.delayed : st === "nohistory" ? L.vars.nohistory : L.vars[sel];
@@ -593,7 +593,7 @@
     const key = `<ul class="cx-legend"><li>${L.fewer}<i class="ramp" aria-hidden="true"></i>${L.more}</li><li><i class="k k0" aria-hidden="true">0</i>${L.emptyWord}</li><li><i class="k kc" aria-hidden="true"></i>${L.closed}</li><li><i class="k kn" aria-hidden="true"></i>${L.noReadings}</li><li><i class="k kt" aria-hidden="true"></i>${L.busiestKey}</li><li><i class="k kf" aria-hidden="true"></i>${L.fewKey}</li></ul>`;
     const main = `<figure class="cx-fig" style="align-items:stretch"><section class="card lit lit-chart cx-pattern" aria-labelledby="pattern-t">${LAMP}
       <header class="cx-pattern-head"><div><h3 id="pattern-t">${L.patternTitle}</h3><p id="pattern-sub">${sub}</p></div>
-        <div class="cx-pattern-tools">${key}<button class="cx-switch" id="numbers" type="button" role="switch" aria-checked="false"><span class="cx-track" aria-hidden="true"><span class="cx-thumb"></span></span><span>${L.numbers}</span></button></div></header>
+        <div class="cx-pattern-tools">${key}<button data-press="dark" class="cx-switch" id="numbers" type="button" role="switch" aria-checked="false"><span class="cx-track" aria-hidden="true"><span class="cx-thumb"></span></span><span>${L.numbers}</span></button></div></header>
       <div class="cx-heat-wrap" id="heat-wrap"><div class="cx-plate">${heatTable(model, { id: "heat" })}</div><div class="cx-tip cx-heat-tip" id="heat-tip" hidden></div></div>
       <p class="sr-only" id="pattern-keys">${L.heatKeys}</p></section>${cap(`${L.st.def} · ${L.st.focus}`, "PAT-1…10 · SRF-5 · TRU-2", false)}<span class="cx-live-tag">${L.live}</span></figure>`;
     const strip = `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-stage" inert><div class="cx-plate">${heatTable(model, { showN: true, onlyRows: [2, 4], grid: false })}</div></div>${cap(L.numbersOn, "PAT-8", false)}</figure>`;
@@ -714,16 +714,16 @@
 
   /* ------------------------------------------------------------ controls */
   function buttons() {
-    const sec = (cls, label, iconName = "") => `<button class="cx-btn ${cls}" type="button">${iconName ? ico(iconName) : ""}${label}</button>`;
+    const sec = (cls, label, iconName = "") => `<button data-press="${cls.split(" ").includes("primary") ? "chalk" : "dark"}" class="cx-btn ${cls}" type="button">${iconName ? ico(iconName) : ""}${label}</button>`;
     const items = [
-      [sec("", L.cancel), `${L.st.def}`, "BTN-2"], [sec("is-hover", L.cancel), L.st.hover, "BTN-2"], [sec("is-focus", L.cancel), L.st.focus, "FOC-1"], [`<button class="cx-btn" type="button" disabled>${L.cancel}</button>`, L.st.disabled, "BTN-4"],
+      [sec("", L.cancel), `${L.st.def}`, "BTN-2"], [sec("is-hover", L.cancel), L.st.hover, "BTN-2"], [sec("is-focus", L.cancel), L.st.focus, "FOC-1"], [`<button data-press="dark" class="cx-btn" type="button" disabled>${L.cancel}</button>`, L.st.disabled, "BTN-4"],
       [sec("", L.save, "save"), `${L.st.def} · ${b("17 px")}`, "BTN-1"],
-      [sec("primary", L.apply), L.st.def, "BTN-3"], [sec("primary is-hover", L.apply), L.st.hover, "BTN-3"], [sec("primary is-focus", L.apply), L.st.focus, "FOC-1"], [`<button class="cx-btn primary" type="button" disabled>${L.apply}</button>`, L.st.disabled, "BTN-4"], [`<button class="cx-btn primary" type="button" disabled aria-busy="true">${L.working}</button>`, L.st.working, "STA-9"],
-      [`<button class="cx-icon-btn" type="button" aria-label="${L.close}">${ico("close")}</button>`, L.st.def, "BTN-5"], [`<button class="cx-icon-btn is-hover" type="button" aria-label="${L.close}">${ico("close")}</button>`, L.st.hover, "BTN-5"], [`<button class="cx-icon-btn is-focus" type="button" aria-label="${L.close}">${ico("close")}</button>`, L.st.focus, "FOC-1"],
+      [sec("primary", L.apply), L.st.def, "BTN-3"], [sec("primary is-hover", L.apply), L.st.hover, "BTN-3"], [sec("primary is-focus", L.apply), L.st.focus, "FOC-1"], [`<button data-press="chalk" class="cx-btn primary" type="button" disabled>${L.apply}</button>`, L.st.disabled, "BTN-4"], [`<button data-press="chalk" class="cx-btn primary" type="button" disabled aria-busy="true">${L.working}</button>`, L.st.working, "STA-9"],
+      [`<button data-press="square" class="cx-icon-btn" type="button" aria-label="${L.close}">${ico("close")}</button>`, L.st.def, "BTN-5"], [`<button data-press="square" class="cx-icon-btn is-hover" type="button" aria-label="${L.close}">${ico("close")}</button>`, L.st.hover, "BTN-5"], [`<button data-press="square" class="cx-icon-btn is-focus" type="button" aria-label="${L.close}">${ico("close")}</button>`, L.st.focus, "FOC-1"],
     ];
     return section("buttons", "buttons", "BTN-1…8", `<div class="card cx-stage"><div class="cx-grid" style="--min:170px">${items.map(([h, s, id]) => fig(h, s, id)).join("")}</div></div>`);
   }
-  const seg = (pressed, extra = {}, cls = "") => `<div class="cx-seg ${cls}" role="group" aria-label="${L.segName}">${["7d", "28d", "custom"].map((k) => `<button class="cx-seg-b${extra[k] ? " " + extra[k] : ""}" type="button" aria-pressed="${k === pressed}"${k === "custom" ? ' aria-haspopup="dialog"' : ""}>${L.seg[k]}</button>`).join("")}</div>`;
+  const seg = (pressed, extra = {}, cls = "") => `<div class="cx-seg ${cls}" role="group" aria-label="${L.segName}">${["7d", "28d", "custom"].map((k) => `<button data-press="option" class="cx-seg-b${extra[k] ? " " + extra[k] : ""}" type="button" aria-pressed="${k === pressed}"${k === "custom" ? ' aria-haspopup="dialog"' : ""}>${L.seg[k]}</button>`).join("")}</div>`;
   function segs() {
     return section("seg", "seg", "SEG-1…5", `<div class="card cx-stage"><div class="cx-grid" style="--min:320px">
       ${fig(seg("28d"), `${L.st.def} · ${L.st.pressed}`, "SEG-2 · SEG-3")}
@@ -732,7 +732,7 @@
       ${fig(`<div class="cx-phone">${seg("7d", {}, "is-full")}</div>`, L.st.phone, "SEG-4", false)}
     </div></div>`);
   }
-  const switchEl = (on, cls = "") => `<button class="cx-switch ${cls}" type="button" role="switch" aria-checked="${on}"><span class="cx-track" aria-hidden="true"><span class="cx-thumb"></span></span><span>${L.numbers}</span></button>`;
+  const switchEl = (on, cls = "") => `<button data-press="dark" class="cx-switch ${cls}" type="button" role="switch" aria-checked="${on}"><span class="cx-track" aria-hidden="true"><span class="cx-thumb"></span></span><span>${L.numbers}</span></button>`;
   function switches() {
     return section("sw", "switch", "SWI-1…4", `<div class="card cx-stage"><div class="cx-grid" style="--min:170px">
       ${fig(switchEl(false), L.st.off, "SWI-2")}${fig(switchEl(false, "is-hover"), L.st.hover, "SWI-3")}${fig(switchEl(false, "is-focus"), L.st.focus, "FOC-1")}${fig(switchEl(true), L.st.on, "SWI-2")}
@@ -779,8 +779,8 @@
 
   /* Dialog specimens use Reports' actual panel, picker, file line and action classes. */
   const fileLine = () => `<p class="file-line">${ico("file")}<span class="file-name" dir="ltr">fitway-minutes-<wbr><span class="nw">2026-08-26</span>-to-<wbr><span class="nw">2026-09-22.csv</span></span><span class="file-rows">${L.rows}</span></p>`;
-  const panelHead = (title, id) => `<header class="dlg-head"><h2${id ? ` id="${id}"` : ""}>${title}</h2><button class="icon-btn" type="button" data-close aria-label="${L.close}">${ico("close")}</button></header>`;
-  const panelFoot = (primary, focus = "primary", busy = false, done = false) => `<footer class="dlg-foot"><button class="rbtn${focus === "cancel" ? " is-focus" : ""}" type="button" data-close>${done ? L.done : L.cancel}</button><button class="rbtn rbtn-primary${focus === "primary" ? " is-focus" : ""}" type="${busy || done ? "button" : "submit"}"${busy ? ' disabled aria-busy="true"' : ""}>${primary}</button></footer>`;
+  const panelHead = (title, id) => `<header class="dlg-head"><h2${id ? ` id="${id}"` : ""}>${title}</h2><button data-press="square" class="icon-btn" type="button" data-close aria-label="${L.close}">${ico("close")}</button></header>`;
+  const panelFoot = (primary, focus = "primary", busy = false, done = false) => `<footer class="dlg-foot"><button data-press="dark" class="rbtn${focus === "cancel" ? " is-focus" : ""}" type="button" data-close>${done ? L.done : L.cancel}</button><button data-press="chalk" class="rbtn rbtn-primary${focus === "primary" ? " is-focus" : ""}" type="${busy || done ? "button" : "submit"}"${busy ? ' disabled aria-busy="true"' : ""}>${primary}</button></footer>`;
   function dialogs() {
     const ready = `<div class="dlg-panel is-dates">${panelHead(L.rangeTitle)}<div class="dlg-body"><p class="dlg-desc">${L.rangeDesc}</p>${pickerHost("range-focus")}</div>${panelFoot(L.apply, "grid")}</div>`;
     const idle = `<div class="dlg-panel is-dates">${panelHead(L.exportTitle)}<div class="dlg-body">${pickerHost()}${fileLine()}</div>${panelFoot(`${ico("save")}${L.exportGo}`)}</div>`;
@@ -792,7 +792,7 @@
       ${fig(ready, L.dlgStates.ready, "DLG-2 · DLG-3 · PCK-7")}${fig(idle, L.exportIdle, "DLG-3 · PCK-1")}
       ${fig(working, L.dlgStates.working, "DLG-4 · STA-9")}${fig(failed, L.dlgStates.failed, "DLG-4 · EMP-2")}
       ${fig(done, L.dlgStates.done, "DLG-4")}${fig(sheet, L.dlgStates.sheet, "DLG-5")}
-      <figure class="cx-fig"><button class="cx-btn" type="button" id="open-dlg" aria-haspopup="dialog">${L.openDlg}</button><span class="cx-live-tag">${L.live}</span></figure>
+      <figure class="cx-fig"><button data-press="dark" class="cx-btn" type="button" id="open-dlg" aria-haspopup="dialog">${L.openDlg}</button><span class="cx-live-tag">${L.live}</span></figure>
     </div>`);
   }
   function liveDialogForm() {
@@ -850,14 +850,14 @@
     const item = (k, iconName) => {
       const name = L.nav[k], cur = k === "today", f = forced[k] || "";
       const glyph = iconName ? svg(P[iconName], k === "signout" ? "mirror" : "") : `<span class="cx-glyph">${LANG === "ar" ? "EN" : "AR"}</span>`;
-      return `<li><button class="cx-ri${f ? " " + f : ""}" type="button"${cur ? ' aria-current="page"' : ""}${open ? "" : ` aria-label="${name}"`}${live ? "" : ' tabindex="-1"'}><span class="cx-tile">${glyph}</span><span class="cx-rn"${k === "lang" ? ` lang="${LANG === "ar" ? "en" : "ar"}"` : ""}>${name}</span>${open ? "" : `<span class="cx-rtip" aria-hidden="true">${name}</span>`}</button></li>`;
+      return `<li><button class="cx-ri${f ? " " + f : ""}" type="button"${cur ? ' aria-current="page"' : ""}${open ? "" : ` aria-label="${name}"`}${live ? "" : ' tabindex="-1"'}><span data-press="${cur ? "tile" : "square"}" class="cx-tile">${glyph}</span><span class="cx-rn"${k === "lang" ? ` lang="${LANG === "ar" ? "en" : "ar"}"` : ""}>${name}</span>${open ? "" : `<span class="cx-rtip" aria-hidden="true">${name}</span>`}</button></li>`;
     };
     const bf = forced.brand || "";
-    return `<nav class="cx-rail${open ? " is-open" : ""}" aria-label="${L.railLabel}"><div class="brand"><button class="cx-ri${bf ? " " + bf : ""}" type="button" aria-label="${L.brand}"${live ? "" : ' tabindex="-1"'}><span class="cx-tile brand">${LOGO}</span><span class="cx-rn wordmark" lang="en">FITWAY</span>${open ? "" : `<span class="cx-rtip" aria-hidden="true">${L.railTip}</span>`}</button></div>
+    return `<nav class="cx-rail${open ? " is-open" : ""}" aria-label="${L.railLabel}"><div class="brand"><button class="cx-ri${bf ? " " + bf : ""}" type="button" aria-label="${L.brand}"${live ? "" : ' tabindex="-1"'}><span data-press="square" class="cx-tile brand">${LOGO}</span><span class="cx-rn wordmark" lang="en">FITWAY</span>${open ? "" : `<span class="cx-rtip" aria-hidden="true">${L.railTip}</span>`}</button></div>
       <ul>${NAV.map(([k, i]) => item(k, i)).join("")}</ul><ul class="foot">${FOOT.map(([k, i]) => item(k, i)).join("")}</ul></nav>`;
   }
   function rails() {
-    const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end">${hstatus()}</div></div><div class="cx-hdr-tools">${seg("28d")}<button class="cx-btn" type="button" tabindex="-1" style="margin-inline-start:auto">${ico("save")}<span>${L.exportMinutes}</span></button></div></div>`;
+    const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end">${hstatus()}</div></div><div class="cx-hdr-tools">${seg("28d")}<button data-press="dark" class="cx-btn" type="button" tabindex="-1" style="margin-inline-start:auto">${ico("save")}<span>${L.exportMinutes}</span></button></div></div>`;
     // RAI-6: the tablet's open rail over SRF-4's scrim, with two plain cards standing for the page behind it.
     const tablet = `<div class="cx-tablet"><div class="cx-tablet-page"><i class="card lit lit-card">${LAMP}</i><i class="card"></i><i class="card is-wide lit lit-chart">${LAMP}</i></div><i class="cx-scrim-spec"></i>${rail({ open: true })}</div>`;
     return section("rail", "rail", "RAI-1…8 · HDR-1…3 · FOC-4…5", `<div class="card cx-stage"><div class="cx-rails">
@@ -873,7 +873,7 @@
   /* ------------------------------------------------------------ the phone's frame (step 3) */
   // The page's own classes (style.css "the frame"), so a specimen is the page's form; components.css only places them.
   const TABS = ["today", "reports", "activity", "access", "settings"];
-  const bar = (forced = {}) => `<nav class="tabbar" aria-label="${L.railLabel}"><ul>${TABS.map((k) => `<li><a class="tb-item${forced[k] ? " " + forced[k] : ""}" href="#frame" tabindex="-1"${k === "today" ? ' aria-current="page"' : ""} aria-label="${L.nav[k]}"><span class="tb-tile">${svg(P[k], "")}</span><span class="tb-name">${L.tabs[k]}</span></a></li>`).join("")}</ul></nav>`;
+  const bar = (forced = {}) => `<nav class="tabbar" aria-label="${L.railLabel}"><ul>${TABS.map((k) => `<li><a class="tb-item${forced[k] ? " " + forced[k] : ""}" href="#frame" tabindex="-1"${k === "today" ? ' aria-current="page"' : ""} aria-label="${L.nav[k]}"><span data-press="${k === "today" ? "tile" : "square"}" class="tb-tile">${svg(P[k], "")}</span><span class="tb-name">${L.tabs[k]}</span></a></li>`).join("")}</ul></nav>`;
   const stateMark = (late) => (late ? svg(P.clock, "ico") : '<span class="dot" aria-hidden="true"></span>');
   const hbadge = (late, open, live) => `<button class="hbadge${late ? " is-delayed" : ""}" type="button"${live ? ' data-layer="ops"' : ' tabindex="-1"'} aria-expanded="${open}" aria-haspopup="dialog" aria-label="${L.opsTitle}: ${late ? L.delayedWord : L.liveWord}"><span class="hb-state">${stateMark(late)}<span class="hb-word">${late ? L.delayedWord : L.liveWord}</span></span>${svg(P.chevron, "hb-chev")}</button>`;
   const hmenu = (open, live) => `<button class="hbtn" type="button"${live ? ' data-layer="menu"' : ' tabindex="-1"'} aria-expanded="${open}" aria-haspopup="menu" aria-label="${L.more}">${svg(P.more, "")}</button>`;
@@ -925,8 +925,8 @@
 
   /* ------------------------------------------------------------ empty, alert, retry */
   function empties() {
-    const table = `<div class="card cx-table-card"><div class="cx-table-head"><div><h3>${L.daysTitle}</h3></div></div><table class="cx-table" role="table"><thead><tr role="row"><th scope="col">${L.cols.day}</th><th scope="col" class="n">${L.cols.peak}</th><th scope="col" class="n">${L.cols.avg}</th><th scope="col" class="n">${L.cols.entries}</th></tr></thead><tbody><tr role="row" class="is-empty"><td role="cell" colspan="4"><div class="cx-empty">${ico("info")}<p>${L.emptyTable}</p><button class="cx-btn" type="button">${L.emptyAction}</button></div></td></tr></tbody></table></div>`;
-    const alert = `<div class="card cx-stage" style="width:min(468px,100%)"><div class="cx-alert" role="alert" style="margin:0">${ico("alert")}<span>${L.failed}</span></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-block-start:24px"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary is-focus" type="button">${L.retry}</button></div></div>`;
+    const table = `<div class="card cx-table-card"><div class="cx-table-head"><div><h3>${L.daysTitle}</h3></div></div><table class="cx-table" role="table"><thead><tr role="row"><th scope="col">${L.cols.day}</th><th scope="col" class="n">${L.cols.peak}</th><th scope="col" class="n">${L.cols.avg}</th><th scope="col" class="n">${L.cols.entries}</th></tr></thead><tbody><tr role="row" class="is-empty"><td role="cell" colspan="4"><div class="cx-empty">${ico("info")}<p>${L.emptyTable}</p><button data-press="dark" class="cx-btn" type="button">${L.emptyAction}</button></div></td></tr></tbody></table></div>`;
+    const alert = `<div class="card cx-stage" style="width:min(468px,100%)"><div class="cx-alert" role="alert" style="margin:0">${ico("alert")}<span>${L.failed}</span></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-block-start:24px"><button data-press="dark" class="cx-btn" type="button">${L.cancel}</button><button data-press="chalk" class="cx-btn primary is-focus" type="button">${L.retry}</button></div></div>`;
     return section("empty", "empty", "EMP-1…4", `<div class="cx-row cx-row-empty">
       <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${table}</div>${cap(L.emptyCaps.table, "EMP-1 · STA-8 · EMP-4")}</figure>${fig(alert, L.emptyCaps.alert, "EMP-2 · EMP-3 · EMP-4")}</div>`);
   }
@@ -939,7 +939,7 @@
     const head = `<div class="cx-stat-head">${icon(o.icon)}<h3 class="cx-stat-label">${o.label}</h3>${o.meta ? `<span class="cx-stat-meta">${o.meta}</span>` : ""}</div>`;
     let body;
     if (o.alert) {
-      body = `<div class="cx-st-alert"><p class="cx-st-say is-err">${ico("alert")}<span>${L.errorSay}</span></p><button class="cx-btn primary${o.working ? " is-working" : " is-focus"}" type="button"${o.working ? ' aria-disabled="true" aria-busy="true"' : ""}>${o.working ? L.retrying : L.retry}</button></div>`;
+      body = `<div class="cx-st-alert"><p class="cx-st-say is-err">${ico("alert")}<span>${L.errorSay}</span></p><button data-press="chalk" class="cx-btn primary${o.working ? " is-working" : " is-focus"}" type="button"${o.working ? ' aria-disabled="true" aria-busy="true"' : ""}>${o.working ? L.retrying : L.retry}</button></div>`;
     } else {
       const value = o.value || "";
       body = `<div class="cx-st-value${o.word ? " is-word" : ""}">${value}</div>` + (o.note != null ? `<p class="cx-st-note">${o.note}</p>` : `<div class="cx-st-foot">${o.foot || ""}</div>`);

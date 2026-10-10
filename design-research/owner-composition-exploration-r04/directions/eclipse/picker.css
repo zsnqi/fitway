@@ -63,7 +63,7 @@
 /* The chosen ends: a chalk tile, dark figures at 500 (BTN-2's primary). The outlined end the next pick would make. */
 .dp-day.is-end .dp-n { background: var(--ink); color: #0d0c0d; font-weight: 500; }
 @media (hover: hover) { .dp-day.is-end:hover .dp-n { background: #fff; } }
-.dp-day.is-ghost .dp-n { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); background: var(--dp-soft); }
+.dp-day.is-ghost .dp-n { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-light, transparent); background: var(--dp-soft); }
 /* Today: today's line (COL-13), 12 × 2 under the number, on a chosen tile too. */
 .dp-day.is-today .dp-n::after { content: ""; position: absolute; inset-block-end: 5px; inset-inline-start: calc(50% - 6px); width: 12px; height: 2px; border-radius: 1px; background: var(--red-hi); }
 /* A day that cannot be picked: --ink-3 at 45%, in place, no hover; today keeps its line, dimmed with it. */
