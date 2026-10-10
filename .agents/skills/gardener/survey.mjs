@@ -509,7 +509,28 @@ export async function collectFolders(
 		if (inside(absolute, out)) continue;
 		if (folders.length % 50 === 0)
 			console.log(`Survey folders measured: ${folders.length}`);
-		folders.push(await measureFolder(absolute));
+		try {
+			const measured = await measureFolder(absolute);
+			// A directory can disappear after its initial stat, during the walk.
+			// Retain every other error, and retain subtree ENOENT if the root exists.
+			if (
+				measured.errors.length &&
+				measured.errors.every((error) => error.endsWith(": ENOENT"))
+			)
+				await lstat(filesystemPath(absolute));
+			folders.push(measured);
+		} catch (error) {
+			if (error.code !== "ENOENT") throw error;
+			// Only inventory tolerates this race. Cleanup still requires measurement.
+			folders.push({
+				path: absolute.replaceAll("\\", "/"),
+				gone: true,
+				bytes: null,
+				files: null,
+				modifiedAt: null,
+				errors: [],
+			});
+		}
 	}
 	return classifyFolders(
 		folders,
@@ -766,7 +787,7 @@ export function formatReport(report) {
 		`Repository unchanged: ${report.repositoryUnchanged}`,
 		`Proposed temp folders: ${report.proposals?.folders.paths.length ?? 0}; unreferenced temp folders include young and unsafe folders.`,
 		"",
-		`Counts: ${report.git?.worktrees.filter((item) => item.missing).length ?? 0} missing registrations; ${report.git?.worktrees.filter((item) => item.mergedClean).length ?? 0} merged clean worktrees; ${report.git?.branches.filter((item) => item.merged && !item.protectedBy.length && item.plain !== "main" && !item.symbolic).length ?? 0} unreferenced merged branches; ${report.folders?.filter((item) => !item.protectedBy.length).length ?? 0} unreferenced temp folders; ${report.gates?.missing.length ?? 0} gate gaps; ${report.gates?.duplicates.length ?? 0} duplicate gates; ${report.checks?.filter(checkFailed).length ?? 0} failing/blocked checks; ${report.checks?.filter((item) => item.notRun).length ?? 0} not-run checks; ${report.rules?.duplicates.length ?? 0} duplicate rule lines; ${report.rules?.dead.length ?? 0} dead path mentions.`,
+		`Counts: ${report.git?.worktrees.filter((item) => item.missing).length ?? 0} missing registrations; ${report.git?.worktrees.filter((item) => item.mergedClean).length ?? 0} merged clean worktrees; ${report.git?.worktrees.filter((item) => item.mergedCleanWithheldForLinks).length ?? 0} merged clean worktrees withheld for links; ${report.git?.branches.filter((item) => item.merged && !item.protectedBy.length && item.plain !== "main" && !item.symbolic).length ?? 0} unreferenced merged branches; ${report.folders?.filter((item) => !item.gone && !item.protectedBy.length).length ?? 0} unreferenced temp folders; ${report.gates?.missing.length ?? 0} gate gaps; ${report.gates?.duplicates.length ?? 0} duplicate gates; ${report.checks?.filter(checkFailed).length ?? 0} failing/blocked checks; ${report.checks?.filter((item) => item.notRun).length ?? 0} not-run checks; ${report.rules?.duplicates.length ?? 0} duplicate rule lines; ${report.rules?.dead.length ?? 0} dead path mentions.`,
 		"",
 	];
 	lines.push("## Worktrees awaiting review", "");
@@ -778,6 +799,26 @@ export function formatReport(report) {
 			`- Path: ${JSON.stringify(item.path)}; branch: ${JSON.stringify(item.branch ?? "<detached>")}; last commit date: ${item.lastCommitAt ?? "unknown"}; status: ${item.statusMeasured ? (item.status ? JSON.stringify(item.status) : "clean") : `unknown (${item.statusReason})`}`,
 		);
 	}
+	lines.push("", "## Worktrees withheld for links", "");
+	const withheld =
+		report.git?.worktrees.filter((item) => item.linksWithheld) ?? [];
+	if (!withheld.length) lines.push("None.", "");
+	for (const item of withheld) {
+		lines.push(`- Path: ${JSON.stringify(item.path)}`);
+		for (const link of item.links ?? [])
+			lines.push(
+				`  - Link: ${JSON.stringify(link.path)}; target: ${JSON.stringify(link.target)}; resolved target: ${JSON.stringify(link.resolvedTarget ?? null)}; outside: ${link.outside ?? "unknown"}; error: ${link.error ?? "none"}`,
+			);
+		for (const error of item.linkErrors ?? [])
+			lines.push(`  - Inspection error: ${error}`);
+		if (!item.linksMeasured)
+			lines.push("  - Link inspection was not completed.");
+	}
+	lines.push("", "## Temp folders gone during inventory", "");
+	const gone = report.folders?.filter((item) => item.gone) ?? [];
+	if (!gone.length) lines.push("None.", "");
+	for (const item of gone)
+		lines.push(`- Gone before measurement: ${JSON.stringify(item.path)}`);
 	lines.push(
 		"## Records",
 		"",
@@ -946,7 +987,7 @@ export function surveyOutcome(report) {
 }
 
 export function consoleSummary(report, out) {
-	return `SURVEY ${report.outcome.toUpperCase()}: ${path.join(out, "REPORT.md")} (collection=${report.complete ? "complete" : "blocked"}; ${report.git?.worktrees.filter((item) => item.coordinatorReview).length ?? 0} worktrees await coordinator review; ${report.checks.filter(checkFailed).length} failing/blocked checks; ${report.checks.filter((item) => item.notRun).length} not-run checks; repository unchanged=${report.repositoryUnchanged})`;
+	return `SURVEY ${report.outcome.toUpperCase()}: ${path.join(out, "REPORT.md")} (collection=${report.complete ? "complete" : "blocked"}; ${report.git?.worktrees.filter((item) => item.coordinatorReview).length ?? 0} worktrees await coordinator review; ${report.git?.worktrees.filter((item) => item.mergedClean).length ?? 0} merged clean worktrees; ${report.git?.worktrees.filter((item) => item.linksWithheld).length ?? 0} worktrees withheld for links; ${report.git?.worktrees.filter((item) => item.mergedCleanWithheldForLinks).length ?? 0} merged clean worktrees withheld for links; ${report.folders?.filter((item) => item.gone).length ?? 0} temp folders gone; ${report.checks.filter(checkFailed).length} failing/blocked checks; ${report.checks.filter((item) => item.notRun).length} not-run checks; repository unchanged=${report.repositoryUnchanged})`;
 }
 
 async function main(args) {

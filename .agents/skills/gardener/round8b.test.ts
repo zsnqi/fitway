@@ -76,15 +76,15 @@ describe("gardener round 8b", () => {
 		);
 	});
 	it.each([
-		"D:/fitway-temp/keep.",
-		"D:/fitway-temp/keep:",
-		"**D:/fitway-temp/keep**",
-		"fitway-temp/keep",
-		"/d/fitway-temp/keep",
-		"`D:/fitway-temp/keep/REPORT.md:12`",
+		"D:/fitway-temp/gardener-fixture-keep.",
+		"D:/fitway-temp/gardener-fixture-keep:",
+		"**D:/fitway-temp/gardener-fixture-keep**",
+		"fitway-temp/gardener-fixture-keep",
+		"/d/fitway-temp/gardener-fixture-keep",
+		"`D:/fitway-temp/gardener-fixture-keep/REPORT.md:12`",
 	])("R4: protects ordinary citation %s", (citation) => {
 		expect(
-			references("D:/fitway-temp/keep", [
+			references("D:/fitway-temp/gardener-fixture-keep", [
 				{ source: "record", text: `Evidence ${citation}` },
 			]),
 		).toHaveLength(1);

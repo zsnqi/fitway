@@ -70,7 +70,7 @@ describe("gardener fixture classifications", () => {
 	const records = [
 		{
 			source: "resume.md",
-			text: "Keep branch `active/topic` and D:/fitway-temp/keep/REPORT.md",
+			text: "Keep branch `active/topic` and D:/fitway-temp/gardener-fixture-keep/REPORT.md",
 		},
 	];
 	it("protects named branches, symbolic refs, main and registered worktrees", () => {
@@ -194,7 +194,7 @@ describe("gardener fixture classifications", () => {
 		const trees = [{ path: "D:/fitway-temp/dirty/tree", candidate: false }];
 		const result = classifyFolders(
 			[
-				folder("keep"),
+				folder("gardener-fixture-keep"),
 				folder("old"),
 				folder("evidence."),
 				folder("dirty"),
@@ -232,8 +232,8 @@ describe("gardener fixture classifications", () => {
 			]),
 		).toEqual([]);
 		expect(
-			references("D:/fitway-temp/keep/child", [
-				{ source: "x", text: "D:/fitway-temp/keep/" },
+			references("D:/fitway-temp/gardener-fixture-keep/child", [
+				{ source: "x", text: "D:/fitway-temp/gardener-fixture-keep/" },
 			]).length,
 		).toBe(1);
 	});
