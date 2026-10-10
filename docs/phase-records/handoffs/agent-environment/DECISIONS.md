@@ -298,6 +298,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     967K); restarting from the resume file at about 300K saves 13-18% of it in simulation, flat from 250K to 350K. The
     resume file stays the handoff, since a compaction summary is local to one session; an `autoCompactWindow` safety
     net is the user's setting.
+    - **When to restart is the user's call (the user, 2026-10-11).** A size the coordinator watches can become a
+      finish line it rushes toward (the user's observation, from another user's account of auto-compaction at 400K).
+      The figures above stay as information for the user, who sees the context meter. The coordinator neither tracks
+      its own context size nor acts on it. It keeps the resume file current at each natural break (after a large
+      round, at each milestone closure), so a restart from «كمّل» costs nothing whenever the user chooses.
 26. **No token budget for a designer (the user, 2026-10-10).** The pressed-state designer used about 480K tokens, and
     the coordinator measured that against item 21's target that a designer's first edit comes in under 125K. The user
     corrected this: that much use is normal for a designer, and a limit or target would harm the work more than it
