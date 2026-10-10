@@ -68,7 +68,9 @@
    1. Done: the Codex round is graded on Y2, Y5 and Y7; Y1, Y3, Y4 and Y6 join the post-F3 verifier pass. F3 waits for step 2.
    2. Done: the user tried both phones on the LAN preview (build `3b673daa`, 2026-10-10) and said everything works
       («كلشي تمام»), including a very fast tap on Android, so F3 needs no pointerdown class.
-   3. F3, running: Codex high, `codex-press-hook.md` (`348ca375`), run folder `D:/fitway-temp/codex-runs/owner-r04-press-hook`,
+   3. F3 done at `eb18b17a` (graded in `codex-rounds.md`; P3 one invisible release frame accepted as an allowance).
+      The verifier pass runs: `verifier-press-hook.md` (`e217534d`), evidence `D:/fitway-temp/owner-r04-press-review/`.
+      Codex high, `codex-press-hook.md` (`348ca375`), run folder `D:/fitway-temp/codex-runs/owner-r04-press-hook`,
       held-out rows Z1-Z7 in `D:/fitway-grader/owner-r04/press-hook-heldout.md`. Then one short verifier pass at high,
       covering F3 and the css-review-fixes rows Y1, Y3, Y4 and Y6. The user found no problems on the phones and
       needs no second look (DECISIONS 43); report the close in a line. Later problems or improvements are welcome.
@@ -114,7 +116,7 @@ Nothing; the phone try comes after the Codex round (Next steps 0.2).
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
   commit that adds this text (parent `090a272b`).
-- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `348ca375` until the press round commits.
+- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `e217534d`.
 - The environment phase: `docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md`.
 - Motion: designer `D:/fitway-temp/owner-r04-motion/`, review `D:/fitway-temp/owner-r04-motion-review/`, research
   `D:/fitway-temp/owner-r04-motion-research/REPORT.md`.

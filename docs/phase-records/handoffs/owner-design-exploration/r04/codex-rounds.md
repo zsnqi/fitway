@@ -450,3 +450,19 @@ checks live outside the repository and never appear here or in a brief. One line
     Activity's regions (Y1's subject), which shows the intent carried past the brief's two examples.
 - **Failure cause:** the stop and D1's wording are brief-caused (a stale decision pointer, and an outcome the tool
   cannot print).
+
+## press-hook (F3): `directions/briefs/codex-press-hook.md` on the build branch, result `eb18b17a` (level high)
+
+- **Set-up:** the review's F3 (the press spread over selector lists, and shadow rules that must repeat its layer), one
+  cause (B6 kept). Held-out rows Z1-Z7 are in `D:/fitway-grader/owner-r04/press-hook-heldout.md`. The user had already
+  found no problems on the phones (DECISIONS 43).
+- **Brief rows, as Codex graded them:** P1, P2, P4, P5 and L1-L4 pass. A new control takes `data-press="dark|option|chalk|tile|square"`.
+  P3 fails on one frame: on the phone menu, 60 ms after release, 27 corner pixels differ by at most 5 levels; two base
+  captures differ by 0.
+- **The diff, read by the coordinator:** the light is now a static, additive CSS animation on every pressable control
+  (`animation-composition: add`, `!important`), so a control's own shadow no longer carries the layer. The global
+  motion gates moved, not added. No control animates itself in CSS, and the script moments animate inner parts.
+- **Coordinator's call on P3:** accepted as a named allowance, because the difference cannot be seen. The verifier
+  looks at that frame at full size. The brief left out a limit for the moments that move a control at full motion;
+  the verifier pass checks them (V8).
+- **Held-out rows:** Z1-Z7 run in `verifier-press-hook.md` (`e217534d`), beside css-review-fixes' Y1, Y3, Y4 and Y6.
