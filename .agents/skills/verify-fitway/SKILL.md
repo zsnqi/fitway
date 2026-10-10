@@ -150,6 +150,9 @@ no tolerance is added. Each differing item has a region, diff JSON and images in
 Only compare waits up to five seconds for finite Web Animations/CSS transitions to finish naturally before each
 capture, under both motion modes. Persistent animations are paused at time zero for an exact, reproducible phase.
 An unsettled finite animation is a capture problem. Ordinary drive retains its original motion and capture timing.
+Compare hides native text carets with Playwright's `caret: "hide"` under every motion mode, retaining focus,
+selection and field values. It disables Chromium's partial raster cache so settled fractional edges are painted
+consistently after movement. Ordinary drive retains its original browser and screenshot options.
 Compare checks these settled pictures; use motion measurements for the movement's timing and intermediate frames.
 
 ```powershell

@@ -1072,10 +1072,12 @@ async function runnerFixture(name, features, options = {}) {
 	await writeFile(
 		resolve(tools, "scripts/web/lib.mjs"),
 		`
-export const launchChromium=async()=>({close:async()=>{}});
+import {appendFile,writeFile} from "node:fs/promises";
+const capture=async(via,options)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from("fixture")};
+export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
  let focus="body", open=false;
-const page={setDefaultTimeout(){},
+const page={setDefaultTimeout(){},waitForFunction:async()=>{},screenshot:async(options)=>capture("native",options),
 context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
   evaluate:async(fn)=>fn.toString().includes("coarse")
    ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
@@ -1090,7 +1092,7 @@ evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body
 }
 export const withParams=(url)=>url;
 export const preparePage=async()=>({ready:true});
-export const screenshot=async()=>Buffer.from("fixture");
+export const screenshot=async(page,options)=>capture("adapter",options);
 export const twoFrames=async()=>{};
 export const injectProbe=async()=>{};
 export const renderSheet=async()=>{};
@@ -1136,6 +1138,7 @@ try {await drive(${JSON.stringify({
 catch(error){if(!(core.ReportedFailure && error instanceof core.ReportedFailure))console.error("FAIL: "+error.message);process.exitCode=1}`,
 	);
 	return {
+		root,
 		out,
 		result: spawnSync(process.execPath, [caller], {
 			encoding: "utf8",
@@ -1648,6 +1651,57 @@ test("R30 V1: focus uses the element's accessibility name or role without readin
 	assert.equal((await focusedElement(page)).role, "document");
 	assert.equal((await focusedElement(page)).name, "");
 	assert.equal(requests.length, count);
+});
+
+test("R30 repair V3: every comparison mode hides carets and paints fresh tiles without changing ordinary drive", async () => {
+	const features = [
+		{ id: "page", actions: [], proof: { selector: "main", visible: true } },
+	];
+	for (const comparisonCapture of [true, false]) {
+		const { root, result } = await runnerFixture(
+			`caret-${comparisonCapture}`,
+			features,
+			{
+				comparisonCapture,
+				motions: "full,reduce",
+			},
+		);
+		assert.equal(result.status, 0, result.stderr + result.stdout);
+		const launch = JSON.parse(
+			await readFile(resolve(root, "launch.json"), "utf8"),
+		);
+		assert.deepEqual(
+			launch,
+			comparisonCapture ? { args: ["--disable-partial-raster"] } : null,
+		);
+		const captures = (await readFile(resolve(root, "captures.jsonl"), "utf8"))
+			.trim()
+			.split("\n")
+			.map(JSON.parse);
+		assert.equal(
+			captures.length,
+			4,
+			"both before/after frames in both motion modes must use the capture policy",
+		);
+		for (const capture of captures) {
+			assert.deepEqual(
+				capture,
+				comparisonCapture
+					? {
+							via: "native",
+							options: { fullPage: false, animations: "allow", caret: "hide" },
+						}
+					: {
+							via: "adapter",
+							options: {
+								method: "playwright",
+								fullPage: false,
+								animations: "allow",
+							},
+						},
+			);
+		}
+	}
 });
 
 test("R30 V3: comparison waits for finite motion and fixes the phase of persistent motion", async () => {

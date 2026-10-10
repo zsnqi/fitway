@@ -165,6 +165,15 @@ export async function settleComparison(page) {
 	});
 }
 
+export async function captureComparison(page) {
+	await settleComparison(page);
+	return page.screenshot({
+		fullPage: false,
+		animations: "allow",
+		caret: "hide",
+	});
+}
+
 export async function drive(options) {
 	const { concept, map, tools, loaded, out } = options;
 	const selected = map.pages.find(
@@ -234,7 +243,11 @@ export async function drive(options) {
 				origin = server.origin;
 			}
 		}
-		browser = await ui.launchChromium(loaded);
+		// Partial raster reuse can round animated, fractional button edges differently
+		// after the animation has ended. Compare paints fresh tiles on both sides.
+		browser = options.comparisonCapture
+			? await ui.launchChromium(loaded, { args: ["--disable-partial-raster"] })
+			: await ui.launchChromium(loaded);
 		for (const feature of features)
 			for (const state of cases)
 				for (const language of languages)
@@ -294,16 +307,16 @@ export async function drive(options) {
 									});
 									current.page.setDefaultTimeout(5000);
 									const save = async (suffix) => {
-										if (options.comparisonCapture)
-											await settleComparison(current.page);
 										const name = `${stem}-${suffix}.png`;
 										await writeFile(
 											await outputFile(out, name),
-											await ui.screenshot(current.page, {
-												method: "playwright",
-												fullPage: false,
-												animations: "allow",
-											}),
+											options.comparisonCapture
+												? await captureComparison(current.page)
+												: await ui.screenshot(current.page, {
+														method: "playwright",
+														fullPage: false,
+														animations: "allow",
+													}),
 										);
 										entry.files.push(name);
 									};
