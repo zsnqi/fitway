@@ -305,3 +305,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - Item 21's target is dropped. A designer's brief still names the files it edits, so the designer reads less, but
       its token use is not a measure of the brief or of the round.
     - Start load is still recorded per round as information, never as a limit.
+27. **A third repair for round 21 (the user, 2026-10-10).** Round 21 is on its second repair: its CLI test depends on
+    a temporary ui-forensics copy, so CI would fail. The user allowed a third repair if this one fails, as a one-time
+    exception to AGENTS.md's limit of two focused repairs. It applies to round 21 only; every other round keeps the
+    rule.
