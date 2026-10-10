@@ -613,6 +613,27 @@ async function main() {
 			throw new Error(
 				"Pass output only as measure --out; use the maintained launch URL, not --serve.",
 			);
+		const heldRequested = options.extra.some((arg) =>
+			/(?:^|[=:])(?:hold|release)(?::|$)/.test(arg),
+		);
+		if (heldRequested) {
+			const source = readFileSync(
+				resolve(tools, "scripts/web/_common.mjs"),
+				"utf8",
+			);
+			const version =
+				source.match(/TOOL_VERSION\s*=\s*["']([^"']+)/)?.[1] || "unknown";
+			const [major, minor, patch] = String(version).split(".").map(Number);
+			if (
+				!(
+					major > 1 ||
+					(major === 1 && (minor > 3 || (minor === 3 && patch >= 0)))
+				)
+			)
+				throw new Error(
+					`Held presses require ui-forensics >=1.3.0; found ${version}`,
+				);
+		}
 		await outputFile(options.out, "tool-output");
 		for (let index = 0; index < options.extra.length; index++) {
 			const argument = options.extra[index];

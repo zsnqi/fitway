@@ -97,6 +97,16 @@ error. Each item's findings survive, and the run continues. Overall failure stil
 Use source-supported switches or real user actions. Read-only readiness/state observations are allowed; internal
 setters do not prove a user flow. Each item uses a fresh context, waits for readiness/fonts and Daily intro settlement.
 Touch uses a coarse pointer and actual taps. `--probes daily` adds the concept's geometry/accessibility measurements.
+`hold:<selector>` presses the selector at its centre and keeps the primary
+mouse button or touch contact down until a matching `release` action (or item
+cleanup). Use `hold` before a capture or motion trigger, and always release it
+before the next item. Keyboard input refuses held presses. A held manifest
+records the selector, input, press-to-capture time, and classification:
+`pressed style shown while held` means the rendered style changed (including
+pointer-event changes), `pressed style exists but emulated touch does not show
+it` means a matching `:active` rule exists but the touch frame did not change,
+and `no pressed style` means neither is present. Emulated touch does not show
+`:active`; prove that state with a mouse hold and on a device.
 `--inputs keyboard` reaches action targets with Tab and activates with Enter; `focus:` also traverses with Tab,
 never sets focus. `press:` sends the named key, `type:` types with keys, and native `select:` uses Home/ArrowDown/Enter.
 For roving controls or a different activation key, recipes can supply `keyboardActions` with `press:` and `focus:`
