@@ -976,3 +976,22 @@ held-out checks live outside the repository and never appear here or in a brief.
   - N1, N2, N4 and N5 rest on the round's own tests, which fail on the base; the coordinator did not rerun them.
 - **Failure cause:** the brief, for K3. It required history claims to stay the same without checking that history
   carries prose claims that bind nothing (B7).
+
+## agent-environment-r03 round 27: `r03/briefs/round-27.md`, result `5e5f142e` (level high)
+
+- **Set-up:** F106, F107 and F109 (inputs to the closing review), and F117, a temp folder vanishing mid-survey that
+  blocked collection. The brief's commit is `63cbff3a`; held-out rows E1-E6. The run stopped once at the second
+  account's limit and resumed on its thread after the user switched accounts.
+- **Brief rows, as Codex graded them:** G1-G5 pass.
+  - Only removable worktrees count as merged and clean (13 to 9 on the real state).
+  - The report names withheld worktrees and vanished folders in prose.
+  - A vanished folder is reported as gone and never blocks; other errors still block, and the cleanup script still
+    refuses.
+  - The round 16c fixture uses a made-up path.
+  - The new tests give 5 failed of 8 on the base, and the real survey's proposals equal the base's.
+- **Held-out:**
+  - E4, rerun by the coordinator: no gardener test names a temp folder that exists or that a record cites as a
+    path.
+  - E5: the real survey completes, with proposals equal to the base's (Codex's comparison of two real surveys).
+  - E1-E3 and E6 rest on the round's tests, which fail on the base.
+- **Failure cause:** none.
