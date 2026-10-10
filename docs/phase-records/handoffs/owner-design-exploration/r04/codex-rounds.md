@@ -418,3 +418,8 @@ checks live outside the repository and never appear here or in a brief. One line
   - the check reports only the two allowances.
 - **Failure cause:** C5 is a brief-caused row (outcome wording). X10 came from a check that counts a programmatic focus
   target or a `:has()` ring as a missing ring.
+- **After acceptance** (2026-10-10, the round's independent review, `D:/fitway-temp/owner-r04-css-review/`, brief
+  `verifier-css-round.md` at `767cd57c`): two defects trace to this part. In forced colours the figures region
+  (`#cards`) of Daily and Reports paints a ring after "Try again": the X10 failure mode on a region the repair missed
+  (`style.css:1127`, `reports.css:695`). The desktop dialog cap divides by a length and by zero with no insets
+  (`reports.css:730-734`). Both go to the review's Codex fix round, `codex-css-review-fixes.md`.

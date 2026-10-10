@@ -789,3 +789,26 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Exceptions and notes:**
   - The user allowed a third repair (DECISIONS 27); it was not needed.
   - The first resume of repair 1 failed on PowerShell 5.1 quoting (F114).
+- **After acceptance** (2026-10-10, the Owner CSS round's independent review,
+  `D:/fitway-temp/owner-r04-css-review/`): the held press counts a hover style as a press with a mouse, because the
+  before style is read before the pointer reaches the control; on `691d62d5`, which has no press, most controls
+  report a press. It reads only the selected element, and `release` is refused without a colon (F115). The planted
+  control was a control without hover, so the round's rows could not see it. The reviewer measured the press with its
+  own script instead.
+
+## Item 21 step 6: the question-and-spec trial, graded (2026-10-10)
+
+- **What ran:** two `grilling` rounds with the user, then `/to-spec` wrote `css-round-spec.md` (`ab504b28`), and the
+  Codex brief, both designer briefs and the verifier brief were written from it. The trial closes with the round's
+  independent review (`verifier-css-round.md`, `767cd57c`).
+- **Repair attempts:** the Codex part took 2 attempts (one repair, X10, caused by the check's false positives, F113);
+  the mean for high Codex rounds in `rounds.tsv` is 1.27, and 22 % of them needed a repair. The press took two
+  designers, the first cut off by a session limit, not by a failure.
+- **Brief-caused failed rows:** 1 (C5's "shows"); the high-round mean is 0.30, and 24 % of rounds have one.
+- **After acceptance:** the review found two defects in the Codex part (the figures region's ring in forced colours, a
+  residue of the X10 failure mode; a dialog cap that divides by a length) and none in the press beyond taste (the
+  held chalk rim, two text sizes in one row) and structure (the press spread over selector lists).
+- **Reading:** on these two measures the spec did not do better than an ordinary brief; the round was also wider than
+  an ordinary one (five causes in one pass, B6 relaxed). Where it helped: every question was settled before the
+  briefs, no decision arrived mid-round except item 42, which the designer's own questions raised, and the review's
+  checklist came straight from the spec's user stories and seams. One trial is a signal, not a verdict.
