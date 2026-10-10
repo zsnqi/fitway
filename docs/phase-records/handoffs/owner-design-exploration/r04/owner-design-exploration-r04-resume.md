@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** codex/owner-redesign-r04 at `090a272b`, 2026-10-08 18:25 +03:00
+- **As of:** codex/owner-redesign-r04 at `93ed2403`, 2026-10-10 21:30 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (item 40), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 12-16, the environment phase), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -30,53 +30,50 @@
 
 ## Running now
 
-- The CSS round's mechanical part (Codex high, 2026-10-10): brief
-  `codex-css-round.md` in the build branch's briefs folder (`cd2938ec`), run folder
-  `D:/fitway-temp/codex-runs/owner-r04-css-round`, held-out rows X1-X10 in
-  D:/fitway-grader/owner-r04/css-round-heldout.md, base focus sweep `D:/fitway-temp/owner-css-base-focus/`. B6
-  is relaxed on purpose: the spec's five independent mechanical causes are graded separately in one pass. Next come
-  agent-environment round 21 (a held press in the CLI) and the designer's pressed state, with the two 13.5 px lists.
-  - **Accepted at `691d62d5`** (2026-10-10, graded in `codex-rounds.md`; repair 1 of 2 after X10's unconditional
-    transparent outlines; pushed). The build's concept CSS check reports only two named allowances (programmatic
-    focus targets, F113). Next: agent-environment round 21 (held press), then the designer's pressed state and the two
-    lists, then the user's try on both phones (item 7) with the whole round.
-- The pressed state and the two lists: the first designer built "the key seats" (`a4639c5e`, `dbdcea0a`;
-  `D:/fitway-temp/owner-r04-pressed/NOTES.md`). The user answered its questions (DECISIONS 42). A fresh designer
-  (`designer-pressed-state-2.md`, `3348f082`) finishes it, launched 2026-10-10:
-  - the release fade;
-  - a held segment that reads as chosen;
-  - a held primary that reads as disabled;
-  - one forced-colours rest frame that changed («EN» on the sheet);
-  - the current tile's press.
-  Output goes to `D:/fitway-temp/owner-r04-pressed-2/`. Then one independent review of the whole round, its fixes, and
-  the user's try on both phones (3180).
-  - **Finished at `b2b2f4c1`** (pushed; fix `bf4bad21`; evidence in `D:/fitway-temp/owner-r04-pressed-2/NOTES.md`
-    and its s2 folder). The pieces:
-    - the release fade, 120 ms;
-    - held segments sink;
-    - chalk keys seat;
-    - the current tile presses;
-    - rest frames match `691d62d5` except Activity's person list.
-    «EN» on the sheet is Chromium's own capture noise, base against base. The coordinator looked at the 390 Arabic
-    held primary and segment. The designer's observations go to the review:
-    - the held segment is quiet at 390;
-    - a mouse press on either list shows its focus ring, as at `691d62d5`;
-    - the forced-colours person list now reads in HighlightText;
-    - a new key kind joins one of the press's two lists in style.css.
+- **The CSS round** (the spec `css-round-spec.md` on the build branch, `ab504b28`; DECISIONS 41-42): the mechanical
+  part was accepted at `691d62d5` (`codex-rounds.md`), and the press and the two lists finished at `b2b2f4c1`. The
+  independent review (`verifier-css-round.md`, `767cd57c`; evidence and NOTES.md in
+  `D:/fitway-temp/owner-r04-css-review/`) passed 15 of 19 checks. Its findings:
+  - F1 medium: in forced colours, the figures region paints a ring after "Try again";
+  - F2 medium, in the tool: the held press counts hover as a press (F115);
+  - F3 low: the press is spread over selector lists;
+  - F4 and F8 low, taste: the held chalk rim; two text sizes in Activity's tools;
+  - F5 low: Activity's list rings on a mouse press;
+  - F6: the tuner's textarea at 16 px. The coordinator keeps it: C5 covers every textarea on the pages, and it stops
+    the iPhone's zoom;
+  - F7 low: the dialog cap divides by a length;
+  - F9 low: the long-name recipe's Arabic is question marks.
+- **F4 and F8 are fixed** at `41821f38` by a fresh designer (`designer-css-review-taste.md`, evidence
+  `D:/fitway-temp/owner-r04-css-taste/`). A held chalk key now shades from its top edge. Activity's open search takes
+  its row's width. The coordinator looked at the keys and the tools frames.
+- **Codex, high, running** (launched 2026-10-10): `codex-css-review-fixes.md` (`c1cd84ab`), run folder
+  `D:/fitway-temp/codex-runs/owner-r04-css-review-fixes`, held-out rows Y1-Y7 in
+  `D:/fitway-grader/owner-r04/css-review-fixes-heldout.md`. It covers D1 (F1, every script-focused region), D2 (F5),
+  D3 (F7), D4 (F9) and D5 (the README's held chalk paragraph). B6 is relaxed; each cause is graded separately.
+- **Phone testing research** (the user asked for agents instead of their own finger for most checks, 2026-10-10):
+  `D:/fitway-temp/mobile-testing-research/ios/REPORT.md` and `D:/fitway-temp/mobile-testing-research/android/REPORT.md`.
+  The user chose to try both phones themselves instead (2026-10-10: no ADB, no cloud service).
+  - Android: the user's own phone over USB with ADB is free and stays local; `adb shell input` gives real touch
+    events, and screencap or screenrecord captures them. CDP-injected touch never shows `:active`.
+  - The Android report reads in Chromium's source that a tap faster than about 100 ms may show no `:active` at all.
+    That would break item 42's "even a very fast tap shows" on Android. The user's try settles it before F3's refactor.
+  - iPhone: there is no free automated path from Windows. Real iPhones in the cloud start at about $39 a month (AWS
+    Device Farm has a one-time trial) and need an account, a card and a tunnel.
 - Report-only, under load only: the dialogs', popover's and records card's parts split across threads under a planted
   stall; rounds item 11 to decide whether they are errors on a real machine.
 
 ## Next steps
 
 0. **The CSS round's close (start here).**
-   1. Run one independent review of the whole round with `owner-direction-verifier`. That covers the mechanical part
-      `691d62d5`, the press and the two lists `b2b2f4c1`, the spec's four seams (`css-round-spec.md`) and the
-      designer's observations above. Use the CLI's `--colors forced` and `hold:` recipe actions, with ui-forensics 1.3.0
-      installed. **Running** (launched 2026-10-10): brief `verifier-css-round.md` on the build branch (`767cd57c`),
-      evidence in `D:/fitway-temp/owner-r04-css-review/` with its `NOTES.md`; a cut-off verifier is replaced from them.
-   2. Fix every finding before the user sees the round (item 11).
-   3. Open the LAN preview on 3180 for the user's iPhone and Android try (seam 4). Check the PC's IP first.
-   4. The concept CSS check joins the fast ladder only once the build is on the trunk.
+   1. Grade the Codex round against its brief rows and Y1-Y7, then review its diff (item 11). F3 waits for step 2.
+   2. The user's try on both phones (item 7, spec story 35), on the LAN preview on 3180; check the PC's IP first. Give
+      them a short list: the press shows under the finger, including on a very fast tap on Android; no colour stays
+      after a tap; a field does not zoom; the tab bar and a dialog's buttons clear the bottom edge.
+   3. F3: one shared hook for the press, as a Codex round whose held and rest frames equal the base. If step 2 showed
+      no press on a fast tap, add a pointerdown class. Then a short verifier pass, the verifier at high, and the
+      finished round to the user (item 11).
+   5. F115 (the held press counts hover) goes to an agent-environment round. The concept CSS check joins the fast
+      ladder only once the build is on the trunk.
 
 1. **After the environment phase:** the Owner screens resume with its tools (the verify-fitway skill and the CLI).
 2. **Then Settings**, Operations (the header status's details) and Monitoring, each per rounds items 6 and 8-11 in
@@ -88,31 +85,12 @@
    the rail's focus ring).
 5. **After each resume point,** fast-forward main to this line once CI passes on it (DECISIONS 40), and update the
    discussion page.
-6. **CSS findings from the good-css review** (2026-10-08, `docs/phase-records/handoffs/owner-design-exploration/r04/good-css-review.md`,
-   counts re-checked by the coordinator): 5 of the concept's 77 `:hover` rules sit behind a hover media query, so hover
-   sticks after a tap on the phone and tablet (gate with `(hover: hover)` only, not `pointer: fine`, because of the
-   tablet band); 12 `outline: none` rules to check against a visible focus; no `forced-colors` support; no
-   `viewport-fit=cover`, so the safe-area insets are inert. A Codex fix round on the build, proved with `pnpm check:concept-css -- <the build's eclipse folder>` (round 13 of
-   the environment phase; 87 findings at `1d3539a3`). With it, DECISIONS 41
-   (the user said yes, 2026-10-08): press feedback on every pressable control (its form drawn by a designer first)
-   and field text of at least 16 px. The
-   skill is not installed; it goes in slash-only, as a reference, at the production (apps/web) stage (the user,
-   2026-10-08).
-   **2026-10-10:** the round's spec is on the build branch at `ab504b28` (D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/css-round-spec.md). It
-   came from the grilling and to-spec trial, agent-environment DECISIONS item 21 step 6. The user's answers:
-   - they try the work on both an iPhone and an Android phone;
-   - the designer is free on the pressed state within the stated limits;
-   - forced colours at the minimum level;
-   - no vibration;
-   - a disabled control does not react to a press;
-   - the four test seams.
-
-   Order: a small environment round adds forced colours and a held press to the verify-fitway CLI. Then Codex does the
-   mechanical part. Then the designer builds the pressed state.
+6. **The good-css review** (2026-10-08, `good-css-review.md` in this folder) became the CSS round above. The skill
+   goes in slash-only, as a reference, at the production (apps/web) stage (the user, 2026-10-08).
 
 ## Waiting on the user
 
-- The CSS round's spec (`ab504b28`): the briefs are written after the user's yes.
+Nothing; the phone try comes after the Codex round (Next steps 0.2).
 
 ## Known risks
 
@@ -136,7 +114,7 @@
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
   commit that adds this text (parent `090a272b`).
-- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `767cd57c`.
+- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `c1cd84ab` until the Codex round commits.
 - The environment phase: `docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md`.
 - Motion: designer `D:/fitway-temp/owner-r04-motion/`, review `D:/fitway-temp/owner-r04-motion-review/`, research
   `D:/fitway-temp/owner-r04-motion-research/REPORT.md`.
