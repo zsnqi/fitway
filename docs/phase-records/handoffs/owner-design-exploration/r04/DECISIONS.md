@@ -446,13 +446,14 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       hidden 16 px native list under a 13.5 px face. Pressed specimens on the components sheet wait for the
       Settings round.
 
-43. **The CSS round, accepted on the phones** (the user, 2026-10-10, after trying build `3b673daa` on their iPhone
-    and Android phone over the LAN preview: «كلشي تمام», then «ممتاز خلاص ما يحتاج اشوف مره ثانية»):
-    - The look and feel of the round are accepted as the user saw them on both phones: the press, its release fade,
-      no colour left after a tap, fields that do not zoom, and the bottom edge kept clear.
-    - The remaining press refactor (`codex-press-hook.md`) and its review close without another look by the user, on
-      one condition. Every frame at rest, hovered and held must equal `3b673daa`. A visible change fails the round and
-      is fixed. The coordinator reports the close in a line.
+43. **The CSS round, tried on the phones** (the user, 2026-10-10, after trying build `3b673daa` on their iPhone and
+    Android phone over the LAN preview: «كلشي تمام», then «ممتاز خلاص ما يحتاج اشوف مره ثانية», and, correcting the
+    coordinator's first wording of this item: «انا قصدت مافيه مشاكل الان وكلشي كويس على حسب تجربتي ... لو فيه مشاكل او
+    تحسينات عادي»):
+    - The user found no problems on either phone, and does not need to see this round again.
+    - Problems and improvements found later are welcome as usual; nothing here freezes the look.
+    - Coordinator: the press refactor (`codex-press-hook.md`) keeps every frame equal to `3b673daa` because that is its
+      brief's own outcome (P3), not a rule of the user's. Its close is reported to the user in a line.
 
 ## How this milestone's rounds run
 

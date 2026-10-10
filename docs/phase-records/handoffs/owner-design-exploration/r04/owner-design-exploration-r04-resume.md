@@ -70,9 +70,8 @@
       («كلشي تمام»), including a very fast tap on Android, so F3 needs no pointerdown class.
    3. F3, running: Codex high, `codex-press-hook.md` (`348ca375`), run folder `D:/fitway-temp/codex-runs/owner-r04-press-hook`,
       held-out rows Z1-Z7 in `D:/fitway-grader/owner-r04/press-hook-heldout.md`. Then one short verifier pass at high,
-      covering F3 and the css-review-fixes rows Y1, Y3, Y4 and Y6. The user accepted the round on the phones
-      (DECISIONS 43): the close is reported to them in a line, with no further look, as long as every frame equals
-      `3b673daa`.
+      covering F3 and the css-review-fixes rows Y1, Y3, Y4 and Y6. The user found no problems on the phones and
+      needs no second look (DECISIONS 43); report the close in a line. Later problems or improvements are welcome.
    5. F115 (the held press counts hover) goes to an agent-environment round. The concept CSS check joins the fast
       ladder only once the build is on the trunk.
 
