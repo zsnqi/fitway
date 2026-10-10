@@ -53,7 +53,9 @@
    test under a short local temp path) is outside this milestone; with TEMP on drive D, which makes no short names,
    the local ladder no longer meets it.
 2. Step 2's real figure: `pnpm start-load -- --since 2026-10-09T19:15+03:00` after each Opus definition's first
-   launch in a new session.
+   launch in a new session. After a few verifier runs, check item 25's predicted saving:
+   `node D:/fitway-temp/cache-ttl-20261010/cache-usage.mjs --since 2026-10-11` (the verifier now writes one-hour
+   caches) against `cache-usage.txt` beside it.
 3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
    `gardener/<date>` branch, merge what is accepted, write the ledger's `gardener` entry, rerun the report's final
    survey, and show the user the folder list before they run the new cleanup script. The main checkout keeps the
