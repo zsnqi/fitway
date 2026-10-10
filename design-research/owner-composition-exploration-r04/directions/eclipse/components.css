@@ -176,7 +176,7 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-seg-b { height: 44px; padding-inline: 16px; border-radius: 12px; font: var(--t-label); color: var(--ink-2); white-space: nowrap; }
 .cx-seg-b.is-hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
 @media (hover: hover) { .cx-seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
-.cx-seg-b[aria-pressed="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-light, transparent); }
+.cx-seg-b[aria-pressed="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); }
 .cx-seg-b:focus-visible, .cx .cx-seg-b.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
 .cx-seg.is-full { display: flex; width: 100%; }
 .cx-seg.is-full .cx-seg-b { flex: 1 1 0; min-width: 0; padding-inline: 8px; }

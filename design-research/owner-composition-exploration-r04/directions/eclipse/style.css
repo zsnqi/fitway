@@ -1349,6 +1349,11 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
   100% { opacity: 0; transform: scale(1); }
 }
 
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
 /* ---------------------------------------------------------------- the press
  * MOT-20, STA-16 (DECISIONS items 41 and 42): every control that does something when pressed shows, under the finger or
  * the mouse, that the press landed, so the owner never presses twice. One form for the whole instrument, kept here so
@@ -1367,14 +1372,12 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
  * Released (DECISIONS item 42), the light fades out in 120 ms (--press-fade), so even the fastest tap leaves a trace;
  * its edge, words, the hover and a new selection change at once (MOT-18); the travel settles back in 240 ms on the
  * page's settle curve (a dialog's, MOT-9). A second press during either starts at full depth at once.
- *   The light is an inset layer of the key's shadow, in the colour of one registered property (--press-light), and
- *   nothing of it is drawn at rest, so the page at rest is exactly as it was before the press. A key whose shadow is
- *   otherwise always none draws the layer only while held, and released, its shadow fades to none. A key that draws a
- *   shadow of its own in some state (a chosen segment's or weekday's ring, a list's edge, a filter in force, a day of the
- *   picker) carries the layer in every state instead, transparent at rest, and the property fades, so its ring or edge
- *   never animates; its own shadow rules repeat the layer after it. Only the press's light ever fades: a hover, a
- *   selection or a state never animates. (A transparent layer kept at rest on every key re-rasterised some icons and
- *   words by a few levels, a dimmed month arrow and the sheet's specimens, so the rest frames no longer matched.)
+ *   One step for a new control: data-press="dark", "option", "chalk", "tile" or "square". Existing control kinds
+ *   already carry the pattern below. The press adds its own inset shadow through a static additive animation, so a
+ *   control's box-shadow never has to repeat the light. This animation paints only; it has no moving timeline.
+ *   Shadowless keys interpolate the light and its geometry back to zero (the former shadow-to-none fade); keys that
+ *   already carried a transparent layer keep its full geometry and interpolate only its colour. A zero-size inset
+ *   paints nothing at rest. The control's own edge stays above the added layer and never animates.
  *   Travel: a key 3% (--press-scale); a small square (an icon button, a tile, a day) 6% (--press-scale-sm), about
  *   1.3 px a side either way. Rows, menu items, sort headings and text links light only: they are not keys.
  *   Reduced motion, ?motion=off and Daily's Motion switch: the light alone, nothing moves, and it goes at once (MOT-11).
@@ -1384,6 +1387,7 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
  *   and the light tuner. Space presses a focused button natively; there is no script for keys. Safari on iPhone applies
  *   :active to a touch only when the page listens for touch: motion.js adds one passive touchstart listener.
  *   The browser's tap flash is removed only on the controls listed here, which this press replaces. */
+@property --press-depth { syntax: "<number>"; inherits: false; initial-value: 0; }
 @property --press-light { syntax: "<color>"; inherits: false; initial-value: transparent; }
 :root {
   --press-lift: rgba(245, 243, 242, 0.1);
@@ -1396,31 +1400,61 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
   --press-back: 240ms cubic-bezier(0.3, 0.75, 0.2, 1);
   --press-fade: 120ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-:is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel select, .dl-sort select,
+:is([data-press], .rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel select, .dl-sort select,
   .rail-item, .tb-item, .fw-mi, .rec-a, .acc-all, .done-a, .dp-day, .skip,
   .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-ri, .cx-index a, .cx-skip) {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-/* Keys with a shadow of their own in some state carry the light's layer in every state, transparent at rest, over
- * their face (zero specificity: their own shadow rules repeat it). Every other key draws the layer only while held
- * (below), and so does a chosen day: a chalk key, whose own shadow is always none. */
-:where(.seg-b, .wk-b, .cx-seg-b, .ac-sel, .dl-sort, .ac-dates, .ac-find, .dp-n) {
-  box-shadow: inset 0 0 0 100vmax var(--press-light, transparent);
+/* One face pattern. The effect is additive: ordinary rest, hover, open and chosen box-shadows stay independent.
+ * The !important static effect survives the global motion gates; only its properties transition, and those gates
+ * still make every transition instant. Forced colours' important box-shadow suppresses the effect entirely. */
+@keyframes press-face { from, to { box-shadow: var(--press-face); } }
+body :is([data-press], .rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort,
+  .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all, .skip, .tile, .tb-tile, .dp-n,
+  .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-tile, .cx-skip) {
+  --press-size: var(--press-depth);
+  --press-y: 0px;
+  --press-blur: 0px;
+  --press-spread: 100vmax;
+  --press-face: inset 0 calc(var(--press-y) * var(--press-size)) calc(var(--press-blur) * var(--press-size))
+    calc(var(--press-spread) * var(--press-size)) var(--press-light);
+  animation: press-face 0s linear both !important;
+  animation-composition: add;
+  transition: scale var(--press-back), --press-depth var(--press-fade), --press-light var(--press-fade);
+  &:active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still),
+  &:is(.rail-item:active .tile, .cx-ri:active .cx-tile, .tb-item:active .tb-tile,
+    .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n) {
+    --press-depth: 1;
+    transition-duration: 0s;
+  }
+  /* New controls supply one hook and their kind; their own rest/hover styles remain the screen's. */
+  &[data-press]:active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still) {
+    scale: var(--press-scale);
+    &:not([data-press="chalk"]) { color: var(--ink); }
+    --press-light: var(--press-lift);
+    &[data-press="dark"] { border-color: var(--line-3); }
+    &[data-press="option"] { --press-light: var(--press-sink); }
+    &[data-press="option"]:not([aria-pressed="true"], [aria-checked="true"]) {
+      background: transparent;
+      box-shadow: inset 0 0 0 1px var(--press-rim);
+    }
+    &[data-press="chalk"] { --press-light: var(--press-seat); }
+    &[data-press="tile"] { --press-light: var(--press-dim); color: #fff; border-color: var(--red); }
+    &:is([data-press="tile"], [data-press="square"]) { scale: var(--press-scale-sm); }
+  }
+  &[data-press="option"] { --press-size: 1; }
+  &[data-press="chalk"] { --press-y: 3px; --press-blur: 8px; --press-spread: 0px; }
 }
-:where(.dp-day.is-end .dp-n) { box-shadow: none; }
-/* Released: the light fades and the travel settles back. Only these are transitioned, and only the press sets them: on
- * a key whose shadow is otherwise always none, the shadow itself; on a key with a shadow of its own, the property. */
-:is(.sort, .fw-mi, .rec-a, .cx-sort) { transition: box-shadow var(--press-fade); }
-:is(.rbtn:not(.ac-dates, .ac-find), .btn, .band-btn, .hbadge, .hbtn, .icon-btn, .switch, .acc-all, .skip,
-  .tile, .tb-tile, .cx-btn, .cx-icon-btn, .cx-switch, .cx-tile, .cx-skip) {
-  transition: scale var(--press-back), box-shadow var(--press-fade);
+/* Existing faces' geometry is provenance: preserve their former two release mechanisms. */
+:root body :is(.seg-b, .wk-b, .cx-seg-b, .ac-sel, .dl-sort, .ac-dates, .ac-find, .dp-n) { --press-size: 1; }
+:root body :is(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip) {
+  --press-y: 3px; --press-blur: 8px; --press-spread: 0px;
 }
-:is(.seg-b, .wk-b, .cx-seg-b, .ac-sel, .dl-sort, .ac-dates, .ac-find, .dp-n) {
-  transition: scale var(--press-back), --press-light var(--press-fade);
+body .dp-day.is-end .dp-n {
+  --press-size: var(--press-depth); --press-y: 2px; --press-blur: 6px; --press-spread: 0px;
+  box-shadow: none;
 }
-.dp-day.is-end .dp-n { transition: scale var(--press-back), box-shadow var(--press-fade); }
-:is(.sort, .fw-mi, .rec-a, .cx-sort):active { transition-duration: 0s; }
 
 /* Keys: a 3% travel; small squares 6%. Down, at once. */
 :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .ac-sel, .dl-sort, .acc-all, .skip,
@@ -1434,17 +1468,6 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
   scale: var(--press-scale-sm);
   transition-duration: 0s;
 }
-/* A key whose shadow is otherwise always none draws the light's layer only while held (released, its shadow fades to
- * none): over its face, or on a chalk key a fall from its top edge, 3 px down and 8 px soft, with no even edge. */
-:is(.rbtn:not(.ac-dates, .ac-find, .rbtn-primary), .btn:not(.btn-primary), button.band-btn, .hbadge, .hbtn, .icon-btn, .switch,
-  .sort, .fw-mi, .rec-a, .acc-all, .cx-btn:not(.primary), .cx-icon-btn, .cx-switch, .cx-sort):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still),
-:is(.rail-item, .cx-ri):active :is(.tile, .cx-tile), .tb-item:active .tb-tile {
-  box-shadow: inset 0 0 0 100vmax var(--press-light, transparent);
-}
-:is(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
-  box-shadow: inset 0 3px 8px var(--press-light, transparent);
-}
-
 /* Dark keys with an edge: the hover's edge and words, then the light. */
 :is(.rbtn:not(.rbtn-primary, .rbtn-danger, .dlg-text-btn, .is-set), .btn:not(.btn-primary), button.band-btn, .switch,
   .cx-btn:not(.primary), .cx-switch):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
@@ -1462,22 +1485,22 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
 }
 .fw-mi:active { --press-light: var(--press-lift); }
 /* A group whose chosen option is lit: a held option sinks inside a faint edge, and never takes the chosen one's light;
- * the chosen one sinks under its chalk ring (its own rule draws the ring and the layer). */
+ * the chosen one sinks under its chalk ring (its own rule draws only the ring). */
 :is(.seg-b, .wk-b, .cx-seg-b):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
   color: var(--ink);
   --press-light: var(--press-sink);
 }
 :is(.seg-b:not([aria-pressed="true"]), .wk-b:not([aria-checked="true"]), .cx-seg-b:not([aria-pressed="true"])):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
   background: transparent;
-  box-shadow: inset 0 0 0 1px var(--press-rim), inset 0 0 0 100vmax var(--press-light, transparent);
+  box-shadow: inset 0 0 0 1px var(--press-rim);
 }
 /* The two lists and the filters in force (their edge is drawn inside). */
 :is(.ac-sel, .dl-sort):active:not(.is-disabled) {
-  box-shadow: inset 0 0 0 1px var(--line-3), inset 0 0 0 100vmax var(--press-light, transparent);
+  box-shadow: inset 0 0 0 1px var(--line-3);
   --press-light: var(--press-lift);
 }
 :is(.ac-sel, .ac-dates, .ac-find).is-set:active:not(.is-disabled) {
-  box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-light, transparent);
+  box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42);
   --press-light: var(--press-lift);
 }
 /* The destructive commit: its own tone, a step further. */
@@ -1495,7 +1518,6 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
 /* A day: its tile lights; a chosen end seats; the end the next pick would make keeps its ring. */
 .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n { --press-light: var(--press-lift); }
 .dp-day.is-end:active:not([aria-disabled="true"], .is-off) .dp-n {
-  box-shadow: inset 0 2px 6px var(--press-light, transparent);
   --press-light: var(--press-seat);
 }
 /* Text links: the underline takes chalk and presses down to 2 px. */
@@ -1511,9 +1533,9 @@ html[data-motion="off"] :active, html[data-motion="off"] :active :is(.tile, .tb-
  * words, and its own words, glyphs and a switch's track take its colours. The light never shows here, not even on a
  * chosen key (which keeps its own shadow), so it has nothing to fade. */
 @media (forced-colors: active) {
-  :where(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a,
+  :where([data-press], .rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a,
     .acc-all, .skip, .tile, .tb-tile, .dp-n, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-tile, .cx-skip) { --press-light: transparent !important; }
-  :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
+  :is([data-press], .rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
     .skip, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still),
   :is(.rail-item, .cx-ri):active :is(.tile, .cx-tile), .tb-item:active .tb-tile, .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n {
     forced-color-adjust: none;
@@ -1522,12 +1544,12 @@ html[data-motion="off"] :active, html[data-motion="off"] :active :is(.tile, .tb-
     color: ButtonFace !important;
     border-color: ButtonText !important;
   }
-  :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
+  :is([data-press], .rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
     .skip, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still) *,
   :is(.rail-item, .cx-ri):active :is(.tile, .cx-tile) *, .tb-item:active .tb-tile *, .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n * {
     color: inherit !important;
   }
-  :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
+  :is([data-press], .rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
     .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort):active svg, :is(.rail-item, .cx-ri, .tb-item):active svg { stroke: currentColor !important; }
   :is(.switch, .cx-switch):active:not(:disabled) :is(.switch-track, .cx-track) { background: transparent !important; border-color: ButtonFace !important; }
   :is(.switch, .cx-switch):active:not(:disabled) :is(.switch-thumb, .cx-thumb) { background: ButtonFace !important; }
@@ -1540,10 +1562,6 @@ html[data-motion="off"] :active, html[data-motion="off"] :active :is(.tile, .tb-
   [data-frame] .head-acts .hbadge:focus-visible:active { outline-color: ButtonFace !important; }
 }
 
-html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-}
 
 /* Device cutouts are physical, independent of the reading direction. Zero insets keep the existing frame. */
 .page {

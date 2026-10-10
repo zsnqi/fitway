@@ -630,7 +630,9 @@ stroke, as the intro draws the line). Timings are in the table above.
 **13. The press (DECISIONS items 41 and 42; MOT-20, STA-16).** Every control that does something when pressed shows,
 under the finger or the mouse, that the press landed, so the owner never presses twice. One form for the whole
 instrument, in one place every page loads (`style.css`, "the press"), so Settings and the screens still to come take it
-by using the same controls: **the key seats.**
+by using the same controls: **the key seats.** A new control takes one step: add `data-press="dark"`,
+`data-press="option"` (an option of a lit group), `data-press="chalk"`, `data-press="tile"` (a current tile), or
+`data-press="square"` (a small square). Its own rest, hover, open and chosen shadow rules need no press layer.
 
 - **When:** at pointer down or touch start, at once, so the fastest tap still shows it. It is CSS `:active`; Space on a
   focused button gives it natively, and no script is added for keys. Safari on iPhone applies `:active` to a touch only
@@ -657,14 +659,12 @@ by using the same controls: **the key seats.**
 - **Released** (DECISIONS item 42): the light fades out in 120 ms on a close's curve, so even a very fast tap leaves a
   trace under the lifting finger; it is a background light, not a glyph (MOT-1), and the one exception to "a press's
   light is instant" (MOT-18). The travel settles back in 240 ms on the dialogs' settle curve. The key's edge and words, a
-  hover and a new selection change at once. The light is an inset layer of the key's shadow in one registered colour
-  (`--press-light`), and nothing of it is drawn at rest, so the page at rest is exactly as before the press. A key whose
-  shadow is otherwise always none (most keys, the chalk keys, the tiles, a chosen day) draws the layer only while held,
-  and released, its shadow fades to none. A key with a shadow of its own in some state (a segment's or weekday's ring, a
-  list's edge, a filter in force, the picker's days) carries the layer in every state, transparent at rest, and its
-  colour fades, so the ring or edge never animates; its own shadow rules repeat the layer after it. (The pass's first
-  build kept the transparent layer on every key at rest: it re-rasterised some icons and words by a few levels, a dimmed
-  month arrow and some of the sheet's specimens, so the rest frames no longer matched.) A second press during either
+  hover and a new selection change at once. The light is a static additive shadow
+  effect, in one registered colour (`--press-light`), separate from the key's own `box-shadow`. It draws nothing at
+  rest. Shadowless keys interpolate the colour and shadow geometry back to zero, preserving their former fade to
+  none. Keys that previously carried a transparent layer keep its full geometry and fade only its colour, so the
+  ring or edge never animates. No control's own shadow rule repeats the press layer. The static effect remains with
+  motion off; the properties' transitions still become instant. A second press during either
   starts at full depth at once.
 - **Nothing else moves:** transforms and paint only, so no neighbour shifts; no glyph changes opacity; the lights never
   react to a press.
@@ -683,11 +683,9 @@ by using the same controls: **the key seats.**
   as before (TYP-6, OWN-A2, OWN-R12). Switched off (Reports while loading), the face keeps the off list's look,
   `--ink-3` at the system's 70%, and in forced colours the list stays unseen, where the rule for switched-off controls
   had drawn its 16 px words over the face.
-- **For production:** Tailwind's `active:` variant with `scale-[.97]` and a `transition-[scale]` on the key; the light
-  as an inset shadow set only by `active:` and transitioned only out (`transition-[box-shadow,scale]`), or, on a key
-  with a shadow of its own, a registered colour property (`@property`) in a transparent layer of that shadow (or a
-  pseudo-element whose opacity fades: it carries no glyph); and `motion-reduce:active:scale-100`. Base UI's buttons
-  need no script.
+- **For production:** carry the same `data-press` hook and kind, the registered colour and geometry, and the static
+  additive shadow effect together. Keep the motion gates and forced-colour turn-over with the pattern; a control's
+  own shadow remains independent. CSS `:active` and native Space need no key script.
 
 ## Open and capture
 
