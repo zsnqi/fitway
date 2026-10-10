@@ -1350,29 +1350,45 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
 }
 
 /* ---------------------------------------------------------------- the press
- * MOT-20, STA-16 (DECISIONS item 41): every control that does something when pressed shows, under the finger or the
- * mouse, that the press landed, so the owner never presses twice. One form for the whole instrument, kept here so every
- * page (and the screens still to come) takes it: the key seats. At pointer down or touch start, with no delay, it
- * shrinks a step into the glass and its face takes one step of light: a dark key takes its hover's edge and words and
- * a chalk light over its face (--press-lift, over whatever it already holds: hover, selected, open); a lit key (chalk,
- * the current section's red, a chosen day) loses light toward black, as a key does under a finger. Released, it settles
- * back in 240 ms on the page's settle curve (a dialog's, MOT-9), so even a quick tap leaves a trace, while its light goes
- * at once, as a hover colour does (MOT-1).
+ * MOT-20, STA-16 (DECISIONS items 41 and 42): every control that does something when pressed shows, under the finger or
+ * the mouse, that the press landed, so the owner never presses twice. One form for the whole instrument, kept here so
+ * every page (and the screens still to come) takes it: the key seats. At pointer down or touch start, with no delay, it
+ * shrinks a step into the glass and its face takes one step of light (--press-light):
+ *   - a dark key takes its hover's edge and words and a chalk light over its face (--press-lift), over whatever it
+ *     already holds (hover, open, a filter in force), so it is always a step past its hover;
+ *   - an option of a group whose chosen one is lit (segments, weekdays) never takes light, so a held option never reads
+ *     as the chosen one: it sinks, its face darker than the strip (--press-sink) inside a faint edge (--press-rim); the
+ *     chosen one sinks too, under its ring;
+ *   - a chalk key (the primary, a chosen day, the skip link) seats in its bezel: its rim shades toward black
+ *     (--press-seat) while its centre keeps its light, so it never reads as off (a chalk dimmed all over is grey);
+ *   - the current section's red tile loses light toward black across its face (--press-dim): a deeper red, never pink
+ *     (LGT-5).
+ * Released (DECISIONS item 42), the light fades out in 120 ms (--press-fade), so even the fastest tap leaves a trace;
+ * its edge, words, the hover and a new selection change at once (MOT-18); the travel settles back in 240 ms on the
+ * page's settle curve (a dialog's, MOT-9). A second press during either starts at full depth at once.
+ *   The light is its own registered property, carried by one inset layer of every key's shadow in every state
+ *   (transparent at rest), so only the press's light ever fades: a hover, a selection or a state never animates. A rule
+ *   that gives a key a shadow of its own (a chosen ring, a list's edge) repeats the layer after it.
  *   Travel: a key 3% (--press-scale); a small square (an icon button, a tile, a day) 6% (--press-scale-sm), about
  *   1.3 px a side either way. Rows, menu items, sort headings and text links light only: they are not keys.
- *   Reduced motion, ?motion=off and Daily's Motion switch: the light alone, nothing moves (MOT-11).
+ *   Reduced motion, ?motion=off and Daily's Motion switch: the light alone, nothing moves, and it goes at once (MOT-11).
  *   Nothing else moves: transforms and paint only, so no neighbour shifts; no glyph changes opacity; the lights never
  *   react to a press.
  *   Not pressed: a disabled or Working control (where it says why it is off, that is the response); the charts' plots
  *   and the light tuner. Space presses a focused button natively; there is no script for keys. Safari on iPhone applies
  *   :active to a touch only when the page listens for touch: motion.js adds one passive touchstart listener.
  *   The browser's tap flash is removed only on the controls listed here, which this press replaces. */
+@property --press-light { syntax: "<color>"; inherits: false; initial-value: transparent; }
 :root {
   --press-lift: rgba(245, 243, 242, 0.1);
   --press-dim: rgba(7, 7, 7, 0.14);
+  --press-seat: rgba(7, 7, 7, 0.16);
+  --press-sink: rgba(0, 0, 0, 0.45);
+  --press-rim: rgba(245, 243, 242, 0.12);
   --press-scale: 0.97;
   --press-scale-sm: 0.94;
   --press-back: 240ms cubic-bezier(0.3, 0.75, 0.2, 1);
+  --press-fade: 120ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel select, .dl-sort select,
   .rail-item, .tb-item, .fw-mi, .rec-a, .acc-all, .done-a, .dp-day, .skip,
@@ -1380,11 +1396,27 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-/* The travel back. Only scale is transitioned, and only the press sets it, so hover and state colours stay instant. */
+/* The light's layer, on every key in every state. Its geometry is the face (zero specificity: a key's own shadow rule
+ * repeats it); a chalk key's is its rim, 2 px and a 12 px fall inward (a day's 8 px). */
+:where(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a,
+  .acc-all, .tile, .tb-tile, .dp-n, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-tile) {
+  box-shadow: inset 0 0 0 100vmax var(--press-light, transparent);
+}
+:where(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip) {
+  box-shadow: inset 0 0 0 2px var(--press-light, transparent), inset 0 0 12px var(--press-light, transparent);
+}
+:where(.dp-day.is-end .dp-n) {
+  box-shadow: inset 0 0 0 2px var(--press-light, transparent), inset 0 0 8px var(--press-light, transparent);
+}
+/* Released: the light fades and the travel settles back. Only these two are transitioned, and only the press sets them. */
+:is(.sort, .fw-mi, .rec-a, .cx-sort) { transition: --press-light var(--press-fade); }
 :is(.rbtn, .btn, .band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .ac-sel, .dl-sort, .acc-all, .skip,
-  .tile, .tb-tile, .dp-n, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-tile, .cx-skip) { transition: scale var(--press-back); }
+  .tile, .tb-tile, .dp-n, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-tile, .cx-skip) {
+  transition: scale var(--press-back), --press-light var(--press-fade);
+}
+:is(.sort, .fw-mi, .rec-a, .cx-sort):active { transition-duration: 0s; }
 
-/* Keys: a 3% travel; small squares 6%. */
+/* Keys: a 3% travel; small squares 6%. Down, at once. */
 :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .ac-sel, .dl-sort, .acc-all, .skip,
   .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off) {
   scale: var(--press-scale);
@@ -1397,57 +1429,71 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
   transition-duration: 0s;
 }
 
-/* Dark keys with an edge: the hover's edge, then the light. */
+/* Dark keys with an edge: the hover's edge and words, then the light. */
 :is(.rbtn:not(.rbtn-primary, .rbtn-danger, .dlg-text-btn, .is-set), .btn:not(.btn-primary), button.band-btn, .switch,
   .cx-btn:not(.primary), .cx-switch):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
   border-color: var(--line-3);
   color: var(--ink);
-  box-shadow: inset 0 0 0 100vmax var(--press-lift);
+  --press-light: var(--press-lift);
 }
 .hbadge:active:not(.is-delayed, .is-err) { border-color: var(--line-3); }
-.hbadge:active { box-shadow: inset 0 0 0 100vmax var(--press-lift); }
+.hbadge:active { --press-light: var(--press-lift); }
 @media (min-width: 721px) { [data-frame] .head-acts .hbadge:active { border-color: transparent; } }
 /* Boxless keys: the hover's words, and the light shows the key's shape. */
-:is(.icon-btn, .hbtn, .dlg-text-btn, .acc-all, .seg-b, .wk-b, .cx-icon-btn, .cx-seg-b, .sort, .cx-sort, .rec-a):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still) {
+:is(.icon-btn, .hbtn, .dlg-text-btn, .acc-all, .cx-icon-btn, .sort, .cx-sort, .rec-a):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still) {
   color: var(--ink);
-  box-shadow: inset 0 0 0 100vmax var(--press-lift);
+  --press-light: var(--press-lift);
 }
-.fw-mi:active { box-shadow: inset 0 0 0 100vmax var(--press-lift); }
-/* A chosen segment or weekday keeps its chalk ring under the light. */
-:is(.seg-b[aria-pressed="true"], .cx-seg-b[aria-pressed="true"], .wk-b[aria-checked="true"]):active:not(:disabled) {
-  box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-lift);
+.fw-mi:active { --press-light: var(--press-lift); }
+/* A group whose chosen option is lit: a held option sinks inside a faint edge, and never takes the chosen one's light;
+ * the chosen one sinks under its chalk ring (its own rule draws the ring and the layer). */
+:is(.seg-b, .wk-b, .cx-seg-b):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
+  color: var(--ink);
+  --press-light: var(--press-sink);
+}
+:is(.seg-b:not([aria-pressed="true"]), .wk-b:not([aria-checked="true"]), .cx-seg-b:not([aria-pressed="true"])):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--press-rim), inset 0 0 0 100vmax var(--press-light, transparent);
 }
 /* The two lists and the filters in force (their edge is drawn inside). */
-:is(.ac-sel, .dl-sort):active:not(.is-disabled) { box-shadow: inset 0 0 0 1px var(--line-3), inset 0 0 0 100vmax var(--press-lift); }
-:is(.ac-sel, .ac-dates, .ac-find).is-set:active:not(.is-disabled) { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-lift); }
-/* The destructive commit: its own tone, a step further. */
-.rbtn-danger:active:not(:disabled, [aria-disabled="true"]) { border-color: rgba(255, 107, 125, 0.75); box-shadow: inset 0 0 0 100vmax rgba(255, 107, 125, 0.1); }
-/* Lit keys: chalk and the current section's red lose light toward black (never toward pink or white, LGT-5). */
-:is(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
-  box-shadow: inset 0 0 0 100vmax var(--press-dim);
+:is(.ac-sel, .dl-sort):active:not(.is-disabled) {
+  box-shadow: inset 0 0 0 1px var(--line-3), inset 0 0 0 100vmax var(--press-light, transparent);
+  --press-light: var(--press-lift);
 }
-/* Tiles: the rail's, the bar's and the sheet's; the current one dims. */
-:is(.rail-item, .cx-ri):active :is(.tile, .cx-tile) { border-color: var(--line-3); color: var(--ink); box-shadow: inset 0 0 0 100vmax var(--press-lift); }
-:is(.rail-item.is-active, .cx-ri[aria-current="page"]):active :is(.tile, .cx-tile) { border-color: var(--red); color: #fff; box-shadow: inset 0 0 0 100vmax var(--press-dim); }
+:is(.ac-sel, .ac-dates, .ac-find).is-set:active:not(.is-disabled) {
+  box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-light, transparent);
+  --press-light: var(--press-lift);
+}
+/* The destructive commit: its own tone, a step further. */
+.rbtn-danger:active:not(:disabled, [aria-disabled="true"]) { border-color: rgba(255, 107, 125, 0.75); --press-light: rgba(255, 107, 125, 0.1); }
+/* Chalk keys seat in their bezel. */
+:is(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
+  --press-light: var(--press-seat);
+}
+/* Tiles: the rail's, the bar's and the sheet's; the current one's red deepens (DECISIONS item 42: it is a real link). */
+:is(.rail-item, .cx-ri):active :is(.tile, .cx-tile) { border-color: var(--line-3); color: var(--ink); --press-light: var(--press-lift); }
+:is(.rail-item.is-active, .cx-ri[aria-current="page"]):active :is(.tile, .cx-tile) { border-color: var(--red); color: #fff; --press-light: var(--press-dim); }
 .tb-item:active { color: var(--ink); }
-.tb-item:active .tb-tile { box-shadow: inset 0 0 0 100vmax var(--press-lift); }
-.tb-item[aria-current="page"]:active .tb-tile { box-shadow: inset 0 0 0 100vmax var(--press-dim); }
-/* A day: its tile lights; a chosen end dims; the end the next pick would make keeps its ring. */
-.dp-day:active:not([aria-disabled="true"], .is-off) .dp-n { box-shadow: inset 0 0 0 100vmax var(--press-lift); }
-.dp-day.is-ghost:active:not([aria-disabled="true"], .is-off) .dp-n { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-lift); }
-.dp-day.is-end:active:not([aria-disabled="true"], .is-off) .dp-n { box-shadow: inset 0 0 0 100vmax var(--press-dim); }
+.tb-item:active .tb-tile { --press-light: var(--press-lift); }
+.tb-item[aria-current="page"]:active .tb-tile { --press-light: var(--press-dim); }
+/* A day: its tile lights; a chosen end seats; the end the next pick would make keeps its ring. */
+.dp-day:active:not([aria-disabled="true"], .is-off) .dp-n { --press-light: var(--press-lift); }
+.dp-day.is-end:active:not([aria-disabled="true"], .is-off) .dp-n { --press-light: var(--press-seat); }
 /* Text links: the underline takes chalk and presses down to 2 px. */
 :is(.done-a, .cx-index a):active { color: var(--ink); text-decoration-color: var(--ink); text-decoration-thickness: 2px; }
 
-/* Reduced motion, ?motion=off and Daily's Motion switch: the light alone. */
+/* Reduced motion, ?motion=off and Daily's Motion switch: the light alone (its fade goes too, with every transition). */
 html[data-motion="off"] :active, html[data-motion="off"] :active :is(.tile, .tb-tile, .cx-tile, .dp-n) { scale: none !important; }
 @media (prefers-reduced-motion: reduce) { :active, :active :is(.tile, .tb-tile, .cx-tile, .dp-n) { scale: none !important; } }
 
 /* High contrast: the light is a shadow, which forced colours remove, so a pressed key turns over into the system's
- * button colours (its text on its own ground), unlike a selected one (Highlight) or a focused one (the ring). As the
- * selected states do (FOC-8), the key opts out of adjustment, so no text backplate covers its words, and its own words,
- * glyphs and a switch's track take its colours. */
+ * button colours (its text on its own ground), unlike a selected one (Highlight) or a focused one (the ring), and goes
+ * back at once. As the selected states do (FOC-8), the key opts out of adjustment, so no text backplate covers its
+ * words, and its own words, glyphs and a switch's track take its colours. The light never shows here, not even on a
+ * chosen key (which keeps its own shadow), so it has nothing to fade. */
 @media (forced-colors: active) {
+  :where(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a,
+    .acc-all, .skip, .tile, .tb-tile, .dp-n, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-tile, .cx-skip) { --press-light: transparent !important; }
   :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
     .skip, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still),
   :is(.rail-item, .cx-ri):active :is(.tile, .cx-tile), .tb-item:active .tb-tile, .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n {
