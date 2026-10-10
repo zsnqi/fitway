@@ -463,6 +463,40 @@ describe("brief-references: decision item citations", () => {
 		expect(formatBriefResult(result)).toContain("missing decision item 2");
 	});
 
+	it("checks decision items for absolute paths, including paths inside the named worktree", async () => {
+		const f = fixture();
+		const decisions = "1. One.\n2. Two.\n";
+		put(f.worktree, "docs/DECISIONS.md", decisions);
+		put(f.root, "absolute-DECISIONS.md", decisions);
+		for (const file of [
+			path.join(f.worktree, "docs/DECISIONS.md"),
+			path.join(f.root, "absolute-DECISIONS.md"),
+		]) {
+			const absolute = file.replaceAll("\\", "/");
+			const result = await f.check(
+				`${f.valid}\n\`${absolute}\` items 2 and 999.\n`,
+			);
+			expect(result.ok).toBe(false);
+			expect(result.problems).toHaveLength(1);
+			expect(formatBriefResult(result)).toContain("missing decision item 999");
+		}
+	});
+
+	it("ignores numbered lines inside fenced decision content", async () => {
+		const f = fixture();
+		put(
+			f.worktree,
+			"docs/DECISIONS.md",
+			"1. One.\n```text\n7. Fenced example.\n```\n",
+		);
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` items 1 and 7.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(1);
+		expect(formatBriefResult(result)).toContain("missing decision item 7");
+	});
+
 	it("does not accept a decisions file that only exists in the command repository", async () => {
 		const f = fixture();
 		put(f.commandRepository, "docs/DECISIONS.md", "42. Command only.\n");

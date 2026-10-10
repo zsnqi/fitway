@@ -51,9 +51,44 @@ function citedDecisionItems(tail) {
 }
 
 function numberedTopLevelEntries(text) {
-	return new Set(
-		[...text.matchAll(/^(\d+)\.\s+/gm)].map((match) => Number(match[1])),
-	);
+	const entries = new Set();
+	let fence = null;
+	for (const line of text.split(/\r?\n/)) {
+		const delimiter = line.match(/^ {0,3}(`{3,}|~{3,})/);
+		if (delimiter) {
+			if (!fence) fence = delimiter[1];
+			else if (
+				delimiter[1][0] === fence[0] &&
+				delimiter[1].length >= fence.length &&
+				/^ {0,3}(?:`+|~+)\s*$/.test(line)
+			)
+				fence = null;
+			continue;
+		}
+		if (fence) continue;
+		const entry = line.match(/^(\d+)\.\s+/);
+		if (entry) entries.add(Number(entry[1]));
+	}
+	return entries;
+}
+
+function reportMissingDecisionItems(
+	content,
+	decisionItems,
+	file,
+	absolute,
+	worktree,
+	line,
+	report,
+) {
+	const entries = numberedTopLevelEntries(content);
+	for (const item of decisionItems)
+		if (!entries.has(item))
+			report(
+				"brief-references",
+				line,
+				`missing decision item ${item} in ${file} (${absolute}) in worktree ${worktree}`,
+			);
 }
 
 function environmentBlock(text) {
@@ -231,16 +266,32 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		const after = tail.match(/^\s*§"([^"]+)"/);
 		// Markdown reads a line break inside a code span as a space.
 		const split = /[\r\n]/.test(span[2]);
-		const reference = await resolver.reference(
-			span[2].replace(/(?:\r\n|[\r\n])[ \t]*/g, " "),
-		);
-		if (!reference) continue;
+		const value = span[2].replace(/(?:\r\n|[\r\n])[ \t]*/g, " ");
+		const decisionItems = citedDecisionItems(tail);
+		const reference = await resolver.reference(value);
+		if (!reference) {
+			if (decisionItems.length && path.isAbsolute(value)) {
+				const absolute = path.resolve(value);
+				const details = await exists(absolute);
+				if (details?.isFile())
+					reportMissingDecisionItems(
+						await readFile(absolute, "utf8"),
+						decisionItems,
+						value,
+						absolute,
+						worktree,
+						line,
+						report,
+					);
+			}
+			continue;
+		}
 		references.push({
 			...reference,
 			split,
 			lineNumber: line,
 			heading: reference.heading ?? after?.[1],
-			decisionItems: citedDecisionItems(tail),
+			decisionItems,
 			isNew: /^[ \t]+\(new\)(?=\s|[.,;:]|$)/.test(tail),
 		});
 	}
@@ -335,14 +386,15 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 				`missing heading §"${heading}" in ${absolute}`,
 			);
 		if (reference.decisionItems.length) {
-			const entries = numberedTopLevelEntries(content);
-			for (const item of reference.decisionItems)
-				if (!entries.has(item))
-					report(
-						"brief-references",
-						line,
-						`missing decision item ${item} in ${reference.file} (${absolute}) in worktree ${worktree}`,
-					);
+			reportMissingDecisionItems(
+				content,
+				reference.decisionItems,
+				reference.file,
+				absolute,
+				worktree,
+				line,
+				report,
+			);
 		}
 	}
 }
