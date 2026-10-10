@@ -42,7 +42,7 @@ equal, and the fast ladder passes whatever another worktree's verify-fitway sess
 ## Causes and required outcomes
 
 - **V1. Where focus stopped quotes a whole page (F045).**
-  - **Cause.** `.agents/skills/verify-fitway/runner.mjs:595` writes "Keyboard focus stopped at <selector> (<text>)"
+  - **Cause.** `.agents/skills/verify-fitway/runner.mjs:595` writes "Keyboard focus stopped at" followed by a selector and, in brackets,
     with the focused element's text cut to 120 characters, so focus on the body quotes the page's text.
   - **Outcome.** The message names the focused element by its selector and its accessible name (or role when it has
     none), never by its text content, and says when focus is on the page itself rather than on a control.
