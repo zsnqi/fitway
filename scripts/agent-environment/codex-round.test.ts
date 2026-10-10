@@ -375,6 +375,34 @@ describe("L2 resume", () => {
 		expect(fallback.status, fallback.output).toBe(0);
 		expect(Buffer.from(f.captured().input, "base64")).toEqual(input);
 	});
+	it("sends a message file byte for byte", async () => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		const message = Buffer.from(
+			`line 1 has "double" and 'single' quotes, a backslash before a quote: \\"\nالعربية «كما هي» and $PATH\r\nline 3`,
+			"utf8",
+		);
+		const messageFile = path.join(f.root, "resume message.txt");
+		writeFileSync(messageFile, message);
+		const result = f.invoke(["resume", f.run, "--message-file", messageFile]);
+		expect(result.status, result.output).toBe(0);
+		expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+	});
+	it.each([
+		["missing", "message file not found"],
+		["empty", "message file is empty"],
+	])("refuses a %s message file", (kind, reason) => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		rmSync(f.capture);
+		const messageFile = path.join(f.root, `${kind} message.txt`);
+		if (kind === "empty") writeFileSync(messageFile, Buffer.alloc(0));
+		refused(
+			f,
+			f.invoke(["resume", f.run, "--message-file", messageFile]),
+			reason,
+		);
+	});
 	it.each([
 		[["--message"]],
 		[["--unknown", "text"]],
@@ -384,7 +412,7 @@ describe("L2 resume", () => {
 		refused(
 			f,
 			f.invoke(["resume", f.run, ...options]),
-			"expected resume <folder> [--message <text>]",
+			"expected resume <folder> [--message <text> | --message-file <file>]",
 		);
 		expect(existsSync(f.run)).toBe(false);
 	});
@@ -668,6 +696,80 @@ describe("L4 shell and byte parity", () => {
 			expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
 		},
 	);
+	it.skipIf(process.platform !== "win32")(
+		"delivers a message file unchanged from PowerShell and Git Bash",
+		() => {
+			const f = fixture();
+			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+			const message = Buffer.from(
+				`double "quote", 'single' quote, backslash before quote: \\"\nالعربية «كما هي» and $PATH\r\nlast line`,
+				"utf8",
+			);
+			const messageFile = path.join(f.root, "resume message.txt");
+			writeFileSync(messageFile, message);
+			const impostor = path.join(f.bin, "bash.exe");
+			copyFileSync(process.execPath, impostor);
+			const env = {
+				...f.env,
+				PATH: `${f.bin}${path.delimiter}${path.join(
+					process.env.SystemRoot ?? "C:/Windows",
+					"System32",
+				)}${path.delimiter}${process.env.PATH}`,
+			};
+			const args = [
+				process.execPath,
+				script,
+				"resume",
+				f.run,
+				"--message-file",
+				messageFile,
+			];
+			const psQuote = (value: string) => `'${value.replaceAll("'", "''")}'`;
+			const powershells = ["powershell.exe"];
+			if (
+				spawnSync("where.exe", ["pwsh.exe"], {
+					env,
+					windowsHide: true,
+					stdio: "ignore",
+				}).status === 0
+			)
+				powershells.push("pwsh.exe");
+			for (const shell of powershells) {
+				const result = spawnSync(
+					shell,
+					["-NoProfile", "-Command", `& ${args.map(psQuote).join(" ")}`],
+					{
+						cwd: f.root,
+						env,
+						encoding: "utf8",
+						windowsHide: true,
+					},
+				);
+				expect(result.status, result.stdout + result.stderr).toBe(0);
+				expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+			}
+			const gitBash = findGitBash(env.PATH);
+			const bashQuote = (value: string) =>
+				`'${value.replaceAll("'", "'\\''")}'`;
+			const bash = spawnSync(
+				gitBash,
+				[
+					"--noprofile",
+					"--norc",
+					"-c",
+					args.map((arg) => bashQuote(arg.replaceAll("\\", "/"))).join(" "),
+				],
+				{
+					cwd: f.coordinator,
+					env,
+					encoding: "utf8",
+					windowsHide: true,
+				},
+			);
+			expect(bash.status, bash.stdout + bash.stderr).toBe(0);
+			expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+		},
+	);
 });
 
 it("prints the command's usage without starting Codex", () => {
@@ -678,7 +780,7 @@ it("prints the command's usage without starting Codex", () => {
 		"Usage: pnpm codex:round [--] <brief> <level> [--run <folder>]",
 	);
 	expect(result.stdout).toContain(
-		"pnpm codex:round [--] resume <folder> [--message <text>]",
+		"pnpm codex:round [--] resume <folder> [--message <text> | --message-file <file>]",
 	);
 	expect(result.stdout).toContain(
 		"--message sends the exact text instead of the saved launch input.",

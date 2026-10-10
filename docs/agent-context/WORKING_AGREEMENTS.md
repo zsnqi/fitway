@@ -77,8 +77,10 @@ latest wording; never copy an entry into a resume point.
   the input tokens of Codex's first request, read from its session file, which is the round's start load.
   The harness reports the exit; nothing polls.
 - A run that stopped mid-change (the app exited, or a limit was reached) resumes on its thread instead
-  of being reset: `pnpm codex:round resume <run folder> --message "<one line on what happened>"`;
-  without a message, resume sends the brief again.
+  of being reset: `pnpm codex:round resume <run folder> --message-file "<UTF-8 message file>"` is the
+  shell-safe form for exact text (including quotes, backslashes, Unicode and newlines); `--message "<one line
+  on what happened>"` remains available where the shell preserves the argument. Without a message, resume
+  sends the brief again.
 - After a round, the coordinator checks the diff, `git status` in every worktree involved, and the
   remote branch.
 - Each Codex round is judged as an evaluation: brief rows, held-out rows, and the failure cause,
