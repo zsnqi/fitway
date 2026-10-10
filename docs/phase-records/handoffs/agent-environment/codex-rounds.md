@@ -627,3 +627,35 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Also found:** the foreign-pid refusal no longer prints the pid (it moved into the error's cause, F105); doctorFix
   ignores an unreadable `session.json` and prefers 3176, which still yields a correct FIX.
 - **Failure cause:** none.
+
+## agent-environment-r03 round 16: `r03/briefs/round-16.md`, result `e0d00b5a` (level xhigh)
+
+- **Set-up:** the brief's commit `3534889e` over HEAD `edaf626c`, on branch `agent-environment-r03-gardener`,
+  launched beside round 17. Before writing it the coordinator reproduced F103 on `edaf626c`
+  (`D:/fitway-temp/r03-r16-baseline/f103.mjs`: four planted steps, one generic message) and ran a survey of the base
+  (`D:/fitway-temp/r03-r16-baseline/survey-base-2/`: 101 s, collection complete, 38 folders proposed, `reports-phone`
+  among them). Held-out rows Y1-Y6 by a Sonnet grader (`sonnet-researcher`) in a disposable worktree at the result
+  with its own installed dependencies, a disposable clone with real junctions and symbolic links for Y1, and a
+  private temp root for planted folders; the coordinator sampled Y2's survey and the offending files.
+- **Brief rows, as Codex graded them:** 4 of 4 (R1-R4); 13 new tests, 50 gardener tests; the ladder passed; a survey
+  in 254 s with `reports-phone` not proposed.
+- **Held-out rows:** 2 of 5 pass, 2 partial, 1 fail. Grade: `D:/fitway-temp/r03-r16-grade/REPORT.md`.
+  - Y1 pass: worktrees with an outward junction (at the root or three levels deep), a directory or file symbolic link,
+    or a dangling junction are withheld and their links named; a worktree with only internal links is proposed with
+    a new helper (`remove-worktree.mjs`) that unlinks internal links and rechecks before `git worktree remove`; run
+    as printed in PowerShell 5.1 it removed that worktree, refused the others, and every sentinel survived; a bare
+    `git worktree remove` control deleted its sentinel.
+  - Y2 fail: the survey of `D:/fitway-temp` proposed 0 of 852 folders. Every tracked file is a citation source, read
+    as text; 13 PNG and zip files hold byte runs such as `/d/`, which `references` reads as `d:/`, an ancestor of every
+    folder. With those files removed in a planted commit, every R2 rule held (backslashes, case, below the folder,
+    closed history; the proposals section and a prose word protect nothing).
+  - Y3 partial: unreachable on the result; on the planted tree the cleanup kept a folder cited after the survey and
+    named the citation, but took about 3 minutes for 4 folders (all tracked files re-read per folder).
+  - Y4 pass: each planted step is named by label or 1-based position with the part that is not literal.
+  - Y5 partial: scope, lockfile, 50 tests and the ladder hold; the survey took 268.6 s against the base's 101 s.
+- **Also found:** the merged-clean count includes worktrees withheld for links (`facts.mjs:242`); the report lists
+  withheld worktrees only in its JSON dump (F106, F107).
+- **Failure cause:** the brief and the code. R2 named its sources as every tracked file and kept a citation "above"
+  the folder as protecting, but had no outcome that uncited folders stay proposable (B7's every-limit item), so
+  Codex's fixture tests passed while the real survey proposed nothing; Codex's report stated the protection without
+  the count. Repair 1 is round 16b.
