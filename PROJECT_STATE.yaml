@@ -6,7 +6,7 @@ gardener:
   outcome: blocked
   report: .agents/skills/gardener/REPORT.md
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; agent-environment-r03 (the environment phase) and Owner r04 (concept-only Eclipse work) are IN_PROGRESS, access-reason-cap-r01 is paused (on 2026-10-10 the user left its restart to the coordinator: after the Owner CSS round closes, before Settings, with its scope revisited first), agent-environment-r01 is DONE and agent-environment-r02 is SUPERSEDED by r03, both archived.
+  owner: Primary coordinator and integrator for FITWAY; agent-environment-r03 (the environment phase) and Owner r04 (concept-only Eclipse work) are IN_PROGRESS, access-reason-cap-r01 is paused (on 2026-10-10 the user left its restart to the coordinator, who restarts it after the Owner CSS round closes and before Settings, its scope revisited first), agent-environment-r01 is DONE and agent-environment-r02 is SUPERSEDED by r03, both archived.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
