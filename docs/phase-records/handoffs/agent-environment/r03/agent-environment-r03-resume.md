@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-11 02:20 +03:00 (rounds 22-29, 31 and 32 merged; round 30's repair
-  running)
+- **As of:** codex/owner-redesign-r04, 2026-10-11 02:25 +03:00 (rounds 22-29, 31 and 32 merged; round 30's repair
+  stopped by the coordinator for a new session)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-28,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -39,15 +39,18 @@
 
 ## Running now
 
-- Round 30's repair 1 (`docs/phase-records/handoffs/agent-environment/r03/briefs/round-30.md`, worktree
+- Nothing runs. Round 30's repair 1 (`docs/phase-records/handoffs/agent-environment/r03/briefs/round-30.md`, worktree
   `D:/Projects/fitway-worktrees/agent-environment-r03-r30`, level `xhigh`, run folder `D:/fitway-temp/codex-runs/r03-round-30`).
   - The first result `1dde2ffd`: V1-V2 pass. In V3, Daily's status is equal 5 of 5 under full motion and a planted
     change is caught. V4 (F119) was not reproduced: the base passes with both ports held.
   - The repair (sent 01:55) asks that a blinking text caret never make a compare differ:
     Access's pin-change validation and my-password features differed under full motion only. The 34 capture problems are
     the concept's missing recipe proofs (F123, Owner).
-  - If `last-message.md` there is older than the newest `events-resume-*.jsonl`, the run stopped: resume it on its
-    thread with `pnpm codex:round resume D:/fitway-temp/codex-runs/r03-round-30` and a one-line message.
+  - The coordinator stopped the repair at 02:21 so the user could start a new session. Its uncommitted edits stay in
+    the worktree (`SKILL.md`, `cli.test.mjs`, `runner.mjs`), with a copy in
+    `D:/fitway-temp/codex-runs/r03-round-30/wip-repair1-0221.patch`. Resume it on its thread with `pnpm codex:round
+    resume D:/fitway-temp/codex-runs/r03-round-30 --message-file <file>`, where the file says it was stopped
+    mid-change and should continue repair 1.
 - The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (next 2026-10-16).
 
 ## Next steps
