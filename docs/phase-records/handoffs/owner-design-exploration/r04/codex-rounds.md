@@ -479,3 +479,28 @@ checks live outside the repository and never appear here or in a brief. One line
   `codex-press-hook-2.md` (`aa406fce`, held-out rows W1-W7 in `D:/fitway-grader/owner-r04/press-hook-2-heldout.md`).
   F1 and F2 are the failure modes this round's rows did not cover, so the new brief makes both outcomes. It also
   carries the forced-colours level chip's empty icon slot, which the review found and which was there before.
+
+## press-hook-2: `directions/briefs/codex-press-hook-2.md` on the build branch, result `d1a01f3c` (level high)
+
+- **Set-up:** the successor to press-hook, with a changed hypothesis: keep the press mechanism the user tried on both
+  phones (`3b673daa`), keep the one-step `data-press` hook, and guard the omitted layer with a check. R5 is a separate
+  forced-colours defect from the review (B6 relaxed for it alone). Held-out rows W1-W7 are in
+  `D:/fitway-grader/owner-r04/press-hook-2-heldout.md`.
+- **Run:** the Codex account reached its usage limit before the commit. After the user switched accounts it resumed
+  on its thread, with no reset.
+- **Brief rows, as Codex graded them:** R2-R5, L1, L4 and L5 pass. Codex left R1, L2 and L3 "unproven": its own
+  captures differed by up to 14 px between two takes of the same target, and five retry recipes lack state proofs.
+- **Held-out rows, graded by the coordinator** with the press review's harness (`D:/fitway-temp/owner-r04-press-review/scripts/`,
+  where two takes of the target differ by 0; evidence in `D:/fitway-temp/owner-r04-press-hook-2-grade/`):
+  - W1 passes: an animation planted on the export button keeps running (`zz-pulse:running`); `eb18b17a` dropped it.
+  - W2 passes: the new check names `reports.css:625` and a planted `[data-press]` rule, and exits 1 on each.
+  - W3 passes: no nesting, no `animation-composition`, no `press-face`.
+  - W4 passes: 135 of 135 frames (AR 1440) and 90 of 90 (EN 390) equal `3b673daa` at rest, hover, held, and 60 and
+    200 ms after release. In forced colours, 133 of 136 are equal. Two release frames of Activity's dates and search
+    buttons vary between takes of the new build (at most 16 px and 4 levels; one take equals the target exactly). It
+    is invisible and accepted as an allowance.
+  - W5 passes: the level chip's bars show in forced colours, where the target shows an empty slot.
+  - W6 passes: the sheet's `data-press` specimens are equal, inside W4.
+  - W7 passes: both worktrees are clean.
+- **Failure cause:** none in the result. Codex's "unproven" rows came from its own capture noise and from recipes
+  without error-state proofs (the review's low, still open).

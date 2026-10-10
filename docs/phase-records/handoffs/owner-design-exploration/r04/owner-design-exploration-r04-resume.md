@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** codex/owner-redesign-r04 at `93ed2403`, 2026-10-10 21:30 +03:00
+- **As of:** codex/owner-redesign-r04 at `435b5268`, 2026-10-11 00:30 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-43), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 12-16, the environment phase), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -30,58 +30,35 @@
 
 ## Running now
 
-- **The CSS round** (the spec `css-round-spec.md` on the build branch, `ab504b28`; DECISIONS 41-42): the mechanical
-  part was accepted at `691d62d5` (`codex-rounds.md`), and the press and the two lists finished at `b2b2f4c1`. The
-  independent review (`verifier-css-round.md`, `767cd57c`; evidence and NOTES.md in
-  `D:/fitway-temp/owner-r04-css-review/`) passed 15 of 19 checks. Its findings:
-  - F1 medium: in forced colours, the figures region paints a ring after "Try again";
-  - F2 medium, in the tool: the held press counts hover as a press (F115);
-  - F3 low: the press is spread over selector lists;
-  - F4 and F8 low, taste: the held chalk rim; two text sizes in Activity's tools;
-  - F5 low: Activity's list rings on a mouse press;
-  - F6: the tuner's textarea at 16 px. The coordinator keeps it: C5 covers every textarea on the pages, and it stops
-    the iPhone's zoom;
-  - F7 low: the dialog cap divides by a length;
-  - F9 low: the long-name recipe's Arabic is question marks.
-- **F4 and F8 are fixed** at `41821f38` by a fresh designer (`designer-css-review-taste.md`, evidence
-  `D:/fitway-temp/owner-r04-css-taste/`). A held chalk key now shades from its top edge. Activity's open search takes
-  its row's width. The coordinator looked at the keys and the tools frames.
-- **Codex, high, done at `3b673daa`** (2026-10-10; graded so far in `codex-rounds.md`): `codex-css-review-fixes.md` (`c1cd84ab`), run folder
-  `D:/fitway-temp/codex-runs/owner-r04-css-review-fixes`, held-out rows Y1-Y7 in
-  `D:/fitway-grader/owner-r04/css-review-fixes-heldout.md`. It covers D1 (F1, every script-focused region), D2 (F5),
-  D3 (F7), D4 (F9) and D5 (the README's held chalk paragraph). B6 is relaxed; each cause is graded separately.
-- **Phone testing research** (the user asked for agents instead of their own finger for most checks, 2026-10-10):
-  `D:/fitway-temp/mobile-testing-research/ios/REPORT.md` and `D:/fitway-temp/mobile-testing-research/android/REPORT.md`.
-  The user chose to try both phones themselves instead (2026-10-10: no ADB, no cloud service).
-  - Android: the user's own phone over USB with ADB is free and stays local; `adb shell input` gives real touch
-    events, and screencap or screenrecord captures them. CDP-injected touch never shows `:active`.
-  - The Android report reads in Chromium's source that a tap faster than about 100 ms may show no `:active` at all.
-    That would break item 42's "even a very fast tap shows" on Android. The user's try settles it before F3's refactor.
-  - iPhone: there is no free automated path from Windows. Real iPhones in the cloud start at about $39 a month (AWS
-    Device Farm has a one-time trial) and need an account, a card and a tunnel.
+- **The CSS round is closed** (2026-10-10, build `d1a01f3c`; spec `css-round-spec.md`, DECISIONS 41-43). Its rounds
+  and grades are in `codex-rounds.md`:
+  - the mechanical part (`691d62d5`);
+  - the press and the two lists (`b2b2f4c1`);
+  - the independent review (`D:/fitway-temp/owner-r04-css-review/`);
+  - the taste fixes (`41821f38`);
+  - the review fixes (`3b673daa`), which the user tried on both phones and found without problems (DECISIONS 43);
+  - press-hook (`eb18b17a`), whose mechanism was replaced;
+  - press-hook-2 (`d1a01f3c`): the tried mechanism, `data-press` for a new control, and
+    the concept's new `check-press-layer` tool guarding the layer.
+- Lows left open, all from before the round:
+  - a key's glyph softens during the 240 ms settle (MOT-1 is the suspect);
+  - Reports' and Activity's recipes have no error-state proof for `page-retry`;
+  - the concept's index check (its tools folder) runs only inside a worktree.
+- Phone testing research (2026-10-10): `D:/fitway-temp/mobile-testing-research/ios/REPORT.md` and
+  `D:/fitway-temp/mobile-testing-research/android/REPORT.md`. The user tries both phones themselves (no ADB, no cloud).
 - Report-only, under load only: the dialogs', popover's and records card's parts split across threads under a planted
   stall; rounds item 11 to decide whether they are errors on a real machine.
 
 ## Next steps
 
-0. **The CSS round's close (start here).**
-   1. Done: the Codex round is graded on Y2, Y5 and Y7; Y1, Y3, Y4 and Y6 join the post-F3 verifier pass. F3 waits for step 2.
-   2. Done: the user tried both phones on the LAN preview (build `3b673daa`, 2026-10-10) and said everything works
-      («كلشي تمام»), including a very fast tap on Android, so F3 needs no pointerdown class.
-   3. F3: `eb18b17a` passed its verifier (12 of 12, `D:/fitway-temp/owner-r04-press-review/`), but its mechanism, an
-      always-on `!important` additive animation, drops later control animations and is unmeasured in Safari. The
-      coordinator replaces it (`codex-rounds.md`). Running: `codex-press-hook-2.md` (`aa406fce`), Codex high, run
-      folder `D:/fitway-temp/codex-runs/owner-r04-press-hook-2`, held-out rows W1-W7. It brings back `3b673daa`'s
-      mechanism with the `data-press` hook, a new check under the folder's tools, and the level chip's icon in forced
-      colours. The coordinator grades it with the verifier's harness (`D:/fitway-temp/owner-r04-press-review/scripts/`).
-      Lows left from the review, all present before the round: a key's glyph softens during the 240 ms settle (MOT-1
-      is the suspect), and Reports' and Activity's recipes have no error-state proof for `page-retry`.
-      Codex high, `codex-press-hook.md` (`348ca375`), run folder `D:/fitway-temp/codex-runs/owner-r04-press-hook`,
-      held-out rows Z1-Z7 in `D:/fitway-grader/owner-r04/press-hook-heldout.md`. Then one short verifier pass at high,
-      covering F3 and the css-review-fixes rows Y1, Y3, Y4 and Y6. The user found no problems on the phones and
-      needs no second look (DECISIONS 43); report the close in a line. Later problems or improvements are welcome.
-   5. F115 (the held press counts hover) goes to an agent-environment round. The concept CSS check joins the fast
-      ladder only once the build is on the trunk.
+0. **Start here: the environment phase's last items** (agent-environment-r03 resume point). These are:
+   - F115, the CLI's held press counting a hover as a press;
+   - F116, `brief:check` passing a decision pointer the named file does not hold;
+   - a written rule that a check an agent scripts twice becomes a feature of the verify-fitway CLI (the user agreed,
+     2026-10-10);
+   - then its closing review.
+   access-reason-cap-r01 restarts after the CSS round, before Settings, with its scope revisited first (the ledger).
+   The concept CSS check, and now `check-press-layer`, join the fast ladder only once the build is on the trunk.
 
 1. **After the environment phase:** the Owner screens resume with its tools (the verify-fitway skill and the CLI).
 2. **Then Settings**, Operations (the header status's details) and Monitoring, each per rounds items 6 and 8-11 in
@@ -122,7 +99,7 @@ Nothing; the phone try comes after the Codex round (Next steps 0.2).
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
   commit that adds this text (parent `090a272b`).
-- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `aa406fce` until the round commits.
+- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `d1a01f3c`.
 - The environment phase: `docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md`.
 - Motion: designer `D:/fitway-temp/owner-r04-motion/`, review `D:/fitway-temp/owner-r04-motion-review/`, research
   `D:/fitway-temp/owner-r04-motion-research/REPORT.md`.
