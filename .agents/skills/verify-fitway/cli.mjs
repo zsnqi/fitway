@@ -627,11 +627,11 @@ async function main() {
 			if (
 				!(
 					major > 1 ||
-					(major === 1 && (minor > 3 || (minor === 3 && patch >= 0)))
+					(major === 1 && (minor > 3 || (minor === 3 && patch >= 1)))
 				)
 			)
 				throw new Error(
-					`Held presses require ui-forensics >=1.3.0; found ${version}`,
+					`Held presses require ui-forensics >=1.3.1; found ${version}`,
 				);
 		}
 		await outputFile(options.out, "tool-output");

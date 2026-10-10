@@ -85,6 +85,119 @@ after(async () => {
 	if (scratch) await rm(scratch, { recursive: true, force: true });
 });
 
+// Real browser regression controls use an explicitly supplied external tool copy.
+// CI has no machine-level skill; local fast/verification runs set this variable.
+const pressTools = process.env.FITWAY_FORENSICS_TEST_PATH;
+let pressBrowser;
+after(async () => {
+	await pressBrowser?.close();
+});
+async function pressFixture(css, body, check) {
+	const ui = await import(
+		pathToFileURL(resolve(pressTools, "scripts/web/lib.mjs"))
+	);
+	pressBrowser ||= await ui.launchChromium(ui.loadPlaywright());
+	const { page, context } = await ui.newContext(pressBrowser, {
+		viewport: { width: 800, height: 600 },
+	});
+	try {
+		await page.setContent(
+			`<style>button { width:160px;height:70px;background:#fff;border:0;outline:0;appearance:none; } ${css}</style>${body}`,
+		);
+		await check(page, ui);
+	} finally {
+		await ui.releaseHeld(page);
+		await context.close();
+	}
+}
+const pressTest = (name, fn) =>
+	test(
+		name,
+		{
+			skip:
+				!pressTools &&
+				"Set FITWAY_FORENSICS_TEST_PATH to the ui-forensics copy for browser controls",
+		},
+		fn,
+	);
+pressTest(
+	"R22 P1: settled hover alone is never a mouse press, including a long hover transition",
+	async () => {
+		await pressFixture(
+			"#hover { transition:background-color 1600ms linear; } #hover:hover { background:#ff0000; }",
+			'<button id="hover">Hover only</button>',
+			async (page, ui) => {
+				await ui.runAction(page, "hold:#hover");
+				const info = await ui.heldPressInfo(page);
+				assert.equal(info.classification, "no pressed style");
+				assert.equal(
+					await page
+						.locator("#hover")
+						.evaluate((e) => getComputedStyle(e).backgroundColor),
+					"rgb(255, 0, 0)",
+				);
+			},
+		);
+	},
+);
+pressTest(
+	"R22 P2: mouse press on a descendant is shown while held",
+	async () => {
+		await pressFixture(
+			"#child span { display:block;background:#fff; } #child:active span { background:#ff0000; }",
+			'<button id="child"><span>Child press</span></button>',
+			async (page, ui) => {
+				await ui.runAction(page, "hold:#child");
+				assert.equal(
+					(await ui.heldPressInfo(page)).classification,
+					"pressed style shown while held",
+				);
+			},
+		);
+	},
+);
+pressTest(
+	"R22 P2: mouse press on root and descendant before/after pseudo-elements is shown",
+	async () => {
+		for (const target of ["#pseudo", "#pseudo span"])
+			for (const pseudo of ["before", "after"]) {
+				await pressFixture(
+					`${target}::${pseudo} { content:'';display:block;width:20px;height:10px;background:#fff; } #pseudo:active${target.endsWith("span") ? " span" : ""}::${pseudo} { background:#ff0000; }`,
+					'<button id="pseudo"><span>Pseudo press</span></button>',
+					async (page, ui) => {
+						await ui.runAction(page, "hold:#pseudo");
+						assert.equal(
+							(await ui.heldPressInfo(page)).classification,
+							"pressed style shown while held",
+							`${target}::${pseudo}`,
+						);
+					},
+				);
+			}
+	},
+);
+pressTest(
+	"R22 P4: an active rule excluding disabled applies only to its enabled descendant control",
+	async () => {
+		await pressFixture(
+			"button span { display:block;background:#fff; } button:not(:disabled):active span { background:#ff0000; }",
+			'<button id="disabled" disabled><span>Disabled</span></button><button id="enabled"><span>Enabled</span></button>',
+			async (page, ui) => {
+				await ui.runAction(page, "hold:#disabled");
+				const disabled = await ui.heldPressInfo(page);
+				assert.equal(disabled.classification, "no pressed style");
+				assert.equal(disabled.activeRule, false);
+				await ui.runAction(page, "release");
+				await ui.runAction(page, "hold:#enabled");
+				assert.equal(
+					(await ui.heldPressInfo(page)).classification,
+					"pressed style shown while held",
+				);
+			},
+		);
+	},
+);
+
 test("source derives pages, readiness, domains, openings and opener source; recipes prove coverage", () => {
 	const map = generateMap(concept);
 	const page = map.pages[0];
@@ -1307,14 +1420,14 @@ async function heldCliFixture(name) {
 	await writeFile(resolve(tools, "scripts/web/probe.js"), "");
 	await writeFile(
 		resolve(tools, "scripts/web/_common.mjs"),
-		'export const TOOL_VERSION="1.3.0";',
+		'export const TOOL_VERSION="1.3.1";',
 	);
 	await writeFile(
 		resolve(tools, "scripts/web/lib.mjs"),
 		`
 import {appendFile,mkdir,writeFile} from "node:fs/promises";
 import {resolve} from "node:path";
-export const TOOL_VERSION="1.3.0";
+export const TOOL_VERSION="1.3.1";
 let held=null;
 const event=async(type)=>{await mkdir(process.env.PROBE_OUT,{recursive:true});await appendFile(resolve(process.env.PROBE_OUT,"events.jsonl"),JSON.stringify({type,held:Boolean(held)})+"\\n")};
 export const launchChromium=async()=>({close:async()=>{}});
@@ -1442,7 +1555,7 @@ test("R21: CLI keyboard input refuses a held press before reaching the tool", as
 	);
 });
 
-test("R21: CLI forwards hold actions to measurements and refuses tools older than 1.3.0", async () => {
+test("R21: CLI forwards hold actions to measurements and refuses tools older than 1.3.1", async () => {
 	const { root, tools, invoke } = await heldCliFixture("held-measure");
 	await writeFile(
 		resolve(tools, "scripts/web/capture.mjs"),
@@ -1463,14 +1576,14 @@ await writeFile(resolve(out,"tool-invoked.json"),JSON.stringify(args));`,
 	);
 	await writeFile(
 		resolve(tools, "scripts/web/_common.mjs"),
-		'export const TOOL_VERSION="1.2.0";',
+		'export const TOOL_VERSION="1.3.0";',
 	);
 	const oldOut = resolve(root, "old");
 	const old = invoke("measure", oldOut, args);
 	assert.equal(old.status, 1, old.stdout);
 	assert.match(
 		old.stderr,
-		/Held presses require ui-forensics >=1\.3\.0; found 1\.2\.0/,
+		/Held presses require ui-forensics >=1\.3\.1; found 1\.3\.0/,
 	);
 	assert.equal(existsSync(resolve(oldOut, "tool-invoked.json")), false);
 	assert.equal(existsSync(resolve(oldOut, "measure-manifest.json")), false);
