@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-09T23:49:00+03:00
+updatedAt: 2026-10-10T05:45:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -161,7 +161,7 @@ milestones:
       - pnpm-lock.yaml and dependencies
       - docs/archive/** and other milestones' handoffs and packets
     sharedLeases: []
-    validationRepairAttempts: 1
+    validationRepairAttempts: 2
     handoff: docs/phase-records/handoffs/agent-environment/r03/agent-environment-r03-resume.md
     stopReason: null
     gates:
