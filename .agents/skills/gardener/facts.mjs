@@ -232,6 +232,15 @@ export function classifyWorktrees(
 			key(worktree.path) === key(current) ||
 			key(worktree.path) === key(weeklyWorktree) ||
 			worktree.branch?.startsWith("refs/heads/gardener/");
+		const candidate =
+			worktree.exists &&
+			worktree.merged &&
+			clean &&
+			linksSafe &&
+			!worktree.locked &&
+			!protectedBy.length &&
+			!self &&
+			worktree.branch !== "refs/heads/main";
 		return {
 			...worktree,
 			status: worktree.status ?? null,
@@ -253,16 +262,11 @@ export function classifyWorktrees(
 				ageDays >= MIN_FOLDER_AGE_DAYS,
 			protectedBy,
 			missing: worktree.exists === false,
-			mergedClean: worktree.exists && worktree.merged && clean,
-			candidate:
-				worktree.exists &&
-				worktree.merged &&
-				clean &&
-				linksSafe &&
-				!worktree.locked &&
-				!protectedBy.length &&
-				!self &&
-				worktree.branch !== "refs/heads/main",
+			linksWithheld: worktree.exists && !linksSafe,
+			mergedCleanWithheldForLinks:
+				worktree.exists && worktree.merged && clean && !linksSafe,
+			mergedClean: candidate,
+			candidate,
 		};
 	});
 }
@@ -291,6 +295,7 @@ export function classifyFolders(folders, records, worktrees, tempRoot, now) {
 		}
 		const safe =
 			deletionPathSafe &&
+			!folder.gone &&
 			key(path.dirname(folder.path)) === key(tempRoot) &&
 			!folder.link &&
 			!(folder.skippedLinks > 0) &&

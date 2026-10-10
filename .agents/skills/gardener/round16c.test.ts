@@ -24,10 +24,10 @@ describe("gardener round 16c repair", () => {
 	])("R8: %s protects complete segments before its patterned segment", async (pattern) => {
 		const tempRoot = "D:/fitway-temp";
 		const spellings = [
-			`D:/fitway-temp/owner-r04-k02/out/sheets/${pattern}`,
-			`D:\\FITWAY-TEMP\\OWNER-R04-K02\\out\\sheets\\${pattern}`,
-			`/d/fitway-temp/owner-r04-k02/out/sheets/${pattern}`,
-			`fitway-temp/owner-r04-k02/out/sheets/${pattern}`,
+			`D:/fitway-temp/gardener-fixture-pattern/out/sheets/${pattern}`,
+			`D:\\FITWAY-TEMP\\GARDENER-FIXTURE-PATTERN\\out\\sheets\\${pattern}`,
+			`/d/fitway-temp/gardener-fixture-pattern/out/sheets/${pattern}`,
+			`fitway-temp/gardener-fixture-pattern/out/sheets/${pattern}`,
 		];
 		for (const spelling of spellings) {
 			const records = [
@@ -39,9 +39,9 @@ describe("gardener round 16c repair", () => {
 			});
 			for (const sources of [records, cached]) {
 				for (const folder of [
-					"owner-r04-k02",
-					"owner-r04-k02/out/sheets",
-					"owner-r04-k02/out/sheets/child",
+					"gardener-fixture-pattern",
+					"gardener-fixture-pattern/out/sheets",
+					"gardener-fixture-pattern/out/sheets/child",
 				])
 					expect(
 						references(`${tempRoot}/${folder}`, sources, { tempRoot }),
@@ -53,8 +53,8 @@ describe("gardener round 16c repair", () => {
 						}),
 					]);
 				for (const folder of [
-					"owner-r04-k02-other",
-					"owner-r04-k02/out/sheets-other",
+					"gardener-fixture-pattern-other",
+					"gardener-fixture-pattern/out/sheets-other",
 					"uncited",
 				])
 					expect(
@@ -101,11 +101,11 @@ describe("gardener round 16c repair", () => {
 			{
 				source: "evidence.md",
 				text: [
-					"Evidence <D:/fitway-temp/keep/out/NN-<state>.png>",
+					"Evidence <D:/fitway-temp/gardener-fixture-keep/out/NN-<state>.png>",
 					"Evidence `D:/fitway-temp/space folder/out/{state}.png`",
 					"Evidence D:/fitway-temp/unquoted/out/NN-*.png",
 					"Evidence D:/fitway-temp/partial-<run>/out/report.md",
-					"Root D:/fitway-temp/<run>/; drive D:/*; above D:/<temp>/keep",
+					"Root D:/fitway-temp/<run>/; drive D:/*; above D:/<temp>/gardener-fixture-keep",
 					"Evidence **D:/fitway-temp/bold/out/*.png**",
 					"Prose keep unquoted uncited.",
 				].join("\n"),
@@ -116,7 +116,7 @@ describe("gardener round 16c repair", () => {
 			},
 		];
 		for (const [folder, source, line] of [
-			["keep", "evidence.md", 1],
+			["gardener-fixture-keep", "evidence.md", 1],
 			["space folder", "evidence.md", 2],
 			["unquoted", "evidence.md", 3],
 			["bold", "evidence.md", 6],
@@ -158,7 +158,7 @@ describe("gardener round 16c repair", () => {
 			);
 			writeFileSync(
 				path.join(checkout, "closed.md"),
-				`# Evidence\nKeep ${tempRoot}/keep/out/NN-<state>-<ar|en>.png\nTemplate ${tempRoot}/<run>/out/*.png\n`,
+				`# Evidence\nKeep ${tempRoot}/gardener-fixture-keep/out/NN-<state>-<ar|en>.png\nTemplate ${tempRoot}/<run>/out/*.png\n`,
 			);
 			git(["add", "."]);
 			git([
@@ -171,7 +171,7 @@ describe("gardener round 16c repair", () => {
 				"fixture",
 			]);
 			git(["update-ref", "refs/remotes/origin/main", "HEAD"]);
-			for (const name of ["keep", "late", "uncited"]) {
+			for (const name of ["gardener-fixture-keep", "late", "uncited"]) {
 				const folder = path.join(tempRoot, name);
 				mkdirSync(folder);
 				writeFileSync(path.join(folder, "sentinel.txt"), "evidence\n");
@@ -194,8 +194,9 @@ describe("gardener round 16c repair", () => {
 					.sort(),
 			).toEqual(["late", "uncited"]);
 			expect(
-				folders.find((folder) => path.basename(folder.path) === "keep")
-					.protectedBy,
+				folders.find(
+					(folder) => path.basename(folder.path) === "gardener-fixture-keep",
+				).protectedBy,
 			).toEqual([expect.objectContaining({ source: "closed.md", line: 2 })]);
 			writeFileSync(
 				path.join(checkout, "late.md"),
@@ -221,7 +222,7 @@ describe("gardener round 16c repair", () => {
 			expect(logs.mock.calls.flat().join("\n")).toContain(
 				"CLEANUP FAIL: 1 proposed folders, 1 failures",
 			);
-			for (const name of ["keep", "late", "uncited"])
+			for (const name of ["gardener-fixture-keep", "late", "uncited"])
 				expect(
 					readFileSync(path.join(tempRoot, name, "sentinel.txt"), "utf8"),
 				).toBe("evidence\n");
