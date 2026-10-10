@@ -4,6 +4,7 @@ import {
 	mkdirSync,
 	mkdtempSync,
 	readFileSync,
+	realpathSync,
 	rmSync,
 	symlinkSync,
 	utimesSync,
@@ -117,10 +118,23 @@ describe("gardener round 16 safety", () => {
 			expect(byName("external").candidate).toBe(false);
 			expect(byName("missing").candidate).toBe(false);
 			expect(byName("internal").candidate).toBe(true);
-			expect(byName("external").links).toEqual(
+			// Resolve the parent, not the junction: keep its identity distinct from
+			// its target while comparing short and long Windows folder spellings.
+			const externalLinks = byName("external").links.map((link) => ({
+				...link,
+				path: path.join(
+					realpathSync.native(path.dirname(link.path)),
+					path.basename(link.path),
+				),
+				target: realpathSync.native(link.target),
+				resolvedTarget: realpathSync.native(link.resolvedTarget),
+			}));
+			expect(externalLinks).toEqual(
 				expect.arrayContaining([
 					expect.objectContaining({
-						path: path.join(nested, "junction").replaceAll("\\", "/"),
+						path: path.join(realpathSync.native(nested), "junction"),
+						target: realpathSync.native(outside),
+						resolvedTarget: realpathSync.native(outside),
 						outside: true,
 					}),
 				]),
@@ -132,7 +146,7 @@ describe("gardener round 16 safety", () => {
 				git: state,
 			});
 			expect(rendered).toContain("deep/junction");
-			expect(rendered).toContain(outside.replaceAll("\\", "/"));
+			expect(rendered).toContain(byName("external").links[0].target);
 			const proposed = state.worktrees.filter((tree) => tree.candidate);
 			expect(proposed).toHaveLength(2);
 			for (const tree of proposed) {
