@@ -83,13 +83,13 @@ html:has(> body.acc) {
 .rec-head .acc-title { min-width: 0; }
 .acc-all { display: inline-flex; flex: none; align-items: center; gap: 4px; height: 44px; margin-inline: -12px; padding-inline: 12px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
 .acc-all svg, .rec-go { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.acc-all:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .acc-all:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
 .acc-all:focus-visible, .rec-a:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
 .rec-list { margin: 18px 0 0; padding: 0; list-style: none; }
 .rec-row { border-block-start: 1px solid var(--row-line); }
 .rec-a { display: flex; align-items: center; gap: 16px; min-height: 44px; margin: 4px -12px; padding: 13px 12px; border-radius: 12px; color: var(--ink-3); text-decoration: none; }
 .rec-row:last-child .rec-a { margin-block-end: -13px; }
-.rec-a:hover { background: rgba(255, 255, 255, 0.04); color: var(--ink); }
+@media (hover: hover) { .rec-a:hover { background: rgba(255, 255, 255, 0.04); color: var(--ink); } }
 .rec-txt { display: flex; flex: 1 1 auto; flex-direction: column; gap: 3px; min-width: 0; }
 .rec-what { font-size: 13.5px; line-height: 20px; color: var(--ink); overflow-wrap: anywhere; }
 .rec-meta { font-size: 12px; line-height: 18px; color: var(--ink-3); overflow-wrap: anywhere; }
@@ -137,21 +137,23 @@ html:has(> body.acc) {
  * --line, and no fill; hover takes the secondary's edge and fill and chalk words, at once. A removal is always on the
  * page, never prominent: its commit, in its confirmation, carries the destructive form. */
 .rbtn-quiet { border-color: var(--line); background: none; color: var(--ink-2); }
-.rbtn-quiet:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); color: var(--ink); }
+@media (hover: hover) { .rbtn-quiet:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); color: var(--ink); } }
 /* The destructive button (new, BTN-10): the commit of a removal, only inside its confirmation. BTN-1's form in the
  * error tone (COL-18), never FITWAY red (BTN-6, COL-21): text --err at 500 (6.0:1 on its fill over the panel), a 1 px
  * --err .5 edge and an 8% fill; hover .14 fill and a .75 edge. Working takes BTN-9's form like any primary. */
 .rbtn-danger { border-color: var(--err-line); background: rgba(255, 107, 125, 0.08); color: var(--err); font-weight: 500; }
-.rbtn-danger:hover { border-color: rgba(255, 107, 125, 0.75); background: rgba(255, 107, 125, 0.14); }
+@media (hover: hover) { .rbtn-danger:hover { border-color: rgba(255, 107, 125, 0.75); background: rgba(255, 107, 125, 0.14); } }
 /* A button's two labels (its words, and its working words or Close) share one cell, so it keeps its width. */
 .acc .rb-stack { display: inline-grid; }
 .acc .rb-l { grid-area: 1 / 1; justify-self: center; }
 .acc .rb-l[aria-hidden="true"] { visibility: hidden; }
 .acc .rbtn[aria-disabled="true"] { cursor: default; }
-.acc .rbtn-primary[aria-disabled="true"], .acc .rbtn-primary[aria-disabled="true"]:hover,
-.acc .rbtn-danger[aria-disabled="true"], .acc .rbtn-danger[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
-.acc .rbtn:not(.rbtn-primary):not(.rbtn-danger)[aria-disabled="true"], .acc .rbtn:not(.rbtn-primary):not(.rbtn-danger)[aria-disabled="true"]:hover { border-color: var(--line); background: transparent; color: var(--ink-3); }
-.acc .icon-btn[aria-disabled="true"], .acc .icon-btn[aria-disabled="true"]:hover { background: none; color: var(--ink-3); cursor: default; }
+.acc .rbtn-primary[aria-disabled="true"], .acc .rbtn-danger[aria-disabled="true"] { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
+@media (hover: hover) { .acc .rbtn-primary[aria-disabled="true"]:hover, .acc .rbtn-danger[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); } }
+.acc .rbtn:not(.rbtn-primary):not(.rbtn-danger)[aria-disabled="true"] { border-color: var(--line); background: transparent; color: var(--ink-3); }
+@media (hover: hover) { .acc .rbtn:not(.rbtn-primary):not(.rbtn-danger)[aria-disabled="true"]:hover { border-color: var(--line); background: transparent; color: var(--ink-3); } }
+.acc .icon-btn[aria-disabled="true"] { background: none; color: var(--ink-3); cursor: default; }
+@media (hover: hover) { .acc .icon-btn[aria-disabled="true"]:hover { background: none; color: var(--ink-3); cursor: default; } }
 .acc .rbtn:disabled svg { stroke: var(--ink-3); }
 
 /* ------------------------------------------------------------------ the done sentence (new, DON-1)
@@ -164,7 +166,7 @@ html:has(> body.acc) {
 .done { width: fit-content; max-width: 100%; margin: 0; padding-block: 12px; text-align: start; padding-inline-start: 24px; text-indent: -24px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); border-radius: 12px; overflow-wrap: anywhere; }
 .done-ico { display: inline-block; width: 16px; height: 16px; margin-inline-end: 8px; vertical-align: -3px; fill: none; stroke: var(--ink-2); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .done-a { display: inline-block; margin-inline-start: 12px; padding-block: 12px; margin-block: -12px; line-height: 20px; text-indent: 0; border-radius: 6px; color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(245, 243, 242, 0.42); text-underline-offset: 4px; white-space: nowrap; }
-.done-a:hover { text-decoration-color: var(--ink); }
+@media (hover: hover) { .done-a:hover { text-decoration-color: var(--ink); } }
 .done-a:focus-visible { outline-offset: 0; }
 .done:focus-visible, .acc-alert:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 /* On the front desk's card it stands under the head; on a row, under the person. */

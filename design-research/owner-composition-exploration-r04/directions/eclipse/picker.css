@@ -14,7 +14,7 @@
  * while days are picked on a page whose dates may be left open (Activity log). */
 .dlg-head-end { display: flex; align-items: center; gap: 4px; }
 .dlg-text-btn { border-color: transparent; background: none; color: var(--ink-2); }
-.dlg-text-btn:hover { border-color: transparent; background: rgba(255, 255, 255, 0.05); color: var(--ink); }
+@media (hover: hover) { .dlg-text-btn:hover { border-color: transparent; background: rgba(255, 255, 255, 0.05); color: var(--ink); } }
 
 .dp { --dp-band: rgba(245, 243, 242, 0.12); --dp-soft: rgba(245, 243, 242, 0.06); padding-block-start: 8px; }
 .dp bdi { white-space: nowrap; }
@@ -40,9 +40,8 @@
  * end edge. */
 .dp-arrows { display: flex; gap: 4px; }
 .dp-step svg { width: 18px; height: 18px; stroke-linejoin: round; }
-.dp-step[aria-disabled="true"], .dp-step[aria-disabled="true"]:hover { background: none; color: var(--ink-3); opacity: 0.4; cursor: default; }
-/* A touch screen keeps no hover on an arrow after a tap. */
-@media (hover: none) { .dp-step:hover { background: none; color: var(--ink-2); } }
+.dp-step[aria-disabled="true"] { background: none; color: var(--ink-3); opacity: 0.4; cursor: default; }
+@media (hover: hover) { .dp-step[aria-disabled="true"]:hover { background: none; color: var(--ink-3); opacity: 0.4; cursor: default; } }
 
 /* The grid: seven equal columns across the content, never under 44 px each; where the sheet's insets leave less (under
  * 340 px), it reaches into them, 6 px from the sheet's edge at 320. */
@@ -50,7 +49,7 @@
 .dp-grid th { height: 22px; padding: 0 0 4px; font-size: 12px; line-height: 18px; font-weight: 400; color: var(--ink-3); text-align: center; white-space: nowrap; }
 .dp-grid td { height: 44px; padding: 0; text-align: center; }
 .dp-day { position: relative; display: grid; place-items: center; width: 100%; height: 44px; border-radius: 0; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.dp-day:focus-visible { outline: none; }
+.dp-day:focus-visible { outline: 2px solid transparent; }
 .dp-n { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; font-size: 15px; line-height: 22.5px; font-variant-numeric: tabular-nums; }
 .dp-day:focus-visible .dp-n { outline: 2px solid var(--ink); outline-offset: 2px; }
 @media (hover: hover) { .dp-day:not(.is-off):not(.is-end):hover .dp-n { background: rgba(255, 255, 255, 0.06); } }
@@ -74,4 +73,14 @@
 /* The sheet (720 px and below): the grid takes the sheet's width; at 400 px and below the system's insets are 16. */
 @media (max-width: 720px) {
   .dlg-panel.is-dates { width: 100%; }
+}
+
+@media (forced-colors: active) {
+  .dp-n, .dp-end.is-wait { border: 1px solid ButtonText; }
+  .dp-day.is-end .dp-n { forced-color-adjust: none; background: Highlight; color: HighlightText; border-color: Highlight; }
+  .dp-day.band::before { forced-color-adjust: none; background: Highlight; }
+  .dp-day.band .dp-n { forced-color-adjust: none; color: HighlightText; }
+  .dp-day.band-soft::before, .dp-day.is-ghost .dp-n { background: Canvas; border: 1px dashed Highlight; }
+  .dp-day.is-off .dp-n { color: GrayText; border-color: GrayText; opacity: 1; }
+  .dp-day.is-today .dp-n::after { background: currentColor; }
 }

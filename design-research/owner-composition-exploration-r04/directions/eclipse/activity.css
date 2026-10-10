@@ -56,8 +56,9 @@ html:has(> body.ac) {
 .ac-loaded-text .ld[aria-hidden="true"] { visibility: hidden; }
 .ac-refresh svg { stroke-linejoin: round; }
 .ac-refresh[aria-disabled="true"] { cursor: default; }
-.ac-refresh[aria-disabled="true"]:hover { background: none; color: var(--ink-2); }
-.ac-refresh.is-off, .ac-refresh.is-off:hover { color: var(--ink-3); }
+@media (hover: hover) { .ac-refresh[aria-disabled="true"]:hover { background: none; color: var(--ink-2); } }
+.ac-refresh.is-off { color: var(--ink-3); }
+@media (hover: hover) { .ac-refresh.is-off:hover { color: var(--ink-3); } }
 /* A refresh that failed: the words in --err after the alert mark (15 px), then the time of the records still shown. */
 .ac-fail { display: inline-flex; align-items: center; gap: 8px; color: var(--err); vertical-align: top; white-space: nowrap; }
 .ac-fail .ico { width: 15px; height: 15px; }
@@ -71,19 +72,19 @@ html:has(> body.ac) {
  * drawn inside), a person at its start and a chevron at its end, as Reports' sort on a phone; as wide as its choice
  * (activity.js fitSelect), not as its widest name. */
 .ac-sel { position: relative; display: inline-flex; align-items: center; height: 44px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
-.ac-sel:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .ac-sel:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .ac-sel:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .ac-sel-ico { position: absolute; inset-inline-start: 16px; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .ac-sel::after { content: ""; position: absolute; top: 17px; inset-inline-end: 18px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.ac-sel select { width: var(--sel-w, auto); height: 44px; padding-inline: 41px 40px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; }
+.ac-sel select { width: var(--sel-w, auto); height: 44px; padding-inline: 41px 40px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: 2px solid transparent; cursor: pointer; }
 .ac-sel select option { background: #121112; color: var(--ink); }
 .ac-sel.is-set, .ac-dates.is-set, .ac-find.is-set { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); background: rgba(245, 243, 242, 0.12); }
 .ac-dates.is-set, .ac-find.is-set { border-color: transparent; }
-.ac-sel.is-set:hover, .ac-dates.is-set:hover, .ac-find.is-set:hover { background: rgba(245, 243, 242, 0.16); }
+@media (hover: hover) { .ac-sel.is-set:hover, .ac-dates.is-set:hover, .ac-find.is-set:hover { background: rgba(245, 243, 242, 0.16); } }
 /* The magnifier (DECISIONS item 32): BTN-1's frame, square, its 17 px glyph; open, it keeps the hover's 5% fill and
  * --line-3 edge (as the header's status keeps its fill while its details are open); words in force press it. */
 .ac-find { width: 44px; padding: 0; color: var(--ink-2); }
-.ac-find:hover { color: var(--ink); }
+@media (hover: hover) { .ac-find:hover { color: var(--ink); } }
 .ac-find[aria-expanded="true"]:not(.is-set) { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); color: var(--ink); }
 .ac-find.is-set { color: var(--ink); }
 
@@ -100,7 +101,7 @@ html:has(> body.ac) {
  * heading and record, so a record's lift (TBL-2: 4% white, at once, on hover) and the quiet tint of a record given focus
  * never sit flush on its words; its top 8 and the first heading's 16 make the 24 above. */
 .ac-log { padding: 8px 12px; container: logcard / inline-size; }
-.ac-log:focus, .ac-msg:focus { outline: none; }
+.ac-log:focus, .ac-msg:focus { outline: 2px solid transparent; }
 .ac-body { container: log / inline-size; }
 /* From 520 px of log the load line stands on the first day's line, at its end: its 44 px centred on the heading's
  * 20 px line (the card's 8, the heading's 16, then 20). Below 520 px it is a line of its own above the days. */
@@ -225,8 +226,10 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
 .ac .rb-l { grid-area: 1 / 1; justify-self: center; }
 .ac .rb-l[aria-hidden="true"] { visibility: hidden; }
 .ac .rbtn[aria-disabled="true"] { cursor: default; }
-.ac .rbtn:not(.rbtn-primary)[aria-disabled="true"], .ac .rbtn:not(.rbtn-primary)[aria-disabled="true"]:hover { border-color: var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
-.ac .rbtn-primary[aria-disabled="true"], .ac .rbtn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
+.ac .rbtn:not(.rbtn-primary)[aria-disabled="true"] { border-color: var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
+@media (hover: hover) { .ac .rbtn:not(.rbtn-primary)[aria-disabled="true"]:hover { border-color: var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); } }
+.ac .rbtn-primary[aria-disabled="true"] { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
+@media (hover: hover) { .ac .rbtn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); } }
 
 /* EMP-1, EMP-4: nothing to show, said once in the card: the info mark, one sentence, and the way back when a filter is in
  * force; padding 40, gap 16. */

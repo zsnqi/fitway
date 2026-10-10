@@ -99,7 +99,7 @@ html:has(> body.rp) {
   color: var(--ink-2);
   white-space: nowrap;
 }
-.seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
 .seg-b[aria-pressed="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); }
 .seg-b:focus-visible { outline-offset: -4px; }
 
@@ -123,13 +123,14 @@ html:has(> body.rp) {
   text-decoration: none;
 }
 .rbtn svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.rbtn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .rbtn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .rbtn-primary { border-color: var(--ink); background: var(--ink); color: #0d0c0d; font-weight: 500; }
-.rbtn-primary:hover { border-color: #fff; background: #fff; }
-.rbtn:disabled, .rbtn.is-disabled, .rbtn.is-disabled:hover { cursor: default; border-color: var(--line); background: transparent; color: var(--ink-3); }
+@media (hover: hover) { .rbtn-primary:hover { border-color: #fff; background: #fff; } }
+.rbtn:disabled, .rbtn.is-disabled { cursor: default; border-color: var(--line); background: transparent; color: var(--ink-3); }
+@media (hover: hover) { .rbtn.is-disabled:hover { cursor: default; border-color: var(--line); background: transparent; color: var(--ink-3); } }
 .rbtn-primary:disabled { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
 .icon-btn { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 12px; color: var(--ink-2); }
-.icon-btn:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .icon-btn:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
 .icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
 
 /* ----------------------------------------------------------------- switch
@@ -147,7 +148,7 @@ html:has(> body.rp) {
   color: var(--ink-2);
   white-space: nowrap;
 }
-.switch:hover { color: var(--ink); border-color: var(--line-3); }
+@media (hover: hover) { .switch:hover { color: var(--ink); border-color: var(--line-3); } }
 .switch-track { position: relative; width: 32px; height: 18px; flex: none; border-radius: 9px; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px var(--line-3); }
 .switch-thumb { position: absolute; top: 3px; inset-inline-start: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--ink-2); transition: transform 200ms var(--ease-state); }
 .switch[aria-checked="true"] { color: var(--ink); }
@@ -253,7 +254,7 @@ html:has(> body.rp) {
 .table tbody td { color: var(--ink-2); }
 .table tbody > tr > * { border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
 .table tbody > tr:last-child > * { border-block-end: 0; }
-.table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); }
+@media (hover: hover) { .table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); } }
 /* TBL-1 (K-34, K-35): in Arabic a numeric column's numbers and its header share the physical right edge; in English
  * they start on its left edge (decision 16, below). */
 .table .n { text-align: right; font-variant-numeric: tabular-nums; }
@@ -266,7 +267,7 @@ html:has(> body.rp) {
 .days-table tbody > tr.wk-edge > * { border-block-end-color: rgba(255, 255, 255, 0.14); }
 .days-table .c-notes { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .days-table tr.is-top > * { background: rgba(229, 25, 53, 0.08); }
-.days-table tr.is-top:hover > * { background: rgba(229, 25, 53, 0.12); }
+@media (hover: hover) { .days-table tr.is-top:hover > * { background: rgba(229, 25, 53, 0.12); } }
 .dd .dt { color: inherit; }
 /* TBL-11: the composite peak cell leads with its value on the numbers' edge, then its time, on one baseline from 721 px
  * (decision 15): leftward in Arabic, rightward in English. The period's highest row carries its tint only, no flag
@@ -293,17 +294,18 @@ html:has(> body.rp) {
 /* Sortable headers (TBL-5): the whole header is the button, at least 44 x 44; the label holds the column's edge (the
  * right in Arabic, the left in English, decision 16) and the arrow follows it; the inset ring (FOC-2). */
 .sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 12px; font-size: inherit; line-height: inherit; color: inherit; }
-.sort:hover { color: var(--ink); }
+@media (hover: hover) { .sort:hover { color: var(--ink); } }
 .sort:focus-visible { outline-offset: -4px; }
 .sort-ico { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
-.sort:hover .sort-ico, .sort:focus-visible .sort-ico { opacity: 0.5; }
+.sort:focus-visible .sort-ico { opacity: 0.5; }
+@media (hover: hover) { .sort:hover .sort-ico { opacity: 0.5; } }
 th.is-sorted { color: var(--ink); }
 th.is-sorted .sort-ico { opacity: 1; }
 th.is-asc .sort-ico { transform: rotate(180deg); }
 /* EMP-1, EMP-4: the empty state inside the table, padding 40, gap 16. */
 .table-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding-block: 40px; color: var(--ink-2); text-align: center; }
 .table-empty .ico { width: 22px; height: 22px; color: var(--ink-3); }
-.table tr.is-empty:hover > * { background: none; }
+@media (hover: hover) { .table tr.is-empty:hover > * { background: none; } }
 
 /* ------------------------------------------------------------------ dialog
  * DLG-1…6: the <dialog> covers the viewport: a scrim (the page stays visible, dimmed and softened) and a centred panel.
@@ -359,13 +361,13 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
   background: var(--field);
   color: var(--ink);
   font: inherit;
-  font-size: 15px;
-  line-height: 22.5px;
+  font-size: 16px;
+  line-height: 24px;
   font-variant-numeric: tabular-nums;
   caret-color: var(--red-hi);
 }
 [dir="rtl"] .field-input { text-align: right; }
-.field-input:hover { border-color: rgba(255, 255, 255, 0.52); }
+@media (hover: hover) { .field-input:hover { border-color: rgba(255, 255, 255, 0.52); } }
 .field-input:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-color: rgba(255, 255, 255, 0.52); }
 .field.is-invalid .field-input { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); }
 .field.is-invalid .field-input:focus-visible { outline-color: var(--err); }
@@ -477,7 +479,7 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
   .days-table .note-row { display: table-row; }
   .days-table tbody > tr.has-note > * { border-block-end: 0; padding-block-end: 4px; }
   .days-table .note-row > td { padding-block: 0 12px; }
-  .days-table tbody > tr.has-note:hover + .note-row > * { background: rgba(255, 255, 255, 0.04); }
+  @media (hover: hover) { .days-table tbody > tr.has-note:hover + .note-row > * { background: rgba(255, 255, 255, 0.04); } }
   .days-table tbody > tr.is-top + .note-row > * { background: rgba(229, 25, 53, 0.08); }
   .sort-ico { display: none; }
   th.is-sorted .sort-ico { display: block; }
@@ -547,7 +549,7 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
  * is one bar, its busiest hour on the bars' scale in its ramp colour (the user's decision 1 of 2026-10-01). */
 .wk-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.015); }
 .wk-b { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; height: 76px; padding: 12px 6px 9px; border-radius: 12px; color: var(--ink-2); }
-.wk-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .wk-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
 .wk-b[aria-checked="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); }
 .wk-b:focus-visible { outline-offset: -4px; }
 .wk-col { display: flex; flex: none; align-items: flex-end; justify-content: center; height: 26px; }
@@ -611,11 +613,11 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 .dl-sortrow { display: flex; margin-block-end: 8px; }
 /* The sort: a native select behind a button of the system (BTN-1: 44 tall, radius 12, a 1 px line drawn inside). */
 .dl-sort { position: relative; display: inline-flex; align-items: center; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
-.dl-sort:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .dl-sort:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .dl-sort:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .rp .dl-sort .sort-ico { position: absolute; inset-inline-start: 14px; display: block; opacity: 1; pointer-events: none; }
 .dl-sort::after { content: ""; position: absolute; top: 17px; inset-inline-end: 17px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.dl-sort select { height: 44px; padding-inline: 38px 38px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; }
+.dl-sort select { height: 44px; padding-inline: 38px 38px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: 2px solid transparent; cursor: pointer; }
 .dl-sort select option { background: #121112; color: var(--ink); }
 .day-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
 .dli { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "day pk" "more pt" "note note"; align-items: baseline; column-gap: 16px; row-gap: 2px; padding: 12px 8px; border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
@@ -655,19 +657,23 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 /* The pattern's empty frame: the plate and its axes, no cell (charts do not imitate data, DESIGN_GUIDE §6). */
 .rp .hc.ph-cell { background: none; }
 /* Controls with nothing to act on yet are set aside in BTN-4's form: no fill, the quiet line, --ink-3. */
-.rp .switch:disabled, .rp .switch:disabled:hover { border-color: var(--line); color: var(--ink-3); cursor: default; }
+.rp .switch:disabled { border-color: var(--line); color: var(--ink-3); cursor: default; }
+@media (hover: hover) { .rp .switch:disabled:hover { border-color: var(--line); color: var(--ink-3); cursor: default; } }
 .rp .switch:disabled .switch-thumb { background: var(--ink-3); }
 .rp .wk-b:disabled { cursor: default; }
-.rp .wk-b:disabled:hover { color: var(--ink-2); background: none; }
-.rp .dl-sort.is-disabled, .rp .dl-sort.is-disabled:hover { box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--ink-3); }
+@media (hover: hover) { .rp .wk-b:disabled:hover { color: var(--ink-2); background: none; } }
+.rp .dl-sort.is-disabled { box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--ink-3); }
+@media (hover: hover) { .rp .dl-sort.is-disabled:hover { box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--ink-3); } }
 .rp .dl-sort.is-disabled select { color: var(--ink-3); cursor: default; }
-.rp .sort.is-still, .rp .sort.is-still:hover { color: inherit; cursor: default; }
+.rp .sort.is-still { color: inherit; cursor: default; }
+@media (hover: hover) { .rp .sort.is-still:hover { color: inherit; cursor: default; } }
 
 /* The error's alert (EMP-2's sentence, EMP-5's place): the sentence in heading type at 400, chalk, after the alert mark
  * (17 px, --err), then the one primary "Try again", 15.5 px below it. */
 .rp .stat-say.is-err { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
 .rp .stat-say .ico-err { width: 17px; height: 17px; color: var(--err); }
-.rp .rbtn-primary[aria-disabled="true"], .rp .rbtn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; }
+.rp .rbtn-primary[aria-disabled="true"] { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; }
+@media (hover: hover) { .rp .rbtn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; } }
 /* Error: one message for the page in place of the cards, in the empty period's form (EMP-1, OWN-R13): the mark, one
  * sentence naming what is missing and its dates, one action; centred, padding 40 / 16, gap 16. The sentence in body
  * type, chalk. */
@@ -675,7 +681,7 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 .rp-msg .stat-say { flex-direction: column; gap: 16px; align-self: auto; max-width: 52ch; font-size: 15px; line-height: 22.5px; white-space: normal; }
 .rp-msg .stat-say .ico-err { width: 22px; height: 22px; }
 /* After the retry arrives, focus goes to the figures that replaced the alert, quietly: a region never shows the ring. */
-.rp #cards:focus { outline: none; }
+.rp #cards:focus { outline: 2px solid transparent; }
 /* The retry's two labels share one cell, so the button is as wide as the wider of "Try again" and "Trying again…" and
  * keeps its width while it runs (STA-9); only the current label is seen. */
 .rp .rb-stack { display: inline-grid; }
@@ -702,4 +708,16 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
  * changes. */
 @container rp-acts (max-width: 149.98px) {
   .rp[data-frame] .head-acts .hbadge { padding-inline: 8px; }
+}
+
+/* Dialog shells clear physical cutouts; mobile foot padding already clears the home indicator. */
+.dlg { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); padding-top: max(16px, env(safe-area-inset-top)); padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+@media (max-width: 720px) {
+  .dlg { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); padding-top: env(safe-area-inset-top); padding-bottom: 0; }
+}
+
+/* A nonzero vertical cutout activates the definite cap, letting the body scroll.
+ * With zero insets the divisor is zero (an unlimited cap), preserving the original no-inset grid layout. */
+@media (min-width: 721px) {
+  .dlg-panel { max-height: calc((100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom))) / min(1, (env(safe-area-inset-top) + env(safe-area-inset-bottom)) / 1px)); }
 }

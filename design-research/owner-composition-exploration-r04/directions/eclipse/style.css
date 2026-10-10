@@ -110,7 +110,7 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   gap: 24px;
   padding: 16px;
 }
-.main { min-width: 0; outline: none; }
+.main { min-width: 0; outline: 2px solid transparent; }
 /* The first screen: header, cards and the chart. Its height is fixed to the viewport so the chart keeps its
  * geometry whether or not the details panel is open below it. */
 .fold {
@@ -214,7 +214,7 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   color: var(--ink-2);
   text-align: start;
 }
-.rail-item:focus-visible { outline: none; }
+.rail-item:focus-visible { outline: 2px solid transparent; }
 .rail-item:focus-visible .tile { outline: 2px solid var(--ink); outline-offset: 3px; }
 .tile {
   flex: none;
@@ -229,9 +229,9 @@ bdi, .num { font-variant-numeric: tabular-nums; }
 }
 .tile svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .tile svg .fill { fill: currentColor; stroke: none; }
-.rail-item:hover .tile { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); }
+@media (hover: hover) { .rail-item:hover .tile { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); } }
 .rail-item.is-active .tile { background: var(--red); border-color: var(--red); color: #fff; }
-.rail-item.is-active:hover .tile { background: #f0223e; border-color: #f0223e; }
+@media (hover: hover) { .rail-item.is-active:hover .tile { background: #f0223e; border-color: #f0223e; } }
 /* The language glyph in its tile: label type at 500, untracked (TYP-3, TYP-5; step 3). */
 .glyph { font-size: 13.5px; line-height: 20px; font-weight: 500; }
 .brand .tile svg { width: 28px; height: 28px; }
@@ -527,7 +527,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   color: var(--ink);
   white-space: nowrap;
 }
-.btn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .btn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .btn svg { width: 16px; height: 16px; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .btn[aria-expanded="true"] svg { transform: rotate(180deg); }
 
@@ -636,7 +636,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .minutes-table tbody td { color: var(--ink-2); }
 .minutes-table tbody > tr > * { border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
 .minutes-table tbody > tr:last-child > * { border-block-end: 0; }
-.minutes-table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); }
+@media (hover: hover) { .minutes-table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); } }
 .minutes-table .n { text-align: right; font-variant-numeric: tabular-nums; }
 .minutes-table td.n bdi { color: var(--ink); }
 /* Option B (decision 16, user 2026-10-03): in English every column starts at its left edge, headings and figures alike,
@@ -644,7 +644,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 [dir="ltr"] .minutes-table .n { text-align: left; }
 .minutes-table .notes { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .minutes-table tr.peak > * { background: rgba(229, 25, 53, 0.08); }
-.minutes-table tr.peak:hover > * { background: rgba(229, 25, 53, 0.12); }
+@media (hover: hover) { .minutes-table tr.peak:hover > * { background: rgba(229, 25, 53, 0.12); } }
 .minutes-table .note-row { display: none; }
 /* TBL-12: a span with no readings is one full-width row, one sentence with the words first (decision 8, user
  * 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م». One size and one colour for the whole sentence, its times and dates
@@ -843,7 +843,8 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 /* Hover only where a pointer hovers: a tap leaves no hover behind on a touch screen. */
 @media (hover: hover) { .band-btn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .band-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.band-btn[aria-disabled="true"], .band-btn[aria-disabled="true"]:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
+.band-btn[aria-disabled="true"] { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
+@media (hover: hover) { .band-btn[aria-disabled="true"]:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; } }
 
 /* --------------------------------------------------------------- the frame
  * Step 3 (run owner_daily_r04_s17): navigation and header at every size, for a page that opts in with
@@ -870,7 +871,8 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   /* HDR-3: the status in label type --ink-2, its mark, the word chalk at 500 and the line; centred on the title's line
    * (its 44 px box starts 4 px above the header). Boxless at rest; the chevron says it opens. */
   [data-frame] .head-acts .hbadge { padding-inline: 12px; border-color: transparent; background: none; color: var(--ink-2); }
-  [data-frame] .head-acts .hbadge:hover, [data-frame] .head-acts .hbadge[aria-expanded="true"] { border-color: transparent; background: rgba(255, 255, 255, 0.05); }
+  [data-frame] .head-acts .hbadge[aria-expanded="true"] { border-color: transparent; background: rgba(255, 255, 255, 0.05); }
+  @media (hover: hover) { [data-frame] .head-acts .hbadge:hover { border-color: transparent; background: rgba(255, 255, 255, 0.05); } }
   [data-frame] .head-acts .hbadge .hb-word { color: var(--ink); }
   /* Its ring is FOC-2's, inside the box. */
   [data-frame] .head-acts .hbadge:focus-visible { outline-offset: -4px; }
@@ -911,7 +913,8 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   color: var(--ink);
   white-space: nowrap;
 }
-.hbadge:hover, .hbadge[aria-expanded="true"] { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+.hbadge[aria-expanded="true"] { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .hbadge:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .hb-state { display: inline-flex; align-items: center; gap: 8px; }
 .hb-word { font-weight: 500; }
 .hbadge .dot, .ops-state .dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--live); }
@@ -921,7 +924,8 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .hb-chev { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .hbadge[aria-expanded="true"] .hb-chev { transform: rotate(180deg); }
 .hbtn { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 12px; color: var(--ink-2); }
-.hbtn:hover, .hbtn[aria-expanded="true"] { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.hbtn[aria-expanded="true"] { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+@media (hover: hover) { .hbtn:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
 .hbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; }
 .hbtn svg .fill { fill: currentColor; stroke: none; }
 
@@ -938,7 +942,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   -webkit-backdrop-filter: blur(22px);
   backdrop-filter: blur(22px);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-  outline: none;
+  outline: 2px solid transparent;
 }
 .fw-pop[hidden] { display: none; }
 .ops-pop { width: min(288px, calc(100vw - 32px)); }
@@ -963,7 +967,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   color: var(--ink);
   white-space: nowrap;
 }
-.fw-mi:hover { background: rgba(255, 255, 255, 0.06); }
+@media (hover: hover) { .fw-mi:hover { background: rgba(255, 255, 255, 0.06); } }
 .fw-mi:focus-visible { outline: 2px solid var(--ink); outline-offset: -4px; }
 .fw-mi svg { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .fw-mi .fw-mi-end { margin-inline-start: auto; }
@@ -992,12 +996,12 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .tb-tile svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .tb-tile svg .fill { fill: currentColor; stroke: none; }
 .tb-name { font-size: 12px; line-height: 18px; white-space: nowrap; }
-.tb-item:hover { color: var(--ink); }
-.tb-item:hover .tb-tile { background: rgba(255, 255, 255, 0.06); }
+@media (hover: hover) { .tb-item:hover { color: var(--ink); } }
+@media (hover: hover) { .tb-item:hover .tb-tile { background: rgba(255, 255, 255, 0.06); } }
 .tb-item[aria-current="page"] { color: var(--ink); }
 .tb-item[aria-current="page"] .tb-tile { background: var(--red); color: #fff; }
 .tb-item[aria-current="page"] .tb-name { font-weight: 500; }
-.tb-item[aria-current="page"]:hover .tb-tile { background: #f0223e; }
+@media (hover: hover) { .tb-item[aria-current="page"]:hover .tb-tile { background: #f0223e; } }
 
 @media (max-width: 720px) {
   [data-frame] .page {
@@ -1102,10 +1106,12 @@ body.dl [hidden] { display: none !important; }
 /* BTN-3, the primary button: chalk fill, #0D0C0D text at 500; hover white. Working (STA-9): BTN-4's primary form, chalk
  * 14% with --ink-2 text; aria-disabled rather than disabled, so the button keeps focus while the retry runs. */
 .dl .btn-primary { border-color: var(--ink); background: var(--ink); color: #0d0c0d; font-weight: 500; }
-.dl .btn-primary:hover { border-color: #fff; background: #fff; }
-.dl .btn-primary[aria-disabled="true"], .dl .btn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; }
+@media (hover: hover) { .dl .btn-primary:hover { border-color: #fff; background: #fff; } }
+.dl .btn-primary[aria-disabled="true"] { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; }
+@media (hover: hover) { .dl .btn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; } }
 /* BTN-4, a disabled secondary button (View details on a day with no readings): no fill, a --line border, --ink-3 text. */
-.dl .btn:disabled, .dl .btn:disabled:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
+.dl .btn:disabled { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
+@media (hover: hover) { .dl .btn:disabled:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; } }
 .dl .btn:disabled svg { stroke: var(--ink-3); }
 
 /* The status's marks, in the header, the badge and its details (never colour alone, DESIGN_GUIDE §6): closed, a hollow
@@ -1117,7 +1123,7 @@ body.dl [hidden] { display: none !important; }
 .hbadge.is-err .hb-word, [data-frame] .hbadge.is-err .hb-word, .ops-state.is-err { color: var(--err); }
 .hbadge.is-err { border-color: rgba(255, 107, 125, 0.5); }
 /* The figures region takes focus after a retry, quietly: a region never shows the ring (FOC-1 is for controls). */
-.dl #cards:focus { outline: none; }
+.dl #cards:focus { outline: 2px solid transparent; }
 
 /* ------------------------------------------------------------- light tuner
  * A working tool, not part of the design: neutral greys, a dashed toggle, no red. By default it sits above the
@@ -1152,7 +1158,8 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
   font-size: 12px;
   color: var(--ink-3);
 }
-.tuner-toggle:hover, .tuner.is-open .tuner-toggle { color: var(--ink); border-color: rgba(255, 255, 255, 0.4); }
+.tuner.is-open .tuner-toggle { color: var(--ink); border-color: rgba(255, 255, 255, 0.4); }
+@media (hover: hover) { .tuner-toggle:hover { color: var(--ink); border-color: rgba(255, 255, 255, 0.4); } }
 .tuner-toggle svg, .tuner-x svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .tuner .t-en { font-size: 10.5px; color: #8d8789; letter-spacing: 0.01em; }
 .tuner-panel {
@@ -1172,13 +1179,13 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
 .tuner-panel[hidden] { display: none; }
 .tuner-head { display: flex; align-items: flex-start; gap: 10px; cursor: grab; touch-action: none; user-select: none; }
 .tuner-grip { display: grid; place-items: center; width: 24px; height: 24px; margin-block-start: -3px; border-radius: 6px; color: var(--ink-3); cursor: grab; }
-.tuner-grip:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+@media (hover: hover) { .tuner-grip:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); } }
 .tuner-grip svg { width: 14px; height: 14px; fill: currentColor; }
 .tuner-toggle { touch-action: none; }
 .tuner-head h2 { font-size: 13.5px; font-weight: 500; color: var(--ink); }
 .tuner-sub { margin-inline-start: auto; padding-block-start: 2px; font-size: 11px; color: #8d8789; }
 .tuner-x { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: var(--ink-3); }
-.tuner-x:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+@media (hover: hover) { .tuner-x:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); } }
 .tuner-presets { display: flex; gap: 6px; margin-block: 10px 4px; }
 .tuner-presets button, .t-btn {
   display: inline-flex;
@@ -1193,7 +1200,7 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
   color: var(--ink-2);
   line-height: 26px;
 }
-.tuner-presets button:hover, .t-btn:hover { border-color: rgba(255, 255, 255, 0.3); color: var(--ink); }
+@media (hover: hover) { .tuner-presets button:hover, .t-btn:hover { border-color: rgba(255, 255, 255, 0.3); color: var(--ink); } }
 .tuner-presets button[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); border-color: rgba(245, 243, 242, 0.5); color: var(--ink); }
 .tuner-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .tuner-group { margin: 0; padding: 0; border: 0; min-width: 0; }
@@ -1210,7 +1217,7 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
 .t-speed { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "label out reset" "input input input"; }
 .t-speed .t-mini { grid-area: reset; padding: 0 6px; border: 1px solid var(--line-2, rgba(255, 255, 255, 0.14)); border-radius: 5px; background: none; color: var(--ink-3); font: inherit; font-size: 10.5px; line-height: 17px; cursor: pointer; }
 .t-speed .t-mini { display: inline-flex; align-items: baseline; gap: 4px; }
-.t-speed .t-mini:hover { color: var(--ink); }
+@media (hover: hover) { .t-speed .t-mini:hover { color: var(--ink); } }
 .t-speed .t-mini:disabled { opacity: 0.45; cursor: default; }
 .tuner-motion { margin-block-start: 10px; padding-block-start: 2px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
 .t-motion-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block: 2px 8px; }
@@ -1233,7 +1240,9 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
   border: 1px solid var(--t-line);
   background: #0c0c0d;
   color: var(--ink-2);
-  font: 11px/1.45 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  /* Keep the measured seven-row box while its 16 px text scrolls inside it. */
+  height: 129.5625px;
+  font: 16px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace;
   resize: vertical;
 }
 @media (max-width: 551px) {
@@ -1342,4 +1351,71 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
 html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* Device cutouts are physical, independent of the reading direction. Zero insets keep the existing frame. */
+.page {
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+.skip { margin-left: env(safe-area-inset-left); margin-right: env(safe-area-inset-right); }
+/* The anchored menu stays above the home indicator, including on a short landscape screen. */
+body[data-frame] .fw-pop {
+  max-height: calc(100dvh - 112px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+/* Hidden password-manager fields share the text-field size. Native lists keep their separate label role. */
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea { font-size: 16px; }
+
+/* High contrast: real edges survive where shadows and background-only states do not.
+ * Keep this media-only contract separate from the normal-colour design. */
+@media (forced-colors: active) {
+  body { background: Canvas; color: CanvasText; }
+  :where(button, input, textarea, select, a[href], [role="button"], [role="radio"], [role="switch"], [role="tab"]):where(:not(.rail-item):not(.cx-ri):not(.dp-day)) {
+    border: 1px solid ButtonText !important;
+    color: ButtonText !important;
+    background: Canvas !important;
+  }
+  :where(.tile, .tb-tile, .cx-tile, .switch-track, .switch-thumb, .cx-track, .cx-thumb, .ac-sel, .dl-sort, .seg, .cx-seg, .fw-pop, .dlg-panel, .cx-panel) {
+    border: 1px solid ButtonText !important;
+  }
+  :where([aria-current="page"], [aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], [aria-expanded="true"], .is-set, .is-sel, th.is-sorted):where(:not(.hc):not(.cx-hc)) {
+    forced-color-adjust: none;
+    background: Highlight !important;
+    color: HighlightText !important;
+    border-color: Highlight !important;
+  }
+  :where(.rail-item.is-active .tile, .tb-item[aria-current="page"] .tb-tile, .cx-ri[aria-current="page"] .cx-tile, [aria-checked="true"] .switch-track, [aria-checked="true"] .cx-track) {
+    forced-color-adjust: none;
+    background: Highlight !important;
+    color: HighlightText !important;
+    border-color: Highlight !important;
+  }
+  :where([aria-current="page"], [aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], [aria-expanded="true"], .is-set, .is-sel) :where(span, bdi, strong, svg) { color: inherit !important; }
+  :where(:disabled, [aria-disabled="true"], .is-disabled, .ac-refresh.is-off, .sort.is-still, .cx-field.is-disabled .cx-input, .field.is-disabled .field-input) {
+    forced-color-adjust: none;
+    color: GrayText !important;
+    border-color: GrayText !important;
+    background: Canvas !important;
+    opacity: 1 !important;
+  }
+  :where(:disabled, [aria-disabled="true"], .is-disabled) * { color: inherit !important; }
+  /* Control glyphs follow their system text colour, including the logo and explicit chalk strokes. */
+  .brand .mk, .cx-brand-mk .mk, .hb-chev, .fw-mi svg { stroke: currentColor !important; }
+  .brand .mk-dot, .cx-brand-mk .mk-dot { fill: currentColor !important; }
+  /* Transparent normal-colour outlines retain their geometry; system colours make focus visible here. */
+  :focus-visible { outline: 2px solid CanvasText !important; }
+  :where(.seg-b, .cx-seg-b, .wk-b):focus-visible:where([aria-pressed="true"], [aria-checked="true"]) { outline-color: HighlightText !important; }
+  .rail-item:focus-visible, .cx-ri:focus-visible, .dp-day:focus-visible { outline-color: transparent !important; }
+  .rail-item:focus-visible .tile, .cx-ri:focus-visible .cx-tile, .dp-day:focus-visible .dp-n { outline-color: CanvasText !important; }
+  /* Only data marks opt out; axis labels, readouts and other text retain system colours. */
+  .plot-svg svg, .cx-plot > svg, .hc.v, .hc.few, .cx-hc.v, .cx-hc.few,
+  .wk-bar, .hb-bar, .strip > span, .sw-line, .sw-usual, .sw-ring, .heat-key .ramp, .heat-key .k, .cx-legend .ramp, .cx-legend .k { forced-color-adjust: none; }
+  .heat-key .k0, .cx-legend .k0 { forced-color-adjust: auto; color: CanvasText !important; border: 1px solid CanvasText; }
+  .plot-svg svg text, .cx-plot > svg text, .hc :where(.hv, .run), .cx-hc :where(.hv, .run) { forced-color-adjust: auto; color: CanvasText !important; fill: CanvasText; }
+  .hc :where(.hv, .run), .cx-hc :where(.hv, .run) { background: Canvas; }
+  .hc.is-sel, .cx-hc.is-sel { forced-color-adjust: none; outline: 1px solid CanvasText; outline-offset: -2px; box-shadow: inset 0 0 0 3px Canvas; }
+  /* Back an inset ring with Canvas, so it remains legible over every heat-ramp colour. */
+  .hc:focus-visible, .cx-hc:focus-visible { box-shadow: inset 0 0 0 6px Canvas; outline-color: CanvasText !important; }
 }
