@@ -30,19 +30,16 @@
 
 ## Running now
 
-- The CSS round's mechanical part (Codex high, launched 2026-10-10 10:55): brief
+- The CSS round's mechanical part (Codex high, 2026-10-10): brief
   `codex-css-round.md` in the build branch's briefs folder (`cd2938ec`), run folder
   `D:/fitway-temp/codex-runs/owner-r04-css-round`, held-out rows X1-X10 in
   D:/fitway-grader/owner-r04/css-round-heldout.md, base focus sweep `D:/fitway-temp/owner-css-base-focus/`. B6
   is relaxed on purpose: the spec's five independent mechanical causes are graded separately in one pass. Next come
   agent-environment round 21 (a held press in the CLI) and the designer's pressed state, with the two 13.5 px lists.
-  - **2026-10-10 12:21, stopped.** The result `9cbb3025` passed C1-C4 and L1-L5. C5 failed only on the brief's wording,
-    "shows", which Codex read as the whole value at once; that is a brief-caused failed row. Held-out rows X1-X9 pass, with
-    X7 judged on intent: system colours on the selected states. X10 fails: five unconditional transparent outlines draw
-    a permanent line in forced colours (`D:/fitway-temp/owner-css-grade/`). Repair 1 of 2
-    (`D:/fitway-temp/owner-css-grade/repair-1.txt`) stopped at the Codex account's usage limit, leaving uncommitted
-    edits in four CSS files in the build worktree. After the user switches accounts, resume it with `pnpm codex:round --
-    resume D:/fitway-temp/codex-runs/owner-r04-css-round --message <continue repair 1>`. Round 21 waits for the ports.
+  - **Accepted at `691d62d5`** (2026-10-10, graded in `codex-rounds.md`; repair 1 of 2 after X10's unconditional
+    transparent outlines; pushed). The build's concept CSS check reports only two named allowances (programmatic
+    focus targets, F113). Next: agent-environment round 21 (held press), then the designer's pressed state and the two
+    lists, then the user's try on both phones (item 7) with the whole round.
 - Report-only, under load only: the dialogs', popover's and records card's parts split across threads under a planted
   stall; rounds item 11 to decide whether they are errors on a real machine.
 

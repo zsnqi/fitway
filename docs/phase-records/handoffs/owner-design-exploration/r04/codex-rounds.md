@@ -380,3 +380,41 @@ checks live outside the repository and never appear here or in a brief. One line
   brief's fault); H3's transient is the price of observing instead of measuring on scroll. The coordinator accepts
   the result without a second repair: a flash of one or two frames over the header on a jump to the top, on a
   concept-only tool.
+
+## css-round (the mechanical part): `directions/briefs/codex-css-round.md` on the build branch, result `691d62d5` (level high)
+
+- **Set-up:** the first brief written from a `/to-spec` spec (agent-environment DECISIONS item 21, step 6;
+  `css-round-spec.md`, `58433873`).
+  - The base was measured first. The concept CSS check found 87 findings. The forced-colours focus sweep showed no
+    stop without a ring except the sheet's heat cell (`D:/fitway-temp/owner-css-base-focus/`). Chromium 149's
+    safe-area emulation applies insets without `viewport-fit`.
+  - The brief over `58433873` was launched alone. B6 was relaxed on purpose: five independent causes from one spec,
+    graded separately.
+  - Held-out rows X1-X10: `D:/fitway-grader/owner-r04/css-round-heldout.md`.
+- **Brief rows, as Codex graded them** (`9cbb3025`): C1-C4 and L1-L5 pass. The check fell from 87 to 0, and the
+  compare of normal colours was EQUAL. C5 failed because "shows" was read as the whole widest value visible at once,
+  which a one-line field cannot do. That is the brief's wording; glyph and icon clearance passed.
+- **Held-out rows** (`D:/fitway-temp/owner-css-grade/`):
+  - X1-X9 pass:
+    - the hover gate is `hover: hover` alone;
+    - forced colours hold at tablet, 320 and in two dialogs;
+    - Daily's five states and Reports' custom period compare EQUAL;
+    - a 240-character Arabic reason fits the textarea at 320, and a 200-character password scrolls clear of its eye
+      button;
+    - the meta adds only `viewport-fit`;
+    - X7 passes on intent: `forced-color-adjust: none` is used for selected and disabled states with system colours;
+    - nothing changed in the designer's part;
+    - DESIGN-SPEC adds FOC-8 and SAFE-1.
+  - X5's status compare at full motion also differed base against base (F112).
+  - X10 failed. Five rules turned from `outline: none` into unconditional transparent outlines (`.main`, `.cx-main`,
+    `.fw-pop` and the two selects), which forced colours paints at rest: a permanent line around the content that runs
+    against Daily's title, a second edge on popovers, and a ring inside each list's own edge.
+  - The check's false positives pushed it there (F113).
+- **Repair 1** (`691d62d5`, at the second resume: the first stopped at the Codex account limit, the second at a model
+  capacity error):
+  - the programmatic targets went back to `outline: none` as named allowances (`.cx-main`, `.fw-pop[tabindex="-1"]`);
+  - the lists' wrappers draw their one edge and ring;
+  - X10 passes on the coordinator's renders, and Activity's focus sweep under forced colours has 0 failed stops;
+  - the check reports only the two allowances.
+- **Failure cause:** C5 is a brief-caused row (outcome wording). X10 came from a check that counts a programmatic focus
+  target or a `:has()` ring as a missing ring.
