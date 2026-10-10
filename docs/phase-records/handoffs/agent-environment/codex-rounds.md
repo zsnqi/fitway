@@ -718,3 +718,21 @@ held-out checks live outside the repository and never appear here or in a brief.
   report check now looks for the reported target rather than the fixture's spelling. Q4: Codex's T1 matches; its T2
   FAIL is the out-of-scope Python test.
 - **Failure cause:** round 16's test, which compared spellings; no brief named the runner's short temp path.
+
+## agent-environment-r03 round 19: `r03/briefs/round-19.md`, result `01e704f4` (level high)
+
+- **Set-up:** F105 reproduced on `f2daff93` (a session on 127.0.0.1:3176 and a foreign listener on `::1` port 3176:
+  doctor and cleanup printed the generic "not served by this session" refusal without the pid,
+  `D:/fitway-temp/r03-r19-baseline/f105-out.txt`). The brief's commit `0667a8aa` over HEAD `f2daff93`, launched alone
+  in a new worktree. F106-F107 and F109 left out: the 2026-10-10 survey found no worktree with an outward link (0 of
+  31), and F109's folder is also cited by round 16c's brief and this file. Held-out rows Z1-Z4 by the coordinator.
+- **Brief rows, as Codex graded them:** V1 and V2 pass (48 verification tests, the fast ladder with 3176-3177 free and
+  held, the Eclipse launch, doctor, drive and cleanup).
+- **Held-out rows:** Z1-Z3 pass, Z3's CI part on the merge. Planted control: the base fails Z1 in 12 checks. Z1: on
+  3176 and on 3177, doctor, cleanup and drive refuse naming the port and the foreign pid ("served by this session but
+  also held by foreign pid N"), without the false cause or advice to stop a process; the holder and the preview keep
+  answering; cleanup passes once the holder stops. Z2: the stopped-preview and foreign-only refusals keep their
+  meaning. Z3: ports 3175 and 3178 refused; Eclipse smoke passes and the ports are free after; 48 tests (47 before)
+  with both ports held; diff only in `core.mjs` and `cli.test.mjs`; the fast ladder passes on the clean tree. Z4:
+  Codex's grades match.
+- **Failure cause:** none; round 17 had moved the pid into the error's cause, which the CLI does not print.

@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-10 08:30 +03:00 (rounds 16-18 merged, F100-F104 fixed; the user ran
+- **As of:** codex/owner-redesign-r04, 2026-10-10 08:50 +03:00 (rounds 16-19 merged, F100-F105 fixed; the user ran
   both cleanup scripts; TEMP is `D:\Temp`)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-24,
   `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -31,6 +31,10 @@
   TMP are `D:\Temp` (item 24); the gardener, verify-fitway and `codex-round.mjs` still write under `D:/fitway-temp`
   by a fixed path, tests write under `D:\Temp`, and `pnpm verify:fast` passes there without mutation. Item 21 step 5,
   second reading: this session started from this file at 79K before its first read, 146K at its first edit.
+- Round 19 (`01e704f4`, graded in `codex-rounds.md`) made verify-fitway's refusal name the foreign pid that shares a
+  session's port (F105). F106-F107 and F109 go to the closing review rather than a round: the 2026-10-10 survey found
+  no worktree with an outward link (0 of 31), the merged-clean count already includes protected worktrees, and
+  F109's folder is cited by other records as well.
 
 ## Running now
 
@@ -40,11 +44,11 @@
 
 ## Next steps
 
-1. Open findings (`findings.tsv`), one round per tool: the gardener (F106-F107: the merged-clean count and the
-   report's prose ignore link-withheld worktrees; F109: round 16c's test cites a real folder) and verify-fitway (F105:
-   a foreign-pid refusal no longer prints the pid). F108 (a pnpm setting blocked one survey inside Codex's sandbox)
-   stays open until a sandbox survey hits it again. F110 (an edge Python test under a short local temp path) is
-   outside this milestone; with TEMP on drive D, which makes no short names, the local ladder no longer meets it.
+1. Open findings (`findings.tsv`): F106-F107 (link-withheld worktrees in the gardener's counts and prose) and F109
+   (round 16c's test cites a real folder) are inputs to the closing review (Next steps 5). F108 (a pnpm setting
+   blocked one survey inside Codex's sandbox) stays open until a sandbox survey hits it again. F110 (an edge Python
+   test under a short local temp path) is outside this milestone; with TEMP on drive D, which makes no short names,
+   the local ladder no longer meets it.
 2. Step 2's real figure: `pnpm start-load -- --since 2026-10-09T19:15+03:00` after each Opus definition's first
    launch in a new session.
 3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
@@ -85,8 +89,11 @@
   (worktree D:/Projects/fitway-worktrees/owner-design-exploration-r04), and main fast-forwards to it when CI passes;
   the branch agent-environment-r03 is behind main.
 - Packet: `docs/phase-records/task-packets/agent-environment-r03.yaml`; briefs: `docs/phase-records/handoffs/agent-environment/r03/briefs/`.
-- Grades: D:/fitway-temp/r03-r16-grade/, r03-r16bc-grade/ and r03-r17-grade/ (REPORT.md each; earlier rounds beside
-  them), D:/fitway-grader/replay/; held-out rows in D:/fitway-grader/agent-environment/ and D:/fitway-grader/owner-r04/.
+- Grades: D:/fitway-temp/r03-r16-grade/, r03-r16bc-grade/, r03-r17-grade/ and r03-r19-grade/ (REPORT.md each; earlier
+  rounds beside them), D:/fitway-grader/replay/; held-out rows in D:/fitway-grader/agent-environment/ and D:/fitway-grader/owner-r04/.
 - The removed copies: their commits in `D:/fitway-grader/replay/<task>/result.bundle` and
   `D:/fitway-grader/preserved-clones/`, the grading worktrees' uncommitted report edits in
   `D:/fitway-temp/r03-cleanup-20261010/preserved/` (the only copy; this line keeps the gardener from proposing it).
+- Round 19's worktree `D:/Projects/fitway-worktrees/agent-environment-r03-r19` (installed dependencies, no junction) is
+  disposable once main holds `01e704f4`; its brief cites it, so the gardener will not propose it (a closing-review
+  input: briefs keep every round's worktree protected).
