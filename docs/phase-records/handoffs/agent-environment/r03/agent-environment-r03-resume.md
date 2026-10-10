@@ -83,7 +83,7 @@
    1.2.0 kept at `D:/fitway-temp/r03-r21-forensics/ui-forensics-1.2.0-backup/`. The Owner CSS round's mechanical part
    (`691d62d5`) and its press (`b2b2f4c1`) are built. Its independent review comes next (Owner resume point, Next
    steps 0), and that review closes step 6's trial, so the trial is graded then.
-   Grade them against ordinary rounds on repair attempts and brief-caused failed rows. Step 7 runs on the
+   Grade the trial's rounds against ordinary ones on repair attempts and brief-caused failed rows. Step 7 runs on the
    Settings designer brief. Then the closing review (it moves the gardener's weight to code health, item 24) and
    the milestone's closure; the rest of the Owner screens follow.
 
