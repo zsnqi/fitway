@@ -30,6 +30,16 @@ const environment = readFileSync(
 );
 const roots: string[] = [];
 
+it("C2: the coordinator checklist explains the must change marker", () => {
+	const template = readFileSync(
+		path.join(repository, "docs/agent-context/briefs/codex.md"),
+		"utf8",
+	);
+	expect(template).toContain(
+		"- [ ] Mark with ` (must change)` each path an outcome requires to change.",
+	);
+});
+
 it("R4: checker diagnostics name their checks without colliding with B1-B10", async () => {
 	const f = fixture();
 	const text =
@@ -111,6 +121,72 @@ function fixture() {
 	};
 	return { root, commandRepository, worktree, head, valid, briefPath, check };
 }
+
+describe("C1 must change references", () => {
+	it("accepts existing repository and absolute files and folders, including bare paths", async () => {
+		const f = fixture();
+		const absolute = path.join(f.root, "outside git.bin").replaceAll("\\", "/");
+		writeFileSync(absolute, "content");
+		const paths = [
+			"docs/guide.md",
+			"docs/",
+			"LICENSE",
+			absolute,
+			f.root.replaceAll("\\", "/"),
+		];
+		const text =
+			f.valid +
+			paths
+				.map((file) => `\n- Outcome: Update \`${file}\` (must change).`)
+				.join("") +
+			"\n";
+		const result = await f.check(text);
+		expect(result.problems).toEqual([]);
+		expect(
+			result.requiredChanges.map((entry: { path: string }) => entry.path),
+		).toEqual(paths);
+		for (const entry of result.requiredChanges)
+			expect(text.split("\n")[entry.line - 1]).toBe(entry.outcome);
+	});
+	it.each([
+		"repository",
+		"absolute",
+		"bare",
+	])("refuses a missing marked %s path", async (kind) => {
+		const f = fixture();
+		const file =
+			kind === "absolute"
+				? path.join(f.root, "missing.bin").replaceAll("\\", "/")
+				: kind === "bare"
+					? "missing"
+					: "docs/missing.md";
+		const text = `${f.valid}\n- Outcome: Update \`${file}\` (must change).\n`;
+		const result = await f.check(text);
+		expect(result.ok).toBe(false);
+		expect(formatBriefResult(result)).toContain(
+			"must change path does not exist:",
+		);
+		writeFileSync(f.briefPath, text);
+		const cli = spawnSync(process.execPath, [script, f.briefPath], {
+			cwd: f.commandRepository,
+			encoding: "utf8",
+			windowsHide: true,
+		});
+		expect(cli.status).toBe(1);
+		expect(cli.stdout).toContain(
+			"FAIL brief-references: must change path does not exist:",
+		);
+	});
+	it("ignores markers in comments and keeps unmarked machine-local paths unjudged", async () => {
+		const f = fixture();
+		const missing = path.join(f.root, "missing.bin").replaceAll("\\", "/");
+		const result = await f.check(
+			`${f.valid}\n\`${missing}\`\n<!-- \`${missing}\` (must change) -->\n`,
+		);
+		expect(result.ok).toBe(true);
+		expect(result.requiredChanges).toEqual([]);
+	});
+});
 
 describe("brief-references: resolve a brief against its named Git worktree", () => {
 	it("Q2: accepts short and long named roots and Windows letter case", async () => {

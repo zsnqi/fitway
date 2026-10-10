@@ -260,6 +260,7 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 	const source = withoutComments(text);
 	const resolver = createPathReferenceResolver(worktree, git);
 	const references = [];
+	const requiredChanges = [];
 	for (const span of codeSpans(source)) {
 		const line = lineAt(text, span.index);
 		const tail = source.slice(span.index + span[0].length);
@@ -267,6 +268,31 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		// Markdown reads a line break inside a code span as a space.
 		const split = /[\r\n]/.test(span[2]);
 		const value = span[2].replace(/(?:\r\n|[\r\n])[ \t]*/g, " ");
+		// The explicit marker opts even bare and machine-local paths into checking.
+		if (/^ \(must change\)(?=\s|[.,;:]|$)/.test(tail)) {
+			const absolute = path.resolve(worktree, value.replaceAll("\\", "/"));
+			const details = await exists(absolute);
+			if (!details)
+				report(
+					"brief-references",
+					line,
+					`must change path does not exist: ${absolute}`,
+				);
+			else if (!details.isFile() && !details.isDirectory())
+				report(
+					"brief-references",
+					line,
+					`must change path must be a file or folder: ${absolute}`,
+				);
+			else
+				requiredChanges.push({
+					path: value,
+					absolute,
+					line,
+					outcome: text.split(/\r?\n/)[line - 1],
+				});
+			continue;
+		}
 		const decisionItems = citedDecisionItems(tail);
 		const reference = await resolver.reference(value);
 		if (!reference) {
@@ -397,6 +423,7 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			);
 		}
 	}
+	return requiredChanges;
 }
 
 export async function checkBrief({
@@ -503,13 +530,15 @@ export async function checkBrief({
 			"WARNING",
 		);
 	const worktree = await validateWorktree(text, report, git);
-	if (worktree)
-		await validateReferences(text, worktree, repositoryRoot, report, git);
+	const requiredChanges = worktree
+		? await validateReferences(text, worktree, repositoryRoot, report, git)
+		: [];
 	problems.sort((a, b) => a.line - b.line || a.rule.localeCompare(b.rule));
 	return {
 		briefPath: absoluteBrief,
 		role,
 		worktree,
+		requiredChanges,
 		lineCount,
 		filled,
 		problems,

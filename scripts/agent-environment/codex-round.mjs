@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { constants, createReadStream } from "node:fs";
 import {
 	access,
@@ -233,6 +233,17 @@ async function prepareLaunch(options) {
 		level: options.level,
 		model: MODEL,
 	};
+	if (result.requiredChanges.length) {
+		metadata.requiredChanges = [];
+		for (const reference of result.requiredChanges) {
+			const before = await contentSnapshot(reference.absolute);
+			if (before.kind === "missing")
+				throw new Error(
+					`must change path disappeared before launch: ${reference.path}`,
+				);
+			metadata.requiredChanges.push({ ...reference, before });
+		}
+	}
 	await mkdir(options.run, { recursive: true });
 	await assertFresh(options.run);
 	// Exclusive creation also arbitrates simultaneous launches into an empty folder.
@@ -244,6 +255,71 @@ async function prepareLaunch(options) {
 	await writeFile(path.join(options.run, "input.md"), input, { flag: "wx" });
 	console.log(formatBriefResult(result));
 	return { metadata, input, executable };
+}
+
+// Compare bytes and file names, never Git status, timestamps, or the final report.
+async function contentSnapshot(absolute, ancestors = new Set()) {
+	let details;
+	try {
+		details = await stat(absolute);
+	} catch (error) {
+		if (error.code === "ENOENT" || error.code === "ENOTDIR")
+			return { kind: "missing" };
+		throw error;
+	}
+	if (details.isFile())
+		return {
+			kind: "file",
+			sha256: createHash("sha256")
+				.update(await readFile(absolute))
+				.digest("hex"),
+		};
+	if (!details.isDirectory())
+		throw new Error(`cannot record content of non-file path: ${absolute}`);
+	const identity = await realpath(absolute);
+	if (ancestors.has(identity))
+		throw new Error(`cannot record recursive folder link: ${absolute}`);
+	const nextAncestors = new Set([...ancestors, identity]);
+	const files = [];
+	for (const name of (await readdir(absolute)).sort()) {
+		const content = await contentSnapshot(
+			path.join(absolute, name),
+			nextAncestors,
+		);
+		if (content.kind === "file") files.push([name, content.sha256]);
+		else if (content.kind === "directory")
+			for (const [file, hash] of Object.entries(content.files))
+				files.push([`${name}/${file}`, hash]);
+		else
+			throw new Error(
+				`path disappeared while recording content: ${path.join(absolute, name)}`,
+			);
+	}
+	return { kind: "directory", files: Object.fromEntries(files) };
+}
+
+async function recordRequiredChanges(metadata, events) {
+	if (!metadata.requiredChanges?.length) return;
+	const comparisons = [];
+	for (const { before, ...reference } of metadata.requiredChanges) {
+		const after = await contentSnapshot(reference.absolute);
+		const changed = JSON.stringify(before) !== JSON.stringify(after);
+		comparisons.push({ ...reference, before, after, changed });
+		if (!changed)
+			console.log(
+				`Required change unchanged: ${reference.path} (brief line ${reference.line}: ${reference.outcome})`,
+			);
+	}
+	const target = path.join(
+		path.dirname(events),
+		path
+			.basename(events)
+			.replace(/^events/, "required-changes")
+			.replace(/\.jsonl$/, ".json"),
+	);
+	await writeFile(target, `${JSON.stringify(comparisons, null, 2)}\n`, {
+		flag: "wx",
+	});
 }
 
 async function firstThread(run) {
@@ -468,6 +544,7 @@ async function execute(options, prepared) {
 		stream.destroy();
 		await output.file.close();
 	}
+	await recordRequiredChanges(metadata, output.events);
 	// A missing measurement never changes the run's exit code.
 	if (started && /^[\w-]+$/.test(started))
 		await recordStartLoad(options.run, started).catch((error) =>

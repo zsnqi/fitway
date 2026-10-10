@@ -74,4 +74,5 @@ The brief rules B1-B10 live here. Codex follows a brief to the letter, so most f
       round deletes or renames, `git grep` its path in the open records (resume files, briefs, packets) first, and
       fix them before launch or name them as in scope (r03 round 3).
 - [ ] A test suite that needs a clean tree is run after the commit.
+- [ ] Mark with ` (must change)` each path an outcome requires to change.
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.
