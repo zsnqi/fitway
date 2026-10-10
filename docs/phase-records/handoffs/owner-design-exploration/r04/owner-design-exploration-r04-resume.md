@@ -72,7 +72,8 @@
    1. Run one independent review of the whole round with `owner-direction-verifier`. That covers the mechanical part
       `691d62d5`, the press and the two lists `b2b2f4c1`, the spec's four seams (`css-round-spec.md`) and the
       designer's observations above. Use the CLI's `--colors forced` and `hold:` recipe actions, with ui-forensics 1.3.0
-      installed.
+      installed. **Running** (launched 2026-10-10): brief `verifier-css-round.md` on the build branch (`767cd57c`),
+      evidence in `D:/fitway-temp/owner-r04-css-review/` with its `NOTES.md`; a cut-off verifier is replaced from them.
    2. Fix every finding before the user sees the round (item 11).
    3. Open the LAN preview on 3180 for the user's iPhone and Android try (seam 4). Check the PC's IP first.
    4. The concept CSS check joins the fast ladder only once the build is on the trunk.
