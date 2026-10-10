@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-10 09:20 +03:00 (rounds 16-19 merged, F100-F105 fixed; item 21 step
+- **As of:** codex/owner-redesign-r04, 2026-10-10 17:30 +03:00 (rounds 16-19 merged, F100-F105 fixed; item 21 step
   6's trial wrote the Owner CSS round's spec; round 20 merged)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-25,
   `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -79,13 +79,11 @@
    and a ui-forensics 1.2.0 copy at `D:/fitway-temp/r03-r20-forensics/ui-forensics/`, graded in `codex-rounds.md`.
    With the user's yes the copy is installed as the machine-level ui-forensics (2026-10-10; self-test 44/44, the CLI
    renders forced without `--forensics`; 1.1.0 kept at `D:/fitway-temp/r03-r20-forensics/ui-forensics-1.1.0-backup/`).
-   Round 21 adds a held press on a named control (running since 2026-10-10 13:30; the user said yes in advance to
-   installing its ui-forensics 1.3.0 copy once graded).
-   It was accepted at `6ba81a0c` after two repairs and merged (`ba7f9f17`), and is graded in `codex-rounds.md`. The
-   copy is installed as the machine-level ui-forensics 1.3.0, with the user's earlier yes; the self-test passes 47/47,
-   and the CLI holds a press without `--forensics`. 1.2.0 is kept at
-   `D:/fitway-temp/r03-r21-forensics/ui-forensics-1.2.0-backup/`. The Owner round's mechanical part (Codex) comes next. Then round 21, then the designer's pressed state. Both Owner briefs are written from the
-   spec. Grade them against ordinary rounds on repair attempts and brief-caused failed rows. Step 7 runs on the
+   Round 21 (the held press) was accepted at `6ba81a0c` after two repairs, and the copy is installed as 1.3.0, with
+   1.2.0 kept at `D:/fitway-temp/r03-r21-forensics/ui-forensics-1.2.0-backup/`. The Owner CSS round's mechanical part
+   (`691d62d5`) and its press (`b2b2f4c1`) are built. Its independent review comes next (Owner resume point, Next
+   steps 0), and that review closes step 6's trial, so the trial is graded then.
+   Grade them against ordinary rounds on repair attempts and brief-caused failed rows. Step 7 runs on the
    Settings designer brief. Then the closing review (it moves the gardener's weight to code health, item 24) and
    the milestone's closure; the rest of the Owner screens follow.
 

@@ -50,14 +50,32 @@
   - the current tile's press.
   Output goes to `D:/fitway-temp/owner-r04-pressed-2/`. Then one independent review of the whole round, its fixes, and
   the user's try on both phones (3180).
-  - **That designer stopped at an API session limit.** It had built all five items and committed none, so the
-    coordinator committed its work as WIP (`aedd3853`; `D:/fitway-temp/owner-r04-pressed-2/NOTES.md`). A fresh designer
-    (`designer-pressed-state-2-finish.md`, `82ae45e9`) is judging it and writing the evidence, launched 2026-10-10.
-    Next comes the independent review.
+  - **Finished at `b2b2f4c1`** (pushed; fix `bf4bad21`; evidence in `D:/fitway-temp/owner-r04-pressed-2/NOTES.md`
+    and its s2 folder). The pieces:
+    - the release fade, 120 ms;
+    - held segments sink;
+    - chalk keys seat;
+    - the current tile presses;
+    - rest frames match `691d62d5` except Activity's person list.
+    «EN» on the sheet is Chromium's own capture noise, base against base. The coordinator looked at the 390 Arabic
+    held primary and segment. The designer's observations go to the review:
+    - the held segment is quiet at 390;
+    - a mouse press on either list shows its focus ring, as at `691d62d5`;
+    - the forced-colours person list now reads in HighlightText;
+    - a new key kind joins one of the press's two lists in style.css.
 - Report-only, under load only: the dialogs', popover's and records card's parts split across threads under a planted
   stall; rounds item 11 to decide whether they are errors on a real machine.
 
 ## Next steps
+
+0. **The CSS round's close (start here).**
+   1. Run one independent review of the whole round with `owner-direction-verifier`. That covers the mechanical part
+      `691d62d5`, the press and the two lists `b2b2f4c1`, the spec's four seams (`css-round-spec.md`) and the
+      designer's observations above. Use the CLI's `--colors forced` and `hold:` recipe actions, with ui-forensics 1.3.0
+      installed.
+   2. Fix every finding before the user sees the round (item 11).
+   3. Open the LAN preview on 3180 for the user's iPhone and Android try (seam 4). Check the PC's IP first.
+   4. The concept CSS check joins the fast ladder only once the build is on the trunk.
 
 1. **After the environment phase:** the Owner screens resume with its tools (the verify-fitway skill and the CLI).
 2. **Then Settings**, Operations (the header status's details) and Monitoring, each per rounds items 6 and 8-11 in
