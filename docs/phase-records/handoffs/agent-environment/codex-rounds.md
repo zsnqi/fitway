@@ -871,3 +871,33 @@ held-out checks live outside the repository and never appear here or in a brief.
   - `node scripts/verify.mjs fast` passes without mutation (174.6 s), after one earlier run in which the CLI
     contracts failed once and did not fail again.
 - **Failure cause:** J5 was not stated in the brief; its intent ("Codex receives that text exactly") covered it.
+
+## agent-environment-r03 round 24: `r03/briefs/round-24.md`, result `01c01409` (level high, one repair)
+
+- **Set-up:** DECISIONS items 20 and 24, the gardener's code-health section and its weight. The brief's commit
+  `7bd07f7d` over `a798440e`, run beside round 25 (both change `survey.mjs`; each put its logic in a new module).
+  Held-out rows G1-G10.
+- **Result `e38b4298`:** H1-H4 pass as Codex graded them. `code-health.mjs` reads the concept on
+  `owner-followup-r04-build` through git objects, and the repository's tooling through `HEAD`. The cleanup procedure
+  moved to `CLEANUP.md`, and `SKILL.md` went from 198 to 141 lines.
+- **Held-out** (`D:/fitway-temp/r03-r24-grade/`): 6 of 10 on the first attempt.
+  - G1, G5, G6, G7, G9 and G10 pass: the seven giant concept files I counted, the boundary fixture, a missing branch
+    reads unknown, the trend, git objects only.
+  - G2 and G4 failed: 10 of 11 "any as a type" hits were the English word in test names and comments, and the test
+    fixtures' own strings were counted.
+  - G3 failed: a block found in three places was three hits.
+  - G8 failed: the shortened text dropped many guards, among them `origin/main` as last fetched, `notRunChecks`, a
+    mutating check blocking the pass, the pnpm preflight, a prose word not being a citation, and the placeholder
+    examples.
+- **Repair 1 (`01c01409`):** a source scanner keeps code, comments and strings apart, and duplicate blocks are listed
+  once with every place they occur. Every dropped guard is back; `SKILL.md` is 157 lines with `CLEANUP.md` at 62.
+  - G2, G3, G4 and G8 pass. The 7 tooling type escapes are real `as unknown as` casts.
+  - Real totals, concept / tooling: giant files 7 / 8, type escapes 0 / 7, suppressions 0 / 1, workarounds 72 / 0,
+    duplicate blocks 45 / 35, boundary breaks 110 / 0.
+  - The first resume met the account's limit before any change; the repair ran after the user switched accounts.
+- **Not proved:** H4's folder proposals equal to the base's. Every survey that night, the base's included, was
+  blocked by a temp folder that vanished mid-scan (F117). Branch and worktree proposals were equal.
+- **Merge:** one conflict with round 25 in `survey.mjs`'s section filter, resolved by keeping both names. The
+  gardener suite passes 81 of 81 on the merge.
+- **Failure cause:** G2, G4 and G8 come from the code, not the brief: the brief named TypeScript type use, and
+  "unchanged in meaning".
