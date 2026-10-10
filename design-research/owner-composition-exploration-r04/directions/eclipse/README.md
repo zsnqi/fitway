@@ -662,9 +662,9 @@ by using the same controls: **the key seats.**
   and released, its shadow fades to none. A key with a shadow of its own in some state (a segment's or weekday's ring, a
   list's edge, a filter in force, the picker's days) carries the layer in every state, transparent at rest, and its
   colour fades, so the ring or edge never animates; its own shadow rules repeat the layer after it. (The pass's first
-  build kept the transparent layer on every key at rest: it re-rasterised a few icons by a level or two, a dimmed month
-  arrow and some of the sheet's specimens, so the rest frames no longer matched.) A second press during either starts
-  at full depth at once.
+  build kept the transparent layer on every key at rest: it re-rasterised some icons and words by a few levels, a dimmed
+  month arrow and some of the sheet's specimens, so the rest frames no longer matched.) A second press during either
+  starts at full depth at once.
 - **Nothing else moves:** transforms and paint only, so no neighbour shifts; no glyph changes opacity; the lights never
   react to a press.
 - **Not pressed:** a disabled or Working control (where it says why it is off, that explanation is the response); the
