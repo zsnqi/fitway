@@ -14,6 +14,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parse as parseYaml } from "yaml";
 import { repositoryFingerprint } from "../../../scripts/repository-fingerprint.mjs";
+import { collectCodeHealth } from "./code-health.mjs";
 import {
 	activeBriefPointers,
 	calledImports,
@@ -777,9 +778,45 @@ export function formatReport(report) {
 		);
 	}
 	lines.push("");
+	if (report.codeHealth) {
+		lines.push(
+			"## Code health",
+			"",
+			`Compared with: ${report.codeHealth.comparedWith}`,
+			"",
+		);
+		for (const scope of report.codeHealth.scopes) {
+			lines.push(`### ${scope.name} (${scope.status})`);
+			if (scope.status === "unknown") lines.push(`Reason: ${scope.reason}`);
+			for (const measure of Object.keys(scope.measures)) {
+				const value = scope.measures[measure];
+				const total = value.total === null ? "unknown" : value.total;
+				const previous =
+					value.previous === null || value.previous === undefined
+						? "no previous"
+						: value.previous;
+				const trend =
+					typeof value.trend === "number"
+						? `${value.trend >= 0 ? "+" : ""}${value.trend}`
+						: (value.trend ?? "no previous");
+				lines.push(
+					`- ${measure}: ${total} (previous ${previous}; trend ${trend})`,
+				);
+				for (const item of value.hits ?? [])
+					lines.push(`  - ${item.file}:${item.line} — ${item.detail}`);
+			}
+			lines.push("");
+		}
+	}
 	for (const [name, value] of Object.entries(report).filter(
 		([name]) =>
-			!["date", "head", "complete", "repositoryUnchanged"].includes(name),
+			![
+				"date",
+				"head",
+				"complete",
+				"repositoryUnchanged",
+				"codeHealth",
+			].includes(name),
 	)) {
 		lines.push(
 			`## ${name}`,
@@ -980,6 +1017,17 @@ async function main(args) {
 		context?.briefs.map(({ source, namedBy }) => ({ source, namedBy })) ?? [];
 	report.landedBriefs = context?.landedBriefs ?? [];
 	report.waitingBriefs = context?.waitingBriefs ?? [];
+	const rollingReport = context?.records.find(
+		(item) => item.kind === "gardener",
+	);
+	report.codeHealth = await attempt("code health", () =>
+		collectCodeHealth({
+			config,
+			git,
+			previousReportText: rollingReport?.text ?? null,
+			previousReportSource: rollingReport?.source ?? null,
+		}),
+	);
 	await mkdir(path.join(out, "scratch"), { recursive: true });
 	report.checks = await runChecks(scripts, {
 		tempRoot: path.join(out, "scratch"),
