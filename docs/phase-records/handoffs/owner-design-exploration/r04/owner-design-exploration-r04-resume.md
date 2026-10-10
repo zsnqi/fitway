@@ -30,7 +30,12 @@
 
 ## Running now
 
-- Nothing in this milestone; the environment phase runs in agent-environment-r03 (its handoff says what).
+- The CSS round's mechanical part (Codex high, launched 2026-10-10 10:55): brief
+  `codex-css-round.md` in the build branch's briefs folder (`cd2938ec`), run folder
+  `D:/fitway-temp/codex-runs/owner-r04-css-round`, held-out rows X1-X10 in
+  D:/fitway-grader/owner-r04/css-round-heldout.md, base focus sweep `D:/fitway-temp/owner-css-base-focus/`. B6
+  is relaxed on purpose: the spec's five independent mechanical causes are graded separately in one pass. Next come
+  agent-environment round 21 (a held press in the CLI) and the designer's pressed state, with the two 13.5 px lists.
 - Report-only, under load only: the dialogs', popover's and records card's parts split across threads under a planted
   stall; rounds item 11 to decide whether they are errors on a real machine.
 
