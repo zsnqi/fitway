@@ -676,3 +676,29 @@ held-out checks live outside the repository and never appear here or in a brief.
   written as a pattern (`D:/fitway-temp/owner-r04-k02/out/sheets/NN-<state>-<ar|en>.png`), which `references`
   discards whole.
 - **Failure cause:** the code, for a case neither brief named: placeholders in a cited path. Repair 2 is round 16c.
+
+## agent-environment-r03 round 16c: `r03/briefs/round-16c.md`, result `e0cd4c6e` (level high, repair 2 of round 16's Y2)
+
+- **Set-up:** the brief's commit `e4cd6678` over HEAD `eb5560d0`, launched alone; the coordinator listed the
+  patterned citations under concrete temp folders first (`owner-r04-k02` the only one among the proposed folders).
+  Held-out rows Y7-Y12 (round 16b's and this round's) by a Sonnet grader (`sonnet-researcher`) on this result, which
+  carries both rounds' code: one real survey of `D:/fitway-temp` and planted folders, PNG and patterned citations in
+  a private temp root; the coordinator sampled the real survey.
+- **Brief rows, as Codex graded them:** 2 of 2 (R8-R9); its sandbox survey completed this time: 30 proposed, one
+  exclusion (`owner-r04-k02`, the resume's line 43); 61 gardener tests; the ladder passed.
+- **Held-out rows:** 5 of 5 pass (Y7-Y9, Y11-Y12); Codex's self-grade matches except the reason for 16b's R5 FAIL
+  (Y10). Grade: `D:/fitway-temp/r03-r16bc-grade/REPORT.md`.
+  - Y7: the real survey proposes 30 of the base's 38, none new; the 8 folders tracked text cites are protected with
+    their citations; no binary file is a citation source; a PNG holding `/d/` and `D:/`, `see D:/`, the temp root
+    itself and a prose word protect nothing; backslash and forward-slash paths protect.
+  - Y8: a 10-folder cleanup in a private root took 7 s (round 16: about 3 minutes for 4), removed 9 and kept the one
+    cited after the survey, naming the citation.
+  - Y9: 61 tests; the new tests fail on the earlier code (7 of 7; 4 of 4); the ladder passes; scope and lockfile hold;
+    the real survey takes 252 s against the base's 101 s.
+  - Y11: `<root>/k/out/NN-<state>.png`, `<root>/m/*.png` and `<root>/k3/{a,b}/file.txt` protect k, m and k3;
+    `<root>/<run>/`, `<root>/run-*` and `<root>/{a,b}/x` protect nothing.
+  - Y12: nothing was installed or reconfigured; F108 did not recur.
+- **Also found:** the new test and the brief cite the real `owner-r04-k02` path, so that folder has three protectors
+  and a check of "protected" alone would not notice the resume citation failing (F109); `pass.ps1` requires `-Out`
+  under `-TempRoot`.
+- **Failure cause:** none. Round 16's Y2 failure closed after two repairs; F100, F103 and F104 are fixed.
