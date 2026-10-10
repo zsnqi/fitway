@@ -167,10 +167,9 @@
 					"uniqueItems": true
 				},
 				"validationRepairAttempts": {
-					"description": "Focused repairs the milestone's latest validation failure took (AGENTS.md: at most two; a third recurrence is FAILED_VALIDATION). It counts per failure, not across the milestone: a new failure counts again from its own first repair.",
+					"description": "Focused repairs the milestone's latest validation failure has taken so far (AGENTS.md: repaired until its gate passes, with a fresh root-cause analysis after every two). It counts per failure, not across the milestone: a new failure counts again from its own first repair.",
 					"type": "integer",
-					"minimum": 0,
-					"maximum": 2
+					"minimum": 0
 				},
 				"lastHeartbeatAt": {},
 				"leaseExpiresAt": {},

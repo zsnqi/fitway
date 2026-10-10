@@ -309,3 +309,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     a temporary ui-forensics copy, so CI would fail. The user allowed a third repair if this one fails, as a one-time
     exception to AGENTS.md's limit of two focused repairs. It applies to round 21 only; every other round keeps the
     rule.
+28. **No repair cap (the user, 2026-10-10).** The user said the rule of two repairs, after which the third
+    recurrence was `FAILED_VALIDATION`, held the project back: they want to finish it, and that needs more attempts.
+    The cap had grown out of the r04 activation record's stall rule, which said to stop and redo the root-cause
+    analysis after two failed rounds on one issue. Its point was to stop blind repeats of the same repair, not to end
+    the work.
+    - A failure is now repaired until its gate passes. After every two failed repairs of the same failure, the
+      coordinator redoes the root-cause analysis, writes the next attempt from a changed hypothesis or scope, and
+      tells the user in a line.
+    - `FAILED_VALIDATION` is declared only when the coordinator or the user judges the approach itself wrong.
+    - AGENTS.md, `docs/WORKFLOW.md` and the ledger schema (no maximum on `validationRepairAttempts`) changed
+      together. Item 27's one-time exception is absorbed.
+    - The design polish loop's two cycles (`docs/WORKFLOW.md`, the phase polish loop) are a separate rule and stay.

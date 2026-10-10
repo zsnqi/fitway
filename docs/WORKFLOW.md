@@ -32,12 +32,12 @@ PLANNED → READY → IN_PROGRESS → VALIDATING → READY_FOR_INTEGRATION → D
   unblock condition; difficulty alone is not a blocker.
 - `NEEDS_HUMAN`: a locked decision, security/privacy ambiguity, material visual change, or
   shared-ownership conflict needs human authority.
-- `FAILED_VALIDATION`: the same gate remains red after two focused repair attempts or the fresh
-  verifier rejects the result.
+- `FAILED_VALIDATION`: the coordinator or the user judges the approach itself wrong after repeated
+  repairs (`AGENTS.md`, the repair rule).
 - `SUPERSEDED`: a successor milestone carries the open work. The record names it in `supersededBy`
   and says why in `stopReason`; it never satisfies a dependency, so a dependent names the successor.
 
-The repair budget, the successor gate and plan deliveries are ruled in `AGENTS.md`, "Ownership and
+The repair rule, the successor gate and plan deliveries are ruled in `AGENTS.md`, "Ownership and
 records". A successor needs human authorization whenever another rule also requires it.
 
 Only the coordinator changes states. The top-level baseline status/commit must match the
@@ -116,8 +116,8 @@ if the base or the ownership differs from the ledger.
 3. Run the focused test/type check frequently.
 4. Run the fast ladder, `pnpm verify:fast`, before broad integration checks.
 5. Run the phase-selected verification with a unique run ID and disposable resources.
-6. If a gate fails, record the command, concise failure, and artifact; make at most two focused
-   repair attempts. Do not reset the count by changing sessions. A successor after
+6. If a gate fails, record the command, concise failure, and artifact, and repair it under the
+   repair rule in `AGENTS.md`. Count repairs per failure across sessions. A successor after
    `FAILED_VALIDATION` must satisfy the evidence gate in the state machine section above.
 7. UI work completes the phase polish loop below.
 8. Produce a durable handoff and set the candidate ready for independent verification.
