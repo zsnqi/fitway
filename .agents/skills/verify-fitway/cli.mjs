@@ -13,6 +13,11 @@ import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+	colorsAxis,
+	measurementColors,
+	requireForcedColors,
+} from "./colors.mjs";
 import { compare } from "./compare.mjs";
 import {
 	assertOutsideGit,
@@ -55,7 +60,7 @@ Commands:
         [--page index.html|all] [--feature page|all] [--states default|all|switch=value,...]
         [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone]
         [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176]
-        [--cache no-store|none]
+        [--colors normal,forced] [--cache no-store|none]
         [--probes daily]
   compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>]
           [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
@@ -82,6 +87,8 @@ Open numeric/text domains have representative samples in the map; --query accept
 Touch uses hasTouch/coarse pointer and real taps; full means no-preference.
 Keyboard uses Tab and key presses only; full evidence records focus at every key.
 Unreached keyboard targets fail with the element where focus stopped; keyboardActions can supply roving keys.
+Colours default to normal; forced requires ui-forensics >=1.2.0 and renders Chromium forced colours.
+measure --colors normal|forced maps to tool --forced-colors none|active.
 measure calls the installed ui-forensics tool; its own --help describes further arguments.
 --port accepts only 3176-3177. Ports 3174 and 3178-3185 belong to other previews.
 launch --isolated-port selects a separate high port (49152-65535) for isolated tests.
@@ -534,6 +541,17 @@ async function cleanup(path) {
 async function main() {
 	const { command, options } = parse(process.argv.slice(2));
 	if (command === "help" || command === "--help") return console.log(help);
+	if (
+		["drive", "compare"].includes(command) &&
+		colorsAxis(options.colors).includes("forced")
+	)
+		await requireForcedColors(forensicsPath(options));
+	if (command === "measure") {
+		const requested = measurementColors(options);
+		if (requested.forced) await requireForcedColors(forensicsPath(options));
+		options.extra = requested.args;
+		options.colors = requested.colors;
+	}
 	if (command === "_serve") {
 		const server = await preview({
 			concept: options.concept,
@@ -645,6 +663,7 @@ async function main() {
 			input: options.inputs || "see tool arguments",
 			motion: options.motions || "see tool arguments",
 			transport: options.transports || "see tool arguments",
+			colors: options.colors,
 		});
 		return console.log(`MEASURE PASS: ${tool}; evidence ${options.out}`);
 	}

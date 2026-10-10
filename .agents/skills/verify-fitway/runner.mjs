@@ -1,6 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { colorsAxis, requireForcedColors } from "./colors.mjs";
 import {
 	jsonOutput,
 	outputFile,
@@ -127,6 +128,7 @@ export function itemSummary(entry) {
 		input: entry.input,
 		motion: entry.motion,
 		transport: entry.transport,
+		colors: entry.colors,
 		result: entry.status,
 		problems: entry.problems,
 		proof: entry.stateProof,
@@ -159,6 +161,11 @@ export async function drive(options) {
 	const inputs = inputAxis(options.inputs);
 	const motions = axis(options.motions, "reduce,full", ["reduce", "full"]);
 	const transports = axis(options.transports, "http,file", ["http", "file"]);
+	const colors = colorsAxis(options.colors);
+	const renderModes = transports.flatMap((transport) =>
+		colors.map((color) => ({ transport, color })),
+	);
+	if (colors.includes("forced")) await requireForcedColors(tools);
 	const cases = stateCases(selected, options);
 	const port = verificationPort(options.port || 3176);
 	process.env.PROBE_ECLIPSE = concept;
@@ -207,7 +214,7 @@ export async function drive(options) {
 					for (const size of sizes)
 						for (const input of inputs)
 							for (const motion of motions)
-								for (const transport of transports) {
+								for (const { transport, color } of renderModes) {
 									if (cancelled)
 										throw new Error(
 											"Drive interrupted; owned resources cleaned up.",
@@ -229,6 +236,7 @@ export async function drive(options) {
 										input,
 										motion,
 										transport,
+										colors: color,
 										query: {
 											...effective.query,
 											lang: language,
@@ -240,7 +248,7 @@ export async function drive(options) {
 										problems: [],
 										actions: [],
 									};
-									const stem = `${String(manifest.items.length + 1).padStart(3, "0")}-${safe(feature.id)}-${safe(entry.state)}-${language}-${size}-${input}-${motion}-${transport}`;
+									const stem = `${String(manifest.items.length + 1).padStart(3, "0")}-${safe(feature.id)}-${safe(entry.state)}-${language}-${size}-${input}-${motion}-${transport}${color === "forced" ? "-forced" : ""}`;
 									manifest.items.push(entry);
 									const current = await ui.newContext(browser, {
 										viewport: {
@@ -253,6 +261,7 @@ export async function drive(options) {
 										reducedMotion:
 											motion === "reduce" ? "reduce" : "no-preference",
 										colorScheme: "dark",
+										forcedColors: color === "forced" ? "active" : "none",
 										locale: language === "ar" ? "ar-SA" : "en-US",
 										timezoneId: "Asia/Riyadh",
 									});
@@ -286,7 +295,12 @@ export async function drive(options) {
 										if (selected.page === "index.html")
 											await probes.introSettled(current.page);
 										entry.emulation = {
-											...current.emulation,
+											...Object.fromEntries(
+												Object.entries(current.emulation).filter(
+													([key]) =>
+														color === "forced" || key !== "forcedColors",
+												),
+											),
 											...(await current.page.evaluate(() => ({
 												coarse: matchMedia("(pointer:coarse)").matches,
 												touchPoints: navigator.maxTouchPoints,
@@ -304,6 +318,32 @@ export async function drive(options) {
 											throw new Error(
 												"Language/direction/pointer emulation mismatch",
 											);
+										if (color === "forced") {
+											entry.forcedPalette = await current.page.evaluate(() => {
+												const canvas = document.createElement("span");
+												canvas.style.cssText =
+													"background-color:Canvas;position:absolute;visibility:hidden";
+												document.body.append(canvas);
+												const result = {
+													active: window.matchMedia("(forced-colors: active)")
+														.matches,
+													background: getComputedStyle(document.body)
+														.backgroundColor,
+													canvas: getComputedStyle(canvas).backgroundColor,
+												};
+												canvas.remove();
+												return result;
+											});
+											if (
+												!entry.forcedPalette.active ||
+												entry.forcedPalette.background !==
+													entry.forcedPalette.canvas
+											)
+												throw new Error(
+													"Forced colours rendering mismatch: body background must equal Canvas; " +
+														JSON.stringify(entry.forcedPalette),
+												);
+										}
 										const rules = requestedProofs(
 											selected,
 											{ query: effective.query },
@@ -559,7 +599,7 @@ export async function drive(options) {
 										);
 										if (!options.quiet)
 											console.log(
-												`FRAME ${entry.status.toUpperCase()}: ${entry.feature} ${entry.state} ${language} ${size} ${input} ${motion} ${transport}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
+												`FRAME ${entry.status.toUpperCase()}: ${entry.feature} ${entry.state} ${language} ${size} ${input} ${motion} ${transport} ${color}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
 											);
 										await jsonOutput(out, "manifest.json", manifest);
 									}
@@ -569,7 +609,7 @@ export async function drive(options) {
 				.filter((item) => item.language === language && item.files.length)
 				.map((item) => ({
 					img: resolve(out, item.files.at(-1)),
-					caption: `${item.feature} ${item.state} ${item.size} ${item.status}`,
+					caption: `${item.feature} ${item.state} ${item.size}${item.colors === "forced" ? " forced" : ""} ${item.status}`,
 				}));
 			if (!cells.length) continue;
 			const name = `sheet-${language}.png`;

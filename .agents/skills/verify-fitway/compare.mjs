@@ -22,6 +22,7 @@ const identity = (item) =>
 		item.input,
 		item.motion,
 		item.transport,
+		item.colors,
 	]);
 export const diffStem = (item, index = 0) =>
 	`${String(index + 1).padStart(3, "0")}-${[
@@ -32,6 +33,7 @@ export const diffStem = (item, index = 0) =>
 		item.input,
 		item.motion,
 		item.transport,
+		...(item.colors === "forced" ? ["forced"] : []),
 	]
 		.map((value) =>
 			String(value)
@@ -148,6 +150,7 @@ export async function compare(options, { doctor, child }) {
 				input: item.input,
 				motion: item.motion,
 				transport: item.transport,
+				colors: item.colors,
 				result: "problem",
 				problems: [],
 				files: {
@@ -196,6 +199,7 @@ export async function compare(options, { doctor, child }) {
 							inputs: item.input,
 							motions: item.motion,
 							transports: item.transport,
+							colors: item.colors,
 						};
 						const repeatedBuild = await capture(
 							{ ...repeatOptions, port: ports[0] },
@@ -238,7 +242,7 @@ export async function compare(options, { doctor, child }) {
 				entry.problems.push(error.message);
 			}
 			console.log(
-				`COMPARE ${entry.result.toUpperCase()}: ${entry.feature} ${entry.state} ${entry.language} ${entry.size} ${entry.input} ${entry.motion} ${entry.transport}${entry.region ? `; region ${JSON.stringify(entry.region)}; diff ${entry.diffPrefix}` : ""}${entry.repeated ? "; repeated in fresh contexts" : ""}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
+				`COMPARE ${entry.result.toUpperCase()}: ${entry.feature} ${entry.state} ${entry.language} ${entry.size} ${entry.input} ${entry.motion} ${entry.transport} ${entry.colors}${entry.region ? `; region ${JSON.stringify(entry.region)}; diff ${entry.diffPrefix}` : ""}${entry.repeated ? "; repeated in fresh contexts" : ""}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
 			);
 			await jsonOutput(out, "comparison.json", result);
 		}
@@ -252,6 +256,7 @@ export async function compare(options, { doctor, child }) {
 					input: item.input,
 					motion: item.motion,
 					transport: item.transport,
+					colors: item.colors,
 					result: "problem",
 					problems: ["Baseline-only item; no matching build item"],
 				};

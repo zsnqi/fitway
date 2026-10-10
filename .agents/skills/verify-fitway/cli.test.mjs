@@ -16,6 +16,7 @@ import { resolve } from "node:path";
 import { after, before, test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { child, doctorFix, playwright } from "./cli.mjs";
+import { measurementColors } from "./colors.mjs";
 import { diffStem } from "./compare.mjs";
 import {
 	assertOutsideGit,
@@ -725,6 +726,7 @@ test("help in a dependency-free clone succeeds and names installation", async ()
 	await mkdir(folder, { recursive: true });
 	for (const name of [
 		"cli.mjs",
+		"colors.mjs",
 		"core.mjs",
 		"compare.mjs",
 		"runner.mjs",
@@ -742,7 +744,7 @@ test("help in a dependency-free clone succeeds and names installation", async ()
 		[resolve(folder, "cli.mjs"), "help"],
 		{ encoding: "utf8", windowsHide: true },
 	);
-	assert.equal(result.status, 0, result.stderr);
+	assert.equal(result.status, 0, result.stderr + result.stdout);
 	assert.match(result.stdout, /--inputs mouse,touch,keyboard/);
 	assert.match(result.stdout, /pnpm --dir .* install --frozen-lockfile/);
 	assert.doesNotMatch(result.stderr, /Cannot find module/);
@@ -1038,13 +1040,17 @@ test("V3: doctor and drive setup failures print one fault block", () => {
 
 // Exercise the runner's actual evidence/summary path through a deterministic UI
 // adapter. The fast ladder does not need a browser installation for these contracts.
-async function runnerFixture(name, features) {
+async function runnerFixture(name, features, options = {}) {
 	const root = resolve(scratch, name);
 	const build = resolve(root, "concept");
 	const tools = resolve(root, "tools");
 	const out = resolve(root, "out");
 	await mkdir(resolve(build, "tools/probes"), { recursive: true });
 	await mkdir(resolve(tools, "scripts/web"), { recursive: true });
+	await writeFile(
+		resolve(tools, "scripts/web/_common.mjs"),
+		'export const TOOL_VERSION="1.2.0"; export const CONTEXT_SPEC={forcedColors:{type:"string"}};',
+	);
 	await writeFile(
 		resolve(build, "tools/probes/lib.mjs"),
 		"export const introSettled=async()=>{}; export const overflowProbe=()=>({hScroll:false});",
@@ -1061,18 +1067,19 @@ async function runnerFixture(name, features) {
 		resolve(tools, "scripts/web/lib.mjs"),
 		`
 export const launchChromium=async()=>({close:async()=>{}});
-export async function newContext() {
+export async function newContext(browser, options) {
  let focus="body", open=false;
  const page={setDefaultTimeout(){},
-  evaluate:async(fn)=>fn.toString().includes("matchMedia")
+  evaluate:async(fn)=>fn.toString().includes("coarse")
    ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
+   : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
    : fn.toString().includes("document.activeElement") ? {selector:focus,text:focus} : {},
   locator:(selector)=>({first(){return this},count:async()=>1,
    evaluate:async()=>focus===selector,ariaSnapshot:async()=>"body",
    waitFor:async()=>{if(selector==="#dialog"&&!open)throw new Error("dialog stayed closed")}}),
   keyboard:{press:async(key)=>{if(key==="Tab")focus=focus==="body"?"#opener":"body";
    if(key==="Enter"&&focus==="#opener"){open=true;focus="#field"}}}};
- return {page,context:{close:async()=>{}},errors:[],emulation:{}};
+ return {page,context:{close:async()=>{}},errors:[],emulation:{forcedColors:options.forcedColors || "none"}};
 }
 export const withParams=(url)=>url;
 export const preparePage=async()=>({ready:true});
@@ -1117,6 +1124,7 @@ try {await drive(${JSON.stringify({
 			inputs: "keyboard",
 			motions: "reduce",
 			transports: "file",
+			...options,
 		})})}
 catch(error){if(!(core.ReportedFailure && error instanceof core.ReportedFailure))console.error("FAIL: "+error.message);process.exitCode=1}`,
 	);
@@ -1128,6 +1136,131 @@ catch(error){if(!(core.ReportedFailure && error instanceof core.ReportedFailure)
 		}),
 	};
 }
+
+test("R20 V1: colours multiply states and reach the context, manifest and FRAME; default stays normal", async () => {
+	const features = [{ id: "page", proof: { selector: "main", visible: true } }];
+	const { result, out } = await runnerFixture("colours", features, {
+		colors: "normal,forced",
+		states: ",",
+	});
+	assert.equal(result.status, 0, result.stderr + result.stdout);
+	const manifest = JSON.parse(
+		await readFile(resolve(out, "manifest.json"), "utf8"),
+	);
+	assert.deepEqual(
+		manifest.items.map((i) => i.colors),
+		["normal", "forced", "normal", "forced"],
+	);
+	assert.equal(manifest.items[1].emulation.forcedColors, "active");
+	assert.match(result.stdout, /FRAME PASS: .* file normal/);
+	assert.match(result.stdout, /FRAME PASS: .* file forced/);
+	assert.notEqual(manifest.items[0].files[0], manifest.items[1].files[0]);
+	const normal = await runnerFixture("colours-default", features);
+	assert.equal(normal.result.status, 0, normal.result.stderr);
+	const one = JSON.parse(
+		await readFile(resolve(normal.out, "manifest.json"), "utf8"),
+	);
+	assert.equal(one.items[0].colors, "normal");
+	const invalid = await runnerFixture("colours-invalid", features, {
+		colors: "sepia",
+	});
+	assert.equal(invalid.result.status, 1);
+	assert.match(invalid.result.stderr, /Unsupported.*sepia.*normal.*forced/);
+});
+
+test("R20 V2: drive, compare and measure refuse forced requests with ui-forensics 1.1.0 before rendering", async () => {
+	const tools = resolve(scratch, "old-forensics");
+	await mkdir(resolve(tools, "scripts/web"), { recursive: true });
+	await writeFile(
+		resolve(tools, "scripts/web/_common.mjs"),
+		'export const TOOL_VERSION="1.2.0"; export const CONTEXT_SPEC={forcedColors:{type:"string"}};',
+	);
+	await writeFile(
+		resolve(tools, "scripts/web/_common.mjs"),
+		'export const TOOL_VERSION = "1.1.0";',
+	);
+	for (const command of ["drive", "compare", "measure"]) {
+		const axes =
+			command === "measure"
+				? [
+						"--tool",
+						"focus",
+						"--out",
+						resolve(scratch, "refusal"),
+						"--",
+						"--forced-colors",
+						"active",
+					]
+				: ["--colors", "forced"];
+		const result = spawnSync(
+			process.execPath,
+			[
+				fileURLToPath(new URL("./cli.mjs", import.meta.url)),
+				command,
+				"--forensics",
+				tools,
+				"--concept",
+				concept,
+				...axes,
+			],
+			{ encoding: "utf8", windowsHide: true },
+		);
+		assert.equal(result.status, 1, result.stdout);
+		assert.match(result.stderr, /forced.*ui-forensics.*1\.2\.0.*1\.1\.0/i);
+		assert.doesNotMatch(result.stdout, /FRAME|DRIVE PASS|COMPARE|MEASURE PASS/);
+	}
+});
+
+test("R20 V2: measurement matrices and inline options also fail closed, with the tool's whitespace handling", async () => {
+	const tools = resolve(scratch, "matrix-old-forensics");
+	await mkdir(resolve(tools, "scripts/web"), { recursive: true });
+	await writeFile(
+		resolve(tools, "scripts/web/_common.mjs"),
+		'export const TOOL_VERSION="1.1.0";',
+	);
+	const frames = resolve(scratch, "forced-frames.json");
+	await writeFile(
+		frames,
+		JSON.stringify({ matrix: { forcedColors: ["none", "active"] } }),
+	);
+	for (const extra of [
+		["--forced-colors=active"],
+		["--each", "forced-colors =none, active"],
+		["--frames", frames],
+		["--spec", frames],
+	]) {
+		assert.equal(measurementColors({ extra }).forced, true);
+		const result = spawnSync(
+			process.execPath,
+			[
+				fileURLToPath(new URL("./cli.mjs", import.meta.url)),
+				"measure",
+				"--tool",
+				"capture",
+				"--forensics",
+				tools,
+				"--out",
+				resolve(scratch, "matrix-refusal"),
+				"--",
+				...extra,
+			],
+			{ encoding: "utf8", windowsHide: true },
+		);
+		assert.equal(result.status, 1);
+		assert.match(
+			result.stderr,
+			/Forced colours require ui-forensics >=1\.2\.0.*found 1\.1\.0/,
+		);
+	}
+	assert.deepEqual(measurementColors({ colors: "forced", extra: [] }).args, [
+		"--forced-colors",
+		"active",
+	]);
+	assert.throws(
+		() => measurementColors({ extra: ["--forced-colors", "sepia"] }),
+		/none or active/,
+	);
+});
 
 test("V4: drive separates and names keyboard reach findings, and still fails", async () => {
 	const { result, out } = await runnerFixture("keyboard-summary", [
@@ -1170,7 +1303,7 @@ test("V5: successful feature proof survives in both summaries beside state proof
 	const { result, out } = await runnerFixture("feature-proof", [
 		{ id: "open", actions: ["activate:#opener"], proof },
 	]);
-	assert.equal(result.status, 0, result.stderr);
+	assert.equal(result.status, 0, result.stderr + result.stdout);
 	const [summary] = JSON.parse(
 		await readFile(resolve(out, "summary.json"), "utf8"),
 	);
@@ -1254,7 +1387,7 @@ async function launched(name, idle = 1500) {
 		"--out",
 		folder,
 	]);
-	assert.equal(result.status, 0, result.stderr);
+	assert.equal(result.status, 0, result.stderr + result.stdout);
 	const session = JSON.parse(
 		await readFile(resolve(folder, "session.json"), "utf8"),
 	);
