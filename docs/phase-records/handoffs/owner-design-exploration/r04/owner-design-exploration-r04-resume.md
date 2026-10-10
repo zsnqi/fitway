@@ -51,6 +51,12 @@
 
 ## Next steps
 
+Sessions (the user, 2026-10-11): three kinds of work, three sessions.
+- the environment phase's last items (step 0), typed «كمّل البيئة»;
+- access-reason-cap-r01, typed «كمّل مهمة الـ240»; it may run beside the first, in its own worktree;
+- Settings (step 2), typed «كمّل الإعدادات»; it starts only after the environment phase closes, on its fixed tools.
+A plain «كمّل» starts the first that is open, in that order.
+
 0. **Start here: the environment phase's last items** (agent-environment-r03 resume point). These are:
    - F115, the CLI's held press counting a hover as a press;
    - F116, `brief:check` passing a decision pointer the named file does not hold;
