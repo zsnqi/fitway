@@ -51,7 +51,7 @@ that would notice if it stopped doing so.
 - **K3. Prose tokens are claimed as paths (F051).**
   - **Cause.** `scripts/verify-repository.mjs:147-162` treats any token with a `/` or a trailing `.ext` before `: ` as
     a path, so "and/or" and "v1.2" in a scope line would be claimed.
-  - **Outcome.** In a scope line, prose tokens are never claimed: slashed words (`and/or`, `RTL/LTR`, `read/write`)
+  - **Outcome.** In a scope line, prose tokens are never claimed: slashed words (and/or, RTL/LTR, read/write)
     and version strings (`v1.2`, `1.2.3`). Every scope line in `PROJECT_STATE.yaml` and `PROJECT_STATE_HISTORY.yaml`
     claims exactly the same paths as before.
   - **Intent.** Ownership checks see the paths a scope names and nothing else.
