@@ -95,8 +95,22 @@ html:has(> body.ac) {
 .ac-find[aria-expanded="true"]:not(.is-set) { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); color: var(--ink); }
 .ac-find.is-set { color: var(--ink); }
 
-/* The search: the reasons' words, FLD-1's field (a label above, 44 px), with its own clear button inside its end. */
-.ac-find-panel { max-width: 360px; }
+/* The search: the reasons' words, FLD-1's field (a label above, 44 px), with its own clear button inside its end.
+ * It opens exactly as wide as the row of controls that opened it, so the row and the search stand as one block, edge to
+ * edge, and its clear button stands under the magnifier. Its words are 16 px (TYP-3: a phone never zooms a field) under
+ * keys of 13.5, as a dialog's field stands over its keys on a phone: neither size can move (at 320 px «الإعدادات»
+ * needs 61.1 px at 16 of a segment's 52), so the shared edges make the set, not the size (the CSS round's review).
+ * While the search is open the page's column is a grid whose first track is as wide as the row on one line (never
+ * wider than the page); only the row and the search stand in it, and the header and the log span the page. Where the
+ * row wraps (a phone, a narrow window) the track is the page's width, as before. Closed, the page is a column. */
+.ac .main:has(> .ac-find-panel:not([hidden])) {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  gap: 16px 0;
+  align-content: start;
+}
+.ac .main:has(> .ac-find-panel:not([hidden])) > * { grid-column: 1 / -1; }
+.ac .main:has(> .ac-find-panel:not([hidden])) > :is(.ac-tools, .ac-find-panel) { grid-column: 1; }
 .ac-search { position: relative; }
 .ac-search .field-input { padding-inline-end: 44px; }
 .ac-search .field-input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
@@ -259,7 +273,6 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
  * stretches to 172 px (the review's O2). */
 @media (max-width: 720px) {
   .ac-tools, .ac-tools-end { gap: 8px; }
-  .ac-find-panel { max-width: none; }
   .ac-log { padding: 4px; }
   .day:first-child .day-h { padding-block-start: 12px; }
   .ac-older { width: 100%; }

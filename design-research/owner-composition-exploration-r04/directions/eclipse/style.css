@@ -1359,8 +1359,9 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
  *   - an option of a group whose chosen one is lit (segments, weekdays) never takes light, so a held option never reads
  *     as the chosen one: it sinks, its face darker than the strip (--press-sink) inside a faint edge (--press-rim); the
  *     chosen one sinks too, under its ring;
- *   - a chalk key (the primary, a chosen day, the skip link) seats in its bezel: its rim shades toward black
- *     (--press-seat) while its centre keeps its light, so it never reads as off (a chalk dimmed all over is grey);
+ *   - a chalk key (the primary, a chosen day, the skip link) seats in its bezel: the bezel's upper lip shades the top
+ *     of its face, a soft fall from above (--press-seat), while the rest keeps its light, so it never reads as off (a
+ *     chalk dimmed all over is grey) and never as ringed (an even edge all round reads as an outline or a focus ring);
  *   - the current section's red tile loses light toward black across its face (--press-dim): a deeper red, never pink
  *     (LGT-5).
  * Released (DECISIONS item 42), the light fades out in 120 ms (--press-fade), so even the fastest tap leaves a trace;
@@ -1387,7 +1388,7 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
 :root {
   --press-lift: rgba(245, 243, 242, 0.1);
   --press-dim: rgba(7, 7, 7, 0.14);
-  --press-seat: rgba(7, 7, 7, 0.16);
+  --press-seat: rgba(7, 7, 7, 0.2);
   --press-sink: rgba(0, 0, 0, 0.45);
   --press-rim: rgba(245, 243, 242, 0.12);
   --press-scale: 0.97;
@@ -1434,14 +1435,14 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
   transition-duration: 0s;
 }
 /* A key whose shadow is otherwise always none draws the light's layer only while held (released, its shadow fades to
- * none): over its face, or a chalk key's rim, 2 px and a 12 px fall inward. */
+ * none): over its face, or on a chalk key a fall from its top edge, 3 px down and 8 px soft, with no even edge. */
 :is(.rbtn:not(.ac-dates, .ac-find, .rbtn-primary), .btn:not(.btn-primary), button.band-btn, .hbadge, .hbtn, .icon-btn, .switch,
   .sort, .fw-mi, .rec-a, .acc-all, .cx-btn:not(.primary), .cx-icon-btn, .cx-switch, .cx-sort):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still),
 :is(.rail-item, .cx-ri):active :is(.tile, .cx-tile), .tb-item:active .tb-tile {
   box-shadow: inset 0 0 0 100vmax var(--press-light, transparent);
 }
 :is(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
-  box-shadow: inset 0 0 0 2px var(--press-light, transparent), inset 0 0 12px var(--press-light, transparent);
+  box-shadow: inset 0 3px 8px var(--press-light, transparent);
 }
 
 /* Dark keys with an edge: the hover's edge and words, then the light. */
@@ -1494,7 +1495,7 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
 /* A day: its tile lights; a chosen end seats; the end the next pick would make keeps its ring. */
 .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n { --press-light: var(--press-lift); }
 .dp-day.is-end:active:not([aria-disabled="true"], .is-off) .dp-n {
-  box-shadow: inset 0 0 0 2px var(--press-light, transparent), inset 0 0 8px var(--press-light, transparent);
+  box-shadow: inset 0 2px 6px var(--press-light, transparent);
   --press-light: var(--press-seat);
 }
 /* Text links: the underline takes chalk and presses down to 2 px. */
