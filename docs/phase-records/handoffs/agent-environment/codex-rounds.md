@@ -604,3 +604,26 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the brief, for one clause: G3 asked for G1's test to fail on `32ac00be`, which already held the
   parser repair (B7); Codex reported it and proved G1 by reverting the repair. One intervention: the resume after
   F100.
+
+## agent-environment-r03 round 17: `r03/briefs/round-17.md`, result `b9fbc832` (level high)
+
+- **Set-up:** the brief's commit `3d858907` over HEAD `edaf626c`, on branch `agent-environment-r03-verify`, launched
+  beside round 16. Before writing it the coordinator reproduced both faults on `edaf626c`
+  (`D:/fitway-temp/r03-r17-baseline/repro.mjs`): a 3176 session expired and `doctor --session` named `--port 3177`;
+  with plain text served on the session's port, cleanup and doctor printed `Unexpected token 'o' ... is not valid JSON`.
+  Held-out rows Z1-Z4 by a Sonnet grader (`sonnet-researcher`) in a disposable worktree at the result with its own
+  installed dependencies, real foreign servers and the build's Eclipse from `git archive ec314ce2`; the coordinator
+  sampled Z1-Z2's output and reran the new tests on the base code (2 fail, then 2 pass).
+- **Brief rows, as Codex graded them:** 3 of 3 (V1-V3); 47 contract tests; the ladder passed with the ports free and
+  held.
+- **Held-out rows:** 3 of 3 pass; Codex's self-grade matches (Z4). Grade: `D:/fitway-temp/r03-r17-grade/REPORT.md`.
+  - Z1: the FIX names the session's own port when free (3176 and 3177 each), the other port when a foreign process
+    holds it, and `FIX BLOCKED: verification ports 3176 and 3177 are both held` when both are held; every FIX ran as
+    printed and launched; `drive --session` now prints the same FIX; a planted opposite-port FIX is caught.
+  - Z2: plain text, foreign JSON, 404 and a closed socket on the session's port, on both ports: cleanup, doctor and
+    drive exit 1 with `Port <n> is not owned by this session`, no parse error, and the foreign server keeps serving.
+  - Z3: `--port` still refuses 3174, 3175, 3178 and 3185; launch, doctor, drive and cleanup pass on Eclipse and free
+    the port; 47 of 47 with the ports held; the ladder passes; scope and lockfile hold.
+- **Also found:** the foreign-pid refusal no longer prints the pid (it moved into the error's cause, F105); doctorFix
+  ignores an unreadable `session.json` and prefers 3176, which still yields a correct FIX.
+- **Failure cause:** none.
