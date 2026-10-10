@@ -14,6 +14,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
+import { TERMINAL_STATUSES } from "./check-agent-context.mjs";
 import {
 	assertGardenerReport,
 	assertProjectRecordUnion,
@@ -435,7 +436,8 @@ describe("R1: check:repository supersededBy diagnostics before schema errors", (
 	it.each([
 		"ledger",
 		"history",
-	])("names the milestone and field in %s", (location) => {
+		"both",
+	])("K5: names every misplaced supersededBy in %s", (location) => {
 		const repository = fileURLToPath(new URL("../", import.meta.url));
 		const root = mkdtempSync(
 			path.join(tmpdir(), "fitway-repository-diagnostic-"),
@@ -493,12 +495,15 @@ describe("R1: check:repository supersededBy diagnostics before schema errors", (
 					record.stopReason = "Carried forward";
 					delete (record as Record<string, unknown>).supersededBy;
 				}
+				const faultyRecords = {
+					"faulty-milestone": record,
+					"another-faulty-milestone": { ...record },
+				};
 				writeFileSync(
 					path.join(root, "PROJECT_STATE.yaml"),
 					JSON.stringify(
 						activeState({
-							milestones:
-								location === "ledger" ? { "faulty-milestone": record } : {},
+							milestones: location !== "history" ? faultyRecords : {},
 						}),
 					),
 				);
@@ -506,8 +511,7 @@ describe("R1: check:repository supersededBy diagnostics before schema errors", (
 					path.join(root, "PROJECT_STATE_HISTORY.yaml"),
 					JSON.stringify(
 						historyState({
-							milestones:
-								location === "history" ? { "faulty-milestone": record } : {},
+							milestones: location !== "ledger" ? faultyRecords : {},
 						}),
 					),
 				);
@@ -517,7 +521,30 @@ describe("R1: check:repository supersededBy diagnostics before schema errors", (
 					{ cwd: root, encoding: "utf8", windowsHide: true },
 				);
 				expect(result.status).toBe(1);
-				expect(result.stderr).toMatch(/faulty-milestone[^\r\n]*supersededBy/);
+				const labels =
+					location === "both"
+						? ["PROJECT_STATE.yaml", "PROJECT_STATE_HISTORY.yaml"]
+						: [
+								location === "ledger"
+									? "PROJECT_STATE.yaml"
+									: "PROJECT_STATE_HISTORY.yaml",
+							];
+				const expected = labels.flatMap((label) =>
+					Object.keys(faultyRecords).map(
+						(id) =>
+							`${label}: ${id}: ${
+								status === "SUPERSEDED"
+									? "SUPERSEDED requires non-empty supersededBy"
+									: "only SUPERSEDED records may carry supersededBy"
+							}`,
+					),
+				);
+				expect(
+					result.stderr
+						.trim()
+						.replace(/^FAILED_VALIDATION: /, "")
+						.split(/\r?\n/),
+				).toEqual(expected);
 			}
 		} finally {
 			rmSync(root, { recursive: true, force: true });
@@ -695,20 +722,22 @@ describe("R7: open milestone ownership intersections", () => {
 	});
 	it("L2: extracts only whitespace-separated path tokens before colon-space", () => {
 		const { state, history } = records(
-			"future/my file.md",
-			"future/my other.md",
+			"future/my-file.md file.md",
+			"future/my-file.md other.md",
 		);
-		expect(() => assertProjectRecordUnion(state, history)).toThrow("future/my");
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(
+			"future/my-file.md",
+		);
 		expect(
 			scopePatterns([
 				"packages/api/src/access/** and its tests",
-				"future/my file.md",
+				"future/my-file.md file.md",
 				"one pointer (and its companion) under docs/pointers/; no other claim",
 				"scripts/a.mjs and scripts/b.test.ts: ignore docs/other.md",
 			]),
 		).toEqual([
 			"packages/api/src/access/**",
-			"future/my",
+			"future/my-file.md",
 			"file.md",
 			"docs/pointers/**",
 			"scripts/a.mjs",
@@ -721,6 +750,91 @@ describe("R7: open milestone ownership intersections", () => {
 			"second/file.ts",
 		);
 		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+	});
+	it.each([
+		"and/or",
+		"RTL/LTR",
+		"read/write",
+		"layout/material",
+		"either/or",
+		"v1.2",
+		"1.2.3",
+	])("K3: never claims prose token %s", (prose) => {
+		for (const token of [prose, `(${prose}),`, `\`${prose}\``]) {
+			expect(
+				scopePatterns([`${token} scripts/a.mjs: docs/ignored.md`]),
+			).toEqual(["scripts/a.mjs"]);
+			expect(() => scopePatterns([token])).toThrow(/no repository path/);
+		}
+		const { state, history } = records(
+			`${prose} first/file.ts`,
+			`${prose} second/file.ts`,
+		);
+		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+	});
+	it("K3: keeps explicit path syntax, including extensionless paths", () => {
+		expect(
+			scopePatterns([
+				"./future/my docs/LICENSE.md future/my/ docs/v1.2 scripts/*.mjs",
+			]),
+		).toEqual([
+			"future/my",
+			"docs/LICENSE.md",
+			"future/my/**",
+			"docs/v1.2",
+			"scripts/*.mjs",
+		]);
+	});
+	it("K3: ignores closed history scopes containing only prose", () => {
+		const { state, history } = records("first/file.ts", "second/file.ts");
+		(history.milestones as Record<string, unknown>).closed = milestone({
+			ownedPaths: ["and/or layout/material v1.2"],
+			sharedLeases: ["RTL/LTR read/write 1.2.3"],
+		});
+		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+	});
+	it("K3: preserves every open milestone scope claim", () => {
+		for (const file of ["PROJECT_STATE.yaml"]) {
+			const records = parseYaml(
+				readFileSync(new URL(`../${file}`, import.meta.url), "utf8"),
+			);
+			for (const [id, record] of Object.entries(records.milestones) as [
+				string,
+				{ status: string; ownedPaths?: string[]; sharedLeases?: string[] },
+			][]) {
+				if (TERMINAL_STATUSES.has(record.status)) continue;
+				// These are the fields consumed by the ownership checker.
+				for (const field of ["ownedPaths", "sharedLeases"] as const) {
+					for (const entry of record[field] ?? []) {
+						// Freeze the pre-K3 grammar here as a compatibility oracle.
+						const before = entry
+							.split(": ")[0]
+							.split(/\s+/)
+							.map((token) =>
+								token
+									.replace(/^[('"`]+|[.,;:)'"`]+$/g, "")
+									.replaceAll("\\", "/"),
+							)
+							.filter((token) => token.includes("/") || /\.[\w-]+$/.test(token))
+							.map((token) =>
+								path.posix.normalize(
+									token.endsWith("/") ? `${token}**` : token,
+								),
+							);
+						if (before.length)
+							expect(
+								scopePatterns([entry]),
+								`${file} ${id} ${field}: ${entry}`,
+							).toEqual(before);
+						else
+							expect(
+								() => scopePatterns([entry]),
+								`${file} ${id} ${field}: ${entry}`,
+							).toThrow(/no repository path/);
+					}
+				}
+			}
+		}
 	});
 	it.each([
 		["future/my-file.md", "future/*.md", "future/my-file.md"],
@@ -918,6 +1032,36 @@ describe("M1/M5: terminal record union without receipts", () => {
 				(history.milestones as Record<string, unknown>).successor = milestone();
 			expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
 		}
+	});
+	it.each([
+		false,
+		true,
+	])("K5: reports every supersededBy invariant fault (invalid targets: %s)", (invalidTargets) => {
+		const { state, history } = records();
+		const faulty = milestone(
+			invalidTargets
+				? {
+						status: "SUPERSEDED",
+						stopReason: "Carried forward",
+						supersededBy: "missing",
+					}
+				: { supersededBy: "baseline-reconciliation-gate" },
+		);
+		(state.milestones as Record<string, unknown>).first = faulty;
+		(history.milestones as Record<string, unknown>).second = { ...faulty };
+		let message = "";
+		try {
+			assertProjectRecordUnion(state, history);
+		} catch (error) {
+			message = (error as Error).message;
+		}
+		const fault = invalidTargets
+			? "supersededBy must name a different existing milestone"
+			: "only SUPERSEDED records may carry supersededBy";
+		expect(message.split("\n")).toEqual([
+			`second: ${fault}`,
+			`first: ${fault}`,
+		]);
 	});
 	it("rejects self, missing, absent successors and stale supersededBy", () => {
 		for (const successor of ["closed", "missing", undefined]) {

@@ -129,18 +129,30 @@ export function assertProjectRecordUnion(state, history) {
 	return milestones;
 }
 
-function assertSupersededByFields(records, label) {
-	for (const [id, record] of Object.entries(records?.milestones ?? {})) {
+function supersededByErrors(milestones, label = "", checkTargets = false) {
+	const errors = [];
+	for (const [id, record] of Object.entries(milestones ?? {})) {
+		const prefix = label ? `${label}: ${id}` : id;
 		if (record?.status === "SUPERSEDED") {
 			if (
 				typeof record.supersededBy !== "string" ||
-				!record.supersededBy.trim()
+				!record.supersededBy.trim() ||
+				(checkTargets &&
+					(record.supersededBy === id ||
+						!Object.hasOwn(milestones, record.supersededBy)))
 			)
-				fail(`${label}: ${id}: SUPERSEDED requires non-empty supersededBy`);
+				errors.push(
+					`${prefix}: ${
+						checkTargets
+							? "supersededBy must name a different existing milestone"
+							: "SUPERSEDED requires non-empty supersededBy"
+					}`,
+				);
 		} else if (record && Object.hasOwn(record, "supersededBy")) {
-			fail(`${label}: ${id}: only SUPERSEDED records may carry supersededBy`);
+			errors.push(`${prefix}: only SUPERSEDED records may carry supersededBy`);
 		}
 	}
+	return errors;
 }
 
 // Before ': ', only tokens containing a path or filename claim ownership.
@@ -153,7 +165,16 @@ export function scopePatterns(entries, label = "scope") {
 			.map((token) =>
 				token.replace(/^[('"`]+|[.,;:)'"`]+$/g, "").replaceAll("\\", "/"),
 			)
-			.filter((token) => token.includes("/") || /\.[\w-]+$/.test(token))
+			.filter(
+				(token) =>
+					// Slashed words and bare versions are prose. Extensionless paths
+					// can use explicit syntax such as ./future/my or future/my/.
+					!(
+						/^[\p{L}]+(?:\/[\p{L}]+)+$/u.test(token) ||
+						/^v?\d+(?:\.\d+)+(?:[-+][\w.-]+)?$/i.test(token)
+					) &&
+					(token.includes("/") || /\.[\w-]+$/.test(token)),
+			)
 			.map((token) =>
 				path.posix.normalize(token.endsWith("/") ? `${token}**` : token),
 			);
@@ -382,6 +403,8 @@ function assertDisjointOwnedPaths(milestones) {
 }
 
 export function assertProjectStateInvariants(state, milestones) {
+	const supersessionErrors = supersededByErrors(milestones, "", true);
+	if (supersessionErrors.length) fail(supersessionErrors.join("\n"));
 	const baselineMilestone = milestones["baseline-reconciliation-gate"];
 	if (!baselineMilestone) {
 		fail(
@@ -433,16 +456,6 @@ export function assertProjectStateInvariants(state, milestones) {
 	const assignedBranches = new Map();
 	const assignedWorktrees = new Map();
 	for (const [id, milestone] of Object.entries(milestones)) {
-		if (milestone.status === "SUPERSEDED") {
-			if (
-				typeof milestone.supersededBy !== "string" ||
-				milestone.supersededBy === id ||
-				!Object.hasOwn(milestones, milestone.supersededBy)
-			)
-				fail(`${id}: supersededBy must name a different existing milestone`);
-		} else if (Object.hasOwn(milestone, "supersededBy")) {
-			fail(`${id}: only SUPERSEDED records may carry supersededBy`);
-		}
 		if (stoppedStatuses.has(milestone.status)) {
 			if (!milestone.stopReason?.trim()) {
 				fail(`${id} is ${milestone.status} without an explicit stop reason`);
@@ -589,8 +602,11 @@ async function main() {
 	ajv.addSchema(stateSchema);
 	const validateState = ajv.compile(stateSchema);
 	const validateHistory = ajv.compile(historySchema);
-	assertSupersededByFields(state, "PROJECT_STATE.yaml");
-	assertSupersededByFields(history, "PROJECT_STATE_HISTORY.yaml");
+	const supersessionErrors = [
+		...supersededByErrors(state?.milestones, "PROJECT_STATE.yaml"),
+		...supersededByErrors(history?.milestones, "PROJECT_STATE_HISTORY.yaml"),
+	];
+	if (supersessionErrors.length) fail(supersessionErrors.join("\n"));
 	if (!validateState(state)) {
 		fail(
 			`PROJECT_STATE.yaml schema validation failed:\n${JSON.stringify(validateState.errors, null, 2)}`,

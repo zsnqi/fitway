@@ -901,6 +901,7 @@ async function validatePackets({
 		return;
 	}
 	const packets = new Map();
+	const badTaskClassPaths = new Set();
 	const packetSchema = JSON.parse(
 		await readText(root, "docs/schemas/task-packet.schema.json"),
 	);
@@ -942,6 +943,7 @@ async function validatePackets({
 			Object.hasOwn(packet, "taskClass") &&
 			!TASK_CLASSES.includes(packet.taskClass)
 		) {
+			badTaskClassPaths.add(packetPath);
 			errors.push(
 				`${packetPath}: taskClass ${JSON.stringify(packet.taskClass)} has no route`,
 			);
@@ -977,7 +979,7 @@ async function validatePackets({
 			errors.push(
 				`${milestoneId}: active taskPacket pointer must be the stable path ${expectedPacketPath}`,
 			);
-		if (!packets.has(milestoneId)) {
+		if (!packets.has(milestoneId) && !badTaskClassPaths.has(packetPath)) {
 			if (milestone.taskPacket !== undefined)
 				errors.push(
 					`${milestoneId}: active packet metadata points to no packet: ${packetPath}`,

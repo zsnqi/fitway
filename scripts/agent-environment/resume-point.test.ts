@@ -58,6 +58,7 @@ const valid = block
 	);
 const placeholders = [
 	...new Set([...block.matchAll(/<(?!!)[^>\r\n]+>/g)].map((match) => match[0])),
+	"<repo path>",
 	...block
 		.split(/^## [^\r\n]+\r?$/m)
 		.slice(1, 6)
@@ -177,10 +178,31 @@ describe("O5: marked active resume point validation", () => {
 			),
 		).rejects.toThrow(/Standing decisions.*existing DECISIONS\.md file/);
 	});
-	it("S2: accepts filename patterns in angle brackets that are not template placeholders", async () => {
+	it.each([
+		"<branch>-resume.md",
+		"briefs/<round>.md",
+		"D:/fitway-temp/<run>/",
+		"docs/<run>/file.md",
+		...placeholders
+			.filter((placeholder) => placeholder.startsWith("<"))
+			.flatMap((placeholder) => [
+				`${placeholder}-resume.md`,
+				`briefs/${placeholder}.md`,
+				`D:/fitway-temp/${placeholder}/`,
+			]),
+	])("K2: accepts the filename or path pattern %s", async (pattern) => {
 		await expect(
-			validate(fixture(), `${valid}\nPattern: \`docs/<run>/file.md\`\n`),
+			validate(fixture(), `${valid}\nName files \`${pattern}\`\n`),
 		).resolves.toBe(true);
+	});
+	it.each([
+		"<branch>",
+		"`<branch>`",
+		"(<branch>)",
+	])("K2: rejects a bare filler surrounded by prose punctuation: %s", async (filler) => {
+		await expect(
+			validate(fixture(), `${valid}\nBranch: ${filler}\n`),
+		).rejects.toThrow(/template placeholder/);
 	});
 	it("accepts the real template sections and existing file paths in LF and CRLF", async () => {
 		const root = fixture();
