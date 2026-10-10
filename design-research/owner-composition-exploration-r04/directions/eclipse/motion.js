@@ -765,6 +765,12 @@
   // Leaving the tab ends every movement at once.
   document.addEventListener("visibilitychange", () => { if (document.hidden) settleAll(); });
 
+  /* ---- the press (style.css "the press", MOT-20). The press itself is CSS :active, at pointer down or touch start with
+   * no delay, and Space on a focused button gives it natively. Safari on iPhone applies :active to a touch only when the
+   * page listens for touch, so every page listens here, once, passively: it never delays or cancels a scroll, a tap or a
+   * click, and does nothing else. */
+  document.addEventListener("touchstart", () => {}, { passive: true });
+
   window.EclipseMotion = {
     on,
     setGate(fn) { pageGate = typeof fn === "function" ? fn : () => true; },

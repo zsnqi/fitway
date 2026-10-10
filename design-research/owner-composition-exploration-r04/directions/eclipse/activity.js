@@ -748,16 +748,23 @@
     if (A.m === B.m) return nw(`${range2(A.d, B.d)} ${monthOf(A.m)}${yr ? ` ${bdi(A.y)}` : ""}`);
     return nw(`${dateBare(a)} ${DASH} ${dateBare(b)}${yr ? ` ${bdi(B.y)}` : ""}`);
   }
-  // Who is as wide as its own choice (with the select's padding: 81 px, or 56 under 360 px where its icon steps aside),
+  // Who is as wide as its own choice (with the face's padding: 81 px, or 56 under 360 px where its icon steps aside),
   // not as its widest name, as a native select is; on a phone that is its least width, so beside a long range the
-  // dates take the next line instead.
+  // dates take the next line instead. The select holds 16 px text unseen, so an iPhone does not zoom when it is tapped;
+  // the face shows its choice in label type (activity.css "Who"), written here whenever the choice or its name changes.
   const personWrap = $("#person-wrap");
+  const personFace = document.createElement("span");
+  personFace.className = "sel-face";
+  personFace.setAttribute("aria-hidden", "true");
+  personSel.after(personFace);
   function fitSelect() {
+    const text = personSel.options[personSel.selectedIndex].text;
+    if (personFace.textContent !== text) personFace.textContent = text;
     const m = document.createElement("span");
     m.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-size:13.5px;line-height:20px";
-    m.textContent = personSel.options[personSel.selectedIndex].text;
+    m.textContent = text;
     personWrap.append(m);
-    const cs = getComputedStyle(personSel), pad = parseFloat(cs.paddingInlineStart) + parseFloat(cs.paddingInlineEnd);
+    const cs = getComputedStyle(personFace), pad = parseFloat(cs.paddingInlineStart) + parseFloat(cs.paddingInlineEnd);
     personWrap.style.setProperty("--sel-w", `${Math.ceil(m.getBoundingClientRect().width + pad) + 1}px`);
     m.remove();
   }

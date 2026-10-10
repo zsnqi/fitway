@@ -70,14 +70,21 @@ html:has(> body.ac) {
 
 /* Who: a native select (the phone's own picker) behind a button of the system (BTN-1: 44 tall, radius 12, a 1 px line
  * drawn inside), a person at its start and a chevron at its end, as Reports' sort on a phone; as wide as its choice
- * (activity.js fitSelect), not as its widest name. */
+ * (activity.js fitSelect), not as its widest name.
+ * TYP-6, OWN-A2 (the press round): an iPhone zooms the page when a field under 16 px is tapped, so the select holds its
+ * text at 16 px and lies unseen over the whole control (it stays the control: the touch, the picker, the keys and
+ * assistive technology are its own), and the choice is shown by a face in label type, 13.5 px, as before. The face is
+ * written by activity.js (fitSelect) and hidden from assistive technology. A choice too wide for the line ends in an
+ * ellipsis; the list itself is the system's. */
 .ac-sel { position: relative; display: inline-flex; align-items: center; height: 44px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
 @media (hover: hover) { .ac-sel:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .ac-sel:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .ac-sel-ico { position: absolute; inset-inline-start: 16px; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .ac-sel::after { content: ""; position: absolute; top: 17px; inset-inline-end: 18px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.ac-sel select { width: var(--sel-w, auto); height: 44px; padding-inline: 41px 40px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: .ac-sel:has(select:focus-visible) */ cursor: pointer; }
+.ac-sel select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: .ac-sel:has(select:focus-visible) */ opacity: 0; cursor: pointer; }
 .ac-sel select option { background: #121112; color: var(--ink); }
+.ac-sel { max-width: 100%; }
+.ac-sel .sel-face { width: var(--sel-w, auto); padding-inline: 41px 40px; }
 .ac-sel.is-set, .ac-dates.is-set, .ac-find.is-set { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); background: rgba(245, 243, 242, 0.12); }
 .ac-dates.is-set, .ac-find.is-set { border-color: transparent; }
 @media (hover: hover) { .ac-sel.is-set:hover, .ac-dates.is-set:hover, .ac-find.is-set:hover { background: rgba(245, 243, 242, 0.16); } }
@@ -265,10 +272,10 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
    * width is its widest name, so it starts from nothing and grows). A long range takes the dates and the magnifier to
    * the next line together, and who takes the whole line above them. */
   .ac-sel, .ac-tools-end { flex: 1 1 0; }
-  .ac-sel { min-width: var(--sel-w, 0px); }
+  .ac-sel { min-width: min(var(--sel-w, 0px), 100%); }
   .ac-tools-end { min-width: max-content; }
   .ac-dates { flex: 1 1 auto; }
-  .ac-sel select { width: 100%; min-width: 0; }
+  .ac-sel .sel-face { width: 100%; }
 }
 /* The title row (TYP-3, HDR-4): the phone's title is 19 px on every page (style.css), so «سجل النشاط» (111.2 px) keeps
  * one line beside the widest status at every width from 320 px (the review's F1). Under 360 px the badge sets its
@@ -278,5 +285,5 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
   .ac[data-frame] .head-acts .hb-chev { display: none; }
   .ac[data-frame] .head-acts .hbadge { padding-inline: 8px; }
   .ac-sel-ico, .ac-dates > svg { display: none; }
-  .ac-sel select { padding-inline-start: 16px; }
+  .ac-sel .sel-face { padding-inline-start: 16px; }
 }

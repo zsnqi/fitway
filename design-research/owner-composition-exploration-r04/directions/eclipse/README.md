@@ -235,9 +235,11 @@ and only while live.
 | The export's done state | the file is ready | the ring draws from its top in the reading direction, then the check; «الملف جاهز» rises into its line; the file line glides from where it stood | ring 380 ms from 140 ms, check 260 ms from 400 ms, words 300 ms from 280 ms | `cubic-bezier(0.65, 0, 0.35, 1)` (the strokes), `cubic-bezier(0.25, 1, 0.5, 1)` (the words) |
 | A done line on the page (Access) | a change succeeded and its dialog left | its words rise into their line, then its check draws; the cards and rows below slide to their new places | from 150 ms: words 300 ms, check 260 ms from 230 ms; blocks 300-420 ms | as above; blocks `cubic-bezier(0.3, 0.75, 0.2, 1)` |
 | A new access record (Access's records card) | with the done line, in the same movement | transform and clip: the records below slide down, the new row is uncovered as the space opens and its words rise as one piece; the oldest rides down and is cut inside the card's bottom edge; a height change moves that edge | rows with the blocks (300-420 ms); words 300 ms from 150 ms | rows `cubic-bezier(0.3, 0.75, 0.2, 1)`; words `cubic-bezier(0.25, 1, 0.5, 1)` |
+| The press (13) | a control is held: pointer down, touch start, Space on a focused button | `scale`: the key seats 3% (a small square 6%) at once, with its light; released, it settles back | none down; 240 ms back | `cubic-bezier(0.3, 0.75, 0.2, 1)` (back) |
 
 The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
-hover colours of the rail tiles and buttons, Daily's details chevron, and the jump to "View details" are all instant.
+hover colours of the rail tiles and buttons, a press's light (13), Daily's details chevron, and the jump to "View
+details" are all instant.
 
 **1. Load: the first-open intro only.**
 
@@ -624,6 +626,45 @@ stroke, as the intro draws the line). Timings are in the table above.
   changes under the leaving window; its new record arrives with the done line. The two export alternatives, the held
   row change and their trial switches are retired. Old comparison links and stored choices are silently ignored.
   `motion-capture.mjs --only=9,10` records the retained moments, and `--only=11` the records card's arrival and range.
+
+**13. The press (DECISIONS item 41; MOT-20, STA-16).** Every control that does something when pressed shows, under the
+finger or the mouse, that the press landed, so the owner never presses twice. One form for the whole instrument, in one
+place every page loads (`style.css`, "the press"), so Settings and the screens still to come take it by using the same
+controls: **the key seats.**
+
+- **When:** at pointer down or touch start, at once, so the fastest tap still shows it. It is CSS `:active`; Space on a
+  focused button gives it natively, and no script is added for keys. Safari on iPhone applies `:active` to a touch only
+  when the page listens for touch, so `motion.js` adds one passive `touchstart` listener on every page (it delays,
+  cancels and changes nothing). Chromium keeps `:active` a moment after a quick tap, and the key's settling back leaves a
+  trace after it.
+- **What:** the key shrinks a step into the glass (`scale`: 3% for a key; 6% for a small square, an icon button, a tile
+  or a day, so each travels about 1.3 px a side) and its face takes one step of light:
+  - a dark key takes its hover's edge and words, and a chalk light over its face (`--press-lift`, 10%), over whatever
+    it already holds (hover, chosen, open, a filter in force), so it is always one step past its hover; a chosen
+    segment or weekday and a filter in force keep their chalk ring;
+  - a lit key loses light toward black (`--press-dim`, 14%): the primary's chalk, a chosen day, the current section's red
+    tile (deeper red, never pink, LGT-5), as a lit key does under a finger;
+  - the destructive commit lights in its own tone, with its hover's edge;
+  - rows (Access's records), menu items, sort headings and text links are not keys: they light (a text link's underline
+    takes chalk at 2 px) and do not move.
+- **Released:** the light goes at once, as a hover colour does (MOT-1, MOT-18); the travel settles back in 240 ms on the
+  dialogs' settle curve. Only `scale` is transitioned and only the press sets it, so a hover, a selection or a state
+  never animates through it. A second press during the settle starts at full depth at once.
+- **Nothing else moves:** transforms and paint only, so no neighbour shifts; no glyph changes opacity; the lights never
+  react to a press.
+- **Not pressed:** a disabled or Working control (where it says why it is off, that explanation is the response); the
+  charts' plots, whose readout appears under the finger; the light tuner. The browser's own tap flash is removed only on
+  the controls the press replaces it on.
+- **Reduced motion, `?motion=off`, Daily's Motion switch:** the light alone, nothing moves (MOT-11).
+- **Forced colours:** shadows are removed there, so a held key turns over into the system's button colours (ButtonText
+  ground, ButtonFace words), unlike a chosen one (Highlight) and a focused one (its ring); the rings, edges and chosen
+  states at rest are FOC-8's.
+- **The two lists** (Activity log's who, Reports' sort on a phone) press as keys. Their native select now holds its text
+  at 16 px, so an iPhone never zooms the page when one is tapped; it lies unseen over the whole control and stays the
+  control (the touch, the system's picker, the keys, assistive technology), and a face in label type shows the choice
+  as before (TYP-6, OWN-A2, OWN-R12).
+- **For production:** Tailwind's `active:` variant with `scale-[.97]` and a `transition-[scale]` on the key, an inset
+  shadow (or a pseudo-element) for the light, and `motion-reduce:active:scale-100`; Base UI's buttons need no script.
 
 ## Open and capture
 

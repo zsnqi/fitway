@@ -1349,6 +1349,132 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
   100% { opacity: 0; transform: scale(1); }
 }
 
+/* ---------------------------------------------------------------- the press
+ * MOT-20, STA-16 (DECISIONS item 41): every control that does something when pressed shows, under the finger or the
+ * mouse, that the press landed, so the owner never presses twice. One form for the whole instrument, kept here so every
+ * page (and the screens still to come) takes it: the key seats. At pointer down or touch start, with no delay, it
+ * shrinks a step into the glass and its face takes one step of light: a dark key takes its hover's edge and words and
+ * a chalk light over its face (--press-lift, over whatever it already holds: hover, selected, open); a lit key (chalk,
+ * the current section's red, a chosen day) loses light toward black, as a key does under a finger. Released, it settles
+ * back in 240 ms on the page's settle curve (a dialog's, MOT-9), so even a quick tap leaves a trace, while its light goes
+ * at once, as a hover colour does (MOT-1).
+ *   Travel: a key 3% (--press-scale); a small square (an icon button, a tile, a day) 6% (--press-scale-sm), about
+ *   1.3 px a side either way. Rows, menu items, sort headings and text links light only: they are not keys.
+ *   Reduced motion, ?motion=off and Daily's Motion switch: the light alone, nothing moves (MOT-11).
+ *   Nothing else moves: transforms and paint only, so no neighbour shifts; no glyph changes opacity; the lights never
+ *   react to a press.
+ *   Not pressed: a disabled or Working control (where it says why it is off, that is the response); the charts' plots
+ *   and the light tuner. Space presses a focused button natively; there is no script for keys. Safari on iPhone applies
+ *   :active to a touch only when the page listens for touch: motion.js adds one passive touchstart listener.
+ *   The browser's tap flash is removed only on the controls listed here, which this press replaces. */
+:root {
+  --press-lift: rgba(245, 243, 242, 0.1);
+  --press-dim: rgba(7, 7, 7, 0.14);
+  --press-scale: 0.97;
+  --press-scale-sm: 0.94;
+  --press-back: 240ms cubic-bezier(0.3, 0.75, 0.2, 1);
+}
+:is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel select, .dl-sort select,
+  .rail-item, .tb-item, .fw-mi, .rec-a, .acc-all, .done-a, .dp-day, .skip,
+  .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-ri, .cx-index a, .cx-skip) {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+/* The travel back. Only scale is transitioned, and only the press sets it, so hover and state colours stay instant. */
+:is(.rbtn, .btn, .band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .ac-sel, .dl-sort, .acc-all, .skip,
+  .tile, .tb-tile, .dp-n, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-tile, .cx-skip) { transition: scale var(--press-back); }
+
+/* Keys: a 3% travel; small squares 6%. */
+:is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .ac-sel, .dl-sort, .acc-all, .skip,
+  .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off) {
+  scale: var(--press-scale);
+  transition-duration: 0s;
+}
+:is(.icon-btn, .hbtn, .cx-icon-btn, button.band-btn, .ac-find):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off),
+:is(.rail-item, .cx-ri):active .tile, .cx-ri:active .cx-tile, .tb-item:active .tb-tile,
+.dp-day:active:not([aria-disabled="true"], .is-off) .dp-n {
+  scale: var(--press-scale-sm);
+  transition-duration: 0s;
+}
+
+/* Dark keys with an edge: the hover's edge, then the light. */
+:is(.rbtn:not(.rbtn-primary, .rbtn-danger, .dlg-text-btn, .is-set), .btn:not(.btn-primary), button.band-btn, .switch,
+  .cx-btn:not(.primary), .cx-switch):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
+  border-color: var(--line-3);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 100vmax var(--press-lift);
+}
+.hbadge:active:not(.is-delayed, .is-err) { border-color: var(--line-3); }
+.hbadge:active { box-shadow: inset 0 0 0 100vmax var(--press-lift); }
+@media (min-width: 721px) { [data-frame] .head-acts .hbadge:active { border-color: transparent; } }
+/* Boxless keys: the hover's words, and the light shows the key's shape. */
+:is(.icon-btn, .hbtn, .dlg-text-btn, .acc-all, .seg-b, .wk-b, .cx-icon-btn, .cx-seg-b, .sort, .cx-sort, .rec-a):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still) {
+  color: var(--ink);
+  box-shadow: inset 0 0 0 100vmax var(--press-lift);
+}
+.fw-mi:active { box-shadow: inset 0 0 0 100vmax var(--press-lift); }
+/* A chosen segment or weekday keeps its chalk ring under the light. */
+:is(.seg-b[aria-pressed="true"], .cx-seg-b[aria-pressed="true"], .wk-b[aria-checked="true"]):active:not(:disabled) {
+  box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-lift);
+}
+/* The two lists and the filters in force (their edge is drawn inside). */
+:is(.ac-sel, .dl-sort):active:not(.is-disabled) { box-shadow: inset 0 0 0 1px var(--line-3), inset 0 0 0 100vmax var(--press-lift); }
+:is(.ac-sel, .ac-dates, .ac-find).is-set:active:not(.is-disabled) { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-lift); }
+/* The destructive commit: its own tone, a step further. */
+.rbtn-danger:active:not(:disabled, [aria-disabled="true"]) { border-color: rgba(255, 107, 125, 0.75); box-shadow: inset 0 0 0 100vmax rgba(255, 107, 125, 0.1); }
+/* Lit keys: chalk and the current section's red lose light toward black (never toward pink or white, LGT-5). */
+:is(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
+  box-shadow: inset 0 0 0 100vmax var(--press-dim);
+}
+/* Tiles: the rail's, the bar's and the sheet's; the current one dims. */
+:is(.rail-item, .cx-ri):active :is(.tile, .cx-tile) { border-color: var(--line-3); color: var(--ink); box-shadow: inset 0 0 0 100vmax var(--press-lift); }
+:is(.rail-item.is-active, .cx-ri[aria-current="page"]):active :is(.tile, .cx-tile) { border-color: var(--red); color: #fff; box-shadow: inset 0 0 0 100vmax var(--press-dim); }
+.tb-item:active { color: var(--ink); }
+.tb-item:active .tb-tile { box-shadow: inset 0 0 0 100vmax var(--press-lift); }
+.tb-item[aria-current="page"]:active .tb-tile { box-shadow: inset 0 0 0 100vmax var(--press-dim); }
+/* A day: its tile lights; a chosen end dims; the end the next pick would make keeps its ring. */
+.dp-day:active:not([aria-disabled="true"], .is-off) .dp-n { box-shadow: inset 0 0 0 100vmax var(--press-lift); }
+.dp-day.is-ghost:active:not([aria-disabled="true"], .is-off) .dp-n { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-lift); }
+.dp-day.is-end:active:not([aria-disabled="true"], .is-off) .dp-n { box-shadow: inset 0 0 0 100vmax var(--press-dim); }
+/* Text links: the underline takes chalk and presses down to 2 px. */
+:is(.done-a, .cx-index a):active { color: var(--ink); text-decoration-color: var(--ink); text-decoration-thickness: 2px; }
+
+/* Reduced motion, ?motion=off and Daily's Motion switch: the light alone. */
+html[data-motion="off"] :active, html[data-motion="off"] :active :is(.tile, .tb-tile, .cx-tile, .dp-n) { scale: none !important; }
+@media (prefers-reduced-motion: reduce) { :active, :active :is(.tile, .tb-tile, .cx-tile, .dp-n) { scale: none !important; } }
+
+/* High contrast: the light is a shadow, which forced colours remove, so a pressed key turns over into the system's
+ * button colours (its text on its own ground), unlike a selected one (Highlight) or a focused one (the ring). As the
+ * selected states do (FOC-8), the key opts out of adjustment, so no text backplate covers its words, and its own words,
+ * glyphs and a switch's track take its colours. */
+@media (forced-colors: active) {
+  :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
+    .skip, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still),
+  :is(.rail-item, .cx-ri):active :is(.tile, .cx-tile), .tb-item:active .tb-tile, .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n {
+    forced-color-adjust: none;
+    box-shadow: none !important;
+    background: ButtonText !important;
+    color: ButtonFace !important;
+    border-color: ButtonText !important;
+  }
+  :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
+    .skip, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still) *,
+  :is(.rail-item, .cx-ri):active :is(.tile, .cx-tile) *, .tb-item:active .tb-tile *, .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n * {
+    color: inherit !important;
+  }
+  :is(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a, .acc-all,
+    .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort):active svg, :is(.rail-item, .cx-ri, .tb-item):active svg { stroke: currentColor !important; }
+  :is(.switch, .cx-switch):active:not(:disabled) :is(.switch-track, .cx-track) { background: transparent !important; border-color: ButtonFace !important; }
+  :is(.switch, .cx-switch):active:not(:disabled) :is(.switch-thumb, .cx-thumb) { background: ButtonFace !important; }
+  :is(.switch, .cx-switch)[aria-checked="true"]:active:not(:disabled) :is(.switch-track, .cx-track) { background: ButtonFace !important; }
+  :is(.switch, .cx-switch)[aria-checked="true"]:active:not(:disabled) :is(.switch-thumb, .cx-thumb) { background: ButtonText !important; }
+  /* An inset ring (FOC-2) held down with Space stays seen on the turned-over ground. */
+  :is(.seg-b, .wk-b, .cx-seg-b, .sort, .cx-sort, .fw-mi):focus-visible:active { outline-color: ButtonFace !important; }
+}
+@media (forced-colors: active) and (min-width: 721px) {
+  [data-frame] .head-acts .hbadge:focus-visible:active { outline-color: ButtonFace !important; }
+}
+
 html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

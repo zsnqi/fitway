@@ -1373,7 +1373,10 @@
     const n = items.length, cut = !listOpen && n > LIST_N;
     const val = `${sort.key}-${sort.dir}`;
     const opts = Object.entries(L.sorts).map(([k, v]) => `<option value="${k}"${k === val ? " selected" : ""}>${v}</option>`).join("");
-    dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort">${opts}</select></label></div>
+    // The select holds 16 px text unseen (no zoom on an iPhone); its face shows the choice in label type, as wide as the
+    // widest choice (reports.css "The sort").
+    const face = Object.entries(L.sorts).map(([k, v]) => `<span${k === val ? ' class="is-on"' : ""}>${v}</span>`).join("");
+    dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort">${opts}</select><span class="sel-face" aria-hidden="true">${face}</span></label></div>
       <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(periodWords(model.a, model.b)))}">${(cut ? items.slice(0, LIST_N) : items).join("")}</ol>` +
       (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" aria-expanded="${!cut}" aria-controls="day-list">${cut ? L.showAll : L.showFewer}</button>` : "");
   }
@@ -1528,7 +1531,7 @@
     if (mqPhone.matches) {
       const n = days.length;
       const items = days.slice(0, LIST_N).map((d) => `<li class="dli"><span class="dl-day">${dayText(d.dn)}</span><span class="dl-pk"><span class="dl-pv">${ph(24, "ph-pv")}</span></span><span class="dl-more">${ph(56)}${ph(72)}</span><span class="dl-pt">${ph(64)}</span></li>`).join("");
-      dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort is-disabled"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort" disabled><option>${L.sorts["day-desc"]}</option></select></label></div>
+      dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort is-disabled"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort" disabled><option>${L.sorts["day-desc"]}</option></select><span class="sel-face" aria-hidden="true"><span class="is-on">${L.sorts["day-desc"]}</span></span></label></div>
         <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(periodWords(model.a, model.b)))}">${items}</ol>` +
         (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" disabled>${L.showAll}</button>` : "");
       return;

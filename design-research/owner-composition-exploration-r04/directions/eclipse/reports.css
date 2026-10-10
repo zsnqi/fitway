@@ -611,13 +611,22 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
  * The user's pick of 2026-10-01 (option B), 720 px and below: a day per item on two lines, the newest 7 and then all,
  * sorted with the phone's own picker. */
 .dl-sortrow { display: flex; margin-block-end: 8px; }
-/* The sort: a native select behind a button of the system (BTN-1: 44 tall, radius 12, a 1 px line drawn inside). */
-.dl-sort { position: relative; display: inline-flex; align-items: center; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
+/* The sort: a native select behind a button of the system (BTN-1: 44 tall, radius 12, a 1 px line drawn inside).
+ * TYP-6, OWN-R12 (the press round): an iPhone zooms the page when a field under 16 px is tapped, so the select holds its
+ * text at 16 px and lies unseen over the whole control (the touch, the picker, the keys and assistive technology stay
+ * its own); a face shows the choice in label type, 13.5 px, as before, and is as wide as the widest choice, as the
+ * native select was: every choice sits in one cell and only the chosen one is seen (reports.js renderDays). Activity
+ * log's person list takes the same face (activity.css). */
+.sel-face { display: block; min-width: 0; font-size: 13.5px; line-height: 20px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.dl-sort .sel-face { display: inline-grid; padding-inline: 38px; }
+.dl-sort .sel-face > span { grid-area: 1 / 1; }
+.dl-sort .sel-face > span:not(.is-on) { visibility: hidden; }
+.dl-sort { position: relative; display: inline-flex; align-items: center; height: 44px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
 @media (hover: hover) { .dl-sort:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .dl-sort:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .rp .dl-sort .sort-ico { position: absolute; inset-inline-start: 14px; display: block; opacity: 1; pointer-events: none; }
 .dl-sort::after { content: ""; position: absolute; top: 17px; inset-inline-end: 17px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.dl-sort select { height: 44px; padding-inline: 38px 38px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: .dl-sort:has(select:focus-visible) */ cursor: pointer; }
+.dl-sort select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: .dl-sort:has(select:focus-visible) */ opacity: 0; cursor: pointer; }
 .dl-sort select option { background: #121112; color: var(--ink); }
 .day-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
 .dli { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "day pk" "more pt" "note note"; align-items: baseline; column-gap: 16px; row-gap: 2px; padding: 12px 8px; border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
@@ -665,6 +674,7 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 .rp .dl-sort.is-disabled { box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--ink-3); }
 @media (hover: hover) { .rp .dl-sort.is-disabled:hover { box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--ink-3); } }
 .rp .dl-sort.is-disabled select { color: var(--ink-3); cursor: default; }
+.rp .dl-sort.is-disabled .sel-face { color: var(--ink-3); }
 .rp .sort.is-still { color: inherit; cursor: default; }
 @media (hover: hover) { .rp .sort.is-still:hover { color: inherit; cursor: default; } }
 
