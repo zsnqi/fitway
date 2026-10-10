@@ -12,7 +12,9 @@ judge the built work with your own eyes, and change it where it falls short.
   Read it first, then its "Read first" sources.
 - **What is decided and built:** `D:/fitway-temp/owner-r04-pressed/NOTES.md`. Read it in full before touching code.
   `git show a4639c5e --stat` and `git show dbdcea0a --stat` show what the two commits changed.
-- **New decision:** item 42 in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`.
+- **New decision:** item 42 in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` as the
+  coordinator's line holds it (this branch's copy predates it): read it with `git -C
+  D:/Projects/fitway-worktrees/owner-design-exploration-r04 show HEAD:docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`.
 
 <!-- environment:start v1 -->
 ## Environment
