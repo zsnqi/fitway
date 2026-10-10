@@ -435,6 +435,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       concept's 15 px field text (DESIGN-SPEC.md, the type roles).
     - Both go with the CSS fix round of the resume point's Next steps 6, when the Owner screens resume.
 
+42. **The press, two answers** (the user, 2026-10-10, on the questions of the pressed-state designer, `dbdcea0a` on
+    the build branch):
+    - On release, the press's light fades out over about 120 ms instead of going at once, so that even a very fast
+      tap shows. This is a background light, not a glyph (MOT-1). It is an exception to MOT-18's "hover colours are
+      instant" for the release only; the press itself still appears at once. The scale settles as built.
+    - The current section's tile and tab show the press like every other control: they are real links that reload
+      the page, and a control that does not react feels broken.
+    - Decided by the coordinator, from the rules and the user's earlier answers: the two lists keep the designer's
+      hidden 16 px native list under a 13.5 px face. Pressed specimens on the components sheet wait for the
+      Settings round.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
