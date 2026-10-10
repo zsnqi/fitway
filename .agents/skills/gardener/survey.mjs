@@ -37,6 +37,7 @@ import {
 	references,
 	TRUNK_REF,
 } from "./facts.mjs";
+import { collectRecordSurvey } from "./records.mjs";
 
 export const root = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
@@ -776,10 +777,20 @@ export function formatReport(report) {
 			`- Path: ${JSON.stringify(item.path)}; branch: ${JSON.stringify(item.branch ?? "<detached>")}; last commit date: ${item.lastCommitAt ?? "unknown"}; status: ${item.statusMeasured ? (item.status ? JSON.stringify(item.status) : "clean") : `unknown (${item.statusReason})`}`,
 		);
 	}
+	lines.push(
+		"## Records",
+		"",
+		"```json",
+		JSON.stringify(report.records ?? {}, null, 2),
+		"```",
+		"",
+	);
 	lines.push("");
 	for (const [name, value] of Object.entries(report).filter(
 		([name]) =>
-			!["date", "head", "complete", "repositoryUnchanged"].includes(name),
+			!["date", "head", "complete", "repositoryUnchanged", "records"].includes(
+				name,
+			),
 	)) {
 		lines.push(
 			`## ${name}`,
@@ -923,12 +934,15 @@ async function main(args) {
 		}
 	};
 	const context = await attempt("open records", collectRecords);
-	report.records =
+	report.recordSources =
 		context?.records.map(({ source, kind, sha256 }) => ({
 			source,
 			kind,
 			sha256,
 		})) ?? [];
+	report.records = await attempt("round and finding records", () =>
+		collectRecordSurvey({ checkout: root }),
+	);
 	report.git = await attempt("git", () => collectGit(context?.records ?? []));
 	report.folders = await attempt("folders", () =>
 		collectFolders(
@@ -1070,7 +1084,7 @@ async function main(args) {
 	const cleanupData = {
 		root,
 		tempRoot,
-		records: report.records,
+		records: report.recordSources,
 		folders:
 			context && report.git && report.complete && report.repositoryUnchanged
 				? report.folders.filter((item) => item.candidate)
