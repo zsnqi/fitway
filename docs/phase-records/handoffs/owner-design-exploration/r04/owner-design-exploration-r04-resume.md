@@ -73,7 +73,7 @@
       coordinator replaces it (`codex-rounds.md`). Running: `codex-press-hook-2.md` (`aa406fce`), Codex high, run
       folder `D:/fitway-temp/codex-runs/owner-r04-press-hook-2`, held-out rows W1-W7. It brings back `3b673daa`'s
       mechanism with the `data-press` hook, a new check under the folder's tools, and the level chip's icon in forced
-      colours. The coordinator grades it with the verifier's harness (`.../owner-r04-press-review/scripts/`).
+      colours. The coordinator grades it with the verifier's harness (`D:/fitway-temp/owner-r04-press-review/scripts/`).
       Lows left from the review, all present before the round: a key's glyph softens during the 240 ms settle (MOT-1
       is the suspect), and Reports' and Activity's recipes have no error-state proof for `page-retry`.
       Codex high, `codex-press-hook.md` (`348ca375`), run folder `D:/fitway-temp/codex-runs/owner-r04-press-hook`,
