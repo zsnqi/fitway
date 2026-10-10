@@ -618,10 +618,10 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
  * native select was: every choice sits in one cell and only the chosen one is seen (reports.js renderDays). Activity
  * log's person list takes the same face (activity.css). */
 .sel-face { display: block; min-width: 0; font-size: 13.5px; line-height: 20px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
-.dl-sort .sel-face { display: inline-grid; padding-inline: 38px; }
+.dl-sort .sel-face { display: inline-grid; align-items: center; height: 44px; padding-inline: 38px; }
 .dl-sort .sel-face > span { grid-area: 1 / 1; }
 .dl-sort .sel-face > span:not(.is-on) { visibility: hidden; }
-.dl-sort { position: relative; display: inline-flex; align-items: center; height: 44px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
+.dl-sort { position: relative; display: inline-flex; align-items: center; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
 @media (hover: hover) { .dl-sort:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); } }
 .dl-sort:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .rp .dl-sort .sort-ico { position: absolute; inset-inline-start: 14px; display: block; opacity: 1; pointer-events: none; }

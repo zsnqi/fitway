@@ -1379,6 +1379,16 @@
     dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort">${opts}</select><span class="sel-face" aria-hidden="true">${face}</span></label></div>
       <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(periodWords(model.a, model.b)))}">${(cut ? items.slice(0, LIST_N) : items).join("")}</ol>` +
       (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" aria-expanded="${!cut}" aria-controls="day-list">${cut ? L.showAll : L.showFewer}</button>` : "");
+    fitSort();
+  }
+  // The native select was as wide as its widest choice rounded up to a whole pixel; its face keeps that width (only
+  // while the list is shown: from 721 px it is not, and the face keeps its own width).
+  function fitSort() {
+    const f = $(".dl-sort .sel-face", dlist);
+    if (!f) return;
+    f.style.width = "";
+    const w = f.getBoundingClientRect().width;
+    if (w > 0) f.style.width = `${Math.ceil(w)}px`;
   }
   dlist.addEventListener("change", (e) => {
     if (e.target.id !== "dl-sort") return;
@@ -1534,6 +1544,7 @@
       dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort is-disabled"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort" disabled><option>${L.sorts["day-desc"]}</option></select><span class="sel-face" aria-hidden="true"><span class="is-on">${L.sorts["day-desc"]}</span></span></label></div>
         <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(periodWords(model.a, model.b)))}">${items}</ol>` +
         (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" disabled>${L.showAll}</button>` : "");
+      fitSort();
       return;
     }
     const cols = [["day", "c-day"], ["peak", "c-peak n"], ["avg", "c-avg n"], ["entries", "c-entries n"], ["notes", "c-notes"]];
@@ -1959,5 +1970,5 @@
   else if (WANT === "export") openExportDialog(exportBtn);
   // The other script's subset is fetched up front too (the rail's language item is written in it), as on the Daily page.
   if (document.fonts && document.fonts.load) ["400", "500"].forEach((w) => document.fonts.load(`${w} 16px "Readex Pro"`, RTL ? "English FITWAY" : "العربية").catch(() => {}));
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { fitSlots(daysTable); if (tipFor) showTip(tipFor); window.__reports.ready = true; });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { fitSlots(daysTable); fitSort(); if (tipFor) showTip(tipFor); window.__reports.ready = true; });
 })();

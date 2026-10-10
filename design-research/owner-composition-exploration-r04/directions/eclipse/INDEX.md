@@ -875,49 +875,50 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - reports.js:1268 — dayNotes — function constant
 - reports.js:1269 — renderDays — function
 - reports.js:1349 — renderList — function
-- reports.js:1402 — tableFile — function
-- reports.js:1434 — goPreset — function
-- reports.js:1438 — renderAll — function
-- reports.js:1446 — setRange — function
-- reports.js:1478 — later — function constant
-- reports.js:1479 — clearTimers — function constant
-- reports.js:1480 — ph — function constant
-- reports.js:1481 — phBox — function constant
-- reports.js:1482 — valueSlot — function constant
-- reports.js:1483 — busyEls — function constant
-- reports.js:1488 — pendGlance — function
-- reports.js:1502 — pendPattern — function
-- reports.js:1526 — pendDays — function
-- reports.js:1552 — retryLabels — function constant
-- reports.js:1553 — alertHTML — function
-- reports.js:1558 — wireAlert — function
-- reports.js:1565 — paintLoading — function
-- reports.js:1570 — paintError — function
-- reports.js:1587 — clearPhase — function
-- reports.js:1595 — applyPhase — function
-- reports.js:1609 — startLoading — function
-- reports.js:1622 — arrive — function
-- reports.js:1639 — fail — function
-- reports.js:1648 — retry — function
-- reports.js:1676 — focusables — function constant
-- reports.js:1678 — openDialog — function
-- reports.js:1689 — closeDialog — function
-- reports.js:1719 — openRangeDialog — function
-- reports.js:1737 — p2 — function constant
-- reports.js:1738 — csvDay — function
-- reports.js:1761 — fileName — function constant
-- reports.js:1763 — fileNameHTML — function constant
-- reports.js:1764 — rowsText — function constant
-- reports.js:1766 — fileLine — function
-- reports.js:1772 — progressHTML — function
-- reports.js:1776 — labels — function constant
-- reports.js:1777 — showLabel — function constant
-- reports.js:1784 — renderExport — function
-- reports.js:1822 — resetExport — function
-- reports.js:1828 — openExportDialog — function
-- reports.js:1838 — revealProgress — function
-- reports.js:1844 — wait — function constant
-- reports.js:1845 — runExport — function
+- reports.js:1386 — fitSort — function
+- reports.js:1412 — tableFile — function
+- reports.js:1444 — goPreset — function
+- reports.js:1448 — renderAll — function
+- reports.js:1456 — setRange — function
+- reports.js:1488 — later — function constant
+- reports.js:1489 — clearTimers — function constant
+- reports.js:1490 — ph — function constant
+- reports.js:1491 — phBox — function constant
+- reports.js:1492 — valueSlot — function constant
+- reports.js:1493 — busyEls — function constant
+- reports.js:1498 — pendGlance — function
+- reports.js:1512 — pendPattern — function
+- reports.js:1536 — pendDays — function
+- reports.js:1563 — retryLabels — function constant
+- reports.js:1564 — alertHTML — function
+- reports.js:1569 — wireAlert — function
+- reports.js:1576 — paintLoading — function
+- reports.js:1581 — paintError — function
+- reports.js:1598 — clearPhase — function
+- reports.js:1606 — applyPhase — function
+- reports.js:1620 — startLoading — function
+- reports.js:1633 — arrive — function
+- reports.js:1650 — fail — function
+- reports.js:1659 — retry — function
+- reports.js:1687 — focusables — function constant
+- reports.js:1689 — openDialog — function
+- reports.js:1700 — closeDialog — function
+- reports.js:1730 — openRangeDialog — function
+- reports.js:1748 — p2 — function constant
+- reports.js:1749 — csvDay — function
+- reports.js:1772 — fileName — function constant
+- reports.js:1774 — fileNameHTML — function constant
+- reports.js:1775 — rowsText — function constant
+- reports.js:1777 — fileLine — function
+- reports.js:1783 — progressHTML — function
+- reports.js:1787 — labels — function constant
+- reports.js:1788 — showLabel — function constant
+- reports.js:1795 — renderExport — function
+- reports.js:1833 — resetExport — function
+- reports.js:1839 — openExportDialog — function
+- reports.js:1849 — revealProgress — function
+- reports.js:1855 — wait — function constant
+- reports.js:1856 — runExport — function
 
 ## activity.js
 
