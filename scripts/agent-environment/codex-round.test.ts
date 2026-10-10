@@ -375,6 +375,85 @@ describe("L2 resume", () => {
 		expect(fallback.status, fallback.output).toBe(0);
 		expect(Buffer.from(f.captured().input, "base64")).toEqual(input);
 	});
+	it("sends a message file byte for byte", async () => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		const message = Buffer.from(
+			`line 1 has "double" and 'single' quotes, a backslash before a quote: \\"\nالعربية «كما هي» and $PATH\r\nline 3`,
+			"utf8",
+		);
+		const messageFile = path.join(f.root, "resume message.txt");
+		writeFileSync(messageFile, message);
+		const result = f.invoke(["resume", f.run, "--message-file", messageFile]);
+		expect(result.status, result.output).toBe(0);
+		expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+	});
+	it.each([
+		[
+			"UTF-8 BOM",
+			(text: string) =>
+				Buffer.concat([
+					Buffer.from([0xef, 0xbb, 0xbf]),
+					Buffer.from(text, "utf8"),
+				]),
+		],
+		["UTF-8", (text: string) => Buffer.from(text, "utf8")],
+		[
+			"UTF-16LE BOM",
+			(text: string) =>
+				Buffer.concat([
+					Buffer.from([0xff, 0xfe]),
+					Buffer.from(text, "utf16le"),
+				]),
+		],
+		[
+			"UTF-16BE BOM",
+			(text: string) => {
+				const littleEndian = Buffer.from(text, "utf16le");
+				for (let index = 0; index < littleEndian.length; index += 2)
+					[littleEndian[index], littleEndian[index + 1]] = [
+						littleEndian[index + 1],
+						littleEndian[index],
+					];
+				return Buffer.concat([Buffer.from([0xfe, 0xff]), littleEndian]);
+			},
+		],
+	])("decodes %s message files and keeps line endings", async (_name, encode) => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		const text = `quotes: "double" and 'single'\r\nالعربية «كما هي»\n`;
+		const expected = Buffer.from(text, "utf8");
+		const messageFile = path.join(f.root, "encoded message.txt");
+		writeFileSync(messageFile, encode(text));
+		const result = f.invoke(["resume", f.run, "--message-file", messageFile]);
+		expect(result.status, result.output).toBe(0);
+		expect(Buffer.from(f.captured().input, "base64")).toEqual(expected);
+	});
+	it("refuses invalid UTF-8 without a BOM and names the file", () => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		rmSync(f.capture);
+		const messageFile = path.join(f.root, "invalid message.txt");
+		writeFileSync(messageFile, Buffer.from([0x61, 0xc3, 0x28]));
+		const result = f.invoke(["resume", f.run, "--message-file", messageFile]);
+		refused(f, result, "message file is not valid UTF-8; write it as UTF-8");
+		expect(result.stderr).toContain(messageFile);
+	});
+	it.each([
+		["missing", "message file not found"],
+		["empty", "message file is empty"],
+	])("refuses a %s message file", (kind, reason) => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		rmSync(f.capture);
+		const messageFile = path.join(f.root, `${kind} message.txt`);
+		if (kind === "empty") writeFileSync(messageFile, Buffer.alloc(0));
+		refused(
+			f,
+			f.invoke(["resume", f.run, "--message-file", messageFile]),
+			reason,
+		);
+	});
 	it.each([
 		[["--message"]],
 		[["--unknown", "text"]],
@@ -384,7 +463,7 @@ describe("L2 resume", () => {
 		refused(
 			f,
 			f.invoke(["resume", f.run, ...options]),
-			"expected resume <folder> [--message <text>]",
+			"expected resume <folder> [--message <text> | --message-file <file>]",
 		);
 		expect(existsSync(f.run)).toBe(false);
 	});
@@ -668,6 +747,112 @@ describe("L4 shell and byte parity", () => {
 			expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
 		},
 	);
+	it.skipIf(process.platform !== "win32")(
+		"delivers a message file unchanged from PowerShell and Git Bash",
+		() => {
+			const f = fixture();
+			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+			const message = Buffer.from(
+				`double "quote", 'single' quote, backslash before quote: \\"\nالعربية «كما هي» and $PATH\r\nlast line`,
+				"utf8",
+			);
+			const messageFile = path.join(f.root, "resume message.txt");
+			writeFileSync(messageFile, message);
+			const impostor = path.join(f.bin, "bash.exe");
+			copyFileSync(process.execPath, impostor);
+			const env = {
+				...f.env,
+				PATH: `${f.bin}${path.delimiter}${path.join(
+					process.env.SystemRoot ?? "C:/Windows",
+					"System32",
+				)}${path.delimiter}${process.env.PATH}`,
+			};
+			const args = [
+				process.execPath,
+				script,
+				"resume",
+				f.run,
+				"--message-file",
+				messageFile,
+			];
+			const psQuote = (value: string) => `'${value.replaceAll("'", "''")}'`;
+			const powershells = ["powershell.exe"];
+			if (
+				spawnSync("where.exe", ["pwsh.exe"], {
+					env,
+					windowsHide: true,
+					stdio: "ignore",
+				}).status === 0
+			)
+				powershells.push("pwsh.exe");
+			for (const shell of powershells) {
+				const result = spawnSync(
+					shell,
+					["-NoProfile", "-Command", `& ${args.map(psQuote).join(" ")}`],
+					{
+						cwd: f.root,
+						env,
+						encoding: "utf8",
+						windowsHide: true,
+					},
+				);
+				expect(result.status, result.stdout + result.stderr).toBe(0);
+				expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+			}
+			const gitBash = findGitBash(env.PATH);
+			const bashQuote = (value: string) =>
+				`'${value.replaceAll("'", "'\\''")}'`;
+			const bash = spawnSync(
+				gitBash,
+				[
+					"--noprofile",
+					"--norc",
+					"-c",
+					args.map((arg) => bashQuote(arg.replaceAll("\\", "/"))).join(" "),
+				],
+				{
+					cwd: f.coordinator,
+					env,
+					encoding: "utf8",
+					windowsHide: true,
+				},
+			);
+			expect(bash.status, bash.stdout + bash.stderr).toBe(0);
+			expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+		},
+	);
+	it.skipIf(process.platform !== "win32")(
+		"decodes PowerShell Out-File and Set-Content defaults",
+		() => {
+			const f = fixture();
+			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+			const outFile = path.join(f.root, "out-file message.txt");
+			const setFile = path.join(f.root, "set-content message.txt");
+			const quote = (value: string) => `'${value.replaceAll("'", "''")}'`;
+			const powershell = spawnSync(
+				"powershell.exe",
+				[
+					"-NoProfile",
+					"-Command",
+					`"العربية\`r\`nASCII" | Out-File -LiteralPath ${quote(outFile)}; "العربية\`r\`nASCII" | Set-Content -LiteralPath ${quote(setFile)}`,
+				],
+				{ cwd: f.root, encoding: "utf8", windowsHide: true },
+			);
+			expect(powershell.status, powershell.stdout + powershell.stderr).toBe(0);
+			expect(
+				f.invoke(["resume", f.run, "--message-file", outFile]).status,
+			).toBe(0);
+			expect(Buffer.from(f.captured().input, "base64")).toEqual(
+				Buffer.from("العربية\r\nASCII\r\n", "utf8"),
+			);
+			expect(
+				f.invoke(["resume", f.run, "--message-file", setFile]).status,
+			).toBe(0);
+			expect(Buffer.from(f.captured().input, "base64")).toEqual(
+				Buffer.from("???????\r\nASCII\r\n", "utf8"),
+			);
+		},
+	);
 });
 
 it("prints the command's usage without starting Codex", () => {
@@ -678,7 +863,7 @@ it("prints the command's usage without starting Codex", () => {
 		"Usage: pnpm codex:round [--] <brief> <level> [--run <folder>]",
 	);
 	expect(result.stdout).toContain(
-		"pnpm codex:round [--] resume <folder> [--message <text>]",
+		"pnpm codex:round [--] resume <folder> [--message <text> | --message-file <file>]",
 	);
 	expect(result.stdout).toContain(
 		"--message sends the exact text instead of the saved launch input.",
