@@ -204,17 +204,17 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 		if (
 			!(
 				major > 1 ||
-				(major === 1 && (minor > 3 || (minor === 3 && patch >= 0)))
+				(major === 1 && (minor > 3 || (minor === 3 && patch >= 1)))
 			)
 		)
 			throw new Error(
-				`Held presses require ui-forensics >=1.3.0; found ${version}`,
+				`Held presses require ui-forensics >=1.3.1; found ${version}`,
 			);
 	}
 	if (input === "keyboard") {
 		const split = action.indexOf(":");
-		const kind = action.slice(0, split);
-		const argument = action.slice(split + 1);
+		const kind = actionKind;
+		const argument = split < 0 ? "" : action.slice(split + 1);
 		if (kind === "press") return keyboardStep(page, argument, entry, action);
 		if (["hold", "release"].includes(kind))
 			throw new KeyboardReachError(

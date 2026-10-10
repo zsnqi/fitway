@@ -1263,7 +1263,7 @@ test("R20 V2: measurement matrices and inline options also fail closed, with the
 });
 
 // Stub only the browser/tool boundary; exercise the real CLI and drive runner.
-async function heldCliFixture(name) {
+async function heldCliFixture(name, explicitRelease = false) {
 	const root = resolve(scratch, name);
 	const build = resolve(root, "concept");
 	const tools = resolve(root, "tools");
@@ -1281,7 +1281,14 @@ async function heldCliFixture(name) {
 			pages: {
 				"fixture.html": {
 					features: [
-						{ id: "held", actions: ["hold:#control"], proof: { ready: true } },
+						{
+							id: "held",
+							actions: [
+								"hold:#control",
+								...(explicitRelease ? ["release"] : []),
+							],
+							proof: { ready: true },
+						},
 						{ id: "next", actions: [], proof: { ready: true } },
 					],
 					states: [
@@ -1307,14 +1314,14 @@ async function heldCliFixture(name) {
 	await writeFile(resolve(tools, "scripts/web/probe.js"), "");
 	await writeFile(
 		resolve(tools, "scripts/web/_common.mjs"),
-		'export const TOOL_VERSION="1.3.0";',
+		'export const TOOL_VERSION="1.3.1";',
 	);
 	await writeFile(
 		resolve(tools, "scripts/web/lib.mjs"),
 		`
 import {appendFile,mkdir,writeFile} from "node:fs/promises";
 import {resolve} from "node:path";
-export const TOOL_VERSION="1.3.0";
+export const TOOL_VERSION="1.3.1";
 let held=null;
 const event=async(type)=>{await mkdir(process.env.PROBE_OUT,{recursive:true});await appendFile(resolve(process.env.PROBE_OUT,"events.jsonl"),JSON.stringify({type,held:Boolean(held)})+"\\n")};
 export const launchChromium=async()=>({close:async()=>{}});
@@ -1329,7 +1336,7 @@ export async function newContext(browser,options){
 export async function runAction(page,action){
  await event(action);
  if(action==="hold:#control")held={selector:"#control",input:"mouse",pressedAt:performance.now(),active:true,classification:"stub classification"};
- else if(action.startsWith("release"))await releaseHeld(page);
+ else if(action==="release")await releaseHeld(page);
  else throw new Error("Unexpected stub action: "+action);
 }
 export const heldPressInfo=async()=>held;
@@ -1397,6 +1404,12 @@ test("R21: CLI saves a held frame, records classification, and releases before t
 	assert.equal(item.heldPress.classification, "stub classification");
 	assert.equal(item.heldPress.selector, "#control");
 	assert.equal(item.heldPress.active, true);
+	assert.equal(item.heldPress.input, "mouse");
+	assert.ok(Number.isFinite(item.heldPress.pressedAt));
+	assert.ok(Number.isFinite(item.heldPress.capturedAt));
+	assert.ok(Number.isFinite(item.heldPress.captureDelayMs));
+	assert.ok(item.heldPress.captureDelayMs >= 0);
+
 	const frame = item.files.find((file) => file.endsWith("-held.png"));
 	assert.ok(frame, "no held frame saved");
 	assert.equal(await readFile(resolve(out, frame), "utf8"), "held-frame");
@@ -1422,6 +1435,70 @@ test("R21: CLI saves a held frame, records classification, and releases before t
 	);
 });
 
+test("R22: bare release reaches the tool in a recipe before the next item", async () => {
+	const { root, invoke, driveArgs } = await heldCliFixture(
+		"bare-release",
+		true,
+	);
+	const out = resolve(root, "out");
+	const result = invoke("drive", out, [...driveArgs, "--inputs", "mouse"]);
+	assert.equal(result.status, 0, result.stderr + result.stdout);
+	const manifest = JSON.parse(
+		await readFile(resolve(out, "manifest.json"), "utf8"),
+	);
+	const item = manifest.items.find(
+		(item) => item.feature === "fixture.html/held",
+	);
+	assert.deepEqual(item.actions, ["hold:#control", "release"]);
+	assert.equal(item.heldPress.classification, "stub classification");
+	const events = (await readFile(resolve(out, "events.jsonl"), "utf8"))
+		.trim()
+		.split("\n")
+		.map(JSON.parse);
+	const hold = events.findIndex((e) => e.type === "hold:#control");
+	const release = events.findIndex(
+		(e, i) => i > hold && e.type === "release" && e.held,
+	);
+	const next = events.findIndex((e, i) => i > hold && e.type === "item-start");
+	assert.ok(hold >= 0 && release > hold && release < next);
+	assert.equal(events[next].held, false);
+});
+test("R22: drive requires 1.3.1 for hold and every release form before reaching tools", async () => {
+	let reached = false;
+	const ui = {
+		TOOL_VERSION: "1.3.0",
+		runAction: async () => {
+			reached = true;
+		},
+	};
+	for (const action of [
+		"hold:#control",
+		"release",
+		"release:",
+		"release:#control",
+	]) {
+		await assert.rejects(
+			performAction(ui, {}, action, "mouse", "", "", {}),
+			/Held presses require ui-forensics >=1\.3\.1; found 1\.3\.0/,
+		);
+	}
+	assert.equal(reached, false);
+});
+test("R22: keyboard refuses bare release before reaching the tool", async () => {
+	let reached = false;
+	const ui = {
+		TOOL_VERSION: "1.3.1",
+		runAction: async () => {
+			reached = true;
+		},
+	};
+	await assert.rejects(
+		performAction(ui, {}, "release", "keyboard", "", "", {}),
+		/Keyboard input cannot hold a pointer press; release requires mouse or touch/,
+	);
+	assert.equal(reached, false);
+});
+
 test("R21: CLI keyboard input refuses a held press before reaching the tool", async () => {
 	const { root, invoke, driveArgs } = await heldCliFixture("held-keyboard");
 	const out = resolve(root, "out");
@@ -1442,7 +1519,7 @@ test("R21: CLI keyboard input refuses a held press before reaching the tool", as
 	);
 });
 
-test("R21: CLI forwards hold actions to measurements and refuses tools older than 1.3.0", async () => {
+test("R21: CLI forwards hold actions to measurements and refuses tools older than 1.3.1", async () => {
 	const { root, tools, invoke } = await heldCliFixture("held-measure");
 	await writeFile(
 		resolve(tools, "scripts/web/capture.mjs"),
@@ -1463,14 +1540,14 @@ await writeFile(resolve(out,"tool-invoked.json"),JSON.stringify(args));`,
 	);
 	await writeFile(
 		resolve(tools, "scripts/web/_common.mjs"),
-		'export const TOOL_VERSION="1.2.0";',
+		'export const TOOL_VERSION="1.3.0";',
 	);
 	const oldOut = resolve(root, "old");
 	const old = invoke("measure", oldOut, args);
 	assert.equal(old.status, 1, old.stdout);
 	assert.match(
 		old.stderr,
-		/Held presses require ui-forensics >=1\.3\.0; found 1\.2\.0/,
+		/Held presses require ui-forensics >=1\.3\.1; found 1\.3\.0/,
 	);
 	assert.equal(existsSync(resolve(oldOut, "tool-invoked.json")), false);
 	assert.equal(existsSync(resolve(oldOut, "measure-manifest.json")), false);
@@ -1826,7 +1903,9 @@ test("R17 V2: foreign status, body and silence name the session port without sto
 });
 
 test("R19 V1: a verified preview sharing its port names every foreign pid and refuses all session commands", {
-	skip: process.platform !== "win32",
+	skip:
+		process.platform !== "win32" &&
+		"Shared-port ownership proof requires Windows listener inspection",
 }, async (t) => {
 	const { folder, session } = await launched("shared-session", 60000);
 	const record = await readFile(resolve(folder, "session.json"), "utf8");

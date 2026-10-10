@@ -282,7 +282,9 @@ async function doctorChecks(options) {
 			);
 		}
 	}
-	if (!options.session) await portAvailable(Number(options.port || 3176));
+	// File-only drives never start a preview, so they do not need a free port.
+	if (!options.session && options.transports !== "file")
+		await portAvailable(Number(options.port || 3176));
 	if (!options.quiet)
 		console.log(
 			`DOCTOR PASS: Chromium, ui-forensics, probe kit, ${map.pages.length} pages, current map ${path}, port owned/free.`,
@@ -627,11 +629,11 @@ async function main() {
 			if (
 				!(
 					major > 1 ||
-					(major === 1 && (minor > 3 || (minor === 3 && patch >= 0)))
+					(major === 1 && (minor > 3 || (minor === 3 && patch >= 1)))
 				)
 			)
 				throw new Error(
-					`Held presses require ui-forensics >=1.3.0; found ${version}`,
+					`Held presses require ui-forensics >=1.3.1; found ${version}`,
 				);
 		}
 		await outputFile(options.out, "tool-output");
