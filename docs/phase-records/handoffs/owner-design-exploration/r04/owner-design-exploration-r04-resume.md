@@ -50,13 +50,10 @@
   - the current tile's press.
   Output goes to `D:/fitway-temp/owner-r04-pressed-2/`. Then one independent review of the whole round, its fixes, and
   the user's try on both phones (3180).
-  - **2026-10-10, session ended at the Claude usage limit with this designer still running** (no report received).
-    The next session starts here:
-    1. Check `git -C D:/Projects/fitway-worktrees/owner-followup-r04-s04 log --oneline -5` and its `status --short`.
-    2. Read `D:/fitway-temp/owner-r04-pressed-2/NOTES.md`.
-    3. If items 1-5 are not all committed, launch a fresh designer on the same brief with those notes. Never resume
-       one (rounds item 10).
-    4. Then the independent review.
+  - **That designer stopped at an API session limit.** It had built all five items and committed none, so the
+    coordinator committed its work as WIP (`aedd3853`; `D:/fitway-temp/owner-r04-pressed-2/NOTES.md`). A fresh designer
+    (`designer-pressed-state-2-finish.md`, `82ae45e9`) is judging it and writing the evidence, launched 2026-10-10.
+    Next comes the independent review.
 - Report-only, under load only: the dialogs', popover's and records card's parts split across threads under a planted
   stall; rounds item 11 to decide whether they are errors on a real machine.
 
