@@ -1478,6 +1478,84 @@ test("R17 V2: foreign status, body and silence name the session port without sto
 	await portAvailable(session.port);
 });
 
+test("R19 V1: a verified preview sharing its port names every foreign pid and refuses all session commands", {
+	skip: process.platform !== "win32",
+}, async (t) => {
+	const { folder, session } = await launched("shared-session", 60000);
+	const record = await readFile(resolve(folder, "session.json"), "utf8");
+	const server = createServer((_, res) => res.end("foreign IPv4"));
+	const foreign = spawn(
+		process.execPath,
+		[
+			"-e",
+			`
+		const server = require("node:http").createServer((_, res) => res.end("foreign IPv6"));
+		server.listen(${session.port}, "::1", () => process.send("ready"));
+	`,
+		],
+		{ windowsHide: true, stdio: ["ignore", "ignore", "ignore", "ipc"] },
+	);
+	const exited = new Promise((done) => foreign.once("exit", done));
+	try {
+		await new Promise((done, reject) => {
+			foreign.once("message", done);
+			foreign.once("error", reject);
+			foreign.once("exit", (code) =>
+				reject(new Error(`Foreign fixture exited ${code} before ready`)),
+			);
+		});
+		await new Promise((done, reject) => {
+			server.once("error", reject);
+			server.listen(session.port, "127.0.0.2", done);
+		});
+		for (const command of ["doctor", "cleanup", "drive"]) {
+			const result = await runCliAsync([
+				command,
+				"--concept",
+				concept,
+				"--session",
+				folder,
+				"--out",
+				resolve(scratch, `shared-${command}`),
+			]);
+			assert.equal(result.status, 1, result.stdout);
+			assert.match(
+				result.stderr,
+				new RegExp(`Port ${session.port} .*foreign pids?`),
+			);
+			for (const pid of [process.pid, foreign.pid])
+				assert.match(result.stderr, new RegExp(`\\b${pid}\\b`));
+			assert.match(result.stderr, /refuse session/);
+			assert.doesNotMatch(result.stderr, /not owned|not served|\bstop\b/i);
+			assert.equal((await fetchRaw(session.port, "/index.html")).status, 200);
+			for (const [host, body] of [
+				["[::1]", "foreign IPv6"],
+				["127.0.0.2", "foreign IPv4"],
+			])
+				assert.equal(
+					await (await fetch(`http://${host}:${session.port}/`)).text(),
+					body,
+				);
+			assert.equal(
+				await readFile(resolve(folder, "session.json"), "utf8"),
+				record,
+			);
+			t.diagnostic(
+				`${command}: ${result.stderr.split("\n")[0]}; preview and both foreign listeners still answer`,
+			);
+		}
+	} finally {
+		server.closeAllConnections();
+		if (server.listening) await new Promise((done) => server.close(done));
+		if (foreign.exitCode === null) foreign.kill();
+		await exited;
+		const cleaned = runCli(["cleanup", "--session", folder]);
+		assert.equal(cleaned.status, 0, cleaned.stderr);
+		t.diagnostic(cleaned.stdout.trim());
+	}
+	await portAvailable(session.port);
+});
+
 test("W2: detached idle preview exits, frees its port, cleans idempotently and sessions require relaunch", async () => {
 	const { folder, session } = await launched("idle-expiry");
 	try {
