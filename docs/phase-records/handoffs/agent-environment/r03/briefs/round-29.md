@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: the concept CSS check sees focus rings as they render (agent-environment-r03, round 29)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-r29`, branch `agent-environment-r03-r29`, HEAD `bb637f1f`
+- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-r29`, branch `agent-environment-r03-r29`, HEAD `8275d1c7`
 - **Milestone:** `agent-environment-r03`. Decisions: `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 20, 21.
 - **Read first, only these:**
   - `scripts/check-concept-css.mjs` and `scripts/check-concept-css.test.ts`;

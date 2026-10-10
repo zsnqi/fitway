@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: the record checkers report exactly what is wrong (agent-environment-r03, round 28)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-r28`, branch `agent-environment-r03-r28`, HEAD `bb637f1f`
+- **Worktree:** `D:/Projects/fitway-worktrees/agent-environment-r03-r28`, branch `agent-environment-r03-r28`, HEAD `8275d1c7`
 - **Milestone:** `agent-environment-r03`. Decisions: `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 17, 20.
 - **Read first, only these:**
   - `docs/phase-records/handoffs/agent-environment/findings.tsv` rows F003, F007, F051, F052, F053;
