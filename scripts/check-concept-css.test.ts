@@ -67,6 +67,153 @@ function snapshot(root: string): unknown[] {
 
 describe("concept CSS planted findings", () => {
 	it.each([
+		"outline: 0 none",
+		"outline: none 0",
+		"outline: solid 0px red",
+		"outline: red hidden 2px",
+		"outline: hidden",
+		"outline-style: none",
+		"outline-style: hidden",
+		"outline-width: 0em",
+		"outline-width: .0rem",
+		"outline-width: +0.00pt",
+		"outline-width: -0px",
+	])("R1 detects outline removal %s", (declaration) => {
+		expect(lint(`.button { ${declaration}; }`).map((f) => f.rule)).toEqual([
+			"outline-without-ring",
+		]);
+		expect(
+			lint(
+				`.button { ${declaration}; } .button:focus-visible { outline: 2px solid red; }`,
+			),
+		).toEqual([]);
+	});
+	it.each([
+		"not all and (hover: hover)",
+		"not screen and (hover: hover)",
+		"(hover: none)",
+		"(any-hover: none)",
+		"(hover: hover), (hover: none)",
+		"(hover: hover) or (width: 800px)",
+		"not ((hover: hover) and (pointer: fine))",
+	])("R2 rejects a touch-matching hover gate %s", (query) => {
+		expect(
+			lint(`@media ${query} { .button:hover { color: red; } }`).map(
+				(f) => f.rule,
+			),
+		).toEqual(["ungated-hover"]);
+	});
+	it("R3 distinguishes an absent ring from a named ring that draws none", () => {
+		expect(lint(".button { outline: none; }")[0].detail).toContain(
+			"no focus ring",
+		);
+		for (const replacement of ["", ".ring:focus-visible { color: red; }"]) {
+			expect(
+				lint(
+					`.button { outline: none; /* focus-ring: .ring:focus-visible */ } ${replacement}`,
+				)[0].detail,
+			).toContain(
+				"declared focus-ring: .ring:focus-visible draws no visible ring",
+			);
+		}
+	});
+	it.each([
+		"border: 1px solid #ccc",
+		"box-shadow: 0 2px 8px #0003",
+		"border: 1px solid #ccc; box-shadow: 0 2px 8px #0003",
+	])("R4 rejects permanent decoration %s", (decoration) => {
+		expect(
+			lint(`.fw-pop { outline: none; ${decoration}; }`).map((f) => f.rule),
+		).toEqual(["outline-without-ring"]);
+		expect(
+			lint(
+				`.fw-pop { outline: none; } .fw-pop:focus-visible { ${decoration}; }`,
+			),
+		).toEqual([]);
+		expect(
+			lint(
+				`.fw-pop { outline: none; ${decoration}; } .fw-pop:focus-visible { ${decoration}; }`,
+			).map((f) => f.rule),
+		).toEqual(["outline-without-ring"]);
+		expect(
+			lint(
+				`.fw-pop { outline: none; } .fw-pop, .fw-pop:focus-visible { ${decoration}; }`,
+			).map((f) => f.rule),
+		).toEqual(["outline-without-ring"]);
+		expect(
+			lint(
+				`.fw-pop { outline: none; } .wrapper { ${decoration}; } .wrapper:has(.fw-pop:focus-visible) { ${decoration}; }`,
+			).map((f) => f.rule),
+		).toEqual(["outline-without-ring"]);
+	});
+	it("recognizes a focused border colour change with inherited geometry", () => {
+		expect(
+			lint(
+				".button { outline: none; border: 2px solid #ccc; } .button:focus-visible { border-color: red; }",
+			),
+		).toEqual([]);
+	});
+	it.each([
+		":focus-visible",
+		":focus",
+	])("R5 recognizes an ancestor ring for %s", (focus) => {
+		for (const relation of [" ", " > "]) {
+			expect(
+				lint(
+					`.wrapper${relation}.button { outline: none; } .wrapper:has(${relation.trim()} .button${focus}) { outline: 2px solid red; }`,
+				),
+			).toEqual([]);
+		}
+		expect(
+			lint(
+				`.button { outline: none; } .wrapper:has(.button${focus}) { box-shadow: 0 0 0 2px red; }`,
+			),
+		).toEqual([]);
+	});
+	it.each([
+		'.button[tabindex="-1"]',
+		".button[tabindex='-1']:focus-visible",
+		".button[tabindex=-1]:focus",
+		'.wrapper .button[tabindex="-1"]',
+	])("R5 exempts a programmatic subject %s", (selector) => {
+		expect(lint(`${selector} { outline: none; }`)).toEqual([]);
+	});
+	it.each([
+		'.wrapper[tabindex="-1"] .button',
+		'.button:not([tabindex="-1"])',
+		'.wrapper:has([tabindex="-1"]) .button',
+		'.button[tabindex="0"]',
+		'.button:is([tabindex="-1"], .keyboard)',
+		".button[data-label='[tabindex=\"-1\"]']",
+	])("keeps keyboard subjects covered %s", (selector) => {
+		expect(lint(`${selector} { outline: none; }`).map((f) => f.rule)).toEqual([
+			"outline-without-ring",
+		]);
+	});
+	it.each([
+		".wrapper:has(.other:focus-visible)",
+		".wrapper:has(.button:not(:focus))",
+		".wrapper:has(.button:focus-visible) .decoration",
+		".wrapper:has(+ .button:focus-visible)",
+		".wrapper:has(.button:focus-visible, .other)",
+	])("rejects an unrelated or non-focus ancestor %s", (selector) => {
+		expect(
+			lint(
+				`.button { outline: none; } ${selector} { outline: 2px solid red; }`,
+			).map((f) => f.rule),
+		).toEqual(["outline-without-ring"]);
+	});
+	it.each([
+		"(any-hover: hover)",
+		"((hover: hover) and (pointer: fine))",
+		"(hover: hover), screen and (hover: hover)",
+		"(hover: hover) or (any-hover: hover)",
+	])("accepts hover-only query %s", (query) => {
+		expect(lint(`@media ${query} { .button:hover { color: red; } }`)).toEqual(
+			[],
+		);
+	});
+	it.each([
 		".a { outline:none; border:solid .0px red; }",
 		".a { outline:none; border:solid 2px #f000; }",
 		".a { outline:none; box-shadow:0 0 0 2px #ffffff00; }",
@@ -83,8 +230,14 @@ describe("concept CSS planted findings", () => {
 		".a { outline:none; /* focus-ring: .ring:not(:focus) */ } .ring:not(:focus) { outline:2px solid red; }",
 		".a { outline:none; } .a:not(:focus) { outline:2px solid red; }",
 		".a { outline:none; border:2px solid red; border-color:transparent; }",
+		".button { outline: none; box-shadow: 0 0 0 2px red; }",
+		".button { outline: none; border: 2px solid red; }",
 	])("rejects invisible or negated replacements %s", (css) => {
-		expect(lint(css).map((f) => f.rule)).toEqual(["outline-without-ring"]);
+		// More outline-removal spellings can produce additional diagnostics, but
+		// every earlier fixture must still have exactly this finding class.
+		expect([...new Set(lint(css).map((f) => f.rule))]).toEqual([
+			"outline-without-ring",
+		]);
 	});
 	it.each([
 		".a { outline:none; } :focus-visible { outline:2px solid red; }",
@@ -160,8 +313,6 @@ describe("concept CSS planted findings", () => {
 		"@media screen and (hover: hover) { @supports (display: grid) { .button:hover { color: red; } } }",
 		".button { transition: opacity 120ms ease-in-out, color 100ms ease-out; animation: pulse 1s ease-in-out; }",
 		".button { animation-timing-function: cubic-bezier(.42,0,.58,1); }",
-		".button { outline: none; box-shadow: 0 0 0 2px red; }",
-		".button { outline: none; border: 2px solid red; }",
 		".button { outline: none; outline: 2px solid red; }",
 		".button { outline: none; } .button:focus { outline: 2px solid red; }",
 		".button { outline: none; } .button:focus-visible { box-shadow: 0 0 0 2px red; }",
