@@ -37,6 +37,25 @@ function codeSpans(text) {
 	return [...text.matchAll(/(`+)([^`]*?)\1(?!`)/g)];
 }
 
+function citedDecisionItems(tail) {
+	const citation = tail.match(
+		/^\s+items?\s+((?:\d+\s*(?:-\s*\d+)?)(?:\s*(?:,|and)\s*\d+\s*(?:-\s*\d+)?)*)(?=\s|[.,;:]|$)/i,
+	);
+	if (!citation) return [];
+	const items = [];
+	for (const part of citation[1].split(/\s*(?:,|and)\s*/i)) {
+		const [start, end = start] = part.split(/\s*-\s*/).map(Number);
+		for (let item = start; item <= end; item += 1) items.push(item);
+	}
+	return items;
+}
+
+function numberedTopLevelEntries(text) {
+	return new Set(
+		[...text.matchAll(/^(\d+)\.\s+/gm)].map((match) => Number(match[1])),
+	);
+}
+
 function environmentBlock(text) {
 	const starts = [...text.matchAll(/^<!-- environment:start v1 -->\r?$/gm)];
 	const ends = [...text.matchAll(/^<!-- environment:end -->\r?$/gm)];
@@ -221,6 +240,7 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			split,
 			lineNumber: line,
 			heading: reference.heading ?? after?.[1],
+			decisionItems: citedDecisionItems(tail),
 			isNew: /^[ \t]+\(new\)(?=\s|[.,;:]|$)/.test(tail),
 		});
 	}
@@ -285,7 +305,8 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			);
 			continue;
 		}
-		if (!heading && reference.line === null) continue;
+		if (!heading && reference.line === null && !reference.decisionItems.length)
+			continue;
 		if (!details.isFile()) {
 			report(
 				"brief-references",
@@ -313,6 +334,16 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 				line,
 				`missing heading §"${heading}" in ${absolute}`,
 			);
+		if (reference.decisionItems.length) {
+			const entries = numberedTopLevelEntries(content);
+			for (const item of reference.decisionItems)
+				if (!entries.has(item))
+					report(
+						"brief-references",
+						line,
+						`missing decision item ${item} in ${reference.file} (${absolute}) in worktree ${worktree}`,
+					);
+		}
 	}
 }
 
