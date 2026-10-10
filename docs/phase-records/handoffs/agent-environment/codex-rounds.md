@@ -995,3 +995,19 @@ held-out checks live outside the repository and never appear here or in a brief.
   - E5: the real survey completes, with proposals equal to the base's (Codex's comparison of two real surveys).
   - E1-E3 and E6 rest on the round's tests, which fail on the base.
 - **Failure cause:** none.
+
+## agent-environment-r03 round 31: `r03/briefs/round-31.md`, result `9d0e4b29` (level high)
+
+- **Set-up:** F120, the code-health workaround count holding `!important` inside accessibility overrides. The brief's
+  commit is `e0b199df`; held-out rows H1-H5.
+- **Brief rows, as Codex graded them:** A1-A2 pass.
+  - On the base, 6 tests fail.
+  - The concept's workarounds go from 72 to 20, and 52 accessibility overrides are counted on their own, all in
+    `style.css`'s forced-colours and reduced-motion blocks.
+  - The fast ladder passes.
+- **Held-out** (`D:/fitway-temp/r03-r31-grade/`): 5 of 5.
+  - These are set aside: a combined `screen and (forced-colors: active)` query, a reduced-motion query with a width
+    condition, and a forced-colours block inside an HTML `<style>`.
+  - A `not` query and `no-preference` stay workarounds.
+  - A comment inside an override block counts nothing.
+- **Failure cause:** none.
