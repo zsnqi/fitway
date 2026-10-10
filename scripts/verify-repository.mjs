@@ -165,7 +165,16 @@ export function scopePatterns(entries, label = "scope") {
 			.map((token) =>
 				token.replace(/^[('"`]+|[.,;:)'"`]+$/g, "").replaceAll("\\", "/"),
 			)
-			.filter((token) => token.includes("/") || /\.[\w-]+$/.test(token))
+			.filter(
+				(token) =>
+					// Slashed words and bare versions are prose. Extensionless paths
+					// can use explicit syntax such as ./future/my or future/my/.
+					!(
+						/^[\p{L}]+(?:\/[\p{L}]+)+$/u.test(token) ||
+						/^v?\d+(?:\.\d+)+(?:[-+][\w.-]+)?$/i.test(token)
+					) &&
+					(token.includes("/") || /\.[\w-]+$/.test(token)),
+			)
 			.map((token) =>
 				path.posix.normalize(token.endsWith("/") ? `${token}**` : token),
 			);

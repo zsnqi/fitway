@@ -14,6 +14,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
+import { TERMINAL_STATUSES } from "./check-agent-context.mjs";
 import {
 	assertGardenerReport,
 	assertProjectRecordUnion,
@@ -721,20 +722,22 @@ describe("R7: open milestone ownership intersections", () => {
 	});
 	it("L2: extracts only whitespace-separated path tokens before colon-space", () => {
 		const { state, history } = records(
-			"future/my file.md",
-			"future/my other.md",
+			"future/my-file.md file.md",
+			"future/my-file.md other.md",
 		);
-		expect(() => assertProjectRecordUnion(state, history)).toThrow("future/my");
+		expect(() => assertProjectRecordUnion(state, history)).toThrow(
+			"future/my-file.md",
+		);
 		expect(
 			scopePatterns([
 				"packages/api/src/access/** and its tests",
-				"future/my file.md",
+				"future/my-file.md file.md",
 				"one pointer (and its companion) under docs/pointers/; no other claim",
 				"scripts/a.mjs and scripts/b.test.ts: ignore docs/other.md",
 			]),
 		).toEqual([
 			"packages/api/src/access/**",
-			"future/my",
+			"future/my-file.md",
 			"file.md",
 			"docs/pointers/**",
 			"scripts/a.mjs",
@@ -748,17 +751,60 @@ describe("R7: open milestone ownership intersections", () => {
 		);
 		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
 	});
-	it("K3: preserves every real record scope claim", () => {
-		for (const file of ["PROJECT_STATE.yaml", "PROJECT_STATE_HISTORY.yaml"]) {
+	it.each([
+		"and/or",
+		"RTL/LTR",
+		"read/write",
+		"layout/material",
+		"either/or",
+		"v1.2",
+		"1.2.3",
+	])("K3: never claims prose token %s", (prose) => {
+		for (const token of [prose, `(${prose}),`, `\`${prose}\``]) {
+			expect(
+				scopePatterns([`${token} scripts/a.mjs: docs/ignored.md`]),
+			).toEqual(["scripts/a.mjs"]);
+			expect(() => scopePatterns([token])).toThrow(/no repository path/);
+		}
+		const { state, history } = records(
+			`${prose} first/file.ts`,
+			`${prose} second/file.ts`,
+		);
+		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+	});
+	it("K3: keeps explicit path syntax, including extensionless paths", () => {
+		expect(
+			scopePatterns([
+				"./future/my docs/LICENSE.md future/my/ docs/v1.2 scripts/*.mjs",
+			]),
+		).toEqual([
+			"future/my",
+			"docs/LICENSE.md",
+			"future/my/**",
+			"docs/v1.2",
+			"scripts/*.mjs",
+		]);
+	});
+	it("K3: ignores closed history scopes containing only prose", () => {
+		const { state, history } = records("first/file.ts", "second/file.ts");
+		(history.milestones as Record<string, unknown>).closed = milestone({
+			ownedPaths: ["and/or layout/material v1.2"],
+			sharedLeases: ["RTL/LTR read/write 1.2.3"],
+		});
+		expect(() => assertProjectRecordUnion(state, history)).not.toThrow();
+	});
+	it("K3: preserves every open milestone scope claim", () => {
+		for (const file of ["PROJECT_STATE.yaml"]) {
 			const records = parseYaml(
 				readFileSync(new URL(`../${file}`, import.meta.url), "utf8"),
 			);
 			for (const [id, record] of Object.entries(records.milestones) as [
 				string,
-				Record<string, string[]>,
+				{ status: string; ownedPaths?: string[]; sharedLeases?: string[] },
 			][]) {
+				if (TERMINAL_STATUSES.has(record.status)) continue;
 				// These are the fields consumed by the ownership checker.
-				for (const field of ["ownedPaths", "sharedLeases"]) {
+				for (const field of ["ownedPaths", "sharedLeases"] as const) {
 					for (const entry of record[field] ?? []) {
 						// Freeze the pre-K3 grammar here as a compatibility oracle.
 						const before = entry
