@@ -952,3 +952,27 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the code, for Z11. Codex reported P4 as passing without the self-test change the brief named.
 - **Waiting on the user:** installing the 1.3.1 copy as the machine-level ui-forensics. Until then the CLI refuses a
   held press with the machine-level 1.3.0 and names 1.3.1.
+
+## agent-environment-r03 round 28: `r03/briefs/round-28.md`, result `0e89866b` (level high, one repair)
+
+- **Set-up:** the closing triage's open lines on the record checkers: F003, F007, F051, F052 and F053. The brief's
+  commit is `8275d1c7`, and the round ran beside round 29. Held-out rows N1-N7.
+- **Result `cea5aea5`:** K1, K2, K4 and K5 pass as Codex graded them.
+  - K1: the registry test now fails when the check loses a milestone or reports a wrong one.
+  - K2: placeholders joined to a path pattern pass.
+  - K4: one bad task class gives one line.
+  - K5: every misplaced `supersededBy` is reported.
+  - Codex rightly stopped on K3. The brief also required that every scope line of history claim the same paths, and
+    a closed record's prose `layout/material` is claimed today. History is never parsed for ownership (only open
+    milestones are), so the condition was wrong in the brief.
+  - Its fast ladder failed while round 22 held 3176-3177 (F119).
+- **Repair 1 (`0e89866b`), with the corrected K3:** prose tokens are never claimed, and open milestones claim the same
+  paths. The fast ladder passes (141.6 s).
+- **Held-out** (`D:/fitway-temp/r03-r28-grade/`):
+  - N3: across the real ledger the claimed paths are identical before and after. A prose-only entry is refused for
+    naming no path, and `docs/a.md and/or docs/b.md v1.2` claims the two paths.
+  - N6: `check:repository` passes on the merge.
+  - N7: `check-brief.mjs` is untouched.
+  - N1, N2, N4 and N5 rest on the round's own tests, which fail on the base; the coordinator did not rerun them.
+- **Failure cause:** the brief, for K3. It required history claims to stay the same without checking that history
+  carries prose claims that bind nothing (B7).
