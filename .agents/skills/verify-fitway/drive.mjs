@@ -197,11 +197,29 @@ export async function reachByKeyboard(page, selector, entry, action) {
 }
 
 async function performAction(ui, page, action, input, out, stem, entry) {
+	const [actionKind] = action.includes(":") ? action.split(":", 1) : [action];
+	if (["hold", "release"].includes(actionKind)) {
+		const version = ui.TOOL_VERSION || "unknown";
+		const [major, minor, patch] = String(version).split(".").map(Number);
+		if (
+			!(
+				major > 1 ||
+				(major === 1 && (minor > 3 || (minor === 3 && patch >= 0)))
+			)
+		)
+			throw new Error(
+				`Held presses require ui-forensics >=1.3.0; found ${version}`,
+			);
+	}
 	if (input === "keyboard") {
 		const split = action.indexOf(":");
 		const kind = action.slice(0, split);
 		const argument = action.slice(split + 1);
 		if (kind === "press") return keyboardStep(page, argument, entry, action);
+		if (["hold", "release"].includes(kind))
+			throw new KeyboardReachError(
+				`Keyboard input cannot hold a pointer press; ${action} requires mouse or touch`,
+			);
 		if (
 			[
 				"activate",
@@ -298,7 +316,7 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 		};
 		if (entry.download.failure)
 			throw new Error(`Download failed: ${entry.download.failure}`);
-	} else await ui.runAction(page, action);
+	} else return ui.runAction(page, action);
 }
 
 export { performAction, prove };

@@ -133,6 +133,7 @@ export function itemSummary(entry) {
 		problems: entry.problems,
 		proof: entry.stateProof,
 		featureProof: entry.featureProof,
+		heldPress: entry.heldPress,
 		dependencies: entry.dependencies,
 		files: entry.files,
 	};
@@ -445,6 +446,20 @@ export async function drive(options) {
 													entry,
 												);
 												entry.actions.push(resolvedAction);
+												if (resolvedAction.startsWith("hold:")) {
+													const held = await ui.heldPressInfo(current.page);
+													if (!held)
+														throw new Error("held press was not retained");
+													await save("held");
+													entry.heldPress = {
+														...held,
+														capturedAt: Date.now(),
+														captureDelayMs: Math.max(
+															0,
+															performance.now() - held.pressedAt,
+														),
+													};
+												}
 											}
 											if (feature.proof.countIncreased)
 												await current.page.waitForFunction(
@@ -590,6 +605,8 @@ export async function drive(options) {
 											entry.finalFocus = await focusedElement(
 												current.page,
 											).catch(() => ({ selector: "<page closed>" }));
+										if (ui.releaseHeld)
+											await ui.releaseHeld(current.page).catch(() => {});
 										await current.context.close();
 										await jsonOutput(out, `${stem}.json`, entry);
 										await jsonOutput(
