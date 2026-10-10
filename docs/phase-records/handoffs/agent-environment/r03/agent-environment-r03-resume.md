@@ -1,121 +1,70 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-10 17:30 +03:00 (rounds 16-19 merged, F100-F105 fixed; item 21 step
-  6's trial wrote the Owner CSS round's spec; round 20 merged)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-25,
+- **As of:** codex/owner-redesign-r04, 2026-10-11 01:20 +03:00 (rounds 22-26, 28 and 29 merged; rounds 27 and 30 stopped
+  at the Codex account limit)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-28,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
-- The audit is saved: `docs/phase-records/handoffs/agent-environment/r03/AUDIT.md` (rounds R1-R5). R1-R4 are done;
-  the machine cleanup is done. Every round is in `docs/phase-records/handoffs/agent-environment/codex-rounds.md`,
-  with its line in `rounds.tsv` and its side findings in `findings.tsv` beside it.
-- R4 delivered the verify-fitway skill and CLI, the Codex launch command `pnpm codex:round`, the B8 and B9
-  evaluation, and the gardener. Haiku 5.5 is the lookup agent (DECISIONS item 18). The environment page is published
-  (Next steps 4).
-- DECISIONS item 21: steps 1-4 are done (start-load baseline, tool lists, `rounds.tsv` and `findings.tsv`, the replay
-  baseline). Step 5's first reading: the session that started from this file on 2026-10-09 at 23:20 carried 75K before
-  its first read (2026-10-08 baseline 71K).
-- 2026-10-10: round 17 (`b9fbc832`) fixed verify-fitway's misleading messages (F101 relaunch port, F102 foreign
-  server); round 16 (`e0d00b5a`) and its two repairs 16b-16c (`eb5560d0`, `e0cd4c6e`) fixed the gardener's faults:
-  a worktree holding an outward or dangling link is withheld and named, and the others are proposed with
-  `remove-worktree.mjs` (F100); every tracked text file protects the temp folders it cites, also by a patterned path,
-  while binaries, drive-root text and the temp root protect nothing (F104); the ladder parser names the step (F103).
-  The repairs answered round 16's Y2 (nothing was proposable); the repair count for that failure is 2, now closed.
-  A survey now takes about 250 s (101 s before). Round 18 (`70adc082`) made round 16's link test pass under CI's
-  short temp path (`C:/Users/RUNNER~1`).
-- 2026-10-10 morning, checked by the coordinator: the user ran the cleanup list (its 30 folders under
-  `D:/fitway-temp` are gone) and `remove-copies.mjs --run` (all 27 worktrees and clones are gone, no dead
-  registration is left; their commits are in the bundles named under Pointers). After the restart the user's TEMP and
-  TMP are `D:\Temp` (item 24); the gardener, verify-fitway and `codex-round.mjs` still write under `D:/fitway-temp`
-  by a fixed path, tests write under `D:\Temp`, and `pnpm verify:fast` passes there without mutation. Item 21 step 5,
-  second reading: this session started from this file at 79K before its first read, 146K at its first edit.
-- Round 19 (`01e704f4`, graded in `codex-rounds.md`) made verify-fitway's refusal name the foreign pid that shares a
-  session's port (F105). F106-F107 and F109 go to the closing review rather than a round: the 2026-10-10 survey found
-  no worktree with an outward link (0 of 31), the merged-clean count already includes protected worktrees, and
-  F109's folder is cited by other records as well.
-- DECISIONS item 25 (cache lifetime and session length, from the transcripts): only `owner-direction-verifier` keeps a
-  one-hour prompt cache, from its next launch in a new session. The recommended restart from this file is at a
-  natural break past about 300K, never drifting beyond 400K (the user's call).
-- Item 21 step 6, the question-and-spec trial (2026-10-10, the user's yes in chat). Upstream
-  (github.com/mattpocock/skills at `49dd158d`) had turned `grill-with-docs` into a wrapper over `grilling` and `domain-modeling`.
-  `domain-modeling` writes a root GLOSSARY.md and ADRs numbered 0001-slug under the ADR folder, which clash with FITWAY's ADR-NNN, so
-  the user chose to install only `to-spec`, for Claude only and unmodified (`~/.claude/skills/to-spec`, with LICENSE
-  and SOURCE.md). The user-level `grilling` took upstream's one new line. `domain-modeling` waits for the move to
-  production (item 20). Two grilling rounds asked the user five product and taste questions. The coordinator
-  settled the technical ones and listed them for objection. The user typed `/to-spec`, because the Skill tool refuses
-  a skill with `disable-model-invocation` (F111). The spec is on the build branch at `ab504b28`
-  (D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/css-round-spec.md).
+- The audit is saved: `docs/phase-records/handoffs/agent-environment/r03/AUDIT.md` (rounds R1-R5). Every round is in
+  `docs/phase-records/handoffs/agent-environment/codex-rounds.md`, with its line in `rounds.tsv` and its side findings
+  in `findings.tsv` beside it.
+- The phase's last items (the user's list of 2026-10-11) are done:
+  - F115, round 22 (`7ab0a660`): the held press reads what the owner sees.
+  - F116, round 23 (`fda6416b`): `brief:check` resolves decision items.
+  - The rule that a check an agent scripts because the CLI cannot make it is recorded as `cli-gap:<kind>` and, on
+    its second kind, becomes a CLI feature: `docs/agent-context/WORKING_AGREEMENTS.md` §"Rules and findings".
+- The closing review's changes:
+  - round 24 (`01c01409`): the gardener measures code health, and its cleanup procedure moved to `CLEANUP.md`
+    (DECISIONS item 24);
+  - round 25 (`833ec599`): the gardener counts `rounds.tsv` and `findings.tsv`;
+  - round 26 (`c88266ea`): `codex:round resume --message-file`;
+  - round 28 (`0e89866b`): the record checkers;
+  - round 29 (`f90f4464`): the concept CSS check.
+  - The closing triage of the open findings is in `D:/fitway-temp/r03-findings-triage/REPORT.md`; its statuses are
+    written into `findings.tsv`.
+- `scripts/check-concept-css.mjs` and its test joined this milestone's owned paths (`8275d1c7`): round 13 made them,
+  but no scope named them.
 
 ## Running now
 
-- The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (next 2026-10-16),
-  `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener (each pass
-  starts branch `gardener/<date>` from `origin/main`), ending with a Windows notification.
+- Rounds 27 and 30 both stopped at the second Codex account's five-hour limit, which resets at 03:13; each worktree
+  holds the uncommitted work.
+  - Round 27 (`r03/briefs/round-27.md`, worktree `D:/Projects/fitway-worktrees/agent-environment-r03-r27`): F106,
+    F107, F109 and F117 in the gardener.
+  - Round 30 (`r03/briefs/round-30.md`, worktree `D:/Projects/fitway-worktrees/agent-environment-r03-r30`, level
+    `xhigh`): F045, F046, F112 and F119 in verify-fitway.
+  - Resume each on its thread: `pnpm codex:round resume D:/fitway-temp/codex-runs/r03-round-27`, and the same for
+    round 30.
+- The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (next 2026-10-16).
 
 ## Next steps
 
-1. Open findings (`findings.tsv`): F106-F107 (link-withheld worktrees in the gardener's counts and prose) and F109
-   (round 16c's test cites a real folder) are inputs to the closing review (Next steps 5). F108 (a pnpm setting
-   blocked one survey inside Codex's sandbox) stays open until a sandbox survey hits it again. F110 (an edge Python
-   test under a short local temp path) is outside this milestone; with TEMP on drive D, which makes no short names,
-   the local ladder no longer meets it.
-2. Step 2's real figure: `pnpm start-load -- --since 2026-10-09T19:15+03:00` after each Opus definition's first
-   launch in a new session. After a few verifier runs, check item 25's predicted saving:
-   `node D:/fitway-temp/cache-ttl-20261010/cache-usage.mjs --since 2026-10-11` (the verifier now writes one-hour
-   caches) against `cache-usage.txt` beside it.
-3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
-   `gardener/<date>` branch, merge what is accepted, write the ledger's `gardener` entry, rerun the report's final
-   survey, and show the user the folder list before they run the new cleanup script. The main checkout keeps the
-   user's uncommitted AGENTS.md edit of 2026-09-06.
-4. The environment page, private: https://claude.ai/artifact/Kx1hDDw4Z67niKMmkgwRzY; republish to that URL from
-   `D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/06eea6dd-7c5b-44ad-b20d-f63072729f39/scratchpad/env-page/`
-   (brief `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`, a standing brief the gardener lists
-   as open).
-5. Item 21 step 6 continues on the CSS round from the spec (build branch `58433873`; the two 13.5 px lists went
-   to the designer after the user's yes). The spec's seam 3 needs two additions to the verify-fitway CLI, each with
-   a planted-defect control. Under B6 they come as two rounds. Round 20 (`28a77408`, merged) added forced colours
-   and a ui-forensics 1.2.0 copy at `D:/fitway-temp/r03-r20-forensics/ui-forensics/`, graded in `codex-rounds.md`.
-   With the user's yes the copy is installed as the machine-level ui-forensics (2026-10-10; self-test 44/44, the CLI
-   renders forced without `--forensics`; 1.1.0 kept at `D:/fitway-temp/r03-r20-forensics/ui-forensics-1.1.0-backup/`).
-   Round 21 (the held press) was accepted at `6ba81a0c` after two repairs, and the copy is installed as 1.3.0, with
-   1.2.0 kept at `D:/fitway-temp/r03-r21-forensics/ui-forensics-1.2.0-backup/`. The Owner CSS round's mechanical part
-   (`691d62d5`) and its press (`b2b2f4c1`) are built. Its independent review comes next (Owner resume point, Next
-   steps 0), and that review closes step 6's trial, so the trial is graded then.
-   Grade the trial's rounds against ordinary ones on repair attempts and brief-caused failed rows. Step 7 runs on the
-   Settings designer brief. Then the closing review (it moves the gardener's weight to code health, item 24) and
-   the milestone's closure; the rest of the Owner screens follow.
+1. Resume rounds 27 and 30 after the limit resets, then grade and merge them. The held-out rows are in
+   `D:/fitway-grader/agent-environment/`.
+2. The closing review: a fresh `sonnet-researcher` on the draft at `D:/fitway-temp/r03-closing-review/brief-draft.md`.
+   Commit it as `r03/briefs/closing-review.md` with the final HEAD first.
+3. CI green on the pushed line, then fast-forward main. Close the milestone in one commit (`docs/WORKFLOW.md`
+   §"Active ledger and closed history"), and update the Owner resume point (Settings starts after this phase).
 
 ## Waiting on the user
 
-Nothing.
+- Installing the ui-forensics 1.3.1 copy (`D:/fitway-temp/r03-r22-forensics/ui-forensics/`) as the machine-level
+  skill. Until then the CLI refuses a held press with the machine-level 1.3.0 and names 1.3.1.
 
 ## Known risks
 
-- When a Codex account reaches its limit, tell the user at once; after the switch, resume each stopped run.
-- On this machine `git worktree remove` deletes through a junction (F100). Unlink junctions first; graders install
-  their own dependencies; the gardener's `remove-worktree.mjs` refuses a worktree with an outward link.
-- Claude Code's auto mode refuses to end Codex processes by hand ("interfere with workloads"), refused a ledger edit
-  and writes in another milestone's worktree as "Modify Shared Resources" until the user said yes in chat
-  (2026-10-08), and refused removing worktrees (2026-10-10); ask the user in plain words when it refuses again.
+- When a Codex account reaches its limit, tell the user at once. On the night of 2026-10-11 only, the user asked the
+  coordinator to wait for the reset instead.
+- Concurrent rounds that drive verify-fitway fail each other's fast ladder on ports 3176-3177 (F119, round 30).
+- On this machine `git worktree remove` deletes through a junction (F100). Use the gardener's `remove-worktree.mjs`.
 - Never run a generated cleanup script before the user reviews its list.
-- A brief that changes what protects or proposes a folder needs an outcome that uncited folders stay proposable,
-  measured on this machine's real temp root (round 16's Y2).
-- access-reason-cap-r01 (paused) still names parts of the deleted check-frontier-preservation scripts; its scope is
-  revisited when the user resumes it.
 
 ## Pointers
 
 - Round results and the coordinator's own changes integrate on the coordinator line codex/owner-redesign-r04
-  (worktree D:/Projects/fitway-worktrees/owner-design-exploration-r04), and main fast-forwards to it when CI passes;
-  the branch agent-environment-r03 is behind main.
+  (worktree D:/Projects/fitway-worktrees/owner-design-exploration-r04), and main fast-forwards to it when CI passes.
 - Packet: `docs/phase-records/task-packets/agent-environment-r03.yaml`; briefs: `docs/phase-records/handoffs/agent-environment/r03/briefs/`.
-- Grades: D:/fitway-temp/r03-r16-grade/, r03-r16bc-grade/, r03-r17-grade/ and r03-r19-grade/ (REPORT.md each; earlier
-  rounds beside them), D:/fitway-grader/replay/; held-out rows in D:/fitway-grader/agent-environment/ and D:/fitway-grader/owner-r04/.
-- The removed copies: their commits in `D:/fitway-grader/replay/<task>/result.bundle` and
-  `D:/fitway-grader/preserved-clones/`, the grading worktrees' uncommitted report edits in
-  `D:/fitway-temp/r03-cleanup-20261010/preserved/` (the only copy; this line keeps the gardener from proposing it).
-- Round 19's worktree `D:/Projects/fitway-worktrees/agent-environment-r03-r19` (installed dependencies, no junction) is
-  disposable once main holds `01e704f4`; its brief cites it, so the gardener will not propose it (a closing-review
-  input: briefs keep every round's worktree protected).
+- Grades: D:/fitway-temp/r03-r22-grade/ through r03-r29-grade/, each holding a REPORT.md or the grader's scripts.
