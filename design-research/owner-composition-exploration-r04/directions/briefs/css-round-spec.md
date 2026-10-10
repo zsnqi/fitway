@@ -150,9 +150,15 @@ When the round is done, the concept shows these behaviours on each device:
   cutouts.
 
 **Field text.**
-- Every input, textarea and select uses 16 px text, because each one opens a keyboard or a picker on a phone. That
-  includes the front desk code field in JetBrains Mono and the components sheet's field specimens.
-- Field height stays 44 px, and the line height follows the type role.
+- **Text fields (Codex).** Every text input and textarea uses 16 px text. Today they are 15 px. That includes the front
+  desk code field in JetBrains Mono and the components sheet's field specimens. Field height stays 44 px, and the
+  line height follows the type role.
+- **The two lists (the designer).** The Activity log's person filter and Reports' sort list are compact controls
+  whose text is 13.5 px, the label role, and they zoom the page on an iPhone too.
+  - Making them 16 px changes how the control rows look, so the form is the designer's: 16 px text, or the native
+    list kept at 16 px under a control that looks as it does today.
+  - The outcome is the user's: tapping either list never zooms the page.
+  - *Coordinator, 2026-10-10, found while writing the briefs, after the user's yes to this spec.*
 - Body text that is not in a field stays 15 px.
 - The concept's type roles record the new field size (TYP-3, TYP-6).
 
