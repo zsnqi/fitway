@@ -16,7 +16,8 @@
 - Windows PowerShell 5.1 without a profile pipes text to node, python or git as ASCII: Arabic, «» and … become `?`.
   Put such text in a file and run the file, and read back each file you write that holds it. (replay motion-lows)
 - In PowerShell run pnpm without `2>&1`. Run Playwright from PowerShell: Git Bash rewrites `/api` paths. (2026-09)
-- Drive C is full: keep temp output on D:, and set `TEMP`/`TMP` to `D:/fitway-temp` for a command that writes much. (2026-09)
+- Drive C is short: keep output on D:. `TEMP` and `TMP` are already on drive D; never point them at `D:/fitway-temp`,
+  whose folders the gardener inventories. (2026-09; agent-environment DECISIONS item 24)
 - If a source this brief names is missing, stale, or contradicts what you find, stop and report the gap instead of
   guessing. (agent-environment DECISIONS item 3)
 - Return your report as your final message, not as a file. (2026-10-02 retrospective)
