@@ -802,8 +802,12 @@ export function formatReport(report) {
 				lines.push(
 					`- ${measure}: ${total} (previous ${previous}; trend ${trend})`,
 				);
-				for (const item of value.hits ?? [])
+				for (const item of value.hits ?? []) {
 					lines.push(`  - ${item.file}:${item.line} — ${item.detail}`);
+					if (item.places)
+						for (const place of item.places)
+							lines.push(`    - ${place.file}:${place.line}`);
+				}
 			}
 			lines.push("");
 		}

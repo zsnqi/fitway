@@ -48,6 +48,22 @@ The console states `SURVEY CLEAN` or `SURVEY BLOCKED` first. Read both
 `REPORT.md` and `survey.json` in the output. Collection runs local checks
 without housekeeping; removal safety is defined in CLEANUP.md.
 
+The survey runs every `check:*` in package.json except `config.json`'s
+`notRunChecks`; each exception is reported as not run with its reason. A
+configured name missing from package.json is a blocker. Every nonzero exit
+remains a failure. Checks run serially; a mutating check is named and blocks
+the pass. pnpm's dependency preflight uses `error`, never `install`; a
+dependency mismatch withholds collection and cleanup. No dependencies or
+services are installed, and scratch files stay under the excluded output.
+
+The survey runs `brief:check` for running or next briefs without a recorded
+result in the environment round log. A clean worktree with committed work
+beyond its brief's launch HEAD waits for its round record; an unlaunched or
+ambiguous brief still gets checked. Unmeasured worktree status is explicitly
+unknown with its reason, never dirty. The **Worktrees awaiting review** section
+names old unmerged worktrees and the console counts them; review-only findings
+are deferred to the coordinator and do not by themselves block the pass.
+
 ## Pass procedure
 
 1. Read `AGENTS.md` and the open ledger. Establish ownership before a change.
@@ -68,7 +84,7 @@ without housekeeping; removal safety is defined in CLEANUP.md.
    proposes only the generated script for user or coordinator review.
 
 5. Replace `.agents/skills/gardener/REPORT.md` with the last pass's date,
-   outcome, survey path and findings, the five-class assessment, change made
+   outcome, survey path and findings, the six-class assessment, change made
    or proposed, verification and items waiting for the coordinator. This is
    one rolling report, not a new milestone. Reports themselves are pass
    bookkeeping, not the bounded correction. Include the coordinator's proposed
@@ -128,7 +144,7 @@ ambiguity, and any action outside authorization go to the coordinator as
 proposals. Folder deletion always belongs to the user. Remote branch deletion
 needs explicit authorization; the survey does not fetch or push.
 
-- **clean:** collection and all five assessments complete, no actionable
+- **clean:** collection and all six assessments complete, no actionable
   findings, no correction needed.
 - **changed:** one authorized correction verified, collection complete, and
   every remaining flag resolved or explicitly deferred to the coordinator.

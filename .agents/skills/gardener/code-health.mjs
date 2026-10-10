@@ -1,4 +1,6 @@
 import path from "node:path";
+import { scanDuplication } from "./code-health-duplication.mjs";
+import { scanSource } from "./code-health-source.mjs";
 
 export const MEASURES = [
 	"giantFiles",
@@ -23,45 +25,6 @@ function hit(file, line, detail) {
 	return { file, line, detail };
 }
 
-function commentLines(text) {
-	const result = [];
-	let block = false;
-	for (const [index, value] of lines(text).entries()) {
-		let content = "";
-		let cursor = 0;
-		while (cursor < value.length) {
-			if (block) {
-				const end = value.indexOf("*/", cursor);
-				content += value.slice(cursor, end < 0 ? value.length : end + 2);
-				if (end < 0) {
-					cursor = value.length;
-				} else {
-					block = false;
-					cursor = end + 2;
-				}
-			} else {
-				const lineComment = value.indexOf("//", cursor);
-				const blockStart = value.indexOf("/*", cursor);
-				if (lineComment < 0 && blockStart < 0) break;
-				if (lineComment >= 0 && (blockStart < 0 || lineComment < blockStart)) {
-					content += value.slice(lineComment);
-					break;
-				}
-				content += value.slice(blockStart);
-				const end = value.indexOf("*/", blockStart + 2);
-				if (end < 0) {
-					block = true;
-					cursor = value.length;
-				} else {
-					cursor = end + 2;
-				}
-			}
-		}
-		result.push({ line: index + 1, text: content });
-	}
-	return result;
-}
-
 function scanGiantFiles(files) {
 	return files
 		.filter((item) => sourceFile(item.file))
@@ -69,143 +32,6 @@ function scanGiantFiles(files) {
 			const count = lines(item.text).length;
 			return count > 800 ? [hit(item.file, 1, `${count} lines`)] : [];
 		});
-}
-
-function scanTypeEscapes(files) {
-	const result = [];
-	for (const item of files.filter(
-		(entry) => path.extname(entry.file).toLowerCase() === ".ts",
-	)) {
-		for (const [index, value] of lines(item.text).entries()) {
-			if (
-				/\bany\b/.test(value) &&
-				/:\s*(?:[A-Za-z_$][\w$]*\s*)?\bany\b|\bas\s+any\b|\bany\s*(?:[|&[<>,;) ]|$)|<\s*any\b|\b(?:type|interface)\b.*\bany\b/.test(
-					value,
-				)
-			) {
-				result.push(hit(item.file, index + 1, "any used as a type"));
-			}
-			if (/\bas\s+unknown\s+as\s+[A-Za-z_$][\w$<>.[\]| &]*/.test(value)) {
-				result.push(hit(item.file, index + 1, "cast through unknown"));
-			}
-			if (/@ts-(?:ignore|expect-error)\b/.test(value)) {
-				result.push(
-					hit(
-						item.file,
-						index + 1,
-						value.match(/@ts-(?:ignore|expect-error)\b/)[0],
-					),
-				);
-			}
-		}
-	}
-	return result;
-}
-
-function scanSuppressions(files) {
-	return files.flatMap((item) =>
-		commentLines(item.text).flatMap(({ line, text }) => {
-			const matches =
-				text.match(/\b(?:biome-ignore|eslint-disable)(?:[-\w]*)?\b/g) ?? [];
-			return matches.map((value) => hit(item.file, line, value));
-		}),
-	);
-}
-
-function scanCommentsForWorkarounds(files) {
-	return files.flatMap((item) =>
-		commentLines(item.text).flatMap(({ line, text }) => {
-			const matches = text.match(/\b(?:TODO|FIXME|HACK|workaround)\b/gi) ?? [];
-			return matches.map((value) => hit(item.file, line, `${value} marker`));
-		}),
-	);
-}
-
-function scanRepeatedWorkarounds(files) {
-	const result = scanCommentsForWorkarounds(files);
-	for (const item of files) {
-		const ext = path.extname(item.file).toLowerCase();
-		for (const [index, value] of lines(item.text).entries()) {
-			if (ext === ".css" && /!important\b/.test(value)) {
-				result.push(hit(item.file, index + 1, "!important"));
-			}
-			if (
-				/requestAnimationFrame\s*\([^\n]*requestAnimationFrame\s*\(/.test(value)
-			) {
-				result.push(hit(item.file, index + 1, "nested requestAnimationFrame"));
-			}
-			if (
-				/setTimeout\s*\([^;\n]*,\s*0\s*\)/.test(value) ||
-				/setTimeout\s*\(\s*[^,;\n]+\)/.test(value)
-			) {
-				result.push(
-					hit(item.file, index + 1, "zero or omitted setTimeout delay"),
-				);
-			}
-		}
-		for (const match of item.text.matchAll(
-			/requestAnimationFrame\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*(?:\{[\s\S]{0,500}?requestAnimationFrame\s*\(|requestAnimationFrame\s*\()/g,
-		)) {
-			const line = item.text.slice(0, match.index).split(/\r?\n/).length;
-			if (
-				!result.some(
-					(entry) =>
-						entry.file === item.file &&
-						entry.line === line &&
-						entry.detail === "nested requestAnimationFrame",
-				)
-			) {
-				result.push(hit(item.file, line, "nested requestAnimationFrame"));
-			}
-		}
-	}
-	return result;
-}
-
-function scanDuplication(files) {
-	const sequences = new Map();
-	for (const item of files) {
-		const values = lines(item.text).map((value) => value.trim());
-		let start = 0;
-		while (start < values.length) {
-			if (!values[start]) {
-				start += 1;
-				continue;
-			}
-			let end = start;
-			while (end < values.length && values[end]) end += 1;
-			const run = values.slice(start, end);
-			for (let offset = 0; offset + 10 <= run.length; offset += 1) {
-				const key = run.slice(offset, offset + 10).join("\n");
-				const occurrences = sequences.get(key) ?? [];
-				occurrences.push({ file: item.file, line: start + offset + 1 });
-				sequences.set(key, occurrences);
-			}
-			start = end;
-		}
-	}
-	const duplicated = new Set();
-	for (const occurrences of sequences.values()) {
-		if (occurrences.length < 2) continue;
-		for (const occurrence of occurrences)
-			duplicated.add(`${occurrence.file}:${occurrence.line}`);
-	}
-	const result = [];
-	const seen = new Set();
-	for (const occurrences of sequences.values()) {
-		if (occurrences.length < 2) continue;
-		for (const occurrence of occurrences) {
-			const key = `${occurrence.file}:${occurrence.line}`;
-			if (duplicated.has(`${occurrence.file}:${occurrence.line - 1}`)) continue;
-			if (!seen.has(key)) {
-				seen.add(key);
-				result.push(
-					hit(occurrence.file, occurrence.line, "10-line duplicate run"),
-				);
-			}
-		}
-	}
-	return result.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
 }
 
 function idsReferenced(text) {
@@ -261,11 +87,12 @@ function scanBoundaryBreaks(files, sharedFiles) {
 }
 
 export function scanScope(files, { sharedFiles = [] } = {}) {
+	const source = files.map(scanSource);
 	const measures = {
 		giantFiles: scanGiantFiles(files),
-		typeEscapes: scanTypeEscapes(files),
-		suppressions: scanSuppressions(files),
-		repeatedWorkarounds: scanRepeatedWorkarounds(files),
+		typeEscapes: source.flatMap((item) => item.typeEscapes),
+		suppressions: source.flatMap((item) => item.suppressions),
+		repeatedWorkarounds: source.flatMap((item) => item.repeatedWorkarounds),
 		duplication: scanDuplication(files),
 		boundaryBreaks: scanBoundaryBreaks(files, sharedFiles),
 	};
@@ -297,7 +124,25 @@ function parsePreviousReport(text) {
 	const match = text.match(
 		/^## codeHealth\r?\n\r?\n```json\r?\n([\s\S]*?)\r?\n```/m,
 	);
-	if (!match) return null;
+	if (!match) {
+		const section = text.match(
+			/^## Code health\r?\n([\s\S]*?)(?=^## |$(?![\s\S]))/m,
+		)?.[1];
+		if (!section) return null;
+		const scopes = [];
+		for (const scope of section.matchAll(
+			/^### (\w+) \((?:ok|unknown)\)\r?\n([\s\S]*?)(?=^### |$(?![\s\S]))/gm,
+		)) {
+			const measures = {};
+			for (const value of scope[2].matchAll(/^- (\w+): (\d+|unknown)\b/gm)) {
+				measures[value[1]] = {
+					total: value[2] === "unknown" ? null : Number(value[2]),
+				};
+			}
+			scopes.push({ name: scope[1], measures });
+		}
+		return { scopes };
+	}
 	try {
 		return JSON.parse(match[1]);
 	} catch {
@@ -358,7 +203,10 @@ export async function collectCodeHealth({
 				previous?.scopes?.find((item) => item.name === name),
 			);
 		} catch (error) {
-			return unknownScope(name, error.message, source);
+			return addTrends(
+				unknownScope(name, error.message, source),
+				previous?.scopes?.find((item) => item.name === name),
+			);
 		}
 	};
 	const conceptScope = readScope("concept", concept.branch, () =>

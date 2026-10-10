@@ -3,20 +3,29 @@
 Read this file only when a pass proposes a folder, branch, registration, or
 worktree removal. The survey never performs housekeeping.
 
+Merged branches and worktrees are judged against **`origin/main` as last
+fetched**, with its exact commit in the report. The survey never fetches or
+falls back to local main.
+
 The launcher chooses a fresh output directory; use `-Out <absolute-fresh-run>`
 and `-TempRoot <absolute-temp-root>` (default `D:/fitway-temp`). A folder is
 eligible only when its newest modification is at least seven days old, no open
 record or tracked checkout text file cites it by path, and every link,
 readability, and worktree guard passes. The rolling report's explicit
 `## Folder removal proposals` section is a proposal list, not evidence;
-citations elsewhere remain protected.
+citations elsewhere remain protected. A prose word matching a folder name is
+not a citation. Survey and cleanup use the same citation rule and name the
+original citing file and line.
 
 Git's binary classification, including attributes, excludes binary files from
 folder citation sources. A citation of the temp root or a path above it,
 including a drive root or its `/d/` spelling, protects no folder. Citations of
 a folder or paths below it protect that folder and related folders below the
-temp root. Placeholder segments protect only the complete path prefix below
-the temp root.
+temp root. For a path containing `<...>`, `*`, `?`, or `{...}`, only complete
+path segments before the first segment containing a placeholder name a
+protected folder, and that prefix must be below the temp root. Thus
+`D:/fitway-temp/keep/out/*.png` protects `keep`, while
+`D:/fitway-temp/<run>/` and `D:/fitway-temp/verify-fitway-*` protect no folder.
 
 Every registered worktree's status and links are inspected at every depth.
 Junctions and directory/file symbolic links are read without traversing them.
@@ -51,4 +60,3 @@ The final survey is run with a fresh `-Out` and
 rechecks safety and emits exactly the report's list; an unsafe listed folder
 blocks collection. The coordinator reruns the final command after integration
 and bookkeeping; never edit the report afterward.
-
