@@ -3,6 +3,8 @@ name: owner-direction-verifier
 description: Independently verifies one FITWAY Owner concept-direction delivery against the coordinator's brief and checklist, from code, rendered frames, measurements and real-time video, and returns an evidence packet. Never edits the work it verifies. Runs at high; the coordinator passes effort xhigh only where evidence shows high misses something.
 model: opus
 effort: high
+experimental:
+  cacheTtl: 1h
 tools:
   - Read
   - Write

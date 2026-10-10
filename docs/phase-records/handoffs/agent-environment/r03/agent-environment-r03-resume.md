@@ -3,7 +3,7 @@
 
 - **As of:** codex/owner-redesign-r04, 2026-10-10 08:50 +03:00 (rounds 16-19 merged, F100-F105 fixed; the user ran
   both cleanup scripts; TEMP is `D:\Temp`)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-24,
+- **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-25,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -35,6 +35,9 @@
   session's port (F105). F106-F107 and F109 go to the closing review rather than a round: the 2026-10-10 survey found
   no worktree with an outward link (0 of 31), the merged-clean count already includes protected worktrees, and
   F109's folder is cited by other records as well.
+- DECISIONS item 25 (cache lifetime and session length, from the transcripts): only `owner-direction-verifier` keeps a
+  one-hour prompt cache, from its next launch in a new session. The recommended restart from this file is at a
+  natural break past about 300K, never drifting beyond 400K (the user's call).
 
 ## Running now
 

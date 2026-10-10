@@ -288,3 +288,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     (F100, F104). The phase's closing review moves its weight to the concept's code health and repeated anti-patterns
     (item 20's code-health section) and keeps cleanup to what a check makes safe. The user's Windows TEMP and TMP
     moved from `D:\fitway-temp` to `D:\Temp` the same night, so other programs' temp folders leave FITWAY's.
+25. **Prompt-cache lifetime and session length (the user asked, 2026-10-10; coordinator, from the transcripts).**
+    Evidence: `D:/fitway-temp/cache-ttl-20261010/REPORT.md` (every FITWAY transcript since 2026-09-20, costed at API
+    list ratios). Subagents are 57% of the spend; a subagent request follows a gap over five minutes in 169 of 15,419
+    requests. A one-hour TTL for every subagent raises their spend by 2% (writes cost 2x instead of 1.25x); for the
+    verifier, whose renders and videos wait 5-10 minutes, it lowers it by 4-7%. So `owner-direction-verifier` alone sets
+    `experimental.cacheTtl: 1h` and `subagentPromptCacheTtl` keeps its default. The coordinator already writes one-hour
+    caches. 31% of its spend came at contexts over 400K, with sessions up to 965K (Opus 5.5 auto-compacts at about
+    967K); restarting from the resume file at about 300K saves 13-18% of it in simulation, flat from 250K to 350K. The
+    resume file stays the handoff, since a compaction summary is local to one session; an `autoCompactWindow` safety
+    net is the user's setting.
