@@ -40,6 +40,10 @@
     transparent outlines; pushed). The build's concept CSS check reports only two named allowances (programmatic
     focus targets, F113). Next: agent-environment round 21 (held press), then the designer's pressed state and the two
     lists, then the user's try on both phones (item 7) with the whole round.
+- The pressed state and the two lists: a fresh `owner-direction-designer` (xhigh) launched 2026-10-10 13:40 on
+  `designer-pressed-state.md` (`d290b90e` on the build branch), rendering from `file://` while agent-environment round
+  21 holds 3176-3177; notes and frames in `D:/fitway-temp/owner-r04-pressed/`. A cut-off designer is replaced, never
+  resumed (rounds item 10).
 - Report-only, under load only: the dialogs', popover's and records card's parts split across threads under a planted
   stall; rounds item 11 to decide whether they are errors on a real machine.
 
