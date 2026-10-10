@@ -48,6 +48,12 @@ Git's binary classification (including attributes) excludes binary files from
 folder citation sources. A citation of the temp root or a path above it, including
 a drive root or its `/d/` spelling, protects no folder. Citations of a folder or
 paths below it still protect that folder and related folders below the temp root.
+For a path containing `<...>`, `*`, `?` or `{...}`, only complete path segments
+before the first segment containing a placeholder name a protected folder, and
+that prefix must be below the temp root. Thus `D:/fitway-temp/keep/out/*.png`
+protects `keep`, while `D:/fitway-temp/<run>/` and
+`D:/fitway-temp/verify-fitway-*` protect no folder. Survey and cleanup use the
+same rule and name the original citing file and line.
 
 The console states the outcome first: `SURVEY CLEAN` or `SURVEY BLOCKED`, then
 whether collection completed. A blocked outcome may still have a usable proposal.
