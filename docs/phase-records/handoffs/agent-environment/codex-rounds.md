@@ -901,3 +901,21 @@ held-out checks live outside the repository and never appear here or in a brief.
   gardener suite passes 81 of 81 on the merge.
 - **Failure cause:** G2, G4 and G8 come from the code, not the brief: the brief named TypeScript type use, and
   "unchanged in meaning".
+
+## agent-environment-r03 round 29: `r03/briefs/round-29.md`, result `f90f4464` (level high)
+
+- **Set-up:** the closing triage's open lines on `check:concept-css` (F041-F044, F113), a check that round 13 made but
+  that no milestone's scope named until `8275d1c7`. The brief's commit is `8275d1c7`; the base on the concept
+  archive at `d1a01f3c` gives 6 findings. Held-out rows W1-W7.
+- **Brief rows, as Codex graded them:** R1-R5 pass. R6 failed only on the fast ladder: its CLI contracts failed while
+  ports 3176-3177 were held by round 22's live sessions (F119).
+  - On `bb637f1f` the new tests give 26 failed and 2 passed; after the change, 112 pass.
+  - The concept goes from 6 findings to 5: the subject restricted to `[tabindex="-1"]` is exempt.
+  - Two older fixtures that accepted a decorative ring now fail, as R4 requires.
+- **Held-out** (`D:/fitway-temp/r03-r29-grade/`): 7 of 7.
+  - W1-W5 pass, 16 fixture cases in all; the base gets 7 of them wrong.
+  - W6: the change in the concept's count is explained finding by finding.
+  - W7: the base fails the resting-border case.
+  - The coordinator ran the fast ladder once the ports were free: it passes without mutation (179 s).
+- **Failure cause:** none in the round. The ladder failure comes from concurrent rounds sharing the verification
+  ports (F119).
