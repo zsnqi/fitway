@@ -50,6 +50,13 @@
 
 ## Running now
 
+- Round 20 (brief `docs/phase-records/handoffs/agent-environment/r03/briefs/round-20.md`, Codex high, launched
+  2026-10-10 09:50): verify-fitway gains a forced-colours axis, and a ui-forensics copy at
+  `D:/fitway-temp/r03-r20-forensics/ui-forensics/` gains the matching option (1.2.0). It runs in the worktree
+  D:/Projects/fitway-worktrees/agent-environment-r03-r20, with the run folder `D:/fitway-temp/codex-runs/r03-round-20`.
+  Resume it with `pnpm codex:round -- resume <run folder>`. The held-out rows and the hashes of the machine-level
+  ui-forensics are in D:/fitway-grader/agent-environment/ (`r03-round20-*`). After grading, the coordinator asks the
+  user before installing the copy over the machine-level skill.
 - The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (next 2026-10-16),
   `scripts/agent-environment/gardener-weekly.ps1`, in the worktree D:/Projects/fitway-worktrees/gardener (each pass
   starts branch `gardener/<date>` from `origin/main`), ending with a Windows notification.
@@ -73,9 +80,9 @@
    `D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/06eea6dd-7c5b-44ad-b20d-f63072729f39/scratchpad/env-page/`
    (brief `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`, a standing brief the gardener lists
    as open).
-5. Item 21 step 6 continues on the CSS round from the spec (`ab504b28`). First, a small round in this milestone adds
-   two axes to the verify-fitway CLI: forced colours, and a held press on a named control. Each axis comes with a
-   planted-defect control (the spec's seam 3). Then the Owner round runs: Codex's brief for the mechanical part,
+5. Item 21 step 6 continues on the CSS round from the spec (`ab504b28`). The spec's seam 3 needs two additions to
+   the verify-fitway CLI, each with a planted-defect control. Under B6 they come as two rounds: round 20 adds forced
+   colours (running), and round 21 adds a held press on a named control. Then the Owner round runs: Codex's brief for the mechanical part,
    then the designer's for the pressed state, each written from the spec. Grade it against ordinary rounds on
    repair attempts and brief-caused failed rows. Step 7 runs on the Settings designer brief. Then the closing review
    (it moves the gardener's weight to code health, item 24) and the milestone's closure; the rest of the Owner
