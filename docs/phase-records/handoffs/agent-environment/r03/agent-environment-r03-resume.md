@@ -77,17 +77,16 @@
    to the designer after the user's yes). The spec's seam 3 needs two additions to the verify-fitway CLI, each with
    a planted-defect control. Under B6 they come as two rounds. Round 20 (`28a77408`, merged) added forced colours
    and a ui-forensics 1.2.0 copy at `D:/fitway-temp/r03-r20-forensics/ui-forensics/`, graded in `codex-rounds.md`.
-   Round 21 adds a held press on a named control. The Owner round's mechanical part (Codex) comes after round 20's
-   copy is installed. Then round 21, then the designer's pressed state. Both Owner briefs are written from the
+   With the user's yes the copy is installed as the machine-level ui-forensics (2026-10-10; self-test 44/44, the CLI
+   renders forced without `--forensics`; 1.1.0 kept at `D:/fitway-temp/r03-r20-forensics/ui-forensics-1.1.0-backup/`).
+   Round 21 adds a held press on a named control. The Owner round's mechanical part (Codex) comes next. Then round 21, then the designer's pressed state. Both Owner briefs are written from the
    spec. Grade them against ordinary rounds on repair attempts and brief-caused failed rows. Step 7 runs on the
    Settings designer brief. Then the closing review (it moves the gardener's weight to code health, item 24) and
    the milestone's closure; the rest of the Owner screens follow.
 
 ## Waiting on the user
 
-- The user's yes to install the ui-forensics 1.2.0 copy over the machine-level skill (`~/.agents/skills/ui-forensics`,
-  shared with Codex): the hashes of the 1.1.0 install are in D:/fitway-grader/agent-environment/
-  (`r03-round20-forensics-hashes.txt`); keep a backup of 1.1.0 beside the copy.
+Nothing.
 
 ## Known risks
 
