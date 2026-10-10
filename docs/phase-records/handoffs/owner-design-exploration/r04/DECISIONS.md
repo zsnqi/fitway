@@ -454,6 +454,14 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - Problems and improvements found later are welcome as usual; nothing here freezes the look.
     - Coordinator: the press refactor (`codex-press-hook.md`) keeps every frame equal to `3b673daa` because that is its
       brief's own outcome (P3), not a rule of the user's. Its close is reported to the user in a line.
+44. **Daily gets its own files** (the user, 2026-10-11, «ايه لو كان هذا يخلي الكود انظف», on the gardener's first
+    code-health reading). Daily's code and styles live inside the shared files: 93 of the 110 places where a shared file
+    names one page's elements are Daily's, which is why `app.js` is the concept's largest file, at over 3,200 lines.
+    Reports, Access and Activity each have their own files.
+    - Daily moves into its own script and stylesheet, as the other pages have. The page looks and behaves the same:
+      the frames before and after compare equal with the verify-fitway CLI.
+    - It is the first concept round after the environment phase, before Settings (Next steps in the resume point).
+    - The gardener's next readings show whether the shared files' size and boundary counts fall.
 
 ## How this milestone's rounds run
 

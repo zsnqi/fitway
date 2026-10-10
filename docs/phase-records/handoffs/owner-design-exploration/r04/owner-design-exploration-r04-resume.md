@@ -3,7 +3,7 @@
 
 - **As of:** codex/owner-redesign-r04 at `435b5268`, 2026-10-11 00:30 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-43), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 12-16, the environment phase), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-44), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 12-16, the environment phase), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -67,6 +67,8 @@ A plain «كمّل» starts the first that is open, in that order.
    The concept CSS check, and now `check-press-layer`, join the fast ladder only once the build is on the trunk.
 
 1. **After the environment phase:** the Owner screens resume with its tools (the verify-fitway skill and the CLI).
+   The first concept round moves Daily into its own script and stylesheet, before Settings (DECISIONS 44); the
+   frames before and after compare equal.
 2. **Then Settings**, Operations (the header status's details) and Monitoring, each per rounds items 6 and 8-11 in
    DECISIONS, built with the motion and checked with the new tools.
 3. **Daily and Reports' last round:** the user's open comment on Reports' «معدّل الموجودين» card (`#fig-avg`,
