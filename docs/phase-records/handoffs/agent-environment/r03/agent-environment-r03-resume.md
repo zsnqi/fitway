@@ -32,9 +32,9 @@
 
 - Rounds 27 and 30 both stopped at the second Codex account's five-hour limit, which resets at 03:13; each worktree
   holds the uncommitted work.
-  - Round 27 (`r03/briefs/round-27.md`, worktree `D:/Projects/fitway-worktrees/agent-environment-r03-r27`): F106,
+  - Round 27 (`docs/phase-records/handoffs/agent-environment/r03/briefs/round-27.md`, worktree `D:/Projects/fitway-worktrees/agent-environment-r03-r27`): F106,
     F107, F109 and F117 in the gardener.
-  - Round 30 (`r03/briefs/round-30.md`, worktree `D:/Projects/fitway-worktrees/agent-environment-r03-r30`, level
+  - Round 30 (`docs/phase-records/handoffs/agent-environment/r03/briefs/round-30.md`, worktree `D:/Projects/fitway-worktrees/agent-environment-r03-r30`, level
     `xhigh`): F045, F046, F112 and F119 in verify-fitway.
   - Resume each on its thread: `pnpm codex:round resume D:/fitway-temp/codex-runs/r03-round-27`, and the same for
     round 30.
@@ -45,7 +45,7 @@
 1. Resume rounds 27 and 30 after the limit resets, then grade and merge them. The held-out rows are in
    `D:/fitway-grader/agent-environment/`.
 2. The closing review: a fresh `sonnet-researcher` on the draft at `D:/fitway-temp/r03-closing-review/brief-draft.md`.
-   Commit it as `r03/briefs/closing-review.md` with the final HEAD first.
+   Commit it as closing-review.md in the same briefs folder with the final HEAD first.
 3. CI green on the pushed line, then fast-forward main. Close the milestone in one commit (`docs/WORKFLOW.md`
    §"Active ledger and closed history"), and update the Owner resume point (Settings starts after this phase).
 
