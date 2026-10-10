@@ -257,7 +257,9 @@ describe("gardener round 8 regressions", () => {
 				out,
 				tempRoot,
 			});
-			const folders = await collectFolders([], [], out, tempRoot);
+			const folders = await collectFolders([], [], out, tempRoot, {
+				checkout: f.checkout,
+			});
 			expect(folders.map((folder) => folder.path)).toEqual([
 				path.join(tempRoot, "evidence.").replaceAll("\\", "/"),
 			]);

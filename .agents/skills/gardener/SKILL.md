@@ -39,7 +39,7 @@ From PowerShell in any FITWAY checkout, run this unchanged. The launcher resolve
 The launcher chooses a fresh output directory; use `-Out <absolute-fresh-run>`
 to name it and `-TempRoot <absolute-temp-root>` to choose the inventory root
 (default `D:/fitway-temp`). Folders qualify only when their newest modification
-is at least **7 days** old, no open record or rolling report cites them by path,
+is at least **7 days** old, no open record or tracked checkout file cites them by path,
 and every link, readability and worktree guard passes. The rolling report's
 explicit `## Folder removal proposals` section is a proposal list, not evidence;
 citations elsewhere, including its survey folders, remain protected. A prose word matching a
@@ -68,7 +68,15 @@ housekeeping runs during the survey. Merged branches and worktrees are judged
 against **`origin/main` as last fetched**, with its exact commit in the report;
 the survey does not fetch or fall back to local main. Unmeasured worktree status
 is explicitly unknown with its reason, never described as dirty.
-Every registered worktree's status is attempted. Old unmerged, unreferenced worktrees
+Every registered worktree's status and links are inspected. At every depth, junctions
+and directory/file symbolic links are read without traversing them. An external or
+missing target, an unreadable link or subtree, or an unmeasured inspection withholds
+removal; the report names every link and its target/error even for protected worktrees.
+Links whose resolved targets are all inside the worktree (including pnpm's layout)
+remain eligible. Worktree proposals run `remove-worktree.mjs`, which rechecks links
+and eligibility at execution, unlinks verified internal links themselves without
+following their targets, then invokes Git; never substitute bare `git worktree remove`.
+Old unmerged, unreferenced worktrees
 include branch, last commit date and status for coordinator review, never removal.
 The invoking checkout and weekly gardener worktree are always excluded from removal.
 The weekly location is configured once in this directory's `config.json`;
@@ -96,9 +104,13 @@ findings are deferred to the coordinator and do not by themselves block the pass
    command, exit code and proof line. A failed verification is **blocked**.
    For folders, only propose the generated `cleanup.mjs` for the user to run:
    `node <survey-output>/cleanup.mjs`. Never run a real cleanup yourself.
-   It uses `rmdir /s /q` with a `\\?\` absolute path, rechecks open records and
+   It uses `rmdir /s /q` with a `\\?\` absolute path, rechecks open records, every
+   tracked checkout file's current path citations, and
    worktree cleanliness, skips unsafe candidates, continues after failures,
-   and reports each result. Folder age/size alone never authorizes deletion.
+   and reports each result. A citation in any tracked file (open, closed, archived,
+   code or other content) protects the named folder, its ancestors and descendants
+   under the existing citation rules; refusals name the citing file and line.
+   Folder age/size alone never authorizes deletion.
    Its real deletion regression tests run only on disposable test-created folders.
 5. Replace `.agents/skills/gardener/REPORT.md` with the last pass's date,
    outcome, survey path and findings, the five-class assessment, change made

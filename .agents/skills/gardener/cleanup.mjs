@@ -1,8 +1,9 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, rmSync } from "node:fs";
 import path from "node:path";
-import { changedRecords, classifyFolders, key } from "./facts.mjs";
+import { changedRecords, classifyFolders, key, references } from "./facts.mjs";
 import {
+	collectFolderRecords,
 	collectGit,
 	collectRecords,
 	measureFolder,
@@ -27,6 +28,15 @@ export async function cleanup(snapshot, { checkout = root } = {}) {
 				continue;
 			}
 			const context = await collectRecords({ checkout });
+			const folderRecords = await collectFolderRecords(context.records, {
+				checkout,
+				tempRoot,
+			});
+			const citations = references(candidate.path, folderRecords, { tempRoot });
+			if (citations.length)
+				throw new Error(
+					`Folder cited by ${citations.map((citation) => `${citation.source}:${citation.line}: ${citation.text}`).join("; ")}`,
+				);
 			const changed = changedRecords(snapshot.records, context.records);
 			if (changed.length)
 				throw new Error(
@@ -36,7 +46,7 @@ export async function cleanup(snapshot, { checkout = root } = {}) {
 			const measured = await measureFolder(candidate.path);
 			const [current] = classifyFolders(
 				[measured],
-				context.records,
+				folderRecords,
 				state.worktrees,
 				tempRoot,
 				Date.now(),

@@ -62,6 +62,9 @@ describe("gardener round 8b", () => {
 				exists: true,
 				merged: true,
 				status: "",
+				linksMeasured: true,
+				links: [],
+				linkErrors: [],
 			})),
 			[],
 			"D:/current",
@@ -242,7 +245,13 @@ describe("gardener round 8b", () => {
 			]);
 			git(["update-ref", "refs/remotes/origin/main", "HEAD"]);
 			const context = await collectRecords({ checkout });
-			const measured = await collectFolders(context.records, [], out, tempRoot);
+			const measured = await collectFolders(
+				context.records,
+				[],
+				out,
+				tempRoot,
+				{ checkout },
+			);
 			expect(measured.map((folder) => path.basename(folder.path))).toEqual([
 				"old",
 			]);
