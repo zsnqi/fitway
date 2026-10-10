@@ -389,6 +389,57 @@ describe("L2 resume", () => {
 		expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
 	});
 	it.each([
+		[
+			"UTF-8 BOM",
+			(text: string) =>
+				Buffer.concat([
+					Buffer.from([0xef, 0xbb, 0xbf]),
+					Buffer.from(text, "utf8"),
+				]),
+		],
+		["UTF-8", (text: string) => Buffer.from(text, "utf8")],
+		[
+			"UTF-16LE BOM",
+			(text: string) =>
+				Buffer.concat([
+					Buffer.from([0xff, 0xfe]),
+					Buffer.from(text, "utf16le"),
+				]),
+		],
+		[
+			"UTF-16BE BOM",
+			(text: string) => {
+				const littleEndian = Buffer.from(text, "utf16le");
+				for (let index = 0; index < littleEndian.length; index += 2)
+					[littleEndian[index], littleEndian[index + 1]] = [
+						littleEndian[index + 1],
+						littleEndian[index],
+					];
+				return Buffer.concat([Buffer.from([0xfe, 0xff]), littleEndian]);
+			},
+		],
+	])("decodes %s message files and keeps line endings", async (_name, encode) => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		const text = `quotes: "double" and 'single'\r\nالعربية «كما هي»\n`;
+		const expected = Buffer.from(text, "utf8");
+		const messageFile = path.join(f.root, "encoded message.txt");
+		writeFileSync(messageFile, encode(text));
+		const result = f.invoke(["resume", f.run, "--message-file", messageFile]);
+		expect(result.status, result.output).toBe(0);
+		expect(Buffer.from(f.captured().input, "base64")).toEqual(expected);
+	});
+	it("refuses invalid UTF-8 without a BOM and names the file", () => {
+		const f = fixture();
+		expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+		rmSync(f.capture);
+		const messageFile = path.join(f.root, "invalid message.txt");
+		writeFileSync(messageFile, Buffer.from([0x61, 0xc3, 0x28]));
+		const result = f.invoke(["resume", f.run, "--message-file", messageFile]);
+		refused(f, result, "message file is not valid UTF-8; write it as UTF-8");
+		expect(result.stderr).toContain(messageFile);
+	});
+	it.each([
 		["missing", "message file not found"],
 		["empty", "message file is empty"],
 	])("refuses a %s message file", (kind, reason) => {
@@ -768,6 +819,38 @@ describe("L4 shell and byte parity", () => {
 			);
 			expect(bash.status, bash.stdout + bash.stderr).toBe(0);
 			expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+		},
+	);
+	it.skipIf(process.platform !== "win32")(
+		"decodes PowerShell Out-File and Set-Content defaults",
+		() => {
+			const f = fixture();
+			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+			const outFile = path.join(f.root, "out-file message.txt");
+			const setFile = path.join(f.root, "set-content message.txt");
+			const quote = (value: string) => `'${value.replaceAll("'", "''")}'`;
+			const powershell = spawnSync(
+				"powershell.exe",
+				[
+					"-NoProfile",
+					"-Command",
+					`"العربية\`r\`nASCII" | Out-File -LiteralPath ${quote(outFile)}; "العربية\`r\`nASCII" | Set-Content -LiteralPath ${quote(setFile)}`,
+				],
+				{ cwd: f.root, encoding: "utf8", windowsHide: true },
+			);
+			expect(powershell.status, powershell.stdout + powershell.stderr).toBe(0);
+			expect(
+				f.invoke(["resume", f.run, "--message-file", outFile]).status,
+			).toBe(0);
+			expect(Buffer.from(f.captured().input, "base64")).toEqual(
+				Buffer.from("العربية\r\nASCII\r\n", "utf8"),
+			);
+			expect(
+				f.invoke(["resume", f.run, "--message-file", setFile]).status,
+			).toBe(0);
+			expect(Buffer.from(f.captured().input, "base64")).toEqual(
+				Buffer.from("???????\r\nASCII\r\n", "utf8"),
+			);
 		},
 	);
 });

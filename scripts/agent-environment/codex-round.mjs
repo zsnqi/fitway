@@ -16,6 +16,7 @@ import path from "node:path";
 import { createInterface } from "node:readline";
 import { finished } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
+import { TextDecoder } from "node:util";
 import { checkBrief, formatBriefResult } from "./check-brief.mjs";
 import { readGit } from "./git-context.mjs";
 import { samePath } from "./path-identity.mjs";
@@ -33,13 +34,42 @@ Relative brief and run paths start at the repository root, in either shell.
 Default run folder: ${process.platform === "win32" ? "D:/fitway-temp" : tmpdir()}/codex-round-<id>.
 Resume allows unfinished changes, keeps each event stream, and updates last-message.md.
 --message sends the exact text instead of the saved launch input.
---message-file reads the exact bytes from a non-empty file instead of the saved launch input;
+--message-file decodes UTF-8 (with or without a BOM) or UTF-16 files with a BOM,
+then sends UTF-8 without the BOM; invalid no-BOM bytes are refused;
 use this shell-safe form for quotes, backslashes, Unicode or multiline text.
 After a run, start-load.json records the thread's first request (input tokens) from
 Codex's session file under CODEX_HOME (default ~/.codex), unless the folder has one.`;
 
 function resolvePath(value) {
 	return path.resolve(repositoryRoot, value.replaceAll("\\", "/"));
+}
+
+function decodeMessageFile(bytes, filename) {
+	const startsWith = (...prefix) =>
+		prefix.every((value, index) => bytes[index] === value);
+	let encoding = "utf-8";
+	let offset = 0;
+	if (startsWith(0xef, 0xbb, 0xbf)) {
+		offset = 3;
+	} else if (startsWith(0xff, 0xfe)) {
+		encoding = "utf-16le";
+		offset = 2;
+	} else if (startsWith(0xfe, 0xff)) {
+		encoding = "utf-16be";
+		offset = 2;
+	}
+	let text;
+	try {
+		text = new TextDecoder(encoding, { fatal: true }).decode(
+			bytes.subarray(offset),
+		);
+	} catch {
+		throw new Error(
+			`message file is not valid UTF-8; write it as UTF-8: ${filename}`,
+		);
+	}
+	if (text.length === 0) throw new Error(`message file is empty: ${filename}`);
+	return Buffer.from(text, "utf8");
 }
 
 function parseArgs(input) {
@@ -261,8 +291,7 @@ async function prepareResume(options) {
 				throw new Error(`message file not found: ${options.messageFile}`);
 			throw error;
 		}
-		if (input.length === 0)
-			throw new Error(`message file is empty: ${options.messageFile}`);
+		input = decodeMessageFile(input, options.messageFile);
 	} else {
 		input =
 			options.message === undefined
