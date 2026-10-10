@@ -830,3 +830,26 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the brief, for Q4. Its D1 asked for absolute paths "as written" and also "as the existing path
   check resolves it", which judges no absolute path (audit R1). B7 already asks that each case an outcome names be
   checked on the base; this one was not. Q6 was not stated in the brief.
+
+## agent-environment-r03 round 25: `r03/briefs/round-25.md`, result `833ec599` (level high)
+
+- **Set-up:** DECISIONS items 20-21 say the gardener counts the findings list and reports the monthly trend, but no
+  script read `findings.tsv` or `rounds.tsv`. The brief's commit `7bd07f7d` over `a798440e`, run beside round 24,
+  which also changes `survey.mjs`, so the logic went into a new module. Held-out rows K1-K9.
+- **Brief rows, as Codex graded them:** C1-C4 pass. `records.mjs` and 5 tests; the survey gains a Records section.
+  - On the real files, the October line is N=72 for Codex: mean attempts 1.18 (n=71), repair share 0.15, held-out
+    665/736 (n=65).
+  - Two rows with an empty date are listed as malformed.
+- **Held-out** (`D:/fitway-temp/r03-r25-grade/`): 9 of 9.
+  - K1: 44 open, 69 fixed and 3 other, equal to the file.
+  - K2: the empty-milestone lines are counted by status, never as zero.
+  - K3-K4: months and writers are split; `9/10` gives 9 of 10, and an empty cell or `n/a` is unknown.
+  - K5-K7: two lines from one round do not recur; `cli-gap:<kind>` is counted per kind and named as due; an extra
+    tab is malformed.
+  - K8: the module only reads the two files.
+  - K9: a planted month parser fails a test.
+- **Failure cause:** none.
+- **Also found:**
+  - `survey.json`'s `records` key now holds these counts; the open-record hashes moved to `recordSources`, and
+    nothing else reads it.
+  - A duplicated id is reported as malformed but still counted.
