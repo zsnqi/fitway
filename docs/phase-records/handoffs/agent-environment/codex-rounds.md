@@ -702,3 +702,19 @@ held-out checks live outside the repository and never appear here or in a brief.
   and a check of "protected" alone would not notice the resume citation failing (F109); `pass.ps1` requires `-Out`
   under `-TempRoot`.
 - **Failure cause:** none. Round 16's Y2 failure closed after two repairs; F100, F103 and F104 are fixed.
+
+## agent-environment-r03 round 18: `r03/briefs/round-18.md`, result `70adc082` (level medium)
+
+- **Set-up:** CI failed on `c08f83e4` in one test, round 16's R1 (`round16.test.ts:120`): the runner's temp folder is
+  the short path `C:/Users/RUNNER~1/...` while Git reports `C:/Users/runneradmin/...`. The coordinator reproduced it
+  with `TEMP` on `C:/Users/PCFORC~1/AppData/Local/Temp/<run>` (drive D makes no 8.3 names). The brief's commit
+  `74a96346` over HEAD `c08f83e4`, launched alone. Held-out rows Q1-Q4 by the coordinator.
+- **Brief rows, as Codex graded them:** T1 pass (61 gardener tests on both temp paths); T2 fail on the short path
+  only, in a Python simulator test outside the scope (`edge/test_windows_lifecycle.py:392`, `no such table: starts`,
+  F110); the ladder passed on `D:/fitway-temp`.
+- **Held-out rows:** Q2 and Q3 pass, Q1 on the merge's CI. Q2: the coordinator's run, 61 of 61 on both temp paths.
+  Q3: only `round16.test.ts` changed; the outward link's path, target and resolved target are now each compared as
+  the same folder (the target was not checked before), `outside`, the ENOENT and the candidate flags kept; the
+  report check now looks for the reported target rather than the fixture's spelling. Q4: Codex's T1 matches; its T2
+  FAIL is the out-of-scope Python test.
+- **Failure cause:** round 16's test, which compared spellings; no brief named the runner's short temp path.

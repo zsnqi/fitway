@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-10 05:40 +03:00 (rounds 16-16c and 17 graded and merged: F100-F104
+- **As of:** codex/owner-redesign-r04, 2026-10-10 06:20 +03:00 (rounds 16-16c, 17 and 18 graded and merged: F100-F104
   fixed; the corrected cleanup list and the copy-removal script wait for the user)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-24,
   `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -23,7 +23,8 @@
   `remove-worktree.mjs` (F100); every tracked text file protects the temp folders it cites, also by a patterned path,
   while binaries, drive-root text and the temp root protect nothing (F104); the ladder parser names the step (F103).
   The repairs answered round 16's Y2 (nothing was proposable); the repair count for that failure is 2, now closed.
-  A survey now takes about 250 s (101 s before).
+  A survey now takes about 250 s (101 s before). Round 18 (`70adc082`) made round 16's link test pass under CI's
+  short temp path (`C:/Users/RUNNER~1`).
 
 ## Running now
 
@@ -33,15 +34,16 @@
 
 ## Next steps
 
-1. Open findings F105-F109 (`findings.tsv`): a foreign-pid refusal no longer prints the pid (F105), the merged-clean
+1. Open findings F105-F110 (`findings.tsv`): a foreign-pid refusal no longer prints the pid (F105), the merged-clean
    count and the report's prose ignore link-withheld worktrees (F106, F107), a pnpm setting blocked one sandbox
-   survey (F108), round 16c's test cites a real folder (F109). Small; one round per tool when worth it. Then the
+   survey (F108), round 16c's test cites a real folder (F109), an edge Python test fails
+   under a short local temp path (F110, outside this milestone). Small; one round per tool when worth it. Then the
    Owner screens with steps 6 and 7 on them.
 2. Step 2's real figure: `pnpm start-load -- --since 2026-10-09T19:15+03:00` after each Opus definition's first
    launch in a new session.
-3. Cleanup list (the user's to run): `D:/fitway-temp/r03-cleanup-20261010/survey-final/` (survey of this commit's tree,
+3. Cleanup list (the user's to run): `D:/fitway-temp/r03-cleanup-20261010/cleanup-list/` (survey of this commit's tree,
    collection complete, 30 folders, 185 MB, none cited by any tracked file); show the user the list, then
-   `node D:/fitway-temp/r03-cleanup-20261010/survey-final/cleanup.mjs`. It replaces the 2026-10-09 list, whose script
+   `node D:/fitway-temp/r03-cleanup-20261010/cleanup-list/cleanup.mjs`. It replaces the 2026-10-09 list, whose script
    must never run (it holds `reports-phone`, `fonts-verify` and `fonts-r1-verify`, which tracked records cite). After
    each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
    `gardener/<date>` branch, merge what is accepted, write the ledger's `gardener` entry, rerun the report's final
