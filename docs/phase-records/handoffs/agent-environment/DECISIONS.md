@@ -298,3 +298,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     967K); restarting from the resume file at about 300K saves 13-18% of it in simulation, flat from 250K to 350K. The
     resume file stays the handoff, since a compaction summary is local to one session; an `autoCompactWindow` safety
     net is the user's setting.
+26. **No token budget for a designer (the user, 2026-10-10).** The pressed-state designer used about 480K tokens, and
+    the coordinator measured that against item 21's target that a designer's first edit comes in under 125K. The user
+    corrected this: that much use is normal for a designer, and a limit or target would harm the work more than it
+    saves. A first edit under 125K is hardly reachable for a whole design pass.
+    - Item 21's target is dropped. A designer's brief still names the files it edits, so the designer reads less, but
+      its token use is not a measure of the brief or of the round.
+    - Start load is still recorded per round as information, never as a limit.
