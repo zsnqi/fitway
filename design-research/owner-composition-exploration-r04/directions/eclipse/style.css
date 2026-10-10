@@ -1124,7 +1124,7 @@ body.dl [hidden] { display: none !important; }
 .hbadge.is-err .hb-word, [data-frame] .hbadge.is-err .hb-word, .ops-state.is-err { color: var(--err); }
 .hbadge.is-err { border-color: rgba(255, 107, 125, 0.5); }
 /* The figures region takes focus after a retry, quietly: a region never shows the ring (FOC-1 is for controls). */
-.dl #cards:focus { outline: 2px solid transparent; }
+.dl #cards:focus { outline: none; } /* Retry assigns tabindex=-1; never a Tab stop. */
 
 /* ------------------------------------------------------------- light tuner
  * A working tool, not part of the design: neutral greys, a dashed toggle, no red. By default it sits above the
@@ -1596,15 +1596,18 @@ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea {
   /* Native lists have one edge and one focus ring, both drawn by their wrapper. The list itself stays unseen under its
    * face (TYP-6), switched off too: the rule above shows a switched-off control at full opacity, which drew its 16 px
    * words over the face's. */
-  .ac-sel select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: .ac-sel:has(select:focus-visible) */ }
-  .dl-sort select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: .dl-sort:has(select:focus-visible) */ }
+  .ac-sel select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: html:not([data-list-pointer]) .ac-sel:has(select:focus-visible) */ }
+  .dl-sort select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: html:not([data-list-pointer]) .dl-sort:has(select:focus-visible) */ }
   .dl-sort.is-disabled .sel-face { opacity: 1 !important; }
-  .ac-sel:has(select:focus-visible), .dl-sort:has(select:focus-visible) { outline: 2px solid CanvasText; outline-offset: 3px; }
+  html:not([data-list-pointer]) .ac-sel:has(select:focus-visible), html:not([data-list-pointer]) .dl-sort:has(select:focus-visible) { outline: 2px solid CanvasText; outline-offset: 3px; }
   /* Control glyphs follow their system text colour, including the logo and explicit chalk strokes. */
   .brand .mk, .cx-brand-mk .mk, .hb-chev, .fw-mi svg { stroke: currentColor !important; }
   .brand .mk-dot, .cx-brand-mk .mk-dot { fill: currentColor !important; }
   /* Transparent normal-colour outlines retain their geometry; system colours make focus visible here. */
   :focus-visible { outline: 2px solid CanvasText !important; }
+  /* Silent programmatic targets retain no ring, including in system colours. */
+  .main:focus-visible, .cx-main:focus-visible, .fw-pop[tabindex="-1"]:focus-visible,
+  .dl #cards:focus, .rp #cards:focus, .ac-log:focus, .ac-msg:focus { outline: none !important; }
   :where(.seg-b, .cx-seg-b, .wk-b):focus-visible:where([aria-pressed="true"], [aria-checked="true"]) { outline-color: HighlightText !important; }
   .rail-item:focus-visible, .cx-ri:focus-visible, .dp-day:focus-visible { outline-color: transparent !important; }
   .rail-item:focus-visible .tile, .cx-ri:focus-visible .cx-tile, .dp-day:focus-visible .dp-n { outline-color: CanvasText !important; }

@@ -24,6 +24,10 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const root = document.documentElement;
+  // Native selects also match :focus-visible after a pointer press. Their frames ring only for keyboard use.
+  document.addEventListener("pointerdown", () => { root.dataset.listPointer = ""; }, { capture: true, passive: true });
+  document.addEventListener("keydown", () => { delete root.dataset.listPointer; }, true);
+
   const LANG = root.lang === "en" ? "en" : "ar";
   const RTL = LANG === "ar";
   const params = new URLSearchParams(location.search);

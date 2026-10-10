@@ -1563,7 +1563,7 @@
           },
           "shows": "Long Arabic and Latin owner names wrap in visible Activity records",
           "proof": {
-            "expression": "Array.from(document.querySelectorAll('.rec')).some(el=>(el.textContent.includes('Abdulrahman bin Abdulaziz') || el.textContent.includes('???? ??? ??? ????')) && el.getBoundingClientRect().bottom>0 && el.getBoundingClientRect().top<innerHeight)"
+            "expression": "Array.from(document.querySelectorAll('.rec')).some(el=>(document.documentElement.lang === 'en' ? el.textContent.includes('Abdulrahman bin Abdulaziz') : el.textContent.includes('نورة بنت عبد الله بن عبد الرحمن العبد اللطيف، مديرة العمليات والمرافق في فرعي شمال الرياض والدرعية وفرع الخرج للنساء فقط')) && el.getBoundingClientRect().bottom>0 && el.getBoundingClientRect().top<innerHeight)"
           }
         },
         {

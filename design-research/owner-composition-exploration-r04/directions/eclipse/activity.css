@@ -78,10 +78,10 @@ html:has(> body.ac) {
  * ellipsis; the list itself is the system's. */
 .ac-sel { position: relative; display: inline-flex; align-items: center; height: 44px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2), inset 0 0 0 100vmax var(--press-light, transparent); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
 @media (hover: hover) { .ac-sel:hover { box-shadow: inset 0 0 0 1px var(--line-3), inset 0 0 0 100vmax var(--press-light, transparent); background: rgba(255, 255, 255, 0.05); } }
-.ac-sel:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
+html:not([data-list-pointer]) .ac-sel:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .ac-sel-ico { position: absolute; inset-inline-start: 16px; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .ac-sel::after { content: ""; position: absolute; top: 17px; inset-inline-end: 18px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.ac-sel select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: .ac-sel:has(select:focus-visible) */ opacity: 0; cursor: pointer; }
+.ac-sel select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: html:not([data-list-pointer]) .ac-sel:has(select:focus-visible) */ opacity: 0; cursor: pointer; }
 .ac-sel select option { background: #121112; color: var(--ink); }
 .ac-sel { max-width: 100%; }
 .ac-sel .sel-face { width: var(--sel-w, auto); padding-inline: 41px 40px; }
@@ -122,7 +122,7 @@ html:has(> body.ac) {
  * heading and record, so a record's lift (TBL-2: 4% white, at once, on hover) and the quiet tint of a record given focus
  * never sit flush on its words; its top 8 and the first heading's 16 make the 24 above. */
 .ac-log { padding: 8px 12px; container: logcard / inline-size; }
-.ac-log:focus, .ac-msg:focus { outline: 2px solid transparent; }
+.ac-log:focus, .ac-msg:focus { outline: none; } /* Non-interactive regions, never Tab stops. */
 .ac-body { container: log / inline-size; }
 /* From 520 px of log the load line stands on the first day's line, at its end: its 44 px centred on the heading's
  * 20 px line (the card's 8, the heading's 16, then 20). Below 520 px it is a line of its own above the days. */

@@ -645,9 +645,10 @@ by using the same controls: **the key seats.**
     never takes light, so a held option never reads as the chosen one: it sinks, darker than its strip (`--press-sink`,
     black 45%), inside a faint chalk edge (`--press-rim`, 12%), with chalk words; the chosen one sinks too, under its
     ring. Released onto a new choice, the choice appears at once and rises out of the sink as its light fades;
-  - a chalk key (the primary, a chosen day, the skip link) seats in its bezel: its rim shades toward black
-    (`--press-seat`, a 2 px edge and a 12 px fall inward, a day's 8 px) while its centre keeps its light and its words
-    their contrast. A chalk dimmed all over (the first build, 14%) read as a grey, switched-off key;
+  - a chalk key (the primary, a chosen day, the skip link) seats in its bezel: the upper lip shades the top of its
+    face, a soft fall from above (`--press-seat`, `inset 0 3px 8px`, a day's `inset 0 2px 6px`, black 20%), thinning
+    down its sides and gone before its lower edge, while the rest of its face keeps its light. It never reads as off
+    (chalk dimmed all over reads grey, as a disabled key does) or as ringed (the even 2 px rim read as a focus ring);
   - the current section's red tile, a real link that reloads the page (item 42), loses light across its face
     (`--press-dim`, 14%): a deeper red, never pink (LGT-5);
   - the destructive commit lights in its own tone, with its hover's edge;
