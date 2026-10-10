@@ -46,7 +46,7 @@
 - **F4 and F8 are fixed** at `41821f38` by a fresh designer (`designer-css-review-taste.md`, evidence
   `D:/fitway-temp/owner-r04-css-taste/`). A held chalk key now shades from its top edge. Activity's open search takes
   its row's width. The coordinator looked at the keys and the tools frames.
-- **Codex, high, running** (launched 2026-10-10): `codex-css-review-fixes.md` (`c1cd84ab`), run folder
+- **Codex, high, done at `3b673daa`** (2026-10-10; graded so far in `codex-rounds.md`): `codex-css-review-fixes.md` (`c1cd84ab`), run folder
   `D:/fitway-temp/codex-runs/owner-r04-css-review-fixes`, held-out rows Y1-Y7 in
   `D:/fitway-grader/owner-r04/css-review-fixes-heldout.md`. It covers D1 (F1, every script-focused region), D2 (F5),
   D3 (F7), D4 (F9) and D5 (the README's held chalk paragraph). B6 is relaxed; each cause is graded separately.
@@ -65,8 +65,9 @@
 ## Next steps
 
 0. **The CSS round's close (start here).**
-   1. Grade the Codex round against its brief rows and Y1-Y7, then review its diff (item 11). F3 waits for step 2.
-   2. The user's try on both phones (item 7, spec story 35), on the LAN preview on 3180; check the PC's IP first. Give
+   1. Done: the Codex round is graded on Y2, Y5 and Y7; Y1, Y3, Y4 and Y6 join the post-F3 verifier pass. F3 waits for step 2.
+   2. The user's try on both phones (item 7, spec story 35), on the LAN preview on 3180 (opened 2026-10-10 at
+      http://192.168.8.105:3180, build `3b673daa`; check the IP again on a new day). Give
       them a short list: the press shows under the finger, including on a very fast tap on Android; no colour stays
       after a tap; a field does not zoom; the tab bar and a dialog's buttons clear the bottom edge.
    3. F3: one shared hook for the press, as a Codex round whose held and rest frames equal the base. If step 2 showed
@@ -114,7 +115,7 @@ Nothing; the phone try comes after the Codex round (Next steps 0.2).
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
   commit that adds this text (parent `090a272b`).
-- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `c1cd84ab` until the Codex round commits.
+- Build: D:/Projects/fitway-worktrees/owner-followup-r04-s04, branch owner-followup-r04-build, expected HEAD `3b673daa`.
 - The environment phase: `docs/phase-records/handoffs/agent-environment/20261007-140000-agent-environment-r03-activation.md`.
 - Motion: designer `D:/fitway-temp/owner-r04-motion/`, review `D:/fitway-temp/owner-r04-motion-review/`, research
   `D:/fitway-temp/owner-r04-motion-research/REPORT.md`.

@@ -423,3 +423,30 @@ checks live outside the repository and never appear here or in a brief. One line
   (`#cards`) of Daily and Reports paints a ring after "Try again": the X10 failure mode on a region the repair missed
   (`style.css:1127`, `reports.css:695`). The desktop dialog cap divides by a length and by zero with no insets
   (`reports.css:730-734`). Both go to the review's Codex fix round, `codex-css-review-fixes.md`.
+
+## css-review-fixes: `directions/briefs/codex-css-review-fixes.md` on the build branch, result `3b673daa` (level high)
+
+- **Set-up:** the CSS round review's mechanical findings F1, F5, F7 and F9 (D1-D4), plus the stale README paragraph
+  that the taste fix `41821f38` left (D5). B6 was relaxed: five independent causes, graded separately. Held-out rows
+  Y1-Y7 are in `D:/fitway-grader/owner-r04/css-review-fixes-heldout.md`.
+- **First run:** Codex stopped at once, rightly, because the brief cited DECISIONS item 42 and the build branch's
+  copy ends at item 41. It resumed on its thread with the coordinator branch's path (F116). That is a brief-caused stop
+  with no code written.
+- **Brief rows, as Codex graded them:** D1-D5, L1, L2 and L4 pass. D1's "reported as a named allowance" and L3 fail
+  only on wording: the check has no allowance labels, and its six findings are all script-focused regions
+  (`.main`, `.cx-main`, `.fw-pop[tabindex="-1"]`, both `#cards`, `.ac-log`/`.ac-msg`). The coordinator re-ran the
+  check.
+- **The diff, read by the coordinator:**
+  - regions lose the outline, with a forced-colours `outline: none` for the script-focused group;
+  - both lists hide the ring after a pointer press through a root flag that any keydown clears (`activity.js`,
+    `reports.js`);
+  - the dialog cap no longer divides and applies only to a real dialog (`.dlg > .dlg-panel`);
+  - the recipe picks the long name by the page's language.
+- **Held-out rows so far** (`D:/fitway-temp/owner-r04-css-fixes-grade/`):
+  - Y2 passes: the transparent outlines left are the four on controls, against three on regions at the base.
+  - Y5 passes: the Arabic run passes on the Arabic name, and with one letter changed it fails.
+  - Y7 passes: the build worktree is clean.
+  - Y1, Y3, Y4 and Y6 run in the verifier pass after F3, against `3b673daa`. Codex's own D1 probes covered
+    Activity's regions (Y1's subject), which shows the intent carried past the brief's two examples.
+- **Failure cause:** the stop and D1's wording are brief-caused (a stale decision pointer, and an outcome the tool
+  cannot print).
