@@ -761,3 +761,31 @@ held-out checks live outside the repository and never appear here or in a brief.
   - docs and `--help` updated, and the image self-test at 55 of 55;
   - a planted copy that drops the option fails exactly the two new controls.
 - **Failure cause:** none. The copy is installed over the machine-level skill only with the user's yes.
+
+## agent-environment-r03 round 21: `r03/briefs/round-21.md`, result `6ba81a0c` (level high, two repairs)
+
+- **Set-up:** the Owner CSS round's pressed state needs frames and traces taken while a control is held.
+  - Every pointer action released at once.
+  - The coordinator's probe found that headless Chromium never shows `:active` under a held emulated touch.
+  - The brief's commit `37d81b0f` over `95a212af` waited for the Owner CSS round's ports.
+  - The ui-forensics 1.2.0 copy is at `D:/fitway-temp/r03-r21-forensics/ui-forensics`.
+  - Held-out rows are Y1-Y9.
+- **Result `69d34845`:** H1, H2 and H4 pass.
+  - The copy is at 1.3.0, with `hold:`/`release:` actions, `heldPressInfo` and 47/47 self-test controls.
+  - drive saves a `held` frame and records the classification. Keyboard and 1.2.0 refuse.
+- **Held-out on the pressed concept `dbdcea0a`** (`D:/fitway-temp/r03-r21-grade/`): Y3, Y4, Y5, Y6 and Y7 pass.
+  - A mouse hold on Reports' 7d segment is classified `shown while held`, and the before and held frames differ.
+  - Touch is classified `exists but emulated touch does not show it`.
+  - Y2 failed: under forced colours from file://, a changed export button was classified `no pressed style`.
+    `heldPressInfo` read only top-level `:active` rules, ignored pointer-event presses and left out `scale`.
+  - H3's fast-ladder tests and the SKILL.md guide were missing. Codex graded H3 on its self-test instead.
+- **Repair 1 (`d1eebafc`):** the classification reads nested rules, counts any rendered change and compares
+  `scale`/`translate`/`rotate`. Y2 now classifies `shown while held`. But the new CLI test required the copy at a
+  `D:/fitway-temp` path, which would have failed CI on Linux.
+- **Repair 2 (`6ba81a0c`):** stub tools as R20 does. test:verification passes 54/54 with no ui-forensics reachable,
+  confirmed by the coordinator, and no test names a temp path.
+- **Failure cause:** a classification written from the brief's three cases without nesting. A test written against
+  the round's own copy instead of CI.
+- **Exceptions and notes:**
+  - The user allowed a third repair (DECISIONS 27); it was not needed.
+  - The first resume of repair 1 failed on PowerShell 5.1 quoting (F114).

@@ -81,10 +81,10 @@
    renders forced without `--forensics`; 1.1.0 kept at `D:/fitway-temp/r03-r20-forensics/ui-forensics-1.1.0-backup/`).
    Round 21 adds a held press on a named control (running since 2026-10-10 13:30; the user said yes in advance to
    installing its ui-forensics 1.3.0 copy once graded).
-   Its result `69d34845` came back with two faults, and repair 1 of 2 is running in the same thread
-   (`D:/fitway-temp/r03-r21-grade/repair-1.txt`, grade folder beside it). First, the hold's classification reads
-   only top-level `:active` rules and ignores pointer-event presses, so it contradicted the frames under forced
-   colours. Second, H3's fast-ladder tests and the SKILL.md guide are missing. The Owner round's mechanical part (Codex) comes next. Then round 21, then the designer's pressed state. Both Owner briefs are written from the
+   It was accepted at `6ba81a0c` after two repairs and merged (`ba7f9f17`), and is graded in `codex-rounds.md`. The
+   copy is installed as the machine-level ui-forensics 1.3.0, with the user's earlier yes; the self-test passes 47/47,
+   and the CLI holds a press without `--forensics`. 1.2.0 is kept at
+   `D:/fitway-temp/r03-r21-forensics/ui-forensics-1.2.0-backup/`. The Owner round's mechanical part (Codex) comes next. Then round 21, then the designer's pressed state. Both Owner briefs are written from the
    spec. Grade them against ordinary rounds on repair attempts and brief-caused failed rows. Step 7 runs on the
    Settings designer brief. Then the closing review (it moves the gardener's weight to code health, item 24) and
    the milestone's closure; the rest of the Owner screens follow.
