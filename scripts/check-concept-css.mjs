@@ -199,6 +199,149 @@ function focusBase(selector) {
 	return normalize(selector.replace(focusPseudo, ""));
 }
 
+// Split Boolean queries / selector compounds without splitting functions or attributes.
+function splitOutside(text, separator) {
+	const masked = maskStrings(text);
+	const parts = [];
+	let depth = 0;
+	let start = 0;
+	for (let i = 0; i < masked.length; i++) {
+		if (masked[i] === "\\") {
+			i++;
+			continue;
+		}
+		if (masked[i] === "(" || masked[i] === "[") depth++;
+		else if (masked[i] === ")" || masked[i] === "]") depth--;
+		else if (!depth) {
+			const match = separator.exec(masked.slice(i));
+			if (match) {
+				parts.push(text.slice(start, i).trim());
+				i += match[0].length - 1;
+				start = i + 1;
+			}
+		}
+	}
+	parts.push(text.slice(start).trim());
+	return parts.filter(Boolean);
+}
+
+function functionEnd(text, open) {
+	let depth = 1;
+	for (let i = open + 1; i < text.length; i++) {
+		if (text[i] === "(") depth++;
+		else if (text[i] === ")" && --depth === 0) return i;
+	}
+	return text.length;
+}
+
+function hoverOnly(query) {
+	const text = query.replace(/^@media\s+/i, "").trim();
+	// A leading media-type `not` negates the whole query, including its hover test.
+	if (/^not\b/i.test(text)) return false;
+	for (const separator of [/^,/, /^\s+or\s+/i]) {
+		const alternatives = splitOutside(text, separator);
+		if (alternatives.length > 1) return alternatives.every(hoverOnly);
+	}
+	const terms = splitOutside(text, /^\s+and\s+/i);
+	if (terms.length > 1) return terms.some(hoverOnly);
+	if (/^\(\s*(?:hover|any-hover)\s*:\s*hover\s*\)$/i.test(text)) return true;
+	if (text[0] === "(" && functionEnd(text, 0) === text.length - 1)
+		return hoverOnly(text.slice(1, -1));
+	return false;
+}
+
+function programmaticSubject(selector) {
+	const subject = splitOutside(selector, /^(?:\s+|[>+~])/).at(-1) ?? "";
+	// Only an attribute on the subject is proof; ancestors and selector alternatives
+	// do not restrict this element to programmatic focus.
+	const masked = maskStrings(subject);
+	for (let i = 0; i < subject.length; i++) {
+		if (masked[i] === "(") i = functionEnd(masked, i);
+		else if (masked[i] === "[") {
+			const end = masked.indexOf("]", i + 1);
+			if (end < 0) return false;
+			if (
+				/^\[\s*tabindex\s*=\s*(?:"-1"|'-1'|-1)\s*(?:[is]\s*)?\]$/i.test(
+					subject.slice(i, end + 1),
+				)
+			)
+				return true;
+			i = end;
+		}
+	}
+	return false;
+}
+
+function ancestorFocusBases(selector) {
+	const subject = splitOutside(selector, /^(?:\s+|[>+~])/).at(-1) ?? "";
+	const masked = maskStrings(subject);
+	const start = masked.indexOf(":has(");
+	if (
+		start < 0 ||
+		[...masked.slice(0, start)].reduce(
+			(depth, c) => depth + (c === "(" ? 1 : c === ")" ? -1 : 0),
+			0,
+		)
+	)
+		return [];
+	const end = functionEnd(masked, start + 4);
+	const relatives = selectors(subject.slice(start + 5, end)).map(
+		({ text }) => text,
+	);
+	// Every alternative must require this control's focus. Sibling :has() rules do
+	// not draw an ancestor ring, and a trailing descendant paints a different subject.
+	if (
+		!relatives.length ||
+		relatives.some(
+			(relative) =>
+				/^[+~]/.test(relative) ||
+				focusBase(relative.replace(/^>\s*/, "")) === null ||
+				!positiveFocus(relative).some((m) =>
+					/^:(?:focus-visible|focus)$/.test(m[0]),
+				),
+		)
+	)
+		return [];
+	const ancestor = normalize(
+		selector.slice(0, selector.lastIndexOf(subject)) +
+			subject.slice(0, start) +
+			subject.slice(end + 1),
+	);
+	return relatives.flatMap((relative) => {
+		const child = focusBase(relative.replace(/^>\s*/, ""));
+		return [
+			child,
+			normalize(`${ancestor}${relative.startsWith(">") ? ">" : " "}${child}`),
+		];
+	});
+}
+
+function focusPaintBase(selector) {
+	// Moved paint still has a resting subject: `.button .tile` or `.wrapper`.
+	let text = selector;
+	let start = text.indexOf(":has(");
+	while (start >= 0) {
+		const end = functionEnd(maskStrings(text), start + 4);
+		if (positiveFocus(text.slice(start + 5, end)).length)
+			text = text.slice(0, start) + text.slice(end + 1);
+		else start = end + 1;
+		start = text.indexOf(":has(", start);
+	}
+	return normalize(text.replace(focusPseudo, ""));
+}
+
+function removesOutline(property, value) {
+	const zero = /^[+-]?(?:0+(?:\.0*)?|\.0+)(?:[a-z%]+)?$/i;
+	if (property === "outline-width") return zero.test(value);
+	if (property === "outline-style") return /^(?:none|hidden)$/i.test(value);
+	if (property !== "outline") return false;
+	// Ignore colour/function arguments: a zero alpha or RGB channel is not a width.
+	return value
+		.replace(/[\w-]+\([^)]*\)/g, "fn")
+		.split(/\s+/)
+		.some((token) => /^(?:none|hidden)$/i.test(token) || zero.test(token));
+}
+
 function visible(value) {
 	return (
 		value &&
@@ -337,7 +480,39 @@ export function lintSources(sources) {
 			},
 		);
 	}
-	const ringRules = rules.filter((rule) => hasRing(rule, expand));
+	const focusRings = new Map();
+	function hasFocusRing(rule, selector) {
+		if (focusRings.has(selector)) return focusRings.get(selector);
+		if (!positiveFocus(selector.text).length) return false;
+		const base = focusBase(selector.text) ?? focusPaintBase(selector.text);
+		const baseline = rules
+			.filter(
+				(r) =>
+					r.media.join("\n") === rule.media.join("\n") &&
+					r.selectors.some(
+						(s) => !positiveFocus(s.text).length && normalize(s.text) === base,
+					),
+			)
+			.flatMap((r) => r.declarations);
+		// A focus rule may inherit border geometry, but repeating the permanent
+		// decoration does not visibly change it. Compare each kind of paint separately
+		// so removing an outline cannot turn an unchanged shadow into a focus ring.
+		const paints = [/^outline(?:-|$)/, /^border(?:-|$)/, /^box-shadow$/];
+		const result = paints.some((paint) => {
+			const before = baseline.filter((d) => paint.test(d.property));
+			const after = rule.declarations.filter((d) => paint.test(d.property));
+			const values = new Map(before.map((d) => [d.property, expand(d.value)]));
+			return (
+				after.some((d) => values.get(d.property) !== expand(d.value)) &&
+				hasRing({ declarations: [...before, ...after] }, expand)
+			);
+		});
+		focusRings.set(selector, result);
+		return result;
+	}
+	const ringRules = rules.filter((rule) =>
+		rule.selectors.some((s) => hasFocusRing(rule, s)),
+	);
 	function finding(rule, offset, id, detail) {
 		const line = sourceByFile
 			.get(rule.file)
@@ -351,7 +526,7 @@ export function lintSources(sources) {
 		});
 	}
 	for (const rule of rules) {
-		if (!rule.media.some((m) => /\(\s*hover\s*:\s*hover\s*\)/i.test(m))) {
+		if (!rule.media.some(hoverOnly)) {
 			for (const selector of rule.rawSelectors) {
 				if (/:hover(?![\w-])/i.test(maskStrings(selector.text)))
 					finding(rule, selector.offset, "ungated-hover", selector.text);
@@ -374,11 +549,7 @@ export function lintSources(sources) {
 				hasEaseIn(value)
 			)
 				finding(rule, d.offset, "ease-in", `${d.property}: ${d.value}`);
-			if (
-				d.property !== "outline" ||
-				!/^(?:none|0(?:\.0*)?(?:[a-z%]+)?)$/i.test(d.value)
-			)
-				continue;
+			if (!removesOutline(d.property, value)) continue;
 			const moved = d.comments.flatMap((c) =>
 				[...c.text.matchAll(/focus-ring:\s*([^\r\n]+)/g)].map((m) =>
 					normalize(m[1]),
@@ -387,17 +558,31 @@ export function lintSources(sources) {
 			const declaredRing = moved.some((selector) =>
 				ringRules.some((r) =>
 					r.selectors.some(
-						(s) =>
-							normalize(s.text) === selector &&
-							positiveFocus(s.text).length > 0,
+						(s) => normalize(s.text) === selector && hasFocusRing(r, s),
 					),
 				),
 			);
 			const uncovered = rule.selectors.filter((selector) => {
-				if (hasRing(rule, expand) || declaredRing) return false;
+				if (programmaticSubject(selector.text) || declaredRing) return false;
+				// A base border/shadow is decoration. An outline restored in the same
+				// rule, or a ring actually painted in a focus state, can replace removal.
+				if (
+					hasRing(
+						{
+							declarations: rule.declarations.filter((item) =>
+								item.property.startsWith("outline"),
+							),
+						},
+						expand,
+					) ||
+					(focusBase(selector.text) !== null && hasFocusRing(rule, selector))
+				)
+					return false;
 				const base = focusBase(selector.text) ?? normalize(selector.text);
 				return !ringRules.some((r) =>
 					r.selectors.some((s) => {
+						if (!hasFocusRing(r, s)) return false;
+						if (ancestorFocusBases(s.text).includes(base)) return true;
 						const candidateBase = focusBase(s.text);
 						if (candidateBase === base) {
 							if (
@@ -440,7 +625,16 @@ export function lintSources(sources) {
 					rule,
 					d.offset,
 					"outline-without-ring",
-					`${uncovered.map((s) => s.text).join(", ")} { outline: ${d.value} }`,
+					`${uncovered.map((s) => s.text).join(", ")} { ${d.property}: ${d.value} }; ${
+						moved.length
+							? moved
+									.map(
+										(selector) =>
+											`declared focus-ring: ${selector} draws no visible ring`,
+									)
+									.join("; ")
+							: "no focus ring"
+					}`,
 				);
 		}
 	}
