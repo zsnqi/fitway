@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-10 06:20 +03:00 (rounds 16-16c, 17 and 18 graded and merged: F100-F104
-  fixed; the corrected cleanup list and the copy-removal script wait for the user)
+- **As of:** codex/owner-redesign-r04, 2026-10-10 08:30 +03:00 (rounds 16-18 merged, F100-F104 fixed; the user ran
+  both cleanup scripts; TEMP is `D:\Temp`)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-24,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -25,6 +25,12 @@
   The repairs answered round 16's Y2 (nothing was proposable); the repair count for that failure is 2, now closed.
   A survey now takes about 250 s (101 s before). Round 18 (`70adc082`) made round 16's link test pass under CI's
   short temp path (`C:/Users/RUNNER~1`).
+- 2026-10-10 morning, checked by the coordinator: the user ran the cleanup list (its 30 folders under
+  `D:/fitway-temp` are gone) and `remove-copies.mjs --run` (all 27 worktrees and clones are gone, no dead
+  registration is left; their commits are in the bundles named under Pointers). After the restart the user's TEMP and
+  TMP are `D:\Temp` (item 24); the gardener, verify-fitway and `codex-round.mjs` still write under `D:/fitway-temp`
+  by a fixed path, tests write under `D:\Temp`, and `pnpm verify:fast` passes there without mutation. Item 21 step 5,
+  second reading: this session started from this file at 79K before its first read, 146K at its first edit.
 
 ## Running now
 
@@ -34,18 +40,14 @@
 
 ## Next steps
 
-1. Open findings F105-F110 (`findings.tsv`): a foreign-pid refusal no longer prints the pid (F105), the merged-clean
-   count and the report's prose ignore link-withheld worktrees (F106, F107), a pnpm setting blocked one sandbox
-   survey (F108), round 16c's test cites a real folder (F109), an edge Python test fails
-   under a short local temp path (F110, outside this milestone). Small; one round per tool when worth it. Then the
-   Owner screens with steps 6 and 7 on them.
+1. Open findings (`findings.tsv`), one round per tool: the gardener (F106-F107: the merged-clean count and the
+   report's prose ignore link-withheld worktrees; F109: round 16c's test cites a real folder) and verify-fitway (F105:
+   a foreign-pid refusal no longer prints the pid). F108 (a pnpm setting blocked one survey inside Codex's sandbox)
+   stays open until a sandbox survey hits it again. F110 (an edge Python test under a short local temp path) is
+   outside this milestone; with TEMP on drive D, which makes no short names, the local ladder no longer meets it.
 2. Step 2's real figure: `pnpm start-load -- --since 2026-10-09T19:15+03:00` after each Opus definition's first
    launch in a new session.
-3. Cleanup list (the user's to run): `D:/fitway-temp/r03-cleanup-20261010/cleanup-list/` (survey of this commit's tree,
-   collection complete, 30 folders, 185 MB, none cited by any tracked file); show the user the list, then
-   `node D:/fitway-temp/r03-cleanup-20261010/cleanup-list/cleanup.mjs`. It replaces the 2026-10-09 list, whose script
-   must never run (it holds `reports-phone`, `fonts-verify` and `fonts-r1-verify`, which tracked records cite). After
-   each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
+3. After each weekly pass (`docs/WORKFLOW.md` §"Active ledger and closed history", its last paragraph): review its
    `gardener/<date>` branch, merge what is accepted, write the ledger's `gardener` entry, rerun the report's final
    survey, and show the user the folder list before they run the new cleanup script. The main checkout keeps the
    user's uncommitted AGENTS.md edit of 2026-09-06.
@@ -53,22 +55,13 @@
    `D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/06eea6dd-7c5b-44ad-b20d-f63072729f39/scratchpad/env-page/`
    (brief `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`, a standing brief the gardener lists
    as open).
-5. Disposable copies (the user's to run, since auto mode refused their removal as "Irreversible Local Destruction"):
-   `node D:/fitway-temp/r03-cleanup-20261010/remove-copies.mjs` lists, `--run` removes, 27 folders under
-   D:/Projects/fitway-worktrees (grade-r6 to grade-r8b-u, grade-r16, grade-r17, agent-environment-r03-css, -gardener,
-   -verify, eval-b89-base, the eval-b89 clones and the replay clones); before each removal it unlinks any link that
-   points outside the folder (none on 2026-10-10). Commits only the clones held are in bundles
-   (`D:/fitway-grader/replay/<task>/result.bundle`, `D:/fitway-grader/preserved-clones/`), and the grading worktrees'
-   uncommitted report edits in `D:/fitway-temp/r03-cleanup-20261010/preserved/`. Then item 21's steps 5-7, the
-   closing review (it moves the gardener's weight to code health, item 24) and the milestone's closure. The Owner
-   screens resume after.
-6. The user's Windows TEMP and TMP move to `D:\Temp` at the next restart (item 24; the machine was shut down at the
-   end of the 2026-10-10 session). Then check that FITWAY's scripts still write under `D:/fitway-temp` and update the
-   drive-C memory.
+5. Item 21's steps 6 and 7 run on the Owner screens' next briefs (step 6 on the CSS round, Owner resume point Next
+   steps 6; step 7 on the Settings designer brief), so the Owner work restarts with them. Then the closing review (it
+   moves the gardener's weight to code health, item 24) and the milestone's closure; the rest of the Owner screens
+   follow.
 
 ## Waiting on the user
 
-- The two scripts above (Next steps 3 and 5) run only after the user reviews their lists.
 - Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
   agreed Owner CSS round (Owner resume point, Next steps 6) waits for that step, whose trial writes its brief.
 
@@ -94,3 +87,6 @@
 - Packet: `docs/phase-records/task-packets/agent-environment-r03.yaml`; briefs: `docs/phase-records/handoffs/agent-environment/r03/briefs/`.
 - Grades: D:/fitway-temp/r03-r16-grade/, r03-r16bc-grade/ and r03-r17-grade/ (REPORT.md each; earlier rounds beside
   them), D:/fitway-grader/replay/; held-out rows in D:/fitway-grader/agent-environment/ and D:/fitway-grader/owner-r04/.
+- The removed copies: their commits in `D:/fitway-grader/replay/<task>/result.bundle` and
+  `D:/fitway-grader/preserved-clones/`, the grading worktrees' uncommitted report edits in
+  `D:/fitway-temp/r03-cleanup-20261010/preserved/` (the only copy; this line keeps the gardener from proposing it).
