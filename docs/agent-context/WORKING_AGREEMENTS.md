@@ -66,9 +66,8 @@ latest wording; never copy an entry into a resume point.
   round of each kind at its lower level is graded like any other; a failure traced to the code moves
   that kind up a level. Each round's record names its level.
 - Usage limits do not shape rounds: when a Codex account reaches its limit, the coordinator tells the
-  user at once, the user switches accounts, and each stopped run resumes on its thread. When the user
-  is away or asleep, the coordinator waits for the limit to reset instead and then resumes each
-  stopped run on its thread. (user, 2026-10-05, 2026-10-07 and 2026-10-11)
+  user at once, the user switches accounts, and each stopped run resumes on its thread. (user,
+  2026-10-05 and 2026-10-07)
 - The coordinator launches Codex from a tracked brief with `pnpm codex:round <brief> <level>` in a
   harness background shell. The command runs `pnpm brief:check` first and launches nothing on a
   failure, adds the launch note when the brief's own commit sits on the HEAD it names (Codex rightly
