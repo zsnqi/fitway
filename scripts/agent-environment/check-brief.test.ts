@@ -408,6 +408,107 @@ describe("brief-references: resolve a brief against its named Git worktree", () 
 	});
 });
 
+describe("brief-references: decision item citations", () => {
+	it.each([
+		["single", "1. One.\n", "item 2", [2]],
+		["list", "1. One.\n3. Three.\n", "items 1, 2, 3", [2]],
+		["range", "1. One.\n2. Two.\n3. Three.\n4. Four.\n", "items 1-5", [5]],
+		[
+			"mixed list",
+			"1. One.\n2. Two.\n3. Three.\n4. Four.\n",
+			"items 1-2, 5 and 3-4",
+			[5],
+		],
+	])("rejects a missing item in a %s citation", async (_shape, decisions, citation, missing) => {
+		const f = fixture();
+		put(f.worktree, "docs/DECISIONS.md", decisions);
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` ${citation}.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(missing.length);
+		for (const item of missing)
+			expect(formatBriefResult(result)).toContain(
+				`missing decision item ${item}`,
+			);
+	});
+
+	it("accepts single, list, range and mixed citations when all items exist", async () => {
+		const f = fixture();
+		put(
+			f.worktree,
+			"docs/DECISIONS.md",
+			"1. One.\n2. Two.\n3. Three.\n4. Four.\n5. Five.\n",
+		);
+		for (const citation of [
+			"item 3",
+			"items 1, 3 and 5",
+			"items 1-5",
+			"items 1-2, 5 and 3-4",
+		])
+			expect(
+				(await f.check(`${f.valid}\n\`docs/DECISIONS.md\` ${citation}.\n`))
+					.problems,
+			).toEqual([]);
+	});
+
+	it("rejects a missing middle item in a range", async () => {
+		const f = fixture();
+		put(f.worktree, "docs/DECISIONS.md", "1. One.\n3. Three.\n");
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` items 1-3.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(1);
+		expect(formatBriefResult(result)).toContain("missing decision item 2");
+	});
+
+	it("checks decision items for absolute paths, including paths inside the named worktree", async () => {
+		const f = fixture();
+		const decisions = "1. One.\n2. Two.\n";
+		put(f.worktree, "docs/DECISIONS.md", decisions);
+		put(f.root, "absolute-DECISIONS.md", decisions);
+		for (const file of [
+			path.join(f.worktree, "docs/DECISIONS.md"),
+			path.join(f.root, "absolute-DECISIONS.md"),
+		]) {
+			const absolute = file.replaceAll("\\", "/");
+			const result = await f.check(
+				`${f.valid}\n\`${absolute}\` items 2 and 999.\n`,
+			);
+			expect(result.ok).toBe(false);
+			expect(result.problems).toHaveLength(1);
+			expect(formatBriefResult(result)).toContain("missing decision item 999");
+		}
+	});
+
+	it("ignores numbered lines inside fenced decision content", async () => {
+		const f = fixture();
+		put(
+			f.worktree,
+			"docs/DECISIONS.md",
+			"1. One.\n```text\n7. Fenced example.\n```\n",
+		);
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` items 1 and 7.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(1);
+		expect(formatBriefResult(result)).toContain("missing decision item 7");
+	});
+
+	it("does not accept a decisions file that only exists in the command repository", async () => {
+		const f = fixture();
+		put(f.commandRepository, "docs/DECISIONS.md", "42. Command only.\n");
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` item 42.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(formatBriefResult(result)).toContain("drift: missing");
+		expect(formatBriefResult(result)).toMatch(/docs[\\/]DECISIONS\.md/);
+	});
+});
+
 describe("brief-format: shared environment and brief role", () => {
 	it.each([
 		"codex",

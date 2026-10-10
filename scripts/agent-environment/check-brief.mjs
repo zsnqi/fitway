@@ -37,6 +37,60 @@ function codeSpans(text) {
 	return [...text.matchAll(/(`+)([^`]*?)\1(?!`)/g)];
 }
 
+function citedDecisionItems(tail) {
+	const citation = tail.match(
+		/^\s+items?\s+((?:\d+\s*(?:-\s*\d+)?)(?:\s*(?:,|and)\s*\d+\s*(?:-\s*\d+)?)*)(?=\s|[.,;:]|$)/i,
+	);
+	if (!citation) return [];
+	const items = [];
+	for (const part of citation[1].split(/\s*(?:,|and)\s*/i)) {
+		const [start, end = start] = part.split(/\s*-\s*/).map(Number);
+		for (let item = start; item <= end; item += 1) items.push(item);
+	}
+	return items;
+}
+
+function numberedTopLevelEntries(text) {
+	const entries = new Set();
+	let fence = null;
+	for (const line of text.split(/\r?\n/)) {
+		const delimiter = line.match(/^ {0,3}(`{3,}|~{3,})/);
+		if (delimiter) {
+			if (!fence) fence = delimiter[1];
+			else if (
+				delimiter[1][0] === fence[0] &&
+				delimiter[1].length >= fence.length &&
+				/^ {0,3}(?:`+|~+)\s*$/.test(line)
+			)
+				fence = null;
+			continue;
+		}
+		if (fence) continue;
+		const entry = line.match(/^(\d+)\.\s+/);
+		if (entry) entries.add(Number(entry[1]));
+	}
+	return entries;
+}
+
+function reportMissingDecisionItems(
+	content,
+	decisionItems,
+	file,
+	absolute,
+	worktree,
+	line,
+	report,
+) {
+	const entries = numberedTopLevelEntries(content);
+	for (const item of decisionItems)
+		if (!entries.has(item))
+			report(
+				"brief-references",
+				line,
+				`missing decision item ${item} in ${file} (${absolute}) in worktree ${worktree}`,
+			);
+}
+
 function environmentBlock(text) {
 	const starts = [...text.matchAll(/^<!-- environment:start v1 -->\r?$/gm)];
 	const ends = [...text.matchAll(/^<!-- environment:end -->\r?$/gm)];
@@ -212,15 +266,32 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		const after = tail.match(/^\s*§"([^"]+)"/);
 		// Markdown reads a line break inside a code span as a space.
 		const split = /[\r\n]/.test(span[2]);
-		const reference = await resolver.reference(
-			span[2].replace(/(?:\r\n|[\r\n])[ \t]*/g, " "),
-		);
-		if (!reference) continue;
+		const value = span[2].replace(/(?:\r\n|[\r\n])[ \t]*/g, " ");
+		const decisionItems = citedDecisionItems(tail);
+		const reference = await resolver.reference(value);
+		if (!reference) {
+			if (decisionItems.length && path.isAbsolute(value)) {
+				const absolute = path.resolve(value);
+				const details = await exists(absolute);
+				if (details?.isFile())
+					reportMissingDecisionItems(
+						await readFile(absolute, "utf8"),
+						decisionItems,
+						value,
+						absolute,
+						worktree,
+						line,
+						report,
+					);
+			}
+			continue;
+		}
 		references.push({
 			...reference,
 			split,
 			lineNumber: line,
 			heading: reference.heading ?? after?.[1],
+			decisionItems,
 			isNew: /^[ \t]+\(new\)(?=\s|[.,;:]|$)/.test(tail),
 		});
 	}
@@ -285,7 +356,8 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			);
 			continue;
 		}
-		if (!heading && reference.line === null) continue;
+		if (!heading && reference.line === null && !reference.decisionItems.length)
+			continue;
 		if (!details.isFile()) {
 			report(
 				"brief-references",
@@ -313,6 +385,17 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 				line,
 				`missing heading §"${heading}" in ${absolute}`,
 			);
+		if (reference.decisionItems.length) {
+			reportMissingDecisionItems(
+				content,
+				reference.decisionItems,
+				reference.file,
+				absolute,
+				worktree,
+				line,
+				report,
+			);
+		}
 	}
 }
 
