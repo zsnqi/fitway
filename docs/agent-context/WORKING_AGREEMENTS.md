@@ -20,6 +20,9 @@ latest wording; never copy an entry into a resume point.
   and every fix that applies an existing rule or decision, is made and checked first; only real
   choices go to the user. The user prefers the running site and frame strips to file paths. (user,
   2026-10-04 and 2026-10-05)
+- The user is asked to look only when something changed a lot on the page, or when a decision is
+  theirs. Smaller fixes, improvements and internal work are done and checked by the coordinator on
+  the frames, then reported in a line, without asking the user to look again. (user, 2026-10-10)
 - Housekeeping is the coordinator's to do and report, not to ask: pushing working branches (never
   forcing), fast-forwarding `main` when CI passes, deleting merged branches, pruning dead worktree
   registrations, and opening a successor milestone once its terminal record meets the successor gate
