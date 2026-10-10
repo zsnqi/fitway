@@ -371,11 +371,11 @@ export async function ownedSession(folder) {
 	const foreign = portOwners(session.port).filter(
 		(owner) => owner.pid !== session.pid,
 	);
-	if (foreign.length)
-		throw refused(
-			new Error(
-				`Foreign pid ${foreign.map((o) => o.pid)} also holds the port.`,
-			),
+	if (foreign.length) {
+		const pids = [...new Set(foreign.map((owner) => owner.pid))];
+		throw new Error(
+			`Port ${session.port} is served by this session but also held by foreign pid${pids.length === 1 ? "" : "s"} ${pids.join(", ")}; refuse session.`,
 		);
+	}
 	return session;
 }
