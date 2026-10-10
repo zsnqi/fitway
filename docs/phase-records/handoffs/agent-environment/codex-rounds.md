@@ -853,3 +853,21 @@ held-out checks live outside the repository and never appear here or in a brief.
   - `survey.json`'s `records` key now holds these counts; the open-record hashes moved to `recordSources`, and
     nothing else reads it.
   - A duplicated id is reported as malformed but still counted.
+
+## agent-environment-r03 round 26: `r03/briefs/round-26.md`, result `c88266ea` (level high, one repair)
+
+- **Set-up:** F114, a resume message with double quotes was split by Windows PowerShell 5.1. The brief's commit
+  `20dbfa70` over `7bd07f7d`. The first launch went out at `medium` by mistake and was stopped within seconds,
+  before Codex had made any change; it was relaunched at `high`, the level the agreement gives a known defect in a
+  known place. Held-out rows J1-J7.
+- **Result `1a2c4850`:** M1-M2 pass as Codex graded them. `--message-file` sends the file's bytes, and tests run real
+  `powershell.exe` and Git Bash against a stand-in `codex`.
+- **Held-out:** J1-J4, J6 and J7 pass. J5 failed: a file written by Windows PowerShell 5.1's `Out-File` (UTF-16LE with
+  a BOM) reached Codex garbled, and a UTF-8 BOM reached it as text.
+- **Repair 1 (`c88266ea`):** files with a UTF-8, UTF-16LE or UTF-16BE BOM are decoded and sent as UTF-8 without the BOM.
+  A file without a BOM must be valid UTF-8 or it is refused; tests cover files written by `Out-File` and
+  `Set-Content`. The account reached its limit before Codex ran the ladder, so the coordinator ran it:
+  - the test file passes 41 of 41;
+  - `node scripts/verify.mjs fast` passes without mutation (174.6 s), after one earlier run in which the CLI
+    contracts failed once and did not fail again.
+- **Failure cause:** J5 was not stated in the brief; its intent ("Codex receives that text exactly") covered it.
