@@ -56,10 +56,21 @@
    and field text of at least 16 px. The
    skill is not installed; it goes in slash-only, as a reference, at the production (apps/web) stage (the user,
    2026-10-08).
+   **2026-10-10:** the round's spec is on the build branch at `ab504b28` (D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/css-round-spec.md). It
+   came from the grilling and to-spec trial, agent-environment DECISIONS item 21 step 6. The user's answers:
+   - they try the work on both an iPhone and an Android phone;
+   - the designer is free on the pressed state within the stated limits;
+   - forced colours at the minimum level;
+   - no vibration;
+   - a disabled control does not react to a press;
+   - the four test seams.
+
+   Order: a small environment round adds forced colours and a held press to the verify-fitway CLI. Then Codex does the
+   mechanical part. Then the designer builds the pressed state.
 
 ## Waiting on the user
 
-Nothing.
+- The CSS round's spec (`ab504b28`): the briefs are written after the user's yes.
 
 ## Known risks
 

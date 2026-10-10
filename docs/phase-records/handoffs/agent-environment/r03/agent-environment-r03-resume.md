@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-10 08:50 +03:00 (rounds 16-19 merged, F100-F105 fixed; the user ran
-  both cleanup scripts; TEMP is `D:\Temp`)
+- **As of:** codex/owner-redesign-r04, 2026-10-10 09:20 +03:00 (rounds 16-19 merged, F100-F105 fixed; item 21 step
+  6's trial wrote the Owner CSS round's spec; main at `38e6d1da`)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-25,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -38,6 +38,15 @@
 - DECISIONS item 25 (cache lifetime and session length, from the transcripts): only `owner-direction-verifier` keeps a
   one-hour prompt cache, from its next launch in a new session. The recommended restart from this file is at a
   natural break past about 300K, never drifting beyond 400K (the user's call).
+- Item 21 step 6, the question-and-spec trial (2026-10-10, the user's yes in chat). Upstream
+  (github.com/mattpocock/skills at `49dd158d`) had turned `grill-with-docs` into a wrapper over `grilling` and `domain-modeling`.
+  `domain-modeling` writes a root GLOSSARY.md and ADRs numbered 0001-slug under the ADR folder, which clash with FITWAY's ADR-NNN, so
+  the user chose to install only `to-spec`, for Claude only and unmodified (`~/.claude/skills/to-spec`, with LICENSE
+  and SOURCE.md). The user-level `grilling` took upstream's one new line. `domain-modeling` waits for the move to
+  production (item 20). Two grilling rounds asked the user five product and taste questions. The coordinator
+  settled the technical ones and listed them for objection. The user typed `/to-spec`, because the Skill tool refuses
+  a skill with `disable-model-invocation` (F111). The spec is on the build branch at `ab504b28`
+  (D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/css-round-spec.md).
 
 ## Running now
 
@@ -64,15 +73,17 @@
    `D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/06eea6dd-7c5b-44ad-b20d-f63072729f39/scratchpad/env-page/`
    (brief `docs/phase-records/handoffs/agent-environment/r03/briefs/env-page.md`, a standing brief the gardener lists
    as open).
-5. Item 21's steps 6 and 7 run on the Owner screens' next briefs (step 6 on the CSS round, Owner resume point Next
-   steps 6; step 7 on the Settings designer brief), so the Owner work restarts with them. Then the closing review (it
-   moves the gardener's weight to code health, item 24) and the milestone's closure; the rest of the Owner screens
-   follow.
+5. Item 21 step 6 continues on the CSS round from the spec (`ab504b28`). First, a small round in this milestone adds
+   two axes to the verify-fitway CLI: forced colours, and a held press on a named control. Each axis comes with a
+   planted-defect control (the spec's seam 3). Then the Owner round runs: Codex's brief for the mechanical part,
+   then the designer's for the pressed state, each written from the spec. Grade it against ordinary rounds on
+   repair attempts and brief-caused failed rows. Step 7 runs on the Settings designer brief. Then the closing review
+   (it moves the gardener's weight to code health, item 24) and the milestone's closure; the rest of the Owner
+   screens follow.
 
 ## Waiting on the user
 
-- Downloading `grill-with-docs` and `to-spec` (item 21, step 6) needs the user's yes at that point; the
-  agreed Owner CSS round (Owner resume point, Next steps 6) waits for that step, whose trial writes its brief.
+- The user reads the CSS round's spec (`ab504b28`); the briefs are written after their yes.
 
 ## Known risks
 
