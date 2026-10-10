@@ -36,6 +36,13 @@
   D:/fitway-grader/owner-r04/css-round-heldout.md, base focus sweep `D:/fitway-temp/owner-css-base-focus/`. B6
   is relaxed on purpose: the spec's five independent mechanical causes are graded separately in one pass. Next come
   agent-environment round 21 (a held press in the CLI) and the designer's pressed state, with the two 13.5 px lists.
+  - **2026-10-10 12:21, stopped.** The result `9cbb3025` passed C1-C4 and L1-L5. C5 failed only on the brief's wording,
+    "shows", which Codex read as the whole value at once; that is a brief-caused failed row. Held-out rows X1-X9 pass, with
+    X7 judged on intent: system colours on the selected states. X10 fails: five unconditional transparent outlines draw
+    a permanent line in forced colours (`D:/fitway-temp/owner-css-grade/`). Repair 1 of 2
+    (`D:/fitway-temp/owner-css-grade/repair-1.txt`) stopped at the Codex account's usage limit, leaving uncommitted
+    edits in four CSS files in the build worktree. After the user switches accounts, resume it with `pnpm codex:round --
+    resume D:/fitway-temp/codex-runs/owner-r04-css-round --message <continue repair 1>`. Round 21 waits for the ports.
 - Report-only, under load only: the dialogs', popover's and records card's parts split across threads under a planted
   stall; rounds item 11 to decide whether they are errors on a real machine.
 
