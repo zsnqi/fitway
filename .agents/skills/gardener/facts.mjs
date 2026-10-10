@@ -156,7 +156,7 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 						return (
 							text[match.index + match[0].length] !== "<" &&
 							!/[<*?]/.test(target) &&
-							key(target) !== key(tempRoot ?? "D:/fitway-temp") &&
+							!inside(target, tempRoot ?? "D:/fitway-temp") &&
 							key(target) !== key("D:/fitway-temp") &&
 							(inside(target, normalized) || inside(normalized, target))
 						);

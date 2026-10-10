@@ -172,21 +172,52 @@ export async function collectRecords({
 	};
 }
 
-// Read tracked files for folder citations only: closed records are never instructions.
+// Let Git classify current tracked content, including .gitattributes overrides.
+// Comparing against an empty tree includes unchanged and newly staged files too.
+function binaryCitationSources(checkout) {
+	const emptyTree = git(["hash-object", "-t", "tree", "--stdin"], checkout);
+	return new Set(
+		git(
+			[
+				"diff",
+				"--numstat",
+				"-z",
+				"--no-renames",
+				"--no-ext-diff",
+				"--no-textconv",
+				emptyTree,
+				"--",
+			],
+			checkout,
+		)
+			.split("\0")
+			.filter((entry) => entry.startsWith("-\t-\t"))
+			.map((entry) => entry.slice(4)),
+	);
+}
+
+// Read tracked text for folder citations only: closed records are never instructions.
 export async function collectFolderRecords(
 	records,
 	{
 		checkout = root,
-		trackedFiles = git(["ls-files", "-z"], checkout)
-			.split("\0")
-			.filter(Boolean),
+		trackedFiles,
+		// Injected source lists belong to fixtures; real checkouts always use Git.
+		binaryFiles = trackedFiles ? new Set() : binaryCitationSources(checkout),
 		load = (source) => record(source, "tracked", checkout),
 		tempRoot,
 	} = {},
 ) {
-	const all = new Map(records.map((item) => [item.source, item]));
-	for (const source of trackedFiles) {
-		if (all.has(source)) continue;
+	const all = new Map(
+		records
+			.filter((item) => !binaryFiles.has(item.source))
+			.map((item) => [item.source, item]),
+	);
+	const tracked =
+		trackedFiles ??
+		git(["ls-files", "-z"], checkout).split("\0").filter(Boolean);
+	for (const source of tracked) {
+		if (all.has(source) || binaryFiles.has(source)) continue;
 		try {
 			all.set(source, await load(source));
 		} catch (error) {
@@ -195,7 +226,7 @@ export async function collectFolderRecords(
 			);
 		}
 	}
-	// Any citation related to a child of tempRoot must also be related to tempRoot.
+	// Any eligible citation related to a child of tempRoot is at or below tempRoot.
 	// Preserve original line numbers and reuse the same matcher to select lines once.
 	return [...all.values()].map((item) =>
 		tempRoot
@@ -329,6 +360,7 @@ export async function collectGit(
 		readGit = (args, cwd = current) => git(args, cwd),
 		exists = existsSync,
 		inspectLinks = inspectWorktreeLinks,
+		worktreeRoot,
 	} = {},
 ) {
 	const trunk = {
@@ -370,6 +402,8 @@ export async function collectGit(
 		readGit(["worktree", "list", "--porcelain"]),
 	);
 	for (const worktree of registrations) {
+		// Cleanup needs fresh safety state only for worktrees inside this candidate.
+		if (worktreeRoot && !inside(worktreeRoot, worktree.path)) continue;
 		worktree.exists = exists(worktree.path);
 		if (worktree.exists) {
 			try {
