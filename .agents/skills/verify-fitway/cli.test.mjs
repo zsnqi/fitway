@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
-import { watch } from "node:fs";
+import { existsSync, watch } from "node:fs";
 import {
 	mkdir,
 	mkdtemp,
@@ -1260,6 +1260,99 @@ test("R20 V2: measurement matrices and inline options also fail closed, with the
 		() => measurementColors({ extra: ["--forced-colors", "sepia"] }),
 		/none or active/,
 	);
+});
+
+test("R21: CLI held presses capture frames and classify every pressed-state case", async () => {
+	const forensics =
+		process.env.UIF_FORENSICS ||
+		"D:/fitway-temp/r03-r21-forensics/ui-forensics";
+	assert.ok(
+		existsSync(resolve(forensics, "scripts/web/capture.mjs")),
+		`ui-forensics copy is required at ${forensics}`,
+	);
+	const fixture = resolve(scratch, "held-fixture.html");
+	await writeFile(
+		fixture,
+		[
+			'<!doctype html><meta charset="utf-8"><style>',
+			"body { margin: 0; background: white; color: black; }",
+			"button { margin: 12px; width: 150px; height: 48px; background: white; color: black; border: 2px solid black; }",
+			"#mouse-active:active { background: black; color: white; transform: scale(.9); }",
+			"#touch-active:active { background: black; color: white; }",
+			"#pointer-pressed.pointer-pressed { background: black; color: white; scale: .9; }",
+			"@media (forced-colors: active) { #nested-active:active { background: Canvas; color: CanvasText; scale: .8; } }",
+			'</style><button id="mouse-active">Mouse active</button>',
+			'<button id="plain">Plain</button><button id="disabled" disabled>Disabled</button>',
+			'<button id="pointer-pressed">Pointer event</button><button id="touch-active">Touch active</button>',
+			'<button id="nested-active">Nested active</button>',
+			'<script>document.querySelector("#pointer-pressed").addEventListener("pointerdown", e => e.currentTarget.classList.add("pointer-pressed"));</script>',
+		].join("\n"),
+		"utf8",
+	);
+	const url = pathToFileURL(fixture).href;
+	const cases = [
+		[
+			"mouse-active",
+			"#mouse-active",
+			[],
+			"pressed style shown while held",
+			true,
+		],
+		["plain", "#plain", [], "no pressed style", false],
+		["disabled", "#disabled", [], "no pressed style", false],
+		[
+			"pointer-touch",
+			"#pointer-pressed",
+			["--touch"],
+			"pressed style shown while held",
+			true,
+		],
+		[
+			"active-touch",
+			"#touch-active",
+			["--touch"],
+			"pressed style exists but emulated touch does not show it",
+			false,
+		],
+		[
+			"nested-forced",
+			"#nested-active",
+			["--forced-colors", "active"],
+			"pressed style shown while held",
+			true,
+		],
+	];
+	for (const [name, selector, options, classification, changed] of cases) {
+		const out = resolve(scratch, `held-${name}`);
+		const result = spawnSync(
+			process.execPath,
+			[
+				fileURLToPath(new URL("./cli.mjs", import.meta.url)),
+				"measure",
+				"--tool",
+				"capture",
+				"--forensics",
+				forensics,
+				"--out",
+				out,
+				"--",
+				"--url",
+				url,
+				"--action",
+				`hold:${selector}`,
+				...options,
+			],
+			{ encoding: "utf8", windowsHide: true, timeout: 120000 },
+		);
+		assert.equal(result.status, 0, `${name}: ${result.stderr}${result.stdout}`);
+		const manifest = JSON.parse(
+			await readFile(resolve(out, "manifest.json"), "utf8"),
+		);
+		const frame = manifest.frames[0];
+		assert.ok(existsSync(resolve(out, frame.file)), `${name}: frame missing`);
+		assert.equal(frame.heldPress.classification, classification, name);
+		assert.equal(frame.heldPress.changed, changed, name);
+	}
 });
 
 test("V4: drive separates and names keyboard reach findings, and still fails", async () => {
