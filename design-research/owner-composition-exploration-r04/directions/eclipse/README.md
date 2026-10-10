@@ -235,7 +235,7 @@ and only while live.
 | The export's done state | the file is ready | the ring draws from its top in the reading direction, then the check; «الملف جاهز» rises into its line; the file line glides from where it stood | ring 380 ms from 140 ms, check 260 ms from 400 ms, words 300 ms from 280 ms | `cubic-bezier(0.65, 0, 0.35, 1)` (the strokes), `cubic-bezier(0.25, 1, 0.5, 1)` (the words) |
 | A done line on the page (Access) | a change succeeded and its dialog left | its words rise into their line, then its check draws; the cards and rows below slide to their new places | from 150 ms: words 300 ms, check 260 ms from 230 ms; blocks 300-420 ms | as above; blocks `cubic-bezier(0.3, 0.75, 0.2, 1)` |
 | A new access record (Access's records card) | with the done line, in the same movement | transform and clip: the records below slide down, the new row is uncovered as the space opens and its words rise as one piece; the oldest rides down and is cut inside the card's bottom edge; a height change moves that edge | rows with the blocks (300-420 ms); words 300 ms from 150 ms | rows `cubic-bezier(0.3, 0.75, 0.2, 1)`; words `cubic-bezier(0.25, 1, 0.5, 1)` |
-| The press (13) | a control is held: pointer down, touch start, Space on a focused button | `scale`: the key seats 3% (a small square 6%) at once, with its light; released, its light (`--press-light`, a background layer) fades out and its travel settles back | none down; the light 120 ms back, the travel 240 ms back | the light `cubic-bezier(0.4, 0, 0.2, 1)`; the travel `cubic-bezier(0.3, 0.75, 0.2, 1)` |
+| The press (13) | a control is held: pointer down, touch start, Space on a focused button | `scale`: the key seats 3% (a small square 6%) at once, with its light; released, its light (an inset layer of its shadow, no glyph) fades out and its travel settles back | none down; the light 120 ms back, the travel 240 ms back | the light `cubic-bezier(0.4, 0, 0.2, 1)`; the travel `cubic-bezier(0.3, 0.75, 0.2, 1)` |
 
 The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
 hover colours of the rail tiles and buttons, a press's light as it comes on (13; released, it fades, DECISIONS item 42),
@@ -656,10 +656,15 @@ by using the same controls: **the key seats.**
 - **Released** (DECISIONS item 42): the light fades out in 120 ms on a close's curve, so even a very fast tap leaves a
   trace under the lifting finger; it is a background light, not a glyph (MOT-1), and the one exception to "a press's
   light is instant" (MOT-18). The travel settles back in 240 ms on the dialogs' settle curve. The key's edge and words, a
-  hover and a new selection change at once. The light is a registered property drawn by one inset layer of the key's
-  shadow, present in every state and transparent at rest, and only the press sets it and the travel, so a hover, a
-  selection or a state never animates through them; a rule that gives a key a shadow of its own (a chosen ring, a
-  list's edge) repeats the layer after it. A second press during either starts at full depth at once.
+  hover and a new selection change at once. The light is an inset layer of the key's shadow in one registered colour
+  (`--press-light`), and nothing of it is drawn at rest, so the page at rest is exactly as before the press. A key whose
+  shadow is otherwise always none (most keys, the chalk keys, the tiles, a chosen day) draws the layer only while held,
+  and released, its shadow fades to none. A key with a shadow of its own in some state (a segment's or weekday's ring, a
+  list's edge, a filter in force, the picker's days) carries the layer in every state, transparent at rest, and its
+  colour fades, so the ring or edge never animates; its own shadow rules repeat the layer after it. (The pass's first
+  build kept the transparent layer on every key at rest: it re-rasterised a few icons by a level or two, a dimmed month
+  arrow and some of the sheet's specimens, so the rest frames no longer matched.) A second press during either starts
+  at full depth at once.
 - **Nothing else moves:** transforms and paint only, so no neighbour shifts; no glyph changes opacity; the lights never
   react to a press.
 - **Not pressed:** a disabled or Working control (where it says why it is off, that explanation is the response); the
@@ -674,10 +679,13 @@ by using the same controls: **the key seats.**
 - **The two lists** (Activity log's who, Reports' sort on a phone) press as keys. Their native select now holds its text
   at 16 px, so an iPhone never zooms the page when one is tapped; it lies unseen over the whole control and stays the
   control (the touch, the system's picker, the keys, assistive technology), and a face in label type shows the choice
-  as before (TYP-6, OWN-A2, OWN-R12).
-- **For production:** Tailwind's `active:` variant with `scale-[.97]` and a `transition-[scale]` on the key, the light
-  as a registered colour property (`@property`) drawn by an inset shadow in every state and transitioned only out (or
-  a pseudo-element whose opacity fades: it carries no glyph), and `motion-reduce:active:scale-100`; Base UI's buttons
+  as before (TYP-6, OWN-A2, OWN-R12). Switched off (Reports while loading), the face keeps the off list's look,
+  `--ink-3` at the system's 70%, and in forced colours the list stays unseen, where the rule for switched-off controls
+  had drawn its 16 px words over the face.
+- **For production:** Tailwind's `active:` variant with `scale-[.97]` and a `transition-[scale]` on the key; the light
+  as an inset shadow set only by `active:` and transitioned only out (`transition-[box-shadow,scale]`), or, on a key
+  with a shadow of its own, a registered colour property (`@property`) in a transparent layer of that shadow (or a
+  pseudo-element whose opacity fades: it carries no glyph); and `motion-reduce:active:scale-100`. Base UI's buttons
   need no script.
 
 ## Open and capture

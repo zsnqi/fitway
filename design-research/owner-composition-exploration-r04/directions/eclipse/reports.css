@@ -674,7 +674,8 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 .rp .dl-sort.is-disabled { box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--ink-3); }
 @media (hover: hover) { .rp .dl-sort.is-disabled:hover { box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--ink-3); } }
 .rp .dl-sort.is-disabled select { color: var(--ink-3); cursor: default; }
-.rp .dl-sort.is-disabled .sel-face { color: var(--ink-3); }
+/* Its words as the switched-off native list drew them before the face (TYP-6): --ink-3 at the system's 70%. */
+.rp .dl-sort.is-disabled .sel-face { color: var(--ink-3); opacity: 0.7; }
 .rp .sort.is-still { color: inherit; cursor: default; }
 @media (hover: hover) { .rp .sort.is-still:hover { color: inherit; cursor: default; } }
 

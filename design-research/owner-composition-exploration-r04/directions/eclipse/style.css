@@ -1366,9 +1366,14 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
  * Released (DECISIONS item 42), the light fades out in 120 ms (--press-fade), so even the fastest tap leaves a trace;
  * its edge, words, the hover and a new selection change at once (MOT-18); the travel settles back in 240 ms on the
  * page's settle curve (a dialog's, MOT-9). A second press during either starts at full depth at once.
- *   The light is its own registered property, carried by one inset layer of every key's shadow in every state
- *   (transparent at rest), so only the press's light ever fades: a hover, a selection or a state never animates. A rule
- *   that gives a key a shadow of its own (a chosen ring, a list's edge) repeats the layer after it.
+ *   The light is an inset layer of the key's shadow, in the colour of one registered property (--press-light), and
+ *   nothing of it is drawn at rest, so the page at rest is exactly as it was before the press. A key whose shadow is
+ *   otherwise always none draws the layer only while held, and released, its shadow fades to none. A key that draws a
+ *   shadow of its own in some state (a chosen segment's or weekday's ring, a list's edge, a filter in force, a day of the
+ *   picker) carries the layer in every state instead, transparent at rest, and the property fades, so its ring or edge
+ *   never animates; its own shadow rules repeat the layer after it. Only the press's light ever fades: a hover, a
+ *   selection or a state never animates. (A transparent layer kept at rest on every key re-rasterised a few icons by a
+ *   level or two, a dimmed month arrow and the sheet's specimens, so the rest frames no longer matched.)
  *   Travel: a key 3% (--press-scale); a small square (an icon button, a tile, a day) 6% (--press-scale-sm), about
  *   1.3 px a side either way. Rows, menu items, sort headings and text links light only: they are not keys.
  *   Reduced motion, ?motion=off and Daily's Motion switch: the light alone, nothing moves, and it goes at once (MOT-11).
@@ -1396,24 +1401,24 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-/* The light's layer, on every key in every state. Its geometry is the face (zero specificity: a key's own shadow rule
- * repeats it); a chalk key's is its rim, 2 px and a 12 px fall inward (a day's 8 px). */
-:where(.rbtn, .btn, button.band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .sort, .ac-sel, .dl-sort, .fw-mi, .rec-a,
-  .acc-all, .tile, .tb-tile, .dp-n, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-sort, .cx-tile) {
+/* Keys with a shadow of their own in some state carry the light's layer in every state, transparent at rest, over
+ * their face (zero specificity: their own shadow rules repeat it). Every other key draws the layer only while held
+ * (below), and so does a chosen day: a chalk key, whose own shadow is always none. */
+:where(.seg-b, .wk-b, .cx-seg-b, .ac-sel, .dl-sort, .ac-dates, .ac-find, .dp-n) {
   box-shadow: inset 0 0 0 100vmax var(--press-light, transparent);
 }
-:where(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip) {
-  box-shadow: inset 0 0 0 2px var(--press-light, transparent), inset 0 0 12px var(--press-light, transparent);
+:where(.dp-day.is-end .dp-n) { box-shadow: none; }
+/* Released: the light fades and the travel settles back. Only these are transitioned, and only the press sets them: on
+ * a key whose shadow is otherwise always none, the shadow itself; on a key with a shadow of its own, the property. */
+:is(.sort, .fw-mi, .rec-a, .cx-sort) { transition: box-shadow var(--press-fade); }
+:is(.rbtn:not(.ac-dates, .ac-find), .btn, .band-btn, .hbadge, .hbtn, .icon-btn, .switch, .acc-all, .skip,
+  .tile, .tb-tile, .cx-btn, .cx-icon-btn, .cx-switch, .cx-tile, .cx-skip) {
+  transition: scale var(--press-back), box-shadow var(--press-fade);
 }
-:where(.dp-day.is-end .dp-n) {
-  box-shadow: inset 0 0 0 2px var(--press-light, transparent), inset 0 0 8px var(--press-light, transparent);
-}
-/* Released: the light fades and the travel settles back. Only these two are transitioned, and only the press sets them. */
-:is(.sort, .fw-mi, .rec-a, .cx-sort) { transition: --press-light var(--press-fade); }
-:is(.rbtn, .btn, .band-btn, .hbadge, .hbtn, .icon-btn, .seg-b, .wk-b, .switch, .ac-sel, .dl-sort, .acc-all, .skip,
-  .tile, .tb-tile, .dp-n, .cx-btn, .cx-icon-btn, .cx-seg-b, .cx-switch, .cx-tile, .cx-skip) {
+:is(.seg-b, .wk-b, .cx-seg-b, .ac-sel, .dl-sort, .ac-dates, .ac-find, .dp-n) {
   transition: scale var(--press-back), --press-light var(--press-fade);
 }
+.dp-day.is-end .dp-n { transition: scale var(--press-back), box-shadow var(--press-fade); }
 :is(.sort, .fw-mi, .rec-a, .cx-sort):active { transition-duration: 0s; }
 
 /* Keys: a 3% travel; small squares 6%. Down, at once. */
@@ -1427,6 +1432,16 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
 .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n {
   scale: var(--press-scale-sm);
   transition-duration: 0s;
+}
+/* A key whose shadow is otherwise always none draws the light's layer only while held (released, its shadow fades to
+ * none): over its face, or a chalk key's rim, 2 px and a 12 px fall inward. */
+:is(.rbtn:not(.ac-dates, .ac-find, .rbtn-primary), .btn:not(.btn-primary), button.band-btn, .hbadge, .hbtn, .icon-btn, .switch,
+  .sort, .fw-mi, .rec-a, .acc-all, .cx-btn:not(.primary), .cx-icon-btn, .cx-switch, .cx-sort):active:not(:disabled, [aria-disabled="true"], .is-disabled, .is-off, .is-still),
+:is(.rail-item, .cx-ri):active :is(.tile, .cx-tile), .tb-item:active .tb-tile {
+  box-shadow: inset 0 0 0 100vmax var(--press-light, transparent);
+}
+:is(.rbtn-primary, .dl .btn-primary, .cx-btn.primary, .skip, .cx-skip):active:not(:disabled, [aria-disabled="true"], .is-disabled) {
+  box-shadow: inset 0 0 0 2px var(--press-light, transparent), inset 0 0 12px var(--press-light, transparent);
 }
 
 /* Dark keys with an edge: the hover's edge and words, then the light. */
@@ -1478,7 +1493,10 @@ html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61,
 .tb-item[aria-current="page"]:active .tb-tile { --press-light: var(--press-dim); }
 /* A day: its tile lights; a chosen end seats; the end the next pick would make keeps its ring. */
 .dp-day:active:not([aria-disabled="true"], .is-off) .dp-n { --press-light: var(--press-lift); }
-.dp-day.is-end:active:not([aria-disabled="true"], .is-off) .dp-n { --press-light: var(--press-seat); }
+.dp-day.is-end:active:not([aria-disabled="true"], .is-off) .dp-n {
+  box-shadow: inset 0 0 0 2px var(--press-light, transparent), inset 0 0 8px var(--press-light, transparent);
+  --press-light: var(--press-seat);
+}
 /* Text links: the underline takes chalk and presses down to 2 px. */
 :is(.done-a, .cx-index a):active { color: var(--ink); text-decoration-color: var(--ink); text-decoration-thickness: 2px; }
 
@@ -1574,9 +1592,12 @@ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea {
     opacity: 1 !important;
   }
   :where(:disabled, [aria-disabled="true"], .is-disabled) * { color: inherit !important; }
-  /* Native lists have one edge and one focus ring, both drawn by their wrapper. */
-  .ac-sel select { border: 0 !important; background: transparent !important; outline: none !important; /* focus-ring: .ac-sel:has(select:focus-visible) */ }
-  .dl-sort select { border: 0 !important; background: transparent !important; outline: none !important; /* focus-ring: .dl-sort:has(select:focus-visible) */ }
+  /* Native lists have one edge and one focus ring, both drawn by their wrapper. The list itself stays unseen under its
+   * face (TYP-6), switched off too: the rule above shows a switched-off control at full opacity, which drew its 16 px
+   * words over the face's. */
+  .ac-sel select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: .ac-sel:has(select:focus-visible) */ }
+  .dl-sort select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: .dl-sort:has(select:focus-visible) */ }
+  .dl-sort.is-disabled .sel-face { opacity: 1 !important; }
   .ac-sel:has(select:focus-visible), .dl-sort:has(select:focus-visible) { outline: 2px solid CanvasText; outline-offset: 3px; }
   /* Control glyphs follow their system text colour, including the logo and explicit chalk strokes. */
   .brand .mk, .cx-brand-mk .mk, .hb-chev, .fw-mi svg { stroke: currentColor !important; }
