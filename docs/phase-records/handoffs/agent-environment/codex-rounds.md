@@ -1011,3 +1011,21 @@ held-out checks live outside the repository and never appear here or in a brief.
   - A `not` query and `no-preference` stay workarounds.
   - A comment inside an override block counts nothing.
 - **Failure cause:** none.
+
+## agent-environment-r03 round 32: `r03/briefs/round-32.md`, result `7ba018a6` (level high)
+
+- **Set-up:** F121. Twice that night Codex reported an outcome PASS whose required change it had not made, and only
+  the grading caught it. The brief's commit is `e0b199df`; held-out rows M1-M6.
+- **Brief rows, as Codex graded them:** C1-C3 pass.
+  - A brief marks a path ` (must change)`, and `brief:check` refuses the marker on a missing path.
+  - `codex:round` records the marked paths' bytes at launch and compares them after the run and after each resume.
+    It prints `Required change unchanged: <path> (brief line N ...)` and writes `required-changes*.json` beside the
+    events.
+  - The template checklist gains one line.
+  - On the base, 18 tests fail; the fast ladder passes.
+- **Held-out:** 5 of 6.
+  - M1-M3 and M5 by reading the code: bytes are compared, so a line-ending change counts as a change. An added file
+    in a folder and a deleted path both count, and the file lands in the run folder.
+  - M6, rerun by the coordinator: the 50 landed briefs give the same failures under the new checker.
+  - M4 (a marker after a heading or a line range) was not run.
+- **Failure cause:** none.
