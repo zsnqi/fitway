@@ -670,6 +670,11 @@ checks live outside the repository and never appear here or in a brief. One line
   each proposed requiring proof from the frames, the repair's own fix) and none caught daily-files' (no limit that the
   other pages' moments still run, which needed knowing that compare sees settled frames and that shared scripts add
   classes at runtime). On the control each arm gave four readings of five worth acting on.
-- **Decision (coordinator, by the fixed rule):** no pre-launch review step. It is reconsidered if another failure of
-  the allowance kind recurs (agent-environment DECISIONS item 20); the moments limit is now carried by the timeline
-  compare in every refactor brief (DECISIONS 45).
+- **Decision after the first arms (coordinator, by the fixed rule):** no step; each arm missed one failure.
+- **Then, at the user's request, xhigh and max** (Codex, briefs alone, and at xhigh also with sources), with a second
+  run of high and xhigh so chance could be told from effort: high caught brief-1 in one run and brief-3 in the other,
+  xhigh caught daily-files in both and midmotion-compare in neither, and max caught both in both runs, with every
+  control reading worth acting on. The first reversal between high and xhigh was chance.
+- **Decision (by the same rule, the user agreeing to the trial):** Codex at max reviews each Codex brief alone before
+  launch (`docs/agent-context/briefs/REVIEW.md`, checklist item B11). Two briefs and two runs are thin evidence: the
+  brief-caused failures of the rounds that follow are the measure.

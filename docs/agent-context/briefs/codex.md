@@ -48,7 +48,7 @@ SHA; anything you could not do.
 
 ## Coordinator checklist (delete before launch)
 
-The brief rules B1-B10 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
+The brief rules B1-B11 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
 (`docs/phase-records/handoffs/agent-environment/codex-rounds.md`).
 
 - [ ] B1. Every supported way to open and run the artifact is named (HTTP, `file://`, sizes, reduced motion), with
@@ -73,6 +73,8 @@ The brief rules B1-B10 live here. Codex follows a brief to the letter, so most f
       no text kept twice, and every live artifact the change can reach still passing (evaluation C3). For a file the
       round deletes or renames, `git grep` its path in the open records (resume files, briefs, packets) first, and
       fix them before launch or name them as in scope (r03 round 3).
+- [ ] B11. The pre-launch review in `docs/agent-context/briefs/REVIEW.md` ran on this brief, and each real reading it
+      returned is closed in the brief or recorded as left open, with the reason. (user, 2026-10-11, after the trial)
 - [ ] A test suite that needs a clean tree is run after the commit.
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.

@@ -517,7 +517,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 3. **Codex** is GPT-6.1 Sol at the level the task calls for (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation";
    Eclipse defects are `high`), launched by the coordinator with `pnpm codex:round`
    (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
-   briefs follow the brief rules B1-B10 in the checklist of `docs/agent-context/briefs/codex.md`.
+   briefs follow the brief rules B1-B11 in the checklist of `docs/agent-context/briefs/codex.md`.
 4. **Verifiers** use the verify-fitway skill (`.agents/skills/verify-fitway/SKILL.md`), which holds the verifier
    rules G1-G4, and its CLI instead of their own scripts (agent-environment-r03 round 4, 2026-10-07).
 5. **Claude Design** is paused (2026-10-02). It stays available for open visual questions; its output is reference
