@@ -626,3 +626,35 @@ checks live outside the repository and never appear here or in a brief. One line
 - **F139 recurs:** Codex wrote its own mid-motion harness, the same kind as the coordinator's, so under the working
   agreement ("Rules and findings") seeked mid-motion comparison becomes a verify-fitway feature in a Codex round of its
   own, with a planted defect it must catch.
+
+## midmotion-compare: `briefs/codex-midmotion-compare.md` (this folder), result `e39225e6` on `owner-r04-midmotion`, level `xhigh`
+
+- **Set-up:** step 1 of the resume point: F139 becomes a verify-fitway feature (`compare --timeline`), with F119, F122,
+  F126 and F130 riding along as their own rows. The ledger gave this milestone `.agents/skills/verify-fitway/**`
+  (`61360cee`). Held-out rows H1-H12 are in `D:/fitway-grader/owner-r04/midmotion-compare-heldout.md`.
+- **Run:** the Codex account reached its usage limit mid-round; after the user switched accounts it resumed on its
+  thread.
+- **Brief rows, as Codex graded them:** T1, T4, T5, T7, T8 and T9 pass; T2, T3 and T6 partial (the full matrices were
+  not finished). T7: 69 of 69 tests pass three times under a concurrent whole-page compare; T8: a planted skip fails
+  the suite by name; F130's two lines are gone.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-midmotion-grade/`, plants in
+  `D:/fitway-grader/owner-r04/midmotion-plants/`):
+  - H1-H3 and H7 pass: a planted dialog start pose, a 40 ms longer opening, a changed easing and a 240 ms press fade
+    are each `TIMELINE DIFFERENT` while the settled result is equal; the unplanted copy is equal.
+  - H5 passes: keyboard at desktop in English over HTTP and `file://` catches `50097ff7`; touch at phone is equal, as
+    the old seek harness found (the phone's sheet lost none of its pieces).
+  - H11 fails: 11 runs of T5's drive wrote two frames, 8 and 3, differing in the Lights chip, as at the base; the fix
+    also adds a style to the page before capture.
+  - H12 passes: only `.agents/skills/verify-fitway/**` changed; both worktrees clean.
+  - H4, H6, H8 and H9 were not run; the repair is graded on them.
+- **Found beyond the rows:** a sample is `NOT-HELD` whenever a page callback ran (`timeline.mjs:662`), and its pixels
+  are not compared. At `50097ff7`, Access's PIN change dialog differs at every time but reports `0 different; 5 not
+  held` and exits 0, while the same moment against itself is byte-equal twice. On Reports, 61 of 116 samples are not
+  held and 39 of them are byte-equal across the builds; the export's progress moments really do vary (timers).
+- **Failure cause: the brief, then the code.** T3 asked for frames "the hold cannot fix" to be their own result and let
+  that result neither pass nor fail, without requiring the classification to come from the frames, and T2's
+  must-catch list named one moment. Codex classified by the page's code, which a literal reading allows and which
+  hides a real regression (B8). T5's 11 of 11 did not reproduce.
+- **Next:** `codex-midmotion-compare-fix.md` (`07c5a87f`, level xhigh): not held only when frames vary between two
+  captures, every moment the real defect broke caught, the noise floor on every page, T6's matrix, and F126 without
+  changing the page.
