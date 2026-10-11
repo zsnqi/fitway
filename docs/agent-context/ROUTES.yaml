@@ -33,9 +33,6 @@ routes:
       - kind: task-packet
         path: docs/phase-records/task-packets/<milestone-id>.yaml
         selector: { kind: whole-file, value: "" }
-      - kind: evidence-receipt
-        path: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
-        selector: { kind: markdown-heading, value: "Rendered and accessibility evidence" }
     normalStartup:
       - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
       - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
@@ -80,9 +77,6 @@ routes:
   repository-infrastructure:
     responsibility: Change repository process, schemas, scripts, validation, or context infrastructure without changing product semantics.
     destinations:
-      - kind: evidence-receipt
-        path: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
-        selector: { kind: markdown-heading, value: "Validation commands and results" }
       - kind: task-packet
         path: docs/phase-records/task-packets/<milestone-id>.yaml
         selector: { kind: whole-file, value: "" }

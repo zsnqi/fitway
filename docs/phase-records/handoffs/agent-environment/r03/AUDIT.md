@@ -59,7 +59,7 @@ stay as written.
 | `taskPacketSha256` pin and duplicated scope (C6) | re-pinned on every packet edit; scope copied into the ledger | remove the pin; scope lives in the ledger, the packet keeps authorities and verification | R2, done |
 | History receipts (C5) | recomputed from the history file; prove nothing git does not | stop writing new ones; the closing commit is the record; the 12 stay frozen | R2, done |
 | `HISTORY_POINTER_EXCEPTIONS.yaml` (C13) | exists to excuse dead pointers | remove with its check for closed records | R2, done |
-| Evidence-receipt template and field (C14) | required, never used | the field is gone from the packets; the template is decided in R3 | R2, done; R3 |
+| Evidence-receipt template and field (C14) | required, never used | the field is gone from the packets; the template is retired at closing (DECISIONS 29) | R2, done; closing, done |
 | DECISIONS files (A36, C9) | logs, not decisions in force; process rules mixed in | each keeps an "in force" list; process rules move to WORKING_AGREEMENTS and the briefs | R3 |
 | codex-rounds.md (C10) | no script reads it | keep: it is the eval log of the user's grading method | none |
 
@@ -91,7 +91,7 @@ stay as written.
 | Merged local branches (D §2) | 15 merged and named by no record | delete | R1-machine, done |
 | agent-environment-r01 worktree | merged, clean, closed | remove | R1-machine, done |
 | `D:/fitway-temp` (D §3) | 47 GB; temp and Playwright leftovers; held-out run copies | sweep the leftovers; keep REPORT files and anything a record names | R1-machine, done (17.7 GB) |
-| eval worktrees (D §1) | C4 and C5 may still need them | keep until the evaluation loop decides | later |
+| eval worktrees (D §1) | C4 and C5 may still need them | C4 and C5 are not adopted (DECISIONS 29): disposable, on the gardener's list | closing, decided |
 | D:/fitway-scratch, D:/codex-worktrees-archive, C: Codex sessions (7 GB) | untracked records and the user's history | the user: not needed (2026-10-07); deleted by the user's script, which keeps two days of Codex logs | R1-machine, done (38.4 GB) |
 
 ### Gardener

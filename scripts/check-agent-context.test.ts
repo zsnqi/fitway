@@ -38,7 +38,6 @@ const CONTEXT_FILES = [
 	"docs/agent-context/README.md",
 	"docs/agent-context/ROUTES.yaml",
 	"docs/agent-context/TASK_PACKET_TEMPLATE.yaml",
-	"docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md",
 	"docs/schemas/agent-context-routes.schema.json",
 	"docs/schemas/task-packet.schema.json",
 ];

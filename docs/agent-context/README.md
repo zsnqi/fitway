@@ -11,8 +11,8 @@ only insofar as it agrees with them; history, handoffs and archives are read onl
 conservative 24,000-byte warning threshold is reported but is not itself a failure.
 
 `ROUTES.yaml` names the minimum initial route for each task class. It does not copy authority text.
-`TASK_PACKET_TEMPLATE.yaml` and `EVIDENCE_RECEIPT_TEMPLATE.md` are templates, not authority. A
-packet is coordinator-authored derived context; it never resolves a conflict with a cited source.
+`TASK_PACKET_TEMPLATE.yaml` is a template, not authority. A packet is coordinator-authored derived
+context; it never resolves a conflict with a cited source.
 The packet path remains stable for the lifetime of its milestone and becomes immutable evidence
 after closure. A route's optional `packetRequiredConditionals` list explicitly names conditional
 sources that may be promoted to required for a packet. Supplemental packet sources may add exact
@@ -55,7 +55,7 @@ startup context. Agents open historical content only when a named trigger or poi
 
 Closed history entries and CLOSED packets are frozen records. Checks validate their shape and
 lifecycle without following any path inside them. Active records still require valid, tracked
-source paths and selectors. `evidence.receiptTemplate` is optional; no check opens its target.
+source paths and selectors. `evidence.receiptTemplate` survives only in closed packets; no check opens its target.
 
 A closure is one commit that moves the terminal milestone from `PROJECT_STATE.yaml` to the end
 of `PROJECT_STATE_HISTORY.yaml`. No receipt, declaration, or anchor is required. Existing

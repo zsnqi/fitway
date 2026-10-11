@@ -326,3 +326,19 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - AGENTS.md, `docs/WORKFLOW.md` and the ledger schema (no maximum on `validationRepairAttempts`) changed
       together. Item 27's one-time exception is absorbed.
     - The design polish loop's two cycles (`docs/WORKFLOW.md`, the phase polish loop) are a separate rule and stay.
+29. **Closing the environment phase (coordinator, 2026-10-11).** The closing review
+    (`r03/briefs/closing-review.md`, a fresh Sonnet at `high`, judged at `5ab33aab`) passed the milestone and asked for
+    three record repairs; this item records them.
+    - r02's open items: C4 and C5 are not adopted. Neither was evaluated, and no brief-caused failure of their cause
+      (cause 5) came after; they stay candidate lines in `brief-failure-causes.md`, adopted if that cause recurs (item
+      20: no new process rule without evidence). C2d is dropped: C2c was not adopted, and nothing failed for it since.
+    - The evidence-receipt template is retired: required once, never used, and item 17's closure has no receipt. Its
+      two routes, its `docs/WORKFLOW.md` line and its context-file entry go; closed packets keep their
+      `receiptTemplate` field, which no check opens.
+    - Scope: r03's commits also changed `vitest.config.ts` and `scripts/run-vitest.test.ts`, now in its scope; the
+      deleted scripts its scope lists were removed within it. access-reason-cap-r01 loses its two frontier lines with
+      the frontier check (item 17); its scope is revisited before it restarts. Some coordinator commits on the shared
+      line mixed both milestones' records; history is not rewritten.
+    - F119, F122 and F126 stay open after the closure. No environment milestone follows: the gardener counts them, and
+      the next round that touches verify-fitway or the fast ladder takes them. The review's gardener findings are
+      F127 and F128.

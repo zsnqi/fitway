@@ -50,8 +50,8 @@
    `D:/fitway-temp/r03-r22-forensics/ui-forensics-1.3.0-backup`. Overwriting the four changed files in
    `C:/Users/Pc Force/.agents/skills/ui-forensics` was refused twice by the auto-mode classifier as a destructive
    action, so it waits on the user (below). Then run the copy's two self-tests and the CLI's `doctor`.
-2. The closing review: a fresh `sonnet-researcher` on the draft at `D:/fitway-temp/r03-closing-review/brief-draft.md`.
-   Commit it as closing-review.md in the same briefs folder, with the final HEAD, and run `brief:check` first.
+2. The closing review (`docs/phase-records/handoffs/agent-environment/r03/briefs/closing-review.md`, judged at
+   `5ab33aab`): PASS, with three record repairs, made under DECISIONS item 29.
 3. CI green on the pushed line, then fast-forward main. Close the milestone in one commit (`docs/WORKFLOW.md`
    §"Active ledger and closed history"), and update the Owner resume point, where the Daily split comes first and
    F123-F125 (the concept's recipe gaps) are the Owner's.

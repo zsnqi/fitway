@@ -336,8 +336,6 @@ changes Owner, Staff, or Public presentation, in addition to the gates above.
 - **Round report.** A Codex round or a subagent reports in its brief's Report block, as its final
   message; the coordinator saves the report verbatim as `REPORT.md` in the round's run folder
   outside the repository and cites in the records only what decides something.
-- **Evidence receipt.** A worker's or verifier's handback at a milestone's closure, using
-  `docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md`.
 
 Keep them concise and evidence-based.
 

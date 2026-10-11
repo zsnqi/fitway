@@ -80,8 +80,6 @@ milestones:
       - apps/web/src/components/owner/access/** and its message files and tests
       - "SPEC.md: one line recording the 240-character audit reason limit only"
       - "apps/server/src/phase11-access.integration.test.ts: one added test block for the 241-character reason refusal only"
-      - "scripts/check-frontier-preservation.mjs and scripts/check-frontier-preservation.test.ts: only the recorded transition that excludes apps/web/src/components/owner/access/messages.ts, owner-access-view.tsx and owner-access-view.test.tsx (the source exclusion list and the pinned policy pointer)"
-      - "one new frontier policy pointer document (and its companion if required) under docs/phase-records/handoffs/coordinator/; the pinned snapshot, its companion, the baseline listing and every earlier pointer stay unchanged"
       - docs/phase-records/handoffs/access-reason-cap/**
       - docs/phase-records/task-packets/access-reason-cap-r01.yaml
     forbiddenPaths:
@@ -142,6 +140,8 @@ milestones:
       - scripts/project-state-history-v2.test.ts
       - scripts/repository-fingerprint.mjs
       - scripts/run-vitest.mjs
+      - scripts/run-vitest.test.ts
+      - vitest.config.ts
       - scripts/show-agent-context.mjs
       - scripts/show-agent-context.test.ts
       - scripts/verify-repository.mjs
