@@ -11,6 +11,7 @@ import {
 	verificationPort,
 } from "./core.mjs";
 import { drive } from "./runner.mjs";
+import { timelineTimes } from "./timeline.mjs";
 
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const identity = (item) =>
@@ -63,7 +64,17 @@ async function capture(options, setup, out) {
 	}
 }
 
-export async function compare(options, { doctor, child }) {
+export async function compare(
+	inputOptions,
+	{ doctor, child, captureItems = capture, checkPort = portAvailable },
+) {
+	const options = {
+		...inputOptions,
+		timeline: Boolean(
+			inputOptions.timeline || inputOptions["timeline-times"] !== undefined,
+		),
+	};
+	timelineTimes(options["timeline-times"]);
 	const out = options.out;
 	assertOutsideGit(out);
 	const ports = [
@@ -89,7 +100,7 @@ export async function compare(options, { doctor, child }) {
 		tools: "diff",
 		quiet: true,
 	});
-	for (const port of ports) await portAvailable(port);
+	for (const port of ports) await checkPort(port);
 	const pages =
 		options.page === "all"
 			? build.map.pages.map((p) => p.page)
@@ -127,16 +138,84 @@ export async function compare(options, { doctor, child }) {
 			build: resolve(out, tag, "build"),
 			baseline: resolve(out, tag, "baseline"),
 		};
-		const left = await capture(
+		const left = await captureItems(
 			{ ...options, page, port: ports[0] },
 			build,
 			folders.build,
 		);
-		const right = await capture(
+		const right = await captureItems(
 			{ ...options, page, port: ports[1] },
 			baseline,
 			folders.baseline,
 		);
+		if (options.timeline && options["timeline-times"] === undefined) {
+			const shared = Object.fromEntries(
+				left.items.map((item) => {
+					const other = right.items.find((i) => identity(i) === identity(item));
+					return [
+						identity(item),
+						[
+							...new Set([
+								...(item.timeline?.times || []),
+								...(other?.timeline?.times || []),
+							]),
+						].sort((a, b) => a - b),
+					];
+				}),
+			);
+			for (const side of ["build", "baseline"]) {
+				const data = side === "build" ? left : right;
+				for (const [index, item] of data.items.entries())
+					if (
+						item.timeline?.times.length &&
+						JSON.stringify(item.timeline.times) !==
+							JSON.stringify(shared[identity(item)])
+					) {
+						const folder = resolve(
+							out,
+							`${diffStem(item, index)}-shared-times-${side}`,
+						);
+						const repeated = await captureItems(
+							{
+								...options,
+								page,
+								port: ports[side === "build" ? 0 : 1],
+								timelineTimesByItem: shared,
+								feature: item.feature.split("/")[1],
+								states: "default",
+								query: new URLSearchParams(
+									Object.entries(item.query).filter(
+										([key]) => !["lang", "motion"].includes(key),
+									),
+								).toString(),
+								languages: item.language,
+								sizes: item.size,
+								inputs: item.input,
+								motions: item.motion,
+								transports: item.transport,
+								colors: item.colors,
+							},
+							side === "build" ? build : baseline,
+							folder,
+						);
+						const replacement = repeated.items[0];
+						if (replacement?.status !== "pass") {
+							item.status = "problem";
+							item.problems.push(
+								"Shared-time recapture failed",
+								...(replacement?.problems || []),
+							);
+						} else
+							item.timeline = {
+								...replacement.timeline,
+								samples: replacement.timeline.samples.map((s) => ({
+									...s,
+									file: resolve(folder, s.file),
+								})),
+							};
+					}
+			}
+		}
 		if (!left.items.length || !right.items.length)
 			throw new Error(
 				`Comparison captured no items: build=${left.error || left.items.length}; baseline=${right.error || right.items.length}`,
@@ -202,12 +281,12 @@ export async function compare(options, { doctor, child }) {
 							transports: item.transport,
 							colors: item.colors,
 						};
-						const repeatedBuild = await capture(
+						const repeatedBuild = await captureItems(
 							{ ...repeatOptions, port: ports[0] },
 							build,
 							resolve(out, `${prefix}-repeat-build`),
 						);
-						const repeatedBase = await capture(
+						const repeatedBase = await captureItems(
 							{ ...repeatOptions, port: ports[1] },
 							baseline,
 							resolve(out, `${prefix}-repeat-baseline`),
@@ -238,9 +317,75 @@ export async function compare(options, { doctor, child }) {
 					entry.region = measured.bbox;
 					entry.changedPixels = measured.changedPixels;
 					entry.diffImages = measured.images;
+					if (options.timeline) {
+						entry.recipe = { build: item.recipe, baseline: other.recipe };
+						entry.timeline = {
+							times: item.timeline?.times || [],
+							reason: item.timeline?.reason,
+							samples: [],
+						};
+						for (const sample of item.timeline?.samples || []) {
+							const baseSample = other.timeline?.samples.find(
+								(s) => s.time === sample.time,
+							);
+							const moment = {
+								time: sample.time,
+								result: "problem",
+								sources: [...sample.sources, ...(baseSample?.sources || [])],
+								files: {
+									build: resolve(folders.build, sample.file),
+									baseline: baseSample
+										? resolve(folders.baseline, baseSample.file)
+										: null,
+								},
+							};
+							entry.timeline.samples.push(moment);
+							if (!baseSample)
+								moment.problems = ["Baseline did not capture this time"];
+							else if (
+								sample.result === "not-held" ||
+								baseSample.result === "not-held"
+							)
+								moment.result = "not-held";
+							else {
+								const prefix = `${diffStem(item, index)}-time-${String(sample.time).replace(".", "_")}ms-diff`;
+								const measurement = await diff(
+									moment.files.baseline,
+									moment.files.build,
+									prefix,
+								);
+								Object.assign(moment, {
+									result: measurement.identical ? "equal" : "different",
+									region: measurement.bbox,
+									changedPixels: measurement.changedPixels,
+									diffImages: measurement.images,
+									diffPrefix: resolve(out, prefix),
+								});
+							}
+							console.log(
+								`TIMELINE ${moment.result.toUpperCase()}: ${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport} ${item.colors}; time ${moment.time} ms${moment.region ? `; region ${JSON.stringify(moment.region)}; diff ${moment.diffPrefix}` : ""}${moment.sources.length ? `; ${moment.sources.map((f) => `${f.source.file}:${f.source.line}: ${f.reason}`).join("; ")}` : ""}`,
+							);
+						}
+						console.log(
+							`TIMELINE TIMES: ${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport} ${item.colors}; ${entry.timeline.times.join(", ") || entry.timeline.reason || "unavailable"}`,
+						);
+					}
 				}
 			} catch (error) {
 				entry.problems.push(error.message);
+			}
+			if (options.timeline && !entry.timeline) {
+				entry.timeline = {
+					times: [],
+					samples: [],
+					reason:
+						entry.result === "not-reachable"
+							? "State/feature cannot be reached; no timeline"
+							: "Capture unavailable; no timeline",
+				};
+				console.log(
+					`TIMELINE TIMES: ${entry.feature} ${entry.state} ${entry.language} ${entry.size} ${entry.input} ${entry.motion} ${entry.transport} ${entry.colors}; ${entry.timeline.reason}`,
+				);
 			}
 			console.log(
 				`COMPARE ${entry.result.toUpperCase()}: ${entry.feature} ${entry.state} ${entry.language} ${entry.size} ${entry.input} ${entry.motion} ${entry.transport} ${entry.colors}${entry.region ? `; region ${JSON.stringify(entry.region)}; diff ${entry.diffPrefix}` : ""}${entry.repeated ? "; repeated in fresh contexts" : ""}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
@@ -274,10 +419,46 @@ export async function compare(options, { doctor, child }) {
 			result.items.filter((i) => i.result === key).length,
 		]),
 	);
-	console.log(
-		`COMPARE ${counts.different || counts.problem ? "FAIL" : "PASS"}: ${counts.equal} equal; ${counts.different} different; ${counts["not-reachable"]} not reachable; ${counts.problem} problems; ${out}/comparison.json`,
+	const moments = result.items.flatMap((item) =>
+		(item.timeline?.samples || []).map((sample) => ({
+			...sample,
+			item: `${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport} ${item.colors}`,
+		})),
 	);
-	if (counts.different || counts.problem)
+	const timelineCounts = Object.fromEntries(
+		["equal", "different", "not-held", "problem"].map((key) => [
+			key,
+			moments.filter((s) => s.result === key).length,
+		]),
+	);
+	const failed =
+		counts.different ||
+		counts.problem ||
+		timelineCounts.different ||
+		timelineCounts.problem;
+	console.log(
+		`COMPARE ${failed ? "FAIL" : options.timeline && timelineCounts["not-held"] ? "INCOMPLETE" : "PASS"}: ${counts.equal} equal; ${counts.different} different; ${counts["not-reachable"]} not reachable; ${counts.problem} problems; ${out}/comparison.json`,
+	);
+	if (options.timeline) {
+		result.timelineSummary = {
+			...timelineCounts,
+			notHeld: moments.filter((s) => s.result === "not-held"),
+		};
+		console.log(
+			`TIMELINE ${timelineCounts.different || timelineCounts.problem ? "FAIL" : timelineCounts["not-held"] ? "INCOMPLETE" : "PASS"}: ${timelineCounts.equal} equal; ${timelineCounts.different} different; ${timelineCounts["not-held"]} not held; ${timelineCounts.problem} problems`,
+		);
+		for (const sample of result.timelineSummary.notHeld)
+			console.log(
+				`NOT-HELD: ${sample.item}; time ${sample.time} ms; ${sample.sources.map((f) => `${f.source.file}:${f.source.line}`).join(", ")}`,
+			);
+		await jsonOutput(out, "comparison.json", result);
+	}
+	if (
+		counts.different ||
+		counts.problem ||
+		timelineCounts.different ||
+		timelineCounts.problem
+	)
 		throw new ReportedFailure(
 			"Comparison has differences or problems; inspect comparison.json.",
 		);

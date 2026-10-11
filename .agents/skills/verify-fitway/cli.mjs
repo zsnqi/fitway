@@ -57,7 +57,7 @@ Commands:
          [--isolated-port <49152-65535>] [--idle-timeout-ms <1-1800000>]
   doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff]
   drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>]
-        [--page index.html|all] [--feature page|all] [--states default|all|switch=value,...]
+        [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...]
         [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone]
         [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176]
         [--colors normal,forced] [--cache no-store|none]
@@ -65,6 +65,7 @@ Commands:
   compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>]
           [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
           [all drive page/feature/state/axis options] [--out <evidence-folder>]
+          [--timeline] [--timeline-times 1,100,200,...]
   measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>
   cleanup --session <launch-folder|session.json>
 Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
@@ -82,6 +83,10 @@ PASS requires state and feature proof. NOT-REACHABLE means state/feature unavail
 KEYBOARD-UNREACHABLE means the pointer feature's keyboard path failed; PROBLEM names a measuring error.
 Items have a short *-summary.json beside the full record; filenames include feature and state.
 compare repeats differing items in fresh contexts, with exact pixel regions and diff images.
+--timeline compares held frames after the last action as well as the settled result.
+Default times start at 1 ms, with gaps <=100 ms through the longest finite movement.
+--timeline-times names other finite nonnegative milliseconds; implies --timeline.
+NOT-HELD names the time and script file/line when a callback moves a held picture.
 Known limits: CSS-only openings and some dynamic/delegated opener relationships are not exhaustively discovered.
 Doctor can block when a missing standalone input has no authoritative recovery source.
 Open numeric/text domains have representative samples in the map; --query accepts other values.
@@ -113,7 +118,7 @@ function parse(argv) {
 		}
 		if (!item.startsWith("--")) throw new Error(`Unexpected argument: ${item}`);
 		const key = item.slice(2);
-		if (key === "lan") options[key] = true;
+		if (["lan", "timeline"].includes(key)) options[key] = true;
 		else {
 			const value = argv.shift();
 			if (!value || value.startsWith("--"))
@@ -162,8 +167,6 @@ export async function child(
 				cwd,
 				env: {
 					...process.env,
-					TEMP: "D:/fitway-temp",
-					TMP: "D:/fitway-temp",
 					PYTHONDONTWRITEBYTECODE: "1",
 				},
 				stdio: nodeTool
@@ -408,7 +411,7 @@ async function launch(options) {
 		],
 		{
 			cwd: dirname(self),
-			env: { ...process.env, TEMP: "D:/fitway-temp", TMP: "D:/fitway-temp" },
+			env: { ...process.env },
 			detached: true,
 			windowsHide: true,
 			stdio: ["ignore", log, log],

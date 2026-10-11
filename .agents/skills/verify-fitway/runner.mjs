@@ -18,8 +18,14 @@ import {
 	performAction,
 	prove,
 	proveFeature,
+	reachByKeyboard,
 } from "./drive.mjs";
 import { loadProbes } from "./probes.mjs";
+import {
+	captureTimeline,
+	observeTimeline,
+	timelineTimes,
+} from "./timeline.mjs";
 
 const axis = (value, fallback, allowed) => {
 	const items = (value || fallback).split(",");
@@ -222,6 +228,7 @@ export async function captureComparison(page) {
 
 export async function drive(options) {
 	const { concept, map, tools, loaded, out } = options;
+	const requestedTimes = timelineTimes(options["timeline-times"]);
 	const selected = map.pages.find(
 		(p) => p.page === (options.page || "index.html"),
 	);
@@ -229,7 +236,15 @@ export async function drive(options) {
 	const features =
 		options.feature === "all"
 			? selected.features
-			: selected.features.filter((f) => f.id === (options.feature || "page"));
+			: selected.features.filter((f) =>
+					(options.feature || "page").split(",").includes(f.id),
+				);
+	if (options.feature && options.feature !== "all")
+		for (const id of options.feature.split(","))
+			if (!features.some((f) => f.id === id))
+				throw new Error(
+					`Unmapped feature ${id}; run list --page ${selected.page}`,
+				);
 	if (!features.length)
 		throw new Error(
 			`Unmapped feature ${options.feature}; run list --page ${selected.page}`,
@@ -352,7 +367,11 @@ export async function drive(options) {
 										timezoneId: "Asia/Riyadh",
 									});
 									current.page.setDefaultTimeout(5000);
-									if (options.comparisonCapture)
+									if (options.timeline)
+										await current.page.addInitScript(
+											`(${observeComparisonFrames.toString()})(); (${observeTimeline.toString()})();`,
+										);
+									else if (options.comparisonCapture)
 										await current.page.addInitScript(observeComparisonFrames);
 									const save = async (suffix) => {
 										const name = `${stem}-${suffix}.png`;
@@ -382,8 +401,18 @@ export async function drive(options) {
 										});
 										if (input === "keyboard")
 											entry.initialFocus = await focusedElement(current.page);
-										if (selected.page === "index.html")
+										if (selected.page === "index.html") {
 											await probes.introSettled(current.page);
+											// A fixed RTL flex surface can otherwise reuse either of two
+											// fractional raster origins despite identical layout boxes (F126).
+											// A consistent compositor layer changes no box or computed pose.
+											await current.page.addStyleTag({
+												content: ".tuner {will-change: transform}",
+											});
+											await ui.twoFrames(current.page);
+											entry.capturePolicy =
+												"Daily tuner uses a consistent compositor layer; layout boxes unchanged";
+										}
 										entry.emulation = {
 											...Object.fromEntries(
 												Object.entries(current.emulation).filter(
@@ -513,9 +542,12 @@ export async function drive(options) {
 													moved: feature.proof.moved,
 												},
 											);
-											for (const action of (input === "keyboard"
-												? actionRecipe.keyboardActions || actionRecipe.actions
-												: actionRecipe.actions) || []) {
+											const actions =
+												(input === "keyboard"
+													? actionRecipe.keyboardActions || actionRecipe.actions
+													: actionRecipe.actions) || [];
+											if (options.timeline) entry.recipe = actionRecipe;
+											for (const [actionIndex, action] of actions.entries()) {
 												const resolvedAction = action.replace(
 													/^activate:/,
 													input === "keyboard"
@@ -524,6 +556,51 @@ export async function drive(options) {
 															? "tap:"
 															: "click:",
 												);
+												if (options.timeline) {
+													if (actionIndex === actions.length - 1) {
+														const [kind, argument] =
+															resolvedAction.split(/:(.*)/s);
+														if (
+															input === "mouse" &&
+															["click", "download", "hold"].includes(kind)
+														)
+															await current.page
+																.locator(argument)
+																.first()
+																.hover();
+														if (
+															input === "keyboard" &&
+															[
+																"activate",
+																"click",
+																"tap",
+																"download",
+																"type",
+																"select",
+															].includes(kind)
+														) {
+															const selector = ["type", "select"].includes(kind)
+																? argument.slice(0, argument.lastIndexOf("="))
+																: argument;
+															await reachByKeyboard(
+																current.page,
+																selector,
+																entry,
+																resolvedAction,
+															);
+														}
+													}
+													await settleComparison(current.page);
+													if (actionIndex === actions.length - 1)
+														await current.page.evaluate(
+															({ action, input }) =>
+																window.__verifyFitwayTimeline.arm(
+																	action,
+																	input,
+																),
+															{ action: resolvedAction, input },
+														);
+												}
 												await performAction(
 													ui,
 													current.page,
@@ -534,6 +611,27 @@ export async function drive(options) {
 													entry,
 												);
 												entry.actions.push(resolvedAction);
+												if (
+													options.timeline &&
+													actionIndex === actions.length - 1
+												)
+													entry.timeline = await captureTimeline(current.page, {
+														out,
+														stem,
+														times:
+															options.timelineTimesByItem?.[
+																JSON.stringify([
+																	entry.feature,
+																	entry.state,
+																	language,
+																	size,
+																	input,
+																	motion,
+																	transport,
+																	color,
+																])
+															] || requestedTimes,
+													});
 												if (resolvedAction.startsWith("hold:")) {
 													const held = await ui.heldPressInfo(current.page);
 													if (!held)
@@ -549,6 +647,13 @@ export async function drive(options) {
 													};
 												}
 											}
+											if (options.timeline && !actions.length)
+												entry.timeline = {
+													times: [],
+													samples: [],
+													reason:
+														"Feature has no actions; compared at rest only",
+												};
 											if (feature.proof.countIncreased)
 												await current.page.waitForFunction(
 													({ selector, count }) =>
