@@ -115,6 +115,12 @@ latest wording; never copy an entry into a resume point.
   its report: what it measured and why the CLI could not. The coordinator records each such script in
   `findings.tsv` with the class `cli-gap:<kind>`; when the same kind comes back from another round, that check
   becomes a feature of the CLI in a Codex round of its own, with a planted defect it must catch. (user, 2026-10-10)
+- A script written as evidence is first run on a build against itself, with its noise floor stated, and on a planted
+  defect of the kind it is meant to catch (a mid-motion plant for a mid-motion script); until it has shown both, its
+  output is not evidence. A script that has shown both is recorded in `findings.tsv` with both results, and the next
+  agent that needs the same measurement starts from it. It is never put in the brief of a round it grades, and an
+  independent verifier may still write its own. (user, 2026-10-11, after a Codex harness that sampled real time
+  differed from itself by up to 5596 pixels while the coordinator's self-tested one was byte-equal)
 - A review looks at every element the round changed as a whole on the page (its order, alignment, sizes and
   spacing), not only at whether the requested change happened: a change can be done and still read badly. (user,
   2026-10-03, after the busiest-time card on the phone passed every check while reading badly)
