@@ -1,8 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-environment-r03: resume point
 
-- **As of:** codex/owner-redesign-r04, 2026-10-11 02:25 +03:00 (rounds 22-29, 31 and 32 merged; round 30's repair
-  stopped by the coordinator for a new session)
+- **As of:** codex/owner-redesign-r04, 2026-10-11 (rounds 22-32 merged; round 30 graded after two repairs)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-environment/DECISIONS.md` items 12-28,
   `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -23,6 +22,9 @@
   - round 27 (`5e5f142e`): the gardener's worktree counts, and folders that vanish mid-survey;
   - round 28 (`0e89866b`): the record checkers;
   - round 29 (`f90f4464`): the concept CSS check;
+  - round 30 (`2b9ac5fe`, two repairs): verify-fitway names where focus stopped, tells its two failure statuses
+    apart, and a full-motion compare of the concept against itself is equal (carets hidden, script motion waited for
+    within five seconds). F045, F046 and F112 are fixed; F119 stays open; F124-F126 are new;
   - round 31 (`9d0e4b29`): accessibility overrides are not workarounds;
   - round 32 (`7ba018a6`): a brief marks required paths ` (must change)`, and `codex:round` reports any left unchanged.
 - The closing triage of the open findings is in `D:/fitway-temp/r03-findings-triage/REPORT.md`; its statuses are
@@ -39,36 +41,24 @@
 
 ## Running now
 
-- Nothing runs. Round 30's repair 1 (`docs/phase-records/handoffs/agent-environment/r03/briefs/round-30.md`, worktree
-  `D:/Projects/fitway-worktrees/agent-environment-r03-r30`, level `xhigh`, run folder `D:/fitway-temp/codex-runs/r03-round-30`).
-  - The first result `1dde2ffd`: V1-V2 pass. In V3, Daily's status is equal 5 of 5 under full motion and a planted
-    change is caught. V4 (F119) was not reproduced: the base passes with both ports held.
-  - The repair (sent 01:55) asks that a blinking text caret never make a compare differ:
-    Access's pin-change validation and my-password features differed under full motion only. The 34 capture problems are
-    the concept's missing recipe proofs (F123, Owner).
-  - The coordinator stopped the repair at 02:21 so the user could start a new session. Its uncommitted edits stay in
-    the worktree (`SKILL.md`, `cli.test.mjs`, `runner.mjs`), with a copy in
-    `D:/fitway-temp/codex-runs/r03-round-30/wip-repair1-0221.patch`. Resume it on its thread with `pnpm codex:round
-    resume D:/fitway-temp/codex-runs/r03-round-30 --message-file <file>`, where the file says it was stopped
-    mid-change and should continue repair 1.
+- Nothing runs.
 - The weekly gardener pass: the Windows task "FITWAY gardener weekly", Fridays 14:00 (next 2026-10-16).
 
 ## Next steps
 
-1. Grade round 30's repair: both Access dialogs equal in five full-motion self-compares, and a planted change in a
-   focused field still different. Then merge it, mark F045, F046 and F112 fixed, and keep F119 open as reworded.
-2. Install the ui-forensics 1.3.1 copy (`D:/fitway-temp/r03-r22-forensics/ui-forensics/`) as the machine-level skill
-   (`C:/Users/Pc Force/.agents/skills/ui-forensics`). The user said yes on 2026-10-11; install only after round 30 ends,
-   since it runs on 1.3.0. Keep a backup of 1.3.0 beside the copy, then run the copy's two self-tests and the CLI's
-   `doctor`.
-3. The closing review: a fresh `sonnet-researcher` on the draft at `D:/fitway-temp/r03-closing-review/brief-draft.md`.
+1. The ui-forensics 1.3.1 install (the user's yes, 2026-10-11): the backup of 1.3.0 is at
+   `D:/fitway-temp/r03-r22-forensics/ui-forensics-1.3.0-backup`. Overwriting the four changed files in
+   `C:/Users/Pc Force/.agents/skills/ui-forensics` was refused twice by the auto-mode classifier as a destructive
+   action, so it waits on the user (below). Then run the copy's two self-tests and the CLI's `doctor`.
+2. The closing review: a fresh `sonnet-researcher` on the draft at `D:/fitway-temp/r03-closing-review/brief-draft.md`.
    Commit it as closing-review.md in the same briefs folder, with the final HEAD, and run `brief:check` first.
-4. CI green on the pushed line, then fast-forward main. Close the milestone in one commit (`docs/WORKFLOW.md`
-   §"Active ledger and closed history"), and update the Owner resume point, where the Daily split comes first.
+3. CI green on the pushed line, then fast-forward main. Close the milestone in one commit (`docs/WORKFLOW.md`
+   §"Active ledger and closed history"), and update the Owner resume point, where the Daily split comes first and
+   F123-F125 (the concept's recipe gaps) are the Owner's.
 
 ## Waiting on the user
 
-Nothing. The ui-forensics install has the user's yes.
+The ui-forensics install: the user runs the copy themselves or allows it (step 1).
 
 ## Known risks
 
@@ -84,5 +74,7 @@ Nothing. The ui-forensics install has the user's yes.
   (main is at `3157d04a`).
 - Packet: `docs/phase-records/task-packets/agent-environment-r03.yaml`; briefs: `docs/phase-records/handoffs/agent-environment/r03/briefs/`.
 - Grades: D:/fitway-temp/r03-r22-grade/ through r03-r31-grade/; held-out rows in D:/fitway-grader/agent-environment/.
+  `D:/fitway-temp/r03-r30-grade/base-cli/node_modules` is a junction into the r30 worktree: unlink it before removing
+  either folder.
 - Round worktrees agent-environment-r03-r22 to r03-r32 are merged and disposable once main holds the line; remove
   them with the gardener's `remove-worktree.mjs`.

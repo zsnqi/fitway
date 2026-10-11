@@ -1029,3 +1029,31 @@ held-out checks live outside the repository and never appear here or in a brief.
   - M6, rerun by the coordinator: the 50 landed briefs give the same failures under the new checker.
   - M4 (a marker after a heading or a line range) was not run.
 - **Failure cause:** none.
+
+## agent-environment-r03 round 30: `r03/briefs/round-30.md`, result `2b9ac5fe` (level xhigh, two repairs)
+
+- **Set-up:** F045, F046, F112 and F119. The brief's commit is `63cbff3a` over `356515f2`; held-out rows U1-U7.
+  The concept was read at `d1a01f3c` from an archive.
+- **First result `1dde2ffd`:** V1-V2 pass. Focus is named by its selector and accessible name, or its role, and focus
+  on the body reads "on the page itself". The two statuses say what failed. Under full motion, Daily's status was
+  equal 5 of 5, but Access's pin-change validation and my-password differed against themselves: a blinking caret.
+  V4 was not reproduced: the base passes 57 of 57 with both ports held.
+- **Repair 1 (`84f66ae4`):** compare hides native carets and turns off Chromium's partial raster; ordinary drive keeps
+  its options. The coordinator stopped it mid-change for a new session; it resumed on its thread.
+- **Repair 2 (`2b9ac5fe`):** one whole-concept self-compare by the coordinator under full motion still differed on
+  Daily's chart hover and on the chart drawn after a retry, both moved by `requestAnimationFrame`. Compare now waits
+  for queued frames to drain, within one five-second bound per capture; a loop that never settles is a capture
+  problem. Its fast-ladder test runs on a simulated page; the real-browser proof is outside the ladder.
+- **Held-out** (coordinator, `D:/fitway-temp/r03-r30-grade/`): 6 of 7.
+  - U1, U2: by the code and the round's tests.
+  - U3: under full motion Daily's status, Access's add, pin-change validation and my-password, and Reports'
+    custom period were equal 5 of 5. Reports' `dialog=range` cannot be measured: its state has no recipe proof (F124).
+  - U4: a one-shade change planted in the open status popover and one in the focused invalid pin field both read
+    different, before and after repair 2. After repair 2, Daily's 42 features were equal in 3 of 3 runs and the
+    whole concept read 125 equal, 0 different.
+  - U6: Reports' frames are byte-identical to the base CLI. Daily's phone frame under reduced motion alternates
+    between two renders of the Lights chip with either CLI (F126), so it matches the base on reruns.
+  - U7: by the code: one bounded wait, only carets hidden, persistent animations paused at time zero.
+  - U5 (two sessions from two worktrees at once) was not run. F119 stays open.
+- **Failure cause:** the code, for both repairs. The brief asked for every feature equal; repair 1 was checked only on
+  the features reported to differ. V4 is not met: its cause is unknown, and no failing test is named.
