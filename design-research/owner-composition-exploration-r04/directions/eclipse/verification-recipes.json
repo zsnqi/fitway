@@ -772,7 +772,8 @@
             "file": "access.js",
             "line": 807
           },
-          "covers": []
+          "covers": [],
+          "changesState": true
         },
         {
           "id": "record-navigation",
@@ -886,6 +887,70 @@
           "proof": {
             "selector": "main",
             "visible": true
+          }
+        },
+        {
+          "when": {
+            "pin": "none"
+          },
+          "shows": "Front desk has no PIN; its create action is available",
+          "proof": {
+            "expression": "window.__access?.desk === 'none' && !!document.querySelector('[data-act=\\\"pinCreate\\\"]')"
+          }
+        },
+        {
+          "when": {
+            "fail": "1"
+          },
+          "shows": "Failure scenario is selected for the next access action",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('fail') === '1'"
+          }
+        },
+        {
+          "when": {
+            "hold": "1"
+          },
+          "shows": "Working scenario is selected for the next access action",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('hold') === '1'"
+          }
+        },
+        {
+          "when": {
+            "state": "error"
+          },
+          "shows": "Access page load error is visible with retry",
+          "proof": {
+            "selector": "#retry",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "records": "error"
+          },
+          "shows": "Access records payload failed; its feature proof checks retry",
+          "proof": {
+            "expression": "window.__access?.records.phase === 'error'"
+          }
+        },
+        {
+          "when": {
+            "refuse": "staff_pin_not_active"
+          },
+          "shows": "PIN refusal scenario is selected",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('refuse') === 'staff_pin_not_active'"
+          }
+        },
+        {
+          "when": {
+            "refuse": "current_password_incorrect"
+          },
+          "shows": "Password refusal scenario is selected",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('refuse') === 'current_password_incorrect'"
           }
         }
       ],
@@ -1263,7 +1328,8 @@
           },
           "covers": [
             "#reason-clear"
-          ]
+          ],
+          "changesState": true
         },
         {
           "id": "older",
@@ -1574,6 +1640,74 @@
           "proof": {
             "selector": ".rec:focus",
             "visible": true
+          }
+        },
+        {
+          "when": {
+            "find": "1"
+          },
+          "shows": "Activity search panel is open",
+          "proof": {
+            "selector": "#find",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "older": "fail"
+          },
+          "shows": "Older-record failure scenario is selected",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('older') === 'fail'"
+          }
+        },
+        {
+          "when": {
+            "older": "hold"
+          },
+          "shows": "Older-record working scenario is selected",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('older') === 'hold'"
+          }
+        },
+        {
+          "when": {
+            "refresh": "fail"
+          },
+          "shows": "Refresh failure scenario is selected",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('refresh') === 'fail'"
+          }
+        },
+        {
+          "when": {
+            "refresh": "hold"
+          },
+          "shows": "Refresh working scenario is selected",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('refresh') === 'hold'"
+          }
+        },
+        {
+          "when": {
+            "state": "error"
+          },
+          "shows": "Activity page load error is visible with retry",
+          "proof": {
+            "selector": "#retry",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "find": "1",
+            "reason": "verification"
+          },
+          "shows": "Activity search contains the verification reason",
+          "proof": {
+            "selector": "#reason",
+            "visible": true,
+            "inputValue": "verification"
           }
         }
       ],
@@ -2312,12 +2446,13 @@
             "activate:.tuner-toggle",
             "focus:#t-nowHot",
             "press:Home",
+            "press:ArrowUp",
             "press:ArrowUp"
           ],
           "proof": {
             "selector": "#t-nowHot",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-hot"
+            "cssPropertyChanged": "--now-hot",
+            "inputValue": "0.1"
           },
           "source": {
             "file": "tuner.js",
@@ -3747,6 +3882,45 @@
           "shows": "Initialized page content is visible",
           "proof": {
             "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "dialog": "range"
+          },
+          "shows": "Range dialog is open",
+          "proof": {
+            "selector": "#dlg-range[open]",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "dialog": "export"
+          },
+          "shows": "Export dialog is open",
+          "proof": {
+            "selector": "#dlg-export[open]",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "export": "fail"
+          },
+          "shows": "Export failure scenario is selected",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('export') === 'fail'"
+          }
+        },
+        {
+          "when": {
+            "state": "error"
+          },
+          "shows": "Reports page load error is visible with retry",
+          "proof": {
+            "selector": "#retry",
             "visible": true
           }
         }
