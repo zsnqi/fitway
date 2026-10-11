@@ -787,6 +787,7 @@
             "selector": ".rec:focus",
             "visible": true
           },
+          "widths": "wide",
           "what": "record-navigation",
           "reach": "activate:.rec-a",
           "source": {
@@ -1039,7 +1040,8 @@
             "file": "access.js",
             "line": 1151
           },
-          "covers": []
+          "covers": [],
+          "changesState": true
         },
         {
           "id": "refused-unauthorized",
