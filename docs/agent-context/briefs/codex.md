@@ -73,15 +73,8 @@ The brief rules B1-B12 live here. Codex follows a brief to the letter, so most f
       no text kept twice, and every live artifact the change can reach still passing (evaluation C3). For a file the
       round deletes or renames, `git grep` its path in the open records (resume files, briefs, packets) first, and
       fix them before launch or name them as in scope (r03 round 3).
-- [ ] B11. The pre-launch review in `docs/agent-context/briefs/REVIEW.md` ran on this brief, and each real reading it
-      returned is closed in the brief or recorded as left open, with the reason. A reading is closed by sharpening the
-      outcome it exploits, not by adding rows or an approach (B4, B6); a brief that needs many new rows is split.
-      (user, 2026-10-11, after the trial)
-- [ ] B12. The readings the review keeps returning are closed before it runs (user, 2026-10-11; from the trial's runs):
-      - a new check is run by a command that always runs (the fast ladder or the launch), not only by hand;
-      - a list the result is measured over (recipes, features, tests) cannot shrink: its base count is an outcome;
-      - a movement checked at fixed times states what happens between them, or the times' spacing bound;
-      - a behaviour on touch is not proved by mouse frames: name what proves it (a device, or a stated limit).
+- [ ] B11. The `REVIEW.md` review ran; each real reading is closed as it says there or recorded as left open, with why.
+- [ ] B12. The readings the review keeps returning (`REVIEW.md` §"Recurring readings") are closed before it runs.
 - [ ] A test suite that needs a clean tree is run after the commit.
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.

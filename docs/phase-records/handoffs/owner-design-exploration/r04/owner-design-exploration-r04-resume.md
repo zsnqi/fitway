@@ -17,7 +17,7 @@
   `.agents/skills/verify-fitway/**`). The first round, `e39225e6`, is graded in `codex-rounds.md` §"midmotion-compare":
   it caught the real defect and four planted ones, but marked a sample not held whenever a page callback ran, which
   hid Access's PIN change at `50097ff7` (F141), and its Daily drive fix did not reproduce and added a style to the page
-  (F142). The repair, `briefs/codex-midmotion-compare-fix.md` (`07c5a87f`, xhigh, outcomes X1-X6), runs on Codex thread
+  (F142). The repair, `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-midmotion-compare-fix.md` (`07c5a87f`, xhigh, outcomes X1-X6), runs on Codex thread
   `01a12bb7-759a-7d01-8e65-bd122b22b76e`, run folder `D:/fitway-temp/codex-runs/owner-r04-midmotion-fix`; its six changed
   files are uncommitted in that worktree.
 - **The repair's own progress when stopped** (its messages, not yet graded): not held now needs two unequal captures;

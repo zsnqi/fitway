@@ -8,11 +8,24 @@ and a brief that held: only `max` caught both failures, in two runs of two, with
 before launch").
 
 The coordinator records each reading's disposition (closed, or left open and why) in the round's record in
-`codex-rounds.md`, and at grading notes whether a brief-caused failure was a reading the review returned. Readings that
-keep coming back move into the checklist of `codex.md` (B12), so briefs start closed. Until the launch command runs
+`codex-rounds.md`, and at grading notes whether a brief-caused failure was a reading the review returned. A reading
+is closed by sharpening the outcome it exploits, not by adding rows or an approach (B4, B6); a brief that needs many
+new rows is split. Readings that keep coming back go under "Recurring readings" below (checklist B12), so briefs
+start closed. Until the launch command runs
 the review itself (planned with the verify-fitway round before Settings), the coordinator starts it in the background
 while writing the held-out rows. The review runs at `max`; the round itself keeps the level its task calls for
 (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation").
+
+## Recurring readings
+
+Close these in a brief before the review runs (the user, 2026-10-11; from the trial's runs):
+
+- a new check is run by a command that always runs (the fast ladder or the launch), not only by hand;
+- a list the result is measured over (recipes, features, tests) cannot shrink: its base count is an outcome;
+- a movement checked at fixed times states what happens between them, or the times' spacing bound;
+- a behaviour on touch is not proved by mouse frames: name what proves it (a device, or a stated limit).
+
+## Running it
 
 Run it from an empty folder outside every git tree, with a copy of the brief as `brief.md` and the prompt below as
 `prompt.md`:
