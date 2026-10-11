@@ -401,18 +401,8 @@ export async function drive(options) {
 										});
 										if (input === "keyboard")
 											entry.initialFocus = await focusedElement(current.page);
-										if (selected.page === "index.html") {
+										if (selected.page === "index.html")
 											await probes.introSettled(current.page);
-											// A fixed RTL flex surface can otherwise reuse either of two
-											// fractional raster origins despite identical layout boxes (F126).
-											// A consistent compositor layer changes no box or computed pose.
-											await current.page.addStyleTag({
-												content: ".tuner {will-change: transform}",
-											});
-											await ui.twoFrames(current.page);
-											entry.capturePolicy =
-												"Daily tuner uses a consistent compositor layer; layout boxes unchanged";
-										}
 										entry.emulation = {
 											...Object.fromEntries(
 												Object.entries(current.emulation).filter(

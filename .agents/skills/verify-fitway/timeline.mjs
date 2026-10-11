@@ -656,10 +656,14 @@ export async function captureTimeline(page, { out, stem, times }) {
 		await writeFile(await outputFile(out, name), frame);
 		info = await page.evaluate(() => window.__verifyFitwayTimeline.info());
 		used.push(time);
+		// Callback findings are evidence about work that ran during the
+		// seek. They do not, by themselves, make the captured picture
+		// unstable: compare classifies NOT-HELD only after it captures
+		// the same side again at this exact time and the pixels differ.
 		samples.push({
 			time,
 			file: name,
-			result: info.findings.length ? "not-held" : "held",
+			result: "held",
 			sources: info.findings,
 		});
 		if (!times) {

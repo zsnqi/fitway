@@ -86,7 +86,7 @@ compare repeats differing items in fresh contexts, with exact pixel regions and 
 --timeline compares held frames after the last action as well as the settled result.
 Default times start at 1 ms, with gaps <=100 ms through the longest finite movement.
 --timeline-times names other finite nonnegative milliseconds; implies --timeline.
-NOT-HELD names the time and script file/line when a callback moves a held picture.
+NOT-HELD names the time and the two same-side captures when their pixels or dimensions differ; callback file/line sources remain in the report.
 Known limits: CSS-only openings and some dynamic/delegated opener relationships are not exhaustively discovered.
 Doctor can block when a missing standalone input has no authoritative recovery source.
 Open numeric/text domains have representative samples in the map; --query accepts other values.

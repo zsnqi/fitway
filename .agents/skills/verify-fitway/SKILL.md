@@ -155,9 +155,8 @@ The initial Daily intro readiness check retains its existing **15-second bound**
 also covers intros restarted by actions such as retry or replay. Neither wait can turn an unsettled capture into a pass.
 Compare hides native text carets with Playwright's `caret: "hide"` under every motion mode, retaining focus,
 selection and field values. It disables Chromium's partial raster cache so settled fractional edges are painted
-consistently after movement. Daily capture gives the tuner a consistent compositor layer (`will-change: transform`)
-to prevent its fractional Lights-chip raster origin from alternating. Every element's box stays the same; the frame
-record names this capture policy. Ordinary drive keeps its screenshot options.
+consistently after movement. The page is captured as served, with the comparison observers described here;
+capture adds no styles, DOM elements or attributes. Ordinary drive keeps its screenshot options.
 Without a timeline request, compare checks these settled pictures.
 
 Use `--timeline` when a refactor must preserve openings, closings, changes of state, held presses and releases
@@ -172,15 +171,21 @@ first 100 ms boundary at or beyond the longest finite movement, including effect
 share the union of their default times.
 `--timeline-times 0,40,120,340` implies `--timeline` and replaces that schedule. Times are finite nonnegative milliseconds.
 Finite browser effects have no duration cap. Authored callback work is bounded to 2000 callbacks per item; exhaustion
-is named `NOT-HELD` with its scheduling source and further script work stops while known finite effects finish.
+is recorded with its scheduling source and further script work stops while known finite effects finish. Each timeline
+sample is captured again in a fresh context on the same side at the same time. A sample is `NOT-HELD` only when those
+two same-side frames differ in pixels or dimensions; callback findings alone never skip its pixel comparison.
+Before reporting a cross-build difference, up to two further captures per side check for variation missed by the
+first pair. Every `NOT-HELD` still has an actual differing pair at the same time on the same side.
 
 The hold pauses and seeks every discovered CSS transition, CSS animation and Web Animation. Persistent effects
 stay at phase zero. Timer and frame callbacks are queued while capturing and advanced on a logical clock, so wall
 clock load cannot advance a frame between seeks. Authored timer, frame, completion and promise callbacks run outside
-the browser-effect hold and produce `TIMELINE NOT-HELD`, with the time, script file/line and reason. This includes
-canvas and CSSOM changes a DOM observer cannot see. Sources name the callback's scheduling or registration file/line. Their frames remain in the
-report. `NOT-HELD` is neither equal nor different; the summary says `INCOMPLETE`, counts and names every such
-sample. Equality has zero pixel tolerance. Inspect `comparison.json` and the exact frames before accepting a change.
+the browser-effect hold and remain in the sample's sources, including canvas and CSSOM changes a DOM observer cannot
+see. Stable callback-driven frames are reported `TIMELINE EQUAL` or `TIMELINE DIFFERENT` with zero pixel tolerance.
+When the two same-side captures differ, `TIMELINE NOT-HELD` names the time, both captures and every callback source;
+that sample is excluded from the cross-build pixel result. Inspect `comparison.json` and the exact frames before
+accepting a change.
+`NOT-HELD` is neither equal nor different; the summary says `INCOMPLETE`, counts and names every such sample.
 
 Name additional moments with `--recipes <external-file>` and the same `--baseline-recipes` file. The report retains
 the recipe entries used. A comma-separated `--feature export-close,export-held,export-release` selects several entries
