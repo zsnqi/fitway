@@ -478,6 +478,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       components sheet's own files) and omits files several pages load (`reports.css`, the picker); it is derived from
       what each page actually loads.
 
+46. **Design-detector findings in Codex rounds** (the user, 2026-10-11, «ممتاز اتفق معك», after Impeccable's hook in
+    Codex led it to suppress three findings in a shared configuration file, F138). The hook stays on; its findings are
+    hints, not verdicts. Codex reports them and acts on none. The coordinator looks at each on the frames: a real one
+    goes to a fresh designer, a false one is recorded with its reason in the concept's own detector exceptions
+    (`directions/eclipse/.impeccable/config.json`), where the earlier ones live.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
