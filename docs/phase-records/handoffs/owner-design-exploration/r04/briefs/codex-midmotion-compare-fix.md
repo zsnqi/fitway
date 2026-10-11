@@ -37,7 +37,8 @@
 ## Goal
 
 A real change inside a moment fails the timeline compare whenever the moment's frames are reproducible, even when a page
-script runs during it; `NOT-HELD` is left for samples whose frames actually vary from one capture to the next.
+script runs during it; `NOT-HELD` is left for samples whose frames actually vary from one capture to the next; and
+Daily's drive frame repeats byte for byte without changing the page.
 
 ## Causes and required outcomes
 
@@ -75,6 +76,17 @@ script runs during it; `NOT-HELD` is left for samples whose frames actually vary
   - **Outcome.** The previous brief's T6 matrix is completed: without `--timeline`, the new CLI and the base CLI give
     the same result for every item (Reports and Access, both languages, desktop and phone, reduced motion, HTTP).
   - **Intent.** The ordinary compare is unchanged by both rounds.
+- **X6. Daily's drive frame still alternates (F126).**
+  - **Cause.** The previous round's T5 adds `.tuner {will-change: transform}` to Daily before capture
+    (`runner.mjs:404-414`). At the HEAD above, 11 runs of the T5 command (`drive`, `7e28c713`, `index.html`, `page`,
+    Arabic, phone, mouse, reduced motion, HTTP) wrote two different frames, 8 and 3, differing only in the Lights chip
+    (`D:/fitway-temp/owner-r04-midmotion-evidence/h11-*`, and `h11-diff.png` there: left, middle, then the difference).
+  - **Outcome.** The same command writes byte-identical frames in 11 of 11 runs, and in 11 of 11 again in a second
+    batch of 11 started after the first ends. Neither `drive` nor `compare` adds a style, script, element or attribute
+    to the page to reach it: the frame is the page as it is served (the comparison observers and the browser and
+    screenshot options compare already uses stay allowed). If no such way exists, the report says what was tried and
+    what each gave, and the injected style is removed.
+  - **Intent.** A drive frame can be compared by its bytes, and it still shows what a user's browser shows.
 - **X5. Proof.**
   - **Outcome.** `.agents/skills/verify-fitway/cli.test.mjs` (must change) gains a test, run by the fast ladder, in
     which a fixture whose moment runs a deterministic callback (a microtask or a timer) and differs only mid-motion is
