@@ -614,7 +614,6 @@ describe("check-agent-context", () => {
 		// This frontier is an independent expectation, not another ledger parse.
 		expect(Object.keys(result.state?.milestones ?? {}).sort()).toEqual([
 			"access-reason-cap-r01",
-			"agent-environment-r03",
 			"owner-design-exploration-r04",
 		]);
 		expect(
