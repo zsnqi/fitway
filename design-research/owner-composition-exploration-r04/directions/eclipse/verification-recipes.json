@@ -766,14 +766,15 @@
           "query": {
             "records": "error"
           },
-          "what": "records-retry",
+          "what": "Retry Access records; the records card is intentionally absent below 721px by design (access.html:169; access.css:45-48)",
           "reach": "access.html?records=error",
           "source": {
             "file": "access.js",
             "line": 807
           },
           "covers": [],
-          "changesState": true
+          "changesState": true,
+          "widths": "wide"
         },
         {
           "id": "record-navigation",
@@ -878,6 +879,192 @@
           "covers": [
             "#dlg-mine"
           ]
+        },
+        {
+          "id": "refused-not_an_owner",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#off-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the not_an_owner refusal after its user action",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] -> activate:#dlg-off .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "not_an_owner"
+          }
+        },
+        {
+          "id": "refused-owner_already_inactive",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#off-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the owner_already_inactive refusal after its user action",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] -> activate:#dlg-off .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_already_inactive"
+          }
+        },
+        {
+          "id": "refused-owner_last_active",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#off-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the owner_last_active refusal after its user action",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] -> activate:#dlg-off .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_last_active"
+          }
+        },
+        {
+          "id": "refused-owner_self_deactivation",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#off-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the owner_self_deactivation refusal after its user action",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] -> activate:#dlg-off .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_self_deactivation"
+          }
+        },
+        {
+          "id": "refused-owner_already_active",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"on\"][data-id=\"o3\"]",
+            "activate:#dlg-on .acc-do"
+          ],
+          "proof": {
+            "selector": "#on-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the owner_already_active refusal after its user action",
+          "reach": "activate:[data-act=\"on\"][data-id=\"o3\"] -> activate:#dlg-on .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_already_active"
+          }
+        },
+        {
+          "id": "refused-owner_email_taken",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"add\"]",
+            "type:#add-name=Verification owner",
+            "type:#add-email=verification@example.test",
+            "type:#add-pw=VerifyPassword123!",
+            "activate:#dlg-add .acc-do"
+          ],
+          "proof": {
+            "selector": "#add-email[aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "Show the owner_email_taken refusal after its user action",
+          "reach": "activate:[data-act=\"add\"] -> type:#add-name=Verification owner -> type:#add-email=verification@example.test -> type:#add-pw=VerifyPassword123! -> activate:#dlg-add .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_email_taken"
+          }
+        },
+        {
+          "id": "refused-staff_pin_already_active",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"pinCreate\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#pin-view-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "refuse": "staff_pin_already_active",
+            "pin": "none"
+          },
+          "what": "Show the staff_pin_already_active refusal after its user action",
+          "reach": "activate:[data-act=\"pinCreate\"] -> type:#pin-code=Verify123 -> activate:#pin-confirm .acc-do -> wait:600 -> activate:#pin-saved",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": []
+        },
+        {
+          "id": "refused-unauthorized",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#pin-view-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "refuse": "unauthorized"
+          },
+          "what": "Show the unauthorized refusal after its user action",
+          "reach": "activate:[data-act=\"pinChange\"] -> type:#pin-code=Verify123 -> activate:#pin-confirm .acc-do -> wait:600 -> activate:#pin-saved",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": []
         }
       ],
       "states": [
@@ -902,7 +1089,7 @@
           "when": {
             "fail": "1"
           },
-          "shows": "Failure scenario is selected for the next access action",
+          "shows": "Deferred scenario fail=1 has no initial visual change; visible result proved by pin-failure, add-owner-retry, reset-password-retry, my-password-retry",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('fail') === '1'"
           }
@@ -911,7 +1098,7 @@
           "when": {
             "hold": "1"
           },
-          "shows": "Working scenario is selected for the next access action",
+          "shows": "Deferred scenario hold=1 has no initial visual change; visible result proved by pin-working",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('hold') === '1'"
           }
@@ -930,7 +1117,7 @@
           "when": {
             "records": "error"
           },
-          "shows": "Access records payload failed; its feature proof checks retry",
+          "shows": "The Access records payload holds its failed phase; records-retry proves the visible desktop/tablet retry",
           "proof": {
             "expression": "window.__access?.records.phase === 'error'"
           }
@@ -939,7 +1126,7 @@
           "when": {
             "refuse": "staff_pin_not_active"
           },
-          "shows": "PIN refusal scenario is selected",
+          "shows": "Deferred scenario refuse=staff_pin_not_active has no initial visual change; visible result proved by pin-refused",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('refuse') === 'staff_pin_not_active'"
           }
@@ -948,9 +1135,241 @@
           "when": {
             "refuse": "current_password_incorrect"
           },
-          "shows": "Password refusal scenario is selected",
+          "shows": "Deferred scenario refuse=current_password_incorrect has no initial visual change; visible result proved by password-refused",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('refuse') === 'current_password_incorrect'"
+          }
+        },
+        {
+          "when": {
+            "case": "long"
+          },
+          "shows": "The longest owner name and email are visible in Access",
+          "proof": {
+            "expression": "document.querySelector('#owners')?.textContent.includes('north-riyadh')"
+          }
+        },
+        {
+          "when": {
+            "case": "short"
+          },
+          "shows": "The short owner fixture is visible in Access",
+          "proof": {
+            "expression": "document.querySelector('#owners')?.textContent.includes('l@example.com')"
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Access document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Access document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Access records the URL motion switch as off",
+          "proof": {
+            "expression": "document.documentElement.dataset.motion === 'off'"
+          }
+        },
+        {
+          "when": {
+            "ops": "live"
+          },
+          "shows": "Access header visibly holds Operations live status",
+          "proof": {
+            "expression": "!document.querySelector('#ops-btn')?.classList.contains('is-delayed') && !document.querySelector('#ops-btn')?.classList.contains('is-closed') && !document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "ops": "delayed"
+          },
+          "shows": "Access header visibly holds Operations delayed status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "ops": "closed"
+          },
+          "shows": "Access header visibly holds Operations closed status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-closed')"
+          }
+        },
+        {
+          "when": {
+            "ops": "offline"
+          },
+          "shows": "Access header visibly holds Operations offline status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "owners": "last"
+          },
+          "shows": "Only the signed-in owner remains active in Access",
+          "proof": {
+            "expression": "window.__access?.owners?.length === 3 && window.__access.owners.find(o => o.id === 'o2')?.active === false"
+          }
+        },
+        {
+          "when": {
+            "owners": "many"
+          },
+          "shows": "The expanded eight-owner Access list is visible",
+          "proof": {
+            "expression": "window.__access?.owners?.length === 8 && document.querySelectorAll('#owners .prs').length >= 8"
+          }
+        },
+        {
+          "when": {
+            "pin": "active"
+          },
+          "shows": "Front desk PIN state active is rendered",
+          "proof": {
+            "expression": "window.__access?.desk === 'active' && !!document.querySelector('#desk-title .mk')"
+          }
+        },
+        {
+          "when": {
+            "pin": "off"
+          },
+          "shows": "Front desk PIN state off is rendered",
+          "proof": {
+            "expression": "window.__access?.desk === 'off' && !!document.querySelector('#desk-title .mk')"
+          }
+        },
+        {
+          "when": {
+            "records": "ok"
+          },
+          "shows": "Access records state ok is rendered",
+          "proof": {
+            "expression": "window.__access?.records?.phase === 'ready' && window.__access.records.ids.length > 0"
+          }
+        },
+        {
+          "when": {
+            "records": "none"
+          },
+          "shows": "Access records state none is rendered",
+          "proof": {
+            "expression": "window.__access?.records?.phase === 'ready' && window.__access.records.ids.length === 0 && !!document.querySelector('.rec-none')"
+          }
+        },
+        {
+          "when": {
+            "state": "loading"
+          },
+          "shows": "Access loading state shows its loading badge and hidden status button",
+          "proof": {
+            "expression": "window.__access?.phase === 'loading' && !!document.querySelector('.hb-load') && document.querySelector('#ops-btn')?.hidden === true"
+          }
+        },
+        {
+          "when": {
+            "refuse": "not_an_owner"
+          },
+          "shows": "Deferred scenario refuse=not_an_owner has no initial visual change; visible result proved by refused-not_an_owner",
+          "proof": {
+            "query": {
+              "refuse": "not_an_owner"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_already_active"
+          },
+          "shows": "Deferred scenario refuse=owner_already_active has no initial visual change; visible result proved by refused-owner_already_active",
+          "proof": {
+            "query": {
+              "refuse": "owner_already_active"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_already_inactive"
+          },
+          "shows": "Deferred scenario refuse=owner_already_inactive has no initial visual change; visible result proved by refused-owner_already_inactive",
+          "proof": {
+            "query": {
+              "refuse": "owner_already_inactive"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_email_taken"
+          },
+          "shows": "Deferred scenario refuse=owner_email_taken has no initial visual change; visible result proved by refused-owner_email_taken",
+          "proof": {
+            "query": {
+              "refuse": "owner_email_taken"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_last_active"
+          },
+          "shows": "Deferred scenario refuse=owner_last_active has no initial visual change; visible result proved by refused-owner_last_active",
+          "proof": {
+            "query": {
+              "refuse": "owner_last_active"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_self_deactivation"
+          },
+          "shows": "Deferred scenario refuse=owner_self_deactivation has no initial visual change; visible result proved by refused-owner_self_deactivation",
+          "proof": {
+            "query": {
+              "refuse": "owner_self_deactivation"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "staff_pin_already_active"
+          },
+          "shows": "Deferred scenario refuse=staff_pin_already_active has no initial visual change; visible result proved by refused-staff_pin_already_active",
+          "proof": {
+            "query": {
+              "refuse": "staff_pin_already_active"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "unauthorized"
+          },
+          "shows": "Deferred scenario refuse=unauthorized has no initial visual change; visible result proved by refused-unauthorized",
+          "proof": {
+            "query": {
+              "refuse": "unauthorized"
+            }
           }
         }
       ],
@@ -1292,9 +1711,15 @@
             "press:Enter"
           ],
           "proof": {
-            "query": {
-              "reason": "verification"
-            }
+            "allOf": [
+              {
+                "selector": "#reason",
+                "inputValue": "verification"
+              },
+              {
+                "expression": "window.__activity?.filters.reason === 'verification' && !!document.querySelector('#clear-filters')"
+              }
+            ]
           },
           "what": "search-reason",
           "reach": "activate:#find-btn → type:#reason=verification → press:Enter",
@@ -1656,7 +2081,7 @@
           "when": {
             "older": "fail"
           },
-          "shows": "Older-record failure scenario is selected",
+          "shows": "Deferred scenario older=fail has no initial visual change; visible result proved by older-failure, older-retry",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('older') === 'fail'"
           }
@@ -1665,7 +2090,7 @@
           "when": {
             "older": "hold"
           },
-          "shows": "Older-record working scenario is selected",
+          "shows": "Deferred scenario older=hold has no initial visual change; visible result proved by older-working",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('older') === 'hold'"
           }
@@ -1674,7 +2099,7 @@
           "when": {
             "refresh": "fail"
           },
-          "shows": "Refresh failure scenario is selected",
+          "shows": "Deferred scenario refresh=fail has no initial visual change; visible result proved by refresh-failure",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('refresh') === 'fail'"
           }
@@ -1683,7 +2108,7 @@
           "when": {
             "refresh": "hold"
           },
-          "shows": "Refresh working scenario is selected",
+          "shows": "Deferred scenario refresh=hold has no initial visual change; visible result proved by refresh-working",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('refresh') === 'hold'"
           }
@@ -1708,6 +2133,221 @@
             "selector": "#reason",
             "visible": true,
             "inputValue": "verification"
+          }
+        },
+        {
+          "when": {
+            "case": "short"
+          },
+          "shows": "The short Activity fixture is visible",
+          "proof": {
+            "expression": "document.querySelector('#person option[value=\"o2\"]')?.textContent.includes('\\u0644\\u064a\\u0646') && document.querySelector('.rec[data-id=\"1001\"]')?.textContent.includes('Bo')"
+          }
+        },
+        {
+          "when": {
+            "case": "wide"
+          },
+          "shows": "The widest Activity prior values are visible",
+          "proof": {
+            "expression": "document.querySelector('#log')?.textContent.includes('9,007,199,254,740,991')"
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Activity document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Activity document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Activity records the URL motion switch as off",
+          "proof": {
+            "expression": "document.documentElement.dataset.motion === 'off'"
+          }
+        },
+        {
+          "when": {
+            "ops": "live"
+          },
+          "shows": "Activity header visibly holds Operations live status",
+          "proof": {
+            "expression": "!document.querySelector('#ops-btn')?.classList.contains('is-delayed') && !document.querySelector('#ops-btn')?.classList.contains('is-closed') && !document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "ops": "delayed"
+          },
+          "shows": "Activity header visibly holds Operations delayed status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "ops": "closed"
+          },
+          "shows": "Activity header visibly holds Operations closed status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-closed')"
+          }
+        },
+        {
+          "when": {
+            "ops": "offline"
+          },
+          "shows": "Activity header visibly holds Operations offline status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "kind": "all"
+          },
+          "shows": "Activity kind filter all is selected",
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"all\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "kind": "count"
+          },
+          "shows": "Activity kind filter count is selected",
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"count\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "kind": "access"
+          },
+          "shows": "Activity kind filter access is selected",
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"access\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "kind": "settings"
+          },
+          "shows": "Activity kind filter settings is selected",
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"settings\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "person": "all"
+          },
+          "shows": "Activity person filter all is selected",
+          "proof": {
+            "selector": "#person",
+            "inputValue": "all"
+          }
+        },
+        {
+          "when": {
+            "person": "o1"
+          },
+          "shows": "Activity person filter o1 is selected",
+          "proof": {
+            "selector": "#person",
+            "inputValue": "o1"
+          }
+        },
+        {
+          "when": {
+            "person": "o2"
+          },
+          "shows": "Activity person filter o2 is selected",
+          "proof": {
+            "selector": "#person",
+            "inputValue": "o2"
+          }
+        },
+        {
+          "when": {
+            "person": "system"
+          },
+          "shows": "Activity person filter system is selected",
+          "proof": {
+            "selector": "#person",
+            "inputValue": "system"
+          }
+        },
+        {
+          "when": {
+            "reason": ""
+          },
+          "shows": "Activity reason filter is empty and rendered",
+          "proof": {
+            "expression": "window.__activity?.filters?.reason === ''"
+          }
+        },
+        {
+          "when": {
+            "reason": "verification"
+          },
+          "shows": "Activity reason filter visibly contains verification",
+          "proof": {
+            "selector": "#reason",
+            "visible": true,
+            "inputValue": "verification"
+          }
+        },
+        {
+          "when": {
+            "record": "missing"
+          },
+          "shows": "Activity shows the missing arrival notice",
+          "proof": {
+            "selector": "#arrival-note",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "state": "loading"
+          },
+          "shows": "Activity page state loading is visible",
+          "proof": {
+            "selector": ".hb-load",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "state": "empty"
+          },
+          "shows": "Activity page state empty is visible",
+          "proof": {
+            "selector": ".ac-empty",
+            "visible": true
           }
         }
       ],
@@ -2082,6 +2722,46 @@
           "proof": {
             "selector": "main",
             "visible": true
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Components document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Components document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Components motion attribute is off",
+          "proof": {
+            "selector": "html",
+            "attribute": "data-motion",
+            "value": "off"
+          }
+        },
+        {
+          "when": {
+            "motion": "on"
+          },
+          "shows": "Components motion attribute is on",
+          "proof": {
+            "selector": "html",
+            "attribute": "data-motion",
+            "value": "on"
           }
         }
       ],
@@ -3166,6 +3846,87 @@
               }
             ]
           }
+        },
+        {
+          "when": {
+            "preset": "v2"
+          },
+          "shows": "Daily tuner preset v2 is applied",
+          "proof": {
+            "expression": "window.__tuner?.snapshot().preset === 'v2'"
+          }
+        },
+        {
+          "when": {
+            "preset": "a-like"
+          },
+          "shows": "Daily tuner preset a-like is applied",
+          "proof": {
+            "expression": "window.__tuner?.snapshot().preset === 'aLike'"
+          }
+        },
+        {
+          "when": {
+            "preset": "aLike"
+          },
+          "shows": "Daily tuner preset aLike is applied",
+          "proof": {
+            "expression": "window.__tuner?.snapshot().preset === 'aLike'"
+          }
+        },
+        {
+          "when": {
+            "preset": "alike"
+          },
+          "shows": "Daily tuner preset alike is applied",
+          "proof": {
+            "expression": "window.__tuner?.snapshot().preset === 'aLike'"
+          }
+        },
+        {
+          "when": {
+            "preset": "recommended"
+          },
+          "shows": "Daily tuner preset recommended is applied",
+          "proof": {
+            "expression": "window.__tuner?.snapshot().preset === 'recommended'"
+          }
+        },
+        {
+          "when": {
+            "tuner": "0"
+          },
+          "shows": "Daily tuner is disabled and absent from the page",
+          "proof": {
+            "expression": "!window.__tuner && !document.querySelector('.tuner')"
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Daily document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Daily document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Daily records the URL motion switch as off",
+          "proof": {
+            "expression": "document.documentElement.dataset.motion === 'off'"
+          }
         }
       ],
       "samples": {
@@ -3909,7 +4670,7 @@
           "when": {
             "export": "fail"
           },
-          "shows": "Export failure scenario is selected",
+          "shows": "Deferred scenario export=fail has no initial visual change; visible result proved by export-failure, export-retry",
           "proof": {
             "expression": "new URL(location.href).searchParams.get('export') === 'fail'"
           }
@@ -3922,6 +4683,118 @@
           "proof": {
             "selector": "#retry",
             "visible": true
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Reports document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Reports document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Reports records the URL motion switch as off",
+          "proof": {
+            "expression": "document.documentElement.dataset.motion === 'off'"
+          }
+        },
+        {
+          "when": {
+            "range": "28d"
+          },
+          "shows": "Reports range 28d is selected",
+          "proof": {
+            "selector": "#range-seg [data-range=\"28d\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "range": "7d"
+          },
+          "shows": "Reports range 7d is selected",
+          "proof": {
+            "selector": "#range-seg [data-range=\"7d\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "state": "full"
+          },
+          "shows": "Reports layout state full is rendered",
+          "proof": {
+            "expression": "document.documentElement.dataset.state === 'full'"
+          }
+        },
+        {
+          "when": {
+            "state": "short"
+          },
+          "shows": "Reports layout state short is rendered",
+          "proof": {
+            "expression": "document.documentElement.dataset.state === 'short'"
+          }
+        },
+        {
+          "when": {
+            "state": "loading"
+          },
+          "shows": "Reports page state loading is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.phase === 'loading' && !!document.querySelector('.hb-load')"
+          }
+        },
+        {
+          "when": {
+            "state": "closed"
+          },
+          "shows": "Reports page state closed is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.page === 'closed' && document.querySelector('#ops-btn')?.classList.contains('is-closed')"
+          }
+        },
+        {
+          "when": {
+            "state": "delayed"
+          },
+          "shows": "Reports page state delayed is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.page === 'delayed' && document.querySelector('#ops-btn')?.classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "state": "unavailable"
+          },
+          "shows": "Reports page state unavailable is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.page === 'unavailable' && document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "state": "pending"
+          },
+          "shows": "Reports page state pending is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.page === 'pending' && document.querySelector('#ops-btn')?.classList.contains('is-off') && !!document.querySelector('.is-wait')"
           }
         }
       ],
