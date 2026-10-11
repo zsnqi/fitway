@@ -462,6 +462,21 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       the frames before and after compare equal with the verify-fitway CLI.
     - It is the first concept round after the environment phase, before Settings (Next steps in the resume point).
     - The gardener's next readings show whether the shared files' size and boundary counts fall.
+    - Found while briefing it (coordinator, 2026-10-11): only Daily loads `app.js`, so the script was already Daily's
+      under a shared name; the real mixing is in `style.css`, which all five pages load. Daily's round therefore renames
+      the script and moves Daily's rules out of `style.css`.
+45. **Shared code gets honest shared files, before Settings** (the user, 2026-10-11, «موافق على اقتراحاتك», on the
+    coordinator's two proposals after item 44's briefing). In this order, after Daily's own files and before Settings,
+    each its own Codex round with item 44's outcome (every page compares equal before and after, both languages, every
+    size, both motions); the user does not need to look, and each close is reported in a line:
+    - **One shared frame script.** The rail, the header and the status details are copied into each page's script
+      (about 400 duplicated lines); they move into one file every page loads, so Settings, Operations and Monitoring
+      do not copy them again. Each page keeps its header markup, since the page is complete at first paint (item 4).
+    - **`reports.css` split.** Four pages load it under one page's name; what more than one page uses moves to a shared
+      file named as shared, and what only Reports uses stays.
+    - **The gardener's shared-file list** (coordinator): today a hand list that names page-only files (`app.js`, the
+      components sheet's own files) and omits files several pages load (`reports.css`, the picker); it is derived from
+      what each page actually loads.
 
 ## How this milestone's rounds run
 

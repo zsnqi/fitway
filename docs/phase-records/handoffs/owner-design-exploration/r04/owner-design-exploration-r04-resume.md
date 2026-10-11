@@ -62,6 +62,12 @@ with its scope revisited first (the ledger).
    recipe gaps (F123-F125) are closed with it or just before it, so the compare covers those states too. The
    gardener's next reading shows whether the shared files' size and boundary counts fall. The concept CSS check and
    `check-press-layer` join the fast ladder only once the build is on the trunk.
+   **Running** (2026-10-11): Codex round recipe-proofs (`directions/briefs/codex-recipe-proofs.md`, `c85e8dc5`, level
+   high; held-out rows `D:/fitway-grader/owner-r04/recipe-proofs-heldout.md`) closes F123-F125. Daily's round is drafted
+   (rows in `D:/fitway-grader/owner-r04/daily-files-heldout.md`); it also repairs the probe kit's `checks.mjs`, which
+   stops at its font pick since Access's monospace face.
+1b. **Then the shared files** (DECISIONS 45): one shared frame script, then `reports.css` split, then the gardener's
+   shared-file list derived from what pages load.
 2. **Then Settings**, Operations (the header status's details) and Monitoring, each per rounds items 6 and 8-11 in
    DECISIONS, built with the motion and checked with the new tools.
 3. **Daily and Reports' last round:** the user's open comment on Reports' «معدّل الموجودين» card (`#fig-avg`,
