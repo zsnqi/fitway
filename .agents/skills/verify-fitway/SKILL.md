@@ -147,9 +147,14 @@ Extract the requested baseline revision once outside all git trees, then give it
 The baseline can use the same recipe file with `--baseline-recipes`, or its own adjacent recipe file. Both sides
 run the same items and axes. Differences are captured again in fresh contexts before the final exact pixel result;
 no tolerance is added. Each differing item has a region, diff JSON and images in `comparison.json`.
-Only compare waits up to five seconds for finite Web Animations/CSS transitions to finish naturally before each
-capture, under both motion modes. Persistent animations are paused at time zero for an exact, reproducible phase.
-An unsettled finite animation is a capture problem. Ordinary drive retains its original motion and capture timing.
+Only compare's motion-settlement wait has a **five-second total bound per capture** for finite Web Animations/CSS
+transitions to finish naturally and for queued `requestAnimationFrame` callbacks to drain, under both motion modes.
+A comparison-only observer is installed before page scripts run; it tracks requests and cancellations without
+changing their clocks or finishing the motion itself. A script loop that keeps scheduling frames, or finite browser
+motion that has not settled within the bound, produces a capture problem and fails the run. Persistent browser
+animations are paused at time zero for an exact, reproducible phase. Ordinary drive retains its original motion and capture timing.
+The initial Daily intro readiness check retains its existing **15-second bound**; the five-second capture bound
+also covers intros restarted by actions such as retry or replay. Neither wait can turn an unsettled capture into a pass.
 Compare hides native text carets with Playwright's `caret: "hide"` under every motion mode, retaining focus,
 selection and field values. It disables Chromium's partial raster cache so settled fractional edges are painted
 consistently after movement. Ordinary drive retains its original browser and screenshot options.

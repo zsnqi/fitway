@@ -1073,16 +1073,29 @@ async function runnerFixture(name, features, options = {}) {
 		resolve(tools, "scripts/web/lib.mjs"),
 		`
 import {appendFile,writeFile} from "node:fs/promises";
-const capture=async(via,options)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from("fixture")};
+import {createContext,runInContext} from "node:vm";
+const motion=${JSON.stringify(options.scriptMotion || null)}, phase=${JSON.stringify(options.scriptPhase || 0)};
+const capture=async(via,options,picture)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from(picture)};
 export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
  let focus="body", open=false;
-const page={setDefaultTimeout(){},waitForFunction:async()=>{},screenshot:async(options)=>capture("native",options),
+ let now=0, next=0; const frames=new Map();
+ const sandbox={position:0,document:{getAnimations:()=>[]},
+ requestAnimationFrame:(callback)=>{const id=++next;frames.set(id,callback);return id},
+ cancelAnimationFrame:(id)=>frames.delete(id)};
+ sandbox.window=sandbox; createContext(sandbox);
+ const run=(fn)=>runInContext('('+fn.toString()+')()',sandbox);
+ const tick=()=>{now+=16;for(const id of [...frames.keys()]){const callback=frames.get(id);if(callback){frames.delete(id);callback.call(sandbox,now)}}};
+const page={setDefaultTimeout(){},addInitScript:async(fn)=>{await appendFile(${JSON.stringify(resolve(root, "init.jsonl"))},"observer\\n");if(motion)run(fn)},
+ startMotion:()=>{if(motion){runInContext('function move(){position++;if('+JSON.stringify(motion==='forever')+'||position<20)requestAnimationFrame(move)};requestAnimationFrame(move)',sandbox);for(let i=0;i<phase;i++)tick()}},
+ tick,picture:()=>motion?JSON.stringify({x:sandbox.position}):"fixture",
+ waitForFunction:async(fn,arg,options)=>{if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
+ screenshot:async(options)=>capture("native",options,page.picture()),
 context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
   evaluate:async(fn)=>fn.toString().includes("coarse")
    ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
-: fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : {},
+: fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
 locator:(selector)=>({first(){return this},count:async()=>1,
 evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body":'- button "Open details"',
    waitFor:async()=>{if(selector==="#dialog"&&!open)throw new Error("dialog stayed closed")}}),
@@ -1091,9 +1104,9 @@ evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body
  return {page,context:{close:async()=>{}},errors:[],emulation:{forcedColors:options.forcedColors || "none"}};
 }
 export const withParams=(url)=>url;
-export const preparePage=async()=>({ready:true});
-export const screenshot=async(page,options)=>capture("adapter",options);
-export const twoFrames=async()=>{};
+export const preparePage=async(page)=>{page.startMotion();return {ready:true}};
+export const screenshot=async(page,options)=>capture("adapter",options,page.picture());
+export const twoFrames=async(page)=>{page.tick();page.tick()};
 export const injectProbe=async()=>{};
 export const renderSheet=async()=>{};
 `,
@@ -1674,6 +1687,11 @@ test("R30 repair V3: every comparison mode hides carets and paints fresh tiles w
 			launch,
 			comparisonCapture ? { args: ["--disable-partial-raster"] } : null,
 		);
+		assert.equal(
+			existsSync(resolve(root, "init.jsonl")),
+			comparisonCapture,
+			"ordinary drive must not install the comparison frame observer",
+		);
 		const captures = (await readFile(resolve(root, "captures.jsonl"), "utf8"))
 			.trim()
 			.split("\n")
@@ -1723,7 +1741,10 @@ test("R30 V3: comparison waits for finite motion and fixes the phase of persiste
 			this.playState = "paused";
 		},
 	};
-	const sandbox = { document: { getAnimations: () => [finite, persistent] } };
+	const sandbox = {
+		window: { __verifyFitwayFrames: { pending: 0 } },
+		document: { getAnimations: () => [finite, persistent] },
+	};
 	const run = (fn) => runInNewContext(`(${fn.toString()})()`, sandbox);
 	const page = {
 		waitForFunction: async (predicate, arg, options) => {
@@ -1756,6 +1777,60 @@ test("R30 V3: comparison waits for finite motion and fixes the phase of persiste
 		/never settled/,
 	);
 	assert.equal(captured, false);
+});
+
+test("R30 repair 2 R5: finite requestAnimationFrame motion compares equal; endless script motion is a capture problem", async () => {
+	const features = [
+		{ id: "page", actions: [], proof: { selector: "main", visible: true } },
+	];
+	const frames = [];
+	for (const phase of [1, 4]) {
+		const { result, out } = await runnerFixture(
+			`raf-finite-${phase}`,
+			features,
+			{
+				comparisonCapture: true,
+				motions: "full",
+				scriptMotion: "finite",
+				scriptPhase: phase,
+			},
+		);
+		assert.equal(result.status, 0, result.stderr + result.stdout);
+		const { items } = JSON.parse(
+			await readFile(resolve(out, "manifest.json"), "utf8"),
+		);
+		frames.push(await readFile(resolve(out, items[0].files.at(-1))));
+	}
+	assert.deepEqual(
+		frames[0],
+		frames[1],
+		"different initial RAF phases must capture the same final picture",
+	);
+	assert.deepEqual(
+		JSON.parse(frames[0]),
+		{ x: 20 },
+		"the script must finish naturally before capture",
+	);
+	const { result, out } = await runnerFixture("raf-endless", features, {
+		comparisonCapture: true,
+		motions: "full",
+		scriptMotion: "forever",
+	});
+	assert.equal(result.status, 1);
+	const { items } = JSON.parse(
+		await readFile(resolve(out, "manifest.json"), "utf8"),
+	);
+	assert.equal(items[0].status, "problem");
+	assert.equal(
+		items[0].files.length,
+		0,
+		"unsettled frames must never be saved or passed",
+	);
+	assert.match(
+		items[0].problems.join(" "),
+		/Comparison capture did not settle \(5000 ms bound\).*script motion still schedules frames/,
+	);
+	assert.match(result.stdout, /FRAME PROBLEM:/);
 });
 
 test("V5: successful feature proof survives in both summaries beside state proof", async () => {
