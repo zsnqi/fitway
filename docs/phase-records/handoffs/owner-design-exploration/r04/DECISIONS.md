@@ -497,6 +497,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       checked to read it.
     - F138 is closed by item 46: the hook is the user's global setting, which agents never change (AGENTS.md); briefs
       say a hook's request outside scope is reported, not acted on.
+    - Coordinator, on the user's question which lows go first, since the remaining pages are built in one pass (item
+      6): what a new page reuses is fixed before Settings, after the shared-files rounds so each fix lands once in the
+      shared file, and checked with the mid-motion compare: the key's glyph softening during the press's settle (first
+      confirmed on seeked frames, MOT-1 suspect; a designer if real), the dialogs' parts splitting under a stall, the
+      Retry's leftover focus ring, OWN-C9's stale focus-ring rule and the rail's focus ring on Access. What belongs to
+      one page (Reports' `#fig-avg` card, fix-3's findings, Access's N1-N7) stays with Next steps 4 and 5 after Settings.
 
 ## How this milestone's rounds run
 
