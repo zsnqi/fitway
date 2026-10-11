@@ -20,10 +20,10 @@
   animation to fixed times (F139; the coordinator's harness `D:/fitway-temp/owner-r04-daily-files-grade/midmotion2.cjs`,
   byte-deterministic on the target except moments with real timers). ui-forensics 1.3.1 is installed (held presses).
 - **Design-detector findings** (DECISIONS 46): Impeccable's hook stays on; Codex reports its findings, the coordinator
-  triages them, and false ones go into the build worktree's gitignored `.impeccable/config.local.json`, the only
+  triages them, and false ones go into the build worktree's gitignored local Impeccable config (config.local.json), the only
   detector config the hook reads there (F140).
-- **main is the trunk** (DECISIONS 40), fast-forwarded to this line whenever CI passes on it. This worktree's untracked
-  `.claude/settings.local.json` allows `git push -q origin <sha>:refs/heads/main` and denies forced pushes (the user,
+- **main is the trunk** (DECISIONS 40), fast-forwarded to this line whenever CI passes on it. This worktree's untracked local
+  Claude Code settings allow `git push -q origin <sha>:refs/heads/main` and deny forced pushes (the user,
   2026-10-11); it loads in a new session.
 - **The discussion page** for the user (Arabic, private): https://claude.ai/artifact/88rd7XwoWHvnYhqbtxA1dm.
 - access-reason-cap-r01 stays paused by the user (its own handoff says how to resume). Parked by the user: the
