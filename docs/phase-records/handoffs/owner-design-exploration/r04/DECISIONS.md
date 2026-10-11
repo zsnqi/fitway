@@ -481,8 +481,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 46. **Design-detector findings in Codex rounds** (the user, 2026-10-11, «ممتاز اتفق معك», after Impeccable's hook in
     Codex led it to suppress three findings in a shared configuration file, F138). The hook stays on; its findings are
     hints, not verdicts. Codex reports them and acts on none. The coordinator looks at each on the frames: a real one
-    goes to a fresh designer, a false one is recorded with its reason in the concept's own detector exceptions
-    (`directions/eclipse/.impeccable/config.json`), where the earlier ones live.
+    goes to a fresh designer, a false one is recorded with its reason through `impeccable hooks ignore-value <rule>
+    "*" --local --file <path> --reason "..."`, scoped to its file, in the build worktree's gitignored
+    `.impeccable/config.local.json`. That is the only file the hook reads there (coordinator, 2026-10-11): the build
+    branch's tracked `.impeccable/config.json` starts with a byte-order mark the hook rejects as malformed, and the
+    concept folder's own `.impeccable/config.json`, which held the 2026-09-24 exceptions, is not read by the hook, so
+    those were copied to the local file.
 
 ## How this milestone's rounds run
 

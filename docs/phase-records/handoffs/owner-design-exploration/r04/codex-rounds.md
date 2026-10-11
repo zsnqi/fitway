@@ -594,3 +594,35 @@ checks live outside the repository and never appear here or in a brief. One line
   (L3); this brief dropped it.
 - **Next:** `codex-daily-files-fix.md` (`f40bb05b`, level high, held-out rows M1-M7) returns the shared styles and
   requires every moment and press to equal `f96753fe` along its timeline.
+
+## daily-files-fix: `directions/briefs/codex-daily-files-fix.md` on the build branch, result `7e28c713` (level high)
+
+- **Set-up:** the repair of daily-files, with a changed hypothesis: a rule is Daily's only if no script any other page
+  loads (`motion.js`, `picker.js`, the shell copies) can make it match, and every moment and press must equal
+  `f96753fe` along its timeline. Held-out rows M1-M7 are in `D:/fitway-grader/owner-r04/daily-files-fix-heldout.md`.
+- **Run:** the Codex account reached its usage limit mid-round; after the user switched accounts it resumed on its
+  thread.
+- **Brief rows, as Codex graded them:** X1, L2 and L3 pass: the interaction motion's pieces, the rail's opening pieces,
+  the date picker's end day and press, and one forced-colours level rule went back to `style.css` (1221 lines;
+  `daily.css` 415). D1-D3 and D5 hold (688, 620, 86 and 28 equal). Codex left X2 failing: its own harness sampled
+  real time, so the target against itself differed by up to 5596 pixels and equality stayed unproven; its 80 mouse
+  presses matched. It left D4 incomplete, reading the brief's CLI port limit as forbidding the probe kit's own port.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-daily-files-grade/`; the seek
+  harness `midmotion2.cjs`, byte-equal on the target against itself except two moments with real timers, the export's
+  done state and the first 40 ms of the rail closing):
+  - M1-M4 pass: the seven openings, the closings and the PIN dialog's change, Activity's older-records button
+    through Working in both languages, and held presses on a range day, the end day and a button all equal
+    `f96753fe`.
+  - M5 passes: a marker on the opening's shade piece in `daily.css` leaves Reports' export opening equal; the same
+    marker in `style.css` changes every seek.
+  - M6 passes: the scan finds 0; Reports and Access in every state, both languages, desktop and phone, both motions,
+    show 0 different, the only problems the known `arrive`, `from` and `to` items and one `ERR_NO_BUFFER_SPACE`
+    capture (F137).
+  - M7 passes: only the two stylesheets changed; `.impeccable/config.json` untouched; both worktrees clean.
+  - Also run: the probe kit's `checks.mjs` passes to its end on port 3178 (D4); forced colours on every page,
+    320 px and 200% zoom, touch and keyboard on Daily, and `file://` on the other pages show 0 different (the
+    keyboard's `language` and `tuner-drag` fail on both sides, as at the base).
+- **Failure cause:** none in the result. X2 and D4 were unproven by Codex's own measuring, not by the change.
+- **F139 recurs:** Codex wrote its own mid-motion harness, the same kind as the coordinator's, so under the working
+  agreement ("Rules and findings") seeked mid-motion comparison becomes a verify-fitway feature in a Codex round of its
+  own, with a planted defect it must catch.
