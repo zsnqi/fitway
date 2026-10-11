@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `8aa6ed82`, 2026-10-12 01:00 +03:00 (step 1's repair round stopped for an
+- **As of:** `codex/owner-redesign-r04` at `4c64f2df`, 2026-10-12 01:10 +03:00 (step 1's repair round stopped for an
   account switch; the user went to sleep)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-47), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
@@ -86,7 +86,7 @@ until-loop on the clock), then resume the run on its thread. Accounts are the us
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `8aa6ed82`).
+  commit that adds this text (parent `4c64f2df`).
 - Round worktree: D:/Projects/fitway-worktrees/owner-r04-midmotion, branch owner-r04-midmotion, HEAD `e39225e6` plus
   the repair's uncommitted changes.
 - Grading evidence: `D:/fitway-temp/owner-r04-midmotion-grade/`; the evidence the repair brief names:
