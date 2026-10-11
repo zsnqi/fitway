@@ -488,6 +488,16 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     concept folder's own `.impeccable/config.json`, which held the 2026-09-24 exceptions, is not read by the hook, so
     those were copied to the local file.
 
+47. **The open tool findings are fixed before Settings** (the user, 2026-10-11: «بس المقصد بنصلحها كلها قبل البدأ ب بناء
+    صفحة الاعدادات صح؟», while the mid-motion compare round ran with F119, F122, F126 and F130). Before Settings starts:
+    - F135 goes with the shared-files rounds (item 45), as planned.
+    - F131, F132, F136 and F137 get one verify-fitway round after the shared files (the user declined a separate round
+      for F137 alone).
+    - F140: the byte-order mark is removed from the build branch's tracked `.impeccable/config.json` and the hook is
+      checked to read it.
+    - F138 is closed by item 46: the hook is the user's global setting, which agents never change (AGENTS.md); briefs
+      say a hook's request outside scope is reported, not acted on.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
