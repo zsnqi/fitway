@@ -536,3 +536,33 @@ checks live outside the repository and never appear here or in a brief. One line
   switch values surfaced only in the round (F134). Codex reported both instead of working around them.
 - **Next:** `codex-recipe-proofs-2.md` (`5fa6db88`, held-out rows T1-T5) proves every page switch value, states the
   phone's designed absence, and holds address reads to scenarios only.
+
+## recipe-proofs-2: `directions/briefs/codex-recipe-proofs-2.md` on the build branch, result `8c1a7c5d` (level high)
+
+- **Set-up:** the successor to recipe-proofs. The changed scope: every value of every switch a page takes from its
+  address (F134), the phone's designed absence of Access's records card, and address-reading proofs held to
+  scenarios that show nothing before an action. Held-out rows T1-T5 are in
+  `D:/fitway-grader/owner-r04/recipe-proofs-2-heldout.md`.
+- **Brief rows, as Codex graded them:** Q3 and L1-L4 pass. Q1 fails: `arrive` (on four pages) and a lone `from` or
+  `to` (Reports, Activity) act only with a companion switch (`state=loading`; the other end of the range), which the
+  CLI neither discovers nor lets a recipe name; one all-pages compare also ended in `ERR_NO_BUFFER_SPACE` and stalled
+  after about 530 items. Codex marked Q2 failing for removing its weak proofs of those values; the rule holds for
+  every proof the file keeps.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-recipe-proofs-2-grade/`):
+  - T1 passes: Reports `state=delayed` and Access `ops=offline`, planted to draw their default, fail their proofs;
+    Daily `motion=off` fails too under full motion (under reduced motion the page is motion-off anyway, so the first
+    control could not show it); the clean copy passes each.
+  - T2 and T3 pass: at tablet and over `file://`, every page state is equal apart from the known `arrive`, `from` and
+    `to` problems.
+  - T4 passes: 17 proofs check the address (9 read `location`, 8 use the `query` form, which the report did not
+    list); each is a scenario with no visible effect before an action, and each names the feature that proves it,
+    Codex having added a feature for each of Access's eight remaining refusals.
+  - T5 passes: only the recipe file changed; both worktrees clean.
+- **Found in grading, repaired by the coordinator** (`f96753fe`): `record-navigation` lacked the phone width limit
+  Q3 gave `records-retry`, and the new `refused-staff_pin_already_active` failed everywhere because the refusal makes
+  the desk active, which its state proof re-checked after the action; it now owns that change (`changesState`).
+- **The base for Daily's round** (`f96753fe`), self-compared page by page: every page state 688 equal (both
+  languages, desktop and phone, both motions); every feature at its own state 620 equal; tablet 86 and `file://` 28
+  equal; the only problems are the 128 + 16 + 8 known `arrive`, `from` and `to` items.
+- **Failure cause: the brief.** Q1 asked for every switch value, and two kinds cannot be proved alone with today's
+  CLI (F136); the long single compare's exhaustion is a tool limit (F137).

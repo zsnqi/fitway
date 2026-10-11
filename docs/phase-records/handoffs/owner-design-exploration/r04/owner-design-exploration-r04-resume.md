@@ -62,11 +62,11 @@ with its scope revisited first (the ledger).
    recipe gaps (F123-F125) are closed with it or just before it, so the compare covers those states too. The
    gardener's next reading shows whether the shared files' size and boundary counts fall. The concept CSS check and
    `check-press-layer` join the fast ladder only once the build is on the trunk.
-   **Running** (2026-10-11): round recipe-proofs is graded (`e097d82c`, `codex-rounds.md`); its successor
-   recipe-proofs-2 (brief commit `5fa6db88` on the build branch, held-out rows in `D:/fitway-grader/owner-r04/`)
-   proves every page switch value (F134) before Daily's round, whose brief is drafted in the coordinator's scratchpad
-   and held-out rows are in `D:/fitway-grader/owner-r04/daily-files-heldout.md`; Daily's round also repairs the probe
-   kit's font pick (F133).
+   **Running** (2026-10-11): recipe-proofs and recipe-proofs-2 are graded (`codex-rounds.md`; F123-F125 and F134
+   fixed, the build at `f96753fe`). Daily's round, daily-files, runs at xhigh from brief commit `7a577ffb` on the
+   build branch; its held-out rows are U1-U8 in `D:/fitway-grader/owner-r04/daily-files-heldout.md`, and its base
+   self-compare is in `codex-rounds.md` (recipe-proofs-2). It also repairs the probe kit's font pick (F133). Open
+   from these rounds: F130-F132, F135-F137.
 1b. **Then the shared files** (DECISIONS 45): one shared frame script, then `reports.css` split, then the gardener's
    shared-file list derived from what pages load.
 2. **Then Settings**, Operations (the header status's details) and Monitoring, each per rounds items 6 and 8-11 in
