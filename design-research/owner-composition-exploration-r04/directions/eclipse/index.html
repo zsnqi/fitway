@@ -15,11 +15,12 @@
       r.dir = en ? "ltr" : "rtl";
       var s = p.get("state");
       r.dataset.state = ["delayed", "nohistory", "loading", "closed", "unavailable", "error"].indexOf(s) >= 0 ? s : "live";
-      // Nothing is hidden before first paint: the page is complete at once (Round 6). Motion is decided in app.js.
+      // Nothing is hidden before first paint: the page is complete at once (Round 6). Motion is decided in daily.js.
     })();
   </script>
   <link rel="stylesheet" href="fonts/readex-pro.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="daily.css">
   <script>
     // Start the CSS faces themselves; their load is shared with text rendering.
     // Both weights use the same subset bytes; Arabic digits need Latin too.
@@ -30,7 +31,7 @@
   </script>
   <!-- motion.js: the interaction motion every Owner page shares (the status's details, the phone's menu, a label). -->
   <script src="motion.js" defer blocking="render"></script>
-  <script src="app.js" defer blocking="render"></script>
+  <script src="daily.js" defer blocking="render"></script>
   <!-- Light tuner: a working tool for this concept (not part of the design). ?tuner=0 turns it off. -->
   <script src="tuner.js" defer blocking="render"></script>
 </head>

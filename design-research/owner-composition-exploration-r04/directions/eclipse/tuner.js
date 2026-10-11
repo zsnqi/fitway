@@ -6,7 +6,7 @@
  *   ?preset=v2|a-like|recommended   start from that preset (not stored); with tuner=0 it applies the preset
  *                                   and shows no panel, which is how the preset evidence frames are captured
  * The panel also has a Motion group (Round 6; Round 7 step 2 adds the hover speed, step 3 the intro speed and
- * "Replay intro") that drives app.js's window.__eclipse.motion and window.__eclipse.intro. */
+ * "Replay intro") that drives daily.js's window.__eclipse.motion and window.__eclipse.intro. */
 (() => {
   "use strict";
   const params = new URLSearchParams(location.search);
@@ -177,10 +177,10 @@
     (grp.g === "now" ? colA : colB).append(fs);
   });
   /* ------------------------------------------------------------ motion group
-   * Drives app.js's motion (window.__eclipse.motion; Round 6): a simulated new reading, a simulated crowd-level
+   * Drives daily.js's motion (window.__eclipse.motion; Round 6): a simulated new reading, a simulated crowd-level
    * change on the Inside now card (across the nearest level boundary, up or down), the Motion switch, (Round 7
    * step 2) the hover speed of the chart marker's follow, and (Round 7 step 3) the first-open intro's speed and a
-   * "Replay intro" button. app.js keeps the switch and both speeds in their own localStorage key
+   * "Replay intro" button. daily.js keeps the switch and both speeds in their own localStorage key
    * (fitway.eclipse.v3.motion), separate from the light values, and ignores them with ?tuner=0. */
   const MO = window.__eclipse && window.__eclipse.motion;
   let syncMotion = () => {};

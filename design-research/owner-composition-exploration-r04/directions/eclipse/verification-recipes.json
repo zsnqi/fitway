@@ -2969,7 +2969,7 @@
           "what": "page-retry",
           "reach": "index.html?state=error",
           "source": {
-            "file": "app.js",
+            "file": "daily.js",
             "line": 24
           },
           "covers": [],

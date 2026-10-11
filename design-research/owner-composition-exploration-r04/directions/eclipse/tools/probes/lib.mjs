@@ -150,7 +150,7 @@ export async function startServer({ dir = E, port = PORT, variants = {}, behavio
         } else { const subset = subsetOf(file); if (subset && h[subset]) await heldDelay(h[subset], pending); }
       }
       if (closing) { entry.status = "cancelled"; return; }
-      if (/app\.js$/.test(file) && behavior.scriptDelay) await heldDelay(behavior.scriptDelay, pending);
+      if (/daily\.js$/.test(file) && behavior.scriptDelay) await heldDelay(behavior.scriptDelay, pending);
       if (closing) { entry.status = "cancelled"; return; }
       const headers = { "content-type": TYPES[extname(file)] ?? "application/octet-stream" };
       if (behavior.cc && behavior.cc !== "none") headers["cache-control"] = behavior.cc;

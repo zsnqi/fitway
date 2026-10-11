@@ -110,7 +110,7 @@
     const r = n % 100;
     return r >= 3 && r <= 10 ? `${n} ${few}` : r >= 11 ? `${n} ${many}` : `${n} ${single}`;
   };
-  // Minutes, by the Daily page's own rule (app.js `arMin`), so «قبل … دقيقة» reads the same on both pages for any count.
+  // Minutes, by the Daily page's own rule (daily.js `arMin`), so «قبل … دقيقة» reads the same on both pages for any count.
   const arMin = (n) => (n === 1 ? "دقيقة" : n === 2 ? "دقيقتين" : n % 100 >= 3 && n % 100 <= 10 ? `${n} دقائق` : `${n} دقيقة`);
   const bdi = (s) => `<bdi>${s}</bdi>`;
   const COPY = {
@@ -674,7 +674,7 @@
     menuLang.setAttribute("href", `?${q}`);
   }
 
-  /* ---- rail: the Daily page's rail and its motion (app.js "rail"), unchanged. */
+  /* ---- rail: the Daily page's rail and its motion (daily.js "rail"), unchanged. */
   let railOpen = false;
   const railRun = { anims: [], surface: null, open: false };
   function finishRail() {
@@ -722,7 +722,7 @@
     Promise.all(an.map((x) => x.finished)).then(() => { if (railRun.anims === an) finishRail(); }).catch(() => {});
   }
 
-  /* ---- the frame (step 4: Reports takes Daily's frame, app.js "the frame"). Breakpoints: the desktop rail at 1024 px
+  /* ---- the frame (step 4: Reports takes Daily's frame, daily.js "the frame"). Breakpoints: the desktop rail at 1024 px
    * and wider (it opens over the content); the same rail from 721 to 1023 px, where it opens as a modal layer (a scrim,
    * the content inert, focus kept inside); at 720 px and below the bar at the bottom and the compact header, whose menu
    * holds Monitoring, the language and sign out. At every size the header's status opens Operations' details: the one

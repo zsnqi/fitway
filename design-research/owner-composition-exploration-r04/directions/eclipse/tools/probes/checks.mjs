@@ -73,9 +73,9 @@ try {
   SRV.cc = "no-store";
   assert.equal((await fetch(`${ORIGIN}/%2e%2e%5cpackage.json`)).status, 403);
   assert.equal((await fetch(`${ORIGIN}/other.html`)).status, 200);
-  const font = (await readdir(resolve(E, "fonts"))).find((name) => name.endsWith(".woff2"));
+  const font = (await readdir(resolve(E, "fonts"))).find((name) => name === "readex-pro-arabic.woff2");
   assert.ok(font);
-  const subset = /readex-pro-([\w-]+)\.woff2/.exec(font)[1];
+  const subset = "arabic";
   for (const hold of [30, { [subset]: 30 }, { afterFp: 30 }]) {
     SRV.fontHold = hold;
     if (hold.afterFp) armFp().resolve(performance.now() + performance.timeOrigin);
@@ -84,7 +84,7 @@ try {
   }
   SRV.fontHold = null;
   SRV.scriptDelay = 30;
-  assert.equal((await fetch(`${ORIGIN}/app.js`)).status, 200);
+  assert.equal((await fetch(`${ORIGIN}/daily.js`)).status, 200);
   assert.ok(SERVER_LOG.at(-1).heldMs >= 28);
   SRV.scriptDelay = 0;
   SRV.hook = (path) => path === "/forced" ? "404" : path === "/hung" ? "hang" : null;
@@ -121,11 +121,11 @@ try {
   server = null;
   assert.equal(await hungRequest, true);
   console.log("PASS shutdown: pending response and browser cleaned up");
-  for (const resource of [`fonts/${font}`, "app.js"]) {
+  for (const resource of [`fonts/${font}`, "daily.js"]) {
     let holdAccepted;
     const holdStarted = new Promise((done) => { holdAccepted = done; });
     const behavior = { ...saved, cc: "no-store" };
-    Object.defineProperty(behavior, resource === "app.js" ? "scriptDelay" : "fontHold", { get() { holdAccepted(); return 60000; } });
+    Object.defineProperty(behavior, resource === "daily.js" ? "scriptDelay" : "fontHold", { get() { holdAccepted(); return 60000; } });
     server = await startServer({ behavior });
     const heldRequest = fetch(`${ORIGIN}/${resource}`).then(() => false, () => true);
     await holdStarted;

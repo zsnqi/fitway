@@ -467,7 +467,7 @@
     menuLang.setAttribute("href", `?${p}`);
   }
 
-  /* ---- rail: the Daily page's rail and its motion (app.js "rail"), as every Owner page takes it. */
+  /* ---- rail: the Daily page's rail and its motion (daily.js "rail"), as every Owner page takes it. */
   let railOpen = false;
   let openDlg = null;
   const railRun = { anims: [], surface: null, open: false };

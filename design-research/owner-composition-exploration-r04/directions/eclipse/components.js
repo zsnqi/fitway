@@ -895,7 +895,7 @@
       ${f(`<div class="cx-phbox cx-bar-spec is-320">${bar({ reports: "is-hover", settings: "is-focus" })}</div>`, L.frameCaps.bar320, "BAR-3 · BAR-5 · FOC-1", false, 320)}
     </div></div>`);
   }
-  // The interactive phone header: the same behaviour as the page (app.js "the frame"), in one specimen.
+  // The interactive phone header: the same behaviour as the page (daily.js "the frame"), in one specimen.
   function wireFrame() {
     for (const box of $$(".cx-live-frame")) {
       const btns = { ops: $('[data-layer="ops"]', box), menu: $('[data-layer="menu"]', box) };

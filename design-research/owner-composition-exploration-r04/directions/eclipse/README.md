@@ -126,7 +126,7 @@ It is a working tool, not part of the design.
   - «سرعة انتقال العلامة» "Hover speed": a range from 0.5× to 2×, default 1× (the reference clip's feel),
     with a small «الافتراضي» "Default" button. It divides the follow's time constants; the output shows the multiplier
     and the settle time, for example "1.00× · 400 ms".
-    - It is kept in the same key as the Motion switch (`{ motion, hoverSpeed, introSpeed }`), which app.js already owns
+    - It is kept in the same key as the Motion switch (`{ motion, hoverSpeed, introSpeed }`), which daily.js already owns
       and ignores with `?tuner=0`. The light values' key and "Copy values" stay about lights only.
   - «سرعة المقدمة» "Intro speed": a range from 0.5× to 2×, default 1×, with its own «الافتراضي»
     "Default" button. It divides every duration of the first-open intro; the output shows the multiplier and the
@@ -201,7 +201,7 @@ the areas). Recommended's middle, 14.3, is above A's 13.0 on the same method.
 is complete at first paint, and something moves only when the data really changes or the owner acts. The first-open
 intro (11 below) reveals the readings inside the still surfaces once per tab, on their first eligible arrival.
 
-Daily's data motion lives in the "motion" section of `app.js`; the interaction motion every Owner page shares (dialogs,
+Daily's data motion lives in the "motion" section of `daily.js`; the interaction motion every Owner page shares (dialogs,
 popovers, a button's label, a dialog that settles, a done state) lives in `motion.js` (12 below), which every page
 loads before its own script. Both use the Web Animations API, and the few pieces they need are in the motion section of
 `style.css`. No glyph ever changes opacity, anywhere:
@@ -246,7 +246,7 @@ Daily's details chevron, and the jump to "View details" are all instant.
 - Without an intro (720 px and below since DECISIONS item 25, reduced motion, `?motion=off`, the Motion switch off, or a return after the tab's intro flag)
   values arrive at once. The frame is complete at first paint; loading holds its slots. No font-loading hide is
   added; Chromium can hold paint for pending early-loaded fonts.
-- The first inline script sets language, direction and state; the second starts both weights of the CSS font faces. app.js
+- The first inline script sets language, direction and state; the second starts both weights of the CSS font faces. daily.js
   decides the intro through ordered render-blocking scripts; the local Arabic and Latin files cover both weights.
 - The chart renders at once. It is measured again when the fonts arrive, because the header's text sets its height,
   and again whenever its box changes.
@@ -406,7 +406,7 @@ Marker choice: `HISTORY.md`, "Motion", rule 6.
     comes first and its crowd-level word after it, as at every other stop («62 مزدحم», "62 Busy").
   - The usual comparison and the delayed age stay below, start-aligned, as before.
 - **One tooltip width that follows the chart:** decision: `HISTORY.md`, "Contract label provenance" → "Tooltip width".
-  - **Width formula:** `app.js` measures the widest numbered tooltip among the chart's current stops, adds 2 px,
+  - **Width formula:** `daily.js` measures the widest numbered tooltip among the chart's current stops, adds 2 px,
     rounds up and sets `--tip-w`. A numbered tooltip has a value or a usual row; the missing span and, without
     history, still-ahead and no-reading-yet stops are excluded. Within one snapshot these tooltips have one width,
     and their start-aligned rows keep one distance from the stop's hairline wherever the plot's sides allow centring.
@@ -481,7 +481,7 @@ Motion switch; every change is then instant, and there is no intro. The interact
 gates on every page (the tuner's switch on Daily only, where the tuner is). See `HISTORY.md`, "Evidence", for the static
 guard.
 
-**11. The first-open intro.** It is "the first-open intro" part of the motion section in `app.js`.
+**11. The first-open intro.** It is "the first-open intro" part of the motion section in `daily.js`.
 Decision: `HISTORY.md`, "Motion", rule 11.
 
 At 1× the intro runs for 1171 ms in total, with a separate, unscaled font-wait cap of 200 ms from first paint
@@ -784,7 +784,7 @@ The log records:
     this run's reduced-motion frame for EN delayed and no history), with the DOM equal to the `?motion=off` DOM, only
     the pulse running after it, no long task and no font load during it. A reload in the same tab has no intro (no
     rolling slot or line dash appears at any time), is the still frame, and runs only the pulse on load.
-  - **Surfaces at the first frames:** at the first frame after app.js runs (the first paint) and at
+  - **Surfaces at the first frames:** at the first frame after daily.js runs (the first paint) and at
     the intro's first frame, every surface (`.card`, `.lamp` and its layers, `.wash` and its light, `.rail`) has its
     rest display, visibility, opacity, transform, clip and filter. Nothing runs but the intro's content transforms (a
     transform on an answer's rolling digits, or the intro's clocks, which have no target and no keyframes) and the
@@ -963,7 +963,7 @@ clipped or spilling element, a day table wider than its card on a phone, or a di
 
 ## Decision 20's trial: the chart by touch on a phone
 
-Built for the user to try (DECISIONS item 20, the user's picks of 2026-10-03), at 720 px and below only; 721 px and up and the phone's arrangement are unchanged. Rules: DESIGN-SPEC CHT-11, CHT-12, CHT-14, CHT-15, CHT-18, OWN-D7 and OWN-D8; code: `app.js`, "the finger", and `style.css`, "Daily on the phone: the finger".
+Built for the user to try (DECISIONS item 20, the user's picks of 2026-10-03), at 720 px and below only; 721 px and up and the phone's arrangement are unchanged. Rules: DESIGN-SPEC CHT-11, CHT-12, CHT-14, CHT-15, CHT-18, OWN-D7 and OWN-D8; code: `daily.js`, "the finger", and `style.css`, "Daily on the phone: the finger".
 
 - A swipe that starts on the plot scrolls the page and reads nothing. A press held still for 300 ms starts the reading; a drag then moves it stop by stop while the page stays put; lifting the finger empties the band.
 - A quick tap keeps the reading, with close, previous and next (44 px each). A tap outside the chart card, Escape or close ends it. The keyboard keeps the reading with its buttons and reaches them after the plot.
