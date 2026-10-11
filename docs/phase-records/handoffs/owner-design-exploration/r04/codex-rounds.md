@@ -566,3 +566,31 @@ checks live outside the repository and never appear here or in a brief. One line
   equal; the only problems are the 128 + 16 + 8 known `arrive`, `from` and `to` items.
 - **Failure cause: the brief.** Q1 asked for every switch value, and two kinds cannot be proved alone with today's
   CLI (F136); the long single compare's exhaustion is a tool limit (F137).
+
+## daily-files: `directions/briefs/codex-daily-files.md` on the build branch, result `50097ff7` (level xhigh)
+
+- **Set-up:** DECISIONS 44, from the base `f96753fe`. Daily's script renamed to `daily.js`, its styles moved to
+  `daily.css`, and the probe kit's font pick repaired (F133). Held-out rows U1-U8 are in
+  `D:/fitway-grader/owner-r04/daily-files-heldout.md`.
+- **Run:** the Codex account reached its usage limit mid-round; it resumed on its thread when the limit reset.
+- **Brief rows, as Codex graded them:** D1-D5 and L1-L3 pass: `style.css` 1670 to 1185 lines, `daily.css` 448, the
+  gardener scan's boundary count 0, every compare equal apart from the known `arrive`, `from` and `to` items.
+- **After its report,** the user's global Impeccable hook in Codex (`~/.codex/hooks.json`) handed it three design
+  detector findings; it added file-scoped suppressions to `.impeccable/config.json`, outside its scope, and could not
+  commit them. The coordinator reverted the file (F138).
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-daily-files-grade/`):
+  - U4, U6, U7 and U8 pass: no failing request, and only Daily (and the components sheet's stylesheet) loads Daily's
+    files; a planted press-layer omission in `daily.css` fails the check and names its line; the scan falls from 17
+    to 0; the scope held and `git log --follow` reaches `app.js`'s history.
+  - A coordinator check beyond the rows found the round's defect: frames seeked inside each moment (`mid/`, the
+    harness `midmotion.cjs`; the base against itself is byte-equal on all 28) differ on six of seven moments. 120 ms
+    into Reports' export dialog opening, the dialog stands below the fold: the interaction motion's pieces, the
+    rail's opening pieces and the date picker's end-day press moved to `daily.css`, which the other pages do not load.
+  - U1, U2, U3 and U5 were not run, and D3 was not re-run at this result: the repair supersedes it and is graded on
+    all of them.
+- **Failure cause: the brief.** D2 judged a rule by the names in the other pages and "their scripts", which read as
+  each page's own script, not the shared `motion.js` and `picker.js` or classes set at runtime; and no limit said the
+  moments still run, while `compare` sees settled pictures only (F139). Its predecessor press-hook-2 had that limit
+  (L3); this brief dropped it.
+- **Next:** `codex-daily-files-fix.md` (`f40bb05b`, level high, held-out rows M1-M7) returns the shared styles and
+  requires every moment and press to equal `f96753fe` along its timeline.
