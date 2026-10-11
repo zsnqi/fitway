@@ -493,7 +493,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - F135 goes with the shared-files rounds (item 45), as planned.
     - F131, F132, F136 and F137 get one verify-fitway round after the shared files (the user declined a separate round
       for F137 alone). With it, `pnpm codex:round` runs the pre-launch brief review itself (B11, Codex at max) and
-      launches only with each reading's disposition recorded (the user, «ما عندي اعتراض»).
+      launches only with each reading's disposition recorded (the user, «ما عندي اعتراض»). Also in that round (the
+      user, 2026-10-12, «ممتاز», «موافق»): during work a compare can take only the pages a change affects, derived from
+      the files each page loads (a shared file means every page), never from which features seem related, with the full
+      check still at the end of every round; and the base side's frames, which never change between reruns, are kept
+      and reused instead of captured again.
     - F140: the byte-order mark is removed from the build branch's tracked `.impeccable/config.json` and the hook is
       checked to read it.
     - F138 is closed by item 46: the hook is the user's global setting, which agents never change (AGENTS.md); briefs

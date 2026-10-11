@@ -53,7 +53,7 @@ until-loop on the clock), then resume the run on its thread. Accounts are the us
    this line, update F119, F122, F126, F130, F139, F141 and F142, push, and fast-forward main once CI passes.
 3. **Then, in DECISIONS 47's order, before Settings:** the shared-files rounds (DECISIONS 45, each refactor compared
    along its moments with `--timeline`), the shared lows, the verify-fitway round (F131, F132, F136, F137, and the
-   launch command running the B11 review), F140; every Codex brief through the B11 review first.
+   launch command running the B11 review, affected-page compares and reused base frames), F140; every Codex brief through the B11 review first.
 4. **Then Settings**, Operations and Monitoring (rounds items 6 and 8-11 in DECISIONS).
 5. **Daily and Reports' last round:** Reports' «معدّل الموجودين» card (`#fig-avg`, DECISIONS 30), fix-3's findings
    (`D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`), the page-only lows (DECISIONS 47).
@@ -62,11 +62,8 @@ until-loop on the clock), then resume the run on its thread. Accounts are the us
 
 ## Waiting on the user
 
-- **Checking only what a change affects** (the user's proposal, 2026-10-12). The coordinator agreed, with two
-  conditions: the affected pages come from the files each page loads (a shared file means every page), never from which
-  features seem related (daily-files broke other pages through shared scripts and classes set at runtime); and the full
-  check still runs at the end of every round. It also proposed caching the base side's frames, which never change
-  between reruns. Both would join the verify-fitway round before Settings; waiting for the user's yes.
+Nothing. The user agreed to checking only the affected pages and to reusing the base side's frames, both in the
+verify-fitway round before Settings (DECISIONS 47), and switched the Codex account at 01:15.
 
 ## Known risks
 
