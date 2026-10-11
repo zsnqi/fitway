@@ -124,14 +124,14 @@ export async function proveFeature(page, proof, language, input) {
 	} catch (error) {
 		if (input === "keyboard")
 			throw new KeyboardReachError(
-				`Not reachable by keyboard via the recorded sequence: ${proof.selector || "feature result"}; focus stopped at ${(await focusedElement(page)).selector}; ${error.message}`,
+				`Not reachable by keyboard via the recorded sequence: ${proof.selector || "feature result"}; focus stopped ${focusDescription(await focusedElement(page))}; ${error.message}`,
 			);
 		throw error;
 	}
 }
 
 export async function focusedElement(page) {
-	return page.evaluate(() => {
+	const focus = await page.evaluate(() => {
 		const element = document.activeElement;
 		if (!element) return { selector: "<none>" };
 		const parts = [];
@@ -151,14 +151,43 @@ export async function focusedElement(page) {
 			selector: parts.join(" > "),
 			tag: element.localName,
 			role: element.getAttribute("role"),
-			text: (element.getAttribute("aria-label") || element.textContent || "")
-				.replace(/\s+/g, " ")
-				.trim()
-				.slice(0, 120),
+			page: element === document.body || element === document.documentElement,
 			tabindex: element.getAttribute("tabindex"),
 		};
 	});
+	if (focus.page) return { ...focus, role: "document", name: "" };
+	if (!focus.tag) return { ...focus, name: "" };
+	// Query Chromium's accessibility node for this element only. A subtree's
+	// snapshot can start with a child when a generic focused container is ignored.
+	const session = await page.context().newCDPSession(page);
+	let objectId;
+	try {
+		const { result } = await session.send("Runtime.evaluate", {
+			expression: "document.activeElement",
+		});
+		objectId = result.objectId;
+		const { nodes } = await session.send("Accessibility.getPartialAXTree", {
+			objectId,
+			fetchRelatives: false,
+		});
+		return {
+			...focus,
+			role: nodes[0]?.role?.value || focus.role || focus.tag,
+			name: nodes[0]?.name?.value || "",
+		};
+	} finally {
+		try {
+			if (objectId) await session.send("Runtime.releaseObject", { objectId });
+		} finally {
+			await session.detach();
+		}
+	}
 }
+
+export const focusDescription = (focus) =>
+	focus.page
+		? `on the page itself: ${focus.selector} (document)`
+		: `at ${focus.selector} (${focus.name ? JSON.stringify(focus.name) : focus.role || focus.tag || "element"})`;
 
 export async function keyboardStep(page, key, entry, action) {
 	const before = await focusedElement(page);
@@ -185,14 +214,14 @@ export async function reachByKeyboard(page, selector, entry, action) {
 			return target;
 		if (seen.has(focused.selector))
 			throw new KeyboardReachError(
-				`Not reachable by keyboard: ${selector}; focus stopped at ${focused.selector} (${focused.text}); Tab cycle repeated`,
+				`Not reachable by keyboard: ${selector}; focus stopped ${focusDescription(focused)}; Tab cycle repeated`,
 			);
 		seen.add(focused.selector);
 		await keyboardStep(page, "Tab", entry, action);
 	}
 	const focused = await focusedElement(page);
 	throw new KeyboardReachError(
-		`Not reachable by keyboard: ${selector}; focus stopped at ${focused.selector} (${focused.text}); 200-key limit`,
+		`Not reachable by keyboard: ${selector}; focus stopped ${focusDescription(focused)}; 200-key limit`,
 	);
 }
 
@@ -259,7 +288,7 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 				const index = choices.indexOf(argument.slice(valueStart + 1));
 				if (index < 0)
 					throw new KeyboardReachError(
-						`Not reachable by keyboard: option ${argument}; focus stopped at ${(await focusedElement(page)).selector}`,
+						`Not reachable by keyboard: option ${argument}; focus stopped ${focusDescription(await focusedElement(page))}`,
 					);
 				await keyboardStep(page, "Home", entry, action);
 				for (let i = 0; i < index; i++)
@@ -287,7 +316,7 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 		}
 		if (!["wait", "waitFor"].includes(kind))
 			throw new KeyboardReachError(
-				`Not reachable by keyboard: ${action} needs an authored keyboardActions sequence; focus stopped at ${(await focusedElement(page)).selector}`,
+				`Not reachable by keyboard: ${action} needs an authored keyboardActions sequence; focus stopped ${focusDescription(await focusedElement(page))}`,
 			);
 	}
 	if (action.startsWith("gesture:"))

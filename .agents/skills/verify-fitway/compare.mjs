@@ -49,6 +49,7 @@ async function capture(options, setup, out) {
 			session: undefined,
 			out,
 			quiet: true,
+			comparisonCapture: true,
 		});
 	} catch (error) {
 		try {

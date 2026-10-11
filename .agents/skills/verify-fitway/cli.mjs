@@ -78,7 +78,8 @@ Sizes: desktop=1440x900, boundary=1024x900, tablet=768x1024, phone=390x844,
 States all sweeps every discovered switch value/sample; dependencies are applied or refused.
 Use --states 'state=live,state=loading,...' for only the page's data states.
 list prints features, states, switches, dependencies, reach and observable proof.
-PASS requires state and feature proof. NOT-REACHABLE is a distinct result; PROBLEM names a measuring error.
+PASS requires state and feature proof. NOT-REACHABLE means state/feature unavailable by recipe (cannot be reached).
+KEYBOARD-UNREACHABLE means the pointer feature's keyboard path failed; PROBLEM names a measuring error.
 Items have a short *-summary.json beside the full record; filenames include feature and state.
 compare repeats differing items in fresh contexts, with exact pixel regions and diff images.
 Known limits: CSS-only openings and some dynamic/delegated opener relationships are not exhaustively discovered.

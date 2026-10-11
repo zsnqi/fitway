@@ -15,6 +15,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { runInNewContext } from "node:vm";
 import { child, doctorFix, playwright } from "./cli.mjs";
 import { measurementColors } from "./colors.mjs";
 import { diffStem } from "./compare.mjs";
@@ -28,7 +29,12 @@ import {
 	shortFinding,
 	verificationPort,
 } from "./core.mjs";
-import { performAction, proveFeature, reachByKeyboard } from "./drive.mjs";
+import {
+	focusedElement,
+	performAction,
+	proveFeature,
+	reachByKeyboard,
+} from "./drive.mjs";
 import {
 	coverageProblems,
 	discoverElements,
@@ -440,7 +446,7 @@ test("a focused control whose keys do not produce the feature reports keyboard u
 			"ar",
 			"keyboard",
 		),
-		/Not reachable by keyboard via the recorded sequence: #dialog; focus stopped at #mouse-only; dialog stayed closed/,
+		/Not reachable by keyboard via the recorded sequence: #dialog; focus stopped at #mouse-only \(element\); dialog stayed closed/,
 	);
 	await assert.rejects(
 		proveFeature(page, { selector: "#dialog", visible: true }, "ar", "mouse"),
@@ -1066,25 +1072,41 @@ async function runnerFixture(name, features, options = {}) {
 	await writeFile(
 		resolve(tools, "scripts/web/lib.mjs"),
 		`
-export const launchChromium=async()=>({close:async()=>{}});
+import {appendFile,writeFile} from "node:fs/promises";
+import {createContext,runInContext} from "node:vm";
+const motion=${JSON.stringify(options.scriptMotion || null)}, phase=${JSON.stringify(options.scriptPhase || 0)};
+const capture=async(via,options,picture)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from(picture)};
+export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
  let focus="body", open=false;
- const page={setDefaultTimeout(){},
+ let now=0, next=0; const frames=new Map();
+ const sandbox={position:0,document:{getAnimations:()=>[]},
+ requestAnimationFrame:(callback)=>{const id=++next;frames.set(id,callback);return id},
+ cancelAnimationFrame:(id)=>frames.delete(id)};
+ sandbox.window=sandbox; createContext(sandbox);
+ const run=(fn)=>runInContext('('+fn.toString()+')()',sandbox);
+ const tick=()=>{now+=16;for(const id of [...frames.keys()]){const callback=frames.get(id);if(callback){frames.delete(id);callback.call(sandbox,now)}}};
+const page={setDefaultTimeout(){},addInitScript:async(fn)=>{await appendFile(${JSON.stringify(resolve(root, "init.jsonl"))},"observer\\n");if(motion)run(fn)},
+ startMotion:()=>{if(motion){runInContext('function move(){position++;if('+JSON.stringify(motion==='forever')+'||position<20)requestAnimationFrame(move)};requestAnimationFrame(move)',sandbox);for(let i=0;i<phase;i++)tick()}},
+ tick,picture:()=>motion?JSON.stringify({x:sandbox.position}):"fixture",
+ waitForFunction:async(fn,arg,options)=>{if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
+ screenshot:async(options)=>capture("native",options,page.picture()),
+context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
   evaluate:async(fn)=>fn.toString().includes("coarse")
    ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
-   : fn.toString().includes("document.activeElement") ? {selector:focus,text:focus} : {},
-  locator:(selector)=>({first(){return this},count:async()=>1,
-   evaluate:async()=>focus===selector,ariaSnapshot:async()=>"body",
+: fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
+locator:(selector)=>({first(){return this},count:async()=>1,
+evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body":'- button "Open details"',
    waitFor:async()=>{if(selector==="#dialog"&&!open)throw new Error("dialog stayed closed")}}),
   keyboard:{press:async(key)=>{if(key==="Tab")focus=focus==="body"?"#opener":"body";
    if(key==="Enter"&&focus==="#opener"){open=true;focus="#field"}}}};
  return {page,context:{close:async()=>{}},errors:[],emulation:{forcedColors:options.forcedColors || "none"}};
 }
 export const withParams=(url)=>url;
-export const preparePage=async()=>({ready:true});
-export const screenshot=async()=>Buffer.from("fixture");
-export const twoFrames=async()=>{};
+export const preparePage=async(page)=>{page.startMotion();return {ready:true}};
+export const screenshot=async(page,options)=>capture("adapter",options,page.picture());
+export const twoFrames=async(page)=>{page.tick();page.tick()};
 export const injectProbe=async()=>{};
 export const renderSheet=async()=>{};
 `,
@@ -1129,6 +1151,7 @@ try {await drive(${JSON.stringify({
 catch(error){if(!(core.ReportedFailure && error instanceof core.ReportedFailure))console.error("FAIL: "+error.message);process.exitCode=1}`,
 	);
 	return {
+		root,
 		out,
 		result: spawnSync(process.execPath, [caller], {
 			encoding: "utf8",
@@ -1553,7 +1576,7 @@ await writeFile(resolve(out,"tool-invoked.json"),JSON.stringify(args));`,
 	assert.equal(existsSync(resolve(oldOut, "measure-manifest.json")), false);
 });
 
-test("V4: drive separates and names keyboard reach findings, and still fails", async () => {
+test("R30 V1/V2: focus names the page or control and summaries distinguish absence from keyboard access", async () => {
 	const { result, out } = await runnerFixture("keyboard-summary", [
 		{
 			id: "open",
@@ -1577,8 +1600,18 @@ test("V4: drive separates and names keyboard reach findings, and still fails", a
 	assert.equal(result.status, 1, result.stdout);
 	assert.match(
 		result.stdout,
-		/DRIVE FAIL: 3 items; 1 not reachable; 1 keyboard unreachable \(fixture.html\/pointer-only default en desktop keyboard reduce file\); 0 problems/,
+		/DRIVE FAIL: 3 items; 1 state\/feature unavailable by recipe \(cannot be reached\); 1 pointer feature unreachable by keyboard \(fixture.html\/pointer-only default en desktop keyboard reduce file\); 0 problems/,
 	);
+	assert.match(
+		result.stdout,
+		/State\/feature cannot be reached: Absent by design/,
+	);
+	assert.match(result.stdout, /Pointer feature unreachable by keyboard/);
+	assert.match(
+		result.stdout,
+		/Keyboard focus stopped on the page itself: body \(document\)/,
+	);
+	assert.doesNotMatch(result.stdout, /Whole page text|\(body\)/);
 	assert.equal(result.stderr, "", result.stderr);
 	const summary = JSON.parse(
 		await readFile(resolve(out, "summary.json"), "utf8"),
@@ -1587,6 +1620,217 @@ test("V4: drive separates and names keyboard reach findings, and still fails", a
 		summary.map((item) => item.result),
 		["pass", "not-reachable", "keyboard-unreachable"],
 	);
+});
+
+test("R30 V1: focus uses the element's accessibility name or role without reading text content", async () => {
+	const focus = { selector: "#control", tag: "input", role: null };
+	const node = {
+		role: { value: "textbox" },
+		name: { value: "Name from associated label" },
+	};
+	const requests = [];
+	let detached = 0;
+	const page = {
+		evaluate: async () => focus,
+		context: () => ({
+			newCDPSession: async () => ({
+				send: async (method, options) => {
+					requests.push([method, options]);
+					return method === "Runtime.evaluate"
+						? { result: { objectId: "focus" } }
+						: method === "Accessibility.getPartialAXTree"
+							? { nodes: [node] }
+							: {};
+				},
+				detach: async () => {
+					detached++;
+				},
+			}),
+		}),
+	};
+	assert.equal((await focusedElement(page)).name, "Name from associated label");
+	assert.deepEqual(requests[1], [
+		"Accessibility.getPartialAXTree",
+		{ objectId: "focus", fetchRelatives: false },
+	]);
+	assert.equal(detached, 1);
+	assert.equal(requests.at(-1)[0], "Runtime.releaseObject");
+	delete node.name;
+	assert.equal((await focusedElement(page)).name, "");
+	assert.equal((await focusedElement(page)).role, "textbox");
+	focus.page = true;
+	focus.tag = "body";
+	const count = requests.length;
+	assert.equal((await focusedElement(page)).role, "document");
+	assert.equal((await focusedElement(page)).name, "");
+	assert.equal(requests.length, count);
+});
+
+test("R30 repair V3: every comparison mode hides carets and paints fresh tiles without changing ordinary drive", async () => {
+	const features = [
+		{ id: "page", actions: [], proof: { selector: "main", visible: true } },
+	];
+	for (const comparisonCapture of [true, false]) {
+		const { root, result } = await runnerFixture(
+			`caret-${comparisonCapture}`,
+			features,
+			{
+				comparisonCapture,
+				motions: "full,reduce",
+			},
+		);
+		assert.equal(result.status, 0, result.stderr + result.stdout);
+		const launch = JSON.parse(
+			await readFile(resolve(root, "launch.json"), "utf8"),
+		);
+		assert.deepEqual(
+			launch,
+			comparisonCapture ? { args: ["--disable-partial-raster"] } : null,
+		);
+		assert.equal(
+			existsSync(resolve(root, "init.jsonl")),
+			comparisonCapture,
+			"ordinary drive must not install the comparison frame observer",
+		);
+		const captures = (await readFile(resolve(root, "captures.jsonl"), "utf8"))
+			.trim()
+			.split("\n")
+			.map(JSON.parse);
+		assert.equal(
+			captures.length,
+			4,
+			"both before/after frames in both motion modes must use the capture policy",
+		);
+		for (const capture of captures) {
+			assert.deepEqual(
+				capture,
+				comparisonCapture
+					? {
+							via: "native",
+							options: { fullPage: false, animations: "allow", caret: "hide" },
+						}
+					: {
+							via: "adapter",
+							options: {
+								method: "playwright",
+								fullPage: false,
+								animations: "allow",
+							},
+						},
+			);
+		}
+	}
+});
+
+test("R30 V3: comparison waits for finite motion and fixes the phase of persistent motion", async () => {
+	const { settleComparison } = await import("./runner.mjs");
+	const finite = {
+		playState: "running",
+		effect: { getComputedTiming: () => ({ endTime: 200 }) },
+		finish() {
+			assert.fail("finite motion must finish naturally");
+		},
+	};
+	const persistent = {
+		playState: "running",
+		currentTime: 187,
+		effect: {
+			getComputedTiming: () => ({ endTime: Number.POSITIVE_INFINITY }),
+		},
+		pause() {
+			this.playState = "paused";
+		},
+	};
+	const sandbox = {
+		window: { __verifyFitwayFrames: { pending: 0 } },
+		document: { getAnimations: () => [finite, persistent] },
+	};
+	const run = (fn) => runInNewContext(`(${fn.toString()})()`, sandbox);
+	const page = {
+		waitForFunction: async (predicate, arg, options) => {
+			assert.equal(arg, undefined);
+			assert.equal(options.timeout, 5000);
+			assert.equal(
+				run(predicate),
+				false,
+				"capture must wait while the popover is opening",
+			);
+			assert.equal(persistent.currentTime, 187);
+			finite.playState = "finished";
+			assert.equal(run(predicate), true);
+		},
+		evaluate: async (fn) => run(fn),
+	};
+	await settleComparison(page);
+	assert.equal(persistent.playState, "paused");
+	assert.equal(persistent.currentTime, 0);
+	let captured = false;
+	await assert.rejects(
+		settleComparison({
+			waitForFunction: async () => {
+				throw new Error("finite movement never settled");
+			},
+			evaluate: async () => {
+				captured = true;
+			},
+		}),
+		/never settled/,
+	);
+	assert.equal(captured, false);
+});
+
+test("R30 repair 2 R5: finite requestAnimationFrame motion compares equal; endless script motion is a capture problem", async () => {
+	const features = [
+		{ id: "page", actions: [], proof: { selector: "main", visible: true } },
+	];
+	const frames = [];
+	for (const phase of [1, 4]) {
+		const { result, out } = await runnerFixture(
+			`raf-finite-${phase}`,
+			features,
+			{
+				comparisonCapture: true,
+				motions: "full",
+				scriptMotion: "finite",
+				scriptPhase: phase,
+			},
+		);
+		assert.equal(result.status, 0, result.stderr + result.stdout);
+		const { items } = JSON.parse(
+			await readFile(resolve(out, "manifest.json"), "utf8"),
+		);
+		frames.push(await readFile(resolve(out, items[0].files.at(-1))));
+	}
+	assert.deepEqual(
+		frames[0],
+		frames[1],
+		"different initial RAF phases must capture the same final picture",
+	);
+	assert.deepEqual(
+		JSON.parse(frames[0]),
+		{ x: 20 },
+		"the script must finish naturally before capture",
+	);
+	const { result, out } = await runnerFixture("raf-endless", features, {
+		comparisonCapture: true,
+		motions: "full",
+		scriptMotion: "forever",
+	});
+	assert.equal(result.status, 1);
+	const { items } = JSON.parse(
+		await readFile(resolve(out, "manifest.json"), "utf8"),
+	);
+	assert.equal(items[0].status, "problem");
+	assert.equal(
+		items[0].files.length,
+		0,
+		"unsettled frames must never be saved or passed",
+	);
+	assert.match(
+		items[0].problems.join(" "),
+		/Comparison capture did not settle \(5000 ms bound\).*script motion still schedules frames/,
+	);
+	assert.match(result.stdout, /FRAME PROBLEM:/);
 });
 
 test("V5: successful feature proof survives in both summaries beside state proof", async () => {

@@ -12,6 +12,7 @@ import {
 	verificationPort,
 } from "./core.mjs";
 import {
+	focusDescription,
 	focusedElement,
 	KeyboardReachError,
 	performAction,
@@ -139,6 +140,86 @@ export function itemSummary(entry) {
 	};
 }
 
+// Comparison measures a reproducible picture after the user flow. Ordinary drive
+// keeps its original capture timing, including frames taken during movement.
+class ComparisonCaptureError extends Error {}
+
+export function observeComparisonFrames() {
+	const request = window.requestAnimationFrame.bind(window);
+	const cancel = window.cancelAnimationFrame.bind(window);
+	const pending = new Set();
+	Object.defineProperty(window, "__verifyFitwayFrames", {
+		value: {
+			get pending() {
+				return pending.size;
+			},
+		},
+	});
+	window.requestAnimationFrame = (callback) => {
+		if (typeof callback !== "function") return request(callback);
+		const id = request((time) => {
+			pending.delete(id);
+			callback.call(window, time);
+		});
+		pending.add(id);
+		return id;
+	};
+	window.cancelAnimationFrame = (id) => {
+		pending.delete(id);
+		return cancel(id);
+	};
+}
+
+export async function settleComparison(page) {
+	try {
+		await page.waitForFunction(
+			() => {
+				if (!window.__verifyFitwayFrames)
+					throw new Error("Comparison frame observer was not installed");
+				return (
+					window.__verifyFitwayFrames.pending === 0 &&
+					document
+						.getAnimations()
+						.every(
+							(animation) =>
+								["finished", "idle"].includes(animation.playState) ||
+								!Number.isFinite(animation.effect.getComputedTiming().endTime),
+						)
+				);
+			},
+			undefined,
+			{ timeout: 5000 },
+		);
+	} catch (error) {
+		throw new ComparisonCaptureError(
+			`Comparison capture did not settle (5000 ms bound): ${error.message}`,
+		);
+	}
+	await page.evaluate(() => {
+		for (const animation of document.getAnimations()) {
+			if (!Number.isFinite(animation.effect.getComputedTiming().endTime)) {
+				animation.pause();
+				animation.currentTime = 0;
+			}
+		}
+	});
+}
+
+export async function captureComparison(page) {
+	await settleComparison(page);
+	try {
+		return await page.screenshot({
+			fullPage: false,
+			animations: "allow",
+			caret: "hide",
+		});
+	} catch (error) {
+		throw new ComparisonCaptureError(
+			`Comparison capture failed: ${error.message}`,
+		);
+	}
+}
+
 export async function drive(options) {
 	const { concept, map, tools, loaded, out } = options;
 	const selected = map.pages.find(
@@ -208,7 +289,11 @@ export async function drive(options) {
 				origin = server.origin;
 			}
 		}
-		browser = await ui.launchChromium(loaded);
+		// Partial raster reuse can round animated, fractional button edges differently
+		// after the animation has ended. Compare paints fresh tiles on both sides.
+		browser = options.comparisonCapture
+			? await ui.launchChromium(loaded, { args: ["--disable-partial-raster"] })
+			: await ui.launchChromium(loaded);
 		for (const feature of features)
 			for (const state of cases)
 				for (const language of languages)
@@ -267,15 +352,19 @@ export async function drive(options) {
 										timezoneId: "Asia/Riyadh",
 									});
 									current.page.setDefaultTimeout(5000);
+									if (options.comparisonCapture)
+										await current.page.addInitScript(observeComparisonFrames);
 									const save = async (suffix) => {
 										const name = `${stem}-${suffix}.png`;
 										await writeFile(
 											await outputFile(out, name),
-											await ui.screenshot(current.page, {
-												method: "playwright",
-												fullPage: false,
-												animations: "allow",
-											}),
+											options.comparisonCapture
+												? await captureComparison(current.page)
+												: await ui.screenshot(current.page, {
+														method: "playwright",
+														fullPage: false,
+														animations: "allow",
+													}),
 										);
 										entry.files.push(name);
 									};
@@ -371,8 +460,7 @@ export async function drive(options) {
 												await prove(current.page, absent.proof, language);
 											entry.status = "not-reachable";
 											entry.problems.push(
-												absent?.reason ||
-													`Feature path unavailable at ${cssWidth} CSS pixels by its recipe`,
+												`State/feature cannot be reached: ${absent?.reason || `Feature path unavailable at ${cssWidth} CSS pixels by its recipe`}`,
 											);
 											await save("after");
 										} else {
@@ -383,7 +471,7 @@ export async function drive(options) {
 													.length
 											)
 												throw new KeyboardReachError(
-													`Not reachable by keyboard: ${feature.id} has no key sequence; focus stopped at ${(await focusedElement(current.page)).selector}`,
+													`Not reachable by keyboard: ${feature.id} has no key sequence; focus stopped ${focusDescription(await focusedElement(current.page))}`,
 												);
 											const actionRecipe =
 												feature.fullMotion && motion === "reduce"
@@ -587,12 +675,18 @@ export async function drive(options) {
 										entry.status =
 											error instanceof KeyboardReachError
 												? "keyboard-unreachable"
-												: "fail";
-										entry.problems.push(error.message);
+												: error instanceof ComparisonCaptureError
+													? "problem"
+													: "fail";
+										entry.problems.push(
+											error instanceof KeyboardReachError
+												? `Pointer feature unreachable by keyboard: ${error.message}`
+												: error.message,
+										);
 										if (input === "keyboard") {
 											entry.finalFocus = await focusedElement(current.page);
 											entry.problems.push(
-												`Keyboard focus stopped at ${entry.finalFocus.selector} (${entry.finalFocus.text})`,
+												`Keyboard focus stopped ${focusDescription(entry.finalFocus)}`,
 											);
 										}
 										try {
@@ -658,7 +752,7 @@ export async function drive(options) {
 		const hasFindings = failed.length || keyboardUnreachable.length;
 		if (!options.quiet)
 			console.log(
-				`DRIVE ${hasFindings ? "FAIL" : "PASS"}: ${manifest.items.length} items; ${manifest.items.filter((i) => i.status === "not-reachable").length} not reachable; ${keyboardUnreachable.length} keyboard unreachable${keyboardUnreachable.length ? ` (${keyboardUnreachable.map((item) => `${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport}`).join(", ")})` : ""}; ${failed.length} problems; evidence ${out}/manifest.json`,
+				`DRIVE ${hasFindings ? "FAIL" : "PASS"}: ${manifest.items.length} items; ${manifest.items.filter((i) => i.status === "not-reachable").length} state/feature unavailable by recipe (cannot be reached); ${keyboardUnreachable.length} pointer feature unreachable by keyboard${keyboardUnreachable.length ? ` (${keyboardUnreachable.map((item) => `${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport}`).join(", ")})` : ""}; ${failed.length} problems; evidence ${out}/manifest.json`,
 			);
 		if (hasFindings)
 			throw new (options.quiet ? Error : ReportedFailure)(
