@@ -658,3 +658,18 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Next:** `codex-midmotion-compare-fix.md` (`07c5a87f`, level xhigh): not held only when frames vary between two
   captures, every moment the real defect broke caught, the noise floor on every page, T6's matrix, and F126 without
   changing the page.
+
+## Evaluation: a blind review of the brief before launch (2026-10-11, the user agreed to the trial)
+
+- **Question:** would a fresh reviewer, asked only "how could every outcome be met as written while the goal fails?",
+  have caught the two brief-caused failures of the day (midmotion-compare, daily-files) without false alarms on a brief
+  that held (press-hook-2)? Scoring and the adoption rule were written before any run, in the grader folder.
+- **Arms:** Sonnet (`sonnet-researcher`, high) and Codex (gpt-6.1-sol, high, read-only) on the three briefs alone;
+  then Codex with each brief's cited sources as they were at its launch, one run per brief.
+- **Result:** all three arms caught midmotion-compare's loophole (the not-held result could absorb real regressions;
+  each proposed requiring proof from the frames, the repair's own fix) and none caught daily-files' (no limit that the
+  other pages' moments still run, which needed knowing that compare sees settled frames and that shared scripts add
+  classes at runtime). On the control each arm gave four readings of five worth acting on.
+- **Decision (coordinator, by the fixed rule):** no pre-launch review step. It is reconsidered if another failure of
+  the allowance kind recurs (agent-environment DECISIONS item 20); the moments limit is now carried by the timeline
+  compare in every refactor brief (DECISIONS 45).
