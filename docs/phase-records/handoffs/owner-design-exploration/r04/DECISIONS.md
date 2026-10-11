@@ -503,6 +503,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       confirmed on seeked frames, MOT-1 suspect; a designer if real), the dialogs' parts splitting under a stall, the
       Retry's leftover focus ring, OWN-C9's stale focus-ring rule and the rail's focus ring on Access. What belongs to
       one page (Reports' `#fig-avg` card, fix-3's findings, Access's N1-N7) stays with Next steps 4 and 5 after Settings.
+      The user agreed («لا ما عندي اعتراض»).
+    - This file stays as it is until the Owner work closes; then its built items shrink to their standing rules as
+      they are carried into the ADR (the user agreed, «ممتاز اي اتفق معك»).
 
 ## How this milestone's rounds run
 
