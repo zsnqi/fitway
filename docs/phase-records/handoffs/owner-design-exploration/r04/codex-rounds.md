@@ -504,3 +504,35 @@ checks live outside the repository and never appear here or in a brief. One line
   - W7 passes: both worktrees are clean.
 - **Failure cause:** none in the result. Codex's "unproven" rows came from its own capture noise and from recipes
   without error-state proofs (the review's low, still open).
+
+## recipe-proofs: `directions/briefs/codex-recipe-proofs.md` on the build branch, result `e097d82c` (level high)
+
+- **Set-up:** the first round after the environment phase, before Daily's own files (DECISIONS 44). It adds observable
+  state proofs for the 22 feature states the last self-compare reported as capture problems (F123, F124) and repairs
+  `tuner-control-nowHot` (F125). Held-out rows V1-V7 are in `D:/fitway-grader/owner-r04/recipe-proofs-heldout.md`.
+- **Brief rows, as Codex graded them:** P2, P3, L2 and L3 pass. P1 fails: 21 of 22 pass, and `records-retry` fails on
+  the phone, where Access has no records card by design (`access.css:45-48`); the `--states all` compare also showed
+  switch values no recipe proves. Codex reported L1 as failing because it measured the compare; L1 as written (the
+  diff touches only the recipe file) passes. P3's cause was the recipe: Home then one ArrowUp returned to the value
+  the page starts with.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-recipe-proofs-grade/`):
+  - V1 passes: with Access `fail=1`, Activity `older=fail` and Reports `export=fail` planted to do nothing, each
+    feature fails on its feature proof; the clean copy passes.
+  - V2 was not run: ten of the new state proofs read the address the CLI typed, so they fail at the default state by
+    construction; T4 of the next round grades them instead.
+  - V3 passes: the 22 states pass over `file://`.
+  - V4 is partial: touch at phone passes 21 of 22 (`records-retry`, the designed absence); keyboard at desktop passes
+    20 of 22, and the address-opened `range` and `export` dialogs report KEYBOARD-UNREACHABLE because a feature with
+    no actions has no key sequence (F132).
+  - V5 passes: the tablet self-compare is 147 equal, 15 not reachable, 0 problems.
+  - V6 passes for the phone with touch; its planted disconnect was not run.
+  - V7 passes: only `verification-recipes.json` changed; both worktrees are clean.
+- **The diff, read by the coordinator:** ten state proofs read `location` (scenario switches such as `fail`, `hold`,
+  `refuse`, `older`, `refresh`, `export`, whose effect shows only after an action); their features' proofs check the
+  visible result, which is what V1 caught. The CLI asks for a proof before the action, so a scenario has nothing else
+  to show (F131).
+- **Failure cause: the brief.** P1 forbade `NOT-REACHABLE` for any of the 22, which the phone's design contradicts
+  (B8: not literally reachable), and its `--states all` compare was never run on the base (B7), so about 60 unproved
+  switch values surfaced only in the round (F134). Codex reported both instead of working around them.
+- **Next:** `codex-recipe-proofs-2.md` (`5fa6db88`, held-out rows T1-T5) proves every page switch value, states the
+  phone's designed absence, and holds address reads to scenarios only.
