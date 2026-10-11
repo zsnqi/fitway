@@ -7,6 +7,13 @@ and a brief that held: only `max` caught both failures, in two runs of two, with
 (`docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`, "Evaluation: a blind review of the brief
 before launch").
 
+The coordinator records each reading's disposition (closed, or left open and why) in the round's record in
+`codex-rounds.md`, and at grading notes whether a brief-caused failure was a reading the review returned. Readings that
+keep coming back move into the checklist of `codex.md` (B12), so briefs start closed. Until the launch command runs
+the review itself (planned with the verify-fitway round before Settings), the coordinator starts it in the background
+while writing the held-out rows. The review runs at `max`; the round itself keeps the level its task calls for
+(`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation").
+
 Run it from an empty folder outside every git tree, with a copy of the brief as `brief.md` and the prompt below as
 `prompt.md`:
 

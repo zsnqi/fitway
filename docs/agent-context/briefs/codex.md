@@ -48,7 +48,7 @@ SHA; anything you could not do.
 
 ## Coordinator checklist (delete before launch)
 
-The brief rules B1-B11 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
+The brief rules B1-B12 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
 (`docs/phase-records/handoffs/agent-environment/codex-rounds.md`).
 
 - [ ] B1. Every supported way to open and run the artifact is named (HTTP, `file://`, sizes, reduced motion), with
@@ -74,7 +74,14 @@ The brief rules B1-B11 live here. Codex follows a brief to the letter, so most f
       round deletes or renames, `git grep` its path in the open records (resume files, briefs, packets) first, and
       fix them before launch or name them as in scope (r03 round 3).
 - [ ] B11. The pre-launch review in `docs/agent-context/briefs/REVIEW.md` ran on this brief, and each real reading it
-      returned is closed in the brief or recorded as left open, with the reason. (user, 2026-10-11, after the trial)
+      returned is closed in the brief or recorded as left open, with the reason. A reading is closed by sharpening the
+      outcome it exploits, not by adding rows or an approach (B4, B6); a brief that needs many new rows is split.
+      (user, 2026-10-11, after the trial)
+- [ ] B12. The readings the review keeps returning are closed before it runs (user, 2026-10-11; from the trial's runs):
+      - a new check is run by a command that always runs (the fast ladder or the launch), not only by hand;
+      - a list the result is measured over (recipes, features, tests) cannot shrink: its base count is an outcome;
+      - a movement checked at fixed times states what happens between them, or the times' spacing bound;
+      - a behaviour on touch is not proved by mouse frames: name what proves it (a device, or a stated limit).
 - [ ] A test suite that needs a clean tree is run after the commit.
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.

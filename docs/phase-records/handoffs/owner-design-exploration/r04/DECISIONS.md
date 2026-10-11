@@ -492,7 +492,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     صفحة الاعدادات صح؟», while the mid-motion compare round ran with F119, F122, F126 and F130). Before Settings starts:
     - F135 goes with the shared-files rounds (item 45), as planned.
     - F131, F132, F136 and F137 get one verify-fitway round after the shared files (the user declined a separate round
-      for F137 alone).
+      for F137 alone). With it, `pnpm codex:round` runs the pre-launch brief review itself (B11, Codex at max) and
+      launches only with each reading's disposition recorded (the user, «ما عندي اعتراض»).
     - F140: the byte-order mark is removed from the build branch's tracked `.impeccable/config.json` and the hook is
       checked to read it.
     - F138 is closed by item 46: the hook is the user's global setting, which agents never change (AGENTS.md); briefs
@@ -517,7 +518,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 3. **Codex** is GPT-6.1 Sol at the level the task calls for (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation";
    Eclipse defects are `high`), launched by the coordinator with `pnpm codex:round`
    (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
-   briefs follow the brief rules B1-B11 in the checklist of `docs/agent-context/briefs/codex.md`.
+   briefs follow the brief rules B1-B12 in the checklist of `docs/agent-context/briefs/codex.md`.
 4. **Verifiers** use the verify-fitway skill (`.agents/skills/verify-fitway/SKILL.md`), which holds the verifier
    rules G1-G4, and its CLI instead of their own scripts (agent-environment-r03 round 4, 2026-10-07).
 5. **Claude Design** is paused (2026-10-02). It stays available for open visual questions; its output is reference
