@@ -73,7 +73,7 @@ The brief rules B1-B12 live here. Codex follows a brief to the letter, so most f
       no text kept twice, and every live artifact the change can reach still passing (evaluation C3). For a file the
       round deletes or renames, `git grep` its path in the open records (resume files, briefs, packets) first, and
       fix them before launch or name them as in scope (r03 round 3).
-- [ ] B11. The `REVIEW.md` review ran; each real reading is closed as it says there or recorded as left open, with why.
+- [ ] B11. Launch runs the `REVIEW.md` review when absent (or with `--new-review`) and stops; record every reading as closed or left open with why, and the current brief SHA-256, in its `dispositions.md` before launching.
 - [ ] B12. The readings the review keeps returning (`REVIEW.md` §"Recurring readings") are closed before it runs.
 - [ ] A test suite that needs a clean tree is run after the commit.
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
