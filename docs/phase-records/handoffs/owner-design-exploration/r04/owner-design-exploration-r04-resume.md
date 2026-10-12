@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `906e9a51`, 2026-10-12 20:25 +03:00 (handoff to a new coordinator session; shared-frame measuring)
+- **As of:** `codex/owner-redesign-r04` at `3c5c311b`, 2026-10-12 22:05 +03:00 (handoff: shared-frame paused, vf-speed measuring)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-48), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -25,7 +25,7 @@
   run folder's `model-switch.md` records which events ran on which model.
 - **Measurements queue on one port pair** (the CLI accepts only 3176-3177), so rounds build in parallel and measure one
   at a time. Port exhaustion is not F137's cause (at most 739 of 16,384 dynamic ports in use, 2026-10-12).
-- **main** is at `1e437f94`. The discussion page for the user (Arabic, private):
+- **main** is at `3c5c311b`; the discussion page still needs today's update. The discussion page for the user (Arabic, private):
   https://claude.ai/artifact/88rd7XwoWHvnYhqbtxA1dm. access-reason-cap-r01 stays paused by the user.
 
 ## Running now
@@ -35,17 +35,18 @@
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/codex-shared-frame-continue.md`
   (`56ed8da6`, xhigh; the round's brief `codex-shared-frame.md` beside it). The full matrices found and fixed
   four real omissions of the move (`d5c0d101`, `1a87ea72`, `8a0f269b`, `c609022b`) and F1's last copies
-  (`8ee417a6`, `4352181f`); at about 20:00 it froze the source and reran F2 and F3 on it. It ends when
-  `last-message.md` is newer than `resume-after-limit.md` and its events stop. Its first run, the saved patch and the
+  (`8ee417a6`, `4352181f`). **Paused at 21:58** with the user's agreement, worktree clean at `4352181f`: 21 of its
+  183 queue jobs done (F3 Index: 172 equal at rest; timeline 308 equal, 0 different, 26 NOT-HELD), 162 pending in
+  its own queue scripts in `D:/fitway-temp/owner-r04-shared-frame/`. It resumes after vf-speed and vf-hold merge, so
+  the rest runs on the faster CLI (its compares call the CLI in this worktree). Its first run, the saved patch and the
   model switches: `model-switch.md` there. B11: `D:/fitway-temp/brief-review/shared-frame-*`; base check
   `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt`; held-out rows SH1-SH10
   `D:/fitway-grader/owner-r04/shared-frame-heldout.md`.
 - **vf-speed** (S1 affected pages, S2 kept base frames, S3 F137) and **vf-hold** (H1 F143, H2 F144): briefs in
   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` (`codex-vf-speed.md`, `codex-vf-hold.md`), xhigh,
   worktrees D:/Projects/fitway-worktrees/owner-r04-vf-speed and owner-r04-vf-hold (same-named branches, pushed). Code
-  and CI-safe tests are done and CI is green (`bdacf8c1`, `452030fb`); their live measurements were not run, because
-  each waits for `D:/fitway-temp/owner-r04-ports/free-for-<round>.txt`. Their turns have ended: each is resumed with
-  a message to run its measurements once its file exists. Run folders `D:/fitway-temp/codex-round-vf-speed-1` and
+  and CI-safe tests are done and CI is green (`bdacf8c1`, `452030fb`). **vf-speed is measuring since 21:59** (ports file written,
+  `resume-measure-1.md`, on `4352181f` as the shared-frame result); vf-hold waits for `free-for-vf-hold.txt`. Run folders `D:/fitway-temp/codex-round-vf-speed-1` and
   `codex-round-vf-hold-1`; B11 in `D:/fitway-temp/brief-review/vf-speed-1/` and `D:/fitway-temp/brief-review/vf-hold-1/`.
   vf-hold's report proposes lines for SKILL.md §"Compare" (the coordinator adds them at merge).
 - **Prepared:** the tool digest `D:/fitway-temp/verify-fitway-round-prep/REPORT.md` (with the port measurement); the
@@ -58,11 +59,13 @@ The user (2026-10-12): the rounds after the current Codex run go to a new coordi
 accounts are theirs. The order they agreed: finish shared-frame, then vf-speed, then the parallel-compare round, then
 `reports.css` and the shared lows.
 
-1. **When shared-frame ends:** write `D:/fitway-temp/owner-r04-ports/shared-frame-result.txt` (its result SHA), grade it
-   on SH1-SH10 and GH7 with the merged CLI, record both runs, the model switches and every B11 disposition in
-   `codex-rounds.md`; on a pass push the build branch and report its close to the user in a line (DECISIONS 45).
-2. **vf-speed:** write `free-for-vf-speed.txt` once no other compare runs, resume its thread to run S1-S3 and L1, grade,
-   merge. Then vf-hold the same way (`free-for-vf-hold.txt`).
+1. **vf-speed** ends when its `last-message.md` is newer than `resume-measure-1.md`: grade it (rerun S1's
+   selections, S2's second run reusing every baseline capture, one S3 full compare), merge it, wait for CI.
+2. **vf-hold:** write `free-for-vf-hold.txt`, resume its thread with a measurement message like vf-speed's, grade, merge
+   (adding its proposed SKILL.md §"Compare" lines). Then **resume shared-frame** (`resume-any.sh`; tell it the CLI
+   changed and to finish its queue on it), and grade it on SH1-SH10 and GH7 with the merged CLI; record both runs, the
+   pause and the model switches in `codex-rounds.md`; on a pass push the build branch and tell the user in a line.
+   If vf-speed or vf-hold fails its grading, resume shared-frame at once on the current CLI.
 3. **The parallel-compare round** (DECISIONS 48): a port pair per round and one compare over several workers.
 4. **`reports.css` split** on the shared-frame result, then **the shared lows**, F140, and F131, F132, F136, F126.
 5. **Then Settings**, Operations and Monitoring (rounds items 6 and 8-11 in DECISIONS); later Daily and Reports' last
@@ -97,7 +100,7 @@ Nothing.
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `906e9a51`).
+  commit that adds this text (parent `3c5c311b`).
 - The merged round worktrees owner-r04-midmotion and owner-r04-gardener and their branches were removed on 2026-10-12
   (links checked first; none pointed outside them).
 - Grading evidence: `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
