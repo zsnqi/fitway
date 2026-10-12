@@ -62,7 +62,7 @@
   **vf-hold** (H1 F143, H2 F144; brief `7f56ac04`), briefs in `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/`,, both xhigh from `b7331e09` in worktrees
   D:/Projects/fitway-worktrees/owner-r04-vf-speed and owner-r04-vf-hold (same-named branches), run folders
   `D:/fitway-temp/codex-round-vf-speed-1` (thread `01a130a2-8f9d-7c81-83af-d3c9932d621a`) and `codex-round-vf-hold-1`
-  (`01a130aa-626f-7e63-9075-525b57c0f51c`); B11 in `D:/fitway-temp/brief-review/vf-speed-1/` and `vf-hold-1/`. Each
+  (`01a130aa-626f-7e63-9075-525b57c0f51c`); B11 in `D:/fitway-temp/brief-review/vf-speed-1/` and `D:/fitway-temp/brief-review/vf-hold-1/`. Each
   measures only once `D:/fitway-temp/owner-r04-ports/free-for-<round>.txt` exists: vf-speed after shared-frame, vf-hold
   after vf-speed. Digest: `D:/fitway-temp/verify-fitway-round-prep/REPORT.md` (F131, F132, F136, F126 come after).
 - **Done in this session:** F145 (`b7331e09`, a 120 s per-test timeout and every verify-fitway test file run; the
