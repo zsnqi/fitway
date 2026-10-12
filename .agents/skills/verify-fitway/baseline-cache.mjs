@@ -102,19 +102,40 @@ export class BaselineCache {
 		);
 		const browserFolder = dirname(executableFolder);
 		const revision = /^chromium-(\d+)$/.exec(basename(browserFolder))?.[1];
-		// Playwright's headed path is public, but headless comparisons use the
-		// separately installed shell of the same Chromium revision. Hash both.
+		const executableIdentity = (root, target) => {
+			const match = filesIn(root).find(
+				(file) => resolve(root, file.file) === resolve(target),
+			);
+			if (!match) throw new Error(`Browser executable missing: ${target}`);
+			return [target, hash(match.bytes)];
+		};
+		// Playwright's headed path is public, but headless comparisons use
+		// the separately installed shell of the same Chromium revision.
+		// Hash the two build binaries rather than generated files beside them.
 		const browser = [
-			...filesIn(executableFolder),
+			executableIdentity(
+				executableFolder,
+				this.setup.loaded.pw.chromium.executablePath(),
+			),
 			...(revision
-				? filesIn(
-						resolve(
-							dirname(browserFolder),
-							`chromium_headless_shell-${revision}`,
-						),
-					)
+				? [
+						(() => {
+							const root = resolve(
+								dirname(browserFolder),
+								`chromium_headless_shell-${revision}`,
+							);
+							return executableIdentity(
+								root,
+								resolve(
+									root,
+									"chrome-headless-shell-win64",
+									"chrome-headless-shell.exe",
+								),
+							);
+						})(),
+					]
 				: []),
-		].map((f) => [f.file, hash(f.bytes)]);
+		];
 		const probes = filesIn(resolve(this.setup.concept, "tools/probes")).map(
 			(f) => [f.file, hash(f.bytes)],
 		);
