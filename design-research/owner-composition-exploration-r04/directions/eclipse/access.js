@@ -323,6 +323,7 @@
     },
   };
   const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
+  const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
 
   /* ------------------------------------------------------------ the gym's access (synthetic, from the contract)
    * Owners: the signed-in owner «فهد», «نورة», and a deactivated owner whose name was typed in Latin letters. A name is
