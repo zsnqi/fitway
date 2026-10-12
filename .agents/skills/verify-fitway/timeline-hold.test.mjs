@@ -1,340 +1,420 @@
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
-import {
-	mkdir,
-	mkdtemp,
-	readdir,
-	readFile,
-	rm,
-	writeFile,
-} from "node:fs/promises";
-import { createServer } from "node:http";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
-import { fileURLToPath } from "node:url";
-import { repository } from "./discover.mjs";
+import { createContext, runInContext } from "node:vm";
+import { compare } from "./compare.mjs";
 import { verificationTest } from "./skip-gate.mjs";
+import { captureTimeline, observeTimeline } from "./timeline.mjs";
 
 const test = verificationTest(nodeTest);
-const source = fileURLToPath(new URL("./", import.meta.url));
 let scratch;
-let cli;
-let ports;
 let serial = 0;
-let stallServer;
-let stallUrl;
-
-async function port() {
-	const server = createServer();
-	await new Promise((done) => server.listen(0, "127.0.0.1", done));
-	const value = server.address().port;
-	await new Promise((done) => server.close(done));
-	assert.ok(value >= 49152, `Unsafe fixture port ${value}`);
-	return value;
-}
-
 before(async () => {
-	scratch = await mkdtemp(resolve(tmpdir(), "verify-fitway-hold-"));
-	const folder = resolve(scratch, "cli");
-	await mkdir(folder);
-	ports = [await port(), await port()];
-	while (ports[0] === ports[1]) ports[1] = await port();
-	for (const name of await readdir(source)) {
-		if (!name.endsWith(".mjs") || name.endsWith(".test.mjs")) continue;
-		let contents = await readFile(resolve(source, name), "utf8");
-		// Run production comparison, drive and capture in a real CLI subprocess.
-		// Only dependency lookup and this disposable copy's port guard change:
-		// concurrent tests must never bind the coordinator's preview ports.
-		if (name === "core.mjs") {
-			assert.ok(contents.includes("[3176, 3177].includes(Number(port))"));
-			contents = contents.replace(
-				"[3176, 3177].includes(Number(port))",
-				`${JSON.stringify(ports)}.includes(Number(port))`,
-			);
-		}
-		if (name === "discover.mjs") {
-			assert.ok(
-				contents.includes(
-					'fileURLToPath(new URL("../../../", import.meta.url))',
-				),
-			);
-			contents = contents.replace(
-				'fileURLToPath(new URL("../../../", import.meta.url))',
-				JSON.stringify(repository),
-			);
-		}
-		await writeFile(resolve(folder, name), contents);
-	}
-	cli = resolve(folder, "cli.mjs");
-	// A native request delays the download action's first seek beyond a short
-	// release, while the page's own clocks remain held. This reproduces effects
-	// that disappear from getAnimations() before a late capture can discover them.
-	stallServer = createServer((_request, response) => {
-		setTimeout(() => {
-			response.writeHead(200, { "Access-Control-Allow-Origin": "*" });
-			response.end("ready");
-		}, 240);
-	});
-	await new Promise((done) => stallServer.listen(0, "127.0.0.1", done));
-	assert.ok(stallServer.address().port >= 49152);
-	stallUrl = `http://127.0.0.1:${stallServer.address().port}/stall`;
+	scratch = await mkdtemp(resolve(tmpdir(), "verify-fitway-hold-unit-"));
 });
-
 after(async () => {
-	if (stallServer) await new Promise((done) => stallServer.close(done));
 	if (scratch) await rm(scratch, { recursive: true, force: true });
 });
 
-async function fixture(name, { css = "", js = "", features = [] }) {
-	const folder = resolve(scratch, name);
-	await mkdir(resolve(folder, "tools/probes"), { recursive: true });
-	await writeFile(
-		resolve(folder, "index.html"),
-		`<!doctype html><html lang="en" dir="ltr"><head><style>
-body{margin:0;background:#222;color:white}button{width:160px;height:60px;margin:30px;border:0;background:#555;color:white}
-${css}</style></head><body><main>Clock and release fixture</main><button id="control">Press</button><script src="app.js"></script></body></html>`,
-	);
-	await writeFile(
-		resolve(folder, "app.js"),
-		`${js}\nwindow.__fixture={ready:true};`,
-	);
-	await writeFile(
-		resolve(folder, "verification-recipes.json"),
-		JSON.stringify({
-			schema: 1,
-			pages: {
-				"index.html": {
-					features,
-					states: [
-						{
-							when: {},
-							shows: "Fixture",
-							proof: { selector: "main", visible: true },
-						},
-					],
-				},
+// Browser-boundary contract, following cli.test.mjs. These synthetic RGBA samples
+// are not browser screenshots or CSS integration evidence. Production observation,
+// scheduling, capture and comparison run unchanged; actual CSS proof is external.
+function fixture() {
+	let wall = 10000;
+	let nextId = 0;
+	const nativeTasks = new Map();
+	const effects = [];
+	class Event {
+		constructor(type) {
+			this.type = type;
+			this.wallStamp = wall;
+		}
+		get timeStamp() {
+			return this.wallStamp;
+		}
+	}
+	class EventTarget {
+		listeners = new Map();
+		nativeHandlers = new Map();
+		addEventListener(type, fn) {
+			const entries = this.listeners.get(type) || [];
+			if (!entries.includes(fn)) entries.push(fn);
+			this.listeners.set(type, entries);
+		}
+		removeEventListener(type, fn) {
+			this.listeners.set(
+				type,
+				(this.listeners.get(type) || []).filter((entry) => entry !== fn),
+			);
+		}
+		deliver(event) {
+			for (const fn of [...(this.listeners.get(event.type) || [])])
+				if (typeof fn === "function") fn.call(this, event);
+				else fn.handleEvent(event);
+			this.nativeHandlers.get(`on${event.type}`)?.call(this, event);
+		}
+		dispatchEvent(event) {
+			if (this instanceof Element) {
+				window.deliver(event);
+				document.deliver(event);
+			}
+			this.deliver(event);
+		}
+	}
+	const handler = (prototype, name) =>
+		Object.defineProperty(prototype, name, {
+			configurable: true,
+			get() {
+				return this.nativeHandlers.get(name) || null;
 			},
-		}),
+			set(value) {
+				this.nativeHandlers.set(name, value);
+			},
+		});
+	class Animation extends EventTarget {
+		constructor(duration, intensity = 200) {
+			super();
+			Object.assign(this, {
+				duration,
+				intensity,
+				startedAt: wall,
+				state: "running",
+				phase: 0,
+			});
+			this.effect = { getComputedTiming: () => ({ endTime: duration }) };
+		}
+		get currentTime() {
+			return this.state === "running" ? wall - this.startedAt : this.phase;
+		}
+		set currentTime(value) {
+			this.phase = value;
+		}
+		get playState() {
+			return this.currentTime >= this.duration ? "finished" : this.state;
+		}
+		pause() {
+			this.phase = this.currentTime;
+			this.state = "paused";
+		}
+		play() {
+			this.startedAt = wall - this.phase;
+			this.state = "running";
+		}
+		finish() {
+			this.phase = this.duration;
+			this.state = "finished";
+		}
+	}
+	class Element extends EventTarget {
+		animate(_frames, options) {
+			const effect = new Animation(options.duration, options.intensity);
+			effects.push(effect);
+			return effect;
+		}
+	}
+	class Document extends EventTarget {
+		getAnimations() {
+			return effects.filter((effect) => effect.playState !== "finished");
+		}
+	}
+	class Window extends EventTarget {}
+	class XMLHttpRequest extends EventTarget {}
+	class MessagePort extends EventTarget {}
+	for (const name of ["onkeyup", "onkeydown", "ontransitionend"])
+		handler(Element.prototype, name);
+	handler(XMLHttpRequest.prototype, "onload");
+	handler(MessagePort.prototype, "onmessage");
+	class MutationObserver {
+		observe() {}
+		takeRecords() {
+			return [];
+		}
+	}
+	const document = new Document();
+	const window = new Window();
+	const scheduleNative = (kind, fn, args = []) => {
+		const id = ++nextId;
+		nativeTasks.set(id, { kind, fn, args });
+		return id;
+	};
+	Object.assign(window, {
+		Element,
+		HTMLElement: Element,
+		Document,
+		Window,
+		XMLHttpRequest,
+		MessagePort,
+		Animation,
+		setTimeout: (fn, _delay, ...args) => scheduleNative("timer", fn, args),
+		setInterval: (fn, _delay, ...args) => scheduleNative("interval", fn, args),
+		requestAnimationFrame: (fn) => scheduleNative("frame", fn),
+		clearTimeout: (id) => nativeTasks.delete(id),
+		clearInterval: (id) => nativeTasks.delete(id),
+		cancelAnimationFrame: (id) => nativeTasks.delete(id),
+		queueMicrotask,
+	});
+	const context = createContext({
+		window,
+		document,
+		Event,
+		EventTarget,
+		Element,
+		Animation,
+		MutationObserver,
+		URL,
+		queueMicrotask,
+		performance: { now: () => wall },
+		nativeWall: () => wall,
+		control: new Element(),
+		request: new XMLHttpRequest(),
+		port: new MessagePort(),
+	});
+	// A separate native Date in this VM realm reads fixture wall, not logical time.
+	runInContext(
+		`const RealDate=Date;
+function NativeDate(...args){if(!new.target)return new RealDate(100000+nativeWall()).toString();return Reflect.construct(RealDate,args.length?args:[100000+nativeWall()],new.target)}
+Object.setPrototypeOf(NativeDate,RealDate);NativeDate.prototype=RealDate.prototype;NativeDate.now=()=>100000+nativeWall();globalThis.Date=NativeDate;`,
+		context,
 	);
-	await writeFile(
-		resolve(folder, "tools/probes/lib.mjs"),
-		"export const introSettled=async()=>{};export const overflowProbe=()=>({hScroll:false});",
-	);
-	await writeFile(
-		resolve(folder, "tools/probes/geom.mjs"),
-		"export const geometryProbe=()=>({});",
-	);
-	await writeFile(
-		resolve(folder, "tools/probes/a11y.mjs"),
-		"export const accessibilityProbe=async()=>({});",
-	);
-	return folder;
+	const evaluate = (fn, arg) => {
+		context.argument = arg;
+		return runInContext(`(${fn.toString()})(argument)`, context);
+	};
+	const author = (script) =>
+		runInContext(script, context, { filename: "http://fixture.test/app.js" });
+	evaluate(observeTimeline);
+	let pixel = () => 0;
+	const page = {
+		evaluate,
+		screenshot: async () => Buffer.from([Math.round(pixel()), 0, 0, 255]),
+	};
+	return {
+		page,
+		evaluate,
+		author,
+		window,
+		render(fn) {
+			pixel = fn;
+		},
+		advanceWall(ms) {
+			wall += ms;
+		},
+		async event(type) {
+			evaluate((name) => control.dispatchEvent(new Event(name)), type);
+			await Promise.resolve();
+		},
+		async arm() {
+			window.__verifyFitwayTimeline.arm("click:#control", "mouse");
+			await this.event("mousedown");
+		},
+		startRelease(duration) {
+			// Native effects expire in wall time unless paused at the release boundary.
+			const effect = new Animation(duration);
+			effects.push(effect);
+			pixel = () =>
+				effect.intensity *
+				Math.max(0, 1 - effect.currentTime / effect.duration);
+			return effect;
+		},
+		nativeFrame() {
+			const entry = [...nativeTasks].find(([, task]) => task.kind === "frame");
+			assert.ok(entry, "startup scheduled a native frame");
+			nativeTasks.delete(entry[0]);
+			entry[1].fn(wall);
+		},
+	};
 }
 
-async function compare(build, baseline, times, feature = "all") {
+async function compared(makeFixture, times) {
 	const out = resolve(scratch, `comparison-${++serial}`);
-	const selectedFeature =
-		feature === "all"
-			? JSON.parse(
-					await readFile(resolve(build, "verification-recipes.json"), "utf8"),
-				)
-					.pages["index.html"].features.map((entry) => entry.id)
-					.join(",")
-			: feature;
-	const args = [
-		cli,
-		"compare",
-		"--concept",
-		build,
-		"--baseline",
-		baseline,
-		"--page",
-		"index.html",
-		"--feature",
-		selectedFeature,
-		"--languages",
-		"en",
-		"--sizes",
-		"desktop",
-		"--inputs",
-		"mouse",
-		"--motions",
-		"full",
-		"--transports",
-		"http",
-		"--port",
-		String(ports[0]),
-		"--baseline-port",
-		String(ports[1]),
-		"--timeline",
-		"--timeline-times",
-		times,
-		"--out",
-		out,
-	];
-	const result = await new Promise((done, reject) => {
-		const child = spawn(process.execPath, args, {
-			windowsHide: true,
-			stdio: ["ignore", "pipe", "pipe"],
-		});
-		let output = "";
-		let timedOut = false;
-		const deadline = setTimeout(() => {
-			timedOut = true;
-			if (process.platform === "win32") {
-				// Kill only this test's owned subtree, including a blocked browser.
-				spawn("taskkill", ["/PID", String(child.pid), "/T", "/F"], {
-					windowsHide: true,
-					stdio: "ignore",
-				}).on("error", () => child.kill());
-			} else child.kill("SIGTERM");
-		}, 30000);
-		child.stdout.on("data", (data) => {
-			output += data;
-		});
-		child.stderr.on("data", (data) => {
-			output += data;
-		});
-		child.on("error", (error) => {
-			clearTimeout(deadline);
-			reject(error);
-		});
-		child.on("close", (code) => {
-			clearTimeout(deadline);
-			done({ code, output, timedOut });
-		});
-	});
-	assert.equal(
-		result.timedOut,
-		false,
-		`Fixture CLI exceeded 30000 ms\n${result.output}`,
+	const captures = { build: 0, base: 0 };
+	let failure;
+	const lines = [];
+	const log = console.log;
+	console.log = (...args) => lines.push(args.join(" "));
+	try {
+		await compare(
+			{
+				out,
+				concept: "build",
+				baseline: "base",
+				page: "fixture.html",
+				"timeline-times": times,
+			},
+			{
+				// No socket listeners, Chromium, ui-forensics, Python or external processes.
+				checkPort: async () => {},
+				doctor: async (options) => ({
+					concept: options.concept,
+					tools: scratch,
+					map: { pages: [{ page: "fixture.html" }] },
+				}),
+				child: async (_command, args) => {
+					const [a, b] = await Promise.all([
+						readFile(args[1]),
+						readFile(args[2]),
+					]);
+					assert.equal(a.length, 4);
+					assert.equal(b.length, 4);
+					await writeFile(
+						args[args.indexOf("--json") + 1],
+						JSON.stringify({
+							identical: a.equals(b),
+							bbox: a.equals(b) ? null : [0, 0, 1, 1],
+							changedPixels: a.equals(b) ? 0 : 1,
+							images: {},
+						}),
+					);
+				},
+				captureItems: async (options, setup, folder) => {
+					const side = setup.concept;
+					const current = await makeFixture(side, ++captures[side]);
+					const timeline = await captureTimeline(current.page, {
+						out: folder,
+						stem: "fixture",
+						times: options["timeline-times"].split(",").map(Number),
+					});
+					current.verify?.();
+					await writeFile(
+						resolve(folder, "settled.png"),
+						Buffer.from([0, 0, 0, 255]),
+					);
+					return {
+						items: [
+							{
+								feature: "fixture.html/hold",
+								state: "default",
+								language: "en",
+								size: "desktop",
+								input: "mouse",
+								motion: "full",
+								transport: "http",
+								colors: "normal",
+								status: "pass",
+								query: {},
+								problems: [],
+								files: ["settled.png"],
+								timeline,
+							},
+						],
+					};
+				},
+			},
+		);
+	} catch (error) {
+		failure = error;
+	} finally {
+		console.log = log;
+	}
+	if (failure && !/differences or problems/.test(failure.message))
+		throw failure;
+	const summary = lines.findLast((line) =>
+		/^TIMELINE (PASS|FAIL|INCOMPLETE):/.test(line),
 	);
-	assert.doesNotMatch(
-		result.output,
-		/COMPARE PROBLEM|TIMELINE PROBLEM/,
-		result.output,
-	);
-	assert.match(
-		result.output,
-		/COMPARE (?:PASS|FAIL|INCOMPLETE):/,
-		result.output,
-	);
+	if (summary) console.log(summary);
 	const report = JSON.parse(
 		await readFile(resolve(out, "comparison.json"), "utf8"),
 	);
-	return { ...result, report };
+	assert.equal(report.timelineSummary.problem, 0, failure?.stack);
+	assert.equal(report.items[0].result, "equal", failure?.stack);
+	return { report, failure, lines };
 }
-
 function different(result) {
-	assert.equal(result.code, 1, result.output);
-	assert.match(result.output, /TIMELINE DIFFERENT:/);
-	assert.equal(result.report.timelineSummary["not-held"], 0, result.output);
-	assert.ok(result.report.timelineSummary.different > 0, result.output);
-	for (const item of result.report.items)
-		assert.ok(
-			item.timeline.samples.some((sample) => sample.result === "different"),
-			`${item.feature} never differed\n${result.output}`,
-		);
+	assert.match(result.failure?.message || "", /differences or problems/);
+	assert.ok(
+		result.lines.some((line) => line.startsWith("TIMELINE DIFFERENT:")),
+	);
+	assert.ok(result.report.timelineSummary.different > 0);
+	assert.equal(result.report.timelineSummary["not-held"], 0);
 }
 
-test("CLI timeline compares an ordinary and registered-property press release mid-fade", {
-	timeout: 120000,
-}, async () => {
-	const features = [
-		{ id: "tap", actions: ["download:#control"], proof: { ready: true } },
-		{
-			id: "release",
-			actions: ["hold:#control", "release"],
-			proof: { ready: true },
-		},
-	];
-	for (const registered of [false, true]) {
-		const css = (duration) =>
-			registered
-				? `@property --light{syntax:"<color>";inherits:false;initial-value:transparent}#control{box-shadow:inset 0 0 0 100vmax var(--light);transition:--light ${duration}ms linear}#control:active{--light:rgba(255,255,255,.8);transition-duration:0s}`
-				: `#control{box-shadow:inset 0 0 0 100vmax transparent;transition:box-shadow ${duration}ms linear}#control:active{box-shadow:inset 0 0 0 100vmax rgba(255,255,255,.8);transition-duration:0s}`;
-		const baseline = await fixture(`release-base-${registered}`, {
-			css: css(120),
-			js: `control.addEventListener('click',()=>{const request=new XMLHttpRequest();request.open('GET',${JSON.stringify(stallUrl)});request.onload=()=>{const link=document.createElement('a');link.href='data:text/plain,fixture';link.download='release.txt';link.click()};request.send();});`,
-			features,
-		});
-		const plant = await fixture(`release-plant-${registered}`, {
-			css: css(160),
-			js: `control.addEventListener('click',()=>{const request=new XMLHttpRequest();request.open('GET',${JSON.stringify(stallUrl)});request.onload=()=>{const link=document.createElement('a');link.href='data:text/plain,fixture';link.download='release.txt';link.click()};request.send();});`,
-			features,
-		});
-		const self = await compare(baseline, baseline, "61,141");
-		assert.equal(self.code, 0, self.output);
-		assert.equal(self.report.timelineSummary.equal, 4, self.output);
-		different(await compare(plant, baseline, "61,141"));
-	}
+test("release boundary holds an expiring native fade before a late capture", async () => {
+	const make = (planted) => async (side) => {
+		const current = fixture();
+		await current.arm();
+		current.startRelease(planted && side === "build" ? 160 : 120);
+		await current.event("mouseup");
+		current.advanceWall(250);
+		return current;
+	};
+	const self = await compared(make(false), "61,141");
+	assert.equal(self.failure, undefined);
+	assert.equal(self.report.timelineSummary.equal, 2);
+	different(await compared(make(true), "61,141"));
 });
-
 for (const clock of ["performance.now()", "Date.now()"])
-	test(`CLI timeline compares a moment timed from ${clock}`, {
-		timeout: 120000,
-	}, async () => {
-		const features = [
-			{ id: "timer", actions: ["activate:#control"], proof: { ready: true } },
-		];
-		const js = (duration) =>
-			`control.addEventListener('click',()=>{const start=${clock};function tick(){if(${clock}-start>=${duration}){control.style.background='#e60032'}else setTimeout(tick,20)}setTimeout(tick,20)});`;
-		const baseline = await fixture(`clock-base-${serial}`, {
-			js: js(400),
-			features,
-		});
-		const plant = await fixture(`clock-plant-${serial}`, {
-			js: js(560),
-			features,
-		});
-		const self = await compare(baseline, baseline, "1,450,650");
-		assert.equal(self.report.timelineSummary.equal, 3, self.output);
-		different(await compare(plant, baseline, "1,450,650"));
+	test(`held ${clock} makes a changed clock-timed moment DIFFERENT`, async () => {
+		const make = (planted) => async (side) => {
+			const current = fixture();
+			const duration = planted && side === "build" ? 560 : 400;
+			current.author(
+				`window.pixel=0;control.addEventListener('click',()=>{const start=${clock};function tick(){if(${clock}-start>=${duration})window.pixel=200;else window.setTimeout(tick,20)}window.setTimeout(tick,20)});`,
+			);
+			current.render(() => current.evaluate(() => window.pixel));
+			await current.arm();
+			await current.event("click");
+			return current;
+		};
+		const self = await compared(make(false), "1,450,650");
+		assert.equal(self.failure, undefined);
+		assert.equal(self.report.timelineSummary.equal, 3);
+		different(await compared(make(true), "1,450,650"));
 	});
-
-test("CLI timeline keeps startup, event, Date and frame clocks consistent", {
-	timeout: 120000,
-}, async () => {
-	const folder = await fixture("clock-consistency", {
-		js: `const first=performance.now();let coherent=first===0&&Date.now()===new Date().getTime()&&Date.now()===Math.floor(performance.timeOrigin+first);
-function check(t){const now=performance.now();coherent&&=Date.now()===new Date().getTime()&&Date.now()===Math.floor(performance.timeOrigin+now)&&(t===undefined||t===now)}
-requestAnimationFrame(t=>{check(t);window.started=true});
-let retained,delivered;control.onkeyup=e=>{retained=e;delivered=performance.now()};
-let loadEvent,loadAt,messageEvent,messageAt,inlineEvent,inlineAt;
-const request=new XMLHttpRequest();request.onload=e=>{loadEvent=e;loadAt=performance.now()};
-const channel=new MessageChannel();channel.port1.onmessage=e=>{messageEvent=e;messageAt=performance.now()};
-window.keepInline=e=>{inlineEvent=e;inlineAt=performance.now()};control.setAttribute('onkeydown','keepInline(event)');
-control.addEventListener('click',e=>{check(e.timeStamp);const at=e.timeStamp;requestAnimationFrame(t=>check(t));setTimeout(()=>{control.dispatchEvent(new Event('keyup'));request.dispatchEvent(new Event('load'));channel.port1.dispatchEvent(new MessageEvent('message'));control.dispatchEvent(new Event('keydown'))},20);setTimeout(()=>{coherent&&=e.timeStamp===at&&retained.timeStamp===delivered&&loadEvent.timeStamp===loadAt&&messageEvent.timeStamp===messageAt&&inlineEvent.timeStamp===inlineAt;check()},30)});
-window.checkClock=()=>coherent&&window.started;`,
-		features: [
-			{
-				id: "clock",
-				actions: ["activate:#control"],
-				proof: { expression: "window.checkClock()" },
-			},
-		],
-	});
-	const result = await compare(folder, folder, "1,21,41,101");
-	assert.equal(result.code, 0, result.output);
-	assert.equal(result.report.timelineSummary.equal, 4, result.output);
+test("startup, event properties, Date and frame callbacks share one page clock", async () => {
+	const result = await compared(async () => {
+		const current = fixture();
+		current.author(`window.coherent=performance.now()===0;
+function check(t){const now=performance.now();window.coherent&&=Date.now()===new Date().getTime()&&Date.now()===Math.floor(performance.timeOrigin+now)&&(t===undefined||t===now)}
+check();window.coherent&&=new Date(1234).getTime()===1234&&Date()===new Date().toString();
+window.requestAnimationFrame(t=>check(t));
+let events=[];control.onkeyup=e=>events.push([e,performance.now()]);request.onload=e=>events.push([e,performance.now()]);port.onmessage=e=>events.push([e,performance.now()]);
+control.nativeHandlers.set('onkeydown',e=>events.push([e,performance.now()]));
+control.addEventListener('click',e=>{check(e.timeStamp);window.requestAnimationFrame(t=>check(t));window.setTimeout(()=>{control.dispatchEvent(new Event('keyup'));request.dispatchEvent(new Event('load'));port.dispatchEvent(new Event('message'));control.dispatchEvent(new Event('keydown'))},20);window.setTimeout(()=>{window.coherent&&=events.length===4&&events.every(([event,at])=>event.timeStamp===at);check()},30)});`);
+		current.nativeFrame();
+		await current.arm();
+		await current.event("click");
+		current.verify = () =>
+			assert.equal(
+				current.evaluate(() => window.coherent),
+				true,
+				"authored clock coherence, not just matching pixels",
+			);
+		return current;
+	}, "1,21,41,101");
+	assert.equal(result.failure, undefined);
+	assert.equal(result.report.timelineSummary.equal, 4);
 });
-
-test("CLI timeline still reports actual same-side frame variation as NOT-HELD", {
-	timeout: 120000,
-}, async () => {
-	const folder = await fixture("varying", {
-		js: "control.addEventListener('click',()=>{const bytes=crypto.getRandomValues(new Uint8Array(3));control.animate([{backgroundColor:'rgb('+bytes.join(',')+')'},{backgroundColor:'#555'}],{duration:100,fill:'forwards'})});",
-		features: [
-			{ id: "random", actions: ["activate:#control"], proof: { ready: true } },
-		],
-	});
-	const result = await compare(folder, folder, "1,21,41");
-	assert.equal(result.code, 0, result.output);
-	assert.match(result.output, /TIMELINE NOT-HELD:/);
-	assert.equal(result.report.timelineSummary["not-held"], 3, result.output);
-	for (const sample of result.report.items[0].timeline.samples)
-		assert.ok(
-			Object.values(sample.stability).some((pair) => pair?.identical === false),
+test("genuine same-side frame variation remains NOT-HELD", async () => {
+	const result = await compared(async (_side, capture) => {
+		const current = fixture();
+		await current.arm();
+		const effect = current.startRelease(100);
+		// Independent fresh-context values vary frames; one context remains stable.
+		const intensity = 40 + capture * 30;
+		current.render(
+			() => intensity * Math.max(0, 1 - effect.currentTime / effect.duration),
 		);
+		await current.event("mouseup");
+		return current;
+	}, "1,21,41");
+	assert.equal(result.failure, undefined);
+	assert.equal(result.report.timelineSummary["not-held"], 3);
+	assert.ok(result.lines.some((line) => line.startsWith("TIMELINE NOT-HELD:")));
+	for (const sample of result.report.items[0].timeline.samples) {
+		const pair = Object.values(sample.stability).find(
+			(entry) => entry?.identical === false,
+		);
+		assert.ok(pair);
+		const [first, repeat] = await Promise.all([
+			readFile(pair.first),
+			readFile(pair.repeat),
+		]);
+		assert.notDeepEqual(
+			first,
+			repeat,
+			"NOT-HELD has an actual differing same-side pair",
+		);
+	}
 });
