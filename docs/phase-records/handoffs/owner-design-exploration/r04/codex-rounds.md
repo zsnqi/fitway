@@ -750,3 +750,25 @@ checks live outside the repository and never appear here or in a brief. One line
   two rounds.
 - **Failure cause:** none.
 - **Disposition:** merged as `2e7a29cf`; F135 fixed. GH7 is graded on the shared-frame round's result.
+
+## launch-review: `briefs/codex-launch-review.md` (this folder, `fe8856fd`), result `7d262d68` on `owner-r04-launch-review`, level `xhigh`
+
+- **Pre-launch review (B11, Codex max, run by hand):** five readings; four closed by sharpening (the dispositions name
+  the launched brief's SHA-256, never written by the launcher, the prompt and command unchanged, each gate proved by
+  removing it) and one by dropping its outcome: R2 (F146, a launcher test at 28.4 s against 20 s on CI run
+  38250368308) was already met locally at the base (3.8 s), so F146 stays open. Dispositions in
+  `D:/fitway-temp/brief-review/launch-review-1/dispositions.md`. No held-out rows were written for this round.
+- **First result `3469c332`:** every brief row PASS by Codex. The coordinator's run with a stand-in Codex and a test
+  worktree (`D:/fitway-temp/grade-launch-review/GRADE.md`) refused all five real review answers given to it as "cannot
+  be read as readings": the parser asked each reading for four labelled fields, and the tests used a stand-in answer
+  shaped to it. No real round could have launched.
+- **Fix (thread resumed, `7d262d68`):** the eight real answers on disk read with 5, 4, 5, 4, 5, 5, 4 and 3 readings
+  from byte-copy fixtures, and restoring the first parser fails all eight. Re-graded on a real answer: all five named
+  with no dispositions, the fifth named when four are answered, a wrong hash refused, and with all answered the
+  stand-in launched and the readings and dispositions were copied into the run.
+- **Failure cause: the brief.** R1 never required a real answer to parse; the review did not return it.
+- **CI:** run 38273918030 failed once on the edge simulator test of F110 (`test_windows_lifecycle.py:392`, a timing
+  assertion this time) and passed on a rerun of the failed job.
+- **Disposition:** merged as `cf2f8a2a`. From now on `pnpm codex:round` runs the review into
+  `D:/fitway-temp/brief-review/<brief name>-<n>/` and launches only once `dispositions.md` there names every reading
+  and the brief's SHA-256 (`docs/agent-context/briefs/REVIEW.md`).
