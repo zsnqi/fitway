@@ -60,28 +60,33 @@ on one pair gives.
     ports of those pairs and nothing more. A command whose port is in use by another command refuses at once and names
     the pair, never shares it. Measured: two compares started together on two pairs (Reports and Access,
     `--feature page --states all`, Arabic and English, desktop, tablet and phone, reduced motion, mouse, HTTP, the
-    base against itself) both finish, each with the verdicts it gives alone; a third started on a pair in use is
-    refused.
+    base against itself), then three on the three pairs (Activity added), all finish, each with the verdicts it gives
+    alone, and their browser captures overlap in time (each capture's start and end in their records show it); a
+    fourth started on a pair in use is refused.
   - **Intent.** Rounds measure side by side without touching each other's previews, and the ports of the user's
     previews (3174 and 3178-3185) stay out.
 - **P2. Workers inside one compare.**
   - **Cause.** `compare.mjs:210-235` captures the pages one after another, and each page's two sides in turn.
   - **Outcome.** `compare` has an option for the number of workers, 1 by default, that captures at the same time
-    within the command's own pair. With 4 workers, `compare --page all --feature page --states all`, Arabic and English,
-    desktop, tablet and phone, reduced and full motion, mouse, HTTP, `--baseline-cache off`, the base against itself,
-    takes the same 1,224 items as with 1 worker and gives each the same verdict, apart from F126's items rerun once;
-    likewise the result against the base. `comparison.json` lists the items in the order 1 worker gives, with the
-    same summary lines. Each run's wall time is reported beside the 1-worker run's. With 4 workers, `--timeline` of
-    Reports' `export-open` and `period-7d` (Arabic, desktop, mouse, full motion, HTTP) gives every sample the verdict
-    1 worker gives.
+    within the command's own pair. For every worker count it accepts and every configuration the CLI supports, the
+    items, their order in `comparison.json`, their verdicts and failures and the summary lines are 1 worker's.
+    Measured: with 4 workers, `compare --page all --feature page --states all`, Arabic and English, desktop, tablet and
+    phone, reduced and full motion, mouse, HTTP, `--baseline-cache off`, the base against itself, takes the same 1,224
+    items as with 1 worker and gives each the same verdict; likewise the result against the base; and each 4-worker
+    run takes at most half the wall time of the 1-worker run of the same command, both run alone on this machine. An
+    item may be rerun once only when its difference lies inside Daily's Lights chip on the phone (F126); after its
+    rerun it gives 1 worker's verdict. Any other difference, or one that persists, fails P2. With 4 workers,
+    `--timeline` of Reports' `export-open` and `period-7d` (Arabic, desktop, mouse, full motion, HTTP) gives every
+    sample the verdict 1 worker gives.
   - **Intent.** A round's full check costs a fraction of today's time, and parallel load never changes a verdict or
     makes a capture less stable: a sample `EQUAL` with 1 worker is never `DIFFERENT` or `NOT-HELD` with 4.
 - **P3. Kept captures reach any later run that takes the same item (F147).**
   - **Cause.** `baseline-cache.mjs:153-185` keys a page's kept captures on the whole option set, the baseline port
     included, so a rerun with fewer axes, or on another pair, captures every item again.
   - **Outcome.** A kept baseline capture is reused by any later compare that takes the same item with the same
-    baseline inputs (the bytes vf-speed's key reads, the recipes, the CLI files, the browser build and the capture
-    settings), on whichever pair and with whichever other items. Measured, each with every verdict equal to a
+    baseline inputs, on whichever pair and with whichever other items. The inputs are every one vf-speed's key reads
+    today (the pages' loaded bytes, the recipes, the CLI files, the browser build, the capture settings); that list may
+    grow and never shrinks, and only the port and the run's other items leave the key. Measured, each with every verdict equal to a
     `--baseline-cache off` run of the same command: Reports' P1 command on 3176-3177, then on 3186-3187 (no baseline
     capture taken), then with `--languages ar --sizes phone` only (none taken); and two compares with the same baseline
     started together on two pairs both finish, neither reading a kept bundle the other is writing.
