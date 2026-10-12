@@ -524,6 +524,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       each launches as soon as the round before it on the build branch closes.
     - Codex resumes on gpt-6.1-sol and falls back to gpt-6-sol on the same thread when gpt-6.1-sol answers "Selected
       model is at capacity" (the user, 2026-10-12); a usage limit is the user's account switch.
+    - A parallel-compare round follows vf-speed (the user, 2026-10-12, «اي», on the coordinator's proposal after the
+      measurements queued for hours on one port pair): each round gets its own port pair, so two or three rounds
+      measure at once, and one compare command can spread its pages over several workers. It comes after vf-speed,
+      which changes the same files and fixes F137 first. Widening Windows' dynamic port range is not needed: at the
+      round's load at most 739 of 16,384 ports were in use (coordinator measurement, 2026-10-12).
 
 ## How this milestone's rounds run
 
