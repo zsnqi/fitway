@@ -140,14 +140,26 @@ export const renderSheet=async(browser,options,file)=>writeFile(file,"sheet");
 	const browser = resolve(root, "browser/chromium.exe");
 	await mkdir(dirname(browser));
 	await writeFile(browser, "fixture browser build");
+	const unavailable = resolve(root, "uninstalled");
+	await mkdir(resolve(unavailable, "browsers"), { recursive: true });
 	const harness = resolve(root, "command.mjs");
-	// Exercise the CLI parser and its real compare, doctor and runner. Only native
-	// browser IO/build identity and the unused file-transport port check are mocked.
+	// Exercise the CLI parser, source discovery, compare and runner unchanged.
+	// Doctor's installed-tool checks, native browser IO and the external pixel
+	// measurer are fixture boundaries. The painted fixture channels compare as
+	// bytes, so this suite needs neither browser tools nor a Python installation.
 	await writeFile(
 		harness,
-		`import {main,doctor} from ${JSON.stringify(pathToFileURL(resolve(clone, "cli.mjs")).href)};
-await main(process.argv.slice(2),{compare:{checkPort:async()=>{},doctor:async(options)=>{
- const setup=await doctor(options);return {...setup,loaded:{...setup.loaded,pw:{chromium:{executablePath:()=>${JSON.stringify(browser)}}}}};
+		`import {readFile,writeFile} from "node:fs/promises";
+import {main} from ${JSON.stringify(pathToFileURL(resolve(clone, "cli.mjs")).href)};
+import {generateMap,coverageProblems} from ${JSON.stringify(pathToFileURL(resolve(clone, "map.mjs")).href)};
+await main(process.argv.slice(2),{compare:{checkPort:async()=>{},child:async(command,args)=>{
+ if(!args[0].endsWith("diff_map.py")||!args.includes("--json"))throw new Error("Unexpected fixture child: "+command);
+ const [a,b]=await Promise.all([readFile(args[1]),readFile(args[2])]);const identical=a.equals(b);
+ await writeFile(args[args.indexOf("--json")+1],JSON.stringify({identical,bbox:null,changedPixels:identical?0:1}));
+},doctor:async(options)=>{
+ const map=generateMap(options.concept,options.recipes);
+ const problems=coverageProblems(map,options.concept);if(problems.length)throw new Error(problems.join("\\n"));
+ return {concept:options.concept,map,tools:options.forensics,loaded:{resolved:${JSON.stringify(browser)},version:"fixture",pw:{chromium:{executablePath:()=>${JSON.stringify(browser)}}}}};
 }}});`,
 	);
 	let sequence = 0;
@@ -192,6 +204,11 @@ await main(process.argv.slice(2),{compare:{checkPort:async()=>{},doctor:async(op
 				const child = spawn(process.execPath, args, {
 					windowsHide: true,
 					timeout: 90000,
+					env: {
+						...process.env,
+						PLAYWRIGHT_BROWSERS_PATH: resolve(unavailable, "browsers"),
+						USERPROFILE: unavailable,
+					},
 				});
 				let stdout = "";
 				let stderr = "";
@@ -484,14 +501,10 @@ test("S2 CLI keeps settled-repeat and timeline reserves independent; role defect
 				'Buffer.from(process.env.PROBE_OUT.includes("baseline-reserve") || !url.includes("/baseline/") ? "build" : "baseline")',
 			),
 		);
-		await mkdir(resolve(f.root, "tools/scripts/img"), { recursive: true });
-		await writeFile(
-			resolve(f.root, "tools/scripts/img/diff_map.py"),
-			`import sys,json,pathlib\na,b=sys.argv[1:3]\njson_path=sys.argv[sys.argv.index('--json')+1]\nidentical=pathlib.Path(a).read_bytes()==pathlib.Path(b).read_bytes()\npathlib.Path(json_path).write_text(json.dumps({'identical':identical,'bbox':None,'changedPixels':0 if identical else 1}))\n`,
-		);
 		const fresh = await f.run(["--timeline", "--baseline-cache", "off"], 1);
 		assert.ok(
 			fresh.comparison.items.every((item) => item.result === "different"),
+			fresh.stdout + fresh.stderr,
 		);
 		const seeded = await f.run(["--timeline"], mutant ? 0 : 1);
 		if (mutant)
