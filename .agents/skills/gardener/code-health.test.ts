@@ -1,14 +1,288 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
 	collectCodeHealth,
 	deriveSharedFiles,
 	scanScope,
 } from "./code-health.mjs";
+import * as survey from "./survey.mjs";
 
 const repeated = Array.from(
 	{ length: 10 },
 	(_, index) => `const repeated${index} = ${index};`,
 ).join("\n");
+
+function fixtureGit(files: { file: string; text: string }[]) {
+	return (args: string[]) => {
+		if (args[0] === "ls-tree") return files.map(({ file }) => file).join("\n");
+		if (args[0] === "ls-files") return "";
+		if (args[0] === "show") {
+			const file = files.find(({ file }) => args[1].endsWith(`:${file}`));
+			if (file) return file.text;
+		}
+		throw new Error(`Unexpected git read: ${args.join(" ")}`);
+	};
+}
+
+function boundaryFixture(total: number, shared = "shared.js") {
+	return [
+		{
+			file: "concept/a.html",
+			text: `<main id="only-a"></main><script src="${shared}"></script>`,
+		},
+		{ file: "concept/b.html", text: `<script src="${shared}"></script>` },
+		{
+			file: `concept/${shared}`,
+			text: Array.from(
+				{ length: total },
+				() => 'document.getElementById("only-a");',
+			).join("\n"),
+		},
+	];
+}
+
+describe("gardener weekly code-health regressions", () => {
+	it("round trips weekly Markdown with a rise, a fall, and order-independent baselines", async () => {
+		const config = {
+			codeHealth: {
+				concept: { branch: "owner", folder: "concept" },
+				toolingRoots: [],
+			},
+		};
+		const read = (
+			total: number,
+			previousReportText?: string,
+			shared = "shared.js",
+		) =>
+			collectCodeHealth({
+				config,
+				git: fixtureGit(boundaryFixture(total, shared).reverse()),
+				previousReportText,
+			});
+		const write = (codeHealth: Awaited<ReturnType<typeof collectCodeHealth>>) =>
+			survey.formatReport({ codeHealth });
+		const first = await read(1);
+		expect(first.scopes[0].measures.boundaryBreaks).toMatchObject({
+			total: 1,
+			previous: null,
+			trend: "starts new baseline",
+		});
+		const firstText = write(first);
+		expect(firstText).toContain("trend starts new baseline");
+		const rise = await read(3, firstText);
+		expect(rise.scopes[0].measures.boundaryBreaks).toMatchObject({
+			total: 3,
+			previous: 1,
+			trend: 2,
+		});
+		expect(write(rise)).toContain("- boundaryBreaks: 3 (previous 1; trend +2)");
+		const fall = await read(1, write(rise));
+		expect(fall.scopes[0].measures.boundaryBreaks).toMatchObject({
+			total: 1,
+			previous: 3,
+			trend: -2,
+		});
+		expect(write(fall)).toContain("- boundaryBreaks: 1 (previous 3; trend -2)");
+		const reordered = {
+			...fall,
+			scopes: fall.scopes.map((scope) => ({
+				...scope,
+				sharedFiles: scope.sharedFiles?.toReversed(),
+			})),
+		};
+		expect(
+			(await read(2, write(reordered))).scopes[0].measures.boundaryBreaks,
+		).toMatchObject({ previous: 1, trend: 1 });
+		const changedList = await read(2, write(fall), "other.js");
+		expect(changedList.scopes[0].measures.boundaryBreaks).toMatchObject({
+			previous: null,
+			trend: "starts new baseline",
+		});
+		const changedMethod = {
+			...fall,
+			scopes: fall.scopes.map((scope) => ({
+				...scope,
+				baselineKey: "different-method",
+			})),
+		};
+		expect(
+			(await read(2, write(changedMethod))).scopes[0].measures.boundaryBreaks,
+		).toMatchObject({ previous: null, trend: "starts new baseline" });
+	});
+
+	it("starts a derived baseline against the shipped pre-derivation report and legacy totals", async () => {
+		const config = {
+			codeHealth: {
+				concept: { branch: "owner", folder: "concept" },
+				toolingRoots: [],
+			},
+		};
+		for (const previousReportText of [
+			readFileSync(new URL("./REPORT.md", import.meta.url), "utf8"),
+			"## Code health\n\n### concept (ok)\n- boundaryBreaks: 99 (previous 98; trend +1)\n",
+		]) {
+			const result = await collectCodeHealth({
+				config,
+				git: fixtureGit(boundaryFixture(1)),
+				previousReportText,
+			});
+			expect(result.scopes[0].measures.boundaryBreaks).toMatchObject({
+				total: 1,
+				previous: null,
+				trend: "starts new baseline",
+			});
+		}
+	});
+
+	it.each([
+		[
+			"HTML single-line comment",
+			".html",
+			'<!-- <script src="ghost.js"></script><link rel="stylesheet" href="ghost.css"> -->',
+		],
+		[
+			"HTML multiline comment",
+			".html",
+			'<!--\n<script src="ghost.js"></script>\n<link rel="stylesheet" href="ghost.css">\n-->',
+		],
+		[
+			"HTML quoted attribute",
+			".html",
+			`<div title='<script src="ghost.js"></script>'></div>`,
+		],
+		[
+			"HTML inline script strings",
+			".html",
+			`<script>const tag = '<script src="ghost.js">'; const css = '<link rel="stylesheet" href="ghost.css">';</script>`,
+		],
+		["CSS single-line block comment", ".css", '/* @import "ghost.css"; */'],
+		[
+			"CSS multiline block comment",
+			".css",
+			'/*\n@import url("ghost.css");\n*/',
+		],
+		[
+			"CSS double-quoted string",
+			".css",
+			`.x { content: "@import 'ghost.css';"; }`,
+		],
+		[
+			"CSS single-quoted string",
+			".css",
+			`.x { content: '@import "ghost.css";'; }`,
+		],
+		[
+			"CSS multiline escaped string",
+			".css",
+			`.x { content: "before\\\n@import 'ghost.css';"; }`,
+		],
+		[
+			"JavaScript line comment",
+			".js",
+			'// import "ghost.js";\n// import("ghost.js");',
+		],
+		["JavaScript block comment", ".js", '/* import "ghost.js"; */'],
+		[
+			"JavaScript multiline block comment",
+			".js",
+			'/*\nimport "ghost.js";\nexport { ghost } from "ghost.js";\n*/',
+		],
+		[
+			"JavaScript double-quoted string",
+			".js",
+			`const text = "import 'ghost.js';";`,
+		],
+		[
+			"JavaScript single-quoted string",
+			".js",
+			`const text = 'import("ghost.js");';`,
+		],
+		[
+			"JavaScript escaped string",
+			".js",
+			`const text = "escaped \\" import 'ghost.js';";`,
+		],
+		[
+			"JavaScript multiline escaped string",
+			".js",
+			`const text = "before\\\nimport 'ghost.js';";`,
+		],
+		["JavaScript template string", ".js", 'const text = `import "ghost.js";`;'],
+		[
+			"JavaScript multiline template string",
+			".js",
+			'const text = `\nimport "ghost.js";\n`;',
+		],
+	])("ignores %s as a load", (_name, extension, text) => {
+		const load =
+			extension === ".html"
+				? text
+				: extension === ".css"
+					? '<link rel="stylesheet" href="entry.css">'
+					: '<script src="entry.js"></script>';
+		const files = [
+			{ file: "a.html", text: load },
+			{ file: "b.html", text: load },
+			{ file: `entry${extension}`, text },
+			{ file: "ghost.js", text: "document.body;" },
+			{ file: "ghost.css", text: ".ghost {}" },
+		];
+		expect(deriveSharedFiles(files)).toEqual(
+			extension === ".html" ? [] : [`entry${extension}`],
+		);
+	});
+
+	it("follows actual static, dynamic and re-export imports while skipping their quoted surroundings", () => {
+		const files = boundaryFixture(0);
+		files[2].text =
+			'import "side.js"; import { value } from "named.js"; export { value } from "export.js"; import("dynamic.js");';
+		files.push(
+			...["side.js", "named.js", "export.js", "dynamic.js"].map((file) => ({
+				file: `concept/${file}`,
+				text: "",
+			})),
+		);
+		expect(deriveSharedFiles(files)).toEqual([
+			"concept/dynamic.js",
+			"concept/export.js",
+			"concept/named.js",
+			"concept/shared.js",
+			"concept/side.js",
+		]);
+	});
+
+	it("the shipped weekly code-health step derives exactly the loaded paths using its loaded configuration", async () => {
+		const config = JSON.parse(
+			readFileSync(new URL("./config.json", import.meta.url), "utf8"),
+		);
+		expect(config.codeHealth.concept).not.toHaveProperty("sharedFiles");
+		const folder = config.codeHealth.concept.folder;
+		const files = boundaryFixture(1).map(({ file, text }) => ({
+			file: file.replace("concept", folder),
+			text,
+		}));
+		files.push({
+			file: `${folder}/unused.js`,
+			text: 'document.getElementById("only-a");',
+		});
+		files.push({
+			file: `${folder}/${config.codeHealth.concept.specimenPages[0]}`,
+			text: '<script src="unused.js"></script>',
+		});
+		const result = await survey.collectSurveyCodeHealth({
+			readGit: fixtureGit(files),
+		});
+		expect(result.scopes[0]).toMatchObject({
+			status: "ok",
+			source: config.codeHealth.concept.branch,
+			sharedFiles: [`${folder}/shared.js`],
+		});
+		expect(result.scopes[0].measures.boundaryBreaks).toMatchObject({
+			total: 1,
+			hits: [{ file: `${folder}/shared.js` }],
+		});
+	});
+});
 
 describe("gardener code-health fixtures", () => {
 	it("finds every planted measure with file and line evidence", () => {

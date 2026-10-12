@@ -1,4 +1,5 @@
 import path from "node:path";
+import ts from "typescript";
 import { scanDuplication } from "./code-health-duplication.mjs";
 import { scanSource } from "./code-health-source.mjs";
 
@@ -47,39 +48,133 @@ function assetReference(value) {
 	}
 }
 
+function htmlLinkedReferences(text) {
+	const references = [];
+	let index = 0;
+	while (index < text.length) {
+		if (text.startsWith("<!--", index)) {
+			index = text.indexOf("-->", index + 4);
+			index = index < 0 ? text.length : index + 3;
+			continue;
+		}
+		if (text[index] !== "<") {
+			index++;
+			continue;
+		}
+		let cursor = index + 1;
+		let quote = null;
+		for (; cursor < text.length; cursor++) {
+			const character = text[cursor];
+			if (quote) {
+				if (character === quote && text[cursor - 1] !== "\\") quote = null;
+			} else if (character === '"' || character === "'") quote = character;
+			else if (character === ">") break;
+		}
+		if (cursor >= text.length) break;
+		const tag = text.slice(index, cursor + 1);
+		const name = tag.match(/^<\s*(script|link)\b/i)?.[1]?.toLowerCase();
+		if (name === "script") {
+			const source = tag.match(/\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+			if (source) references.push(source);
+			else {
+				const close = text.indexOf("</script", cursor + 1);
+				if (close >= 0) {
+					const end = text.indexOf(">", close + 8);
+					index = end < 0 ? text.length : end + 1;
+					continue;
+				}
+			}
+		} else if (name === "link") {
+			const rel = tag.match(/\brel\s*=\s*["']([^"']+)["']/i)?.[1] ?? "";
+			const href = tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1];
+			if (href && rel.split(/\s+/).includes("stylesheet"))
+				references.push(href);
+		}
+		index = cursor + 1;
+	}
+	return references;
+}
+
+function cssLinkedReferences(text) {
+	const references = [];
+	let index = 0;
+	while (index < text.length) {
+		if (text.startsWith("/*", index)) {
+			index = text.indexOf("*/", index + 2);
+			index = index < 0 ? text.length : index + 2;
+			continue;
+		}
+		if (text[index] === '"' || text[index] === "'") {
+			const quote = text[index++];
+			while (
+				index < text.length &&
+				(text[index] !== quote || text[index - 1] === "\\")
+			)
+				index++;
+			index++;
+			continue;
+		}
+		if (
+			!text.startsWith("@import", index) ||
+			/[\w-]/.test(text[index - 1] ?? "")
+		) {
+			index++;
+			continue;
+		}
+		index += 7;
+		while (/\s/.test(text[index] ?? "")) index++;
+		if (text.startsWith("url", index)) {
+			index += 3;
+			while (/\s/.test(text[index] ?? "")) index++;
+			if (text[index] === "(") index++;
+			while (/\s/.test(text[index] ?? "")) index++;
+		}
+		const quote =
+			text[index] === '"' || text[index] === "'" ? text[index++] : null;
+		const start = index;
+		while (
+			index < text.length &&
+			(quote ? text[index] !== quote : !/[\s);]/.test(text[index]))
+		)
+			index++;
+		if (index > start) references.push(text.slice(start, index));
+	}
+	return references;
+}
+
+function javascriptLinkedReferences(text, extension) {
+	const source = ts.createSourceFile(
+		`source${extension}`,
+		text,
+		ts.ScriptTarget.Latest,
+		true,
+	);
+	const references = [];
+	const visit = (node) => {
+		if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+			if (node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier))
+				references.push(node.moduleSpecifier.text);
+		} else if (
+			ts.isCallExpression(node) &&
+			node.expression.kind === ts.SyntaxKind.ImportKeyword
+		) {
+			const [argument] = node.arguments;
+			if (argument && ts.isStringLiteral(argument))
+				references.push(argument.text);
+		}
+		ts.forEachChild(node, visit);
+	};
+	visit(source);
+	return references;
+}
+
 function linkedReferences(text, extension) {
 	if (extension === ".html") {
-		const references = [];
-		for (const match of text.matchAll(
-			/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi,
-		))
-			references.push(match[1]);
-		for (const match of text.matchAll(/<link\b[^>]*>/gi)) {
-			const tag = match[0];
-			const rel = tag.match(/\brel\s*=\s*["']([^"']+)["']/i)?.[1] ?? "";
-			if (!rel.split(/\s+/).includes("stylesheet")) continue;
-			const href = tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1];
-			if (href) references.push(href);
-		}
-		return references;
+		return htmlLinkedReferences(text);
 	}
-	if (extension === ".css")
-		return [
-			...text.matchAll(/@import\s+(?:url\(\s*)?["']?([^"')\s;]+)["']?\s*\)?/gi),
-		].map((match) => match[1]);
+	if (extension === ".css") return cssLinkedReferences(text);
 	if (extension === ".js" || extension === ".mjs" || extension === ".ts") {
-		const references = [];
-		for (const match of text.matchAll(
-			/\bimport\s*(?:[^"'();]*?\sfrom\s*)?["']([^"']+)["']/g,
-		))
-			references.push(match[1]);
-		for (const match of text.matchAll(/\bimport\s*\(\s*["']([^"']+)["']\s*\)/g))
-			references.push(match[1]);
-		for (const match of text.matchAll(
-			/\bexport\s+[^"']*?\sfrom\s*["']([^"']+)["']/g,
-		))
-			references.push(match[1]);
-		return references;
+		return javascriptLinkedReferences(text, extension);
 	}
 	return [];
 }
@@ -254,12 +349,17 @@ function parsePreviousReport(text) {
 			/^### (\w+) \((?:ok|unknown)\)\r?\n([\s\S]*?)(?=^### |$(?![\s\S]))/gm,
 		)) {
 			const measures = {};
+			const baselineKey = scope[2].match(/^Baseline: (.+)$/m)?.[1];
 			for (const value of scope[2].matchAll(/^- (\w+): (\d+|unknown)\b/gm)) {
 				measures[value[1]] = {
 					total: value[2] === "unknown" ? null : Number(value[2]),
 				};
 			}
-			scopes.push({ name: scope[1], measures });
+			scopes.push({
+				name: scope[1],
+				...(baselineKey ? { baselineKey: JSON.parse(baselineKey) } : {}),
+				measures,
+			});
 		}
 		return { scopes };
 	}
@@ -331,7 +431,9 @@ export async function collectCodeHealth({
 					status: "ok",
 					source,
 					baselineKey:
-						name === "concept" ? "concept-page-loads-v1" : "tooling-files-v1",
+						name === "concept"
+							? `concept-page-loads-v1:${sharedFiles.join("|")}`
+							: "tooling-files-v1",
 					...(name === "concept" ? { sharedFiles } : {}),
 					measures: scanScope(files, {
 						sharedFiles,
