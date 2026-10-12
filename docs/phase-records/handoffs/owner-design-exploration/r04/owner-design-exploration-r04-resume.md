@@ -41,6 +41,8 @@
   (`56ed8da6`, xhigh): apply the patch, then meet the round's brief (`codex-shared-frame.md` beside it) on the commit
   it delivers. Thread `01a12f3c-a486-7681-a1f5-6b12abdbe87a`, run folder
   `D:/fitway-temp/codex-round-ef95d9e6-4736-49f6-8f7e-959e6eee78a8`, ports 3176-3177.
+  It was launched from the previous coordinator session, which gets its exit; a new session sees it end when
+  `last-message.md` appears in the run folder (and its events stop), and resumes it on its thread if it stopped.
 - Its B11 reviews and dispositions: `D:/fitway-temp/brief-review/shared-frame-1/`,
   `D:/fitway-temp/brief-review/shared-frame-2/` and `D:/fitway-temp/brief-review/shared-frame-continue-1/`. Its base
   check: `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt` (known problems: `arrive`, a lone `from` or `to`,
