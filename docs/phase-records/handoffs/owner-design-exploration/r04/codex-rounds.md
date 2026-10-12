@@ -678,3 +678,36 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Decision (by the same rule, the user agreeing to the trial):** Codex at max reviews each Codex brief alone before
   launch (`docs/agent-context/briefs/REVIEW.md`, checklist item B11). Two briefs and two runs are thin evidence: the
   brief-caused failures of the rounds that follow are the measure.
+
+## midmotion-compare-fix: `briefs/codex-midmotion-compare-fix.md` (this folder, `07c5a87f`), result `84cacbad` on `owner-r04-midmotion`, level `xhigh`
+
+- **Set-up:** the repair of the first round (F141, F142, with F126 as X6). It launched at 19:06 on 2026-10-11, before
+  the pre-launch review was adopted (21:05), so it had no B11 review.
+- **Run:** resumed three times on its thread (usage limits, then the user's account switch at 01:15 on 2026-10-12).
+- **Brief rows, as Codex graded them:** X1-X5 and L1-L3 pass; X6 fails: 11 runs of Daily's drive still give two
+  frames (7/4, then 8/3), and the injected style is gone, as the brief allows when no way exists. X3's not-held counts
+  per page (self, self, against `f96753fe`): Reports 99/103/92, Access 6/9/9, Activity 4/2/1, Daily 26/23/28,
+  components 7/3/4, with 0 different everywhere.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-midmotion-fix-grade/`):
+  - X1 and X2 re-run: Access's `pinChange` at `50097ff7` against `f96753fe` is `TIMELINE FAIL` with 4 different and
+    exits 1, and against itself 5 equal; Reports' three moments 10 different, Activity's `dates` 4, each exit 1.
+  - H4 passes as written: a timer plant (the export's 400 ms wait made 560 ms) is never equal; its samples at
+    200-900 ms are not held on both sides, because the export is timed from the page's real clock, so the plant is
+    never `DIFFERENT` and the command exits 0 with `INCOMPLETE` (F144).
+  - H6 passes: under reduced motion Reports (108 samples) and Access (217) report no not-held and no different.
+  - H8 passes: on Activity (not in Codex's X4), both languages, desktop and phone, reduced motion, the new and base
+    CLIs give the same result for all 124 items; one base-side `ERR_NO_BUFFER_SPACE` (F137) was equal on a re-run.
+  - H9 passes: with the hold's positions taken from the real clock, the suite fails 4 of 71, the new X5 test among
+    them. Two cruder plants hung the suite instead (F145).
+  - H10 partial: a third self run of Access (1432 equal, 5 not held) and Activity (513, 3) under full motion has 0
+    different; reduced motion ran for Access only.
+  - H11 fails, as the round reports; not re-run.
+  - H12 passes: only `.agents/skills/verify-fitway/**` changed; the worktree is clean; CI is on the merge.
+- **Found beyond the rows:** 24 not-held samples across the pages have no callback source. Each is the pressed
+  control's region in the first 200 ms after its activation, so the release fade is not held (F143). Reports' 93
+  others are its export timers.
+- **Failure cause:** none in the brief for the rows that failed; X6 is Chromium's raster, reported honestly. The
+  repair's measures held: classification now comes from the frames, as the trial's reviewers proposed for the first
+  round.
+- **Disposition:** merged as `ad9ea85f`. F119, F122, F130, F139, F141 and F142 are fixed; F126, F143, F144 and F145
+  go to the verify-fitway round before Settings (DECISIONS 47).
