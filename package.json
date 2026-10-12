@@ -35,7 +35,7 @@
 		"start-load": "node scripts/agent-environment/start-load.mjs",
 		"check:design-context": "node scripts/check-design-context.mjs",
 		"check:verification-map": "node .agents/skills/verify-fitway/cli.mjs drift-tree",
-		"test:verification": "node --test .agents/skills/verify-fitway/cli.test.mjs",
+		"test:verification": "node --test --test-timeout=120000 \".agents/skills/verify-fitway/*.test.mjs\"",
 		"verify:owner": "node .agents/skills/verify-fitway/cli.mjs",
 		"format": "biome check --write .",
 		"test": "node scripts/run-vitest.mjs run",
