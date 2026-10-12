@@ -15,6 +15,7 @@
   const f2 = (n) => Number(n).toFixed(2);
   const FRAME_COPY = {
     ar: {
+      loadingWord: "جارٍ التحميل…", opens: (t) => `يفتح ${t}`,
       skip: "انتقل إلى المحتوى", railLabel: "الأقسام", brand: "FITWAY، أسماء الأقسام", railTip: "أسماء الأقسام",
       nav: { daily: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
       tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
@@ -22,6 +23,7 @@
       live: "مباشر", delayed: "متأخر", lastReading: "آخر قراءة", hours: "ساعات العمل", closed: "مغلق", closedWord: "مغلق", offline: "غير متصل", noCount: "لا عدّ حاليًا", errorWord: "خطأ", errorLine: "تعذّر التحميل",
     },
     en: {
+      loadingWord: "Loading…", opens: (t) => `Opens ${t}`,
       skip: "Skip to content", railLabel: "Sections", brand: "FITWAY, section names", railTip: "Section names",
       nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
       tabs: { daily: "Today", reports: "Reports", activity: "Activity", access: "Access", settings: "Settings" },
@@ -241,7 +243,7 @@
       renderStatus();
       renderOps();
     };
-    return { renderStatus, renderOps, statusLoading, refreshStatus, state: frameState, layers, mqPhone, mqTablet, icons: ICONS, setRail, hideLayer, finishRail, refreshLanguage: () => { const q = langQuery(); langLink.setAttribute("href", `?${q}`); menuLang.setAttribute("href", `?${q}`); } };
+    return { renderStatus, renderOps, statusLoading, refreshStatus, state: frameState, layers, mqPhone, mqTablet, icons: ICONS, setRail, hideLayer, finishRail, refreshLanguage: (q = langQuery()) => { langLink.setAttribute("href", `?${q}`); menuLang.setAttribute("href", `?${q}`); } };
   }
 
   window.EclipseFrame = Object.freeze({ init, icons: ICONS, timings: T, easings: EASE, copy: FRAME_COPY });

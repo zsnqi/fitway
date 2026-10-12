@@ -205,13 +205,11 @@
       rangeSay: (r) => `تُعرض الفترة ${r}`,
       // The page's states (K-02): the status words are the Daily page's (STW-1, STW-2).
       ago: (n) => `قبل ${arMin(n)}`,
-      opens: (t) => `يفتح ${t}`,
       errorFull: "تعذّر تحميل قراءات الفترة",
       errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
       errorDates: (a, b) => `تعذّر تحميل القراءات من ${a} إلى ${b}`,
       errorDay: (a) => `تعذّر تحميل قراءات ${a}`,
       retrying: "جارٍ المحاولة…",
-      loadingWord: "جارٍ التحميل…",
       loadingSay: "جارٍ تحميل قراءات الفترة",
       pending: "قيد الانتظار",
       waiting: "بانتظار القراءات",
@@ -301,13 +299,11 @@
       readySay: (n) => `Your file is ready, ${n}`,
       rangeSay: (r) => `Showing ${r}`,
       ago: (n) => `${n} min ago`,
-      opens: (t) => `Opens ${t}`,
       errorFull: "Couldn't load the period's readings",
       errorHint: "Check the connection, then try again.",
       errorDates: (a, b) => `Couldn't load readings from ${a} to ${b}`,
       errorDay: (a) => `Couldn't load readings for ${a}`,
       retrying: "Trying again…",
-      loadingWord: "Loading…",
       loadingSay: "Loading the period's readings",
       pending: "Pending",
       waiting: "Waiting for readings",
@@ -625,8 +621,7 @@
     const p = urlFor();
     try { history.replaceState(null, "", `${location.pathname}${p.toString() ? `?${p}` : ""}`); } catch (e) { /* file:// may refuse; links still carry the period */ }
     const q = urlFor({ lang: RTL ? "en" : "ar" });
-    $("#lang-link").setAttribute("href", `?${q}`);
-    $("#menu-lang").setAttribute("href", `?${q}`);
+    frame.refreshLanguage(q);
   }
 
   const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };

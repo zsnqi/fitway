@@ -87,9 +87,7 @@
       notes: { miss: "لا قراءات", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
       // Daily's states (step 3, second part). The status word is the same in the header, the phone's badge and its
       // details; the rest says what the owner can know or do.
-      loadingWord: "جارٍ التحميل…",
       loadingSay: "جارٍ تحميل قراءات اليوم",
-      opens: (t) => `يفتح ${t}`,
       checkOps: "تحقّق من حالة التشغيل",
       errorFull: "تعذّر تحميل قراءات اليوم",
       errorSay: "تعذّر تحميل القراءات",
@@ -145,9 +143,7 @@
       minutesAria: "Today's readings, minute by minute",
       cols: ["Time", "Inside", "Average inside", "Note"],
       notes: { miss: "No readings", zero: "Empty", peak: "Peak", latest: "Latest reading" },
-      loadingWord: "Loading…",
       loadingSay: "Loading today's readings",
-      opens: (t) => `Opens ${t}`,
       checkOps: "Check the Operations status",
       errorFull: "Couldn't load today's readings",
       errorSay: "Couldn't load readings",
@@ -441,15 +437,15 @@
 
   /* ---------------------------------------------------------------- icons */
   const ICON = {
-    clock: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 2"/></svg>`,
+    clock: EclipseFrame.icons.clock,
     up: `<svg class="trend" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 16.5l5.2-5.2 3.6 3.6L20 7.7"/><path d="M14.6 7.7H20v5.4"/></svg>`,
     down: `<svg class="trend" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7.5l5.2 5.2 3.6-3.6L20 16.3"/><path d="M14.6 16.3H20v-5.4"/></svg>`,
     same: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9.5h14M5 14.5h14"/></svg>`,
     info: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/></svg>`,
     // The states' marks (step 3, second part): offline is a circle struck through; an error is the alert mark. Neither
     // mirrors (ICO-5). Closed is a hollow ring the live dot's size (.dot.ring, CSS).
-    offline: `<svg class="ico ico-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M6.3 17.7 17.7 6.3"/></svg>`,
-    alert: `<svg class="ico ico-err" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`,
+    offline: EclipseFrame.icons.offline,
+    alert: EclipseFrame.icons.error,
   };
 
   /* ------------------------------------------------------------ motion settings
@@ -1815,15 +1811,14 @@
     roll: "cubic-bezier(0.25, 1, 0.5, 1)",       // digits: decisive start, soft landing (quart out)
     bar: "cubic-bezier(0.25, 1, 0.5, 1)",        // a level bar fills or empties
     morph: "cubic-bezier(0.4, 0, 0.2, 1)",       // the live tail (a data transition: symmetric)
-    rail: "cubic-bezier(0.22, 1, 0.36, 1)",      // rail opens
-    railClose: "cubic-bezier(0.4, 0, 0.2, 1)",   // rail closes
+    ...EclipseFrame.easings,
     introLine: "cubic-bezier(0.3, 0.2, 0.4, 1)", // the intro's line: a firm start, an even day, a soft landing into now
   };
   const T = {
     roll: 280,
     bar: 200, barStagger: 50,
     morph: 280,
-    railOpen: 240, railClose: 200, railDist: 156, railReveal: 12,
+    ...EclipseFrame.timings,
     pulse: 5000,
   };
   const played = []; // every animation this section started, so motion off can finish them at once

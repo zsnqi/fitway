@@ -103,7 +103,6 @@
       errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
       errorDates: (a, b) => `تعذّر تحميل السجلات من ${a} إلى ${b}`,
       errorDay: (a) => `تعذّر تحميل سجلات ${a}`,
-      loadingWord: "جارٍ التحميل…",
       loadingSay: "جارٍ تحميل سجل النشاط",
       // The dates: the date picker's dialog (picker.js has the picker's own words).
       datesTitle: "اختر التواريخ",
@@ -169,7 +168,6 @@
       errorHint: "Check the connection, then try again.",
       errorDates: (a, b) => `Couldn't load records from ${a} to ${b}`,
       errorDay: (a) => `Couldn't load records for ${a}`,
-      loadingWord: "Loading…",
       loadingSay: "Loading the activity log",
       datesTitle: "Choose dates",
       datesApply: "Show records",
@@ -368,9 +366,9 @@
   const SVG_ERR = EclipseFrame.icons.error;
   const OPS_STATES = {
     live: (m = NOW_MIN) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
-    delayed: (m = NOW_MIN - 13) => ({ cls: "is-delayed", mark: EclipseFrame.icons.clock, word: RTL ? "متأخر" : "Delayed", line: `${L.lastReading} ${timeText(m)}` }),
-    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: RTL ? "مغلق" : "Closed", line: RTL ? `يفتح ${timeText(DAY_OPEN)}` : `Opens ${timeText(DAY_OPEN)}` }),
-    offline: () => ({ cls: "is-off", mark: EclipseFrame.icons.offline, word: RTL ? "غير متصل" : "Offline", line: RTL ? "لا عدّ حاليًا" : "No current count" }),
+    delayed: (m = NOW_MIN - 13) => ({ cls: "is-delayed", mark: EclipseFrame.icons.clock, word: L.delayed, line: `${L.lastReading} ${timeText(m)}` }),
+    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: L.closed, line: L.opens(timeText(DAY_OPEN)) }),
+    offline: () => ({ cls: "is-off", mark: EclipseFrame.icons.offline, word: L.offline, line: L.noCount }),
     error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
   };
   const OPS = ["delayed", "closed", "offline"].includes(params.get("ops")) ? params.get("ops") : "live";
@@ -392,8 +390,7 @@
     const p = urlFor();
     try { history.replaceState(null, "", `${location.pathname}${p.toString() ? `?${p}` : ""}`); } catch (e) { /* file:// may refuse; links still carry the filters */ }
     const q = urlFor({ lang: RTL ? "en" : "ar" });
-    $("#lang-link").setAttribute("href", `?${q}`);
-    $("#menu-lang").setAttribute("href", `?${q}`);
+    frame.refreshLanguage(q);
   }
 
   /* ---------------------------------------------------------------- icons */

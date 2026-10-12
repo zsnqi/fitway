@@ -186,7 +186,6 @@
       errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
       retry: "إعادة المحاولة",
       retrying: "جارٍ المحاولة…",
-      loadingWord: "جارٍ التحميل…",
       loadingSay: "جارٍ تحميل مكتب الاستقبال والمالكين",
       arrivedSay: "حُمّل مكتب الاستقبال والمالكون",
     },
@@ -317,7 +316,6 @@
       errorHint: "Check the connection, then try again.",
       retry: "Try again",
       retrying: "Trying again…",
-      loadingWord: "Loading…",
       loadingSay: "Loading the front desk and the owners",
       arrivedSay: "Front desk and owners loaded",
     },
@@ -410,9 +408,9 @@
   const SVG_ERR = EclipseFrame.icons.error;
   const OPS_STATES = {
     live: (m = NOW_MIN) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
-    delayed: (m = NOW_MIN - 13) => ({ cls: "is-delayed", mark: EclipseFrame.icons.clock, word: RTL ? "متأخر" : "Delayed", line: `${L.lastReading} ${timeText(m)}` }),
-    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: RTL ? "مغلق" : "Closed", line: RTL ? `يفتح ${timeText(DAY_OPEN)}` : `Opens ${timeText(DAY_OPEN)}` }),
-    offline: () => ({ cls: "is-off", mark: EclipseFrame.icons.offline, word: RTL ? "غير متصل" : "Offline", line: RTL ? "لا عدّ حاليًا" : "No current count" }),
+    delayed: (m = NOW_MIN - 13) => ({ cls: "is-delayed", mark: EclipseFrame.icons.clock, word: L.delayed, line: `${L.lastReading} ${timeText(m)}` }),
+    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: L.closed, line: L.opens(timeText(DAY_OPEN)) }),
+    offline: () => ({ cls: "is-off", mark: EclipseFrame.icons.offline, word: L.offline, line: L.noCount }),
     error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
   };
   const OPS = ["delayed", "closed", "offline"].includes(params.get("ops")) ? params.get("ops") : "live";
