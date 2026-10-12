@@ -55,8 +55,8 @@ themselves, so its readings show whether the shared-files refactors (items 44-45
     such a load imports (CSS `@import`, JavaScript `import`), matched by its path in the folder, and the boundary
     count uses exactly those paths. `config.json` names the specimen pages whose loads do not count (the components
     sheet, which loads page files to show their specimens) and no longer lists shared files. At `7e28c713` the
-    derived list is exactly `fonts/readex-pro.css`, `style.css`, `motion.js`, `reports.css`, `picker.css` and
-    `picker.js`.
+    derived list is exactly these six, by their paths in the folder: `style.css`, `motion.js`, `reports.css`,
+    `picker.css`, `picker.js`, and `readex-pro.css` in its `fonts` folder.
   - **Intent.** The count follows the code as pages are added or files split (Settings, Operations and Monitoring
     will add pages); a list that has to be edited by hand drifts again.
 - **G2. Proof.**
