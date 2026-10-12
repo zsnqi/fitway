@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `88a6ef65`, 2026-10-12 14:15 +03:00 (the shared-frame round's second run, on gpt-6-sol)
+- **As of:** `codex/owner-redesign-r04` at `f64fd050`, 2026-10-12 15:40 +03:00 (the shared-frame round's second run, measuring F2 and F3)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-47), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -43,14 +43,15 @@
   `D:/fitway-temp/codex-round-ef95d9e6-4736-49f6-8f7e-959e6eee78a8`, ports 3176-3177.
   It was launched from the previous coordinator session, which gets its exit; a new session sees it end when
   `last-message.md` appears in the run folder (and its events stop), and resumes it on its thread if it stopped.
-- **The second run now runs on gpt-6-sol** (2026-10-12 14:10, the user's call): gpt-6.1-sol answered "Selected model
-  is at capacity" on every resume from about 12:00 (`retry.log`, `retry-2.log`), and the previous session's end at 13:46
-  also killed its retry loop mid-compare. The thread held about 274k tokens; gpt-6-sol's window is 272k. Because
-  `codex:round` pins gpt-6.1-sol, it was resumed by hand with the script's own arguments plus `-m gpt-6-sol`, writing
-  `events-resume-10.jsonl`; `model-switch.md` in the run folder records it. Resume it the same way (`codex exec
-  --approve-for-me -C <worktree> -m gpt-6-sol -c model_reasoning_effort=xhigh --json -o <run>/last-message.md resume
-  <thread> -`, the message on stdin, a new `events-resume-<n>.jsonl`). Grading records which events ran on which
-  model.
+- **Models in the second run.** gpt-6.1-sol answered "Selected model is at capacity" on every resume from about 12:00
+  (`retry.log`, `retry-2.log`); the previous session's end at 13:46 also killed its retry loop mid-compare. At the
+  user's call it resumed by hand on gpt-6-sol at 14:10 (the script's own arguments plus `-m gpt-6-sol`;
+  `events-resume-10.jsonl`), which committed `a8521e98` and reported F1, F4, L1, L2 and P3 PASS but F2 and F3 FAIL,
+  their matrices not run (report kept as `last-message-a8521e98.md`). Sent back to run both matrices and judge every
+  not-held sample by F3's rule (`resume-msg-4.md`); at the user's request that resume moved back to gpt-6.1-sol at
+  15:34 through `codex:round` (`resume-msg-5.md`, `events-resume-12.jsonl`), which runs again. `model-switch.md` in
+  the run folder records each switch; grading records which events ran on which model. Resume it with `codex:round`;
+  if gpt-6.1-sol is at capacity again, by hand on gpt-6-sol as above.
 - Its B11 reviews and dispositions: `D:/fitway-temp/brief-review/shared-frame-1/`,
   `D:/fitway-temp/brief-review/shared-frame-2/` and `D:/fitway-temp/brief-review/shared-frame-continue-1/`. Its base
   check: `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt` (known problems: `arrive`, a lone `from` or `to`,
@@ -108,7 +109,7 @@ Nothing.
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `88a6ef65`).
+  commit that adds this text (parent `f64fd050`).
 - The merged round worktrees owner-r04-midmotion and owner-r04-gardener and their branches were removed on 2026-10-12
   (links checked first; none pointed outside them).
 - Grading evidence: `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
