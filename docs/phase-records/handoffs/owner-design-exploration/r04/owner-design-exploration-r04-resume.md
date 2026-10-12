@@ -1,59 +1,56 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `4c64f2df`, 2026-10-12 01:10 +03:00 (step 1's repair round stopped for an
-  account switch; the user went to sleep)
+- **As of:** `codex/owner-redesign-r04` at `1e437f94`, 2026-10-12 08:41 +03:00 (step 1 and the gardener's list done; the
+  shared-frame round running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-47), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
 - **Owner screens.** Daily, Reports, Activity log and Access are built on owner-followup-r04-build (worktree
-  D:/Projects/fitway-worktrees/owner-followup-r04-s04, HEAD `7e28c713`), with their motion and CSS rounds done and
-  Daily in its own files (DECISIONS 36-44). The user reviews on the eclipse-build preview (3174) and the LAN preview
-  (3180).
-- **Step 1, the mid-motion compare (F139), is in its repair round.** `compare --timeline` on `owner-r04-midmotion`
-  (worktree D:/Projects/fitway-worktrees/owner-r04-midmotion; the ledger gave this milestone
-  `.agents/skills/verify-fitway/**`). The first round, `e39225e6`, is graded in `codex-rounds.md` §"midmotion-compare":
-  it caught the real defect and four planted ones, but marked a sample not held whenever a page callback ran, which
-  hid Access's PIN change at `50097ff7` (F141), and its Daily drive fix did not reproduce and added a style to the page
-  (F142). The repair, `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-midmotion-compare-fix.md` (`07c5a87f`, xhigh, outcomes X1-X6), runs on Codex thread
-  `01a12bb7-759a-7d01-8e65-bd122b22b76e`, run folder `D:/fitway-temp/codex-runs/owner-r04-midmotion-fix`; its six changed
-  files are uncommitted in that worktree.
-- **The repair's own progress when stopped** (its messages, not yet graded): not held now needs two unequal captures;
-  the Daily style injection is gone; X3 self runs show 0 different on Reports, Activity (first run), Access (two runs)
-  and Daily (first run; one `ERR_NO_BUFFER_SPACE` capture, F137); X4 matched the base CLI on Reports' 128 items and
-  was running Access's base side; X5's new fixture fails on `e39225e6` and passes with the fix.
-- **Briefs.** Before a Codex launch, Codex at max reviews the brief alone (B11, `REVIEW.md`, adopted from the blind
-  trial in `codex-rounds.md` §"Evaluation: a blind review of the brief before launch"); each reading's disposition goes
-  in the round's record; B12 holds the readings that keep coming back. An evidence script first proves itself on a
-  self-compare and a planted defect (WORKING_AGREEMENTS "Rules and findings").
-- **main** is at `be4f665e`; the coordinator line is pushed past it. The discussion page for the user (Arabic,
-  private): https://claude.ai/artifact/88rd7XwoWHvnYhqbtxA1dm.
+  D:/Projects/fitway-worktrees/owner-followup-r04-s04, HEAD `32c1edcb`, the shared-frame brief on `7e28c713`), with
+  their motion and CSS rounds done and Daily in its own files (DECISIONS 36-44). The user reviews on the
+  eclipse-build preview (3174) and the LAN preview (3180).
+- **Step 1 is done.** `compare --timeline` (F139) is merged (`ad9ea85f`): a sample is not held only when two
+  same-side captures differ, and the real defect is caught on every moment it broke. Graded in `codex-rounds.md`
+  §"midmotion-compare-fix". F119, F122, F130, F139, F141 and F142 are fixed. Still open for the verify-fitway round:
+  F126 (Daily's drive frame alternates in the tuner chip), F143 (a pressed control's release is not held in its first
+  200 ms, the rail's tiles under touch included), F144 (the page's real clock is not held: the export's timers are
+  never comparable), F145 (the CLI suite has no per-test timeout; a stuck hold hangs it).
+- **The gardener's shared-file list (F135) is done**, merged as `2e7a29cf` after one fix round (§"gardener-shared-files"
+  and §"gardener-shared-files-fix"): shared means loaded by two or more pages, the components sheet excluded; at
+  `7e28c713` the concept's boundary breaks are 11, all in `reports.css`, and the first weekly reading starts a new
+  baseline. Held-out GH7 (the shared frame script appears in the list) is graded on the shared-frame result.
+- **Briefs.** Before a Codex launch, Codex at max reviews the brief alone (B11, `REVIEW.md`); dispositions sit beside
+  each review in `D:/fitway-temp/brief-review/<brief>-<n>/dispositions.md` and go into the round's record at grading.
+  Every outcome's command is first run on the base against itself (B7).
+- **main** is at `1e437f94`. The discussion page for the user (Arabic, private):
+  https://claude.ai/artifact/88rd7XwoWHvnYhqbtxA1dm.
 - access-reason-cap-r01 stays paused by the user (its own handoff says how to resume).
 
 ## Running now
 
-Nothing. The coordinator stopped the repair round's process tree at 00:55 so the user could switch Codex accounts;
-ports 3176-3177 are free and the worktree keeps the round's changes.
+- **The shared-frame round** (DECISIONS 45, first item): brief
+  `design-research/owner-composition-exploration-r04/directions/briefs/codex-shared-frame.md` on the build branch
+  (`32c1edcb`, xhigh), Codex thread `01a12ea0-d183-79f2-a924-d8800a524a53`, run folder
+  `D:/fitway-temp/codex-round-017636a2-29af-44dd-b050-5468cfbdf5c7`, ports 3176-3177. Its B11 reviews:
+  `D:/fitway-temp/brief-review/shared-frame-1/` and `-2/`. Its base check (every outcome's command, the base against
+  itself): `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt`. Held-out rows SH1-SH10:
+  `D:/fitway-grader/owner-r04/shared-frame-heldout.md`.
 
 ## Next steps
 
-The user's instructions for the night (2026-10-12): continue without them. Codex usage limits never stop the work:
-when a run exits on a limit, read the reset time from its output, wait for it in the background (Monitor with an
-until-loop on the clock), then resume the run on its thread. Accounts are the user's; never switch them.
+The user's instructions for the night (2026-10-12) still hold: continue without them; a Codex usage limit is waited
+out in the background and the run resumed on its thread; accounts are the user's.
 
-1. **Start here: resume the repair round on its thread:** `pnpm codex:round resume
-   D:/fitway-temp/codex-runs/owner-r04-midmotion-fix --message-file <file>`, the message saying the account was switched
-   and to continue where it stopped (Access's X4 base side, the Daily and components X3 runs and their rechecks, X6, the
-   fast ladder, one commit).
-2. **Grade it:** the held-out rows still open in `D:/fitway-grader/owner-r04/midmotion-compare-heldout.md` (H4, H6, H8,
-   H9, H10, H11; planted copies in `D:/fitway-grader/owner-r04/midmotion-plants/`) and the coordinator's own re-run of
-   X1, X2 (Access's `pinChange` among the six) and X6 (two batches of 11). On a pass: merge `owner-r04-midmotion` into
-   this line, update F119, F122, F126, F130, F139, F141 and F142, push, and fast-forward main once CI passes.
-3. **Then, in DECISIONS 47's order, before Settings:** the shared-files rounds (DECISIONS 45, each refactor compared
-   along its moments with `--timeline`), the shared lows, the verify-fitway round (F131, F132, F136, F137, and the
-   launch command running the B11 review, affected-page compares and reused base frames), F140; every Codex brief through the B11 review first.
+1. **Grade the shared-frame round** on SH1-SH10 and GH7 with the merged CLI; on a pass, update INDEX-facing records,
+   report its close to the user in a line (DECISIONS 45), push the build branch, and record it in `codex-rounds.md`.
+2. **Then `reports.css` split** (DECISIONS 45, second item), its brief written from
+   `D:/fitway-temp/shared-files-map/REPORT.md` §4 and §6, through B11 and a base check.
+3. **Then, in DECISIONS 47's order, before Settings:** the shared lows (each checked with the mid-motion compare), the
+   verify-fitway round (F131, F132, F136, F137 with F126 and F143-F145; the launch command running the B11 review;
+   affected-page compares and reused base frames), F140.
 4. **Then Settings**, Operations and Monitoring (rounds items 6 and 8-11 in DECISIONS).
 5. **Daily and Reports' last round:** Reports' «معدّل الموجودين» card (`#fig-avg`, DECISIONS 30), fix-3's findings
    (`D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`), the page-only lows (DECISIONS 47).
@@ -62,13 +59,14 @@ until-loop on the clock), then resume the run on its thread. Accounts are the us
 
 ## Waiting on the user
 
-Nothing. The user agreed to checking only the affected pages and to reusing the base side's frames, both in the
-verify-fitway round before Settings (DECISIONS 47), and switched the Codex account at 01:15.
+Nothing.
 
 ## Known risks
 
 - **Codex usage limits** stop runs often; each resumes on its thread (`pnpm codex:round resume <run folder>`).
 - **Briefs for refactors** need a limit that the moments still run along their timeline; `--timeline` now measures it.
+- **Long compares** can run out of Windows sockets (`ERR_NO_BUFFER_SPACE`, F137) and then fail a script load; briefs
+  allow one rerun of such an item until the verify-fitway round fixes it.
 - main has no branch protection (a private repository on GitHub's free plan); nothing found deploys on a push to main.
   The main checkout D:/Projects/fitway keeps its local main at `bbb51709` and an uncommitted one-line AGENTS.md change
   from 2026-09-06; it was left untouched.
@@ -83,10 +81,11 @@ verify-fitway round before Settings (DECISIONS 47), and switched the Codex accou
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `4c64f2df`).
-- Round worktree: D:/Projects/fitway-worktrees/owner-r04-midmotion, branch owner-r04-midmotion, HEAD `e39225e6` plus
-  the repair's uncommitted changes.
-- Grading evidence: `D:/fitway-temp/owner-r04-midmotion-grade/`; the evidence the repair brief names:
-  `D:/fitway-temp/owner-r04-midmotion-evidence/`; the brief-review trial: `D:/fitway-temp/brief-review-trial/` and
-  `D:/fitway-grader/owner-r04/brief-review-trial.md`.
+  commit that adds this text (parent `1e437f94`).
+- Merged round worktrees, to remove with their branches once their node_modules links are checked:
+  D:/Projects/fitway-worktrees/owner-r04-midmotion (`owner-r04-midmotion`) and
+  D:/Projects/fitway-worktrees/owner-r04-gardener (`owner-r04-gardener`).
+- Grading evidence: `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
+  rows and plants in `D:/fitway-grader/owner-r04/`; the researcher's map of the shared code:
+  `D:/fitway-temp/shared-files-map/REPORT.md`.
 - Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
