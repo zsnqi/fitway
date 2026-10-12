@@ -711,3 +711,27 @@ checks live outside the repository and never appear here or in a brief. One line
   round.
 - **Disposition:** merged as `ad9ea85f`. F119, F122, F130, F139, F141 and F142 are fixed; F126, F143, F144 and F145
   go to the verify-fitway round before Settings (DECISIONS 47).
+
+## gardener-shared-files: `briefs/codex-gardener-shared-files.md` (this folder, `554eee67`), result `040bc5c8` on `owner-r04-gardener`, level `high`
+
+- **Set-up:** F135, the first of the shared-files rounds (DECISIONS 45 and 47), run beside the shared-frame brief's
+  base check. Held-out rows GH1-GH8 are in `D:/fitway-grader/owner-r04/gardener-shared-heldout.md`.
+- **Pre-launch review (B11, Codex max, briefs alone):** four readings, all closed by sharpening (a scan pinned to the
+  measuring revision; direct loads only; base-name filtering kept; the new-baseline notice only in comparisons);
+  dispositions in `D:/fitway-temp/brief-review/gardener-shared-1/dispositions.md`.
+- **Brief rows, as Codex graded them:** G1-G3 and L1-L2 pass. The derived list at `7e28c713` is the six files the
+  brief names; the boundary total falls from 17 (hand list) to 11, all in `reports.css`.
+- **Held-out rows, graded by the coordinator** (scripts and output in `D:/fitway-temp/owner-r04-gardener-grade/`):
+  - GH1, GH2, GH4 and GH6 pass: the same six files at `f96753fe`; `./`, query, fragment and `../` spellings resolve;
+    without the specimen list `daily.css` and `reports.js` become shared; 17 and 11 reproduce.
+  - GH3 fails: a script tag inside an HTML comment, and an `import` inside a JavaScript comment, count as loads.
+  - GH5 fails: with the hand list restored in `config.json` and preferred by the scan, all 34 tests still pass.
+  - GH7 waits for the shared-frame round; GH8's CI waits for the merge.
+- **Found beyond the rows:** through the report text `formatReport` writes, the baseline key is lost, so every later
+  reading under the same list also says "starts new baseline" and shows no trend: the reading could never show the
+  refactors' effect. The round's test fed a JSON block the report never writes.
+- **Failure cause: the brief, then the code.** G3 stated what the first reading says and nothing about the next one,
+  and G2's "fail on the hand list" did not name the configuration the weekly pass ships; the review did not return
+  either reading. The comment matching is the code's.
+- **Next:** `codex-gardener-shared-files-fix.md` (level high): the trend through the written report, comments are not
+  loads, and a test on the shipped configuration.
