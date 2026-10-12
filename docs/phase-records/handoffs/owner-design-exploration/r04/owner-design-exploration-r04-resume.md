@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `fe8856fd`, 2026-10-12 18:05 +03:00 (shared-frame measuring F3; launch-review running; vf-speed in B11)
+- **As of:** `codex/owner-redesign-r04` at `7f56ac04`, 2026-10-12 18:40 +03:00 (four rounds running: shared-frame F3, launch-review, vf-speed, vf-hold)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-48), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -11,12 +11,8 @@
   D:/Projects/fitway-worktrees/owner-followup-r04-s04, HEAD `56ed8da6`, the shared-frame briefs on `7e28c713`), with
   their motion and CSS rounds done and Daily in its own files (DECISIONS 36-44). The user reviews on the eclipse-build
   preview (3174) and the LAN preview (3180).
-- **Step 1 is done.** `compare --timeline` (F139) is merged (`ad9ea85f`): a sample is not held only when two same-side
-  captures differ, and the real defect is caught on every moment it broke. Graded in `codex-rounds.md`
-  §"midmotion-compare-fix". F119, F122, F130, F139, F141 and F142 are fixed. Still open for the verify-fitway round:
-  F126 (Daily's drive frame alternates in the tuner chip), F143 (a pressed control's release is not held in its first
-  200 ms, the rail's tiles under touch included), F144 (the page's real clock is not held: the export's timers are never
-  comparable), F145 (the CLI suite has no per-test timeout; a stuck hold hangs it).
+- **Step 1 is done.** `compare --timeline` (F139) is merged (`ad9ea85f`), graded in `codex-rounds.md`
+  §"midmotion-compare-fix". Open tool findings: F126, F143, F144 (vf-hold), F146, and F131, F132, F136, F137.
 - **The gardener's shared-file list (F135) is done**, merged as `2e7a29cf` after one fix round (§"gardener-shared-files"
   and §"gardener-shared-files-fix"): shared means loaded by two or more pages, the components sheet excluded; at
   `7e28c713` the concept's boundary breaks are 11, all in `reports.css`, and the first weekly reading starts a new
@@ -62,11 +58,13 @@
   from `b7331e09`), run folder `D:/fitway-temp/codex-round-launch-review-1`, thread `01a13091-e5ec-7ad0-ac35-5a009f439939`,
   no ports. B11: `D:/fitway-temp/brief-review/launch-review-1/` (five readings, dispositions there; R2 for F146 was
   dropped because the base met it locally, so F146 stays open).
-- **The vf-speed round** (S1 affected pages, S2 kept base frames, S3 F137): brief
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-speed.md` (uncommitted until its B11
-  review in `D:/fitway-temp/brief-review/vf-speed-1/` is answered), worktree D:/Projects/fitway-worktrees/owner-r04-vf-speed
-  (branch `owner-r04-vf-speed` from `b7331e09`, installed). It builds at once and measures only once the ports file
-  above exists. Digest: `D:/fitway-temp/verify-fitway-round-prep/REPORT.md` (F143-F144 can run beside it; F131, F132, F136, F126 after).
+- **vf-speed** (S1 affected pages, S2 kept base frames, S3 F137; brief `9d0c86e7`) and
+  **vf-hold** (H1 F143, H2 F144; brief `7f56ac04`), briefs in `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/`,, both xhigh from `b7331e09` in worktrees
+  D:/Projects/fitway-worktrees/owner-r04-vf-speed and owner-r04-vf-hold (same-named branches), run folders
+  `D:/fitway-temp/codex-round-vf-speed-1` (thread `01a130a2-8f9d-7c81-83af-d3c9932d621a`) and `codex-round-vf-hold-1`
+  (`01a130aa-626f-7e63-9075-525b57c0f51c`); B11 in `D:/fitway-temp/brief-review/vf-speed-1/` and `vf-hold-1/`. Each
+  measures only once `D:/fitway-temp/owner-r04-ports/free-for-<round>.txt` exists: vf-speed after shared-frame, vf-hold
+  after vf-speed. Digest: `D:/fitway-temp/verify-fitway-round-prep/REPORT.md` (F131, F132, F136, F126 come after).
 - **Done in this session:** F145 (`b7331e09`, a 120 s per-test timeout and every verify-fitway test file run; the
   ledger leases that `package.json` line). Open: F146, the launcher test "decodes PowerShell Out-File and Set-Content
   defaults" took 28.4 s against 20 s on CI run 38250368308 (a docs-only commit; 3.8 s locally).
@@ -126,7 +124,7 @@ Nothing.
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `fe8856fd`).
+  commit that adds this text (parent `7f56ac04`).
 - The merged round worktrees owner-r04-midmotion and owner-r04-gardener and their branches were removed on 2026-10-12
   (links checked first; none pointed outside them).
 - Grading evidence: `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
