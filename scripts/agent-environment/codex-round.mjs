@@ -24,14 +24,16 @@ import { samePath } from "./path-identity.mjs";
 const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
 const MODEL = "gpt-6.1-sol";
 const LEVELS = new Set(["medium", "high", "xhigh"]);
-const HELP = `Usage: pnpm codex:round [--] <brief> <level> [--run <folder>]
+const HELP = `Usage: pnpm codex:round [--] <brief> <level> [--run <folder>] [--new-review]
        pnpm codex:round [--] resume <folder> [--message <text> | --message-file <file>]
-       node <repository>/scripts/agent-environment/codex-round.mjs <brief> <level> [--run <folder>]
+       node <repository>/scripts/agent-environment/codex-round.mjs <brief> <level> [--run <folder>] [--new-review]
        node <repository>/scripts/agent-environment/codex-round.mjs resume <folder> [--message <text> | --message-file <file>]
 
 Levels: medium, high, xhigh (WORKING_AGREEMENTS.md, Delegation).
 Relative brief and run paths start at the repository root, in either shell.
 Default run folder: ${process.platform === "win32" ? "D:/fitway-temp" : tmpdir()}/codex-round-<id>.
+Launch runs the REVIEW.md review when absent and stops for coordinator dispositions.
+--new-review requests a fresh review and stops; resume never checks reviews.
 Resume allows unfinished changes, keeps each event stream, and updates last-message.md.
 --message sends the exact text instead of the saved launch input.
 --message-file decodes UTF-8 (with or without a BOM) or UTF-16 files with a BOM,
@@ -92,23 +94,28 @@ function parseArgs(input) {
 				args[2] === "--message-file" ? resolvePath(args[3]) : undefined,
 		};
 	}
-	if (
-		![2, 4].includes(args.length) ||
-		(args.length === 4 && args[2] !== "--run") ||
-		args[0]?.startsWith("-")
-	)
+	if (args.length < 2 || args[0]?.startsWith("-"))
 		throw new Error(
-			"expected <brief> <level> [--run <folder>] or resume <folder> [--message <text>]",
+			"expected <brief> <level> [--run <folder>] [--new-review] or resume <folder> [--message <text>]",
 		);
+	let run;
+	let newReview = false;
+	for (let index = 2; index < args.length; index += 1) {
+		if (args[index] === "--new-review" && !newReview) newReview = true;
+		else if (args[index] === "--run" && !run && args[index + 1])
+			run = resolvePath(args[++index]);
+		else throw new Error(`unexpected launch option: ${args[index]}`);
+	}
 	return {
 		brief: resolvePath(args[0]),
 		level: args[1],
-		run: args[3]
-			? resolvePath(args[3])
-			: path.join(
-					process.platform === "win32" ? "D:/fitway-temp" : tmpdir(),
-					`codex-round-${randomUUID()}`,
-				),
+		newReview,
+		run:
+			run ??
+			path.join(
+				process.platform === "win32" ? "D:/fitway-temp" : tmpdir(),
+				`codex-round-${randomUUID()}`,
+			),
 	};
 }
 
@@ -184,6 +191,315 @@ async function assertFresh(run) {
 	}
 }
 
+function sha256(bytes) {
+	return createHash("sha256").update(bytes).digest("hex");
+}
+
+// REVIEW.md owns both the command and the prompt. Interpret its argv as data,
+// without a shell, replacing only the documented folder placeholder.
+async function reviewProcedure(folder) {
+	const document = await readFile(
+		path.join(repositoryRoot, "docs/agent-context/briefs/REVIEW.md"),
+		"utf8",
+	);
+	const command = document.match(
+		/^## Running it\r?\n(?:(?!^## ).)*?```bash\r?\n([^`]+)```/ms,
+	)?.[1];
+	const prompt = document.match(
+		/^## Prompt\r?\n\s*```text\r?\n([\s\S]*?)^```\s*$/m,
+	)?.[1];
+	const tokens = command
+		?.trim()
+		.match(/"[^"]*"|[^\s]+/g)
+		?.map((token) => token.replace(/^"|"$/g, ""));
+	const redirect = tokens?.indexOf("<");
+	if (
+		!prompt ||
+		tokens?.[0] !== "codex" ||
+		redirect !== tokens.length - 2 ||
+		tokens[redirect - 1] !== "-" ||
+		tokens[redirect + 1] !== "<folder>/prompt.md" ||
+		tokens[tokens.indexOf("-s") + 1] !== "read-only"
+	)
+		throw new Error("cannot read the review command and prompt from REVIEW.md");
+	return {
+		prompt,
+		args: tokens
+			.slice(1, redirect)
+			.map((token) => token.replaceAll("<folder>", folder)),
+	};
+}
+
+// The unchanged prompt asks for Markdown, not a fixed set of field labels.
+// Preserve each numbered reading as written; explicit reading headings retain
+// the older four-field format. Ambiguous answers fail closed.
+function parseReadings(answer) {
+	const text = answer.trim();
+	const plain = text.replace(/[*_`]/g, "");
+	if (
+		/^(?:(?:The brief has|This brief has|There are|I found|I find) )?no (?:such |literal )?readings?(?: (?:found|identified|in (?:this|the) brief))?[.!]?$/i.test(
+			plain,
+		)
+	)
+		return [];
+	const items = [...text.matchAll(/^(\d+)[.)][ \t]+\S[^\n]*/gm)];
+	if (items[0]?.index === 0) {
+		if (
+			items.length > 5 ||
+			items.some((item, index) => Number(item[1]) !== index + 1)
+		)
+			return null;
+		const readings = items.map((item, index) => ({
+			id: index + 1,
+			text: text
+				.slice(item.index, items[index + 1]?.index ?? text.length)
+				.trim(),
+		}));
+		// A bare numbered topic is not a reading: it needs an outcome/limit ID
+		// and a body, but the prompt leaves the body's Markdown wording open.
+		if (
+			readings.some(
+				(reading) =>
+					!/\b[A-Z]+\d+\b/.test(reading.text) ||
+					!reading.text
+						.split(/\r?\n/)
+						.slice(1)
+						.some((line) => line.trim()),
+			)
+		)
+			return null;
+		return readings;
+	}
+	const headings = [
+		...text.matchAll(
+			/^#{1,6}\s+(?:\d+[.)]\s*|Reading\s+\d+\b[^\n]*|[A-Z]\d+\b)[^\n]*/gim,
+		),
+	];
+	if (headings.length) {
+		const depth = headings[0][0].match(/^#+/)[0].length;
+		const peers = [...text.matchAll(/^#{1,6}\s+[^\n]*/gm)].filter(
+			(heading) => heading[0].match(/^#+/)[0].length === depth,
+		);
+		// Do not silently drop a reading whose heading uses another format.
+		if (
+			peers.length !== headings.length ||
+			headings.some((heading) => heading[0].match(/^#+/)[0].length !== depth)
+		)
+			return null;
+	}
+	const starts = headings;
+	if (!starts.length || starts.length > 5) return null;
+	const readings = starts.map((start, index) => ({
+		id: index + 1,
+		text: text
+			.slice(start.index, starts[index + 1]?.index ?? text.length)
+			.trim(),
+	}));
+	for (const reading of readings) {
+		const lines = reading.text.replace(/[*_`]/g, "").split(/\r?\n/);
+		const numbered = [1, 2, 3, 4].every((id) =>
+			lines.some((line) => new RegExp(`^\\s*${id}[.)]\\s+\\S`).test(line)),
+		);
+		const labels = [
+			/(?:outcome|limit|exploits|exploited)/i,
+			/literal reading/i,
+			/(?:what would go wrong|would go wrong|failure|consequence|delivered work)/i,
+			/(?:one.line change|change to (?:the )?brief|closing change|fix)/i,
+		];
+		const labelled = labels.every((label) =>
+			lines.some((line) => {
+				const field = line.replace(/^\s*(?:[-*]|\d+[.)])?\s*/, "");
+				const colon = field.indexOf(":");
+				return (
+					colon > 0 &&
+					label.test(field.slice(0, colon)) &&
+					field.slice(colon + 1).trim()
+				);
+			}),
+		);
+		if ((!numbered && !labelled) || !/\b[A-Z]+\d+\b/.test(reading.text))
+			return null;
+	}
+	return readings;
+}
+
+async function optionalFile(filename) {
+	try {
+		return await readFile(filename);
+	} catch (error) {
+		if (error.code === "ENOENT") return undefined;
+		throw error;
+	}
+}
+
+async function reviewFolders(root, basename) {
+	let entries;
+	try {
+		entries = await readdir(root, { withFileTypes: true });
+	} catch (error) {
+		if (error.code === "ENOENT") return [];
+		throw error;
+	}
+	return entries
+		.filter(
+			(entry) => entry.isDirectory() && entry.name.startsWith(`${basename}-`),
+		)
+		.map((entry) => ({
+			name: entry.name,
+			number: Number(entry.name.slice(basename.length + 1)),
+		}))
+		.filter(
+			(entry) =>
+				/^[1-9]\d*$/.test(entry.name.slice(basename.length + 1)) &&
+				Number.isSafeInteger(entry.number),
+		)
+		.sort((a, b) => b.number - a.number);
+}
+
+async function runReview(folder, executable, brief) {
+	const { args, prompt } = await reviewProcedure(folder);
+	await writeFile(path.join(folder, "brief.md"), brief, { flag: "wx" });
+	await writeFile(path.join(folder, "prompt.md"), prompt, { flag: "wx" });
+	const record = path.join(folder, "review.json");
+	await writeFile(
+		record,
+		`${JSON.stringify({ status: "running", sha256: sha256(brief) })}\n`,
+		{ flag: "wx" },
+	);
+	const log = await open(path.join(folder, "review.log"), "wx");
+	const stream = log.createWriteStream();
+	const child = startCodex(executable, args, folder);
+	child.stdin.on("error", (error) => {
+		if (error.code !== "EPIPE") console.error(`codex-round: ${error.message}`);
+	});
+	const completion = new Promise((resolve, reject) => {
+		child.once("error", reject);
+		child.once("close", (code, signal) =>
+			resolve(code ?? (signal === "SIGINT" ? 130 : 1)),
+		);
+	});
+	child.stdout.pipe(stream);
+	child.stdin.end(Buffer.from(prompt, "utf8"));
+	let code;
+	try {
+		[code] = await Promise.all([completion, finished(stream)]);
+	} finally {
+		if (child.exitCode === null) child.kill();
+		stream.destroy();
+		await log.close();
+	}
+	await writeFile(
+		record,
+		`${JSON.stringify({ status: code === 0 ? "complete" : "failed", exitCode: code, sha256: sha256(brief) })}\n`,
+	);
+}
+
+async function inspectBriefReview(options, executable, brief) {
+	const root = path.resolve(
+		process.env.FITWAY_BRIEF_REVIEW_ROOT ||
+			path.join(
+				process.platform === "win32" ? "D:/fitway-temp" : tmpdir(),
+				"brief-review",
+			),
+	);
+	const basename = path.basename(options.brief, path.extname(options.brief));
+	const snapshot = {
+		folder: undefined,
+		readings: undefined,
+		dispositions: undefined,
+	};
+	const refuse = (refusal, reason) => ({ ...snapshot, refusal, reason });
+	try {
+		await assertOutsideGit(root);
+		const folders = await reviewFolders(root, basename);
+		const fresh = options.newReview || !folders.length;
+		snapshot.folder = path.join(
+			root,
+			fresh ? `${basename}-${(folders[0]?.number ?? 0) + 1}` : folders[0].name,
+		);
+		if (fresh) {
+			await mkdir(root, { recursive: true });
+			// Exclusive creation prevents simultaneous requests sharing a review.
+			await mkdir(snapshot.folder);
+			await assertOutsideGit(snapshot.folder);
+			console.log(`Review folder: ${snapshot.folder}`);
+			await runReview(snapshot.folder, executable, brief);
+		} else {
+			await assertOutsideGit(snapshot.folder);
+			console.log(`Review folder: ${snapshot.folder}`);
+		}
+		snapshot.readings = await optionalFile(
+			path.join(snapshot.folder, "last.md"),
+		);
+		snapshot.dispositions = await optionalFile(
+			path.join(snapshot.folder, "dispositions.md"),
+		);
+		const record = await optionalFile(
+			path.join(snapshot.folder, "review.json"),
+		);
+		if (record) {
+			const status = JSON.parse(record.toString("utf8"));
+			if (status.status !== "complete" || status.exitCode !== 0)
+				return refuse(
+					"failed-review",
+					`review failed or is unfinished (Codex exit ${status.exitCode ?? "unknown"}); inspect ${snapshot.folder}`,
+				);
+		}
+		const readings =
+			snapshot.readings && parseReadings(snapshot.readings.toString("utf8"));
+		if (!readings)
+			return refuse(
+				"unreadable-review",
+				`review answer cannot be read as readings; inspect ${snapshot.folder}`,
+			);
+		if (fresh) {
+			console.log(
+				`Readings:\n${readings.length ? readings.map((reading) => `Reading ${reading.id}:\n${reading.text}`).join("\n\n") : "No such readings."}`,
+			);
+			console.log(
+				`Write coordinator dispositions to: ${path.join(snapshot.folder, "dispositions.md")}`,
+			);
+			return refuse(
+				"new-review",
+				"review completed; record its dispositions before launching",
+			);
+		}
+		const dispositions = snapshot.dispositions?.toString("utf8") ?? "";
+		const missing = readings.filter((reading) => {
+			const answers = [
+				...dispositions.matchAll(
+					new RegExp(`^Reading ${reading.id}: (.+)\\r?$`, "gm"),
+				),
+			];
+			return (
+				answers.length !== 1 ||
+				!/^(?:closed(?:\s.*)?|left open\s*[:\u2014-]\s*\S.*)$/i.test(
+					answers[0][1].trim(),
+				)
+			);
+		});
+		if (missing.length)
+			return refuse(
+				"unanswered-readings",
+				`readings without a disposition: ${missing.map((reading) => `Reading ${reading.id} (${reading.text.split(/\r?\n/)[0]})`).join("; ")}; write ${path.join(snapshot.folder, "dispositions.md")}`,
+			);
+		const hashes = [
+			...dispositions.matchAll(/^Brief SHA-256: ([a-fA-F0-9]{64})\r?$/gm),
+		];
+		if (hashes.length !== 1 || hashes[0][1].toLowerCase() !== sha256(brief))
+			return refuse(
+				"brief-hash",
+				`dispositions must name the current brief SHA-256; write ${path.join(snapshot.folder, "dispositions.md")}`,
+			);
+		return snapshot;
+	} catch (error) {
+		return refuse(
+			"failed-review",
+			`review failed: ${error.message}; inspect ${snapshot.folder ?? root}`,
+		);
+	}
+}
+
 async function prepareLaunch(options) {
 	// The checker is the first launch gate; it never fills or rewrites the brief.
 	const result = await checkBrief({ repositoryRoot, briefPath: options.brief });
@@ -211,6 +527,12 @@ async function prepareLaunch(options) {
 	await assertFresh(options.run);
 	const executable = await findCodex();
 	const brief = await readFile(options.brief);
+	const review = await inspectBriefReview(options, executable, brief);
+	if (review.refusal === "new-review") throw new Error(review.reason);
+	if (review.refusal === "failed-review") throw new Error(review.reason);
+	if (review.refusal === "unreadable-review") throw new Error(review.reason);
+	if (review.refusal === "unanswered-readings") throw new Error(review.reason);
+	if (review.refusal === "brief-hash") throw new Error(review.reason);
 	const named = brief
 		.toString("utf8")
 		.replace(/<!--[\s\S]*?-->/g, "")
@@ -253,6 +575,15 @@ async function prepareLaunch(options) {
 		{ flag: "wx" },
 	);
 	await writeFile(path.join(options.run, "input.md"), input, { flag: "wx" });
+	for (const [name, bytes] of [
+		["review-readings.md", review.readings],
+		["review-dispositions.md", review.dispositions],
+	]) {
+		if (bytes !== undefined)
+			await writeFile(path.join(options.run, name), bytes, {
+				flag: "wx",
+			});
+	}
 	console.log(formatBriefResult(result));
 	return { metadata, input, executable };
 }
@@ -554,8 +885,9 @@ async function execute(options, prepared) {
 }
 
 export async function main(args = process.argv.slice(2)) {
+	let options;
 	try {
-		const options = parseArgs(args);
+		options = parseArgs(args);
 		if (options.help) {
 			console.log(HELP);
 			return 0;
@@ -565,6 +897,10 @@ export async function main(args = process.argv.slice(2)) {
 			: await prepareLaunch(options);
 		return await execute(options, prepared);
 	} catch (error) {
+		if (options?.brief) {
+			const brief = await optionalFile(options.brief).catch(() => undefined);
+			if (brief) console.log(`Current brief SHA-256: ${sha256(brief)}`);
+		}
 		console.error(`codex-round: ${error.message.replace(/[\r\n]+/g, " ")}`);
 		return 1;
 	}

@@ -11,9 +11,9 @@ The coordinator records each reading's disposition (closed, or left open and why
 `codex-rounds.md`, and at grading notes whether a brief-caused failure was a reading the review returned. A reading
 is closed by sharpening the outcome it exploits, not by adding rows or an approach (B4, B6); a brief that needs many
 new rows is split. Readings that keep coming back go under "Recurring readings" below (checklist B12), so briefs
-start closed. Until the launch command runs
-the review itself (planned with the verify-fitway round before Settings), the coordinator starts it in the background
-while writing the held-out rows. The review runs at `max`; the round itself keeps the level its task calls for
+start closed. The launch command runs
+the review itself when absent (or with `--new-review`), then stops; it launches only after the newest review's readings
+have coordinator dispositions naming the current brief's SHA-256. The review runs at `max`; the round itself keeps the level its task calls for
 (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation").
 
 ## Recurring readings
@@ -33,6 +33,24 @@ Run it from an empty folder outside every git tree, with a copy of the brief as 
 ```bash
 codex exec -s read-only --skip-git-repo-check -C "<folder>" -m gpt-6.1-sol -c model_reasoning_effort=max -o "<folder>/last.md" - < "<folder>/prompt.md"
 ```
+
+The launcher uses `D:/fitway-temp/brief-review/<brief file name without extension>-<n>/`, with `n` one above the
+highest existing folder, prints the readings and current brief hash, and stops without launching. Tests use an isolated
+folder via `FITWAY_BRIEF_REVIEW_ROOT`. A failed or unreadable review leaves its folder and blocks launch.
+The coordinator alone writes `dispositions.md` in that review folder, with these lines (reading numbers are in the
+launcher's printed order):
+
+```text
+Brief SHA-256: <current hash printed by the launcher>
+Reading 1: closed
+Reading 2: left open: <why>
+```
+
+Write one disposition per reading, including a reason for each left open; with no readings, write just the hash line.
+After editing the brief to close a reading, write its new hash. The launcher refuses a missing answer or a different
+hash, never writes dispositions, and copies `last.md` and `dispositions.md` into the run as `review-readings.md` and
+`review-dispositions.md` when it launches. `--new-review` always reviews the current brief and stops; `resume` never
+runs or checks a review.
 
 ## Prompt
 
