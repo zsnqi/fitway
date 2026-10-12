@@ -735,3 +735,18 @@ checks live outside the repository and never appear here or in a brief. One line
   either reading. The comment matching is the code's.
 - **Next:** `codex-gardener-shared-files-fix.md` (level high): the trend through the written report, comments are not
   loads, and a test on the shipped configuration.
+
+## gardener-shared-files-fix: `briefs/codex-gardener-shared-files-fix.md` (this folder, `005b9fa2`), result `dd8f0fb8` on `owner-r04-gardener`, level `high`
+
+- **Pre-launch review (B11, Codex max):** five readings; four closed by sharpening (the weekly step itself, the trend
+  as the difference, the same set of paths in any order, every comment and string form) and one by clarifying the
+  other way (a total counted under the hand list must not seed a trend); dispositions in
+  `D:/fitway-temp/brief-review/gardener-fix-1/dispositions.md`.
+- **Brief rows, as Codex graded them:** X1-X3 and L1-L2 pass.
+- **Held-out rows, re-graded by the coordinator** (`D:/fitway-temp/owner-r04-gardener-grade/`): through the written
+  report the second reading shows its previous and trend (11, 0; across revisions 28 to 11 is -17 and back +17); GH3's
+  comment and string fixtures pass; GH1, GH2, GH4 and GH6 still pass; GH5 passes: with the hand list restored and
+  preferred, the shipped-configuration test fails by name. `code-health.test.ts` grew from 3 to 11 cases over the
+  two rounds.
+- **Failure cause:** none.
+- **Disposition:** merged as `2e7a29cf`; F135 fixed. GH7 is graded on the shared-frame round's result.
