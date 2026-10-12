@@ -510,6 +510,8 @@
   });
   const { mqPhone } = frame;
   $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${SR_SEP}${L.hours} ${timeRange(0, DAY)}</span>`;
+  frame.renderStatus();
+  frame.renderOps();
 
   /* ---------------------------------------------------------------- cards */
   const levelChip = (v) => {
@@ -664,6 +666,7 @@
   function updateCards(prev) {
     const dt = Math.sign(M.last - prev.last);
     rollTo($("#ops-btn .hb-line bdi"), fmtTime(M.last), dt);
+    frame.renderOps(); // the details take the new time at once
 
     rollTo($("#now-v"), String(shownNow()));
     if (STATE === "delayed") rollTo($("#now-meta span"), L.ago(M.nowM - M.last));
@@ -2701,6 +2704,7 @@
     sayRegion();
     pendCards();
     setLights(false);
+    frame.statusLoading(true);
 
     setDetails(false);
     hit.hidden = true;
@@ -2726,6 +2730,9 @@
     retryBtn = errSay = null;
     fillCards();
     setLights(STATE !== "delayed");
+    frame.statusLoading(false);
+    frame.renderStatus();
+    frame.renderOps();
     setDetails(true);
 
     hit.hidden = false;
@@ -2756,6 +2763,9 @@
   function showError(focus) {
     if (!retryBtn) errorCards();
     setLights(false);
+    frame.statusLoading(false);
+    frame.renderStatus();
+    frame.renderOps();
     setDetails(false);
     hit.hidden = true;
     busy(false);

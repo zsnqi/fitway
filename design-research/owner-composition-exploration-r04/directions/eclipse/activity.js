@@ -648,7 +648,7 @@
     renderControls();
     renderLoaded();
     renderList();
-
+    frame.refreshStatus();
     root.dataset.phase = phase;
     logEl.toggleAttribute("aria-busy", phase === "loading" || phase === "retrying");
   }

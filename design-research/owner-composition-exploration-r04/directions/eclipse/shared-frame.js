@@ -33,7 +33,6 @@
   function init(ctx) {
     const { L: supplied, RTL, motionOn, Motion = window.EclipseMotion, URL_OFF = false } = ctx;
     const L = Object.assign(supplied, FRAME_COPY[RTL ? "ar" : "en"]);
-    const root = document.documentElement;
     const frameState = { railOpen: false, openLayer: null };
     const rail = $("#rail"), brand = $("#brand");
     document.title = L.docTitle;
@@ -212,30 +211,37 @@
     $$(".tb-item[data-tab]").forEach((a) => { const key = a.dataset.tab; $(".tb-name", a).textContent = L.tabs[key]; a.setAttribute("aria-label", L.nav[key]); if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault()); });
 
     const status = ctx.status;
-    if (status) {
-      let statusLoad = null;
-      const words = (x) => `${x.mark}<span class="hb-word">${x.word}</span><span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${x.line}</span>`;
-      const renderStatus = () => {
-        const phase = status.phase(), loading = status.loading ? status.loading(phase) : phase === "loading";
-        const btn = layers.ops.btn;
-        if (loading && !statusLoad) { statusLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: status.loadingWord || L.loadingWord }); btn.before(statusLoad); }
-        if (!loading && statusLoad) { statusLoad.remove(); statusLoad = null; }
-        btn.hidden = loading;
-        const key = status.key(phase), state = status.states[key]();
-        btn.className = `hbadge${state.cls ? ` ${state.cls}` : ""}`;
-        if (status.buttonAria === false) btn.removeAttribute("aria-label");
-        $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${words(state)}`;
-        const minute = status.reserveMinute ?? 284;
-        $("#ops-res").innerHTML = Object.values(status.states).map((f) => `<span class="hb-r">${words(f(minute))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
-        $("#ops-state").className = `ops-state${state.cls ? ` ${state.cls}` : ""}`;
-        $("#ops-state").innerHTML = `${state.mark}<span>${state.word}</span>`;
-        $("#ops-last").innerHTML = status.detail ? status.detail(state) : state.detail || state.line;
-        $("#ops-hours").innerHTML = status.hours();
-      };
+    let statusLoad = null;
+    const statusLoading = (on) => {
+      const btn = layers.ops.btn;
+      if (on && !statusLoad) { statusLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: status.loadingWord || L.loadingWord }); btn.before(statusLoad); }
+      if (!on && statusLoad) { statusLoad.remove(); statusLoad = null; }
+      btn.hidden = on;
+    };
+    const statusOf = () => status.states[status.key(status.phase())]();
+    const words = (x) => `${x.mark}<span class="hb-word">${x.word}</span><span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${x.line}</span>`;
+    const renderStatus = () => {
+      const btn = layers.ops.btn, state = statusOf();
+      btn.className = `hbadge${state.cls ? ` ${state.cls}` : ""}`;
+      if (status.buttonAria === false) btn.removeAttribute("aria-label");
+      $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${words(state)}`;
+      const minute = status.reserveMinute ?? 284;
+      $("#ops-res").innerHTML = Object.values(status.states).map((f) => `<span class="hb-r">${words(f(minute))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
+    };
+    const renderOps = () => {
+      const state = statusOf();
+      $("#ops-state").className = `ops-state${state.cls ? ` ${state.cls}` : ""}`;
+      $("#ops-state").innerHTML = `${state.mark}<span>${state.word}</span>`;
+      $("#ops-last").innerHTML = status.detail ? status.detail(state) : state.detail || state.line;
+      $("#ops-hours").innerHTML = status.hours();
+    };
+    const refreshStatus = () => {
+      const phase = status.phase();
+      statusLoading(status.loading ? status.loading(phase) : phase === "loading");
       renderStatus();
-      new MutationObserver(renderStatus).observe(root, { attributes: true, attributeFilter: ["data-phase"] });
-    }
-    return { state: frameState, layers, mqPhone, mqTablet, icons: ICONS, setRail, hideLayer, finishRail, refreshLanguage: () => { const q = langQuery(); langLink.setAttribute("href", `?${q}`); menuLang.setAttribute("href", `?${q}`); } };
+      renderOps();
+    };
+    return { renderStatus, renderOps, statusLoading, refreshStatus, state: frameState, layers, mqPhone, mqTablet, icons: ICONS, setRail, hideLayer, finishRail, refreshLanguage: () => { const q = langQuery(); langLink.setAttribute("href", `?${q}`); menuLang.setAttribute("href", `?${q}`); } };
   }
 
   window.EclipseFrame = Object.freeze({ init, icons: ICONS, timings: T, easings: EASE, copy: FRAME_COPY });

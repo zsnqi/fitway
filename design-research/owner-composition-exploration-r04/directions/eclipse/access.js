@@ -639,7 +639,7 @@
   }
   function renderAll() {
     renderCards();
-
+    frame.refreshStatus();
     root.dataset.phase = phase;
   }
   // The control that stands for an action, after a render: by its key, or the row's name when the row lost it (an owner

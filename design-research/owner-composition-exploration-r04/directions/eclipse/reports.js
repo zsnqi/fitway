@@ -1366,7 +1366,7 @@
     const lit = !waiting && hasValues() && pageNow === "live";
     $("#pattern").classList.toggle("lit", lit);
     $("#pattern").classList.toggle("lit-chart", lit);
-
+    frame.refreshStatus();
   }
   function startLoading(arriveAfter) {
     clearTimers();
