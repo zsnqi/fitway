@@ -16,8 +16,6 @@ $cli = (Resolve-Path '.agents/skills/verify-fitway/cli.mjs').Path
 $concept = '<absolute concept folder from the brief>'
 $recipes = Join-Path $concept 'verification-recipes.json'
 $run = 'D:/fitway-temp/<unique run name>'
-$env:TEMP = 'D:/fitway-temp'
-$env:TMP = 'D:/fitway-temp'
 node $cli help
 node $cli list --concept $concept --recipes $recipes --page all
 ```
@@ -157,8 +155,47 @@ The initial Daily intro readiness check retains its existing **15-second bound**
 also covers intros restarted by actions such as retry or replay. Neither wait can turn an unsettled capture into a pass.
 Compare hides native text carets with Playwright's `caret: "hide"` under every motion mode, retaining focus,
 selection and field values. It disables Chromium's partial raster cache so settled fractional edges are painted
-consistently after movement. Ordinary drive retains its original browser and screenshot options.
-Compare checks these settled pictures; use motion measurements for the movement's timing and intermediate frames.
+consistently after movement. The page is captured as served, with the comparison observers described here;
+capture adds no styles, DOM elements or attributes. Ordinary drive keeps its screenshot options.
+Without a timeline request, compare checks these settled pictures.
+
+Use `--timeline` when a refactor must preserve openings, closings, changes of state, held presses and releases
+throughout their movement. Earlier recipe actions settle before the last action. Pointer positioning and keyboard
+reach settle before that action's clock starts, so hover/focus transitions cannot supply a varying starting pose. Each reachable item retains its
+settled result and adds exact-pixel `TIMELINE EQUAL` or `TIMELINE DIFFERENT` results, regions and diff images for
+the same fixed milliseconds on both sides. Every item prints `TIMELINE TIMES`; a feature with no actions says
+`Feature has no actions; compared at rest only`. All existing axes apply.
+
+The default starts at 1 ms (the first held picture after the action), advances by at most 100 ms, and reaches the
+first 100 ms boundary at or beyond the longest finite movement, including effects started during it. The two sides
+share the union of their default times.
+`--timeline-times 0,40,120,340` implies `--timeline` and replaces that schedule. Times are finite nonnegative milliseconds.
+Finite browser effects have no duration cap. Authored callback work is bounded to 2000 callbacks per item; exhaustion
+is recorded with its scheduling source and further script work stops while known finite effects finish. Each timeline
+sample is captured again in a fresh context on the same side at the same time. A sample is `NOT-HELD` only when those
+two same-side frames differ in pixels or dimensions; callback findings alone never skip its pixel comparison.
+Before reporting a cross-build difference, up to two further captures per side check for variation missed by the
+first pair. Every `NOT-HELD` still has an actual differing pair at the same time on the same side.
+
+The hold pauses and seeks every discovered CSS transition, CSS animation and Web Animation. Persistent effects
+stay at phase zero. Timer and frame callbacks are queued while capturing and advanced on a logical clock, so wall
+clock load cannot advance a frame between seeks. Authored timer, frame, completion and promise callbacks run outside
+the browser-effect hold and remain in the sample's sources, including canvas and CSSOM changes a DOM observer cannot
+see. Stable callback-driven frames are reported `TIMELINE EQUAL` or `TIMELINE DIFFERENT` with zero pixel tolerance.
+When the two same-side captures differ, `TIMELINE NOT-HELD` names the time, both captures and every callback source;
+that sample is excluded from the cross-build pixel result. Inspect `comparison.json` and the exact frames before
+accepting a change.
+`NOT-HELD` is neither equal nor different; the summary says `INCOMPLETE`, counts and names every such sample.
+
+Name additional moments with `--recipes <external-file>` and the same `--baseline-recipes` file. The report retains
+the recipe entries used. A comma-separated `--feature export-close,export-held,export-release` selects several entries
+in one page command. For example, add an `export-close` entry with `actions: ["activate:#export-btn", "press:Escape"]`
+and `proof: {selector: "#dlg-export", hidden: true}`; a held press uses `["hold:#export-btn"]`, and its release uses
+`["hold:#export-btn", "release"]`. Keep these entries beside the existing recipes in the external copy.
+
+```powershell
+node $cli compare --concept $concept --baseline $baseline --page reports.html --feature all --languages ar,en --sizes desktop,phone --inputs mouse --motions full --transports http --timeline --out "$run/reports-timeline"
+```
 
 ```powershell
 $baseline = '<absolute extracted concept folder>'
