@@ -46,6 +46,19 @@ export const root = path.resolve(
 );
 export const defaultTempRoot = "D:/fitway-temp";
 
+export function collectSurveyCodeHealth({
+	readGit = git,
+	previousReportText = null,
+	previousReportSource = null,
+} = {}) {
+	return collectCodeHealth({
+		config,
+		git: readGit,
+		previousReportText,
+		previousReportSource,
+	});
+}
+
 export function filesystemPath(absolute) {
 	return process.platform === "win32"
 		? path.toNamespacedPath(absolute)
@@ -837,6 +850,8 @@ export function formatReport(report) {
 		);
 		for (const scope of report.codeHealth.scopes) {
 			lines.push(`### ${scope.name} (${scope.status})`);
+			if (scope.baselineKey)
+				lines.push(`Baseline: ${JSON.stringify(scope.baselineKey)}`);
 			if (scope.status === "unknown") lines.push(`Reason: ${scope.reason}`);
 			for (const measure of Object.keys(scope.measures)) {
 				const value = scope.measures[measure];

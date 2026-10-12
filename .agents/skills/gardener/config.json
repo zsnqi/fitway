@@ -7,13 +7,7 @@
 		"concept": {
 			"branch": "owner-followup-r04-build",
 			"folder": "design-research/owner-composition-exploration-r04/directions/eclipse",
-			"sharedFiles": [
-				"app.js",
-				"style.css",
-				"motion.js",
-				"components.js",
-				"components.css"
-			]
+			"specimenPages": ["components.html"]
 		},
 		"toolingRoots": ["scripts", ".agents/skills"]
 	}
