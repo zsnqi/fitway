@@ -56,8 +56,8 @@
 ## Next steps
 
 The user (2026-10-12): the rounds after the current Codex run go to a new coordinator session; continue without them;
-accounts are theirs. The order they agreed: finish shared-frame, then vf-speed, then the parallel-compare round, then
-`reports.css` and the shared lows.
+accounts are theirs. The order, as the user amended it at 22:00 («موافق»): vf-speed and vf-hold measure and merge,
+shared-frame resumes on their CLI and is graded, then the parallel-compare round, then `reports.css` and the shared lows.
 
 1. **vf-speed** ends when its `last-message.md` is newer than `resume-measure-1.md`: grade it (rerun S1's
    selections, S2's second run reusing every baseline capture, one S3 full compare), merge it, wait for CI.
