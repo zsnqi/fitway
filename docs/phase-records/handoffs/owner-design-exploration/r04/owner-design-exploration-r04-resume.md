@@ -83,7 +83,7 @@ Nothing.
 - **Briefs for refactors** need a limit that the moments still run along their timeline; `--timeline` now measures it.
 - **Codex** is 0.162.1 since 2026-10-12 (the user updated it); GPT-6.1 Sol's catalog default context is 500k (max
   872k), and the user's `config.toml` no longer pins 400k (backup `D:/fitway-temp/codex-config-backup-20261012.toml`).
-  Its `model_auto_compact_token_limit = 350000` is left for the user to decide.
+  Its `model_auto_compact_token_limit = 350000` was removed too, at the user's request (backup `-b.toml` beside it).
 - **Long compares** can run out of Windows sockets (`ERR_NO_BUFFER_SPACE`, F137) and then fail a script load; briefs
   allow one rerun of such an item until the verify-fitway round fixes it.
 - main has no branch protection (a private repository on GitHub's free plan); nothing found deploys on a push to main.
