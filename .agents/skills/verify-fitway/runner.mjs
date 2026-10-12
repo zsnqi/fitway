@@ -290,7 +290,13 @@ export async function drive(options) {
 	process.once("SIGTERM", abort);
 	try {
 		if (transports.includes("http")) {
-			if (options.session) {
+			if (options.compareRuntime) {
+				origin = await options.compareRuntime.origin(
+					concept,
+					port,
+					options.cache || "no-store",
+				);
+			} else if (options.session) {
 				const session = await ownedSession(options.session);
 				if (session.concept !== concept)
 					throw new Error("Session serves another concept");
@@ -306,9 +312,13 @@ export async function drive(options) {
 		}
 		// Partial raster reuse can round animated, fractional button edges differently
 		// after the animation has ended. Compare paints fresh tiles on both sides.
-		browser = options.comparisonCapture
-			? await ui.launchChromium(loaded, { args: ["--disable-partial-raster"] })
-			: await ui.launchChromium(loaded);
+		browser = options.compareRuntime
+			? await options.compareRuntime.browser(ui, loaded)
+			: options.comparisonCapture
+				? await ui.launchChromium(loaded, {
+						args: ["--disable-partial-raster"],
+					})
+				: await ui.launchChromium(loaded);
 		for (const feature of features)
 			for (const state of cases)
 				for (const language of languages)
@@ -366,6 +376,8 @@ export async function drive(options) {
 										locale: language === "ar" ? "ar-SA" : "en-US",
 										timezoneId: "Asia/Riyadh",
 									});
+									if (options.compareRuntime && transport === "http")
+										await options.compareRuntime.route(current.context, origin);
 									current.page.setDefaultTimeout(5000);
 									if (options.timeline)
 										await current.page.addInitScript(
@@ -855,7 +867,10 @@ export async function drive(options) {
 			);
 		return manifest;
 	} finally {
-		await Promise.allSettled([browser?.close(), server?.close()]);
+		await Promise.allSettled([
+			options.compareRuntime ? undefined : browser?.close(),
+			server?.close(),
+		]);
 		process.removeListener("SIGINT", abort);
 		process.removeListener("SIGTERM", abort);
 		await jsonOutput(out, "manifest.json", manifest);
