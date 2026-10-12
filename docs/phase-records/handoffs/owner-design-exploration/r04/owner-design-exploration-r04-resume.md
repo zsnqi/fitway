@@ -32,7 +32,7 @@
 
 ## Running now
 
-- **vf-hold, measuring** (H1 F143, H2 F144; brief `briefs/codex-vf-hold.md`, xhigh, worktree
+- **vf-hold, measuring** (H1 F143, H2 F144; brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-hold.md`, xhigh, worktree
   D:/Projects/fitway-worktrees/owner-r04-vf-hold, code `452030fb`, CI green). Resumed at 02:11 with
   `D:/fitway-temp/codex-round-vf-hold-1/resume-measure-1.md`; it holds ports 3176-3177
   (`D:/fitway-temp/owner-r04-ports/free-for-vf-hold.txt`). At 03:00 every named H1 release plant was DIFFERENT (134
@@ -47,7 +47,7 @@
   `D:/fitway-temp/owner-r04-shared-frame/`. Its compares call the CLI in this worktree, so it resumes on the merged CLI.
   B11: `D:/fitway-temp/brief-review/shared-frame-*`; base check `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt`;
   held-out SH1-SH10 `D:/fitway-grader/owner-r04/shared-frame-heldout.md`.
-- **vf-parallel, ready to launch** (DECISIONS 48; F147): brief `briefs/codex-vf-parallel.md` (`23752f84`), worktree
+- **vf-parallel, ready to launch** (DECISIONS 48; F147): brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md` (`23752f84`), worktree
   D:/Projects/fitway-worktrees/owner-r04-vf-parallel (same-named branch at `3faea886`, pushed; packages installed).
   Its review (`D:/fitway-temp/brief-review/codex-vf-parallel-1/`) returned five readings, all closed in the brief;
   `dispositions-draft.md` there holds them and waits for the final hash.
@@ -106,10 +106,11 @@ Nothing.
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `23752f84`).
+  commit that last changed this text (it follows `a3957f6f`).
 - Grading evidence: `D:/fitway-temp/owner-r04-vf-speed-grade/` (runner `run.mjs`, verdict diff `cmp.mjs`, plants in
-  `plants/`), `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
-  rows and plants in `D:/fitway-grader/owner-r04/`; the researcher's map of the shared code:
+  `D:/fitway-temp/owner-r04-vf-speed-grade/plants/`), `D:/fitway-temp/owner-r04-midmotion-fix-grade/`,
+  `D:/fitway-temp/owner-r04-gardener-grade/`; held-out rows and plants in `D:/fitway-grader/owner-r04/`; the
+  researcher's map of the shared code:
   `D:/fitway-temp/shared-files-map/REPORT.md`; a rewrapping helper that keeps every word:
   `D:/fitway-temp/owner-r04-reports-css-draft/reflow.cjs`.
 - Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
