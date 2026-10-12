@@ -15,6 +15,11 @@ import { filesIn, hash } from "./reaches.mjs";
 export const cacheRoot = "D:/fitway-verify-captures";
 export const cacheLimit = 10 * 1024 ** 3;
 const self = dirname(fileURLToPath(import.meta.url));
+const stableFiles = (root) =>
+	filesIn(root).filter(
+		({ file }) =>
+			!/(?:^|[\\/])__pycache__(?:[\\/]|$)/.test(file) && !/\.pyc$/i.test(file),
+	);
 
 export const captureIdentity = (item) =>
 	JSON.stringify([
@@ -88,7 +93,7 @@ export class BaselineCache {
 				f.file.startsWith("code-health"),
 			),
 		].map((f) => [f.file, hash(f.bytes)]);
-		const captureTools = filesIn(this.setup.tools).map((f) => [
+		const captureTools = stableFiles(this.setup.tools).map((f) => [
 			f.file,
 			hash(f.bytes),
 		]);
