@@ -141,6 +141,28 @@ forced filenames add `-forced`, so mixed runs cannot overwrite frames.
 
 ## Compare
 
+`--affected-pages` selects pages reached by byte changes in either input's HTML,
+loaded scripts/styles and their imports, or that page's recipe entry. A changed
+file loaded by two product pages takes every page; `components.html` is excluded
+from that shared-file count. Computed or unresolved loads always take their page.
+Before capture the command names every taken/omitted page and prints `COMPARE
+PARTIAL`. An unloaded-only change takes no pages and exits successfully. Omit this
+option for the round's full verification.
+
+Baseline captures are kept in `D:/fitway-verify-captures`, outside evidence folders.
+The cache is bounded to 10 GB and evicts the oldest entries first. Page load bytes,
+raw recipes, CLI/probe/capture-tool bytes, browser build, axes, queries and capture
+settings identify a bundle. Independent repeats and timeline confirmations are
+kept with it; reuse performs no baseline browser work. Changed effective timeline
+times invalidate the bundle. Unresolved local files fingerprint the whole baseline;
+computed, script-created or external loads disable reuse. Every run prints `BASELINE CAPTURES` reused/taken
+counts. `--baseline-cache off` forces fresh captures and retains today's capture
+sequence. Evidence owns restored copies, so eviction cannot remove a run's frames.
+
+Compare shares its command-owned browser and previews, retaining fresh item
+contexts. Local HTTP requests go to the preview through bounded keep-alive
+connections, preserving response bytes/status while avoiding port exhaustion.
+
 Extract the requested baseline revision once outside all git trees, then give its concept folder to `compare`.
 The baseline can use the same recipe file with `--baseline-recipes`, or its own adjacent recipe file. Both sides
 run the same items and axes. Differences are captured again in fresh contexts before the final exact pixel result;

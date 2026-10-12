@@ -66,6 +66,7 @@ Commands:
           [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
           [all drive page/feature/state/axis options] [--out <evidence-folder>]
           [--timeline] [--timeline-times 1,100,200,...]
+          [--affected-pages] [--baseline-cache off]
   measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>
   cleanup --session <launch-folder|session.json>
 Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
@@ -118,7 +119,8 @@ function parse(argv) {
 		}
 		if (!item.startsWith("--")) throw new Error(`Unexpected argument: ${item}`);
 		const key = item.slice(2);
-		if (["lan", "timeline"].includes(key)) options[key] = true;
+		if (["lan", "timeline", "affected-pages"].includes(key))
+			options[key] = true;
 		else {
 			const value = argv.shift();
 			if (!value || value.startsWith("--"))
@@ -544,8 +546,8 @@ async function cleanup(path) {
 	await jsonOutput(folder, "session.json", { ...session, stopped: true });
 }
 
-async function main() {
-	const { command, options } = parse(process.argv.slice(2));
+export async function main(argv = process.argv.slice(2), services = {}) {
+	const { command, options } = parse(argv);
 	if (command === "help" || command === "--help") return console.log(help);
 	if (
 		["drive", "compare"].includes(command) &&
@@ -754,7 +756,7 @@ async function main() {
 	if (command === "compare")
 		return compare(
 			{ ...options, out: options.out || freshOutput() },
-			{ doctor, child },
+			{ doctor, child, ...services.compare },
 		);
 	if (command === "launch") return launch(options);
 	if (command === "doctor") return doctor(options);

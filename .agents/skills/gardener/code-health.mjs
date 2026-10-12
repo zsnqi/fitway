@@ -168,7 +168,7 @@ function javascriptLinkedReferences(text, extension) {
 	return references;
 }
 
-function linkedReferences(text, extension) {
+export function linkedReferences(text, extension) {
 	if (extension === ".html") {
 		return htmlLinkedReferences(text);
 	}
@@ -179,7 +179,7 @@ function linkedReferences(text, extension) {
 	return [];
 }
 
-function resolveLinkedFile(importer, reference, filesByPath) {
+export function resolveLinkedFile(importer, reference, filesByPath) {
 	const value = assetReference(reference);
 	if (!value) return null;
 	const candidate = path.posix.normalize(
