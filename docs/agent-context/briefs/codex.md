@@ -76,5 +76,9 @@ The brief rules B1-B12 live here. Codex follows a brief to the letter, so most f
 - [ ] B11. Launch runs the `REVIEW.md` review when absent (or with `--new-review`) and stops; record every reading as closed or left open with why, and the current brief SHA-256, in its `dispositions.md` before launching.
 - [ ] B12. The readings the review keeps returning (`REVIEW.md` §"Recurring readings") are closed before it runs.
 - [ ] A test suite that needs a clean tree is run after the commit.
+- [ ] A round that adds or changes tests the fast ladder runs says that CI runs them on Windows without Playwright
+      Chromium or ui-forensics (`.github/workflows/checks.yml`): they pass there, and a proof that needs a real
+      browser is a script in the temp folder, run and reported. (vf-speed and vf-hold, 2026-10-12: both first pushes
+      failed CI for it.)
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.

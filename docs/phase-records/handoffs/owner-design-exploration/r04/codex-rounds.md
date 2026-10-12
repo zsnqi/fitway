@@ -772,3 +772,46 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Disposition:** merged as `cf2f8a2a`. From now on `pnpm codex:round` runs the review into
   `D:/fitway-temp/brief-review/<brief name>-<n>/` and launches only once `dispositions.md` there names every reading
   and the brief's SHA-256 (`docs/agent-context/briefs/REVIEW.md`).
+
+## vf-speed: `briefs/codex-vf-speed.md` (this folder), result `5ba2c2f2` on `owner-r04-vf-speed`, level `xhigh`
+
+- **Set-up:** the verify-fitway round of DECISIONS 47, split by DECISIONS 48 into vf-speed (S1 affected pages, S2 kept
+  baseline frames, S3 F137) and vf-hold, run beside the paused shared-frame round. Its measurements waited for the
+  port pair. Held-out rows VS1-VS10 in `D:/fitway-grader/owner-r04/vf-speed-heldout.md`, written at grading before any
+  measurement.
+- **Pre-launch review (B11, Codex max):** three readings, all closed by sharpening (L1 over every configuration, no
+  baseline browser work on a reused item, tests through the CLI's own compare); B7 left open with its reason: the
+  ports were the shared-frame round's, so no outcome command ran on the base. Dispositions in
+  `D:/fitway-temp/brief-review/vf-speed-1/dispositions.md`.
+- **First push `2f05a734`:** CI run 38277425383 failed 14 of the new tests with `Playwright Chromium missing`: CI runs
+  the ladder without a browser or ui-forensics, which no brief said. Resumed on its thread with that fact
+  (`resume-ci-1.md`); `bdacf8c1` stubbed the browser and passed CI. vf-hold failed the same way (run 38277420287).
+- **Live measurements** (`resume-measure-1.md`): the live run found the kept captures never reused (the key held a
+  generated browser file) and fixed it (`a8ae4d4e`, `5ba2c2f2`). Every brief row PASS by Codex
+  (`D:/fitway-temp/codex-round-vf-speed-1/REPORT-5ba2c2f2.md`): Reports' rerun 162 s to 64 s with 114 reused and 0
+  captured; two full five-page compares of 1,224 items in about 19 minutes each, 12 peak sockets, no
+  `ERR_NO_BUFFER_SPACE`; L1 408 of 408 items and 9 of 9 timeline samples equal to the HEAD's CLI.
+- **Held-out rows, graded by the coordinator** (`D:/fitway-temp/owner-r04-vf-speed-grade/`, CLI at `5ba2c2f2`, its
+  own archives of `7e28c713` and `4352181f`):
+  - VS1-VS3 pass: the shared-frame result takes every page through `shared-frame.js`; a changed recipe entry takes
+    Access alone; a font loaded through CSS `url()` takes its page (`jetbrains-mono-500.woff2`, Access) or every page
+    (`readex-pro-latin.woff2`); the partial line prints first.
+  - VS4-VS6 pass: the coordinator's own archive reused Codex's kept captures (the key is content, not path); cached and
+    fresh runs agree on all 114 Reports items (66 s against 113 s); a planted Reports change under 140 reused
+    captures is DIFFERENT on the same 26 items as a fresh run; a baseline font change reuses nothing.
+  - VS7 partial: one full compare, 1,224 items, 1,234 captures, 66 connections, 12 peak sockets, no
+    `ERR_NO_BUFFER_SPACE`, no stall (F137 fixed); 3 items DIFFERENT, all Daily's Lights chip on the phone half a pixel
+    apart, which is F126: quiet reruns of Daily on the phone show it in 1 of 2 runs under this CLI and 1 of 3 under the
+    HEAD's. Codex's two runs did not hit it; S3's known-problem list did not name it.
+  - VS8 pass: a planted Access difference gives the same verdict on all 128 items under the HEAD's CLI and this one
+    (112 DIFFERENT each). VS9 pass: dropping the recipe from the cache key fails two tests, counting the components
+    sheet as a page fails one; the worktree restored clean. VS10 pass: scope as briefed, recipe counts 44, 31, 46, 30
+    and 14, the cache 1.1 GB in `D:/fitway-verify-captures`.
+- **Found beyond the rows:** kept captures are keyed per page on the whole option set, the baseline port included, so
+  a rerun with fewer axes, or on another port pair, captures afresh (F147, for the parallel-compare round). CI run
+  38309737308 on `5ba2c2f2` failed two Vitest cases at 20 s outside the round's files (the launcher's, F146, and the
+  gardener's H6 at 48.8 s) and passed on a rerun of the failed job.
+- **Failure cause: the brief,** for the first CI failure: it named the local ladder and not CI's machine. The review
+  could not return it (a fact outside the brief). It becomes a checklist line in `docs/agent-context/briefs/codex.md`.
+- **Disposition:** merged as `ebbfecd6`; F137 fixed. F126 now fails a full compare at random and goes first among the
+  shared lows.
