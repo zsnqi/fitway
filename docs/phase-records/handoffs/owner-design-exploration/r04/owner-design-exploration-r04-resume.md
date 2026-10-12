@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `3c5c311b`, 2026-10-12 22:05 +03:00 (handoff: shared-frame paused, vf-speed measuring)
+- **As of:** `codex/owner-redesign-r04` at `d3825a34`, 2026-10-13 00:20 +03:00 (handoff: nothing running; vf-speed done, to grade; shared-frame paused)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-48), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -45,8 +45,10 @@
 - **vf-speed** (S1 affected pages, S2 kept base frames, S3 F137) and **vf-hold** (H1 F143, H2 F144): briefs in
   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` (`codex-vf-speed.md`, `codex-vf-hold.md`), xhigh,
   worktrees D:/Projects/fitway-worktrees/owner-r04-vf-speed and owner-r04-vf-hold (same-named branches, pushed). Code
-  and CI-safe tests are done and CI is green (`bdacf8c1`, `452030fb`). **vf-speed is measuring since 21:59** (ports file written,
-  `resume-measure-1.md`, on `4352181f` as the shared-frame result); vf-hold waits for `free-for-vf-hold.txt`. Run folders `D:/fitway-temp/codex-round-vf-speed-1` and
+  and CI-safe tests are done and CI is green (`bdacf8c1`, `452030fb`). **vf-speed ended at 00:17 on 2026-10-13**, result `5ba2c2f2`
+  (pushed), every row PASS by Codex (`D:/fitway-temp/codex-round-vf-speed-1/REPORT-5ba2c2f2.md`): the live run found the
+  cache never reused and fixed it (`a8ae4d4e`, `5ba2c2f2`); a Reports rerun 162 s to 64 s; one full compare of 1,224
+  items in about 19 minutes with no `ERR_NO_BUFFER_SPACE`. Nothing runs now; vf-hold waits for `free-for-vf-hold.txt`. Run folders `D:/fitway-temp/codex-round-vf-speed-1` and
   `codex-round-vf-hold-1`; B11 in `D:/fitway-temp/brief-review/vf-speed-1/` and `D:/fitway-temp/brief-review/vf-hold-1/`.
   vf-hold's report proposes lines for SKILL.md §"Compare" (the coordinator adds them at merge).
 - **Prepared:** the tool digest `D:/fitway-temp/verify-fitway-round-prep/REPORT.md` (with the port measurement); the
@@ -59,8 +61,8 @@ The user (2026-10-12): the rounds after the current Codex run go to a new coordi
 accounts are theirs. The order, as the user amended it at 22:00 («موافق»): vf-speed and vf-hold measure and merge,
 shared-frame resumes on their CLI and is graded, then the parallel-compare round, then `reports.css` and the shared lows.
 
-1. **vf-speed** ends when its `last-message.md` is newer than `resume-measure-1.md`: grade it (rerun S1's
-   selections, S2's second run reusing every baseline capture, one S3 full compare), merge it, wait for CI.
+1. **Grade vf-speed** (`5ba2c2f2`; its CI on the pushed branch): rerun S1's selections, S2's second run reusing every
+   baseline capture, one S3 full compare; record it in `codex-rounds.md`, merge it, wait for CI.
 2. **vf-hold:** write `free-for-vf-hold.txt`, resume its thread with a measurement message like vf-speed's, grade, merge
    (adding its proposed SKILL.md §"Compare" lines). Then **resume shared-frame** (`resume-any.sh`; tell it the CLI
    changed and to finish its queue on it), and grade it on SH1-SH10 and GH7 with the merged CLI; record both runs, the
@@ -100,7 +102,7 @@ Nothing.
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `3c5c311b`).
+  commit that adds this text (parent `d3825a34`).
 - The merged round worktrees owner-r04-midmotion and owner-r04-gardener and their branches were removed on 2026-10-12
   (links checked first; none pointed outside them).
 - Grading evidence: `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
