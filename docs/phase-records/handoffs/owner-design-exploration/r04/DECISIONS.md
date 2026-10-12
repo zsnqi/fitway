@@ -512,6 +512,19 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - This file stays as it is until the Owner work closes; then its built items shrink to their standing rules as
       they are carried into the ADR (the user agreed, «ممتاز اي اتفق معك»).
 
+48. **The work before Settings runs in parallel where it can** (the user, 2026-10-12, «مب مشكلة ادا ما كان فيه مشاكل
+    ونقدر نسرع الشغل او فيه مهام او جولات نقدر نشغلها بشكل متوازي», on the coordinator's proposal). This amends item
+    47's order:
+    - The verify-fitway round starts now, beside the shared-frame round, in its own worktree, and may split into
+      Codex rounds on disjoint files run side by side. Its affected-page compares, kept base frames and socket fix
+      (F137) then speed up the `reports.css` split and the shared lows. Its builds and tests run at any time; its long
+      compares wait while another round's compares run, until F137 is fixed (the machine: Ryzen 7 7700, 8 cores and
+      16 threads, 31 GB; Windows' default 16,384 dynamic TCP ports, the likely limit behind F137).
+    - The briefs for the `reports.css` split and the shared lows are written and reviewed (B11) while rounds run, and
+      each launches as soon as the round before it on the build branch closes.
+    - Codex resumes on gpt-6.1-sol and falls back to gpt-6-sol on the same thread when gpt-6.1-sol answers "Selected
+      model is at capacity" (the user, 2026-10-12); a usage limit is the user's account switch.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
