@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `f64fd050`, 2026-10-12 15:40 +03:00 (the shared-frame round's second run, measuring F2 and F3)
+- **As of:** `codex/owner-redesign-r04` at `fe8856fd`, 2026-10-12 18:05 +03:00 (shared-frame measuring F3; launch-review running; vf-speed in B11)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-48), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -45,21 +45,38 @@
   `last-message.md` appears in the run folder (and its events stop), and resumes it on its thread if it stopped.
 - **Models in the second run.** gpt-6.1-sol answered "Selected model is at capacity" on every resume from about 12:00
   (`retry.log`, `retry-2.log`); the previous session's end at 13:46 also killed its retry loop mid-compare. At the
-  user's call it resumed by hand on gpt-6-sol at 14:10 (the script's own arguments plus `-m gpt-6-sol`;
-  `events-resume-10.jsonl`), which committed `a8521e98` and reported F1, F4, L1, L2 and P3 PASS but F2 and F3 FAIL,
+  user's call it resumed by hand on gpt-6-sol at 14:10 (`events-resume-10.jsonl`), which committed `a8521e98` and reported F1, F4, L1, L2 and P3 PASS but F2 and F3 FAIL,
   their matrices not run (report kept as `last-message-a8521e98.md`). Sent back to run both matrices and judge every
   not-held sample by F3's rule (`resume-msg-4.md`); at the user's request that resume moved back to gpt-6.1-sol at
-  15:34 through `codex:round` (`resume-msg-5.md`, `events-resume-12.jsonl`), which runs again. `model-switch.md` in
-  the run folder records each switch; grading records which events ran on which model. Resume it with `codex:round`;
-  if gpt-6.1-sol is at capacity again, by hand on gpt-6-sol as above.
+  15:34 through `codex:round` (`resume-msg-5.md`, `events-resume-12.jsonl`), capacity again at 16:08 (F2's page
+  matrices done), gpt-6-sol from 16:09 (`events-resume-13.jsonl`; three real omissions fixed: `d5c0d101`,
+  `1a87ea72`, `8a0f269b`) until the account's usage limit at 17:18; after the user switched the
+  account, gpt-6.1-sol from 17:23 (`resume-msg-7.md`, `events-resume-14.jsonl`). `model-switch.md` in the run folder
+  records each switch; grading records which events ran on which model. Resume it with the run folder's
+  `resume-smart.sh <message file>`: gpt-6.1-sol through `codex:round`, falling back to gpt-6-sol by hand on "at
+  capacity", exit 75 on a usage limit (DECISIONS 48).
+- **When it ends:** write `D:/fitway-temp/owner-r04-ports/shared-frame-result.txt` (its result SHA) and
+  `D:/fitway-temp/owner-r04-ports/free-for-vf-speed.txt`, which free ports 3176-3177 for the vf-speed round.
+- **The launch-review round** (DECISIONS 47-48): brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launch-review.md`
+  (`fe8856fd`, xhigh), worktree D:/Projects/fitway-worktrees/owner-r04-launch-review (branch `owner-r04-launch-review`
+  from `b7331e09`), run folder `D:/fitway-temp/codex-round-launch-review-1`, thread `01a13091-e5ec-7ad0-ac35-5a009f439939`,
+  no ports. B11: `D:/fitway-temp/brief-review/launch-review-1/` (five readings, dispositions there; R2 for F146 was
+  dropped because the base met it locally, so F146 stays open).
+- **The vf-speed round** (S1 affected pages, S2 kept base frames, S3 F137): brief
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-speed.md` (uncommitted until its B11
+  review in `D:/fitway-temp/brief-review/vf-speed-1/` is answered), worktree D:/Projects/fitway-worktrees/owner-r04-vf-speed
+  (branch `owner-r04-vf-speed` from `b7331e09`, installed). It builds at once and measures only once the ports file
+  above exists. Digest: `D:/fitway-temp/verify-fitway-round-prep/REPORT.md` (F143-F144 can run beside it; F131, F132, F136, F126 after).
+- **Done in this session:** F145 (`b7331e09`, a 120 s per-test timeout and every verify-fitway test file run; the
+  ledger leases that `package.json` line). Open: F146, the launcher test "decodes PowerShell Out-File and Set-Content
+  defaults" took 28.4 s against 20 s on CI run 38250368308 (a docs-only commit; 3.8 s locally).
+- **The shared lows' digest:** `D:/fitway-temp/shared-lows-prep/REPORT.md` (low 1 has no recorded frame: confirm first).
 - Its B11 reviews and dispositions: `D:/fitway-temp/brief-review/shared-frame-1/`,
   `D:/fitway-temp/brief-review/shared-frame-2/` and `D:/fitway-temp/brief-review/shared-frame-continue-1/`. Its base
   check: `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt` (known problems: `arrive`, a lone `from` or `to`,
   and `language` / `phone-language` with keyboard or touch; not held at the base on Daily's phone tuner chip and on
   the rail under touch, F126 and F143). Held-out rows SH1-SH10: `D:/fitway-grader/owner-r04/shared-frame-heldout.md`.
-- To check at grading: the first run left two scratch scripts at the worktree root (`.tmp-transform-shared.cjs`,
-  `.tmp-debug.mjs`) against the brief's Scope; they were gone at the reset. Record it as a finding if the second run
-  repeats it; the next briefs carry an explicit clean-tree limit.
+- At grading: the first run left two `.tmp-*` scripts at the worktree root (gone at the reset); a finding if repeated.
 
 ## Next steps
 
@@ -69,13 +86,13 @@ in the background and the run resumed on its thread; accounts are the user's.
 1. **Grade the shared-frame round** on SH1-SH10 and GH7 with the merged CLI, and record both runs and every B11
    disposition in `codex-rounds.md`; on a pass, update INDEX-facing records,
    report its close to the user in a line (DECISIONS 45), push the build branch, and record it in `codex-rounds.md`.
-2. **Then `reports.css` split** (DECISIONS 45, second item): its draft is
+2. **Then `reports.css` split** (DECISIONS 45, second item; written and reviewed while rounds run, DECISIONS 48): its draft is
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`, from
    `D:/fitway-temp/shared-files-map/REPORT.md` §4 and §6; finish it on the shared-frame result, then B11 and a base
    check.
-3. **Then, in DECISIONS 47's order, before Settings:** the shared lows (each checked with the mid-motion compare), the
-   verify-fitway round (F131, F132, F136, F137 with F126 and F143-F145; the launch command running the B11 review;
-   affected-page compares and reused base frames), F140.
+3. **Then, before Settings (DECISIONS 47 as amended by 48):** the shared lows (each checked with the mid-motion
+   compare); the rest of the verify-fitway round beside them (the timeline round for F143-F144, then F131, F132, F136,
+   F126 after vf-speed); F140.
 4. **Then Settings**, Operations and Monitoring (rounds items 6 and 8-11 in DECISIONS). 5. **Daily and Reports' last
 round:** Reports' «معدّل الموجودين» card (`#fig-avg`, DECISIONS 30), fix-3's findings
    (`D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`), the page-only lows (DECISIONS 47).
@@ -109,7 +126,7 @@ Nothing.
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `f64fd050`).
+  commit that adds this text (parent `fe8856fd`).
 - The merged round worktrees owner-r04-midmotion and owner-r04-gardener and their branches were removed on 2026-10-12
   (links checked first; none pointed outside them).
 - Grading evidence: `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
