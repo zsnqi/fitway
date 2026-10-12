@@ -16,8 +16,8 @@ export function timelineTimes(value) {
 	return [...new Set(times)].sort((a, b) => a - b);
 }
 
-// Installed before source scripts. Ordinary execution delegates to the original
-// clocks. Only the final action's timeline uses the logical scheduler below.
+// Installed before source scripts. Page clocks share a logical origin even during
+// startup; the observer alone keeps native clocks for scheduling outside captures.
 export function observeTimeline() {
 	const native = {
 		timeout: window.setTimeout.bind(window),
@@ -27,8 +27,54 @@ export function observeTimeline() {
 		frame: window.requestAnimationFrame.bind(window),
 		cancel: window.cancelAnimationFrame.bind(window),
 		now: performance.now.bind(performance),
+		Date: Date,
 		animate: Element.prototype.animate,
 	};
+	let clock = 0;
+	const epoch = 0;
+	const pageNow = () => (held ? origin + time : clock);
+	Object.defineProperty(performance, "now", {
+		configurable: true,
+		value: pageNow,
+	});
+	Object.defineProperty(performance, "timeOrigin", {
+		configurable: true,
+		value: epoch,
+	});
+	function HeldDate(...args) {
+		if (!new.target) return new native.Date(epoch + pageNow()).toString();
+		return Reflect.construct(
+			native.Date,
+			args.length ? args : [epoch + pageNow()],
+			new.target,
+		);
+	}
+	Object.setPrototypeOf(HeldDate, native.Date);
+	HeldDate.prototype = native.Date.prototype;
+	Object.defineProperty(HeldDate.prototype, "constructor", {
+		configurable: true,
+		writable: true,
+		value: HeldDate,
+	});
+	HeldDate.now = () => Math.floor(epoch + pageNow());
+	globalThis.Date = HeldDate;
+	const eventTimes = new WeakMap();
+	const stamp = (event) => {
+		if (
+			event &&
+			(typeof event === "object" || typeof event === "function") &&
+			!eventTimes.has(event)
+		)
+			eventTimes.set(event, pageNow());
+	};
+	if (globalThis.Event)
+		Object.defineProperty(Event.prototype, "timeStamp", {
+			configurable: true,
+			get() {
+				stamp(this);
+				return eventTimes.get(this);
+			},
+		});
 	let held = false;
 	let waiting = null;
 	let time = 0;
@@ -156,10 +202,7 @@ export function observeTimeline() {
 	const removeListener = EventTarget.prototype.removeEventListener;
 	const completionListeners = new WeakMap();
 	EventTarget.prototype.addEventListener = function (event, fn, options) {
-		if (
-			!["finish", "animationend", "transitionend"].includes(event) ||
-			!(typeof fn === "function" || typeof fn?.handleEvent === "function")
-		)
+		if (!(typeof fn === "function" || typeof fn?.handleEvent === "function"))
 			return addListener.call(this, event, fn, options);
 		const src = source();
 		let entries = completionListeners.get(this);
@@ -176,7 +219,8 @@ export function observeTimeline() {
 		const wrapped =
 			byEvent.get(key) ||
 			function (...args) {
-				if (held)
+				stamp(args[0]);
+				if (held && ["finish", "animationend", "transitionend"].includes(event))
 					note(src, `${event} handler runs outside held animation effects`);
 				return typeof fn === "function"
 					? Reflect.apply(fn, this, args)
@@ -208,6 +252,7 @@ export function observeTimeline() {
 					typeof fn !== "function"
 						? fn
 						: function (...args) {
+								stamp(args[0]);
 								if (held)
 									note(
 										src,
@@ -218,15 +263,31 @@ export function observeTimeline() {
 				);
 			},
 		});
-	for (const prototype of [
-		window.HTMLElement?.prototype,
-		window.SVGElement?.prototype,
-		window.Document?.prototype,
-		window.Window?.prototype,
-	].filter(Boolean))
-		for (const property of ["onanimationend", "ontransitionend"]) {
+	// Native event-property deliveries do not pass through JS addEventListener.
+	// Discover their owners before scripts, including targets outside the DOM,
+	// without evaluating window getters or naming an interface/control.
+	const eventOwners = new Set([window]);
+	const eventTypes = new Set();
+	for (const name of Object.getOwnPropertyNames(window)) {
+		const value = Object.getOwnPropertyDescriptor(window, name)?.value;
+		let prototype = typeof value === "function" ? value.prototype : null;
+		if (
+			!prototype ||
+			!Object.prototype.isPrototypeOf.call(EventTarget.prototype, prototype)
+		)
+			continue;
+		while (prototype && !eventOwners.has(prototype)) {
+			eventOwners.add(prototype);
+			prototype = Object.getPrototypeOf(prototype);
+		}
+	}
+	for (const prototype of eventOwners)
+		for (const property of Object.getOwnPropertyNames(prototype).filter(
+			(name) => /^on/.test(name),
+		)) {
 			const descriptor = Object.getOwnPropertyDescriptor(prototype, property);
-			if (!descriptor?.set) continue;
+			eventTypes.add(property.slice(2));
+			if (!descriptor?.set || !descriptor.configurable) continue;
 			const assigned = new WeakMap();
 			Object.defineProperty(prototype, property, {
 				...descriptor,
@@ -243,7 +304,11 @@ export function observeTimeline() {
 						typeof fn !== "function"
 							? fn
 							: function (...args) {
-									if (held)
+									stamp(args[0]);
+									if (
+										held &&
+										["onanimationend", "ontransitionend"].includes(property)
+									)
 										note(
 											src,
 											`${property} handler runs outside held animation effects`,
@@ -254,6 +319,12 @@ export function observeTimeline() {
 				},
 			});
 		}
+	// Inline handlers are compiled by the browser without invoking those setters.
+	for (const event of eventTypes) {
+		if (typeof window.addEventListener === "function")
+			addListener.call(window, event, stamp, true);
+		document.addEventListener(event, stamp, true);
+	}
 	const clearNative = (task) =>
 		task.kind === "frame"
 			? native.cancel(task.nativeId)
@@ -271,7 +342,7 @@ export function observeTimeline() {
 			source: source(),
 			delay: kind === "frame" ? 1000 / 60 : Math.max(1, Number(delay) || 0),
 			due:
-				(held ? time : native.now()) +
+				(held ? time : clock) +
 				(kind === "frame" ? 1000 / 60 : Math.max(1, Number(delay) || 0)),
 		};
 		if (held && schedulingBlocked) {
@@ -281,11 +352,12 @@ export function observeTimeline() {
 			);
 			return id;
 		}
-		const run = (...values) => {
+		const run = () => {
+			clock = Math.max(clock, task.due);
 			if (kind !== "interval") tasks.delete(id);
-			else task.due = native.now() + task.delay;
+			else task.due = clock + task.delay;
 			if (typeof fn === "function")
-				Reflect.apply(fn, window, kind === "frame" ? values : args);
+				Reflect.apply(fn, window, kind === "frame" ? [clock] : args);
 		};
 		if (!held)
 			task.nativeId =
@@ -375,7 +447,7 @@ export function observeTimeline() {
 		held = true;
 		waiting = null;
 		time = 0;
-		origin = native.now();
+		origin = clock;
 		effects.clear();
 		findings.length = 0;
 		callbacks = 0;
@@ -390,6 +462,8 @@ export function observeTimeline() {
 		queueMicrotask(collect);
 	}
 	for (const event of [
+		"pointerdown",
+		"pointerup",
 		"click",
 		"mousedown",
 		"touchstart",
@@ -408,6 +482,14 @@ export function observeTimeline() {
 					(!waiting.key || waiting.key === e.key)
 				)
 					begin();
+				stamp(e);
+				if (held) {
+					// Flush the pressed pose before the browser removes :active. The
+					// next flush discovers its release transitions, including registered
+					// custom properties, without adding a style or changing the DOM.
+					collect();
+					queueMicrotask(collect);
+				}
 			},
 			true,
 		);
@@ -589,6 +671,7 @@ export function observeTimeline() {
 		info,
 		release() {
 			waiting = null;
+			clock = origin + time;
 			held = false;
 			for (const [a, e] of effects)
 				if (!e.finished && a.playState !== "idle") a.play();
@@ -596,15 +679,16 @@ export function observeTimeline() {
 			stringTasks.length = 0;
 			for (const task of [...tasks.values()]) {
 				const remaining = Math.max(1, task.due - time);
-				task.due = native.now() + remaining;
+				task.due = clock + remaining;
 				const run = () => {
+					clock = Math.max(clock, task.due);
 					if (task.kind !== "interval") tasks.delete(task.id);
-					else task.due = native.now() + task.delay;
+					else task.due = clock + task.delay;
 					if (typeof task.fn === "function")
 						Reflect.apply(
 							task.fn,
 							window,
-							task.kind === "frame" ? [native.now()] : task.args,
+							task.kind === "frame" ? [clock] : task.args,
 						);
 				};
 				task.nativeId =
