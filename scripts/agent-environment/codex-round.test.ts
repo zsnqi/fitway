@@ -34,6 +34,52 @@ const reviewDocument = readFileSync(
 	path.join(repository, "docs/agent-context/briefs/REVIEW.md"),
 	"utf8",
 );
+const realReviewRoot = path.join(
+	repository,
+	"scripts/agent-environment/fixtures/codex-round-reviews",
+);
+const realReviews = [
+	[
+		"gardener-fix-1",
+		5,
+		"4bdbb12f132f75b0941a7b1c48f36dba986f6cae1b9f0ace75985091700001bf",
+	],
+	[
+		"gardener-shared-1",
+		4,
+		"4ec6de261399a92d8c5bd70da61e318a75e51bba9e12b16f14762e2476bd41b6",
+	],
+	[
+		"launch-review-1",
+		5,
+		"b6881c2048e4f8a328c01d25ea3bbe43fa9b5260ba71532afbea2353d652d20c",
+	],
+	[
+		"shared-frame-1",
+		4,
+		"6cbe5347a7178713d9a186ad4152b7e6bcc73db3b34926a632de35525fab73f2",
+	],
+	[
+		"shared-frame-2",
+		5,
+		"98ae005206506437c2da705d87a719cdf611b40601b99bd8d9b32bc7bb7584b1",
+	],
+	[
+		"shared-frame-continue-1",
+		5,
+		"98193158be85224a53538c649e44ba44f2d8128653032e450c2252270c398153",
+	],
+	[
+		"vf-hold-1",
+		4,
+		"41dff2096d0544e8e3d1fae2a7a312331b3a5f78a8af77b0845da87845a3eaa8",
+	],
+	[
+		"vf-speed-1",
+		3,
+		"6f53ea7e1398754e61940614c6bbd9907eb52f35962d366340f25f0d5333c39b",
+	],
+] as const;
 const readingAnswer = `## Reading 1: R1
 
 1. Outcome exploited: R1.
@@ -134,7 +180,7 @@ process.stdin.on('end', () => {
   if (args.includes('read-only')) {
     const capture = {args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), files:fs.readdirSync(process.cwd())};
     fs.appendFileSync(process.env.ROUND_REVIEW_CAPTURE, JSON.stringify(capture) + '\\n');
-    if (!process.env.REVIEW_NO_ANSWER) fs.writeFileSync(args[args.indexOf('-o') + 1], process.env.REVIEW_ANSWER || 'No such readings.\\n');
+    if (!process.env.REVIEW_NO_ANSWER) fs.writeFileSync(args[args.indexOf('-o') + 1], process.env.REVIEW_ANSWER_FILE ? fs.readFileSync(process.env.REVIEW_ANSWER_FILE) : process.env.REVIEW_ANSWER || 'No such readings.\\n');
     process.stdout.write('stand-in review\\n');
     process.exitCode = Number(process.env.REVIEW_EXIT || 0);
     return;
@@ -694,6 +740,113 @@ describe("R1 pre-launch review", () => {
 		rmSync(f.capture);
 		refused(f, f.invoke(["resume", f.run, "--new-review"]), "expected resume");
 		expect(f.reviewCalls()).toEqual([]);
+	});
+});
+
+describe("R1 real review answers", () => {
+	it.each(
+		realReviews,
+	)("reads %s as exactly %i readings in order and permits an answered launch", (name, count, hash) => {
+		const answerFile = path.join(realReviewRoot, `${name}.md`);
+		const bytes = readFileSync(answerFile);
+		// Frozen hashes are from the coordinator's eight original last.md files.
+		expect(createHash("sha256").update(bytes).digest("hex")).toBe(hash);
+		const answer = bytes.toString("utf8");
+		// The expected blocks come directly from the real numbered Markdown;
+		// no production parser or label dictionary shapes these expectations.
+		const blocks = answer
+			.split(/(?=^\d+\. \*\*)/m)
+			.map((block) => block.trim());
+		expect(blocks).toHaveLength(count);
+		const f = fixture();
+		rmSync(f.reviewRoot, { recursive: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER_FILE: answerFile });
+		const printed = result.stdout.match(/^Reading \d+:$/gm) ?? [];
+		expect(printed, "real review reading count").toHaveLength(count);
+		expect(printed).toEqual(
+			Array.from({ length: count }, (_, index) => `Reading ${index + 1}:`),
+		);
+		const section = result.stdout
+			.split("Readings:\n")[1]
+			?.split("\nWrite coordinator dispositions to:")[0];
+		expect(section).toBe(
+			blocks
+				.map((block, index) => `Reading ${index + 1}:\n${block}`)
+				.join("\n\n"),
+		);
+		reviewRefused(f, result, "record its dispositions before launching");
+		const folder = path.join(f.reviewRoot, "brief-1");
+		expect(readFileSync(path.join(folder, "last.md"))).toEqual(bytes);
+		expect(existsSync(path.join(folder, "dispositions.md"))).toBe(false);
+		const unanswered = f.invoke();
+		reviewRefused(f, unanswered, "readings without a disposition");
+		for (let index = 0; index < count; index += 1)
+			expect(unanswered.stderr).toContain(
+				`Reading ${index + 1} (${blocks[index].split(/\r?\n/)[0]})`,
+			);
+		const dispositions = `Brief SHA-256: ${briefHash(f.brief)}\n${Array.from({ length: count }, (_, index) => `Reading ${index + 1}: closed\n`).join("")}`;
+		writeFileSync(path.join(folder, "dispositions.md"), dispositions);
+		const launched = f.invoke();
+		expect(launched.status, launched.output).toBe(0);
+		expect(f.captured().args).toEqual(expectedArgs(f, "last-message.md"));
+		expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
+		expect(f.reviewCalls()).toHaveLength(1);
+		expect(readFileSync(path.join(f.run, "review-readings.md"))).toEqual(bytes);
+		expect(
+			readFileSync(path.join(f.run, "review-dispositions.md"), "utf8"),
+		).toBe(dispositions);
+	});
+
+	it.each([
+		[
+			"prose",
+			"R1 permits a literal reading. The delivered work can miss the goal.",
+		],
+		[
+			"unnumbered readings",
+			readFileSync(path.join(realReviewRoot, "vf-speed-1.md"), "utf8").replace(
+				/^\d+\. /gm,
+				"- ",
+			),
+		],
+		[
+			"more than five numbered readings",
+			`${readFileSync(path.join(realReviewRoot, "gardener-fix-1.md"), "utf8")}\n6. **X3**\n   This is a sixth reading.\n`,
+		],
+		[
+			"numbered prose before the list",
+			`Introductory prose about R1.\n\n${readFileSync(path.join(realReviewRoot, "vf-speed-1.md"), "utf8")}`,
+		],
+		[
+			"missing reading number",
+			readFileSync(path.join(realReviewRoot, "vf-speed-1.md"), "utf8").replace(
+				"2. **S2",
+				"4. **S2",
+			),
+		],
+		["numbered topics without bodies", "1. R1\n2. L1\n"],
+	])("refuses an invalid numbered answer: %s", (_kind, answer) => {
+		const f = fixture();
+		f.answerReview(answer);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
+	});
+
+	it.each([
+		"No readings.",
+		"The brief has no such reading.",
+		"I found no literal readings.",
+	])("reads a no-readings answer as none: %s", (answer) => {
+		const f = fixture();
+		rmSync(f.reviewRoot, { recursive: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER: answer });
+		expect(result.stdout).toContain("Readings:\nNo such readings.\n");
+		expect(result.stdout.match(/^Reading \d+:$/gm) ?? []).toEqual([]);
+		reviewRefused(f, result, "record its dispositions before launching");
+		writeFileSync(
+			path.join(f.reviewRoot, "brief-1", "dispositions.md"),
+			`Brief SHA-256: ${briefHash(f.brief)}\n`,
+		);
+		expect(f.invoke().status).toBe(0);
 	});
 });
 

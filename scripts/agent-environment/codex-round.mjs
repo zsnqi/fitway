@@ -230,8 +230,9 @@ async function reviewProcedure(folder) {
 	};
 }
 
-// The unchanged prompt asks for Markdown, not JSON. Accept numbered readings
-// or reading headings, with the four requested fields; ambiguous text fails closed.
+// The unchanged prompt asks for Markdown, not a fixed set of field labels.
+// Preserve each numbered reading as written; explicit reading headings retain
+// the older four-field format. Ambiguous answers fail closed.
 function parseReadings(answer) {
 	const text = answer.trim();
 	const plain = text.replace(/[*_`]/g, "");
@@ -241,6 +242,34 @@ function parseReadings(answer) {
 		)
 	)
 		return [];
+	const items = [...text.matchAll(/^(\d+)[.)][ \t]+\S[^\n]*/gm)];
+	if (items[0]?.index === 0) {
+		if (
+			items.length > 5 ||
+			items.some((item, index) => Number(item[1]) !== index + 1)
+		)
+			return null;
+		const readings = items.map((item, index) => ({
+			id: index + 1,
+			text: text
+				.slice(item.index, items[index + 1]?.index ?? text.length)
+				.trim(),
+		}));
+		// A bare numbered topic is not a reading: it needs an outcome/limit ID
+		// and a body, but the prompt leaves the body's Markdown wording open.
+		if (
+			readings.some(
+				(reading) =>
+					!/\b[A-Z]+\d+\b/.test(reading.text) ||
+					!reading.text
+						.split(/\r?\n/)
+						.slice(1)
+						.some((line) => line.trim()),
+			)
+		)
+			return null;
+		return readings;
+	}
 	const headings = [
 		...text.matchAll(
 			/^#{1,6}\s+(?:\d+[.)]\s*|Reading\s+\d+\b[^\n]*|[A-Z]\d+\b)[^\n]*/gim,
@@ -258,9 +287,7 @@ function parseReadings(answer) {
 		)
 			return null;
 	}
-	const starts = headings.length
-		? headings
-		: [...text.matchAll(/^\d+[.)]\s+\S[^\n]*/gm)];
+	const starts = headings;
 	if (!starts.length || starts.length > 5) return null;
 	const readings = starts.map((start, index) => ({
 		id: index + 1,
