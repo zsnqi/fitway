@@ -34,6 +34,7 @@
        (Reports' custom period too). -->
   <script src="motion.js" defer blocking="render"></script>
   <script src="picker.js" defer blocking="render"></script>
+  <script src="shared-frame.js" defer blocking="render"></script>
   <script src="activity.js" defer blocking="render"></script>
 </head>
 <!-- data-frame: the frame Daily and Reports take (style.css "the frame"): the rail at 721 px and wider (over the content,
@@ -257,15 +258,5 @@
       </footer>
     </form>
   </dialog>
-  <script>
-    // Access keeps the language and motion switch, as the other page links do.
-    (function () {
-      var p = new URLSearchParams({ lang: document.documentElement.lang });
-      if (new URLSearchParams(location.search).get("motion") === "off") p.set("motion", "off");
-      document.querySelectorAll('[data-nav="access"], [data-tab="access"]').forEach(function (a) {
-        a.setAttribute("href", "access.html?" + p);
-      });
-    })();
-  </script>
 </body>
 </html>

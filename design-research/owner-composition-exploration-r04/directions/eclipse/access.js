@@ -46,19 +46,6 @@
   const nw = (html) => `<span class="nw">${html}</span>`;
   const COPY = {
     ar: {
-      skip: "انتقل إلى المحتوى",
-      railLabel: "الأقسام",
-      brand: "FITWAY، أسماء الأقسام",
-      railTip: "أسماء الأقسام",
-      nav: { daily: "اليوم", reports: "التقارير", activity: "سجل النشاط", access: "الوصول", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
-      tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
-      opsTitle: "حالة التشغيل",
-      more: "المزيد",
-      live: "مباشر",
-      lastReading: "آخر قراءة",
-      hours: "ساعات العمل",
-      langAria: "التبديل إلى اللغة الإنجليزية",
-      langGlyph: "EN",
       docTitle: "الوصول · FITWAY (مفهوم)",
       title: "الوصول",
       history: "سجل الوصول",
@@ -195,8 +182,6 @@
       },
       doneLink: "عرض في سجل النشاط",
       // The page's states: the status words are every page's (STW-1, STW-2).
-      errorWord: "خطأ",
-      errorLine: "تعذّر التحميل",
       errorFull: "تعذّر تحميل مكتب الاستقبال والمالكين",
       errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
       retry: "إعادة المحاولة",
@@ -206,19 +191,6 @@
       arrivedSay: "حُمّل مكتب الاستقبال والمالكون",
     },
     en: {
-      skip: "Skip to content",
-      railLabel: "Sections",
-      brand: "FITWAY, section names",
-      railTip: "Section names",
-      nav: { daily: "Today", reports: "Reports", activity: "Activity log", access: "Access", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
-      tabs: { daily: "Today", reports: "Reports", activity: "Activity", access: "Access", settings: "Settings" },
-      opsTitle: "Operations status",
-      more: "More",
-      live: "Live",
-      lastReading: "Last reading",
-      hours: "Open",
-      langAria: "Switch to Arabic",
-      langGlyph: "AR",
       docTitle: "Access · FITWAY (concept)",
       title: "Access",
       history: "Access history",
@@ -341,8 +313,6 @@
         mine: () => "Your password was changed.",
       },
       doneLink: "View in Activity log",
-      errorWord: "Error",
-      errorLine: "Couldn't load",
       errorFull: "Couldn't load the front desk and the owners",
       errorHint: "Check the connection, then try again.",
       retry: "Try again",
@@ -352,7 +322,7 @@
       arrivedSay: "Front desk and owners loaded",
     },
   };
-  const L = COPY[LANG];
+  const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
 
   /* ------------------------------------------------------------ the gym's access (synthetic, from the contract)
    * Owners: the signed-in owner «فهد», «نورة», and a deactivated owner whose name was typed in Latin letters. A name is
@@ -425,247 +395,45 @@
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
   const motionOn = () => !URL_OFF && !mqReduce.matches;
   root.dataset.motion = motionOn() ? "on" : "off";
-  const EASE = { rail: "cubic-bezier(0.22, 1, 0.36, 1)", railClose: "cubic-bezier(0.4, 0, 0.2, 1)" };
-  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12 };
   // The interaction motion (dialogs, popovers, labels, done lines) is motion.js's, every Owner page's (DECISIONS 36).
   const M = window.EclipseMotion;
-  const f2 = (n) => n.toFixed(2);
 
   /* ---------------------------------------------------------------- shell */
-  document.title = L.docTitle;
-  document.querySelectorAll("[data-t]").forEach((el) => { const v = L[el.dataset.t]; if (typeof v === "string") el.innerHTML = v; });
-  const rail = $("#rail"), brand = $("#brand");
-  rail.setAttribute("aria-label", L.railLabel);
-  brand.setAttribute("aria-label", L.brand);
-  $$(".rail-item[data-nav]").forEach((a) => {
-    const key = a.dataset.nav, name = L.nav[key];
-    $(".rail-name", a).textContent = name;
-    a.setAttribute("aria-label", key === "lang" ? L.langAria : name);
-    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
-  });
-  $("#lang-glyph").textContent = L.langGlyph;
-  $("#lang-glyph").setAttribute("lang", "en");
-  // Today, Reports and Activity log keep the language (and ?motion=off), as their own links to each other do; the way to
-  // the access records opens Activity log on the access kind (OWN-A9).
-  const keep = new URLSearchParams({ lang: LANG });
-  if (URL_OFF) keep.set("motion", "off");
-  for (const id of ["#daily-link", "#tab-daily"]) $(id).setAttribute("href", `index.html?${keep}`);
-  for (const id of ["#reports-link", "#tab-reports"]) $(id).setAttribute("href", `reports.html?${keep}`);
-  for (const id of ["#activity-link", "#tab-activity"]) $(id).setAttribute("href", `activity.html?${keep}`);
-  const LOG_HREF = `activity.html?kind=access&${keep}`;
-  const historyLink = $("#history-link");
-  historyLink.setAttribute("href", LOG_HREF);
-  historyLink.setAttribute("aria-label", L.historyName);
-  const langLink = $("#lang-link"), menuLang = $("#menu-lang");
-  for (const el of [langLink, menuLang]) el.setAttribute("hreflang", RTL ? "en" : "ar");
-  $(".rail-name", langLink).setAttribute("lang", RTL ? "en" : "ar");
-  {
-    // The other language keeps every review switch.
-    const p = new URLSearchParams(location.search);
-    p.set("lang", RTL ? "en" : "ar");
-    langLink.setAttribute("href", `?${p}`);
-    menuLang.setAttribute("href", `?${p}`);
-  }
-
-  /* ---- rail: the Daily page's rail and its motion (daily.js "rail"), as every Owner page takes it. */
-  let railOpen = false;
-  let openDlg = null;
-  const railRun = { anims: [], surface: null, open: false };
-  function finishRail() {
-    if (!railRun.surface) return;
-    const anims = railRun.anims;
-    railRun.anims = [];
-    anims.forEach((a) => a.cancel());
-    railRun.surface.remove();
-    railRun.surface = null;
-    rail.classList.remove("is-morph");
-    rail.dataset.open = String(railRun.open);
-  }
-  function animateRail(open) {
-    finishRail();
-    if (!motionOn()) { rail.dataset.open = String(open); return; }
-    const s = document.createElement("i");
-    s.className = "rail-surface";
-    s.setAttribute("aria-hidden", "true");
-    s.innerHTML = '<i class="rs-shadow"></i><i class="rs-start"><i></i></i><i class="rs-mid"><i></i></i><i class="rs-end"><i></i></i>';
-    rail.prepend(s);
-    rail.classList.add("is-morph");
-    rail.dataset.open = "true";
-    railRun.surface = s;
-    railRun.open = open;
-    const [shadow, start, mid, end] = s.children;
-    const d = (RTL ? -1 : 1) * T.railDist;
-    const o = open ? { duration: T.railOpen, easing: EASE.rail, fill: "both" } : { duration: T.railClose, easing: EASE.railClose, fill: "both" };
-    const kf = (a, b) => (open ? [a, b] : [b, a]);
-    const an = [];
-    an.push(end.animate(kf({ transform: "translateX(0px)" }, { transform: `translateX(${d}px)` }), o));
-    an.push(mid.animate(kf({ transform: "scaleX(0)" }, { transform: "scaleX(1)" }), o));
-    an.push(shadow.animate(kf({ opacity: 0 }, { opacity: 1 }), o));
-    [start, mid, end].forEach((p) => an.push(p.firstElementChild.animate(kf({ opacity: 0 }, { opacity: 1 }), o)));
-    const rr = rail.getBoundingClientRect(), closedW = rr.width - T.railDist;
-    rail.querySelectorAll(".rail-name").forEach((n) => {
-      const bx = n.getBoundingClientRect();
-      const a = RTL ? rr.right - bx.right : bx.left - rr.left, w = bx.width;
-      const p0 = Math.min(1, Math.max(0, (a + T.railReveal - closedW) / T.railDist));
-      const p1 = Math.min(1, Math.max(p0, (a + w + T.railReveal - closedW) / T.railDist));
-      const clip = (hidden) => { const e = f2(hidden ? w + 8 : -8); return RTL ? `inset(-8px -8px -8px ${e}px)` : `inset(-8px ${e}px -8px -8px)`; };
-      const frames = [{ offset: 0, clipPath: clip(1) }, { offset: p0, clipPath: clip(1) }, { offset: p1, clipPath: clip(0) }, { offset: 1, clipPath: clip(0) }];
-      an.push(n.animate(open ? frames : frames.map((k) => ({ ...k, offset: 1 - k.offset })).reverse(), o));
-    });
-    railRun.anims = an;
-    Promise.all(an.map((x) => x.finished)).then(() => { if (railRun.anims === an) finishRail(); }).catch(() => {});
-  }
-
-  /* ---- the frame (every Owner page's): the desktop rail at 1024 px and wider; the same rail from 721 to 1023 px as a
-   * modal layer; at 720 px and below the bar and the compact header, whose menu holds Monitoring, the language and sign
-   * out. At every size the header's status opens Operations' details. */
-  const mqTablet = matchMedia("(min-width: 721px) and (max-width: 1023px)");
-  const mqPhone = matchMedia("(max-width: 720px)");
-  const scrim = $("#rail-scrim");
-  const railFocusables = () => [...rail.querySelectorAll("button, a[href]")];
-  let railModal = false, scrimFade = null;
-  const setRailModal = (on) => {
-    if (on === railModal) return;
-    railModal = on;
-    for (const el of [$("#main"), $(".skip")]) el.inert = on;
-    if (scrimFade) { scrimFade.cancel(); scrimFade = null; }
-    scrim.style.pointerEvents = on ? "" : "none";
-    if (on) scrim.hidden = false;
-    if (!motionOn() || scrim.hidden) { scrim.hidden = !on; return; }
-    const run = scrim.animate(on ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }],
-      on ? { duration: T.railOpen, easing: EASE.rail } : { duration: T.railClose, easing: EASE.railClose, fill: "forwards" });
-    scrimFade = run;
-    run.finished.then(() => { if (scrimFade !== run) return; scrimFade = null; if (!on) { scrim.hidden = true; run.cancel(); } }).catch(() => {});
-  };
-  const setRail = (open) => {
-    if (open === railOpen) return;
-    railOpen = open;
-    brand.setAttribute("aria-expanded", String(open));
-    setRailModal(open && mqTablet.matches);
-    animateRail(open);
-  };
-  brand.addEventListener("click", () => setRail(!railOpen));
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && railOpen && !openDlg) { setRail(false); brand.focus(); } });
-  document.addEventListener("pointerdown", (e) => { if (railOpen && !rail.contains(e.target)) setRail(false); });
-  rail.addEventListener("focusout", (e) => { if (railOpen && !railModal && e.relatedTarget && !rail.contains(e.relatedTarget)) setRail(false); });
-  rail.addEventListener("keydown", (e) => {
-    if (e.key !== "Tab" || !railModal) return;
-    const f = railFocusables(), i = f.indexOf(document.activeElement);
-    const next = e.shiftKey ? (i <= 0 ? f[f.length - 1] : null) : (i === f.length - 1 ? f[0] : null);
-    if (next) { e.preventDefault(); next.focus(); }
-  });
-
-  const layers = { ops: { btn: $("#ops-btn"), pop: $("#ops-pop") }, menu: { btn: $("#menu-btn"), pop: $("#menu-pop") } };
-  let openLayer = null;
-  const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
-  // Each unrolls from its control and rolls back up (motion.js); focus moves at once either way.
-  function showLayer(name, focus = "first") {
-    // One panel replacing another: the old one goes at once, so the two never overlap while one leaves.
-    if (openLayer && openLayer !== name) hideLayer(openLayer, false, true);
-    const { btn, pop } = layers[name];
-    openLayer = name;
-    pop.hidden = false;
-    btn.setAttribute("aria-expanded", "true");
-    if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
-    else pop.focus();
-    M.popOpen(pop);
-  }
-  function hideLayer(name, returnFocus, instant = false) {
-    const { btn, pop } = layers[name];
-    if (pop.hidden) return;
-    if (!instant) M.popClose(pop);
-    pop.hidden = true;
-    btn.setAttribute("aria-expanded", "false");
-    if (openLayer === name) openLayer = null;
-    if (returnFocus) btn.focus();
-  }
-  for (const [name, { btn, pop }] of Object.entries(layers)) {
-    btn.addEventListener("click", () => (pop.hidden ? showLayer(name) : hideLayer(name, true)));
-    pop.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); hideLayer(name, true); } });
-    pop.addEventListener("focusout", (e) => { if (!pop.hidden && !pop.contains(e.relatedTarget) && e.relatedTarget !== btn && e.relatedTarget) hideLayer(name, false); });
-  }
-  layers.menu.btn.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); showLayer("menu", e.key === "ArrowUp" ? "last" : "first"); }
-  });
-  layers.menu.pop.addEventListener("keydown", (e) => {
-    const it = menuItems(), i = it.indexOf(document.activeElement);
-    const go = (j) => { e.preventDefault(); it[(j + it.length) % it.length].focus(); };
-    if (e.key === "ArrowDown") go(i + 1);
-    else if (e.key === "ArrowUp") go(i - 1);
-    else if (e.key === "Home") go(0);
-    else if (e.key === "End") go(it.length - 1);
-    else if (e.key === "Tab") hideLayer("menu", true);
-    else if (e.key === " ") { e.preventDefault(); document.activeElement.click(); }
-  });
-  for (const id of ["#menu-signout", "#menu-monitoring", "#ops-link"]) $(id).addEventListener("click", (e) => e.preventDefault());
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openLayer && !openDlg) hideLayer(openLayer, true); });
-  document.addEventListener("pointerdown", (e) => {
-    if (!openLayer) return;
-    const { btn, pop } = layers[openLayer];
-    // A press on the other panel's control replaces this one: it goes at once, so the two never overlap.
-    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false, Object.values(layers).some((l) => l.btn.contains(e.target)));
-  });
-  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false, true); };
-  mqTablet.addEventListener("change", onFrameChange);
-  mqPhone.addEventListener("change", onFrameChange);
-  layers.menu.btn.setAttribute("aria-label", L.more);
-  $("#menu-lang-glyph").textContent = L.langGlyph;
-  $("#menu-lang-glyph").setAttribute("lang", "en");
-  $("#menu-lang-name").textContent = L.nav.lang;
-  $("#menu-lang-name").setAttribute("lang", RTL ? "en" : "ar");
-  $("#menu-signout-name").textContent = L.nav.signout;
-  $("#menu-monitoring-name").textContent = L.nav.monitoring;
-  $("#ops-link-name").textContent = L.nav.operations;
-  $("#tabbar").setAttribute("aria-label", L.railLabel);
-  $$(".tb-item[data-tab]").forEach((a) => {
-    const key = a.dataset.tab;
-    $(".tb-name", a).textContent = L.tabs[key];
-    a.setAttribute("aria-label", L.nav[key]);
-    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
-  });
-
-  /* The frame's status (STW-1): the gym's Operations status, as on every screen; in the concept, live with its last
-   * reading at 7:42 PM. While the page loads the status is not known (STW-2); a first load that fails says Error, as
-   * Reports' and Activity log's do (DECISIONS item 14). */
-  const NOW_MIN = 19 * 60 + 42, DAY_OPEN = 360, DAY_CLOSE = 60;   // 7:42 PM; open 6:00 AM to 1:00 AM
+  const NOW_MIN = 19 * 60 + 42, DAY_OPEN = 360, DAY_CLOSE = 60;
   const DASH = "–";
   const fmtClock = (mins) => {
     const h = Math.floor(mins / 60) % 24, m = mins % 60;
     return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${RTL ? (h >= 12 ? "م" : "ص") : h >= 12 ? "PM" : "AM"}`;
   };
   const timeText = (mins) => nw(bdi(fmtClock(mins)));
-  const SVG_ERR = `<svg class="ico ico-err" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`;
-  const SVG_CLOCK = `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 2"/></svg>`;
-  const SVG_OFF = `<svg class="ico ico-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M6.3 17.7 17.7 6.3"/></svg>`;
+  const SVG_ERR = EclipseFrame.icons.error;
   const OPS_STATES = {
-    live: (m = NOW_MIN) => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
-    delayed: (m = NOW_MIN - 13) => ({ cls: "is-delayed", mark: SVG_CLOCK, word: RTL ? "متأخر" : "Delayed", line: `${L.lastReading} ${timeText(m)}` }),
-    closed: () => ({ cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: RTL ? "مغلق" : "Closed", line: RTL ? `يفتح ${timeText(DAY_OPEN)}` : `Opens ${timeText(DAY_OPEN)}` }),
-    offline: () => ({ cls: "is-off", mark: SVG_OFF, word: RTL ? "غير متصل" : "Offline", line: RTL ? "لا عدّ حاليًا" : "No current count" }),
+    live: (m = NOW_MIN) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
+    delayed: (m = NOW_MIN - 13) => ({ cls: "is-delayed", mark: EclipseFrame.icons.clock, word: RTL ? "متأخر" : "Delayed", line: `${L.lastReading} ${timeText(m)}` }),
+    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: RTL ? "مغلق" : "Closed", line: RTL ? `يفتح ${timeText(DAY_OPEN)}` : `Opens ${timeText(DAY_OPEN)}` }),
+    offline: () => ({ cls: "is-off", mark: EclipseFrame.icons.offline, word: RTL ? "غير متصل" : "Offline", line: RTL ? "لا عدّ حاليًا" : "No current count" }),
     error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
   };
   const OPS = ["delayed", "closed", "offline"].includes(params.get("ops")) ? params.get("ops") : "live";
-  let statusLoad = null;
-  function renderStatus() {
-    const btn = layers.ops.btn;
-    const loading = phase === "loading";
-    if (loading && !statusLoad) { statusLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: L.loadingWord }); btn.before(statusLoad); }
-    if (!loading && statusLoad) { statusLoad.remove(); statusLoad = null; }
-    btn.hidden = loading;
-    const s = OPS_STATES[phase === "error" || phase === "retrying" ? "error" : OPS]();
-    btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
-    const words = (x) => `${x.mark}<span class="hb-word">${x.word}</span>` +
-      `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${x.line}</span>`;
-    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${words(s)}`;
-    // The slot holds every status's width with the verified widest time, 10:44 AM (decision 24), as on every page.
-    $("#ops-res").innerHTML = Object.values(OPS_STATES).map((f) => `<span class="hb-r">${words(f(644))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
-    $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
-    $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
-    $("#ops-last").innerHTML = s.detail || s.line;
-    $("#ops-hours").innerHTML = `${L.hours} ${nw(`${bdi(fmtClock(DAY_OPEN))} ${DASH} ${bdi(fmtClock(DAY_CLOSE))}`)}`;
-  }
-
-  const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
+  const keep = new URLSearchParams({ lang: LANG });
+  if (URL_OFF) keep.set("motion", "off");
+  const LOG_HREF = `activity.html?kind=access&${keep}`;
+  let openDlg = null;
+  const frame = EclipseFrame.init({
+    L, RTL, motionOn, Motion: M, URL_OFF,
+    links: (() => { const p = new URLSearchParams({ lang: LANG }); if (URL_OFF) p.set("motion", "off"); return {
+      daily: `index.html?${p}`, reports: `reports.html?${p}`, activity: `activity.html?${p}`,
+    }; })(),
+    extraLinks: { "#history-link": `activity.html?kind=access&${(() => { const p = new URLSearchParams({ lang: LANG }); if (URL_OFF) p.set("motion", "off"); return p; })()}` },
+    isDialogOpen: () => !!openDlg,
+    status: {
+      phase: () => phase, key: (p) => p === "error" || p === "retrying" ? "error" : OPS,
+      states: OPS_STATES, reserveMinute: 644,
+      hours: () => `${L.hours} ${nw(`${bdi(fmtClock(DAY_OPEN))} ${DASH} ${bdi(fmtClock(DAY_CLOSE))}`)}`,
+    },
+  });
+  const { mqPhone } = frame;
+  $("#history-link").setAttribute("aria-label", L.historyName);
 
   /* ---------------------------------------------------------------- icons (ICO-1: a 24 grid, round, currentColor) */
   const svg = (cls, body) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`;
@@ -870,7 +638,7 @@
   }
   function renderAll() {
     renderCards();
-    renderStatus();
+
     root.dataset.phase = phase;
   }
   // The control that stands for an action, after a render: by its key, or the row's name when the row lost it (an owner
@@ -890,8 +658,8 @@
     .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length && x.getAttribute("type") !== "hidden" && !x.classList.contains("acc-user"));
   function openDialog(dlg, opener, first) {
     if (openDlg) closeDialog(openDlg.dlg, { instant: true, back: null, quiet: true });
-    if (railOpen) setRail(false);
-    if (openLayer) hideLayer(openLayer, false);
+    if (frame.state.railOpen) frame.setRail(false);
+    if (frame.state.openLayer) frame.hideLayer(frame.state.openLayer, false);
     openDlg = { dlg, opener };
     dlg.showModal();
     dlg.classList.add("is-open");

@@ -201,10 +201,11 @@ the areas). Recommended's middle, 14.3, is above A's 13.0 on the same method.
 is complete at first paint, and something moves only when the data really changes or the owner acts. The first-open
 intro (11 below) reveals the readings inside the still surfaces once per tab, on their first eligible arrival.
 
-Daily's data motion lives in the "motion" section of `daily.js`; the interaction motion every Owner page shares (dialogs,
-popovers, a button's label, a dialog that settles, a done state) lives in `motion.js` (12 below), which every page
-loads before its own script. Both use the Web Animations API, and the few pieces they need are in the motion section of
-`style.css`. No glyph ever changes opacity, anywhere:
+Daily's data motion lives in the "motion" section of `daily.js`; the frame shell (rail, header panels, labels and status
+details) lives once in `shared-frame.js`, and the interaction motion every Owner page shares (dialogs, popovers, a
+button's label, a dialog that settles, a done state) lives in `motion.js` (12 below). Every page loads the shared frame
+and motion scripts before its own script. Both use the Web Animations API, and the few pieces they need are in the motion
+section of `style.css`. No glyph ever changes opacity, anywhere:
 - numbers roll inside a clip;
 - a word that replaces a word on a button rolls through its line (12); other words swap at once;
 - the tooltip appears, changes and leaves at once;

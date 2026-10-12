@@ -35,25 +35,11 @@
   const arMin = (n) => (n === 1 ? "دقيقة" : n === 2 ? "دقيقتين" : n % 100 >= 3 && n % 100 <= 10 ? `${n} دقائق` : `${n} دقيقة`);
   const COPY = {
     ar: {
-      skip: "انتقل إلى المحتوى",
-      railLabel: "الأقسام",
-      brand: "FITWAY، أسماء الأقسام",
-      nav: { daily: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
       // The frame (step 3): the logo's name on keyboard focus, the bar's short names (each inside its section's full
       // name, which stays the accessible name), the Operations status, and the phone's menu.
-      railTip: "أسماء الأقسام",
-      tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
-      opsTitle: "حالة التشغيل",
-      more: "المزيد",
-      langAria: "التبديل إلى اللغة الإنجليزية",
-      langGlyph: "EN",
       docTitle: "اليوم · FITWAY (مفهوم)",
       title: "اليوم",
       date: `الأربعاء <bdi>23</bdi> سبتمبر <bdi>2026</bdi>`,
-      hours: "ساعات العمل",
-      live: "مباشر",
-      delayed: "متأخر",
-      lastReading: "آخر قراءة",
       glance: "اليوم باختصار",
       nowTitle: "داخل الصالة الآن",
       staleTitle: "آخر قراءة",
@@ -103,13 +89,8 @@
       // details; the rest says what the owner can know or do.
       loadingWord: "جارٍ التحميل…",
       loadingSay: "جارٍ تحميل قراءات اليوم",
-      closed: "مغلق",
       opens: (t) => `يفتح ${t}`,
-      offline: "غير متصل",
-      noCount: "لا عدّ حاليًا",
       checkOps: "تحقّق من حالة التشغيل",
-      errorWord: "خطأ",
-      errorLine: "تعذّر التحميل",
       errorFull: "تعذّر تحميل قراءات اليوم",
       errorSay: "تعذّر تحميل القراءات",
       errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
@@ -119,23 +100,9 @@
       sayOffline: "غير متصل: لا عدّ حاليًا.",
     },
     en: {
-      skip: "Skip to content",
-      railLabel: "Sections",
-      brand: "FITWAY, section names",
-      nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
-      railTip: "Section names",
-      tabs: { daily: "Today", reports: "Reports", activity: "Activity", access: "Access", settings: "Settings" },
-      opsTitle: "Operations status",
-      more: "More",
-      langAria: "Switch to Arabic",
-      langGlyph: "AR",
       docTitle: "Today · FITWAY (concept)",
       title: "Today",
       date: "Wednesday, 23 September 2026",
-      hours: "Open",
-      live: "Live",
-      delayed: "Delayed",
-      lastReading: "Last reading",
       glance: "Today at a glance",
       nowTitle: "Inside now",
       staleTitle: "Last reading",
@@ -180,13 +147,8 @@
       notes: { miss: "No readings", zero: "Empty", peak: "Peak", latest: "Latest reading" },
       loadingWord: "Loading…",
       loadingSay: "Loading today's readings",
-      closed: "Closed",
       opens: (t) => `Opens ${t}`,
-      offline: "Offline",
-      noCount: "No current count",
       checkOps: "Check the Operations status",
-      errorWord: "Error",
-      errorLine: "Couldn't load",
       errorFull: "Couldn't load today's readings",
       errorSay: "Couldn't load readings",
       errorHint: "Check the connection, then try again.",
@@ -196,7 +158,7 @@
       sayOffline: "Offline: no current count.",
     },
   };
-  const L = COPY[LANG];
+  const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
 
   /* ------------------------------------------------------------ day constants */
   const DAY = 1140;               // 6:00 AM to 1:00 AM next day, gym time (Riyadh)
@@ -526,245 +488,28 @@
   Motion.setGate(() => opts.motion);
 
   /* ---------------------------------------------------------------- shell */
-  document.title = L.docTitle;
-  document.querySelectorAll("[data-t]").forEach((el) => { const v = L[el.dataset.t]; if (typeof v === "string") el.innerHTML = v; });
-  const rail = $("#rail"), brand = $("#brand");
-  rail.setAttribute("aria-label", L.railLabel);
-  brand.setAttribute("aria-label", L.brand);
-  document.querySelectorAll(".rail-item[data-nav]").forEach((a) => {
-    const key = a.dataset.nav, name = L.nav[key];
-    $(".rail-name", a).textContent = name;
-    a.setAttribute("aria-label", key === "lang" ? L.langAria : name);
-    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
-  });
-  $("#lang-glyph").textContent = L.langGlyph;
-  $("#lang-glyph").setAttribute("lang", "en");
-  {
-    const p = new URLSearchParams(location.search);
-    p.set("lang", RTL ? "en" : "ar");
-    const link = $("#lang-link");
-    link.setAttribute("href", `?${p.toString()}`);
-    link.setAttribute("hreflang", RTL ? "en" : "ar");
-    $(".rail-name", link).setAttribute("lang", RTL ? "en" : "ar");
-  }
-  {
-    // Reports (reports.html, the second Eclipse page) keeps the chosen language, and ?motion=off. The language always
-    // comes first, so motion=off is only ever appended to it (as on the language link).
-    const p = new URLSearchParams({ lang: LANG });
-    if (URL_OFF) p.set("motion", "off");
-    $("#reports-link").setAttribute("href", `reports.html?${p}`);
-    $("#tab-reports").setAttribute("href", `reports.html?${p}`);
-    // Activity log (activity.html, the third Eclipse page) the same way.
-    $("#activity-link").setAttribute("href", `activity.html?${p}`);
-    $("#tab-activity").setAttribute("href", `activity.html?${p}`);
-  }
-
-  /* ---- the frame (step 3; step 4 moved Operations out of the rail). Breakpoints: the desktop rail at 1024 px and wider
-   * (it opens over the content, as it always has); the same rail from 721 to 1023 px, where it opens over the content as
-   * a modal layer (a scrim, the content inert, focus kept inside); at 720 px and below the bar at the bottom and the
-   * compact header, whose menu holds Monitoring, the language and sign out. At every size the header's status opens
-   * Operations' details: the one way to Operations. Every layer opens from the keyboard, closes with Escape and returns
-   * focus to the control that opened it. */
-  const mqTablet = matchMedia("(min-width: 721px) and (max-width: 1023px)");
-  const mqPhone = matchMedia("(max-width: 720px)");
-  const scrim = $("#rail-scrim");
-  const railFocusables = () => [...rail.querySelectorAll("button, a[href]")];
-  let railModal = false, scrimFade = null;
-  // At 721-1023 px the open rail is a modal layer: the rest of the page is inert and dimmed. The scrim (it holds no
-  // text) fades with the rail's own timing; the page is interactive again the moment the rail starts to close.
-  const setRailModal = (on) => {
-    if (on === railModal) return;
-    railModal = on;
-    for (const el of [$("#main"), $(".skip")]) el.inert = on;
-    if (scrimFade) { scrimFade.cancel(); scrimFade = null; }
-    scrim.style.pointerEvents = on ? "" : "none";
-    if (on) scrim.hidden = false;
-    if (!motionOn() || scrim.hidden) { scrim.hidden = !on; return; }
-    const run = scrim.animate(on ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }],
-      on ? { duration: T.railOpen, easing: EASE.rail } : { duration: T.railClose, easing: EASE.railClose, fill: "forwards" });
-    scrimFade = run;
-    run.finished.then(() => { if (scrimFade !== run) return; scrimFade = null; if (!on) { scrim.hidden = true; run.cancel(); } }).catch(() => {});
-  };
-  let railOpen = false;
-  const setRail = (open) => {
-    if (open === railOpen) return;
-    endIntro("rail"); // the intro yields to the owner: it settles at once (motion section)
-    railOpen = open;
-    brand.setAttribute("aria-expanded", String(open));
-    setRailModal(open && mqTablet.matches);
-    animateRail(open); // motion section; without motion it only switches data-open
-  };
-  brand.addEventListener("click", () => setRail(!railOpen));
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && railOpen) { setRail(false); brand.focus(); } });
-  document.addEventListener("pointerdown", (e) => { if (railOpen && !rail.contains(e.target)) setRail(false); });
-  // On the desktop the open rail is not modal: when keyboard focus leaves it, it closes, so focus never lands on
-  // content hidden under it (FOC-3).
-  rail.addEventListener("focusout", (e) => { if (railOpen && !railModal && e.relatedTarget && !rail.contains(e.relatedTarget)) setRail(false); });
-  // The modal rail keeps Tab and Shift+Tab inside it, in its visual order.
-  rail.addEventListener("keydown", (e) => {
-    if (e.key !== "Tab" || !railModal) return;
-    const f = railFocusables(), i = f.indexOf(document.activeElement);
-    const next = e.shiftKey ? (i <= 0 ? f[f.length - 1] : null) : (i === f.length - 1 ? f[0] : null);
-    if (next) { e.preventDefault(); next.focus(); }
-  });
-
-  // The status's details (every size) and the phone's menu. One is open at a time; each closes with Escape (focus
-  // returns to its button), a tap outside, or focus leaving it. The details are a non-modal dialog that takes focus; the menu is a
-  // menu (arrow keys, Home and End; Tab closes it and moves on).
-  const layers = {
-    ops: { btn: $("#ops-btn"), pop: $("#ops-pop") },
-    menu: { btn: $("#menu-btn"), pop: $("#menu-pop") },
-  };
-  let openLayer = null;
-  const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
-  // Each unrolls from its control and rolls back up (motion.js); focus moves at once either way.
-  function showLayer(name, focus = "first") {
-    // One panel replacing another: the old one goes at once, so the two never overlap while one leaves.
-    if (openLayer && openLayer !== name) hideLayer(openLayer, false, true);
-    const { btn, pop } = layers[name];
-    openLayer = name;
-    pop.hidden = false;
-    btn.setAttribute("aria-expanded", "true");
-    if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
-    else pop.focus();
-    Motion.popOpen(pop);
-  }
-  function hideLayer(name, returnFocus, instant = false) {
-    const { btn, pop } = layers[name];
-    if (pop.hidden) return;
-    if (!instant) Motion.popClose(pop);
-    pop.hidden = true;
-    btn.setAttribute("aria-expanded", "false");
-    if (openLayer === name) openLayer = null;
-    if (returnFocus) btn.focus();
-  }
-  for (const [name, { btn, pop }] of Object.entries(layers)) {
-    btn.addEventListener("click", () => (pop.hidden ? showLayer(name) : hideLayer(name, true)));
-    pop.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); hideLayer(name, true); } });
-    pop.addEventListener("focusout", (e) => { if (!pop.hidden && !pop.contains(e.relatedTarget) && e.relatedTarget !== btn && e.relatedTarget) hideLayer(name, false); });
-  }
-  layers.menu.btn.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); showLayer("menu", e.key === "ArrowUp" ? "last" : "first"); }
-  });
-  layers.menu.pop.addEventListener("keydown", (e) => {
-    const it = menuItems(), i = it.indexOf(document.activeElement);
-    const go = (j) => { e.preventDefault(); it[(j + it.length) % it.length].focus(); };
-    if (e.key === "ArrowDown") go(i + 1);
-    else if (e.key === "ArrowUp") go(i - 1);
-    else if (e.key === "Home") go(0);
-    else if (e.key === "End") go(it.length - 1);
-    else if (e.key === "Tab") hideLayer("menu", true); // focus returns to the button, then Tab moves on from it
-    else if (e.key === " ") { e.preventDefault(); document.activeElement.click(); }
-  });
-  // A menu item that does something closes the menu; the concept's sign out does nothing, like the rail's.
-  $("#menu-signout").addEventListener("click", (e) => e.preventDefault());
-  $("#menu-monitoring").addEventListener("click", (e) => e.preventDefault());
-  $("#ops-link").addEventListener("click", (e) => e.preventDefault());
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openLayer) hideLayer(openLayer, true); });
-  document.addEventListener("pointerdown", (e) => {
-    if (!openLayer) return;
-    const { btn, pop } = layers[openLayer];
-    // A press on the other panel's control replaces this one: it goes at once, so the two never overlap.
-    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false, Object.values(layers).some((l) => l.btn.contains(e.target)));
-  });
-  // Crossing a breakpoint closes whatever is open, so no layer outlives the frame it belongs to.
-  const onFrameChange = () => {
-    if (railOpen) setRail(false);
-    setRailModal(false);
-    if (openLayer) hideLayer(openLayer, false, true);
-  };
-  mqTablet.addEventListener("change", onFrameChange);
-  mqPhone.addEventListener("change", onFrameChange);
-
-  layers.menu.btn.setAttribute("aria-label", L.more);
-  {
-    const lang = $("#menu-lang"), p = new URLSearchParams(location.search);
-    p.set("lang", RTL ? "en" : "ar");
-    lang.setAttribute("href", `?${p.toString()}`);
-    lang.setAttribute("hreflang", RTL ? "en" : "ar");
-    $("#menu-lang-glyph").textContent = L.langGlyph;
-    $("#menu-lang-glyph").setAttribute("lang", "en");
-    $("#menu-lang-name").textContent = L.nav.lang;
-    $("#menu-lang-name").setAttribute("lang", RTL ? "en" : "ar");
-    $("#menu-signout-name").textContent = L.nav.signout;
-    $("#menu-monitoring-name").textContent = L.nav.monitoring; // user 2026-10-01: Monitoring joins the phone's menu
-    $("#ops-link-name").textContent = L.nav.operations;
-  }
-  $("#tabbar").setAttribute("aria-label", L.railLabel);
-  document.querySelectorAll(".tb-item[data-tab]").forEach((a) => {
-    const key = a.dataset.tab;
-    $(".tb-name", a).textContent = L.tabs[key];
-    a.setAttribute("aria-label", L.nav[key]); // the full section name; the short name under the icon is part of it
-    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
-  });
-
-  // The subtitle's two parts never break inside; on a phone the hours move into the status details.
-  $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${SR_SEP}${L.hours} ${timeRange(0, DAY)}</span>`;
-
-  // The frame's status (step 4: Operations has no section in the rail, user 2026-10-01): one control at every size,
-  // which opens Operations' details (BDG-2, BDG-3). From 721 px it reads in full, its word and its line (HDR-3); on a
-  // phone it is the compact badge, its word alone (BDG-1). The control and its details say the same state: one word,
-  // its mark (never colour alone) and one line. Live and delayed keep their step-3 words. Step 3, second part:
-  //   closed     a hollow ring the live dot's size, "Closed", and the next opening;
-  //   offline    (the unavailable state) a struck circle, "Offline", "No current count": no count, band or time;
-  //   error      the alert mark in the error colour, "Error", what happened (and, in the details, what to do);
-  //   loading    the status is not known yet: the words "Loading…", boxless and not a control (statusLoading below).
-  const STATUSES = {
+  const DAILY_STATUS = {
     error: () => ({ cls: "is-err", mark: ICON.alert, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
-    closed: () => ({ cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: L.closed, line: L.opens(tb(0)) }),
+    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: L.closed, line: L.opens(tb(0)) }),
     offline: () => ({ cls: "is-off", mark: ICON.offline, word: L.offline, line: L.noCount }),
     delayed: (m = M.last) => ({ cls: "is-delayed", mark: ICON.clock, word: L.delayed, line: `${L.lastReading} ${tb(m)}`, ago: true }),
-    live: (m = M.last) => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${tb(m)}` }),
+    live: (m = M.last) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${tb(m)}` }),
   };
-  function statusOf() {
-    return STATUSES[phase === "error" || phase === "retrying" ? "error" : CLOSED ? "closed" : UNAV ? "offline" : STATE === "delayed" ? "delayed" : "live"]();
-  }
-  const statusWords = (s) => `${s.mark}<span class="hb-word">${s.word}</span>` +
-    `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${s.line}</span>`;
-  // K-02 (DECISIONS item 14, as Reports): from 721 px the status's slot is as wide as the widest status, which unseen
-  // copies of every status hold (style.css .hb-res), so loading, the arrival, a retry and any status change keep the
-  // control's place and the slot's size; the control itself is as wide as its own status (HDR-3), at the slot's inline
-  // end. The copies with a time carry the widest time the day can show (coordinator decision, 2026-10-03), so the slot
-  // keeps one width all day, as a new reading's time changes. Readex Pro's digits differ in width:
-  // 10:44 AM / «10:44 ص» is the widest time in the pinned Readex Pro status face (13.5 px, 400). Keep the verified
-  // exemplar, rather than laying out 1,140 samples before paint and again at fonts.ready. The fallback's digits are
-  // equal-width, so this two-digit hour reserves its maximum too. Recheck the exemplar if the font or time format changes.
-  const WIDEST_STATUS_MINUTE = 284;
-  function renderReserve() {
-    const m = WIDEST_STATUS_MINUTE;
-    $("#ops-res").innerHTML = Object.values(STATUSES).map((f) => `<span class="hb-r">${statusWords(f(m))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
-  }
-  // The control's name is its own text after the details' title, so it holds every word it shows (WCAG 2.5.3): the
-  // line is part of it from 721 px, and set aside with its box on a phone.
-  function renderStatus() {
-    const s = statusOf(), btn = layers.ops.btn;
-    btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
-    btn.removeAttribute("aria-label");
-    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${statusWords(s)}`;
-    renderReserve();
-  }
-  renderStatus();
-  // The details: the same status, and the rest on request.
-  function renderOps() {
-    const s = statusOf();
-    $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
-    $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
-    $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${SR_SEP}${L.ago(M.nowM - M.last)}</span>` : "");
-    $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
-  }
-  renderOps();
-  // While the first payload resolves the state is not known: the control is set aside (hidden, so its box is new when
-  // the state arrives and nothing moves, DESIGN_GUIDE §6) and the words "Loading…" stand in its place, boxless and not a
-  // control (there are no details to open yet). Hidden for the first 300 ms.
-  let statusLoad = null;
-  function statusLoading(on) {
-    if (on && !statusLoad) {
-      statusLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: L.loadingWord });
-      layers.ops.btn.before(statusLoad);
-    }
-    if (!on && statusLoad) { statusLoad.remove(); statusLoad = null; }
-    layers.ops.btn.hidden = on;
-  }
+  const dailyStatusKey = (p) => p === "error" || p === "retrying" ? "error" : CLOSED ? "closed" : UNAV ? "offline" : STATE === "delayed" ? "delayed" : "live";
+  const frame = EclipseFrame.init({
+    L, RTL, motionOn, Motion, URL_OFF,
+    links: (() => { const p = new URLSearchParams({ lang: LANG }); if (URL_OFF) p.set("motion", "off"); return {
+      reports: `reports.html?${p}`, activity: `activity.html?${p}`, access: `access.html?${p}`,
+    }; })(),
+    beforeRail: () => endIntro("rail"),
+    status: {
+      phase: () => phase, key: dailyStatusKey, states: DAILY_STATUS, reserveMinute: 284, buttonAria: false,
+      detail: (s) => s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${SR_SEP}${L.ago(M.nowM - M.last)}</span>` : ""),
+      hours: () => `${L.hours} ${timeRange(0, DAY)}`,
+    },
+  });
+  const { mqPhone } = frame;
+  $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${SR_SEP}${L.hours} ${timeRange(0, DAY)}</span>`;
 
   /* ---------------------------------------------------------------- cards */
   const levelChip = (v) => {
@@ -919,7 +664,7 @@
   function updateCards(prev) {
     const dt = Math.sign(M.last - prev.last);
     rollTo($("#ops-btn .hb-line bdi"), fmtTime(M.last), dt);
-    renderOps(); // the status details (closed or open) take the new time at once
+
     rollTo($("#now-v"), String(shownNow()));
     if (STATE === "delayed") rollTo($("#now-meta span"), L.ago(M.nowM - M.last));
     else rollTo($("#now-meta bdi"), fmtTime(M.last), dt);
@@ -2597,60 +2342,6 @@
     return { from: v, to: next, level: L.levels[levelOf(next)], fromLevel: L.levels[li] };
   }
 
-  /* ---- rail: opens with transforms (the width switches at once and is never animated). During the change the
-   * rail's own surface steps aside for three pieces: a fixed start cap, a middle that scales from the inline-start,
-   * and an end cap that slides. The section names never fade: the moving end cap uncovers them (a clip on each name
-   * that keeps 12px inside the moving edge, on the same timing and curve), and covers them again on close. */
-  const railRun = { anims: [], surface: null, open: false };
-  function animateRail(open) {
-    finishRail();
-    if (!motionOn()) { rail.dataset.open = String(open); return; }
-    const s = document.createElement("i");
-    s.className = "rail-surface";
-    s.setAttribute("aria-hidden", "true");
-    s.innerHTML = '<i class="rs-shadow"></i><i class="rs-start"><i></i></i><i class="rs-mid"><i></i></i><i class="rs-end"><i></i></i>';
-    rail.prepend(s);
-    rail.classList.add("is-morph");
-    rail.dataset.open = "true";
-    railRun.surface = s;
-    railRun.open = open;
-    const [shadow, start, mid, end] = s.children;
-    const d = (RTL ? -1 : 1) * T.railDist;
-    const o = open ? { duration: T.railOpen, easing: EASE.rail, fill: "both" } : { duration: T.railClose, easing: EASE.railClose, fill: "both" };
-    const kf = (a, b) => (open ? [a, b] : [b, a]);
-    const an = [];
-    an.push(end.animate(kf({ transform: "translateX(0px)" }, { transform: `translateX(${d}px)` }), o));
-    an.push(mid.animate(kf({ transform: "scaleX(0)" }, { transform: "scaleX(1)" }), o));
-    an.push(shadow.animate(kf({ opacity: 0 }, { opacity: 1 }), o));
-    [start, mid, end].forEach((p) => an.push(p.firstElementChild.animate(kf({ opacity: 0 }, { opacity: 1 }), o)));
-    // Each name is uncovered by the moving edge. The keyframe offsets are points along the eased progress, which is
-    // exactly where the end cap is (it moves linearly in eased progress), so name and edge stay locked together.
-    const rr = rail.getBoundingClientRect(), closedW = rr.width - T.railDist; // the collapsed rail's width (80px)
-    rail.querySelectorAll(".rail-name").forEach((n) => {
-      const b = n.getBoundingClientRect();
-      const a = RTL ? rr.right - b.right : b.left - rr.left, w = b.width; // the name's inline-start offset in the rail
-      const p0 = Math.min(1, Math.max(0, (a + T.railReveal - closedW) / T.railDist));
-      const p1 = Math.min(1, Math.max(p0, (a + w + T.railReveal - closedW) / T.railDist));
-      // Fully hidden: the whole name and its 8px bleed are cut from the inline-end side. Shown: nothing is cut.
-      const clip = (hidden) => { const e = f(hidden ? w + 8 : -8); return RTL ? `inset(-8px -8px -8px ${e}px)` : `inset(-8px ${e}px -8px -8px)`; };
-      const frames = [{ offset: 0, clipPath: clip(1) }, { offset: p0, clipPath: clip(1) }, { offset: p1, clipPath: clip(0) }, { offset: 1, clipPath: clip(0) }];
-      an.push(n.animate(open ? frames : frames.map((k) => ({ ...k, offset: 1 - k.offset })).reverse(), o));
-    });
-    railRun.anims = an.map(track);
-    const run = railRun.anims;
-    Promise.all(run.map((a) => a.finished)).then(() => { if (railRun.anims === run) finishRail(); }).catch(() => {});
-  }
-  function finishRail() {
-    if (!railRun.surface) return;
-    const anims = railRun.anims;
-    railRun.anims = [];
-    anims.forEach((a) => a.cancel());
-    railRun.surface.remove();
-    railRun.surface = null;
-    rail.classList.remove("is-morph");
-    rail.dataset.open = String(railRun.open);
-  }
-
   /* ---- the first-open intro (Round 7 step 3; it amends Round 6 §1, "No load motion").
    * When: only on the first open of the page in a browser tab. A flag in sessionStorage (interface state, never visitor
    *   data) marks the tab as having opened the page, so F5, a reload, the language link or coming back in the same tab
@@ -2946,7 +2637,7 @@
   /* ---- switching motion on and off at runtime (tuner) */
   function settleAll() {
     endIntro("settle");
-    finishLive(); stopFollow(); finishRail();
+    finishLive(); stopFollow(); frame.finishRail();
     [...rolls.keys()].forEach(finishRoll);
     [...feet.keys()].forEach(finishFoot);
   }
@@ -3010,7 +2701,7 @@
     sayRegion();
     pendCards();
     setLights(false);
-    statusLoading(true);
+
     setDetails(false);
     hit.hidden = true;
     busy(true);
@@ -3035,10 +2726,7 @@
     retryBtn = errSay = null;
     fillCards();
     setLights(STATE !== "delayed");
-    statusLoading(false);
-    renderStatus();
-    renderOps();
-    setDetails(true);
+
     hit.hidden = false;
     busy(false);
     $("#chart-summary").textContent = summary();
@@ -3067,9 +2755,6 @@
   function showError(focus) {
     if (!retryBtn) errorCards();
     setLights(false);
-    statusLoading(false);
-    renderStatus();
-    renderOps();
     setDetails(false);
     hit.hidden = true;
     busy(false);

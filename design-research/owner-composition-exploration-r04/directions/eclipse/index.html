@@ -31,6 +31,7 @@
   </script>
   <!-- motion.js: the interaction motion every Owner page shares (the status's details, the phone's menu, a label). -->
   <script src="motion.js" defer blocking="render"></script>
+  <script src="shared-frame.js" defer blocking="render"></script>
   <script src="daily.js" defer blocking="render"></script>
   <!-- Light tuner: a working tool for this concept (not part of the design). ?tuner=0 turns it off. -->
   <script src="tuner.js" defer blocking="render"></script>
@@ -276,15 +277,5 @@
       </ul>
     </nav>
   </div>
-  <script>
-    // Access keeps the language and motion switch, as the other page links do.
-    (function () {
-      var p = new URLSearchParams({ lang: document.documentElement.lang });
-      if (new URLSearchParams(location.search).get("motion") === "off") p.set("motion", "off");
-      document.querySelectorAll('[data-nav="access"], [data-tab="access"]').forEach(function (a) {
-        a.setAttribute("href", "access.html?" + p);
-      });
-    })();
-  </script>
 </body>
 </html>

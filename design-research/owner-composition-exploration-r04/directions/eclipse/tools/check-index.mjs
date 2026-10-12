@@ -36,7 +36,7 @@ await writeFile(runner, source, "utf8");
 const filesLine = source.slice(source.indexOf("const files"), source.indexOf("\n", source.indexOf("const files")));
 const generatorFiles = runInNewContext(`${filesLine}\nfiles;`);
 const scripts = Array.from(generatorFiles).filter((name) => name.endsWith(".js"));
-assert.ok(scripts.includes("access.js") && scripts.at(-1) === "tuner.js", `unexpected generator file list: ${scripts.join(", ")}`);
+assert.ok(scripts.includes("access.js") && scripts.includes("shared-frame.js") && scripts.at(-1) === "tuner.js", `unexpected generator file list: ${scripts.join(", ")}`);
 for (const name of scripts) await writeFile(resolve(root, name), fixture, "utf8");
 await writeFile(resolve(root, "DESIGN-SPEC.md"), "# Spec\n| STA-10 | K | Short title |\n```\n# Ignored\n```\n", "utf8");
 const run = (...args) => spawnSync(process.execPath, [runner, ...args], { cwd: root, windowsHide: true, encoding: "utf8", timeout: 10000 });

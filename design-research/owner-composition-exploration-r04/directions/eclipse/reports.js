@@ -115,20 +115,7 @@
   const bdi = (s) => `<bdi>${s}</bdi>`;
   const COPY = {
     ar: {
-      skip: "انتقل إلى المحتوى",
-      railLabel: "الأقسام",
-      brand: "FITWAY، أسماء الأقسام",
-      railTip: "أسماء الأقسام",
-      nav: { daily: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
       // The frame (as on Daily): the bar's short names, the Operations status and its details, the phone's menu.
-      tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
-      opsTitle: "حالة التشغيل",
-      more: "المزيد",
-      live: "مباشر",
-      lastReading: "آخر قراءة",
-      hours: "ساعات العمل",
-      langAria: "التبديل إلى اللغة الإنجليزية",
-      langGlyph: "EN",
       docTitle: "التقارير · FITWAY (مفهوم)",
       title: "التقارير",
       rangeName: "الفترة",
@@ -157,7 +144,6 @@
       keyMore: "أكثر",
       empty: "خالية",
       emptyLong: "الصالة خالية",
-      closed: "مغلق",
       busiestKey: "الأكثر ازدحامًا",
       fewKey: `أقل من ${bdi(3)} أيام`,
       avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "معدّل يومين" : `معدّل ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
@@ -218,14 +204,8 @@
       readySay: (n) => `الملف جاهز، ${n}`,
       rangeSay: (r) => `تُعرض الفترة ${r}`,
       // The page's states (K-02): the status words are the Daily page's (STW-1, STW-2).
-      delayed: "متأخر",
       ago: (n) => `قبل ${arMin(n)}`,
-      closedWord: "مغلق",
       opens: (t) => `يفتح ${t}`,
-      offline: "غير متصل",
-      noCount: "لا عدّ حاليًا",
-      errorWord: "خطأ",
-      errorLine: "تعذّر التحميل",
       errorFull: "تعذّر تحميل قراءات الفترة",
       errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
       errorDates: (a, b) => `تعذّر تحميل القراءات من ${a} إلى ${b}`,
@@ -238,19 +218,6 @@
       since: "منذ",
     },
     en: {
-      skip: "Skip to content",
-      railLabel: "Sections",
-      brand: "FITWAY, section names",
-      railTip: "Section names",
-      nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
-      tabs: { daily: "Today", reports: "Reports", activity: "Activity", access: "Access", settings: "Settings" },
-      opsTitle: "Operations status",
-      more: "More",
-      live: "Live",
-      lastReading: "Last reading",
-      hours: "Open",
-      langAria: "Switch to Arabic",
-      langGlyph: "AR",
       docTitle: "Reports · FITWAY (concept)",
       title: "Reports",
       rangeName: "Dates",
@@ -279,7 +246,6 @@
       keyMore: "More",
       empty: "Empty",
       emptyLong: "Empty",
-      closed: "Closed",
       busiestKey: "Busiest",
       fewKey: "Fewer than 3 days",
       avgOf: (n) => `Average of ${n} ${n === 1 ? "day" : "days"}`,
@@ -334,14 +300,8 @@
       canceledSay: "Export canceled",
       readySay: (n) => `Your file is ready, ${n}`,
       rangeSay: (r) => `Showing ${r}`,
-      delayed: "Delayed",
       ago: (n) => `${n} min ago`,
-      closedWord: "Closed",
       opens: (t) => `Opens ${t}`,
-      offline: "Offline",
-      noCount: "No current count",
-      errorWord: "Error",
-      errorLine: "Couldn't load",
       errorFull: "Couldn't load the period's readings",
       errorHint: "Check the connection, then try again.",
       errorDates: (a, b) => `Couldn't load readings from ${a} to ${b}`,
@@ -354,7 +314,7 @@
       since: "since",
     },
   };
-  const L = COPY[LANG];
+  const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
 
   /* ------------------------------------------------------------ numbers and time */
   function fmtInt(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
@@ -615,8 +575,6 @@
   const motionOn = () => !URL_OFF && !mqReduce.matches;
   const M = window.EclipseMotion;
   root.dataset.motion = motionOn() ? "on" : "off";
-  const EASE = { rail: "cubic-bezier(0.22, 1, 0.36, 1)", railClose: "cubic-bezier(0.4, 0, 0.2, 1)" };
-  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12 };
   const f2 = (n) => n.toFixed(2);
 
   /* ---------------------------------------------------------------- the range
@@ -639,247 +597,36 @@
   }
 
   /* ---------------------------------------------------------------- shell */
-  document.title = L.docTitle;
-  document.querySelectorAll("[data-t]").forEach((el) => { const v = L[el.dataset.t]; if (typeof v === "string") el.innerHTML = v; });
-  document.querySelectorAll("[data-t-label]").forEach((el) => el.setAttribute("aria-label", L[el.dataset.tLabel]));
-  const rail = $("#rail"), brand = $("#brand");
-  rail.setAttribute("aria-label", L.railLabel);
-  brand.setAttribute("aria-label", L.brand);
-  $$(".rail-item[data-nav]").forEach((a) => {
-    const key = a.dataset.nav, name = L.nav[key];
-    $(".rail-name", a).textContent = name;
-    a.setAttribute("aria-label", key === "lang" ? L.langAria : name);
-    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
-  });
-  $("#lang-glyph").textContent = L.langGlyph;
-  $("#lang-glyph").setAttribute("lang", "en");
-  // The Daily page keeps the language (and ?motion=off); the language links keep everything, the period included.
-  {
-    const p = new URLSearchParams({ lang: LANG });
-    if (URL_OFF) p.set("motion", "off");
-    $("#daily-link").setAttribute("href", `index.html?${p}`);
-    $("#tab-daily").setAttribute("href", `index.html?${p}`);
-    // Activity log (activity.html) the same way.
-    $("#activity-link").setAttribute("href", `activity.html?${p}`);
-    $("#tab-activity").setAttribute("href", `activity.html?${p}`);
-  }
-  const langLink = $("#lang-link"), menuLang = $("#menu-lang");
-  for (const el of [langLink, menuLang]) el.setAttribute("hreflang", RTL ? "en" : "ar");
-  $(".rail-name", langLink).setAttribute("lang", RTL ? "en" : "ar");
-  function syncUrl() {
-    const p = urlFor();
-    try { history.replaceState(null, "", `${location.pathname}${p.toString() ? `?${p}` : ""}`); } catch (e) { /* file:// may refuse; links still carry the period */ }
-    const q = urlFor({ lang: RTL ? "en" : "ar" });
-    langLink.setAttribute("href", `?${q}`);
-    menuLang.setAttribute("href", `?${q}`);
-  }
-
-  /* ---- rail: the Daily page's rail and its motion (daily.js "rail"), unchanged. */
-  let railOpen = false;
-  const railRun = { anims: [], surface: null, open: false };
-  function finishRail() {
-    if (!railRun.surface) return;
-    const anims = railRun.anims;
-    railRun.anims = [];
-    anims.forEach((a) => a.cancel());
-    railRun.surface.remove();
-    railRun.surface = null;
-    rail.classList.remove("is-morph");
-    rail.dataset.open = String(railRun.open);
-  }
-  function animateRail(open) {
-    finishRail();
-    if (!motionOn()) { rail.dataset.open = String(open); return; }
-    const s = document.createElement("i");
-    s.className = "rail-surface";
-    s.setAttribute("aria-hidden", "true");
-    s.innerHTML = '<i class="rs-shadow"></i><i class="rs-start"><i></i></i><i class="rs-mid"><i></i></i><i class="rs-end"><i></i></i>';
-    rail.prepend(s);
-    rail.classList.add("is-morph");
-    rail.dataset.open = "true";
-    railRun.surface = s;
-    railRun.open = open;
-    const [shadow, start, mid, end] = s.children;
-    const d = (RTL ? -1 : 1) * T.railDist;
-    const o = open ? { duration: T.railOpen, easing: EASE.rail, fill: "both" } : { duration: T.railClose, easing: EASE.railClose, fill: "both" };
-    const kf = (a, b) => (open ? [a, b] : [b, a]);
-    const an = [];
-    an.push(end.animate(kf({ transform: "translateX(0px)" }, { transform: `translateX(${d}px)` }), o));
-    an.push(mid.animate(kf({ transform: "scaleX(0)" }, { transform: "scaleX(1)" }), o));
-    an.push(shadow.animate(kf({ opacity: 0 }, { opacity: 1 }), o));
-    [start, mid, end].forEach((p) => an.push(p.firstElementChild.animate(kf({ opacity: 0 }, { opacity: 1 }), o)));
-    const rr = rail.getBoundingClientRect(), closedW = rr.width - T.railDist;
-    rail.querySelectorAll(".rail-name").forEach((n) => {
-      const bx = n.getBoundingClientRect();
-      const a = RTL ? rr.right - bx.right : bx.left - rr.left, w = bx.width;
-      const p0 = Math.min(1, Math.max(0, (a + T.railReveal - closedW) / T.railDist));
-      const p1 = Math.min(1, Math.max(p0, (a + w + T.railReveal - closedW) / T.railDist));
-      const clip = (hidden) => { const e = f2(hidden ? w + 8 : -8); return RTL ? `inset(-8px -8px -8px ${e}px)` : `inset(-8px ${e}px -8px -8px)`; };
-      const frames = [{ offset: 0, clipPath: clip(1) }, { offset: p0, clipPath: clip(1) }, { offset: p1, clipPath: clip(0) }, { offset: 1, clipPath: clip(0) }];
-      an.push(n.animate(open ? frames : frames.map((k) => ({ ...k, offset: 1 - k.offset })).reverse(), o));
-    });
-    railRun.anims = an;
-    Promise.all(an.map((x) => x.finished)).then(() => { if (railRun.anims === an) finishRail(); }).catch(() => {});
-  }
-
-  /* ---- the frame (step 4: Reports takes Daily's frame, daily.js "the frame"). Breakpoints: the desktop rail at 1024 px
-   * and wider (it opens over the content); the same rail from 721 to 1023 px, where it opens as a modal layer (a scrim,
-   * the content inert, focus kept inside); at 720 px and below the bar at the bottom and the compact header, whose menu
-   * holds Monitoring, the language and sign out. At every size the header's status opens Operations' details: the one
-   * way to Operations, which has no section in the rail (user 2026-10-01). Every layer opens from the keyboard, closes
-   * with Escape and returns focus to the control that opened it. */
-  const mqTablet = matchMedia("(min-width: 721px) and (max-width: 1023px)");
-  const mqPhone = matchMedia("(max-width: 720px)");
-  const scrim = $("#rail-scrim");
-  const railFocusables = () => [...rail.querySelectorAll("button, a[href]")];
-  let railModal = false, scrimFade = null;
-  const setRailModal = (on) => {
-    if (on === railModal) return;
-    railModal = on;
-    for (const el of [$("#main"), $(".skip")]) el.inert = on;
-    if (scrimFade) { scrimFade.cancel(); scrimFade = null; }
-    scrim.style.pointerEvents = on ? "" : "none";
-    if (on) scrim.hidden = false;
-    if (!motionOn() || scrim.hidden) { scrim.hidden = !on; return; }
-    const run = scrim.animate(on ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }],
-      on ? { duration: T.railOpen, easing: EASE.rail } : { duration: T.railClose, easing: EASE.railClose, fill: "forwards" });
-    scrimFade = run;
-    run.finished.then(() => { if (scrimFade !== run) return; scrimFade = null; if (!on) { scrim.hidden = true; run.cancel(); } }).catch(() => {});
-  };
-  const setRail = (open) => {
-    if (open === railOpen) return;
-    railOpen = open;
-    brand.setAttribute("aria-expanded", String(open));
-    setRailModal(open && mqTablet.matches);
-    animateRail(open);
-  };
-  brand.addEventListener("click", () => setRail(!railOpen));
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && railOpen && !openDlg) { setRail(false); brand.focus(); } });
-  document.addEventListener("pointerdown", (e) => { if (railOpen && !rail.contains(e.target)) setRail(false); });
-  // On the desktop the open rail is not modal: when keyboard focus leaves it, it closes (FOC-3).
-  rail.addEventListener("focusout", (e) => { if (railOpen && !railModal && e.relatedTarget && !rail.contains(e.relatedTarget)) setRail(false); });
-  rail.addEventListener("keydown", (e) => {
-    if (e.key !== "Tab" || !railModal) return;
-    const f = railFocusables(), i = f.indexOf(document.activeElement);
-    const next = e.shiftKey ? (i <= 0 ? f[f.length - 1] : null) : (i === f.length - 1 ? f[0] : null);
-    if (next) { e.preventDefault(); next.focus(); }
-  });
-
-  // The status's details (every size) and the phone's menu. One is open at a time; each closes with Escape (focus
-  // returns to its button), a tap outside, or focus leaving it.
-  const layers = { ops: { btn: $("#ops-btn"), pop: $("#ops-pop") }, menu: { btn: $("#menu-btn"), pop: $("#menu-pop") } };
-  let openLayer = null;
-  const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
-  // Each unrolls from its control and rolls back up (motion.js); focus moves at once either way.
-  function showLayer(name, focus = "first") {
-    // One panel replacing another: the old one goes at once, so the two never overlap while one leaves.
-    if (openLayer && openLayer !== name) hideLayer(openLayer, false, true);
-    const { btn, pop } = layers[name];
-    openLayer = name;
-    pop.hidden = false;
-    btn.setAttribute("aria-expanded", "true");
-    if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
-    else pop.focus();
-    M.popOpen(pop);
-  }
-  function hideLayer(name, returnFocus, instant = false) {
-    const { btn, pop } = layers[name];
-    if (pop.hidden) return;
-    if (!instant) M.popClose(pop);
-    pop.hidden = true;
-    btn.setAttribute("aria-expanded", "false");
-    if (openLayer === name) openLayer = null;
-    if (returnFocus) btn.focus();
-  }
-  for (const [name, { btn, pop }] of Object.entries(layers)) {
-    btn.addEventListener("click", () => (pop.hidden ? showLayer(name) : hideLayer(name, true)));
-    pop.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); hideLayer(name, true); } });
-    pop.addEventListener("focusout", (e) => { if (!pop.hidden && !pop.contains(e.relatedTarget) && e.relatedTarget !== btn && e.relatedTarget) hideLayer(name, false); });
-  }
-  layers.menu.btn.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); showLayer("menu", e.key === "ArrowUp" ? "last" : "first"); }
-  });
-  layers.menu.pop.addEventListener("keydown", (e) => {
-    const it = menuItems(), i = it.indexOf(document.activeElement);
-    const go = (j) => { e.preventDefault(); it[(j + it.length) % it.length].focus(); };
-    if (e.key === "ArrowDown") go(i + 1);
-    else if (e.key === "ArrowUp") go(i - 1);
-    else if (e.key === "Home") go(0);
-    else if (e.key === "End") go(it.length - 1);
-    else if (e.key === "Tab") hideLayer("menu", true);
-    else if (e.key === " ") { e.preventDefault(); document.activeElement.click(); }
-  });
-  for (const id of ["#menu-signout", "#menu-monitoring", "#ops-link"]) $(id).addEventListener("click", (e) => e.preventDefault());
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openLayer && !openDlg) hideLayer(openLayer, true); });
-  document.addEventListener("pointerdown", (e) => {
-    if (!openLayer) return;
-    const { btn, pop } = layers[openLayer];
-    // A press on the other panel's control replaces this one: it goes at once, so the two never overlap.
-    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false, Object.values(layers).some((l) => l.btn.contains(e.target)));
-  });
-  // Crossing a breakpoint closes whatever the frame has open.
-  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false, true); };
-  mqTablet.addEventListener("change", onFrameChange);
-  mqPhone.addEventListener("change", onFrameChange);
-  layers.menu.btn.setAttribute("aria-label", L.more);
-  $("#menu-lang-glyph").textContent = L.langGlyph;
-  $("#menu-lang-glyph").setAttribute("lang", "en");
-  $("#menu-lang-name").textContent = L.nav.lang;
-  $("#menu-lang-name").setAttribute("lang", RTL ? "en" : "ar");
-  $("#menu-signout-name").textContent = L.nav.signout;
-  $("#menu-monitoring-name").textContent = L.nav.monitoring;
-  $("#ops-link-name").textContent = L.nav.operations;
-  $("#tabbar").setAttribute("aria-label", L.railLabel);
-  $$(".tb-item[data-tab]").forEach((a) => {
-    const key = a.dataset.tab;
-    $(".tb-name", a).textContent = L.tabs[key];
-    a.setAttribute("aria-label", L.nav[key]);
-    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
-  });
-
-  // The frame's status, the same as on every screen (STW-1): the gym's Operations status, not this page's. In the concept
-  // it is Daily's moment, live with its last reading at 7:42 PM on Wednesday 23 September; its page states (loading,
-  // closed, unavailable, error) come with Reports' own states in a later round (K-02).
-  const NOW = { last: 822 };   // 7:42 PM, in minutes since 6:00 AM, as on the Daily page
-  // K-02: the Daily page's status words and marks (STW-1), for Reports' own states. Delayed is Daily's moment (the last
-  // reading 7:29 PM, 13 minutes ago); Closed is 5:12 AM, before the 6:00 AM opening; Offline (`unavailable`, and
-  // `pending`, whose edge has been offline since the evening before) has no count and no time; Error is the page's
-  // payload failing. While the page loads the status is not known (STW-2): the control is set aside for the words.
-  const SVG_CLOCK = `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 2"/></svg>`;
-  const SVG_OFF = `<svg class="ico ico-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M6.3 17.7 17.7 6.3"/></svg>`;
-  const SVG_ERR = `<svg class="ico ico-err" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`;
+  const NOW = { last: 822 };
+  const SVG_ERR = EclipseFrame.icons.error;
   const OPS_STATES = {
-    live: (m = NOW.last) => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
-    delayed: (m = NOW.last - 13) => ({ cls: "is-delayed", mark: SVG_CLOCK, word: L.delayed, line: `${L.lastReading} ${timeText(m)}`, ago: L.ago(13) }),
-    closed: () => ({ cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: L.closedWord, line: L.opens(timeText(0)) }),
-    offline: () => ({ cls: "is-off", mark: SVG_OFF, word: L.offline, line: L.noCount }),
+    live: (m = NOW.last) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
+    delayed: (m = NOW.last - 13) => ({ cls: "is-delayed", mark: EclipseFrame.icons.clock, word: L.delayed, line: `${L.lastReading} ${timeText(m)}`, ago: L.ago(13) }),
+    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: L.closedWord, line: L.opens(timeText(0)) }),
+    offline: () => ({ cls: "is-off", mark: EclipseFrame.icons.offline, word: L.offline, line: L.noCount }),
     error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
   };
   const opsState = () => (phase === "error" || phase === "retrying" ? "error" : pageNow === "unavailable" || pageNow === "pending" ? "offline"
     : pageNow === "closed" || pageNow === "delayed" ? pageNow : "live");
-  let statusLoad = null;
-  function renderStatus() {
-    const btn = layers.ops.btn;
-    // STW-2: while the page loads, the words «جارٍ التحميل…» stand where the control will be, boxless and not a control.
-    const loading = phase === "loading";
-    if (loading && !statusLoad) { statusLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: L.loadingWord }); btn.before(statusLoad); }
-    if (!loading && statusLoad) { statusLoad.remove(); statusLoad = null; }
-    btn.hidden = loading;
-    const s = OPS_STATES[opsState()]();
-    btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
-    const words = (x) => `${x.mark}<span class="hb-word">${x.word}</span>` +
-      `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${x.line}</span>`;
-    // K-02 (DECISIONS item 14): from 721 px the status's slot is as wide as the widest status, which unseen copies of
-    // every status hold (style.css .hb-res), so loading, its arrival, a retry and any status change keep the control's
-    // place and the slot's size; the control itself is as wide as its own status (HDR-3), so its fill and its ring fit
-    // the status, at the slot's inline end, where the loading words stand too. On a phone only the control is drawn.
-    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${words(s)}`;
-    // Decision 24: the same verified 10:44 AM / «10:44 ص» exemplar as Daily, with no synchronous minute scan.
-    $("#ops-res").innerHTML = Object.values(OPS_STATES).map((f) => `<span class="hb-r">${words(f(284))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
-    $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
-    $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
-    $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${SR_SEP}${s.ago}</span>` : "");
-    $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
+  const frame = EclipseFrame.init({
+    L, RTL, motionOn, Motion: M, URL_OFF,
+    links: (() => { const p = new URLSearchParams({ lang: LANG }); if (URL_OFF) p.set("motion", "off"); return {
+      daily: `index.html?${p}`, activity: `activity.html?${p}`, access: `access.html?${p}`,
+    }; })(),
+    isDialogOpen: () => !!openDlg,
+    status: {
+      phase: () => phase, key: () => opsState(), states: OPS_STATES, reserveMinute: 284,
+      detail: (s) => s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${SR_SEP}${s.ago}</span>` : ""),
+      hours: () => `${L.hours} ${timeRange(0, DAY)}`,
+    },
+  });
+  const { mqPhone } = frame;
+  function syncUrl() {
+    const p = urlFor();
+    try { history.replaceState(null, "", `${location.pathname}${p.toString() ? `?${p}` : ""}`); } catch (e) { /* file:// may refuse; links still carry the period */ }
+    const q = urlFor({ lang: RTL ? "en" : "ar" });
+    $("#lang-link").setAttribute("href", `?${q}`);
+    $("#menu-lang").setAttribute("href", `?${q}`);
   }
 
   const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
@@ -1619,7 +1366,7 @@
     const lit = !waiting && hasValues() && pageNow === "live";
     $("#pattern").classList.toggle("lit", lit);
     $("#pattern").classList.toggle("lit-chart", lit);
-    renderStatus();
+
   }
   function startLoading(arriveAfter) {
     clearTimers();
@@ -1692,7 +1439,7 @@
     .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length);
   function openDialog(dlg, opener, first) {
     if (openDlg) closeDialog(openDlg.dlg, true);
-    if (railOpen) setRail(false);
+    if (frame.state.railOpen) frame.setRail(false);
     openDlg = { dlg, opener, onClose: dlg._onClose };
     dlg.showModal();
     dlg.classList.add("is-open");
@@ -1967,7 +1714,7 @@
     pickDay: (wd) => pickDay(wd, false),
     showAllDays: () => { if (!listOpen) { listOpen = true; renderDays(); } },
     hideTip,
-    motion: { get on() { return motionOn(); }, timings: T, easings: EASE },
+    motion: { get on() { return motionOn(); }, timings: EclipseFrame.timings, easings: EclipseFrame.easings },
   };
   const WANT = params.get("dialog");
   if (WANT === "range") openRangeDialog(segButtons[2]);
