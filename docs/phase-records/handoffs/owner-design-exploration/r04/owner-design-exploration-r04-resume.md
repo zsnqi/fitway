@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `d3825a34`, 2026-10-13 00:20 +03:00 (handoff: nothing running; vf-speed done, to grade; shared-frame paused)
+- **As of:** `codex/owner-redesign-r04` at `23752f84`, 2026-10-13 03:00 +03:00 (handoff: vf-speed graded and merged; vf-hold measuring; the user stopped for the day)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-48), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -11,71 +11,73 @@
   D:/Projects/fitway-worktrees/owner-followup-r04-s04; the shared-frame round's commits run to `4352181f` and on), with
   their motion and CSS rounds done (DECISIONS 36-44). The user reviews on the eclipse-build preview (3174) and the LAN
   preview (3180).
-- **Done on 2026-10-12:** F145 (`b7331e09`: a 120 s per-test timeout, every verify-fitway test file run; the ledger
-  leases that `package.json` line); the launch-review round (merged `cf2f8a2a`, recorded `14ecfceb`); DECISIONS 48
-  (parallel work, the capacity fallback, a parallel-compare round after vf-speed). F135 was done before (`2e7a29cf`).
-- **Briefs now launch through the review.** `pnpm codex:round <brief> <level>` runs the B11 review into
-  `D:/fitway-temp/brief-review/<brief name>-<n>/` and stops; write `dispositions.md` there (`Brief SHA-256: <hash>`,
-  then `Reading <n>: closed` or `Reading <n>: left open: <why>`) and run it again (`REVIEW.md` §"Running it"). Every
-  outcome's command is first run on the base against itself (B7). A brief's measurements must be run: briefs say a
-  measurement not run is a FAIL.
-- **Resuming Codex:** `bash D:/fitway-temp/resume-any.sh <run folder> <message file>` resumes on gpt-6.1-sol through
-  `codex:round` and falls back to gpt-6-sol on the same thread on "at capacity"; it exits 75 on a usage limit, which
-  the user clears by switching the account (they switch quickly; four parallel rounds use one in 35-60 minutes). Each
-  run folder's `model-switch.md` records which events ran on which model.
-- **Measurements queue on one port pair** (the CLI accepts only 3176-3177), so rounds build in parallel and measure one
-  at a time. Port exhaustion is not F137's cause (at most 739 of 16,384 dynamic ports in use, 2026-10-12).
-- **main** is at `3c5c311b`; the discussion page still needs today's update. The discussion page for the user (Arabic, private):
+- **Done on 2026-10-13:** vf-speed graded (held-out VS1-VS10 in `D:/fitway-grader/owner-r04/vf-speed-heldout.md`,
+  evidence `D:/fitway-temp/owner-r04-vf-speed-grade/`) and merged as `ebbfecd6`, recorded `3faea886`: compares can
+  take only the pages a change reaches (`--affected-pages`), kept baseline captures in `D:/fitway-verify-captures`
+  (content-keyed, 1.1 GB), bounded connections; F137 fixed (a full compare of 1,224 items, no `ERR_NO_BUFFER_SPACE`).
+  The grading found F126 (Daily's Lights chip on the phone, half a pixel apart) now fails full compares at random with
+  any CLI, and F147 (kept captures keyed on the whole option set and the baseline port). The codex template gained a
+  checklist line: CI runs the ladder without Playwright Chromium or ui-forensics (`14fafda7`; both tool rounds' first
+  pushes failed CI for it).
+- **Briefs launch through the review.** `pnpm codex:round <brief> <level>` runs the B11 review into
+  `D:/fitway-temp/brief-review/<brief file name>-<n>/` and stops; write `dispositions.md` there (`Brief SHA-256: <hash>`,
+  then `Reading <n>: closed` or `Reading <n>: left open: <why>`) and run it again (`REVIEW.md` §"Running it"). The brief
+  must be committed first. The codex template must stay at 80 lines or fewer (`check-brief.test.ts:761`).
+- **Resuming Codex:** `bash D:/fitway-temp/resume-any.sh <run folder> <message file>` resumes on gpt-6.1-sol and falls
+  back to gpt-6-sol on "at capacity"; it exits 75 on a usage limit (the user switches the account). Each run folder's
+  `model-switch.md` records the events per model.
+- **main** is at `3c5c311b` and is fast-forwarded to `23752f84` with this handoff (CI passed on it). The discussion page
+  for the user (Arabic, private) still needs the updates of 2026-10-12 and 2026-10-13:
   https://claude.ai/artifact/88rd7XwoWHvnYhqbtxA1dm. access-reason-cap-r01 stays paused by the user.
 
 ## Running now
 
-- **shared-frame, second run** (DECISIONS 45, first item): thread `01a12f3c-a486-7681-a1f5-6b12abdbe87a`, run folder
+- **vf-hold, measuring** (H1 F143, H2 F144; brief `briefs/codex-vf-hold.md`, xhigh, worktree
+  D:/Projects/fitway-worktrees/owner-r04-vf-hold, code `452030fb`, CI green). Resumed at 02:11 with
+  `D:/fitway-temp/codex-round-vf-hold-1/resume-measure-1.md`; it holds ports 3176-3177
+  (`D:/fitway-temp/owner-r04-ports/free-for-vf-hold.txt`). At 03:00 every named H1 release plant was DIFFERENT (134
+  samples, no NOT-HELD) and it was measuring the rail control. It ran in the previous session's background shell: if
+  `model-switch.md` in the run folder has no "ended" line after 02:11 and no codex process runs, resume it with
+  `resume-any.sh` and a one-line message that its measurement run stopped and to finish the brief's measurements.
+  Held-out rows VH1-VH8 are in `D:/fitway-grader/owner-r04/vf-hold-heldout.md`.
+- **shared-frame, paused** (DECISIONS 45, first item): thread `01a12f3c-a486-7681-a1f5-6b12abdbe87a`, run folder
   `D:/fitway-temp/codex-round-ef95d9e6-4736-49f6-8f7e-959e6eee78a8`, continuation brief
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/codex-shared-frame-continue.md`
-  (`56ed8da6`, xhigh; the round's brief `codex-shared-frame.md` beside it). The full matrices found and fixed
-  four real omissions of the move (`d5c0d101`, `1a87ea72`, `8a0f269b`, `c609022b`) and F1's last copies
-  (`8ee417a6`, `4352181f`). **Paused at 21:58** with the user's agreement, worktree clean at `4352181f`: 21 of its
-  183 queue jobs done (F3 Index: 172 equal at rest; timeline 308 equal, 0 different, 26 NOT-HELD), 162 pending in
-  its own queue scripts in `D:/fitway-temp/owner-r04-shared-frame/`. It resumes after vf-speed and vf-hold merge, so
-  the rest runs on the faster CLI (its compares call the CLI in this worktree). Its first run, the saved patch and the
-  model switches: `model-switch.md` there. B11: `D:/fitway-temp/brief-review/shared-frame-*`; base check
-  `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt`; held-out rows SH1-SH10
-  `D:/fitway-grader/owner-r04/shared-frame-heldout.md`.
-- **vf-speed** (S1 affected pages, S2 kept base frames, S3 F137) and **vf-hold** (H1 F143, H2 F144): briefs in
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` (`codex-vf-speed.md`, `codex-vf-hold.md`), xhigh,
-  worktrees D:/Projects/fitway-worktrees/owner-r04-vf-speed and owner-r04-vf-hold (same-named branches, pushed). Code
-  and CI-safe tests are done and CI is green (`bdacf8c1`, `452030fb`). **vf-speed ended at 00:17 on 2026-10-13**, result `5ba2c2f2`
-  (pushed), every row PASS by Codex (`D:/fitway-temp/codex-round-vf-speed-1/REPORT-5ba2c2f2.md`): the live run found the
-  cache never reused and fixed it (`a8ae4d4e`, `5ba2c2f2`); a Reports rerun 162 s to 64 s; one full compare of 1,224
-  items in about 19 minutes with no `ERR_NO_BUFFER_SPACE`. Nothing runs now; vf-hold waits for `free-for-vf-hold.txt`. Run folders `D:/fitway-temp/codex-round-vf-speed-1` and
-  `codex-round-vf-hold-1`; B11 in `D:/fitway-temp/brief-review/vf-speed-1/` and `D:/fitway-temp/brief-review/vf-hold-1/`.
-  vf-hold's report proposes lines for SKILL.md §"Compare" (the coordinator adds them at merge).
-- **Prepared:** the tool digest `D:/fitway-temp/verify-fitway-round-prep/REPORT.md` (with the port measurement); the
-  shared lows' digest `D:/fitway-temp/shared-lows-prep/REPORT.md` (low 1 has no recorded frame: confirm first); the
-  `reports.css` draft `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`.
+  (`56ed8da6`, xhigh). Worktree clean at `4352181f`; 21 of 183 queue jobs done, 162 pending in its queue scripts in
+  `D:/fitway-temp/owner-r04-shared-frame/`. Its compares call the CLI in this worktree, so it resumes on the merged CLI.
+  B11: `D:/fitway-temp/brief-review/shared-frame-*`; base check `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt`;
+  held-out SH1-SH10 `D:/fitway-grader/owner-r04/shared-frame-heldout.md`.
+- **vf-parallel, ready to launch** (DECISIONS 48; F147): brief `briefs/codex-vf-parallel.md` (`23752f84`), worktree
+  D:/Projects/fitway-worktrees/owner-r04-vf-parallel (same-named branch at `3faea886`, pushed; packages installed).
+  Its review (`D:/fitway-temp/brief-review/codex-vf-parallel-1/`) returned five readings, all closed in the brief;
+  `dispositions-draft.md` there holds them and waits for the final hash.
 
 ## Next steps
 
-The user (2026-10-12): the rounds after the current Codex run go to a new coordinator session; continue without them;
-accounts are theirs. The order, as the user amended it at 22:00 («موافق»): vf-speed and vf-hold measure and merge,
-shared-frame resumes on their CLI and is graded, then the parallel-compare round, then `reports.css` and the shared lows.
+The order (the user, 2026-10-12, «موافق»): vf-hold measures and merges, shared-frame resumes on the merged CLI and is
+graded, then the parallel-compare round, then `reports.css` and the shared lows.
 
-1. **Grade vf-speed** (`5ba2c2f2`; its CI on the pushed branch): rerun S1's selections, S2's second run reusing every
-   baseline capture, one S3 full compare; record it in `codex-rounds.md`, merge it, wait for CI.
-2. **vf-hold:** write `free-for-vf-hold.txt`, resume its thread with a measurement message like vf-speed's, grade, merge
-   (adding its proposed SKILL.md §"Compare" lines). Then **resume shared-frame** (`resume-any.sh`; tell it the CLI
-   changed and to finish its queue on it), and grade it on SH1-SH10 and GH7 with the merged CLI; record both runs, the
-   pause and the model switches in `codex-rounds.md`; on a pass push the build branch and tell the user in a line.
-   If vf-speed or vf-hold fails its grading, resume shared-frame at once on the current CLI.
-3. **The parallel-compare round** (DECISIONS 48): a port pair per round and one compare over several workers.
-4. **`reports.css` split** on the shared-frame result, then **the shared lows**, F140, and F131, F132, F136, F126.
+1. **Grade vf-hold** when it reports: its brief rows and VH1-VH8 (VH6-VH7 on the merged line); record it in
+   `codex-rounds.md`, `rounds.tsv` and `findings.tsv` (F143, F144); merge it, adding its proposed SKILL.md §"Compare"
+   lines (in its report, `last-message.md`); wait for CI.
+2. **vf-parallel:** move its worktree's branch to the vf-hold merge, set that HEAD in the brief (its L1 names
+   `timeline-hold.test.mjs`, which exists only after the merge; drop that name if vf-hold fails), commit, rename
+   `dispositions-draft.md` to `dispositions.md` with the new SHA-256, and launch at xhigh. Its code and tests run
+   while shared-frame measures; its measurements wait for `free-for-vf-parallel.txt`.
+3. **Resume shared-frame** after the vf-hold merge (`resume-any.sh`; tell it the CLI changed, the cache and
+   `--affected-pages` exist, and that F126 can make one to three Daily phone items DIFFERENT on the Lights chip, to be
+   rerun once), and grade it on SH1-SH10 and GH7; record both runs, the pause and the model switches in
+   `codex-rounds.md`; on a pass push the build branch and tell the user in a line. Then grade and merge vf-parallel.
+4. **`reports.css` split** on the shared-frame result (draft `D:/fitway-temp/owner-r04-reports-css-draft/
+   codex-reports-css-split-draft.md`, placeholders still open), then **the shared lows**, F126 first (it fails full
+   compares at random), F140, and F131, F132, F136. The shared lows' digest: `D:/fitway-temp/shared-lows-prep/REPORT.md`
+   (low 1 has no recorded frame: confirm first).
 5. **Then Settings**, Operations and Monitoring (rounds items 6 and 8-11 in DECISIONS); later Daily and Reports' last
    round (`#fig-avg`, DECISIONS 30; `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`; page-only lows) and Access's
    (N1-N7 in Next steps 4 of the 2026-10-05 resume point).
 6. **After each resume point,** fast-forward main once CI passes on it (DECISIONS 40) and update the discussion page.
-   Open: F146 (a launcher test at 28.4 s against 20 s on CI run 38250368308); F110's edge test failed once on CI
-   timing (run 38273918030) and passed on a rerun.
+   Open: F146 (two Vitest cases over the 20 s default on CI: the launcher's and the gardener's H6; each passed on a
+   rerun of the failed job).
 
 ## Waiting on the user
 
@@ -83,11 +85,13 @@ Nothing.
 
 ## Known risks
 
+- **F126** makes a full compare fail at random (one to three Daily phone items on the Lights chip): rerun such an item
+  once before reading it as a regression.
 - **Briefs for refactors** need a limit that the moments still run along their timeline; `--timeline` now measures it.
-- **Codex** is 0.162.1 since 2026-10-12 (the user updated it); GPT-6.1 Sol's catalog default context is 500k (max
-  872k), and the user's `config.toml` no longer pins 400k (backup `D:/fitway-temp/codex-config-backup-20261012.toml`).
-  Its `model_auto_compact_token_limit = 350000` was removed too, at the user's request (backup `-b.toml` beside it).
-- **Long compares** can fail with `ERR_NO_BUFFER_SPACE` (F137); briefs allow one rerun of such an item until vf-speed merges.
+- **Codex** is 0.162.1 since 2026-10-12; GPT-6.1 Sol's catalog default context is 500k (max 872k); the user's
+  `config.toml` pins neither the context nor the compaction limit (backups `D:/fitway-temp/codex-config-backup-20261012*.toml`).
+- **Temp junctions:** the grading's old-CLI copies linked `node_modules` into a worktree; both junctions were removed
+  on 2026-10-13. A grader that needs the old CLI again links it and removes the link after.
 - main has no branch protection (a private repository on GitHub's free plan); nothing found deploys on a push to main.
   The main checkout D:/Projects/fitway keeps its local main at `bbb51709` and an uncommitted one-line AGENTS.md change
   from 2026-09-06; it was left untouched.
@@ -97,15 +101,14 @@ Nothing.
 - The preview server (Python's http.server) sends no cache headers; after a build a stale script can throw until a hard
   reload; the verify-fitway launch serves with no-store.
 - Ports: 3174 is the user's preview; 3176-3177 builders, verifiers and Codex; 3178-3179 reviewers and the probe kit;
-  3180 the LAN preview.
+  3180 the LAN preview; vf-parallel proposes 3186-3189 for two more compare pairs.
 
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
-  commit that adds this text (parent `d3825a34`).
-- The merged round worktrees owner-r04-midmotion and owner-r04-gardener and their branches were removed on 2026-10-12
-  (links checked first; none pointed outside them).
-- Grading evidence: `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
+  commit that adds this text (parent `23752f84`).
+- Grading evidence: `D:/fitway-temp/owner-r04-vf-speed-grade/` (runner `run.mjs`, verdict diff `cmp.mjs`, plants in
+  `plants/`), `D:/fitway-temp/owner-r04-midmotion-fix-grade/`, `D:/fitway-temp/owner-r04-gardener-grade/`; held-out
   rows and plants in `D:/fitway-grader/owner-r04/`; the researcher's map of the shared code:
   `D:/fitway-temp/shared-files-map/REPORT.md`; a rewrapping helper that keeps every word:
   `D:/fitway-temp/owner-r04-reports-css-draft/reflow.cjs`.
