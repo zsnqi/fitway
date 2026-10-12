@@ -56,6 +56,14 @@ the pass. pnpm's dependency preflight uses `error`, never `install`; a
 dependency mismatch withholds collection and cleanup. No dependencies or
 services are installed, and scratch files stay under the excluded output.
 
+The code-health concept scope derives its boundary-break shared-file set from
+the configured concept folder's HTML pages. Stylesheet and script links are
+followed through CSS `@import` and JavaScript `import` edges, and configured
+specimen pages are excluded as page origins. Shared-file matching uses the
+resolved path in the concept folder, never a basename. When this derivation
+method changes, the concept boundary-break measure starts a new baseline rather
+than reporting a rise or fall against the old list.
+
 The survey runs `brief:check` for running or next briefs without a recorded
 result in the environment round log. A clean worktree with committed work
 beyond its brief's launch HEAD waits for its round record; an unlaunched or

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { collectCodeHealth, scanScope } from "./code-health.mjs";
+import {
+	collectCodeHealth,
+	deriveSharedFiles,
+	scanScope,
+} from "./code-health.mjs";
 
 const repeated = Array.from(
 	{ length: 10 },
@@ -61,6 +65,123 @@ describe("gardener code-health fixtures", () => {
 			{ sharedFiles: ["app.js"] },
 		);
 		for (const value of Object.values(report)) expect(value.total).toBe(0);
+	});
+
+	it("derives shared files from page loads and page-added files", () => {
+		const files = [
+			{
+				file: "index.html",
+				text: '<link rel="stylesheet" href="style.css"><script src="page.js"></script>',
+			},
+			{
+				file: "reports.html",
+				text: '<link rel="stylesheet" href="style.css"><script src="page.js"></script>',
+			},
+			{
+				file: "components.html",
+				text: '<link rel="stylesheet" href="specimen.css"><script src="specimen.js"></script>',
+			},
+			{ file: "style.css", text: '@import "tokens.css";' },
+			{ file: "tokens.css", text: ".token { color: red; }" },
+			{ file: "page.js", text: 'import "shared-module.js";' },
+			{ file: "shared-module.js", text: "export const ready = true;" },
+			{ file: "specimen.css", text: ".specimen {}" },
+			{ file: "specimen.js", text: "document.body;" },
+			{ file: "unused.css", text: ".unused {}" },
+		];
+		expect(
+			deriveSharedFiles(files, { specimenPages: ["components.html"] }),
+		).toEqual(["page.js", "shared-module.js", "style.css", "tokens.css"]);
+	});
+
+	it("follows CSS and JavaScript imports from a shared page load", () => {
+		const files = [
+			{
+				file: "a.html",
+				text: '<link rel="stylesheet" href="shared.css"><script src="shared.js"></script>',
+			},
+			{
+				file: "b.html",
+				text: '<link rel="stylesheet" href="shared.css"><script src="shared.js"></script>',
+			},
+			{ file: "shared.css", text: '@import url("nested/tokens.css");' },
+			{ file: "nested/tokens.css", text: ".token {}" },
+			{ file: "shared.js", text: 'import "nested/module.js";' },
+			{ file: "nested/module.js", text: "export const value = 1;" },
+		];
+		expect(deriveSharedFiles(files)).toEqual([
+			"nested/module.js",
+			"nested/tokens.css",
+			"shared.css",
+			"shared.js",
+		]);
+	});
+
+	it("matches boundary files by exact path rather than basename", () => {
+		const report = scanScope(
+			[
+				{
+					file: "root/shared.js",
+					text: 'document.querySelector("#only-root");',
+				},
+				{
+					file: "nested/shared.js",
+					text: 'document.querySelector("#only-nested");',
+				},
+				{
+					file: "page.html",
+					text: '<main id="only-root"></main><main id="only-nested"></main>',
+				},
+			],
+			{ sharedFiles: ["root/shared.js"] },
+		);
+		expect(report.boundaryBreaks.total).toBe(1);
+		expect(report.boundaryBreaks.hits[0].file).toBe("root/shared.js");
+	});
+
+	it("marks a changed concept method as a new boundary baseline", async () => {
+		const git = (args: string[]) => {
+			if (args[0] === "ls-tree") return "concept/a.html\nconcept/shared.js\n";
+			if (args[0] === "ls-files") return "scripts/tool.js\0";
+			if (args[0] === "show" && args[1] === "owner:concept/a.html")
+				return '<script src="shared.js"></script>';
+			if (args[0] === "show" && args[1] === "owner:concept/shared.js")
+				return "document.body;";
+			if (args[0] === "show" && args[1] === "HEAD:scripts/tool.js")
+				return "const tool = true;";
+			throw new Error("missing object");
+		};
+		const previous = {
+			scopes: [
+				{
+					name: "concept",
+					baselineKey: "hand-list-v0",
+					measures: { boundaryBreaks: { total: 9 } },
+				},
+				{ name: "tooling", measures: {} },
+			],
+		};
+		const result = await collectCodeHealth({
+			config: {
+				codeHealth: {
+					concept: { branch: "owner", folder: "concept" },
+					toolingRoots: ["scripts"],
+				},
+			},
+			git,
+			previousReportText: [
+				"## codeHealth",
+				"",
+				"```json",
+				JSON.stringify(previous),
+				"```",
+			].join("\n"),
+			previousReportSource: "REPORT.md",
+		});
+		expect(result.scopes[0].measures.boundaryBreaks).toMatchObject({
+			previous: null,
+			trend: "starts new baseline",
+		});
 	});
 
 	it("adds previous totals and leaves an unreadable branch unknown", async () => {

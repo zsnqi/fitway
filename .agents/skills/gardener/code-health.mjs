@@ -13,6 +13,7 @@ export const MEASURES = [
 ];
 
 const SOURCE_EXTENSIONS = new Set([".js", ".mjs", ".ts", ".css", ".html"]);
+const IMPORT_EXTENSIONS = [".js", ".mjs", ".ts", ".css"];
 
 function sourceFile(file) {
 	return SOURCE_EXTENSIONS.has(path.extname(file).toLowerCase());
@@ -24,6 +25,121 @@ function lines(text) {
 
 function hit(file, line, detail) {
 	return { file, line, detail };
+}
+
+function slashPath(file) {
+	return file.replaceAll("\\", "/");
+}
+
+function assetReference(value) {
+	const reference = value.trim().split(/[?#]/, 1)[0];
+	if (
+		!reference ||
+		reference.startsWith("/") ||
+		reference.startsWith("//") ||
+		/^[a-z][a-z\d+.-]*:/i.test(reference)
+	)
+		return null;
+	try {
+		return decodeURIComponent(reference.replaceAll("\\", "/"));
+	} catch {
+		return reference.replaceAll("\\", "/");
+	}
+}
+
+function linkedReferences(text, extension) {
+	if (extension === ".html") {
+		const references = [];
+		for (const match of text.matchAll(
+			/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi,
+		))
+			references.push(match[1]);
+		for (const match of text.matchAll(/<link\b[^>]*>/gi)) {
+			const tag = match[0];
+			const rel = tag.match(/\brel\s*=\s*["']([^"']+)["']/i)?.[1] ?? "";
+			if (!rel.split(/\s+/).includes("stylesheet")) continue;
+			const href = tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1];
+			if (href) references.push(href);
+		}
+		return references;
+	}
+	if (extension === ".css")
+		return [
+			...text.matchAll(/@import\s+(?:url\(\s*)?["']?([^"')\s;]+)["']?\s*\)?/gi),
+		].map((match) => match[1]);
+	if (extension === ".js" || extension === ".mjs" || extension === ".ts") {
+		const references = [];
+		for (const match of text.matchAll(
+			/\bimport\s*(?:[^"'();]*?\sfrom\s*)?["']([^"']+)["']/g,
+		))
+			references.push(match[1]);
+		for (const match of text.matchAll(/\bimport\s*\(\s*["']([^"']+)["']\s*\)/g))
+			references.push(match[1]);
+		for (const match of text.matchAll(
+			/\bexport\s+[^"']*?\sfrom\s*["']([^"']+)["']/g,
+		))
+			references.push(match[1]);
+		return references;
+	}
+	return [];
+}
+
+function resolveLinkedFile(importer, reference, filesByPath) {
+	const value = assetReference(reference);
+	if (!value) return null;
+	const candidate = path.posix.normalize(
+		path.posix.join(path.posix.dirname(slashPath(importer)), value),
+	);
+	const candidates = [candidate];
+	if (!path.posix.extname(candidate))
+		for (const extension of IMPORT_EXTENSIONS)
+			candidates.push(`${candidate}${extension}`);
+	for (const resolved of candidates)
+		if (filesByPath.has(resolved)) return filesByPath.get(resolved);
+	return null;
+}
+
+function isSpecimenPage(file, specimenPages) {
+	const normalized = slashPath(file);
+	const base = path.posix.basename(normalized);
+	return specimenPages.some((page) => {
+		const normalizedPage = slashPath(page);
+		return (
+			normalized === normalizedPage ||
+			base === path.posix.basename(normalizedPage)
+		);
+	});
+}
+
+export function deriveSharedFiles(files, { specimenPages = [] } = {}) {
+	const filesByPath = new Map(
+		files.map((item) => [slashPath(item.file), item]),
+	);
+	const pages = files.filter(
+		(item) =>
+			path.posix.extname(slashPath(item.file)).toLowerCase() === ".html" &&
+			!isSpecimenPage(item.file, specimenPages),
+	);
+	const loadedBy = new Map();
+	for (const page of pages) {
+		const visited = new Set();
+		const visit = (item) => {
+			if (!item || visited.has(item.file)) return;
+			visited.add(item.file);
+			const origins = loadedBy.get(item.file) ?? new Set();
+			origins.add(page.file);
+			loadedBy.set(item.file, origins);
+			const extension = path.posix.extname(slashPath(item.file)).toLowerCase();
+			for (const reference of linkedReferences(item.text, extension))
+				visit(resolveLinkedFile(item.file, reference, filesByPath));
+		};
+		for (const reference of linkedReferences(page.text, ".html"))
+			visit(resolveLinkedFile(page.file, reference, filesByPath));
+	}
+	return [...loadedBy.entries()]
+		.filter(([, origins]) => origins.size > 1)
+		.map(([file]) => filesByPath.get(slashPath(file)).file)
+		.sort();
 }
 
 function scanGiantFiles(files) {
@@ -62,9 +178,9 @@ function scanBoundaryBreaks(files, sharedFiles) {
 		}
 	}
 	const result = [];
+	const shared = new Set(sharedFiles.map(slashPath));
 	for (const item of files) {
-		const name = path.basename(item.file);
-		if (!sharedFiles.includes(name)) continue;
+		if (!shared.has(slashPath(item.file))) continue;
 		for (const reference of idsReferenced(item.text)) {
 			const owners = definitions.get(reference.id) ?? [];
 			if (owners.length !== 1) continue;
@@ -162,6 +278,14 @@ function addTrends(scope, previous) {
 		scope.measures[measure].trend =
 			old === null || current === null ? "no previous" : current - old;
 	}
+	const baselineChanged =
+		scope.name === "concept" &&
+		scope.baselineKey &&
+		(!previous || previous.baselineKey !== scope.baselineKey);
+	if (baselineChanged) {
+		scope.measures.boundaryBreaks.previous = null;
+		scope.measures.boundaryBreaks.trend = "starts new baseline";
+	}
 	return scope;
 }
 
@@ -195,13 +319,22 @@ export async function collectCodeHealth({
 				file,
 				text: gitText(git, ["show", `${source}:${file}`]),
 			}));
+			const sharedFiles =
+				name === "concept"
+					? deriveSharedFiles(files, {
+							specimenPages: concept.specimenPages ?? [],
+						})
+					: [];
 			return addTrends(
 				{
 					name,
 					status: "ok",
 					source,
+					baselineKey:
+						name === "concept" ? "concept-page-loads-v1" : "tooling-files-v1",
+					...(name === "concept" ? { sharedFiles } : {}),
 					measures: scanScope(files, {
-						sharedFiles: concept.sharedFiles ?? [],
+						sharedFiles,
 					}),
 				},
 				previous?.scopes?.find((item) => item.name === name),
