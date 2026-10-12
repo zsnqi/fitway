@@ -2726,6 +2726,7 @@
     retryBtn = errSay = null;
     fillCards();
     setLights(STATE !== "delayed");
+    setDetails(true);
 
     hit.hidden = false;
     busy(false);
