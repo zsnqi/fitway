@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-11T16:20:00+03:00
+updatedAt: 2026-10-12T06:55:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -41,6 +41,7 @@ milestones:
       - docs/phase-records/handoffs/owner-design-exploration/r04/**
       - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
       - .agents/skills/verify-fitway/** (from 2026-10-11, for the mid-motion compare round, F139; its earlier owner agent-environment-r03 is DONE)
+      - .agents/skills/gardener/** (from 2026-10-12, for the shared-file list, F135, DECISIONS 45 and 47; its earlier owner agent-environment-r03 is DONE)
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
       - design-research/owner-visual-preferences/** (user-supplied reference; read only)
