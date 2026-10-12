@@ -180,6 +180,7 @@
     },
   };
   const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
+  const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
 
   /* ------------------------------------------------------------ numbers, time and dates */
   const fmtInt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
