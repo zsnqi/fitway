@@ -23,6 +23,8 @@ const repository = fileURLToPath(new URL("../../", import.meta.url));
 const script =
 	process.env.FITWAY_ROUND_TEST_SCRIPT ||
 	path.join(repository, "scripts/agent-environment/codex-round.mjs");
+const GPT_MODEL = "gpt-6.1-sol";
+const DEEPSEEK_MODEL = "deepseek-v4.1-flash";
 const environment = readFileSync(
 	path.join(repository, "docs/agent-context/briefs/ENVIRONMENT.md"),
 	"utf8",
@@ -214,6 +216,79 @@ process.stdin.on('end', () => {
 	const run = path.join(root, "run");
 	// Never read the machine's own Codex sessions.
 	const codexHome = path.join(root, "codex-home");
+	mkdirSync(codexHome, { recursive: true });
+	writeFileSync(
+		path.join(codexHome, "models_cache.json"),
+		`${JSON.stringify(
+			{
+				models: [
+					{
+						slug: "gpt-5.5",
+						display_name: "GPT-5.5",
+						description: "Legacy coding model.",
+						default_reasoning_level: "medium",
+						supported_reasoning_levels: [
+							{ effort: "low", description: "low" },
+							{ effort: "medium", description: "medium" },
+							{ effort: "high", description: "high" },
+							{ effort: "xhigh", description: "xhigh" },
+						],
+						shell_type: "unified_exec",
+						visibility: "hide",
+						supported_in_api: true,
+						priority: 13,
+						additional_speed_tiers: ["fast"],
+						service_tiers: [
+							{
+								id: "priority",
+								name: "Fast",
+								description: "fast",
+							},
+						],
+						available_access_programs: { cyber: ["standard"] },
+						availability_nux: null,
+						upgrade: {
+							model: "gpt-6.1-sol",
+							migration_markdown: "fixture",
+							retirement_at: "2026-10-14T19:00:00Z",
+						},
+						model_messages: {
+							instructions_template: "fixture instructions",
+							approvals: null,
+							collaboration_modes: null,
+							auto_review: null,
+							permissions: null,
+							multi_agent: null,
+						},
+						include_skills_usage_instructions: true,
+						include_plugin_usage_instructions: true,
+						include_apps_usage_instructions: true,
+						default_reasoning_summary: "none",
+						support_verbosity: true,
+						default_verbosity: "low",
+						apply_patch_tool_type: "freeform",
+						web_search_tool_type: "text_and_image",
+						truncation_policy: { mode: "tokens", limit: 10000 },
+						supports_image_detail_original: true,
+						context_window: 272000,
+						max_context_window: 272000,
+						comp_hash: "2911",
+						effective_context_window_percent: 95,
+						experimental_supported_tools: [],
+						input_modalities: ["text", "image"],
+						supports_search_tool: true,
+						supports_experimental_context: false,
+						use_responses_lite: false,
+						supports_reasoning_effort_updates: false,
+						node_repl_auto_review_required: false,
+						node_repl_disabled: false,
+					},
+				],
+			},
+			null,
+			2,
+		)}\n`,
+	);
 	const env = {
 		...process.env,
 		PATH: `${bin}${path.delimiter}${process.env.PATH}`,
@@ -221,12 +296,9 @@ process.stdin.on('end', () => {
 		ROUND_REVIEW_CAPTURE: reviewCapture,
 		FITWAY_BRIEF_REVIEW_ROOT: reviewRoot,
 		CODEX_HOME: codexHome,
+		OPENDESIGN_API_KEY: "fixture-opendesign-key",
 	};
-	const invoke = (
-		args = [brief, "high", "--run", run],
-		extraEnv = {},
-		cwd = root,
-	) => {
+	const invokeRaw = (args: string[], extraEnv = {}, cwd = root) => {
 		const result = spawnSync(process.execPath, [script, ...args], {
 			cwd,
 			env: { ...env, ...extraEnv },
@@ -239,6 +311,26 @@ process.stdin.on('end', () => {
 				`Mutation evidence: stand-in recorded ${captured().args.includes("resume") ? "resume" : "launch"}; status ${result.status}`,
 			);
 		return { ...result, output: result.stdout + result.stderr };
+	};
+	const invoke = (args?: string[], extraEnv = {}, cwd = root) => {
+		const effective = args ?? [brief, "high", "--run", run];
+		const legacyLaunch =
+			effective[0] !== "resume" &&
+			!effective.includes("--help") &&
+			!effective[0]?.startsWith("-") &&
+			!effective.includes("--model");
+		if (!legacyLaunch) return invokeRaw(effective, extraEnv, cwd);
+		const insertAt = effective[1]?.startsWith("-") ? 1 : 2;
+		return invokeRaw(
+			[
+				...effective.slice(0, insertAt),
+				"--model",
+				GPT_MODEL,
+				...effective.slice(insertAt),
+			],
+			extraEnv,
+			cwd,
+		);
 	};
 	const captured = () => JSON.parse(readFileSync(capture, "utf8"));
 	const reviewCalls = () =>
@@ -287,6 +379,7 @@ process.stdin.on('end', () => {
 		codexHome,
 		env,
 		invoke,
+		invokeRaw,
 		captured,
 		laterHead,
 	};
@@ -342,6 +435,39 @@ function expectedArgs(
 		"gpt-6.1-sol",
 		"-c",
 		"model_reasoning_effort=high",
+		"--json",
+		"-o",
+		path.join(f.run, last),
+		...(resume ? ["resume", thread] : []),
+		"-",
+	];
+}
+
+function expectedDeepSeekArgs(
+	f: ReturnType<typeof fixture>,
+	last: string,
+	resume = false,
+) {
+	const catalog = path.join(f.run, "model-catalog.json").replaceAll("\\", "/");
+	return [
+		"exec",
+		"--approve-for-me",
+		"-C",
+		f.worktree,
+		"-m",
+		DEEPSEEK_MODEL,
+		"-c",
+		"model_provider=opendesign",
+		"-c",
+		'model_providers.opendesign={name="OpenDesign",base_url="https://amr-link.open-design.ai/v1",env_key="OPENDESIGN_API_KEY",wire_api="responses"}',
+		"-c",
+		`model_catalog_json=${JSON.stringify(catalog)}`,
+		"-c",
+		"model_reasoning_effort=max",
+		"-c",
+		"web_search=disabled",
+		"-c",
+		"features.hooks=false",
 		"--json",
 		"-o",
 		path.join(f.run, last),
@@ -446,6 +572,266 @@ function reviewRefused(
 	expect(existsSync(f.run)).toBe(false);
 }
 
+describe("D1 model choice, catalog, and resume", () => {
+	it("defaults to DeepSeek max and records the catalog and its hash", () => {
+		const f = fixture();
+		const result = f.invokeRaw([f.brief, "--run", f.run]);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toEqual(
+			expectedDeepSeekArgs(f, "last-message.md"),
+		);
+		const metadata = JSON.parse(
+			readFileSync(path.join(f.run, "run.json"), "utf8"),
+		);
+		expect(metadata).toMatchObject({
+			model: DEEPSEEK_MODEL,
+			level: "max",
+		});
+		const catalogBytes = readFileSync(path.join(f.run, "model-catalog.json"));
+		expect(metadata.catalogSha256).toBe(
+			createHash("sha256").update(catalogBytes).digest("hex"),
+		);
+		const catalog = JSON.parse(catalogBytes.toString("utf8"));
+		expect(catalog.models[0]).toMatchObject({
+			slug: DEEPSEEK_MODEL,
+			display_name: "DeepSeek V4.1 Flash (Open Design)",
+			default_reasoning_level: "high",
+			supported_reasoning_levels: [
+				{ effort: "high", description: "high" },
+				{ effort: "max", description: "max" },
+			],
+			priority: 99,
+			apply_patch_tool_type: "freeform",
+			web_search_tool_type: "text",
+			context_window: 900000,
+			max_context_window: 1000000,
+			input_modalities: ["text"],
+			supports_search_tool: false,
+		});
+		expect(catalog.models[0]).not.toHaveProperty("comp_hash");
+	});
+
+	it("accepts GPT max without DeepSeek route arguments or a key", () => {
+		const f = fixture();
+		const result = f.invoke(
+			[f.brief, "max", "--model", GPT_MODEL, "--run", f.run],
+			{ OPENDESIGN_API_KEY: "" },
+		);
+		expect(result.status, result.output).toBe(0);
+		const args = f.captured().args;
+		expect(args).toContain(GPT_MODEL);
+		expect(args).toContain("model_reasoning_effort=max");
+		expect(args.some((value) => value.startsWith("model_provider="))).toBe(
+			false,
+		);
+		expect(
+			JSON.parse(readFileSync(path.join(f.run, "run.json"), "utf8")),
+		).toMatchObject({ model: GPT_MODEL, level: "max" });
+	});
+
+	it.each([
+		["unsupported model", "high", "not-a-model", [DEEPSEEK_MODEL, GPT_MODEL]],
+		["unsupported DeepSeek level", "medium", DEEPSEEK_MODEL, ["high", "max"]],
+	])("refuses %s before Codex starts", (_name, level, model, accepted) => {
+		const f = fixture();
+		const result = f.invokeRaw([
+			f.brief,
+			level,
+			"--model",
+			model,
+			"--run",
+			f.run,
+		]);
+		refused(f, result, String(accepted[0]));
+		expect(result.stderr).toContain(String(accepted[1]));
+	});
+
+	it("uses the model and level recorded for resume", () => {
+		const f = fixture();
+		expect(f.invokeRaw([f.brief, "--run", f.run]).status).toBe(0);
+		rmSync(f.capture);
+		const result = f.invokeRaw(["resume", f.run]);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toEqual(
+			expectedDeepSeekArgs(f, "last-message.md", true),
+		);
+		expect(
+			JSON.parse(readFileSync(path.join(f.run, "run.json"), "utf8")),
+		).toMatchObject({ model: DEEPSEEK_MODEL, level: "max" });
+	});
+});
+
+describe("D2 absent catalog and missing key gates", () => {
+	it("refuses a missing cache and names the file and gpt-5.5 entry", () => {
+		const f = fixture();
+		const cache = path.join(f.codexHome, "models_cache.json");
+		rmSync(cache);
+		const result = f.invokeRaw([f.brief, "--run", f.run], {
+			OPENDESIGN_API_KEY: "test-only",
+		});
+		refused(f, result, "model catalog cache not found");
+		expect(result.stderr).toContain(cache);
+		expect(result.stderr).toContain("gpt-5.5");
+		expect(existsSync(f.run)).toBe(false);
+	});
+
+	it("refuses a cache without gpt-5.5", () => {
+		const f = fixture();
+		writeFileSync(
+			path.join(f.codexHome, "models_cache.json"),
+			'{"models":[]}\n',
+		);
+		const result = f.invokeRaw([f.brief, "--run", f.run], {
+			OPENDESIGN_API_KEY: "test-only",
+		});
+		refused(f, result, "model catalog cache has no gpt-5.5 entry");
+		expect(result.stderr).toContain(
+			path.join(f.codexHome, "models_cache.json"),
+		);
+		expect(existsSync(f.run)).toBe(false);
+	});
+
+	it("requires OPENDESIGN_API_KEY before DeepSeek review, launch, or resume", () => {
+		const review = fixture();
+		rmSync(review.reviewRoot, { recursive: true });
+		const reviewResult = review.invoke(undefined, {
+			OPENDESIGN_API_KEY: "",
+		});
+		refused(review, reviewResult, "OPENDESIGN_API_KEY");
+		expect(review.reviewCalls()).toEqual([]);
+
+		const launch = fixture();
+		const launchResult = launch.invokeRaw([launch.brief, "--run", launch.run], {
+			OPENDESIGN_API_KEY: "",
+		});
+		refused(launch, launchResult, "OPENDESIGN_API_KEY");
+		expect(existsSync(launch.run)).toBe(false);
+
+		const resume = fixture();
+		expect(resume.invokeRaw([resume.brief, "--run", resume.run]).status).toBe(
+			0,
+		);
+		rmSync(resume.capture);
+		const resumeResult = resume.invokeRaw(["resume", resume.run], {
+			OPENDESIGN_API_KEY: "",
+		});
+		refused(resume, resumeResult, "OPENDESIGN_API_KEY");
+	});
+});
+
+describe("D5 review sources", () => {
+	it("copies repository sources at the named HEAD and D:/fitway-temp sources", () => {
+		const f = fixture();
+		const absoluteDir = mkdtempSync(
+			path.join("D:/fitway-temp", "round-source-"),
+		);
+		try {
+			const repositorySource = path.join(
+				f.worktree,
+				"docs",
+				"review-source.md",
+			);
+			const decisionsSource = path.join(f.worktree, "docs", "decisions.md");
+			mkdirSync(path.dirname(repositorySource), { recursive: true });
+			writeFileSync(repositorySource, "repository source\n");
+			writeFileSync(decisionsSource, "decision one\n1. Decision\n");
+			git(f.worktree, "add", ".");
+			git(f.worktree, "commit", "-m", "review sources");
+			const head = git(f.worktree, "rev-parse", "HEAD");
+
+			const absoluteSource = path.join(absoluteDir, "trial.txt");
+			mkdirSync(absoluteDir, { recursive: true });
+			writeFileSync(absoluteSource, "temporary source\n");
+			const brief = readFileSync(f.brief, "utf8")
+				.replace(
+					new RegExp(`HEAD \`${f.head.slice(0, 8)}\``),
+					`HEAD \`${head.slice(0, 8)}\``,
+				)
+				.replace(
+					"## Goal",
+					`- **Read first, only these:**\n\n  - \`docs/review-source.md\` whole\n  - \`${absoluteSource.replaceAll("\\", "/")}\`\n\nDecisions: \`docs/decisions.md\` item 1.\n\n## Goal\n\nA later note about the "Read first" process names \`prompt.md\` but is not a source list.`,
+				);
+			writeFileSync(f.brief, brief);
+			git(f.coordinator, "add", ".");
+			git(f.coordinator, "commit", "-m", "brief names review sources");
+			rmSync(f.reviewRoot, { recursive: true });
+
+			const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
+				REVIEW_ANSWER: "No such readings.\n",
+			});
+			reviewRefused(f, result, "record its dispositions before launching");
+			const folder = path.join(f.reviewRoot, "brief-1");
+			expect(
+				readFileSync(path.join(folder, "sources", "docs", "review-source.md")),
+			).toEqual(Buffer.from("repository source\n"));
+			expect(
+				readFileSync(path.join(folder, "sources", "docs", "decisions.md")),
+			).toEqual(Buffer.from("decision one\n1. Decision\n"));
+			const relativeAbsolute = path.relative(
+				path.resolve("D:/fitway-temp"),
+				absoluteSource,
+			);
+			expect(
+				readFileSync(path.join(folder, "sources", "temp", relativeAbsolute)),
+			).toEqual(Buffer.from("temporary source\n"));
+			expect(existsSync(path.join(folder, "sources", "prompt.md"))).toBe(false);
+		} finally {
+			rmSync(absoluteDir, { recursive: true, force: true });
+		}
+	});
+
+	it.each([
+		["missing repository source", "missing-review-source.md"],
+		["a credential file", ".env"],
+	])("refuses %s before Codex starts", (_name, source) => {
+		const f = fixture();
+		if (source === ".env")
+			writeFileSync(path.join(f.worktree, source), "SECRET=value\n");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "--allow-empty", "-m", source);
+		const head = git(f.worktree, "rev-parse", "HEAD");
+		const brief = readFileSync(f.brief, "utf8")
+			.replace(
+				new RegExp(`HEAD \`${f.head.slice(0, 8)}\``),
+				`HEAD \`${head.slice(0, 8)}\``,
+			)
+			.replace(
+				"## Goal",
+				`## Read first, only these:\n\n- \`${source}\`\n\n## Goal`,
+			);
+		writeFileSync(f.brief, brief);
+		git(f.coordinator, "add", ".");
+		git(f.coordinator, "commit", "-m", `brief names ${source}`);
+		rmSync(f.reviewRoot, { recursive: true });
+
+		const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
+			REVIEW_ANSWER: "No such readings.\n",
+		});
+		refused(f, result, source);
+		expect(f.reviewCalls()).toEqual([]);
+	});
+
+	it("refuses an absolute source outside D:/fitway-temp", () => {
+		const f = fixture();
+		const source = path.join(f.root, "outside-review-source.txt");
+		writeFileSync(source, "outside source\n");
+		const brief = readFileSync(f.brief, "utf8").replace(
+			"## Goal",
+			`## Read first, only these:\n\n- \`${source.replaceAll("\\", "/")}\`\n\n## Goal`,
+		);
+		writeFileSync(f.brief, brief);
+		git(f.coordinator, "add", ".");
+		git(f.coordinator, "commit", "-m", "brief names outside source");
+		rmSync(f.reviewRoot, { recursive: true });
+
+		const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
+			REVIEW_ANSWER: "No such readings.\n",
+		});
+		refused(f, result, "absolute review source is outside D:/fitway-temp");
+		expect(f.reviewCalls()).toEqual([]);
+	});
+});
+
 describe("R1 pre-launch review", () => {
 	it("runs an absent review from REVIEW.md and stops before launching", () => {
 		const f = fixture();
@@ -467,21 +853,42 @@ describe("R1 pre-launch review", () => {
 		expect(readFileSync(path.join(folder, "prompt.md"), "utf8")).toBe(prompt);
 		const [review] = f.reviewCalls();
 		expect(f.reviewCalls()).toHaveLength(1);
-		const command = reviewDocument.match(/```bash\n([^`]+)```/)?.[1];
-		const tokens = command
-			?.trim()
-			.match(/"[^"]*"|[^\s]+/g)
-			?.map((token) => token.replace(/^"|"$/g, ""));
-		expect(review.args).toEqual(
-			tokens?.slice(1, -2).map((token) => token.replaceAll("<folder>", folder)),
-		);
+		expect(review.args).toEqual([
+			"exec",
+			"-s",
+			"read-only",
+			"--skip-git-repo-check",
+			"-C",
+			folder,
+			"-m",
+			DEEPSEEK_MODEL,
+			"-c",
+			"model_provider=opendesign",
+			"-c",
+			'model_providers.opendesign={name="OpenDesign",base_url="https://amr-link.open-design.ai/v1",env_key="OPENDESIGN_API_KEY",wire_api="responses"}',
+			"-c",
+			`model_catalog_json=${JSON.stringify(
+				path.join(folder, "model-catalog.json").replaceAll("\\", "/"),
+			)}`,
+			"-c",
+			"model_reasoning_effort=max",
+			"-c",
+			"web_search=disabled",
+			"-c",
+			"features.hooks=false",
+			"-o",
+			`${folder}/last.md`,
+			"-",
+		]);
 		expect(review.cwd).toBe(folder);
 		expect(Buffer.from(review.input, "base64").toString("utf8")).toBe(prompt);
 		expect(review.files.sort()).toEqual([
 			"brief.md",
+			"model-catalog.json",
 			"prompt.md",
 			"review.json",
 			"review.log",
+			"sources",
 		]);
 		expect(() => git(folder, "rev-parse", "--show-toplevel")).toThrow();
 		expect(existsSync(path.join(folder, "dispositions.md"))).toBe(false);
@@ -674,6 +1081,17 @@ describe("R1 pre-launch review", () => {
 		f.answerReview(
 			answer,
 			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\nReading 2: closed\n`,
+		);
+		expect(f.invoke().status).toBe(0);
+	});
+
+	it("accepts bold Reading headings with numbered labelled fields", () => {
+		const f = fixture();
+		const answer =
+			"**Reading 1: R1**\n1. **Outcome/limit:** R1.\n2. **Literal reading:** The check can pass.\n3. **What goes wrong:** The intent fails.\n4. **One-line change:** Require the intent.\n";
+		f.answerReview(
+			answer,
+			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\n`,
 		);
 		expect(f.invoke().status).toBe(0);
 	});
@@ -1611,13 +2029,19 @@ it("prints the command's usage without starting Codex", () => {
 	const result = f.invoke(["--help"]);
 	expect(result.status).toBe(0);
 	expect(result.stdout).toContain(
-		"Usage: pnpm codex:round [--] <brief> <level> [--run <folder>]",
+		"Usage: pnpm codex:round [--] <brief> [<level>] [--model <model>] [--run <folder>] [--new-review]",
 	);
 	expect(result.stdout).toContain(
 		"pnpm codex:round [--] resume <folder> [--message <text> | --message-file <file>]",
 	);
 	expect(result.stdout).toContain(
 		"--message sends the exact text instead of the saved launch input.",
+	);
+	expect(result.stdout).toContain(
+		"Models: deepseek-v4.1-flash (default), gpt-6.1-sol.",
+	);
+	expect(result.stdout).toContain(
+		"Levels: deepseek-v4.1-flash: high, max (default max); gpt-6.1-sol: medium, high, xhigh, max.",
 	);
 	expect(existsSync(f.capture)).toBe(false);
 });

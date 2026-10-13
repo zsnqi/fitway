@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { constants, createReadStream } from "node:fs";
 import {
@@ -22,14 +22,23 @@ import { readGit } from "./git-context.mjs";
 import { samePath } from "./path-identity.mjs";
 
 const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
-const MODEL = "gpt-6.1-sol";
-const LEVELS = new Set(["medium", "high", "xhigh"]);
-const HELP = `Usage: pnpm codex:round [--] <brief> <level> [--run <folder>] [--new-review]
+const GPT_MODEL = "gpt-6.1-sol";
+const DEEPSEEK_MODEL = "deepseek-v4.1-flash";
+const GPT_LEVELS = new Set(["medium", "high", "xhigh", "max"]);
+const DEEPSEEK_LEVELS = new Set(["high", "max"]);
+const DEFAULT_MODEL = DEEPSEEK_MODEL;
+const DEFAULT_DEEPSEEK_LEVEL = "max";
+const MODEL_LEVELS = new Map([
+	[DEEPSEEK_MODEL, DEEPSEEK_LEVELS],
+	[GPT_MODEL, GPT_LEVELS],
+]);
+const HELP = `Usage: pnpm codex:round [--] <brief> [<level>] [--model <model>] [--run <folder>] [--new-review]
        pnpm codex:round [--] resume <folder> [--message <text> | --message-file <file>]
-       node <repository>/scripts/agent-environment/codex-round.mjs <brief> <level> [--run <folder>] [--new-review]
+       node <repository>/scripts/agent-environment/codex-round.mjs <brief> [<level>] [--model <model>] [--run <folder>] [--new-review]
        node <repository>/scripts/agent-environment/codex-round.mjs resume <folder> [--message <text> | --message-file <file>]
 
-Levels: medium, high, xhigh (WORKING_AGREEMENTS.md, Delegation).
+Models: deepseek-v4.1-flash (default), gpt-6.1-sol.
+Levels: deepseek-v4.1-flash: high, max (default max); gpt-6.1-sol: medium, high, xhigh, max.
 Relative brief and run paths start at the repository root, in either shell.
 Default run folder: ${process.platform === "win32" ? "D:/fitway-temp" : tmpdir()}/codex-round-<id>.
 Launch runs the REVIEW.md review when absent and stops for coordinator dispositions.
@@ -44,6 +53,158 @@ Codex's session file under CODEX_HOME (default ~/.codex), unless the folder has 
 
 function resolvePath(value) {
 	return path.resolve(repositoryRoot, value.replaceAll("\\", "/"));
+}
+
+function levelsFor(model) {
+	return MODEL_LEVELS.get(model);
+}
+
+function validateModelLevel(model, level) {
+	const levels = levelsFor(model);
+	if (!levels)
+		throw new Error(
+			`unsupported model: ${model}; use ${[...MODEL_LEVELS.keys()].join(" or ")}`,
+		);
+	if (level === undefined || level === "") {
+		if (model === DEEPSEEK_MODEL) return DEFAULT_DEEPSEEK_LEVEL;
+		throw new Error(
+			`unsupported reasoning level: missing; ${model} accepts ${[...levels].join(", ")}`,
+		);
+	}
+	if (!levels.has(level))
+		throw new Error(
+			`unsupported reasoning level for ${model}: ${level}; use ${[...levels].join(", ")}`,
+		);
+	return level;
+}
+
+function shellTokens(command) {
+	const tokens = [];
+	let token = "";
+	let quote = null;
+	let escaped = false;
+	for (const character of command.trim()) {
+		if (escaped) {
+			token += character;
+			escaped = false;
+			continue;
+		}
+		if (character === "\\" && quote !== "'") {
+			escaped = true;
+			continue;
+		}
+		if (quote) {
+			if (character === quote) quote = null;
+			else token += character;
+			continue;
+		}
+		if (character === "'" || character === '"') {
+			quote = character;
+			continue;
+		}
+		if (/\s/.test(character)) {
+			if (token) {
+				tokens.push(token);
+				token = "";
+			}
+			continue;
+		}
+		token += character;
+	}
+	if (quote) throw new Error("review command has an unmatched quote");
+	if (escaped) token += "\\";
+	if (token) tokens.push(token);
+	return tokens;
+}
+
+function modelArgs(model, level, catalogPath) {
+	if (model === GPT_MODEL)
+		return ["-m", GPT_MODEL, "-c", `model_reasoning_effort=${level}`];
+	if (model === DEEPSEEK_MODEL) {
+		if (!catalogPath) throw new Error("DeepSeek requires a model catalog");
+		return [
+			"-m",
+			DEEPSEEK_MODEL,
+			"-c",
+			"model_provider=opendesign",
+			"-c",
+			'model_providers.opendesign={name="OpenDesign",base_url="https://amr-link.open-design.ai/v1",env_key="OPENDESIGN_API_KEY",wire_api="responses"}',
+			"-c",
+			`model_catalog_json=${JSON.stringify(catalogPath.replaceAll("\\", "/"))}`,
+			"-c",
+			`model_reasoning_effort=${level}`,
+			"-c",
+			"web_search=disabled",
+			"-c",
+			"features.hooks=false",
+		];
+	}
+	throw new Error(`unsupported model: ${model}`);
+}
+
+function requireDeepSeekKey() {
+	if (!process.env.OPENDESIGN_API_KEY?.trim())
+		throw new Error("OPENDESIGN_API_KEY is required for DeepSeek");
+}
+
+function catalogPathFor(catalog) {
+	return catalog ? path.join(catalog.run, "model-catalog.json") : undefined;
+}
+
+function deepSeekCatalogEntry(source) {
+	const entry = JSON.parse(JSON.stringify(source));
+	entry.slug = DEEPSEEK_MODEL;
+	entry.display_name = "DeepSeek V4.1 Flash (Open Design)";
+	entry.description = "DeepSeek V4.1 Flash through Open Design";
+	entry.default_reasoning_level = "high";
+	entry.supported_reasoning_levels = [
+		{ effort: "high", description: "high" },
+		{ effort: "max", description: "max" },
+	];
+	entry.priority = 99;
+	entry.additional_speed_tiers = [];
+	entry.service_tiers = [];
+	entry.available_access_programs = { cyber: [] };
+	entry.upgrade = null;
+	entry.support_verbosity = false;
+	entry.default_verbosity = null;
+	entry.web_search_tool_type = "text";
+	entry.supports_image_detail_original = false;
+	entry.context_window = 900000;
+	entry.max_context_window = 1000000;
+	entry.input_modalities = ["text"];
+	entry.supports_search_tool = false;
+	entry.node_repl_disabled = true;
+	delete entry.comp_hash;
+	return entry;
+}
+
+async function readDeepSeekCatalog(run) {
+	requireDeepSeekKey();
+	const codexHome = process.env.CODEX_HOME || path.join(homedir(), ".codex");
+	const cachePath = path.join(codexHome, "models_cache.json");
+	let cache;
+	try {
+		cache = JSON.parse(await readFile(cachePath, "utf8"));
+	} catch (error) {
+		if (error.code === "ENOENT" || error.code === "ENOTDIR")
+			throw new Error(
+				`model catalog cache not found: ${cachePath}; expected gpt-5.5`,
+			);
+		throw error;
+	}
+	const source = cache.models?.find((entry) => entry?.slug === "gpt-5.5");
+	if (!source)
+		throw new Error(`model catalog cache has no gpt-5.5 entry: ${cachePath}`);
+	const bytes = Buffer.from(
+		`${JSON.stringify({ models: [deepSeekCatalogEntry(source)] }, null, 2)}\n`,
+	);
+	return { bytes, sha256: sha256(bytes), run };
+}
+
+async function writeCatalog(catalog, flag = "wx") {
+	if (!catalog) return;
+	await writeFile(catalogPathFor(catalog), catalog.bytes, { flag });
 }
 
 function decodeMessageFile(bytes, filename) {
@@ -94,21 +255,41 @@ function parseArgs(input) {
 				args[2] === "--message-file" ? resolvePath(args[3]) : undefined,
 		};
 	}
-	if (args.length < 2 || args[0]?.startsWith("-"))
-		throw new Error(
-			"expected <brief> <level> [--run <folder>] [--new-review] or resume <folder> [--message <text>]",
-		);
 	let run;
+	let model = DEFAULT_MODEL;
+	let modelSeen = false;
 	let newReview = false;
-	for (let index = 2; index < args.length; index += 1) {
-		if (args[index] === "--new-review" && !newReview) newReview = true;
-		else if (args[index] === "--run" && !run && args[index + 1])
+	const positionals = [];
+	for (let index = 0; index < args.length; index += 1) {
+		const argument = args[index];
+		if (argument === "--model") {
+			if (modelSeen || !args[index + 1] || args[index + 1].startsWith("-"))
+				throw new Error("--model requires <deepseek-v4.1-flash|gpt-6.1-sol>");
+			model = args[++index];
+			modelSeen = true;
+		} else if (argument === "--run") {
+			if (run || !args[index + 1]) throw new Error("--run requires a folder");
 			run = resolvePath(args[++index]);
-		else throw new Error(`unexpected launch option: ${args[index]}`);
+		} else if (argument === "--new-review") {
+			if (newReview) throw new Error("--new-review was repeated");
+			newReview = true;
+		} else if (argument.startsWith("-")) {
+			throw new Error(`unexpected launch option: ${argument}`);
+		} else {
+			positionals.push(argument);
+		}
 	}
+	if (positionals.length < 1 || positionals.length > 2)
+		throw new Error(
+			"expected <brief> [<level>] [--model <model>] [--run <folder>] [--new-review]",
+		);
+	const level =
+		positionals[1] ??
+		(model === DEEPSEEK_MODEL ? DEFAULT_DEEPSEEK_LEVEL : undefined);
 	return {
-		brief: resolvePath(args[0]),
-		level: args[1],
+		brief: resolvePath(positionals[0]),
+		level,
+		model,
 		newReview,
 		run:
 			run ??
@@ -197,7 +378,7 @@ function sha256(bytes) {
 
 // REVIEW.md owns both the command and the prompt. Interpret its argv as data,
 // without a shell, replacing only the documented folder placeholder.
-async function reviewProcedure(folder) {
+async function reviewProcedure(folder, catalogPath) {
 	const document = await readFile(
 		path.join(repositoryRoot, "docs/agent-context/briefs/REVIEW.md"),
 		"utf8",
@@ -209,24 +390,32 @@ async function reviewProcedure(folder) {
 		/^## Prompt\r?\n\s*```text\r?\n([\s\S]*?)^```\s*$/m,
 	)?.[1];
 	const tokens = command
-		?.trim()
-		.match(/"[^"]*"|[^\s]+/g)
-		?.map((token) => token.replace(/^"|"$/g, ""));
+		? shellTokens(command).map((token) =>
+				token
+					.replaceAll("<folder>", folder)
+					.replaceAll("<catalog>", catalogPath.replaceAll("\\", "/")),
+			)
+		: undefined;
 	const redirect = tokens?.indexOf("<");
+	const route = modelArgs(DEEPSEEK_MODEL, "max", catalogPath);
+	const routeStart = tokens?.indexOf("-m");
 	if (
 		!prompt ||
-		tokens?.[0] !== "codex" ||
+		!tokens ||
+		tokens[0] !== "codex" ||
 		redirect !== tokens.length - 2 ||
 		tokens[redirect - 1] !== "-" ||
-		tokens[redirect + 1] !== "<folder>/prompt.md" ||
-		tokens[tokens.indexOf("-s") + 1] !== "read-only"
+		typeof tokens[redirect + 1] !== "string" ||
+		path.resolve(tokens[redirect + 1]) !== path.resolve(folder, "prompt.md") ||
+		tokens[tokens.indexOf("-s") + 1] !== "read-only" ||
+		routeStart < 0 ||
+		tokens.slice(routeStart, routeStart + route.length).join("\0") !==
+			route.join("\0")
 	)
 		throw new Error("cannot read the review command and prompt from REVIEW.md");
 	return {
 		prompt,
-		args: tokens
-			.slice(1, redirect)
-			.map((token) => token.replaceAll("<folder>", folder)),
+		args: tokens.slice(1, redirect),
 	};
 }
 
@@ -270,24 +459,31 @@ function parseReadings(answer) {
 			return null;
 		return readings;
 	}
-	const headings = [
+	const atxHeadings = [
 		...text.matchAll(
 			/^#{1,6}\s+(?:\d+[.)]\s*|Reading\s+\d+\b[^\n]*|[A-Z]\d+\b)[^\n]*/gim,
 		),
 	];
-	if (headings.length) {
-		const depth = headings[0][0].match(/^#+/)[0].length;
+	if (atxHeadings.length) {
+		const depth = atxHeadings[0][0].match(/^#+/)[0].length;
 		const peers = [...text.matchAll(/^#{1,6}\s+[^\n]*/gm)].filter(
 			(heading) => heading[0].match(/^#+/)[0].length === depth,
 		);
 		// Do not silently drop a reading whose heading uses another format.
 		if (
-			peers.length !== headings.length ||
-			headings.some((heading) => heading[0].match(/^#+/)[0].length !== depth)
+			peers.length !== atxHeadings.length ||
+			atxHeadings.some((heading) => heading[0].match(/^#+/)[0].length !== depth)
 		)
 			return null;
 	}
-	const starts = headings;
+	const boldHeadings = [
+		...text.matchAll(
+			/^\*\*(?:Reading\s+\d+\b|\d+[.)]\s*|[A-Z]\d+\b)[^\n]*\*\*\s*$/gim,
+		),
+	];
+	const starts = [...atxHeadings, ...boldHeadings].sort(
+		(left, right) => left.index - right.index,
+	);
 	if (!starts.length || starts.length > 5) return null;
 	const readings = starts.map((start, index) => ({
 		id: index + 1,
@@ -356,14 +552,171 @@ async function reviewFolders(root, basename) {
 		.sort((a, b) => b.number - a.number);
 }
 
-async function runReview(folder, executable, brief) {
-	const { args, prompt } = await reviewProcedure(folder);
+function isAbsolutePath(value) {
+	return path.isAbsolute(value) || path.win32.isAbsolute(value);
+}
+
+function repositorySourcePath(value) {
+	const normalized = value.replaceAll("\\", "/");
+	if (
+		!normalized ||
+		normalized.startsWith("/") ||
+		/^[A-Za-z]:/.test(normalized)
+	)
+		return null;
+	const result = path.posix.normalize(normalized);
+	if (
+		result === "." ||
+		result === ".." ||
+		result.startsWith("../") ||
+		result.includes("/../")
+	)
+		return null;
+	return result;
+}
+
+function looksLikeNamedSource(value) {
+	const trimmed = value.trim();
+	if (!trimmed || /[\r\n]/.test(trimmed)) return false;
+	if (isAbsolutePath(trimmed)) return true;
+	if (repositorySourcePath(trimmed)) {
+		return (
+			trimmed.includes("/") ||
+			trimmed.includes("\\") ||
+			/\.[A-Za-z0-9]+$/.test(trimmed)
+		);
+	}
+	return false;
+}
+
+function namedReviewSources(brief) {
+	const text = brief.toString("utf8").replace(/<!--[\s\S]*?-->/g, "");
+	const found = [];
+	let section = null;
+	for (const line of text.split(/\r?\n/)) {
+		const heading = line.match(/^#{1,6}\s+(.*)$/);
+		const boldBullet = line.match(/^\s*-\s+\*\*([^*]+)\*\*/);
+		const label = heading?.[1]?.trim() ?? boldBullet?.[1]?.trim() ?? "";
+		if (heading || (boldBullet && !/^\s{2,}/.test(line))) {
+			if (/^Read first\b/i.test(label)) section = "read first";
+			else if (/^Decisions\b/i.test(label)) section = "decisions";
+			else section = null;
+		}
+		const decisionsLine = /\bDecisions\s*:/i.test(line);
+		if (section !== "read first" && section !== "decisions" && !decisionsLine)
+			continue;
+		for (const span of line.matchAll(/(`+)([^`]*?)\1(?!`)/g)) {
+			const value = span[2].trim();
+			if (looksLikeNamedSource(value)) found.push(value);
+		}
+	}
+	return [...new Set(found)];
+}
+
+function isCredentialSource(value, bytes) {
+	const name = path.basename(value).toLowerCase();
+	if (
+		name === ".env" ||
+		(/^\.env\.[^.]+$/.test(name) &&
+			!/\.(?:example|sample|template)$/.test(name)) ||
+		name === ".netrc" ||
+		name === "auth.json" ||
+		/^id_(?:rsa|ed25519|ecdsa)$/.test(name) ||
+		/\.(?:key|pem|p12|pfx|ppk)$/.test(name)
+	)
+		return true;
+	return /-----BEGIN [^-]*PRIVATE KEY-----/.test(bytes.toString("utf8"));
+}
+
+function sourceTarget(sources, value) {
+	if (isAbsolutePath(value)) {
+		const root = path.resolve(
+			process.platform === "win32" ? "D:/fitway-temp" : tmpdir(),
+		);
+		const absolute = path.resolve(value);
+		const relative = path.relative(root, absolute);
+		if (!relative || relative.startsWith("..") || path.isAbsolute(relative))
+			throw new Error(
+				`absolute review source is outside D:/fitway-temp: ${value}`,
+			);
+		return path.join(sources, "temp", relative);
+	}
+	const relative = repositorySourcePath(value);
+	if (!relative) throw new Error(`invalid named review source: ${value}`);
+	return path.join(sources, ...relative.split("/"));
+}
+
+async function sourceBytes(worktree, head, value) {
+	if (isAbsolutePath(value)) {
+		const absolute = path.resolve(value);
+		let details;
+		try {
+			details = await stat(absolute);
+		} catch (error) {
+			if (error.code === "ENOENT" || error.code === "ENOTDIR")
+				throw new Error(`named review source not found: ${value}`);
+			throw error;
+		}
+		if (!details.isFile())
+			throw new Error(`named review source is not a file: ${value}`);
+		return readFile(absolute);
+	}
+	const relative = repositorySourcePath(value);
+	if (!relative) throw new Error(`invalid named review source: ${value}`);
+	const object = `${head}:${relative}`;
+	let type;
+	try {
+		type = readGit(worktree, ["cat-file", "-t", object]);
+	} catch {
+		throw new Error(`named review source not found: ${value}`);
+	}
+	if (type !== "blob")
+		throw new Error(`named review source is not a file: ${value}`);
+	return execFileSync("git", ["show", object], {
+		cwd: worktree,
+		encoding: "buffer",
+		maxBuffer: 256 * 1024 * 1024,
+		stdio: ["ignore", "pipe", "pipe"],
+		windowsHide: true,
+	});
+}
+
+async function copyReviewSources(folder, brief, worktree, head) {
+	const sources = path.join(folder, "sources");
+	await mkdir(sources, { recursive: true });
+	const targets = new Set();
+	for (const value of namedReviewSources(brief)) {
+		const bytes = await sourceBytes(worktree, head, value);
+		if (isCredentialSource(value, bytes))
+			throw new Error(`named review source holds credentials: ${value}`);
+		const target = sourceTarget(sources, value);
+		const targetKey = path.resolve(target).toLowerCase();
+		if (targets.has(targetKey))
+			throw new Error(`two named review sources map to one file: ${value}`);
+		targets.add(targetKey);
+		await mkdir(path.dirname(target), { recursive: true });
+		await writeFile(target, bytes, { flag: "wx" });
+	}
+}
+
+async function runReview(folder, executable, brief, worktree, head) {
+	const catalog = await readDeepSeekCatalog(folder);
+	const { args, prompt } = await reviewProcedure(
+		folder,
+		catalogPathFor(catalog),
+	);
 	await writeFile(path.join(folder, "brief.md"), brief, { flag: "wx" });
 	await writeFile(path.join(folder, "prompt.md"), prompt, { flag: "wx" });
+	await copyReviewSources(folder, brief, worktree, head);
+	await writeCatalog(catalog);
 	const record = path.join(folder, "review.json");
 	await writeFile(
 		record,
-		`${JSON.stringify({ status: "running", sha256: sha256(brief) })}\n`,
+		`${JSON.stringify({
+			status: "running",
+			sha256: sha256(brief),
+			catalogSha256: catalog.sha256,
+		})}\n`,
 		{ flag: "wx" },
 	);
 	const log = await open(path.join(folder, "review.log"), "wx");
@@ -390,11 +743,16 @@ async function runReview(folder, executable, brief) {
 	}
 	await writeFile(
 		record,
-		`${JSON.stringify({ status: code === 0 ? "complete" : "failed", exitCode: code, sha256: sha256(brief) })}\n`,
+		`${JSON.stringify({
+			status: code === 0 ? "complete" : "failed",
+			exitCode: code,
+			sha256: sha256(brief),
+			catalogSha256: catalog.sha256,
+		})}\n`,
 	);
 }
 
-async function inspectBriefReview(options, executable, brief) {
+async function inspectBriefReview(options, executable, brief, worktree, head) {
 	const root = path.resolve(
 		process.env.FITWAY_BRIEF_REVIEW_ROOT ||
 			path.join(
@@ -423,7 +781,7 @@ async function inspectBriefReview(options, executable, brief) {
 			await mkdir(snapshot.folder);
 			await assertOutsideGit(snapshot.folder);
 			console.log(`Review folder: ${snapshot.folder}`);
-			await runReview(snapshot.folder, executable, brief);
+			await runReview(snapshot.folder, executable, brief, worktree, head);
 		} else {
 			await assertOutsideGit(snapshot.folder);
 			console.log(`Review folder: ${snapshot.folder}`);
@@ -512,10 +870,7 @@ async function prepareLaunch(options) {
 		);
 	}
 	if (result.role !== "codex") throw new Error("brief must have role: codex");
-	if (!LEVELS.has(options.level))
-		throw new Error(
-			`unsupported reasoning level: ${options.level}; use medium, high or xhigh`,
-		);
+	options.level = validateModelLevel(options.model, options.level);
 	const worktree = resolvePath(result.worktree);
 	if (readGit(worktree, ["status", "--short"]))
 		throw new Error("target worktree has uncommitted changes");
@@ -527,20 +882,26 @@ async function prepareLaunch(options) {
 	await assertFresh(options.run);
 	const executable = await findCodex();
 	const brief = await readFile(options.brief);
-	const review = await inspectBriefReview(options, executable, brief);
-	if (review.refusal === "new-review") throw new Error(review.reason);
-	if (review.refusal === "failed-review") throw new Error(review.reason);
-	if (review.refusal === "unreadable-review") throw new Error(review.reason);
-	if (review.refusal === "unanswered-readings") throw new Error(review.reason);
-	if (review.refusal === "brief-hash") throw new Error(review.reason);
 	const named = brief
 		.toString("utf8")
 		.replace(/<!--[\s\S]*?-->/g, "")
 		.match(
 			/^- \*\*Worktree:\*\* `[^`]+`, branch `[^`]+`, HEAD `([^`]+)`\s*$/m,
 		)?.[1];
-	const head = readGit(worktree, ["rev-parse", "HEAD"]);
 	const namedHead = readGit(worktree, ["rev-parse", `${named}^{commit}`]);
+	const review = await inspectBriefReview(
+		options,
+		executable,
+		brief,
+		worktree,
+		namedHead,
+	);
+	if (review.refusal === "new-review") throw new Error(review.reason);
+	if (review.refusal === "failed-review") throw new Error(review.reason);
+	if (review.refusal === "unreadable-review") throw new Error(review.reason);
+	if (review.refusal === "unanswered-readings") throw new Error(review.reason);
+	if (review.refusal === "brief-hash") throw new Error(review.reason);
+	const head = readGit(worktree, ["rev-parse", "HEAD"]);
 	const note =
 		head === namedHead
 			? Buffer.alloc(0)
@@ -553,7 +914,7 @@ async function prepareLaunch(options) {
 		worktree,
 		head,
 		level: options.level,
-		model: MODEL,
+		model: options.model,
 	};
 	if (result.requiredChanges.length) {
 		metadata.requiredChanges = [];
@@ -566,8 +927,14 @@ async function prepareLaunch(options) {
 			metadata.requiredChanges.push({ ...reference, before });
 		}
 	}
+	const catalog =
+		options.model === DEEPSEEK_MODEL
+			? await readDeepSeekCatalog(options.run)
+			: undefined;
+	if (catalog) metadata.catalogSha256 = catalog.sha256;
 	await mkdir(options.run, { recursive: true });
 	await assertFresh(options.run);
+	await writeCatalog(catalog);
 	// Exclusive creation also arbitrates simultaneous launches into an empty folder.
 	await writeFile(
 		path.join(options.run, "run.json"),
@@ -677,10 +1044,15 @@ async function prepareResume(options) {
 	const metadata = JSON.parse(
 		await readFile(path.join(options.run, "run.json"), "utf8"),
 	);
+	let level;
+	try {
+		level = validateModelLevel(metadata.model, metadata.level);
+	} catch {
+		throw new Error("invalid run metadata");
+	}
 	if (
 		metadata.version !== 1 ||
-		metadata.model !== MODEL ||
-		!LEVELS.has(metadata.level) ||
+		level !== metadata.level ||
 		typeof metadata.worktree !== "string" ||
 		!path.isAbsolute(metadata.worktree) ||
 		!(await samePath(
@@ -705,11 +1077,24 @@ async function prepareResume(options) {
 				? await readFile(path.join(options.run, "input.md"))
 				: Buffer.from(options.message, "utf8");
 	}
+	const catalog =
+		metadata.model === DEEPSEEK_MODEL
+			? await readDeepSeekCatalog(options.run)
+			: undefined;
+	if (catalog) {
+		await writeCatalog(catalog, "w");
+		metadata.catalogSha256 = catalog.sha256;
+		await writeFile(
+			path.join(options.run, "run.json"),
+			`${JSON.stringify(metadata, null, 2)}\n`,
+		);
+	}
 	return {
 		metadata,
 		input,
 		thread: await firstThread(options.run),
 		executable: await findCodex(),
+		catalog,
 	};
 }
 
@@ -725,7 +1110,9 @@ function startCodex(executable, args, worktree) {
 	// values are quoted data; embedded percent references are not expanded again.
 	const env = { ...process.env, FITWAY_CODEX_COMMAND: executable };
 	const references = args.map((argument, index) => {
-		env[`FITWAY_CODEX_ARG_${index}`] = argument;
+		// cmd.exe strips unescaped quotes while expanding a quoted %VAR%.
+		// Keep embedded quotes in the child argv without re-interpreting %.
+		env[`FITWAY_CODEX_ARG_${index}`] = argument.replaceAll('"', '\\"');
 		return `"%FITWAY_CODEX_ARG_${index}%"`;
 	});
 	return spawn(
@@ -818,15 +1205,16 @@ async function recordStartLoad(run, thread) {
 async function execute(options, prepared) {
 	const output = await capture(options.run, options.resume);
 	const { metadata, input, executable, thread } = prepared;
+	const catalogPath =
+		metadata.model === DEEPSEEK_MODEL
+			? path.join(options.run, "model-catalog.json")
+			: undefined;
 	const args = [
 		"exec",
 		"--approve-for-me",
 		"-C",
 		metadata.worktree,
-		"-m",
-		metadata.model,
-		"-c",
-		`model_reasoning_effort=${metadata.level}`,
+		...modelArgs(metadata.model, metadata.level, catalogPath),
 		"--json",
 		"-o",
 		output.last,
