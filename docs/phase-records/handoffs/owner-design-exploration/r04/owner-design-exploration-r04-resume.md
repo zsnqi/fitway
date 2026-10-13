@@ -24,12 +24,14 @@
   `D:/fitway-temp/brief-review/<brief file name>-<n>/` and stops; write `dispositions.md` there (`Brief SHA-256: <hash>`,
   then `Reading <n>: closed` or `Reading <n>: left open: <why>`) and run it again (`REVIEW.md` §"Running it"). The brief
   must be committed first. The codex template must stay at 80 lines or fewer (`check-brief.test.ts:761`).
-- **Resuming Codex:** `bash D:/fitway-temp/resume-any.sh <run folder> <message file>` resumes on gpt-6.1-sol and falls
-  back to gpt-6-sol on "at capacity"; it exits 75 on a usage limit (the user switches the account). When the user is
-  away, a limit waits for its reset instead (the user, 2026-10-13): `bash D:/fitway-temp/resume-wait-limit.sh <run
-  folder> <message file> [wait-first]` wraps `resume-any.sh`, waits until Codex's "try again at" time plus five
-  minutes, and resumes with `D:/fitway-temp/resume-after-limit-wait.md`. Each run folder's `model-switch.md` records
-  the events per model.
+- **Resuming Codex:** `bash D:/fitway-temp/resume-auto.sh <run folder> <message file> [limit-first]` (from
+  2026-10-13, the user: switch accounts automatically). It wraps `resume-any.sh` (gpt-6.1-sol, falling back to
+  gpt-6-sol on "at capacity"); on a usage limit it switches to the next saved Codex account that is not limited and
+  resumes at once, and with every account limited it waits for the earliest reset. Accounts: the user signs in to each
+  once and runs `node D:/fitway-temp/codex-accounts.mjs save`; `list` shows them (profiles beside `auth.json` in
+  `~/.codex/accounts/`; the Codex app shares the sign-in). `resume-wait-limit.sh` (wait only) and the hand-over
+  watcher `handover-to-auto.sh` are what the two runs started before it use. Each run folder's `model-switch.md` logs
+  every account, model and wait.
 - **main** is at `23752f84`; fast-forward it to this text's commit once CI passes on it. The discussion page
   of 2026-10-07 is dropped (the user, 2026-10-13, «اسحب على الصفحة خلاص»; its link no longer opened from this account):
   no more updates to it. access-reason-cap-r01 stays paused by the user.
