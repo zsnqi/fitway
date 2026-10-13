@@ -62,10 +62,13 @@ DeepSeek); each restarts fresh on DeepSeek, its brief naming what it inherits.
      only, `setup`).
 2. **shared-frame on DeepSeek** (running, above). When it reports: write `free-for-vf-parallel.txt`; grade SH1-SH10
    and GH7; record; merge; push.
-3. **vf-parallel on DeepSeek:** a fresh launch sends only the brief (the launcher's own note covers a HEAD that adds
-   the brief, nothing else), so fold `resume-ports-free-1.md` into its brief; name every source by its full path,
-   repository files as they stand at the build worktree's HEAD, other files under `D:/fitway-temp` (F153); then
-   `--new-review`, dispositions, launch; grade VP1-VP11; merge; CI.
+3. **vf-parallel on DeepSeek:** brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel-continue.md`
+   (it folds in `resume-ports-free-1.md`; a fresh launch sends only the brief), reviewed in
+   `D:/fitway-temp/brief-review/codex-vf-parallel-continue-1` with dispositions written (reading 1 closed as R2, four
+   left open). Launch `pnpm codex:round <brief>` once shared-frame reports and `free-for-vf-parallel.txt` exists, not
+   before (all its open work needs the ports). At grading, time the 1-worker command with the CLI at `5493e888`, check
+   each rerun's difference mask, and watch the listening ports while compares overlap (the readings left open); grade
+   VP1-VP11; merge; CI.
 4. **Remove the light tuner** (decision 50); then the **`reports.css` split** (draft
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); then the **tool fixes** F148, F140,
    F131, F132, F136, F149, F150, F152 (DECISIONS 47).

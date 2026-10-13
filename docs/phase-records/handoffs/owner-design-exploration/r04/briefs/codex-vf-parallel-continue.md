@@ -49,14 +49,18 @@ The round's brief is met: its Goal and every outcome and limit, measured as it s
 - **R1. Every measurement run.** P1, P2, P3 and L1 are measured as the round's brief states them, on the commit you
   deliver, after the release file exists; P4, L2 and L3 are measured again in this run on that commit, and no earlier
   report stands in for any of them.
-- **R2. A change only on evidence.** Change the code only where a measurement or a test shows an outcome or limit
+- **R2. Every pair gives the real verdicts.** P1's two and three compares run the result against the base, in place
+  of the base against itself, and each gives the items, their order, verdicts and failures that the same command gives
+  on 3176-3177 with 1 worker; P3's runs of "Reports' P1 command" are this command. A pair that serves one side on both
+  of its ports then shows as a verdict the 3176-3177 run does not give.
+- **R3. A change only on evidence.** Change the code only where a measurement or a test shows an outcome or limit
   failing. Then commit once, and measure again on the new commit everything the change can reach, which for a change
   to `compare.mjs`, `compare-runtime.mjs`, `baseline-cache.mjs`, `cache-lock.mjs`, `core.mjs`, `cli.mjs` or
   `runner.mjs` is every outcome and limit.
 
 ## Scope
 
-As the round's brief: you may change what its Scope names; commit once if R2 needs a change, otherwise commit nothing.
+As the round's brief: you may change what its Scope names; commit once if R3 needs a change, otherwise commit nothing.
 Everything else is read-only. Add no dependencies. If an outcome cannot be met, do not work around it: finish and
 measure the others, then stop and report. (B3)
 
