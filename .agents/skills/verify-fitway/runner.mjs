@@ -975,7 +975,10 @@ export async function drive(options) {
 			options.comparisonCapture ? options.workers || 1 : 1,
 			(index) => manifest.items.splice(serialLengths[index]),
 		);
+		// Compare consumes item frames directly; its sheet is an auxiliary
+		// artifact and rendering it after every capture only delays verdicts.
 		for (const language of languages) {
+			if (options.comparisonCapture) break;
 			const cells = manifest.items
 				.filter((item) => item.language === language && item.files.length)
 				.map((item) => ({
