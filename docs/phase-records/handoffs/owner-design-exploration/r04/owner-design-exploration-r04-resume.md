@@ -58,7 +58,7 @@ Nothing: both rounds stopped at the user's request, ready to resume; no Codex, n
 - **vf-parallel** (DECISIONS 48; F147): brief
   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md` (`00178ec4`), run folder
   `D:/fitway-temp/codex-round-c9d939cf-0dbd-4bd8-ab8e-1b9a9eb7828e`, thread `01a1341e-0ea2-7a71-8f60-73849e2670f7`,
-  worktree D:/Projects/fitway-worktrees/owner-r04-vf-parallel, code committed `0fbad66d` (not pushed). Its report
+  worktree D:/Projects/fitway-worktrees/owner-r04-vf-parallel, code committed `0fbad66d` (pushed; its CI not yet read). Its report
   (`last-message.md`, 15:10): P4, L2, L3 PASS (11 new tests; fast ladder clean); P1, P2, P3, L1 unrun because the
   port marker never appeared. Resume message ready: `resume-ports-free-1.md` in its run folder, to send after writing
   `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt` once shared-frame's compares end. Held-out VP1-VP11
