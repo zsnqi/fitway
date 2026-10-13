@@ -7,7 +7,8 @@
   - `design-research/owner-composition-exploration-r04/directions/briefs/codex-shared-frame.md` in that worktree, the
     round's brief. Its Goal, outcomes F1-F4 and the reruns, limits L1-L2, Scope and Report hold for this run;
     everything it tells you to read, read.
-  - `codex-shared-frame-continue.md` beside it: its P2 and P3 hold (its P1 is done: the patch was applied).
+  - `design-research/owner-composition-exploration-r04/directions/briefs/codex-shared-frame-continue.md` in that
+    worktree: its P2 and P3 hold (its P1 is done: the patch was applied).
   - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/.agents/skills/verify-fitway/SKILL.md` §"Compare": the
     CLI the round's compares call changed after the round's brief was written.
 
