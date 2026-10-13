@@ -34,6 +34,8 @@
 - **CI** runs the fast ladder on Windows (`.github/workflows/checks.yml`): every test you add passes there. Tests use
   the fake Codex and `FITWAY_BRIEF_REVIEW_ROOT`; no test or check you run calls Open Design or reads
   `OPENDESIGN_API_KEY`.
+- **A message ends the run.** Any message you write without a tool call is your final one and closes the session,
+  stopping whatever you started. Wait on tests inside a tool call, and write a message only once, as the Report. (F154)
 - **Your temp folder** is `D:/fitway-temp/owner-r04-launcher-fixes/`. Another round runs Codex and its compares on
   this machine now: start no preview, compare or Codex process.
 
