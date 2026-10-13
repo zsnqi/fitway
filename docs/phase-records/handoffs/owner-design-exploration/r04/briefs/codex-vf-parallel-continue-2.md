@@ -69,7 +69,9 @@ The round's brief is met: its Goal and every outcome and limit, measured as it s
   4-worker run of P2's base-against-itself command into its phases: the command's work before the workers start and
   after they finish; per worker, browser and context start, page load and settle, captures, comparison and file
   writes; and the time each worker waits idle or on a lock. Instrument a copy of the CLI in your temp folder or use
-  Node's profiler; the tracked files change only through R4. Report the largest phases with their seconds. Where the
+  Node's profiler; the tracked files change only through R4. The phases do not overlap within the command or within
+  a worker, and with an "other" phase for what none names they add up to the run's wall time, and each worker's to
+  that worker's span. Report the largest phases with their seconds. Where the
   breakdown shows time a change inside the Scope removes, make that change (R4), and the R1 measurements run on its
   commit. Saving time by measuring less is not such a change: every capture setting, settle and hold wait,
   comparison threshold, rerun rule and item stays the HEAD's. The workers' upper limit may rise only if the
