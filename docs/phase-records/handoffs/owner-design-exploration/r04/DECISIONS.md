@@ -563,6 +563,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     README's account of it) are removed; the static lights on the cards (LGT-1 to LGT-8) are not the tuner and stay.
     It runs after the shared-frame round merges, so that round's comparisons keep their base. It also ends F126, whose
     unstable render was the tuner's chip.
+51. **Every page in the concept before any move to production** (the user, 2026-10-13, «اي بس بعد ما نخلص الصفحات
+    كاملة», «اشوف يمدينا نخلصها كامله»). After the tool fixes (item 47), the concept gets every page it still lacks:
+    Settings (item 49), Operations and Monitoring, the public crowd page, the front-desk screen and sign-in, in that order
+    unless the user reorders. The move to the production application waits for a later decision of the user's. When it
+    comes, the user has accepted in principle («موافق معليك», on the production-readiness digest of 2026-10-13) the
+    concept's Product/Spec amendments (`DESIGN-SPEC.md` §4.4.1, AMD-C1 to C8; the usual-day baseline; Settings' reason
+    and its log entry naming the change) and Readex Pro in place of Cairo; each is still written as an explicit
+    amendment at the move, and the move restructures the Owner code into shared modules rather than porting page files
+    one to one.
 
 ## How this milestone's rounds run
 
