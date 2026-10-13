@@ -63,6 +63,35 @@ export function absoluteCaptures(manifest, folder) {
 	return copy;
 }
 
+export function mergeCaptures(order, ...manifests) {
+	const items = manifests.flatMap((manifest) => manifest?.items || []);
+	return {
+		...(manifests.find(Boolean) || {}),
+		sheets: [],
+		items: order.items.flatMap((item) => {
+			const index = items.findIndex(
+				(candidate) => captureIdentity(candidate) === captureIdentity(item),
+			);
+			const found = index < 0 ? null : items.splice(index, 1)[0];
+			return found ? [found] : [];
+		}),
+	};
+}
+
+const itemBundle = (bundle, item) => {
+	const only = (manifest) =>
+		manifest ? mergeCaptures({ items: [item] }, manifest) : null;
+	return {
+		original: only(bundle.original),
+		effective: only(bundle.effective),
+		settled: only(bundle.settled),
+		reserves: bundle.reserves.map(only),
+		times: bundle.times
+			? { [captureIdentity(item)]: bundle.times[captureIdentity(item)] }
+			: undefined,
+	};
+};
+
 const transform = (value, fn) => {
 	if (typeof value === "string") return fn(value);
 	if (Array.isArray(value)) return value.map((item) => transform(item, fn));
@@ -150,25 +179,22 @@ export class BaselineCache {
 			]),
 		);
 	}
-	key(page) {
+	key(page, item) {
 		const settings = {};
-		for (const name of [
-			"feature",
-			"states",
-			"query",
-			"languages",
-			"sizes",
-			"inputs",
-			"motions",
-			"transports",
-			"colors",
-			"cache",
-			"probes",
-			"timeline",
-			"timeline-times",
-			"baseline-port",
-		])
+		for (const name of ["cache", "probes", "timeline", "timeline-times"])
 			settings[name] = this.options[name];
+		for (const [name, value] of Object.entries({
+			feature: item.feature,
+			state: item.state,
+			query: Object.fromEntries(Object.entries(item.query).sort()),
+			language: item.language,
+			size: item.size,
+			input: item.input,
+			motion: item.motion,
+			transport: item.transport,
+			colors: item.colors,
+		}))
+			settings[name] = value;
 		const load = this.loads.find((p) => p.page === page);
 		return hash(
 			JSON.stringify([
@@ -176,21 +202,57 @@ export class BaselineCache {
 				page,
 				load.fingerprint,
 				settings,
-				this.options.transports?.split(",").includes("file") ||
-				!this.options.transports
-					? this.setup.concept
-					: null,
+				item.transport === "file" ? this.setup.concept : null,
 			]),
 		);
 	}
 	async load(page, left, out) {
+		const release = await cacheLock(this.root);
+		try {
+			const bundles = [];
+			for (const [index, item] of left.items.entries()) {
+				const bundle = await this.loadItem(
+					page,
+					{ items: [item] },
+					resolve(out, String(index)),
+				);
+				if (bundle) bundles.push(bundle);
+			}
+			if (!bundles.length) return null;
+			return {
+				original: mergeCaptures(
+					left,
+					...bundles.map((bundle) => bundle.original),
+				),
+				effective: mergeCaptures(
+					left,
+					...bundles.map((bundle) => bundle.effective),
+				),
+				settled: mergeCaptures(
+					left,
+					...bundles.map((bundle) => bundle.settled),
+				),
+				reserves: bundles[0].reserves.map((_, index) =>
+					mergeCaptures(
+						left,
+						...bundles.map((bundle) => bundle.reserves[index]),
+					),
+				),
+				times: Object.assign({}, ...bundles.map((bundle) => bundle.times)),
+			};
+		} finally {
+			await release();
+		}
+	}
+	async loadItem(page, left, out) {
 		if (this.loads.find((p) => p.page === page)?.external) return null;
-		const folder = resolve(this.root, this.key(page));
+		const key = this.key(page, left.items[0]);
+		const folder = resolve(this.root, key);
 		try {
 			const entry = JSON.parse(
 				await readFile(resolve(folder, "entry.json"), "utf8"),
 			);
-			if (entry.schema !== 1 || entry.key !== this.key(page)) return null;
+			if (entry.schema !== 2 || entry.key !== key) return null;
 			if (
 				this.options.timeline &&
 				this.options["timeline-times"] === undefined &&
@@ -222,11 +284,22 @@ export class BaselineCache {
 		}
 	}
 	async save(page, bundle, out) {
+		const release = await cacheLock(this.root);
+		try {
+			this.evictionEntries = null;
+			for (const item of bundle.original.items)
+				if (item.status !== "running")
+					await this.saveItem(page, itemBundle(bundle, item), out);
+		} finally {
+			this.evictionEntries = null;
+			await release();
+		}
+	}
+	async saveItem(page, bundle, out) {
 		if (this.loads.find((p) => p.page === page)?.external) return;
-		const key = this.key(page);
+		const key = this.key(page, bundle.original.items[0]);
 		const pending = resolve(this.root, `${key}.pending-${process.pid}`);
 		const folder = resolve(this.root, key);
-		const release = await cacheLock(this.root);
 		try {
 			const paths = new Set();
 			transform(bundle, (value) => {
@@ -244,7 +317,7 @@ export class BaselineCache {
 				size += bytes.length;
 			}
 			const entry = {
-				schema: 1,
+				schema: 2,
 				key,
 				created: Date.now(),
 				size,
@@ -264,44 +337,61 @@ export class BaselineCache {
 				);
 			await writeFile(resolve(pending, "entry.json"), JSON.stringify(entry));
 			await rename(pending, folder);
+			this.evictionEntries.push({ ...entry, folder });
 		} finally {
 			await removeCacheFolder(this.root, pending);
-			await release();
 		}
 	}
 	async evict(incoming, replacement) {
-		const entries = [];
-		for (const entry of await readdir(this.root, { withFileTypes: true })) {
-			if (
-				entry.isDirectory() &&
-				/^[a-f0-9]{64}\.pending-\d+$/.test(entry.name)
-			) {
-				await removeCacheFolder(this.root, resolve(this.root, entry.name));
-				continue;
+		const entries = this.evictionEntries || [];
+		if (!this.evictionEntries) {
+			for (const entry of await readdir(this.root, { withFileTypes: true })) {
+				if (
+					entry.isDirectory() &&
+					/^[a-f0-9]{64}\.pending-\d+$/.test(entry.name)
+				) {
+					await removeCacheFolder(this.root, resolve(this.root, entry.name));
+					continue;
+				}
+				if (!entry.isDirectory() || !/^[a-f0-9]{64}$/.test(entry.name))
+					continue;
+				const folder = resolve(this.root, entry.name);
+				const metadata = await readFile(resolve(folder, "entry.json"), "utf8")
+					.then(JSON.parse)
+					.catch(() => null);
+				if (!metadata) {
+					await removeCacheFolder(this.root, folder);
+					continue;
+				}
+				// Published metadata includes every owned artifact plus an upper bound
+				// for entry.json. Avoid one filesystem operation per retained frame.
+				const size =
+					Number.isSafeInteger(metadata.size) && metadata.size > 0
+						? metadata.size
+						: (
+								await Promise.all(
+									(
+										await readdir(folder)
+									).map(
+										async (file) => (await stat(resolve(folder, file))).size,
+									),
+								)
+							).reduce((a, b) => a + b, 0);
+				entries.push({ ...metadata, folder, size });
 			}
-			if (!entry.isDirectory() || !/^[a-f0-9]{64}$/.test(entry.name)) continue;
-			const folder = resolve(this.root, entry.name);
-			const metadata = await readFile(resolve(folder, "entry.json"), "utf8")
-				.then(JSON.parse)
-				.catch(() => null);
-			if (!metadata || entry.name === replacement) {
-				await removeCacheFolder(this.root, folder);
-				continue;
-			}
-			const size = (
-				await Promise.all(
-					(
-						await readdir(folder)
-					).map(async (file) => (await stat(resolve(folder, file))).size),
-				)
-			).reduce((a, b) => a + b, 0);
-			entries.push({ ...metadata, folder, size });
+			this.evictionEntries = entries;
+		}
+		const replaced = entries.find((entry) => entry.key === replacement);
+		if (replaced) {
+			await removeCacheFolder(this.root, replaced.folder);
+			entries.splice(entries.indexOf(replaced), 1);
 		}
 		let total = entries.reduce((sum, entry) => sum + entry.size, incoming);
-		for (const entry of entries.sort((a, b) => a.created - b.created)) {
+		for (const entry of [...entries].sort((a, b) => a.created - b.created)) {
 			if (total <= cacheLimit) break;
 			await removeCacheFolder(this.root, entry.folder);
 			total -= entry.size;
+			entries.splice(entries.indexOf(entry), 1);
 		}
 	}
 }

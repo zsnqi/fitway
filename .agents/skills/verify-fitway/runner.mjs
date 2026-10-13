@@ -125,6 +125,38 @@ function requestedProofs(page, state, language) {
 }
 
 const safe = (value) => value.replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 120);
+const captureIdentity = (item) =>
+	JSON.stringify([
+		item.feature,
+		item.state,
+		item.language,
+		item.size,
+		item.input,
+		item.motion,
+		item.transport,
+		item.colors,
+	]);
+// Start in input order and finish active jobs before command-owned cleanup.
+async function runWorkers(jobs, count, onFailure) {
+	let next = 0;
+	let failed;
+	await Promise.all(
+		Array.from({ length: Math.min(count, jobs.length) }, async () => {
+			while (next < jobs.length && !failed) {
+				const index = next++;
+				try {
+					await jobs[index]();
+				} catch (error) {
+					if (!failed || index < failed.index) failed = { index, error };
+				}
+			}
+		}),
+	);
+	if (failed) {
+		onFailure(failed.index);
+		throw failed.error;
+	}
+}
 export function itemSummary(entry) {
 	return {
 		feature: entry.feature,
@@ -226,9 +258,7 @@ export async function captureComparison(page) {
 	}
 }
 
-export async function drive(options) {
-	const { concept, map, tools, loaded, out } = options;
-	const requestedTimes = timelineTimes(options["timeline-times"]);
+function drivePlan(map, options) {
 	const selected = map.pages.find(
 		(p) => p.page === (options.page || "index.html"),
 	);
@@ -262,8 +292,82 @@ export async function drive(options) {
 	const renderModes = transports.flatMap((transport) =>
 		colors.map((color) => ({ transport, color })),
 	);
-	if (colors.includes("forced")) await requireForcedColors(tools);
 	const cases = stateCases(selected, options);
+	return {
+		selected,
+		features,
+		languages,
+		sizes,
+		inputs,
+		motions,
+		transports,
+		colors,
+		renderModes,
+		cases,
+	};
+}
+
+export function plannedCaptures(map, options) {
+	const {
+		selected,
+		features,
+		cases,
+		languages,
+		sizes,
+		inputs,
+		motions,
+		renderModes,
+	} = drivePlan(map, options);
+	const items = [];
+	for (const feature of features)
+		for (const state of cases)
+			for (const language of languages)
+				for (const size of sizes)
+					for (const input of inputs)
+						for (const motion of motions)
+							for (const { transport, color } of renderModes) {
+								const effective = resolveQuery(selected, {
+									...feature.query,
+									...state.query,
+								});
+								items.push({
+									feature: `${selected.page}/${feature.id}`,
+									state:
+										new URLSearchParams(
+											Object.entries(effective.query).sort(),
+										).toString() || "default",
+									language,
+									size,
+									input,
+									motion,
+									transport,
+									colors: color,
+									query: {
+										...effective.query,
+										lang: language,
+										...(motion === "reduce" ? { motion: "off" } : {}),
+									},
+								});
+							}
+	return { items };
+}
+
+export async function drive(options) {
+	const { concept, map, tools, loaded, out } = options;
+	const requestedTimes = timelineTimes(options["timeline-times"]);
+	const {
+		selected,
+		features,
+		languages,
+		sizes,
+		inputs,
+		motions,
+		transports,
+		colors,
+		renderModes,
+		cases,
+	} = drivePlan(map, options);
+	if (colors.includes("forced")) await requireForcedColors(tools);
 	const port = verificationPort(options.port || 3176);
 	process.env.PROBE_ECLIPSE = concept;
 	process.env.PROBE_OUT = out;
@@ -280,6 +384,13 @@ export async function drive(options) {
 		feature: `${selected.page}/${options.feature || "page"}`,
 		probeSources: probes.sources,
 		items: [],
+	};
+	let manifestWrites = Promise.resolve();
+	const writeManifest = () => {
+		manifestWrites = manifestWrites.then(() =>
+			jsonOutput(out, "manifest.json", manifest),
+		);
+		return manifestWrites;
 	};
 	const abort = () => {
 		cancelled = true;
@@ -319,6 +430,8 @@ export async function drive(options) {
 						args: ["--disable-partial-raster"],
 					})
 				: await ui.launchChromium(loaded);
+		const jobs = [];
+		const serialLengths = [];
 		for (const feature of features)
 			for (const state of cases)
 				for (const language of languages)
@@ -326,502 +439,539 @@ export async function drive(options) {
 						for (const input of inputs)
 							for (const motion of motions)
 								for (const { transport, color } of renderModes) {
-									if (cancelled)
-										throw new Error(
-											"Drive interrupted; owned resources cleaned up.",
-										);
-									const dimensions = map.sizes[size];
-									const cssWidth = dimensions.width / (dimensions.zoom || 1);
-									const effective = resolveQuery(selected, {
-										...feature.query,
-										...state.query,
-									});
-									const entry = {
-										feature: `${selected.page}/${feature.id}`,
-										state:
-											new URLSearchParams(
-												Object.entries(effective.query).sort(),
-											).toString() || "default",
-										language,
-										size,
-										input,
-										motion,
-										transport,
-										colors: color,
-										query: {
-											...effective.query,
-											lang: language,
-											...(motion === "reduce" ? { motion: "off" } : {}),
-										},
-										dependencies: [...state.applied, ...effective.applied],
-										files: [],
-										status: "running",
-										problems: [],
-										actions: [],
-									};
-									const stem = `${String(manifest.items.length + 1).padStart(3, "0")}-${safe(feature.id)}-${safe(entry.state)}-${language}-${size}-${input}-${motion}-${transport}${color === "forced" ? "-forced" : ""}`;
-									manifest.items.push(entry);
-									const current = await ui.newContext(browser, {
-										viewport: {
-											width: dimensions.width,
-											height: dimensions.height,
-										},
-										zoom: dimensions.zoom || 1,
-										touch: input === "touch",
-										mobile: input === "touch" && cssWidth <= 720,
-										reducedMotion:
-											motion === "reduce" ? "reduce" : "no-preference",
-										colorScheme: "dark",
-										forcedColors: color === "forced" ? "active" : "none",
-										locale: language === "ar" ? "ar-SA" : "en-US",
-										timezoneId: "Asia/Riyadh",
-									});
-									if (options.compareRuntime && transport === "http")
-										await options.compareRuntime.route(current.context, origin);
-									current.page.setDefaultTimeout(5000);
-									if (options.timeline)
-										await current.page.addInitScript(
-											`(${observeComparisonFrames.toString()})(); (${observeTimeline.toString()})();`,
-										);
-									else if (options.comparisonCapture)
-										await current.page.addInitScript(observeComparisonFrames);
-									const save = async (suffix) => {
-										const name = `${stem}-${suffix}.png`;
-										await writeFile(
-											await outputFile(out, name),
-											options.comparisonCapture
-												? await captureComparison(current.page)
-												: await ui.screenshot(current.page, {
-														method: "playwright",
-														fullPage: false,
-														animations: "allow",
-													}),
-										);
-										entry.files.push(name);
-									};
-									try {
-										const url = ui.withParams(
-											transport === "file"
-												? pathToFileURL(resolve(concept, selected.page)).href
-												: `${origin}/${selected.page}`,
-											entry.query,
-										);
-										entry.url = url;
-										entry.readiness = await ui.preparePage(current.page, url, {
-											readyJs: selected.ready,
-											timeout: 15000,
+									const jobIndex = jobs.length;
+									jobs.push(async () => {
+										serialLengths[jobIndex] = manifest.items.length;
+										if (cancelled)
+											throw new Error(
+												"Drive interrupted; owned resources cleaned up.",
+											);
+										const dimensions = map.sizes[size];
+										const cssWidth = dimensions.width / (dimensions.zoom || 1);
+										const effective = resolveQuery(selected, {
+											...feature.query,
+											...state.query,
 										});
-										if (input === "keyboard")
-											entry.initialFocus = await focusedElement(current.page);
-										if (selected.page === "index.html")
-											await probes.introSettled(current.page);
-										entry.emulation = {
-											...Object.fromEntries(
-												Object.entries(current.emulation).filter(
-													([key]) =>
-														color === "forced" || key !== "forcedColors",
-												),
-											),
-											...(await current.page.evaluate(() => ({
-												coarse: matchMedia("(pointer:coarse)").matches,
-												touchPoints: navigator.maxTouchPoints,
-												direction: getComputedStyle(document.documentElement)
-													.direction,
-												language: document.documentElement.lang,
-											}))),
+										const entry = {
+											feature: `${selected.page}/${feature.id}`,
+											state:
+												new URLSearchParams(
+													Object.entries(effective.query).sort(),
+												).toString() || "default",
+											language,
+											size,
+											input,
+											motion,
+											transport,
+											colors: color,
+											query: {
+												...effective.query,
+												lang: language,
+												...(motion === "reduce" ? { motion: "off" } : {}),
+											},
+											dependencies: [...state.applied, ...effective.applied],
+											files: [],
+											status: "running",
+											problems: [],
+											actions: [],
 										};
 										if (
-											entry.emulation.language !== language ||
-											entry.emulation.direction !==
-												(language === "ar" ? "rtl" : "ltr") ||
-											entry.emulation.coarse !== (input === "touch")
+											options.captureOnly &&
+											!options.captureOnly.includes(captureIdentity(entry))
 										)
-											throw new Error(
-												"Language/direction/pointer emulation mismatch",
+											return;
+										entry.captureStartedAt = new Date().toISOString();
+										const stem = `${String(manifest.items.length + 1).padStart(3, "0")}-${safe(feature.id)}-${safe(entry.state)}-${language}-${size}-${input}-${motion}-${transport}${color === "forced" ? "-forced" : ""}`;
+										manifest.items.push(entry);
+										serialLengths[jobIndex] = manifest.items.length;
+										const current = await ui.newContext(browser, {
+											viewport: {
+												width: dimensions.width,
+												height: dimensions.height,
+											},
+											zoom: dimensions.zoom || 1,
+											touch: input === "touch",
+											mobile: input === "touch" && cssWidth <= 720,
+											reducedMotion:
+												motion === "reduce" ? "reduce" : "no-preference",
+											colorScheme: "dark",
+											forcedColors: color === "forced" ? "active" : "none",
+											locale: language === "ar" ? "ar-SA" : "en-US",
+											timezoneId: "Asia/Riyadh",
+										});
+										if (options.compareRuntime && transport === "http")
+											await options.compareRuntime.route(
+												current.context,
+												origin,
 											);
-										if (color === "forced") {
-											entry.forcedPalette = await current.page.evaluate(() => {
-												const canvas = document.createElement("span");
-												canvas.style.cssText =
-													"background-color:Canvas;position:absolute;visibility:hidden";
-												document.body.append(canvas);
-												const result = {
-													active: window.matchMedia("(forced-colors: active)")
-														.matches,
-													background: getComputedStyle(document.body)
-														.backgroundColor,
-													canvas: getComputedStyle(canvas).backgroundColor,
-												};
-												canvas.remove();
-												return result;
-											});
-											if (
-												!entry.forcedPalette.active ||
-												entry.forcedPalette.background !==
-													entry.forcedPalette.canvas
-											)
-												throw new Error(
-													"Forced colours rendering mismatch: body background must equal Canvas; " +
-														JSON.stringify(entry.forcedPalette),
-												);
-										}
-										const rules = requestedProofs(
-											selected,
-											{ query: effective.query },
-											language,
-										);
-										entry.stateProof = [];
-										for (const rule of rules) {
-											await prove(current.page, rule.proof, language);
-											entry.stateProof.push(rule.shows);
-										}
-										await save("before");
-										for (const rule of rules)
-											await prove(current.page, rule.proof, language);
-										const unavailable =
-											(feature.widths === "phone" && cssWidth > 720) ||
-											(feature.widths === "wide" && cssWidth <= 720) ||
-											(feature.minWidth && cssWidth < feature.minWidth) ||
-											(feature.maxWidth && cssWidth > feature.maxWidth);
-										const absent = (feature.unreachable || []).find((rule) =>
-											matches(rule, effective.query, language),
-										);
-										if (unavailable || absent) {
-											if (absent)
-												await prove(current.page, absent.proof, language);
-											entry.status = "not-reachable";
-											entry.problems.push(
-												`State/feature cannot be reached: ${absent?.reason || `Feature path unavailable at ${cssWidth} CSS pixels by its recipe`}`,
+										current.page.setDefaultTimeout(5000);
+										if (options.timeline)
+											await current.page.addInitScript(
+												`(${observeComparisonFrames.toString()})(); (${observeTimeline.toString()})();`,
 											);
-											await save("after");
-										} else {
-											if (
-												input === "keyboard" &&
-												feature.id !== "page" &&
-												!(feature.keyboardActions || feature.actions || [])
-													.length
-											)
-												throw new KeyboardReachError(
-													`Not reachable by keyboard: ${feature.id} has no key sequence; focus stopped ${focusDescription(await focusedElement(current.page))}`,
-												);
-											const actionRecipe =
-												feature.fullMotion && motion === "reduce"
-													? {
-															actions: [feature.actions[0]],
-															proof: {
-																selector: feature.proof.selector,
-																disabled: true,
-															},
-														}
-													: feature;
-											const prior = await current.page.evaluate(
-												({ selector, css, count, text, moved }) => ({
-													text: text
-														? document.querySelector(selector)?.textContent
-														: null,
-													css: css
-														? getComputedStyle(
-																document.documentElement,
-															).getPropertyValue(css)
-														: null,
-													count: count
-														? document.querySelectorAll(count).length
-														: null,
-													position: moved
-														? JSON.stringify(
-																document
-																	.querySelector(selector)
-																	?.getBoundingClientRect()
-																	.toJSON(),
-															)
-														: null,
-												}),
+										else if (options.comparisonCapture)
+											await current.page.addInitScript(observeComparisonFrames);
+										const save = async (suffix) => {
+											const name = `${stem}-${suffix}.png`;
+											await writeFile(
+												await outputFile(out, name),
+												options.comparisonCapture
+													? await captureComparison(current.page)
+													: await ui.screenshot(current.page, {
+															method: "playwright",
+															fullPage: false,
+															animations: "allow",
+														}),
+											);
+											entry.files.push(name);
+										};
+										try {
+											const url = ui.withParams(
+												transport === "file"
+													? pathToFileURL(resolve(concept, selected.page)).href
+													: `${origin}/${selected.page}`,
+												entry.query,
+											);
+											entry.url = url;
+											entry.readiness = await ui.preparePage(
+												current.page,
+												url,
 												{
-													selector: feature.proof.selector,
-													css: feature.proof.cssPropertyChanged,
-													count: feature.proof.countIncreased,
-													text: feature.proof.textChanged,
-													moved: feature.proof.moved,
+													readyJs: selected.ready,
+													timeout: 15000,
 												},
 											);
-											const actions =
-												(input === "keyboard"
-													? actionRecipe.keyboardActions || actionRecipe.actions
-													: actionRecipe.actions) || [];
-											if (options.timeline) entry.recipe = actionRecipe;
-											for (const [actionIndex, action] of actions.entries()) {
-												const resolvedAction = action.replace(
-													/^activate:/,
-													input === "keyboard"
-														? "activate:"
-														: input === "touch"
-															? "tap:"
-															: "click:",
+											if (input === "keyboard")
+												entry.initialFocus = await focusedElement(current.page);
+											if (selected.page === "index.html")
+												await probes.introSettled(current.page);
+											entry.emulation = {
+												...Object.fromEntries(
+													Object.entries(current.emulation).filter(
+														([key]) =>
+															color === "forced" || key !== "forcedColors",
+													),
+												),
+												...(await current.page.evaluate(() => ({
+													coarse: matchMedia("(pointer:coarse)").matches,
+													touchPoints: navigator.maxTouchPoints,
+													direction: getComputedStyle(document.documentElement)
+														.direction,
+													language: document.documentElement.lang,
+												}))),
+											};
+											if (
+												entry.emulation.language !== language ||
+												entry.emulation.direction !==
+													(language === "ar" ? "rtl" : "ltr") ||
+												entry.emulation.coarse !== (input === "touch")
+											)
+												throw new Error(
+													"Language/direction/pointer emulation mismatch",
 												);
-												if (options.timeline) {
-													if (actionIndex === actions.length - 1) {
-														const [kind, argument] =
-															resolvedAction.split(/:(.*)/s);
-														if (
-															input === "mouse" &&
-															["click", "download", "hold"].includes(kind)
-														)
-															await current.page
-																.locator(argument)
-																.first()
-																.hover();
-														if (
-															input === "keyboard" &&
-															[
-																"activate",
-																"click",
-																"tap",
-																"download",
-																"type",
-																"select",
-															].includes(kind)
-														) {
-															const selector = ["type", "select"].includes(kind)
-																? argument.slice(0, argument.lastIndexOf("="))
-																: argument;
-															await reachByKeyboard(
-																current.page,
-																selector,
-																entry,
-																resolvedAction,
-															);
-														}
-													}
-													await settleComparison(current.page);
-													if (actionIndex === actions.length - 1)
-														await current.page.evaluate(
-															({ action, input }) =>
-																window.__verifyFitwayTimeline.arm(
-																	action,
-																	input,
-																),
-															{ action: resolvedAction, input },
-														);
-												}
-												await performAction(
-													ui,
-													current.page,
-													resolvedAction,
-													input,
-													out,
-													stem,
-													entry,
-												);
-												entry.actions.push(resolvedAction);
-												if (
-													options.timeline &&
-													actionIndex === actions.length - 1
-												)
-													entry.timeline = await captureTimeline(current.page, {
-														out,
-														stem,
-														times:
-															options.timelineTimesByItem?.[
-																JSON.stringify([
-																	entry.feature,
-																	entry.state,
-																	language,
-																	size,
-																	input,
-																	motion,
-																	transport,
-																	color,
-																])
-															] || requestedTimes,
-													});
-												if (resolvedAction.startsWith("hold:")) {
-													const held = await ui.heldPressInfo(current.page);
-													if (!held)
-														throw new Error("held press was not retained");
-													await save("held");
-													entry.heldPress = {
-														...held,
-														capturedAt: Date.now(),
-														captureDelayMs: Math.max(
-															0,
-															performance.now() - held.pressedAt,
-														),
-													};
-												}
-											}
-											if (options.timeline && !actions.length)
-												entry.timeline = {
-													times: [],
-													samples: [],
-													reason:
-														"Feature has no actions; compared at rest only",
-												};
-											if (feature.proof.countIncreased)
-												await current.page.waitForFunction(
-													({ selector, count }) =>
-														document.querySelectorAll(selector).length > count,
-													{
-														selector: feature.proof.countIncreased,
-														count: prior.count,
+											if (color === "forced") {
+												entry.forcedPalette = await current.page.evaluate(
+													() => {
+														const canvas = document.createElement("span");
+														canvas.style.cssText =
+															"background-color:Canvas;position:absolute;visibility:hidden";
+														document.body.append(canvas);
+														const result = {
+															active: window.matchMedia(
+																"(forced-colors: active)",
+															).matches,
+															background: getComputedStyle(document.body)
+																.backgroundColor,
+															canvas: getComputedStyle(canvas).backgroundColor,
+														};
+														canvas.remove();
+														return result;
 													},
 												);
-											else
-												await proveFeature(
-													current.page,
-													actionRecipe.proof,
-													language,
-													input,
-												);
-											if (feature.settleIntro && motion === "full")
-												await probes.introSettled(current.page);
-											if (
-												feature.proof.textChanged &&
-												(await current.page
-													.locator(feature.proof.selector)
-													.textContent()) === prior.text
-											)
-												throw new Error(
-													`Text unchanged: ${feature.proof.selector}`,
-												);
-											if (
-												feature.proof.moved &&
-												(await current.page
-													.locator(feature.proof.selector)
-													.evaluate((el) =>
-														JSON.stringify(el.getBoundingClientRect().toJSON()),
-													)) === prior.position
-											)
-												throw new Error(
-													`Element unmoved: ${feature.proof.selector}`,
-												);
-											if (
-												feature.proof.cssPropertyChanged &&
-												(await current.page.evaluate(
-													(p) =>
-														getComputedStyle(
-															document.documentElement,
-														).getPropertyValue(p),
-													feature.proof.cssPropertyChanged,
-												)) === prior.css
-											)
-												throw new Error(
-													`CSS property unchanged: ${feature.proof.cssPropertyChanged}`,
-												);
-											await ui.twoFrames(current.page);
-											if (!feature.changesState)
-												for (const rule of rules)
-													await prove(current.page, rule.proof, language);
-											await save("after");
-											if (!feature.changesState)
-												for (const rule of rules)
-													await prove(current.page, rule.proof, language);
-											// A flow may change a state (retry/navigation). Its end proof owns that result;
-											// the requested state was proved before the first user action.
-											entry.featureProof = actionRecipe.proof;
-											entry.status = "pass";
-										}
-										for (const [name, measure] of [
-											[
-												"accessibility",
-												() => current.page.locator("body").ariaSnapshot(),
-											],
-											[
-												"overflow",
-												() => current.page.evaluate(probes.overflowProbe),
-											],
-											[
-												"geometry",
-												async () => {
-													await ui.injectProbe(current.page);
-													return current.page.evaluate(() =>
-														UIProbe.boxes("body"),
+												if (
+													!entry.forcedPalette.active ||
+													entry.forcedPalette.background !==
+														entry.forcedPalette.canvas
+												)
+													throw new Error(
+														"Forced colours rendering mismatch: body background must equal Canvas; " +
+															JSON.stringify(entry.forcedPalette),
 													);
-												},
-											],
-											...(options.probes === "daily" &&
-											selected.page === "index.html"
-												? [
-														[
-															"dailyGeometry",
-															() => current.page.evaluate(probes.geometryProbe),
-														],
-														[
-															"dailyAccessibility",
-															() =>
-																probes.accessibilityProbe(current.page, {
-																	lang: language,
-																	control: true,
-																}),
-														],
-													]
-												: []),
-										])
-											try {
-												entry[name] = await measure();
-											} catch (error) {
-												entry.problems.push(`${name}: ${error.message}`);
-												entry.measurementProblems ||= [];
-												entry.measurementProblems.push(
-													`${name}: ${error.message}`,
+											}
+											const rules = requestedProofs(
+												selected,
+												{ query: effective.query },
+												language,
+											);
+											entry.stateProof = [];
+											for (const rule of rules) {
+												await prove(current.page, rule.proof, language);
+												entry.stateProof.push(rule.shows);
+											}
+											await save("before");
+											for (const rule of rules)
+												await prove(current.page, rule.proof, language);
+											const unavailable =
+												(feature.widths === "phone" && cssWidth > 720) ||
+												(feature.widths === "wide" && cssWidth <= 720) ||
+												(feature.minWidth && cssWidth < feature.minWidth) ||
+												(feature.maxWidth && cssWidth > feature.maxWidth);
+											const absent = (feature.unreachable || []).find((rule) =>
+												matches(rule, effective.query, language),
+											);
+											if (unavailable || absent) {
+												if (absent)
+													await prove(current.page, absent.proof, language);
+												entry.status = "not-reachable";
+												entry.problems.push(
+													`State/feature cannot be reached: ${absent?.reason || `Feature path unavailable at ${cssWidth} CSS pixels by its recipe`}`,
+												);
+												await save("after");
+											} else {
+												if (
+													input === "keyboard" &&
+													feature.id !== "page" &&
+													!(feature.keyboardActions || feature.actions || [])
+														.length
+												)
+													throw new KeyboardReachError(
+														`Not reachable by keyboard: ${feature.id} has no key sequence; focus stopped ${focusDescription(await focusedElement(current.page))}`,
+													);
+												const actionRecipe =
+													feature.fullMotion && motion === "reduce"
+														? {
+																actions: [feature.actions[0]],
+																proof: {
+																	selector: feature.proof.selector,
+																	disabled: true,
+																},
+															}
+														: feature;
+												const prior = await current.page.evaluate(
+													({ selector, css, count, text, moved }) => ({
+														text: text
+															? document.querySelector(selector)?.textContent
+															: null,
+														css: css
+															? getComputedStyle(
+																	document.documentElement,
+																).getPropertyValue(css)
+															: null,
+														count: count
+															? document.querySelectorAll(count).length
+															: null,
+														position: moved
+															? JSON.stringify(
+																	document
+																		.querySelector(selector)
+																		?.getBoundingClientRect()
+																		.toJSON(),
+																)
+															: null,
+													}),
+													{
+														selector: feature.proof.selector,
+														css: feature.proof.cssPropertyChanged,
+														count: feature.proof.countIncreased,
+														text: feature.proof.textChanged,
+														moved: feature.proof.moved,
+													},
+												);
+												const actions =
+													(input === "keyboard"
+														? actionRecipe.keyboardActions ||
+															actionRecipe.actions
+														: actionRecipe.actions) || [];
+												if (options.timeline) entry.recipe = actionRecipe;
+												for (const [actionIndex, action] of actions.entries()) {
+													const resolvedAction = action.replace(
+														/^activate:/,
+														input === "keyboard"
+															? "activate:"
+															: input === "touch"
+																? "tap:"
+																: "click:",
+													);
+													if (options.timeline) {
+														if (actionIndex === actions.length - 1) {
+															const [kind, argument] =
+																resolvedAction.split(/:(.*)/s);
+															if (
+																input === "mouse" &&
+																["click", "download", "hold"].includes(kind)
+															)
+																await current.page
+																	.locator(argument)
+																	.first()
+																	.hover();
+															if (
+																input === "keyboard" &&
+																[
+																	"activate",
+																	"click",
+																	"tap",
+																	"download",
+																	"type",
+																	"select",
+																].includes(kind)
+															) {
+																const selector = ["type", "select"].includes(
+																	kind,
+																)
+																	? argument.slice(0, argument.lastIndexOf("="))
+																	: argument;
+																await reachByKeyboard(
+																	current.page,
+																	selector,
+																	entry,
+																	resolvedAction,
+																);
+															}
+														}
+														await settleComparison(current.page);
+														if (actionIndex === actions.length - 1)
+															await current.page.evaluate(
+																({ action, input }) =>
+																	window.__verifyFitwayTimeline.arm(
+																		action,
+																		input,
+																	),
+																{ action: resolvedAction, input },
+															);
+													}
+													await performAction(
+														ui,
+														current.page,
+														resolvedAction,
+														input,
+														out,
+														stem,
+														entry,
+													);
+													entry.actions.push(resolvedAction);
+													if (
+														options.timeline &&
+														actionIndex === actions.length - 1
+													)
+														entry.timeline = await captureTimeline(
+															current.page,
+															{
+																out,
+																stem,
+																times:
+																	options.timelineTimesByItem?.[
+																		JSON.stringify([
+																			entry.feature,
+																			entry.state,
+																			language,
+																			size,
+																			input,
+																			motion,
+																			transport,
+																			color,
+																		])
+																	] || requestedTimes,
+															},
+														);
+													if (resolvedAction.startsWith("hold:")) {
+														const held = await ui.heldPressInfo(current.page);
+														if (!held)
+															throw new Error("held press was not retained");
+														await save("held");
+														entry.heldPress = {
+															...held,
+															capturedAt: Date.now(),
+															captureDelayMs: Math.max(
+																0,
+																performance.now() - held.pressedAt,
+															),
+														};
+													}
+												}
+												if (options.timeline && !actions.length)
+													entry.timeline = {
+														times: [],
+														samples: [],
+														reason:
+															"Feature has no actions; compared at rest only",
+													};
+												if (feature.proof.countIncreased)
+													await current.page.waitForFunction(
+														({ selector, count }) =>
+															document.querySelectorAll(selector).length >
+															count,
+														{
+															selector: feature.proof.countIncreased,
+															count: prior.count,
+														},
+													);
+												else
+													await proveFeature(
+														current.page,
+														actionRecipe.proof,
+														language,
+														input,
+													);
+												if (feature.settleIntro && motion === "full")
+													await probes.introSettled(current.page);
+												if (
+													feature.proof.textChanged &&
+													(await current.page
+														.locator(feature.proof.selector)
+														.textContent()) === prior.text
+												)
+													throw new Error(
+														`Text unchanged: ${feature.proof.selector}`,
+													);
+												if (
+													feature.proof.moved &&
+													(await current.page
+														.locator(feature.proof.selector)
+														.evaluate((el) =>
+															JSON.stringify(
+																el.getBoundingClientRect().toJSON(),
+															),
+														)) === prior.position
+												)
+													throw new Error(
+														`Element unmoved: ${feature.proof.selector}`,
+													);
+												if (
+													feature.proof.cssPropertyChanged &&
+													(await current.page.evaluate(
+														(p) =>
+															getComputedStyle(
+																document.documentElement,
+															).getPropertyValue(p),
+														feature.proof.cssPropertyChanged,
+													)) === prior.css
+												)
+													throw new Error(
+														`CSS property unchanged: ${feature.proof.cssPropertyChanged}`,
+													);
+												await ui.twoFrames(current.page);
+												if (!feature.changesState)
+													for (const rule of rules)
+														await prove(current.page, rule.proof, language);
+												await save("after");
+												if (!feature.changesState)
+													for (const rule of rules)
+														await prove(current.page, rule.proof, language);
+												// A flow may change a state (retry/navigation). Its end proof owns that result;
+												// the requested state was proved before the first user action.
+												entry.featureProof = actionRecipe.proof;
+												entry.status = "pass";
+											}
+											for (const [name, measure] of [
+												[
+													"accessibility",
+													() => current.page.locator("body").ariaSnapshot(),
+												],
+												[
+													"overflow",
+													() => current.page.evaluate(probes.overflowProbe),
+												],
+												[
+													"geometry",
+													async () => {
+														await ui.injectProbe(current.page);
+														return current.page.evaluate(() =>
+															UIProbe.boxes("body"),
+														);
+													},
+												],
+												...(options.probes === "daily" &&
+												selected.page === "index.html"
+													? [
+															[
+																"dailyGeometry",
+																() =>
+																	current.page.evaluate(probes.geometryProbe),
+															],
+															[
+																"dailyAccessibility",
+																() =>
+																	probes.accessibilityProbe(current.page, {
+																		lang: language,
+																		control: true,
+																	}),
+															],
+														]
+													: []),
+											])
+												try {
+													entry[name] = await measure();
+												} catch (error) {
+													entry.problems.push(`${name}: ${error.message}`);
+													entry.measurementProblems ||= [];
+													entry.measurementProblems.push(
+														`${name}: ${error.message}`,
+													);
+													if (entry.status !== "not-reachable")
+														entry.status = "problem";
+												}
+											entry.errors = current.errors;
+											if (current.errors.length || entry.overflow?.hScroll) {
+												entry.problems.push(
+													...current.errors,
+													...(entry.overflow?.hScroll
+														? ["Horizontal overflow"]
+														: []),
 												);
 												if (entry.status !== "not-reachable")
-													entry.status = "problem";
+													entry.status = "fail";
 											}
-										entry.errors = current.errors;
-										if (current.errors.length || entry.overflow?.hScroll) {
+										} catch (error) {
+											entry.status =
+												error instanceof KeyboardReachError
+													? "keyboard-unreachable"
+													: error instanceof ComparisonCaptureError
+														? "problem"
+														: "fail";
 											entry.problems.push(
-												...current.errors,
-												...(entry.overflow?.hScroll
-													? ["Horizontal overflow"]
-													: []),
+												error instanceof KeyboardReachError
+													? `Pointer feature unreachable by keyboard: ${error.message}`
+													: error.message,
 											);
-											if (entry.status !== "not-reachable")
-												entry.status = "fail";
-										}
-									} catch (error) {
-										entry.status =
-											error instanceof KeyboardReachError
-												? "keyboard-unreachable"
-												: error instanceof ComparisonCaptureError
-													? "problem"
-													: "fail";
-										entry.problems.push(
-											error instanceof KeyboardReachError
-												? `Pointer feature unreachable by keyboard: ${error.message}`
-												: error.message,
-										);
-										if (input === "keyboard") {
-											entry.finalFocus = await focusedElement(current.page);
-											entry.problems.push(
-												`Keyboard focus stopped ${focusDescription(entry.finalFocus)}`,
+											if (input === "keyboard") {
+												entry.finalFocus = await focusedElement(current.page);
+												entry.problems.push(
+													`Keyboard focus stopped ${focusDescription(entry.finalFocus)}`,
+												);
+											}
+											try {
+												await save("error");
+											} catch (captureError) {
+												entry.problems.push(`capture: ${captureError.message}`);
+											}
+										} finally {
+											if (input === "keyboard" && !entry.finalFocus)
+												entry.finalFocus = await focusedElement(
+													current.page,
+												).catch(() => ({ selector: "<page closed>" }));
+											if (ui.releaseHeld)
+												await ui.releaseHeld(current.page).catch(() => {});
+											await current.context.close();
+											await jsonOutput(out, `${stem}.json`, entry);
+											await jsonOutput(
+												out,
+												`${stem}-summary.json`,
+												itemSummary(entry),
 											);
+											if (!options.quiet)
+												console.log(
+													`FRAME ${entry.status.toUpperCase()}: ${entry.feature} ${entry.state} ${language} ${size} ${input} ${motion} ${transport} ${color}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
+												);
+											entry.captureEndedAt = new Date().toISOString();
+											await writeManifest();
 										}
-										try {
-											await save("error");
-										} catch (captureError) {
-											entry.problems.push(`capture: ${captureError.message}`);
-										}
-									} finally {
-										if (input === "keyboard" && !entry.finalFocus)
-											entry.finalFocus = await focusedElement(
-												current.page,
-											).catch(() => ({ selector: "<page closed>" }));
-										if (ui.releaseHeld)
-											await ui.releaseHeld(current.page).catch(() => {});
-										await current.context.close();
-										await jsonOutput(out, `${stem}.json`, entry);
-										await jsonOutput(
-											out,
-											`${stem}-summary.json`,
-											itemSummary(entry),
-										);
-										if (!options.quiet)
-											console.log(
-												`FRAME ${entry.status.toUpperCase()}: ${entry.feature} ${entry.state} ${language} ${size} ${input} ${motion} ${transport} ${color}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
-											);
-										await jsonOutput(out, "manifest.json", manifest);
-									}
+									});
 								}
+		await runWorkers(
+			jobs,
+			options.comparisonCapture ? options.workers || 1 : 1,
+			(index) => manifest.items.splice(serialLengths[index]),
+		);
 		for (const language of languages) {
 			const cells = manifest.items
 				.filter((item) => item.language === language && item.files.length)

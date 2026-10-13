@@ -3,7 +3,7 @@ import { preview } from "./core.mjs";
 
 // Contexts stay fresh. Only command-owned browser processes and upstream HTTP
 // connections are shared; Chromium never needs an ephemeral socket per asset.
-export function compareRuntime() {
+export function compareRuntime(portLease) {
 	const browsers = new Map();
 	const previews = new Map();
 	const agents = new Map();
@@ -58,7 +58,7 @@ export function compareRuntime() {
 				server = null;
 			}
 			if (!server) {
-				server = await preview({ concept, port, cache });
+				server = await preview({ concept, port, cache, portLease });
 				if (closed) {
 					await server.close();
 					throw new Error("Compare interrupted during preview creation");
