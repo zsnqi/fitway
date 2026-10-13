@@ -387,6 +387,9 @@ export async function drive(options) {
 	};
 	let manifestWrites = Promise.resolve();
 	const writeManifest = () => {
+		// Compare reads the manifest only after every capture settles; its
+		// final write in the outer finally is the complete record.
+		if (options.comparisonCapture) return manifestWrites;
 		manifestWrites = manifestWrites.then(() =>
 			jsonOutput(out, "manifest.json", manifest),
 		);
