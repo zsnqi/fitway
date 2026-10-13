@@ -10,8 +10,7 @@
   - `design-research/owner-composition-exploration-r04/directions/briefs/codex-shared-frame-continue.md` in that
     worktree: its P2 and P3 hold (its P1 is done: the patch was applied).
   - `D:/fitway-temp/owner-r04-shared-frame/verify-fitway-SKILL-c5f60069.md` §"Compare", a copy of the CLI's
-    `SKILL.md` (in `D:/Projects/fitway-worktrees/owner-design-exploration-r04/.agents/skills/verify-fitway/`) at
-    `c5f60069`: the CLI the round's compares call changed after the round's brief was written.
+    skill file, as it stands in the CLI's folder named under R1, at `c5f60069`: the CLI the round's compares call changed after the round's brief was written.
 
 <!-- environment:start v1 -->
 ## Environment
