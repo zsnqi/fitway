@@ -16,8 +16,8 @@ export function timelineTimes(value) {
 	return [...new Set(times)].sort((a, b) => a - b);
 }
 
-// Installed before source scripts. Ordinary execution delegates to the original
-// clocks. Only the final action's timeline uses the logical scheduler below.
+// Installed before source scripts. Page clocks share a logical origin even during
+// startup; the observer alone keeps native clocks for scheduling outside captures.
 export function observeTimeline() {
 	const native = {
 		timeout: window.setTimeout.bind(window),
@@ -27,8 +27,64 @@ export function observeTimeline() {
 		frame: window.requestAnimationFrame.bind(window),
 		cancel: window.cancelAnimationFrame.bind(window),
 		now: performance.now.bind(performance),
+		Date: Date,
 		animate: Element.prototype.animate,
+		play: Animation.prototype.play,
 	};
+	let clock = 0;
+	let realAnchor = native.now();
+	function advanceSetupClock() {
+		if (held) return;
+		const now = native.now();
+		clock += Math.max(0, now - realAnchor);
+		realAnchor = now;
+	}
+	const epoch = 0;
+	const pageNow = () => (held ? origin + time : clock);
+	Object.defineProperty(performance, "now", {
+		configurable: true,
+		value: pageNow,
+	});
+	Object.defineProperty(performance, "timeOrigin", {
+		configurable: true,
+		value: epoch,
+	});
+	function HeldDate(...args) {
+		if (!new.target) return new native.Date(epoch + pageNow()).toString();
+		return Reflect.construct(
+			native.Date,
+			args.length ? args : [epoch + pageNow()],
+			new.target,
+		);
+	}
+	Object.setPrototypeOf(HeldDate, native.Date);
+	HeldDate.prototype = native.Date.prototype;
+	Object.defineProperty(HeldDate.prototype, "constructor", {
+		configurable: true,
+		writable: true,
+		value: HeldDate,
+	});
+	HeldDate.now = () => Math.floor(epoch + pageNow());
+	globalThis.Date = HeldDate;
+	const eventTimes = new WeakMap();
+	const stamp = (event, advance = true) => {
+		if (
+			event &&
+			(typeof event === "object" || typeof event === "function") &&
+			!eventTimes.has(event)
+		) {
+			if (advance) advanceSetupClock();
+			eventTimes.set(event, pageNow());
+		}
+	};
+	if (globalThis.Event)
+		Object.defineProperty(Event.prototype, "timeStamp", {
+			configurable: true,
+			get() {
+				stamp(this, false);
+				return eventTimes.get(this);
+			},
+		});
 	let held = false;
 	let waiting = null;
 	let time = 0;
@@ -40,6 +96,7 @@ export function observeTimeline() {
 	let schedulingBlocked = false;
 	const tasks = new Map();
 	const effects = new Map();
+	const played = new Set();
 	const findings = [];
 	const stringTasks = [];
 	const source = () => {
@@ -156,10 +213,7 @@ export function observeTimeline() {
 	const removeListener = EventTarget.prototype.removeEventListener;
 	const completionListeners = new WeakMap();
 	EventTarget.prototype.addEventListener = function (event, fn, options) {
-		if (
-			!["finish", "animationend", "transitionend"].includes(event) ||
-			!(typeof fn === "function" || typeof fn?.handleEvent === "function")
-		)
+		if (!(typeof fn === "function" || typeof fn?.handleEvent === "function"))
 			return addListener.call(this, event, fn, options);
 		const src = source();
 		let entries = completionListeners.get(this);
@@ -176,7 +230,8 @@ export function observeTimeline() {
 		const wrapped =
 			byEvent.get(key) ||
 			function (...args) {
-				if (held)
+				stamp(args[0]);
+				if (held && ["finish", "animationend", "transitionend"].includes(event))
 					note(src, `${event} handler runs outside held animation effects`);
 				return typeof fn === "function"
 					? Reflect.apply(fn, this, args)
@@ -208,6 +263,7 @@ export function observeTimeline() {
 					typeof fn !== "function"
 						? fn
 						: function (...args) {
+								stamp(args[0]);
 								if (held)
 									note(
 										src,
@@ -218,15 +274,31 @@ export function observeTimeline() {
 				);
 			},
 		});
-	for (const prototype of [
-		window.HTMLElement?.prototype,
-		window.SVGElement?.prototype,
-		window.Document?.prototype,
-		window.Window?.prototype,
-	].filter(Boolean))
-		for (const property of ["onanimationend", "ontransitionend"]) {
+	// Native event-property deliveries do not pass through JS addEventListener.
+	// Discover their owners before scripts, including targets outside the DOM,
+	// without evaluating window getters or naming an interface/control.
+	const eventOwners = new Set([window]);
+	const eventTypes = new Set();
+	for (const name of Object.getOwnPropertyNames(window)) {
+		const value = Object.getOwnPropertyDescriptor(window, name)?.value;
+		let prototype = typeof value === "function" ? value.prototype : null;
+		if (
+			!prototype ||
+			!Object.prototype.isPrototypeOf.call(EventTarget.prototype, prototype)
+		)
+			continue;
+		while (prototype && !eventOwners.has(prototype)) {
+			eventOwners.add(prototype);
+			prototype = Object.getPrototypeOf(prototype);
+		}
+	}
+	for (const prototype of eventOwners)
+		for (const property of Object.getOwnPropertyNames(prototype).filter(
+			(name) => /^on/.test(name),
+		)) {
 			const descriptor = Object.getOwnPropertyDescriptor(prototype, property);
-			if (!descriptor?.set) continue;
+			eventTypes.add(property.slice(2));
+			if (!descriptor?.set || !descriptor.configurable) continue;
 			const assigned = new WeakMap();
 			Object.defineProperty(prototype, property, {
 				...descriptor,
@@ -243,7 +315,11 @@ export function observeTimeline() {
 						typeof fn !== "function"
 							? fn
 							: function (...args) {
-									if (held)
+									stamp(args[0]);
+									if (
+										held &&
+										["onanimationend", "ontransitionend"].includes(property)
+									)
 										note(
 											src,
 											`${property} handler runs outside held animation effects`,
@@ -254,6 +330,12 @@ export function observeTimeline() {
 				},
 			});
 		}
+	// Inline handlers are compiled by the browser without invoking those setters.
+	for (const event of eventTypes) {
+		if (typeof window.addEventListener === "function")
+			addListener.call(window, event, stamp, true);
+		document.addEventListener(event, stamp, true);
+	}
 	const clearNative = (task) =>
 		task.kind === "frame"
 			? native.cancel(task.nativeId)
@@ -262,6 +344,7 @@ export function observeTimeline() {
 				: native.clear(task.nativeId);
 	function schedule(kind, fn, delay, args) {
 		if (kind === "frame" && typeof fn !== "function") return native.frame(fn);
+		advanceSetupClock();
 		const id = ++sequence;
 		const task = {
 			id,
@@ -271,7 +354,7 @@ export function observeTimeline() {
 			source: source(),
 			delay: kind === "frame" ? 1000 / 60 : Math.max(1, Number(delay) || 0),
 			due:
-				(held ? time : native.now()) +
+				(held ? time : clock) +
 				(kind === "frame" ? 1000 / 60 : Math.max(1, Number(delay) || 0)),
 		};
 		if (held && schedulingBlocked) {
@@ -281,11 +364,13 @@ export function observeTimeline() {
 			);
 			return id;
 		}
-		const run = (...values) => {
+		const run = () => {
+			advanceSetupClock();
+			clock = Math.max(clock, task.due);
 			if (kind !== "interval") tasks.delete(id);
-			else task.due = native.now() + task.delay;
+			else task.due = clock + task.delay;
 			if (typeof fn === "function")
-				Reflect.apply(fn, window, kind === "frame" ? values : args);
+				Reflect.apply(fn, window, kind === "frame" ? [clock] : args);
 		};
 		if (!held)
 			task.nativeId =
@@ -328,19 +413,29 @@ export function observeTimeline() {
 		if (held) remember(animation);
 		return animation;
 	};
-	function remember(animation) {
-		if (effects.has(animation)) return;
+	// Directly constructed effects can drive script without a document target.
+	// An authored play also resumes or rewinds a previously held effect.
+	Animation.prototype.play = function (...args) {
+		const result = native.play.apply(this, args);
+		played.add(this);
+		if (held) remember(this, true);
+		return result;
+	};
+	function remember(animation, restart = false) {
+		if (effects.has(animation) && !restart) return;
 		const end = animation.effect?.getComputedTiming().endTime;
-		if (animation.playState === "finished" && Number.isFinite(end)) return;
+		if (!restart && animation.playState === "finished" && Number.isFinite(end))
+			return;
+		const initial = restart ? Number(animation.currentTime) || 0 : 0;
 		effects.set(animation, {
 			start: time,
 			end,
-			initial: 0,
+			initial,
 			finished: false,
 			source: source(),
 		});
 		animation.pause();
-		animation.currentTime = 0;
+		animation.currentTime = initial;
 	}
 	const phase = Object.getOwnPropertyDescriptor(
 		Animation.prototype,
@@ -369,13 +464,18 @@ export function observeTimeline() {
 	};
 	function collect() {
 		for (const animation of document.getAnimations()) remember(animation);
+		for (const animation of played) {
+			if (["idle", "finished"].includes(animation.playState))
+				played.delete(animation);
+			else remember(animation);
+		}
 	}
 	function begin() {
 		if (held) return;
 		held = true;
 		waiting = null;
 		time = 0;
-		origin = native.now();
+		origin = clock;
 		effects.clear();
 		findings.length = 0;
 		callbacks = 0;
@@ -390,6 +490,8 @@ export function observeTimeline() {
 		queueMicrotask(collect);
 	}
 	for (const event of [
+		"pointerdown",
+		"pointerup",
 		"click",
 		"mousedown",
 		"touchstart",
@@ -408,6 +510,14 @@ export function observeTimeline() {
 					(!waiting.key || waiting.key === e.key)
 				)
 					begin();
+				stamp(e);
+				if (held) {
+					// Flush the pressed pose before the browser removes :active. The
+					// next flush discovers its release transitions, including registered
+					// custom properties, without adding a style or changing the DOM.
+					collect();
+					queueMicrotask(collect);
+				}
 			},
 			true,
 		);
@@ -441,7 +551,10 @@ export function observeTimeline() {
 		collect();
 	}
 	async function seek(at) {
-		if (!held) begin();
+		if (!held) {
+			advanceSetupClock();
+			begin();
+		}
 		collect();
 		while (true) {
 			const nextTask = [...tasks.values()].sort(
@@ -547,6 +660,7 @@ export function observeTimeline() {
 	}
 	window.__verifyFitwayTimeline = {
 		arm(action, input) {
+			advanceSetupClock();
 			const [kind, arg] = action.split(/:(.*)/s);
 			const keyboardActivation =
 				input === "keyboard" &&
@@ -589,22 +703,26 @@ export function observeTimeline() {
 		info,
 		release() {
 			waiting = null;
+			clock = origin + time;
 			held = false;
+			realAnchor = native.now();
 			for (const [a, e] of effects)
 				if (!e.finished && a.playState !== "idle") a.play();
 			for (const task of stringTasks) native.timeout(task.fn, 0, ...task.args);
 			stringTasks.length = 0;
 			for (const task of [...tasks.values()]) {
 				const remaining = Math.max(1, task.due - time);
-				task.due = native.now() + remaining;
+				task.due = clock + remaining;
 				const run = () => {
+					advanceSetupClock();
+					clock = Math.max(clock, task.due);
 					if (task.kind !== "interval") tasks.delete(task.id);
-					else task.due = native.now() + task.delay;
+					else task.due = clock + task.delay;
 					if (typeof task.fn === "function")
 						Reflect.apply(
 							task.fn,
 							window,
-							task.kind === "frame" ? [native.now()] : task.args,
+							task.kind === "frame" ? [clock] : task.args,
 						);
 				};
 				task.nativeId =
