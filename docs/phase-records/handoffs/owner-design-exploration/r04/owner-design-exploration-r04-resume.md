@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `00178ec4`, 2026-10-13 10:25 +03:00 (vf-hold graded and merged; vf-parallel launched; shared-frame resumed on the merged CLI; the Settings questions asked)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-13 15:20 +03:00 (handoff: the user ended the session to discuss something in a new one; both Codex rounds stopped with resume messages ready; nothing running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-49), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -40,39 +40,43 @@
 
 ## Running now
 
-- **shared-frame, a fresh session** (DECISIONS 45, first item) since 14:50: brief
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-frame-continue-2.md` (`d17164bb`, xhigh;
-  review `D:/fitway-temp/brief-review/codex-shared-frame-continue-2-1/`, readings 1-4 closed, 5 left open), run folder
-  `D:/fitway-temp/codex-round-c64dae1e-9642-4fe5-895f-dd761f7e71c4`. It continues from `4352181f` and the old
-  session's records (95 of 228 jobs). The old thread below grew to about 48 MB and got "at capacity" or 503 on both
-  models from 13:54, so its retries were stopped. The old session, resumed at 10:16 with `resume-after-pause-1.md` through
-  `D:/fitway-temp/resume-wait-limit.sh` (it waits out a usage limit): thread `01a12f3c-a486-7681-a1f5-6b12abdbe87a`,
-  run folder `D:/fitway-temp/codex-round-ef95d9e6-4736-49f6-8f7e-959e6eee78a8`, continuation brief
-  `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/codex-shared-frame-continue.md`
-  (`56ed8da6`, xhigh), worktree clean at `4352181f` at the resume. The message: the CLI changed (vf-speed, vf-hold),
-  rerun the F3 timeline jobs finished before the pause, F2's finished ordinary compares stay valid, rerun an F126 or
-  F148 item once and report an F148 sample NOT-HELD on the result side only for the coordinator. It holds 3176-3177
-  (`D:/fitway-temp/owner-r04-ports/shared-frame-measuring.txt`). B11: `D:/fitway-temp/brief-review/shared-frame-*`;
-  base check `D:/fitway-temp/owner-r04-shared-frame-base/summary.txt`; held-out SH1-SH10
-  `D:/fitway-grader/owner-r04/shared-frame-heldout.md`.
-- **vf-parallel, running** (DECISIONS 48; F147), launched 10:12 at xhigh: brief
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md` (`00178ec4`, HEAD `5493e888`,
-  one rerun allowed for F148 after the review), run folder `D:/fitway-temp/codex-round-c9d939cf-0dbd-4bd8-ab8e-1b9a9eb7828e`,
-  thread `01a1341e-0ea2-7a71-8f60-73849e2670f7`, worktree D:/Projects/fitway-worktrees/owner-r04-vf-parallel. Its code
-  and tests run now; its measurements wait for `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt`, which the
-  coordinator writes when shared-frame's compares end. A usage limit on it: resume with `resume-wait-limit.sh` and
-  `wait-first` when the user is away.
+Nothing: both rounds stopped at the user's request, ready to resume; no Codex, no compare, ports 3176-3177 free (15:15).
+
+- **shared-frame, fresh session** (DECISIONS 45, first item): brief
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-frame-continue-2.md` (`d17164bb`,
+  xhigh; review `D:/fitway-temp/brief-review/codex-shared-frame-continue-2-1/`, readings 1-4 closed, 5 left open),
+  run folder `D:/fitway-temp/codex-round-c64dae1e-9642-4fe5-895f-dd761f7e71c4`, thread
+  `01a13521-b58d-7012-84b0-f59989dadf45`, launched 14:50, stopped 15:11 just after it restarted the inherited queue.
+  Worktree D:/Projects/fitway-worktrees/owner-followup-r04-s04 clean at `4352181f` (the moved frame code). Queue
+  `D:/fitway-temp/owner-r04-shared-frame/matrix-vfhold-435.json`: 95 of 228 jobs complete; one incomplete record,
+  `f3-dense-reports-435-vfhold-restart`. Resume message ready: `resume-after-stop-1.md` in its run folder. Found so
+  far: Daily's dense status item had 21 DIFFERENT samples in one run, inside F126's chip, EQUAL alone
+  (`D:/fitway-temp/owner-r04-shared-frame/live/dense-status-diagnosis-vfhold-435.json`). The old session's thread
+  (`01a12f3c-a486-7681-a1f5-6b12abdbe87a`, run folder `D:/fitway-temp/codex-round-ef95d9e6-4736-49f6-8f7e-959e6eee78a8`)
+  grew to about 48 MB and gets "at capacity" or 503 on both models: never resume it. Held-out SH1-SH10
+  `D:/fitway-grader/owner-r04/shared-frame-heldout.md`; B11 of the first brief `D:/fitway-temp/brief-review/shared-frame-*`.
+- **vf-parallel** (DECISIONS 48; F147): brief
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md` (`00178ec4`), run folder
+  `D:/fitway-temp/codex-round-c9d939cf-0dbd-4bd8-ab8e-1b9a9eb7828e`, thread `01a1341e-0ea2-7a71-8f60-73849e2670f7`,
+  worktree D:/Projects/fitway-worktrees/owner-r04-vf-parallel, code committed `0fbad66d` (not pushed). Its report
+  (`last-message.md`, 15:10): P4, L2, L3 PASS (11 new tests; fast ladder clean); P1, P2, P3, L1 unrun because the
+  port marker never appeared. Resume message ready: `resume-ports-free-1.md` in its run folder, to send after writing
+  `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt` once shared-frame's compares end. Held-out VP1-VP11
+  `D:/fitway-grader/owner-r04/vf-parallel-heldout.md` (written before any of its measurements).
+- **Codex accounts** (three saved, `node D:/fitway-temp/codex-accounts.mjs list`): smhsdxsz5h current, hhmam1435,
+  ryshyjhad85 (limited until 17:06 on 2026-10-13). Resume either run with
+  `bash D:/fitway-temp/resume-auto.sh <run folder> <message file>` in a background shell.
 
 ## Next steps
 
 The order (the user, 2026-10-12, «موافق»): shared-frame finishes on the merged CLI and is graded, vf-parallel measures
 and is graded, then `reports.css` and the shared lows, then Settings.
 
-1. **When shared-frame reports:** write `free-for-vf-parallel.txt`; grade shared-frame on SH1-SH10 and GH7; record both
-   runs, the pause and the model switches in `codex-rounds.md`; on a pass push the build branch and tell the user in a
-   line.
-2. **When vf-parallel reports:** grade it (write its held-out rows before its measurements land, in
-   `D:/fitway-grader/owner-r04/`), record, merge, wait for CI.
+1. **Resume shared-frame** with `resume-auto.sh` and its `resume-after-stop-1.md`. When it reports: write
+   `free-for-vf-parallel.txt`, resume vf-parallel with `resume-ports-free-1.md`; grade shared-frame on SH1-SH10 and
+   GH7; record the old session, the pause, the capacity failure and the fresh session in `codex-rounds.md`; on a pass
+   push the build branch and tell the user in a line.
+2. **When vf-parallel reports:** grade it on its brief rows and VP1-VP11, record, push its branch, merge, wait for CI.
 3. **`reports.css` split** on the shared-frame result (draft `D:/fitway-temp/owner-r04-reports-css-draft/
    codex-reports-css-split-draft.md`, placeholders still open), then **the shared lows**: F126 and F148 first (render
    instabilities that make compares fail or INCOMPLETE at random), F140, F131, F132, F136, F149. The shared lows' digest:
