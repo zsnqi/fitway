@@ -60,7 +60,9 @@ The round's brief is met: its Goal and every outcome and limit, measured as it s
 - **R3. Timings that can be trusted.** Each of P2's two timed commands (the base against itself, and the result
   against the base) runs six times, alternating 1, 4, 1, 4, 1, 4 workers, each with nothing else of yours running on
   the machine. The median of each worker count's three runs is that count's time, P2's bar is judged on the medians,
-  and the report gives every run.
+  and the report gives every run. The result-against-base command also runs six times the same way with the kept
+  captures on (`--baseline-cache` left on, its base side already kept), where 4 workers' median is at most half of 1
+  worker's.
 - **R4. A change only on evidence.** Change the code only where a measurement or a test shows an outcome or limit
   failing, or where R5's breakdown shows time a change removes. Then commit once, and measure again on the new commit
   everything the change can reach, which for a change to `compare.mjs`, `compare-runtime.mjs`, `baseline-cache.mjs`, `cache-lock.mjs`, `core.mjs`, `cli.mjs` or
@@ -71,7 +73,8 @@ The round's brief is met: its Goal and every outcome and limit, measured as it s
   writes; and the time each worker waits idle or on a lock. Instrument a copy of the CLI in your temp folder or use
   Node's profiler; the tracked files change only through R4. The phases do not overlap within the command or within
   a worker, and with an "other" phase for what none names they add up to the run's wall time, and each worker's to
-  that worker's span. Report the largest phases with their seconds. Where the
+  that worker's span; "other" stays under a tenth of each, or is split into named phases until it does. Report the
+  largest phases with their seconds. Where the
   breakdown shows time a change inside the Scope removes, make that change (R4), and the R1 measurements run on its
   commit. Saving time by measuring less is not such a change: every capture setting, settle and hold wait,
   comparison threshold, rerun rule and item stays the HEAD's. The workers' upper limit may rise only if the
