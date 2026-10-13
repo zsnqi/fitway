@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: compares that run side by side (owner-design-exploration-r04, vf-parallel)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/owner-r04-vf-parallel`, branch `owner-r04-vf-parallel`, HEAD `3faea886`
+- **Worktree:** `D:/Projects/fitway-worktrees/owner-r04-vf-parallel`, branch `owner-r04-vf-parallel`, HEAD `5493e888`
 - **Milestone:** `owner-design-exploration-r04`. Decisions: `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` items 47 and 48.
 - **Read first, only these:**
   - `.agents/skills/verify-fitway/SKILL.md` §"Compare", and `compare.mjs`, `compare-runtime.mjs`, `baseline-cache.mjs`,
@@ -42,7 +42,10 @@
   whose tests choose their own ports. Wait for the file with Monitor. Change no Windows network setting.
 - **A known instability.** On the base, Daily's Lights chip on the phone lands half a pixel apart between captures in
   some runs (F126), with the HEAD's CLI and older ones alike: a full compare of the base against itself can show one
-  to three such items `DIFFERENT`. Where an outcome below allows it, such an item is rerun once and reported.
+  to three such items `DIFFERENT`. Likewise, in the first 21 ms of a release, an SVG icon inside a button that is
+  scaling back can differ by one or two levels on one or two edge pixels between two captures of the same moment
+  (F148), so that timeline sample is `NOT-HELD`. Where an outcome below allows it, such an item is rerun once and
+  reported.
 
 ## Goal
 
@@ -74,8 +77,9 @@ on one pair gives.
     phone, reduced and full motion, mouse, HTTP, `--baseline-cache off`, the base against itself, takes the same 1,224
     items as with 1 worker and gives each the same verdict; likewise the result against the base; and each 4-worker
     run takes at most half the wall time of the 1-worker run of the same command, both run alone on this machine. An
-    item may be rerun once only when its difference lies inside Daily's Lights chip on the phone (F126); after its
-    rerun it gives 1 worker's verdict. Any other difference, or one that persists, fails P2. With 4 workers,
+    item may be rerun once only when its difference lies inside Daily's Lights chip on the phone (F126), or when a
+    timeline sample is `NOT-HELD` on an icon's edge in the first 21 ms of a release (F148); after its rerun it gives 1
+    worker's verdict. Any other difference, or one that persists, fails P2. With 4 workers,
     `--timeline` of Reports' `export-open` and `period-7d` (Arabic, desktop, mouse, full motion, HTTP) gives every
     sample the verdict 1 worker gives.
   - **Intent.** A round's full check costs a fraction of today's time, and parallel load never changes a verdict or
