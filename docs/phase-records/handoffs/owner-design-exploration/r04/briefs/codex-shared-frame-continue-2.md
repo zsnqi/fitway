@@ -48,6 +48,10 @@ What it found, which you inherit:
 - Daily, the status details, English, phone, mouse, timeline 1-401 ms: 21 samples `DIFFERENT` in one run, all inside
   the Lights chip (F126), and `EQUAL` at every sample when the item ran alone; its record is
   `D:/fitway-temp/owner-r04-shared-frame/live/dense-status-diagnosis-vfhold-435.json`.
+- That session was stopped by the coordinator on 2026-10-13 at 15:11, mid-job, for no fault of its own: the runner
+  and its running compare were killed, so `live/f3-dense-reports-435-vfhold-restart` is incomplete (its marker was
+  never cleared, so the runner will not redo it until you clear it) and the running job may have left partial output;
+  no completed record changed (95 of 228), the worktree is clean at `4352181f`, and nothing of that session runs.
 - Known instabilities at the base: F126 (Daily's Lights chip on the phone, half a pixel) and F148 (in a release's
   first 21 ms, an SVG icon inside a scaling button differs by one or two levels on one or two edge pixels).
 
