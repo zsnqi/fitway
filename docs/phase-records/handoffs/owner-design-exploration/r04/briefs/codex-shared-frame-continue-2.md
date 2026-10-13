@@ -38,8 +38,8 @@
 The session that did this round's work so far can no longer be resumed: its thread grew to about 48 MB, and the
 service answers it with "Selected model is at capacity" or 503 on both models. Its work is committed at `4352181f`
 (the frame code moved into `shared-frame.js`). Its measurements are in `D:/fitway-temp/owner-r04-shared-frame/`: the
-job list `matrix-vfhold-435.json`, one folder per job in `live/` with `measurement.json` (the SHA, the CLI revision,
-the counts) and `comparison.json`, its runner `matrix-runner-vfhold-435.mjs` and its progress script
+job list `matrix-vfhold-435.json`, one folder per job in `D:/fitway-temp/owner-r04-shared-frame/live/` with
+`measurement.json` (the SHA, the CLI revision, the counts) and `comparison.json`, its runner `matrix-runner-vfhold-435.mjs` and its progress script
 `progress-vfhold-435.mjs` (95 jobs complete and 133 pending on 2026-10-13 at 14:15). Read them; reuse what is sound.
 
 What it found, which you inherit:
@@ -47,7 +47,7 @@ What it found, which you inherit:
   release and the page's clocks in `--timeline` (vf-hold, `f2c89624`); timeline jobs run before `f2c89624` are stale.
 - Daily, the status details, English, phone, mouse, timeline 1-401 ms: 21 samples `DIFFERENT` in one run, all inside
   the Lights chip (F126), and `EQUAL` at every sample when the item ran alone; its record is
-  `live/dense-status-diagnosis-vfhold-435.json`.
+  `D:/fitway-temp/owner-r04-shared-frame/live/dense-status-diagnosis-vfhold-435.json`.
 - Known instabilities at the base: F126 (Daily's Lights chip on the phone, half a pixel) and F148 (in a release's
   first 21 ms, an SVG icon inside a scaling button differs by one or two levels on one or two edge pixels).
 
