@@ -27,6 +27,17 @@
 - **Owner screens:** Daily, Reports, Activity log and Access are built on owner-followup-r04-build (worktree
   D:/Projects/fitway-worktrees/owner-followup-r04-s04, clean at `4352181f`). Previews: eclipse-build (3174), LAN (3180).
 
+- **Done this evening:** launcher-fixes merged as `47d233b2` (6/6, held-out 9/10; F150, F152, F153 fixed; F156 the test gap).
+- **shared-frame** reported at 22:19: 237 of 237 jobs, every F3 difference inside F126 (69 samples) or F148 (21), one
+  F126 item DIFFERENT after its rerun (Daily's tuner chip, `tuner-speed-reset`, English phone, 1 ms), no code change
+  (result `4352181f`). DeepSeek cannot view images, so no frame was looked at by the model. Graded so far: SH5, SH10
+  (folder only, its history file and evidence folder unchanged) and GH7 pass; SH4 partial (the four pages define the frame
+  once; `components.js` keeps its own copy of three frame words from the base, outside the brief's cause). SH1-SH3 and
+  SH6-SH9 need compares: run them after vf-parallel merges, on a pair it frees, with 4 workers; then the coordinator
+  looks at the F126 item's captures, records the round, merges, pushes.
+- **The environment block** in every brief template says a message without a tool call ends the run (`0361d77e`), a
+  mitigation of F154, not a proven fix.
+
 ## Running now
 
 DeepSeek ends a run early at times with a message and no tool call, under Codex and Claude Code alike (F154): when a
@@ -52,19 +63,6 @@ naming where it stopped (the `resume-turn-ended-*.md` and `message.md` files bes
   `CLAUDE_CODE_MAX_OUTPUT_TOKENS=128000`: Claude Code sends `output_config.effort` and adaptive thinking with display
   omitted, and caps output at 32K for a model it does not know (request captured with a local echo server; three low
   and three max runs suggest the level reaches DeepSeek).
-
-## Done since the last resume point
-
-- **launcher-fixes** merged as `47d233b2` (6/6, held-out 9/10; F150, F152, F153 fixed; F156 the test gap).
-- **shared-frame** reported at 22:19: 237 of 237 jobs, every F3 difference inside F126 (69 samples) or F148 (21), one
-  F126 item DIFFERENT after its rerun (Daily's tuner chip, `tuner-speed-reset`, English phone, 1 ms), no code change
-  (result `4352181f`). DeepSeek cannot view images, so no frame was looked at by the model. Graded so far: SH5, SH10
-  (folder only, `HISTORY.md` and `evidence/` unchanged) and GH7 pass; SH4 partial (the four pages define the frame
-  once; `components.js` keeps its own copy of three frame words from the base, outside the brief's cause). SH1-SH3 and
-  SH6-SH9 need compares: run them after vf-parallel merges, on a pair it frees, with 4 workers; then the coordinator
-  looks at the F126 item's captures, records the round, merges, pushes.
-- **The environment block** in every brief template says a message without a tool call ends the run (`0361d77e`), a
-  mitigation of F154, not a proven fix.
 
 ## Next steps
 
