@@ -71,7 +71,9 @@ allows reaches Open Design, however its path is written or linked.
     review reads repository paths from the target worktree and absolute paths only under the temp folder.
   - **Outcome.** An absolute review source inside the Git checkout the launcher runs from is read as that file
     committed at that checkout's HEAD, and is refused, naming it, when it is untracked or its working copy differs from
-    HEAD. `REVIEW.md` §"Running it" states the three places a source may come from.
+    HEAD. A launch refuses, naming it, any repository source the review read that differs between the brief's named
+    HEAD and the worktree's HEAD at launch (the brief checker allows later Markdown-only commits). `REVIEW.md`
+    §"Running it" states the three places a source may come from.
   - **Intent.** Only committed files of this public repository and the temp folder's files reach Open Design, and the
     review reads the same text the implementer will read.
 - **A4. Tests that fail when their defect returns (F150).**
@@ -85,7 +87,8 @@ allows reaches Open Design, however its path is written or linked.
 
 - **L1. Today's briefs still pass.** `pnpm brief:check` gives the same result as at the HEAD on every brief under
   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` that names only sources the review reads today,
-  and a brief whose review ran without a source error since 2026-10-13 still passes.
+  and a brief whose review ran without a source error since 2026-10-13 still passes. No rule or exception in the
+  checker or the launcher depends on a brief's folder or file name.
 - **L2. The ladder.** `node scripts/verify.mjs fast` passes on your committed tree, and `git status --short` is empty
   after your commit and after the ladder.
 
