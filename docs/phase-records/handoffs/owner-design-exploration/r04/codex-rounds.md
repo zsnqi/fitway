@@ -815,3 +815,48 @@ checks live outside the repository and never appear here or in a brief. One line
   could not return it (a fact outside the brief). It becomes a checklist line in `docs/agent-context/briefs/codex.md`.
 - **Disposition:** merged as `ebbfecd6`; F137 fixed. F126 now fails a full compare at random and goes first among the
   shared lows.
+
+## vf-hold: `briefs/codex-vf-hold.md` (this folder), result `7c8418fb` on `owner-r04-vf-hold`, level `xhigh`
+
+- **Set-up:** the second half of the verify-fitway round (DECISIONS 47 and 48): the timeline holds a press's release
+  (F143) and the page's clocks (F144). Held-out rows VH1-VH8 in `D:/fitway-grader/owner-r04/vf-hold-heldout.md`,
+  written before its measurements. Resumed four times on its thread: after a usage limit, with CI's missing browser
+  (`resume-ci-1.md`, the same brief gap as vf-speed's), for the measurements, and after the overnight stop
+  (`resume-after-stop-1.md`).
+- **Found at the stop:** under the clock hold, six Access PIN saves timed out: the held clock skipped the driver's
+  600 ms idle wait, so the page's double-tap guard refused the save. Codex fixed it (`55a97093`, setup waits advance
+  the logical clock) with a test, then held effects started with `Animation.play()` (`7c8418fb`), and reran every
+  measurement on the final commit.
+- **Codex's report** (`D:/fitway-temp/codex-round-vf-hold-1/last-message.md`, evidence
+  `D:/fitway-temp/owner-r04-vf-hold/run-7c8418fb/`): H1 FAIL on two rows, H2, H3 and L1-L4 PASS; NOT-HELD under the
+  historical CLI against its own, Access 0 to 0, Activity 1 to 0, Daily 12 to 0, Reports 17 to 0; 15 defect controls,
+  each failing its test; fast ladder clean. CI run 38353822792 on `7c8418fb` passed.
+  - H1 self: one NOT-HELD in 840 samples, one pixel one level apart on the download icon of Reports' export button at
+    21 ms. Coordinator: rendering noise, not the hold (F148).
+  - H1 outside the list: the 40 ms release plant was EQUAL on a held rail press and DIFFERENT on activation and
+    release. Coordinator: the brief asked a release-only plant to change a held press, which it cannot; VH1 tests the
+    press with its own plant. **Failure cause: the brief.**
+- **Held-out rows, graded by the coordinator** (`D:/fitway-temp/owner-r04-vf-hold-grade/`, runner `run.mjs`, plants
+  in `plants/`, the base from `D:/fitway-temp/owner-r04-vf-speed-grade/7e28c713/`; CLI at `7c8418fb`, and the merge
+  `f2c89624` for VH6-VH7):
+  - VH1 pass: on Activity's dates button and current rail tile, a stronger press light is DIFFERENT on all 42 held
+    samples; the 40 ms release plant is DIFFERENT at 21-101 ms (tile 21-121), EQUAL before and after; self 83 EQUAL
+    and one NOT-HELD at 1 ms of the dates release, two pixels on the calendar icon's edge (F148, on both sides in the
+    plant run).
+  - VH2 pass with Space: `--inputs keyboard` activates with Enter, which never shows a press in Chromium, so the
+    release plant is EQUAL there (F149); a recipe ending `press:Space` on `period-7d` gives self 21 EQUAL and the plant
+    DIFFERENT at 21-141 ms.
+  - VH3 pass: the export run read from `Date.now()` instead of `performance.now()` is EQUAL on 137 samples (one F148
+    NOT-HELD at 21 ms, the download icon again); with 560 ms minimums DIFFERENT from 401 ms, exit 1.
+  - VH4 pass: Activity's refresh self 27 EQUAL, no NOT-HELD; the clock's start one minute later DIFFERENT, exit 1.
+  - VH5 pass: a random colour on the export button's press is NOT-HELD on all 42 samples, never EQUAL, exit 1.
+  - VH6 pass: on the merge, Reports `export-open` and `period-7d` rerun with 4 kept captures reused and 0 captured
+    (19 s against 39 s) give the cache-off run's verdicts; the release plant is DIFFERENT at 100 ms under reuse and
+    fresh alike.
+  - VH7 pass: every feature with actions on the four pages, base against itself, `ebbfecd6`'s CLI against the merge:
+    no sample compared before is missing or NOT-HELD now; NOT-HELD Access 0 to 0, Activity 0 to 0, Reports 24 to 0,
+    Daily 13 to 0; Reports and Daily gain 6 and 18 samples, their moves now measured to the end.
+  - VH8 pass: only `timeline.mjs` and `timeline-hold.test.mjs` changed, `cli.test.mjs` unedited, Daily's phone frame
+    under reduced motion EQUAL under both CLIs, CI green on `7c8418fb`.
+- **Disposition:** merged as `f2c89624`; F143 and F144 fixed; the §"Compare" lines added to `SKILL.md` with F148 and
+  F149. F148 goes with F126 among the shared lows; vf-parallel's brief allows one rerun for it.

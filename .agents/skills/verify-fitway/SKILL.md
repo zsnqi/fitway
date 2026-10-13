@@ -209,6 +209,16 @@ that sample is excluded from the cross-build pixel result. Inspect `comparison.j
 accepting a change.
 `NOT-HELD` is neither equal nor different; the summary says `INCOMPLETE`, counts and names every such sample.
 
+The page's clocks are held with it (vf-hold, F143 and F144): `performance.now()`, `Date.now()`, `new Date()`, event
+timestamps and frame-callback timestamps read one logical clock from before the page's first script. Setup waits
+advance that clock through native scheduling; capture wall time stays outside it. Press and release boundaries collect
+newly created effects before delayed captures, and effects started with `Animation.play()`, including targetless
+effects and replays, join the hold. Compared regions and zero tolerance are unchanged.
+Two known limits: an SVG icon inside a button that is scaling back can differ by one or two levels on one or two edge
+pixels in the first 21 ms of a release (F148), so such a sample may be `NOT-HELD`: rerun the item once. And
+`--inputs keyboard` activates with Enter, which never shows a press in Chromium (F149); a keyboard press's look is
+reached only by a recipe that ends `press:Space` on the focused control.
+
 Name additional moments with `--recipes <external-file>` and the same `--baseline-recipes` file. The report retains
 the recipe entries used. A comma-separated `--feature export-close,export-held,export-release` selects several entries
 in one page command. For example, add an `export-close` entry with `actions: ["activate:#export-btn", "press:Escape"]`
