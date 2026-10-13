@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` after `9a7c6726`, 2026-10-13 19:50 +03:00 (findings labelled, DECISIONS 52; nothing running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-52), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-53), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -48,6 +48,13 @@ DeepSeek); each restarts fresh on DeepSeek, its brief naming what it inherits.
   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes.md` (`c30cac54`); review
   `D:/fitway-temp/brief-review/codex-launcher-fixes-1` (readings 2 and 4 closed, 1, 3, 5 left open; 1 is F155). No
   held-out suite yet: write one in `D:/fitway-grader/owner-r04/` before grading.
+- **Claude Code on DeepSeek, replay of deepseek-route** (DECISIONS 53), **running since 2026-10-13 21:16** in
+  `D:/fitway-temp/cc-replay-deepseek-route-1` (`launch.sh`, `events.jsonl`, `exit.txt` when done), worktree
+  D:/Projects/fitway-worktrees/owner-r04-cc-replay (branch `owner-r04-cc-replay` from `4a151786`): the brief at
+  `107c71e5` with only the worktree line and the harness paragraph changed (diff against `brief-107c71e5.md` there).
+  Grade with DR1-DR12 (`D:/fitway-grader/owner-r04/deepseek-route-heldout.md`) and the plants in
+  `D:/fitway-temp/owner-r04-deepseek-route-grade/`, against Codex's 6/6 and 11/12 (two runs, the second on the first
+  run's edits; 45.3M input tokens).
 - **vf-parallel** (DECISIONS 48; F147): brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md`
   (`00178ec4`); code committed `0fbad66d` in D:/Projects/fitway-worktrees/owner-r04-vf-parallel (pushed); P1-P3 and L1
   unmeasured until `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt` exists; its old run folder
@@ -90,9 +97,9 @@ Nothing.
 ## Known risks
 
 - **DeepSeek runs:** start load about 87k tokens (every tool schema; GPT's was about 27k), mostly cached; trimming it
-  with a per-run setting is the coordinator's call (WORKING_AGREEMENTS). Open Design Go limits: $10 per 5 hours and
-  $30 per 7 days of Design Plan credit, DeepSeek V4.1 Flash counted at half; a with-sources review reads about 1M
-  tokens. Open Design names no host and no retention period. A thread whose history holds a hook message cannot resume.
+  with a per-run setting is the coordinator's call (WORKING_AGREEMENTS). Open Design credit is not a constraint
+  (the user, 2026-10-13: run in parallel without weighing it, DECISIONS 53). Open Design names no host and no
+  retention period. A thread whose history holds a hook message cannot resume.
 - **F126** makes a full compare fail at random until the tuner goes; **F148** can leave a release sample NOT-HELD:
   rerun such an item once before reading it as a regression.
 - **Briefs for refactors** need a limit that the moments still run along their timeline; `--timeline` measures it.

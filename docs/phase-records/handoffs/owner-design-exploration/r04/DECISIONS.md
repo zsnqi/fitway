@@ -583,6 +583,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       video and a PDF built from the concept).
     The page lows recorded outside the table (Reports' `#fig-avg` card, fix-3's observations, Access's N1-N7 and the
     focus rings) carry the same two labels in the resume point.
+53. **Claude Code on DeepSeek, compared with Codex on DeepSeek** (the user, 2026-10-13, on Open Design's API page,
+    which offers an Anthropic Messages format «Recommended for Claude Code»: why it was not raised before, and why
+    Codex). Codex stayed the harness when the rounds moved to DeepSeek only because the launcher, the brief rules, the
+    sandbox and 30-odd rounds of records were built on it; the two harnesses were never compared. A closed round,
+    deepseek-route, is replayed on Claude Code (`--bare`, auto permission mode with DeepSeek as its classifier, Open
+    Design's Anthropic base URL `https://amr-link.open-design.ai`) from the same HEAD with the same brief and graded on
+    the same held-out rows; the better harness carries the rounds that follow. The user: Open Design's credit is open
+    and is not weighed when choosing what runs in parallel. The launch scripts run under an allow rule the user
+    approved for `bash D:/fitway-temp/cc-*/launch.sh` in this worktree's local settings.
 
 ## How this milestone's rounds run
 
