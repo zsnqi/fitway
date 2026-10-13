@@ -70,6 +70,11 @@ latest wording; never copy an entry into a resume point.
   its model and level, and whether a failure came from the brief's wording or the model's own reading.
 - FITWAY's source, tests, specifications and records may be sent to Open Design for these rounds;
   `D:/fitway-private/`, `D:/fitway-grader/` and real secrets never are (user, 2026-10-13).
+- DeepSeek runs switch off Codex's hooks with a per-run setting, because a hook message placed between
+  a tool call and its result makes Open Design refuse the request; the user's own Codex configuration
+  and GPT runs keep them. Any later per-run setting that a DeepSeek run needs to work with Open Design
+  is the coordinator's call, reported in a line; the user's configuration is never changed (user,
+  2026-10-13, approved in advance).
 - Usage limits do not shape rounds: when a Codex account reaches its limit, the coordinator tells the
   user at once, the user switches accounts, and each stopped run resumes on its thread. (user,
   2026-10-05 and 2026-10-07)

@@ -49,8 +49,10 @@ model or level is given, and on GPT-6.1 Sol when asked, and every run folder rec
   `resume` uses the recorded ones without being told. Intent: the user moved Codex's rounds to DeepSeek at max; going
   back to GPT is one argument, and a resumed run never changes model.
 - **D2. DeepSeek needs its route on every call.** The coordinator's runs on 2026-10-13 showed that Open Design refuses
-  a request carrying Codex's web search tool ("unsupported Responses tool type web_search"), and that with no catalog
-  entry Codex gives DeepSeek no patch tool, so it rewrote whole files through PowerShell. The arguments that worked are
+  a request carrying Codex's web search tool ("unsupported Responses tool type web_search"), that with no catalog
+  entry Codex gives DeepSeek no patch tool, so it rewrote whole files through PowerShell, and (in the first run of
+  this round) that a hook message Codex places between a tool call and its result makes Open Design refuse the request
+  ("must be followed by tool messages"); hooks stay on in GPT runs and in the user's own configuration. The arguments that worked are
   `D:/fitway-temp/opendesign-smoke/route-args.txt` (read-only). Outcome: every `codex exec` the launcher starts for
   DeepSeek (launch, resume and review) carries those arguments, its `model_catalog_json` naming the catalog D3 wrote
   into that run's folder for that call; a GPT run carries none of the set, and its arguments are otherwise exactly
