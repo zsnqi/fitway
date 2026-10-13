@@ -572,6 +572,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     and its log entry naming the change) and Readex Pro in place of Cairo; each is still written as an explicit
     amendment at the move, and the move restructures the Owner code into shared modules rather than porting page files
     one to one.
+52. **The order of work, and two labels on every open finding** (the user, 2026-10-13). Tool and testing fixes come
+    before the next pages, since they make those pages faster and better; small design issues nobody sees wait until
+    after the demo; anything visible that would make the demo look bad is fixed before it. Each open row of
+    `docs/phase-records/handoffs/agent-environment/findings.tsv` carries two labels after its status (coordinator, the
+    same day; a closed row leaves both empty):
+    - `seen_by`: `owner` (the owner sees it on the page), `checks-slowed` (our checks run slower or need reruns),
+      `check-missing` (a check we cannot run yet), `setup` (the machine or the tools' configuration).
+    - `demo`: `blocks`, `lowers` or `waits`, read against the private demo plan (pages shown as device mock-ups, a
+      video and a PDF built from the concept).
+    The page lows recorded outside the table (Reports' `#fig-avg` card, fix-3's observations, Access's N1-N7 and the
+    focus rings) carry the same two labels in the resume point.
 
 ## How this milestone's rounds run
 

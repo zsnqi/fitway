@@ -29,13 +29,20 @@ const findingHeader = [
 	"class",
 	"finding",
 	"status",
+	"seen_by",
+	"demo",
 	"resolved_by",
 	"evidence",
 	"source",
 ].join("\t");
 
 const round = (values: string[]) => values.join("\t");
-const finding = (values: string[]) => values.join("\t");
+// A case gives the ten other fields; the two labels after status stay empty.
+const finding = (values: string[]) =>
+	(values.length === 10
+		? [...values.slice(0, 7), "", "", ...values.slice(7)]
+		: values
+	).join("\t");
 
 describe("gardener records survey", () => {
 	it("counts recurring classes, separates cli-gap kinds, and preserves one-off classes", () => {

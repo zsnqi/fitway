@@ -29,6 +29,8 @@ const FINDING_COLUMNS = [
 	"class",
 	"finding",
 	"status",
+	"seen_by",
+	"demo",
 	"resolved_by",
 	"evidence",
 	"source",

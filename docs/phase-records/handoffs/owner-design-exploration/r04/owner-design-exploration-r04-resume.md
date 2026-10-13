@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `9da5739b`, 2026-10-13 19:27 +03:00 (handoff: deepseek-route merged and graded; the user asked for a fresh session; nothing running)
+- **As of:** `codex/owner-redesign-r04` after `9a7c6726`, 2026-10-13 19:50 +03:00 (findings labelled, DECISIONS 52; nothing running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-51), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-52), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -44,9 +44,17 @@ DeepSeek): each restarts fresh on DeepSeek with its brief and a launch note nami
 
 ## Next steps
 
-1. **Label the open findings** in `docs/phase-records/handoffs/agent-environment/findings.tsv` with the two labels
-   above, keeping `pnpm check:repository` passing, and show the user which page lows (Daily and Reports' last round,
-   Access N1-N7) are visible.
+1. **Done:** the open findings carry the two labels (`seen_by`, `demo`; DECISIONS 52): none blocks the demo, all 27
+   wait. The page lows outside the table, labelled the same way (all `owner` unless named; recorded at their rounds,
+   N1 and N2 re-read in the build's code on 2026-10-13):
+   - **lowers** (fix before the demo; they stay with each page's last round, DECISIONS 47): Reports' «معدّل الموجودين»
+     card too empty (`#fig-avg`, DECISIONS 30); Access N1, the reset named «تعيين» on the row and «إعادة تعيين» in
+     its result; N2, the done line's link opens «هذا السجل غير موجود في هذه العينة.»; N3, the records card sparse at
+     1440.
+   - **waits:** Access N4 (zero dot at 1x), N5 (721 English pairs wrap), N6 (lone last words), N7 (the code face
+     loads on every visit); the Retry ring, OWN-C9's stale ring rule and the rail's ring on Access (keyboard only;
+     already in the shared lows before Settings, DECISIONS 47); fix-3's observations 1, 2 and 4 (the components sheet
+     only, `setup`).
 2. **shared-frame on DeepSeek:** `pnpm codex:round <brief> --new-review` (the model changed, so a fresh review),
    dispositions, then launch with a launch note from `resume-after-stop-1.md`. When it reports: write
    `free-for-vf-parallel.txt`; grade SH1-SH10 and GH7; record; merge; push.
