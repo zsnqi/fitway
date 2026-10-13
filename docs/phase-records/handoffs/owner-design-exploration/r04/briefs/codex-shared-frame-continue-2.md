@@ -58,15 +58,18 @@ The round's brief is met: its Goal and every outcome and limit, measured as it s
 ## Required outcomes
 
 - **R1. The measurements finished.** Every F2 and F3 configuration the round's brief names is measured on the commit
-  you deliver with the CLI at `f2c89624` or later, and judged by the round's rules. A recorded result counts only when
-  its `measurement.json` names that commit and such a CLI and you have read its `comparison.json`; measure the rest.
-  Kept baseline captures may be used: their verdicts equal a `--baseline-cache off` run's.
-- **R2. The instabilities reported, not passed.** An item or sample that is `DIFFERENT` or `NOT-HELD` only inside
-  F126's chip or F148's edge pixels is rerun once alone and reported with its captures and its rerun's result. One
-  `NOT-HELD` on the result side only, after its rerun, goes in the report for the coordinator; do not count it as
-  passing.
-- **R3. The rest of the round holds.** F1, F4, L1, L2 and the continuation's P3 hold on the commit you deliver; measure
-  each that no record shows on that commit.
+  you deliver with the CLI in `D:/Projects/fitway-worktrees/owner-design-exploration-r04/.agents/skills/verify-fitway/`
+  (its code is `f2c89624`'s; later commits there change only `SKILL.md`), and judged by the round's rules. A recorded
+  result counts only when one complete run produced it: its `measurement.json` has `completedAt` and an exit code,
+  names that commit and that CLI code (`cliCodeRevision` or `cliHashes`), its `comparisonSha256` matches the
+  `comparison.json` you read, and that file holds every item its `expectedItems` names with every sample; measure the
+  rest. Kept baseline captures may be used: their verdicts equal a `--baseline-cache off` run's.
+- **R2. The instabilities reported, not passed.** Any item or sample with a difference inside F126's chip or F148's
+  edge pixels is rerun once alone and reported with its captures and its rerun's result, whatever else differs in it;
+  a difference outside those regions is judged by the round's rules. One `NOT-HELD` on the result side only, after its
+  rerun, goes in the report for the coordinator; do not count it as passing.
+- **R3. The rest of the round holds.** F1, F4, L1, L2 and the continuation's P3 hold on the commit you deliver, each
+  measured by you in this run (they are quick); no earlier record stands in for them.
 - **R4. A change only on evidence.** Change the code only where a measurement shows the move changed what a user sees
   or does (a difference the base does not have in the same place, after its rerun). Then the round's rules for the
   change apply, and everything the change can reach is measured again.
