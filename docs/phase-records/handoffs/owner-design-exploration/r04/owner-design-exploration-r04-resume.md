@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `23752f84`, 2026-10-13 03:00 +03:00 (handoff: vf-speed graded and merged; vf-hold measuring; the user stopped for the day)
+- **As of:** `codex/owner-redesign-r04` at `19768edc`, 2026-10-13 03:50 +03:00 (handoff: vf-speed graded and merged; vf-hold stopped mid-measurement at the user's request; the PC shut down for the night)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-48), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md`, and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -32,13 +32,15 @@
 
 ## Running now
 
-- **vf-hold, measuring** (H1 F143, H2 F144; brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-hold.md`, xhigh, worktree
-  D:/Projects/fitway-worktrees/owner-r04-vf-hold, code `452030fb`, CI green). Resumed at 02:11 with
-  `D:/fitway-temp/codex-round-vf-hold-1/resume-measure-1.md`; it holds ports 3176-3177
-  (`D:/fitway-temp/owner-r04-ports/free-for-vf-hold.txt`). At 03:00 every named H1 release plant was DIFFERENT (134
-  samples, no NOT-HELD) and it was measuring the rail control. It ran in the previous session's background shell: if
-  `model-switch.md` in the run folder has no "ended" line after 02:11 and no codex process runs, resume it with
-  `resume-any.sh` and a one-line message that its measurement run stopped and to finish the brief's measurements.
+- **vf-hold, stopped mid-measurement** (H1 F143, H2 F144; brief
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-hold.md`, xhigh, worktree
+  D:/Projects/fitway-worktrees/owner-r04-vf-hold, clean at `452030fb`, CI green). Its measurement resume (02:11,
+  `resume-measure-1.md`) was stopped by the coordinator at 03:47 at the user's request (the PC shut down); the thread
+  is intact, the ports file `D:/fitway-temp/owner-r04-ports/free-for-vf-hold.txt` still holds. Done before the stop:
+  H1's release plants all DIFFERENT (134 samples, no NOT-HELD), H2's Reports self-run 120 of 120 EQUAL, the 560 ms
+  plant DIFFERENT (46 samples, exit 1). **Found at the stop:** in H2's four-page comparison, Access under
+  `b7331e09` gave 358 EQUAL and 6 NOT-HELD, but under vf-hold's CLI six PIN-save features timed out (a regression of
+  the clock hold, not yet traced). Its last messages: `D:/fitway-temp/codex-round-vf-hold-1/progress-at-stop.md`.
   Held-out rows VH1-VH8 are in `D:/fitway-grader/owner-r04/vf-hold-heldout.md`.
 - **shared-frame, paused** (DECISIONS 45, first item): thread `01a12f3c-a486-7681-a1f5-6b12abdbe87a`, run folder
   `D:/fitway-temp/codex-round-ef95d9e6-4736-49f6-8f7e-959e6eee78a8`, continuation brief
@@ -57,7 +59,9 @@
 The order (the user, 2026-10-12, «موافق»): vf-hold measures and merges, shared-frame resumes on the merged CLI and is
 graded, then the parallel-compare round, then `reports.css` and the shared lows.
 
-1. **Grade vf-hold** when it reports: its brief rows and VH1-VH8 (VH6-VH7 on the merged line); record it in
+1. **Resume vf-hold:** run `D:/fitway-temp/resume-any.sh` with the run folder `D:/fitway-temp/codex-round-vf-hold-1` and the message `D:/fitway-temp/codex-round-vf-hold-1/resume-after-stop-1.md`
+   in a background shell (the message tells it to trace and fix the PIN-save timeouts with a test, then rerun H2 on
+   the four pages under both CLIs and every measurement its fix can change). Then **grade vf-hold** when it reports: its brief rows and VH1-VH8 (VH6-VH7 on the merged line); record it in
    `codex-rounds.md`, `rounds.tsv` and `findings.tsv` (F143, F144); merge it, adding its proposed SKILL.md §"Compare"
    lines (in its report, `last-message.md`); wait for CI.
 2. **vf-parallel:** move its worktree's branch to the vf-hold merge, set that HEAD in the brief (its L1 names
