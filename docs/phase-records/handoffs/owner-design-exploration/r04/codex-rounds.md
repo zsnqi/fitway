@@ -860,3 +860,21 @@ checks live outside the repository and never appear here or in a brief. One line
     under reduced motion EQUAL under both CLIs, CI green on `7c8418fb`.
 - **Disposition:** merged as `f2c89624`; F143 and F144 fixed; the §"Compare" lines added to `SKILL.md` with F148 and
   F149. F148 goes with F126 among the shared lows; vf-parallel's brief allows one rerun for it.
+
+## Evaluation: DeepSeek for the brief review (2026-10-13, the user asked for the trials)
+
+- **Setting:** the user moved Codex's rounds to DeepSeek V4.1 Flash through Open Design at `max`
+  (`docs/agent-context/WORKING_AGREEMENTS.md` §"Delegation"), Codex CLI 0.162.1 as the harness with a one-model
+  catalog; the coordinator's smoke runs first proved a read, a patch-tool edit that kept Arabic text, and an escalation
+  reviewed by DeepSeek itself as the approval reviewer. The same three briefs, prompts and catch criteria as the
+  evaluation of 2026-10-11 above; scoring and each rule were written in the grader folder before each set ran.
+- **Briefs alone, six runs:** brief-1's allowance loophole in 6 of 6; daily-files' missing motion limit in 1 of 6; no
+  false alarm in 30 control readings. One run caught both once in six; pairs of runs caught both in 5 of 15, so a
+  second review adds little. GPT-6.1 Sol had caught daily-files in 5 of its 6 briefs-alone runs.
+- **With the files each brief names, two runs per brief (one brief per run):** both failures caught in both runs,
+  each time naming that settled compares cannot see motion from the verifier guide; no false alarm in 10 control
+  readings. GPT-6.1 Sol in this form had caught one of the two at `high` and the other at `xhigh`.
+- **Decision (by the rule written before the runs):** DeepSeek at `max` reviews each brief together with the files
+  it names, one run per brief; the launcher change is round deepseek-route. Six briefs and two hard cases are thin
+  evidence: the brief-caused failures of the rounds that follow are the measure, now recorded apart from failures of
+  the model's own reading.

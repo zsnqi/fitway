@@ -59,12 +59,17 @@ latest wording; never copy an entry into a resume point.
 - The coordinator's questions to the user and its designer briefs carry what the owner must see and
   be able to do, and why; the composition, forms and colours are the designer's, and the coordinator
   recommends none of them. (user, 2026-10-04)
-- Codex takes frozen fixes and edits. Its reasoning level follows the task (user, 2026-10-03):
-  `xhigh` when the cause is unknown or the change spans many files with tests and Windows or CI
-  behaviour; `high` for a known defect in a known place with a measurable outcome; `medium` for
-  mechanical edits from an exact list (documents, a regenerated index, text replacements). The first
-  round of each kind at its lower level is graded like any other; a failure traced to the code moves
-  that kind up a level. Each round's record names its level.
+- Codex takes frozen fixes and edits. From 2026-10-13 its rounds run on DeepSeek V4.1 Flash through
+  the user's Open Design subscription, with the Codex CLI as the harness, always at `max`: the model
+  is cheap enough that a lower level saves nothing (user, 2026-10-13). GPT-6.1 Sol stays available;
+  on it the level follows the task (user, 2026-10-03): `xhigh` when the cause is unknown or the
+  change spans many files with tests and Windows or CI behaviour; `high` for a known defect in a
+  known place with a measurable outcome; `medium` for mechanical edits from an exact list (documents,
+  a regenerated index, text replacements). The first round of each kind at its lower level is graded
+  like any other; a failure traced to the code moves that kind up a level. Each round's record names
+  its model and level, and whether a failure came from the brief's wording or the model's own reading.
+- FITWAY's source, tests, specifications and records may be sent to Open Design for these rounds;
+  `D:/fitway-private/`, `D:/fitway-grader/` and real secrets never are (user, 2026-10-13).
 - Usage limits do not shape rounds: when a Codex account reaches its limit, the coordinator tells the
   user at once, the user switches accounts, and each stopped run resumes on its thread. (user,
   2026-10-05 and 2026-10-07)
