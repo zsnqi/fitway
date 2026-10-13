@@ -82,7 +82,8 @@ stops for the coordinator.
     a run that ended without a report, or resumes after a report, after a `STOPPED:` line or after a nonzero exit, or
     passes 10, or takes a message that leaves an ID out for a report; and a review source of any kind (a repository
     file at the named HEAD, a file under `D:/fitway-temp`, a file in the launcher's checkout, one outside them all)
-    is read before its place check (F156: a planted read ahead of the check passed all 170 tests). Each fails with its defect alone put back; report how you checked each.
+    is read before its place check (F156: a planted read ahead of the check passed all 170 tests). Each fails with
+    its defect alone put back; report how you checked each.
   - **Intent.** CI guards what the launcher reads and when it resumes.
 
 ## Limits the result keeps
