@@ -878,3 +878,26 @@ checks live outside the repository and never appear here or in a brief. One line
   it names, one run per brief; the launcher change is round deepseek-route. Six briefs and two hard cases are thin
   evidence: the brief-caused failures of the rounds that follow are the measure, now recorded apart from failures of
   the model's own reading.
+
+## deepseek-route: `briefs/codex-deepseek-route.md` (this folder, `107c71e5`), result `96e4f36b` on `owner-r04-deepseek-route`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** the first round on DeepSeek V4.1 Flash through Open Design, launched by hand with the route the brief
+  names (the launcher could not route yet). The with-sources review returned five readings, all closed before launch
+  (private and held-out paths reachable through absolute sources, the catalog argument not tied to the written
+  catalog, the smoke files missing from Read first, no default level, no real call required).
+- **Run 1** stopped after about 25 edits on an Open Design error: the user's Impeccable hook placed a message between
+  a tool call and its result, which Open Design's chat route refuses. A CSS edit reproduced it with hooks on and not
+  with hooks off; the user agreed to a per-run switch for DeepSeek runs only (WORKING_AGREEMENTS §"Delegation"). The
+  thread cannot be resumed (its history holds the order), so **run 2** started fresh on the uncommitted work with a
+  launch note and the brief's D2 amended (`-c features.hooks=false`).
+- **Run 2:** brief rows 6/6 by the coordinator's own checks. The required real `--new-review` found two defects the
+  fake Codex could not: source discovery read any prose line naming "Read first" as the list, and the reading parser
+  did not accept DeepSeek's `**Reading N:**` form; both fixed in the round. Tokens: 45.3M input (44.8M cached), 127k
+  output. CI passed on `96e4f36b`.
+- **Held-out** (`D:/fitway-grader/owner-r04/deepseek-route-heldout.md`): DR1-DR6, DR9, DR11 and DR12 pass; DR7 and
+  DR8 pass on the code executed directly (sources come from the named HEAD, not an edited working copy; DeepSeek
+  refuses `xhigh` and `medium`, defaults to `max`), but no test guards either: of nine planted defects the round's
+  suite caught seven, not a working-copy source read (P5) and not DeepSeek accepting `xhigh` (P7) (F150). DR10 is
+  partial: `start-load.json` for a DeepSeek launch is untested until the first launcher run.
+- **Failure causes:** none from the brief's wording; run 1's stop was the environment (F151). Side findings: F150,
+  F152.

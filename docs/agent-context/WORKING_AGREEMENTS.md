@@ -78,8 +78,8 @@ latest wording; never copy an entry into a resume point.
 - Usage limits do not shape rounds: when a Codex account reaches its limit, the coordinator tells the
   user at once, the user switches accounts, and each stopped run resumes on its thread. (user,
   2026-10-05 and 2026-10-07)
-- The coordinator launches Codex from a tracked brief with `pnpm codex:round <brief> <level>` in a
-  harness background shell. The command runs `pnpm brief:check` first and launches nothing on a
+- The coordinator launches Codex from a tracked brief with `pnpm codex:round <brief>` (DeepSeek at `max`;
+  `--model gpt-6.1-sol <level>` for GPT) in a harness background shell. The command runs `pnpm brief:check` first and launches nothing on a
   failure, adds the launch note when the brief's own commit sits on the HEAD it names (Codex rightly
   stops on a HEAD it was not told about), and starts `codex exec --approve-for-me` in Codex's sandbox
   with automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7),
