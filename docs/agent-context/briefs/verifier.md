@@ -23,7 +23,9 @@ rationale or handoff before recording your own result, and never edit what you v
   whose folders the gardener inventories. (2026-09; agent-environment DECISIONS item 24)
 - If a source this brief names is missing, stale, or contradicts what you find, stop and report the gap instead of
   guessing. (agent-environment DECISIONS item 3)
-- Return your report as your final message, not as a file. (2026-10-02 retrospective)
+- Return your report as your final message, not as a file. Any message without a tool call is your final message:
+  it ends your run and stops what you started, so wait inside a tool call and write it once, as the report.
+  (2026-10-02 retrospective; F154)
 <!-- environment:end -->
 
 - Write only in `D:/fitway-temp/<run>/`; the coordinator checks `git status` in every worktree afterwards. (r04 G5)

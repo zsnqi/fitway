@@ -20,7 +20,9 @@
   whose folders the gardener inventories. (2026-09; agent-environment DECISIONS item 24)
 - If a source this brief names is missing, stale, or contradicts what you find, stop and report the gap instead of
   guessing. (agent-environment DECISIONS item 3)
-- Return your report as your final message, not as a file. (2026-10-02 retrospective)
+- Return your report as your final message, not as a file. Any message without a tool call is your final message:
+  it ends your run and stops what you started, so wait inside a tool call and write it once, as the report.
+  (2026-10-02 retrospective; F154)
 <!-- environment:end -->
 
 - You run in the workspace-write sandbox with automatic approval review. `git add`, `git commit` and anything that
@@ -51,8 +53,7 @@ SHA; anything you could not do.
 The brief rules B1-B12 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
 (`docs/phase-records/handoffs/agent-environment/codex-rounds.md`).
 
-- [ ] B1. Every supported way to open and run the artifact is named (HTTP, `file://`, sizes, reduced motion), with
-      the ones the checks cover.
+- [ ] B1. Every supported way to open and run the artifact is named (HTTP, `file://`, sizes, reduced motion), with the ones the checks cover.
 - [ ] B2. Before requiring equality to a baseline, the baseline is checked for the defect being removed.
 - [ ] B3. The Scope keeps its last sentence: an unmet outcome is measured and reported, never worked around.
 - [ ] B4. Goal, cause and outcomes only; the approach is left open.
@@ -65,8 +66,7 @@ The brief rules B1-B12 live here. Codex follows a brief to the letter, so most f
       every outcome is literally reachable from the baseline; an allowance ("may trail") states its bound; an
       equality measured in emulation states its noise floor. (user, 2026-10-04; the Intent field since Evaluation
       B8 and B9, 2026-10-07)
-- [ ] B9. An outcome about how a value fits names the widest value it can take, not only the current one: the widest
-      the code can produce, not the widest the current data shows. (A Widest field was not shown to help.)
+- [ ] B9. An outcome about how a value fits names the widest value it can take, not only the current one: the widest the code can produce, not the widest the current data shows. (A Widest field was not shown to help.)
 - [ ] B10. Every file, section, row and decision item the brief names exists at the named HEAD (checker id `brief-references`): `pnpm brief:check <this file>`
       passes against the worktree it names.
 - [ ] Every limit the result must keep is an outcome of its own: where the tool may run from, length or size caps,
