@@ -55,7 +55,8 @@ DeepSeek); each restarts fresh on DeepSeek, its brief naming what it inherits.
   Grade with DR1-DR12 (`D:/fitway-grader/owner-r04/deepseek-route-heldout.md`) and the plants in
   `D:/fitway-temp/owner-r04-deepseek-route-grade/`, against Codex's 6/6 and 11/12 (two runs, the second on the first
   run's edits; 45.3M input tokens).
-- **vf-parallel** (DECISIONS 48; F147): brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md`
+- **vf-parallel** (DECISIONS 48; F147), **launched on DeepSeek at 21:20** with `codex-vf-parallel-continue.md` in
+  `D:/fitway-temp/codex-round-6cb545e8-2571-48fd-af5e-db0c44320e48`; it measures only after the release file: brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md`
   (`00178ec4`); code committed `0fbad66d` in D:/Projects/fitway-worktrees/owner-r04-vf-parallel (pushed); P1-P3 and L1
   unmeasured until `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt` exists; its old run folder
   `D:/fitway-temp/codex-round-c9d939cf-0dbd-4bd8-ab8e-1b9a9eb7828e` holds `resume-ports-free-1.md`. Held-out VP1-VP11
