@@ -29,13 +29,18 @@
 
 ## Running now
 
-Nothing. The two GPT rounds stopped earlier today are not resumed on their threads (a GPT thread does not continue on
-DeepSeek): each restarts fresh on DeepSeek with its brief and a launch note naming what it inherits.
+The two GPT rounds stopped earlier today are not resumed on their threads (a GPT thread does not continue on
+DeepSeek); each restarts fresh on DeepSeek, its brief naming what it inherits.
 
-- **shared-frame** (DECISIONS 45): brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-frame-continue-2.md`
-  (`d17164bb`); old run folder `D:/fitway-temp/codex-round-c64dae1e-9642-4fe5-895f-dd761f7e71c4`, whose
-  `resume-after-stop-1.md` says what the next run must know; queue `D:/fitway-temp/owner-r04-shared-frame/matrix-vfhold-435.json`
-  at 95 of 228 with one incomplete record. Held-out SH1-SH10 `D:/fitway-grader/owner-r04/shared-frame-heldout.md`.
+- **shared-frame** (DECISIONS 45), **running on DeepSeek at max since 2026-10-13 20:25** in
+  `D:/fitway-temp/codex-round-b041ea52-52cd-4d03-b04e-d70094731ffc`: brief
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-frame-continue-2.md` (`56cb64a0`; it
+  now names the incomplete record); review `D:/fitway-temp/brief-review/codex-shared-frame-continue-2-5`, five readings
+  all left open with reasons (F153: four launches failed on review sources first). Old run folder
+  `D:/fitway-temp/codex-round-c64dae1e-9642-4fe5-895f-dd761f7e71c4`; queue
+  `D:/fitway-temp/owner-r04-shared-frame/matrix-vfhold-435.json` at 95 of 228 with one incomplete record. Held-out
+  SH1-SH10 `D:/fitway-grader/owner-r04/shared-frame-heldout.md`. When it reports: write `free-for-vf-parallel.txt`,
+  grade, record the review's dispositions in `codex-rounds.md`, merge, push.
 - **vf-parallel** (DECISIONS 48; F147): brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md`
   (`00178ec4`); code committed `0fbad66d` in D:/Projects/fitway-worktrees/owner-r04-vf-parallel (pushed); P1-P3 and L1
   unmeasured until `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt` exists; its old run folder
@@ -55,10 +60,12 @@ DeepSeek): each restarts fresh on DeepSeek with its brief and a launch note nami
      loads on every visit); the Retry ring, OWN-C9's stale ring rule and the rail's ring on Access (keyboard only;
      already in the shared lows before Settings, DECISIONS 47); fix-3's observations 1, 2 and 4 (the components sheet
      only, `setup`).
-2. **shared-frame on DeepSeek:** `pnpm codex:round <brief> --new-review` (the model changed, so a fresh review),
-   dispositions, then launch with a launch note from `resume-after-stop-1.md`. When it reports: write
-   `free-for-vf-parallel.txt`; grade SH1-SH10 and GH7; record; merge; push.
-3. **vf-parallel on DeepSeek** with `resume-ports-free-1.md` as its launch note; grade VP1-VP11; merge; CI.
+2. **shared-frame on DeepSeek** (running, above). When it reports: write `free-for-vf-parallel.txt`; grade SH1-SH10
+   and GH7; record; merge; push.
+3. **vf-parallel on DeepSeek:** a fresh launch sends only the brief (the launcher's own note covers a HEAD that adds
+   the brief, nothing else), so fold `resume-ports-free-1.md` into its brief; name every source by its full path,
+   repository files as they stand at the build worktree's HEAD, other files under `D:/fitway-temp` (F153); then
+   `--new-review`, dispositions, launch; grade VP1-VP11; merge; CI.
 4. **Remove the light tuner** (decision 50); then the **`reports.css` split** (draft
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); then the **tool fixes** F148, F140,
    F131, F132, F136, F149, F150, F152 (DECISIONS 47).
