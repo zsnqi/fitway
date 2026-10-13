@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 00:55 +03:00 (handoff: the user asked for fresh sessions; nothing running; vf-parallel stopped on `f3601821` with a fresh brief)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 01:35 +03:00 (vf-parallel relaunched on DeepSeek in a fresh Codex session; the coordinator is a fresh session too)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-55), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -45,8 +45,13 @@
 
 ## Running now
 
-Nothing. Both DeepSeek runs were stopped at about 00:44 on 2026-10-14 at the user's request (DECISIONS 54), their
-process trees killed and the ports free; each left a `STOPPED-2026-10-14.md` with its state.
+**vf-parallel** on DeepSeek V4.1 Flash at `max` since 01:33 on 2026-10-14: brief `codex-vf-parallel-continue-2.md` at
+`245dbcaf` (decision 55: each P2 command timed three times, medians; R5 first breaks a 4-worker compare's time into
+phases), run folder `D:/fitway-temp/codex-round-5baafff1-b258-4fcb-ae90-79f9d26e340d`, worktree
+`D:/Projects/fitway-worktrees/owner-r04-vf-parallel` from `f3601821`. Its reviews: `codex-vf-parallel-continue-2-1`
+(unparsed, F157; dispositions by hand in `coordinator-note.md`) and `-2` (2 and 5 closed). The machine stays quiet
+until it reports: no round, ladder, compare or replay beside it. The user, 2026-10-14: the Settings skeleton does
+not start in this session; the tool fixes and shared lows before Settings do, once the items above them are done.
 
 DeepSeek ends runs early with a message and no tool call, under Codex and Claude Code alike (F154; nine times on
 2026-10-13): when a launcher exits, read its last message before treating it as a report, and resume on the thread
