@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-12T06:55:00+03:00
+updatedAt: 2026-10-13T20:55:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -43,6 +43,7 @@ milestones:
       - .agents/skills/verify-fitway/** (from 2026-10-11, for the mid-motion compare round, F139; its earlier owner agent-environment-r03 is DONE)
       - .agents/skills/gardener/** (from 2026-10-12, for the shared-file list, F135, DECISIONS 45 and 47; its earlier owner agent-environment-r03 is DONE)
       - scripts/agent-environment/codex-round.mjs, scripts/agent-environment/codex-round.test.ts, docs/agent-context/briefs/REVIEW.md and docs/agent-context/briefs/codex.md (from 2026-10-12, for the verify-fitway round's pre-launch review in the launcher, DECISIONS 47 and 48; their earlier owner agent-environment-r03 is DONE)
+      - scripts/agent-environment/check-brief.mjs, scripts/agent-environment/check-brief.test.ts and scripts/agent-environment/fixtures/** (from 2026-10-13, for the launcher-fixes round, F150, F152 and F153, DECISIONS 47; their earlier owner agent-environment-r03 is DONE)
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
       - design-research/owner-visual-preferences/** (user-supplied reference; read only)
