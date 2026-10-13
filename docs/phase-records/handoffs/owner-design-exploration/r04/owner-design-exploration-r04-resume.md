@@ -24,11 +24,14 @@
   then `Reading <n>: closed` or `Reading <n>: left open: <why>`) and run it again (`REVIEW.md` §"Running it"). The brief
   must be committed first. The codex template must stay at 80 lines or fewer (`check-brief.test.ts:761`).
 - **Resuming Codex:** `bash D:/fitway-temp/resume-any.sh <run folder> <message file>` resumes on gpt-6.1-sol and falls
-  back to gpt-6-sol on "at capacity"; it exits 75 on a usage limit (the user switches the account). Each run folder's
-  `model-switch.md` records the events per model.
+  back to gpt-6-sol on "at capacity"; it exits 75 on a usage limit (the user switches the account). When the user is
+  away, a limit waits for its reset instead (the user, 2026-10-13): `bash D:/fitway-temp/resume-wait-limit.sh <run
+  folder> <message file> [wait-first]` wraps `resume-any.sh`, waits until Codex's "try again at" time plus five
+  minutes, and resumes with `D:/fitway-temp/resume-after-limit-wait.md`. Each run folder's `model-switch.md` records
+  the events per model.
 - **main** is at `3c5c311b` and is fast-forwarded to `23752f84` with this handoff (CI passed on it). The discussion page
-  for the user (Arabic, private) still needs the updates of 2026-10-12 and 2026-10-13:
-  https://claude.ai/artifact/88rd7XwoWHvnYhqbtxA1dm. access-reason-cap-r01 stays paused by the user.
+  of 2026-10-07 is dropped (the user, 2026-10-13, «اسحب على الصفحة خلاص»; its link no longer opened from this account):
+  no more updates to it. access-reason-cap-r01 stays paused by the user.
 
 ## Running now
 
@@ -79,7 +82,7 @@ graded, then the parallel-compare round, then `reports.css` and the shared lows.
 5. **Then Settings**, Operations and Monitoring (rounds items 6 and 8-11 in DECISIONS); later Daily and Reports' last
    round (`#fig-avg`, DECISIONS 30; `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`; page-only lows) and Access's
    (N1-N7 in Next steps 4 of the 2026-10-05 resume point).
-6. **After each resume point,** fast-forward main once CI passes on it (DECISIONS 40) and update the discussion page.
+6. **After each resume point,** fast-forward main once CI passes on it (DECISIONS 40).
    Open: F146 (two Vitest cases over the 20 s default on CI: the launcher's and the gardener's H6; each passed on a
    rerun of the failed job).
 
