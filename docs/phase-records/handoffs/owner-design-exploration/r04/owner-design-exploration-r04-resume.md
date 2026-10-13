@@ -32,7 +32,8 @@
 The two GPT rounds stopped earlier today are not resumed on their threads (a GPT thread does not continue on
 DeepSeek); each restarts fresh on DeepSeek, its brief naming what it inherits.
 
-- **shared-frame** (DECISIONS 45), **running on DeepSeek at max since 2026-10-13 20:25** in
+- **shared-frame** (DECISIONS 45), **running on DeepSeek at max since 2026-10-13 20:19** (its turn ended at 20:32 while it waited, F154; resumed
+  on its thread at 20:33 with `resume-turn-ended-1.md`) in
   `D:/fitway-temp/codex-round-b041ea52-52cd-4d03-b04e-d70094731ffc`: brief
   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-frame-continue-2.md` (`56cb64a0`; it
   now names the incomplete record); review `D:/fitway-temp/brief-review/codex-shared-frame-continue-2-5`, five readings
@@ -41,6 +42,12 @@ DeepSeek); each restarts fresh on DeepSeek, its brief naming what it inherits.
   `D:/fitway-temp/owner-r04-shared-frame/matrix-vfhold-435.json` at 95 of 228 with one incomplete record. Held-out
   SH1-SH10 `D:/fitway-grader/owner-r04/shared-frame-heldout.md`. When it reports: write `free-for-vf-parallel.txt`,
   grade, record the review's dispositions in `codex-rounds.md`, merge, push.
+- **launcher-fixes** (F150, F152, F153; DECISIONS 47), **running on DeepSeek at max since 2026-10-13 20:37** in
+  `D:/fitway-temp/codex-round-fc867eb5-cb40-4189-92b2-d5274b8eb72e`, worktree
+  D:/Projects/fitway-worktrees/owner-r04-launcher-fixes (branch `owner-r04-launcher-fixes` from `c97d564e`): brief
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes.md` (`c30cac54`); review
+  `D:/fitway-temp/brief-review/codex-launcher-fixes-1` (readings 2 and 4 closed, 1, 3, 5 left open; 1 is F155). No
+  held-out suite yet: write one in `D:/fitway-grader/owner-r04/` before grading.
 - **vf-parallel** (DECISIONS 48; F147): brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md`
   (`00178ec4`); code committed `0fbad66d` in D:/Projects/fitway-worktrees/owner-r04-vf-parallel (pushed); P1-P3 and L1
   unmeasured until `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt` exists; its old run folder
