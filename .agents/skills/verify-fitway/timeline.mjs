@@ -29,6 +29,7 @@ export function observeTimeline() {
 		now: performance.now.bind(performance),
 		Date: Date,
 		animate: Element.prototype.animate,
+		play: Animation.prototype.play,
 	};
 	let clock = 0;
 	let realAnchor = native.now();
@@ -95,6 +96,7 @@ export function observeTimeline() {
 	let schedulingBlocked = false;
 	const tasks = new Map();
 	const effects = new Map();
+	const played = new Set();
 	const findings = [];
 	const stringTasks = [];
 	const source = () => {
@@ -411,19 +413,29 @@ export function observeTimeline() {
 		if (held) remember(animation);
 		return animation;
 	};
-	function remember(animation) {
-		if (effects.has(animation)) return;
+	// Directly constructed effects can drive script without a document target.
+	// An authored play also resumes or rewinds a previously held effect.
+	Animation.prototype.play = function (...args) {
+		const result = native.play.apply(this, args);
+		played.add(this);
+		if (held) remember(this, true);
+		return result;
+	};
+	function remember(animation, restart = false) {
+		if (effects.has(animation) && !restart) return;
 		const end = animation.effect?.getComputedTiming().endTime;
-		if (animation.playState === "finished" && Number.isFinite(end)) return;
+		if (!restart && animation.playState === "finished" && Number.isFinite(end))
+			return;
+		const initial = restart ? Number(animation.currentTime) || 0 : 0;
 		effects.set(animation, {
 			start: time,
 			end,
-			initial: 0,
+			initial,
 			finished: false,
 			source: source(),
 		});
 		animation.pause();
-		animation.currentTime = 0;
+		animation.currentTime = initial;
 	}
 	const phase = Object.getOwnPropertyDescriptor(
 		Animation.prototype,
@@ -452,6 +464,11 @@ export function observeTimeline() {
 	};
 	function collect() {
 		for (const animation of document.getAnimations()) remember(animation);
+		for (const animation of played) {
+			if (["idle", "finished"].includes(animation.playState))
+				played.delete(animation);
+			else remember(animation);
+		}
 	}
 	function begin() {
 		if (held) return;

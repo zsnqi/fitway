@@ -83,7 +83,12 @@ function fixture() {
 				state: "running",
 				phase: 0,
 			});
-			this.effect = { getComputedTiming: () => ({ endTime: duration }) };
+			this.effect = {
+				getComputedTiming: () => ({
+					endTime: duration,
+					progress: Math.min(1, Math.max(0, this.currentTime / duration)),
+				}),
+			};
 		}
 		get currentTime() {
 			return this.state === "running" ? wall - this.startedAt : this.phase;
@@ -99,6 +104,7 @@ function fixture() {
 			this.state = "paused";
 		}
 		play() {
+			this.phase = this.playState === "finished" ? 0 : this.currentTime;
 			this.startedAt = wall - this.phase;
 			this.state = "running";
 		}
@@ -425,6 +431,47 @@ control.addEventListener('click',e=>{if(e.timeStamp-shownAt>=500)window.pixel=20
 	}, "1,21,41");
 	assert.equal(result.failure, undefined);
 	assert.equal(result.report.timelineSummary.equal, 3);
+});
+test("targetless browser clocks are held when started and replayed", async () => {
+	for (const birth of ["startup", "click", "resume"]) {
+		const make = (planted) => async (side) => {
+			const current = fixture();
+			const duration = planted && side === "build" ? 160 : 120;
+			current.author(`window.pixel=200;const clockEffect=new Animation(${duration});
+function draw(){const progress=clockEffect.effect.getComputedTiming().progress;window.pixel=200*(1-progress);if(progress<1)window.requestAnimationFrame(draw)}
+function start(){clockEffect.play();draw()}
+${birth === "startup" ? "start();" : "control.addEventListener('click',start);"}
+window.setTimeout(()=>{${birth === "resume" ? "clockEffect.pause();clockEffect.currentTime=20;" : ""}start();window.replayPhase=clockEffect.currentTime},200);`);
+			current.render(() => current.evaluate(() => window.pixel));
+			await current.arm();
+			await current.event("click");
+			current.advanceWall(250);
+			current.verify = () =>
+				assert.equal(
+					current.evaluate(() => window.replayPhase),
+					birth === "resume" ? 20 : 0,
+					"play preserves a paused phase and rewinds a finished effect",
+				);
+			return current;
+		};
+		const self = await compared(make(false), "61,141,241,341");
+		assert.equal(self.failure, undefined);
+		assert.equal(self.report.timelineSummary.equal, 4);
+		const plant = await compared(make(true), "61,141,241,341");
+		different(plant);
+		assert.ok(
+			plant.report.items[0].timeline.samples.some(
+				(sample) => sample.time < 200 && sample.result === "different",
+			),
+			"the first play is held, including plays during startup",
+		);
+		assert.ok(
+			plant.report.items[0].timeline.samples.some(
+				(sample) => sample.time > 200 && sample.result === "different",
+			),
+			"replaying a finished effect renews its hold",
+		);
+	}
 });
 test("genuine same-side frame variation remains NOT-HELD", async () => {
 	const result = await compared(async (_side, capture) => {
