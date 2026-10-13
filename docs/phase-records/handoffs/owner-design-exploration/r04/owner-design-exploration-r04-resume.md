@@ -29,7 +29,9 @@
   gpt-6-sol on "at capacity"); on a usage limit it switches to the next saved Codex account that is not limited and
   resumes at once, and with every account limited it waits for the earliest reset. Accounts: the user signs in to each
   once and runs `node D:/fitway-temp/codex-accounts.mjs save`; `list` shows them (profiles beside `auth.json` in
-  `~/.codex/accounts/`; the Codex app shares the sign-in). `resume-wait-limit.sh` (wait only) and the hand-over
+  `~/.codex/accounts/`; the Codex app shares the sign-in). Signing out revokes the account's saved token (401
+  `token_revoked`, tested 2026-10-13), so accounts are added without signing out, through
+  `bash D:/fitway-temp/codex-add-account.sh` (device code in a separate CODEX_HOME, opened in a private window). `resume-wait-limit.sh` (wait only) and the hand-over
   watcher `handover-to-auto.sh` are what the two runs started before it use. Each run folder's `model-switch.md` logs
   every account, model and wait.
 - **main** is at `23752f84`; fast-forward it to this text's commit once CI passes on it. The discussion page
