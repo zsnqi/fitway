@@ -530,6 +530,35 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       which changes the same files and fixes F137 first. Widening Windows' dynamic port range is not needed: at the
       round's load at most 739 of 16,384 ports were in use (coordinator measurement, 2026-10-12).
 
+49. **Settings, the answers before its one pass** (the user, 2026-10-13, «موافق عليها كلها», on the coordinator's
+    recommendation for each of the research digest's questions Q1-Q10, `D:/fitway-temp/owner-r04-settings-questions/
+    REPORT.md`). Settings holds the owner's five editable axes: capacity, the three crowd-level limits, the weekly hours,
+    the end of the business day and the reset buffer.
+    - **A reason when saving:** an optional "Reason" (at most 240 characters, what the log stores), shown in Activity
+      log. A Product/Spec amendment: production's form has no reason input.
+    - **The log says what changed**, for example capacity 120 → 140, by comparing the saved version with the one before
+      it, not only "Settings updated" (item 31). A Product/Spec amendment that answers SPEC story 26's "from → to".
+    - **A confirmation before saving** lists each change from → to, since a saved value reaches the visitors' page at
+      once. Its look is the designer's.
+    - **No hours for a later date** (Ramadan, Eid) for now: the owner changes them on the day. A "from this date" field
+      is recorded as a later idea; it needs new storage.
+    - **The five technical values** (time zone, push, fresh, stale, poll) are not shown on Settings; only "Riyadh time"
+      beside the hours, as the hours' unit.
+    - **Each crowd level also reads in people** beside its percentage ("Quiet up to 29 people"), computed in the page
+      from capacity; the contract stays in percent.
+    - **A value that looks like a mistake** (capacity 5, every day closed, opening equal to closing) is accepted with a
+      plain sentence under the field, not refused.
+    - **Times are entered in 12 hours with ص/م** on the page (DAT-1), 24 hours on the wire.
+    - **Leaving with unsaved changes** asks first.
+    - **Two owners saving at once:** the second sees what the other saved, and keeps their own typed changes in view to
+      apply again; nothing is merged silently.
+    - Decided by the coordinator from the rules (not asked): the rail and bar slot, owner-only, no visitor data; the five
+      read-only values are never editable (the contract; PHASES' "freshness configuration" yields to it, C1); capacity
+      and percentages may show on owner pages (DESIGN_GUIDE.md lines 86-87; the concept's TRU-6 is the public side's,
+      C5); time zone, feed geometry and transparency wording are site checks, not Settings (SPEC, C6); no technical
+      language or explanatory captions (DO-NOT, C8); the page's composition is the designer's alone, as for Access
+      (item 33).
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the

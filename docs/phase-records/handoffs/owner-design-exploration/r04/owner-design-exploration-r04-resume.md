@@ -69,8 +69,7 @@ and is graded, then `reports.css` and the shared lows, then Settings.
    instabilities that make compares fail or INCOMPLETE at random), F140, F131, F132, F136, F149. The shared lows' digest:
    `D:/fitway-temp/shared-lows-prep/REPORT.md` (low 1 has no recorded frame: confirm first, now possible with the
    release held).
-4. **Then Settings** on the user's answers to Q1-Q10 (below): record them in DECISIONS, then the skeleton (rounds
-   item 8), then the one-pass build; then Operations and Monitoring (rounds items 6 and 8-11 in DECISIONS); later Daily
+4. **Then Settings** on DECISIONS item 49: the skeleton (rounds item 8), then the one-pass build; then Operations and Monitoring (rounds items 6 and 8-11 in DECISIONS); later Daily
    and Reports' last round (`#fig-avg`, DECISIONS 30; `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`; page-only lows)
    and Access's (N1-N7 in Next steps 4 of the 2026-10-05 resume point).
 5. **After each resume point,** fast-forward main once CI passes on it (DECISIONS 40).
@@ -79,13 +78,8 @@ and is graded, then `reports.css` and the shared lows, then Settings.
 
 ## Waiting on the user
 
-- **The Settings questions Q1-Q10**, asked on 2026-10-13 in plain Arabic with a recommendation each (the digest's
-  section 5; the coordinator's recommendations: Q1 an optional reason, Q2 the log says what changed by comparing
-  versions, Q3 a confirmation listing each change, Q4 none for now, Q5 only "Riyadh time", Q6 people beside the
-  percentage, Q7 accept with a plain sentence, Q8 12-hour with ص/م, Q9 ask before leaving, Q10 keep the typed changes
-  beside the other owner's). Answered by the rules and not asked: the rail slot, owner-only, the five read-only values
-  never editable, capacity shown on owner pages (DESIGN_GUIDE.md lines 86-87; TRU-6 is the public side's), the
-  composition to the designer.
+Nothing. The Settings questions Q1-Q10 were answered on 2026-10-13 (DECISIONS item 49: the user agreed with every
+recommendation).
 
 ## Known risks
 
