@@ -901,3 +901,25 @@ checks live outside the repository and never appear here or in a brief. One line
   partial: `start-load.json` for a DeepSeek launch is untested until the first launcher run.
 - **Failure causes:** none from the brief's wording; run 1's stop was the environment (F151). Side findings: F150,
   F152.
+
+## launcher-fixes: `briefs/codex-launcher-fixes.md` (this folder, `c30cac54`), result `5b58492e` on `owner-r04-launcher-fixes`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** the first round launched by `pnpm codex:round` on DeepSeek with the brief's own "a message ends the run"
+  line (F154). The review returned five readings: two closed (L1: no exception by a brief's folder or name; A3: a
+  launch refuses a review source changed between the named HEAD and the launch), three left open (the read-only
+  sandbox does not confine reads on Windows, F155; the check and the review reading seconds apart; hard links).
+- **Run:** one run, no intervention, ended with its report. Tokens: 30.9M input (30.6M cached), 84k output.
+- **Brief rows** 6/6 by the coordinator's own checks (A1-A4 through the held-out rows below; L1 as LH8; L2 by the
+  run's ladder and CI on the merge).
+- **Held-out** (`D:/fitway-grader/owner-r04/launcher-fixes-heldout.md`, graded in
+  `D:/fitway-temp/owner-r04-launcher-fixes-grade/` with a fake Codex and the checker at `c97d564e` beside the new one):
+  LH1-LH8 and LH10 pass. LH1 an untracked file, LH2 a junction out of `D:/fitway-temp` (the launch stops at the gate
+  and no review folder holds the outside file's marker), LH3 a committed symbolic link, LH4 four bad names in one run
+  with their own lines, LH5 the launcher checkout's clean, modified and untracked files, LH6 a Markdown commit changing
+  a named source (refused, naming it) or an unnamed one (launches), LH7 `.env` by name and a key by content (refused
+  by the review, nothing copied), LH8 the twelve r04 briefs with the same exit status under both checkers (the extra
+  FAIL lines are bare names such as `compare.mjs` the review also refuses) and a renamed copy elsewhere passing, LH10
+  no test line removed. LH9: of three planted defects the suites caught two (a working-copy read, four tests; DeepSeek
+  accepting `xhigh`, one test); reading an absolute source before its place check passed all 170 tests, though the
+  code reads only after the check (F156).
+- **Failure causes:** none from the brief's wording; none from the model's reading. Side finding: F156.

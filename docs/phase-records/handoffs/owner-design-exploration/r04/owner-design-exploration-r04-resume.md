@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` after `9a7c6726`, 2026-10-13 19:50 +03:00 (findings labelled, DECISIONS 52; nothing running)
+- **As of:** `codex/owner-redesign-r04` after `47d233b2`, 2026-10-13 22:45 +03:00 (launcher-fixes merged; shared-frame reported; vf-parallel and the Claude Code replay running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-53), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -29,38 +29,42 @@
 
 ## Running now
 
-The two GPT rounds stopped earlier today are not resumed on their threads (a GPT thread does not continue on
-DeepSeek); each restarts fresh on DeepSeek, its brief naming what it inherits.
+DeepSeek ends a run early at times with a message and no tool call, under Codex and Claude Code alike (F154): when a
+run's launcher exits, read its last message before treating it as a report, and resume it on its thread with a message
+naming where it stopped (the `resume-turn-ended-*.md` and `message.md` files beside each run are the form).
 
-- **shared-frame** (DECISIONS 45), **running on DeepSeek at max since 2026-10-13 20:19** (its turn ended at 20:32 while it waited, F154; resumed
-  on its thread at 20:33 with `resume-turn-ended-1.md`) in
-  `D:/fitway-temp/codex-round-b041ea52-52cd-4d03-b04e-d70094731ffc`: brief
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-frame-continue-2.md` (`56cb64a0`; it
-  now names the incomplete record); review `D:/fitway-temp/brief-review/codex-shared-frame-continue-2-5`, five readings
-  all left open with reasons (F153: four launches failed on review sources first). Old run folder
-  `D:/fitway-temp/codex-round-c64dae1e-9642-4fe5-895f-dd761f7e71c4`; queue
-  `D:/fitway-temp/owner-r04-shared-frame/matrix-vfhold-435.json` at 95 of 228 with one incomplete record. Held-out
-  SH1-SH10 `D:/fitway-grader/owner-r04/shared-frame-heldout.md`. When it reports: write `free-for-vf-parallel.txt`,
-  grade, record the review's dispositions in `codex-rounds.md`, merge, push.
-- **launcher-fixes** (F150, F152, F153; DECISIONS 47), **running on DeepSeek at max since 2026-10-13 20:37** in
-  `D:/fitway-temp/codex-round-fc867eb5-cb40-4189-92b2-d5274b8eb72e`, worktree
-  D:/Projects/fitway-worktrees/owner-r04-launcher-fixes (branch `owner-r04-launcher-fixes` from `c97d564e`): brief
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes.md` (`c30cac54`); review
-  `D:/fitway-temp/brief-review/codex-launcher-fixes-1` (readings 2 and 4 closed, 1, 3, 5 left open; 1 is F155). No
-  held-out suite yet: write one in `D:/fitway-grader/owner-r04/` before grading.
-- **Claude Code on DeepSeek, replay of deepseek-route** (DECISIONS 53), **running since 2026-10-13 21:16** in
-  `D:/fitway-temp/cc-replay-deepseek-route-1` (`launch.sh`, `events.jsonl`, `exit.txt` when done), worktree
-  D:/Projects/fitway-worktrees/owner-r04-cc-replay (branch `owner-r04-cc-replay` from `4a151786`): the brief at
-  `107c71e5` with only the worktree line and the harness paragraph changed (diff against `brief-107c71e5.md` there).
-  Grade with DR1-DR12 (`D:/fitway-grader/owner-r04/deepseek-route-heldout.md`) and the plants in
+- **vf-parallel** (DECISIONS 48; F147), on DeepSeek since 21:18 (its turn ended at 21:33, F154; resumed 21:34) in
+  `D:/fitway-temp/codex-round-6cb545e8-2571-48fd-af5e-db0c44320e48`, worktree
+  D:/Projects/fitway-worktrees/owner-r04-vf-parallel (code `0fbad66d`), brief
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel-continue.md`. It holds the ports
+  since 22:22 (`D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt`) and measures P1-P3 and L1; a full 1,224-item
+  compare takes about 19 minutes on one worker. When it reports: grade VP1-VP11
+  (`D:/fitway-grader/owner-r04/vf-parallel-heldout.md`) with the checks the review left open (time the 1-worker
+  command with the CLI at `5493e888`, check each rerun's difference mask, watch the listening ports while compares
+  overlap); merge; CI.
+- **Claude Code on DeepSeek, replay of deepseek-route** (DECISIONS 53), run
+  `D:/fitway-temp/cc-replay-deepseek-route-2` (`[1m]`, a 1M window like Codex's 900k; run `-1` used the default 200k and
+  was stopped after reading only) from 21:28; its turn ended at 22:09 and 22:33 (F154), resumed as `-2-resume1` and
+  `-2-resume2` on session `33b78d33-32c0-4382-9cee-06544d23d9ed`; worktree D:/Projects/fitway-worktrees/owner-r04-cc-replay
+  from `4a151786`. Grade with DR1-DR12 (`D:/fitway-grader/owner-r04/deepseek-route-heldout.md`) and the plants in
   `D:/fitway-temp/owner-r04-deepseek-route-grade/`, against Codex's 6/6 and 11/12 (two runs, the second on the first
-  run's edits; 45.3M input tokens).
-- **vf-parallel** (DECISIONS 48; F147), **launched on DeepSeek at 21:20** with `codex-vf-parallel-continue.md` in
-  `D:/fitway-temp/codex-round-6cb545e8-2571-48fd-af5e-db0c44320e48`; it measures only after the release file: brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel.md`
-  (`00178ec4`); code committed `0fbad66d` in D:/Projects/fitway-worktrees/owner-r04-vf-parallel (pushed); P1-P3 and L1
-  unmeasured until `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt` exists; its old run folder
-  `D:/fitway-temp/codex-round-c9d939cf-0dbd-4bd8-ab8e-1b9a9eb7828e` holds `resume-ports-free-1.md`. Held-out VP1-VP11
-  `D:/fitway-grader/owner-r04/vf-parallel-heldout.md`.
+  run's edits; 45.3M input tokens), counting each resume as an intervention. Later Claude Code launch scripts also set
+  `CLAUDE_CODE_MAX_OUTPUT_TOKENS=128000`: Claude Code sends `output_config.effort` and adaptive thinking with display
+  omitted, and caps output at 32K for a model it does not know (request captured with a local echo server; three low
+  and three max runs suggest the level reaches DeepSeek).
+
+## Done since the last resume point
+
+- **launcher-fixes** merged as `47d233b2` (6/6, held-out 9/10; F150, F152, F153 fixed; F156 the test gap).
+- **shared-frame** reported at 22:19: 237 of 237 jobs, every F3 difference inside F126 (69 samples) or F148 (21), one
+  F126 item DIFFERENT after its rerun (Daily's tuner chip, `tuner-speed-reset`, English phone, 1 ms), no code change
+  (result `4352181f`). DeepSeek cannot view images, so no frame was looked at by the model. Graded so far: SH5, SH10
+  (folder only, `HISTORY.md` and `evidence/` unchanged) and GH7 pass; SH4 partial (the four pages define the frame
+  once; `components.js` keeps its own copy of three frame words from the base, outside the brief's cause). SH1-SH3 and
+  SH6-SH9 need compares: run them after vf-parallel merges, on a pair it frees, with 4 workers; then the coordinator
+  looks at the F126 item's captures, records the round, merges, pushes.
+- **The environment block** in every brief template says a message without a tool call ends the run (`0361d77e`), a
+  mitigation of F154, not a proven fix.
 
 ## Next steps
 
@@ -75,18 +79,13 @@ DeepSeek); each restarts fresh on DeepSeek, its brief naming what it inherits.
      loads on every visit); the Retry ring, OWN-C9's stale ring rule and the rail's ring on Access (keyboard only;
      already in the shared lows before Settings, DECISIONS 47); fix-3's observations 1, 2 and 4 (the components sheet
      only, `setup`).
-2. **shared-frame on DeepSeek** (running, above). When it reports: write `free-for-vf-parallel.txt`; grade SH1-SH10
-   and GH7; record; merge; push.
-3. **vf-parallel on DeepSeek:** brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel-continue.md`
-   (it folds in `resume-ports-free-1.md`; a fresh launch sends only the brief), reviewed in
-   `D:/fitway-temp/brief-review/codex-vf-parallel-continue-1` with dispositions written (reading 1 closed as R2, four
-   left open). Launch `pnpm codex:round <brief>` once shared-frame reports and `free-for-vf-parallel.txt` exists, not
-   before (all its open work needs the ports). At grading, time the 1-worker command with the CLI at `5493e888`, check
-   each rerun's difference mask, and watch the listening ports while compares overlap (the readings left open); grade
-   VP1-VP11; merge; CI.
+2. **vf-parallel** (running, above): grade, merge, CI.
+3. **shared-frame's compares** (SH1-SH3, SH6-SH9) on the merged CLI with 4 workers; the F126 item's captures; record;
+   merge `4352181f` onto the build line's record; push.
 4. **Remove the light tuner** (decision 50); then the **`reports.css` split** (draft
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); then the **tool fixes** F148, F140,
-   F131, F132, F136, F149, F150, F152 (DECISIONS 47).
+   F131, F132, F136, F149 and F156 (DECISIONS 47); F154's harness side (an automatic resume when a run ends without
+   its report) is worth a launcher change if the environment line does not stop it.
 5. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
 6. After each resume point, fast-forward main once CI passes on it (DECISIONS 40).
