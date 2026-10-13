@@ -602,6 +602,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     (`codex-vf-parallel-continue-2.md`) measures everything on the delivered commit, with nothing else running while
     P2 is timed. The bar stays as the round's brief states unless the user changes it; the coordinator's recommendation
     was a floor of 1.5x judged at grading on a quiet machine.
+55. **vf-parallel: three timings each, and a look for more speed** (the user, 2026-10-14, before the fresh session's
+    launch): each of P2's timings runs three times and the medians count, since trustworthy numbers matter more than
+    the hours they take; the speedup so far suggests compares can go faster still, so the round first breaks a
+    4-worker compare's time into its phases and takes a change only where that breakdown shows time it removes, never
+    one that measures less; and every timing runs on a quiet machine. The bar is unchanged (item 54). Carried by R3 and
+    R5 of `briefs/codex-vf-parallel-continue-2.md`.
 
 ## How this milestone's rounds run
 

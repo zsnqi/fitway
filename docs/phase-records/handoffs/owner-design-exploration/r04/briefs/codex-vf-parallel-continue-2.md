@@ -42,6 +42,10 @@ extracts, the earlier `measure.mjs` and its records: read them and reuse what is
 The ports are free and yours: `D:/fitway-temp/owner-r04-ports/free-for-vf-parallel.txt` exists. The coordinator runs
 nothing else on this machine while you time P2.
 
+The user, on 2026-10-14: each P2 timing runs three times and the medians count, since trustworthy numbers matter more
+than the hours they take; and the speedup so far suggests a compare can go faster still, so this run first finds
+where a compare's time goes (R5), without measuring any less to save time.
+
 ## Goal
 
 The round's brief is met: its Goal and every outcome and limit, measured as it states them, on the commit you deliver.
@@ -53,13 +57,24 @@ The round's brief is met: its Goal and every outcome and limit, measured as it s
 - **R2. Every pair gives the real verdicts.** P1's two and three compares run the result against the base, in place
   of the base against itself, and each gives the items, their order, verdicts and failures that the same command gives
   on 3176-3177 with 1 worker; P3's runs of "Reports' P1 command" are this command.
-- **R3. Timings that can be trusted.** Each P2 timing runs with nothing else of yours running on the machine. When
-  a command's 4-worker time lands between 45% and 55% of its 1-worker time, that pair runs twice more, alternating
-  (1, 4, 1, 4), and the medians are the result; the report gives every run.
+- **R3. Timings that can be trusted.** Each of P2's two timed commands (the base against itself, and the result
+  against the base) runs six times, alternating 1, 4, 1, 4, 1, 4 workers, each with nothing else of yours running on
+  the machine. The median of each worker count's three runs is that count's time, P2's bar is judged on the medians,
+  and the report gives every run.
 - **R4. A change only on evidence.** Change the code only where a measurement or a test shows an outcome or limit
-  failing. Then commit once, and measure again on the new commit everything the change can reach, which for a change
-  to `compare.mjs`, `compare-runtime.mjs`, `baseline-cache.mjs`, `cache-lock.mjs`, `core.mjs`, `cli.mjs` or
+  failing, or where R5's breakdown shows time a change removes. Then commit once, and measure again on the new commit
+  everything the change can reach, which for a change to `compare.mjs`, `compare-runtime.mjs`, `baseline-cache.mjs`, `cache-lock.mjs`, `core.mjs`, `cli.mjs` or
   `runner.mjs` is every outcome and limit.
+- **R5. Where a compare's time goes, found before the R1 measurements.** On `f3601821`, break the wall time of one
+  4-worker run of P2's base-against-itself command into its phases: the command's work before the workers start and
+  after they finish; per worker, browser and context start, page load and settle, captures, comparison and file
+  writes; and the time each worker waits idle or on a lock. Instrument a copy of the CLI in your temp folder or use
+  Node's profiler; the tracked files change only through R4. Report the largest phases with their seconds. Where the
+  breakdown shows time a change inside the Scope removes, make that change (R4), and the R1 measurements run on its
+  commit. Saving time by measuring less is not such a change: every capture setting, settle and hold wait,
+  comparison threshold, rerun rule and item stays the HEAD's. The workers' upper limit may rise only if the
+  breakdown shows the machine's cores idle with 4; P2's bar stays at 4 workers, and a new largest count is timed once
+  on the same command and reported beside it.
 
 ## Scope
 
@@ -70,5 +85,5 @@ measure the others, then stop and report. (B3)
 ## Report
 
 As the round's brief's Report: each outcome and limit PASS or FAIL with the command and output line that proves it and
-the SHA it ran on; which code, if any, you changed and why; P2's wall times, every run of each pair;
-every F126 or F148 rerun; the commit SHA you deliver. At most 30 lines.
+the SHA it ran on; R5's largest phases and seconds; which code, if any, you changed and why; P2's wall times,
+every run and the medians; every F126 or F148 rerun; the commit SHA you deliver. At most 35 lines.
