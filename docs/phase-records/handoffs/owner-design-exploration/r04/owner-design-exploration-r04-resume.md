@@ -40,7 +40,12 @@
 
 ## Running now
 
-- **shared-frame, resumed** (DECISIONS 45, first item) at 10:16 with `resume-after-pause-1.md` through
+- **shared-frame, a fresh session** (DECISIONS 45, first item) since 14:50: brief
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-frame-continue-2.md` (`d17164bb`, xhigh;
+  review `D:/fitway-temp/brief-review/codex-shared-frame-continue-2-1/`, readings 1-4 closed, 5 left open), run folder
+  `D:/fitway-temp/codex-round-c64dae1e-9642-4fe5-895f-dd761f7e71c4`. It continues from `4352181f` and the old
+  session's records (95 of 228 jobs). The old thread below grew to about 48 MB and got "at capacity" or 503 on both
+  models from 13:54, so its retries were stopped. The old session, resumed at 10:16 with `resume-after-pause-1.md` through
   `D:/fitway-temp/resume-wait-limit.sh` (it waits out a usage limit): thread `01a12f3c-a486-7681-a1f5-6b12abdbe87a`,
   run folder `D:/fitway-temp/codex-round-ef95d9e6-4736-49f6-8f7e-959e6eee78a8`, continuation brief
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/codex-shared-frame-continue.md`
