@@ -558,6 +558,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       C5); time zone, feed geometry and transparency wording are site checks, not Settings (SPEC, C6); no technical
       language or explanatory captions (DO-NOT, C8); the page's composition is the designer's alone, as for Access
       (item 33).
+50. **Daily's light tuner goes** (the user, 2026-10-13, «اداة الاضائة شيلها ماعد احتاجها خلاص»). The dashed
+    "الإضاءة · Lights" button at the top of Daily and the light tuner it opens (`tuner.js`, its recipes and the
+    README's account of it) are removed; the static lights on the cards (LGT-1 to LGT-8) are not the tuner and stay.
+    It runs after the shared-frame round merges, so that round's comparisons keep their base. It also ends F126, whose
+    unstable render was the tuner's chip.
 
 ## How this milestone's rounds run
 
