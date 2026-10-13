@@ -56,7 +56,8 @@ stops for the coordinator.
     `scripts/agent-environment/fixtures/codex-round-reviews/`, byte for byte) is a fixture there under its folder's
     name, frozen by its hash as the eight are, and the launcher reads each as exactly the readings it
     holds, in order, each the text from its start to the next reading's start; the test's expected readings come from
-    each answer's own markup, as the existing real-review test derives them, never from the parser. Every answer the
+    each answer's own markup, as the existing real-review test derives them, never from the parser. Answers that keep
+    that structure in heading levels and field labels no fixture uses are read the same way. Every answer the
     existing tests refuse is still refused.
   - **Intent.** A reading is found by its structure, a numbered start with an ID and a body, not by the wording of its
     field labels, which the prompt leaves open; an answer that cannot be split is refused, never guessed.
@@ -65,8 +66,9 @@ stops for the coordinator.
     message and no tool call while work is unfinished (nine times on 2026-10-13), which closes the run, and the
     coordinator has resumed each by hand with a message.
   - **Outcome.** When `codex exec` exits 0 and its last message is not a report, the launcher resumes the same thread
-    with a fixed message and captures it as a resume does today. A report is a last message with a line that names
-    one of the brief's outcome or limit IDs together with `PASS` or `FAIL`, or a line starting `STOPPED:`. The message
+    with a fixed message and captures it as a resume does today. A report is a last message that names every outcome and
+    limit ID of the brief, alone or in a range such as `L1-L3`, on lines with `PASS` or `FAIL`, or that has a line
+    starting `STOPPED:`; a message that leaves any ID out is not one. The message
     says the run ended because a message without a tool call ends it, quotes the first line of that last message, and
     tells the agent to continue toward the brief's outcomes, to wait inside tool calls, and to send a message only as
     its report, or a line `STOPPED: <reason>` when it stops on purpose. At most 10 automatic resumes follow one launch
@@ -78,8 +80,9 @@ stops for the coordinator.
 - **K3. Tests that fail when their defect returns (F156 with K1 and K2).**
   - **Outcome.** With the fake Codex, tests fail when: any K1 fixture is not read as its readings; K2 does not resume
     a run that ended without a report, or resumes after a report, after a `STOPPED:` line or after a nonzero exit, or
-    passes 10; and a review source is read before its place check in `check-brief.mjs` (F156: a planted read ahead of
-    the check passed all 170 tests). Each fails with its defect alone put back; report how you checked each.
+    passes 10, or takes a message that leaves an ID out for a report; and a review source of any kind (a repository
+    file at the named HEAD, a file under `D:/fitway-temp`, a file in the launcher's checkout, one outside them all)
+    is read before its place check (F156: a planted read ahead of the check passed all 170 tests). Each fails with its defect alone put back; report how you checked each.
   - **Intent.** CI guards what the launcher reads and when it resumes.
 
 ## Limits the result keeps
