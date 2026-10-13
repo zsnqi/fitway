@@ -386,6 +386,46 @@ control.addEventListener('click',e=>{check(e.timeStamp);window.requestAnimationF
 	assert.equal(result.failure, undefined);
 	assert.equal(result.report.timelineSummary.equal, 4);
 });
+test("idle driver waits advance setup time without advancing the armed clock", async () => {
+	const result = await compared(async () => {
+		const current = fixture();
+		current.author(`window.pixel=0;const shownAt=performance.now();
+control.addEventListener('click',e=>{if(e.timeStamp-shownAt>=500)window.pixel=200});`);
+		current.render(() => current.evaluate(() => window.pixel));
+		// The driver's wait runs outside the page, with no authored timer or frame.
+		current.advanceWall(600);
+		assert.equal(
+			current.evaluate(() => new Event("unused").timeStamp),
+			0,
+			"a page timestamp getter reads only the logical clock",
+		);
+		await current.arm();
+		current.advanceWall(1000);
+		await current.event("click");
+		current.verify = () => {
+			assert.equal(
+				current.evaluate(() => window.pixel),
+				200,
+				"save passes its age guard",
+			);
+			assert.equal(
+				current.evaluate(() => performance.now()),
+				641,
+				"capture wall time stays outside the page clock",
+			);
+			current.advanceWall(50);
+			current.evaluate(() => control.dispatchEvent(new Event("keydown")));
+			assert.equal(
+				current.evaluate(() => performance.now()),
+				691,
+				"release excludes held wall time from the next setup event",
+			);
+		};
+		return current;
+	}, "1,21,41");
+	assert.equal(result.failure, undefined);
+	assert.equal(result.report.timelineSummary.equal, 3);
+});
 test("genuine same-side frame variation remains NOT-HELD", async () => {
 	const result = await compared(async (_side, capture) => {
 		const current = fixture();

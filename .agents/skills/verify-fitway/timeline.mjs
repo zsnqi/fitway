@@ -31,6 +31,13 @@ export function observeTimeline() {
 		animate: Element.prototype.animate,
 	};
 	let clock = 0;
+	let realAnchor = native.now();
+	function advanceSetupClock() {
+		if (held) return;
+		const now = native.now();
+		clock += Math.max(0, now - realAnchor);
+		realAnchor = now;
+	}
 	const epoch = 0;
 	const pageNow = () => (held ? origin + time : clock);
 	Object.defineProperty(performance, "now", {
@@ -59,19 +66,21 @@ export function observeTimeline() {
 	HeldDate.now = () => Math.floor(epoch + pageNow());
 	globalThis.Date = HeldDate;
 	const eventTimes = new WeakMap();
-	const stamp = (event) => {
+	const stamp = (event, advance = true) => {
 		if (
 			event &&
 			(typeof event === "object" || typeof event === "function") &&
 			!eventTimes.has(event)
-		)
+		) {
+			if (advance) advanceSetupClock();
 			eventTimes.set(event, pageNow());
+		}
 	};
 	if (globalThis.Event)
 		Object.defineProperty(Event.prototype, "timeStamp", {
 			configurable: true,
 			get() {
-				stamp(this);
+				stamp(this, false);
 				return eventTimes.get(this);
 			},
 		});
@@ -333,6 +342,7 @@ export function observeTimeline() {
 				: native.clear(task.nativeId);
 	function schedule(kind, fn, delay, args) {
 		if (kind === "frame" && typeof fn !== "function") return native.frame(fn);
+		advanceSetupClock();
 		const id = ++sequence;
 		const task = {
 			id,
@@ -353,6 +363,7 @@ export function observeTimeline() {
 			return id;
 		}
 		const run = () => {
+			advanceSetupClock();
 			clock = Math.max(clock, task.due);
 			if (kind !== "interval") tasks.delete(id);
 			else task.due = clock + task.delay;
@@ -523,7 +534,10 @@ export function observeTimeline() {
 		collect();
 	}
 	async function seek(at) {
-		if (!held) begin();
+		if (!held) {
+			advanceSetupClock();
+			begin();
+		}
 		collect();
 		while (true) {
 			const nextTask = [...tasks.values()].sort(
@@ -629,6 +643,7 @@ export function observeTimeline() {
 	}
 	window.__verifyFitwayTimeline = {
 		arm(action, input) {
+			advanceSetupClock();
 			const [kind, arg] = action.split(/:(.*)/s);
 			const keyboardActivation =
 				input === "keyboard" &&
@@ -673,6 +688,7 @@ export function observeTimeline() {
 			waiting = null;
 			clock = origin + time;
 			held = false;
+			realAnchor = native.now();
 			for (const [a, e] of effects)
 				if (!e.finished && a.playState !== "idle") a.play();
 			for (const task of stringTasks) native.timeout(task.fn, 0, ...task.args);
@@ -681,6 +697,7 @@ export function observeTimeline() {
 				const remaining = Math.max(1, task.due - time);
 				task.due = clock + remaining;
 				const run = () => {
+					advanceSetupClock();
 					clock = Math.max(clock, task.due);
 					if (task.kind !== "interval") tasks.delete(task.id);
 					else task.due = clock + task.delay;
