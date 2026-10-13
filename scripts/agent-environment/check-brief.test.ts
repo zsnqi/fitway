@@ -484,6 +484,117 @@ describe("brief-references: resolve a brief against its named Git worktree", () 
 	});
 });
 
+describe("brief-review-sources: the pre-launch source contract", () => {
+	it("reports every refused source in one pass with its line", async () => {
+		const f = fixture();
+		const outside = path.join(f.root, "outside-review-source.txt");
+		writeFileSync(outside, "outside\n");
+		writeFileSync(path.join(f.worktree, ".env"), "SECRET=value\n");
+		const sources = [
+			"docs/guide.md",
+			"docs/./guide.md",
+			"docs/missing-review-source.md",
+			"docs/",
+			".env",
+			outside.replaceAll("\\", "/"),
+		];
+		const text = f.valid.replace(
+			"## Goal",
+			`- **Read first, only these:**\n\n${sources
+				.map((source) => `  - \`${source}\``)
+				.join("\n")}\n\n## Goal`,
+		);
+		const result = await f.check(text);
+		const problems = result.problems.filter(
+			(problem: { rule: string }) => problem.rule === "brief-review-sources",
+		);
+		expect(problems).toHaveLength(5);
+		expect(formatBriefResult(result)).toContain(
+			"two named review sources map to one file: docs/./guide.md",
+		);
+		expect(formatBriefResult(result)).toContain(
+			"named review source not found: docs/missing-review-source.md",
+		);
+		expect(formatBriefResult(result)).toContain(
+			"named review source is not a file: docs/",
+		);
+		expect(formatBriefResult(result)).toContain(
+			"named review source holds credentials: .env",
+		);
+		expect(formatBriefResult(result)).toContain(
+			"absolute review source is outside D:/fitway-temp and the launcher checkout",
+		);
+		const lines = text.split("\n");
+		for (const problem of problems)
+			expect(lines[problem.line - 1]).toMatch(
+				/docs\/|\.env|outside-review-source/,
+			);
+	});
+
+	it("refuses a repository source that is a symbolic link at the named HEAD", async () => {
+		const f = fixture();
+		const target = path.join(f.root, "link-target.txt");
+		writeFileSync(target, "link target\n");
+		const blob = git(f.worktree, "hash-object", "-w", target);
+		git(
+			f.worktree,
+			"update-index",
+			"--add",
+			"--cacheinfo",
+			`120000,${blob},docs/link-source.md`,
+		);
+		git(f.worktree, "commit", "-m", "add symbolic review source");
+		const head = git(f.worktree, "rev-parse", "--short=8", "HEAD");
+		const text = f.valid
+			.replace(f.head, head)
+			.replace(
+				"## Goal",
+				"- **Read first, only these:**\n\n  - `docs/link-source.md`\n\n## Goal",
+			);
+		const result = await f.check(text);
+		expect(formatBriefResult(result)).toContain(
+			"named review source is a symbolic link: docs/link-source.md",
+		);
+	});
+
+	it("accepts a committed launcher-checkout absolute source and refuses untracked or changed copies", async () => {
+		const f = fixture();
+		const accepted = path
+			.join(f.commandRepository, "docs", "guide.md")
+			.replaceAll("\\", "/");
+		const untracked = path
+			.join(f.commandRepository, "docs", "untracked-source.md")
+			.replaceAll("\\", "/");
+		const changed = path
+			.join(f.commandRepository, "docs", "changed-source.md")
+			.replaceAll("\\", "/");
+		put(f.commandRepository, "docs/changed-source.md", "head\n");
+		git(f.commandRepository, "add", ".");
+		git(f.commandRepository, "commit", "-m", "checkout source");
+		put(f.commandRepository, "docs/changed-source.md", "working\n");
+		put(f.commandRepository, "docs/untracked-source.md", "untracked\n");
+		const acceptedResult = await f.check(
+			f.valid.replace(
+				"## Goal",
+				`- **Read first, only these:**\n\n  - \`${accepted}\`\n\n## Goal`,
+			),
+		);
+		expect(acceptedResult.ok, formatBriefResult(acceptedResult)).toBe(true);
+		const result = await f.check(
+			f.valid.replace(
+				"## Goal",
+				`- **Read first, only these:**\n\n  - \`${untracked}\`\n  - \`${changed}\`\n\n## Goal`,
+			),
+		);
+		expect(formatBriefResult(result)).toContain(
+			`absolute review source not found: ${untracked}`,
+		);
+		expect(formatBriefResult(result)).toContain(
+			`absolute review source differs from the launcher checkout HEAD: ${changed}`,
+		);
+	});
+});
+
 describe("brief-references: decision item citations", () => {
 	it.each([
 		["single", "1. One.\n", "item 2", [2]],

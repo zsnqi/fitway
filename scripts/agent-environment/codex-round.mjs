@@ -1,4 +1,4 @@
-import { execFileSync, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { constants, createReadStream } from "node:fs";
 import {
@@ -17,9 +17,15 @@ import { createInterface } from "node:readline";
 import { finished } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
 import { TextDecoder } from "node:util";
-import { checkBrief, formatBriefResult } from "./check-brief.mjs";
+import {
+	checkBrief,
+	formatBriefResult,
+	isCredentialSource,
+	namedReviewSourceEntries,
+	reviewSourcePlan,
+} from "./check-brief.mjs";
 import { readGit } from "./git-context.mjs";
-import { samePath } from "./path-identity.mjs";
+import { pathKey, samePath } from "./path-identity.mjs";
 
 const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
 const GPT_MODEL = "gpt-6.1-sol";
@@ -552,150 +558,53 @@ async function reviewFolders(root, basename) {
 		.sort((a, b) => b.number - a.number);
 }
 
-function isAbsolutePath(value) {
-	return path.isAbsolute(value) || path.win32.isAbsolute(value);
-}
-
-function repositorySourcePath(value) {
-	const normalized = value.replaceAll("\\", "/");
-	if (
-		!normalized ||
-		normalized.startsWith("/") ||
-		/^[A-Za-z]:/.test(normalized)
-	)
-		return null;
-	const result = path.posix.normalize(normalized);
-	if (
-		result === "." ||
-		result === ".." ||
-		result.startsWith("../") ||
-		result.includes("/../")
-	)
-		return null;
-	return result;
-}
-
-function looksLikeNamedSource(value) {
-	const trimmed = value.trim();
-	if (!trimmed || /[\r\n]/.test(trimmed)) return false;
-	if (isAbsolutePath(trimmed)) return true;
-	if (repositorySourcePath(trimmed)) {
-		return (
-			trimmed.includes("/") ||
-			trimmed.includes("\\") ||
-			/\.[A-Za-z0-9]+$/.test(trimmed)
-		);
-	}
-	return false;
-}
-
-function namedReviewSources(brief) {
-	const text = brief.toString("utf8").replace(/<!--[\s\S]*?-->/g, "");
-	const found = [];
-	let section = null;
-	for (const line of text.split(/\r?\n/)) {
-		const heading = line.match(/^#{1,6}\s+(.*)$/);
-		const boldBullet = line.match(/^\s*-\s+\*\*([^*]+)\*\*/);
-		const label = heading?.[1]?.trim() ?? boldBullet?.[1]?.trim() ?? "";
-		if (heading || (boldBullet && !/^\s{2,}/.test(line))) {
-			if (/^Read first\b/i.test(label)) section = "read first";
-			else if (/^Decisions\b/i.test(label)) section = "decisions";
-			else section = null;
-		}
-		const decisionsLine = /\bDecisions\s*:/i.test(line);
-		if (section !== "read first" && section !== "decisions" && !decisionsLine)
-			continue;
-		for (const span of line.matchAll(/(`+)([^`]*?)\1(?!`)/g)) {
-			const value = span[2].trim();
-			if (looksLikeNamedSource(value)) found.push(value);
-		}
-	}
-	return [...new Set(found)];
-}
-
-function isCredentialSource(value, bytes) {
-	const name = path.basename(value).toLowerCase();
-	if (
-		name === ".env" ||
-		(/^\.env\.[^.]+$/.test(name) &&
-			!/\.(?:example|sample|template)$/.test(name)) ||
-		name === ".netrc" ||
-		name === "auth.json" ||
-		/^id_(?:rsa|ed25519|ecdsa)$/.test(name) ||
-		/\.(?:key|pem|p12|pfx|ppk)$/.test(name)
-	)
-		return true;
-	return /-----BEGIN [^-]*PRIVATE KEY-----/.test(bytes.toString("utf8"));
-}
-
-function sourceTarget(sources, value) {
-	if (isAbsolutePath(value)) {
-		const root = path.resolve(
-			process.platform === "win32" ? "D:/fitway-temp" : tmpdir(),
-		);
-		const absolute = path.resolve(value);
-		const relative = path.relative(root, absolute);
-		if (!relative || relative.startsWith("..") || path.isAbsolute(relative))
-			throw new Error(
-				`absolute review source is outside D:/fitway-temp: ${value}`,
-			);
-		return path.join(sources, "temp", relative);
-	}
-	const relative = repositorySourcePath(value);
-	if (!relative) throw new Error(`invalid named review source: ${value}`);
-	return path.join(sources, ...relative.split("/"));
-}
-
-async function sourceBytes(worktree, head, value) {
-	if (isAbsolutePath(value)) {
-		const absolute = path.resolve(value);
-		let details;
-		try {
-			details = await stat(absolute);
-		} catch (error) {
-			if (error.code === "ENOENT" || error.code === "ENOTDIR")
-				throw new Error(`named review source not found: ${value}`);
-			throw error;
-		}
-		if (!details.isFile())
-			throw new Error(`named review source is not a file: ${value}`);
-		return readFile(absolute);
-	}
-	const relative = repositorySourcePath(value);
-	if (!relative) throw new Error(`invalid named review source: ${value}`);
-	const object = `${head}:${relative}`;
-	let type;
-	try {
-		type = readGit(worktree, ["cat-file", "-t", object]);
-	} catch {
-		throw new Error(`named review source not found: ${value}`);
-	}
-	if (type !== "blob")
-		throw new Error(`named review source is not a file: ${value}`);
-	return execFileSync("git", ["show", object], {
-		cwd: worktree,
-		encoding: "buffer",
-		maxBuffer: 256 * 1024 * 1024,
-		stdio: ["ignore", "pipe", "pipe"],
-		windowsHide: true,
-	});
-}
-
-async function copyReviewSources(folder, brief, worktree, head) {
+export async function copyReviewSources(folder, brief, worktree, head) {
 	const sources = path.join(folder, "sources");
 	await mkdir(sources, { recursive: true });
-	const targets = new Set();
-	for (const value of namedReviewSources(brief)) {
-		const bytes = await sourceBytes(worktree, head, value);
-		if (isCredentialSource(value, bytes))
+	const targets = new Map();
+	for (const { value } of namedReviewSourceEntries(brief)) {
+		const source = await reviewSourcePlan(value, {
+			worktree,
+			head,
+			checkoutRoot: repositoryRoot,
+		});
+		if (isCredentialSource(value, source.bytes))
 			throw new Error(`named review source holds credentials: ${value}`);
-		const target = sourceTarget(sources, value);
-		const targetKey = path.resolve(target).toLowerCase();
+		const target = path.join(sources, ...source.target.split("/"));
+		const targetKey = await pathKey(target);
 		if (targets.has(targetKey))
 			throw new Error(`two named review sources map to one file: ${value}`);
-		targets.add(targetKey);
+		targets.set(targetKey, value);
 		await mkdir(path.dirname(target), { recursive: true });
-		await writeFile(target, bytes, { flag: "wx" });
+		await writeFile(target, source.bytes, { flag: "wx" });
+	}
+}
+
+async function assertReviewSourcesAtLaunch(brief, worktree, namedHead, head) {
+	if (namedHead === head) return;
+	for (const { value } of namedReviewSourceEntries(brief)) {
+		const before = await reviewSourcePlan(value, {
+			worktree,
+			head: namedHead,
+			checkoutRoot: repositoryRoot,
+		});
+		if (before.kind !== "repository") continue;
+		let after;
+		try {
+			after = await reviewSourcePlan(value, {
+				worktree,
+				head,
+				checkoutRoot: repositoryRoot,
+			});
+		} catch (error) {
+			throw new Error(
+				`repository review source changed before launch: ${value}; ${error.message}`,
+			);
+		}
+		if (!before.bytes.equals(after.bytes))
+			throw new Error(
+				`repository review source differs between named HEAD ${namedHead} and launch HEAD ${head}: ${value}`,
+			);
 	}
 }
 
@@ -889,6 +798,8 @@ async function prepareLaunch(options) {
 			/^- \*\*Worktree:\*\* `[^`]+`, branch `[^`]+`, HEAD `([^`]+)`\s*$/m,
 		)?.[1];
 	const namedHead = readGit(worktree, ["rev-parse", `${named}^{commit}`]);
+	const head = readGit(worktree, ["rev-parse", "HEAD"]);
+	await assertReviewSourcesAtLaunch(brief, worktree, namedHead, head);
 	const review = await inspectBriefReview(
 		options,
 		executable,
@@ -901,7 +812,6 @@ async function prepareLaunch(options) {
 	if (review.refusal === "unreadable-review") throw new Error(review.reason);
 	if (review.refusal === "unanswered-readings") throw new Error(review.reason);
 	if (review.refusal === "brief-hash") throw new Error(review.reason);
-	const head = readGit(worktree, ["rev-parse", "HEAD"]);
 	const note =
 		head === namedHead
 			? Buffer.alloc(0)
