@@ -29,10 +29,12 @@ Close these in a brief before the review runs (the user, 2026-10-11; from the tr
 ## Running it
 
 Run it from an empty folder outside every Git tree, with a copy of the brief as `brief.md`, the prompt below as
-`prompt.md`, and the files named on the brief's "Read first" and "Decisions" lines under `sources/`. Repository files
-are copied whole from the brief's named HEAD; absolute files are copied from disk and must be under
-`D:/fitway-temp/`. A missing file, a file that holds credentials, or an absolute file outside that folder stops the
-review before Codex starts. The launcher writes the generated `model-catalog.json` and passes its path as `<catalog>`:
+`prompt.md`, and the files named on the brief's "Read first" and "Decisions" lines under `sources/`. Each source comes
+from one of three places: a repository file copied whole from the brief's named HEAD, an absolute file whose real path
+is under `D:/fitway-temp/`, or an absolute file committed in the Git checkout the launcher runs from and matching that
+checkout's `HEAD`. A missing file, a file that holds credentials, a repository symbolic link, an untracked or modified
+checkout file, or an absolute file whose real path leaves those places stops the review before Codex starts. The
+launcher writes the generated `model-catalog.json` and passes its path as `<catalog>`:
 
 ```bash
 codex exec -s read-only --skip-git-repo-check -C "<folder>" -m deepseek-v4.1-flash -c model_provider=opendesign -c 'model_providers.opendesign={name="OpenDesign",base_url="https://amr-link.open-design.ai/v1",env_key="OPENDESIGN_API_KEY",wire_api="responses"}' -c 'model_catalog_json="<catalog>"' -c model_reasoning_effort=max -c web_search=disabled -c features.hooks=false -o "<folder>/last.md" - < "<folder>/prompt.md"

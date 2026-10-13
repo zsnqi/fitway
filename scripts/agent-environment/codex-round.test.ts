@@ -17,6 +17,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
+import { copyReviewSources } from "./codex-round.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
@@ -632,6 +633,7 @@ describe("D1 model choice, catalog, and resume", () => {
 	it.each([
 		["unsupported model", "high", "not-a-model", [DEEPSEEK_MODEL, GPT_MODEL]],
 		["unsupported DeepSeek level", "medium", DEEPSEEK_MODEL, ["high", "max"]],
+		["unsupported DeepSeek level", "xhigh", DEEPSEEK_MODEL, ["high", "max"]],
 	])("refuses %s before Codex starts", (_name, level, model, accepted) => {
 		const f = fixture();
 		const result = f.invokeRaw([
@@ -780,6 +782,66 @@ describe("D5 review sources", () => {
 		}
 	});
 
+	it("copies a repository source at the named HEAD, not its working copy", async () => {
+		const f = fixture();
+		const source = path.join(f.worktree, "docs", "named-head-source.md");
+		mkdirSync(path.dirname(source), { recursive: true });
+		writeFileSync(source, "named head\n");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", "named-head source");
+		const namedHead = git(f.worktree, "rev-parse", "HEAD");
+		writeFileSync(source, "working copy\n");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", "working-copy source");
+		const folder = path.join(f.root, "direct-review");
+		await copyReviewSources(
+			folder,
+			Buffer.from(
+				"## Read first, only these:\n\n- `docs/named-head-source.md`\n",
+			),
+			f.worktree,
+			namedHead,
+		);
+		expect(
+			readFileSync(
+				path.join(folder, "sources", "docs", "named-head-source.md"),
+			),
+		).toEqual(Buffer.from("named head\n"));
+	});
+
+	it("refuses a repository source changed after the brief's named HEAD", () => {
+		const f = fixture();
+		const source = path.join(f.worktree, "docs", "review-source.md");
+		mkdirSync(path.dirname(source), { recursive: true });
+		writeFileSync(source, "named head\n");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", "named-head source");
+		const namedHead = git(f.worktree, "rev-parse", "HEAD");
+		writeFileSync(source, "later head\n");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", "later Markdown source");
+		const brief = readFileSync(f.brief, "utf8")
+			.replace(
+				new RegExp(`HEAD \`${f.head.slice(0, 8)}\``),
+				`HEAD \`${namedHead.slice(0, 8)}\``,
+			)
+			.replace(
+				"## Goal",
+				"- **Read first, only these:**\n\n  - `docs/review-source.md`\n\n## Goal",
+			);
+		writeFileSync(f.brief, brief);
+		git(f.coordinator, "add", ".");
+		git(f.coordinator, "commit", "-m", "brief source after named head");
+		rmSync(f.reviewRoot, { recursive: true, force: true });
+
+		const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
+			REVIEW_ANSWER: "No such readings.\n",
+		});
+		refused(f, result, "differs between named HEAD");
+		expect(f.reviewCalls()).toEqual([]);
+		expect(existsSync(f.reviewRoot)).toBe(false);
+	});
+
 	it.each([
 		["missing repository source", "missing-review-source.md"],
 		["a credential file", ".env"],
@@ -809,6 +871,44 @@ describe("D5 review sources", () => {
 		});
 		refused(f, result, source);
 		expect(f.reviewCalls()).toEqual([]);
+	});
+
+	it("refuses an absolute source reached through a junction outside D:/fitway-temp", () => {
+		const f = fixture();
+		const linkRoot = mkdtempSync(path.join("D:/fitway-temp", "round-link-"));
+		try {
+			const outside = path.join(f.root, "outside-source");
+			mkdirSync(outside, { recursive: true });
+			writeFileSync(path.join(outside, "source.txt"), "outside source\n");
+			const link = path.join(linkRoot, "escape");
+			symlinkSync(
+				outside,
+				link,
+				process.platform === "win32" ? "junction" : "dir",
+			);
+			const source = path.join(link, "source.txt");
+			const brief = readFileSync(f.brief, "utf8").replace(
+				"## Goal",
+				`## Read first, only these:\n\n- \`${source.replaceAll("\\", "/")}\`\n\n## Goal`,
+			);
+			writeFileSync(f.brief, brief);
+			git(f.coordinator, "add", ".");
+			git(f.coordinator, "commit", "-m", "brief names linked source");
+			rmSync(f.reviewRoot, { recursive: true, force: true });
+
+			const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
+				REVIEW_ANSWER: "No such readings.\n",
+			});
+			refused(
+				f,
+				result,
+				"absolute review source is outside D:/fitway-temp and the launcher checkout",
+			);
+			expect(f.reviewCalls()).toEqual([]);
+		} finally {
+			rmSync(path.join(linkRoot, "escape"), { force: true });
+			rmSync(linkRoot, { recursive: true, force: true });
+		}
 	});
 
 	it("refuses an absolute source outside D:/fitway-temp", () => {
