@@ -592,6 +592,16 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     the same held-out rows; the better harness carries the rounds that follow. The user: Open Design's credit is open
     and is not weighed when choosing what runs in parallel. The launch scripts run under an allow rule the user
     approved for `bash D:/fitway-temp/cc-*/launch.sh` in this worktree's local settings.
+54. **vf-parallel: the optimization stays, and fresh sessions for both** (the user, 2026-10-14, after P2's 4-worker
+    self-compare took 581 s against 1112 s, 25 s over the brief's "at most half", and Codex committed `f3601821`,
+    fewer manifest rewrites, to meet it). The 2x bar was the coordinator's way of measuring decision 48's "a fraction of
+    today's time", not the user's; the timings also ran beside the coordinator's Claude Code replay, against the brief's
+    "both run alone". The user chose to keep `f3601821` (it may make compares faster), to stop the run and save its
+    progress (`D:/fitway-temp/owner-r04-vf-parallel/STOPPED-2026-10-14.md`), and to continue Codex in a fresh session
+    with a clean context rather than resume its thread, and the coordinator in a fresh session too. The new brief
+    (`codex-vf-parallel-continue-2.md`) measures everything on the delivered commit, with nothing else running while
+    P2 is timed. The bar stays as the round's brief states unless the user changes it; the coordinator's recommendation
+    was a floor of 1.5x judged at grading on a quiet machine.
 
 ## How this milestone's rounds run
 
