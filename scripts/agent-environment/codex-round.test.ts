@@ -386,6 +386,7 @@ process.stdin.on('end', () => {
 		ROUND_REVIEW_CAPTURE: reviewCapture,
 		FITWAY_BRIEF_REVIEW_ROOT: reviewRoot,
 		CODEX_HOME: codexHome,
+		FITWAY_DEEPSEEK_CATALOG_SOURCE: path.join(codexHome, "models_cache.json"),
 		OPENDESIGN_API_KEY: "fixture-opendesign-key",
 	};
 	const invokeRaw = (args: string[], extraEnv = {}, cwd = root) => {
@@ -753,33 +754,59 @@ describe("D1 model choice, catalog, and resume", () => {
 });
 
 describe("D2 absent catalog and missing key gates", () => {
-	it("refuses a missing cache and names the file and gpt-5.5 entry", () => {
+	it("refuses a missing catalog source and names the file", () => {
 		const f = fixture();
-		const cache = path.join(f.codexHome, "models_cache.json");
-		rmSync(cache);
+		const source = path.join(f.codexHome, "models_cache.json");
+		rmSync(source);
 		const result = f.invokeRaw([f.brief, "--run", f.run], {
 			OPENDESIGN_API_KEY: "test-only",
 		});
-		refused(f, result, "model catalog cache not found");
-		expect(result.stderr).toContain(cache);
-		expect(result.stderr).toContain("gpt-5.5");
+		refused(f, result, "DeepSeek catalog source not found");
+		expect(result.stderr).toContain(source);
 		expect(existsSync(f.run)).toBe(false);
 	});
 
-	it("refuses a cache without gpt-5.5", () => {
+	it.each([
+		["no entry", '{"models":[]}\n'],
+		["two entries", '{"models":[{"slug":"a"},{"slug":"b"}]}\n'],
+	])("refuses a catalog source with %s", (_name, content) => {
 		const f = fixture();
-		writeFileSync(
-			path.join(f.codexHome, "models_cache.json"),
-			'{"models":[]}\n',
-		);
+		const source = path.join(f.codexHome, "models_cache.json");
+		writeFileSync(source, content);
 		const result = f.invokeRaw([f.brief, "--run", f.run], {
 			OPENDESIGN_API_KEY: "test-only",
 		});
-		refused(f, result, "model catalog cache has no gpt-5.5 entry");
-		expect(result.stderr).toContain(
-			path.join(f.codexHome, "models_cache.json"),
+		refused(
+			f,
+			result,
+			"DeepSeek catalog source must hold exactly one model entry",
 		);
+		expect(result.stderr).toContain(source);
 		expect(existsSync(f.run)).toBe(false);
+	});
+
+	it("builds the catalog from the source, whatever Codex's own cache holds", () => {
+		const f = fixture();
+		const source = path.join(f.root, "pinned-source.json");
+		writeFileSync(
+			source,
+			readFileSync(path.join(f.codexHome, "models_cache.json")),
+		);
+		writeFileSync(
+			path.join(f.codexHome, "models_cache.json"),
+			'{"models":[{"slug":"gpt-6.1-sol"}]}\n',
+		);
+		const result = f.invokeRaw([f.brief, "--run", f.run], {
+			FITWAY_DEEPSEEK_CATALOG_SOURCE: source,
+		});
+		expect(result.status, result.output).toBe(0);
+		const catalog = JSON.parse(
+			readFileSync(path.join(f.run, "model-catalog.json"), "utf8"),
+		);
+		expect(catalog.models[0]).toMatchObject({
+			slug: DEEPSEEK_MODEL,
+			model_messages: { instructions_template: "fixture instructions" },
+		});
 	});
 
 	it("requires OPENDESIGN_API_KEY before DeepSeek review, launch, or resume", () => {

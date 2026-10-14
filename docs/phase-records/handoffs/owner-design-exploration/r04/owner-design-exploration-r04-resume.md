@@ -84,6 +84,9 @@ Nothing (the user said to continue on 2026-10-14, about 18:20). Optional, the us
 
 ## Known risks
 
+- **DeepSeek's catalog source** is pinned at `D:/fitway-private/codex/deepseek-catalog-source.json` (F172, the user's
+  choice on 2026-10-14): a DeepSeek review or launch stops if it is missing; copy it from any run folder's
+  `model-catalog.json` taken before 2026-10-14 21:00 (SHA-256 `2b39f705...`).
 - **DeepSeek runs:** start load about 89k tokens, mostly cached; Open Design credit is not a constraint (DECISIONS 53).
   A thread whose history holds a hook message cannot resume.
 - **F126** makes a full compare fail at random until the tuner goes; **F148** can leave a release sample NOT-HELD:

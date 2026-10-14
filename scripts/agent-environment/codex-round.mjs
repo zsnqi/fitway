@@ -191,23 +191,29 @@ function deepSeekCatalogEntry(source) {
 	return entry;
 }
 
+// The catalog's source entry is pinned on this machine, outside the repository, because
+// Codex's own model cache follows OpenAI's server list (gpt-5.5 left it on 2026-10-14, F172)
+// and the entry holds Codex's instructions text.
+const DEEPSEEK_CATALOG_SOURCE =
+	"D:/fitway-private/codex/deepseek-catalog-source.json";
+
 async function readDeepSeekCatalog(run) {
 	requireDeepSeekKey();
-	const codexHome = process.env.CODEX_HOME || path.join(homedir(), ".codex");
-	const cachePath = path.join(codexHome, "models_cache.json");
-	let cache;
+	const sourcePath =
+		process.env.FITWAY_DEEPSEEK_CATALOG_SOURCE || DEEPSEEK_CATALOG_SOURCE;
+	let pinned;
 	try {
-		cache = JSON.parse(await readFile(cachePath, "utf8"));
+		pinned = JSON.parse(await readFile(sourcePath, "utf8"));
 	} catch (error) {
 		if (error.code === "ENOENT" || error.code === "ENOTDIR")
-			throw new Error(
-				`model catalog cache not found: ${cachePath}; expected gpt-5.5`,
-			);
+			throw new Error(`DeepSeek catalog source not found: ${sourcePath}`);
 		throw error;
 	}
-	const source = cache.models?.find((entry) => entry?.slug === "gpt-5.5");
+	const source = pinned.models?.length === 1 ? pinned.models[0] : null;
 	if (!source)
-		throw new Error(`model catalog cache has no gpt-5.5 entry: ${cachePath}`);
+		throw new Error(
+			`DeepSeek catalog source must hold exactly one model entry: ${sourcePath}`,
+		);
 	const bytes = Buffer.from(
 		`${JSON.stringify({ models: [deepSeekCatalogEntry(source)] }, null, 2)}\n`,
 	);
