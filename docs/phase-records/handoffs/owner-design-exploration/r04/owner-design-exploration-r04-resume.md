@@ -44,7 +44,7 @@
 ## Running now
 
 - **tuner-removal, continued** (DECISIONS 59), launched about 16:55 on DeepSeek at `max`:
-  `briefs/codex-tuner-removal-continue.md` (`7147ce79`, SHA-256 `8b3af88d...`), review
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal-continue.md` (`7147ce79`, SHA-256 `8b3af88d...`), review
   `D:/fitway-temp/brief-review/codex-tuner-removal-continue-1` (four readings closed, one left open), run folder
   `D:/fitway-temp/codex-round-9e63e748-50de-49e4-bc40-e6d7d6419115`, thread `01a13aa9-5797-7702-b9e0-dcd5b519f4b9`.
   It works on `owner-followup-r04-build` in `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, which the
