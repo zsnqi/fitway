@@ -58,9 +58,21 @@ The round's brief is met: its Goal and every outcome and limit, measured as it s
   with the outcome it serves.
   - **Intent.** The earlier session's work is kept where it is right and corrected where it is not.
 
+## Additions to the round's brief
+
+- **T2.** The base side's call for each moment is the exact `window.__eclipse.motion` call, with its arguments, that
+  the tuner's button for it makes in `tuner.js` at `4352181f`. Each key, pressed again in the same page after its
+  moment ends, gives the same frames as its first press. After each moment, the text of Daily's live announcement
+  region equals the base's after the same call. The intro is not one of the four: it plays in each new tab.
+  - **Intent.** The keys start the moments the tuner started, as often as a recording needs, announcement included.
+- **T5.** With one press layer removed from a stylesheet, `node scripts/verify.mjs fast` itself exits nonzero.
+  - **Intent.** CI stops on the defect, not only the check run by hand.
+
 ## Scope
 
-As the round's brief: you may change what its Scope names; commit once when done. `58e39ede` is not amended or
+As the round's brief: you may change what its Scope names, and `motion.js` in its comment only (the saved change
+edits a comment there; any other change to it is reverted); L3 covers files changed as well as added. Commit once
+when done. `58e39ede` is not amended or
 rewritten. Everything else is read-only. Add no dependencies. If an outcome cannot be met, do not work around it:
 finish and measure the others, then stop and report. (B3)
 
