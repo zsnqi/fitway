@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 18:00 +03:00 (tuner-removal reported, not graded; nothing running; the user asked that no new task or round start without their permission, since the machine may be shut down; main at `cb187715`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 21:15 +03:00 (tuner-removal graded, not merged: Daily's `capture.mjs` deleted; its fix brief written, its review next; main at `8117ff5f`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-59), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -43,26 +43,24 @@
 
 ## Running now
 
-Nothing. **tuner-removal reported** at about 17:55 (DECISIONS 59): `aeb7d35a` on `owner-followup-r04-build` in
-`D:/Projects/fitway-worktrees/owner-followup-r04-s04` (an empty verification commit on the saved `58e39ede`, tree clean,
-not pushed), run folder `D:/fitway-temp/codex-round-9e63e748-50de-49e4-bc40-e6d7d6419115` (`last-message.md`; the
-hand resume's events in `events-resume.jsonl`; 83.2M input tokens, 82.2M cached, 114k output). Its report: R1-R2,
-T1-T5 and L1-L3 PASS; switch `?live-keys=1`, keys `n` step, `r` reset, `u` crowd up, `d` crowd down; no tracked file
-changed by the continue run. To check at grading: T5's ladder ran "with CI-equivalent env values and the ignored local
-config set aside". The brief, review and dispositions: `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal-continue.md` (`7147ce79`),
-`D:/fitway-temp/brief-review/codex-tuner-removal-continue-1`. The first session ended after about 10 minutes on a
-progress line with no automatic resume (F170); the coordinator resumed it once by hand.
-vf-fixes stays stopped (`wip/vf-fixes-stopped-20261014`, `862dea71`; run folder
-`D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`).
+Nothing. **tuner-removal is graded** (record in `codex-rounds.md`, row in `rounds.tsv`): `aeb7d35a` on `58e39ede`,
+pushed, CI green (F166 fixed); brief 7/10, held-out 9/10. The tuner is gone, its moments run on keys under
+`?live-keys=1` (`n`, `r`, `u`, `d`), every page compares unchanged. Not merged: `58e39ede` deleted Daily's
+`capture.mjs` whole (static guard, motion checks, light measurements) where L1 allowed removing only its tuner parts,
+and README still names the tuner's presets. The fix brief is
+`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal-fix.md` (`brief:check` PASS),
+with the base file at `D:/fitway-temp/owner-r04-tuner-removal-fix-sources/capture-4352181f.mjs`. Grading kit and
+evidence: `D:/fitway-temp/owner-r04-tuner-grade/`. vf-fixes stays stopped (`wip/vf-fixes-stopped-20261014`,
+`862dea71`; run folder `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`).
 
 ## Next steps
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
-2. **Ask the user first** (2026-10-14, about 17:55: no new task or round starts without their permission). Then
-   **grade tuner-removal** on `D:/fitway-grader/owner-r04/tuner-removal-heldout.md`, record it (`codex-rounds.md`,
-   `rounds.tsv`, findings), push the build branch for CI (F166) and merge; **then vf-fixes** the same way from
-   `862dea71` with its own continue brief whose outcomes sit under "## Causes and required outcomes" (F170), never
-   both at once (F168).
+2. **tuner-removal-fix:** run its review (`pnpm codex:round` on the fix brief, B11), record dispositions, launch;
+   grade it (`capture.mjs` back with only its tuner parts gone, run at the base and the result check by check; README's
+   presets; L1's checks and the ladder), then merge the build branch's tuner work. **Then vf-fixes** from `862dea71`
+   with its own continue brief whose outcomes sit under "## Causes and required outcomes" (F170), never beside
+   another round (F168).
 3. **After the tuner merges:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
    `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown).
 4. **The other tool rounds before Settings:** the encoding round's brief can be drafted now from
@@ -82,7 +80,7 @@ vf-fixes stays stopped (`wip/vf-fixes-stopped-20261014`, `862dea71`; run folder
 
 ## Waiting on the user
 
-Permission to start the next task (grading tuner-removal), per the user's instruction of 2026-10-14. Optional, the user's call: Windows Update's active hours or a pause on nights when rounds run (F159).
+Nothing (the user said to continue on 2026-10-14, about 18:20). Optional, the user's call: Windows Update's active hours or a pause on nights when rounds run (F159).
 
 ## Known risks
 

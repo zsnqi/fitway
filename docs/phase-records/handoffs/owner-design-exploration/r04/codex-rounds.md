@@ -1118,3 +1118,51 @@ checks live outside the repository and never appear here or in a brief. One line
   Side findings: F167, F168, F169.
 - **Disposition:** merged (`3a959ac2`) for K2, K3's checker and K1's new forms; F156's rest, F162's preface form and
   F169 go to the next round on these files (the encoding round, decision 56).
+
+## tuner-removal: `briefs/codex-tuner-removal.md`, continued by `codex-tuner-removal-continue.md` (this folder), result `aeb7d35a` (on `58e39ede`) on `owner-followup-r04-build`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** Daily's light tuner removed (DECISIONS 50) with its live moments kept under a URL switch (T1-T2), every
+  page unchanged otherwise (T3), the hook's file without its BOM (T4, F140), the build branch's CI green (T5, F166).
+  Held-out rows TR1-TR10 in `D:/fitway-grader/owner-r04/tuner-removal-heldout.md`. Two sessions: the first
+  (`codex-round-62a57dd6-5c06-45b8-9ded-996d11222dab`) wrote the change and was stopped at the user's request before
+  reporting, its tree saved as `58e39ede`; a fresh continue session (`codex-round-9e63e748-50de-49e4-bc40-e6d7d6419115`)
+  ended after about 10 minutes on a progress line and was not resumed automatically (F170), so the coordinator resumed
+  it by hand once. Tokens: 219.1M input (217.2M cached), 306k output; start loads 88,344 and 89,221.
+- **Codex's report** (that folder's `last-message.md`): R1-R2, T1-T5 and L1-L3 PASS; `?live-keys=1` with `n` a new
+  reading, `r` reset, `u` and `d` the crowd level; the continue session changed no file (`aeb7d35a` is an empty
+  verification commit); T5's ladder ran "with CI-equivalent env values and the ignored local config set aside".
+- **Brief rows** 7/10 by the coordinator's checks: R1, T2-T5, L2, L3 pass; T1 partial (TR1); L1 fail and R2 fail:
+  `58e39ede` deleted Daily's `capture.mjs` whole (2,362 lines, about 128 naming the tuner: the folder's static-frame
+  guard against the evidence hashes, the Round 6 motion checks and the light measurements) with README's account of
+  it, where the round's L1 allowed removing only the parts that captured the tuner; the first session's own notes say
+  it deleted the file because trimming it was laborious, and the continue session's R2 review found "no correction
+  required". Neither report names the deletion.
+- **Held-out** (graded on the merged CLI with 4 workers on 3186-3187 and the coordinator's scripts in
+  `D:/fitway-temp/owner-r04-tuner-grade/`: `queue*.sh`, `run.mjs`, `rows.mjs`, `tr3-control.mjs`; the base's `?tuner=0`
+  is a base copy without `tuner.js` (`concepts/base-off`), since the CLI adds a query to both sides and the result maps
+  no `tuner` switch, and a fresh context has no stored tuning; TR4's base adds `grade-keys.js`, the tuner buttons' own
+  `window.__eclipse.motion` calls on the same keys):
+  - TR1 partial: no file loads, styles or reads the tuner, every `src` and `href` resolves, Daily's recipes are the
+    base's 8 byte-identical plus the four keys and the other pages' identical; but README §"Measurements" still
+    compares the tuner's presets by name ("Recommended", "A-like", "v2 preset"), unreported.
+  - TR2 pass: 95 light and tuner-overridden properties on `:root` and each card, 3 sizes, both languages, no difference.
+  - TR3 pass: without the switch the four keys and another key make no call and change no live text or DOM; frames
+    unchanged with reduced motion (with full motion the live pulse changes them with or without keys, the control);
+    with the switch at rest the only DOM difference is the language link keeping `live-keys=1`.
+  - TR4 pass: 16 items, 644 samples EQUAL at 1 ms and every 20 ms to 800 ms; 12 NOT-HELD on level-up, Arabic, 1-100 ms,
+    which the base against itself also shows (12); 14 announcement sequences equal.
+  - TR5 pass: 24 presses on the status button, the menu button and a rail link each make exactly their call, open
+    nothing and keep the URL; a key held 1 s starts once on both sides.
+  - TR6 pass: no DIFFERENT on Daily (84 items, 356 samples), Activity (348, 1,328), components (144, 304) or Access
+    (532, 3,434 on a quiet rerun); Reports' one DIFFERENT (phone-language, English, phone, full motion: the 7-day
+    segment's hover after the navigation) did not recur in three reruns either way, the base against itself included.
+    Every NOT-HELD is a 1 ms or 100 ms press sample that the base against itself shows in kind. Access's first run
+    returned all 3,439 samples as callback "problems" and its rerun on a quiet machine none (F171).
+  - TR7 pass: the header's elements keep their boxes within 0.5 px against the base with its toggle shown.
+  - TR8 pass. TR9 pass: CI green on `aeb7d35a` (F166 ends); one press layer removed from `reports.css:103` fails the
+    check, which passes on the result. TR10 pass: only Scope paths, `HISTORY.md` and `evidence/` unchanged, drift and
+    doctor pass, tree clean.
+- **Failure causes:** the model's, on L1: the brief's limit named the case; the first session took the shorter path and
+  the continue brief's R2 did not make it re-run L1's tools. F170 (the brief's heading) cost one manual resume.
+- **Disposition:** not merged; `briefs/codex-tuner-removal-fix.md` brings `capture.mjs` back without the tuner, run at
+  the base first, and takes the preset names out of README. Side findings: F170, F171.
