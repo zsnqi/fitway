@@ -62,14 +62,14 @@ Python/numpy/Pillow. Missing machine-level tools block browser verification in c
 
 ## Launch and drive
 
-`--port` accepts only **3176 and 3177**. 3174 and 3178-3185 belong to other previews. A listener on any address is busy;
+`--port` accepts only ports in **3176-3177, 3186-3187 and 3188-3189**. 3174 and 3178-3185 belong to other previews. A listener on any address is busy;
 never stop its owner. A run without `--session` starts and closes its own preview. Explicit launch is optional:
 
 Every preview stops after **30 minutes without a request** and frees its port; requests renew that timeout.
 An expired session needs a fresh launch before doctor or drive can use it. Cleanup accepts the launch folder
 or its `session.json` file and reports an expired preview as already stopped. A nonexistent path fails.
 For isolated lifecycle tests, `launch --isolated-port <49152-65535>` uses a separate high port;
-`--port` still accepts only 3176 or 3177. `--idle-timeout-ms <1-1800000>` shortens the idle bound for tests.
+`--port` still accepts only ports in those three pairs. `--idle-timeout-ms <1-1800000>` shortens the idle bound for tests.
 
 ```powershell
 node $cli launch --concept $concept --port 3176 --out "$run/launch"
@@ -141,6 +141,12 @@ forced filenames add `-forced`, so mixed runs cannot overwrite frames.
 
 ## Compare
 
+Choose one ordered pair with `--port` and `--baseline-port`: **3176-3177, 3186-3187 or 3188-3189**.
+The default is 3176-3177. Other ports and mixed/reversed pairs are refused. Compare claims both ports before
+startup; a busy port or another command's claim refuses immediately and names the pair. Never stop its owner.
+`--workers 1|2|3|4` defaults to 1. Workers capture fresh item contexts concurrently on the command's own pair;
+comparison items and verdict lines retain their original order. Item records retain capture start/end timestamps.
+
 `--affected-pages` selects pages reached by byte changes in either input's HTML,
 loaded scripts/styles and their imports, or that page's recipe entry. A changed
 file loaded by two product pages takes every page; `components.html` is excluded
@@ -152,8 +158,10 @@ option for the round's full verification.
 Baseline captures are kept in `D:/fitway-verify-captures`, outside evidence folders.
 The cache is bounded to 10 GB and evicts the oldest entries first. Page load bytes,
 raw recipes, CLI/probe/capture-tool bytes, browser build, axes, queries and capture
-settings identify a bundle. Independent repeats and timeline confirmations are
-kept with it; reuse performs no baseline browser work. Changed effective timeline
+settings identify each item's bundle, independent of its preview port, workers and the other requested items.
+A narrower run or another pair reuses every matching item. Independent repeats and timeline confirmations are
+kept with it; reuse performs no baseline browser work. Reads and atomic publication/eviction share a lock,
+so a concurrent run never reads a bundle being replaced. Changed effective timeline
 times invalidate the bundle. Unresolved local files fingerprint the whole baseline;
 computed, script-created or external loads disable reuse. Every run prints `BASELINE CAPTURES` reused/taken
 counts. `--baseline-cache off` forces fresh captures and retains today's capture

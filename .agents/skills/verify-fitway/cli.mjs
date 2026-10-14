@@ -22,6 +22,7 @@ import { compare } from "./compare.mjs";
 import {
 	assertOutsideGit,
 	canonical,
+	checkVerificationLease,
 	defaultLanAddresses,
 	freshOutput,
 	jsonOutput,
@@ -31,6 +32,7 @@ import {
 	portAvailable,
 	preview,
 	ReportedFailure,
+	verificationPairs,
 	verificationPort,
 } from "./core.mjs";
 import { requireDependency } from "./discover.mjs";
@@ -66,7 +68,7 @@ Commands:
           [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
           [all drive page/feature/state/axis options] [--out <evidence-folder>]
           [--timeline] [--timeline-times 1,100,200,...]
-          [--affected-pages] [--baseline-cache off]
+          [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]
   measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>
   cleanup --session <launch-folder|session.json>
 Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
@@ -97,9 +99,10 @@ Unreached keyboard targets fail with the element where focus stopped; keyboardAc
 Colours default to normal; forced requires ui-forensics >=1.2.0 and renders Chromium forced colours.
 measure --colors normal|forced maps to tool --forced-colors none|active.
 measure calls the installed ui-forensics tool; its own --help describes further arguments.
---port accepts only 3176-3177. Ports 3174 and 3178-3185 belong to other previews.
+--port accepts only ports in 3176-3177, 3186-3187 and 3188-3189; compare requires one ordered pair.
+Ports 3174 and 3178-3185 belong to other previews. --workers defaults to 1 (maximum 4).
 launch --isolated-port selects a separate high port (49152-65535) for isolated tests.
---port stays restricted to 3176-3177 even with --isolated-port; busy ports are always refused.
+--port stays restricted to those three pairs even with --isolated-port; busy ports are always refused.
 Previews stop after 30 minutes without a request; requests renew the timeout.
 launch --idle-timeout-ms can shorten that bound for tests, never extend it.
 --forensics <folder> overrides the machine-level ui-forensics location.
@@ -288,9 +291,16 @@ async function doctorChecks(options) {
 			);
 		}
 	}
-	// File-only drives never start a preview, so they do not need a free port.
-	if (!options.session && options.transports !== "file")
-		await portAvailable(Number(options.port || 3176));
+	if (!options.session) {
+		// File rendering does not bind a listener; command-owned claims still
+		// refuse another compare's allocation, including before HTTP startup.
+		if (options.transports === "file")
+			await checkVerificationLease(
+				Number(options.port || 3176),
+				options.portLease,
+			);
+		else await portAvailable(Number(options.port || 3176), options.portLease);
+	}
 	if (!options.quiet)
 		console.log(
 			`DOCTOR PASS: Chromium, ui-forensics, probe kit, ${map.pages.length} pages, current map ${path}, port owned/free.`,
@@ -337,8 +347,11 @@ export async function doctorFix(options, error, available = portAvailable) {
 				// A missing or invalid record cannot supply a preferred port.
 			}
 		}
-		const ports = [...new Set([preferred, 3176, 3177])].filter((port) =>
-			[3176, 3177].includes(port),
+		const pair =
+			verificationPairs.find((pair) => pair.includes(preferred)) ||
+			verificationPairs[0];
+		const ports = [...new Set([preferred, ...pair])].filter((port) =>
+			pair.includes(port),
 		);
 		for (const port of ports) {
 			try {
@@ -348,7 +361,7 @@ export async function doctorFix(options, error, available = portAvailable) {
 			}
 			return `${command} launch --concept ${quote(concept)} --port ${port} --out ${quote(freshOutput())}`;
 		}
-		return "BLOCKED: verification ports 3176 and 3177 are both held; retry when a verification port is free.";
+		return `BLOCKED: verification ports ${pair[0]} and ${pair[1]} are both held; retry when a verification port is free.`;
 	}
 	if (/Cannot find module/.test(error.message))
 		return `pnpm --dir ${quote(repository)} install --frozen-lockfile`;
