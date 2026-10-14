@@ -45,6 +45,10 @@ Three DeepSeek rounds, each launched by `pnpm codex:round` with its review dispo
   `D:/fitway-temp/codex-round-62a57dd6-5c06-45b8-9ded-996d11222dab`.
 - **launcher-fixes-3** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-3.md`; F156, F162, F163), `D:/Projects/fitway-worktrees/owner-r04-launcher-fixes-2`
   from `a6ad0ae4`, run folder `D:/fitway-temp/codex-round-29b568cf-1e61-4a63-ab53-bec121e985f1`.
+  **Reported** at 17:30 with `d802b101` (pushed for CI; one automatic resume): K1-K3 and L1 PASS, L2 failed locally on
+  `compare-speed` tests beside the other rounds. It read launcher-fixes-2's grading folder through F162's evidence
+  path (F167); its own rows in `D:/fitway-grader` were not read. To grade with
+  `D:/fitway-grader/owner-r04/launcher-fixes-3-heldout.md`.
 - **vf-fixes** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-fixes.md`; F131, F132, F136, F149, F158, F161, F164), `D:/Projects/fitway-worktrees/owner-r04-vf-fixes`
   from `088711e0`, pair 3186-3187, run folder `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`.
 
