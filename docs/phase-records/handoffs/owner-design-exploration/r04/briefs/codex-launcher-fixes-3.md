@@ -59,22 +59,26 @@ source is read before its place check even if that read's error is ignored.
     each with a body, is read as exactly those readings, each the text from its start to the next reading's start,
     whatever numbered or bulleted lists, deeper headings or fenced code its bodies hold. An answer whose reading
     starts cannot be told apart from its bodies' list items is still refused, never guessed. Every answer the existing
-    tests refuse is still refused, and every fixture is still read as its readings.
+    tests accept or refuse keeps that result, and every fixture is still read as its readings.
   - **Intent.** A sound answer never stops a launch, and an ambiguous one still stops it.
 - **K2. The trigger line quoted exactly (F163).**
   - **Cause.** `autoResumeMessage` (`scripts/agent-environment/codex-round.mjs:568-570`) quotes the trigger line with
     `JSON.stringify`, so its double quotes and backslashes reach the agent escaped.
   - **Outcome.** The resume message holds the trigger's first line character for character, with no character added
     inside it, delimited so its start and end show; a line with double quotes, backslashes, backticks, « », and Arabic
-    shows each unchanged. `auto-resumes.log` stays as it is.
+    shows each unchanged, and so does a line that contains the delimiter itself, with its bounds still unambiguous.
+    `auto-resumes.log` stays as it is.
   - **Intent.** The agent reads its own last line as it wrote it.
 - **K3. A silent read before the place check fails a test (F156).**
   - **Cause.** The launcher-fixes-2 test for read order catches a read that throws (`EISDIR`). With
     `await readFile(real).catch(() => {});` inserted after `const real = await realSourcePath(sourceValue);` in
     `reviewSourcePlan` (`scripts/agent-environment/check-brief.mjs:217-260`), all 189 tests in the two files still pass.
-  - **Outcome.** With that line inserted, at least one test fails; with it removed, all pass. The same holds for a
-    silent read placed ahead of the check of each other kind of review source the launcher accepts (a repository
-    file at the named HEAD, a file in the launcher's checkout, a file outside them all). Report how you checked each.
+  - **Outcome.** With that line inserted, at least one test fails because the source's content was read before its
+    place was decided (not because a file or hash changed); with it removed, all pass. The same holds for a silent
+    read ahead of the check of each other kind of review source the launcher accepts (a repository file at the named
+    HEAD, a file in the launcher's checkout, a file outside them all), whatever route reads the bytes (asynchronous or
+    synchronous file reads, a stream, `git show`) and from every entry point that obtains a review source. Report how
+    you checked each.
   - **Intent.** CI notices any read of a source before its place is checked, not only a read that fails.
 
 ## Limits the result keeps
