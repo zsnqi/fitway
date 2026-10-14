@@ -62,7 +62,8 @@ stopped (the `resume-turn-ended-1.md` beside vf-parallel's run folder is the for
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); the verify-fitway fixes F131,
    F132, F136, F148 (checked with 4 workers), F149, F158, F160 and F161 with a test pinning SKILL.md's claims to the
    CLI; the encoding round of decision 56
-   (BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
+   (F129 twice: K1 checks the frontier against the packets, and main moves only through a command that refuses a commit
+   without a green CI run; BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
    definitions; each check proven on its real past mistake; and decision 57's outcome-and-limit count in `brief:check`
    with its threshold from the past rounds, then B6, B8 and B13 unfolded); the shared lows (decision 47); the `no-comments`
    report-only trial. The Claude Code replay is deferred (DECISIONS 58); its worktree

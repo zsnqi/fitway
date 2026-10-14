@@ -613,9 +613,11 @@ describe("check-agent-context", () => {
 		expect(result.registry).not.toHaveProperty("mode");
 		// This frontier is an independent expectation, not another ledger parse.
 		expect(Object.keys(result.state?.milestones ?? {}).sort()).toEqual([
-			"access-reason-cap-r01",
 			"owner-design-exploration-r04",
 		]);
+		expect(result.history?.milestones?.["access-reason-cap-r01"]?.status).toBe(
+			"DONE",
+		);
 		expect(
 			result.history?.milestones?.[
 				"owner-design-exploration-envelope-repair-r01"
