@@ -628,6 +628,16 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       agent table matches the definitions go in one small extra round run beside the planned ones.
     - **B6** now allows several small causes, related or not, in one round when each has its own outcome and check;
       they split when one changes what another measures, needs a decision or another base, or outgrows one review.
+57. **The brief's length warning measures what one review can cover** (the user, 2026-10-14, agreeing with the
+    coordinator's reading: the 80-line warning had no measurement behind it (agent-environment DECISIONS 4 and 6 set
+    "at most a warning, measured first" and templates of about 40 lines), it fired on 13 of the 14 r04 Codex briefs,
+    and brief-caused failures did not follow length; on 2026-10-14 it failed CI on the template, whose checklist never
+    reaches the agent, and B6, B8 and B13 were folded onto single lines to pass):
+    - `brief:check` counts only what reaches the agent (the coordinator checklist excluded) and warns, never fails.
+    - The warning is on the outcomes and limits a brief asks for, at a threshold derived from the past rounds' records
+      (outcomes and limits per brief against brief-caused failures and the review's readings), not chosen; if the
+      records show no threshold, the round reports that and keeps a count without a warning.
+    - B6, B8 and B13 go back to wrapped lines with the change. It goes in item 56's encoding round.
 
 ## How this milestone's rounds run
 
