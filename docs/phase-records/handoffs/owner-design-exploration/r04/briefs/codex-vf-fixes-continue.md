@@ -57,6 +57,12 @@ extracts and recipe copies: read them and reuse what is sound. No other round ru
     outcome or limit is not met, and report each change with the outcome it serves.
   - **Intent.** The earlier session's work is kept where it is right and corrected where it is not.
 
+## Addition to the round's brief
+
+- **V1.** Each post-action proof the measurement relies on is false on the page before its action and true after it,
+  shown on at least one switch of each kind the round changes.
+  - **Intent.** A proof that holds anyway proves nothing about the switch.
+
 ## Scope
 
 As the round's brief: you may change what its Scope names; commit once when done. `862dea71` is not amended or
