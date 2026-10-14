@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 22:14 +03:00 (the tuner work accepted on the build branch at `c2fe4661`, CI green; vf-fixes' continue brief written, its review next; main at `79717c22`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 22:17 +03:00 (the tuner work accepted at `c2fe4661`; vf-fixes' continue run launched; main at `79717c22`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-59), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -43,7 +43,13 @@
 
 ## Running now
 
-Nothing. **The tuner work is accepted** on `owner-followup-r04-build` (`58e39ede`, `aeb7d35a`, `c2fe4661`; pushed, CI
+- **vf-fixes, continued**, launched about 22:17 on DeepSeek at `max`:
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-fixes-continue.md` (`81806a2c`, SHA-256
+  `ac983d66...`), review `D:/fitway-temp/brief-review/codex-vf-fixes-continue-1` (one closed, four left open as in
+  codex-vf-fixes-2), run folder `D:/fitway-temp/codex-round-3800e181-1edc-4e50-bb03-ff458e5dcd41`, thread
+  `01a13bd9-757c-7850-8125-c79ae84af4bd`, on `owner-r04-vf-fixes` from `862dea71` (base `088711e0`). Nothing else runs
+  compares beside it.
+- **The tuner work is accepted** on `owner-followup-r04-build` (`58e39ede`, `aeb7d35a`, `c2fe4661`; pushed, CI
 green): the tuner is gone, its moments run on keys under `?live-keys=1` (`n`, `r`, `u`, `d`), every page compares
 unchanged (tuner-removal, brief 7/10, held-out 9/10), and tuner-removal-fix (brief 4/4) restored Daily's `capture.mjs`
 without the tuner, with the same verdicts and stable frames as the base file. Records in `codex-rounds.md` and
@@ -57,7 +63,7 @@ round's lesson).
 ## Next steps
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
-2. **vf-fixes, continued:** `pnpm codex:round` on the continue brief (its review, B11), dispositions, launch; grade on
+2. **vf-fixes, continued** (running, above): grade on
    `D:/fitway-grader/owner-r04/vf-fixes-heldout.md` and the round's own V1-V7 and L1-L3, then merge, CI, main.
 3. **Now that the tuner is in:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
    `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown).
