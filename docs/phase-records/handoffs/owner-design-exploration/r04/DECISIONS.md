@@ -672,6 +672,27 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     on a user turn, since the app refuses a start on a turn another session or an automated event began. The cause
     this answers: on 2026-10-15 the previous coordinator, opened while vf-fixes still ran under it, woke when the run
     ended and committed a resume point (`6db75be8`) while a newer coordinator was active.
+62. **The encoding round splits in two, and the coordinator carries on through the night** (the user, 2026-10-15,
+    «موافق على تقسيم Encoding Round إلى جولتين متوازيتين مثل ما اقترحت»; on the command that moves main, «فهمت الفكرة
+    وموافق عليها. وعندك إذني بتعديل AGENTS.md وWORKFLOW.md والملفات اللازمة إذا كان التعديل يخدم تحسين البيئة»; then
+    «كمّل الشغل بالترتيب اللي تشوفه مناسبًا، بما فيه الجولات والمراجعات والاختبارات والدمج بعد التحقق ... إذا ظهر موضوع
+    يحتاج قراري الشخصي فعلًا، سجّله وخله لوقت رجعتي، وواصل أي شغل مستقل عنه»):
+    - Two Codex rounds run side by side in their own worktrees on disjoint files. **encoding-launcher** takes
+      `codex-round.mjs`, its test and its review fixtures: F169, F162's preface form, F156's copy path, F170, the
+      launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, and F174. **encoding-checks** takes F129 (K1 checks the open
+      milestones against the packets, and one command moves main only to a commit whose CI run passed), the BOM check,
+      B3 in `brief:check`, `CLAUDE.md`'s agent table against the definitions, decision 57's count with B6, B8 and B13
+      wrapped again, and F173. F171 goes to the diagnosis round with F148 and F165; F168, F175 and F176 stay with the
+      next verify-fitway round.
+    - Decision 57's threshold (coordinator, from the research digest's 44 rounds at
+      `D:/fitway-temp/owner-r04-encoding-draft/research-digest.md`: brief-caused failures rise weakly and smoothly from
+      53% to 83% across the ID buckets, with no step, and the long briefs are the early ones): there is none, so
+      `brief:check` prints the count and warns on nothing for length.
+    - Once the command merges, `AGENTS.md` and `docs/WORKFLOW.md` name it as the only way main moves; the user's
+      permission above covers edits to both that improve the environment.
+    - The user's permission covers the ordinary engineering steps: rounds, reviews, tests, grading, and merges after
+      verification. A question only the user can answer is recorded under "Waiting on the user" in the resume point,
+      and the work that does not depend on it goes on.
 
 ## How this milestone's rounds run
 

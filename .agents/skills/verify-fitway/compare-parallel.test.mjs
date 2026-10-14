@@ -564,7 +564,8 @@ test("P3 CLI simultaneous writers leave one whole bundle; publication defect is 
 			f.run([...settings, ...pairArgs(f.pairs[1])]),
 		]);
 		if (broken) {
-			await assert.rejects(writers, /ENOENT|ENOTEMPTY|EEXIST/);
+			// Windows reports a directory renamed onto a published one as EPERM.
+			await assert.rejects(writers, /ENOENT|ENOTEMPTY|EEXIST|EPERM/);
 			continue;
 		}
 		await writers;
