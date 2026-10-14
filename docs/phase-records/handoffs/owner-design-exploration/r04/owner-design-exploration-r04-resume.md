@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 11:15 +03:00 (handoff: the user starts a fresh session; nothing running; vf-parallel delivered `70cf9180` and is mid-grading)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 12:35 +03:00 (vf-parallel graded and merged as `4910963a`; main fast-forwarded to `9c46065d`; nothing running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-58), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -15,24 +15,12 @@
   carry `seen_by` and `demo` labels (decision 52). The demo's direction is private: `D:/fitway-private/demo-plan.md`.
 - **Owner screens:** Daily, Reports, Activity log and Access on owner-followup-r04-build (worktree
   D:/Projects/fitway-worktrees/owner-followup-r04-s04, clean at `4352181f`). Previews: eclipse-build (3174), LAN (3180).
-- **vf-parallel delivered `70cf9180`** on `owner-r04-vf-parallel` (`0fbad66d` parallel compares, `f3601821` fewer
-  manifest rewrites, `70cf9180` compare skips the language sheets, about 59 s of serial work, which R5's breakdown
-  found; F158 the SKILL.md line it left stale). Codex's report: every outcome PASS; P2 medians of three on a quiet
-  machine, base against itself 917 s with 1 worker and 360 s with 4, result against base 922 s and 366 s, with kept
-  captures 500 s and 221 s; the CLI at `5493e888` took 1,083 s. One F154 resume (`resume-turn-ended-1.md`).
-- **vf-parallel's grading so far** (`D:/fitway-temp/owner-r04-vf-parallel-grade/queue.progress`; held-out rows
-  `D:/fitway-grader/owner-r04/vf-parallel-heldout.md`): the coordinator's own timing, alone, `5493e888` with 1 worker
-  1,136.6 s against `70cf9180` with 4 workers 375.0 s, the same 1,224 verdicts (3.0x). VP1, VP2, VP3, VP5, VP6, VP8,
-  VP9 and VP10 pass (VP3 Activity: 8 problem items whose error text differs, the same verdicts). Open:
-  - **VP4:** Activity's `g-dates-release` at 1 ms is NOT-HELD with 4 workers in `vp4-4` and its one rerun, EQUAL in
-    `vp4-1`; two pixels at (831,98) on both sides, F148's calendar icon, also seen with 1 worker in vf-hold's VH1.
-    Next: three alternating runs with 1 and 4 workers (B13) to see whether 4 workers raise its rate.
-  - **VP7:** both writers started together (4 workers each, kept captures on, fresh baseline `D:/fitway-temp/owner-r04-vf-parallel-grade/concepts/vp7`) gave
-    DIFFERENT on Reports `page`, `state=loading`, Arabic, desktop, reduced motion; the reader that reused their kept
-    bundle and the cache-off run were EQUAL. Next: look at that item's frames and region in `D:/fitway-temp/owner-r04-vf-parallel-grade/runs/vp7-w1` and
-    `D:/fitway-temp/owner-r04-vf-parallel-grade/runs/vp7-w2`; a load-sensitive capture of the loading state would fail P2's intent.
-  - **VP11** not run: scope (`git diff --stat 5493e888 70cf9180`), the SKILL.md hunks only in §"Compare" and its port
-    lines, recipe counts, CI on the pushed and the merged commit.
+- **vf-parallel is merged** (`4910963a`; record in `codex-rounds.md` §"vf-parallel", row in `rounds.tsv`): port pairs,
+  up to 4 workers per compare and kept captures per item (F147 fixed); the full compare 3.0x faster with 4 workers
+  (coordinator's timing alone, 1,136.6 s against 375.0 s, the same 1,224 verdicts). Brief 12/12, held-out 10/11:
+  VP4 partial on F148 (NOT-HELD in 5 of 5 runs with 4 workers, 2 of 4 with 1). New: F160 (Reports' and Access's
+  loading proofs capture inside the 300 ms skeleton window, a false DIFFERENT under load; one kept reserve frame
+  holds the skeleton), F161 (the tests' leftover lease folders).
 - **The pstack reading (decision 56):** nothing installed; `correct`'s method adopted, `benchmark-checklist` folded
   into B13 (three runs, more only where they could change the decision), B6 loosened (small causes may share a round
   when each has its own outcome and check), one report-only `no-comments` trial on the tool code.
@@ -48,10 +36,8 @@ stopped (the `resume-turn-ended-1.md` beside vf-parallel's run folder is the for
 
 ## Next steps
 
-1. **Finish vf-parallel's grading:** VP4 and VP7 as above, VP11; then record the round in `codex-rounds.md` and
-   `rounds.tsv` (Codex's report is `D:/fitway-temp/codex-round-5baafff1-b258-4fcb-ae90-79f9d26e340d/last-message.md`;
-   tokens 90.7M input, 90.0M cached, 129k output; start load 89,495), merge `owner-r04-vf-parallel`, push, CI.
-2. **Then in parallel, each on its own pair or worktree:**
+1. CI on this resume point's commit (the vf-parallel merge and its record), then fast-forward main to it.
+2. **In parallel, each on its own pair or worktree:**
    - **launcher-fixes-2:** brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-2.md` (`c609e08b`), review
      `D:/fitway-temp/brief-review/codex-launcher-fixes-2-1` dispositioned for that hash; worktree
      `D:/Projects/fitway-worktrees/owner-r04-launcher-fixes-2` at `a14586fe` needs `pnpm install` first; held-out
@@ -70,7 +56,8 @@ stopped (the `resume-turn-ended-1.md` beside vf-parallel's run folder is the for
    URL switch, nothing visible without it (coordinator, reported to the user on 2026-10-14).
 4. **The other tool rounds before Settings:** the `reports.css` split (draft
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); the verify-fitway fixes F131,
-   F132, F136, F148, F149 and F158 with a test pinning SKILL.md's claims to the CLI; the encoding round of decision 56
+   F132, F136, F148 (checked with 4 workers), F149, F158, F160 and F161 with a test pinning SKILL.md's claims to the
+   CLI; the encoding round of decision 56
    (BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
    definitions; each check proven on its real past mistake; and decision 57's outcome-and-limit count in `brief:check`
    with its threshold from the past rounds, then B6, B8 and B13 unfolded); the shared lows (decision 47); the `no-comments`
@@ -79,7 +66,6 @@ stopped (the `resume-turn-ended-1.md` beside vf-parallel's run folder is the for
    its `node_modules` is checked for a junction and unlinked first.
 5. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
-6. Fast-forward main once CI passes on this resume point's commit (DECISIONS 40).
 
 ## Waiting on the user
 
@@ -94,8 +80,8 @@ Nothing. Optional, the user's call: Windows Update's active hours or a pause on 
 - **Timed outcomes need a quiet machine** (B13): no other round, ladder or replay beside them.
 - **Temp junctions:** the vf-parallel grader's link `D:/fitway-temp/owner-r04-vf-parallel-grade/cli-5493e888/node_modules` was removed; relink it to time the old
   CLI again, then remove it (never with a recursive delete).
-- **Test leftovers:** 26 empty `.port-49xxx-lease` folders from 2026-10-13 in `D:/fitway-verify-captures`; check whether
-  `70cf9180`'s suite still leaves them.
+- **Test leftovers (F161):** every verify-fitway suite run leaves empty `.port-<port>-lease` folders in
+  `D:/fitway-verify-captures` (713 so far); harmless to verdicts, and its fix clears them.
 - main has no branch protection; nothing deploys on a push to main. The main checkout D:/Projects/fitway keeps its local
   main at `bbb51709` and an uncommitted one-line AGENTS.md change from 2026-09-06; left untouched.
 - «مساءً», «ظهرًا», «ليلًا» on the busiest-time card are a deliberate exception to DESIGN_GUIDE.md §9 (DECISIONS 33, 34).

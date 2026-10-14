@@ -942,3 +942,63 @@ checks live outside the repository and never appear here or in a brief. One line
   rounds; Claude Code's classifier ran on DeepSeek; the replay ran beside vf-parallel's timings; Codex's run 2 did not
   start from the base; whether the model or the route drops the tool call (F154) is not known.
 - **Disposition:** DeepSeek stays on Codex (DECISIONS 58); the replay reopens only on that item's conditions.
+
+## vf-parallel: `briefs/codex-vf-parallel.md` (this folder), continued by `codex-vf-parallel-continue.md` and `codex-vf-parallel-continue-2.md`, result `70cf9180` on `owner-r04-vf-parallel`, GPT-6.1 Sol `xhigh`, then DeepSeek V4.1 Flash `max`
+
+- **Set-up:** the parallel-compare round of DECISIONS 48: a port pair per round (P1), workers inside one compare (P2),
+  kept captures keyed per item (P3, F147). Held-out rows VP1-VP11 in `D:/fitway-grader/owner-r04/vf-parallel-heldout.md`,
+  written before its measurements. Three sessions:
+  - GPT-6.1 Sol from `5493e888` (`D:/fitway-temp/codex-round-c9d939cf-0dbd-4bd8-ab8e-1b9a9eb7828e`): three resumes
+    over a capacity answer and usage limits on every account; delivered `0fbad66d` with P4, L2 and L3 passing and P1-P3
+    and L1 unmeasured, because the shared-frame round held the ports and the release marker came too late for it.
+  - DeepSeek, fresh (`codex-vf-parallel-continue.md`, `codex-round-6cb545e8-2571-48fd-af5e-db0c44320e48`): on
+    `0fbad66d` 4 workers took 581 s against 1,112 s (1.91x, 25 s over the brief's half); it committed `f3601821` (fewer
+    manifest rewrites); one F154 resume; stopped at the user's request (DECISIONS 54), its timings having run beside the
+    coordinator's Claude Code replay.
+  - DeepSeek, fresh again (`codex-vf-parallel-continue-2.md`, `codex-round-5baafff1-b258-4fcb-ae90-79f9d26e340d`,
+    DECISIONS 54 and 55): the phase breakdown first (R5), then `70cf9180`, which skips the language sheets in comparison
+    captures (59 s of serial work), then every measurement on it; one F154 resume (`resume-turn-ended-1.md`).
+- **Codex's report** (`last-message.md` in the last run folder): every outcome and limit PASS. P2 medians of three
+  alternating runs on a quiet machine: the base against itself 917 s with 1 worker and 360 s with 4 (2.55x), the result
+  against the base 922 s and 366 s, with kept captures 500 s and 221 s; the old CLI 1,083 s; fast ladder 659 s with
+  107/107 verification tests. Last session: 90.7M input tokens (90.0M cached), 129k output; start load 89,495.
+- **Brief rows** 12/12 by the coordinator's own checks (R1-R5 of continue-2; P1-P4 and L1-L3 through the held-out rows
+  below; P4 also by CI). R4's change left `SKILL.md`'s line on language sheets stale (F158).
+- **Held-out, graded by the coordinator** (`D:/fitway-temp/owner-r04-vf-parallel-grade/`, runner `run.mjs`, item
+  compare `cmp.mjs`, queues `queue.sh`, `queue2.sh` and `queue3.sh`; CLI at `70cf9180`; base `7e28c713`, result
+  `4352181f`, plants from vf-hold's grade). The queue was killed by a Windows Update restart at 06:36 and resumed at
+  09:22 (F159).
+  - Timing, alone, the full base self compare of 1,224 items: `5493e888` with 1 worker 1,136.6 s, `70cf9180` with 4
+    workers 375.0 s, the same verdicts (3.0x).
+  - VP1 pass: with a plain listener on 3186, compare on 3186-3187 refused in 183 ms naming the pair, no browser started;
+    3174, 3178, 3180 and 3185 refused for launch, doctor, drive and compare (16 of 16, at most 148 ms).
+  - VP2 pass: the release plant on Activity's `g-dates-release` and Reports' base self compare, run at once on two pairs,
+    gave each its alone verdicts item by item (1 and 228).
+  - VP3 pass: the `light` plant with 4 workers against 1: Access 376 items the same; Activity 280 the same verdicts,
+    regions and pixel counts, 8 problem items whose error text differs.
+  - VP4 partial: 9 runs of the four press and release features (4 with 1 worker, 5 with 4): 83 of 84 samples identical
+    in every run. The 84th, `g-dates-release` at 1 ms, is NOT-HELD on two pixels of the calendar icon at (831,98)
+    (F148) in 2 of 4 runs with 1 worker and 5 of 5 with 4, one rerun included. F148 is not the round's code, since it
+    shows with 1 worker; these counts cannot settle whether 4 workers raise its rate, so F148's fix is checked under 4.
+  - VP5 pass: `--workers` 0, -1, 2.5 and abc refused with one message; 2, 3 and 4 gave 1 worker's 152 items field by
+    field.
+  - VP6 pass: kept captures made on 3176-3177 reused on 3188-3189 (10 reused, 0 captured); after a comment in
+    `activity.css`, 8 reused and Activity's 4 captured again, every verdict the cache-off run's.
+  - VP7 pass: two writers of one fresh baseline started together both finished; the reader reused 153 kept captures
+    and matched the cache-off run on all 152 items. Both writers also gave one false DIFFERENT, on Reports `page`
+    with `state=loading`, Arabic, desktop, reduced motion: its proof holds before the skeleton shows at 300 ms, so
+    under two 4-worker writers 4 of 6 captures caught the skeleton and 2 did not, and a kept reserve frame holds it
+    (F160, the recipe, not the round's code).
+  - VP8 pass: on 3176-3177, 1 worker, cache off, `5493e888`'s and `70cf9180`'s CLIs gave the same 152 items for Reports'
+    states and the same 2 timeline items (9 samples).
+  - VP9 pass: three 4-worker compares on the three pairs at once (Reports 228, Access 384, Activity 396 items) finished
+    in 105-134 s with no `ERR_NO_BUFFER_SPACE`, at most 12 peak sockets each and 114 established connections on the
+    machine; a stand-in preview on 3174 answered all 688 polls.
+  - VP10 pass: a compare killed mid-run left no Chromium and no listener on 3188-3189 after 10 s; the next compare there
+    finished in 14 s.
+  - VP11 pass: only `.agents/skills/verify-fitway/**` changed; `SKILL.md` only in §"Compare" and its port lines; the
+    recipes keep 44, 31, 46, 30 and 14 features, which both CLIs list; CI run 38539370125 green on `70cf9180`.
+- **Failure causes:** the first session's unmeasured rows were the coordinator's port schedule, not the brief's words or
+  the model's reading; the 2x bar the second session missed was the coordinator's reading of DECISIONS 48 (54). Side
+  findings: F158, F159, F160.
+- **Disposition:** merged; F147 fixed.
