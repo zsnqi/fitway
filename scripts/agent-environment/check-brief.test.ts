@@ -10,14 +10,114 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	checkBrief,
 	formatBriefResult,
 	parseBriefArgs,
 	reviewSourcePlan,
+	setReviewSourcePlaceObserver,
 } from "./check-brief.mjs";
+import { copyReviewSources } from "./codex-round.mjs";
 import { git, put } from "./fixtures";
+
+vi.mock("node:fs", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs")>();
+	return {
+		...actual,
+		readFileSync: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "readFileSync",
+					value: args[0],
+				});
+			return (
+				actual.readFileSync as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+		createReadStream: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "createReadStream",
+					value: args[0],
+				});
+			return (
+				actual.createReadStream as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+	};
+});
+
+vi.mock("node:fs/promises", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs/promises")>();
+	return {
+		...actual,
+		readFile: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "readFile",
+					value: args[0],
+				});
+			return (actual.readFile as unknown as (...values: unknown[]) => unknown)(
+				...args,
+			);
+		}),
+	};
+});
+
+vi.mock("node:child_process", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:child_process")>();
+	const recordGitShow = (args: unknown[]) => {
+		const command = args[0];
+		const commandArgs = args[1];
+		if (
+			command === "git" &&
+			Array.isArray(commandArgs) &&
+			commandArgs[0] === "show"
+		) {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "git-show",
+					value: commandArgs[2],
+				});
+		}
+	};
+	return {
+		...actual,
+		execFileSync: vi.fn((...args: unknown[]) => {
+			recordGitShow(args);
+			return (
+				actual.execFileSync as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+		spawnSync: vi.fn((...args: unknown[]) => {
+			recordGitShow(args);
+			return (actual.spawnSync as unknown as (...values: unknown[]) => unknown)(
+				...args,
+			);
+		}),
+	};
+});
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const script = path.join(
@@ -121,6 +221,27 @@ function fixture() {
 		});
 	};
 	return { root, commandRepository, worktree, head, valid, briefPath, check };
+}
+
+async function captureReviewSourceAccess(action: () => Promise<unknown>) {
+	const accessKey = Symbol.for("fitway.review-source-access-test");
+	const events: {
+		type: "place" | "read";
+		kind?: string;
+		route?: string;
+		value?: unknown;
+	}[] = [];
+	Reflect.set(globalThis, accessKey, events);
+	setReviewSourcePlaceObserver((event) => {
+		events.push({ type: "place", ...event });
+	});
+	try {
+		await action();
+		return events;
+	} finally {
+		setReviewSourcePlaceObserver(undefined);
+		Reflect.deleteProperty(globalThis, accessKey);
+	}
 }
 
 describe("C1 must change references", () => {
@@ -491,10 +612,15 @@ describe("brief-review-sources: the pre-launch source contract", () => {
 		const temporary = mkdtempSync(
 			path.join("D:/fitway-temp", "brief-source-place-"),
 		);
+		const temporaryFile = path.join(temporary, "source.md");
 		const checkout = path.join(f.commandRepository, "checkout-place-dir");
+		const checkoutFile = path.join(f.commandRepository, "docs", "guide.md");
 		const outside = path.join(f.root, "outside-place-dir");
+		const outsideFile = path.join(f.root, "outside-source.md");
 		mkdirSync(checkout);
 		mkdirSync(outside);
+		writeFileSync(temporaryFile, "temporary source\n");
+		writeFileSync(outsideFile, "outside source\n");
 		try {
 			const plan = (value: string) =>
 				reviewSourcePlan(value, {
@@ -502,18 +628,119 @@ describe("brief-review-sources: the pre-launch source contract", () => {
 					head: f.head,
 					checkoutRoot: f.commandRepository,
 				});
-			await expect(plan(temporary)).rejects.toThrow(
-				"named review source is not a file",
-			);
-			await expect(plan(checkout)).rejects.toThrow(
-				"named review source is not a file",
-			);
-			await expect(plan(outside)).rejects.toThrow(
-				"absolute review source is outside D:/fitway-temp and the launcher checkout",
-			);
+			const accessKey = Symbol.for("fitway.review-source-access-test");
+			const cases = [
+				{
+					name: "temp directory",
+					value: temporary,
+					error: "named review source is not a file",
+				},
+				{
+					name: "checkout directory",
+					value: checkout,
+					error: "named review source is not a file",
+				},
+				{
+					name: "outside directory",
+					value: outside,
+					error:
+						"absolute review source is outside D:/fitway-temp and the launcher checkout",
+				},
+				{ name: "temp file", value: temporaryFile },
+				{ name: "checkout file", value: checkoutFile },
+				{
+					name: "outside file",
+					value: outsideFile,
+					error:
+						"absolute review source is outside D:/fitway-temp and the launcher checkout",
+				},
+				{ name: "repository file", value: "docs/guide.md" },
+			] as const;
+			for (const item of cases) {
+				const events: {
+					type: "place" | "read";
+					kind?: string;
+					route?: string;
+					value?: unknown;
+				}[] = [];
+				Reflect.set(globalThis, accessKey, events);
+				setReviewSourcePlaceObserver((event) => {
+					events.push({ type: "place", ...event });
+				});
+				try {
+					if ("error" in item) {
+						await expect(plan(item.value), item.name).rejects.toThrow(
+							item.error,
+						);
+					} else {
+						await expect(plan(item.value), item.name).resolves.toBeTruthy();
+					}
+				} finally {
+					setReviewSourcePlaceObserver(undefined);
+					Reflect.deleteProperty(globalThis, accessKey);
+				}
+				const reads = events.filter((event) => event.type === "read");
+				if ("error" in item) {
+					expect(reads, item.name).toEqual([]);
+					continue;
+				}
+				const firstPlace = events.findIndex((event) => event.type === "place");
+				const firstRead = events.findIndex((event) => event.type === "read");
+				expect(firstPlace, item.name).toBeGreaterThanOrEqual(0);
+				expect(firstRead, item.name).toBeGreaterThan(firstPlace);
+			}
 		} finally {
 			rmSync(temporary, { recursive: true, force: true });
 		}
+	});
+
+	it("keeps source reads after the place check through the checker", async () => {
+		const f = fixture();
+		const goal = f.valid.indexOf("## Goal");
+		expect(goal).toBeGreaterThan(0);
+		const text = `${f.valid.slice(0, goal)}- **Read first, only these:**
+
+  - \`docs/guide.md\`
+
+## Goal
+
+No file references.
+`;
+		const events = await captureReviewSourceAccess(() => f.check(text));
+		const allowed = new Set([
+			path.normalize(path.resolve(f.briefPath)),
+			path.normalize(path.resolve(f.commandRepository, environmentPath)),
+		]);
+		const sourceReads = events.filter(
+			(event) =>
+				event.type === "read" &&
+				(typeof event.value !== "string" ||
+					!allowed.has(path.normalize(path.resolve(event.value)))),
+		);
+		const firstPlace = events.findIndex((event) => event.type === "place");
+		expect(sourceReads.length).toBeGreaterThan(0);
+		for (const read of sourceReads)
+			expect(events.indexOf(read)).toBeGreaterThan(firstPlace);
+	});
+
+	it("keeps source reads after the place check through review copying", async () => {
+		const f = fixture();
+		const brief = `- **Read first, only these:**
+
+  - \`docs/guide.md\`
+`;
+		const events = await captureReviewSourceAccess(() =>
+			copyReviewSources(
+				path.join(f.root, "copy-review"),
+				brief,
+				f.worktree,
+				f.head,
+			),
+		);
+		const firstPlace = events.findIndex((event) => event.type === "place");
+		const firstRead = events.findIndex((event) => event.type === "read");
+		expect(firstPlace).toBeGreaterThanOrEqual(0);
+		expect(firstRead).toBeGreaterThan(firstPlace);
 	});
 
 	it("checks a repository source's type before reading it", async () => {
