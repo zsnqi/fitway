@@ -53,25 +53,27 @@ guard, its motion checks and its light measurements, runs again, and no file des
     record each check's verdict and every frame it writes; then run the result on the HEAD's folder. Every check the
     base file makes outside the tuner gives the same verdict and writes the same frames with the same bytes; report
     each check with both verdicts, and any that fails at the base as failing there too. README names and describes it
-    as at the base, without the tuner.
+    as at the base, without the tuner. A case-insensitive search of the folder, `HISTORY.md` and the evidence folder
+    apart, for `tuner`, each preset's name and the base's stored-tuning keys finds nothing.
   - **Intent.** The folder keeps every guard it had that was not about the tuner.
 - **C2. The tuner's presets in README's measurements.**
   - **Cause.** README §"Measurements" still compares the tuner's presets by name ("Recommended", "A-like",
     "v2 preset"), which T1 does not allow outside `HISTORY.md` and the evidence folder.
-  - **Outcome.** Those rows describe each light variant without naming a tuner preset, or move to `HISTORY.md`'s
-    record with a pointer; their measured values are unchanged.
+  - **Outcome.** Those rows describe each light variant without naming a tuner preset or giving a key from which one
+    could be looked up; their measured values are unchanged.
   - **Intent.** What a reader learns about the lights stays; the tool's names go.
 
 ## Limits the result keeps
 
-- **L1. Everything else unchanged.** Only `capture.mjs`, `README.md`, `INDEX.md` and `HISTORY.md` change, and
-  `HISTORY.md` only by C2's added record; recipes, page files and tools are byte-identical to the HEAD.
+- **L1. Everything else unchanged.** Only `capture.mjs`, `README.md` and `INDEX.md` change: README outside C1's
+  account of the capture script and C2's rows, and INDEX outside the lines its build tool generates for that
+  script, are byte-identical to the HEAD, and so are recipes, page files, tools and `HISTORY.md`.
 - **L2. The checks pass.** The round's L1 checks pass, and `node scripts/verify.mjs fast` passes on your committed
   tree; `git status --short` is empty after your commit and after the ladder.
 
 ## Scope
 
-You may add `capture.mjs` back to the folder and change `README.md` (must change), `INDEX.md` and `HISTORY.md` there.
+You may add `capture.mjs` back to the folder and change `README.md` (must change) and `INDEX.md` there.
 Commit once when done. Everything else is read-only. Add no dependencies. If an outcome cannot be met, do not work
 around it: finish and measure the others, then stop and report. (B3)
 
