@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 23:28 +03:00 (handoff to a fresh session at the user's request: the tuner work accepted at `c2fe4661`; vf-fixes' continue run running; decision 60 in the shared block; main at `ae67d156`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-15 00:14 +03:00 (handoff to a fresh session at the user's request: nothing running; vf-fixes reported at `9c69abe5`, not graded; the tuner work accepted at `c2fe4661`; main at `05c1aaa0`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-60), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -43,16 +43,17 @@
 
 ## Running now
 
-- **vf-fixes, continued**, launched about 22:17 on DeepSeek at `max`:
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-fixes-continue.md` (`81806a2c`, SHA-256
-  `ac983d66...`), review `D:/fitway-temp/brief-review/codex-vf-fixes-continue-1` (one closed, four left open as in
-  codex-vf-fixes-2), run folder `D:/fitway-temp/codex-round-3800e181-1edc-4e50-bb03-ff458e5dcd41`, thread
-  `01a13bd9-757c-7850-8125-c79ae84af4bd`, on `owner-r04-vf-fixes` from `862dea71` (base `088711e0`). Nothing else runs
-  compares beside it. It has ended when its launcher exits: `last-message.md` in the run folder then holds a report
-  naming R1, R2, V1-V7 and L1-L3 on PASS or FAIL lines (an early end resumes on its own up to 10 times,
-  `auto-resumes.log`). If the coordinator's session closed or the machine restarted first, the launcher may have
-  died with it: `events.jsonl` stops growing and no report exists. Its work stays in the worktree; resume it by
-  hand with `pnpm codex:round resume <run folder> --message-file <file>` (resume allows unfinished changes).
+Nothing.
+
+- **vf-fixes reported** (not graded) at about 00:00 on 2026-10-15: `9c69abe5` on `owner-r04-vf-fixes` (one commit on
+  the saved `862dea71`; base `088711e0`), pushed for CI; run folder
+  `D:/fitway-temp/codex-round-3800e181-1edc-4e50-bb03-ff458e5dcd41` (`last-message.md`; two automatic resumes). Its
+  report: R1, R2, V1-V7 and L1-L3 PASS; R2 found nothing deleted, emptied or loosened (keyboard expectations moved
+  from Enter to Space for V4; the compare tests' temp roots isolated, F168); V6 removed 721 empty lease folders and 12
+  dead claims under `D:/fitway-verify-captures`; L1's full self-compare kept every verdict (1,224 and 2,448 items, the
+  same 192 and 384 recipe-omission problems on both sides). Brief and review:
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-fixes-continue.md` (`81806a2c`),
+  `D:/fitway-temp/brief-review/codex-vf-fixes-continue-1`.
 - **The tuner work is accepted** on `owner-followup-r04-build` (`58e39ede`, `aeb7d35a`, `c2fe4661`; pushed, CI
 green): the tuner is gone, its moments run on keys under `?live-keys=1` (`n`, `r`, `u`, `d`), every page compares
 unchanged (tuner-removal, brief 7/10, held-out 9/10), and tuner-removal-fix (brief 4/4) restored Daily's `capture.mjs`
@@ -70,7 +71,7 @@ round's lesson).
 2. **First, the user's topics** (the user, 2026-10-14, at the handoff): a few subjects to discuss before the encoding
    round, among them a new Claude Desktop update and whether it adds capabilities that help this environment.
    Discuss them before starting any round.
-3. **Grade vf-fixes** when it reports (or resume it, above): `D:/fitway-grader/owner-r04/vf-fixes-heldout.md` and the
+3. **Grade vf-fixes** (reported, above; CI on `9c69abe5` first): `D:/fitway-grader/owner-r04/vf-fixes-heldout.md` and the
    round's V1-V7 and L1-L3 on the delivered commit, R2's list of deletions and loosened checks read against the base
    `088711e0`; then merge, CI, main. Its compares need a quiet machine (F168, B13).
 4. **Now that the tuner is in:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
