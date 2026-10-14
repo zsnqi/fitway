@@ -1196,3 +1196,65 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Failure causes:** none in the brief's rows; F173 is an environment edit outside the Scope.
 - **Disposition:** accepted; with it the tuner round's L1 failure is repaired and the build branch's tuner work
   (`58e39ede`, `aeb7d35a`, `c2fe4661`) stands.
+
+## vf-fixes: `briefs/codex-vf-fixes.md` (this folder), continued by `codex-vf-fixes-continue.md` (`81806a2c`), result `9c69abe5` on `owner-r04-vf-fixes`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** the verify-fitway gaps of decision 47: post-action state proofs (V1, F131), address-only features under
+  keyboard (V2, F132), declared companion switches (V3, F136), a keyboard press that shows (V4, F149), `SKILL.md` held
+  to the CLI (V5, F158), no lease folders left (V6, F161), navigating features under touch and keyboard (V7, F164),
+  with limits L1-L3. Held-out rows VF1-VF9 in `D:/fitway-grader/owner-r04/vf-fixes-heldout.md`, written before the
+  launch. Two sessions:
+  - DeepSeek, fresh (`codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`): every behaviour written with contract tests
+    green, stopped at the user's request before its measurements (its `STOPPED-2026-10-14.md`); the coordinator saved
+    the tree as `862dea71`.
+  - DeepSeek, fresh (`codex-vf-fixes-continue.md`, `codex-round-3800e181-1edc-4e50-bb03-ff458e5dcd41`): R1 every
+    measurement on the delivered commit, R2 the saved change judged against `088711e0`; two automatic resumes, no
+    intervention. Tokens over the three runs: 402.8M input (399.6M cached), 412k output; start load 87,345.
+- **Codex's report** (that folder's `last-message.md`): R1, R2, V1-V7 and L1-L3 PASS on `9c69abe5`. R2: nothing
+  deleted or emptied; keyboard expectations moved from Enter to Space for V4; the compare tests' temp roots and the
+  speed test's cache root moved under the round's temp folder (reverting them reproduced 120 s timeouts). V6 removed
+  721 empty lease folders and 12 dead claims. L1: 1,224 and 2,448 items, the same verdicts; two transient self-differences
+  on Daily's `preset=aLike` reran EQUAL.
+- **Brief rows** 12/12 by the coordinator's checks: R1 and R2 pass (the diff `088711e0..9c69abe5` holds only the nine
+  files R2 lists; the removed test lines are the Enter expectations, now Space, and the two temp roots); V1-V7 and
+  L1-L3 through the held-out rows below, V3 by its own measure (no capture problem named for those switches) though
+  VF3 finds the arrival itself cannot be captured; L3 also by CI (green on `9c69abe5`).
+- **Held-out, graded by the coordinator** (`D:/fitway-temp/owner-r04-vf-fixes-grade/`: `job.mjs`, `mkrec.cjs` for the
+  recipe copies, `queue-a.sh`, `queue-b.sh`, `vf5.sh`, plants under `plants/`; CLIs extracted at `088711e0` and
+  `9c69abe5`, their `node_modules` junctions listed in `JUNCTIONS.txt`; concept `4352181f`, the tuner still in it):
+  - VF1 pass: an `afterActions` rule for Access `fail=1` reading a planted text failed all 4 items ("State text missing:
+    #pin-view-alert must contain VF1-PLANTED-NOT-ON-PAGE"), the same rule reading non-empty text passed 4/4, and with no
+    `fail` rule the items were refused ("No observable state proof for fail=1").
+  - VF2 pass: Reports' range and export under `--inputs keyboard`, Arabic and English, desktop and phone, 16 items EQUAL
+    (the HEAD CLI: KEYBOARD-UNREACHABLE); a planted feature whose only path activates the page's `h1` stayed
+    KEYBOARD-UNREACHABLE on both sides.
+  - VF3 partial: a declared `case=long` dependency conflicting with the source-found one was refused with "declared
+    dependency conflicts with source for case=long: record conflicts". `arrive=500` with its declared `state=loading`,
+    the arrival proved by `phase === 'ready'` after the actions: 8 of 8 items problems on both sides
+    ("page.waitForFunction: Timeout 5000ms exceeded"); the error frames show the payload arrived. The runner proves the
+    before rules again after the before capture (unchanged since the base), and `state=loading` is false once the
+    payload lands at about 0.9 s (a probe of the page), so no arrival can be captured (F175). Codex's V3 drive passed
+    these items by timing, its arrival proof (`main` visible) not reading the arrival.
+  - VF4 pass, on Activity's `dates` button instead of `g-dates-release`: the row named a pointer-hold feature, which no
+    keyboard can hold (the coordinator's error in the row; KEYBOARD-UNREACHABLE on both sides, as it should be). The
+    release plant (`--press-fade` 120 to 160 ms) is DIFFERENT at 100 ms under `--inputs keyboard --timeline` as under
+    the mouse, the concept against itself EQUAL (10 samples), and the HEAD CLI's keyboard run misses the plant (EQUAL). A
+    rail link opened and activated by keyboard reaches Reports, its proof reading `reports.html` (8/8 PASS, mouse too).
+  - VF5 pass: the V5 test fails on the stale language-sheet line put back, on `--keep-sheets` in the Compare section and
+    at its end, and on the pair 3190-3191; the unplanted copy passes. The same option placed after "Evidence and
+    advanced tools" passes (F176).
+  - VF6 pass: after both full compares and the 114 verify-fitway tests (114/114, 82 s), `D:/fitway-verify-captures`
+    holds no lease folder (the HEAD CLI's two left empty earlier were removed by the result CLI's next run), the root
+    otherwise only kept captures; the result's worktree stays clean.
+  - VF7 pass: `language` on Reports, Access and Activity and Access's `record-navigation` under touch and keyboard,
+    Arabic and English: every desktop item EQUAL (32), every phone item NOT-REACHABLE by the recipes' `wide` width
+    (32); with the English title planted, Reports' Arabic-to-English items are DIFFERENT under touch and the
+    English-to-Arabic ones EQUAL.
+  - VF8 pass: the full mouse self compare, 4 workers, cache off: 1,224 items with both CLIs (372.9 s and 380.6 s), every
+    verdict the same but one, Daily `state=closed` Arabic phone, DIFFERENT on the result side on the tuner's Lights chip
+    (681 px, a half-pixel shift, F126); that item reran EQUAL 3 of 3 with the result CLI and 1 of 1 with the HEAD CLI.
+  - VF9 pass: only `.agents/skills/verify-fitway/**` changed; CI green on `9c69abe5`; the merge's run below.
+- **Failure causes:** VF3's arrival half is a runner behaviour older than the round (F175) that its measure could not
+  show; VF4's first form was the coordinator's row. Side findings: F174 (a unit test's timeout on main's CI), F175,
+  F176; F168 stays open, its roots moved to another fixed folder.
+- **Disposition:** merged; F131, F132, F136, F149, F158, F161 and F164 fixed.

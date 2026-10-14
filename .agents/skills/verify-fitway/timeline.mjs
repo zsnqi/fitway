@@ -692,9 +692,7 @@ export function observeTimeline() {
 						? arg === "Space"
 							? " "
 							: arg.split("+").at(-1)
-						: keyboardActivation
-							? "Enter"
-							: null,
+						: null,
 			};
 			if (["wait", "waitFor", "gesture", "eval", "scroll"].includes(kind))
 				begin();

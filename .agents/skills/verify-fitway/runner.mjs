@@ -105,6 +105,33 @@ export function stateCases(page, options) {
 const matches = (rule, query, language) =>
 	(!rule.language || rule.language === language) &&
 	Object.entries(rule.when || {}).every(([key, value]) => query[key] === value);
+
+const pageReadingProofKeys = new Set([
+	"attribute",
+	"checked",
+	"disabled",
+	"focused",
+	"hidden",
+	"inputValue",
+	"nonemptyText",
+	"rangeStep",
+	"textContains",
+	"visible",
+]);
+
+function readsPage(proof) {
+	if (!proof || typeof proof !== "object") return false;
+	if (typeof proof.expression === "string") return true;
+	if (Array.isArray(proof.allOf) && proof.allOf.length)
+		return proof.allOf.some(readsPage);
+	if (Array.isArray(proof.oneOf) && proof.oneOf.length)
+		return proof.oneOf.every(readsPage);
+	return (
+		typeof proof.selector === "string" &&
+		Object.keys(proof).some((key) => pageReadingProofKeys.has(key))
+	);
+}
+
 function requestedProofs(page, state, language) {
 	const rules = page.states.filter((rule) =>
 		matches(rule, state.query, language),
@@ -116,6 +143,11 @@ function requestedProofs(page, state, language) {
 		)
 			throw new Error(
 				`No observable state proof for ${key}=${state.query[key]}; add it to verification-recipes.json before claiming a pass.`,
+			);
+	for (const rule of rules)
+		if (rule.afterActions && !readsPage(rule.proof))
+			throw new Error(
+				`${page.page}: afterActions state proof must read the page with a selector or expression, not the address or readiness alone.`,
 			);
 	if (!rules.length)
 		throw new Error(
@@ -606,13 +638,19 @@ export async function drive(options) {
 												{ query: effective.query },
 												language,
 											);
+											const beforeRules = rules.filter(
+												(rule) => !rule.afterActions,
+											);
+											const afterRules = rules.filter(
+												(rule) => rule.afterActions,
+											);
 											entry.stateProof = [];
-											for (const rule of rules) {
+											for (const rule of beforeRules) {
 												await prove(current.page, rule.proof, language);
 												entry.stateProof.push(rule.shows);
 											}
 											await save("before");
-											for (const rule of rules)
+											for (const rule of beforeRules)
 												await prove(current.page, rule.proof, language);
 											const unavailable =
 												(feature.widths === "phone" && cssWidth > 720) ||
@@ -631,15 +669,6 @@ export async function drive(options) {
 												);
 												await save("after");
 											} else {
-												if (
-													input === "keyboard" &&
-													feature.id !== "page" &&
-													!(feature.keyboardActions || feature.actions || [])
-														.length
-												)
-													throw new KeyboardReachError(
-														`Not reachable by keyboard: ${feature.id} has no key sequence; focus stopped ${focusDescription(await focusedElement(current.page))}`,
-													);
 												const actionRecipe =
 													feature.fullMotion && motion === "reduce"
 														? {
@@ -798,6 +827,10 @@ export async function drive(options) {
 														reason:
 															"Feature has no actions; compared at rest only",
 													};
+												for (const rule of afterRules) {
+													await prove(current.page, rule.proof, language);
+													entry.stateProof.push(rule.shows);
+												}
 												if (feature.proof.countIncreased)
 													await current.page.waitForFunction(
 														({ selector, count }) =>
@@ -854,11 +887,11 @@ export async function drive(options) {
 													);
 												await ui.twoFrames(current.page);
 												if (!feature.changesState)
-													for (const rule of rules)
+													for (const rule of beforeRules)
 														await prove(current.page, rule.proof, language);
 												await save("after");
 												if (!feature.changesState)
-													for (const rule of rules)
+													for (const rule of beforeRules)
 														await prove(current.page, rule.proof, language);
 												// A flow may change a state (retry/navigation). Its end proof owns that result;
 												// the requested state was proved before the first user action.

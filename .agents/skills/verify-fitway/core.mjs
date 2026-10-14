@@ -1,7 +1,14 @@
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { existsSync, lstatSync, readlinkSync, realpathSync } from "node:fs";
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import {
+	mkdir,
+	readdir,
+	readFile,
+	rm,
+	rmdir,
+	writeFile,
+} from "node:fs/promises";
 import { createServer } from "node:http";
 import { networkInterfaces } from "node:os";
 import {
@@ -380,7 +387,9 @@ export async function reserveVerificationPorts(ports) {
 			await checkVerificationLease(port);
 			let claim;
 			try {
-				claim = await claimResource(leaseFolder(port), true);
+				claim = await claimResource(leaseFolder(port), true, [
+					leaseFolder(port),
+				]);
 			} catch (error) {
 				if (error.code === "RESOURCE_BUSY")
 					throw new Error(
@@ -434,13 +443,24 @@ async function resourceOwners(root) {
 	return owners;
 }
 
-export async function claimResource(root, tryOnly = false) {
+async function removeEmptyDirectory(path) {
+	try {
+		await rmdir(path);
+	} catch (error) {
+		if (!["ENOENT", "ENOTEMPTY", "EPERM"].includes(error.code)) throw error;
+	}
+}
+
+export async function claimResource(root, tryOnly = false, emptyParents = []) {
 	assertOutsideGit(root);
 	await mkdir(root, { recursive: true });
 	const token = randomBytes(24).toString("hex");
 	const folder = resolve(root, `claim-${process.pid}-${token}`);
 	await mkdir(folder);
-	const release = () => rm(folder, { recursive: true, force: true });
+	const release = async () => {
+		await rm(folder, { recursive: true, force: true });
+		for (const parent of emptyParents) await removeEmptyDirectory(parent);
+	};
 	try {
 		const ownerFile = resolve(folder, "owner.json");
 		await writeFile(ownerFile, JSON.stringify({ ticket: null }));
