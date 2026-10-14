@@ -45,8 +45,8 @@
   brief's same paragraphs, except that the CLI is at `6d472338` or later and your compares run on ports
   3188-3189 only, with `--workers 4`.
 - **Known instabilities** (the findings rows F148, F160, F164 and F165 named above): an item or sample that is
-  NOT-HELD, DIFFERENT or a problem on the base side as well, or that matches one of those rows, is reported with its row
-  and not counted against T3; rerun it once, and report both runs.
+  NOT-HELD, DIFFERENT or a problem is left out of T3 only when the base against itself, run the same way, shows the same
+  kind on that item; report it with its row and both runs. Anything else counts against T3.
 - **The base** is the folder at the HEAD above. Take it from your own `git archive`, extracted outside every git tree.
 
 ## Goal
@@ -66,8 +66,10 @@ live moments the tuner's Motion group was the only way to start stay reachable f
     toggle, panel, presets (`?preset`), switch (`?tuner`), stored tuning or Motion group, apart from `HISTORY.md` and
     the evidence folder, which keep their record. The static lights (LGT-1 to LGT-8) and their custom properties stay
     in `style.css` with the values they have at the base. Daily's recipes drop the 36 `tuner*` features and keep the
-    other 8 unchanged; Reports 31, Access 46, Activity 30 and the components sheet 14 stay as they are. Report every
-    remaining line in the folder that names the tuner, with why it stays.
+    other 8 unchanged; Reports 31, Access 46, Activity 30 and the components sheet 14 stay as they are. No equivalent
+    remains under another name: beyond T2's four key actions, none of the tuner's behaviour, state, storage, panel,
+    presets or controls is rebuilt anywhere. Report every remaining line in the folder that names the tuner, with why
+    it stays.
   - **Intent.** Nothing of the tool is left to load, maintain or measure; what the owner sees was never the tool.
 - **T2. The live moments still reachable.**
   - **Outcome.** A new reading, resetting the readings, and the crowd level going up and down across the nearest
@@ -76,16 +78,15 @@ live moments the tuner's Motion group was the only way to start stay reachable f
     Without the switch the page has no listener, element, text or announcement of it. Each of the four gets a recipe
     feature that the CLI drives with its actions and samples with `--timeline`; `README.md` names the switch and keys.
     Measured: each moment, started at the result by its key and at the base by the same `window.__eclipse.motion` call
-    with `?tuner=0`, gives pixel-equal frames at 1 ms and every 20 ms until its last movement ends, Arabic and
+    with `?tuner=0`, gives pixel-equal frames at 1 ms and every 20 ms until 500 ms after its last movement ends, Arabic and
     English, desktop and phone, full motion, from a script in your temp folder whose output you report.
   - **Intent.** The live update, the digit roll, the crowd bars and the live announcement stay checkable and can be
     recorded for the demo, without a visible tool on the page.
 - **T3. Every page unchanged otherwise.**
   - **Outcome.** F2 and F3 of the shared-frame brief, run as written there with this round's base and result, hold
-    on all five pages, except that on Daily an item may differ only inside the rectangle the tuner's toggle occupied
-    at the base (measured from the base's page at each size and language), where the result shows what lay behind it;
-    report each such item with its region. The tuner's own features are absent from the result's recipes and are not
-    compared. Its reruns rule applies as written.
+    on all five pages, with Daily's base opened with `?tuner=0` (the tuner off at the base: no toggle, panel or stored
+    tuning) and no region excused. The tuner's own features are absent from the result's recipes and are not
+    compared. Known instabilities are treated as above.
   - **Intent.** Removing the tool changes the pixels it drew and nothing else, at rest or in motion.
 - **T4. The hook's configuration readable (F140).**
   - **Outcome.** The build branch's tracked `.impeccable/config.json` no longer starts with a byte-order mark and is
@@ -95,9 +96,9 @@ live moments the tuner's Motion group was the only way to start stay reachable f
   - **Cause.** The folder's press-layer check, named above, is a plain Node script with `node:assert`; its
     `*.test.mjs` name makes the fast ladder's Vitest collect it as a test file with no suite, so CI on this branch has
     failed since 2026-10-11.
-  - **Outcome.** `node scripts/verify.mjs fast` passes on your committed tree, and the press-layer check still fails
-    when one press layer is removed from a stylesheet (the planted defect the script checks today), run the way the
-    folder's tools document it.
+  - **Outcome.** `node scripts/verify.mjs fast` passes on your committed tree, and the press-layer check runs inside
+    it with every case it checks today; it still fails when one press layer is removed from a stylesheet (the planted
+    defect it checks today).
   - **Intent.** The branch's CI vouches for its commits again, and the press-layer guard keeps working.
 
 ## Limits the result keeps
