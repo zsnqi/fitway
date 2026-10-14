@@ -1,0 +1,381 @@
+import { execFileSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
+import { existsSync, lstatSync, readlinkSync, realpathSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createServer } from "node:http";
+import { networkInterfaces } from "node:os";
+import {
+	dirname,
+	extname,
+	isAbsolute,
+	relative,
+	resolve,
+	sep,
+} from "node:path";
+
+// A command already printed this failure's outcome block; callers still fail.
+export class ReportedFailure extends Error {}
+
+export const inside = (root, target) => {
+	const rel = relative(root, target);
+	return !isAbsolute(rel) && rel !== ".." && !rel.startsWith(`..${sep}`);
+};
+
+export const shortFinding = (value) => {
+	const line = String(value).replace(/\s+/g, " ").trim();
+	return line.length > 240 ? `${line.slice(0, 240)}… (see record)` : line;
+};
+
+export function canonical(target, seen = new Set()) {
+	if (!isAbsolute(target)) throw new Error(`Use an absolute path: ${target}`);
+	let ancestor = resolve(target);
+	let info;
+	while (!info) {
+		try {
+			info = lstatSync(ancestor);
+		} catch (error) {
+			if (!["ENOENT", "ENOTDIR"].includes(error.code)) throw error;
+			const parent = dirname(ancestor);
+			if (parent === ancestor) throw error;
+			ancestor = parent;
+		}
+	}
+	if (info.isSymbolicLink()) {
+		if (seen.has(ancestor)) throw new Error(`Link cycle: ${target}`);
+		seen.add(ancestor);
+		return resolve(
+			canonical(resolve(dirname(ancestor), readlinkSync(ancestor)), seen),
+			relative(ancestor, target),
+		);
+	}
+	return resolve(realpathSync(ancestor), relative(ancestor, target));
+}
+
+export function assertOutsideGit(target) {
+	const resolved = canonical(target);
+	// Check lexical ancestors too: a link out of a worktree is still output in that tree.
+	for (const start of [resolve(target), resolved]) {
+		for (let dir = start; ; dir = dirname(dir)) {
+			if (existsSync(resolve(dir, ".git")))
+				throw new Error(`Refusing output inside git working tree: ${target}`);
+			if (dir === dirname(dir)) break;
+		}
+	}
+	return resolved;
+}
+
+export function freshOutput() {
+	return resolve(
+		"D:/fitway-temp",
+		`verify-fitway-${Date.now()}-${randomBytes(4).toString("hex")}`,
+	);
+}
+
+export async function outputFile(root, name) {
+	assertOutsideGit(root);
+	const target = resolve(root, name);
+	if (!inside(canonical(root), canonical(target)) || target === root)
+		throw new Error(`Output escapes evidence folder: ${name}`);
+	assertOutsideGit(target);
+	await mkdir(dirname(target), { recursive: true });
+	assertOutsideGit(target);
+	return target;
+}
+
+export async function jsonOutput(root, name, value) {
+	await writeFile(
+		await outputFile(root, name),
+		`${JSON.stringify(value, null, 2)}\n`,
+		"utf8",
+	);
+}
+
+const types = {
+	".html": "text/html; charset=utf-8",
+	".js": "text/javascript; charset=utf-8",
+	".mjs": "text/javascript; charset=utf-8",
+	".css": "text/css; charset=utf-8",
+	".json": "application/json",
+	".woff2": "font/woff2",
+	".woff": "font/woff",
+	".png": "image/png",
+	".svg": "image/svg+xml",
+	".jpg": "image/jpeg",
+	".txt": "text/plain; charset=utf-8",
+};
+
+export async function preview({
+	concept,
+	port,
+	lan = false,
+	token = randomBytes(24).toString("hex"),
+	cache = "no-store",
+	idleTimeoutMs = 30 * 60 * 1000,
+}) {
+	if (!Number.isInteger(port) || port < 0 || port > 65535)
+		throw new Error(`Invalid port: ${port}`);
+	if (
+		!Number.isInteger(idleTimeoutMs) ||
+		idleTimeoutMs < 1 ||
+		idleTimeoutMs > 30 * 60 * 1000
+	)
+		throw new Error("Idle timeout must be 1-1800000 ms (at most 30 minutes).");
+	const root = realpathSync(concept);
+	if (port !== 0) await portAvailable(port);
+	const sockets = new Set();
+	let idleTimer;
+	const touch = () => {
+		clearTimeout(idleTimer);
+		idleTimer = setTimeout(() => close(), idleTimeoutMs);
+	};
+	const server = createServer(async (req, res) => {
+		touch();
+		if (cache === "no-store") res.setHeader("Cache-Control", "no-store");
+		const send = (code, body = "", type = "text/plain; charset=utf-8") => {
+			res.writeHead(code, {
+				"Content-Type": type,
+				"Content-Length": Buffer.byteLength(body),
+			});
+			res.end(req.method === "HEAD" ? undefined : body);
+		};
+		try {
+			const url = new URL(req.url, `http://127.0.0.1:${port}`);
+			if (url.pathname.startsWith("/__verify/")) {
+				if (req.headers["x-verify-token"] !== token) return send(403);
+				if (url.pathname === "/__verify/identity" && req.method === "GET")
+					return send(
+						200,
+						JSON.stringify({ token, concept: root, pid: process.pid }),
+						"application/json",
+					);
+				if (url.pathname === "/__verify/stop" && req.method === "POST") {
+					send(200, "STOPPED");
+					setImmediate(() => close());
+					return;
+				}
+				return send(404);
+			}
+			if (!["GET", "HEAD"].includes(req.method)) return send(405);
+			const decoded = decodeURIComponent(url.pathname);
+			if (
+				decoded.includes("\\") ||
+				decoded.includes("\0") ||
+				decoded.split("/").some((part) => part === "..")
+			)
+				return send(403);
+			const file = resolve(
+				root,
+				`.${decoded.endsWith("/") ? `${decoded}index.html` : decoded}`,
+			);
+			if (!inside(root, file) || !inside(root, realpathSync(file)))
+				return send(403);
+			const bytes = await readFile(file);
+			return send(
+				200,
+				bytes,
+				types[extname(file)] || "application/octet-stream",
+			);
+		} catch (error) {
+			return send(
+				["ENOENT", "ENOTDIR", "EISDIR"].includes(error.code) ? 404 : 400,
+			);
+		}
+	});
+	server.on("connection", (socket) => {
+		sockets.add(socket);
+		socket.once("close", () => sockets.delete(socket));
+	});
+	let closing;
+	function close() {
+		clearTimeout(idleTimer);
+		closing ??= new Promise((done) => {
+			server.close(done);
+			for (const socket of sockets) socket.destroy();
+		});
+		return closing;
+	}
+	await new Promise((done, reject) => {
+		server.once("error", (error) =>
+			reject(
+				new Error(
+					error.code === "EADDRINUSE"
+						? `Port ${port} busy; choose another port (never stop its owner).`
+						: error.message,
+				),
+			),
+		);
+		server.listen(port, lan ? "0.0.0.0" : "127.0.0.1", done);
+	});
+	const assigned = server.address().port;
+	if (port === 0 && assigned < 49152) {
+		await close();
+		throw new Error(
+			`Kernel assigned port ${assigned} outside the isolated high-port range.`,
+		);
+	}
+	port = assigned;
+	touch();
+	return {
+		server,
+		close,
+		token,
+		concept: root,
+		port,
+		origin: `http://127.0.0.1:${port}`,
+	};
+}
+
+export async function portAvailable(port) {
+	if (process.platform === "win32") {
+		const owners = portOwners(port);
+		if (owners.length)
+			throw new Error(
+				`Port ${port} held by a process this CLI did not start (${owners.map((o) => `${o.address} pid=${o.pid}`).join(", ")}); use a free port.`,
+			);
+	}
+	const listener = createServer();
+	await new Promise((done, reject) => {
+		listener.once("error", () =>
+			reject(
+				new Error(
+					`Port ${port} held by a process this CLI did not start; use a free port.`,
+				),
+			),
+		);
+		listener.listen({ port, host: "::", exclusive: true }, done);
+	});
+	await new Promise((done) => listener.close(done));
+}
+
+export function portOwners(port) {
+	if (process.platform !== "win32") return [];
+	return parsePortOwners(
+		execFileSync("netstat", ["-ano"], {
+			encoding: "utf8",
+			windowsHide: true,
+		}),
+		port,
+	);
+}
+
+export function parsePortOwners(output, port) {
+	return output.split(/\r?\n/).flatMap((line) => {
+		const m = /^\s*TCP\s+(\S+):(\d+)\s+\S+\s+LISTENING\s+(\d+)/.exec(line);
+		return m && Number(m[2]) === port
+			? [{ address: m[1].replace(/^\[|\]$/g, ""), pid: Number(m[3]) }]
+			: [];
+	});
+}
+
+export function defaultLanAddresses() {
+	if (process.platform !== "win32") return [];
+	const routes = execFileSync("route", ["PRINT", "-4"], {
+		encoding: "utf8",
+		windowsHide: true,
+	});
+	return routes
+		.split(/\r?\n/)
+		.flatMap((line) => {
+			const match =
+				/^\s*0\.0\.0\.0\s+0\.0\.0\.0\s+\S+\s+([\d.]+)\s+(\d+)\s*$/.exec(line);
+			return match ? [{ address: match[1], metric: Number(match[2]) }] : [];
+		})
+		.sort((a, b) => a.metric - b.metric)
+		.map((route) => route.address);
+}
+
+export function lanOrigins(
+	port,
+	interfaces = networkInterfaces(),
+	preferred = [],
+) {
+	const addresses = [
+		...new Set(
+			Object.values(interfaces)
+				.flat()
+				.filter(
+					(item) =>
+						item &&
+						!item.internal &&
+						(item.family === "IPv4" || item.family === 4) &&
+						item.address !== "0.0.0.0" &&
+						!item.address.startsWith("169.254."),
+				)
+				.map((item) => item.address),
+		),
+	].sort();
+	if (!addresses.length)
+		throw new Error(
+			"No external IPv4 LAN address; connect a network interface before launch --lan.",
+		);
+	const routed = preferred.find((address) => addresses.includes(address));
+	return (routed ? [routed] : addresses).map(
+		(address) => `http://${address}:${port}`,
+	);
+}
+
+export function verificationPort(port) {
+	if (![3176, 3177].includes(Number(port)))
+		throw new Error(
+			`Port ${port} is outside the verification allocation; choose 3176 or 3177. Ports 3174 and 3178-3185 belong to other previews.`,
+		);
+	return Number(port);
+}
+
+export async function ownedSession(folder) {
+	const session = JSON.parse(
+		await readFile(resolve(folder, "session.json"), "utf8"),
+	);
+	if (!Number.isInteger(session.port))
+		throw new Error("Invalid session port; relaunch.");
+	const refused = (cause) =>
+		new Error(
+			`Port ${session.port} is not owned by this session (not served by this session); refuse session.`,
+			{ cause },
+		);
+	let response;
+	try {
+		response = await fetch(
+			`http://127.0.0.1:${session.port}/__verify/identity`,
+			{
+				headers: { "x-verify-token": session.token },
+				redirect: "error",
+				signal: AbortSignal.timeout(1500),
+			},
+		);
+	} catch (error) {
+		try {
+			await portAvailable(session.port);
+		} catch {
+			throw refused(error);
+		}
+		throw new Error(
+			`Session preview on port ${session.port} has stopped or is unreachable; relaunch.`,
+			{ cause: error },
+		);
+	}
+	if (!response.ok) throw refused();
+	let identity;
+	try {
+		identity = await response.json();
+	} catch (error) {
+		throw refused(error);
+	}
+	if (
+		!identity ||
+		identity.token !== session.token ||
+		identity.concept !== session.concept ||
+		identity.pid !== session.pid
+	)
+		throw refused();
+	const foreign = portOwners(session.port).filter(
+		(owner) => owner.pid !== session.pid,
+	);
+	if (foreign.length) {
+		const pids = [...new Set(foreign.map((owner) => owner.pid))];
+		throw new Error(
+			`Port ${session.port} is served by this session but also held by foreign pid${pids.length === 1 ? "" : "s"} ${pids.join(", ")}; refuse session.`,
+		);
+	}
+	return session;
+}

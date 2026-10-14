@@ -12,7 +12,25 @@
 			"type": "object",
 			"minProperties": 1,
 			"additionalProperties": {
-				"$ref": "https://fitway.local/schemas/project-state.schema.json#/$defs/milestone"
+				"allOf": [
+					{
+						"$ref": "https://fitway.local/schemas/project-state.schema.json#/$defs/milestone"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"status": {
+								"enum": [
+									"DONE",
+									"BLOCKED",
+									"NEEDS_HUMAN",
+									"FAILED_VALIDATION",
+									"SUPERSEDED"
+								]
+							}
+						}
+					}
+				]
 			}
 		}
 	}

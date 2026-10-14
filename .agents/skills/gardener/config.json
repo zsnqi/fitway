@@ -1,0 +1,14 @@
+{
+	"weeklyWorktree": "D:/Projects/fitway-worktrees/gardener",
+	"notRunChecks": {
+		"check:concept-css": "Requires a concept folder; deferred by the coordinator until it enters the fast ladder after the Owner CSS round (agent-environment DECISIONS item 20)."
+	},
+	"codeHealth": {
+		"concept": {
+			"branch": "owner-followup-r04-build",
+			"folder": "design-research/owner-composition-exploration-r04/directions/eclipse",
+			"specimenPages": ["components.html"]
+		},
+		"toolingRoots": ["scripts", ".agents/skills"]
+	}
+}

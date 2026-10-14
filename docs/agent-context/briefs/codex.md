@@ -13,11 +13,16 @@
 - Use absolute paths; the shell's working directory resets between calls. (2026-10-02 retrospective)
 - Wait on long jobs with Monitor or a background shell, never `sleep` or `Start-Sleep`. (2026-10-02 retrospective)
 - Read a file before editing it. Write UTF-8 without a BOM and keep the file's line endings. (2026-10-02 retrospective)
+- Windows PowerShell 5.1 without a profile pipes text to node, python or git as ASCII: Arabic, «» and … become `?`.
+  Put such text in a file and run the file, and read back each file you write that holds it. (replay motion-lows)
 - In PowerShell run pnpm without `2>&1`. Run Playwright from PowerShell: Git Bash rewrites `/api` paths. (2026-09)
-- Drive C is full: keep temp output on D:, and set `TEMP`/`TMP` to `D:/fitway-temp` for a command that writes much. (2026-09)
+- Drive C is short: keep output on D:. `TEMP` and `TMP` are already on drive D; never point them at `D:/fitway-temp`,
+  whose folders the gardener inventories. (2026-09; agent-environment DECISIONS item 24)
 - If a source this brief names is missing, stale, or contradicts what you find, stop and report the gap instead of
   guessing. (agent-environment DECISIONS item 3)
-- Return your report as your final message, not as a file. (2026-10-02 retrospective)
+- Return your report as your final message, not as a file. Any message without a tool call is your final message:
+  it ends your run and stops what you started, so wait inside a tool call and write it once, as the report.
+  (2026-10-02 retrospective; F154)
 <!-- environment:end -->
 
 - You run in the workspace-write sandbox with automatic approval review. `git add`, `git commit` and anything that
@@ -30,12 +35,13 @@
 
 ## Causes and required outcomes
 
-- **<X>1.** <The cause, with `path:line` evidence.> Outcome: <an observable result, not an approach>.
+- **<X>1.** <The cause, with `path:line` or `path:start-end` evidence.> Outcome: <an observable result, not an approach;
+  any allowance names its bound>. Intent: <what the outcome is for, so a literal reading that defeats it shows>.
 
 ## Scope
 
 You may change `<paths>`; commit once when done. Everything else is read-only. Add no dependencies. If an outcome cannot be met, do not
-work around it: finish and measure the others, then stop and report. (r04 B3)
+work around it: finish and measure the others, then stop and report. (B3)
 
 ## Report
 
@@ -44,16 +50,29 @@ SHA; anything you could not do.
 
 ## Coordinator checklist (delete before launch)
 
-- [ ] Goal, cause and outcomes only; the approach is left open (B4). One change, aimed at one cause (B6).
-- [ ] Every way to open and run the artifact is named, with the ones the checks cover (B1).
-- [ ] The baseline meets each required outcome under each condition, or the condition is marked "unchanged from the
-      baseline" (B2, B7).
-- [ ] Every command an outcome requires was run on the baseline in that scope first: `pnpm biome check .` has 21
-      older errors in `design-research/**`, which Biome's config excludes anyway, and `git ls-files -ci` lists the
-      local `.claude/` exclude (agent-environment rounds 3, 4; nav-2).
+The brief rules B1-B13 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
+(`docs/phase-records/handoffs/agent-environment/codex-rounds.md`).
+
+- [ ] B1. Every supported way to open and run the artifact is named (HTTP, `file://`, sizes, reduced motion), with the ones the checks cover.
+- [ ] B2. Before requiring equality to a baseline, the baseline is checked for the defect being removed.
+- [ ] B3. The Scope keeps its last sentence: an unmet outcome is measured and reported, never worked around.
+- [ ] B4. Goal, cause and outcomes only; the approach is left open.
+- [ ] B5. No verifier probe, threshold or held-out check, and no `fitway-grader` path.
+- [ ] B6. Each outcome aims at one cause and has its own check. A round may group several small causes, related or not, when each is verified on its own; split them when one changes what another measures, when one needs a decision or another base, or when the brief outgrows one review. (user, 2026-10-14; the rounds that grouped five independent causes graded cleanly)
+- [ ] B7. The baseline meets each required outcome under each condition, or that condition is marked "unchanged from
+      the baseline"; every command an outcome requires was run on the baseline in that scope first (`git ls-files
+      -ci` lists the tracked `.claude/` files the local exclude covers).
+- [ ] B8. Each measurable outcome has its intent beside it, so a literal reading that defeats the purpose shows; every outcome is literally reachable from the baseline; an allowance ("may trail") states its bound; an equality measured in emulation states its noise floor. (user, 2026-10-04; the Intent field since Evaluation B8 and B9, 2026-10-07)
+- [ ] B9. An outcome about how a value fits names the widest value it can take, not only the current one: the widest the code can produce, not the widest the current data shows. (A Widest field was not shown to help.)
+- [ ] B10. Every file, section, row and decision item the brief names exists at the named HEAD (checker id `brief-references`): `pnpm brief:check <this file>`
+      passes against the worktree it names.
 - [ ] Every limit the result must keep is an outcome of its own: where the tool may run from, length or size caps,
-      no text kept twice, and every live artifact the change can reach still passing (agent-environment C3).
-- [ ] No verifier probe, threshold or held-out check, and no `fitway-grader` path (B5).
-- [ ] A test suite that needs a clean tree is run after the commit (agent-environment round 2).
+      no text kept twice, and every live artifact the change can reach still passing (evaluation C3). For a file the
+      round deletes or renames, `git grep` its path in the open records (resume files, briefs, packets) first, and
+      fix them before launch or name them as in scope (r03 round 3).
+- [ ] B11. Launch runs the `REVIEW.md` review when absent (or with `--new-review`) and stops; record every reading as closed or left open with why, and the current brief SHA-256, in its `dispositions.md` before launching.
+- [ ] B12. The readings the review keeps returning (`REVIEW.md` §"Recurring readings") are closed before it runs.
+- [ ] B13. A timed outcome runs each side three times, alternating, on a quiet machine, and reports every run with the median and range, what limits the time, the errors counted, and proof the work ran; more runs only where they could change the decision. (user, 2026-10-14; adapted from pstack's `benchmark-checklist`)
+- [ ] A test suite that needs a clean tree is run after the commit. A brief whose round adds ladder tests says CI runs them on Windows without Playwright Chromium or ui-forensics (`.github/workflows/checks.yml`), so a proof that needs a real browser is a script in the temp folder, run and reported (vf-speed and vf-hold, 2026-10-12: both first pushes failed CI for it).
+- [ ] Mark with ` (must change)` each path an outcome requires to change.
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.
-- [ ] `pnpm brief:check <this file>` passes against the worktree it names.

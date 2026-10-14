@@ -15,15 +15,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    Each screen is designed at 1440, 768 and 390; 320, 1024 and 200% zoom are checked only. Tests come once, at the
    end. (2026-09-30; brief "The design-phase plan", from line 821.)
    **Why** (the user, 2026-10-04): this concept is the single design reference that production is later moved to.
-   After that move, the user shows a demo to the gym's owner (informal; a family friend) to win funding and an
-   agreement. Demo polish (convincing synthetic data, no dead links, a clean link) waits for then, as do the demo's
-   materials: device mock-ups, a motion-graphics video and an explanatory PDF, each researched first. Not now.
-   The gym already runs an older internal system that handles payments and is wired to the entry/exit turnstile,
-   with no public crowd page; the user believes https://finityloops.com/ built it. FITWAY complements it, not
-   replaces it, with better features and interface (the user, 2026-10-04). Research done: Opus 5.5 motion-graphics
-   examples and tools; the incumbent system (confirmed by the user: Finityloops, `ug1.finityloops.com`) and
-   positioning. Both saved in
-   `docs/phase-records/handoffs/owner-design-exploration/r04/demo-research/` (read its README first).
+   The demo and its materials wait until after that move. FITWAY complements the gym's existing internal system
+   (payments, the entry/exit turnstile); it does not replace it. The demo plan and its research are kept on the
+   user's machine, not in the repository (the user, 2026-10-09: the repository is public).
 3. **The user's bans.** `DO-NOT.md`, read in full before any design or copy work.
 4. **Motion.** Lights are static and the page is complete at first paint. Digits roll only on a live change. The
    intro plays on first open only, about 1.17 s, with the font wait capped at 200 ms. Reports has no intro and no
@@ -271,7 +265,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       picker's motion praised): the minute-data export too (it lives on Reports, TBL-10; Daily has no export), and
       every later screen with a date. The follow-up goes to Codex (frozen edits applying the built picker), then the
       coordinator inspects its frames. Brief `codex-activity-followup.md` (`7f8d2dd` on `owner-r04-activity`), level
-      `high`; an owner's one stored name is «فهد» / «نورة» on both pages (coordinator).
+      `high`; an owner's one stored name is «فهد» / «نورة» on both pages (coordinator). Built at `31e9dd9`, merged into
+      `owner-followup-r04-build`; published https://claude.ai/artifact/C6yiDVgdAnFN5wzwuzHdoD (Daily, Reports, Activity log).
+      Two notes on it, delegated by the user to the screen's last round (designer or reviewer decides): the English page
+      shows the stored Arabic name beside an English reason that names "Noura"; at 320 px the export's file line sits
+      below the sheet's first view.
 
 33. **Access, the answers before its one pass** (2026-10-04; research digest
     `D:/fitway-temp/owner-r04-access-questions/REPORT.md`). Access holds the one shared front-desk PIN and the owner
@@ -288,6 +286,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **"Change my password"** is added, though no contract has it (the user: an excellent feature or change missing
       from the specification may be added). The design names each such addition as a Product/Spec amendment for the
       move to production; privacy and security limits still bind.
+    - **The PIN changes in two steps** (the user, 2026-10-04, after the first build; coordinator's proposal): the new
+      PIN is shown while the old one keeps working; only «حفظتُ الرمز» makes the new one take effect and signs the
+      front desk out. An accident before it (a closed browser, a lost connection) changes nothing. A Product/Spec
+      amendment (the contract rotates in one step today); built in Access's fix round.
+    - **The specification may change where a change is better** (the user, 2026-10-04), not only gain missing
+      features; each change is still named as a Product/Spec amendment for the move to production, and privacy and
+      security limits bind.
     - **Deactivated owners** stay in the same list, quieter, with "Reactivate".
     - **After an action:** one quiet sentence that it is done, with a link to the record in Activity log; a failure
       shows its specific refusal and keeps the form as typed.
@@ -297,44 +302,371 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       a long reason fails on saving. The concept caps the field at 240; production's contract is fixed outside this
       concept milestone (production paths are forbidden here).
 
+34. **Access, after the max-effort build** (`2fa0792` on `owner-r04-access`, 2026-10-04; designer report
+    `D:/fitway-temp/owner-r04-access/REPORT.md`; review `D:/fitway-temp/owner-r04-access-review/REPORT.md`, all checks
+    pass but V8 low). Published with the other three pages, links wired in the staged copy only:
+    https://claude.ai/artifact/34ZEAW6e9xJmAbr4WmG2VM (the account changed; earlier links no longer open).
+    Coordinator answers to the designer's questions, each applying a rule already decided:
+    - Creating a PIN asks nothing first (it signs no one out; item 33 asks only before a change).
+    - Reactivating asks first, as built (the account works again at once with its old password).
+    - A typed password stays masked while its dialog is open after a refusal (item 33: the form is kept) and is emptied
+      when the dialog closes (review F2).
+    - The done link opens the exact record (AMD-C2 built: Activity log arrives on one record by its id; item 33 "a
+      link to the record" and the user's "specification may change where better").
+    - One English pair on both pages: Deactivate / Reactivate (item 33's words); Activity log changes with it.
+    - Changing one's own password ends one's other sessions, as drawn (the usual security rule).
+    The fix round, by an `owner-direction-designer` (xhigh) on the integrated build branch: the two-step PIN change
+    (item 33), the computer's composition (designer and review: at 1440 a row's actions sit about 1000 px from its
+    name, half the screen empty), the sign-out wording («دخول» means visitors' entries here, review F4), and the
+    review's lows (F1, F2, F5, the 700 ms silence, the row that jumps groups); plus the rail and bar links, the spec
+    fragment merged as §4.4, and INDEX. Access merged into `owner-followup-r04-build` at `6ec9591`.
+    **The user's notes on the published page** (artifact comments and answers, 2026-10-04), which revise item 33:
+    - **The sign-out wording** «ينتهي دخول …» is wrong (the user agrees): «دخول» is visitors' entries here.
+    - **The quiet removal buttons** («تعطيل الرمز», «تعطيل الحساب») read oddly without a box on the computer; on the
+      phone they read well and stay.
+    - **The reason is optional** for both deactivations: the field stays, at most 240 characters, never required. A
+      Product/Spec and contract amendment (the contract requires it today).
+    - **The front-desk code:** the owner either lets the system generate it or types one; it may hold letters as well
+      as digits (the user: a mixed code lowers the risk), with a copy control in its one-time view. This reverses
+      item 33's "no copy control" and the generated-only, digits-only PIN; a Product/Spec and contract amendment. The
+      user declined a weak-code rule ("معليك"); the coordinator keeps only a minimum length.
+    - **The computer's arrangement is shown first as a simple skeleton** (the user): the designer proposes the
+      arrangement in plain blocks before building it, and the user agrees before the full fix round.
+    **The skeleton, agreed** (2026-10-05; `D:/fitway-temp/owner-r04-access-skeleton/`, report `REPORT.md` there,
+    https://claude.ai/artifact/Gog3geQcM3pruLW59DfmXM; the user: "اعجبتني … واضحة ومرتبه"):
+    - Two halves on the computer: the front desk and the owners, each person's buttons under the name; and a new
+      «سجل الوصول» card with the latest access records and «عرض الكل». The user accepts the new content (the
+      requirements still improve during development; anything bad is changed later).
+    - **The removal buttons get their quiet box on the phone too** (the user), revising the earlier note.
+    - **The owner always types the front-desk code**; the system no longer generates one (the user), revising the
+      generate-or-type choice above. Letters and digits, a minimum length, a copy control in its one-time view.
+    - **«إلغاء التغيير»** in the one-time view (the user: "ممتاز"): safe with the two-step change, since the old code
+      works until «حفظتُ الرمز». This revises item 33's "closes only by «حفظتُ الرمز»".
+    - «السبب (اختياري)» confirmed.
+    **After the fix round's design part** (`a0c6c76`, 2026-10-05; report `D:/fitway-temp/owner-r04-access-fix/REPORT.md`),
+    the user's answers to two of the designer's questions:
+    - **The code's letters keep their case** (the user: «نفرّق»): A and a differ. This reverses the designer's
+      case-insensitive proposal in AMD-C4; the code stays 8-16 English letters or digits.
+    - **The code shows in a monospace face** that tells I from l and O from 0, in its one-time view and its field
+      only (the user): a named exception to Readex only (TYP-1), self-hosted or a system face (item 6).
+    - **The copy control sits beside the code on the computer** (the user, «اي», after asking why it sat under the
+      code unlike the skeleton): at the code's end on the same line from the computer's widths, under it on the
+      phone. Built with the monospace face, which makes the widest code predictable; the designer checks it against
+      the widest sixteen characters and reports the measurements if it does not fit.
+    Coordinator, applying rules already decided: the records card stays off the phone, which keeps its link (the
+    designer's composition); 16 stays the maximum.
+
+35. **A dialog's buttons start where its text starts** (the user, 2026-10-05, «موافق يلا», after two research digests
+    `D:/fitway-temp/owner-r04-dialog-side/REPORT.md` and `REPORT-2.md` and the frames `compare-1440-*.png` there).
+    Every dialog's actions sit at the inline start (the right in Arabic, the left in English), under the title, text
+    and fields they finish, Cancel first and the primary after it, so a destructive primary is not the first thing
+    the eye reaches. This replaces DLG-2's "actions at the inline end, the primary last". Why: the dialogs are text
+    and fields hung on the start edge (form-like); the one measured study (Wroblewski, in-page forms) and GOV.UK,
+    HashiCorp Helios and Fluent's mirroring favour the start; the end's strongest reason is platform habit (Apple,
+    Material). On the phone the two buttons fill the width, unchanged.
+    **A centred moment stays centred** (the user, 2026-10-05): the export's done state keeps its check and «الملف جاهز»
+    centred over start-aligned buttons; a status moment is not text that flows from the start, and not everything
+    belongs on one edge. Built at `54b2737` (fixer report in `D:/fitway-temp/owner-r04-dialog-start/`).
+
+36. **Interaction motion gets its own round, before the remaining screens** (the user, 2026-10-05: «اتفق معك»).
+    What the user means: motion in chosen moments that raise the design's quality and beauty, not everywhere; for
+    example the check in the export's done state could arrive with a fine animation. The round covers, for every
+    page: a dialog's open and close, a button from its label to Working to done, the done line appearing, popovers,
+    «نسخ» to «نُسخ», a row that changes after a deactivation; reduced motion honoured; the bans on load motion (DO-NOT,
+    MOT-1) still hold. The remaining screens are then built with it. For the move to production (React, Tailwind,
+    shadcn with Base UI already): the coordinator researches which motion library and component sources fit, from
+    what practitioners recommend (Motion is the first candidate; HextaUI and the like only for components that pass
+    RTL), and proposes one (the user: «شوف وش المناسب انت»).
+
+37. **Motion and components for production** (the user, 2026-10-05: «ممتاز» on each of the three points; research
+    digest `D:/fitway-temp/owner-r04-motion-research/REPORT.md`). For the move to production, not the concept:
+    - The simple moments (a dialog's open and close, popovers, tooltips) are CSS transitions on Base UI's
+      `data-starting-style` / `data-ending-style`, with no added library. Why: Base UI's own guidance, no bundle cost,
+      and a transition can be interrupted midway.
+    - The finer moments (a button from its label to Working to done, the done check, a row that changes after a
+      deactivation) use Motion (MIT), its light form (`LazyMotion` + `m` + `domAnimation`), and only there. Reduced
+      motion is honoured by the code itself, since Motion's setting leaves opacity and colour moving; any slide is
+      mirrored by hand, since Motion is not direction-aware.
+    - Components stay shadcn on Base UI with `rtl: true`. HextaUI (Base UI, MIT, days old on 2026-10-05) is a source
+      to copy from (its button states, its number roller) only after an Arabic test. NumberFlow is not used (it does
+      not support RTL or non-Latin digits). Magic UI, Animate UI and Motion Primitives are not used: they hard-code
+      left and right (coordinator, from the digest).
+
+38. **The motion round, after the user tried it** (`0c43c90`, the user on the live site and the frame strips, 2026-10-05):
+    - The timings stay: the window's 340 ms opening and about 0.9 s from file ready to the finished check («ممتازة»).
+    - The export's check draws on the phone too, as built.
+    - The export's done state: the user liked it as built («اشوفها ممتازة»), then asked for the coordinator's ideas
+      for its empty third of a second and wants to see both («بنشوف الاثنين»): (1) the check starts drawing while
+      the window shrinks; (2) the calendar is not removed first but cut away by the shrinking bottom edge, then the
+      check. A designer builds both as switchable variants beside the current one on the live site; the user picks.
+    - Access's row after a (de)activation (O2): try changing the row only once the window has closed, without a
+      noticeable wait («المفروض ما تتأخر جدا»); the user judges whether it is better.
+    - Access's «سجل الوصول» card: the user asks how a new record would arrive with motion; show it before building.
+      Answered (2026-10-05, «اي يدخل بحركة», on the coordinator's description: the new record appears at the top,
+      the lines below move down to make room, its words rise into place without fading): a new record arrives with
+      motion. Built by a fresh designer after the variants round, in its own small brief.
+    - Speak to the user of «النافذة», not «الحوار», and describe a moment step by step as they see it.
+39. **The variants, picked** (the user on the live site at `2996d7a`, 2026-10-06): the export's done state stays as built,
+    `?done=0` («افضل الحالية»), and Access's row stays as built, `?row=0` («الحالي افضل خلاص»). Coordinator: the trial
+    switches have done their work; the next build removes variants 1 and 2, row option 1 and the switches (MOT-19),
+    keeping what the motion rounds made true for every variant (one frame clock, the narrow sheet's file line). The
+    narrow-sheet review was stopped as moot: its open observations concern variant 2 only.
+40. **Verification tooling before Settings, and `main` as the trunk** (the user, 2026-10-07, after the discussion of
+    Lauren Tan's talk on agent-friendly codebases; the four digests are in `D:/fitway-temp/verification-discussion-20261007/`):
+    - The whole coordinator line merges into `main`, which becomes the repository's truth for tools, policy and
+      finished code. The concept's research files come along as reference only (ADR-009 keeps Owner composition
+      vacant); the live Eclipse build stays on `owner-followup-r04-build` until the user approves it. The merge takes
+      main's 2026-09-24 removal of the retired external-worker section from `docs/WORKFLOW.md`, the later decision.
+      Coordinator: from then on `main` is fast-forwarded to the coordinator line whenever CI passes on it, at least at
+      every resume point.
+    - One tooling round runs before Settings, as its own milestone cut from the new `main`: a verification CLI built
+      on the existing probe kit and ui-forensics (it measures; acceptance thresholds and held-out checks stay in
+      `D:/fitway-grader`), a feature map of the Owner concept generated from its code and spec, a `verify-fitway`
+      skill that Claude and Codex both read, the brief fields for B8 and B9 (through agent-environment-r02's
+      evaluation loop), a preview that sends no-store, and one command that launches a Codex round.
+    - pstack's `create-verification-skill` and `maintain-verification-skill` (Lauren Tan, MIT) are installed
+      user-level, unmodified from `cursor/plugins` at `df58112`, and tried in that round; their `.cursor/skills/`
+      output goes to `.agents/skills/` and `.claude/skills/` instead.
+41. **Press feedback and 16 px field text** (the user, 2026-10-08, «موافق عليها كلها», on the two questions the good-css
+    review raised, `good-css-review.md` in this folder):
+    - Every pressable control shows that it was pressed. The form is the designer's, within the motion rules
+      (DESIGN-SPEC §1.10 and DESIGN_GUIDE.md §10); today the concept has none.
+    - Text fields use at least 16 px text, so a phone does not zoom the page when a field is tapped; this replaces the
+      concept's 15 px field text (DESIGN-SPEC.md, the type roles).
+    - Both go with the CSS fix round of the resume point's Next steps 6, when the Owner screens resume.
+
+42. **The press, two answers** (the user, 2026-10-10, on the questions of the pressed-state designer, `dbdcea0a` on
+    the build branch):
+    - On release, the press's light fades out over about 120 ms instead of going at once, so that even a very fast
+      tap shows. This is a background light, not a glyph (MOT-1). It is an exception to MOT-18's "hover colours are
+      instant" for the release only; the press itself still appears at once. The scale settles as built.
+    - The current section's tile and tab show the press like every other control: they are real links that reload
+      the page, and a control that does not react feels broken.
+    - Decided by the coordinator, from the rules and the user's earlier answers: the two lists keep the designer's
+      hidden 16 px native list under a 13.5 px face. Pressed specimens on the components sheet wait for the
+      Settings round.
+
+43. **The CSS round, tried on the phones** (the user, 2026-10-10, after trying build `3b673daa` on their iPhone and
+    Android phone over the LAN preview: «كلشي تمام», then «ممتاز خلاص ما يحتاج اشوف مره ثانية», and, correcting the
+    coordinator's first wording of this item: «انا قصدت مافيه مشاكل الان وكلشي كويس على حسب تجربتي ... لو فيه مشاكل او
+    تحسينات عادي»):
+    - The user found no problems on either phone, and does not need to see this round again.
+    - Problems and improvements found later are welcome as usual; nothing here freezes the look.
+    - Coordinator: the press refactor (`codex-press-hook.md`) keeps every frame equal to `3b673daa` because that is its
+      brief's own outcome (P3), not a rule of the user's. Its close is reported to the user in a line.
+44. **Daily gets its own files** (the user, 2026-10-11, «ايه لو كان هذا يخلي الكود انظف», on the gardener's first
+    code-health reading). Daily's code and styles live inside the shared files: 93 of the 110 places where a shared file
+    names one page's elements are Daily's, which is why `app.js` is the concept's largest file, at over 3,200 lines.
+    Reports, Access and Activity each have their own files.
+    - Daily moves into its own script and stylesheet, as the other pages have. The page looks and behaves the same:
+      the frames before and after compare equal with the verify-fitway CLI.
+    - It is the first concept round after the environment phase, before Settings (Next steps in the resume point).
+    - The gardener's next readings show whether the shared files' size and boundary counts fall.
+    - Found while briefing it (coordinator, 2026-10-11): only Daily loads `app.js`, so the script was already Daily's
+      under a shared name; the real mixing is in `style.css`, which all five pages load. Daily's round therefore renames
+      the script and moves Daily's rules out of `style.css`.
+45. **Shared code gets honest shared files, before Settings** (the user, 2026-10-11, «موافق على اقتراحاتك», on the
+    coordinator's two proposals after item 44's briefing). In this order, after Daily's own files and before Settings,
+    each its own Codex round with item 44's outcome (every page compares equal before and after, both languages, every
+    size, both motions); the user does not need to look, and each close is reported in a line:
+    - **One shared frame script.** The rail, the header and the status details are copied into each page's script
+      (about 400 duplicated lines); they move into one file every page loads, so Settings, Operations and Monitoring
+      do not copy them again. Each page keeps its header markup, since the page is complete at first paint (item 4).
+    - **`reports.css` split.** Four pages load it under one page's name; what more than one page uses moves to a shared
+      file named as shared, and what only Reports uses stays.
+    - **The gardener's shared-file list** (coordinator): today a hand list that names page-only files (`app.js`, the
+      components sheet's own files) and omits files several pages load (`reports.css`, the picker); it is derived from
+      what each page actually loads.
+
+46. **Design-detector findings in Codex rounds** (the user, 2026-10-11, «ممتاز اتفق معك», after Impeccable's hook in
+    Codex led it to suppress three findings in a shared configuration file, F138). The hook stays on; its findings are
+    hints, not verdicts. Codex reports them and acts on none. The coordinator looks at each on the frames: a real one
+    goes to a fresh designer, a false one is recorded with its reason through `impeccable hooks ignore-value <rule>
+    "*" --local --file <path> --reason "..."`, scoped to its file, in the build worktree's gitignored
+    `.impeccable/config.local.json`. That is the only file the hook reads there (coordinator, 2026-10-11): the build
+    branch's tracked `.impeccable/config.json` starts with a byte-order mark the hook rejects as malformed, and the
+    concept folder's own `.impeccable/config.json`, which held the 2026-09-24 exceptions, is not read by the hook, so
+    those were copied to the local file.
+
+47. **The open tool findings are fixed before Settings** (the user, 2026-10-11: «بس المقصد بنصلحها كلها قبل البدأ ب بناء
+    صفحة الاعدادات صح؟», while the mid-motion compare round ran with F119, F122, F126 and F130). Before Settings starts:
+    - F135 goes with the shared-files rounds (item 45), as planned.
+    - F131, F132, F136 and F137 get one verify-fitway round after the shared files (the user declined a separate round
+      for F137 alone). With it, `pnpm codex:round` runs the pre-launch brief review itself (B11, Codex at max) and
+      launches only with each reading's disposition recorded (the user, «ما عندي اعتراض»). Also in that round (the
+      user, 2026-10-12, «ممتاز», «موافق»): during work a compare can take only the pages a change affects, derived from
+      the files each page loads (a shared file means every page), never from which features seem related, with the full
+      check still at the end of every round; and the base side's frames, which never change between reruns, are kept
+      and reused instead of captured again.
+    - F140: the byte-order mark is removed from the build branch's tracked `.impeccable/config.json` and the hook is
+      checked to read it.
+    - F138 is closed by item 46: the hook is the user's global setting, which agents never change (AGENTS.md); briefs
+      say a hook's request outside scope is reported, not acted on.
+    - Coordinator, on the user's question which lows go first, since the remaining pages are built in one pass (item
+      6): what a new page reuses is fixed before Settings, after the shared-files rounds so each fix lands once in the
+      shared file, and checked with the mid-motion compare: the key's glyph softening during the press's settle (first
+      confirmed on seeked frames, MOT-1 suspect; a designer if real), the dialogs' parts splitting under a stall, the
+      Retry's leftover focus ring, OWN-C9's stale focus-ring rule and the rail's focus ring on Access. What belongs to
+      one page (Reports' `#fig-avg` card, fix-3's findings, Access's N1-N7) stays with Next steps 4 and 5 after Settings.
+      The user agreed («لا ما عندي اعتراض»).
+    - This file stays as it is until the Owner work closes; then its built items shrink to their standing rules as
+      they are carried into the ADR (the user agreed, «ممتاز اي اتفق معك»).
+
+48. **The work before Settings runs in parallel where it can** (the user, 2026-10-12, «مب مشكلة ادا ما كان فيه مشاكل
+    ونقدر نسرع الشغل او فيه مهام او جولات نقدر نشغلها بشكل متوازي», on the coordinator's proposal). This amends item
+    47's order:
+    - The verify-fitway round starts now, beside the shared-frame round, in its own worktree, and may split into
+      Codex rounds on disjoint files run side by side. Its affected-page compares, kept base frames and socket fix
+      (F137) then speed up the `reports.css` split and the shared lows. Its builds and tests run at any time; its long
+      compares wait while another round's compares run, until F137 is fixed (the machine: Ryzen 7 7700, 8 cores and
+      16 threads, 31 GB; Windows' default 16,384 dynamic TCP ports, the likely limit behind F137).
+    - The briefs for the `reports.css` split and the shared lows are written and reviewed (B11) while rounds run, and
+      each launches as soon as the round before it on the build branch closes.
+    - Codex resumes on gpt-6.1-sol and falls back to gpt-6-sol on the same thread when gpt-6.1-sol answers "Selected
+      model is at capacity" (the user, 2026-10-12); a usage limit is the user's account switch.
+    - A parallel-compare round follows vf-speed (the user, 2026-10-12, «اي», on the coordinator's proposal after the
+      measurements queued for hours on one port pair): each round gets its own port pair, so two or three rounds
+      measure at once, and one compare command can spread its pages over several workers. It comes after vf-speed,
+      which changes the same files and fixes F137 first. Widening Windows' dynamic port range is not needed: at the
+      round's load at most 739 of 16,384 ports were in use (coordinator measurement, 2026-10-12).
+
+49. **Settings, the answers before its one pass** (the user, 2026-10-13, «موافق عليها كلها», on the coordinator's
+    recommendation for each of the research digest's questions Q1-Q10, `D:/fitway-temp/owner-r04-settings-questions/
+    REPORT.md`). Settings holds the owner's five editable axes: capacity, the three crowd-level limits, the weekly hours,
+    the end of the business day and the reset buffer.
+    - **A reason when saving:** an optional "Reason" (at most 240 characters, what the log stores), shown in Activity
+      log. A Product/Spec amendment: production's form has no reason input.
+    - **The log says what changed**, for example capacity 120 → 140, by comparing the saved version with the one before
+      it, not only "Settings updated" (item 31). A Product/Spec amendment that answers SPEC story 26's "from → to".
+    - **A confirmation before saving** lists each change from → to, since a saved value reaches the visitors' page at
+      once. Its look is the designer's.
+    - **No hours for a later date** (Ramadan, Eid) for now: the owner changes them on the day. A "from this date" field
+      is recorded as a later idea; it needs new storage.
+    - **The five technical values** (time zone, push, fresh, stale, poll) are not shown on Settings; only "Riyadh time"
+      beside the hours, as the hours' unit.
+    - **Each crowd level also reads in people** beside its percentage ("Quiet up to 29 people"), computed in the page
+      from capacity; the contract stays in percent.
+    - **A value that looks like a mistake** (capacity 5, every day closed, opening equal to closing) is accepted with a
+      plain sentence under the field, not refused.
+    - **Times are entered in 12 hours with ص/م** on the page (DAT-1), 24 hours on the wire.
+    - **Leaving with unsaved changes** asks first.
+    - **Two owners saving at once:** the second sees what the other saved, and keeps their own typed changes in view to
+      apply again; nothing is merged silently.
+    - Decided by the coordinator from the rules (not asked): the rail and bar slot, owner-only, no visitor data; the five
+      read-only values are never editable (the contract; PHASES' "freshness configuration" yields to it, C1); capacity
+      and percentages may show on owner pages (DESIGN_GUIDE.md lines 86-87; the concept's TRU-6 is the public side's,
+      C5); time zone, feed geometry and transparency wording are site checks, not Settings (SPEC, C6); no technical
+      language or explanatory captions (DO-NOT, C8); the page's composition is the designer's alone, as for Access
+      (item 33).
+50. **Daily's light tuner goes** (the user, 2026-10-13, «اداة الاضائة شيلها ماعد احتاجها خلاص»). The dashed
+    "الإضاءة · Lights" button at the top of Daily and the light tuner it opens (`tuner.js`, its recipes and the
+    README's account of it) are removed; the static lights on the cards (LGT-1 to LGT-8) are not the tuner and stay.
+    It runs after the shared-frame round merges, so that round's comparisons keep their base. It also ends F126, whose
+    unstable render was the tuner's chip.
+51. **Every page in the concept before any move to production** (the user, 2026-10-13, «اي بس بعد ما نخلص الصفحات
+    كاملة», «اشوف يمدينا نخلصها كامله»). After the tool fixes (item 47), the concept gets every page it still lacks:
+    Settings (item 49), Operations and Monitoring, the public crowd page, the front-desk screen and sign-in, in that order
+    unless the user reorders. The move to the production application waits for a later decision of the user's. When it
+    comes, the user has accepted in principle («موافق معليك», on the production-readiness digest of 2026-10-13) the
+    concept's Product/Spec amendments (`DESIGN-SPEC.md` §4.4.1, AMD-C1 to C8; the usual-day baseline; Settings' reason
+    and its log entry naming the change) and Readex Pro in place of Cairo; each is still written as an explicit
+    amendment at the move, and the move restructures the Owner code into shared modules rather than porting page files
+    one to one.
+52. **The order of work, and two labels on every open finding** (the user, 2026-10-13). Tool and testing fixes come
+    before the next pages, since they make those pages faster and better; small design issues nobody sees wait until
+    after the demo; anything visible that would make the demo look bad is fixed before it. Each open row of
+    `docs/phase-records/handoffs/agent-environment/findings.tsv` carries two labels after its status (coordinator, the
+    same day; a closed row leaves both empty):
+    - `seen_by`: `owner` (the owner sees it on the page), `checks-slowed` (our checks run slower or need reruns),
+      `check-missing` (a check we cannot run yet), `setup` (the machine or the tools' configuration).
+    - `demo`: `blocks`, `lowers` or `waits`, read against the private demo plan (pages shown as device mock-ups, a
+      video and a PDF built from the concept).
+    The page lows recorded outside the table (Reports' `#fig-avg` card, fix-3's observations, Access's N1-N7 and the
+    focus rings) carry the same two labels in the resume point.
+53. **Claude Code on DeepSeek, compared with Codex on DeepSeek** (the user, 2026-10-13, on Open Design's API page,
+    which offers an Anthropic Messages format «Recommended for Claude Code»: why it was not raised before, and why
+    Codex). Codex stayed the harness when the rounds moved to DeepSeek only because the launcher, the brief rules, the
+    sandbox and 30-odd rounds of records were built on it; the two harnesses were never compared. A closed round,
+    deepseek-route, is replayed on Claude Code (`--bare`, auto permission mode with DeepSeek as its classifier, Open
+    Design's Anthropic base URL `https://amr-link.open-design.ai`) from the same HEAD with the same brief and graded on
+    the same held-out rows; the better harness carries the rounds that follow. The user: Open Design's credit is open
+    and is not weighed when choosing what runs in parallel. The launch scripts run under an allow rule the user
+    approved for `bash D:/fitway-temp/cc-*/launch.sh` in this worktree's local settings.
+54. **vf-parallel: the optimization stays, and fresh sessions for both** (the user, 2026-10-14, after P2's 4-worker
+    self-compare took 581 s against 1112 s, 25 s over the brief's "at most half", and Codex committed `f3601821`,
+    fewer manifest rewrites, to meet it). The 2x bar was the coordinator's way of measuring decision 48's "a fraction of
+    today's time", not the user's; the timings also ran beside the coordinator's Claude Code replay, against the brief's
+    "both run alone". The user chose to keep `f3601821` (it may make compares faster), to stop the run and save its
+    progress (`D:/fitway-temp/owner-r04-vf-parallel/STOPPED-2026-10-14.md`), and to continue Codex in a fresh session
+    with a clean context rather than resume its thread, and the coordinator in a fresh session too. The new brief
+    (`codex-vf-parallel-continue-2.md`) measures everything on the delivered commit, with nothing else running while
+    P2 is timed. The bar stays as the round's brief states unless the user changes it; the coordinator's recommendation
+    was a floor of 1.5x judged at grading on a quiet machine.
+55. **vf-parallel: three timings each, and a look for more speed** (the user, 2026-10-14, before the fresh session's
+    launch): each of P2's timings runs three times and the medians count, since trustworthy numbers matter more than
+    the hours they take; the speedup so far suggests compares can go faster still, so the round first breaks a
+    4-worker compare's time into its phases and takes a change only where that breakdown shows time it removes, never
+    one that measures less; and every timing runs on a quiet machine. The bar is unchanged (item 54). Carried by R3 and
+    R5 of `briefs/codex-vf-parallel-continue-2.md`.
+56. **pstack's ideas, not its plugin; B6 loosened; three timed runs** (the user, 2026-10-14, «I agree with your
+    recommendations», after the coordinator's reading of pstack (`cursor/plugins` at `ce649c03`) and its Claude Code and
+    Codex port (`michael-denyer/pstack-claude` at `94f5ce95`)):
+    - Nothing of pstack is installed: the port's plugin adds a session-start hook that routes every multi-file task
+      through `poteto-mode` (it would reach GPT Codex rounds, which keep hooks) and lets skills invoke themselves.
+    - **`correct`'s method** is adopted without the skill: a mistake class that happened twice is fixed at the highest
+      level that works (structure, then types, then a check whose error names the fix, then a test; prose last, for
+      judgment only), and each new check is proven to fail on the real past mistake. Its rule-to-enforcer table in the
+      agent instruction file is not adopted (an AGENTS.md change; ask first).
+    - **`benchmark-checklist`** is folded into brief rule B13: three alternating runs per side on a quiet machine,
+      every run with the median and range, the limiter, the errors counted and proof the work ran; more runs only
+      where they could change the decision, never to reach a fixed number.
+    - **`no-comments`** gets one report-only trial on the tool code we own (the verify-fitway CLI and
+      `scripts/agent-environment`): its `MUST KILL` flags become findings, nothing is deleted by it.
+    - The small encodings go as the coordinator proposed: F140 in the tuner round, F154 by launcher-fixes-2's automatic
+      resume, F158 with a test that pins SKILL.md's claims to the CLI in the verify-fitway fixes round; the BOM check,
+      the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check in `brief:check` and a check that `CLAUDE.md`'s
+      agent table matches the definitions go in one small extra round run beside the planned ones.
+    - **B6** now allows several small causes, related or not, in one round when each has its own outcome and check;
+      they split when one changes what another measures, needs a decision or another base, or outgrows one review.
+57. **The brief's length warning measures what one review can cover** (the user, 2026-10-14, agreeing with the
+    coordinator's reading: the 80-line warning had no measurement behind it (agent-environment DECISIONS 4 and 6 set
+    "at most a warning, measured first" and templates of about 40 lines), it fired on 13 of the 14 r04 Codex briefs,
+    and brief-caused failures did not follow length; on 2026-10-14 it failed CI on the template, whose checklist never
+    reaches the agent, and B6, B8 and B13 were folded onto single lines to pass):
+    - `brief:check` counts only what reaches the agent (the coordinator checklist excluded) and warns, never fails.
+    - The warning is on the outcomes and limits a brief asks for, at a threshold derived from the past rounds' records
+      (outcomes and limits per brief against brief-caused failures and the review's readings), not chosen; if the
+      records show no threshold, the round reports that and keeps a count without a warning.
+    - B6, B8 and B13 go back to wrapped lines with the change. It goes in item 56's encoding round.
+58. **DeepSeek stays on Codex; the Claude Code replay is deferred** (the user, 2026-10-14, after the coordinator's
+    reading of the partial replay, `codex-rounds.md` §"Evaluation: Claude Code on DeepSeek, the partial replay"):
+    Codex has carried four DeepSeek rounds to graded results, so item 53's comparison is not finished on purpose and
+    takes no more hours without a practical reason. It is reopened when one of these is observed: Codex's route through
+    Open Design breaks or degrades; early ends (F154) keep costing real time after the automatic resume; a task needs a
+    capability only Claude Code has; or Codex's start load or `apply_patch` failures become a measured bottleneck. The
+    working Claude Code settings stay recorded in item 53, as a fallback beside GPT on Codex.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
    user decides. The user sees exact rendered crops, numbered for comparison; the coordinator starts any preview
    itself.
-2. **Agents** follow the table in `CLAUDE.md`; a long-context designer is never resumed.
+2. **Agents** follow the table in `CLAUDE.md`; a long-context designer is never resumed, not even one cut off
+   mid-round (item 10).
 3. **Codex** is GPT-6.1 Sol at the level the task calls for (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation";
-   Eclipse defects are `high`), run by the coordinator with `codex exec --approve-for-me`
+   Eclipse defects are `high`), launched by the coordinator with `pnpm codex:round`
    (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
-   briefs follow these rules:
-   - B1. Name every supported way to open and run the artifact (HTTP, `file://`, sizes, reduced motion) and which
-     ones the harness checks.
-   - B2. Before requiring equality to a baseline, check the baseline does not carry the defect being removed.
-   - B3. When an outcome is unmet, do not work around it: measure the rest, then stop and report.
-   - B4. State the goal, the cause and the outcomes; leave the approach open.
-   - B5. Never put the verifier's probes, thresholds or held-out checks in a brief.
-   - B6. One change per round, aimed at a cause.
-   - B7. Before requiring an outcome under any condition, check the baseline meets it there; a condition where it
-     fails is pre-existing and out of scope, required "unchanged from the baseline".
-   - B8. Write each measurable outcome's intent beside it, so a literal text that contradicts the purpose shows,
-     and check that every outcome is literally reachable from the baseline; an allowance ("may trail") states its
-     bound. (The user, 2026-10-04: GPT-6.1 Sol follows a brief to the letter; touch-1's L3 and T2.)
-   - B9. An outcome about how a value fits names the widest value it can take, not only the current one
-     (coordinator, 2026-10-04; card-1's L3).
-4. **Verifiers** follow these rules:
-   - G1. Keep cap checks at least 30 ms from the cap (50, 150, 250 and 600 ms).
-   - G2. Detect a removed pre-intro frame by holding fonts until first paint + 50 ms and + 100 ms.
-   - G3. Run load checks under `no-store` and under no cache header.
-   - G4. Every movement check runs until at least 500 ms after `endedAt`.
-   - G5. A verifier writes only in its own temp folder; afterwards the coordinator checks `git status` in every
-     worktree involved.
+   briefs follow the brief rules B1-B13 in the checklist of `docs/agent-context/briefs/codex.md`.
+4. **Verifiers** use the verify-fitway skill (`.agents/skills/verify-fitway/SKILL.md`), which holds the verifier
+   rules G1-G4, and its CLI instead of their own scripts (agent-environment-r03 round 4, 2026-10-07).
 5. **Claude Design** is paused (2026-10-02). It stays available for open visual questions; its output is reference
    until built in Eclipse's files.
 6. **The remaining Owner screens, one pass each** (the user, 2026-10-03): Activity log, Access, Settings and
    Operations are each aimed to be finished in one round, now that the look, the components, the states and the
    references are settled. Before a screen starts, the coordinator asks all its open questions at once, in plain
    words; then one design-and-build round and one review, not a series of option rounds.
-   **The max-effort trial** (the user, 2026-10-03): `owner-direction-designer-max` designs one whole screen once, the
+   **The max-effort trial** (the user, 2026-10-03): `owner-direction-designer` at effort `max` (until 2026-10-08 the
+   separate `owner-direction-designer-max`; agent-environment DECISIONS item 18) designs one whole screen once, the
    first of these (Activity log), and its result is judged before it is used again. Not for small fixes such as the
    busiest-time card. Rules are not rigid (WORKING_AGREEMENTS "Rules and findings"): its brief states the question
    and the hard limits (product, privacy, truthful states, the user's bans) and leaves the composition to the
@@ -353,6 +685,36 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    - **Decisions arrived after their brief.** A decision made while a round ran (item 26 for the computer) produced a
      conflict the next review had to find. The questions are settled first; a late decision waits for the next round.
    - **Briefs were read literally.** Most Codex failures traced to the brief (`codex-rounds.md`); B8 and B9 apply.
-   - **Every review opened a new round.** Each review's small findings became the next round. From now on only high
-     and medium findings, or what the user sees, open a round; low findings wait for the screen's last round.
+   - **Every review opened a new round.** Each review's small findings became the next round; item 11 now settles
+     what happens to a review's findings.
    - **Questions the rules already answer** go to no one: the coordinator decides and reports in a line.
+8. **A skeleton before every new screen** (the user, 2026-10-05, after Access's skeleton): after the questions and
+   before the one-pass build, a designer (xhigh) shows the screen's arrangement in plain blocks (no colour, no
+   finished components) at the computer and the phone, with the new dialogs; the user agrees, then the build starts.
+   Coordinator: it settles the arrangement for a fraction of a build (Access's skeleton took about a quarter of its
+   max-effort build's tokens) and would have caught Access's empty computer page before it was built.
+9. **Who builds what** (the user, 2026-10-05: design stays with Claude; Codex where its rounds show it fits). Claude's
+   designer builds anything visual: arrangement, a new or changed component, a form, a state's look. Codex takes what
+   has no taste in it, with a precise brief: wording, behaviour and logic fixes, links, accessibility fixes (focus,
+   clearing fields), spec and index upkeep, the measurable lows a review returns, and later the move of the concept
+   into production code with tests. Coordinator's reading of `codex-rounds.md`: Codex is thorough and honest (it
+   measures far more than asked, stops on a missing source, reports a conflict instead of working around it) but
+   follows a brief to the letter, so its failures trace mostly to the brief, and it has no eye for composition.
+10. **Rounds sized so a designer's context stays small** (the user, 2026-10-05, «اي مابي المشكلة تتكرر», after the
+    motion designer reached about 584k tokens and was resumed after an API session limit instead of replaced):
+    - **Commit at natural checkpoints**, not after every step: when a working unit is done (the shared file with its
+      first moments, then each group of moments or each page), with a short notes file in the round's temp folder
+      saying what is decided and what is left. A cut-off designer is then replaced by a fresh one that reads the
+      brief, the last commit and the notes, never resumed.
+    - **The designer judges; the full matrix goes elsewhere.** The designer looks at its work at 1440 and 390 in
+      Arabic; English, 768, 200% zoom, `file://` and reduced motion are rendered by Codex or measured by the
+      verifier. Images and videos are what fill a designer's context.
+    - **A large round is split in two:** the foundation first (the shared parts and the first moments or
+      components), then a fresh designer for the per-page work on top of its commit.
+11. **The user sees a round only when it is finished** (the user, 2026-10-05, after the motion round came back with
+    the export's empty-panel finding, O1, for the user to decide: «ليه ما تصلحها قبل ما ترجع لي»; and: «لو مر عليها
+    مراجع وشاف فيه اخطاء ف المفروض تتصلح»). Every error a review finds, low ones included, and every taste finding the
+    coordinator would recommend fixing anyway, is fixed (a fresh designer for taste, Codex or a fixer for the rest)
+    and checked before the user sees the round; the user gets the finished result, the live site
+    (`eclipse-build` preview on 3174) and the published link, with motion shown as frame strips. Only real choices
+    go to the user, in plain words.

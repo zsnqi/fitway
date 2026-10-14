@@ -1,13 +1,13 @@
-# agent-environment-r01: decisions in force
+# agent-environment: decisions in force
 
 Decisions for the agent-environment work. Edit an entry in place when it changes. Decisions are the user's unless
 marked "coordinator". Agreements on how the user and agents work are in `docs/agent-context/WORKING_AGREEMENTS.md`.
 
 1. **Scope (2026-10-02).** The user approved every proposal of the 2026-10-02 retrospective and left the environment
    decisions to the coordinator; the user's settings and security stay the user's to approve.
-2. **Resume points (2026-10-02).** A fresh session reaches the current state from "كمّل" alone. Each resume point is
-   a new short file from `docs/agent-context/HANDOFF_TEMPLATE.md`; standing decisions live in one file per
-   milestone, edited in place; the 340 KB r04 activation log is frozen history.
+2. **Resume points (2026-10-02).** A fresh session reaches the current state from "كمّل" alone. Each milestone's
+   resume point is one short file (item 10); standing decisions live in one file per milestone, edited in place; the
+   340 KB r04 activation log is frozen history.
 3. **The least sufficient context (2026-10-02).** Agents read the smallest context that is still enough for the
    task. Two conditions keep it from becoming missing context: everything a brief cites exists and is current in
    the agent's worktree, and an agent that finds a gap stops and reports it instead of guessing.
@@ -32,8 +32,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    `codex exec --approve-for-me` (command in `WORKING_AGREEMENTS.md`): everything else stays in the workspace-write
    sandbox, and each escalation is reviewed for exfiltration, credential probing, security weakening and destructive
    actions. `-s danger-full-access` is the fallback for a round the reviewer blocks. `config.toml` stays unchanged.
-   Each brief forbids pushing and writing outside its worktree, and after the round the coordinator checks the
-   diff, `git status` in every worktree involved, and the remote branch.
+   Each brief forbids pushing and writing outside its worktree; the coordinator's check after a round is in
+   `WORKING_AGREEMENTS.md`.
 8. **Usage panel (2026-10-02).** A Claude Code mod shows the subscription limits as its main element: the five-hour
    window with its reset time, and the weekly limit. The context window is a separate element with a different
    look from Anthropic's `token-weather` sample; its appearance changes at thresholds. Be inventive. Built
@@ -44,8 +44,301 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 9. **Evaluation loop (2026-10-02).** The method of Anthropic's "Automating eval design and hillclimbing" applies to
    Codex's brief template, the verifier (planted defects) and Sonnet `medium` against `high`; taste and design
    quality stay with the user.
-10. **Resume-point name (2026-10-03, coordinator).** `handoff:new` writes `<YYYYMMDD-HHMMSS>-<milestone-id>-resume.md`
-    and nothing else; an active handoff with exactly that name must carry the marker; older handoffs keep their
-    names and pass as before.
+10. **Resume-point name (2026-10-03, coordinator; revised 2026-10-07).** Each milestone resumes from one file,
+    `<milestone-id>-resume.md`, which `handoff:new` creates once and later refreshes in place; git history is the
+    chain. Older timestamped handoffs keep their names and pass as before.
 11. **Sonnet definitions (2026-10-03).** The user keeps both copies: the global ones in `~/.claude/agents/` serve
     every project, and the tracked ones in `.claude/agents/` serve cloud sessions, which see only committed files.
+12. **The environment phase (the user, 2026-10-07).** The user widened the coordinator's mandate for this phase: old
+    rules, workflows, tools and records are not constraints to keep when they prove stale, conflicting, wasteful or in
+    the way of a cleaner environment; the coordinator may reorganize, replace, move ownership, remove or merge
+    duplicated tools, and change CI, the brief workflow and the work records when that is the right fix («الهدف في هذه
+    المرحلة هو تنظيف وتبسيط وتحسين بيئة العمل نفسها»). Locked product, security, privacy, content, accessibility,
+    visual-authority and data-semantic decisions stay in force (AGENTS.md). agent-environment-r03 opens for it, from
+    main at cf7758eb.
+13. **What the phase delivers (coordinator, 2026-10-07).**
+    - An audit of every rule, workflow, tool, check, record type and machine resource, each kept, merged, replaced or
+      removed on cited evidence, saved before the first removal.
+    - The tooling round of owner-design-exploration-r04 DECISIONS item 40: a verify-fitway skill both tools read, a
+      feature map of the Owner concept generated from its code and spec, a verification CLI on the Eclipse probe kit
+      and ui-forensics, a no-store preview, one command that launches a Codex round, and the B8 and B9 brief fields
+      through the evaluation loop. pstack's create-verification-skill and maintain-verification-skill are tried.
+    - The two checker faults of the r04 resume point of 2026-10-07: resume-point paths and branch names judged
+      against what the CI checkout has, and a lease check that does not fail a branch only because the wall clock
+      passed a lease it carries.
+    - A permanent gardener (item 16).
+14. **Ownership (coordinator, 2026-10-07).** agent-environment-r03 owns the environment: AGENTS.md, CLAUDE.md,
+    .claude/agents/**, .claude/skills/**, .agents/**, docs/WORKFLOW.md, docs/agent-context/**, docs/schemas/**, the
+    repository's check, ledger and test-runner scripts, .github/workflows/**, lefthook.yml, biome.json and the scripts
+    section of package.json. It absorbs agent-environment-r02, whose work is all on main (by patch): every path but
+    its packet moves here, with its open items (C4, C5, C2d, the closing review); r02 closes once the records can
+    express a closure by succession (r03 acceptance criterion 3). CLAUDE.md, .claude/agents/**, .claude/skills/** and
+    biome.json move from owner-design-exploration-r04, which keeps the Owner concept and its records. Both sides say
+    so in their packets and forbiddenPaths, because no check compares owned paths across milestones.
+15. **Where the tools live and what they drive (coordinator, 2026-10-07).**
+    - The verify-fitway skill is committed at .agents/skills/verify-fitway/, where Codex finds repository skills;
+      .claude/skills/verify-fitway/SKILL.md points Claude to it, so the content has one copy.
+    - ui-forensics stays the user's machine-level skill (1.1.0 since 2026-10-07): the CLI uses it on this machine, and
+      the skill's doctor reports when it is missing; cloud sessions cannot run the browser verification.
+    - The live Owner concept is the Eclipse build on owner-followup-r04-build, 134 commits ahead of main, which holds
+      an early Eclipse and no probe kit. Until the user approves the build, the skill, the CLI and the feature map
+      take the Eclipse folder as an input and run against the build's; nothing from the build is copied to main.
+16. **A permanent gardener (the user asked, 2026-10-07; coordinator design).** None existed: maintain-verification-skill
+    keeps only the verification map honest, and CI only blocks regressions in rules already encoded. The phase
+    builds a gardener that keeps the environment clean after it:
+    - a skill both tools read, with a fixed checklist: a correction seen twice becomes a lint, test, check or template
+      field (or a recorded reason why not); drift between docs, maps, indexes and code; sediment (dead files and
+      scripts, duplicate tools, stale handoffs, branches, worktrees and temp folders); gate gaps (checks that run
+      only locally, twice, or never fail); rules nothing needs any more;
+    - a weekly schedule, plus a pass when a milestone closes and when a review repeats a known finding class;
+    - each pass gives one report and at most one bounded, verified change, or says the environment is clean;
+      removals of policy go to the coordinator; it never touches product semantics, design decisions or evidence a
+      record points to.
+17. **Records and evidence (coordinator, 2026-10-07, under item 12).**
+    - The records keep only what a reader or a check uses (r03 Codex round 2): a milestone a successor carries closes
+      as `SUPERSEDED` with `supersededBy`; no heartbeat, lease expiry or packet pin is kept or read; a milestone's
+      scope, base and handoff live in the ledger and its task class in the packet; closing is one commit that moves
+      the record, with no receipt; closed records are checked for shape and never followed into.
+    - The verification a record cites is the green CI run on the pushed commit, and CI runs the local fast ladder
+      (r03 Codex round 3). The Vitest provenance layer and its "authoritative" local run, built 2026-09-19 and used
+      once, are retired with `check:frontier`, whose tree snapshot closed in September.
+    - Each rule has one home: the rules in `AGENTS.md`, the procedure in `docs/WORKFLOW.md`, the agreements with the
+      user in `docs/agent-context/WORKING_AGREEMENTS.md`, the brief rules B1-B10 in the checklist of
+      `docs/agent-context/briefs/codex.md`; decisions files keep decisions and point to those homes.
+18. **Haiku 5.5 and call-time effort (the user agreed, 2026-10-08; coordinator design).**
+    - Haiku 5.5 (released 2026-10-07; `haiku` in Claude Code 2.1.293) answers narrow lookups through `haiku-scout`
+      (`claude-haiku-5-5`, `medium`, five read-only tools). Sonnet keeps research, audits, grading, cold reads and
+      the gardener's pass; Opus keeps design, building, verification and reading-direction review. `CLAUDE.md`
+      holds the rules: what Haiku is not for, the source check before using its answer, and the move to Sonnet.
+    - Evidence: on 12 lookups with known answers, three of them traps, Haiku and Sonnet at `medium` both scored 12
+      of 12 with no invented answer; Haiku found one correct detail the expected answer missed
+      (D:/fitway-temp/evals/haiku-scout-20261008/REPORT.md). Moving all Sonnet subagent work of 2026-09-20 to
+      2026-10-07 to Haiku would have saved about 4% of that period's input tokens' list price: the spend is Opus,
+      which stays. Haiku's use is keeping lookups out of the coordinator's Opus context.
+    - Since Claude Code 2.1.292 the Agent tool takes `effort`, and a call's level overrides the definition's
+      (probed 2026-10-07). The effort-only variants `owner-direction-designer-max` and
+      `owner-direction-verifier-high` therefore merge into their base definitions (13 definitions become 12), and
+      `CLAUDE.md` names the cases for a call-time level. The user's max-effort trial (r04 DECISIONS item 6)
+      continues as the designer at `max`.
+    - The advisor tool stays off: in Anthropic's measurement a Haiku 5.5 executor consulted an Opus advisor on none
+      of 198 questions, and every subagent would inherit it. The gardener's scheduled pass pins
+      `--model claude-sonnet-5-5 --effort high`, because a headless run otherwise takes the user's saved Opus at
+      `xhigh`; the terminal Claude Code is 2.1.293 (updated by the user, 2026-10-08). Kept over Opus 5.5 at `high`
+      when the user asked (2026-10-08): on the shared agentic benchmarks the two are within about three points
+      (Sonnet ahead on Terminal-Bench 4.0), Anthropic's Claude Code help says Opus "costs several times more per
+      turn", and two Sonnet passes reached identical findings in round 7; `high`, not `medium`, because Sonnet 5.5
+      may check in before finishing at `medium`, which ends a headless run
+      (`docs/phase-records/handoffs/agent-environment/r03/model-choice-gardener.md`). A miss traced to the model
+      moves the pass to Opus.
+19. **Recipes beside the concept, and the rounds 6-7 follow-up (coordinator, 2026-10-08).**
+    - What the concept's code can tell (pages, switches, values, dependencies, the elements a user opens) is derived
+      each time the map is used; what it cannot tell (how a user reaches a feature, what proves it, sample values for
+      open-domain switches) lives in `verification-recipes.json` beside the concept, on the branch that changes it
+      (the Eclipse build: `6df156bd`). Nothing generated is committed. The drift step fails on an element no recipe
+      covers and on a recipe whose selector is gone.
+    - The gardener's weekly pass deletes nothing (the user, 2026-10-07): folders go into a script the user runs after
+      reviewing its list, and merged branches are proposed. The skill's branch-deletion line is aligned in the
+      follow-up round.
+    - Two concurrent Codex rounds take them, one tool each (B6), before the weekly schedule starts (round 8 the
+      gardener, round 9 verify-fitway; 2026-10-08): the cleanup script's quoting and its test,
+      an age and citation guard and a chosen temp root for proposals, "merged" judged against `origin/main`, running
+      an unknown `check:*` script, the local date, a `$root` taken from the skill's own location, landed briefs left
+      out of the survey's next-brief checks; and for verify-fitway, keyboard as an input, `aria-haspopup` openers, a
+      stale-recipe command that repairs, and shorter output. W2's CSS-only opener stays a recipe entry.
+20. **Direction after the environment phase (the user and the coordinator, discussion of 2026-10-08).** Sources: the
+    user's points; Lauren Tan's (@poteto) talk, her two pstack guides and Matt Pocock's live stream with her
+    (digests `D:/fitway-temp/verification-discussion-20261007/REPORT-1-talk-and-skills.md` and
+    `D:/fitway-temp/agent-env-vision-research/REPORT.md`). Nothing below is built yet.
+    - **Agreed.** The user's role is the environment and the decisions, not reading code. The order of work is the
+      demo first; no refactor of the product code before then. The concept is the reference production will copy,
+      so its quality counts now; the product code's own checks come
+      at the move to production.
+    - **Agreed.** No further investment in process tooling (records, briefs, routes); rules are cut after evidence
+      shows which ones are used, through the gardener's "rules without need" class. Size of rules or records is not
+      an achievement; an agent that must read dozens of files for a small change is a cost.
+    - **Agreed.** A held-out row that proved useful becomes a permanent test, so grading costs fall over time. One
+      findings list: each side finding a grade reports becomes a line with a status, which the gardener counts.
+    - **Agreed.** Two levels: continuous checks run on every push and block known violations; the periodic gardener
+      surveys what a direct check cannot see and proposes, never editing architecture by itself. A finding class
+      that reaches zero gets its check into the fast ladder (first: `check:concept-css` after the Owner CSS round).
+    - **Agreed.** The gardener gains a code-health section, report only: giant files, boundary breaks, type escapes
+      (`any`, forced casts), repeated workarounds, with their trend, and one proposed improvement per pass; the
+      concept now, the product at the move to production.
+    - **Agreed, at the move to production:** checks that make product mistakes impossible (the web app imports no
+      server or database code; no per-visitor column; "live" only when fresh; `apps/web` as strict as the base
+      TypeScript config), the full ladder with the database and browser suites on a schedule, and the list of
+      one-way doors that always go to the user.
+    - **Agreed principles for any status page:** each value shows its source and age; old reads grey, unknown reads
+      unknown, nothing is green by default; "the agent says" is marked apart from "independently verified"; a
+      permanent blind-spots section; a check is shown with the proof that it fails on a planted defect; no single
+      health score, a short list of what needs the user instead; generated from repository data, never written by
+      hand; audited against reality by an independent agent from time to time.
+    - **Agreed (the user, later the same evening).** The coordinator's heavy session start is the problem to solve
+      first: measure how much each role reads at start, and lighten the coordinator's until its resume file is
+      enough. The verification CLI stays the place to invest (Lauren Tan). Before designing a change to the
+      environment, a Sonnet researcher gathers what experienced engineers have written on it, as references, not as
+      truth. The status page is built only when the user asks for it explicitly.
+    - **Closed by item 21 (the discussion of 2026-10-08/09).** Was open: how to
+      measure that the environment improves (the user's measures: fewer attempts per feature, fewer defects reaching
+      the final grade, fewer interventions per round, a fresh agent productive without a long explanation, fewer
+      regressions), which needs a structured one-line-per-round record; and how to give each role the least correct
+      and sufficient context. Research for it: `D:/fitway-temp/agent-env-vision-research/matt-skills.md` (Matt
+      Pocock's skills against these problems) and `D:/fitway-temp/agent-env-vision-research/context-health-metrics.md`
+      (experienced engineers on context, code health, measures and status pages).
+    - **The user's view of Matt Pocock's skills (same evening):** `retro` is very good (a per-session review of the
+      environment, run by request; first trial proposed on the 2026-10-08 session); `improve-codebase-architecture`
+      looks excellent (its visual HTML report suits the user; it needs `domain-modeling` and a GLOSSARY.md, neither
+      present). At the move to production it runs on each page as it moves, whatever it reads, with
+      `domain-modeling` and a GLOSSARY.md provided first (the user). Replacing FITWAY's planning records with his
+      pipeline is not proposed: lighten ours with his ideas.
+    - **Agreed trial (the user said yes, same evening):** the front of Matt Pocock's pipeline (questions that clear up
+      intent, then a written spec: `grill-with-docs` and `to-spec`, neither installed) writes the brief of the next
+      real task (the Owner CSS round or the press-feedback design), because most failed rows come from brief wording.
+      The back (`to-tickets`, `implement-spec`) is not tried: Codex rounds with independent grading cover it. The
+      coordinator answers technical questions and brings the user only product and taste ones. Compared with ordinary
+      rounds on repair attempts and brief-caused failed rows; one trial is a signal, not a verdict. Part of the plan
+      the next session closes.
+21. **Measuring the environment and the least context per role (the user agreed every point, discussion of
+    2026-10-08/09; coordinator design).** Closes item 20's open points. Nothing below is built yet.
+    - **Evidence** (`D:/fitway-temp/start-load-20261008/REPORT.md`, from the transcripts of 25 coordinator sessions and
+      138 subagents): before reading a file the coordinator carries 68-74K tokens, the five-tool Sonnet definitions
+      16-17K, and the five Opus definitions without a tool list (designer, builder, verifier, fixer, rtl-ltr-reviewer)
+      52-61K. The coordinator's own start reads are 8-25K. At its first edit the designer's median is 185K
+      (designer-max 407K), above the 125-150K where Matt Pocock's dictionary places the quality drop (debated); one
+      designer read about 75K first, mostly the code it edited and one decisions file three times. The desktop app's
+      context panel (the user's screenshot, 2026-10-09, this coordinator session) splits the fixed load: built-in
+      tools 17.1K, MCP tools 11.9K, skills 9.1K, memory files 6K (3), system prompt 5K, custom agents 2K (21), MCP
+      server instructions 1K, about 52K; deferred tools (79K) do not load. Tools and skills (38K) match the 35-40K
+      an all-tools subagent pays over a five-tool one. The window is 1M, so the fixed load is about 5% of it; the
+      session's own tools and connectors stay as they are (the user).
+    - **Measures.** One TSV line per round, written by the coordinator at grading: the round, model and effort,
+      attempts until accepted, held-out rows passed of total, rows failed by brief wording, interventions during the
+      round, defects found after acceptance, and start load. Start load, interventions and attempts are computed; the
+      rest is the grader's judgment. Back-filled from both `codex-rounds.md` files, so the baseline exists on day one.
+      The findings list (item 20) is a line per side finding with its status and class, regressions being one class;
+      the gardener counts recurrences and a recurring class gets a check. A replay set of about ten frozen past tasks
+      with their held-out rows reruns on Codex after a material environment change, because rounds differ in
+      difficulty and N is small; it is the "fresh agent productive without a long explanation" measure. The gardener
+      reports the monthly trend with N beside each rate and no single score.
+    - **Least context.** The five Opus definitions get a tool list (Read, Write, Edit, Glob, Grep, Bash, PowerShell,
+      Skill), measured before and after; a tool an agent reports missing comes back. The designer's brief names the
+      files and lines it edits and carries the decisions in force (target: first edit under 125K). The coordinator's
+      resume file is enough on its own and names decision items by number; a packet's required sources are the
+      worker's, not the coordinator's start.
+    - **The question-and-spec trial (item 20).** `grill-with-docs` and `to-spec` install as slash-only skills. Their
+      descriptions cost little (the user's point, about a hundred tokens); slash-only is so they run only when the trial
+      calls them. By its description `grill-with-docs` writes ADRs and a GLOSSARY: its body is read before the trial
+      and its writes are kept out of `docs/adr/**`. Downloading them needs the user's yes at execution.
+    - **retro:** the user runs it in the first execution session.
+    - **Order, from the next session:** (1) the start-load script into `scripts/agent-environment/`, the 2026-10-08
+      numbers as the baseline; (2) the tool lists, measured; (3) the rounds and findings files, back-filled by a Sonnet
+      researcher and sampled by the coordinator; (4) the replay set and its first Codex baseline; (5) the coordinator's
+      start from the resume file alone, measured; (6) the trial on the Owner CSS round's brief; (7) the designer brief
+      template. Step (4)'s set also takes item 22's product-like tasks.
+22. **Who writes the code at the move to production (the user agreed, 2026-10-09; coordinator design).** Developer
+    forums say Claude writes the more maintainable code and Codex the faster solution. The rounds so far say less:
+    Codex meets its brief rows, and the held-out rows and "Also found" catch what the brief did not state (a fixed
+    `$root`, the UTC day, a raw module error without node_modules, Windows quoting, a stale local `main`). No round
+    compared the two on one task, and every round was tooling, not product code. Review sees the diff, not what is
+    missing (a helper not reused, logic repeated elsewhere, a seam not drawn), anchors on the solution in front of it,
+    and pays a whole round to reject working code; checks cover what can be stated (item 20's product checks), not
+    where a module boundary goes or which change comes next.
+    - Claude writes the contracts and the first example of each pattern (Zod schemas, DTOs, module interfaces; the
+      first API route, page data flow and migration), cross-cutting refactors and privacy-sensitive paths. Agents copy
+      the codebase's patterns, so the examples are the strongest brief.
+    - Codex writes later instances against a named example, features inside an established module, tests from a
+      spec, tooling and bulk work.
+    - The handoff is interface first: Claude writes the types, the interface, failing contract tests and the file
+      list; Codex implements.
+    - Review runs both ways, Codex reviewing Claude's code too: a different model does not share the writer's blind
+      spots.
+    - The reviewer may ask for a redesign, not only fixes. Each design finding enters the findings list (item 21) with
+      its class (duplication, missing abstraction, wrong seam); a class that recurs moves that kind of task to Claude
+      or becomes a check.
+    - The replay set (item 21, step 4) adds two or three product-like tasks run both ways (Codex writes and Claude
+      reviews; Claude writes and Codex reviews), graded blind on held-out rows and a code-health rubric. One trial is a
+      signal, not a verdict.
+23. **The 2026-10-09 retro and step 4 (the user agreed every point, 2026-10-09).**
+    - The replay set's first Codex baseline runs now, before any change to Codex's environment merges: a gardener
+      branch that touches it merges only after the baseline. The set is ten Owner concept tasks (nav-1, nav-3, nav-5,
+      d3-d8, fix-1, card-1, fix-2, fix-3, and nav-4 and motion-lows at full marks): each starts at its base commit with
+      the current environment (agent-environment-r03's owned paths) laid over it, runs its original brief and is graded
+      on its original held-out rows. Environment rounds stay out: the overlay would carry their own results.
+    - Item 22's product-like tasks wait for the move to production, where two or three tasks with real design are
+      chosen; access-reason-cap-r01 (a 240-character cap) does not test architecture and stays paused.
+    - The retro's fixes: the unit step's placeholder variables come from one source for `pnpm verify:fast` and CI; the
+      resume-point path check accepts only tracked files; the ledger schema says what `validationRepairAttempts`
+      counts; CLAUDE.md says an edited agent definition takes effect in a new session; `codex-round.mjs` records
+      Codex's start load (with step 4).
+    - **The set-up (coordinator, 2026-10-09, under this item).** Codex's `--json` stream carries only the turn's
+      total, so the start load is the first request's input tokens from Codex's session file (`af13c16f`). Each task
+      runs in a clone holding only its base's history, not a worktree: a worktree shares every ref, and Codex could
+      read the round's own result and later fixes (the B8/B9 evaluation's method). The overlay leaves out the
+      milestone's records, which carry the original grades. nav-3 is replaced by three-rounds-fix: nav-3's four input
+      files in `D:/fitway-scratch/` no longer exist. Brief edits are mechanical (the clone's path, output folders,
+      ports for two runs at once, a decisions snapshot, and citations today's `brief:check` reads as repository
+      paths); the method and every edit are in `D:/fitway-grader/replay/README.md` and its `prepare.mjs`.
+    - **No rush (the user, 2026-10-09; no demo date is set).** After the baseline come the environment faults the
+      replay found (F095-F099: the fast ladder's fixed ports, a preview left running, a misleading cleanup message,
+      Arabic turned into `?` by a Windows PowerShell 5.1 pipe, outcomes met by hiding the defect), then the Owner
+      screens; steps 6 and 7 are tried on them (the CSS round's brief; the Settings designer brief), not run apart.
+24. **The gardener's weight (the user agreed, 2026-10-10).** Lauren Tan's gardener weeds out anti-patterns before
+    agents copy them (delete debt, enforce the paved path, a lint rule for each bad pattern); ours spends most of its
+    pass on temp folders, branches and worktrees, and both harmful proposals of 2026-10-09/10 came from that part
+    (F100, F104). The phase's closing review moves its weight to the concept's code health and repeated anti-patterns
+    (item 20's code-health section) and keeps cleanup to what a check makes safe. The user's Windows TEMP and TMP
+    moved from `D:\fitway-temp` to `D:\Temp` the same night, so other programs' temp folders leave FITWAY's.
+25. **Prompt-cache lifetime and session length (the user asked, 2026-10-10; coordinator, from the transcripts).**
+    Evidence: `D:/fitway-temp/cache-ttl-20261010/REPORT.md` (every FITWAY transcript since 2026-09-20, costed at API
+    list ratios). Subagents are 57% of the spend; a subagent request follows a gap over five minutes in 169 of 15,419
+    requests. A one-hour TTL for every subagent raises their spend by 2% (writes cost 2x instead of 1.25x); for the
+    verifier, whose renders and videos wait 5-10 minutes, it lowers it by 4-7%. So `owner-direction-verifier` alone sets
+    `experimental.cacheTtl: 1h` and `subagentPromptCacheTtl` keeps its default. The coordinator already writes one-hour
+    caches. 31% of its spend came at contexts over 400K, with sessions up to 965K (Opus 5.5 auto-compacts at about
+    967K); restarting from the resume file at about 300K saves 13-18% of it in simulation, flat from 250K to 350K. The
+    resume file stays the handoff, since a compaction summary is local to one session; an `autoCompactWindow` safety
+    net is the user's setting.
+    - **When to restart is the user's call (the user, 2026-10-11).** A size the coordinator watches can become a
+      finish line it rushes toward (the user's observation, from another user's account of auto-compaction at 400K).
+      The figures above stay as information for the user, who sees the context meter. The coordinator neither tracks
+      its own context size nor acts on it. It keeps the resume file current at each natural break (after a large
+      round, at each milestone closure), so a restart from «كمّل» costs nothing whenever the user chooses.
+26. **No token budget for a designer (the user, 2026-10-10).** The pressed-state designer used about 480K tokens, and
+    the coordinator measured that against item 21's target that a designer's first edit comes in under 125K. The user
+    corrected this: that much use is normal for a designer, and a limit or target would harm the work more than it
+    saves. A first edit under 125K is hardly reachable for a whole design pass.
+    - Item 21's target is dropped. A designer's brief still names the files it edits, so the designer reads less, but
+      its token use is not a measure of the brief or of the round.
+    - Start load is still recorded per round as information, never as a limit.
+27. **A third repair for round 21 (the user, 2026-10-10).** Round 21 is on its second repair: its CLI test depends on
+    a temporary ui-forensics copy, so CI would fail. The user allowed a third repair if this one fails, as a one-time
+    exception to AGENTS.md's limit of two focused repairs. It applies to round 21 only; every other round keeps the
+    rule.
+28. **No repair cap (the user, 2026-10-10).** The user said the rule of two repairs, after which the third
+    recurrence was `FAILED_VALIDATION`, held the project back: they want to finish it, and that needs more attempts.
+    The cap had grown out of the r04 activation record's stall rule, which said to stop and redo the root-cause
+    analysis after two failed rounds on one issue. Its point was to stop blind repeats of the same repair, not to end
+    the work.
+    - A failure is now repaired until its gate passes. After every two failed repairs of the same failure, the
+      coordinator redoes the root-cause analysis, writes the next attempt from a changed hypothesis or scope, and
+      tells the user in a line.
+    - `FAILED_VALIDATION` is declared only when the coordinator or the user judges the approach itself wrong.
+    - AGENTS.md, `docs/WORKFLOW.md` and the ledger schema (no maximum on `validationRepairAttempts`) changed
+      together. Item 27's one-time exception is absorbed.
+    - The design polish loop's two cycles (`docs/WORKFLOW.md`, the phase polish loop) are a separate rule and stay.
+29. **Closing the environment phase (coordinator, 2026-10-11).** The closing review
+    (`r03/briefs/closing-review.md`, a fresh Sonnet at `high`, judged at `5ab33aab`) passed the milestone and asked for
+    three record repairs; this item records them.
+    - r02's open items: C4 and C5 are not adopted. Neither was evaluated, and no brief-caused failure of their cause
+      (cause 5) came after; they stay candidate lines in `brief-failure-causes.md`, adopted if that cause recurs (item
+      20: no new process rule without evidence). C2d is dropped: C2c was not adopted, and nothing failed for it since.
+    - The evidence-receipt template is retired: required once, never used, and item 17's closure has no receipt. Its
+      two routes, its `docs/WORKFLOW.md` line and its context-file entry go; closed packets keep their
+      `receiptTemplate` field, which no check opens.
+    - Scope: r03's commits also changed `vitest.config.ts` and `scripts/run-vitest.test.ts`, now in its scope; the
+      deleted scripts its scope lists were removed within it. access-reason-cap-r01 loses its two frontier lines with
+      the frontier check (item 17); its scope is revisited before it restarts. Some coordinator commits on the shared
+      line mixed both milestones' records; history is not rewritten.
+    - F119, F122 and F126 stay open after the closure. No environment milestone follows: the gardener counts them, and
+      the next round that touches verify-fitway or the fast ladder takes them. The review's gardener findings are
+      F127 and F128.

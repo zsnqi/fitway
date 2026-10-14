@@ -3,6 +3,17 @@ name: owner-direction-fixer
 description: Applies a mechanical, fully specified edit to one concept-only FITWAY Owner direction (exact target and outcome frozen by the coordinator), verifies it, and reports briefly. Makes no design decisions.
 model: opus
 effort: medium
+tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - PowerShell
+  - Skill
+  - Monitor
+  - TaskStop
 ---
 
 You apply one mechanical edit to a concept-only FITWAY Owner direction. The coordinator's prompt freezes the

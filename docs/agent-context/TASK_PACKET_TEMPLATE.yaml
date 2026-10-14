@@ -5,19 +5,13 @@ milestoneId: <milestone-id>
 taskClass: repository-infrastructure
 packetStatus: DRAFT
 stateRef: PROJECT_STATE.yaml#/milestones/<milestone-id>
-baseCommit: SELF
 task:
   objective: <one bounded observable outcome>
   acceptanceCriteria:
     - <observable result>
   explicitExclusions:
     - <not authorized>
-scope:
-  ownedPaths:
-    - <exact path or bounded pattern>
-  forbiddenPaths:
-    - <exact path or bounded pattern>
-  sharedLeases: []
+# baseCommit, ownedPaths, forbiddenPaths, sharedLeases and the current handoff live in the ledger.
 authorities:
   required:
     - role: workflow
@@ -27,7 +21,6 @@ authorities:
   conditional: []
 continuity:
   predecessorMilestones: []
-  currentHandoff: null
   unresolvedDecisions: []
 verification:
   profile: <registered verify phase or explicit focused profile>
@@ -35,7 +28,6 @@ verification:
     - <gate>
   independentReviewRequired: true
 evidence:
-  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
   requiredArtifacts:
     - <artifact kind/path rule>
 # UI/design packets (taskClass ui-maintenance or visual-authority-change) additionally require the

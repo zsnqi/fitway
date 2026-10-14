@@ -4,7 +4,8 @@ One entry per round: the brief, brief rows passed, held-out rows passed, the fai
 whether a brief-caused failure was already covered by a brief rule (DECISIONS "How this milestone's rounds run" item 3)
 when the brief was written. A repeat means the rule failed or was not applied, and is a brief-rule defect to fix
 (the user, 2026-10-04: held-out pass rates track the task's kind, not round order, so only repeats test the rules). The held-out
-checks live outside the repository and never appear here or in a brief.
+checks live outside the repository and never appear here or in a brief. One line per round and per side finding:
+`docs/phase-records/handoffs/agent-environment/rounds.tsv` and `findings.tsv` beside it.
 
 ## nav-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-1-readme-split.md`, result `32958e1`
 
@@ -208,3 +209,736 @@ checks live outside the repository and never appear here or in a brief.
   no-history legend needs two rows (a legend-layout question for Daily's last round). M5 with M6, brief: from 721 px
   the sheet now shows two identical computer cards, the second captioned "On a phone".
 - **Repeat fault:** repeats B8 (M3's slide exception and M4's two requirements were not checked together).
+
+## activity-followup: `design-research/owner-composition-exploration-r04/directions/briefs/codex-activity-followup.md`, result `31e9dd9` on `owner-r04-activity`, level `high`
+
+- **Attempt 1** stopped at once, correctly: the brief named "DESIGN-SPEC §8 Q-PCK", a section FLD-2 points to but that
+  never existed. Brief-caused; no rule covered it, so B10 is added (DECISIONS rounds item 3). Fixed in `97988ff`.
+- **Brief rows:** 7 of 10 (P3, P4, L1-L4, L6 pass). P1 partial: in the short-history state the shown period starts
+  before the first day with readings, so "open on the period shown" and "Reports' bounds" cannot both hold; Codex
+  clamped to the bounds, as the custom period does (coordinator: accepted, no change). P2 literal conflict: "the same
+  field states" kept an invalid specimen the reason search never builds (low, waits for the last round). L5: the
+  index checker's fixture omits `picker.js`, failing at `e72e5fe` too (pre-existing since fix-1; low, last round).
+- **Held-out rows:** none prepared for this round.
+- **Coordinator inspection:** the export dialog at 1440, 390 and 320 in each state, the sheet's picker specimens and
+  English Activity log: no high or medium finding. At 320 the file line sits below the sheet's first view (low).
+- **Environment:** Codex also asked to write three `.impeccable/config.json` ignores for detector flags (the masked
+  lighting, a legend swatch); automatic approval review refused and nothing was written. Left standing.
+- **Repeat fault:** B7 applied (P1's conflict surfaced as a report, not a workaround); attempt 1 is a new fault (B10).
+
+## access-fix: `design-research/owner-composition-exploration-r04/directions/briefs/codex-access-fix.md`, result `376c845` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** Access's fix round after the designer's visual part (`a0c6c76`): the optional reason, the sign-out
+  wording, Reactivate's confirmation, passwords emptied on close, arrival at a record by id, one set of words on
+  Access and Activity log, the deactivated owner's records, the review's lows (F1, F5, the 700 ms silence), the rail
+  and bar links, ACCESS-SPEC merged as §4.4 and INDEX.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/access-fix-heldout.md` (H1-H8), written before the run; graded by
+  the review that follows the builder round (`builder-access-code.md`).
+- **Brief rows, as Codex graded them:** A1-A9 and L1-L3, L5, L6 PASS (about 4,800 checks per mode, 114 crops).
+  A10 FAIL: INDEX does not list `access.js`, because the generator's file list is in `tools/build-index.mjs`, which
+  the brief's scope left read-only. L4 FAIL on its literal text: "no password once submitted" contradicts A4 and
+  DECISIONS 33 (a refused form keeps its masked password while open); Codex followed A4 and said so.
+- **Failure causes:** A10, brief: scope omitted the file the outcome needs (a B10 kind: the brief named an outcome
+  without checking where it lives). L4, brief: B8 (two outcomes not read together). A8, brief: "within one frame"
+  removed the commit's 700 ms guard, whose purpose (a double tap on Continue landing on «حفظتُ الرمز») the brief did not
+  state; Codex reported it. B8 again: an outcome's intent must name the purpose of what it replaces.
+- **Environment:** the harness background limit (2 h) killed the run after its final checks, before the commit; the
+  coordinator resumed the same thread, which committed and reported. Launch such runs with the limit in mind.
+- **Repeat fault:** B8 (twice). Codex surfaced every conflict instead of working around it (B3, B7 held).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/access-fix-heldout.md`, 8 of 8 (H7 with a note: «سجّل الدخول», sign in
+  again, is the right use of the word). Graded by `D:/fitway-temp/owner-r04-access-fix-review/REPORT.md` (verifier at
+  `high`), which confirms A1-A9 and finds one regression: F1 (medium), Access's focus ring on every mouse click and
+  tap, from a blanket `:focus`. Cause, brief: A8 said "every element that takes focus programmatically shows the
+  ring" without its intent (keyboard users see where focus went); Codex met the literal text the only way it could.
+  B8 again: three B8 faults in one round. Fixed by an `owner-direction-fixer` (`fixer-access-focus.md`).
+
+## motion-lows: `design-research/owner-composition-exploration-r04/directions/briefs/codex-motion-lows.md`, result `4850e58` and WIP `48ff52b` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** the motion review's measurable lows (F2, O3, O4) and two lines the records round left untrue: M1 a
+  label's place at rest, M2 the widths MOT-14 gives written down, M3 the component sheet's dead dialog animation,
+  M4 the scroll lock lifting on the close, M5 OWN-C9 and README's capture sizes.
+- **Brief rows, as Codex graded them:** M2-M5 and L1-L5 PASS (576 close-path checks, 240 rest pages pixel-identical,
+  246 motion cases each side). M1 stopped: English "Copy"'s icon sits 6.328 px from its place at `54b2737`, and L1
+  allowed only "sub-pixel" moves. Codex found a correction with 0 px error and left it unapplied (B3, right).
+- **Failure cause:** brief, B8 kind: L1's bound came from the review's reading (about 2 px) instead of a measure at
+  the HEAD the brief named. The coordinator's correction was resumed on the thread; Codex hit its usage limit while
+  checking it, the edit was saved as WIP `48ff52b`, and an `owner-direction-fixer` (`fixer-copy-label.md`) verified it
+  unchanged against M1's four targets (`cd7a27c`, an empty commit; 48 measures, 0 px).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/motion-lows-heldout.md`, 8 of 8, graded by
+  `D:/fitway-temp/owner-r04-three-rounds-review/` (verifier at `high`, `verifier-three-rounds.md`). H1 with a note:
+  the row said "centred", but at `54b2737` English "Copy" sits 3.16 px off true centre; M1's target (its old place)
+  is the right one, and the row's wording was the grader's error. That review's F6 (low): MOT-14 lists all 20 cells
+  without saying which are wider at rest than their visible label, so M2's outcome holds only in part.
+- **Repeat fault:** B8 again (a bound in a limit taken from a reading, not a measure). B3 and B7 held.
+
+## three-rounds-fix: `design-research/owner-composition-exploration-r04/directions/briefs/codex-three-rounds-fix.md`, result `ce3f07e` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** the three rounds' review findings: F1 (medium) variant 2's file line ran over the calendar copy in real
+  time; F2 (low) the trial switch covered the records card on short windows; F3 (low) MOT-14 to mark the cells wider
+  at rest than their label.
+- **Brief rows, as Codex graded them:** F1 overlap, timing and cleanup PASS (cause confirmed: a main-thread
+  `clip-path` cut lagging compositor riders; a translated overflow window now cuts), F3 PASS, L3-L5 PASS. Literal
+  FAILs, each reported rather than worked around (B7): F2's "no other element's box" (containing elements, and the
+  phone's fixed bar over the switch while scrolling), and L1/L2's strict pixel equality (raster noise also present
+  between two baseline captures).
+- **Failure causes:** both literal FAILs are brief wording: a rule stated without its noise floor or its exceptions.
+  The review found a regression no brief row guarded: on the phone sheet under 4x CPU the copy now jumps about 32 px
+  (F-a), because the cut moved to the compositor while the panel it sits in still settles on the main thread. The
+  brief asked for no text over text under load but not for the moment's other promises (the sheet's copy stays
+  still) under load; B8 kind: an outcome that replaces a mechanism must name every promise the old one kept.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/three-rounds-fix-heldout.md`, 8 of 8 (H6 partial: the verifier could
+  not reach the Copy view; the M1 fixer had measured it). Graded by
+  `D:/fitway-temp/owner-r04-three-rounds-fix-review/` (verifier at `high`, `verifier-three-rounds-fix.md`); its F-a,
+  F-b (the panel's content lags its surface under a stall, also at the baseline) and F-c (the «22» mark 1 px off)
+  went to the one-clock round (`codex-one-clock.md`).
+- **Repeat fault:** B8 (the brief's). B3 and B7 held.
+
+## one-clock: `design-research/owner-composition-exploration-r04/directions/briefs/codex-one-clock.md`, WIP `dbee42d` and result `809aa09` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** the review of three-rounds-fix's F-a, F-b, F-c: the export's settle holding together under load (C1), the
+  chosen day's mark under the cut (C2), the docs (C3); report-only, other moments split across threads.
+- **Run:** stopped by the user mid-run; the edit was saved as WIP `dbee42d` and the thread resumed, which finished its
+  checks and committed `809aa09` on top.
+- **Brief rows, as Codex graded them:** C1, C3, L2-L4 PASS (96 load cases, 2,296 frames, 0 px at matched progress;
+  mechanism: paused Web Animations effects driven by one main-thread frame clock). C2 FAIL and a literal conflict with
+  L1: the «22» mark's 1 px raster offset already existed at `aef7437`, and L1 forbade changing it. L1 FAIL on 12 px by
+  one level.
+- **Failure causes:** C2 was the brief's: its bound came from the review's frame without checking whether the baseline
+  already had it (B8 kind, a bound from a reading). L1's noise floor again (as in three-rounds-fix).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/one-clock-heldout.md`, 6 of 6 (H2 a report: the dialogs' shade and
+  clip separate under a stall, unchanged by the round). Graded by `D:/fitway-temp/owner-r04-one-clock-review/`
+  (verifier at `high`, `verifier-one-clock.md`), every row PASS. Its observation 1 (medium, present at `aef7437`): at
+  320 x 568 variant 2's file line glides across the still calendar copy at 60-80 ms, glyphs on glyphs, seen at 1x; to
+  the narrow-sheet round (`codex-narrow-sheet.md`).
+- **Repeat fault:** B8 (the brief's). B3 and B7 held: both conflicts reported, not worked around.
+
+## narrow-sheet: `design-research/owner-composition-exploration-r04/directions/briefs/codex-narrow-sheet.md`, result `b6d6a5c` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** variant 2's file line running over the still calendar copy on the 320 x 568 sheet (one-clock review,
+  observation 1).
+- **Brief rows, as Codex graded them:** N1, N2, L1-L5 PASS (48 real-time runs, 1,570 frames, 0 overlaps; control 6
+  frames at 320). Cause found: at 320 the old file line lay outside the scrolling body, so its pair was skipped and the
+  panel carried it. Codex caught its own first fix's defect by looking (the long path crossing the actions) and fixed it.
+  `motion-capture.mjs` ran on moment 9 only, though L4 named it whole.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/narrow-sheet-heldout.md`, partly graded: the review
+  (`verifier-narrow-sheet.md`) was stopped when the user kept variant 0 (DECISIONS 39); its settled rows passed H1
+  (72 sheet heights, 0 overlap; control flags 36) and H2 (0 px). Its open observations concerned variant 2 only.
+- **Repeat fault:** none from the brief. L4's scope was narrowed without saying so (a new kind, low).
+
+## variants-removal: `design-research/owner-composition-exploration-r04/directions/briefs/codex-variants-removal.md`, result `e74ca06` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** remove export variants 1-2, Access's row option 1 and the trial switches after the user's pick
+  (DECISIONS 39).
+- **Brief rows, as Codex graded them:** R1-R4, L1-L4 PASS (1,024 export and 2,048 row frames within measured noise;
+  240 rest frames and 336 legacy-link loads exact; full `motion-capture.mjs`). It noted that `b6d6a5c`'s guard applied
+  to variant 2 only, so the kept moment is unchanged.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/variants-removal-heldout.md`. No verifier (the user: not needed for a
+  cleanup). The coordinator checked H1-H3 itself: a fresh browser over HTTP with stale stored choices and old links
+  loads both pages as built, no switch, no errors; no trial code left (only decision 20's comments mention a trial).
+  A stale browser cache serving the old `reports.js` throws `M.trial is not a function` until a hard reload; the
+  preview server sends no cache headers.
+- **Repeat fault:** none.
+
+## tuner-reach: `design-research/owner-composition-exploration-r04/directions/briefs/codex-tuner-reach.md`, result `1305c0ee` on `owner-followup-r04-build`, level `high`
+
+- **Scope:** the light tuner reachable on the phone and the tablet (the user said yes, 2026-10-07): on the phone its
+  toggle lay off the screen in both languages while Tab still focused it; on the tablet the open panel ran off the
+  screen and the toggle covered the header status button.
+- **Brief rows, as Codex graded them:** T1-T3, L1-L5 PASS.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/tuner-reach/ROWS.md`, by the coordinator. 112 of 114 pass; the two
+  failures (H6, a tap after a drag) are a harness fault: after CDP touch events the next tap gives no click to any
+  element, the page's own menu button included; a fresh context passes. Planted control: the baseline fails 46 rows
+  where the defect is. Two findings the rows did not cover, measured after: with the tuner closed, `place()` reads
+  every page control's box on every page change, about 11,300 reads during a one-second pointer sweep over Daily's
+  chart against about 100 at the baseline, with frames over 20 ms in 2 of 3 runs (H11); on the phone and the tablet
+  the toggle jumps across the screen when the panel opens (H12). Escape with a page layer open still closes the
+  layer first (H13).
+- **Failure cause:** the brief. It set no limit on the page's motion cost with the tuner on, and T3 (no control under
+  the toggle at any scroll position) left a moving toggle as the literal reading. Repair attempt 1:
+  `codex-tuner-reach-fix-1.md` (F1 cost, F2 the jump), from `1d3539a3`.
+
+## tuner-reach fix-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-tuner-reach-fix-1.md`, result `ec314ce2` on `owner-followup-r04-build`, level `high`
+
+- **Run:** stopped at 16:40 on the old Codex account's limit; resumed on its thread on the new account with its HTTP
+  checks moved to 3177 (tuner-reach's own preview still held 3176); stopped twice more on "Selected model is at
+  capacity", the second time after its last measurement, so its verdicts come from its event stream.
+- **Brief rows, as Codex graded them:** F2, T1-T3 and L1-L5 PASS (256 HTTP and 256 `file://` contract checks, 120
+  pixel comparisons); F1 FAIL: 4 of 12 groups outside the baseline's three-run spread, by p95 16.8 against 16.7 ms
+  and one 50 ms frame in one of three intro runs, with box reads equal to the baseline.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/tuner-reach/ROWS.md`, by the coordinator, on a `git archive` of
+  `ec314ce2`. 126 of 136 pass in `grade.cjs`; H11 and H13 pass; H10 looked at (390 Arabic, closed and open: the
+  dashed toggle stays put, the panel opens below it, neutral greys).
+  - H12 and H6 now pass at every size and language (the toggle's box is the same before, while and after opening).
+  - H11: a one-second sweep over Daily's chart reads 100 boxes, as the baseline (tuner-reach read about 11,300); the
+    intro reads about 25 more once; frames over 20 ms within the baseline's run-to-run range; the phone 0.
+  - H3 is partial: the 10 failures (390, 360, 412, 320 and 600, both languages, `#menu-btn` and `#ops-btn` at scroll
+    0) came from a run with four other jobs on the machine. Unloaded, after a jump to the top from a scrolled page
+    the toggle covers the header buttons for two frames in 4 of 10 tries, against 0 at tuner-reach and the baseline:
+    the repair moves the toggle when an IntersectionObserver reports a control under it, one frame or more after
+    paint, where tuner-reach placed it in the scroll handler.
+- **Failure cause:** F1's "within the run-to-run spread" was too strict for frame times quantised at 16.7 ms (the
+  brief's fault); H3's transient is the price of observing instead of measuring on scroll. The coordinator accepts
+  the result without a second repair: a flash of one or two frames over the header on a jump to the top, on a
+  concept-only tool.
+
+## css-round (the mechanical part): `directions/briefs/codex-css-round.md` on the build branch, result `691d62d5` (level high)
+
+- **Set-up:** the first brief written from a `/to-spec` spec (agent-environment DECISIONS item 21, step 6;
+  `css-round-spec.md`, `58433873`).
+  - The base was measured first. The concept CSS check found 87 findings. The forced-colours focus sweep showed no
+    stop without a ring except the sheet's heat cell (`D:/fitway-temp/owner-css-base-focus/`). Chromium 149's
+    safe-area emulation applies insets without `viewport-fit`.
+  - The brief over `58433873` was launched alone. B6 was relaxed on purpose: five independent causes from one spec,
+    graded separately.
+  - Held-out rows X1-X10: `D:/fitway-grader/owner-r04/css-round-heldout.md`.
+- **Brief rows, as Codex graded them** (`9cbb3025`): C1-C4 and L1-L5 pass. The check fell from 87 to 0, and the
+  compare of normal colours was EQUAL. C5 failed because "shows" was read as the whole widest value visible at once,
+  which a one-line field cannot do. That is the brief's wording; glyph and icon clearance passed.
+- **Held-out rows** (`D:/fitway-temp/owner-css-grade/`):
+  - X1-X9 pass:
+    - the hover gate is `hover: hover` alone;
+    - forced colours hold at tablet, 320 and in two dialogs;
+    - Daily's five states and Reports' custom period compare EQUAL;
+    - a 240-character Arabic reason fits the textarea at 320, and a 200-character password scrolls clear of its eye
+      button;
+    - the meta adds only `viewport-fit`;
+    - X7 passes on intent: `forced-color-adjust: none` is used for selected and disabled states with system colours;
+    - nothing changed in the designer's part;
+    - DESIGN-SPEC adds FOC-8 and SAFE-1.
+  - X5's status compare at full motion also differed base against base (F112).
+  - X10 failed. Five rules turned from `outline: none` into unconditional transparent outlines (`.main`, `.cx-main`,
+    `.fw-pop` and the two selects), which forced colours paints at rest: a permanent line around the content that runs
+    against Daily's title, a second edge on popovers, and a ring inside each list's own edge.
+  - The check's false positives pushed it there (F113).
+- **Repair 1** (`691d62d5`, at the second resume: the first stopped at the Codex account limit, the second at a model
+  capacity error):
+  - the programmatic targets went back to `outline: none` as named allowances (`.cx-main`, `.fw-pop[tabindex="-1"]`);
+  - the lists' wrappers draw their one edge and ring;
+  - X10 passes on the coordinator's renders, and Activity's focus sweep under forced colours has 0 failed stops;
+  - the check reports only the two allowances.
+- **Failure cause:** C5 is a brief-caused row (outcome wording). X10 came from a check that counts a programmatic focus
+  target or a `:has()` ring as a missing ring.
+- **After acceptance** (2026-10-10, the round's independent review, `D:/fitway-temp/owner-r04-css-review/`, brief
+  `verifier-css-round.md` at `767cd57c`): two defects trace to this part. In forced colours the figures region
+  (`#cards`) of Daily and Reports paints a ring after "Try again": the X10 failure mode on a region the repair missed
+  (`style.css:1127`, `reports.css:695`). The desktop dialog cap divides by a length and by zero with no insets
+  (`reports.css:730-734`). Both go to the review's Codex fix round, `codex-css-review-fixes.md`.
+
+## css-review-fixes: `directions/briefs/codex-css-review-fixes.md` on the build branch, result `3b673daa` (level high)
+
+- **Set-up:** the CSS round review's mechanical findings F1, F5, F7 and F9 (D1-D4), plus the stale README paragraph
+  that the taste fix `41821f38` left (D5). B6 was relaxed: five independent causes, graded separately. Held-out rows
+  Y1-Y7 are in `D:/fitway-grader/owner-r04/css-review-fixes-heldout.md`.
+- **First run:** Codex stopped at once, rightly, because the brief cited DECISIONS item 42 and the build branch's
+  copy ends at item 41. It resumed on its thread with the coordinator branch's path (F116). That is a brief-caused stop
+  with no code written.
+- **Brief rows, as Codex graded them:** D1-D5, L1, L2 and L4 pass. D1's "reported as a named allowance" and L3 fail
+  only on wording: the check has no allowance labels, and its six findings are all script-focused regions
+  (`.main`, `.cx-main`, `.fw-pop[tabindex="-1"]`, both `#cards`, `.ac-log`/`.ac-msg`). The coordinator re-ran the
+  check.
+- **The diff, read by the coordinator:**
+  - regions lose the outline, with a forced-colours `outline: none` for the script-focused group;
+  - both lists hide the ring after a pointer press through a root flag that any keydown clears (`activity.js`,
+    `reports.js`);
+  - the dialog cap no longer divides and applies only to a real dialog (`.dlg > .dlg-panel`);
+  - the recipe picks the long name by the page's language.
+- **Held-out rows so far** (`D:/fitway-temp/owner-r04-css-fixes-grade/`):
+  - Y2 passes: the transparent outlines left are the four on controls, against three on regions at the base.
+  - Y5 passes: the Arabic run passes on the Arabic name, and with one letter changed it fails.
+  - Y7 passes: the build worktree is clean.
+  - Y1, Y3, Y4 and Y6 run in the verifier pass after F3, against `3b673daa`. Codex's own D1 probes covered
+    Activity's regions (Y1's subject), which shows the intent carried past the brief's two examples.
+- **Failure cause:** the stop and D1's wording are brief-caused (a stale decision pointer, and an outcome the tool
+  cannot print).
+
+## press-hook (F3): `directions/briefs/codex-press-hook.md` on the build branch, result `eb18b17a` (level high)
+
+- **Set-up:** the review's F3 (the press spread over selector lists, and shadow rules that must repeat its layer), one
+  cause (B6 kept). Held-out rows Z1-Z7 are in `D:/fitway-grader/owner-r04/press-hook-heldout.md`. The user had already
+  found no problems on the phones (DECISIONS 43).
+- **Brief rows, as Codex graded them:** P1, P2, P4, P5 and L1-L4 pass. A new control takes `data-press="dark|option|chalk|tile|square"`.
+  P3 fails on one frame: on the phone menu, 60 ms after release, 27 corner pixels differ by at most 5 levels; two base
+  captures differ by 0.
+- **The diff, read by the coordinator:** the light is now a static, additive CSS animation on every pressable control
+  (`animation-composition: add`, `!important`), so a control's own shadow no longer carries the layer. The global
+  motion gates moved, not added. No control animates itself in CSS, and the script moments animate inner parts.
+- **Coordinator's call on P3:** accepted as a named allowance, because the difference cannot be seen. The verifier
+  looks at that frame at full size. The brief left out a limit for the moments that move a control at full motion;
+  the verifier pass checks them (V8).
+- **Held-out rows:** Z1-Z7 run in `verifier-press-hook.md` (`e217534d`), beside css-review-fixes' Y1, Y3, Y4 and Y6.
+- **The verifier pass** (`verifier-press-hook.md`, `e217534d`; `D:/fitway-temp/owner-r04-press-review/`): all twelve
+  checks pass, Z1-Z7 and Y1, Y3, Y4 and Y6 included. P3's release frame is equal when the transitions are seeked to
+  exact times. Its findings:
+  - F1: the `!important` animation drops any CSS animation a later screen gives a control;
+  - F2: the press relies on CSS nesting, `animation-composition` and `var()` in keyframes, unmeasured in Safari,
+    while the user accepted `3b673daa` on an iPhone;
+  - F3: the record leaves `tile`, `option` and Working open, and the markup holds no real `data-press` example;
+  - F4 and F5: two invisible computed and forced-colour differences.
+- **Coordinator's call:** the mechanism is replaced, not repaired. The changed hypothesis: keep the mechanism the user
+  tried, keep the one-step hook, and guard the omission with a check instead of a new mechanism. The successor is
+  `codex-press-hook-2.md` (`aa406fce`, held-out rows W1-W7 in `D:/fitway-grader/owner-r04/press-hook-2-heldout.md`).
+  F1 and F2 are the failure modes this round's rows did not cover, so the new brief makes both outcomes. It also
+  carries the forced-colours level chip's empty icon slot, which the review found and which was there before.
+
+## press-hook-2: `directions/briefs/codex-press-hook-2.md` on the build branch, result `d1a01f3c` (level high)
+
+- **Set-up:** the successor to press-hook, with a changed hypothesis: keep the press mechanism the user tried on both
+  phones (`3b673daa`), keep the one-step `data-press` hook, and guard the omitted layer with a check. R5 is a separate
+  forced-colours defect from the review (B6 relaxed for it alone). Held-out rows W1-W7 are in
+  `D:/fitway-grader/owner-r04/press-hook-2-heldout.md`.
+- **Run:** the Codex account reached its usage limit before the commit. After the user switched accounts it resumed
+  on its thread, with no reset.
+- **Brief rows, as Codex graded them:** R2-R5, L1, L4 and L5 pass. Codex left R1, L2 and L3 "unproven": its own
+  captures differed by up to 14 px between two takes of the same target, and five retry recipes lack state proofs.
+- **Held-out rows, graded by the coordinator** with the press review's harness (`D:/fitway-temp/owner-r04-press-review/scripts/`,
+  where two takes of the target differ by 0; evidence in `D:/fitway-temp/owner-r04-press-hook-2-grade/`):
+  - W1 passes: an animation planted on the export button keeps running (`zz-pulse:running`); `eb18b17a` dropped it.
+  - W2 passes: the new check names `reports.css:625` and a planted `[data-press]` rule, and exits 1 on each.
+  - W3 passes: no nesting, no `animation-composition`, no `press-face`.
+  - W4 passes: 135 of 135 frames (AR 1440) and 90 of 90 (EN 390) equal `3b673daa` at rest, hover, held, and 60 and
+    200 ms after release. In forced colours, 133 of 136 are equal. Two release frames of Activity's dates and search
+    buttons vary between takes of the new build (at most 16 px and 4 levels; one take equals the target exactly). It
+    is invisible and accepted as an allowance.
+  - W5 passes: the level chip's bars show in forced colours, where the target shows an empty slot.
+  - W6 passes: the sheet's `data-press` specimens are equal, inside W4.
+  - W7 passes: both worktrees are clean.
+- **Failure cause:** none in the result. Codex's "unproven" rows came from its own capture noise and from recipes
+  without error-state proofs (the review's low, still open).
+
+## recipe-proofs: `directions/briefs/codex-recipe-proofs.md` on the build branch, result `e097d82c` (level high)
+
+- **Set-up:** the first round after the environment phase, before Daily's own files (DECISIONS 44). It adds observable
+  state proofs for the 22 feature states the last self-compare reported as capture problems (F123, F124) and repairs
+  `tuner-control-nowHot` (F125). Held-out rows V1-V7 are in `D:/fitway-grader/owner-r04/recipe-proofs-heldout.md`.
+- **Brief rows, as Codex graded them:** P2, P3, L2 and L3 pass. P1 fails: 21 of 22 pass, and `records-retry` fails on
+  the phone, where Access has no records card by design (`access.css:45-48`); the `--states all` compare also showed
+  switch values no recipe proves. Codex reported L1 as failing because it measured the compare; L1 as written (the
+  diff touches only the recipe file) passes. P3's cause was the recipe: Home then one ArrowUp returned to the value
+  the page starts with.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-recipe-proofs-grade/`):
+  - V1 passes: with Access `fail=1`, Activity `older=fail` and Reports `export=fail` planted to do nothing, each
+    feature fails on its feature proof; the clean copy passes.
+  - V2 was not run: ten of the new state proofs read the address the CLI typed, so they fail at the default state by
+    construction; T4 of the next round grades them instead.
+  - V3 passes: the 22 states pass over `file://`.
+  - V4 is partial: touch at phone passes 21 of 22 (`records-retry`, the designed absence); keyboard at desktop passes
+    20 of 22, and the address-opened `range` and `export` dialogs report KEYBOARD-UNREACHABLE because a feature with
+    no actions has no key sequence (F132).
+  - V5 passes: the tablet self-compare is 147 equal, 15 not reachable, 0 problems.
+  - V6 passes for the phone with touch; its planted disconnect was not run.
+  - V7 passes: only `verification-recipes.json` changed; both worktrees are clean.
+- **The diff, read by the coordinator:** ten state proofs read `location` (scenario switches such as `fail`, `hold`,
+  `refuse`, `older`, `refresh`, `export`, whose effect shows only after an action); their features' proofs check the
+  visible result, which is what V1 caught. The CLI asks for a proof before the action, so a scenario has nothing else
+  to show (F131).
+- **Failure cause: the brief.** P1 forbade `NOT-REACHABLE` for any of the 22, which the phone's design contradicts
+  (B8: not literally reachable), and its `--states all` compare was never run on the base (B7), so about 60 unproved
+  switch values surfaced only in the round (F134). Codex reported both instead of working around them.
+- **Next:** `codex-recipe-proofs-2.md` (`5fa6db88`, held-out rows T1-T5) proves every page switch value, states the
+  phone's designed absence, and holds address reads to scenarios only.
+
+## recipe-proofs-2: `directions/briefs/codex-recipe-proofs-2.md` on the build branch, result `8c1a7c5d` (level high)
+
+- **Set-up:** the successor to recipe-proofs. The changed scope: every value of every switch a page takes from its
+  address (F134), the phone's designed absence of Access's records card, and address-reading proofs held to
+  scenarios that show nothing before an action. Held-out rows T1-T5 are in
+  `D:/fitway-grader/owner-r04/recipe-proofs-2-heldout.md`.
+- **Brief rows, as Codex graded them:** Q3 and L1-L4 pass. Q1 fails: `arrive` (on four pages) and a lone `from` or
+  `to` (Reports, Activity) act only with a companion switch (`state=loading`; the other end of the range), which the
+  CLI neither discovers nor lets a recipe name; one all-pages compare also ended in `ERR_NO_BUFFER_SPACE` and stalled
+  after about 530 items. Codex marked Q2 failing for removing its weak proofs of those values; the rule holds for
+  every proof the file keeps.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-recipe-proofs-2-grade/`):
+  - T1 passes: Reports `state=delayed` and Access `ops=offline`, planted to draw their default, fail their proofs;
+    Daily `motion=off` fails too under full motion (under reduced motion the page is motion-off anyway, so the first
+    control could not show it); the clean copy passes each.
+  - T2 and T3 pass: at tablet and over `file://`, every page state is equal apart from the known `arrive`, `from` and
+    `to` problems.
+  - T4 passes: 17 proofs check the address (9 read `location`, 8 use the `query` form, which the report did not
+    list); each is a scenario with no visible effect before an action, and each names the feature that proves it,
+    Codex having added a feature for each of Access's eight remaining refusals.
+  - T5 passes: only the recipe file changed; both worktrees clean.
+- **Found in grading, repaired by the coordinator** (`f96753fe`): `record-navigation` lacked the phone width limit
+  Q3 gave `records-retry`, and the new `refused-staff_pin_already_active` failed everywhere because the refusal makes
+  the desk active, which its state proof re-checked after the action; it now owns that change (`changesState`).
+- **The base for Daily's round** (`f96753fe`), self-compared page by page: every page state 688 equal (both
+  languages, desktop and phone, both motions); every feature at its own state 620 equal; tablet 86 and `file://` 28
+  equal; the only problems are the 128 + 16 + 8 known `arrive`, `from` and `to` items.
+- **Failure cause: the brief.** Q1 asked for every switch value, and two kinds cannot be proved alone with today's
+  CLI (F136); the long single compare's exhaustion is a tool limit (F137).
+
+## daily-files: `directions/briefs/codex-daily-files.md` on the build branch, result `50097ff7` (level xhigh)
+
+- **Set-up:** DECISIONS 44, from the base `f96753fe`. Daily's script renamed to `daily.js`, its styles moved to
+  `daily.css`, and the probe kit's font pick repaired (F133). Held-out rows U1-U8 are in
+  `D:/fitway-grader/owner-r04/daily-files-heldout.md`.
+- **Run:** the Codex account reached its usage limit mid-round; it resumed on its thread when the limit reset.
+- **Brief rows, as Codex graded them:** D1-D5 and L1-L3 pass: `style.css` 1670 to 1185 lines, `daily.css` 448, the
+  gardener scan's boundary count 0, every compare equal apart from the known `arrive`, `from` and `to` items.
+- **After its report,** the user's global Impeccable hook in Codex (`~/.codex/hooks.json`) handed it three design
+  detector findings; it added file-scoped suppressions to `.impeccable/config.json`, outside its scope, and could not
+  commit them. The coordinator reverted the file (F138).
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-daily-files-grade/`):
+  - U4, U6, U7 and U8 pass: no failing request, and only Daily (and the components sheet's stylesheet) loads Daily's
+    files; a planted press-layer omission in `daily.css` fails the check and names its line; the scan falls from 17
+    to 0; the scope held and `git log --follow` reaches `app.js`'s history.
+  - A coordinator check beyond the rows found the round's defect: frames seeked inside each moment (`mid/`, the
+    harness `midmotion.cjs`; the base against itself is byte-equal on all 28) differ on six of seven moments. 120 ms
+    into Reports' export dialog opening, the dialog stands below the fold: the interaction motion's pieces, the
+    rail's opening pieces and the date picker's end-day press moved to `daily.css`, which the other pages do not load.
+  - U1, U2, U3 and U5 were not run, and D3 was not re-run at this result: the repair supersedes it and is graded on
+    all of them.
+- **Failure cause: the brief.** D2 judged a rule by the names in the other pages and "their scripts", which read as
+  each page's own script, not the shared `motion.js` and `picker.js` or classes set at runtime; and no limit said the
+  moments still run, while `compare` sees settled pictures only (F139). Its predecessor press-hook-2 had that limit
+  (L3); this brief dropped it.
+- **Next:** `codex-daily-files-fix.md` (`f40bb05b`, level high, held-out rows M1-M7) returns the shared styles and
+  requires every moment and press to equal `f96753fe` along its timeline.
+
+## daily-files-fix: `directions/briefs/codex-daily-files-fix.md` on the build branch, result `7e28c713` (level high)
+
+- **Set-up:** the repair of daily-files, with a changed hypothesis: a rule is Daily's only if no script any other page
+  loads (`motion.js`, `picker.js`, the shell copies) can make it match, and every moment and press must equal
+  `f96753fe` along its timeline. Held-out rows M1-M7 are in `D:/fitway-grader/owner-r04/daily-files-fix-heldout.md`.
+- **Run:** the Codex account reached its usage limit mid-round; after the user switched accounts it resumed on its
+  thread.
+- **Brief rows, as Codex graded them:** X1, L2 and L3 pass: the interaction motion's pieces, the rail's opening pieces,
+  the date picker's end day and press, and one forced-colours level rule went back to `style.css` (1221 lines;
+  `daily.css` 415). D1-D3 and D5 hold (688, 620, 86 and 28 equal). Codex left X2 failing: its own harness sampled
+  real time, so the target against itself differed by up to 5596 pixels and equality stayed unproven; its 80 mouse
+  presses matched. It left D4 incomplete, reading the brief's CLI port limit as forbidding the probe kit's own port.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-daily-files-grade/`; the seek
+  harness `midmotion2.cjs`, byte-equal on the target against itself except two moments with real timers, the export's
+  done state and the first 40 ms of the rail closing):
+  - M1-M4 pass: the seven openings, the closings and the PIN dialog's change, Activity's older-records button
+    through Working in both languages, and held presses on a range day, the end day and a button all equal
+    `f96753fe`.
+  - M5 passes: a marker on the opening's shade piece in `daily.css` leaves Reports' export opening equal; the same
+    marker in `style.css` changes every seek.
+  - M6 passes: the scan finds 0; Reports and Access in every state, both languages, desktop and phone, both motions,
+    show 0 different, the only problems the known `arrive`, `from` and `to` items and one `ERR_NO_BUFFER_SPACE`
+    capture (F137).
+  - M7 passes: only the two stylesheets changed; `.impeccable/config.json` untouched; both worktrees clean.
+  - Also run: the probe kit's `checks.mjs` passes to its end on port 3178 (D4); forced colours on every page,
+    320 px and 200% zoom, touch and keyboard on Daily, and `file://` on the other pages show 0 different (the
+    keyboard's `language` and `tuner-drag` fail on both sides, as at the base).
+- **Failure cause:** none in the result. X2 and D4 were unproven by Codex's own measuring, not by the change.
+- **F139 recurs:** Codex wrote its own mid-motion harness, the same kind as the coordinator's, so under the working
+  agreement ("Rules and findings") seeked mid-motion comparison becomes a verify-fitway feature in a Codex round of its
+  own, with a planted defect it must catch.
+
+## midmotion-compare: `briefs/codex-midmotion-compare.md` (this folder), result `e39225e6` on `owner-r04-midmotion`, level `xhigh`
+
+- **Set-up:** step 1 of the resume point: F139 becomes a verify-fitway feature (`compare --timeline`), with F119, F122,
+  F126 and F130 riding along as their own rows. The ledger gave this milestone `.agents/skills/verify-fitway/**`
+  (`61360cee`). Held-out rows H1-H12 are in `D:/fitway-grader/owner-r04/midmotion-compare-heldout.md`.
+- **Run:** the Codex account reached its usage limit mid-round; after the user switched accounts it resumed on its
+  thread.
+- **Brief rows, as Codex graded them:** T1, T4, T5, T7, T8 and T9 pass; T2, T3 and T6 partial (the full matrices were
+  not finished). T7: 69 of 69 tests pass three times under a concurrent whole-page compare; T8: a planted skip fails
+  the suite by name; F130's two lines are gone.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-midmotion-grade/`, plants in
+  `D:/fitway-grader/owner-r04/midmotion-plants/`):
+  - H1-H3 and H7 pass: a planted dialog start pose, a 40 ms longer opening, a changed easing and a 240 ms press fade
+    are each `TIMELINE DIFFERENT` while the settled result is equal; the unplanted copy is equal.
+  - H5 passes: keyboard at desktop in English over HTTP and `file://` catches `50097ff7`; touch at phone is equal, as
+    the old seek harness found (the phone's sheet lost none of its pieces).
+  - H11 fails: 11 runs of T5's drive wrote two frames, 8 and 3, differing in the Lights chip, as at the base; the fix
+    also adds a style to the page before capture.
+  - H12 passes: only `.agents/skills/verify-fitway/**` changed; both worktrees clean.
+  - H4, H6, H8 and H9 were not run; the repair is graded on them.
+- **Found beyond the rows:** a sample is `NOT-HELD` whenever a page callback ran (`timeline.mjs:662`), and its pixels
+  are not compared. At `50097ff7`, Access's PIN change dialog differs at every time but reports `0 different; 5 not
+  held` and exits 0, while the same moment against itself is byte-equal twice. On Reports, 61 of 116 samples are not
+  held and 39 of them are byte-equal across the builds; the export's progress moments really do vary (timers).
+- **Failure cause: the brief, then the code.** T3 asked for frames "the hold cannot fix" to be their own result and let
+  that result neither pass nor fail, without requiring the classification to come from the frames, and T2's
+  must-catch list named one moment. Codex classified by the page's code, which a literal reading allows and which
+  hides a real regression (B8). T5's 11 of 11 did not reproduce.
+- **Next:** `codex-midmotion-compare-fix.md` (`07c5a87f`, level xhigh): not held only when frames vary between two
+  captures, every moment the real defect broke caught, the noise floor on every page, T6's matrix, and F126 without
+  changing the page.
+
+## Evaluation: a blind review of the brief before launch (2026-10-11, the user agreed to the trial)
+
+- **Question:** would a fresh reviewer, asked only "how could every outcome be met as written while the goal fails?",
+  have caught the two brief-caused failures of the day (midmotion-compare, daily-files) without false alarms on a brief
+  that held (press-hook-2)? Scoring and the adoption rule were written before any run, in the grader folder.
+- **Arms:** Sonnet (`sonnet-researcher`, high) and Codex (gpt-6.1-sol, high, read-only) on the three briefs alone;
+  then Codex with each brief's cited sources as they were at its launch, one run per brief.
+- **Result:** all three arms caught midmotion-compare's loophole (the not-held result could absorb real regressions;
+  each proposed requiring proof from the frames, the repair's own fix) and none caught daily-files' (no limit that the
+  other pages' moments still run, which needed knowing that compare sees settled frames and that shared scripts add
+  classes at runtime). On the control each arm gave four readings of five worth acting on.
+- **Decision after the first arms (coordinator, by the fixed rule):** no step; each arm missed one failure.
+- **Then, at the user's request, xhigh and max** (Codex, briefs alone, and at xhigh also with sources), with a second
+  run of high and xhigh so chance could be told from effort: high caught brief-1 in one run and brief-3 in the other,
+  xhigh caught daily-files in both and midmotion-compare in neither, and max caught both in both runs, with every
+  control reading worth acting on. The first reversal between high and xhigh was chance.
+- **Decision (by the same rule, the user agreeing to the trial):** Codex at max reviews each Codex brief alone before
+  launch (`docs/agent-context/briefs/REVIEW.md`, checklist item B11). Two briefs and two runs are thin evidence: the
+  brief-caused failures of the rounds that follow are the measure.
+
+## midmotion-compare-fix: `briefs/codex-midmotion-compare-fix.md` (this folder, `07c5a87f`), result `84cacbad` on `owner-r04-midmotion`, level `xhigh`
+
+- **Set-up:** the repair of the first round (F141, F142, with F126 as X6). It launched at 19:06 on 2026-10-11, before
+  the pre-launch review was adopted (21:05), so it had no B11 review.
+- **Run:** resumed three times on its thread (usage limits, then the user's account switch at 01:15 on 2026-10-12).
+- **Brief rows, as Codex graded them:** X1-X5 and L1-L3 pass; X6 fails: 11 runs of Daily's drive still give two
+  frames (7/4, then 8/3), and the injected style is gone, as the brief allows when no way exists. X3's not-held counts
+  per page (self, self, against `f96753fe`): Reports 99/103/92, Access 6/9/9, Activity 4/2/1, Daily 26/23/28,
+  components 7/3/4, with 0 different everywhere.
+- **Held-out rows, graded by the coordinator** (evidence `D:/fitway-temp/owner-r04-midmotion-fix-grade/`):
+  - X1 and X2 re-run: Access's `pinChange` at `50097ff7` against `f96753fe` is `TIMELINE FAIL` with 4 different and
+    exits 1, and against itself 5 equal; Reports' three moments 10 different, Activity's `dates` 4, each exit 1.
+  - H4 passes as written: a timer plant (the export's 400 ms wait made 560 ms) is never equal; its samples at
+    200-900 ms are not held on both sides, because the export is timed from the page's real clock, so the plant is
+    never `DIFFERENT` and the command exits 0 with `INCOMPLETE` (F144).
+  - H6 passes: under reduced motion Reports (108 samples) and Access (217) report no not-held and no different.
+  - H8 passes: on Activity (not in Codex's X4), both languages, desktop and phone, reduced motion, the new and base
+    CLIs give the same result for all 124 items; one base-side `ERR_NO_BUFFER_SPACE` (F137) was equal on a re-run.
+  - H9 passes: with the hold's positions taken from the real clock, the suite fails 4 of 71, the new X5 test among
+    them. Two cruder plants hung the suite instead (F145).
+  - H10 partial: a third self run of Access (1432 equal, 5 not held) and Activity (513, 3) under full motion has 0
+    different; reduced motion ran for Access only.
+  - H11 fails, as the round reports; not re-run.
+  - H12 passes: only `.agents/skills/verify-fitway/**` changed; the worktree is clean; CI is on the merge.
+- **Found beyond the rows:** 24 not-held samples across the pages have no callback source. Each is the pressed
+  control's region in the first 200 ms after its activation, so the release fade is not held (F143). Reports' 93
+  others are its export timers.
+- **Failure cause:** none in the brief for the rows that failed; X6 is Chromium's raster, reported honestly. The
+  repair's measures held: classification now comes from the frames, as the trial's reviewers proposed for the first
+  round.
+- **Disposition:** merged as `ad9ea85f`. F119, F122, F130, F139, F141 and F142 are fixed; F126, F143, F144 and F145
+  go to the verify-fitway round before Settings (DECISIONS 47).
+
+## gardener-shared-files: `briefs/codex-gardener-shared-files.md` (this folder, `554eee67`), result `040bc5c8` on `owner-r04-gardener`, level `high`
+
+- **Set-up:** F135, the first of the shared-files rounds (DECISIONS 45 and 47), run beside the shared-frame brief's
+  base check. Held-out rows GH1-GH8 are in `D:/fitway-grader/owner-r04/gardener-shared-heldout.md`.
+- **Pre-launch review (B11, Codex max, briefs alone):** four readings, all closed by sharpening (a scan pinned to the
+  measuring revision; direct loads only; base-name filtering kept; the new-baseline notice only in comparisons);
+  dispositions in `D:/fitway-temp/brief-review/gardener-shared-1/dispositions.md`.
+- **Brief rows, as Codex graded them:** G1-G3 and L1-L2 pass. The derived list at `7e28c713` is the six files the
+  brief names; the boundary total falls from 17 (hand list) to 11, all in `reports.css`.
+- **Held-out rows, graded by the coordinator** (scripts and output in `D:/fitway-temp/owner-r04-gardener-grade/`):
+  - GH1, GH2, GH4 and GH6 pass: the same six files at `f96753fe`; `./`, query, fragment and `../` spellings resolve;
+    without the specimen list `daily.css` and `reports.js` become shared; 17 and 11 reproduce.
+  - GH3 fails: a script tag inside an HTML comment, and an `import` inside a JavaScript comment, count as loads.
+  - GH5 fails: with the hand list restored in `config.json` and preferred by the scan, all 34 tests still pass.
+  - GH7 waits for the shared-frame round; GH8's CI waits for the merge.
+- **Found beyond the rows:** through the report text `formatReport` writes, the baseline key is lost, so every later
+  reading under the same list also says "starts new baseline" and shows no trend: the reading could never show the
+  refactors' effect. The round's test fed a JSON block the report never writes.
+- **Failure cause: the brief, then the code.** G3 stated what the first reading says and nothing about the next one,
+  and G2's "fail on the hand list" did not name the configuration the weekly pass ships; the review did not return
+  either reading. The comment matching is the code's.
+- **Next:** `codex-gardener-shared-files-fix.md` (level high): the trend through the written report, comments are not
+  loads, and a test on the shipped configuration.
+
+## gardener-shared-files-fix: `briefs/codex-gardener-shared-files-fix.md` (this folder, `005b9fa2`), result `dd8f0fb8` on `owner-r04-gardener`, level `high`
+
+- **Pre-launch review (B11, Codex max):** five readings; four closed by sharpening (the weekly step itself, the trend
+  as the difference, the same set of paths in any order, every comment and string form) and one by clarifying the
+  other way (a total counted under the hand list must not seed a trend); dispositions in
+  `D:/fitway-temp/brief-review/gardener-fix-1/dispositions.md`.
+- **Brief rows, as Codex graded them:** X1-X3 and L1-L2 pass.
+- **Held-out rows, re-graded by the coordinator** (`D:/fitway-temp/owner-r04-gardener-grade/`): through the written
+  report the second reading shows its previous and trend (11, 0; across revisions 28 to 11 is -17 and back +17); GH3's
+  comment and string fixtures pass; GH1, GH2, GH4 and GH6 still pass; GH5 passes: with the hand list restored and
+  preferred, the shipped-configuration test fails by name. `code-health.test.ts` grew from 3 to 11 cases over the
+  two rounds.
+- **Failure cause:** none.
+- **Disposition:** merged as `2e7a29cf`; F135 fixed. GH7 is graded on the shared-frame round's result.
+
+## launch-review: `briefs/codex-launch-review.md` (this folder, `fe8856fd`), result `7d262d68` on `owner-r04-launch-review`, level `xhigh`
+
+- **Pre-launch review (B11, Codex max, run by hand):** five readings; four closed by sharpening (the dispositions name
+  the launched brief's SHA-256, never written by the launcher, the prompt and command unchanged, each gate proved by
+  removing it) and one by dropping its outcome: R2 (F146, a launcher test at 28.4 s against 20 s on CI run
+  38250368308) was already met locally at the base (3.8 s), so F146 stays open. Dispositions in
+  `D:/fitway-temp/brief-review/launch-review-1/dispositions.md`. No held-out rows were written for this round.
+- **First result `3469c332`:** every brief row PASS by Codex. The coordinator's run with a stand-in Codex and a test
+  worktree (`D:/fitway-temp/grade-launch-review/GRADE.md`) refused all five real review answers given to it as "cannot
+  be read as readings": the parser asked each reading for four labelled fields, and the tests used a stand-in answer
+  shaped to it. No real round could have launched.
+- **Fix (thread resumed, `7d262d68`):** the eight real answers on disk read with 5, 4, 5, 4, 5, 5, 4 and 3 readings
+  from byte-copy fixtures, and restoring the first parser fails all eight. Re-graded on a real answer: all five named
+  with no dispositions, the fifth named when four are answered, a wrong hash refused, and with all answered the
+  stand-in launched and the readings and dispositions were copied into the run.
+- **Failure cause: the brief.** R1 never required a real answer to parse; the review did not return it.
+- **CI:** run 38273918030 failed once on the edge simulator test of F110 (`test_windows_lifecycle.py:392`, a timing
+  assertion this time) and passed on a rerun of the failed job.
+- **Disposition:** merged as `cf2f8a2a`. From now on `pnpm codex:round` runs the review into
+  `D:/fitway-temp/brief-review/<brief name>-<n>/` and launches only once `dispositions.md` there names every reading
+  and the brief's SHA-256 (`docs/agent-context/briefs/REVIEW.md`).
+
+## vf-speed: `briefs/codex-vf-speed.md` (this folder), result `5ba2c2f2` on `owner-r04-vf-speed`, level `xhigh`
+
+- **Set-up:** the verify-fitway round of DECISIONS 47, split by DECISIONS 48 into vf-speed (S1 affected pages, S2 kept
+  baseline frames, S3 F137) and vf-hold, run beside the paused shared-frame round. Its measurements waited for the
+  port pair. Held-out rows VS1-VS10 in `D:/fitway-grader/owner-r04/vf-speed-heldout.md`, written at grading before any
+  measurement.
+- **Pre-launch review (B11, Codex max):** three readings, all closed by sharpening (L1 over every configuration, no
+  baseline browser work on a reused item, tests through the CLI's own compare); B7 left open with its reason: the
+  ports were the shared-frame round's, so no outcome command ran on the base. Dispositions in
+  `D:/fitway-temp/brief-review/vf-speed-1/dispositions.md`.
+- **First push `2f05a734`:** CI run 38277425383 failed 14 of the new tests with `Playwright Chromium missing`: CI runs
+  the ladder without a browser or ui-forensics, which no brief said. Resumed on its thread with that fact
+  (`resume-ci-1.md`); `bdacf8c1` stubbed the browser and passed CI. vf-hold failed the same way (run 38277420287).
+- **Live measurements** (`resume-measure-1.md`): the live run found the kept captures never reused (the key held a
+  generated browser file) and fixed it (`a8ae4d4e`, `5ba2c2f2`). Every brief row PASS by Codex
+  (`D:/fitway-temp/codex-round-vf-speed-1/REPORT-5ba2c2f2.md`): Reports' rerun 162 s to 64 s with 114 reused and 0
+  captured; two full five-page compares of 1,224 items in about 19 minutes each, 12 peak sockets, no
+  `ERR_NO_BUFFER_SPACE`; L1 408 of 408 items and 9 of 9 timeline samples equal to the HEAD's CLI.
+- **Held-out rows, graded by the coordinator** (`D:/fitway-temp/owner-r04-vf-speed-grade/`, CLI at `5ba2c2f2`, its
+  own archives of `7e28c713` and `4352181f`):
+  - VS1-VS3 pass: the shared-frame result takes every page through `shared-frame.js`; a changed recipe entry takes
+    Access alone; a font loaded through CSS `url()` takes its page (`jetbrains-mono-500.woff2`, Access) or every page
+    (`readex-pro-latin.woff2`); the partial line prints first.
+  - VS4-VS6 pass: the coordinator's own archive reused Codex's kept captures (the key is content, not path); cached and
+    fresh runs agree on all 114 Reports items (66 s against 113 s); a planted Reports change under 140 reused
+    captures is DIFFERENT on the same 26 items as a fresh run; a baseline font change reuses nothing.
+  - VS7 partial: one full compare, 1,224 items, 1,234 captures, 66 connections, 12 peak sockets, no
+    `ERR_NO_BUFFER_SPACE`, no stall (F137 fixed); 3 items DIFFERENT, all Daily's Lights chip on the phone half a pixel
+    apart, which is F126: quiet reruns of Daily on the phone show it in 1 of 2 runs under this CLI and 1 of 3 under the
+    HEAD's. Codex's two runs did not hit it; S3's known-problem list did not name it.
+  - VS8 pass: a planted Access difference gives the same verdict on all 128 items under the HEAD's CLI and this one
+    (112 DIFFERENT each). VS9 pass: dropping the recipe from the cache key fails two tests, counting the components
+    sheet as a page fails one; the worktree restored clean. VS10 pass: scope as briefed, recipe counts 44, 31, 46, 30
+    and 14, the cache 1.1 GB in `D:/fitway-verify-captures`.
+- **Found beyond the rows:** kept captures are keyed per page on the whole option set, the baseline port included, so
+  a rerun with fewer axes, or on another port pair, captures afresh (F147, for the parallel-compare round). CI run
+  38309737308 on `5ba2c2f2` failed two Vitest cases at 20 s outside the round's files (the launcher's, F146, and the
+  gardener's H6 at 48.8 s) and passed on a rerun of the failed job.
+- **Failure cause: the brief,** for the first CI failure: it named the local ladder and not CI's machine. The review
+  could not return it (a fact outside the brief). It becomes a checklist line in `docs/agent-context/briefs/codex.md`.
+- **Disposition:** merged as `ebbfecd6`; F137 fixed. F126 now fails a full compare at random and goes first among the
+  shared lows.
+
+## vf-hold: `briefs/codex-vf-hold.md` (this folder), result `7c8418fb` on `owner-r04-vf-hold`, level `xhigh`
+
+- **Set-up:** the second half of the verify-fitway round (DECISIONS 47 and 48): the timeline holds a press's release
+  (F143) and the page's clocks (F144). Held-out rows VH1-VH8 in `D:/fitway-grader/owner-r04/vf-hold-heldout.md`,
+  written before its measurements. Resumed four times on its thread: after a usage limit, with CI's missing browser
+  (`resume-ci-1.md`, the same brief gap as vf-speed's), for the measurements, and after the overnight stop
+  (`resume-after-stop-1.md`).
+- **Found at the stop:** under the clock hold, six Access PIN saves timed out: the held clock skipped the driver's
+  600 ms idle wait, so the page's double-tap guard refused the save. Codex fixed it (`55a97093`, setup waits advance
+  the logical clock) with a test, then held effects started with `Animation.play()` (`7c8418fb`), and reran every
+  measurement on the final commit.
+- **Codex's report** (`D:/fitway-temp/codex-round-vf-hold-1/last-message.md`, evidence
+  `D:/fitway-temp/owner-r04-vf-hold/run-7c8418fb/`): H1 FAIL on two rows, H2, H3 and L1-L4 PASS; NOT-HELD under the
+  historical CLI against its own, Access 0 to 0, Activity 1 to 0, Daily 12 to 0, Reports 17 to 0; 15 defect controls,
+  each failing its test; fast ladder clean. CI run 38353822792 on `7c8418fb` passed.
+  - H1 self: one NOT-HELD in 840 samples, one pixel one level apart on the download icon of Reports' export button at
+    21 ms. Coordinator: rendering noise, not the hold (F148).
+  - H1 outside the list: the 40 ms release plant was EQUAL on a held rail press and DIFFERENT on activation and
+    release. Coordinator: the brief asked a release-only plant to change a held press, which it cannot; VH1 tests the
+    press with its own plant. **Failure cause: the brief.**
+- **Held-out rows, graded by the coordinator** (`D:/fitway-temp/owner-r04-vf-hold-grade/`, runner `run.mjs`, plants
+  in `plants/`, the base from `D:/fitway-temp/owner-r04-vf-speed-grade/7e28c713/`; CLI at `7c8418fb`, and the merge
+  `f2c89624` for VH6-VH7):
+  - VH1 pass: on Activity's dates button and current rail tile, a stronger press light is DIFFERENT on all 42 held
+    samples; the 40 ms release plant is DIFFERENT at 21-101 ms (tile 21-121), EQUAL before and after; self 83 EQUAL
+    and one NOT-HELD at 1 ms of the dates release, two pixels on the calendar icon's edge (F148, on both sides in the
+    plant run).
+  - VH2 pass with Space: `--inputs keyboard` activates with Enter, which never shows a press in Chromium, so the
+    release plant is EQUAL there (F149); a recipe ending `press:Space` on `period-7d` gives self 21 EQUAL and the plant
+    DIFFERENT at 21-141 ms.
+  - VH3 pass: the export run read from `Date.now()` instead of `performance.now()` is EQUAL on 137 samples (one F148
+    NOT-HELD at 21 ms, the download icon again); with 560 ms minimums DIFFERENT from 401 ms, exit 1.
+  - VH4 pass: Activity's refresh self 27 EQUAL, no NOT-HELD; the clock's start one minute later DIFFERENT, exit 1.
+  - VH5 pass: a random colour on the export button's press is NOT-HELD on all 42 samples, never EQUAL, exit 1.
+  - VH6 pass: on the merge, Reports `export-open` and `period-7d` rerun with 4 kept captures reused and 0 captured
+    (19 s against 39 s) give the cache-off run's verdicts; the release plant is DIFFERENT at 100 ms under reuse and
+    fresh alike.
+  - VH7 pass: every feature with actions on the four pages, base against itself, `ebbfecd6`'s CLI against the merge:
+    no sample compared before is missing or NOT-HELD now; NOT-HELD Access 0 to 0, Activity 0 to 0, Reports 24 to 0,
+    Daily 13 to 0; Reports and Daily gain 6 and 18 samples, their moves now measured to the end.
+  - VH8 pass: only `timeline.mjs` and `timeline-hold.test.mjs` changed, `cli.test.mjs` unedited, Daily's phone frame
+    under reduced motion EQUAL under both CLIs, CI green on `7c8418fb`.
+- **Disposition:** merged as `f2c89624`; F143 and F144 fixed; the §"Compare" lines added to `SKILL.md` with F148 and
+  F149. F148 goes with F126 among the shared lows; vf-parallel's brief allows one rerun for it.
+
+## Evaluation: DeepSeek for the brief review (2026-10-13, the user asked for the trials)
+
+- **Setting:** the user moved Codex's rounds to DeepSeek V4.1 Flash through Open Design at `max`
+  (`docs/agent-context/WORKING_AGREEMENTS.md` §"Delegation"), Codex CLI 0.162.1 as the harness with a one-model
+  catalog; the coordinator's smoke runs first proved a read, a patch-tool edit that kept Arabic text, and an escalation
+  reviewed by DeepSeek itself as the approval reviewer. The same three briefs, prompts and catch criteria as the
+  evaluation of 2026-10-11 above; scoring and each rule were written in the grader folder before each set ran.
+- **Briefs alone, six runs:** brief-1's allowance loophole in 6 of 6; daily-files' missing motion limit in 1 of 6; no
+  false alarm in 30 control readings. One run caught both once in six; pairs of runs caught both in 5 of 15, so a
+  second review adds little. GPT-6.1 Sol had caught daily-files in 5 of its 6 briefs-alone runs.
+- **With the files each brief names, two runs per brief (one brief per run):** both failures caught in both runs,
+  each time naming that settled compares cannot see motion from the verifier guide; no false alarm in 10 control
+  readings. GPT-6.1 Sol in this form had caught one of the two at `high` and the other at `xhigh`.
+- **Decision (by the rule written before the runs):** DeepSeek at `max` reviews each brief together with the files
+  it names, one run per brief; the launcher change is round deepseek-route. Six briefs and two hard cases are thin
+  evidence: the brief-caused failures of the rounds that follow are the measure, now recorded apart from failures of
+  the model's own reading.
+
+## deepseek-route: `briefs/codex-deepseek-route.md` (this folder, `107c71e5`), result `96e4f36b` on `owner-r04-deepseek-route`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** the first round on DeepSeek V4.1 Flash through Open Design, launched by hand with the route the brief
+  names (the launcher could not route yet). The with-sources review returned five readings, all closed before launch
+  (private and held-out paths reachable through absolute sources, the catalog argument not tied to the written
+  catalog, the smoke files missing from Read first, no default level, no real call required).
+- **Run 1** stopped after about 25 edits on an Open Design error: the user's Impeccable hook placed a message between
+  a tool call and its result, which Open Design's chat route refuses. A CSS edit reproduced it with hooks on and not
+  with hooks off; the user agreed to a per-run switch for DeepSeek runs only (WORKING_AGREEMENTS §"Delegation"). The
+  thread cannot be resumed (its history holds the order), so **run 2** started fresh on the uncommitted work with a
+  launch note and the brief's D2 amended (`-c features.hooks=false`).
+- **Run 2:** brief rows 6/6 by the coordinator's own checks. The required real `--new-review` found two defects the
+  fake Codex could not: source discovery read any prose line naming "Read first" as the list, and the reading parser
+  did not accept DeepSeek's `**Reading N:**` form; both fixed in the round. Tokens: 45.3M input (44.8M cached), 127k
+  output. CI passed on `96e4f36b`.
+- **Held-out** (`D:/fitway-grader/owner-r04/deepseek-route-heldout.md`): DR1-DR6, DR9, DR11 and DR12 pass; DR7 and
+  DR8 pass on the code executed directly (sources come from the named HEAD, not an edited working copy; DeepSeek
+  refuses `xhigh` and `medium`, defaults to `max`), but no test guards either: of nine planted defects the round's
+  suite caught seven, not a working-copy source read (P5) and not DeepSeek accepting `xhigh` (P7) (F150). DR10 is
+  partial: `start-load.json` for a DeepSeek launch is untested until the first launcher run.
+- **Failure causes:** none from the brief's wording; run 1's stop was the environment (F151). Side findings: F150,
+  F152.
+
+## launcher-fixes: `briefs/codex-launcher-fixes.md` (this folder, `c30cac54`), result `5b58492e` on `owner-r04-launcher-fixes`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** the first round launched by `pnpm codex:round` on DeepSeek with the brief's own "a message ends the run"
+  line (F154). The review returned five readings: two closed (L1: no exception by a brief's folder or name; A3: a
+  launch refuses a review source changed between the named HEAD and the launch), three left open (the read-only
+  sandbox does not confine reads on Windows, F155; the check and the review reading seconds apart; hard links).
+- **Run:** one run, no intervention, ended with its report. Tokens: 30.9M input (30.6M cached), 84k output.
+- **Brief rows** 6/6 by the coordinator's own checks (A1-A4 through the held-out rows below; L1 as LH8; L2 by the
+  run's ladder and CI on the merge).
+- **Held-out** (`D:/fitway-grader/owner-r04/launcher-fixes-heldout.md`, graded in
+  `D:/fitway-temp/owner-r04-launcher-fixes-grade/` with a fake Codex and the checker at `c97d564e` beside the new one):
+  LH1-LH8 and LH10 pass. LH1 an untracked file, LH2 a junction out of `D:/fitway-temp` (the launch stops at the gate
+  and no review folder holds the outside file's marker), LH3 a committed symbolic link, LH4 four bad names in one run
+  with their own lines, LH5 the launcher checkout's clean, modified and untracked files, LH6 a Markdown commit changing
+  a named source (refused, naming it) or an unnamed one (launches), LH7 `.env` by name and a key by content (refused
+  by the review, nothing copied), LH8 the twelve r04 briefs with the same exit status under both checkers (the extra
+  FAIL lines are bare names such as `compare.mjs` the review also refuses) and a renamed copy elsewhere passing, LH10
+  no test line removed. LH9: of three planted defects the suites caught two (a working-copy read, four tests; DeepSeek
+  accepting `xhigh`, one test); reading an absolute source before its place check passed all 170 tests, though the
+  code reads only after the check (F156).
+- **Failure causes:** none from the brief's wording; none from the model's reading. Side finding: F156.
+
+## Evaluation: Claude Code on DeepSeek, the partial replay (2026-10-13 to 14, DECISIONS 53, deferred by 58)
+
+- **Set-up:** deepseek-route replayed from `4a151786` with the same brief (`107c71e5`) on Claude Code `--bare`,
+  `deepseek-v4.1-flash[1m]` at `max` through Open Design's Anthropic route, auto permission mode with DeepSeek as its
+  classifier (`D:/fitway-temp/cc-replay-deepseek-route-2*`). A first start with a 200k window was stopped after reading
+  (`cc-replay-deepseek-route-1/STOPPED.md`). Not graded: it was stopped mid-work at the user's request for fresh
+  sessions, its edits uncommitted in `D:/Projects/fitway-worktrees/owner-r04-cc-replay`.
+- **Observed, from its event streams:** about 3.1 hours of turns over seven runs, 303 turns and 296 tool calls (Bash
+  169, Edit 88, Read 39), 425k output tokens, 44.2M input (43.8M cached); seven early ends with a lead-in sentence and
+  no tool call (F154), four inside an automatic resume loop; 14 tool errors, five of them the auto-mode classifier on
+  DeepSeek timing out or failing its second stage, two Edit misses, one deny rule rightly refusing `git switch`.
+- **Codex on the same brief:** run 1 stopped at 18 minutes on the hook message Open Design refuses (F151); run 2,
+  on run 1's uncommitted work, reached its report in 52 minutes with 121 commands, 127k output tokens, no early end,
+  graded 6/6 and held-out 11/12.
+- **Not a fair comparison:** one unfinished Claude Code run; the brief and launcher were shaped for Codex over 30-odd
+  rounds; Claude Code's classifier ran on DeepSeek; the replay ran beside vf-parallel's timings; Codex's run 2 did not
+  start from the base; whether the model or the route drops the tool call (F154) is not known.
+- **Disposition:** DeepSeek stays on Codex (DECISIONS 58); the replay reopens only on that item's conditions.

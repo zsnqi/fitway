@@ -1,4 +1,6 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import { readFile, realpath, stat, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -35,6 +37,346 @@ function withoutComments(text) {
 
 function codeSpans(text) {
 	return [...text.matchAll(/(`+)([^`]*?)\1(?!`)/g)];
+}
+
+const REVIEW_TEMP_ROOT =
+	process.platform === "win32" ? "D:/fitway-temp" : tmpdir();
+
+function sourceFileValue(value) {
+	return value.replace(/:\d+(?:-\d+)?$/, "");
+}
+
+function isAbsolutePath(value) {
+	return path.isAbsolute(value) || path.win32.isAbsolute(value);
+}
+
+function repositorySourcePath(value) {
+	const normalized = value.replaceAll("\\", "/");
+	if (
+		!normalized ||
+		normalized.startsWith("/") ||
+		/^[A-Za-z]:/.test(normalized)
+	)
+		return null;
+	const result = path.posix.normalize(normalized);
+	if (
+		result === "." ||
+		result === ".." ||
+		result.startsWith("../") ||
+		result.includes("/../")
+	)
+		return null;
+	return result;
+}
+
+function looksLikeNamedSource(value) {
+	const trimmed = value.trim();
+	if (!trimmed || /[\r\n]/.test(trimmed)) return false;
+	if (isAbsolutePath(trimmed)) return true;
+	if (repositorySourcePath(trimmed)) {
+		return (
+			trimmed.includes("/") ||
+			trimmed.includes("\\") ||
+			/\.[A-Za-z0-9]+$/.test(trimmed)
+		);
+	}
+	return false;
+}
+
+export function namedReviewSourceEntries(brief) {
+	const text = brief.toString("utf8").replace(/<!--[\s\S]*?-->/g, mask);
+	const found = [];
+	let section = null;
+	const lines = text.split(/\r?\n/);
+	for (let index = 0; index < lines.length; index += 1) {
+		const line = lines[index];
+		const heading = line.match(/^#{1,6}\s+(.*)$/);
+		const boldBullet = line.match(/^\s*-\s+\*\*([^*]+)\*\*/);
+		const label = heading?.[1]?.trim() ?? boldBullet?.[1]?.trim() ?? "";
+		if (heading || (boldBullet && !/^\s{2,}/.test(line))) {
+			if (/^Read first\b/i.test(label)) section = "read first";
+			else if (/^Decisions\b/i.test(label)) section = "decisions";
+			else section = null;
+		}
+		const decisionsLine = /\bDecisions\s*:/i.test(line);
+		if (section !== "read first" && section !== "decisions" && !decisionsLine)
+			continue;
+		for (const span of line.matchAll(/(`+)([^`]*?)\1(?!`)/g)) {
+			const value = span[2].trim();
+			if (looksLikeNamedSource(value)) found.push({ value, line: index + 1 });
+		}
+	}
+	const seen = new Set();
+	return found.filter((entry) => {
+		if (seen.has(entry.value)) return false;
+		seen.add(entry.value);
+		return true;
+	});
+}
+
+export function namedReviewSources(brief) {
+	return namedReviewSourceEntries(brief).map((entry) => entry.value);
+}
+
+function isCredentialSourceName(value) {
+	const name = path.basename(sourceFileValue(value)).toLowerCase();
+	return (
+		name === ".env" ||
+		(/^\.env\.[^.]+$/.test(name) &&
+			!/\.(?:example|sample|template)$/.test(name)) ||
+		name === ".netrc" ||
+		name === "auth.json" ||
+		/^id_(?:rsa|ed25519|ecdsa)$/.test(name) ||
+		/\.(?:key|pem|p12|pfx|ppk)$/.test(name)
+	);
+}
+
+export function isCredentialSource(value, bytes) {
+	return (
+		isCredentialSourceName(value) ||
+		/-----BEGIN [^-]*PRIVATE KEY-----/.test(bytes.toString("utf8"))
+	);
+}
+
+function isWithin(root, absolute) {
+	const rootValue = path.resolve(root);
+	const absoluteValue = path.resolve(absolute);
+	const relative = path.relative(
+		process.platform === "win32" ? rootValue.toLowerCase() : rootValue,
+		process.platform === "win32" ? absoluteValue.toLowerCase() : absoluteValue,
+	);
+	return (
+		relative === "" ||
+		(!relative.startsWith("..") && !path.isAbsolute(relative))
+	);
+}
+
+async function realSourcePath(value) {
+	try {
+		return await realpath(path.resolve(value));
+	} catch (error) {
+		if (error.code === "ENOENT" || error.code === "ENOTDIR")
+			throw new Error(`named review source not found: ${value}`);
+		throw error;
+	}
+}
+
+async function requireSourceFile(absolute, value) {
+	let details;
+	try {
+		details = await stat(absolute);
+	} catch (error) {
+		if (error.code === "ENOENT" || error.code === "ENOTDIR")
+			throw new Error(`named review source not found: ${value}`);
+		throw error;
+	}
+	if (!details.isFile())
+		throw new Error(`named review source is not a file: ${value}`);
+}
+
+function gitSourceBytes(worktree, head, relative, value, label) {
+	const objectPath = relative.replace(/\/+$/, "");
+	if (!objectPath) throw new Error(`invalid named review source: ${value}`);
+	let listing;
+	try {
+		listing = execFileSync("git", ["ls-tree", "-z", head, "--", objectPath], {
+			cwd: worktree,
+			encoding: "utf8",
+			maxBuffer: 256 * 1024 * 1024,
+			stdio: ["ignore", "pipe", "pipe"],
+			windowsHide: true,
+		});
+	} catch {
+		throw new Error(`${label} not found: ${value}`);
+	}
+	const entry = listing
+		.split("\0")
+		.filter(Boolean)
+		.find((line) => line.slice(line.indexOf("\t") + 1) === objectPath);
+	if (!entry) throw new Error(`${label} not found: ${value}`);
+	const [metadata] = entry.split("\t");
+	const [mode, type] = metadata.trim().split(/\s+/);
+	if (type !== "blob" || !/^100(?:644|755)$/.test(mode)) {
+		if (mode === "120000")
+			throw new Error(`${label} is a symbolic link: ${value}`);
+		throw new Error(`${label} is not a file: ${value}`);
+	}
+	try {
+		return execFileSync("git", ["show", `${head}:${objectPath}`], {
+			cwd: worktree,
+			encoding: "buffer",
+			maxBuffer: 256 * 1024 * 1024,
+			stdio: ["ignore", "pipe", "pipe"],
+			windowsHide: true,
+		});
+	} catch {
+		throw new Error(`${label} not found: ${value}`);
+	}
+}
+
+export async function reviewSourcePlan(
+	value,
+	{ worktree, head, checkoutRoot } = {},
+) {
+	const sourceValue = sourceFileValue(value);
+	if (isAbsolutePath(sourceValue)) {
+		const real = await realSourcePath(sourceValue);
+		let insideTemp = false;
+		let insideCheckout = false;
+		for (const root of [REVIEW_TEMP_ROOT, checkoutRoot].filter(Boolean)) {
+			let realRoot;
+			try {
+				realRoot = await realpath(path.resolve(root));
+			} catch {
+				continue;
+			}
+			if (root === REVIEW_TEMP_ROOT) insideTemp = isWithin(realRoot, real);
+			else insideCheckout = isWithin(realRoot, real);
+		}
+		if (insideTemp) {
+			await requireSourceFile(real, value);
+			const realRoot = await realpath(path.resolve(REVIEW_TEMP_ROOT));
+			const relative = path.relative(realRoot, real);
+			return {
+				kind: "temp",
+				value,
+				target: path.join("temp", relative),
+				bytes: await readFile(real),
+			};
+		}
+		if (insideCheckout) {
+			await requireSourceFile(real, value);
+			const realRoot = await realpath(path.resolve(checkoutRoot));
+			const relative = path.relative(realRoot, real).replaceAll(path.sep, "/");
+			if (!relative)
+				throw new Error(`absolute review source is not a file: ${value}`);
+			const bytes = gitSourceBytes(
+				checkoutRoot,
+				"HEAD",
+				relative,
+				value,
+				"absolute review source",
+			);
+			const working = await readFile(real);
+			if (!bytes.equals(working))
+				throw new Error(
+					`absolute review source differs from the launcher checkout HEAD: ${value}`,
+				);
+			return {
+				kind: "checkout",
+				value,
+				target: path.join("checkout", ...relative.split("/")),
+				bytes,
+			};
+		}
+		throw new Error(
+			`absolute review source is outside D:/fitway-temp and the launcher checkout: ${value}`,
+		);
+	}
+	const relative = repositorySourcePath(sourceValue);
+	if (!relative) throw new Error(`invalid named review source: ${value}`);
+	return {
+		kind: "repository",
+		value,
+		target: relative,
+		bytes: gitSourceBytes(
+			worktree,
+			head,
+			relative,
+			value,
+			"named review source",
+		),
+	};
+}
+
+async function validateReviewSources(
+	text,
+	{ worktree, head, repositoryRoot, report },
+) {
+	const targets = new Map();
+	for (const entry of namedReviewSourceEntries(text)) {
+		const { value, line } = entry;
+		if (isCredentialSourceName(value)) {
+			report(
+				"brief-review-sources",
+				line,
+				`named review source holds credentials: ${value}`,
+			);
+			continue;
+		}
+		try {
+			const source = await reviewSourcePlan(value, {
+				worktree,
+				head,
+				checkoutRoot: repositoryRoot,
+			});
+			const key = path.normalize(source.target).replaceAll("\\", "/");
+			const targetKey = process.platform === "win32" ? key.toLowerCase() : key;
+			if (targets.has(targetKey)) {
+				report(
+					"brief-review-sources",
+					line,
+					`two named review sources map to one file: ${value}; also ${targets.get(targetKey)}`,
+				);
+			} else targets.set(targetKey, value);
+		} catch (error) {
+			report("brief-review-sources", line, error.message);
+		}
+	}
+}
+
+function citedDecisionItems(tail) {
+	const citation = tail.match(
+		/^\s+items?\s+((?:\d+\s*(?:-\s*\d+)?)(?:\s*(?:,|and)\s*\d+\s*(?:-\s*\d+)?)*)(?=\s|[.,;:]|$)/i,
+	);
+	if (!citation) return [];
+	const items = [];
+	for (const part of citation[1].split(/\s*(?:,|and)\s*/i)) {
+		const [start, end = start] = part.split(/\s*-\s*/).map(Number);
+		for (let item = start; item <= end; item += 1) items.push(item);
+	}
+	return items;
+}
+
+function numberedTopLevelEntries(text) {
+	const entries = new Set();
+	let fence = null;
+	for (const line of text.split(/\r?\n/)) {
+		const delimiter = line.match(/^ {0,3}(`{3,}|~{3,})/);
+		if (delimiter) {
+			if (!fence) fence = delimiter[1];
+			else if (
+				delimiter[1][0] === fence[0] &&
+				delimiter[1].length >= fence.length &&
+				/^ {0,3}(?:`+|~+)\s*$/.test(line)
+			)
+				fence = null;
+			continue;
+		}
+		if (fence) continue;
+		const entry = line.match(/^(\d+)\.\s+/);
+		if (entry) entries.add(Number(entry[1]));
+	}
+	return entries;
+}
+
+function reportMissingDecisionItems(
+	content,
+	decisionItems,
+	file,
+	absolute,
+	worktree,
+	line,
+	report,
+) {
+	const entries = numberedTopLevelEntries(content);
+	for (const item of decisionItems)
+		if (!entries.has(item))
+			report(
+				"brief-references",
+				line,
+				`missing decision item ${item} in ${file} (${absolute}) in worktree ${worktree}`,
+			);
 }
 
 function environmentBlock(text) {
@@ -108,7 +450,7 @@ async function validateWorktree(text, report, git) {
 	);
 	if (headers.length !== 1 || !fields || /<[^>]*>/.test(fields[0])) {
 		report(
-			"B1",
+			"brief-references",
 			line,
 			"requires one filled Worktree line with path, branch and HEAD",
 		);
@@ -117,7 +459,7 @@ async function validateWorktree(text, report, git) {
 	const [, worktree, branch, head] = fields;
 	if (!path.isAbsolute(worktree) || !(await exists(worktree))?.isDirectory()) {
 		report(
-			"B1",
+			"brief-references",
 			line,
 			`worktree does not exist or is not absolute: ${worktree}`,
 		);
@@ -127,7 +469,7 @@ async function validateWorktree(text, report, git) {
 		const root = git(worktree, ["rev-parse", "--show-toplevel"]);
 		if (!(await samePath(root, worktree))) {
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`named worktree is not a Git worktree root: ${worktree}`,
 			);
@@ -146,13 +488,13 @@ async function validateWorktree(text, report, git) {
 		}
 		if (currentBranch !== branch)
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`branch mismatch in ${worktree}: expected ${branch}, found ${currentBranch}`,
 			);
 		if (!/^[a-f\d]{4,40}$/i.test(head)) {
-			report("B1", line, `HEAD must be a commit hash: ${head}`);
-			return worktree;
+			report("brief-references", line, `HEAD must be a commit hash: ${head}`);
+			return { root: worktree, head: null };
 		}
 		let namedHead;
 		try {
@@ -160,11 +502,11 @@ async function validateWorktree(text, report, git) {
 			git(worktree, ["merge-base", "--is-ancestor", namedHead, "HEAD"]);
 		} catch {
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`named HEAD ${head} is missing or is not an ancestor of HEAD in ${worktree}`,
 			);
-			return worktree;
+			return { root: worktree, head: null };
 		}
 		// Check each intervening commit: a non-Markdown edit followed by a revert still fails.
 		const later = git(worktree, ["rev-list", `${namedHead}..HEAD`]);
@@ -186,14 +528,18 @@ async function validateWorktree(text, report, git) {
 			);
 			if (nonMarkdown.length)
 				report(
-					"B1",
+					"brief-references",
 					line,
 					`commit ${commit} after named HEAD ${head} changes non-Markdown paths: ${nonMarkdown.join(", ")}`,
 				);
 		}
-		return worktree;
+		return { root: worktree, head: namedHead };
 	} catch (error) {
-		report("B1", line, `cannot inspect worktree ${worktree}: ${error.message}`);
+		report(
+			"brief-references",
+			line,
+			`cannot inspect worktree ${worktree}: ${error.message}`,
+		);
 		return null;
 	}
 }
@@ -202,21 +548,64 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 	const source = withoutComments(text);
 	const resolver = createPathReferenceResolver(worktree, git);
 	const references = [];
+	const requiredChanges = [];
 	for (const span of codeSpans(source)) {
 		const line = lineAt(text, span.index);
 		const tail = source.slice(span.index + span[0].length);
 		const after = tail.match(/^\s*§"([^"]+)"/);
 		// Markdown reads a line break inside a code span as a space.
 		const split = /[\r\n]/.test(span[2]);
-		const reference = await resolver.reference(
-			span[2].replace(/(?:\r\n|[\r\n])[ \t]*/g, " "),
-		);
-		if (!reference) continue;
+		const value = span[2].replace(/(?:\r\n|[\r\n])[ \t]*/g, " ");
+		// The explicit marker opts even bare and machine-local paths into checking.
+		if (/^ \(must change\)(?=\s|[.,;:]|$)/.test(tail)) {
+			const absolute = path.resolve(worktree, value.replaceAll("\\", "/"));
+			const details = await exists(absolute);
+			if (!details)
+				report(
+					"brief-references",
+					line,
+					`must change path does not exist: ${absolute}`,
+				);
+			else if (!details.isFile() && !details.isDirectory())
+				report(
+					"brief-references",
+					line,
+					`must change path must be a file or folder: ${absolute}`,
+				);
+			else
+				requiredChanges.push({
+					path: value,
+					absolute,
+					line,
+					outcome: text.split(/\r?\n/)[line - 1],
+				});
+			continue;
+		}
+		const decisionItems = citedDecisionItems(tail);
+		const reference = await resolver.reference(value);
+		if (!reference) {
+			if (decisionItems.length && path.isAbsolute(value)) {
+				const absolute = path.resolve(value);
+				const details = await exists(absolute);
+				if (details?.isFile())
+					reportMissingDecisionItems(
+						await readFile(absolute, "utf8"),
+						decisionItems,
+						value,
+						absolute,
+						worktree,
+						line,
+						report,
+					);
+			}
+			continue;
+		}
 		references.push({
 			...reference,
 			split,
 			lineNumber: line,
 			heading: reference.heading ?? after?.[1],
+			decisionItems,
 			isNew: /^[ \t]+\(new\)(?=\s|[.,;:]|$)/.test(tail),
 		});
 	}
@@ -233,7 +622,12 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		const absolute = path.resolve(worktree, checkedPath);
 		const details = await exists(absolute);
 		if (reference.isNew) {
-			if (details) report("B1", line, `new path already exists: ${absolute}`);
+			if (details)
+				report(
+					"brief-references",
+					line,
+					`new path already exists: ${absolute}`,
+				);
 			const parent = path.dirname(absolute);
 			const parentDetails = await exists(parent);
 			if (
@@ -242,7 +636,7 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 					: !newPaths.has(await pathKey(parent))
 			)
 				report(
-					"B1",
+					"brief-references",
 					line,
 					`parent folder must exist or be declared (new): ${parent}`,
 				);
@@ -256,40 +650,68 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 				(await exists(inCommandRepository))
 			)
 				report(
-					"B1",
+					"brief-references",
 					line,
 					`drift: missing ${absolute} in worktree ${worktree}; present at ${inCommandRepository} in command repository ${repositoryRoot}${hint}`,
 				);
 			else
-				report("B1", line, `missing path in ${worktree}: ${absolute}${hint}`);
+				report(
+					"brief-references",
+					line,
+					`missing path in ${worktree}: ${absolute}${hint}`,
+				);
 			continue;
 		}
 		if (wildcard && !details.isDirectory()) {
-			report("B1", line, `glob folder is not a directory: ${absolute}`);
+			report(
+				"brief-references",
+				line,
+				`glob folder is not a directory: ${absolute}`,
+			);
 			continue;
 		}
-		if (!heading && reference.line === null) continue;
+		if (!heading && reference.line === null && !reference.decisionItems.length)
+			continue;
 		if (!details.isFile()) {
 			report(
-				"B1",
+				"brief-references",
 				line,
 				`heading or line selector requires a file: ${absolute}`,
 			);
 			continue;
 		}
 		const content = await readFile(absolute, "utf8");
+		const lastLine = reference.endLine ?? reference.line;
 		if (
 			reference.line !== null &&
-			(reference.line < 1 || reference.line > lines(content))
+			(reference.line < 1 ||
+				lastLine < reference.line ||
+				lastLine > lines(content))
 		)
 			report(
-				"B1",
+				"brief-references",
 				line,
-				`${reference.file}:${reference.line} exceeds file length (${lines(content)} lines) or is below line 1 in ${worktree}`,
+				`${reference.file}:${reference.line}${reference.endLine === null ? "" : `-${reference.endLine}`} exceeds file length (${lines(content)} lines), is below line 1, or ends before it starts in ${worktree}`,
 			);
 		if (heading && !headings(content).has(heading))
-			report("B1", line, `missing heading §"${heading}" in ${absolute}`);
+			report(
+				"brief-references",
+				line,
+				`missing heading §"${heading}" in ${absolute}`,
+			);
+		if (reference.decisionItems.length) {
+			reportMissingDecisionItems(
+				content,
+				reference.decisionItems,
+				reference.file,
+				absolute,
+				worktree,
+				line,
+				report,
+			);
+		}
 	}
+	return requiredChanges;
 }
 
 export async function checkBrief({
@@ -334,13 +756,13 @@ export async function checkBrief({
 	const role = text.match(FORMAT)?.[1];
 	if (!role)
 		report(
-			"B2",
+			"brief-format",
 			1,
 			"must start with <!-- brief-format: v1 role: codex|builder|designer|verifier --> using one role",
 		);
 	if (!block)
 		report(
-			"B2",
+			"brief-format",
 			1,
 			"requires one ordered pair of environment:start v1 and environment:end markers",
 		);
@@ -349,7 +771,7 @@ export async function checkBrief({
 		canonicalBlock.inner.replace(/\r\n/g, "\n")
 	)
 		report(
-			"B2",
+			"brief-format",
 			lineAt(text, block.start),
 			`environment block differs from ${ENVIRONMENT_PATH}${fillEnvironment ? "; --fill-environment only fills empty markers" : ""}`,
 		);
@@ -370,34 +792,50 @@ export async function checkBrief({
 		/^## Coordinator checklist(?:\s.*)?\r?$/gim,
 	))
 		report(
-			"B3",
+			"brief-readiness",
 			lineAt(text, checklist.index),
 			"remove the Coordinator checklist section before launch",
 		);
 	for (const placeholder of prose.matchAll(/<[^<>\r\n]+>/g))
 		report(
-			"B3",
+			"brief-readiness",
 			lineAt(text, placeholder.index),
 			`unfilled placeholder: ${text.slice(placeholder.index, placeholder.index + placeholder[0].length)}`,
 		);
 	if (role === "codex")
 		for (const forbidden of text.matchAll(/fitway-grader|held-out/gi))
 			report(
-				"B3",
+				"brief-readiness",
 				lineAt(text, forbidden.index),
 				`codex brief mentions forbidden text: ${forbidden[0]}`,
 			);
 	const lineCount = lines(text);
 	if (lineCount > 80)
-		report("B4", 81, `${lineCount} lines exceeds 80; warning only`, "WARNING");
-	const worktree = await validateWorktree(text, report, git);
-	if (worktree)
-		await validateReferences(text, worktree, repositoryRoot, report, git);
+		report(
+			"brief-length",
+			81,
+			`${lineCount} lines exceeds 80; warning only`,
+			"WARNING",
+		);
+	const validatedWorktree = await validateWorktree(text, report, git);
+	const worktree = validatedWorktree?.root ?? null;
+	const namedHead = validatedWorktree?.head ?? null;
+	const requiredChanges = worktree
+		? await validateReferences(text, worktree, repositoryRoot, report, git)
+		: [];
+	if (role === "codex" && worktree && namedHead)
+		await validateReviewSources(text, {
+			worktree,
+			head: namedHead,
+			repositoryRoot,
+			report,
+		});
 	problems.sort((a, b) => a.line - b.line || a.rule.localeCompare(b.rule));
 	return {
 		briefPath: absoluteBrief,
 		role,
 		worktree,
+		requiredChanges,
 		lineCount,
 		filled,
 		problems,

@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=./docs/schemas/project-state-history.schema.json
 # Milestone definitions are shared with project-state.schema.json via $ref.
 schemaVersion: 1
-updatedAt: "2026-09-18T01:27:45.312+03:00"
+updatedAt: "2026-10-11T04:40:00+03:00"
 
 milestones:
 
@@ -4467,3 +4467,115 @@ milestones:
       visual: NOT_REQUIRED
       independentReview: PASS
     integratedCommit: 47c44ba19ce390936e1d0292c229cdd003c02c38
+
+  agent-environment-r02:
+    status: SUPERSEDED
+    objective: >-
+      Improve the briefs and the coordinator's view of its own limits: find which brief faults cause Codex
+      rounds to fail, test template lines that remove them through the evaluation loop before they enter the
+      templates, and give the user a Claude Code panel for the subscription limits.
+    taskPacket: docs/phase-records/task-packets/agent-environment-r02.yaml
+    dependencies:
+      - agent-environment-r01
+    ownerSession: claude-code-desktop:coordinator-28297a9c
+    branch: agent-environment-r02
+    worktree: D:/Projects/fitway-worktrees/agent-environment-r02
+    baseCommit: 81ffd55fa6fe0c73061edc31f5e170b619a6ca93
+    ownedPaths:
+      - docs/phase-records/task-packets/agent-environment-r02.yaml
+    forbiddenPaths:
+      - apps/**, packages/**, tests/browser/** and migrations
+      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - CLAUDE.md and .claude/** (owned by agent-environment-r03)
+      - pnpm-lock.yaml and dependencies
+      - docs/archive/** and other milestones' handoffs and packets
+      - docs/agent-context/briefs/**, docs/agent-context/HANDOFF_TEMPLATE.md, docs/agent-context/WORKING_AGREEMENTS.md, docs/phase-records/handoffs/agent-environment/** and scripts/agent-environment/** (absorbed by agent-environment-r03 on 2026-10-07)
+    sharedLeases: []
+    validationRepairAttempts: 0
+    handoff: docs/phase-records/handoffs/agent-environment/20261004-015613-agent-environment-r02-resume.md
+    stopReason: >-
+      Superseded on 2026-10-07 by agent-environment-r03, which absorbed its paths and carries its open work (the brief templates and the brief-fault evaluations); its subscription-limits panel is parked by the user.
+    supersededBy: agent-environment-r03
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+  agent-environment-r03:
+    status: DONE
+    objective: >-
+      Clean, simplify and improve the working environment itself: audit every rule, tool, check and record and keep,
+      merge, replace or remove each on evidence; deliver the verification path (verify-fitway skill, generated
+      feature map, CLI, no-store preview, Codex launch command, tested B8 and B9 fields, the two checker faults); and
+      leave a permanent gardener that keeps it clean.
+    taskPacket: docs/phase-records/task-packets/agent-environment-r03.yaml
+    dependencies: []
+    ownerSession: claude-code-desktop:coordinator-ad094a60
+    branch: agent-environment-r03
+    worktree: D:/Projects/fitway-worktrees/agent-environment-r03
+    baseCommit: cf7758eb06b0a76f4f8b2bcea387d142847fc98e
+    ownedPaths:
+      - AGENTS.md
+      - CLAUDE.md
+      - .claude/agents/**
+      - .claude/skills/**
+      - .agents/**
+      - docs/WORKFLOW.md
+      - docs/agent-context/**
+      - docs/schemas/**
+      - docs/phase-records/handoffs/agent-environment/**
+      - docs/phase-records/history-transitions/**
+      - docs/phase-records/task-packets/agent-environment-r03.yaml
+      - scripts/agent-environment/**
+      - scripts/check-agent-context.mjs
+      - scripts/check-agent-context.test.ts
+      - scripts/check-concept-css.mjs
+      - scripts/check-concept-css.test.ts
+      - scripts/check-design-context.mjs
+      - scripts/check-owner-tokens.mjs
+      - scripts/check-test-runtime.mjs
+      - scripts/check-test-runtime.test.ts
+      - scripts/project-state-history-transition.mjs
+      - scripts/project-state-history-transition.test.ts
+      - scripts/project-state-history-v2.test.ts
+      - scripts/repository-fingerprint.mjs
+      - scripts/run-vitest.mjs
+      - scripts/run-vitest.test.ts
+      - vitest.config.ts
+      - scripts/show-agent-context.mjs
+      - scripts/show-agent-context.test.ts
+      - scripts/verify-repository.mjs
+      - scripts/verify-repository.schema.test.ts
+      - scripts/verify.mjs
+      - scripts/vitest-runtime.bootstrap.test.mjs
+      - scripts/vitest-runtime.mjs
+      - scripts/vitest-runtime.test.ts
+      - .github/workflows/**
+      - lefthook.yml
+      - biome.json
+      - package.json (the scripts section only; no dependency changes)
+    forbiddenPaths:
+      - apps/**, packages/**, edge/**, tests/** and migrations (product code and its tests; CI may run them)
+      - design-research/** (read only; owned by owner-design-exploration-r04)
+      - visual-direction-gate/**, docs/design/**, docs/adr/**, approval manifests, pinned hashes, scripts/visual-authority.mjs, scripts/visual-authority.test.ts and scripts/owner-supersession-policy.mjs
+      - FITWAY_PRODUCT.md, PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md and RESEARCH.md
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - pnpm-lock.yaml and dependencies
+      - docs/archive/** and other milestones' handoffs and packets
+    sharedLeases: []
+    validationRepairAttempts: 2
+    handoff: docs/phase-records/handoffs/agent-environment/r03/agent-environment-r03-resume.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PASS
+    integratedCommit: 044000ede76727773998d156070985f3e96875c9

@@ -9,7 +9,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
-import { gitFixture } from "./fixtures";
+import { git, gitFixture } from "./fixtures";
 import {
 	MAX_RESUME_POINT_BYTES,
 	RESUME_POINT_MARKER,
@@ -58,6 +58,7 @@ const valid = block
 	);
 const placeholders = [
 	...new Set([...block.matchAll(/<(?!!)[^>\r\n]+>/g)].map((match) => match[0])),
+	"<repo path>",
 	...block
 		.split(/^## [^\r\n]+\r?$/m)
 		.slice(1, 6)
@@ -177,10 +178,31 @@ describe("O5: marked active resume point validation", () => {
 			),
 		).rejects.toThrow(/Standing decisions.*existing DECISIONS\.md file/);
 	});
-	it("S2: accepts filename patterns in angle brackets that are not template placeholders", async () => {
+	it.each([
+		"<branch>-resume.md",
+		"briefs/<round>.md",
+		"D:/fitway-temp/<run>/",
+		"docs/<run>/file.md",
+		...placeholders
+			.filter((placeholder) => placeholder.startsWith("<"))
+			.flatMap((placeholder) => [
+				`${placeholder}-resume.md`,
+				`briefs/${placeholder}.md`,
+				`D:/fitway-temp/${placeholder}/`,
+			]),
+	])("K2: accepts the filename or path pattern %s", async (pattern) => {
 		await expect(
-			validate(fixture(), `${valid}\nPattern: \`docs/<run>/file.md\`\n`),
+			validate(fixture(), `${valid}\nName files \`${pattern}\`\n`),
 		).resolves.toBe(true);
+	});
+	it.each([
+		"<branch>",
+		"`<branch>`",
+		"(<branch>)",
+	])("K2: rejects a bare filler surrounded by prose punctuation: %s", async (filler) => {
+		await expect(
+			validate(fixture(), `${valid}\nBranch: ${filler}\n`),
+		).rejects.toThrow(/template placeholder/);
 	});
 	it("accepts the real template sections and existing file paths in LF and CRLF", async () => {
 		const root = fixture();
@@ -203,7 +225,6 @@ describe("O5: marked active resume point validation", () => {
 	});
 	it.each([
 		"As of",
-		"Previous resume point",
 		"Standing decisions",
 	])("rejects missing or duplicate %s header lines", async (name) => {
 		const root = fixture();
@@ -217,6 +238,30 @@ describe("O5: marked active resume point validation", () => {
 		await expect(
 			validate(root, valid.replace(line, `${line}\n${line}`)),
 		).rejects.toThrow(/header lines in order/);
+	});
+	it("M4: accepts both header formats and never follows the previous resume pointer", async () => {
+		const root = fixture();
+		await expect(validate(root, valid)).resolves.toBe(true);
+		await expect(
+			validate(
+				root,
+				valid.replace(
+					"- **Standing decisions:**",
+					"- **Previous resume point:** `gone/previous.md`\n- **Standing decisions:**",
+				),
+			),
+		).resolves.toBe(true);
+	});
+	it("M4: the stable filename also requires a resume marker", async () => {
+		const root = fixture();
+		await expect(
+			validateResumePoint({
+				repositoryRoot: root,
+				handoffPath: "fixture-r01-resume.md",
+				milestoneId: "fixture-r01",
+				bytes: Buffer.from(valid.replace(RESUME_POINT_MARKER, "")),
+			}),
+		).rejects.toThrow(/missing required marker/);
 	});
 	it("rejects reordered or misplaced headers", async () => {
 		const root = fixture();
@@ -283,6 +328,25 @@ describe("O5: marked active resume point validation", () => {
 		writeFileSync(path.join(root, "LICENSE"), "License.\n");
 		await expect(
 			validate(root, `${valid}\n\`docs/input file.md\` \`LICENSE\`\n`),
+		).resolves.toBe(true);
+	});
+	it("rejects a git-ignored file present on disk, and accepts a tracked file in an ignored folder", async () => {
+		const root = fixture();
+		gitFixture(root);
+		writeFileSync(path.join(root, ".gitignore"), ".env\nconfig/\n");
+		mkdirSync(path.join(root, "server"));
+		writeFileSync(path.join(root, "server/.env"), "SECRET=placeholder\n");
+		mkdirSync(path.join(root, "config"));
+		writeFileSync(path.join(root, "config/agent.md"), "Agent.\n");
+		git(root, "add", "-f", ".gitignore", "config/agent.md");
+		git(root, "commit", "-m", "tracked file in an ignored folder");
+		await expect(
+			validate(root, `${valid}\n- Local: \`server/.env\`\n`),
+		).rejects.toThrow(
+			/git-ignored path, present on this disk and absent in CI: server\/\.env/,
+		);
+		await expect(
+			validate(root, `${valid}\n- Tracked: \`config/agent.md\`\n`),
 		).resolves.toBe(true);
 	});
 	it("skips bare mentions, temp paths, placeholders, commands and hashes", async () => {

@@ -52,7 +52,6 @@ type FixtureOptions = {
 	milestoneStatus?: string;
 	packetStatus?: string;
 	metadataFields?: PacketMetadataField[];
-	registryMode?: string;
 	editPacket?: (packet: Packet) => void;
 	editMilestone?: (milestone: Milestone) => void;
 	omitPacket?: boolean;
@@ -151,7 +150,6 @@ function createFixture(options: FixtureOptions = {}) {
 		ROUTES_PATH,
 		stringifyYaml({
 			schemaVersion: 1,
-			mode: options.registryMode ?? "compatibility",
 			routes: {
 				"backend-api-data": {
 					responsibility: "Review the bounded backend contract.",
@@ -228,23 +226,72 @@ describe("context:show bounded packet discovery", () => {
 		expect(plan).toContain("history is retrieved only through a named pointer");
 	});
 
-	it("rejects a stale packet hash before printing any plan", async () => {
-		const { root } = createFixture({
+	it("M2/M3: prints each fact from its home and ignores old copies and pin", async () => {
+		const { root, milestone } = createFixture({
 			editMilestone: (milestone) => {
-				milestone.taskPacketSha256 = "0".repeat(64);
+				milestone.taskClass = "repository-infrastructure";
+				milestone.taskPacketSha256 = "ignored";
+			},
+			editPacket: (packet) => {
+				packet.baseCommit = "abcdef0";
+				packet.scope.ownedPaths = ["old-copy/**"];
+				packet.continuity.currentHandoff = "gone/old.md";
 			},
 		});
-
-		await expectBuildToFail(
-			root,
-			/taskPacketSha256 differs from active milestone/,
+		const plan = await buildAgentContextPlan({
+			repositoryRoot: root,
+			milestoneId: MILESTONE_ID,
+		});
+		expect(plan).toContain(`baseCommit: ${milestone.baseCommit}`);
+		expect(plan).toContain(`handoff: ${HANDOFF_PATH}`);
+		expect(plan).toContain(
+			`scope.ownedPaths: ${JSON.stringify(milestone.ownedPaths)}`,
 		);
-		const result = runShow(root);
-		expect(result.status).toBe(1);
-		expect(result.stdout).toBe("");
-		expect(result.stderr).toContain("context:show FAILED:");
+		expect(plan).toContain(
+			`scope.forbiddenPaths: ${JSON.stringify(milestone.forbiddenPaths)}`,
+		);
+		expect(plan).toContain(
+			`scope.sharedLeases: ${JSON.stringify(milestone.sharedLeases)}`,
+		);
+		expect(plan).toContain("taskClass: backend-api-data");
+		expect(plan).not.toContain("packetSha256:");
+		expect(runShow(root).status).toBe(0);
 	});
-
+	it("M3: requires only a packet pointer in the ledger for active routing", async () => {
+		const { root } = createFixture({
+			metadataFields: ["taskPacket"],
+		});
+		expect(
+			await buildAgentContextPlan({
+				repositoryRoot: root,
+				milestoneId: MILESTONE_ID,
+			}),
+		).toContain("taskClass: backend-api-data");
+	});
+	it("rejects packet identity, state reference and an unregistered packet task class", async () => {
+		for (const [editPacket, expected] of [
+			[
+				(packet: Packet) => {
+					packet.milestoneId = "other";
+				},
+				/milestoneId differs/,
+			],
+			[
+				(packet: Packet) => {
+					packet.stateRef = "PROJECT_STATE.yaml#/milestones/other";
+				},
+				/stateRef/,
+			],
+			[
+				(packet: Packet) => {
+					packet.taskClass = "unknown";
+				},
+				/no registered route/,
+			],
+		] as Array<[(packet: Packet) => void, RegExp]>) {
+			await expectBuildToFail(createFixture({ editPacket }).root, expected);
+		}
+	});
 	it("fails before printing a plan when a registered packet file is missing", async () => {
 		const { root } = createFixture({ omitPacket: true });
 
@@ -266,120 +313,8 @@ describe("context:show bounded packet discovery", () => {
 		await expectBuildToFail(root, /taskPacket must be the stable path/);
 	});
 
-	it("rejects packet identity, task class, state reference, and base drift", async () => {
-		const cases: Array<[(packet: Packet) => void, RegExp]> = [
-			[
-				(packet) => {
-					packet.milestoneId = "other-milestone";
-				},
-				/milestoneId differs from active milestone/,
-			],
-			[
-				(packet) => {
-					packet.taskClass = "analysis-review";
-				},
-				/taskClass differs from active milestone/,
-			],
-			[
-				(packet) => {
-					packet.stateRef = "PROJECT_STATE.yaml#/milestones/other-milestone";
-				},
-				/stateRef does not identify the selected active milestone/,
-			],
-			[
-				(packet) => {
-					packet.baseCommit = "19e28f4f0874d96569bc6944e38ad94b89924b60";
-				},
-				/baseCommit differs from active milestone/,
-			],
-		];
-
-		for (const [editPacket, error] of cases) {
-			const { root } = createFixture({ editPacket });
-			await expectBuildToFail(root, error);
-		}
-	});
-
-	it("rejects each scope field when it differs from active state", async () => {
-		const cases: Array<[(scope: PacketScope) => void, RegExp]> = [
-			[
-				(scope) => {
-					scope.ownedPaths.push("another/owned/path.ts");
-				},
-				/scope\.ownedPaths differs from active milestone/,
-			],
-			[
-				(scope) => {
-					scope.forbiddenPaths.push("another/forbidden/path.ts");
-				},
-				/scope\.forbiddenPaths differs from active milestone/,
-			],
-			[
-				(scope) => {
-					scope.sharedLeases.push("another-lease");
-				},
-				/scope\.sharedLeases differs from active milestone/,
-			],
-		];
-
-		for (const [editScope, error] of cases) {
-			const { root } = createFixture({
-				editPacket: (packet) => editScope(packet.scope),
-			});
-			await expectBuildToFail(root, error);
-		}
-	});
-
-	it("rejects a stale current handoff", async () => {
-		const { root } = createFixture({
-			editPacket: (packet) => {
-				packet.continuity.currentHandoff = "docs/other-handoff.md";
-			},
-		});
-
-		await expectBuildToFail(
-			root,
-			/continuity\.currentHandoff differs from active handoff/,
-		);
-	});
-
-	it("rejects partial packet metadata while preserving all-absent compatibility", async () => {
-		const partial = createFixture({
-			metadataFields: ["taskClass", "taskPacket"],
-		});
-		await expectBuildToFail(
-			partial.root,
-			/packet metadata must be all-or-none/,
-		);
-
-		const legacy = createFixture({ metadataFields: [] });
-		const plan = await buildAgentContextPlan({
-			repositoryRoot: legacy.root,
-			milestoneId: MILESTONE_ID,
-		});
-		expect(plan).toContain("compatibility mode does not infer one");
-		expect(plan).toContain("packetStatus: DRAFT");
-		expect(plan).toContain(
-			"compatibility note: this packet was not validated against active state",
-		);
-		expect(plan).toContain(
-			"route: unavailable because the active state does not record a task class",
-		);
-
-		const absent = createFixture({ metadataFields: [], omitPacket: true });
-		const absentPlan = await buildAgentContextPlan({
-			repositoryRoot: absent.root,
-			milestoneId: MILESTONE_ID,
-		});
-		expect(absentPlan).toContain(`packet: ${PACKET_PATH} (absent)`);
-		expect(absentPlan).toContain(
-			"compatibility warning: no active packet is available; packet context is not claimed",
-		);
-	});
-
 	it("fails closed when active routing has no packet metadata", async () => {
 		const active = createFixture({
-			registryMode: "active",
 			metadataFields: [],
 		});
 		await expectBuildToFail(
@@ -388,7 +323,6 @@ describe("context:show bounded packet discovery", () => {
 		);
 
 		const activeOmit = createFixture({
-			registryMode: "active",
 			metadataFields: [],
 			omitPacket: true,
 		});
@@ -398,16 +332,8 @@ describe("context:show bounded packet discovery", () => {
 		);
 	});
 
-	it("rejects an unknown startup routing mode", async () => {
-		const unknown = createFixture({ registryMode: "legacy" });
-		await expectBuildToFail(
-			unknown.root,
-			/ROUTES\.yaml mode must be "compatibility" or "active"/,
-		);
-	});
-
-	it("fails closed on packet inspection errors in compatibility mode", async () => {
-		const { root } = createFixture({ metadataFields: [], omitPacket: true });
+	it("fails closed on packet inspection errors", async () => {
+		const { root } = createFixture({ omitPacket: true });
 		const failingInspectPath = async (
 			repositoryRoot: string,
 			relativePath: string,

@@ -16,6 +16,17 @@ latest wording; never copy an entry into a resume point.
   (user, 2026-09-29, 2026-10-01 and 2026-10-02)
 - Inside an announced task, process, tooling and ordering are the coordinator's decisions; it
   reports them at the end. (user, 2026-10-02)
+- The user sees a round only when it is finished: every finding the coordinator would fix anyway,
+  and every fix that applies an existing rule or decision, is made and checked first; only real
+  choices go to the user. The user prefers the running site and frame strips to file paths. (user,
+  2026-10-04 and 2026-10-05)
+- The user is asked to look only when something changed a lot on the page, or when a decision is
+  theirs. Smaller fixes, improvements and internal work are done and checked by the coordinator on
+  the frames, then reported in a line, without asking the user to look again. (user, 2026-10-10)
+- Housekeeping is the coordinator's to do and report, not to ask: pushing working branches (never
+  forcing), fast-forwarding `main` when CI passes, deleting merged branches, pruning dead worktree
+  registrations, and opening a successor milestone once its terminal record meets the successor gate
+  in `AGENTS.md`. (user, 2026-09-29 and 2026-10-07)
 
 ## Talking with the user
 
@@ -24,13 +35,20 @@ latest wording; never copy an entry into a resume point.
   ("Does the design round stay?"). Leave out pixel values and other measurements unless the user asks for them;
   name a screen by the device (on the phone, on a tablet, on a computer). The measurements stay in the records and in
   the agents' reports. (user, 2026-10-03, after a decision page that was hard to read)
+
+## What stays out of the repository
+
+- The repository is public. Business plans (the demo, its audience and funding), personal notes and anything the
+  user calls private stay on the user's machine in `D:/fitway-private/`, never in a tracked file; held-out rows stay
+  in `D:/fitway-grader/`. (user, 2026-10-09)
+
 ## Sessions and resuming
 
 - The coordinator's own context stays small: fresh agents do the reading and building, and the
   coordinator reads their reports and the key frames. (user, 2026-10-02)
-- When the coordinator's context grows, the user asks it to record a resume point
-  (`docs/agent-context/HANDOFF_TEMPLATE.md`). The next session starts from the user's "كمّل"
-  alone. (user, 2026-10-02)
+- When the coordinator's context grows, the user asks it to bring the milestone's resume file up to
+  date (`pnpm handoff:new`, `docs/WORKFLOW.md` "Handoff format"). The next session starts from the
+  user's "كمّل" alone. (user, 2026-10-02)
 - Reply in Saudi-dialect Arabic when the user writes Arabic; code, paths, commit messages and
   repository documents stay in English. (user)
 
@@ -41,25 +59,54 @@ latest wording; never copy an entry into a resume point.
 - The coordinator's questions to the user and its designer briefs carry what the owner must see and
   be able to do, and why; the composition, forms and colours are the designer's, and the coordinator
   recommends none of them. (user, 2026-10-04)
-- Codex takes frozen fixes and edits. Its reasoning level follows the task (user, 2026-10-03):
-  `xhigh` when the cause is unknown or the change spans many files with tests and Windows or CI
-  behaviour (the brief checker, path rules, CI); `high` for a known defect in a known place with
-  a measurable outcome (Eclipse defects such as D3-D8); `medium` for mechanical edits from an
-  exact list (documents, a regenerated index, text replacements). The first round of each kind
-  at its lower level is graded like any other; a failure traced to the code moves that kind up a
-  level. Each round's record names its level. Before a launch, read `rate_limits` and avoid
-  running rounds side by side that the five-hour window cannot carry.
-  The coordinator runs it from a tracked brief file, in Codex's sandbox with
-  automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md`
-  item 7), in a harness background shell (Git Bash, which has `<`):
-  `{ printf 'Launch note: HEAD <sha> only adds this brief over the named HEAD.\n\n'; cat <brief>; } | codex exec --approve-for-me -C <worktree> -m gpt-6.1-sol -c model_reasoning_effort="<level>" --json -o <run>/last-message.md - > <run>/events.jsonl`.
-  The note is needed because the brief's own commit sits on the HEAD it names, and Codex rightly stops on a HEAD
-  it was not told about (2026-10-03, nav-5 and round 8).
-  The harness reports the exit; nothing polls. Each Codex round is judged as an evaluation:
-  brief rows, held-out rows kept out of Codex's reach, and the failure cause; the brief rules
-  live with the milestone's standing decisions. (user, 2026-10-02)
-- Every subagent is launched from a definition with a fixed effort; `CLAUDE.md` gives the choice
-  between the Opus and Sonnet definitions. (user, 2026-10-02)
+- Codex takes frozen fixes and edits. From 2026-10-13 its rounds run on DeepSeek V4.1 Flash through
+  the user's Open Design subscription, with the Codex CLI as the harness, always at `max`: the model
+  is cheap enough that a lower level saves nothing (user, 2026-10-13). GPT-6.1 Sol stays available;
+  on it the level follows the task (user, 2026-10-03): `xhigh` when the cause is unknown or the
+  change spans many files with tests and Windows or CI behaviour; `high` for a known defect in a
+  known place with a measurable outcome; `medium` for mechanical edits from an exact list (documents,
+  a regenerated index, text replacements). The first round of each kind at its lower level is graded
+  like any other; a failure traced to the code moves that kind up a level. Each round's record names
+  its model and level, and whether a failure came from the brief's wording or the model's own reading.
+- FITWAY's source, tests, specifications and records may be sent to Open Design for these rounds;
+  `D:/fitway-private/`, `D:/fitway-grader/` and real secrets never are (user, 2026-10-13).
+- DeepSeek runs switch off Codex's hooks with a per-run setting, because a hook message placed between
+  a tool call and its result makes Open Design refuse the request; the user's own Codex configuration
+  and GPT runs keep them. Any later per-run setting that a DeepSeek run needs to work with Open Design
+  is the coordinator's call, reported in a line; the user's configuration is never changed (user,
+  2026-10-13, approved in advance).
+- Usage limits do not shape rounds: when a Codex account reaches its limit, the coordinator tells the
+  user at once, the user switches accounts, and each stopped run resumes on its thread. (user,
+  2026-10-05 and 2026-10-07)
+- The coordinator launches Codex from a tracked brief with `pnpm codex:round <brief>` (DeepSeek at `max`;
+  `--model gpt-6.1-sol <level>` for GPT) in a harness background shell. The command runs `pnpm brief:check` first and launches nothing on a
+  failure, adds the launch note when the brief's own commit sits on the HEAD it names (Codex rightly
+  stops on a HEAD it was not told about), and starts `codex exec --approve-for-me` in Codex's sandbox
+  with automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7),
+  keeping the events and the last message in a run folder outside the repository, with `start-load.json`:
+  the input tokens of Codex's first request, read from its session file, which is the round's start load.
+  The harness reports the exit; nothing polls.
+- A run that stopped mid-change (the app exited, or a limit was reached) resumes on its thread instead
+  of being reset: `pnpm codex:round resume <run folder> --message-file "<message file>"` is the shell-safe
+  form for exact text (UTF-8 with or without a BOM, or BOM-marked UTF-16; quotes, backslashes, Unicode and
+  newlines are preserved); `--message "<one line on what happened>"` remains available where the shell
+  preserves the argument. Without a message, resume sends the brief again.
+- After a round, the coordinator checks the diff, `git status` in every worktree involved, and the
+  remote branch.
+- Each Codex round is judged as an evaluation: brief rows, held-out rows, and the failure cause,
+  recorded in `docs/phase-records/handoffs/agent-environment/codex-rounds.md`. At grading the
+  coordinator also adds the round's line to `rounds.tsv` beside it and a line per side finding to
+  `findings.tsv`, whose status changes when a later round or commit fixes it; a value no source states
+  stays empty (DECISIONS item 21). Held-out suites live
+  in `D:/fitway-grader/`, carry planted-defect controls, and never appear in a brief. The numbers come
+  from executed checks, not from the implementer's report. A stop caused by the brief becomes a brief
+  rule (the checklist of `docs/agent-context/briefs/codex.md`). Models or levels are compared only
+  when a decision depends on it, by replaying one closed round on each with the same suite. Records
+  never bias the reader against the model and never record run time. (user, 2026-09-30 and
+  2026-10-02)
+- Every subagent is launched from a definition, at the definition's effort unless `CLAUDE.md` names
+  the case for another; `CLAUDE.md` gives the choice between the Opus, Sonnet and Haiku definitions.
+  (user, 2026-10-02 and 2026-10-08)
 - The Claude subscription is the scarce budget; Codex capacity is not (user, 2026-10-04). A round
   of small fixes gets one Claude review, the verifier at `high`, which also reads the changed
   elements in both directions; the separate reading-direction review is kept for a whole screen or
@@ -73,6 +120,17 @@ latest wording; never copy an entry into a resume point.
   pass, because a rule can be fragile or wrong. It names the rule that produced the finding as the suspect; when
   that rule is the user's decision, it goes back to the user. (user, 2026-10-03, after English tables built to
   decision 9 passed every check while reading wrong)
+- An agent checks a page with the verify-fitway CLI first. When the CLI cannot measure what it needs, it writes its
+  own script in its temp folder outside the repository, never edits the CLI during a review, and names the script in
+  its report: what it measured and why the CLI could not. The coordinator records each such script in
+  `findings.tsv` with the class `cli-gap:<kind>`; when the same kind comes back from another round, that check
+  becomes a feature of the CLI in a Codex round of its own, with a planted defect it must catch. (user, 2026-10-10)
+- A script written as evidence is first run on a build against itself, with its noise floor stated, and on a planted
+  defect of the kind it is meant to catch (a mid-motion plant for a mid-motion script); until it has shown both, its
+  output is not evidence. A script that has shown both is recorded in `findings.tsv` with both results, and the next
+  agent that needs the same measurement starts from it. It is never put in the brief of a round it grades, and an
+  independent verifier may still write its own. (user, 2026-10-11, after a Codex harness that sampled real time
+  differed from itself by up to 5596 pixels while the coordinator's self-tested one was byte-equal)
 - A review looks at every element the round changed as a whole on the page (its order, alignment, sizes and
   spacing), not only at whether the requested change happened: a change can be done and still read badly. (user,
   2026-10-03, after the busiest-time card on the phone passed every check while reading badly)

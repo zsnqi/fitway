@@ -1,0 +1,261 @@
+---
+name: verify-fitway
+description: Launch, inspect, drive and compare the FITWAY Owner Eclipse concept, with source discovery and observable state proofs. Use for Owner verification and evidence capture.
+---
+
+# Verify FITWAY
+
+The concept is a read-only input. Use its `verification-recipes.json`: user paths and observable state/feature
+proofs belong beside the concept on the branch that changes it. `--recipes` can point to a coordinator's evidence
+copy before that file is committed. Generated maps remain in evidence. Never copy the concept into this checkout.
+
+From the root of whichever repository checkout contains this skill, initialize these PowerShell variables once:
+
+```powershell
+$cli = (Resolve-Path '.agents/skills/verify-fitway/cli.mjs').Path
+$concept = '<absolute concept folder from the brief>'
+$recipes = Join-Path $concept 'verification-recipes.json'
+$run = 'D:/fitway-temp/<unique run name>'
+node $cli help
+node $cli list --concept $concept --recipes $recipes --page all
+```
+
+After resolving `$cli`, commands work from any shell directory. Plain folders and `git archive` extractions need
+no enclosing package.json: Playwright comes from this skill's repository. No new dependencies are installed.
+`help` needs only Node. It prints the checkout's `pnpm install --frozen-lockfile` command for discovery and browser tools.
+Commands that need an absent dependency print its package name and that install command, without a stack trace.
+On this Windows machine run browser commands in PowerShell, with the brief's required escalation for child processes.
+Git Bash may rewrite browser paths; use PowerShell for the examples below. All JSON is UTF-8 without a BOM.
+
+## Discover and check
+
+`list --page activity.html` prints feature ids, states, switches, dependencies, user reach and observable proof.
+`--page` and `--feature` select one path; language, size, input, motion, transport and colours multiply its frames.
+Use `help` for the full command and axis inventory. Every consumer rediscovers the source, including openings and
+opener controls, including every `aria-haspopup` value except `false`. Specimens need explicit recipe coverage too.
+A source edit alone is not drift. Uncovered openings/openers and vanished recipe selectors/markers fail
+with their names and source file/line; repair the recipe or source on the concept branch, then run:
+
+An inert specimen can use `coversOpeners: [{selector, file, marker}]`, where `marker` names its source declaration.
+Coverage applies only to that declaration's opener, so a live control with the same classes still fails drift.
+
+Discovery is not yet exhaustive: CSS-only openings and some dynamic or delegated opener relationships remain
+unresolved. A drift pass proves coverage of the discovered openings; it does not prove a complete feature census.
+`drift-tree` prints `DRIFT SKIP` when no recipe file is found and exits successfully, so the fast ladder can
+continue without claiming coverage. Supply the concept's recipe file beside it or use `drift --recipes`.
+
+```powershell
+node $cli map --concept $concept --recipes $recipes --out "$run/map"
+node $cli drift --concept $concept --recipes $recipes --map "$run/map/verification-map.json"
+node $cli doctor --concept $concept --recipes $recipes --tools diff
+```
+
+Doctor is read-only and prints `DOCTOR PASS` or the problem and a `FIX:` command. Recipe drift's `FIX` uses
+`repair-recipes`, which writes a copy outside the concept: vanished selector/marker recipes are dropped and uncovered
+elements get draft entries. Drift with that copy reports drafts to complete; author their user reach and observable
+proof, remove `draft`, and check again. A missing recipe file produces a draft skeleton, not recovered knowledge.
+Missing standalone inputs without
+an authoritative recovery source print `FIX BLOCKED`; not every doctor failure has an automatic repair command.
+It checks Chromium, the user's
+machine-level ui-forensics skill, the concept probe kit, recipe coverage, and port ownership; `--tools diff` adds
+Python/numpy/Pillow. Missing machine-level tools block browser verification in cloud sessions.
+
+## Launch and drive
+
+`--port` accepts only **3176 and 3177**. 3174 and 3178-3185 belong to other previews. A listener on any address is busy;
+never stop its owner. A run without `--session` starts and closes its own preview. Explicit launch is optional:
+
+Every preview stops after **30 minutes without a request** and frees its port; requests renew that timeout.
+An expired session needs a fresh launch before doctor or drive can use it. Cleanup accepts the launch folder
+or its `session.json` file and reports an expired preview as already stopped. A nonexistent path fails.
+For isolated lifecycle tests, `launch --isolated-port <49152-65535>` uses a separate high port;
+`--port` still accepts only 3176 or 3177. `--idle-timeout-ms <1-1800000>` shortens the idle bound for tests.
+
+```powershell
+node $cli launch --concept $concept --port 3176 --out "$run/launch"
+try {
+  node $cli doctor --concept $concept --recipes $recipes --session "$run/launch"
+  node $cli drive --concept $concept --recipes $recipes --session "$run/launch" --page index.html --feature status --languages ar,en --sizes desktop,tablet,phone --inputs mouse --motions reduce --transports http --out "$run/status"
+} finally {
+  node $cli cleanup --session "$run/launch"
+}
+```
+
+Every preview response sends `Cache-Control: no-store`; `--cache none` tests the no-header route. `--lan` makes an
+explicit preview reachable on the LAN on an allocated port; use its printed network-interface URL on another device.
+Session identity authenticates cleanup; retain
+`session.json` privately. Cleanup after a refused launch or a previously cleaned session is safe and retains evidence.
+
+A `FRAME PASS` requires the requested state's visible proof and the feature's action/result proof. Unsupported
+state combinations with no proof fail explicitly. Dependent switches are applied with the recipe default or refused
+with the source reason. `NOT-REACHABLE` means the recipe says the feature is absent by design and proves that absence
+(for example status details while loading); the message and summary say that the state/feature cannot be reached.
+It is neither a pass nor a failure. `PROBLEM` names a measuring tool's
+error. Each item's findings survive, and the run continues. Overall failure still has a manifest and frames.
+
+Use source-supported switches or real user actions. Read-only readiness/state observations are allowed; internal
+setters do not prove a user flow. Each item uses a fresh context, waits for readiness/fonts and Daily intro settlement.
+Touch uses a coarse pointer and actual taps. `--probes daily` adds the concept's geometry/accessibility measurements.
+`hold:<selector>` presses the selector at its centre and keeps the primary
+mouse button or touch contact down until a matching `release` action (or item
+cleanup). Use `hold` before a capture or motion trigger, and always release it
+before the next item. Keyboard input refuses held presses. A held manifest
+records the selector, input, press-to-capture time, and classification:
+`pressed style shown while held` means the rendered style changed (including
+pointer-event changes), `pressed style exists but emulated touch does not show
+it` means a matching `:active` rule exists but the touch frame did not change,
+and `no pressed style` means neither is present. Emulated touch does not show
+`:active`; prove that state with a mouse hold and on a device.
+`--inputs keyboard` reaches action targets with Tab and activates with Enter; `focus:` also traverses with Tab,
+never sets focus. `press:` sends the named key, `type:` types with keys, and native `select:` uses Home/ArrowDown/Enter.
+For roving controls or a different activation key, recipes can supply `keyboardActions` with `press:` and `focus:`
+steps. Each key's before/after focused element is recorded in the full item JSON, with initial/final focus.
+`FRAME KEYBOARD-UNREACHABLE` fails the run and names the target and focus stop after a repeated Tab cycle or bounded
+sequence. Unsupported pointer actions require authored keyboard steps. Inspect the recorded sequence before claiming reach.
+Focus messages name the selector and accessible name (or role if unnamed), and explicitly identify focus on the page
+itself. `KEYBOARD-UNREACHABLE` means the pointer feature's recorded keyboard path failed; it differs from a recipe's
+designed absence (`NOT-REACHABLE`). Both manifest status values retain their existing meaning.
+The drive summary counts keyboard-unreachable items separately from problems, names each item, and still fails.
+Tab evidence names the move and its focus destination; activation evidence retains the requested action.
+`--states all` sweeps discovered switch values and recipe samples; use explicit states or query for a narrower claim.
+
+These two tasks demonstrate finding the feature and applying its state:
+
+```powershell
+node $cli list --concept $concept --recipes $recipes --page activity.html
+node $cli drive --concept $concept --recipes $recipes --page activity.html --feature page --query 'case=long' --languages ar --sizes narrow --inputs mouse --motions reduce --transports http --port 3176 --out "$run/activity-long"
+node $cli list --concept $concept --recipes $recipes --page reports.html
+node $cli drive --concept $concept --recipes $recipes --page reports.html --feature export-open --languages en --sizes phone --inputs touch --motions reduce --transports http --port 3176 --out "$run/reports-export"
+node $cli list --concept $concept --recipes $recipes --page access.html
+node $cli drive --concept $concept --recipes $recipes --page access.html --feature pinChange --languages ar --sizes tablet --inputs keyboard --motions reduce --transports http --port 3176 --out "$run/access-pin-keyboard"
+```
+
+Activity's `case=long` needs `record`; this build's recipe applies `record=1001` and checks the visible long-name
+record and arrival focus. If another build has no default, supply `--query 'case=long&record=<valid id>'`.
+
+`--colors normal,forced` adds the colours axis to drive and compare; omitting it selects normal.
+Forced requires ui-forensics **1.2.0 or later** (use `--forensics <copy>` until installed).
+Every forced item records the computed body background and Canvas palette colour and refuses a mismatch.
+Each manifest item and FRAME line names normal or forced. Normal keeps its existing filenames;
+forced filenames add `-forced`, so mixed runs cannot overwrite frames.
+
+## Compare
+
+`--affected-pages` selects pages reached by byte changes in either input's HTML,
+loaded scripts/styles and their imports, or that page's recipe entry. A changed
+file loaded by two product pages takes every page; `components.html` is excluded
+from that shared-file count. Computed or unresolved loads always take their page.
+Before capture the command names every taken/omitted page and prints `COMPARE
+PARTIAL`. An unloaded-only change takes no pages and exits successfully. Omit this
+option for the round's full verification.
+
+Baseline captures are kept in `D:/fitway-verify-captures`, outside evidence folders.
+The cache is bounded to 10 GB and evicts the oldest entries first. Page load bytes,
+raw recipes, CLI/probe/capture-tool bytes, browser build, axes, queries and capture
+settings identify a bundle. Independent repeats and timeline confirmations are
+kept with it; reuse performs no baseline browser work. Changed effective timeline
+times invalidate the bundle. Unresolved local files fingerprint the whole baseline;
+computed, script-created or external loads disable reuse. Every run prints `BASELINE CAPTURES` reused/taken
+counts. `--baseline-cache off` forces fresh captures and retains today's capture
+sequence. Evidence owns restored copies, so eviction cannot remove a run's frames.
+
+Compare shares its command-owned browser and previews, retaining fresh item
+contexts. Local HTTP requests go to the preview through bounded keep-alive
+connections, preserving response bytes/status while avoiding port exhaustion.
+
+Extract the requested baseline revision once outside all git trees, then give its concept folder to `compare`.
+The baseline can use the same recipe file with `--baseline-recipes`, or its own adjacent recipe file. Both sides
+run the same items and axes. Differences are captured again in fresh contexts before the final exact pixel result;
+no tolerance is added. Each differing item has a region, diff JSON and images in `comparison.json`.
+Only compare's motion-settlement wait has a **five-second total bound per capture** for finite Web Animations/CSS
+transitions to finish naturally and for queued `requestAnimationFrame` callbacks to drain, under both motion modes.
+A comparison-only observer is installed before page scripts run; it tracks requests and cancellations without
+changing their clocks or finishing the motion itself. A script loop that keeps scheduling frames, or finite browser
+motion that has not settled within the bound, produces a capture problem and fails the run. Persistent browser
+animations are paused at time zero for an exact, reproducible phase. Ordinary drive retains its original motion and capture timing.
+The initial Daily intro readiness check retains its existing **15-second bound**; the five-second capture bound
+also covers intros restarted by actions such as retry or replay. Neither wait can turn an unsettled capture into a pass.
+Compare hides native text carets with Playwright's `caret: "hide"` under every motion mode, retaining focus,
+selection and field values. It disables Chromium's partial raster cache so settled fractional edges are painted
+consistently after movement. The page is captured as served, with the comparison observers described here;
+capture adds no styles, DOM elements or attributes. Ordinary drive keeps its screenshot options.
+Without a timeline request, compare checks these settled pictures.
+
+Use `--timeline` when a refactor must preserve openings, closings, changes of state, held presses and releases
+throughout their movement. Earlier recipe actions settle before the last action. Pointer positioning and keyboard
+reach settle before that action's clock starts, so hover/focus transitions cannot supply a varying starting pose. Each reachable item retains its
+settled result and adds exact-pixel `TIMELINE EQUAL` or `TIMELINE DIFFERENT` results, regions and diff images for
+the same fixed milliseconds on both sides. Every item prints `TIMELINE TIMES`; a feature with no actions says
+`Feature has no actions; compared at rest only`. All existing axes apply.
+
+The default starts at 1 ms (the first held picture after the action), advances by at most 100 ms, and reaches the
+first 100 ms boundary at or beyond the longest finite movement, including effects started during it. The two sides
+share the union of their default times.
+`--timeline-times 0,40,120,340` implies `--timeline` and replaces that schedule. Times are finite nonnegative milliseconds.
+Finite browser effects have no duration cap. Authored callback work is bounded to 2000 callbacks per item; exhaustion
+is recorded with its scheduling source and further script work stops while known finite effects finish. Each timeline
+sample is captured again in a fresh context on the same side at the same time. A sample is `NOT-HELD` only when those
+two same-side frames differ in pixels or dimensions; callback findings alone never skip its pixel comparison.
+Before reporting a cross-build difference, up to two further captures per side check for variation missed by the
+first pair. Every `NOT-HELD` still has an actual differing pair at the same time on the same side.
+
+The hold pauses and seeks every discovered CSS transition, CSS animation and Web Animation. Persistent effects
+stay at phase zero. Timer and frame callbacks are queued while capturing and advanced on a logical clock, so wall
+clock load cannot advance a frame between seeks. Authored timer, frame, completion and promise callbacks run outside
+the browser-effect hold and remain in the sample's sources, including canvas and CSSOM changes a DOM observer cannot
+see. Stable callback-driven frames are reported `TIMELINE EQUAL` or `TIMELINE DIFFERENT` with zero pixel tolerance.
+When the two same-side captures differ, `TIMELINE NOT-HELD` names the time, both captures and every callback source;
+that sample is excluded from the cross-build pixel result. Inspect `comparison.json` and the exact frames before
+accepting a change.
+`NOT-HELD` is neither equal nor different; the summary says `INCOMPLETE`, counts and names every such sample.
+
+The page's clocks are held with it (vf-hold, F143 and F144): `performance.now()`, `Date.now()`, `new Date()`, event
+timestamps and frame-callback timestamps read one logical clock from before the page's first script. Setup waits
+advance that clock through native scheduling; capture wall time stays outside it. Press and release boundaries collect
+newly created effects before delayed captures, and effects started with `Animation.play()`, including targetless
+effects and replays, join the hold. Compared regions and zero tolerance are unchanged.
+Two known limits: an SVG icon inside a button that is scaling back can differ by one or two levels on one or two edge
+pixels in the first 21 ms of a release (F148), so such a sample may be `NOT-HELD`: rerun the item once. And
+`--inputs keyboard` activates with Enter, which never shows a press in Chromium (F149); a keyboard press's look is
+reached only by a recipe that ends `press:Space` on the focused control.
+
+Name additional moments with `--recipes <external-file>` and the same `--baseline-recipes` file. The report retains
+the recipe entries used. A comma-separated `--feature export-close,export-held,export-release` selects several entries
+in one page command. For example, add an `export-close` entry with `actions: ["activate:#export-btn", "press:Escape"]`
+and `proof: {selector: "#dlg-export", hidden: true}`; a held press uses `["hold:#export-btn"]`, and its release uses
+`["hold:#export-btn", "release"]`. Keep these entries beside the existing recipes in the external copy.
+
+```powershell
+node $cli compare --concept $concept --baseline $baseline --page reports.html --feature all --languages ar,en --sizes desktop,phone --inputs mouse --motions full --transports http --timeline --out "$run/reports-timeline"
+```
+
+```powershell
+$baseline = '<absolute extracted concept folder>'
+node $cli compare --concept $concept --baseline $baseline --recipes $recipes --baseline-recipes $recipes --page index.html --feature page --states 'state=live,state=delayed,state=nohistory,state=loading,state=closed,state=unavailable,state=error' --languages ar,en --sizes desktop,tablet,phone --inputs mouse --motions reduce --transports http --port 3176 --baseline-port 3177 --out "$run/daily-compare"
+```
+
+`COMPARE EQUAL` and `COMPARE DIFFERENT` name each item; capture/probe problems and designed absence are separate
+results. A difference or problem makes the command fail. Inspect its frames and diff images, including the repeats.
+
+## Evidence and advanced tools
+
+Output must be an absolute folder outside every git tree, including links and junction aliases. File names carry
+feature/state/language/size/input/motion/transport. Read `summary.json` or the item's `*-summary.json` first; full
+JSON retains actions, readiness, geometry, overflow, ARIA, errors and each keyboard focus step.
+Each summary retains `proof` for the reached state and `featureProof` for the successfully reached feature result.
+Compare prints one line per item and a summary; full diff measurements remain in `comparison.json` and the named diff JSON files.
+Before/after/error frames and language sheets remain after cleanup. Capture downloads when a feature claims them.
+Personally inspect exact named rendered frames
+at the required sizes and languages; logs/hashes do not establish visual quality or human acceptance.
+
+`measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>` delegates to
+ui-forensics. `measure --colors forced` passes `--forced-colors active`; tool arguments can supply it directly.
+Forced requests in tool arguments and frame/probe matrices also require 1.2.0 before delegation. Read that tool's help for advanced measurements. Extend this path when an adapter is missing instead
+of writing another server, launcher or capture loop. The concept is synthetic; preserve privacy and data semantics.
+
+Verifier rules (one canonical statement):
+
+- G1: Keep cap checks at least 30 ms from the cap: 50, 150, 250 and 600 ms.
+- G2: Detect a removed pre-intro frame by holding fonts until first paint +50 ms and +100 ms.
+- G3: Run load checks under no-store and under no cache header.
+- G4: Run every movement check until at least 500 ms after `endedAt`.
