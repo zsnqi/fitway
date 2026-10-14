@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04`, 2026-10-15 02:40 +03:00 (the new coordinator session took over under decision 61; main at `911e4a91` with CI green; the two encoding rounds of decision 62 running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-62), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-63), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -33,6 +33,8 @@
   follow-ups for the move to production (the password-reset form's pending Cancel among them).
 - **The pstack reading (decision 56):** nothing installed; `correct`'s method adopted, B13 and B6 changed, one
   report-only `no-comments` trial on the tool code.
+- **main is protected on GitHub** (decision 63): a push to main needs the `checks` job passed on that exact commit,
+  administrators included; no force push or deletion.
 - **Windows Update restarted the machine at 06:36** during grading (F159; the user's setting, never an agent's).
 
 ## Running now
@@ -92,12 +94,8 @@
 
 ## Waiting on the user
 
-Nothing blocking. The user's call, when back:
-
-- **Branch protection on main** (encoding-checks' review, reading 1, left open): a GitHub rule requiring the `checks`
-  job before main moves would make `pnpm main:advance` the enforced path rather than the agreed one; it changes the
-  repository's settings, so it waits for the user's word.
-- Optional: Windows Update's active hours or a pause on nights when rounds run (F159).
+Nothing blocking. Optional, the user's call: Windows Update's active hours or a pause on nights when rounds run
+(F159).
 
 ## Known risks
 

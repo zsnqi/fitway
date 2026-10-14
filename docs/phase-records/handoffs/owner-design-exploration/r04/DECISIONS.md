@@ -693,6 +693,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - The user's permission covers the ordinary engineering steps: rounds, reviews, tests, grading, and merges after
       verification. A question only the user can answer is recorded under "Waiting on the user" in the resume point,
       and the work that does not depend on it goes on.
+63. **main is protected on GitHub** (the user, 2026-10-15, «بخصوص القرار الي منتظر موافقتي انا موافق عليه», on
+    encoding-checks' review reading 1, recorded under "Waiting on the user"). Branch protection on `main` requires the
+    `checks` job of GitHub Actions to have passed on the exact commit, for administrators too, and refuses force
+    pushes and deletion; no pull request is required, so main still moves by a fast-forward push, and
+    `pnpm main:advance` stays the agents' way to make one. If CI itself breaks so that no commit can pass, lifting the
+    rule is the user's call. Applied by the coordinator with `gh api` on 2026-10-15.
 
 ## How this milestone's rounds run
 
