@@ -58,8 +58,9 @@ says what the CLI does, held there by a test; and its runs leave nothing behind.
   query key's state proof before the feature's first action, so a scenario switch (fail, hold, refuse, older, refresh,
   export) whose effect shows only after an action has a proof that reads its own query. Outcome: a recipe's state rule
   can have its proof checked after the feature's actions instead of before, and the CLI checks it there; an item whose
-  state has no proof is still refused; every existing recipe gives the same items and verdicts. Intent: a state proof
-  reads the page.
+  state has no proof is still refused; every existing recipe gives the same items and verdicts. Measured on a recipes
+  copy whose rules for those six switches use it: each proof reads the page, is checked after its action, and passes.
+  Intent: a state proof reads the page.
 - **V2. Address-only features under keyboard (F132).** Cause: `runner.mjs:634-642` throws `KeyboardReachError` for a
   keyboard item whose feature has no actions, so Reports' range and export dialogs, reached by their address alone,
   are KEYBOARD-UNREACHABLE. Outcome: under `--inputs keyboard` such a feature is captured and compared as under mouse;
@@ -80,24 +81,27 @@ says what the CLI does, held there by a test; and its runs leave nothing behind.
 - **V5. `SKILL.md` held to the CLI (F158).** Cause: `SKILL.md:255` says compare leaves language sheets, which
   `runner.mjs:978-981` stopped rendering for compares. Outcome: `SKILL.md` says what compare and drive render; a test
   fails when `SKILL.md` names an option, a port or pair, or an artifact a command writes that the CLI does not have,
-  accept or write, and it fails on that line put back. Intent: the guide cannot drift from the tool unnoticed.
+  accept or write, and when an option the CLI's `--help` lists is not named in `SKILL.md`; it fails on the stale
+  line put back. Intent: the guide cannot drift from the tool unnoticed.
 - **V6. Nothing left behind (F161).** Cause: the lease root is fixed at `D:/fitway-verify-captures` (`core.mjs:356-357`)
   and release removes only the claim (`core.mjs:436-441`), so every test run leaves empty `.port-<port>-lease`
-  folders. Outcome: the verify-fitway test files and a compare leave no folder they created in
-  `D:/fitway-verify-captures`; the folders left there by earlier runs outside the three pairs are removed once, by a
+  folders. Outcome: the verify-fitway test files and a compare leave no file or folder they created in
+  `D:/fitway-verify-captures` beyond the captures they keep; the folders left there by earlier runs outside the three pairs are removed once, by a
   command you report. Intent: the captures root holds only captures and live claims.
 - **V7. Navigating features under touch and keyboard (F164).** Cause: nothing between an action and the next page
   read waits for a navigation (`runner.mjs`, `drive.mjs:192-200`), so `language`, `phone-language` and Access's
   `record-navigation` fail on both sides with "Execution context was destroyed" under touch and keyboard. Outcome:
-  those features are captured and compared under touch and keyboard as under mouse; measured with the concept against
-  itself, every such item EQUAL in Arabic and English, desktop and phone. Intent: every input reaches every feature.
+  those features are captured and compared under touch and keyboard as under mouse, each item's feature proof (the
+  page after the navigation) passing; measured with the concept against itself, every such item EQUAL in Arabic and
+  English, desktop and phone. Intent: every input reaches every feature.
 
 ## Limits the result keeps
 
-- **L1. Today's verdicts.** Apart from the items V2, V4 and V7 change (report each), the vf-parallel full compare
+- **L1. Today's verdicts.** The vf-parallel full compare
   (`compare --page all --feature page --states all`, Arabic and English, desktop, tablet and phone, reduced and full
   motion, mouse, HTTP, `--baseline-cache off`, the concept against itself, 4 workers) gives the HEAD CLI's items and
-  verdicts; `cli.test.mjs`, `compare-speed.test.mjs`, `compare-parallel.test.mjs` and `timeline-hold.test.mjs` keep
+  verdicts, every one; the same command with `--inputs keyboard,touch` changes only items of V2, V4 and V7, each listed
+  with its HEAD and new verdict; `cli.test.mjs`, `compare-speed.test.mjs`, `compare-parallel.test.mjs` and `timeline-hold.test.mjs` keep
   every assertion.
 - **L2. Only the tool.** Only `.agents/skills/verify-fitway/**` changes; the concept's files are read-only.
 - **L3. The ladder and a clean tree.** `node scripts/verify.mjs fast` passes on your committed tree, and
