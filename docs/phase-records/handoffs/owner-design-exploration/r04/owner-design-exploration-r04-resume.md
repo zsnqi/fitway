@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 16:45 +03:00 (launcher-fixes-3 graded and merged at `3a959ac2`; tuner-removal's continue brief written, its review next; vf-fixes waits; main at `6272eeb5`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 16:45 +03:00 (launcher-fixes-3 graded and merged at `3a959ac2`; tuner-removal's continue run launched; vf-fixes waits; main at `6272eeb5`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-59), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -43,20 +43,23 @@
 
 ## Running now
 
-Nothing. tuner-removal's continue run is prepared: the coordinator moved `owner-followup-r04-build` onto the saved
-`58e39ede` (`git reset --mixed`, the worktree's files unchanged and its tree clean), and wrote
-`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal-continue.md` (`brief:check` PASS);
-`.impeccable/config.json` on the build branch is in the owned paths (F140). vf-fixes stays stopped
-(`wip/vf-fixes-stopped-20261014`, `862dea71`; run folder `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`).
+- **tuner-removal, continued** (DECISIONS 59), launched about 16:55 on DeepSeek at `max`:
+  `briefs/codex-tuner-removal-continue.md` (`7147ce79`, SHA-256 `8b3af88d...`), review
+  `D:/fitway-temp/brief-review/codex-tuner-removal-continue-1` (four readings closed, one left open), run folder
+  `D:/fitway-temp/codex-round-9e63e748-50de-49e4-bc40-e6d7d6419115`, thread `01a13aa9-5797-7702-b9e0-dcd5b519f4b9`.
+  It works on `owner-followup-r04-build` in `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, which the
+  coordinator moved onto the saved `58e39ede` (`git reset --mixed`, files unchanged); base `4352181f`, pair
+  3188-3189. It has ended when `last-message.md` holds a report (or the launcher's background shell exits). Grade on
+  `D:/fitway-grader/owner-r04/tuner-removal-heldout.md`. Nothing else runs compares beside it (F168, B13).
+- **vf-fixes** stays stopped (`wip/vf-fixes-stopped-20261014`, `862dea71`; run folder
+  `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`) until tuner-removal is graded.
 
 ## Next steps
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
-2. **Continue the two stopped rounds** (DECISIONS 59): tuner-removal first with the continue brief above
-   (`pnpm codex:round` runs its review, B11; dispositions; launch), graded on
-   `D:/fitway-grader/owner-r04/tuner-removal-heldout.md`; then vf-fixes the same way from `862dea71`, never both at once
-   (F168). Its live moments stay reachable by a key under a URL switch (coordinator, reported to the user on
-   2026-10-14).
+2. **Grade tuner-removal** when it reports (held-out above), record, merge on the build branch, push it for CI
+   (F166). **Then vf-fixes** the same way from `862dea71` with its own continue brief, never both at once
+   (F168).
 3. **After the tuner merges:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
    `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown).
 4. **The other tool rounds before Settings:** the encoding round's brief can be drafted now from
