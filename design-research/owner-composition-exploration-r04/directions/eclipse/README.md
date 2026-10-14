@@ -32,18 +32,16 @@ only around the disc's edge. Everything else is a near-black card with a thin bo
 ## Light model
 
 Every setting is a plain number on `:root` in `style.css` (`--now-*`, `--chart-*`, `--wash-int`, `--grain-o`).
-These are the Recommended values. The lighting section turns them into geometry, and the tuner overrides them
-live on `<html>`.
+These are the static values. The lighting section turns them into geometry.
 
 **The user's tuning is the default.** Decision: `HISTORY.md`, "Contract label provenance" → "User-tuned defaults".
-- **Source:** the user tuned the lights in the tuner and sent the "Copy values" JSON. The coordinator made
-  those values the `:root` defaults, so Recommended is now the user's tuning.
+- **Source:** the user tuned the lights and sent the "Copy values" JSON. The coordinator made those values the `:root` defaults.
 - **Values:**
   - **Inside now:** intensity 0.7, core `#E51935`, disc size 77, position 67, softness 34px, rim 8%, lit-corner
     glow 0.05 at size 110%, far glow 0.9, ring-end fade 19.
   - **Chart:** intensity 0.95, fade 11.5, sides 48.5, balance 0, softness 260px.
   - **Page:** wash 1, grain 0.15.
-- **Measurements:** the tables below record the first Recommended values; see `HISTORY.md`, "Light model (v3)", for those defaults.
+- **Measurements:** the tables below record the first measured values; see `HISTORY.md`, "Light model (v3)", for those defaults.
 - **Structure:** each lit card owns a `.lamp`. It covers the border box, is clipped to the card's outer
   radius, and is a size container, so the geometry is in `cqw`/`cqh` of the card.
   - `.lamp-in` is masked by the disc: a radial gradient, transparent inside and opaque outside. Where the
@@ -71,81 +69,13 @@ live on `<html>`.
 - **Page wash:** unchanged geometry. `--wash-int` scales its alpha.
 - **Grain:** unchanged texture. `--grain-o` is 0.15.
 
-## Light tuner
+## Live-moment checks
 
-`tuner.js` is a classic script (no modules, no fetch), so it works when `index.html` is opened from `file://`.
-It is a working tool, not part of the design.
-
-- **Look and place:** a small dashed "الإضاءة · Lights" button at the top, 452px in from the inline-start
-  edge where it fits, with the panel opening directly below it. On smaller screens the unit stays inside
-  the viewport; the closed button moves clear of page controls as the page scrolls or changes, without
-  replacing the saved spot. Collision checks follow page controls entering the button's area or changing
-  geometry, not the chart's animation frames. It is Arabic-first and right-to-left, with short English
-  secondary labels.
-- **Moving the tuner:** decision: `HISTORY.md`, "Contract label provenance" → "Moving the tuner".
-  - The button and the panel move together as one unit.
-  - Drag the button, or drag the panel's header by its title or its ⠿ grip.
-  - Dragging never presses the button. Opening and closing leave the button in exactly the same spot;
-    near an edge, the panel shifts independently to fit inside the viewport below the button.
-  - The spot is kept in `localStorage` (`fitway.eclipse.v3.tuner-pos`), separate from the light values, and
-    is measured from the page's inline-start edge.
-  - On the grip, the arrow keys move the unit 12px, or 60px with Shift. Home, or a double-click on the
-    header, returns it to its original spot, constrained to the current screen and clear of page controls.
-- **Access:** keyboard operable, with native range inputs, labels and outputs. Escape closes the panel and
-  returns focus to the button, including after moving it. The panel fits the viewport's width and remaining
-  height; narrow screens use one column, and its contents scroll so every control can be reached.
-- **Controls:**
-  - Inside now: intensity, core colour, disc size, disc position, edge softness, rim thickness, lit-corner
-    glow and its size, far-corner glow, and ring-end fade.
-  - Lit-corner glow controls (decision: `HISTORY.md`, "Contract label provenance" → "Lit-corner glow controls"):
-    - `--now-hot` sets the strength and `--now-hot-size` the size of the `#FF2946` hot spot just inside
-      the lit corner.
-    - It is the bottom-left in Arabic and the bottom-right in English.
-    - The defaults are strength 0.05 and size 110%.
-  - Core colour is an OKLCH hue slider limited to 21-29 at FITWAY red's own lightness and chroma, so it cannot
-    reach pink or purple. `#FF2946` is hue 21.6 and `#E51935` is 22.9.
-  - Chart: intensity, fade distance, side height, corner balance and edge softness. Edge softness is one
-    control beyond the brief. It is needed to reproduce v2's haze.
-  - Page: wash and grain.
-- **Presets:**
-  - **v2** is the closest the new controls get to Eclipse v2.
-  - **A-like** changes only the chart, and is fitted to light-study A.
-  - **Recommended** is the CSS defaults. The tuner reads its Recommended values from the stylesheet.
-- **Buttons:** "Copy values" copies `{preset, values, css}` as JSON. If the clipboard fails, a selectable
-  textarea shows the JSON. "Reset to Recommended" removes every override.
-- **Storage:** tuning is kept in `localStorage` (`fitway.eclipse.v3.lights`). Every access is wrapped in
-  try/catch.
-- **Motion group:**
-  - «قراءة جديدة» "New reading": the next minute of the same simulated day. «إعادة القراءات» "Reset readings".
-  - «مستوى الازدحام» "Crowd level": «مستوى أعلى» "Level up" and «مستوى أدنى» "Level down" simulate a crowd-level change
-    on the Inside now card. Each crosses the nearest level boundary by the smallest step, so Busy 49 goes down to
-    Moderate 48 or up to Packed 69. It changes the card only, and "New reading" or "Reset readings" clears it. It is
-    off while delayed, because a stale card never moves, and a short note says so in both languages.
-  - «الحركة» "Motion": one switch, kept in its own `localStorage` key (`fitway.eclipse.v3.motion`), separate from the
-    light values, and ignored with `?tuner=0`.
-  - «سرعة انتقال العلامة» "Hover speed": a range from 0.5× to 2×, default 1× (the reference clip's feel),
-    with a small «الافتراضي» "Default" button. It divides the follow's time constants; the output shows the multiplier
-    and the settle time, for example "1.00× · 400 ms".
-    - It is kept in the same key as the Motion switch (`{ motion, hoverSpeed, introSpeed }`), which daily.js already owns
-      and ignores with `?tuner=0`. The light values' key and "Copy values" stay about lights only.
-  - «سرعة المقدمة» "Intro speed": a range from 0.5× to 2×, default 1×, with its own «الافتراضي»
-    "Default" button. It divides every duration of the first-open intro; the output shows the multiplier and the
-    intro's length, for example "1.00× · 1171 ms". It is kept in the same key and ignored with `?tuner=0`. A new speed
-    applies to the next intro, never to one that is playing.
-  - «إعادة المقدمة» "Replay intro" plays the current reading again only when the page is ready and has a reading.
-    It is disabled with reduced motion, `?motion=off` or the Motion switch off. In loading, error, closed or
-    unavailable states it does nothing, even if the button remains enabled.
-  - Scripts reach the same actions on `window.__eclipse.motion`: `step()`, `reset()`, `crowd(1 | -1)`,
-    `set({ motion, hoverSpeed, introSpeed })` and `settle()`. The intro has its own `window.__eclipse.intro`: `state`,
-    `played`, `reason`, `yieldedBy`, `timings`, `replay()`, `seek(ms)`, `release()` and `settle()`.
-- **URL:**
-  - `?tuner=0` means no panel and no stored tuning.
-  - `?preset=v2|a-like|recommended` starts from that preset without storing it.
-  - With `tuner=0`, a preset still applies, with no panel. The preset frames are captured this way.
+`?live-keys=1` arms four actions on Daily: `n` starts a new reading, `r` resets the readings, `u` moves the crowd level up, and `d` moves it down. Without the switch the page has no listener for these keys. The actions use `window.__eclipse.motion.step()`, `.reset()`, `.crowd(1)` and `.crowd(-1)`.
 
 ## Measurements
 
-These are measured in `capture.mjs` on light-only 1x captures, with the card content hidden. The values are
+These were measured from the captured evidence frames, with the card content hidden. The values are
 OKLab L relative to each card's own base (L 0.161). The 1px border is excluded. Peaks and fade heights use a
 5×5 blur.
 
@@ -221,7 +151,7 @@ and only while live.
 | --- | --- | --- | --- | --- |
 | Changed digits | a number changes (a new reading, a level change, a minute passing while delayed) | transform: the new digit rolls in, the old one rolls out | 280 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
 | A level bar | the crowd level changes | transform: scaleY of a red fill, from the bottom | 200 ms, then 50 ms between bars | same |
-| The chart's marker (form B) | the owner moves between stops (pointer or keys) | SVG geometry each frame, along the drawn path; the lit hairline and the tooltip follow (the smooth follow, Round 7 step 2) | settled in about 400 ms, whatever the distance | two lags in series, 90 ms and 15 ms (divided by the hover speed) |
+| The chart's marker (form B) | the owner moves between stops (pointer or keys) | SVG geometry each frame, along the drawn path; the lit hairline and the tooltip follow (the smooth follow, Round 7 step 2) | settled in about 400 ms, whatever the distance | two lags in series, 90 ms and 15 ms |
 | The line's tail | a new reading | SVG path of the last 15-30 minutes, end point, the tail's fine lines, the now clip | 280 ms | `cubic-bezier(0.4, 0, 0.2, 1)` |
 | Live pulse | while live only; none while delayed | a thin ring, opacity 0.4 to 0 and scale 0.34 to 1, from inside the end point to just past its halo | every 5 s, visible for the first 48% | `cubic-bezier(0.22, 0.61, 0.36, 1)` |
 | Rail | the logo is pressed | transforms: the end cap slides and the middle scales; the darker surface layers and the shadow fade (no text); each name is uncovered by a clip | 240 ms open, 200 ms close | `cubic-bezier(0.22, 1, 0.36, 1)` open, `cubic-bezier(0.4, 0, 0.2, 1)` close |
@@ -238,13 +168,13 @@ and only while live.
 | A new access record (Access's records card) | with the done line, in the same movement | transform and clip: the records below slide down, the new row is uncovered as the space opens and its words rise as one piece; the oldest rides down and is cut inside the card's bottom edge; a height change moves that edge | rows with the blocks (300-420 ms); words 300 ms from 150 ms | rows `cubic-bezier(0.3, 0.75, 0.2, 1)`; words `cubic-bezier(0.25, 1, 0.5, 1)` |
 | The press (13) | a control is held: pointer down, touch start, Space on a focused button | `scale`: the key seats 3% (a small square 6%) at once, with its light; released, its light (an inset layer of its shadow, no glyph) fades out and its travel settles back | none down; the light 120 ms back, the travel 240 ms back | the light `cubic-bezier(0.4, 0, 0.2, 1)`; the travel `cubic-bezier(0.3, 0.75, 0.2, 1)` |
 
-The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
+The intro's durations are fixed. Nothing else animates: the lights, the wash, the
 hover colours of the rail tiles and buttons, a press's light as it comes on (13; released, it fades, DECISIONS item 42),
 Daily's details chevron, and the jump to "View details" are all instant.
 
 **1. Load: the first-open intro only.**
 
-- Without an intro (720 px and below since DECISIONS item 25, reduced motion, `?motion=off`, the Motion switch off, or a return after the tab's intro flag)
+- Without an intro (720 px and below since DECISIONS item 25, reduced motion, `?motion=off`, or a return after the tab's intro flag)
   values arrive at once. The frame is complete at first paint; loading holds its slots. No font-loading hide is
   added; Chromium can hold paint for pending early-loaded fonts.
 - The first inline script sets language, direction and state; the second starts both weights of the CSS font faces. daily.js
@@ -357,7 +287,7 @@ Marker choice: `HISTORY.md`, "Motion", rule 6.
   - After a simulated new reading, it shows the new reading.
   - The screen-reader text never calls it an average: «7:42 م، آخر قراءة، 49 داخل الصالة، الازدحام مزدحم، المعتاد 45».
     While delayed it adds how old it is: «آخر قراءة قبل 13 دقيقة».
-  - The tuner's simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
+  - A simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
 - **Tooltip lane:** the box lives in a fixed band at the top of the plot.
   - **The lane:** its top is 2 px below the plot's top (`LANE.top`). Its height is measured with the width
     on hidden copies, including a probe of the tallest tooltip any state can show: the delayed latest reading,
@@ -391,7 +321,7 @@ Marker choice: `HISTORY.md`, "Motion", rule 6.
       corner, up to 3 px above the box's bounding rectangle.
     - It sits on the pixel column that holds the marker's x (up to 0.5 px from its centre).
   - **Motion:** the box's top never changes. Its x follows the ring: while the ring follows a route, the box is centred on
-    the ring itself, so it moves on the follow's curve with its timing and hover speed. Where the ring moves at once (across
+    the ring itself, so it moves on the follow's curve with its timing. Where the ring moves at once (across
     the missing span, into the future, onto or off the gap stop) the box eases sideways to its new place on the same curve;
     if that place is farther than half the box's width (less 4 px), the box moves with the ring, as it does for Home and
     End, and never trails across the plot. The ring stays under the box, at least 4 px inside its ends, at every frame. The
@@ -444,9 +374,7 @@ Marker choice: `HISTORY.md`, "Motion", rule 6.
   several stops is one continuous movement. Approaching a target, it never overshoots it.
 - **Text:** the tooltip's text changes at once when the stop changes, and then the tooltip travels. No glyph fades.
 - **Keys:** the arrow keys, PageUp/PageDown and Home/End use the same follow.
-- **Reduced motion, `?motion=off` or the Motion switch:** it jumps, as before.
-- **Hover speed:** the tuner's «سرعة انتقال العلامة» "Hover speed" divides both time constants (0.5× to 2×; 1× is the
-  clip's feel). See "Light tuner".
+- **Reduced motion or `?motion=off`:** it jumps, as before.
 - **Track changes and long jumps:**
   - **Where no drawn track joins two stops, the ring moves at once and the tooltip eases sideways.** This covers crossing the
     missing span, going from the latest reading into the future, and going onto or off the gap stop.
@@ -474,12 +402,9 @@ Marker choice: `HISTORY.md`, "Motion", rule 6.
 - The names no longer fade. A clip on each name keeps 12px inside the moving edge, on the same timing and curve, so
   the edge uncovers them.
 
-**9. Tuner.** See "Light tuner" above: the Motion group now has New reading, Reset readings, the crowd-level buttons,
-the Motion switch, (Round 7 step 2) the hover speed and (Round 7 step 3) the intro speed and "Replay intro".
+**9. Live-moment checks.** `?live-keys=1` arms `n`, `r`, `u` and `d` on Daily; without the switch no listener exists.
 
-**10. Motion off.** Motion is off with `prefers-reduced-motion: reduce`, with `?motion=off`, or with the tuner's
-Motion switch; every change is then instant, and there is no intro. The interaction motion (12) follows the same three
-gates on every page (the tuner's switch on Daily only, where the tuner is). See `HISTORY.md`, "Evidence", for the static
+**10. Motion off.** Motion is off with `prefers-reduced-motion: reduce` or `?motion=off`; every change is then instant, and there is no intro. The interaction motion (12) follows the same gates on every page. See `HISTORY.md`, "Evidence", for the static
 guard.
 
 **11. The first-open intro.** It is "the first-open intro" part of the motion section in `daily.js`.
@@ -497,8 +422,7 @@ on an initially ready page.
   - A tab opened by `window.open`, duplicated, or restored by Chrome may inherit storage and skip the intro;
     this remains the accepted session-storage limit.
   - If session storage is unavailable, there is no intro (fail safe).
-  - There is none with reduced motion, `?motion=off` or the tuner's Motion switch off (`?tuner=0` ignores the stored
-    switch, as before).
+  - There is none with reduced motion or `?motion=off`.
   - A tab opened in the background keeps its intro waiting until the tab is first shown.
 - **What is still:** every surface (the glass cards and their lights when shown, the wash, the rail), labels,
   units, times, reference values, level chips and the chart's frame. When readings are already available they are
@@ -557,8 +481,7 @@ on an initially ready page.
     waits until it is first shown.
   - When the fonts arrive in time, their final geometry paints before the intro; there is no header-fill page drop.
   - Each frame sets a few attributes; the arc lengths come from the page's own path tables.
-- **Tuner:** intro speed (0.5× to 2×) divides every duration; "Replay intro" replays a ready page with a reading.
-  See "Light tuner" for the motion gates and no-op states.
+
 
 **12. Interaction motion (DECISIONS item 36, 2026-10-05).** One shared file, `motion.js` (`window.EclipseMotion`),
 that Daily, Reports, Activity log, Access and the component sheet load before their own script; the screens still to
@@ -612,7 +535,7 @@ stroke, as the intro draws the line). Timings are in the table above.
   the synthetic answer arrived). Working never moves after its roll: it is no spinner (the skeleton never moves either,
   MOT-13). A progress line, once shown, stays at least 400 ms, and a file built in less than 300 ms shows none, so the
   dialog never grows and shrinks again at once.
-- **Off:** reduced motion, `?motion=off` and Daily's tuner switch (`EclipseMotion.setGate`) make every change instant,
+- **Off:** reduced motion and `?motion=off` make every change instant,
   ending where the movement would; nothing `motion.js` adds stays at rest.
 - **For production** (React, Tailwind, shadcn on Base UI): the dialog's unfold and fold, the sheet, the popovers and
   the scrim are CSS transitions on `clip-path`, `transform` and `opacity` from `data-starting-style` and to
@@ -671,9 +594,9 @@ A control's own `box-shadow` lists the inset layer using `--press-light` last; r
 - **Nothing else moves:** transforms and paint only, so no neighbour shifts; no glyph changes opacity; the lights never
   react to a press.
 - **Not pressed:** a disabled or Working control (where it says why it is off, that explanation is the response); the
-  charts' plots, whose readout appears under the finger; the light tuner. The browser's own tap flash is removed only on
+  charts' plots, whose readout appears under the finger. The browser's own tap flash is removed only on
   the controls the press replaces it on.
-- **Reduced motion, `?motion=off`, Daily's Motion switch:** the light alone, nothing moves, and released it goes at
+- **Reduced motion or `?motion=off`:** the light alone, nothing moves, and released it goes at
   once (MOT-11).
 - **Forced colours:** shadows are removed there, so a held key turns over into the system's button colours (ButtonText
   ground, ButtonFace words), unlike a chosen one (Highlight) and a focused one (its ring), and turns back at once; the
@@ -692,12 +615,7 @@ A control's own `box-shadow` lists the inset layer using `--press-light` last; r
 ## Open and capture
 
 Open `index.html` directly or through an HTTP preview. Fonts load from `fonts/` in either case; the inline script starts
-the CSS faces for both first-screen subsets, and text shares those fetches on HTTP and file pages. To capture, run this
-from PowerShell at the worktree root:
-
-```
-node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir]
-```
+the CSS faces for both first-screen subsets, and text shares those fetches on HTTP and file pages.
 
 The interaction motion (Motion, 12) has its own capture, which writes each moment's real-time video, filmstrip and
 reduced-motion comparison into a folder outside the repository and exits 1 on a failed check (its header lists them):
@@ -708,10 +626,8 @@ node design-research/owner-composition-exploration-r04/directions/eclipse/motion
 
 It serves the folder on `127.0.0.1:3176`.
 
-`capture.mjs` serves the folder on `127.0.0.1:3173` and uses a fresh Playwright chromium context per frame. Frames are at
-deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "reduce", and the motion part uses
-"no-preference". It writes the frames described in `HISTORY.md`, "Evidence", and `capture-log.json` into `outDir`
-(default `evidence/`), and takes about five minutes. It exits with code 1 if any check below fails.
+Current result and base frames come from the `verify-fitway` CLI. The historical still-frame evidence remains in
+`HISTORY.md` and `evidence/`.
 
 - **The intro:** every fresh context is a new tab, so with motion on its first open plays the intro.
   `open()` waits for the intro to end, so every older check starts from the still page, as before.
@@ -720,7 +636,7 @@ deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "re
     secondary tab. All console message types and page errors are recorded. A repeated-fetch control recorded
     one duplicate per navigation and two over a reload; the ordinary capture requires no duplicates.
   - Capture uses no-store HTTP, still reduced motion and full-motion intro checks, AR/EN at 1440x900, and
-    live 1280x800 overflow checks. Its file checks cover the tuner and motion. The four-size, three-state,
+    live 1280x800 overflow checks. Its file checks cover motion. The four-size, three-state,
     header, reload and file font matrices are separate probes; capture does not check that complete matrix.
   - The slow-font check holds each local woff2 response for 50 or 600 ms; the local stylesheet is not held.
     Its log requires both first-screen font URLs, no external request, and at least two
@@ -765,14 +681,8 @@ deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "re
 The log records:
 
 - **Still frames:** fonts, overflow, spill, errors, Western digits, en dashes in Arabic, and the line checks, plus the
-  1280×800 overflow checks and the light measurements per preset.
+  1280×800 overflow checks and the light measurements.
 - **Calibration:** light-study A, rendered read-only from `file://`.
-- **The tuner from `file://`:**
-  - keyboard, presets, drag, copy (both paths), persistence, `?tuner=0` and reset;
-  - the Motion group: no obsolete controls, New reading, the crowd buttons, the switch persisting in its own key, and
-    (Round 7 step 3) the intro speed and "Replay intro", disabled with reduced motion;
-  - (in `marker`) the hover speed: its row, its storage with the switch, a reload, and `?tuner=0`;
-  - a crowd change with motion on: the number rolls, the bars change, no light moves and no glyph fades.
 - **`motion`:**
   - **Static guard:** `identity.staticFrames` and `identity.motionOffFrames`. The frames that change by design are
     compared with this run's reduced-motion frame. Since the lane round these are 17 frames, every one that shows the plot
@@ -795,9 +705,7 @@ The log records:
       (`yieldedBy: "fonts late"`), the answers are in view within 250 ms of the first paint, and once the fonts are in
       the DOM equals the `?motion=off` DOM and the page is the still frame. Held 50 ms, the intro plays and completes.
     - `whenItPlays`: a new tab plays it; a reload, the language link in the same tab, reduced motion, `?motion=off` and a
-      new tab with the Motion switch off do not; a second tab does; `?tuner=0` ignores the stored switch. "Replay intro"
-      plays it at 1×, 0.5× and 2× (measured against 1171, 2342 and 586 ms) and ends at the still frame; the speed is
-      stored, kept on a reload and ignored with `?tuner=0`.
+      new tab with motion off does not; a second tab does.
     - `yields`: a hover, keys, the rail, a tap, a new reading and a resize, each at 100 and 400 ms into it. It settles at
       once; the hover, tap and keys select their stop with the marker on the line; the rail settles at the still
       rail-open frame; the reading is not lost (7:43 PM, Entries 333, the canonical DOM); the resize equals a fresh
@@ -827,7 +735,7 @@ The log records:
       not below 0). They replace the side and the number's start against the hairline of the floating placement. The other
       snapshots, the other viewports, the fonts and the motion are swept by the lane round's probes, outside this file.
   - **`marker`:** B's variants sheet; that form A is gone (no Marker group, `?marker=a` ignored, no
-    `setMarker`); and the hover speed.
+    `setMarker`).
   - **`follow`** (AR and EN): the follow's own curve against the clip's figures (within 0.07); the
     marker held at 33, 66, 100, 200 and 400 ms after a new target stays on the line, the usual line or straight above
     the peak on the drop, with nothing above the point, and it is not a straight hop. Across the gap and into the
@@ -947,12 +855,12 @@ grid from 1280 px, one day at a time below, and the day table from 721 px or the
 node design-research/owner-composition-exploration-r04/directions/eclipse/reports-capture.mjs <outDir> [--port=3176]
 ```
 
-It serves this folder on `127.0.0.1:3176` (never 3173, which is `capture.mjs`'s, or 3174), renders the Reports frames in
+It serves this folder on `127.0.0.1:3176` (never 3173 or 3174), renders the Reports frames in
 fresh contexts with reduced motion, and writes `frames/`, `sheets/` and `reports-log.json` into `outDir`, which must be
 outside the repository. It exits 1 on a console message or page error, a font file fetched twice in one load, an
 off-origin request, a horizontal page scroll, a layout shift after the first paint (input-driven shifts excluded), a
 clipped or spilling element, a day table wider than its card on a phone, or a dialog panel outside the viewport.
-`capture.mjs` is unchanged and still covers the Daily page only.
+This capture covers Reports only.
 
 ## Decisions 21–24 and fix-1
 
@@ -976,7 +884,7 @@ Built for the user to try (DECISIONS item 20, the user's picks of 2026-10-03), a
 ### After the trial (DECISIONS item 25, 2026-10-03)
 
 - **Both edges (decision 26, 2026-10-04).** When a hold or a tap starts while any part of the plot (the band is its top) is above the screen or under the bottom bar, the page slides down or up once, 420 ms with the live tail's ease, until the plot fits between 16 px from the top and 16 px above the bar (FOC-7's bottom clearance). The finger does not move the page, and the selected stop stays unchanged across the slide. Reduced motion: instant. Nothing slides when both edges are clear.
-- **No intro on the phone.** At 720 px and below the page is complete at first paint; the tab's first open is spent all the same. A window brought across 720 px settles a waiting or playing intro at once and never starts one; the tuner's replay does nothing there. From 721 px the intro is unchanged; a live change still rolls.
+- **No intro on the phone.** At 720 px and below the page is complete at first paint; the tab's first open is spent all the same. A window brought across 720 px settles a waiting or playing intro at once and never starts one;  From 721 px the intro is unchanged; a live change still rolls.
 - **The first reported movement (decision 26).** Touchstart is left uncancelled: the browser owns swipes, flicks and pinches on the plot, as on the cards. There is no page pan or fling. Chromium holds back touchmove within about 15 px; after a still hold, each animation frame advances one stop toward the latest reported finger position, in either direction, and continues after movement stops. It never skips a stop or passes the current target. Decision 29 accepts this catch-up as built: after a fast full-width sweep at 60 Hz the reading may keep moving for about 0.4 s; only held moves and reading taps are cancelled. The hidden desktop tooltip is fixed outside document overflow on a phone: its transient width cannot expand the mobile viewport and clamp the page’s scroll during the hold. The one initial visibility slide remains the exception to keeping the page still.
 - **Where a finger reads.** From the scale's highest mark down (the plot's data). A touch in the band's lane above it is the page's: it scrolls natively, and a tap there reads nothing, so the finger always starts at least 28 px under the band's lowest line and never covers the reading.
 - **The buttons.** Tab goes from the plot to previous, next, then close: along the lower row in reading order, then up to close, which stands above next (the look is unchanged; the order was close, previous, next, a diagonal jump back).

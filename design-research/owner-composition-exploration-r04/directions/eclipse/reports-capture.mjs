@@ -238,7 +238,7 @@ try {
   }
   /* ---- the Daily page: its rail now links to Reports (nothing else changed) */
   for (const lang of LANGS) {
-    const o = await open(`index.html?lang=${lang}&tuner=0`);
+    const o = await open(`index.html?lang=${lang}`);
     const link = await o.page.evaluate(() => document.querySelector("#reports-link").getAttribute("href"));
     await o.page.click("#brand");
     await o.page.mouse.move(720, 40);

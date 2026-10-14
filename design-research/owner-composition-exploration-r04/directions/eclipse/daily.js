@@ -246,7 +246,7 @@
     return { occ, ent };
   }
   // The whole synthetic day is simulated up front; readings after "now" are only revealed one minute at a time by
-  // the tuner's "New reading" (motion section), so a simulated live update never invents a point.
+  // the key-driven live moments (motion section), so a simulated live update never invents a point.
   const today = simulateDay(SEED, { am: 22, amAt: 82, mid: 8, pm: 53, pmAt: 752 });
   // The last 4 Wednesdays (16, 9, 2 Sep and 26 Aug). Complete days.
   const PAST_WED = [
@@ -449,39 +449,16 @@
   };
 
   /* ------------------------------------------------------------ motion settings
-   * Motion is on unless the system asks for reduced motion, the URL says ?motion=off, or the tuner's stored
-   * choice turned it off (stored choices are ignored with ?tuner=0). Nothing waits for it: the page is complete at
-   * first paint either way. */
+   * Motion is on unless the system asks for reduced motion or the URL says ?motion=off. Nothing waits for it: the
+   * page is complete at first paint either way. */
   const params = new URLSearchParams(location.search);
   const URL_OFF = params.get("motion") === "off";
-  const TUNER_OFF = params.get("tuner") === "0";
-  // The tuner's Motion group keeps three values in this key: the Motion switch; the hover speed (Round 7 step 2), a
-  // multiplier on the chart marker's follow (1 is the reference clip's feel; 2 settles twice as fast); and the intro
-  // speed (Round 7 step 3), a multiplier on the first-open intro (1 is the designed length; 2 plays it twice as fast).
-  const MOTION_STORE = "fitway.eclipse.v3.motion";
-  const MOTION_DEFAULTS = { motion: true, hoverSpeed: 1, introSpeed: 1 };
-  const HOVER_SPEED = { min: 0.5, max: 2 };
-  const clampSpeed = (v) => Math.min(HOVER_SPEED.max, Math.max(HOVER_SPEED.min, v));
-  const INTRO_SPEED = { min: 0.5, max: 2 };
-  const clampIntroSpeed = (v) => Math.min(INTRO_SPEED.max, Math.max(INTRO_SPEED.min, v));
+  const KEY_MOMENTS = params.get("live-keys") === "1";
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
-  let opts = (() => {
-    const o = { ...MOTION_DEFAULTS };
-    if (TUNER_OFF) return o;
-    try {
-      const raw = JSON.parse(localStorage.getItem(MOTION_STORE));
-      if (raw && typeof raw.motion === "boolean") o.motion = raw.motion;
-      if (raw && Number.isFinite(raw.hoverSpeed)) o.hoverSpeed = clampSpeed(raw.hoverSpeed);
-      if (raw && Number.isFinite(raw.introSpeed)) o.introSpeed = clampIntroSpeed(raw.introSpeed);
-    } catch (e) { /* storage unavailable: defaults */ }
-    return o;
-  })();
-  const motionOn = () => opts.motion && !URL_OFF && !mqReduce.matches;
+  const motionOn = () => !URL_OFF && !mqReduce.matches;
   root.dataset.motion = motionOn() ? "on" : "off";
-  // The interaction motion every Owner page shares (motion.js: the status's details, the phone's menu, a label) follows
-  // the tuner's Motion switch too.
+  // The interaction motion every Owner page shares (motion.js: the status's details, the phone's menu, a label).
   const Motion = window.EclipseMotion;
-  Motion.setGate(() => opts.motion);
 
   /* ---------------------------------------------------------------- shell */
   const DAILY_STATUS = {
@@ -518,8 +495,8 @@
   const cmpChip = (c) => (c === "busier" || c === "quieter"
     ? `<span class="cmp cmp-${c}">${c === "busier" ? ICON.up : c === "quieter" ? ICON.down : ICON.same}${L.cmp[c]}</span>`
     : "");
-  // The tuner can simulate a crowd-level change on the Inside now card (a value across the nearest level boundary);
-  // null means the card shows the latest reading. A new reading or "Reset readings" clears it.
+  // A key-driven crowd change can show a value across the nearest level boundary; null means the card shows the
+  // latest reading. A new reading or reset clears it.
   let crowdShown = null;
   const shownNow = () => (crowdShown == null ? occ[M.last] : crowdShown);
   const cardNow = $("#card-now"), chartCard = $("section.chart");
@@ -1805,7 +1782,7 @@
    * the changed digits roll, level bars fill or empty, the line's tail extends) or when the owner acts (the chart's
    * marker follows its stop along the curve, the rail opens). No glyph ever changes opacity: numbers roll inside a
    * clip, words swap at once, and the tooltip appears, changes and leaves at once (then travels with the marker). With prefers-reduced-motion,
-   * ?motion=off or the tuner's Motion switch, every change is instant. At rest no inline style, attribute or extra
+   * ?motion=off, every change is instant. At rest no inline style, attribute or extra
    * element from this section remains (the live pulse is the one exception, and only while live). */
   const EASE = {
     roll: "cubic-bezier(0.25, 1, 0.5, 1)",       // digits: decisive start, soft landing (quart out)
@@ -2002,14 +1979,13 @@
    *     the tooltip, which is then more than half its width from its new place: it moves with the marker rather than
    *     trailing across the plot. A sweep of the pointer never reaches this, because the marker trails the pointer by
    *     far less.
-   *   The hover speed (tuner) divides both time constants. Positions are exact functions of the time since the last
-   *   target, so frame rate never changes the path. */
+   *   Positions are exact functions of the time since the last target, so frame rate never changes the path. */
   const FOLLOW = { tau1: 90, tau2: 15, jumpMinutes: 360, ext: 160, settlePx: 0.1, settleV: 0.003 };
   const follow = { raf: 0, route: null, stop: null, t0: 0, e0: 0, v0: 0, tip: null, hold: null, snap: null, tLast: 0, at: null, settle: false };
   let tipVel = { x: 0, t: 0 };
   const nowMs = () => (follow.hold != null ? follow.hold : performance.now());
   const displayedTipVelocity = () => nowMs() - tipVel.t < 50 ? { x: tipVel.x } : { x: 0 };
-  const taus = () => { const k = opts.hoverSpeed || 1; return [FOLLOW.tau1 / k, FOLLOW.tau2 / k]; };
+  const taus = () => [FOLLOW.tau1, FOLLOW.tau2];
   // The follow's response to a step, from error e0 and velocity v0 (px, px/ms), after dt ms: exact, so any frame rate
   // lands on the same path.
   function spring(e0, v0, dt) {
@@ -2183,13 +2159,6 @@
     if (follow.snap) { const k = follow.snap; Object.assign(follow, { route: k.route, t0: k.t0, e0: k.e0, v0: k.v0, tip: k.tip }); follow.snap = null; }
     loopFollow();
   }
-  // A new hover speed takes effect from now, from where the marker and tooltip are.
-  function rebaseFollow() {
-    const now = nowMs();
-    if (follow.route) { const s = followState(now); follow.t0 = now; follow.e0 = s.e; follow.v0 = s.v; }
-    if (follow.tip) { const o = tipState(now); follow.tip = { t0: now, ox: o.x, vx: o.vx }; }
-  }
-
   /* ---- live: the pulse on the line's end point (live state only; never while delayed). Calmer than Round 5: one
    * thin ring every 5 s, from inside the end point to just past its halo, at 40% at most. */
   let ping = null;
@@ -2218,7 +2187,7 @@
     finishLive();
     carryFollowIntoReading();
     const from = M;
-    if (from.nowM >= DAY - 1 || phase !== "ready" || from.last < 0) return null; // the tuner's reading: a day with readings only
+    if (from.nowM >= DAY - 1 || phase !== "ready" || from.last < 0) return null; // a reading change needs a day with readings
     const reading = STATE !== "delayed"; // delayed: the minute passes and no reading arrives
     const to = compute(reading ? from.last + 1 : from.last, from.nowM + 1);
     M = to;
@@ -2325,7 +2294,7 @@
     if (!details.hidden) buildDetails();
     render();
   }
-  // Tuner: a crowd-level change on the Inside now card, across the nearest level boundary by the smallest step
+  // A crowd-level change on the Inside now card, across the nearest level boundary by the smallest step
   // (Busy 49 goes down to Moderate 48, or up to Packed 69). Live only: a delayed card never moves.
   function crowdStep(dir) {
     if (STATE === "delayed" || phase !== "ready" || M.last < 0) return null;
@@ -2344,8 +2313,8 @@
    * When: only on the first open of the page in a browser tab. A flag in sessionStorage (interface state, never visitor
    *   data) marks the tab as having opened the page, so F5, a reload, the language link or coming back in the same tab
    *   never play it; a new tab or a new browser session starts with empty session storage and plays it. If storage is
-   *   unavailable there is no intro (fail safe). There is none with reduced motion, ?motion=off or the tuner's Motion
-   *   switch off, and the flag is still set then: the intro belongs to the tab's first open only.
+   *   unavailable there is no intro (fail safe). There is none with reduced motion or ?motion=off, and the flag is
+   *   still set then: the intro belongs to the tab's first open only.
    * What is still: every surface (the cards and their lights, the wash, the rail), every label, unit, time of day and
    *   reference value (usual, average), the chart's grid, axes and legend, and the usual Wednesday line are present from
    *   the first paint and never move.
@@ -2359,8 +2328,8 @@
    *      missing span stays a gap throughout: each part of the line is its own path and is never joined.
    *   3. When the line arrives, the end point swells out of the line's tip (live; while delayed the grey point simply
    *      appears), and the peak ring swells into place with its dotted drop and its label (257 ms). The pulse starts then.
-   *   About 1171 ms in all at 1× (the tuner's intro speed divides every duration). Transform, clip and draw only: no glyph
-   *   changes opacity, no element's box changes, and nothing is announced (the live region is untouched).
+   *   About 1171 ms in all. Transform, clip and draw only: no glyph changes opacity, no element's box changes, and
+   *   nothing is announced (the live region is untouched).
    * When it starts: once the page's fonts are loaded (no font swaps mid-intro) and the tab is visible. Until then the
    *   numbers wait out of sight and the line is not drawn; if the fonts are not in within 200 ms of the first paint
    *   (user decision, 2026-09-26; it replaces a 1 s cap), there is no intro: the still page shows at once, its numbers
@@ -2380,7 +2349,7 @@
   const INTRO_HIDE = ";clip-path:inset(50%)";
   const SVGNS = "http://www.w3.org/2000/svg";
   const intro = { state: "off", firstOpen: false, played: false, count: 0, reason: "", yieldedBy: null, nums: [], run: null, tagStyle: null, fontWaitMs: null, startedAt: null, endedAt: null };
-  const introTotal = (k = opts.introSpeed || 1) => (Math.max(INTRO_T.roll, INTRO_T.line) + INTRO_T.mark) / k;
+  const introTotal = () => Math.max(INTRO_T.roll, INTRO_T.line) + INTRO_T.mark;
   function introDecide() {
     let first = false;
     try {
@@ -2466,8 +2435,7 @@
   function introStart() {
     if (!geo) { endIntro("no chart"); return; }
     if (mqPhone.matches) { endIntro("phone"); return; } // a window brought to 720 px or below before the intro began
-    const k = opts.introSpeed || 1;
-    const d = { roll: INTRO_T.roll / k, line: INTRO_T.line / k, mark: INTRO_T.mark / k };
+    const d = { roll: INTRO_T.roll, line: INTRO_T.line, mark: INTRO_T.mark };
     intro.state = "running";
     intro.played = true;
     intro.count++;
@@ -2600,18 +2568,6 @@
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") endIntro("hidden"); });
   // A window resized across 720 px never starts an intro, and one that plays or waits settles at once (decision 25).
   mqPhone.addEventListener("change", () => { if (mqPhone.matches) endIntro("phone"); });
-  // Tuner: replay the intro on the page as it is now (the current reading). Not while motion is off.
-  function replayIntro() {
-    if (!motionOn() || phase !== "ready" || M.last < 0) return false; // nothing to reveal without a reading
-    if (mqPhone.matches) return false; // no intro at 720 px and below (decision 25)
-    settleAll();
-    clearSelection();
-    stopPulse();
-    introPark();
-    render(); // the chart's start state
-    introStart();
-    return true;
-  }
   // Held frames: every part of the intro held at `ms` after its start (it can be held again at another time).
   function seekIntro(ms) {
     const run = intro.run;
@@ -2632,20 +2588,15 @@
     return true;
   }
 
-  /* ---- switching motion on and off at runtime (tuner) */
+  /* ---- switching motion on and off when the system preference changes */
   function settleAll() {
     endIntro("settle");
     finishLive(); stopFollow(); frame.finishRail();
     [...rolls.keys()].forEach(finishRoll);
     [...feet.keys()].forEach(finishFoot);
   }
-  function setOptions(next, persist = true) {
+  function syncMotion() {
     const was = motionOn();
-    if (Number.isFinite(next.hoverSpeed)) { rebaseFollow(); opts.hoverSpeed = clampSpeed(next.hoverSpeed); }
-    // A new intro speed applies to the next intro (a replay, or the next first open), never to one that is playing.
-    if (Number.isFinite(next.introSpeed)) opts.introSpeed = clampIntroSpeed(next.introSpeed);
-    if (typeof next.motion === "boolean") opts.motion = next.motion;
-    if (persist && !TUNER_OFF) { try { localStorage.setItem(MOTION_STORE, JSON.stringify(opts)); } catch (e) { /* storage unavailable */ } }
     const on = motionOn();
     root.dataset.motion = on ? "on" : "off";
     if (was && !on) {
@@ -2655,7 +2606,7 @@
     }
     if (on && !was) startPulse();
   }
-  mqReduce.addEventListener("change", () => setOptions({}, false));
+  mqReduce.addEventListener("change", syncMotion);
 
   /* ------------------------------------------------------------ lifecycle
    * Rendered at once. Without an intro nothing is hidden while the fonts load. On a tab's first open (the intro), the
@@ -2810,6 +2761,7 @@
     lang: LANG,
     state: STATE,
     page: PAGE, // the URL's state: loading and error arrive into live
+    get liveKeys() { return KEY_MOMENTS; },
     get phase() { return phase; },
     // The first payload (step 3, second part), for the probes: its timeline, what happened when, and what was announced.
     load: {
@@ -2862,12 +2814,10 @@
       releaseFollow,
       // The follow's response to one step from rest, as fractions of the distance at the given times (ms).
       response: (times = [33, 66, 100, 133, 200, 266, 400]) => times.map((t) => ({ ms: t, fraction: Math.round((1 - spring(1, 0, t).e) * 1000) / 1000 })),
-      get timings() { const [a, b] = taus(); return { tau1: a, tau2: b, hoverSpeed: opts.hoverSpeed, jumpMinutes: FOLLOW.jumpMinutes, settlePx: FOLLOW.settlePx, fold: FOLD, magnet: MAGNET }; },
+      get timings() { const [a, b] = taus(); return { tau1: a, tau2: b, jumpMinutes: FOLLOW.jumpMinutes, settlePx: FOLLOW.settlePx, fold: FOLD, magnet: MAGNET }; },
     },
     motion: {
       get on() { return motionOn(); },
-      get options() { return { ...opts }; },
-      defaults: { ...MOTION_DEFAULTS },
       get urlOff() { return URL_OFF; },
       get systemReduced() { return mqReduce.matches; },
       get liveActive() { return Boolean(liveRun.clock); },
@@ -2875,33 +2825,32 @@
       get latest() { return M.last >= 0 ? fmtTime(M.last) : ""; },
       get atStart() { return M.last === START.last && M.nowM === START.nowM && crowdShown == null; },
       get canCrowd() { return STATE !== "delayed" && phase === "ready" && M.last >= 0; },
-      // The tuner's "New reading" and "Reset readings": only on a day with readings (step 3, second part).
+      // New reading and reset: only on a day with readings (step 3, second part).
       get canStep() { return phase === "ready" && M.last >= 0; },
       timings: T,
       easings: EASE,
       // Every motion, as built above (for the capture log and README.md, "Motion" / "What moves, and when").
       spec: () => [
         { motion: "Load", animates: "nothing but the first-open intro: the surfaces, lights, labels, grid, axes and usual line are complete at first paint (no stagger, no rise, no light entrance)", note: "a reload or a return in the same tab has no intro; only the live pulse runs at rest, and only while live" },
-        { motion: "First-open intro (Round 7 step 3): the answers", animates: "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still", delayMs: 0, durationMs: INTRO_T.roll / (opts.introSpeed || 1), easing: EASE.roll, note: "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced" },
-        { motion: "First-open intro: the line", animates: "stroke-dasharray of today's line parts, drawn by minutes since open from opening to the latest reading (right to left in Arabic), and one clip uncovering the fine vertical lines to the same minute", delayMs: 0, durationMs: INTRO_T.line / (opts.introSpeed || 1), easing: EASE.introLine, note: "the missing span stays a gap throughout; the grid, axes and usual line are still from the first paint" },
-        { motion: "First-open intro: the end point and the peak", animates: "SVG transform scale: the live end point and halo from the line tip's size (0.34) to 1, the peak ring from the same 0.34 to 1; the stale end point, the peak's drop and its label appear at once when the line arrives", delayMs: INTRO_T.line / (opts.introSpeed || 1), durationMs: INTRO_T.mark / (opts.introSpeed || 1), easing: EASE.roll, note: `about ${Math.round(introTotal())} ms in all; it settles at once on any action, a new reading or a resize; the pulse starts when it ends` },
+        { motion: "First-open intro (Round 7 step 3): the answers", animates: "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still", delayMs: 0, durationMs: INTRO_T.roll, easing: EASE.roll, note: "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced" },
+        { motion: "First-open intro: the line", animates: "stroke-dasharray of today's line parts, drawn by minutes since open from opening to the latest reading (right to left in Arabic), and one clip uncovering the fine vertical lines to the same minute", delayMs: 0, durationMs: INTRO_T.line, easing: EASE.introLine, note: "the missing span stays a gap throughout; the grid, axes and usual line are still from the first paint" },
+        { motion: "First-open intro: the end point and the peak", animates: "SVG transform scale: the live end point and halo from the line tip's size (0.34) to 1, the peak ring from the same 0.34 to 1; the stale end point, the peak's drop and its label appear at once when the line arrives", delayMs: INTRO_T.line, durationMs: INTRO_T.mark, easing: EASE.roll, note: `about ${Math.round(introTotal())} ms in all; it settles at once on any action, a new reading or a resize; the pulse starts when it ends` },
         { motion: "Lights", animates: "nothing, ever", note: "no entrance, no pointer-follow, no crowd-dependent light" },
         { motion: "Numbers: digit roll", animates: "transform translateY of the changed digits only, by the height of the digits' ink box (the new digit from below when rising, from above when falling; the old one leaves the other way), clipped to that ink box; the slot's width eases from the old digit's width to the new one's (Readex Pro has no tabular figures)", delayMs: 0, durationMs: T.roll, easing: EASE.roll, note: "no opacity on any glyph; words swap at once; plain markup restored at the end" },
         { motion: "Crowd level: bars", animates: "transform scaleY (from the bottom) of a red fill in each bar that changes", delayMs: `0, +${T.barStagger} per further bar (lower bars first when rising, upper first when falling)`, durationMs: T.bar, easing: EASE.bar, note: "the level word swaps at once" },
-        { motion: "Chart: the marker follows its stop (Round 7 step 2)", animates: "SVG geometry each frame along the drawn path (the ring B and its lit hairline, moved in place); the tooltip, in the lane at the top of the plot, is centred on the ring and moves sideways only (its left), and its connector to the ring follows", delayMs: 0, durationMs: "about 400 ms to settle, whatever the distance", easing: `two first-order lags in series, tau ${FOLLOW.tau1} ms and ${FOLLOW.tau2} ms, divided by the hover speed (${opts.hoverSpeed})`, note: `no restart: a new target keeps the position and velocity; at once (the marker) across the missing span, into the future, onto or off the gap stop, or more than ${FOLLOW.jumpMinutes} minutes away; the tooltip then eases sideways into its new place, or moves with the marker if that is more than half its width away; its text changes at once and it appears and leaves at once` },
+        { motion: "Chart: the marker follows its stop (Round 7 step 2)", animates: "SVG geometry each frame along the drawn path (the ring B and its lit hairline, moved in place); the tooltip, in the lane at the top of the plot, is centred on the ring and moves sideways only (its left), and its connector to the ring follows", delayMs: 0, durationMs: "about 400 ms to settle, whatever the distance", easing: `two first-order lags in series, tau ${FOLLOW.tau1} ms and ${FOLLOW.tau2} ms`, note: `no restart: a new target keeps the position and velocity; at once (the marker) across the missing span, into the future, onto or off the gap stop, or more than ${FOLLOW.jumpMinutes} minutes away; the tooltip then eases sideways into its new place, or moves with the marker if that is more than half its width away; its text changes at once and it appears and leaves at once` },
         { motion: "Live: new reading, tail morph and extension", animates: "SVG path d of the last ~15-30 minutes only, end point cx/cy, the tail's fine lines, the now clip", delayMs: 0, durationMs: T.morph, easing: EASE.morph },
         { motion: "Live: end-point pulse (live state only; none while delayed)", animates: "a 1px ring: opacity 0.4 to 0, transform scale 0.34 to 1 (9.5px to 28px)", delayMs: 1000, durationMs: T.pulse, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", note: "infinite; the ring is visible for the first 48% of each 5 s cycle" },
         { motion: "Rail opens", animates: "end cap translateX (0 to 156px, inline-end), middle scaleX (0 to 1) from the inline-start, darker surface layers and shadow opacity 0 to 1 (no text); each name uncovered by a clip-path that follows the end cap", delayMs: 0, durationMs: T.railOpen, easing: EASE.rail, note: "the width switches at once and is never animated; names never fade" },
         { motion: "Rail closes", animates: "the same in reverse", delayMs: 0, durationMs: T.railClose, easing: EASE.railClose },
       ],
       settle: () => settleAll(),
-      set: (o) => setOptions(o),
       step: stepReading,
       seekLive,
       reset: resetReadings,
       crowd: crowdStep,
     },
-    // The first-open intro (Round 7 step 3), for the tuner and the capture checks.
+    // The first-open intro (Round 7 step 3), for the capture checks.
     intro: {
       get state() { return intro.state; },   // "off" (no intro on this open), "pending", "running" or "done"
       get firstOpen() { return intro.firstOpen; },
@@ -2912,14 +2861,26 @@
       get fontWaitMs() { return intro.fontWaitMs; },
       get startedAt() { return intro.startedAt; },
       get endedAt() { return intro.endedAt; },
-      get timings() { const k = opts.introSpeed || 1; return { speed: k, rollMs: INTRO_T.roll / k, lineMs: INTRO_T.line / k, markMs: INTRO_T.mark / k, totalMs: introTotal(k), fontCapMs: INTRO_T.fontCap, easings: { roll: EASE.roll, line: EASE.introLine, mark: EASE.roll } }; },
-      totalMs: (k) => introTotal(k),
-      replay: replayIntro,
+      get timings() { return { rollMs: INTRO_T.roll, lineMs: INTRO_T.line, markMs: INTRO_T.mark, totalMs: introTotal(), fontCapMs: INTRO_T.fontCap, easings: { roll: EASE.roll, line: EASE.introLine, mark: EASE.roll } }; },
+      totalMs: () => introTotal(),
       seek: seekIntro,
       release: releaseIntro,
       settle: () => endIntro("script"),
     },
   };
+  if (KEY_MOMENTS) {
+    addEventListener("keydown", (e) => {
+      if (e.defaultPrevented || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      let handled = true;
+      if (key === "n") window.__eclipse.motion.step();
+      else if (key === "r") window.__eclipse.motion.reset();
+      else if (key === "u") window.__eclipse.motion.crowd(1);
+      else if (key === "d") window.__eclipse.motion.crowd(-1);
+      else handled = false;
+      if (handled) e.preventDefault();
+    });
+  }
   if (intro.state === "pending") introWait().catch(() => endIntro("error"));
   // The other script's subset of Readex Pro is fetched up front too (the rail's language item is written in it), so
   // opening the rail never swaps a font mid-way; this changes no pixel.

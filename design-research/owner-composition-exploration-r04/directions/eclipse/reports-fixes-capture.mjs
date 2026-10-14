@@ -120,7 +120,7 @@ const MEASURE = () => {
 async function statusBoxes(width, lang) {
   const words = {};
   for (const st of ["live", "delayed", "closed", "unavailable", "error"]) {
-    const d = await open("build", `lang=${lang}&state=${st}&tuner=0`, { width, file: "index.html" });
+    const d = await open("build", `lang=${lang}&state=${st}`, { width, file: "index.html" });
     await d.page.waitForTimeout(400);
     words[st] = await d.page.evaluate(() => ({ cls: document.querySelector("#ops-btn").className, html: document.querySelector("#ops-btn-state").innerHTML }));
     await d.context.close();
@@ -389,12 +389,12 @@ try {
   }
   if (part("compare")) for (const width of [1440, 768, 390]) for (const lang of ["ar", "en"]) for (const st of ["live", "delayed", "nohistory", "loading", "closed", "unavailable", "error"]) {
     const k = `${width}-${lang}-${st}`;
-    log.daily[k] = await pair(`daily-${k}`, "index.html", `lang=${lang}&state=${st}&tuner=0`, width);
-    log.daily[`${k}-details`] = await pair(`daily-${k}-details`, "index.html", `lang=${lang}&state=${st}&tuner=0`, width, { pre: () => { const b = document.querySelector("#details-btn"); if (b && !b.disabled && !b.hidden && document.querySelector("#details").hidden) b.click(); } });
+    log.daily[k] = await pair(`daily-${k}`, "index.html", `lang=${lang}&state=${st}`, width);
+    log.daily[`${k}-details`] = await pair(`daily-${k}-details`, "index.html", `lang=${lang}&state=${st}`, width, { pre: () => { const b = document.querySelector("#details-btn"); if (b && !b.disabled && !b.hidden && document.querySelector("#details").hidden) b.click(); } });
     // The minute table scrolls inside its own region: its no-readings rows brought into view (the gap, and in Delayed the
     // span with no readings yet at its end).
-    for (const [tag, which] of [["gap-row", "first"], ["last-row", "last"]]) log.daily[`${k}-details-${tag}`] = await pair(`daily-${k}-details-${tag}`, "index.html", `lang=${lang}&state=${st}&tuner=0`, width, { pre: (w) => { const b = document.querySelector("#details-btn"); if (b && !b.disabled && !b.hidden && document.querySelector("#details").hidden) b.click(); const rows = document.querySelectorAll("#minutes tr.none"); const r = w === "first" ? rows[0] : rows[rows.length - 1]; const sc = document.querySelector("#minutes .scroller"); if (r && sc) sc.scrollTop = r.offsetTop - sc.clientHeight / 2; else if (sc) sc.scrollTop = w === "first" ? 0 : sc.scrollHeight; }, arg: which });
-    if (["live", "delayed"].includes(st)) log.daily[`${k}-gap-tooltip`] = await pair(`daily-${k}-gap-tooltip`, "index.html", `lang=${lang}&state=${st}&tuner=0`, width, { pre: () => window.__eclipse.chart.select("gap") });
+    for (const [tag, which] of [["gap-row", "first"], ["last-row", "last"]]) log.daily[`${k}-details-${tag}`] = await pair(`daily-${k}-details-${tag}`, "index.html", `lang=${lang}&state=${st}`, width, { pre: (w) => { const b = document.querySelector("#details-btn"); if (b && !b.disabled && !b.hidden && document.querySelector("#details").hidden) b.click(); const rows = document.querySelectorAll("#minutes tr.none"); const r = w === "first" ? rows[0] : rows[rows.length - 1]; const sc = document.querySelector("#minutes .scroller"); if (r && sc) sc.scrollTop = r.offsetTop - sc.clientHeight / 2; else if (sc) sc.scrollTop = w === "first" ? 0 : sc.scrollHeight; }, arg: which });
+    if (["live", "delayed"].includes(st)) log.daily[`${k}-gap-tooltip`] = await pair(`daily-${k}-gap-tooltip`, "index.html", `lang=${lang}&state=${st}`, width, { pre: () => window.__eclipse.chart.select("gap") });
   }
   for (const [k, v] of Object.entries(log.daily)) if (!v.inside) fail(`Daily ${k} differs from ff0e922 outside its phrases: ${JSON.stringify(v.regions)}`);
   if (part("compare")) for (const lang of ["ar", "en"]) for (const state of Object.keys(STATES)) {
@@ -421,7 +421,7 @@ async function evidence() {
   const gapItem = () => { const n = document.querySelector(".dl-note"); const li = n.closest("li").getBoundingClientRect(); return { x: li.left - 4, y: li.top + scrollY - 4, width: li.width + 8, height: li.height + 8 }; };
   await both("5a-no-readings-day-list-390-ar", { query: "lang=ar&range=7d", clip: gapItem }, "column");
   const minuteRow = () => { const tr = document.querySelector("#minutes tr.none"); tr.scrollIntoView({ block: "center" }); const t = tr.closest("table").getBoundingClientRect(), r = tr.getBoundingClientRect(); return { x: t.left, y: r.top + scrollY - 37, width: t.width, height: r.height + 74 }; };
-  await both("5b-no-readings-daily-390-ar", { query: "lang=ar&tuner=0", file: "index.html", clip: minuteRow, pre: () => document.querySelector("#details-btn").click() }, "column");
+  await both("5b-no-readings-daily-390-ar", { query: "lang=ar", file: "index.html", clip: minuteRow, pre: () => document.querySelector("#details-btn").click() }, "column");
   for (const lang of ["ar", "en"]) await both(`6-no-readings-320-${lang}`, { query: `lang=${lang}&range=7d`, width: 320, clip: gapItem }, "column");
   // Where the sentence does wrap: the day table's notes column at 768 (the row of Thursday 17 September).
   const noteRow = () => { const tr = document.querySelector("#days-table tr.has-note"); const r = tr.getBoundingClientRect(); return { x: r.left, y: r.top + scrollY, width: r.width, height: r.height }; };

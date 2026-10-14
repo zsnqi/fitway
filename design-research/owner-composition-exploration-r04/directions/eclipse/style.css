@@ -2,7 +2,7 @@
  * Evolved from ../light-study (recipe A). Every light is owned by one element, clipped by it, and never fixed
  * to the viewport. v3: the card lights are a light behind the glass (--light) with a large dark disc in front of
  * it (--disc-mask, transparent inside, opaque outside), so the light shows only around the disc's edge. Every
- * light setting is a custom property on :root that the light tuner (tuner.js) can override live. */
+ * light setting is a custom property on :root. */
 :root {
   --page: #070707;
   --card: rgba(15, 14, 15, 0.94);
@@ -33,14 +33,13 @@
    * Grey noise centred on 50% so the overlay blend leaves the average untouched; it only shows where lit. */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 
-  /* ---- Light settings (v3). These are the Recommended values: since 2026-09-25 they are the user's own tuning,
-   * copied from the tuner's "Copy values" (the designer's first Recommended values are in HISTORY.md, "Light model (v3)"). The
-   * light tuner (tuner.js) reads them from here as its Recommended preset and overrides them live on <html>.
-   * Plain numbers, so they tune and copy cleanly; the lighting section turns them into geometry.
+  /* ---- Light settings (v3). These are the static values: since 2026-09-25 they are the user's own tuning.
+   * The designer's earlier values are in HISTORY.md, "Light model (v3)".
+   * Plain numbers; the lighting section turns them into geometry.
    * Inside now: a light behind the card, brightest at the inline-end bottom corner, and a large dark disc
    * in front of it. */
   --now-int: 0.7;          /* light intensity (alpha multiplier) */
-  --now-core: 229 25 53;   /* core colour, sRGB; the tuner only offers FITWAY reds (OKLCH hue 21-29) */
+  --now-core: 229 25 53;   /* core colour, sRGB (FITWAY red) */
   --now-disc-size: 77;     /* disc radius along the card, % of card width */
   --now-disc-aspect: 0.7;  /* disc height / width, in pixels */
   --now-disc-x: 67;        /* disc centre, % of card width from the lit side */
@@ -837,13 +836,6 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .hbadge.is-err { border-color: rgba(255, 107, 125, 0.5); }
 /* The figures region takes focus after a retry, quietly: a region never shows the ring (FOC-1 is for controls). */
 /* Retry assigns tabindex=-1; never a Tab stop. */
-/* ------------------------------------------------------------- light tuner
- * A working tool, not part of the design: neutral greys, a dashed toggle, no red. By default it sits above the
- * middle cards (452px in from the inline-start edge). The toggle and the panel move together as one unit: drag
- * the toggle or the panel's header anywhere (tuner.js keeps it inside the viewport and remembers the spot).
- * Always Arabic-first and right-to-left; the toggle stays on the page's inline-start side of the unit. */
-/* Motion group (Round 6): a simulated reading, a simulated crowd-level change, and the Motion switch; Round 7 step 2
- * adds the hover speed, a range row with a small "Default" button. */
 /* ------------------------------------------------------------------ motion
  * Round 6. The page is complete at first paint and the lights never move. daily.js moves only what the data changes
  * (digits, level bars, the line's tail) or what the owner acts on (the chart's marker, the rail), with the
@@ -939,8 +931,8 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
  *   Reduced motion, ?motion=off and Daily's Motion switch: the light alone, nothing moves, and it goes at once (MOT-11).
  *   Nothing else moves: transforms and paint only, so no neighbour shifts; no glyph changes opacity; the lights never
  *   react to a press.
- *   Not pressed: a disabled or Working control (where it says why it is off, that is the response); the charts' plots
- *   and the light tuner. Space presses a focused button natively; there is no script for keys. Safari on iPhone applies
+ *   Not pressed: a disabled or Working control (where it says why it is off, that is the response); the charts' plots.
+ *   Space presses a focused button natively; there is no script for keys. Safari on iPhone applies
  *   :active to a touch only when the page listens for touch: motion.js adds one passive touchstart listener.
  *   The browser's tap flash is removed only on the controls listed here, which this press replaces. */
 @property --press-light { syntax: "<color>"; inherits: false; initial-value: transparent; }

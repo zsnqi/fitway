@@ -95,7 +95,7 @@ try {
   browser = await launch();
   const { context, page, heldLog } = await newPage(browser, { motion: false, fontCache: false, fontDelayMs: holdBySubset({ [subset]: 30 }) });
   try {
-    await page.goto(`${ORIGIN}/index.html?lang=ar&tuner=0`, { waitUntil: "load" });
+    await page.goto(`${ORIGIN}/index.html?lang=ar`, { waitUntil: "load" });
     await page.evaluate(() => document.fonts.ready);
     await introSettled(page);
     assert.equal(holdProof(heldLog, { [subset]: 30 }).ok, true, JSON.stringify(heldLog));
@@ -104,7 +104,7 @@ try {
   let routeAccepted;
   const routeStarted = new Promise((done) => { routeAccepted = done; });
   const routeHeld = await newPage(browser, { motion: false, fontDelayMs: () => { routeAccepted(); return 60000; } });
-  const navigation = routeHeld.page.goto(`${ORIGIN}/index.html?lang=ar&tuner=0`).catch(() => null);
+  const navigation = routeHeld.page.goto(`${ORIGIN}/index.html?lang=ar`).catch(() => null);
   await routeStarted;
   const routeCloseAt = performance.now();
   await routeHeld.context.close();

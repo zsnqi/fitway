@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { inspectCss, checkFolder } from "./check-press-layer.mjs";
 import { fileURLToPath } from "node:url";
+import { test } from "vitest";
 
+function run() {
 const folder = fileURLToPath(new URL("../", import.meta.url));
 assert.deepEqual(checkFolder(folder), []);
 const source = readFileSync(new URL("../activity.css", import.meta.url), "utf8");
@@ -28,3 +30,6 @@ assert.equal(inspectCss('@import url("other.css"); .rbtn { box-shadow: none; }')
 assert.equal(inspectCss('@charset "UTF-8"; @layer base, screen; .rbtn { BOX-SHADOW: none; }').length, 1);
 assert.equal(inspectCss("/* .rbtn { box-shadow: red; } */\n@media (hover: hover) { .rbtn {\n box-shadow: none; } }", "nested.css")[0].startsWith("nested.css:3:"), true);
 console.log("PRESS-LAYER TEST PASS: folder, planted omission, subjects, layer order, comments and media");
+}
+if (process.env.VITEST) test("press layer keeps its light last and rejects the planted omission", run);
+else run();

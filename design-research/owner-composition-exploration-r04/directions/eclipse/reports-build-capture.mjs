@@ -138,7 +138,7 @@ async function measure(src, lang, state, width, { act = null, extra = "", key = 
 async function statusBoxes(width, lang) {
   const words = {};
   for (const st of ["live", "delayed", "closed", "unavailable", "error"]) {
-    const d = await open("build", `lang=${lang}&state=${st}&tuner=0`, { width, file: "index.html" });
+    const d = await open("build", `lang=${lang}&state=${st}`, { width, file: "index.html" });
     await d.page.waitForTimeout(400);
     words[st] = await d.page.evaluate(() => ({ cls: document.querySelector("#ops-btn").className, html: document.querySelector("#ops-btn-state").innerHTML }));
     await d.context.close();
@@ -365,7 +365,7 @@ try {
   for (const width of [1440, 768, 390]) for (const lang of ["ar", "en"]) for (const st of ["live", "delayed", "nohistory", "loading", "closed", "unavailable", "error"]) {
     const h = {};
     for (const src of ["before", "build"]) {
-      const o = await open(src, `lang=${lang}&state=${st}&tuner=0`, { width, file: "index.html" });
+      const o = await open(src, `lang=${lang}&state=${st}`, { width, file: "index.html" });
       await o.page.waitForTimeout(500);
       const H = await o.page.evaluate(() => document.documentElement.scrollHeight);
       await o.page.setViewportSize({ width, height: H });

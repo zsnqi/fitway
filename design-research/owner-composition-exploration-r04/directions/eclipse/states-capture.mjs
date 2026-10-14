@@ -36,7 +36,7 @@ const WIDE = [1440, 1024, 768, 721];
 const PAGES = {
   reports: { file: "reports.html", extra: "", ready: () => window.__reports?.ready === true,
     states: [["01", "live", ""], ["02", "loading", "loading"], ["03", "closed", "closed"], ["04", "delayed", "delayed"], ["05", "offline", "unavailable"], ["06", "pending", "pending"], ["07", "error", "error"]] },
-  daily: { file: "index.html", extra: "tuner=0", ready: () => window.__eclipse?.ready === true,
+  daily: { file: "index.html", extra: "", ready: () => window.__eclipse?.ready === true,
     states: [["01", "live", ""], ["02", "delayed", "delayed"], ["03", "nohistory", "nohistory"], ["04", "loading", "loading"], ["05", "closed", "closed"], ["06", "offline", "unavailable"], ["07", "error", "error"]] },
 };
 const log = { base: BASE || "file://", frames: {}, status: {}, shift: {}, alert: {}, crops: {}, failures: [] };

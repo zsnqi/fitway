@@ -219,7 +219,7 @@ export async function newPage(browser, { width = 1440, height = 900, scale = 1, 
   } catch (error) { await context.close(); throw error; }
 }
 export const urlOf = (variant = "", q = "", page = "index.html") => `${ORIGIN}/${variant ? `${encodeURIComponent(variant)}/` : ""}${page}${q ? `?${q}` : ""}`;
-export const Q = (lang, state = "live", extra = "tuner=0") => `lang=${lang}${state === "live" ? "" : `&state=${state}`}${extra ? `&${extra}` : ""}`;
+export const Q = (lang, state = "live", extra = "") => `lang=${lang}${state === "live" ? "" : `&state=${state}`}${extra ? `&${extra}` : ""}`;
 export const introSettled = (page, timeout = 15000) => page.waitForFunction(() => window.__eclipse?.intro && !["pending", "running"].includes(window.__eclipse.intro.state), null, { timeout });
 export const introRunning = (page, timeout = 15000) => page.waitForFunction(() => ["running", "done", "off"].includes(window.__eclipse?.intro?.state), null, { timeout });
 async function ready(page) {
@@ -238,7 +238,6 @@ export async function open(browser, { page: pg = "index.html", lang = "ar", widt
   if (!inside(E, resolve(E, pg))) throw new Error("Page escapes PROBE_ECLIPSE");
   const query = new URLSearchParams(q);
   query.set("lang", lang);
-  if (pg === "index.html") query.set("tuner", "0");
   const url = transport === "file" ? `${pathToFileURL(resolve(E, pg)).href}?${query}` : urlOf(variant, query.toString(), pg);
   const initScript = intro ? null : () => { try { sessionStorage.setItem("fitway.eclipse.v3.intro", "1"); } catch {} };
   return openReports(browser, url, { width, height, motion, scale: dpr, initScript });

@@ -243,7 +243,7 @@ try {
     const heads = [];
     for (const st of states) {
       const sq = st.includes("=") ? st : `state=${st}`;
-      const q = pg === "activity.html" ? `lang=${lang}&${sq}` : `${pg}?lang=${lang}&tuner=0&motion=off&${sq}`;
+      const q = pg === "activity.html" ? `lang=${lang}&${sq}` : `${pg}?lang=${lang}&motion=off&${sq}`;
       const name = `3-30-title-${tag}-${st.replace(/^(ops|state)=/, "")}-${w}-${lang}`;
       const o = await open(q, { width: w, height: 640, scale: 2, phone: true });
       if (st.endsWith("loading")) await o.page.waitForTimeout(450);
@@ -300,7 +300,7 @@ try {
     await flow("4-07-older", L, [["tap", async (p) => { await p.evaluate(() => document.querySelector(".ac-tail").scrollIntoView({ block: "center" })); await p.tap("#older"); await p.waitForTimeout(900); }], ["all-loaded-end", async (p) => { for (let k = 0; k < 4; k++) { const b = await p.$("#older"); if (!b) break; await b.scrollIntoViewIfNeeded(); await p.tap("#older"); await p.waitForTimeout(900); } await p.evaluate(() => document.querySelector(".ac-end").scrollIntoView({ block: "center" })); }]]);
     await flow("4-08-refresh", `${L}&refresh=hold`, [["tap-working", (p) => p.tap("#refresh")]]);
     // Reports' custom period, the same picker on the phone.
-    await flow("4-09-reports-period", `reports.html?lang=${lang}&tuner=0&motion=off`, [
+    await flow("4-09-reports-period", `reports.html?lang=${lang}&motion=off`, [
       ["tap-other", (p) => p.tap('.seg-b[data-range="custom"]')],
       ["tap-start", (p) => p.tap(day("2026-09-01"))],
       ["tap-end", (p) => p.tap(day("2026-09-14"))],
@@ -364,15 +364,15 @@ try {
     await pk("17-page-up-previous-month", `${L}&from=2026-09-16&to=2026-09-22`, [(p) => p.keyboard.press("PageUp")]);
     await pk("18-focus-ring-arrow", L, [(p) => p.keyboard.press("Shift+Tab"), (p) => p.keyboard.press("Shift+Tab")]);
     await pk("19-after-clear", `${L}&from=2026-09-16&to=2026-09-22`, [(p) => press(p, "#dates-clear", ph)]);
-    await pk("20-reports-period", `reports.html?${L}&tuner=0&motion=off`, [], "reports");
-    await pk("21-reports-start-picked", `reports.html?${L}&tuner=0&motion=off`, [tapDay("2026-09-07")], "reports");
-    await pk("22-reports-first-month", `reports.html?${L}&tuner=0&motion=off`, [step(-1)], "reports");
-    await pk("23-reports-short-history", `reports.html?${L}&tuner=0&motion=off&state=short&range=7d`, [], "reports");
+    await pk("20-reports-period", `reports.html?${L}&motion=off`, [], "reports");
+    await pk("21-reports-start-picked", `reports.html?${L}&motion=off`, [tapDay("2026-09-07")], "reports");
+    await pk("22-reports-first-month", `reports.html?${L}&motion=off`, [step(-1)], "reports");
+    await pk("23-reports-short-history", `reports.html?${L}&motion=off&state=short&range=7d`, [], "reports");
   }
 
   /* ---- the Daily and Reports pages: the rail's and the bar's Activity log item link here */
   if (want(6)) for (const lang of LANGS) for (const pg of ["index.html", "reports.html"]) {
-    const o = await open(`${pg}?lang=${lang}&tuner=0`);
+    const o = await open(`${pg}?lang=${lang}`);
     const hrefs = await o.page.evaluate(() => ({ rail: document.querySelector("#activity-link").getAttribute("href"), bar: document.querySelector("#tab-activity").getAttribute("href") }));
     await finish(`6-${pg === "index.html" ? "01-daily" : "02-reports"}-links-${lang}`, o, hrefs, { problems: false });
     if (!hrefs.rail.startsWith(`activity.html?lang=${lang}`) || !hrefs.bar.startsWith(`activity.html?lang=${lang}`)) log.failures.push(`${pg} ${lang}: the Activity log links are ${hrefs.rail} and ${hrefs.bar}`);

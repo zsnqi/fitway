@@ -11,8 +11,8 @@
  *   draw     a done mark draws its stroke, as the intro draws the line (MOT-10), and the words beside it rise into
  *            their line, as the intro's answers do.
  * No glyph ever changes opacity (MOT-1): only a scrim and a shadow fade. Nothing here plays on load. With
- * prefers-reduced-motion, ?motion=off or a page's own switch (Daily's tuner) every change is instant and ends exactly
- * where the movement would. Focus and announcements never wait for a movement: a dialog that closes is closed at once
+ * prefers-reduced-motion or ?motion=off every change is instant and ends exactly where the movement would. Focus and
+ * announcements never wait for a movement: a dialog that closes is closed at once
  * (its picture leaves as an inert copy), and a done line's words are in place for assistive technology from the start.
  * At rest nothing this file added remains: no inline style, attribute or element.
  *

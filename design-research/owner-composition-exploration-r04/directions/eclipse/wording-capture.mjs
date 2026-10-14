@@ -62,7 +62,7 @@ async function open(src, query, { width = 390, height = SIZES[width] || 844, sca
   return { context, page, errors };
 }
 const rq = (lang, state) => [`lang=${lang}`, R_STATES[state]].filter(Boolean).join("&");
-const dq = (lang, state) => `lang=${lang}&state=${state}&tuner=0`;
+const dq = (lang, state) => `lang=${lang}&state=${state}`;
 const ACTS = {
   list: () => window.__reports.showAllDays(),
   details: () => { const b = document.querySelector("#details-btn"); if (b && !b.disabled && !b.hidden && document.querySelector("#details").hidden) b.click(); },

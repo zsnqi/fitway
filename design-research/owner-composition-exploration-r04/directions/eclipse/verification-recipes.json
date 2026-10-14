@@ -2976,750 +2976,85 @@
           "changesState": true
         },
         {
-          "id": "tuner",
-          "what": "Light tuner",
-          "reach": "tap Lights",
+          "id": "new-reading",
+          "marker": "live-keys",
           "actions": [
-            "activate:.tuner-toggle"
+            "press:n"
           ],
           "proof": {
-            "selector": "#tuner-panel",
-            "visible": true
+            "expression": "window.__eclipse.figures.last === 823"
           },
+          "query": {
+            "live-keys": "1"
+          },
+          "what": "new reading (key)",
+          "reach": "index.html?live-keys=1 -> press:n",
           "source": {
-            "file": "tuner.js",
-            "line": 141
-          },
-          "covers": [
-            "#tuner-panel"
-          ]
-        },
-        {
-          "id": "tuner-control-nowInt",
-          "what": "Intensity",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowInt",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-nowInt",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-int"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 61
+            "file": "daily.js",
+            "line": 456
           },
           "covers": []
         },
         {
-          "id": "tuner-control-nowHue",
-          "what": "Core colour",
-          "reach": "Lights → control",
+          "id": "reset-readings",
+          "marker": "live-keys",
           "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowHue",
-            "press:Home",
-            "press:ArrowUp"
+            "press:n",
+            "press:r"
           ],
           "proof": {
-            "selector": "#t-nowHue",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-core"
+            "expression": "window.__eclipse.figures.last === 822"
           },
+          "query": {
+            "live-keys": "1"
+          },
+          "what": "reset readings (key)",
+          "reach": "index.html?live-keys=1 -> press:n -> press:r",
           "source": {
-            "file": "tuner.js",
-            "line": 62
+            "file": "daily.js",
+            "line": 456
           },
           "covers": []
         },
         {
-          "id": "tuner-control-nowDiscSize",
-          "what": "Disc size",
-          "reach": "Lights → control",
+          "id": "level-up",
+          "marker": "live-keys",
           "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowDiscSize",
-            "press:Home",
-            "press:ArrowUp"
+            "press:u"
           ],
           "proof": {
-            "selector": "#t-nowDiscSize",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-disc-size"
+            "expression": "window.__eclipse.figures.shownNow !== window.__eclipse.figures.now"
           },
+          "query": {
+            "live-keys": "1"
+          },
+          "what": "crowd level up (key)",
+          "reach": "index.html?live-keys=1 -> press:u",
           "source": {
-            "file": "tuner.js",
-            "line": 63
+            "file": "daily.js",
+            "line": 456
           },
           "covers": []
         },
         {
-          "id": "tuner-control-nowDiscX",
-          "what": "Disc position",
-          "reach": "Lights → control",
+          "id": "level-down",
+          "marker": "live-keys",
           "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowDiscX",
-            "press:Home",
-            "press:ArrowUp"
+            "press:d"
           ],
           "proof": {
-            "selector": "#t-nowDiscX",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-disc-x"
+            "expression": "window.__eclipse.figures.shownNow !== window.__eclipse.figures.now"
           },
+          "query": {
+            "live-keys": "1"
+          },
+          "what": "crowd level down (key)",
+          "reach": "index.html?live-keys=1 -> press:d",
           "source": {
-            "file": "tuner.js",
-            "line": 64
+            "file": "daily.js",
+            "line": 456
           },
           "covers": []
-        },
-        {
-          "id": "tuner-control-nowSoft",
-          "what": "Edge softness",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowSoft",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-nowSoft",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-soft"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 65
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-nowRim",
-          "what": "Rim thickness",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowRim",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-nowRim",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-rim"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 66
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-nowHot",
-          "what": "Lit-corner glow",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowHot",
-            "press:Home",
-            "press:ArrowUp",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-nowHot",
-            "cssPropertyChanged": "--now-hot",
-            "inputValue": "0.1"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 67
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-nowHotSize",
-          "what": "Glow size",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowHotSize",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-nowHotSize",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-hot-size"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 68
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-nowFar",
-          "what": "Far-corner glow",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowFar",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-nowFar",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-far"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 69
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-nowEnd",
-          "what": "Ring-end fade",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-nowEnd",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-nowEnd",
-            "rangeStep": true,
-            "cssPropertyChanged": "--now-end"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 70
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-chartInt",
-          "what": "Intensity",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-chartInt",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-chartInt",
-            "rangeStep": true,
-            "cssPropertyChanged": "--chart-int"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 71
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-chartFade",
-          "what": "Fade distance",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-chartFade",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-chartFade",
-            "rangeStep": true,
-            "cssPropertyChanged": "--chart-fade"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 72
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-chartSide",
-          "what": "Side height",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-chartSide",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-chartSide",
-            "rangeStep": true,
-            "cssPropertyChanged": "--chart-side"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 73
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-chartBalance",
-          "what": "Corner balance",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-chartBalance",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-chartBalance",
-            "rangeStep": true,
-            "cssPropertyChanged": "--chart-balance"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 74
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-chartSoft",
-          "what": "Edge softness",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-chartSoft",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-chartSoft",
-            "rangeStep": true,
-            "cssPropertyChanged": "--chart-soft"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 75
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-washInt",
-          "what": "Page wash",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-washInt",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-washInt",
-            "rangeStep": true,
-            "cssPropertyChanged": "--wash-int"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 76
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-control-grain",
-          "what": "Grain",
-          "reach": "Lights → control",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-grain",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-grain",
-            "rangeStep": true,
-            "cssPropertyChanged": "--grain-o"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 77
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-close",
-          "marker": "tuner-x",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:.tuner-x"
-          ],
-          "proof": {
-            "selector": "#tuner-panel",
-            "hidden": true
-          },
-          "what": "tuner-close",
-          "reach": "activate:.tuner-toggle → activate:.tuner-x",
-          "source": {
-            "file": "tuner.js",
-            "line": 146
-          },
-          "covers": [
-            "#tuner-panel"
-          ]
-        },
-        {
-          "id": "tuner-copy",
-          "marker": "Copy values",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:.tuner-actions button:has-text(\"Copy values\")"
-          ],
-          "proof": {
-            "selector": ".tuner-status",
-            "nonemptyText": true
-          },
-          "what": "tuner-copy",
-          "reach": "activate:.tuner-toggle → activate:.tuner-actions button:has-text(\"Copy values\")",
-          "source": {
-            "file": "tuner.js",
-            "line": 264
-          },
-          "covers": [
-            ".tuner-json"
-          ]
-        },
-        {
-          "id": "tuner-reset",
-          "marker": "Reset to Recommended",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:#tuner-panel [data-preset=\"v2\"]",
-            "activate:.tuner-actions button:has-text(\"Reset to Recommended\")"
-          ],
-          "proof": {
-            "selector": "#tuner-panel [data-preset=\"recommended\"]",
-            "attribute": "aria-pressed",
-            "value": "true"
-          },
-          "what": "tuner-reset",
-          "reach": "activate:.tuner-toggle → activate:#tuner-panel [data-preset=\"v2\"] → activate:.tuner-actions button:has-text(\"Reset to Recommended\")",
-          "source": {
-            "file": "tuner.js",
-            "line": 265
-          },
-          "covers": [
-            "#tuner-panel"
-          ]
-        },
-        {
-          "id": "tuner-move",
-          "marker": "tuner-grip",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:.tuner-grip",
-            "press:ArrowDown"
-          ],
-          "proof": {
-            "selector": ".tuner",
-            "moved": true
-          },
-          "what": "tuner-move",
-          "reach": "activate:.tuner-toggle → focus:.tuner-grip → press:ArrowDown",
-          "source": {
-            "file": "tuner.js",
-            "line": 147
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-drag",
-          "marker": "tuner-grip",
-          "actions": [
-            "activate:.tuner-toggle",
-            "gesture:.tuner-grip@0,30,300"
-          ],
-          "proof": {
-            "selector": ".tuner",
-            "moved": true
-          },
-          "what": "tuner-drag",
-          "reach": "activate:.tuner-toggle → gesture:.tuner-grip@0,30,300",
-          "source": {
-            "file": "tuner.js",
-            "line": 147
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-motion",
-          "marker": "t-mo-motion",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:#t-mo-motion"
-          ],
-          "proof": {
-            "selector": "#t-mo-motion",
-            "checked": false
-          },
-          "fullMotion": true,
-          "what": "tuner-motion",
-          "reach": "activate:.tuner-toggle → activate:#t-mo-motion",
-          "source": {
-            "file": "tuner.js",
-            "line": 200
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-replay",
-          "marker": "t-mo-replay",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:#t-mo-replay"
-          ],
-          "proof": {
-            "selector": "#t-mo-replay",
-            "visible": true
-          },
-          "fullMotion": true,
-          "settleIntro": true,
-          "what": "tuner-replay",
-          "reach": "activate:.tuner-toggle → activate:#t-mo-replay",
-          "source": {
-            "file": "tuner.js",
-            "line": 230
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-new-reading",
-          "marker": "New reading",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:.tuner-motion button:has-text(\"New reading\")"
-          ],
-          "proof": {
-            "selector": ".t-latest",
-            "textChanged": true
-          },
-          "what": "tuner-new-reading",
-          "reach": "activate:.tuner-toggle → activate:.tuner-motion button:has-text(\"New reading\")",
-          "source": {
-            "file": "tuner.js",
-            "line": 192
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-level-up",
-          "marker": "Level up",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:.tuner-motion button:has-text(\"Level up\")"
-          ],
-          "proof": {
-            "selector": ".t-latest",
-            "textChanged": true
-          },
-          "what": "tuner-level-up",
-          "reach": "activate:.tuner-toggle → activate:.tuner-motion button:has-text(\"Level up\")",
-          "source": {
-            "file": "tuner.js",
-            "line": 197
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-level-down",
-          "marker": "Level down",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:.tuner-motion button:has-text(\"Level down\")"
-          ],
-          "proof": {
-            "selector": ".t-latest",
-            "textChanged": true
-          },
-          "what": "tuner-level-down",
-          "reach": "activate:.tuner-toggle → activate:.tuner-motion button:has-text(\"Level down\")",
-          "source": {
-            "file": "tuner.js",
-            "line": 198
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-reset-readings",
-          "marker": "Reset readings",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:.tuner-motion button:has-text(\"New reading\")",
-            "activate:.tuner-motion button:has-text(\"Reset readings\")"
-          ],
-          "proof": {
-            "selector": ".tuner-motion button:has-text(\"Reset readings\")",
-            "disabled": true
-          },
-          "what": "tuner-reset-readings",
-          "reach": "activate:.tuner-toggle → activate:.tuner-motion button:has-text(\"New reading\") → activate:.tuner-motion button:has-text(\"Reset readings\")",
-          "source": {
-            "file": "tuner.js",
-            "line": 193
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-speed-speed",
-          "marker": "t-mo-speed",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-mo-speed",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-mo-speed",
-            "rangeStep": true
-          },
-          "what": "tuner-speed-speed",
-          "reach": "activate:.tuner-toggle → focus:#t-mo-speed → press:Home → press:ArrowUp",
-          "source": {
-            "file": "tuner.js",
-            "line": 207
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-speed-reset",
-          "marker": "t-mo-speed",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-mo-speed",
-            "press:Home",
-            "activate:#t-mo-speed >> xpath=.. >> button"
-          ],
-          "proof": {
-            "selector": "#t-mo-speed",
-            "inputValue": "1"
-          },
-          "what": "tuner-speed-reset",
-          "reach": "activate:.tuner-toggle → focus:#t-mo-speed → press:Home → activate:#t-mo-speed >> xpath=.. >> button",
-          "source": {
-            "file": "tuner.js",
-            "line": 207
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-intro-speed",
-          "marker": "t-mo-intro",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-mo-intro",
-            "press:Home",
-            "press:ArrowUp"
-          ],
-          "proof": {
-            "selector": "#t-mo-intro",
-            "rangeStep": true
-          },
-          "what": "tuner-intro-speed",
-          "reach": "activate:.tuner-toggle → focus:#t-mo-intro → press:Home → press:ArrowUp",
-          "source": {
-            "file": "tuner.js",
-            "line": 220
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-intro-reset",
-          "marker": "t-mo-intro",
-          "actions": [
-            "activate:.tuner-toggle",
-            "focus:#t-mo-intro",
-            "press:Home",
-            "activate:#t-mo-intro >> xpath=.. >> button"
-          ],
-          "proof": {
-            "selector": "#t-mo-intro",
-            "inputValue": "1"
-          },
-          "what": "tuner-intro-reset",
-          "reach": "activate:.tuner-toggle → focus:#t-mo-intro → press:Home → activate:#t-mo-intro >> xpath=.. >> button",
-          "source": {
-            "file": "tuner.js",
-            "line": 220
-          },
-          "covers": []
-        },
-        {
-          "id": "tuner-preset-v2",
-          "what": "Choose v2 light preset",
-          "reach": "Lights → preset",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:#tuner-panel [data-preset=\"v2\"]"
-          ],
-          "proof": {
-            "selector": "#tuner-panel [data-preset=\"v2\"]",
-            "attribute": "aria-pressed",
-            "value": "true"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 102
-          },
-          "covers": [
-            "#tuner-panel"
-          ]
-        },
-        {
-          "id": "tuner-preset-aLike",
-          "what": "Choose aLike light preset",
-          "reach": "Lights → preset",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:#tuner-panel [data-preset=\"aLike\"]"
-          ],
-          "proof": {
-            "selector": "#tuner-panel [data-preset=\"aLike\"]",
-            "attribute": "aria-pressed",
-            "value": "true"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 102
-          },
-          "covers": [
-            "#tuner-panel"
-          ]
-        },
-        {
-          "id": "tuner-preset-recommended",
-          "what": "Choose recommended light preset",
-          "reach": "Lights → preset",
-          "actions": [
-            "activate:.tuner-toggle",
-            "activate:#tuner-panel [data-preset=\"recommended\"]"
-          ],
-          "proof": {
-            "selector": "#tuner-panel [data-preset=\"recommended\"]",
-            "attribute": "aria-pressed",
-            "value": "true"
-          },
-          "source": {
-            "file": "tuner.js",
-            "line": 102
-          },
-          "covers": [
-            "#tuner-panel"
-          ]
         }
       ],
       "states": [
@@ -3851,56 +3186,11 @@
         },
         {
           "when": {
-            "preset": "v2"
+            "live-keys": "1"
           },
-          "shows": "Daily tuner preset v2 is applied",
+          "shows": "Daily key-driven live moments are armed",
           "proof": {
-            "expression": "window.__tuner?.snapshot().preset === 'v2'"
-          }
-        },
-        {
-          "when": {
-            "preset": "a-like"
-          },
-          "shows": "Daily tuner preset a-like is applied",
-          "proof": {
-            "expression": "window.__tuner?.snapshot().preset === 'aLike'"
-          }
-        },
-        {
-          "when": {
-            "preset": "aLike"
-          },
-          "shows": "Daily tuner preset aLike is applied",
-          "proof": {
-            "expression": "window.__tuner?.snapshot().preset === 'aLike'"
-          }
-        },
-        {
-          "when": {
-            "preset": "alike"
-          },
-          "shows": "Daily tuner preset alike is applied",
-          "proof": {
-            "expression": "window.__tuner?.snapshot().preset === 'aLike'"
-          }
-        },
-        {
-          "when": {
-            "preset": "recommended"
-          },
-          "shows": "Daily tuner preset recommended is applied",
-          "proof": {
-            "expression": "window.__tuner?.snapshot().preset === 'recommended'"
-          }
-        },
-        {
-          "when": {
-            "tuner": "0"
-          },
-          "shows": "Daily tuner is disabled and absent from the page",
-          "proof": {
-            "expression": "!window.__tuner && !document.querySelector('.tuner')"
+            "expression": "window.__eclipse.liveKeys === true"
           }
         },
         {

@@ -106,7 +106,7 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - DESIGN-SPEC.md:249 — MOT-8 — Rail opens / closes (transforms and a clip; the width switches at once)
 - DESIGN-SPEC.md:250 — MOT-9 — A dialog (DECISIONS item 36). From 721 px it unfolds from its title: its bottom edge…
 - DESIGN-SPEC.md:251 — MOT-10 — Daily's first-open intro: the answers roll, the line draws, then the end point and the…
-- DESIGN-SPEC.md:252 — MOT-11 — Reduced motion, ?motion=off (and on Daily the tuner's switch): every change is…
+- DESIGN-SPEC.md:252 — MOT-11 — Reduced motion and ?motion=off: every change is instant, no intro, the page at rest is…
 - DESIGN-SPEC.md:253 — MOT-12 — The frame (steps 3 and 4): at 721-1023 px the rail opens as MOT-8 and its scrim (no…
 - DESIGN-SPEC.md:254 — MOT-13 — Loading and the intro. The skeleton never moves, in every motion setting (MOT-1,…
 - DESIGN-SPEC.md:255 — MOT-14 — A label that changes rolls (DECISIONS item 36): a button whose words change (Working,…
@@ -519,155 +519,151 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - daily.js:289 — monotone — function
 - daily.js:330 — usualAt — function constant
 - daily.js:335 — compute — function
-- daily.js:464 — clampSpeed — function constant
-- daily.js:466 — clampIntroSpeed — function constant
-- daily.js:479 — motionOn — function constant
-- daily.js:494 — dailyStatusKey — function constant
-- daily.js:513 — levelChip — function constant
-- daily.js:518 — cmpChip — function constant
-- daily.js:524 — shownNow — function constant
-- daily.js:529 — setLights — function
-- daily.js:536 — fillCards — function
-- daily.js:561 — busiestRange — function constant
-- daily.js:562 — fillBusiest — function
-- daily.js:581 — keep — function constant
-- daily.js:582 — aside — function constant
-- daily.js:583 — make — function constant
-- daily.js:590 — bar — function constant
-- daily.js:591 — clearState — function
-- daily.js:597 — sayInValue — function
-- daily.js:602 — pendCards — function
-- daily.js:613 — sentence — function constant
-- daily.js:614 — stateCards — function
-- daily.js:638 — errorCards — function
-- daily.js:662 — updateCards — function
-- daily.js:699 — f — function constant
-- daily.js:701 — endPoint — function constant
-- daily.js:704 — hairlines — function
-- daily.js:720 — render — function
-- daily.js:844 — unavSpan — function
-- daily.js:851 — gapStop — function
-- daily.js:855 — buildStops — function
-- daily.js:895 — stopBy — function constant
-- daily.js:898 — valueText — function
-- daily.js:913 — tipHTML — function
-- daily.js:955 — laneProbe — function constant
-- daily.js:961 — measureTipWidth — function
-- daily.js:1007 — trackPath — function constant
-- daily.js:1008 — parsePath — function
-- daily.js:1027 — evalAt — function
-- daily.js:1033 — table — function
-- daily.js:1055 — uAtX — function
-- daily.js:1065 — lengthOfU — function
-- daily.js:1073 — uOfLength — function
-- daily.js:1081 — peakPoint — function constant
-- daily.js:1084 — restPoint — function
-- daily.js:1115 — onEndPoint — function
-- daily.js:1127 — stepAside — function
-- daily.js:1138 — paintMarker — function
-- daily.js:1204 — clearMarker — function
-- daily.js:1222 — paintConnector — function
-- daily.js:1267 — tagBox — function
-- daily.js:1287 — tipBox — function
-- daily.js:1292 — tipRest — function constant
-- daily.js:1293 — placeTip — function
-- daily.js:1324 — tipEaseFrom — function
-- daily.js:1332 — selectStop — function
-- daily.js:1350 — clearSelection — function
-- daily.js:1358 — restoreSelection — function
-- daily.js:1392 — stopAt — function
-- daily.js:1412 — homeStop — function constant
-- daily.js:1467 — stopForFinger — function
-- daily.js:1475 — stopForTap — function
-- daily.js:1488 — bandHTML — function
-- daily.js:1510 — syncBand — function
-- daily.js:1532 — stepBand — function
-- daily.js:1541 — closeBand — function
-- daily.js:1580 — fingerZone — function constant
-- daily.js:1583 — scrollMax — function constant
-- daily.js:1584 — scrollToY — function constant
-- daily.js:1585 — stopPageMove — function
-- daily.js:1587 — runPageMove — function
-- daily.js:1595 — slideClear — function
-- daily.js:1615 — fingerTouch — function constant
-- daily.js:1616 — followFinger — function
-- daily.js:1629 — endFinger — function
-- daily.js:1701 — summary — function
-- daily.js:1740 — minText — function constant
-- daily.js:1741 — buildDetails — function
-- daily.js:1788 — setDetails — function constant
-- daily.js:1825 — track — function
-- daily.js:1827 — clockAnim — function constant
-- daily.js:1838 — numValue — function constant
-- daily.js:1839 — finishRoll — function
-- daily.js:1847 — shapeOf — function constant
-- daily.js:1854 — textNodes — function constant
-- daily.js:1855 — rollTo — function
-- daily.js:1891 — digitWindow — function
-- daily.js:1908 — rollFragment — function
-- daily.js:1946 — finishFoot — function
-- daily.js:1953 — setFoot — function
-- daily.js:1985 — announce — function constant
-- daily.js:2010 — nowMs — function constant
-- daily.js:2011 — displayedTipVelocity — function constant
-- daily.js:2012 — taus — function constant
-- daily.js:2015 — spring — function
-- daily.js:2020 — lineLeg — function constant
-- daily.js:2021 — dropLeg — function constant
-- daily.js:2022 — legAt — function
-- daily.js:2030 — buildRoute — function
-- daily.js:2059 — pointAtS — function
-- daily.js:2067 — dirAt — function
-- daily.js:2074 — followState — function
-- daily.js:2082 — tipState — function
-- daily.js:2086 — loopFollow — function
-- daily.js:2087 — followTo — function
-- daily.js:2112 — followFrame — function
-- daily.js:2135 — stopFollow — function
-- daily.js:2152 — carryFollowIntoReading — function
-- daily.js:2166 — seekFollow — function
-- daily.js:2180 — releaseFollow — function
-- daily.js:2187 — rebaseFollow — function
-- daily.js:2196 — startPulse — function
-- daily.js:2202 — stopPulse — function
-- daily.js:2203 — placePing — function
-- daily.js:2216 — stepReading — function
-- daily.js:2251 — morphValue — function
-- daily.js:2259 — applyMorph — function
-- daily.js:2293 — liveLoop — function
-- daily.js:2294 — finishLive — function
-- daily.js:2305 — seekLive — function
-- daily.js:2314 — resetReadings — function
-- daily.js:2330 — crowdStep — function
-- daily.js:2383 — introTotal — function constant
-- daily.js:2384 — introDecide — function
-- daily.js:2403 — introPark — function
-- daily.js:2432 — introWait — function
-- daily.js:2466 — introStart — function
-- daily.js:2493 — introLoop — function
-- daily.js:2501 — introChartSetup — function
-- daily.js:2516 — introProgress — function constant
-- daily.js:2517 — introChartFrame — function
-- daily.js:2557 — introChartClear — function
-- daily.js:2572 — introAfterRender — function
-- daily.js:2580 — endIntro — function
-- daily.js:2604 — replayIntro — function
-- daily.js:2616 — seekIntro — function
-- daily.js:2626 — releaseIntro — function
-- daily.js:2636 — settleAll — function
-- daily.js:2642 — setOptions — function
-- daily.js:2681 — later — function constant
-- daily.js:2682 — clearTimers — function constant
-- daily.js:2683 — setPhase — function constant
-- daily.js:2684 — busy — function constant
-- daily.js:2688 — sayRegion — function
-- daily.js:2695 — say — function
-- daily.js:2696 — startLoading — function
-- daily.js:2714 — arrive — function
-- daily.js:2752 — retryLabel — function
-- daily.js:2758 — showError — function
-- daily.js:2776 — fail — function
-- daily.js:2787 — retry — function
+- daily.js:458 — motionOn — function constant
+- daily.js:471 — dailyStatusKey — function constant
+- daily.js:490 — levelChip — function constant
+- daily.js:495 — cmpChip — function constant
+- daily.js:501 — shownNow — function constant
+- daily.js:506 — setLights — function
+- daily.js:513 — fillCards — function
+- daily.js:538 — busiestRange — function constant
+- daily.js:539 — fillBusiest — function
+- daily.js:558 — keep — function constant
+- daily.js:559 — aside — function constant
+- daily.js:560 — make — function constant
+- daily.js:567 — bar — function constant
+- daily.js:568 — clearState — function
+- daily.js:574 — sayInValue — function
+- daily.js:579 — pendCards — function
+- daily.js:590 — sentence — function constant
+- daily.js:591 — stateCards — function
+- daily.js:615 — errorCards — function
+- daily.js:639 — updateCards — function
+- daily.js:676 — f — function constant
+- daily.js:678 — endPoint — function constant
+- daily.js:681 — hairlines — function
+- daily.js:697 — render — function
+- daily.js:821 — unavSpan — function
+- daily.js:828 — gapStop — function
+- daily.js:832 — buildStops — function
+- daily.js:872 — stopBy — function constant
+- daily.js:875 — valueText — function
+- daily.js:890 — tipHTML — function
+- daily.js:932 — laneProbe — function constant
+- daily.js:938 — measureTipWidth — function
+- daily.js:984 — trackPath — function constant
+- daily.js:985 — parsePath — function
+- daily.js:1004 — evalAt — function
+- daily.js:1010 — table — function
+- daily.js:1032 — uAtX — function
+- daily.js:1042 — lengthOfU — function
+- daily.js:1050 — uOfLength — function
+- daily.js:1058 — peakPoint — function constant
+- daily.js:1061 — restPoint — function
+- daily.js:1092 — onEndPoint — function
+- daily.js:1104 — stepAside — function
+- daily.js:1115 — paintMarker — function
+- daily.js:1181 — clearMarker — function
+- daily.js:1199 — paintConnector — function
+- daily.js:1244 — tagBox — function
+- daily.js:1264 — tipBox — function
+- daily.js:1269 — tipRest — function constant
+- daily.js:1270 — placeTip — function
+- daily.js:1301 — tipEaseFrom — function
+- daily.js:1309 — selectStop — function
+- daily.js:1327 — clearSelection — function
+- daily.js:1335 — restoreSelection — function
+- daily.js:1369 — stopAt — function
+- daily.js:1389 — homeStop — function constant
+- daily.js:1444 — stopForFinger — function
+- daily.js:1452 — stopForTap — function
+- daily.js:1465 — bandHTML — function
+- daily.js:1487 — syncBand — function
+- daily.js:1509 — stepBand — function
+- daily.js:1518 — closeBand — function
+- daily.js:1557 — fingerZone — function constant
+- daily.js:1560 — scrollMax — function constant
+- daily.js:1561 — scrollToY — function constant
+- daily.js:1562 — stopPageMove — function
+- daily.js:1564 — runPageMove — function
+- daily.js:1572 — slideClear — function
+- daily.js:1592 — fingerTouch — function constant
+- daily.js:1593 — followFinger — function
+- daily.js:1606 — endFinger — function
+- daily.js:1678 — summary — function
+- daily.js:1717 — minText — function constant
+- daily.js:1718 — buildDetails — function
+- daily.js:1765 — setDetails — function constant
+- daily.js:1802 — track — function
+- daily.js:1804 — clockAnim — function constant
+- daily.js:1815 — numValue — function constant
+- daily.js:1816 — finishRoll — function
+- daily.js:1824 — shapeOf — function constant
+- daily.js:1831 — textNodes — function constant
+- daily.js:1832 — rollTo — function
+- daily.js:1868 — digitWindow — function
+- daily.js:1885 — rollFragment — function
+- daily.js:1923 — finishFoot — function
+- daily.js:1930 — setFoot — function
+- daily.js:1962 — announce — function constant
+- daily.js:1986 — nowMs — function constant
+- daily.js:1987 — displayedTipVelocity — function constant
+- daily.js:1988 — taus — function constant
+- daily.js:1991 — spring — function
+- daily.js:1996 — lineLeg — function constant
+- daily.js:1997 — dropLeg — function constant
+- daily.js:1998 — legAt — function
+- daily.js:2006 — buildRoute — function
+- daily.js:2035 — pointAtS — function
+- daily.js:2043 — dirAt — function
+- daily.js:2050 — followState — function
+- daily.js:2058 — tipState — function
+- daily.js:2062 — loopFollow — function
+- daily.js:2063 — followTo — function
+- daily.js:2088 — followFrame — function
+- daily.js:2111 — stopFollow — function
+- daily.js:2128 — carryFollowIntoReading — function
+- daily.js:2142 — seekFollow — function
+- daily.js:2156 — releaseFollow — function
+- daily.js:2165 — startPulse — function
+- daily.js:2171 — stopPulse — function
+- daily.js:2172 — placePing — function
+- daily.js:2185 — stepReading — function
+- daily.js:2220 — morphValue — function
+- daily.js:2228 — applyMorph — function
+- daily.js:2262 — liveLoop — function
+- daily.js:2263 — finishLive — function
+- daily.js:2274 — seekLive — function
+- daily.js:2283 — resetReadings — function
+- daily.js:2299 — crowdStep — function
+- daily.js:2352 — introTotal — function constant
+- daily.js:2353 — introDecide — function
+- daily.js:2372 — introPark — function
+- daily.js:2401 — introWait — function
+- daily.js:2435 — introStart — function
+- daily.js:2461 — introLoop — function
+- daily.js:2469 — introChartSetup — function
+- daily.js:2484 — introProgress — function constant
+- daily.js:2485 — introChartFrame — function
+- daily.js:2525 — introChartClear — function
+- daily.js:2540 — introAfterRender — function
+- daily.js:2548 — endIntro — function
+- daily.js:2572 — seekIntro — function
+- daily.js:2582 — releaseIntro — function
+- daily.js:2592 — settleAll — function
+- daily.js:2598 — syncMotion — function
+- daily.js:2632 — later — function constant
+- daily.js:2633 — clearTimers — function constant
+- daily.js:2634 — setPhase — function constant
+- daily.js:2635 — busy — function constant
+- daily.js:2639 — sayRegion — function
+- daily.js:2646 — say — function
+- daily.js:2647 — startLoading — function
+- daily.js:2665 — arrive — function
+- daily.js:2703 — retryLabel — function
+- daily.js:2709 — showError — function
+- daily.js:2727 — fail — function
+- daily.js:2738 — retry — function
 
 ## components.js
 
@@ -1078,46 +1074,3 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - picker.js:63 — monthLen — function constant
 - picker.js:64 — addMonths — function constant
 - picker.js:67 — create — function
-
-## tuner.js
-
-- tuner.js:22 — lin — function constant
-- tuner.js:23 — gam — function constant
-- tuner.js:24 — toOklch — function
-- tuner.js:34 — fromOklch — function
-- tuner.js:50 — cssDefault — function constant
-- tuner.js:53 — round — function constant
-- tuner.js:54 — coreFor — function constant
-- tuner.js:55 — hex — function constant
-- tuner.js:58 — pct — function constant
-- tuner.js:59 — num — function constant
-- tuner.js:110 — clampTo — function constant
-- tuner.js:111 — sanitize — function
-- tuner.js:116 — cssValue — function
-- tuner.js:117 — apply — function
-- tuner.js:124 — same — function constant
-- tuner.js:125 — activePreset — function constant
-- tuner.js:126 — save — function
-- tuner.js:127 — load — function
-- tuner.js:128 — snapshot — function
-- tuner.js:139 — el — function constant
-- tuner.js:186 — syncMotion — function binding (let)
-- tuner.js:273 — syncRow — function
-- tuner.js:279 — syncPresets — function
-- tuner.js:283 — sync — function
-- tuner.js:296 — savePos — function constant
-- tuner.js:297 — viewport — function constant
-- tuner.js:298 — current — function constant
-- tuner.js:301 — clearSpot — function
-- tuner.js:319 — fitPanel — function
-- tuner.js:327 — place — function
-- tuner.js:340 — moveBy — function constant
-- tuner.js:341 — resetPos — function constant
-- tuner.js:343 — startDrag — function
-- tuner.js:353 — moveDrag — function
-- tuner.js:365 — endDrag — function
-- tuner.js:385 — schedulePlace — function constant
-- tuner.js:390 — watchSpot — function
-- tuner.js:410 — refreshControls — function
-- tuner.js:420 — hasControls — function constant
-- tuner.js:435 — setOpen — function constant
