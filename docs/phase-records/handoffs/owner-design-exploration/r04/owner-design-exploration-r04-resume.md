@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 16:45 +03:00 (launcher-fixes-3 graded and merged at `3a959ac2`; tuner-removal's continue run launched; vf-fixes waits; main at `6272eeb5`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 16:45 +03:00 (launcher-fixes-3 graded and merged at `3a959ac2`; tuner-removal's continue run launched; vf-fixes waits; main at `940391e1`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-59), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -49,7 +49,10 @@
   `D:/fitway-temp/codex-round-9e63e748-50de-49e4-bc40-e6d7d6419115`, thread `01a13aa9-5797-7702-b9e0-dcd5b519f4b9`.
   It works on `owner-followup-r04-build` in `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, which the
   coordinator moved onto the saved `58e39ede` (`git reset --mixed`, files unchanged); base `4352181f`, pair
-  3188-3189. It has ended when `last-message.md` holds a report (or the launcher's background shell exits). Grade on
+  3188-3189. It ended after about 10 minutes on a progress line and the launcher took it for a report (F170: no
+  outcome IDs under its "Required outcomes" heading, so no automatic resume); the coordinator resumed it by hand at about
+  17:05 (`resume-message-1.md` in the run folder). F170 means no automatic resume on this run either: when it stops,
+  read `last-message.md`, and resume by hand unless it is a report or `STOPPED:`. Grade on
   `D:/fitway-grader/owner-r04/tuner-removal-heldout.md`. Nothing else runs compares beside it (F168, B13).
 - **vf-fixes** stays stopped (`wip/vf-fixes-stopped-20261014`, `862dea71`; run folder
   `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`) until tuner-removal is graded.
@@ -65,7 +68,7 @@
 4. **The other tool rounds before Settings:** the encoding round's brief can be drafted now from
    `D:/fitway-temp/owner-r04-encoding-draft/research-digest.md` (each check's real past mistake and where it sits; it
    also found three build-branch round records saying "B3 held" for briefs without the sentence) and launched now that
-   launcher-fixes-3 has merged (same files), and takes F169, F156's copy path and F162's preface form; the `reports.css` split (draft
+   launcher-fixes-3 has merged (same files), and takes F169, F170, F156's copy path and F162's preface form; the `reports.css` split (draft
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); the encoding round of decision 56
    (F129 twice: K1 checks the frontier against the packets, and main moves only through a command that refuses a commit
    without a green CI run; BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
