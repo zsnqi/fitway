@@ -923,3 +923,22 @@ checks live outside the repository and never appear here or in a brief. One line
   accepting `xhigh`, one test); reading an absolute source before its place check passed all 170 tests, though the
   code reads only after the check (F156).
 - **Failure causes:** none from the brief's wording; none from the model's reading. Side finding: F156.
+
+## Evaluation: Claude Code on DeepSeek, the partial replay (2026-10-13 to 14, DECISIONS 53, deferred by 58)
+
+- **Set-up:** deepseek-route replayed from `4a151786` with the same brief (`107c71e5`) on Claude Code `--bare`,
+  `deepseek-v4.1-flash[1m]` at `max` through Open Design's Anthropic route, auto permission mode with DeepSeek as its
+  classifier (`D:/fitway-temp/cc-replay-deepseek-route-2*`). A first start with a 200k window was stopped after reading
+  (`cc-replay-deepseek-route-1/STOPPED.md`). Not graded: it was stopped mid-work at the user's request for fresh
+  sessions, its edits uncommitted in `D:/Projects/fitway-worktrees/owner-r04-cc-replay`.
+- **Observed, from its event streams:** about 3.1 hours of turns over seven runs, 303 turns and 296 tool calls (Bash
+  169, Edit 88, Read 39), 425k output tokens, 44.2M input (43.8M cached); seven early ends with a lead-in sentence and
+  no tool call (F154), four inside an automatic resume loop; 14 tool errors, five of them the auto-mode classifier on
+  DeepSeek timing out or failing its second stage, two Edit misses, one deny rule rightly refusing `git switch`.
+- **Codex on the same brief:** run 1 stopped at 18 minutes on the hook message Open Design refuses (F151); run 2,
+  on run 1's uncommitted work, reached its report in 52 minutes with 121 commands, 127k output tokens, no early end,
+  graded 6/6 and held-out 11/12.
+- **Not a fair comparison:** one unfinished Claude Code run; the brief and launcher were shaped for Codex over 30-odd
+  rounds; Claude Code's classifier ran on DeepSeek; the replay ran beside vf-parallel's timings; Codex's run 2 did not
+  start from the base; whether the model or the route drops the tool call (F154) is not known.
+- **Disposition:** DeepSeek stays on Codex (DECISIONS 58); the replay reopens only on that item's conditions.

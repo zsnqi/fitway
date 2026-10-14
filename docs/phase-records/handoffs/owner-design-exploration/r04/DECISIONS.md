@@ -638,6 +638,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       (outcomes and limits per brief against brief-caused failures and the review's readings), not chosen; if the
       records show no threshold, the round reports that and keeps a count without a warning.
     - B6, B8 and B13 go back to wrapped lines with the change. It goes in item 56's encoding round.
+58. **DeepSeek stays on Codex; the Claude Code replay is deferred** (the user, 2026-10-14, after the coordinator's
+    reading of the partial replay, `codex-rounds.md` §"Evaluation: Claude Code on DeepSeek, the partial replay"):
+    Codex has carried four DeepSeek rounds to graded results, so item 53's comparison is not finished on purpose and
+    takes no more hours without a practical reason. It is reopened when one of these is observed: Codex's route through
+    Open Design breaks or degrades; early ends (F154) keep costing real time after the automatic resume; a task needs a
+    capability only Claude Code has; or Codex's start load or `apply_patch` failures become a measured bottleneck. The
+    working Claude Code settings stay recorded in item 53, as a fallback beside GPT on Codex.
 
 ## How this milestone's rounds run
 

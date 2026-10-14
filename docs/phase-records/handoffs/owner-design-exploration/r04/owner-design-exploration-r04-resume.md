@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04`, 2026-10-14 11:15 +03:00 (handoff: the user starts a fresh session; nothing running; vf-parallel delivered `70cf9180` and is mid-grading)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-57), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-58), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -74,7 +74,9 @@ stopped (the `resume-turn-ended-1.md` beside vf-parallel's run folder is the for
    (BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
    definitions; each check proven on its real past mistake; and decision 57's outcome-and-limit count in `brief:check`
    with its threshold from the past rounds, then B6, B8 and B13 unfolded); the shared lows (decision 47); the `no-comments`
-   report-only trial; the Claude Code replay (DECISIONS 53, `D:/fitway-temp/cc-replay-deepseek-route-2/STOPPED-2026-10-14.md`).
+   report-only trial. The Claude Code replay is deferred (DECISIONS 58); its worktree
+   `D:/Projects/fitway-worktrees/owner-r04-cc-replay` (uncommitted launcher edits, not needed) can be removed once
+   its `node_modules` is checked for a junction and unlinked first.
 5. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
 6. Fast-forward main once CI passes on this resume point's commit (DECISIONS 40).
