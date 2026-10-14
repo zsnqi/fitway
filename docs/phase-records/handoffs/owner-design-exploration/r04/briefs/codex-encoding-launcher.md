@@ -57,19 +57,21 @@ launches, and refuses inputs the shell or the environment has already damaged, w
     1, each naming an outcome or limit ID and each with an indented body, are read as exactly those readings, whatever
     lists their bodies hold; an answer whose starts cannot be told apart from its bodies' list items is still refused.
   - **Intent.** The bare form a model writes most often never stops a launch, and an ambiguous answer still does.
-- **E2. A one-line preface (F162).**
+- **E2. A preface (F162).**
   - **Cause.** The bold and numbered-bold starts count only when the first one is at the answer's first character
     (`codex-round.mjs:578-581`), so the vf-fixes review answer, `D:/fitway-temp/brief-review/codex-vf-fixes-1/last.md`,
     is refused for its first line.
-  - **Outcome.** An answer whose readings, in any form the launcher reads, follow prose that holds no reading start
-    and no outcome or limit ID is read as those readings, the prose part of none; that file is read as its five
-    readings. Prose before the first start that names an ID is still refused.
+  - **Outcome.** An answer whose readings, in any form the launcher reads, follow prose of one or more lines or
+    paragraphs that holds no reading start and no outcome or limit ID is read as those readings, the prose part of
+    none; that file is read as its five readings, and so is a fixture whose preface spans several lines. Prose before
+    the first start that names an ID is still refused.
   - **Intent.** A sound answer with a sentence before its list is read; a reading hidden in prose is never dropped.
 - **E3. A silent read in the copy path fails a test (F156).**
   - **Cause.** `copyReviewSources` (`codex-round.mjs:683-703`) is tested for read order with a repository source only;
     a read of an absolute source placed ahead of its `reviewSourcePlan` call, its error ignored, passes every test.
   - **Outcome.** With a silent read of the source's bytes inserted in `copyReviewSources` ahead of `reviewSourcePlan`,
-    at least one test fails because the bytes were read before the source's place was decided, for each kind of
+    at least one test fails because it observed the bytes being read before the source's place was decided (an
+    observed read, never a check of the source text), for each kind of
     source the launcher accepts (a repository file at the named HEAD, a file in the launcher's checkout, an absolute
     file outside both) and for each read route (asynchronous, synchronous, stream); with it removed, all pass. Report
     each kind and route with the failing test's name.
@@ -88,29 +90,32 @@ launches, and refuses inputs the shell or the environment has already damaged, w
   - **Cause.** Git Bash rewrites an argument that looks like a POSIX path before a native program receives it
     (`/api` became `C:/Program Files/Git/api` in Phase 5); `resume <folder> --message <text>` passes the rewritten
     text to Codex as the coordinator's words.
-  - **Outcome.** When the launcher runs under Git Bash, a `--message` text that holds Git Bash's rewrite of a path is
-    refused before Codex starts, the message naming `--message-file`, and a `--message-file` text reaches Codex byte
-    for byte; outside Git Bash, and for a message with no rewrite, nothing changes. A test proves it with the real
-    rewrite from a Git Bash on the machine running it, and skips by name where none exists.
+  - **Outcome.** When the launcher runs under Git Bash, `--message` is refused before Codex starts, the message naming
+    `--message-file`, since the text it receives may already be rewritten; a `--message-file` text reaches Codex byte
+    for byte; outside Git Bash nothing changes.
   - **Intent.** A message reaches the agent as it was typed, or not at all.
 - **E6. `TEMP` and `TMP` for Codex (F110, F118).**
   - **Cause.** The launcher passes its own environment to Codex (`codex-round.mjs:1144-1172`); an 8.3 short `TEMP`
     broke a test (F110) and a `TEMP` under `D:/fitway-temp` broke another (F118).
-  - **Outcome.** A launch or resume whose `TEMP` or `TMP` lies under `D:/fitway-temp` is refused before the review or
-    Codex starts, naming the variable; one holding an 8.3 short segment reaches Codex as its long path; any other
+  - **Outcome.** Each of `TEMP` and `TMP` is expanded to its long path and resolved to its real path; a launch or
+    resume whose value then equals or lies inside the real `D:/fitway-temp` is refused before the review or Codex
+    starts, naming the variable, whatever its case, slashes, short names, junctions or `..`; a sibling such as
+    `D:/fitway-temp-logs` is not refused; a value with an 8.3 short segment reaches Codex as its long path; any other
     value reaches it unchanged.
   - **Intent.** Codex's temporary files never land where the gardener inventories, and its tools see long paths.
 - **E7. A test's timeout on a slower runner (F174).**
   - **Cause.** "removing the marker keeps launch and resume behavior exactly as before"
-    (`codex-round.test.ts:1709-1725`) took 26.4 s on main's CI against its 20 s timeout, while the same commit passed.
-  - **Outcome.** Each test in `codex-round.test.ts` whose local median over three runs exceeds 2 s has a timeout of at
-    least three times that median, or its median falls below a third of its timeout; report each such test with its
+    (`codex-round.test.ts:1709-1725`) took 26.4 s on main's CI against its 20 s timeout, while the same commit passed;
+    it takes about 5.4 s on this machine, so that runner was about five times slower.
+  - **Outcome.** Each test in `codex-round.test.ts` whose local median over three runs exceeds 1 s has a timeout of at
+    least eight times that median, or its median falls below an eighth of its timeout; report each such test with its
     three runs and timeout, and the machine's load while timing (another round may be running).
-  - **Intent.** A runner three times slower than this machine fails no test whose work is unchanged.
+  - **Intent.** A runner five times slower than this machine, with margin, fails no test whose work is unchanged.
 
 ## Limits the result keeps
 
-- **L1. Today's behaviour elsewhere.** Every existing test keeps its assertions; every review answer the existing
+- **L1. Today's behaviour elsewhere.** Every existing test keeps its assertions and still runs (none skipped,
+  excluded or made conditional, and the file runs at least as many tests as at the HEAD); every review answer the existing
   tests and fixtures accept or refuse keeps that result, except where E1 or E2 now reads it; launch, `resume` and the
   review keep their arguments, files and exit codes except the refusals E4 to E6 add.
 - **L2. The ladder.** `node scripts/verify.mjs fast` passes on your committed tree, and `git status --short` is empty

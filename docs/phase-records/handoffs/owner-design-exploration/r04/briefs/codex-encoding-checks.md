@@ -55,14 +55,17 @@ whose CI passed.
   - **Cause.** K1 (`scripts/check-agent-context.test.ts:608-636`) expects the ledger's open milestones by name, so the
     closures `79f3efd6` and `446bb9fa`, correct in every other check, failed CI.
   - **Outcome.** K1 passes on the repository as it stands at your result and on the ledger, history and packets as
-    they were at `79f3efd6` and at `446bb9fa`, with no milestone named in the test; it still fails, by name, when an
-    open milestone and the packets disagree (each kind of disagreement the checker rejects, one case each).
+    they were at `79f3efd6` and at `446bb9fa`, with no live milestone named in the test, its helpers or its fixtures:
+    its expectation comes at run time from the packets, compared with the ledger; it still fails, by name, when an
+    open milestone and the packets disagree (each kind of disagreement the checker rejects, one case each, on
+    mutated copies).
   - **Intent.** Opening or closing a milestone correctly never needs the test edited; an inconsistent frontier still fails.
 - **C2. `main` moved before CI was read (F129).**
   - **Cause.** Twice main was fast-forwarded to a commit whose CI run then failed (`79f3efd6`, then `0c09af23`).
   - **Outcome.** `pnpm main:advance <commit>` moves the remote `main` to the commit only when the commit is pushed,
-    the remote `main` is its ancestor, and the newest completed run of `.github/workflows/checks.yml` on exactly that
-    SHA concluded `success`; otherwise it refuses with the reason and pushes nothing. It never forces. `--dry-run`
+    the remote `main` is its ancestor, no run of `.github/workflows/checks.yml` on exactly that SHA is queued or in
+    progress, and the newest such run, whatever its status, completed with `success`, checked again just before the
+    push; otherwise it refuses with the reason and pushes nothing. It never forces. `--dry-run`
     makes every check and pushes nothing. Tests prove each refusal and the move with a stand-in `gh` and local
     repositories.
   - **Intent.** The only way main moves cannot skip the CI result.
@@ -78,9 +81,10 @@ whose CI passed.
     `codex-one-clock.md`, `codex-narrow-sheet.md`, `codex-variants-removal.md` in
     `design-research/owner-composition-exploration-r04/directions/briefs/` on `owner-followup-r04-build`) launched with
     a Scope that lacks B3's last sentence (`docs/agent-context/briefs/codex.md` §"Scope").
-  - **Outcome.** `pnpm brief:check` fails a Codex brief whose Scope does not end with that sentence, whatever its line
-    breaks; each of the five fails on it, and every brief in `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/`
-    passes it.
+  - **Outcome.** `pnpm brief:check` fails a Codex brief that has no Scope section, more than one, or one whose final
+    visible plain-text sentence (outside comments and code) is not that sentence, whatever its line breaks; each of
+    the five fails on it, and every brief in `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` passes
+    it.
   - **Intent.** No Codex brief launches without telling the agent to report an unmet outcome instead of working around it.
 - **C5. `CLAUDE.md`'s agent table and the definitions.**
   - **Cause.** At `e86bc33e` the table listed `sonnet-researcher` and `sonnet-scout` with no tracked definition, and at
@@ -106,7 +110,8 @@ whose CI passed.
 ## Limits the result keeps
 
 - **L1. Today's checks.** Every existing test keeps its assertions except K1's names and the length-warning
-  expectations C6 replaces; every check that passes at the HEAD still passes.
+  expectations C6 replaces, and still runs: none skipped, excluded or made conditional, and the ladder runs at least
+  as many tests as at the HEAD; every check that passes at the HEAD still passes.
 - **L2. The ladder.** `node scripts/verify.mjs fast` passes on your committed tree, and `git status --short` is empty
   after your commit and after the ladder.
 - **L3. Files outside the Scope** are unchanged, the BOM-listed files included.
