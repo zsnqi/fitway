@@ -390,6 +390,27 @@ export function OwnerAccessLive({
 		setResettingOwnerId(ownerId);
 	}
 
+	function clearStaffPinDeactivation() {
+		setStaffPinDeactivating(false);
+		setStaffPinReason("");
+		setStaffPinReasonTooLong(false);
+		deactivateStaffPin.reset();
+	}
+
+	function clearOwnerDeactivation() {
+		setDeactivatingOwnerId(null);
+		setOwnerReason("");
+		setOwnerReasonTooLong(false);
+		deactivateOwner.reset();
+	}
+
+	function openOwnerDeactivation(ownerId: string) {
+		// The reason draft, its too-long message and the refusal belong to one
+		// principal. Never carry any of them from one owner to another.
+		clearOwnerDeactivation();
+		setDeactivatingOwnerId(ownerId);
+	}
+
 	function passwordValidationMessage(error: Exclude<OwnerPasswordError, null>) {
 		return messages.ownerPasswordErrors[error];
 	}
@@ -587,7 +608,7 @@ export function OwnerAccessLive({
 									<Button
 										type="button"
 										variant="outline"
-										onClick={() => setStaffPinDeactivating(false)}
+										onClick={clearStaffPinDeactivation}
 									>
 										{messages.cancel}
 									</Button>
@@ -871,7 +892,7 @@ export function OwnerAccessLive({
 															<Button
 																type="button"
 																variant="outline"
-																onClick={() => setDeactivatingOwnerId(null)}
+																onClick={clearOwnerDeactivation}
 															>
 																{messages.cancel}
 															</Button>
@@ -960,7 +981,7 @@ export function OwnerAccessLive({
 															variant="link"
 															className="owner-access-action-link owner-access-action-link--danger"
 															onClick={() =>
-																setDeactivatingOwnerId(owner.principalId)
+																openOwnerDeactivation(owner.principalId)
 															}
 														>
 															{messages.deactivateOwner}

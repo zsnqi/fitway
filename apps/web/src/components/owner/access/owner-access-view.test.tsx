@@ -724,6 +724,148 @@ describe("owner access live", () => {
 		}
 	});
 
+	it("starts each owner deactivation form empty after Cancel and for another owner", async () => {
+		const messages = ownerAccessMessages.en;
+		const ownerBId = "00000000-0000-4000-8000-0000000000a2";
+		const reasonA = "a reason written for Nadia only";
+		const deactivateOwner = mutationSpy<OwnerDeactivateInput>();
+		await render(
+			<OwnerAccessLive
+				{...liveProps([
+					ownerPrincipal(),
+					ownerPrincipal({ principalId: ownerBId, displayName: "Samir" }),
+				])}
+				deactivateOwner={deactivateOwner}
+			/>,
+			"en",
+		);
+		const rowButton = (name: string, label: string) =>
+			[...container.querySelectorAll(".owner-access-owner")]
+				.filter((row) => row.textContent?.includes(name))
+				.flatMap((row) => [
+					...row.querySelectorAll<HTMLButtonElement>("button"),
+				])
+				.find((button) => button.textContent?.trim() === label);
+
+		await act(async () =>
+			rowButton("Nadia", messages.deactivateOwner)?.click(),
+		);
+		const inputA = container.querySelector(
+			`input[id$="reason-${ownerAId}"]`,
+		) as HTMLInputElement;
+		expect(inputA).not.toBeNull();
+		await act(async () => setControlledValue(inputA, reasonA));
+		await act(async () => rowButton("Nadia", messages.cancel)?.click());
+
+		await act(async () =>
+			rowButton("Samir", messages.deactivateOwner)?.click(),
+		);
+		const inputB = container.querySelector(
+			`input[id$="reason-${ownerBId}"]`,
+		) as HTMLInputElement;
+		expect(inputB).not.toBeNull();
+		expect(inputB.value).toBe("");
+		await act(async () => rowButton("Samir", messages.confirm)?.click());
+		expect(
+			deactivateOwner.submitSpy.mock.calls.some(
+				([input]) => (input as OwnerDeactivateInput).reason === reasonA,
+			),
+		).toBe(false);
+	});
+
+	it("drops an owner's too-long message on Cancel so another owner's form opens clean", async () => {
+		const messages = ownerAccessMessages.en;
+		const ownerBId = "00000000-0000-4000-8000-0000000000a2";
+		const deactivateOwner = mutationSpy<OwnerDeactivateInput>();
+		await render(
+			<OwnerAccessLive
+				{...liveProps([
+					ownerPrincipal(),
+					ownerPrincipal({ principalId: ownerBId, displayName: "Samir" }),
+				])}
+				deactivateOwner={deactivateOwner}
+			/>,
+			"en",
+		);
+		const rowButton = (name: string, label: string) =>
+			[...container.querySelectorAll(".owner-access-owner")]
+				.filter((row) => row.textContent?.includes(name))
+				.flatMap((row) => [
+					...row.querySelectorAll<HTMLButtonElement>("button"),
+				])
+				.find((button) => button.textContent?.trim() === label);
+
+		await act(async () =>
+			rowButton("Nadia", messages.deactivateOwner)?.click(),
+		);
+		const inputA = container.querySelector(
+			`input[id$="reason-${ownerAId}"]`,
+		) as HTMLInputElement;
+		await act(async () => {
+			setControlledValue(inputA, "r".repeat(241));
+			inputA.form?.dispatchEvent(
+				new Event("submit", { bubbles: true, cancelable: true }),
+			);
+		});
+		expect(inputA.getAttribute("aria-invalid")).toBe("true");
+		expect(container.textContent).toContain(messages.reasonTooLong);
+		await act(async () => rowButton("Nadia", messages.cancel)?.click());
+
+		await act(async () =>
+			rowButton("Samir", messages.deactivateOwner)?.click(),
+		);
+		const inputB = container.querySelector(
+			`input[id$="reason-${ownerBId}"]`,
+		) as HTMLInputElement;
+		expect(inputB).not.toBeNull();
+		expect(inputB.getAttribute("aria-invalid")).not.toBe("true");
+		expect(container.textContent).not.toContain(messages.reasonTooLong);
+		expect(deactivateOwner.submitSpy).not.toHaveBeenCalled();
+	});
+
+	it("reopens the staff PIN deactivation form empty after a refused reason and Cancel", async () => {
+		const messages = ownerAccessMessages.en;
+		const deactivateStaffPin = mutationSpy<StaffPinDeactivateInput>();
+		await render(
+			<OwnerAccessLive
+				{...liveProps([staffPrincipal()])}
+				deactivateStaffPin={deactivateStaffPin}
+			/>,
+			"en",
+		);
+		const cardButton = (label: string) =>
+			[
+				...container.querySelectorAll<HTMLButtonElement>(
+					"[data-owner-access-staff-pin] button",
+				),
+			].find((button) => button.textContent?.trim() === label);
+		const reasonInput = () =>
+			container.querySelector(
+				'input[id$="staff-pin-reason"]',
+			) as HTMLInputElement | null;
+
+		await act(async () => cardButton(messages.deactivateStaffPin)?.click());
+		const first = reasonInput() as HTMLInputElement;
+		expect(first).not.toBeNull();
+		await act(async () => {
+			setControlledValue(first, "r".repeat(241));
+			first.form?.dispatchEvent(
+				new Event("submit", { bubbles: true, cancelable: true }),
+			);
+		});
+		expect(first.getAttribute("aria-invalid")).toBe("true");
+		expect(container.textContent).toContain(messages.reasonTooLong);
+		await act(async () => cardButton(messages.cancel)?.click());
+
+		await act(async () => cardButton(messages.deactivateStaffPin)?.click());
+		const reopened = reasonInput();
+		expect(reopened).not.toBeNull();
+		expect(reopened?.value).toBe("");
+		expect(reopened?.getAttribute("aria-invalid")).not.toBe("true");
+		expect(container.textContent).not.toContain(messages.reasonTooLong);
+		expect(deactivateStaffPin.submitSpy).not.toHaveBeenCalled();
+	});
+
 	it("offers deactivate and reset for an active owner, only reactivate for an inactive one", async () => {
 		await render(
 			<OwnerAccessLive
