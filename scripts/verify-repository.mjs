@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
@@ -19,6 +20,179 @@ const root = process.cwd();
 
 function fail(message) {
 	throw new Error(message);
+}
+
+const UTF8_BOM = Buffer.from([0xef, 0xbb, 0xbf]);
+const CLAUDE_AGENT_DIRECTORY = ".claude/agents";
+const CLAUDE_INSTRUCTIONS_FILE = "CLAUDE.md";
+
+export const TRACKED_BOM_EXCEPTIONS = Object.freeze([
+	{
+		path: "apps/server/src/phase11-settings.integration.test.ts",
+		reason:
+			"Pre-existing tracked BOM; kept byte-for-byte outside this round's approved scope.",
+	},
+	{
+		path: "apps/web/src/components/owner/settings/owner-settings-section.test.tsx",
+		reason:
+			"Pre-existing tracked BOM; kept byte-for-byte outside this round's approved scope.",
+	},
+	{
+		path: "apps/web/src/components/owner/settings/owner-settings-section.tsx",
+		reason:
+			"Pre-existing tracked BOM; kept byte-for-byte outside this round's approved scope.",
+	},
+	{
+		path: "apps/web/src/components/owner/settings/owner-settings-view.tsx",
+		reason:
+			"Pre-existing tracked BOM; kept byte-for-byte outside this round's approved scope.",
+	},
+	{
+		path: "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-pre-existing-frontier.txt",
+		reason: "Historical evidence preserved with its original bytes and BOM.",
+	},
+	{
+		path: "tests/browser/phase11-settings.browser.spec.ts",
+		reason:
+			"Pre-existing tracked BOM; kept byte-for-byte outside this round's approved scope.",
+	},
+]);
+
+const CLAUDE_MODEL_ALIASES = new Map([
+	["opus", "opus"],
+	["sonnet", "sonnet"],
+	["haiku 5.5", "claude-haiku-5-5"],
+]);
+
+function normalizeGitPath(value) {
+	return value.replaceAll("\\", "/");
+}
+
+function lineNumberAt(text, index) {
+	return text.slice(0, index).split(/\r?\n/).length;
+}
+
+function normalizeClaudeModel(value) {
+	const normalized = String(value).trim().toLowerCase().replace(/\s+/g, " ");
+	return CLAUDE_MODEL_ALIASES.get(normalized) ?? normalized;
+}
+
+export function listTrackedFiles(cwd = root, patterns = []) {
+	const output = execFileSync("git", ["ls-files", "-z", "--", ...patterns], {
+		cwd,
+	});
+	return output
+		.toString("utf8")
+		.split("\0")
+		.filter(Boolean)
+		.map(normalizeGitPath)
+		.sort();
+}
+
+export function assertNoUnexpectedBom({
+	repositoryRoot = root,
+	trackedFiles = listTrackedFiles(repositoryRoot),
+} = {}) {
+	const allowed = new Map(
+		TRACKED_BOM_EXCEPTIONS.map((entry) => [entry.path, entry.reason]),
+	);
+	let allowedCount = 0;
+	for (const relativePath of trackedFiles) {
+		const bytes = readFileSync(path.resolve(repositoryRoot, relativePath));
+		if (!bytes.subarray(0, UTF8_BOM.length).equals(UTF8_BOM)) continue;
+		if (allowed.has(relativePath)) {
+			allowedCount += 1;
+			continue;
+		}
+		fail(
+			`File starts with a UTF-8 BOM: ${relativePath}. Remove the BOM or add the path to TRACKED_BOM_EXCEPTIONS with its reason.`,
+		);
+	}
+	return { checked: trackedFiles.length, allowed: allowedCount };
+}
+
+export function assertClaudeAgentTable({
+	repositoryRoot = root,
+	trackedFiles = listTrackedFiles(repositoryRoot, [CLAUDE_AGENT_DIRECTORY]),
+} = {}) {
+	const instructionsPath = path.resolve(
+		repositoryRoot,
+		CLAUDE_INSTRUCTIONS_FILE,
+	);
+	const instructions = readFileSync(instructionsPath, "utf8");
+	const trackedDefinitions = trackedFiles.filter(
+		(relativePath) =>
+			relativePath.startsWith(`${CLAUDE_AGENT_DIRECTORY}/`) &&
+			relativePath.endsWith(".md"),
+	);
+	const trackedNames = new Set(
+		trackedDefinitions.map((relativePath) =>
+			path.posix.basename(relativePath, ".md"),
+		),
+	);
+	const rows = new Map();
+	for (const match of instructions.matchAll(
+		/^\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|/gm,
+	)) {
+		const name = match[1].trim();
+		const row = {
+			name,
+			model: match[2].trim(),
+			effort: match[3].trim(),
+			line: lineNumberAt(instructions, match.index),
+		};
+		if (rows.has(name))
+			fail(
+				`${CLAUDE_INSTRUCTIONS_FILE}:${row.line}: agent table names ${name} more than once`,
+			);
+		rows.set(name, row);
+	}
+	if (rows.size === 0)
+		fail(`${CLAUDE_INSTRUCTIONS_FILE}: agent definition table is missing`);
+
+	for (const row of rows.values()) {
+		const relativeDefinition = `${CLAUDE_AGENT_DIRECTORY}/${row.name}.md`;
+		if (!trackedNames.has(row.name))
+			fail(
+				`${CLAUDE_INSTRUCTIONS_FILE}:${row.line}: agent table names ${row.name}, but ${relativeDefinition} is not tracked`,
+			);
+		const definitionText = readFileSync(
+			path.resolve(repositoryRoot, relativeDefinition),
+			"utf8",
+		);
+		const frontmatter = definitionText.match(
+			/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/,
+		);
+		if (!frontmatter)
+			fail(`${relativeDefinition}: agent definition is missing frontmatter`);
+		const definition = parseYaml(frontmatter[1]);
+		if (typeof definition?.model !== "string")
+			fail(`${relativeDefinition}: agent definition is missing model`);
+		if (typeof definition?.effort !== "string")
+			fail(`${relativeDefinition}: agent definition is missing effort`);
+		if (
+			normalizeClaudeModel(row.model) !== normalizeClaudeModel(definition.model)
+		)
+			fail(
+				`${CLAUDE_INSTRUCTIONS_FILE}:${row.line}: agent ${row.name} model ${row.model} does not match ${definition.model}`,
+			);
+		if (row.effort.toLowerCase() !== definition.effort.toLowerCase())
+			fail(
+				`${CLAUDE_INSTRUCTIONS_FILE}:${row.line}: agent ${row.name} effort ${row.effort} does not match ${definition.effort}`,
+			);
+	}
+
+	for (const relativeDefinition of trackedDefinitions) {
+		const name = path.posix.basename(relativeDefinition, ".md");
+		if (name.startsWith("impeccable-") || rows.has(name)) continue;
+		fail(
+			`${CLAUDE_INSTRUCTIONS_FILE}: agent table is missing tracked definition ${relativeDefinition}`,
+		);
+	}
+	return {
+		rows: rows.size,
+		trackedDefinitions: trackedDefinitions.length,
+	};
 }
 
 function resolveRepositoryPath(relativePath) {
@@ -617,6 +791,18 @@ async function main() {
 			`PROJECT_STATE_HISTORY.yaml schema validation failed:\n${JSON.stringify(validateHistory.errors, null, 2)}`,
 		);
 	}
+	const trackedFiles = listTrackedFiles(root);
+	const bomCheck = assertNoUnexpectedBom({
+		repositoryRoot: root,
+		trackedFiles,
+	});
+	const claudeAgentTable = assertClaudeAgentTable({
+		repositoryRoot: root,
+		trackedFiles,
+	});
+	console.log(
+		`Tracked encoding and agent checks passed: ${bomCheck.checked} tracked files checked, ${bomCheck.allowed} allowed BOM(s), ${claudeAgentTable.rows} agent table rows, and ${claudeAgentTable.trackedDefinitions} tracked definitions.`,
+	);
 	await verifyGardenerRecord(state);
 	if (state.gardener)
 		console.log(

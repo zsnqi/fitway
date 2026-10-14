@@ -4,6 +4,7 @@ import {
 	copyFileSync,
 	mkdirSync,
 	mkdtempSync,
+	readdirSync,
 	readFileSync,
 	rmSync,
 	symlinkSync,
@@ -47,6 +48,7 @@ const FIXTURE_MILESTONES = [
 const FIXTURE_BASE_COMMIT = "19e28f4f0874d96569bc6944e38ad94b89924b60";
 const FIXTURE_HANDOFF =
 	"docs/phase-records/handoffs/coordinator/20260920-182500-agent-context-architecture-migration-r01-m8-closure.md";
+const HISTORICAL_FRONTIERS = ["79f3efd6", "446bb9fa"] as const;
 const fixtureRoots: string[] = [];
 
 it("R3: exposes exactly the task classes used by packets and no startup mode", () => {
@@ -133,6 +135,116 @@ function copyFixtureFile(root: string, relativePath: string): void {
 	const target = path.resolve(root, relativePath);
 	mkdirSync(path.dirname(target), { recursive: true });
 	copyFileSync(source, target);
+}
+
+function committedPath(commit: string, relativePath: string): Buffer {
+	return execFileSync("git", ["show", `${commit}:${relativePath}`], {
+		cwd: REAL_ROOT,
+	});
+}
+
+function writeCommittedPath(
+	root: string,
+	commit: string,
+	relativePath: string,
+): boolean {
+	const normalized = relativePath.replaceAll("\\", "/");
+	const target = path.resolve(root, normalized);
+	const relative = path.relative(root, target);
+	if (relative.startsWith("..") || path.isAbsolute(relative)) return false;
+	try {
+		const bytes = committedPath(commit, normalized);
+		mkdirSync(path.dirname(target), { recursive: true });
+		writeFileSync(target, bytes);
+		return true;
+	} catch (error) {
+		if ((error as { status?: number }).status === 128) return false;
+		throw error;
+	}
+}
+
+function materializeCommitFrontier(root: string, commit: string): void {
+	for (const relativePath of [
+		"PROJECT_STATE.yaml",
+		"PROJECT_STATE_HISTORY.yaml",
+	])
+		writeCommittedPath(root, commit, relativePath);
+
+	const packetDirectory = "docs/phase-records/task-packets";
+	rmSync(path.resolve(root, packetDirectory), {
+		recursive: true,
+		force: true,
+	});
+	const packetPaths = execFileSync(
+		"git",
+		["ls-tree", "-r", "--name-only", commit, "--", packetDirectory],
+		{
+			cwd: REAL_ROOT,
+			encoding: "utf8",
+		},
+	)
+		.trim()
+		.split(/\r?\n/)
+		.filter((entry) => entry.endsWith(".yaml"));
+	for (const packetPath of packetPaths)
+		writeCommittedPath(root, commit, packetPath);
+
+	const state = parseYaml(
+		readFileSync(path.resolve(root, "PROJECT_STATE.yaml"), "utf8"),
+	) as FixtureState;
+	const sourcePaths = new Set<string>();
+	for (const milestone of Object.values(state.milestones)) {
+		if (milestone.handoff) sourcePaths.add(milestone.handoff);
+	}
+	for (const packetPath of packetPaths) {
+		const packet = parseYaml(
+			readFileSync(path.resolve(root, packetPath), "utf8"),
+		) as FixturePacket;
+		if (packet.packetStatus === "CLOSED") continue;
+		for (const authority of [
+			...(packet.authorities?.required ?? []),
+			...(packet.authorities?.conditional ?? []),
+		]) {
+			if (
+				typeof authority.path === "string" &&
+				!authority.path.includes("<") &&
+				!authority.path.endsWith("/")
+			)
+				sourcePaths.add(authority.path);
+		}
+		const visual = packet.visual as
+			| {
+					explorationEnvelope?: { authorizingDecision?: unknown };
+					currentFrames?: Array<{ path?: unknown }>;
+					referenceFrames?: Array<{ path?: unknown }>;
+			  }
+			| undefined;
+		if (typeof visual?.explorationEnvelope?.authorizingDecision === "string")
+			sourcePaths.add(visual.explorationEnvelope.authorizingDecision);
+		for (const frame of [
+			...(visual?.currentFrames ?? []),
+			...(visual?.referenceFrames ?? []),
+		]) {
+			if (typeof frame.path === "string") sourcePaths.add(frame.path);
+		}
+	}
+	for (const sourcePath of sourcePaths)
+		writeCommittedPath(root, commit, sourcePath);
+}
+
+function packetFrontier(root: string): string[] {
+	const packetDirectory = path.resolve(root, "docs/phase-records/task-packets");
+	return readdirSync(packetDirectory)
+		.filter((entry) => entry.endsWith(".yaml"))
+		.map((entry) => {
+			const packet = parseYaml(
+				readFileSync(path.join(packetDirectory, entry), "utf8"),
+			) as FixturePacket;
+			return packet;
+		})
+		.filter((packet) => packet.packetStatus !== "CLOSED")
+		.map((packet) => packet.milestoneId)
+		.sort();
 }
 
 function makeFixture(): string {
@@ -605,34 +717,102 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("K1: passes the current registry with its live frontier and closed archived packets", async () => {
-		const result = await checkAgentContext({
-			root: REAL_ROOT,
+	it("K1: derives the open frontier from packets and passes the historical closures", async () => {
+		for (const candidate of [
+			REAL_ROOT,
+			...HISTORICAL_FRONTIERS.map((commit) => {
+				const root = makeFixture();
+				materializeCommitFrontier(root, commit);
+				return root;
+			}),
+		]) {
+			const result = await checkAgentContext({
+				root: candidate,
+				checkTracked: false,
+			});
+			expect(result.registry).not.toHaveProperty("mode");
+			expect(result.ok, result.errors.join("\n")).toBe(true);
+			expect(Object.keys(result.state?.milestones ?? {}).sort()).toEqual(
+				packetFrontier(candidate),
+			);
+			expect(
+				result.warnings.some((warning) =>
+					warning.includes("no active task packet"),
+				),
+			).toBe(false);
+		}
+	});
+
+	it("K1: fails by ID for each packet/ledger frontier direction", async () => {
+		const missingPacketRoot = makeFixture();
+		isolateFixtureHistory(missingPacketRoot);
+		const missingPacket = basePacket(missingPacketRoot);
+		const missingMilestone =
+			missingPacket.state.milestones[missingPacket.packet.milestoneId];
+		delete missingMilestone.taskClass;
+		delete missingMilestone.taskPacket;
+		delete missingMilestone.taskPacketSha256;
+		rmSync(path.resolve(missingPacketRoot, missingPacket.packetPath));
+		writeFixtureState(missingPacketRoot, missingPacket.state);
+		const missingResult = await checkAgentContext({
+			root: missingPacketRoot,
 			checkTracked: false,
 		});
-		expect(result.registry).not.toHaveProperty("mode");
-		// This frontier is an independent expectation, not another ledger parse.
-		expect(Object.keys(result.state?.milestones ?? {}).sort()).toEqual([
-			"owner-design-exploration-r04",
-		]);
-		expect(result.history?.milestones?.["access-reason-cap-r01"]?.status).toBe(
-			"DONE",
-		);
 		expect(
-			result.history?.milestones?.[
-				"owner-design-exploration-envelope-repair-r01"
-			]?.status,
-		).toBe("DONE");
-		expect(
-			result.history?.milestones?.["agent-context-architecture-migration-r01"]
-				?.status,
-		).toBe("DONE");
-		expect(result.ok).toBe(true);
-		expect(
-			result.warnings.some((warning) =>
-				warning.includes("no active task packet"),
+			missingResult.errors.some(
+				(error) =>
+					error.includes(missingPacket.packet.milestoneId) &&
+					error.includes(
+						"active routing requires exactly one validated packet",
+					),
 			),
-		).toBe(false);
+		).toBe(true);
+
+		const orphanRoot = makeFixture();
+		isolateFixtureHistory(orphanRoot);
+		const orphanPacket = basePacket(orphanRoot);
+		const orphanId = "fixture-orphan";
+		const orphanPath = `docs/phase-records/task-packets/${orphanId}.yaml`;
+		orphanPacket.packet.milestoneId = orphanId;
+		orphanPacket.packet.stateRef = `PROJECT_STATE.yaml#/milestones/${orphanId}`;
+		writeFileSync(
+			path.resolve(orphanRoot, orphanPath),
+			stringifyYaml(orphanPacket.packet),
+			"utf8",
+		);
+		const orphanResult = await checkAgentContext({
+			root: orphanRoot,
+			checkTracked: false,
+		});
+		expect(
+			orphanResult.errors.some(
+				(error) =>
+					error.includes(orphanPath) &&
+					error.includes("packet points to no active milestone"),
+			),
+		).toBe(true);
+
+		const closedRoot = makeFixture();
+		isolateFixtureHistory(closedRoot);
+		const closedPacket = basePacket(closedRoot);
+		closedPacket.packet.packetStatus = "CLOSED";
+		materializePacket(
+			closedRoot,
+			closedPacket.state,
+			closedPacket.packet,
+			closedPacket.packetPath,
+		);
+		const closedResult = await checkAgentContext({
+			root: closedRoot,
+			checkTracked: false,
+		});
+		expect(
+			closedResult.errors.some(
+				(error) =>
+					error.includes(closedPacket.packet.milestoneId) &&
+					error.includes("cannot route a CLOSED packet"),
+			),
+		).toBe(true);
 	});
 
 	it("warns conservatively below the instruction cap and fails only above it", async () => {

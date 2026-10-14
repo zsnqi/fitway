@@ -17,6 +17,8 @@ const START = "<!-- environment:start v1 -->";
 const END = "<!-- environment:end -->";
 const FORMAT =
 	/^<!-- brief-format: v1 role: (codex|builder|designer|verifier) -->\r?\n/;
+const CODEX_SCOPE_FINAL_SENTENCE =
+	"If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.";
 
 function lineAt(text, index) {
 	return text.slice(0, index).split("\n").length;
@@ -37,6 +39,88 @@ function withoutComments(text) {
 
 function codeSpans(text) {
 	return [...text.matchAll(/(`+)([^`]*?)\1(?!`)/g)];
+}
+
+function withoutFencedCode(text) {
+	return text.replace(
+		/^ {0,3}(`{3,}|~{3,})[^\r\n]*\r?\n[\s\S]*?^ {0,3}\1\s*$/gm,
+		(value) => mask(value),
+	);
+}
+
+function withoutCode(text) {
+	let result = withoutFencedCode(text);
+	for (const span of codeSpans(result).reverse())
+		result =
+			result.slice(0, span.index) +
+			mask(span[0]) +
+			result.slice(span.index + span[0].length);
+	return result;
+}
+
+function markdownSections(text, title) {
+	const headings = [];
+	for (const match of text.matchAll(/^ {0,3}(#{1,6})\s+(.+?)\s*#*\s*$/gm))
+		headings.push({
+			level: match[1].length,
+			title: match[2].trim(),
+			start: match.index,
+			contentStart: match.index + match[0].length,
+			line: lineAt(text, match.index),
+		});
+	const sections = [];
+	for (let index = 0; index < headings.length; index += 1) {
+		const heading = headings[index];
+		if (heading.title.toLowerCase() !== title.toLowerCase()) continue;
+		const next = headings
+			.slice(index + 1)
+			.find((candidate) => candidate.level <= heading.level);
+		sections.push({
+			line: heading.line,
+			content: text.slice(heading.contentStart, next?.start ?? text.length),
+		});
+	}
+	return sections;
+}
+
+function sectionIds(text, patterns) {
+	const ids = new Set();
+	for (const section of patterns.flatMap((pattern) =>
+		markdownSections(text, pattern).flatMap((entry) => entry.content),
+	)) {
+		for (const match of section.matchAll(
+			/^\s*[-*]\s+\*\*([A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*\d+)\b/gm,
+		))
+			ids.add(match[1]);
+	}
+	return ids.size;
+}
+
+export function codexScopeProblem(prose) {
+	const scopeSections = markdownSections(
+		withoutCode(withoutComments(prose)),
+		"Scope",
+	);
+	if (scopeSections.length !== 1)
+		return {
+			line: scopeSections[0]?.line ?? 1,
+			message: `Codex brief must have exactly one Scope section; found ${scopeSections.length}`,
+		};
+	const visibleScope = scopeSections[0].content.replace(/\s+/g, " ").trim();
+	const sentenceStart = visibleScope.lastIndexOf(CODEX_SCOPE_FINAL_SENTENCE);
+	const sentenceEndsScope =
+		sentenceStart >= 0 &&
+		["", "(B3)"].includes(
+			visibleScope
+				.slice(sentenceStart + CODEX_SCOPE_FINAL_SENTENCE.length)
+				.trim(),
+		) &&
+		(sentenceStart === 0 || /\s/.test(visibleScope[sentenceStart - 1]));
+	if (sentenceEndsScope) return null;
+	return {
+		line: scopeSections[0].line,
+		message: `Codex Scope must end with: ${CODEX_SCOPE_FINAL_SENTENCE}`,
+	};
 }
 
 const REVIEW_TEMP_ROOT =
@@ -798,11 +882,7 @@ export async function checkBrief({
 			mask(prose.slice(block.start, block.end)) +
 			prose.slice(block.end);
 	prose = withoutComments(prose);
-	for (const span of codeSpans(prose).reverse())
-		prose =
-			prose.slice(0, span.index) +
-			mask(span[0]) +
-			prose.slice(span.index + span[0].length);
+	prose = withoutCode(prose);
 	for (const checklist of prose.matchAll(
 		/^## Coordinator checklist(?:\s.*)?\r?$/gim,
 	))
@@ -825,13 +905,21 @@ export async function checkBrief({
 				`codex brief mentions forbidden text: ${forbidden[0]}`,
 			);
 	const lineCount = lines(text);
-	if (lineCount > 80)
-		report(
-			"brief-length",
-			81,
-			`${lineCount} lines exceeds 80; warning only`,
-			"WARNING",
-		);
+	if (role === "codex") {
+		const isFullBrief =
+			markdownSections(prose, "Report").length > 0 ||
+			markdownSections(prose, "Scope").length > 0;
+		if (isFullBrief) {
+			const scopeProblem = codexScopeProblem(prose);
+			if (scopeProblem)
+				report("brief-scope", scopeProblem.line, scopeProblem.message);
+		}
+	}
+	const outcomeIds = sectionIds(prose, [
+		"Causes and required outcomes",
+		"Causes and outcomes",
+	]);
+	const limitIds = sectionIds(prose, ["Limits", "Limits the result keeps"]);
 	const validatedWorktree = await validateWorktree(text, report, git);
 	const worktree = validatedWorktree?.root ?? null;
 	const namedHead = validatedWorktree?.head ?? null;
@@ -852,6 +940,8 @@ export async function checkBrief({
 		worktree,
 		requiredChanges,
 		lineCount,
+		outcomeIds,
+		limitIds,
 		filled,
 		problems,
 		ok: !problems.some((problem) => problem.severity === "FAIL"),
@@ -862,6 +952,9 @@ export function formatBriefResult(result) {
 	const output = result.problems.map(
 		(problem) =>
 			`${result.briefPath}:${problem.line}: ${problem.severity} ${problem.rule}: ${problem.message}`,
+	);
+	output.push(
+		`${result.briefPath}:1: INFO brief-ids: ${result.outcomeIds} outcome IDs, ${result.limitIds} limit IDs`,
 	);
 	if (result.filled)
 		output.push(`${result.briefPath}:1: filled shared environment block`);
