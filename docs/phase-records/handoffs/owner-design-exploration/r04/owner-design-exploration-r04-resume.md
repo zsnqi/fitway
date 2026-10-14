@@ -14,41 +14,35 @@
   sees wait until after the demo; anything visible that would make the demo look bad is fixed before it. Findings
   carry `seen_by` and `demo` labels (decision 52). The demo's direction is private: `D:/fitway-private/demo-plan.md`.
 - **Owner screens:** Daily, Reports, Activity log and Access on owner-followup-r04-build (worktree
-  D:/Projects/fitway-worktrees/owner-followup-r04-s04 at `4352181f`, dirty with the stopped tuner-removal work, so the
-  previews show the tuner removed). Previews: eclipse-build (3174), LAN (3180).
+  D:/Projects/fitway-worktrees/owner-followup-r04-s04 at `c2fe4661`, the tuner removed). Previews: eclipse-build
+  (3174), LAN (3180).
 - **vf-parallel is merged** (`4910963a`; record in `codex-rounds.md` §"vf-parallel", row in `rounds.tsv`): port pairs,
   up to 4 workers per compare and kept captures per item (F147 fixed); the full compare 3.0x faster with 4 workers
   (coordinator's timing alone, 1,136.6 s against 375.0 s, the same 1,224 verdicts). Brief 12/12, held-out 10/11:
   VP4 partial on F148 (NOT-HELD in 5 of 5 runs with 4 workers, 2 of 4 with 1). New: F160 (Reports' and Access's
   loading proofs capture inside the 300 ms skeleton window, a false DIFFERENT under load; one kept reserve frame
   holds the skeleton), F161 (the tests' leftover lease folders).
-- **launcher-fixes-2 is merged** (`6d472338`): every real review answer read, and a run that ends without a report
-  resumed on its own up to 10 times (`auto-resumes.log` in the run folder; F157 fixed, F154 resolved). Held-out 5/8:
-  F156's silent read still untested, a numbered list inside a reading refuses the answer (F162), the resume message
-  escapes quotes (F163).
-- **launcher-fixes-3 is merged** (`3a959ac2`; record in `codex-rounds.md`, row in `rounds.tsv`): brief 3/5, held-out
-  4/6. The resume quote is exact (F163 fixed); lists, deeper headings and fences in a reading's body and `**1.**` starts
-  are read; the checker's silent read fails a test. Open: bare `1. R1` readings now refused where `a6ad0ae4` read them
-  (F169), a silent absolute read in `copyReviewSources` untested (F156), the preface form (F162).
+- **launcher-fixes-2 and -3 are merged** (`6d472338`, `3a959ac2`; records in `codex-rounds.md`): every real review
+  answer read, automatic resume up to 10 times (F154, F157), the resume quote exact (F163); their open F156, F162 and
+  F169 are in encoding-launcher.
 - **shared-frame is graded** (record in `codex-rounds.md`): brief 6/6, held-out 8/10; every page unchanged outside the
   base's own instabilities (the Lights chip, F126; touch presses, F165). New: F164 (navigating features cannot be
   captured under touch or keyboard), F166 (the build branch's CI red since 2026-10-11 on a Node script Vitest collects).
 - **access-reason-cap-r01 is DONE** (integrated `bfc23713`, closed `446bb9fa`): restarted by the coordinator, main
   merged in, the review's carry-over findings fixed after one added criterion (`b62594d3`); its resume file lists the
   follow-ups for the move to production (the password-reset form's pending Cancel among them).
-- **The pstack reading (decision 56):** nothing installed; `correct`'s method adopted, `benchmark-checklist` folded
-  into B13 (three runs, more only where they could change the decision), B6 loosened (small causes may share a round
-  when each has its own outcome and check), one report-only `no-comments` trial on the tool code.
+- **The pstack reading (decision 56):** nothing installed; `correct`'s method adopted, B13 and B6 changed, one
+  report-only `no-comments` trial on the tool code.
 - **Windows Update restarted the machine at 06:36** during grading (F159; the user's setting, never an agent's).
 
 ## Running now
 
-- **encoding-launcher** (decision 62): `briefs/codex-encoding-launcher.md`, worktree
+- **encoding-launcher** (decision 62): `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-encoding-launcher.md`, worktree
   `D:/Projects/fitway-worktrees/owner-r04-encoding-launcher` (branch of the same name, from `945c07b5`), run
   `D:/fitway-temp/codex-round-ec7c6878-0206-4712-822d-18c195cf796f`, DeepSeek at `max`. Review readings: four closed,
   one left open (`D:/fitway-temp/brief-review/codex-encoding-launcher-1/dispositions.md`). Held-out rows EL1-EL8 in
   `D:/fitway-grader/owner-r04/encoding-launcher-heldout.md`.
-- **encoding-checks** (decision 62): `briefs/codex-encoding-checks.md`, worktree
+- **encoding-checks** (decision 62): `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-encoding-checks.md`, worktree
   `D:/Projects/fitway-worktrees/owner-r04-encoding-checks` (branch of the same name, from `945c07b5`), run
   `D:/fitway-temp/codex-round-ae11a8ef-f311-4b20-a357-a7427974cee0`, DeepSeek at `max`. Review readings: four closed,
   one left open for the user (branch protection, below). Held-out rows EC1-EC8 in
