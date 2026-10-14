@@ -366,7 +366,7 @@ just data, not a special case.
   older pending ones; only the latest is delivered.
 - **Audit log** — actor (authenticated principal; the shared front-desk principal for staff
   actions, accepted coarse granularity per RESEARCH.md §3), action, from → to values,
-  optional reason, created-at. Written in the same transaction as the mutation it
+  optional reason (at most 240 characters), created-at. Written in the same transaction as the mutation it
   records. Retained ~12 months.
 - **Edge health log** — offline/online transitions, device-reported health flags
   (camera/feed/process), derived from pushes and cron detection. Retained ~12 months.
