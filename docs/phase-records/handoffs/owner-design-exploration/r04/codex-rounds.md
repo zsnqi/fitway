@@ -997,7 +997,8 @@ checks live outside the repository and never appear here or in a brief. One line
   - VP10 pass: a compare killed mid-run left no Chromium and no listener on 3188-3189 after 10 s; the next compare there
     finished in 14 s.
   - VP11 pass: only `.agents/skills/verify-fitway/**` changed; `SKILL.md` only in §"Compare" and its port lines; the
-    recipes keep 44, 31, 46, 30 and 14 features, which both CLIs list; CI run 38539370125 green on `70cf9180`.
+    recipes keep 44, 31, 46, 30 and 14 features, which both CLIs list; CI green on `70cf9180` (run 38539370125)
+    and on `d7c5bfa8`, the merge with this record (run 38541495924).
 - **Failure causes:** the first session's unmeasured rows were the coordinator's port schedule, not the brief's words or
   the model's reading; the 2x bar the second session missed was the coordinator's reading of DECISIONS 48 (54). Side
   findings: F158, F159, F160.
