@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 17:55 +03:00 (handoff to a fresh session; nothing running: tuner-removal and vf-fixes stopped and saved at the user's request, launcher-fixes-3 reported; main at `4030ca3e`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 16:45 +03:00 (launcher-fixes-3 graded and merged at `3a959ac2`; tuner-removal's continue brief written, its review next; vf-fixes waits; main at `6272eeb5`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-59), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -26,6 +26,10 @@
   resumed on its own up to 10 times (`auto-resumes.log` in the run folder; F157 fixed, F154 resolved). Held-out 5/8:
   F156's silent read still untested, a numbered list inside a reading refuses the answer (F162), the resume message
   escapes quotes (F163).
+- **launcher-fixes-3 is merged** (`3a959ac2`; record in `codex-rounds.md`, row in `rounds.tsv`): brief 3/5, held-out
+  4/6. The resume quote is exact (F163 fixed); lists, deeper headings and fences in a reading's body and `**1.**` starts
+  are read; the checker's silent read fails a test. Open: bare `1. R1` readings now refused where `a6ad0ae4` read them
+  (F169), a silent absolute read in `copyReviewSources` untested (F156), the preface form (F162).
 - **shared-frame is graded** (record in `codex-rounds.md`): brief 6/6, held-out 8/10; every page unchanged outside the
   base's own instabilities (the Lights chip, F126; touch presses, F165). New: F164 (navigating features cannot be
   captured under touch or keyboard), F166 (the build branch's CI red since 2026-10-11 on a Node script Vitest collects).
@@ -39,36 +43,26 @@
 
 ## Running now
 
-Nothing. At the user's request (2026-10-14, about 17:45) the coordinator stopped two DeepSeek rounds before they
-reported and saved their uncommitted work on side branches (pushed); each worktree is left dirty as it was, and each
-run folder has a `STOPPED-2026-10-14.md` saying where it stood:
-- **tuner-removal** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal.md`; T1-T5 with F140 and F166):
-  `wip/tuner-removal-stopped-20261014` (`58e39ede`, parent `4352181f`, 23 files); at-rest compares done, motion matrix
-  begun; run folder `D:/fitway-temp/codex-round-62a57dd6-5c06-45b8-9ded-996d11222dab`.
-- **vf-fixes** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-fixes.md`; F131, F132, F136, F149, F158, F161, F164):
-  `wip/vf-fixes-stopped-20261014` (`862dea71`, parent `088711e0`, 9 files); every behaviour and its contract tests
-  in place, real measurements not begun; run folder `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`.
-- **launcher-fixes-3** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-3.md`; F156, F162, F163)
-  **reported** at 17:30 with `d802b101` on `owner-r04-launcher-fixes-2` (pushed for CI; one automatic resume): K1-K3
-  and L1 PASS; L2 failed locally on `compare-speed` tests, which collide with another worktree's run (F168). It read
-  launcher-fixes-2's grading folder through F162's evidence path (F167); its own rows in `D:/fitway-grader` were not
-  read. To grade with `D:/fitway-grader/owner-r04/launcher-fixes-3-heldout.md`.
+Nothing. tuner-removal's continue run is prepared: the coordinator moved `owner-followup-r04-build` onto the saved
+`58e39ede` (`git reset --mixed`, the worktree's files unchanged and its tree clean), and wrote
+`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal-continue.md` (`brief:check` PASS);
+`.impeccable/config.json` on the build branch is in the owned paths (F140). vf-fixes stays stopped
+(`wip/vf-fixes-stopped-20261014`, `862dea71`; run folder `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`).
 
 ## Next steps
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
-2. **Grade launcher-fixes-3** against its held-out rows, record it (`codex-rounds.md`, `rounds.tsv`, findings), merge,
-   CI, main. **Then continue the two stopped rounds** (DECISIONS 59): tuner-removal first, then vf-fixes, never both
-   at once (F168); each a fresh Codex session from its side-branch commit above with a short continue brief (DECISIONS
-   54's precedent), reviewed (B11) and graded on its existing held-out rows. The tuner round adds `.impeccable/config.json` at the build branch's root to the owned
-   paths (F140); its live moments stay reachable by a key under a URL switch (coordinator, reported to the user on
+2. **Continue the two stopped rounds** (DECISIONS 59): tuner-removal first with the continue brief above
+   (`pnpm codex:round` runs its review, B11; dispositions; launch), graded on
+   `D:/fitway-grader/owner-r04/tuner-removal-heldout.md`; then vf-fixes the same way from `862dea71`, never both at once
+   (F168). Its live moments stay reachable by a key under a URL switch (coordinator, reported to the user on
    2026-10-14).
 3. **After the tuner merges:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
    `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown).
 4. **The other tool rounds before Settings:** the encoding round's brief can be drafted now from
    `D:/fitway-temp/owner-r04-encoding-draft/research-digest.md` (each check's real past mistake and where it sits; it
-   also found three build-branch round records saying "B3 held" for briefs without the sentence) and launched after
-   launcher-fixes-3 merges (same files); the `reports.css` split (draft
+   also found three build-branch round records saying "B3 held" for briefs without the sentence) and launched now that
+   launcher-fixes-3 has merged (same files), and takes F169, F156's copy path and F162's preface form; the `reports.css` split (draft
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); the encoding round of decision 56
    (F129 twice: K1 checks the frontier against the packets, and main moves only through a command that refuses a commit
    without a green CI run; BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the

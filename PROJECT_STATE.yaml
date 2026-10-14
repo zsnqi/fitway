@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-14T13:45:00+03:00
+updatedAt: 2026-10-14T16:45:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -45,6 +45,7 @@ milestones:
       - scripts/agent-environment/codex-round.mjs, scripts/agent-environment/codex-round.test.ts, docs/agent-context/briefs/REVIEW.md and docs/agent-context/briefs/codex.md (from 2026-10-12, for the verify-fitway round's pre-launch review in the launcher, DECISIONS 47 and 48; their earlier owner agent-environment-r03 is DONE)
       - scripts/agent-environment/check-brief.mjs, scripts/agent-environment/check-brief.test.ts and scripts/agent-environment/fixtures/** (from 2026-10-13, for the launcher-fixes round, F150, F152 and F153, DECISIONS 47; their earlier owner agent-environment-r03 is DONE)
       - docs/agent-context/briefs/ENVIRONMENT.md, builder.md, designer.md and verifier.md beside it (from 2026-10-13, the shared environment block's line on a message ending the run, F154; their earlier owner agent-environment-r03 is DONE)
+      - .impeccable/config.json on the build branch owner-followup-r04-build only (from 2026-10-14, the tuner round's byte-order mark, F140, DECISIONS 47)
       - scripts/check-agent-context.test.ts, its K1 live-frontier expectation only (from 2026-10-14, for access-reason-cap-r01's closure, F129; its earlier owner agent-environment-r03 is DONE)
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)

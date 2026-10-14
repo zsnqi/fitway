@@ -1078,3 +1078,43 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Failure causes:** none from the brief's wording or the model's reading; the sessions ended on usage limits and
   capacity (environment). Side findings: F164, F165, F166.
 - **Disposition:** accepted on the build branch; F166 goes with the tuner round, which pushes the branch.
+
+## launcher-fixes-3: `briefs/codex-launcher-fixes-3.md` (this folder), result `d802b101` on `owner-r04-launcher-fixes-2`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** the three gaps launcher-fixes-2's grading found: readings whose bodies hold lists, or that start bold
+  numbered, read (K1, F162); the resume message quotes its trigger line exactly (K2, F163); a silent read before the
+  place check fails a test (K3, F156). Review readings: four closed, one left open (field wording stays free). One run
+  (`codex-round-29b568cf-1e61-4a63-ab53-bec121e985f1`), one automatic resume, no intervention. Tokens: 42.1M input
+  (41.4M cached), 139k output; start load 87,823.
+- **Codex's report** (that folder's `last-message.md`): K1-K3 and L1 PASS, 195 tests in the two files; L2 FAIL
+  locally on verify-fitway's `compare-speed` tests, which collided with vf-fixes' run in another worktree (F168). CI
+  green on `d802b101`. It ran launcher-fixes-2's held-out suite as a check, reached through F162's evidence path
+  (F167).
+- **Brief rows** 3/5 by the coordinator's checks: K2, L1, L2 pass; K1 partial (bare `N.` starts, LG1); K3 partial
+  (an absolute source in `copyReviewSources`, LG4).
+- **Held-out** (`D:/fitway-grader/owner-r04/launcher-fixes-3-heldout.md`, graded with a scratch test file on the
+  round's fixtures, kept at `D:/fitway-temp/owner-r04-launcher-fixes-3-grade/` with every run's output):
+  - LG1 partial: a "### 1. R1" body with a bulleted list and a fence whose lines start "2." and "3.", a "####" heading
+    in a body, and "**1.** R1 text" starts each read as 2 with each reading's text running to the next start; bare
+    "1. R1 text" readings with an indented body, with or without an indented list, are refused, and `a6ad0ae4` read
+    both (F169).
+  - LG2 pass: body items at the starts' level that continue the numbering, six readings, IDs without bodies, prose
+    naming R1, and readings numbered 1, 2, 4: each "cannot be read as readings".
+  - LG3 pass: `He said "stop" \ C:\x`, backticks, «الآن» with Arabic, a line holding runs of three to five backticks
+    and a line that is only a fence each sent character for character between fences longer than any run in it;
+    `auto-resumes.log` keeps the line.
+  - LG4 partial: a silent `readFileSync` ahead of the place check in `check-brief.mjs` fails "checks each source's
+    place before reading it" (1 of 195); a silent read of an absolute source in `copyReviewSources` before it calls
+    the source plan passes all 195 (F156 stays open). The tree unchanged after both.
+  - LG5 pass: `brief:check` on the 13 r04 briefs gives the same exit and lines with `check-brief.mjs` at `a6ad0ae4`
+    and `d802b101`; the three removed `expect` lines moved into the new per-case loop with the same errors; the
+    checker's diff is the observer seam only.
+  - LG6 pass: only the Scope's four files changed; CI green on `d802b101` and on the merge.
+  - Probe (not in the brief's K1): the vf-fixes review answer, a one-line preface then "1. **V7: ...**" readings,
+    is still refused (F162's later part).
+- **Failure causes:** the model's reading on both partials: K1 named bare `N.` starts and the rewrite dropped that
+  path; K3 named every entry point and every source kind, and the copy test covers a repository source only. The
+  brief contributed to K1: its L1 guarded the answers the existing tests accept, and no test accepted the bare form.
+  Side findings: F167, F168, F169.
+- **Disposition:** merged (`3a959ac2`) for K2, K3's checker and K1's new forms; F156's rest, F162's preface form and
+  F169 go to the next round on these files (the encoding round, decision 56).
