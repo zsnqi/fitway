@@ -608,6 +608,7 @@ export function OwnerAccessLive({
 									<Button
 										type="button"
 										variant="outline"
+										disabled={deactivateStaffPin.outcome.phase === "pending"}
 										onClick={clearStaffPinDeactivation}
 									>
 										{messages.cancel}
@@ -892,6 +893,9 @@ export function OwnerAccessLive({
 															<Button
 																type="button"
 																variant="outline"
+																disabled={
+																	deactivateOwner.outcome.phase === "pending"
+																}
 																onClick={clearOwnerDeactivation}
 															>
 																{messages.cancel}
@@ -980,6 +984,9 @@ export function OwnerAccessLive({
 															type="button"
 															variant="link"
 															className="owner-access-action-link owner-access-action-link--danger"
+															disabled={
+																deactivateOwner.outcome.phase === "pending"
+															}
 															onClick={() =>
 																openOwnerDeactivation(owner.principalId)
 															}
