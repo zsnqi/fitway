@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 22:17 +03:00 (the tuner work accepted at `c2fe4661`; vf-fixes' continue run launched; main at `79717c22`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 23:28 +03:00 (handoff to a fresh session at the user's request: the tuner work accepted at `c2fe4661`; vf-fixes' continue run running; decision 60 in the shared block; main at `ae67d156`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-60), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -48,7 +48,11 @@
   `ac983d66...`), review `D:/fitway-temp/brief-review/codex-vf-fixes-continue-1` (one closed, four left open as in
   codex-vf-fixes-2), run folder `D:/fitway-temp/codex-round-3800e181-1edc-4e50-bb03-ff458e5dcd41`, thread
   `01a13bd9-757c-7850-8125-c79ae84af4bd`, on `owner-r04-vf-fixes` from `862dea71` (base `088711e0`). Nothing else runs
-  compares beside it.
+  compares beside it. It has ended when its launcher exits: `last-message.md` in the run folder then holds a report
+  naming R1, R2, V1-V7 and L1-L3 on PASS or FAIL lines (an early end resumes on its own up to 10 times,
+  `auto-resumes.log`). If the coordinator's session closed or the machine restarted first, the launcher may have
+  died with it: `events.jsonl` stops growing and no report exists. Its work stays in the worktree; resume it by
+  hand with `pnpm codex:round resume <run folder> --message-file <file>` (resume allows unfinished changes).
 - **The tuner work is accepted** on `owner-followup-r04-build` (`58e39ede`, `aeb7d35a`, `c2fe4661`; pushed, CI
 green): the tuner is gone, its moments run on keys under `?live-keys=1` (`n`, `r`, `u`, `d`), every page compares
 unchanged (tuner-removal, brief 7/10, held-out 9/10), and tuner-removal-fix (brief 4/4) restored Daily's `capture.mjs`
@@ -63,14 +67,19 @@ round's lesson).
 ## Next steps
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
-2. **vf-fixes, continued** (running, above): grade on
-   `D:/fitway-grader/owner-r04/vf-fixes-heldout.md` and the round's own V1-V7 and L1-L3, then merge, CI, main.
-3. **Now that the tuner is in:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
+2. **First, the user's topics** (the user, 2026-10-14, at the handoff): a few subjects to discuss before the encoding
+   round, among them a new Claude Desktop update and whether it adds capabilities that help this environment.
+   Discuss them before starting any round.
+3. **Grade vf-fixes** when it reports (or resume it, above): `D:/fitway-grader/owner-r04/vf-fixes-heldout.md` and the
+   round's V1-V7 and L1-L3 on the delivered commit, R2's list of deletions and loosened checks read against the base
+   `088711e0`; then merge, CI, main. Its compares need a quiet machine (F168, B13).
+4. **Now that the tuner is in:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
    `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown).
-4. **The other tool rounds before Settings:** the encoding round's brief can be drafted now from
+5. **The encoding round, in a fresh session (the user, 2026-10-14), then the other tool rounds before Settings:**
+   the encoding round's brief can be drafted now from
    `D:/fitway-temp/owner-r04-encoding-draft/research-digest.md` (each check's real past mistake and where it sits; it
    also found three build-branch round records saying "B3 held" for briefs without the sentence) and launched now that
-   launcher-fixes-3 has merged (same files), and takes F169, F170, F156's copy path and F162's preface form; the `reports.css` split (draft
+   launcher-fixes-3 has merged (same files), and takes F169, F170, F171, F173, F156's copy path and F162's preface form; the `reports.css` split (draft
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); the encoding round of decision 56
    (F129 twice: K1 checks the frontier against the packets, and main moves only through a command that refuses a commit
    without a green CI run; BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
@@ -79,15 +88,18 @@ round's lesson).
    report-only trial. The Claude Code replay is deferred (DECISIONS 58); its worktree
    `D:/Projects/fitway-worktrees/owner-r04-cc-replay` (uncommitted launcher edits, not needed) can be removed once
    its `node_modules` is checked for a junction and unlinked first.
-5. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
+6. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
 
 ## Waiting on the user
 
-Nothing (the user said to continue on 2026-10-14, about 18:20). Optional, the user's call: Windows Update's active hours or a pause on nights when rounds run (F159).
+The user's topics before the encoding round (Next step 2). Optional, the user's call: Windows Update's active hours or
+a pause on nights when rounds run (F159).
 
 ## Known risks
 
+- **Briefs written before decision 60** carry the old environment block, so `brief:check` now flags them; only a
+  brief launched again needs its block refilled.
 - **DeepSeek's catalog source** is pinned at `D:/fitway-private/codex/deepseek-catalog-source.json` (F172, the user's
   choice on 2026-10-14): a DeepSeek review or launch stops if it is missing; copy it from any run folder's
   `model-catalog.json` taken before 2026-10-14 21:00 (SHA-256 `2b39f705...`).
