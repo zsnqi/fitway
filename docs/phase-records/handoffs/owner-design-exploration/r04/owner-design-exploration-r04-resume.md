@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 20:50 +03:00 (tuner-removal graded, not merged: Daily's `capture.mjs` deleted; its fix brief written, its review next; main at `8117ff5f`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 21:24 +03:00 (tuner-removal graded, not merged; tuner-removal-fix running; DeepSeek catalog pinned, F172; main at `8117ff5f`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-59), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -43,7 +43,15 @@
 
 ## Running now
 
-Nothing. **tuner-removal is graded** (record in `codex-rounds.md`, row in `rounds.tsv`): `aeb7d35a` on `58e39ede`,
+- **tuner-removal-fix**, launched about 21:20 on DeepSeek at `max`:
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal-fix.md` (`763156e0`, SHA-256
+  `77668bbf...`), review `D:/fitway-temp/brief-review/codex-tuner-removal-fix-2` (three closed, two left open), run
+  folder `D:/fitway-temp/codex-round-2d7f3220-fbf8-4120-a1fe-779ad7e1c6c8`, thread
+  `01a13ba8-12b5-78d3-9a53-74e884964f0c`, on `owner-followup-r04-build` from `aeb7d35a` in
+  `D:/Projects/fitway-worktrees/owner-followup-r04-s04`; its outcomes sit under the launcher's headings, so an early
+  end resumes on its own. Grade it against its brief and the base: `capture.mjs` run at the base and the result check
+  by check, the folder search, README and INDEX outside the named parts byte-identical, the ladder.
+- **tuner-removal is graded** (record in `codex-rounds.md`, row in `rounds.tsv`): `aeb7d35a` on `58e39ede`,
 pushed, CI green (F166 fixed); brief 7/10, held-out 9/10. The tuner is gone, its moments run on keys under
 `?live-keys=1` (`n`, `r`, `u`, `d`), every page compares unchanged. Not merged: `58e39ede` deleted Daily's
 `capture.mjs` whole (static guard, motion checks, light measurements) where L1 allowed removing only its tuner parts,
@@ -56,8 +64,7 @@ evidence: `D:/fitway-temp/owner-r04-tuner-grade/`. vf-fixes stays stopped (`wip/
 ## Next steps
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
-2. **tuner-removal-fix:** run its review (`pnpm codex:round` on the fix brief, B11), record dispositions, launch;
-   grade it (`capture.mjs` back with only its tuner parts gone, run at the base and the result check by check; README's
+2. **tuner-removal-fix** (running, above): grade it (`capture.mjs` back with only its tuner parts gone, run at the base and the result check by check; README's
    presets; L1's checks and the ladder), then merge the build branch's tuner work. **Then vf-fixes** from `862dea71`
    with its own continue brief whose outcomes sit under "## Causes and required outcomes" (F170), never beside
    another round (F168).
