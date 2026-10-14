@@ -1423,6 +1423,62 @@ describe("R1 real review answers", () => {
 
 	it.each([
 		[
+			"a heading body with its own numbered list",
+			`### 1. R1
+Literal reading: the steps can be skipped:
+1. read
+2. edit
+3. test
+4. commit
+What goes wrong: nothing is measured.
+
+### 2. L1
+Literal reading: the input can change.
+What goes wrong: the result drifts.
+One-line change: keep the input.
+`,
+			2,
+		],
+		[
+			"a bold numbered start followed by body text",
+			`**1)** R1 permits a shortcut.
+    The check can pass without the intent.
+    Close: require the observable result.
+
+**2)** L1 can drift.
+    A changed input survives.
+    Close: preserve the input.
+`,
+			2,
+		],
+		[
+			"deeper headings and fenced code in a reading body",
+			`## 1. R1
+Literal reading: a body can contain nested material.
+### Example
+1. keep this list
+\`\`\`text
+## 2. L1
+1. keep this fenced line
+\`\`\`
+What goes wrong: the reading can be split.
+
+## 2. L1
+Literal reading: the result can drift.
+What goes wrong: the proof fails.
+`,
+			2,
+		],
+	])("reads %s without splitting its body", (_name, answer, printedLines) => {
+		const f = fixture();
+		rmSync(f.reviewRoot, { recursive: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER: answer });
+		expect(result.stdout.match(/^Reading \d+:$/gm)).toHaveLength(printedLines);
+		reviewRefused(f, result, "record its dispositions before launching");
+	});
+
+	it.each([
+		[
 			"prose",
 			"R1 permits a literal reading. The delivered work can miss the goal.",
 		],
@@ -1904,6 +1960,23 @@ describe("K2 automatic resume", () => {
 			firstLine: "Now let me test the implementation:",
 		});
 		expect(log[0].time).toMatch(/^\d{4}-\d\d-\d\dT/);
+	});
+
+	it("quotes the trigger's first line exactly and handles a fence in the line", () => {
+		const first =
+			'quote " slash \\ tick ``` \u00ab\u00ab \u0645\u0631\u062d\u0628\u0627 \u00bb\u00bb';
+		const f = fixture();
+		outcomeBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: `${first}\nsecond line\n`,
+			ROUND_RESUME_MESSAGE: report,
+		});
+		expect(result.status, result.output).toBe(0);
+		const sent = Buffer.from(f.captured().input, "base64").toString("utf8");
+		const fence = sent.match(/^(`{3,})$/m)?.[1];
+		expect(fence).toBeTruthy();
+		expect(sent).toContain(`${fence}\n${first}\n${fence}`);
+		expect(resumeLog(f)).toMatchObject([{ exitCode: 0, firstLine: first }]);
 	});
 
 	it("does not resume after a complete report or a STOPPED line", () => {

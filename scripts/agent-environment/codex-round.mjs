@@ -434,6 +434,110 @@ async function reviewProcedure(folder, catalogPath) {
 // The unchanged prompt asks for Markdown, not a fixed set of field labels.
 // Preserve each numbered reading as written; explicit reading headings retain
 // the older four-field format. Ambiguous answers fail closed.
+function markdownLineRecords(text) {
+	const records = [];
+	let index = 0;
+	let fence = null;
+	for (const raw of text.split("\n")) {
+		const line = raw.endsWith("\r") ? raw.slice(0, -1) : raw;
+		const delimiter = line.match(/^ {0,3}(`{3,}|~{3,})/);
+		if (delimiter) {
+			if (!fence) fence = delimiter[1];
+			else if (
+				delimiter[1][0] === fence[0] &&
+				delimiter[1].length >= fence.length &&
+				/^ {0,3}(?:`+|~+)\s*$/.test(line)
+			)
+				fence = null;
+		} else if (!fence) records.push({ index, line });
+		index += raw.length + 1;
+	}
+	return records;
+}
+
+function headingStart({ index, line }) {
+	const heading = line.match(/^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*$/);
+	if (!heading) return null;
+	const content = heading[2];
+	const numbered = content.match(/^(\d+)[.)](?=[ \t]|$)/);
+	const reading = content.match(/^Reading[ \t]+(\d+)\b/i);
+	return {
+		type: "heading",
+		index,
+		level: heading[1].length,
+		number: Number(numbered?.[1] ?? reading?.[1] ?? Number.NaN),
+		bodyLines: 2,
+	};
+}
+
+function boldStart({ index, line }) {
+	const marker = line.match(/^ {0,3}\*\*(\d+)[.)]\*\*[ \t]+\S/);
+	if (marker)
+		return {
+			type: "bold",
+			index,
+			number: Number(marker[1]),
+			bodyLines: 1,
+		};
+	const numbered = line.match(/^ {0,3}\*\*(\d+)[.)][ \t]+\S[^\n]*\*\*[ \t]*$/);
+	if (numbered)
+		return {
+			type: "bold",
+			index,
+			number: Number(numbered[1]),
+			bodyLines: 3,
+		};
+	const reading = line.match(
+		/^ {0,3}\*\*Reading[ \t]+(\d+)\b[^\n]*\*\*[ \t]*$/i,
+	);
+	if (reading)
+		return {
+			type: "bold",
+			index,
+			number: Number(reading[1]),
+			bodyLines: 3,
+		};
+	return null;
+}
+
+function numberedBoldStart({ index, line }) {
+	const match = line.match(/^ {0,3}(\d+)[.)][ \t]+\*\*[^\n]*\*\*[ \t]*$/);
+	if (!match) return null;
+	return {
+		type: "numbered-bold",
+		index,
+		number: Number(match[1]),
+		bodyLines: 1,
+	};
+}
+
+function readingsFromStarts(text, starts) {
+	if (!starts.length || starts.length > 5) return null;
+	if (starts.some((start, index) => start.number !== index + 1)) return null;
+	const readings = starts.map((start, index) => ({
+		id: index + 1,
+		text: text
+			.slice(start.index, starts[index + 1]?.index ?? text.length)
+			.trim(),
+		bodyLines:
+			starts.length === 1 && start.type === "heading"
+				? Math.max(start.bodyLines, 3)
+				: start.bodyLines,
+	}));
+	if (
+		readings.some(
+			(reading) =>
+				!/\b[A-Z]+\d+\b/.test(reading.text) ||
+				reading.text
+					.split(/\r?\n/)
+					.slice(1)
+					.filter((line) => line.trim()).length < reading.bodyLines,
+		)
+	)
+		return null;
+	return readings.map(({ id, text }) => ({ id, text }));
+}
+
 function parseReadings(answer) {
 	const text = answer.trim();
 	const plain = text.replace(/[*_`]/g, "");
@@ -443,74 +547,33 @@ function parseReadings(answer) {
 		)
 	)
 		return [];
-	const items = [...text.matchAll(/^(\d+)[.)][ \t]+\S[^\n]*/gm)];
-	if (items[0]?.index === 0) {
+
+	const headings = [];
+	const bold = [];
+	const numberedBold = [];
+	for (const record of markdownLineRecords(text)) {
+		const heading = headingStart(record);
+		if (heading) headings.push(heading);
+		const boldStartRecord = boldStart(record);
+		if (boldStartRecord) bold.push(boldStartRecord);
+		const numberedBoldRecord = numberedBoldStart(record);
+		if (numberedBoldRecord) numberedBold.push(numberedBoldRecord);
+	}
+
+	if (headings.length) {
+		const level = headings[0].level;
+		const sameLevel = headings.filter((heading) => heading.level === level);
 		if (
-			items.length > 5 ||
-			items.some((item, index) => Number(item[1]) !== index + 1)
+			headings.some((heading) => heading.level < level) ||
+			sameLevel.some((heading) => !Number.isInteger(heading.number))
 		)
 			return null;
-		const readings = items.map((item, index) => ({
-			id: index + 1,
-			text: text
-				.slice(item.index, items[index + 1]?.index ?? text.length)
-				.trim(),
-		}));
-		// A bare numbered topic is not a reading: it needs an outcome/limit ID
-		// and a body, but the prompt leaves the body's Markdown wording open.
-		if (
-			readings.some(
-				(reading) =>
-					!/\b[A-Z]+\d+\b/.test(reading.text) ||
-					!reading.text
-						.split(/\r?\n/)
-						.slice(1)
-						.some((line) => line.trim()),
-			)
-		)
-			return null;
-		return readings;
+		return readingsFromStarts(text, sameLevel);
 	}
-	const atxHeadings = [
-		...text.matchAll(
-			/^#{1,6}\s+(?:\d+[.)]\s*|Reading\s+\d+\b[^\n]*|[A-Z]\d+\b)[^\n]*/gim,
-		),
-	];
-	if (atxHeadings.length) {
-		const depth = atxHeadings[0][0].match(/^#+/)[0].length;
-		const peers = [...text.matchAll(/^#{1,6}\s+[^\n]*/gm)].filter(
-			(heading) => heading[0].match(/^#+/)[0].length === depth,
-		);
-		// Do not silently drop a reading whose heading uses another format.
-		if (
-			peers.length !== atxHeadings.length ||
-			atxHeadings.some((heading) => heading[0].match(/^#+/)[0].length !== depth)
-		)
-			return null;
-	}
-	const boldHeadings = [
-		...text.matchAll(
-			/^\*\*(?:Reading\s+\d+\b|\d+[.)]\s*|[A-Z]\d+\b)[^\n]*\*\*\s*$/gim,
-		),
-	];
-	const starts = [...atxHeadings, ...boldHeadings].sort(
-		(left, right) => left.index - right.index,
-	);
-	if (!starts.length || starts.length > 5) return null;
-	const readings = starts.map((start, index) => ({
-		id: index + 1,
-		text: text
-			.slice(start.index, starts[index + 1]?.index ?? text.length)
-			.trim(),
-	}));
-	for (const reading of readings) {
-		const body = reading.text
-			.split(/\r?\n/)
-			.slice(1)
-			.filter((line) => line.trim()).length;
-		if (body < 3 || !/\b[A-Z]+\d+\b/.test(reading.text)) return null;
-	}
-	return readings;
+	if (bold.length && bold[0].index === 0) return readingsFromStarts(text, bold);
+	if (numberedBold.length && numberedBold[0].index === 0)
+		return readingsFromStarts(text, numberedBold);
+	return null;
 }
 
 function outcomeIdsFromBrief(input) {
@@ -565,8 +628,17 @@ function firstLine(message) {
 	return message.split(/\r?\n/, 1)[0] ?? "";
 }
 
+function quoteLine(line) {
+	const longestRun = Math.max(
+		0,
+		...[...line.matchAll(/`+/g)].map((match) => match[0].length),
+	);
+	const fence = "`".repeat(Math.max(3, longestRun + 1));
+	return `${fence}\n${line}\n${fence}`;
+}
+
 function autoResumeMessage(line) {
-	return `The run ended because a message without a tool call ends it. Its first line was: ${JSON.stringify(line)}. Continue toward the brief's outcomes, wait inside tool calls, and send a message only as your report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
+	return `The run ended because a message without a tool call ends it. Its first line was exactly:\n${quoteLine(line)}\nContinue toward the brief's outcomes, wait inside tool calls, and send a message only as your report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
 }
 
 async function optionalFile(filename) {

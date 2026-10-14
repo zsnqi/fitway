@@ -42,6 +42,16 @@ function codeSpans(text) {
 const REVIEW_TEMP_ROOT =
 	process.platform === "win32" ? "D:/fitway-temp" : tmpdir();
 
+let reviewSourcePlaceObserver;
+
+export function setReviewSourcePlaceObserver(observer) {
+	reviewSourcePlaceObserver = observer;
+}
+
+function recordReviewSourcePlace(value, kind) {
+	reviewSourcePlaceObserver?.({ kind, value });
+}
+
 function sourceFileValue(value) {
 	return value.replace(/:\d+(?:-\d+)?$/, "");
 }
@@ -201,6 +211,10 @@ function gitSourceBytes(worktree, head, relative, value, label) {
 			throw new Error(`${label} is a symbolic link: ${value}`);
 		throw new Error(`${label} is not a file: ${value}`);
 	}
+	recordReviewSourcePlace(
+		value,
+		label === "absolute review source" ? "checkout" : "repository",
+	);
 	try {
 		return execFileSync("git", ["show", `${head}:${objectPath}`], {
 			cwd: worktree,
@@ -235,6 +249,7 @@ export async function reviewSourcePlan(
 		}
 		if (insideTemp) {
 			await requireSourceFile(real, value);
+			recordReviewSourcePlace(value, "temp");
 			const realRoot = await realpath(path.resolve(REVIEW_TEMP_ROOT));
 			const relative = path.relative(realRoot, real);
 			return {
