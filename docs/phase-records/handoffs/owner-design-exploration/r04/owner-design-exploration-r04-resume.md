@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-15 00:14 +03:00 (handoff to a fresh session at the user's request: nothing running; vf-fixes reported at `9c69abe5`, not graded; the tuner work accepted at `c2fe4661`; main at `05c1aaa0`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-15 00:50 +03:00 (the user's topics settled, decision 61; nothing running; vf-fixes reported at `9c69abe5`, not graded; the tuner work accepted at `c2fe4661`; main at `05c1aaa0`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-60), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-61), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -68,9 +68,9 @@ round's lesson).
 ## Next steps
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
-2. **First, the user's topics** (the user, 2026-10-14, at the handoff): a few subjects to discuss before the encoding
-   round, among them a new Claude Desktop update and whether it adds capabilities that help this environment.
-   Discuss them before starting any round.
+2. **The user's topics are settled** (2026-10-15): of the Claude Desktop update's capabilities only side sessions
+   were adopted, for the coordinator's handovers (decision 61); the Claude Code CLI on PATH was updated from 2.1.293
+   to 2.1.300.
 3. **Grade vf-fixes** (reported, above; CI on `9c69abe5` first): `D:/fitway-grader/owner-r04/vf-fixes-heldout.md` and the
    round's V1-V7 and L1-L3 on the delivered commit, R2's list of deletions and loosened checks read against the base
    `088711e0`; then merge, CI, main. Its compares need a quiet machine (F168, B13).
@@ -94,7 +94,7 @@ round's lesson).
 
 ## Waiting on the user
 
-The user's topics before the encoding round (Next step 2). Optional, the user's call: Windows Update's active hours or
+Nothing blocking. Optional, the user's call: Windows Update's active hours or
 a pause on nights when rounds run (F159).
 
 ## Known risks

@@ -663,6 +663,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     and treat shell command text as code (`JSON.stringify()` is not shell quoting). Briefs written before keep their
     v1 block as it was; `brief:check` compares a brief with the current block, so it now flags them, which matters
     only for a brief launched again.
+61. **The coordinator hands over to a fresh session itself** (the user, 2026-10-15, after the Claude Desktop update
+    review, «نعتمد Side Sessions للتسليم بين جلسات الـCoordinator، لكن بدون أرشفة الجلسات القديمة»). When the user asks
+    for a handover, the coordinator first lets its own work and background tasks finish, commits the resume point,
+    then starts one session with `start_session` (`context: "fresh"`, this worktree, `use_worktree: false`, the brief
+    «كمل» plus a short background) and stops working; the new session takes the role through the normal startup.
+    Nothing is archived and nothing new is built: old sessions stay as they are. The handover needs the user's word
+    on a user turn, since the app refuses a start on a turn another session or an automated event began. The cause
+    this answers: on 2026-10-15 the previous coordinator, opened while vf-fixes still ran under it, woke when the run
+    ended and committed a resume point (`6db75be8`) while a newer coordinator was active.
 
 ## How this milestone's rounds run
 
