@@ -59,8 +59,9 @@ says what the CLI does, held there by a test; and its runs leave nothing behind.
   export) whose effect shows only after an action has a proof that reads its own query. Outcome: a recipe's state rule
   can have its proof checked after the feature's actions instead of before, and the CLI checks it there; an item whose
   state has no proof is still refused; every existing recipe gives the same items and verdicts. Measured on a recipes
-  copy whose rules for those six switches use it: each proof reads the page, is checked after its action, and passes.
-  Intent: a state proof reads the page.
+  copy whose rules for those six switches use it: each proof reads the page (a selector or an expression, not the
+  address or readiness alone), is checked after its action, and passes; such a rule without a page-reading proof is
+  refused. Intent: a state proof reads the page.
 - **V2. Address-only features under keyboard (F132).** Cause: `runner.mjs:634-642` throws `KeyboardReachError` for a
   keyboard item whose feature has no actions, so Reports' range and export dialogs, reached by their address alone,
   are KEYBOARD-UNREACHABLE. Outcome: under `--inputs keyboard` such a feature is captured and compared as under mouse;
@@ -74,8 +75,8 @@ says what the CLI does, held there by a test; and its runs leave nothing behind.
   of those switches as a capture problem. Intent: what the scan cannot see, the recipe can say.
 - **V4. A keyboard press shows (F149).** Cause: keyboard `activate`, `click` and `tap` press Enter (`drive.mjs:315`),
   which in Chromium clicks without `:active`, so no keyboard run shows a press. Outcome: under `--inputs keyboard`,
-  activating a button shows its pressed state as a keyboard user's press does, and a link still activates as it does
-  today. Measured: a copy of the concept with the press light's release 40 ms longer is DIFFERENT under
+  every action that activates a button (activate, click, tap, download) shows its pressed state as a keyboard user's
+  press does, a link still activates as it does today, and choosing a native select's option is unchanged. Measured: a copy of the concept with the press light's release 40 ms longer is DIFFERENT under
   `--inputs keyboard --timeline` on Reports' `period-7d` and `export-open`, as it is with the mouse, and the
   unchanged copy EQUAL. Intent: the keyboard path checks the press feedback every pressable control has.
 - **V5. `SKILL.md` held to the CLI (F158).** Cause: `SKILL.md:255` says compare leaves language sheets, which
@@ -86,13 +87,14 @@ says what the CLI does, held there by a test; and its runs leave nothing behind.
 - **V6. Nothing left behind (F161).** Cause: the lease root is fixed at `D:/fitway-verify-captures` (`core.mjs:356-357`)
   and release removes only the claim (`core.mjs:436-441`), so every test run leaves empty `.port-<port>-lease`
   folders. Outcome: the verify-fitway test files and a compare leave no file or folder they created in
-  `D:/fitway-verify-captures` beyond the captures they keep; the folders left there by earlier runs outside the three pairs are removed once, by a
-  command you report. Intent: the captures root holds only captures and live claims.
+  `D:/fitway-verify-captures` beyond the captures they keep, and no command leaves an empty lease folder behind; every
+  empty lease folder earlier runs left there is removed once, by a command you report. Intent: the captures root holds only captures and live claims.
 - **V7. Navigating features under touch and keyboard (F164).** Cause: nothing between an action and the next page
   read waits for a navigation (`runner.mjs`, `drive.mjs:192-200`), so `language`, `phone-language` and Access's
   `record-navigation` fail on both sides with "Execution context was destroyed" under touch and keyboard. Outcome:
-  those features are captured and compared under touch and keyboard as under mouse, each item's feature proof (the
-  page after the navigation) passing; measured with the concept against itself, every such item EQUAL in Arabic and
+  those features are captured and compared under touch and keyboard as under mouse, each item's feature proof reading
+  the destination page (its address and a mark only that page shows) and failing when the navigation lands elsewhere;
+  measured with the concept against itself, every such item EQUAL in Arabic and
   English, desktop and phone. Intent: every input reaches every feature.
 
 ## Limits the result keeps
