@@ -21,6 +21,8 @@ reference only. This round shows the user options and stops; a builder builds th
 - In PowerShell run pnpm without `2>&1`. Run Playwright from PowerShell: Git Bash rewrites `/api` paths. (2026-09)
 - Drive C is short: keep output on D:. `TEMP` and `TMP` are already on drive D; never point them at `D:/fitway-temp`,
   whose folders the gardener inventories. (2026-09; agent-environment DECISIONS item 24)
+- Meet each outcome in full: never delete or loosen what a limit keeps to save effort; report it instead. (2026-10-14)
+- Shell text is code: `JSON.stringify()` is not shell quoting, and backticks or `$()` still run; use a file. (2026-10-14)
 - If a source this brief names is missing, stale, or contradicts what you find, stop and report the gap instead of
   guessing. (agent-environment DECISIONS item 3)
 - Return your report as your final message, not as a file. Any message without a tool call is your final message:

@@ -652,6 +652,18 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     measurements, cleans the build branch and its CI, and finishes on the CLI it started with; then vf-fixes. Never
     both at once (F168, and load on the compares). They start in the next session, after launcher-fixes-3 is graded.
 
+60. **Two lines from GPT-6.1 Sol's instructions go into the shared block, not the catalog** (the user, 2026-10-14,
+    «ضيف السطرين للبلوك في الجولة الجاية», after the coordinator's comparison of Sol's Codex instructions with the
+    pinned GPT-5.5 text that DeepSeek receives, F172). The pinned catalog stays as it is: Sol's text assumes tools the
+    DeepSeek catalog lacks (`functions.exec` batching, user-input and multi-agent tools), drops the editing rules the
+    rounds rely on (`apply_patch`, never reverting others' changes, no destructive git) and the line against ending a
+    turn while commands run, and asks for an update at least every 60 seconds, which ends a DeepSeek run (F154). Its
+    two useful rules join `docs/agent-context/briefs/ENVIRONMENT.md` and the role templates from the next brief on:
+    meet each outcome in full rather than deleting or loosening what a limit keeps (the tuner round's `capture.mjs`),
+    and treat shell command text as code (`JSON.stringify()` is not shell quoting). Briefs written before keep their
+    v1 block as it was; `brief:check` compares a brief with the current block, so it now flags them, which matters
+    only for a brief launched again.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
