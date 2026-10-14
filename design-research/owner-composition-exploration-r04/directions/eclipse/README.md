@@ -75,7 +75,7 @@ These are the static values. The lighting section turns them into geometry.
 
 ## Measurements
 
-These were measured from the captured evidence frames, with the card content hidden. The values are
+These were measured by `capture.mjs` on light-only 1x captures, with the card content hidden. The values are
 OKLab L relative to each card's own base (L 0.161). The 1px border is excluded. Peaks and fade heights use a
 5×5 blur.
 
@@ -83,16 +83,16 @@ OKLab L relative to each card's own base (L 0.161). The 1px border is excluded. 
 
 | | Pure dark | Haze (+.02 to +.10) | Lit | Fades to black (% of height) | Lower corner peak L (inline-end / inline-start) |
 | --- | --- | --- | --- | --- | --- |
-| Recommended | 79.7% | 13.5% | 6.8% | 14.1-32.5 (middle 14.3, corners 31.6 / 31.5) | 0.471 / 0.471 |
-| A-like | 81.5% | 12.1% | 6.4% | 13.3-33.7 (middle 13.6) | 0.570 / 0.321 |
-| v2 preset | 66.6% | 30.0% | 3.5% | 25.9-43.9 (middle 28.8) | 0.347 / 0.347 |
+| Static light | 79.7% | 13.5% | 6.8% | 14.1-32.5 (middle 14.3, corners 31.6 / 31.5) | 0.471 / 0.471 |
+| Low-haze calibration | 81.5% | 12.1% | 6.4% | 13.3-33.7 (middle 13.6) | 0.570 / 0.321 |
+| High-haze variant | 66.6% | 30.0% | 3.5% | 25.9-43.9 (middle 28.8) | 0.347 / 0.347 |
 | light-study A, same method | 80.4% | 13.0% | 6.6% | 12.0-33.5 (middle 13.0) | 0.535 / 0.311 |
-| true v2, same method (scratch rebuild, pixel-identical to the v2 frame) | 64.7% | 33.6% | 1.8% | 28.1-44.3 | 0.365 / 0.364 |
+| High-haze reconstruction, same method (scratch rebuild, pixel-identical to the high-haze frame) | 64.7% | 33.6% | 1.8% | 28.1-44.3 | 0.365 / 0.364 |
 
 My method reads A a little lower in the middle than the coordinator's (13.0 against 15, with 79/13/8 for
-the areas). Recommended's middle, 14.3, is above A's 13.0 on the same method.
+the areas). The static light's middle, 14.3, is above the low-haze calibration's 13.0 on the same method.
 
-**Inside now, Recommended, RTL.** The rows run from the far corner to the lit corner:
+**Inside now, static light, RTL.** The rows run from the far corner to the lit corner:
 
 | Row | L values |
 | --- | --- |
@@ -615,7 +615,12 @@ A control's own `box-shadow` lists the inset layer using `--press-light` last; r
 ## Open and capture
 
 Open `index.html` directly or through an HTTP preview. Fonts load from `fonts/` in either case; the inline script starts
-the CSS faces for both first-screen subsets, and text shares those fetches on HTTP and file pages.
+the CSS faces for both first-screen subsets, and text shares those fetches on HTTP and file pages. To capture, run this
+from PowerShell at the worktree root:
+
+```
+node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir]
+```
 
 The interaction motion (Motion, 12) has its own capture, which writes each moment's real-time video, filmstrip and
 reduced-motion comparison into a folder outside the repository and exits 1 on a failed check (its header lists them):
@@ -625,6 +630,11 @@ node design-research/owner-composition-exploration-r04/directions/eclipse/motion
 ```
 
 It serves the folder on `127.0.0.1:3176`.
+
+`capture.mjs` serves the folder on `127.0.0.1:3173` and uses a fresh Playwright chromium context per frame. Frames are at
+deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "reduce", and the motion part uses
+"no-preference". It writes the frames described in `HISTORY.md`, "Evidence", and `capture-log.json` into `outDir`
+(default `evidence/`), and takes about five minutes. It exits with code 1 if any check below fails.
 
 Current result and base frames come from the `verify-fitway` CLI. The historical still-frame evidence remains in
 `HISTORY.md` and `evidence/`.
@@ -685,11 +695,9 @@ The log records:
 - **Calibration:** light-study A, rendered read-only from `file://`.
 - **`motion`:**
   - **Static guard:** `identity.staticFrames` and `identity.motionOffFrames`. The frames that change by design are
-    compared with this run's reduced-motion frame. Since the lane round these are 17 frames, every one that shows the plot
-    (each with its reason in `EXPECTED_TO_CHANGE`); each is also compared with 8ae88f3's committed frame outside the plot
-    element (`evidence/lane-outside-plot.json`: the frame's pixels with the plot's box zeroed, and, with the rail open, the
-    rail's box too, because its glass blurs the plot behind it), and the run fails if one differs (16 of 16 are identical;
-    the level map has no such comparison).
+    compared with this run's reduced-motion frame. Since the lane round these are 12 frames, each with its reason in
+    `EXPECTED_TO_CHANGE`; the frames in `STEP3_FRAMES` are held to this run's reduced-motion frame, and the
+    outside-plot comparison is retired for them (the light-only crops and level maps have no such comparison).
   - **First paint:** `identity.firstOpen` and `identity.reload`, in AR and EN, live,
     delayed and no history. A first open plays the intro and ends identical to the still frame (the pre-motion frame, or
     this run's reduced-motion frame for EN delayed and no history), with the DOM equal to the `?motion=off` DOM, only
