@@ -20,9 +20,11 @@ node $cli help
 node $cli list --concept $concept --recipes $recipes --page all
 ```
 
+`help` or `--help` prints the command and axis inventory.
+
 After resolving `$cli`, commands work from any shell directory. Plain folders and `git archive` extractions need
 no enclosing package.json: Playwright comes from this skill's repository. No new dependencies are installed.
-`help` needs only Node. It prints the checkout's `pnpm install --frozen-lockfile` command for discovery and browser tools.
+`help` needs only Node. It prints the checkout's `pnpm --dir <checkout> install --frozen-lockfile` command for discovery and browser tools.
 Commands that need an absent dependency print its package name and that install command, without a stack trace.
 On this Windows machine run browser commands in PowerShell, with the brief's required escalation for child processes.
 Git Bash may rewrite browser paths; use PowerShell for the examples below. All JSON is UTF-8 without a BOM.
@@ -33,6 +35,10 @@ Git Bash may rewrite browser paths; use PowerShell for the examples below. All J
 `--page` and `--feature` select one path; language, size, input, motion, transport and colours multiply its frames.
 Use `help` for the full command and axis inventory. Every consumer rediscovers the source, including openings and
 opener controls, including every `aria-haspopup` value except `false`. Specimens need explicit recipe coverage too.
+A page recipe can declare `dependencies: [{switch, value, requires}]` for a switch relationship the source scan
+cannot see; these merge with source-found dependencies, and a conflicting declaration is refused. A state rule can
+set `afterActions: true` when its effect appears only after the feature's actions; that proof must read the page
+with a selector or expression and is checked after those actions.
 A source edit alone is not drift. Uncovered openings/openers and vanished recipe selectors/markers fail
 with their names and source file/line; repair the recipe or source on the concept branch, then run:
 
@@ -43,6 +49,7 @@ Discovery is not yet exhaustive: CSS-only openings and some dynamic or delegated
 unresolved. A drift pass proves coverage of the discovered openings; it does not prove a complete feature census.
 `drift-tree` prints `DRIFT SKIP` when no recipe file is found and exits successfully, so the fast ladder can
 continue without claiming coverage. Supply the concept's recipe file beside it or use `drift --recipes`.
+`drift-tree` scans this checkout by default; `--root <repository>` points it at another checkout.
 
 ```powershell
 node $cli map --concept $concept --recipes $recipes --out "$run/map"
@@ -106,7 +113,7 @@ pointer-event changes), `pressed style exists but emulated touch does not show
 it` means a matching `:active` rule exists but the touch frame did not change,
 and `no pressed style` means neither is present. Emulated touch does not show
 `:active`; prove that state with a mouse hold and on a device.
-`--inputs keyboard` reaches action targets with Tab and activates with Enter; `focus:` also traverses with Tab,
+`--inputs keyboard` reaches action targets with Tab; button activations use Space and links use Enter. `focus:` also traverses with Tab,
 never sets focus. `press:` sends the named key, `type:` types with keys, and native `select:` uses Home/ArrowDown/Enter.
 For roving controls or a different activation key, recipes can supply `keyboardActions` with `press:` and `focus:`
 steps. Each key's before/after focused element is recorded in the full item JSON, with initial/final focus.
@@ -118,6 +125,8 @@ designed absence (`NOT-REACHABLE`). Both manifest status values retain their exi
 The drive summary counts keyboard-unreachable items separately from problems, names each item, and still fails.
 Tab evidence names the move and its focus destination; activation evidence retains the requested action.
 `--states all` sweeps discovered switch values and recipe samples; use explicit states or query for a narrower claim.
+An address-only feature with no actions is captured under keyboard as under mouse. After an action that may
+navigate, the CLI waits for the destination page before the feature proof or the next read.
 
 These two tasks demonstrate finding the feature and applying its state:
 
@@ -175,6 +184,7 @@ Extract the requested baseline revision once outside all git trees, then give it
 The baseline can use the same recipe file with `--baseline-recipes`, or its own adjacent recipe file. Both sides
 run the same items and axes. Differences are captured again in fresh contexts before the final exact pixel result;
 no tolerance is added. Each differing item has a region, diff JSON and images in `comparison.json`.
+`--baseline-map <file>` can pin the baseline side to a previously generated verification map.
 Only compare's motion-settlement wait has a **five-second total bound per capture** for finite Web Animations/CSS
 transitions to finish naturally and for queued `requestAnimationFrame` callbacks to drain, under both motion modes.
 A comparison-only observer is installed before page scripts run; it tracks requests and cancellations without
@@ -224,8 +234,8 @@ newly created effects before delayed captures, and effects started with `Animati
 effects and replays, join the hold. Compared regions and zero tolerance are unchanged.
 Two known limits: an SVG icon inside a button that is scaling back can differ by one or two levels on one or two edge
 pixels in the first 21 ms of a release (F148), so such a sample may be `NOT-HELD`: rerun the item once. And
-`--inputs keyboard` activates with Enter, which never shows a press in Chromium (F149); a keyboard press's look is
-reached only by a recipe that ends `press:Space` on the focused control.
+`--inputs keyboard` activates buttons with a real Space press, including the held `:active` pose, while links keep
+Enter activation. Native select option movement remains Home/ArrowDown/Enter.
 
 Name additional moments with `--recipes <external-file>` and the same `--baseline-recipes` file. The report retains
 the recipe entries used. A comma-separated `--feature export-close,export-held,export-release` selects several entries
@@ -252,7 +262,9 @@ feature/state/language/size/input/motion/transport. Read `summary.json` or the i
 JSON retains actions, readiness, geometry, overflow, ARIA, errors and each keyboard focus step.
 Each summary retains `proof` for the reached state and `featureProof` for the successfully reached feature result.
 Compare prints one line per item and a summary; full diff measurements remain in `comparison.json` and the named diff JSON files.
-Before/after/error frames and language sheets remain after cleanup. Capture downloads when a feature claims them.
+Drive retains before/after/error frames and its language sheets. Compare retains item frames and its records but
+does not render language sheets; use `measure --tool sheet` when a compare sheet is explicitly needed. Capture
+downloads when a feature claims them.
 Personally inspect exact named rendered frames
 at the required sizes and languages; logs/hashes do not establish visual quality or human acceptance.
 

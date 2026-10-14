@@ -20,7 +20,7 @@ const skill = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(skill, "../../..");
 let scratch;
 before(async () => {
-	const root = "D:/fitway-temp/owner-r04-vf-parallel";
+	const root = "D:/fitway-temp/owner-r04-vf-fixes/parallel";
 	await mkdir(root, { recursive: true });
 	scratch = await mkdtemp(resolve(root, "fixtures-"));
 });

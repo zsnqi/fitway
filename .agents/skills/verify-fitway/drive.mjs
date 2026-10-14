@@ -122,7 +122,7 @@ export async function proveFeature(page, proof, language, input) {
 	try {
 		await prove(page, proof, language);
 	} catch (error) {
-		if (input === "keyboard")
+		if (input === "keyboard" && !proof.path)
 			throw new KeyboardReachError(
 				`Not reachable by keyboard via the recorded sequence: ${proof.selector || "feature result"}; focus stopped ${focusDescription(await focusedElement(page))}; ${error.message}`,
 			);
@@ -202,6 +202,23 @@ export async function keyboardStep(page, key, entry, action) {
 	});
 }
 
+async function keyboardActivationStep(page, key, entry, action) {
+	const before = await focusedElement(page);
+	await page.keyboard.down(key);
+	// Chromium paints :active during a real keyboard hold. Keep the key down
+	// through a frame so the pressed pose is observable before activation.
+	await new Promise((done) => setTimeout(done, 16));
+	await page.keyboard.up(key);
+	const after = await focusedElement(page);
+	entry.focusSteps ||= [];
+	entry.focusSteps.push({
+		action,
+		key,
+		before,
+		after,
+	});
+}
+
 export async function reachByKeyboard(page, selector, entry, action) {
 	const target = page.locator(selector).first();
 	const seen = new Set();
@@ -223,6 +240,39 @@ export async function reachByKeyboard(page, selector, entry, action) {
 	throw new KeyboardReachError(
 		`Not reachable by keyboard: ${selector}; focus stopped ${focusDescription(focused)}; 200-key limit`,
 	);
+}
+
+const navigationActionKinds = new Set([
+	"activate",
+	"click",
+	"tap",
+	"download",
+	"press",
+]);
+
+async function runNavigationAction(page, action, run) {
+	const [kind] = action.includes(":") ? action.split(":", 1) : [action];
+	if (!navigationActionKinds.has(kind) || !page.waitForNavigation) return run();
+	const navigation = page
+		.waitForNavigation({
+			waitUntil: "domcontentloaded",
+			timeout: 5000,
+		})
+		.catch(() => null);
+	const result = await run();
+	await Promise.race([navigation, new Promise((done) => setTimeout(done, 80))]);
+	return result;
+}
+
+async function keyboardActivationKey(target) {
+	const button = await target.evaluate(
+		(element) =>
+			element.localName === "button" ||
+			(element.localName === "input" &&
+				["button", "submit", "reset"].includes(element.type)) ||
+			element.getAttribute("role") === "button",
+	);
+	return button ? "Space" : "Enter";
 }
 
 async function performAction(ui, page, action, input, out, stem, entry) {
@@ -297,9 +347,12 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 				return;
 			}
 			if (kind === "download") {
+				const key = await keyboardActivationKey(target);
 				const [download] = await Promise.all([
 					page.waitForEvent("download"),
-					keyboardStep(page, "Enter", entry, action),
+					runNavigationAction(page, action, () =>
+						keyboardActivationStep(page, key, entry, action),
+					),
 				]);
 				const file = `${stem}-download.csv`;
 				await download.saveAs(await outputFile(out, file));
@@ -312,7 +365,10 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 					throw new Error(`Download failed: ${entry.download.failure}`);
 				return;
 			}
-			return keyboardStep(page, "Enter", entry, action);
+			const key = await keyboardActivationKey(target);
+			return runNavigationAction(page, action, () =>
+				keyboardActivationStep(page, key, entry, action),
+			);
 		}
 		if (!["wait", "waitFor"].includes(kind))
 			throw new KeyboardReachError(
@@ -334,7 +390,12 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 		await page.locator(selector).waitFor({ state: "visible", timeout: 10000 });
 		const [download] = await Promise.all([
 			page.waitForEvent("download"),
-			ui.runAction(page, `${input === "touch" ? "tap" : "click"}:${selector}`),
+			runNavigationAction(page, action, () =>
+				ui.runAction(
+					page,
+					`${input === "touch" ? "tap" : "click"}:${selector}`,
+				),
+			),
 		]);
 		const file = `${stem}-download.csv`;
 		await download.saveAs(await outputFile(out, file));
@@ -345,7 +406,8 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 		};
 		if (entry.download.failure)
 			throw new Error(`Download failed: ${entry.download.failure}`);
-	} else return ui.runAction(page, action);
+	} else
+		return runNavigationAction(page, action, () => ui.runAction(page, action));
 }
 
 export { performAction, prove };

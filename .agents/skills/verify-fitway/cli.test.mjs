@@ -20,7 +20,7 @@ const test = verificationTest(nodeTest);
 
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createContext, runInContext, runInNewContext } from "node:vm";
-import { child, doctorFix, playwright } from "./cli.mjs";
+import { child, doctorFix, help, playwright } from "./cli.mjs";
 import { measurementColors } from "./colors.mjs";
 import { compare, diffStem } from "./compare.mjs";
 import {
@@ -30,11 +30,14 @@ import {
 	parsePortOwners,
 	portAvailable,
 	preview,
+	reserveVerificationPorts,
 	shortFinding,
+	verificationPairs,
 	verificationPort,
 } from "./core.mjs";
 import {
 	focusedElement,
+	KeyboardReachError,
 	performAction,
 	proveFeature,
 	reachByKeyboard,
@@ -1230,7 +1233,7 @@ test("doctor gives portable concrete repair commands; verification ports are res
 	assert.equal(verificationPort("3176"), 3176);
 });
 
-test("keyboard is an axis; Tab/Enter are the only reach input and each key records focus", async () => {
+test("keyboard is an axis; Tab reaches controls and Space activates a button", async () => {
 	assert.deepEqual(inputAxis("keyboard"), ["keyboard"]);
 	const keys = [];
 	let focus = 0;
@@ -1245,9 +1248,16 @@ test("keyboard is an axis; Tab/Enter are the only reach input and each key recor
 			evaluate: async () => stops[focus] === selector,
 		}),
 		keyboard: {
+			down: async (key) => {
+				keys.push(key);
+			},
+			up: async (key) => {
+				keys.push(key);
+				focus = 3;
+			},
 			press: async (key) => {
 				keys.push(key);
-				focus = key === "Enter" ? 3 : (focus + 1) % stops.length;
+				focus = (focus + 1) % stops.length;
 			},
 		},
 	};
@@ -1261,7 +1271,7 @@ test("keyboard is an axis; Tab/Enter are the only reach input and each key recor
 		"test",
 		entry,
 	);
-	assert.deepEqual(keys, ["Tab", "Tab", "Enter"]);
+	assert.deepEqual(keys, ["Tab", "Tab", "Space", "Space"]);
 	assert.deepEqual(
 		entry.focusSteps.map((s) => s.after.selector),
 		["#first", "#pin-change", "#pin-code"],
@@ -1945,8 +1955,11 @@ context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.eva
 locator:(selector)=>({first(){return this},count:async()=>1,
 evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body":'- button "Open details"',
    waitFor:async()=>{if(selector==="#dialog"&&!open)throw new Error("dialog stayed closed")}}),
-  keyboard:{press:async(key)=>{if(key==="Tab")focus=focus==="body"?"#opener":"body";
-   if(key==="Enter"&&focus==="#opener"){open=true;focus="#field"}}}};
+  keyboard:{
+   down:async()=>{},
+   up:async(key)=>{if(key==="Space"&&focus==="#opener"){open=true;focus="#field"}},
+   press:async(key)=>{if(key==="Tab")focus=focus==="body"?"#opener":"body";
+    if(key==="Enter"&&focus==="#opener"){open=true;focus="#field"}}}};
  return {page,context:{close:async()=>{}},errors:[],emulation:{forcedColors:options.forcedColors || "none"}};
 }
 export const withParams=(url)=>url;
@@ -1973,15 +1986,16 @@ try {await drive(${JSON.stringify({
 					{
 						page: "fixture.html",
 						ready: "true",
-						switches: [],
+						switches: options.switches || [],
 						features,
-						states: [
+						states: options.mapStates || [
 							{
 								when: {},
 								shows: "Fixture state",
 								proof: { selector: "main", visible: true },
 							},
 						],
+						defaults: options.defaults || {},
 					},
 				],
 			},
@@ -2709,7 +2723,7 @@ test("V5: successful feature proof survives in both summaries beside state proof
 	assert.equal(unproved.featureProof, undefined);
 });
 
-test("V6: Tab evidence names the move and focus destination; Enter names activation", async () => {
+test("V6: Tab evidence names the move and focus destination; Space names activation", async () => {
 	let focus = "body";
 	const page = {
 		evaluate: async () => ({ selector: focus }),
@@ -2721,6 +2735,10 @@ test("V6: Tab evidence names the move and focus destination; Enter names activat
 			evaluate: async () => focus === "#opener",
 		}),
 		keyboard: {
+			down: async () => {},
+			up: async () => {
+				focus = "#field";
+			},
 			press: async (key) => {
 				focus = key === "Tab" ? "#opener" : "#field";
 			},
@@ -2742,8 +2760,308 @@ test("V6: Tab evidence names the move and focus destination; Enter names activat
 	);
 	assert.deepEqual(
 		entry.focusSteps.map((step) => step.key),
-		["Tab", "Enter"],
+		["Tab", "Space"],
 	);
+});
+
+test("V1: afterActions state proofs run after the feature and must read the page", async () => {
+	const features = [
+		{
+			id: "open",
+			actions: ["activate:#opener"],
+			proof: { selector: "#dialog", visible: true },
+		},
+	];
+	const passing = await runnerFixture("after-actions-pass", features, {
+		mapStates: [
+			{
+				when: { state: "after" },
+				afterActions: true,
+				shows: "Dialog after action",
+				proof: { selector: "#dialog", visible: true },
+			},
+		],
+		switches: [{ name: "state", values: ["after"], samples: [] }],
+		states: "state=after",
+	});
+	assert.equal(
+		passing.result.status,
+		0,
+		passing.result.stderr + passing.result.stdout,
+	);
+	const [summary] = JSON.parse(
+		await readFile(resolve(passing.out, "summary.json"), "utf8"),
+	);
+	assert.deepEqual(summary.proof, ["Dialog after action"]);
+	const refused = await runnerFixture("after-actions-refused", features, {
+		mapStates: [
+			{
+				when: { state: "after" },
+				afterActions: true,
+				shows: "Not page reading",
+				proof: { ready: true },
+			},
+		],
+		switches: [{ name: "state", values: ["after"], samples: [] }],
+		states: "state=after",
+	});
+	assert.equal(refused.result.status, 1);
+	const refusedSummary = JSON.parse(
+		await readFile(resolve(refused.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		refusedSummary[0].problems.join(" "),
+		/afterActions state proof must read the page with a selector or expression/,
+	);
+});
+
+test("V2: an address-only feature is captured under keyboard", async () => {
+	const { result } = await runnerFixture(
+		"address-only-keyboard",
+		[
+			{
+				id: "address-only",
+				actions: [],
+				proof: { selector: "main", visible: true },
+			},
+		],
+		{ inputs: "keyboard" },
+	);
+	assert.equal(result.status, 0, result.stderr + result.stdout);
+});
+
+test("V3: recipe dependencies merge with source dependencies and conflicts are refused", async () => {
+	const root = resolve(scratch, "dependency-map");
+	await mkdir(root);
+	await writeFile(
+		resolve(root, "fixture.html"),
+		'<main>Fixture</main><script src="app.js"></script>',
+	);
+	await writeFile(
+		resolve(root, "app.js"),
+		`const params=new URLSearchParams(location.search);
+const arrive=params.get("arrive");
+const from=params.get("from");
+const to=params.get("to");
+const state=params.get("state");
+if(params.get("state")==="loading" && params.get("arrive")==="500"){}
+window.__fixture={ready:true};`,
+	);
+	const recipePath = resolve(root, "verification-recipes.json");
+	const recipes = {
+		schema: 1,
+		pages: {
+			"fixture.html": {
+				features: [],
+				states: [],
+				samples: {
+					arrive: ["500"],
+					from: ["2026-09-01"],
+					to: ["2026-09-10"],
+				},
+				dependencies: [
+					{
+						switch: "arrive",
+						value: "500",
+						requires: [{ name: "state", value: "loading" }],
+					},
+					{
+						switch: "from",
+						value: "2026-09-01",
+						requires: [{ name: "to", value: "2026-09-10" }],
+					},
+					{
+						switch: "to",
+						value: "2026-09-10",
+						requires: [{ name: "from", value: "2026-09-01" }],
+					},
+				],
+			},
+		},
+	};
+	await writeFile(recipePath, JSON.stringify(recipes));
+	const page = generateMap(root, recipePath).pages[0];
+	const cases = stateCases(page, { states: "all" });
+	const arrive = cases.find((entry) => entry.query.arrive === "500");
+	assert.equal(arrive.query.state, "loading");
+	const from = cases.find((entry) => entry.query.from === "2026-09-01");
+	assert.equal(from.query.to, "2026-09-10");
+	const to = cases.find((entry) => entry.query.to === "2026-09-10");
+	assert.equal(to.query.from, "2026-09-01");
+	const conflictPath = resolve(scratch, "dependency-conflict.json");
+	await writeFile(
+		conflictPath,
+		JSON.stringify({
+			...recipes,
+			pages: {
+				"fixture.html": {
+					...recipes.pages["fixture.html"],
+					dependencies: [
+						{
+							switch: "arrive",
+							value: "500",
+							requires: [{ name: "state", value: "error" }],
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.throws(
+		() => generateMap(root, conflictPath),
+		/declared dependency conflicts with source/,
+	);
+});
+
+function interactiveKeyboardPage(kind) {
+	let focus = "body";
+	const events = [];
+	const page = {
+		evaluate: async (fn) =>
+			fn.toString().includes("document.activeElement")
+				? { selector: focus, tag: focus === "body" ? "body" : "button" }
+				: {},
+		locator: () => ({
+			first() {
+				return this;
+			},
+			count: async () => 1,
+			evaluate: async (fn) =>
+				fn.toString().includes("localName")
+					? kind === "button"
+					: focus === "#control",
+			waitFor: async () => {},
+		}),
+		keyboard: {
+			down: async (key) => events.push(`down:${key}`),
+			up: async (key) => events.push(`up:${key}`),
+			press: async (key) => {
+				events.push(`press:${key}`);
+				if (key === "Tab") focus = "#control";
+			},
+		},
+		context: () => ({
+			newCDPSession: async () => ({
+				send: async (method) =>
+					method === "Runtime.evaluate"
+						? { result: { objectId: "focus" } }
+						: method === "Accessibility.getPartialAXTree"
+							? {
+									nodes: [
+										{ role: { value: "button" }, name: { value: "Open" } },
+									],
+								}
+							: {},
+				detach: async () => {},
+			}),
+		}),
+	};
+	return { page, events };
+}
+
+test("V4: keyboard activation uses Space for buttons and Enter for links", async () => {
+	const link = interactiveKeyboardPage("link");
+	await performAction(
+		{},
+		link.page,
+		"activate:#control",
+		"keyboard",
+		scratch,
+		"link",
+		{},
+	);
+	assert.deepEqual(link.events, ["press:Tab", "down:Enter", "up:Enter"]);
+	const button = interactiveKeyboardPage("button");
+	await performAction(
+		{},
+		button.page,
+		"activate:#control",
+		"keyboard",
+		scratch,
+		"button",
+		{},
+	);
+	assert.deepEqual(button.events, ["press:Tab", "down:Space", "up:Space"]);
+});
+
+test("V7: navigation settles before the action returns and a wrong destination fails", async () => {
+	const button = interactiveKeyboardPage("button");
+	let settle;
+	let settled = false;
+	button.page.waitForNavigation = () =>
+		new Promise((done) => {
+			settle = done;
+		}).then(() => {
+			settled = true;
+		});
+	const originalUp = button.page.keyboard.up;
+	button.page.keyboard.up = async (key) => {
+		await originalUp(key);
+		settle?.();
+	};
+	await performAction(
+		{},
+		button.page,
+		"activate:#control",
+		"keyboard",
+		scratch,
+		"navigation",
+		{},
+	);
+	assert.equal(settled, true);
+	const proofPage = {
+		waitForURL: async () => {
+			throw new Error("wrong destination");
+		},
+		locator: () => ({ first: () => ({ waitFor: async () => {} }) }),
+	};
+	const error = await assert.rejects(
+		proveFeature(
+			proofPage,
+			{ path: "activity.html", selector: ".rec", visible: true },
+			"en",
+			"keyboard",
+		),
+		/wrong destination/,
+	);
+	assert.equal(error instanceof KeyboardReachError, false);
+});
+
+test("V5: SKILL names CLI options, ports and rendered artifacts without drift", async () => {
+	const skill = await readFile(
+		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
+		"utf8",
+	);
+	const cliOptions = new Set(help.match(/--[a-z][a-z0-9-]*/g) || []);
+	for (const option of cliOptions)
+		assert.ok(skill.includes(option), `${option} is missing from SKILL.md`);
+	const beforeAdvanced = skill.split("## Evidence and advanced tools")[0];
+	for (const option of beforeAdvanced.match(/--[a-z][a-z0-9-]*/g) || [])
+		assert.ok(cliOptions.has(option), `${option} is not a CLI option`);
+	for (const pair of skill.match(/\b31\d\d-31\d\d\b/g) || [])
+		if (pair !== "3178-3185")
+			assert.ok(
+				verificationPairs.some(([a, b]) => pair === `${a}-${b}`),
+				`${pair} is not a verification pair`,
+			);
+	assert.match(skill, /does not render language sheets/);
+	assert.doesNotMatch(skill, /language sheets remain after cleanup/);
+	assert.match(
+		await readFile(
+			fileURLToPath(new URL("./runner.mjs", import.meta.url)),
+			"utf8",
+		),
+		/comparisonCapture[\s\S]*break/,
+	);
+});
+
+test("V6: a released lease removes its empty port folder", async () => {
+	const port = await isolatedPort();
+	const folder = resolve("D:/fitway-verify-captures", `.port-${port}-lease`);
+	const lease = await reserveVerificationPorts([port]);
+	assert.equal(existsSync(folder), true);
+	await lease.release();
+	assert.equal(existsSync(folder), false);
 });
 
 async function isolatedPort() {
