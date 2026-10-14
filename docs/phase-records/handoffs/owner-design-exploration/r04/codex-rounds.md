@@ -1003,3 +1003,78 @@ checks live outside the repository and never appear here or in a brief. One line
   the model's reading; the 2x bar the second session missed was the coordinator's reading of DECISIONS 48 (54). Side
   findings: F158, F159, F160.
 - **Disposition:** merged; F147 fixed.
+
+## launcher-fixes-2: `briefs/codex-launcher-fixes-2.md` (this folder, `c609e08b`), result `a6ad0ae4` on `owner-r04-launcher-fixes-2`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** every review answer read by its structure (K1, F157), a run that ends before its report resumed on its
+  own up to 10 times (K2, F154), and tests that fail when either returns or a source is read before its place check
+  (K3, F156). The review's five readings: three closed in K1-K3, two left open. Launched by `pnpm codex:round`
+  beside shared-frame's compares; one run, no intervention, no early end. Tokens: 70.7M input (70.3M cached), 117k
+  output; start load 87,937.
+- **Codex's report** (`D:/fitway-temp/codex-round-caa1d3ee-9a68-4d12-be7a-d0448811e86c/last-message.md`): K1-K3 and
+  L1 PASS, 189 tests in the two files; L2 FAIL locally, verify-fitway's S2 cache tests timing out at 120 s while the
+  coordinator's compares ran on the machine. CI run on `a6ad0ae4` green, so L2 holds.
+- **Brief rows** 3/5 by the coordinator's checks: K2, L1, L2 pass; K1 partial (LF1); K3 fails on F156 (LF6).
+- **Held-out** (`D:/fitway-grader/owner-r04/launcher-fixes-2-heldout.md`, graded with a scratch test file built on the
+  round's own fixtures, kept at `D:/fitway-temp/owner-r04-launcher-fixes-2-grade/`):
+  - LF1 partial: "## Reading N - ID" with "Exploits/Reading/Effect/Fix" reads as 3; "**1)** R1 text" starts are
+    refused (the bold-heading form must wrap the whole line); a "### 1. R1" reading whose body holds a 1-4 numbered
+    list makes the whole answer "cannot be read as readings" (F162).
+  - LF2 pass: six readings, IDs with no bodies, prose naming R1, readings numbered 1, 2, 4: each refused.
+  - LF3 pass: "Tests PASS so far" and "K1 PASS so far; K2 next" resumed; `STOPPED:`, "**K1** PASS", "K1: PASS", a
+    table and "K1-K3 PASS / L1-L2 PASS" not resumed.
+  - LF4 partial: the message is UTF-8, names `STOPPED:`, and `auto-resumes.log` keeps the first line exactly; the
+    message quotes it as a JSON string, so its double quotes arrive as `\"` (F163).
+  - LF5 pass: a manual `resume` gets its own 10 (20 lines after both, exit 1 naming it); exit 5 with a lead-in
+    message is not resumed and keeps 5.
+  - LF6 fail: F156's plant (`await readFile(real).catch(() => {})` ahead of the place check in `check-brief.mjs`)
+    passes all 189 tests; the round's K3 test catches a read that throws (`EISDIR`), not a read whose error is ignored.
+  - LF7 pass: `check-brief.mjs` and its imports unchanged. LF8 pass: only the Scope's files; 17 answers, each a
+    byte-identical fixture pinned by its hash; CI green on `a6ad0ae4`.
+- **Failure causes:** LF1's bold-start form and LF6's silent read trace to the brief (K1 named heading levels and
+  field labels, not start markers; K3 named F156 without its plant's form); LF4 too ("quotes" without "exactly"). The
+  numbered list inside a body is the model's reading of K1, whose text covers it. Side findings: F162, F163.
+- **Disposition:** merged for its automatic resume; a fix round takes F156, F162 and F163.
+
+## shared-frame: `directions/briefs/codex-shared-frame.md` and `codex-shared-frame-continue.md` on the build branch, then `briefs/codex-shared-frame-continue-2.md` (this folder), result `4352181f` on `owner-followup-r04-build`, GPT-6.1 Sol `xhigh`, then DeepSeek V4.1 Flash `max`
+
+- **Set-up:** the rail, the header and the status details move from the four page scripts into one `shared-frame.js`
+  (DECISIONS 45), every page unchanged at rest and in motion (F1-F4, L1-L2). Held-out rows SH1-SH10 in
+  `D:/fitway-grader/owner-r04/shared-frame-heldout.md`. Four sessions: GPT from `32c1edcb` (8 resumes), GPT from a
+  saved patch at `56ed8da6` (29 resumes across usage limits and account switches; it wrote `a8521e98` to `4352181f`),
+  GPT to measure from `4352181f` (stopped), and DeepSeek fresh (`codex-round-b041ea52-52cd-4d03-b04e-d70094731ffc`,
+  one F154 resume), which finished the 237 measurement jobs without a code change. That session: 32.2M input tokens
+  (31.5M cached), 80k output; start load 87,610.
+- **Codex's report** (that folder's `last-message.md`): F1 PASS (`shared-frame.js` 250 lines; the four page scripts
+  8,086 to 7,305 lines), F4 and L1-L2 PASS; F3's exact verdict INCOMPLETE and reported as such: 69 F126 samples and 21
+  F148 samples, nothing else; DeepSeek could not open the frames (no image input).
+- **Brief rows** 6/6 by the coordinator's checks (F1-F4, L1, L2), with F3's instabilities shown below to be the
+  base's own.
+- **Held-out, graded by the coordinator** (`D:/fitway-temp/owner-r04-shared-frame-grade/`, queue `queue.sh`, control
+  `control.sh`, classifier `sf-classify.mjs`: a difference is F126 when every cluster is the Lights chip's 119x28 box,
+  its "Lights" text or noise inside it; merged CLI with 4 workers on 3186-3187; base `7e28c713`):
+  - SH1 pass: Reports 256, Access 376 and Activity 248 items have no DIFFERENT; Daily's 360 have 36 DIFFERENT inside
+    the chip (F126) and 8 on tuner buttons under touch. The control on those tuner items (16 per run) gave the base
+    against itself 7 and 9 DIFFERENT and the result against the base 9 and 6, so they are the touch instability, not
+    the round. Every NOT-HELD sample is the chip or a touch press at 1 ms (once at 100 ms), on the base side as well
+    (F165).
+  - SH2 pass: 80 items, no DIFFERENT; 5 touch NOT-HELD. SH3 pass: over `file://` Reports, Access and Activity equal
+    on all 220 items; Daily's 25 DIFFERENT are the chip (18) and tuner buttons under touch (7).
+  - SH4 partial (graded on 2026-10-13: `components.js` keeps its own copy of three frame words). SH5 pass (781 lines
+    fewer).
+  - SH6 pass: Daily's hooks, 8 items, no DIFFERENT; the rail with Motion off equal. SH7 pass: Access with the keyboard,
+    47 items settled and timeline, no DIFFERENT.
+  - Every run's problem items are the features that navigate (language, phone language, record navigation) under touch
+    or keyboard, failing on both sides with "Execution context was destroyed" (F164).
+  - SH8 pass on Reports: the plant (the shared rail's opening 240 to 280 ms) is DIFFERENT on 6 samples and the
+    unplanted copy EQUAL with the mouse. On Daily, the brief's page, the rail cannot be held: `tuner.js:386`'s frame
+    callback runs outside the hold, so the plant gave problems and NOT-HELD, not DIFFERENT (F126's family).
+  - SH9 pass: with the frame and page scripts held 800 ms and the fonts held, the first painted frame of every page in
+    both languages holds the nine rail names and the status text, at the base and the result; a control without
+    render blocking paints at about 125 ms with them empty (`sh9.mjs`, `sh9-out/`).
+  - SH10 partial: only the folder changed, `HISTORY.md` and `evidence/` unchanged, drift and doctor pass; but the build
+    branch's CI has been red since 2026-10-11 on a plain Node script named `*.test.mjs` that Vitest collects (F166),
+    and `4352181f` is not pushed.
+- **Failure causes:** none from the brief's wording or the model's reading; the sessions ended on usage limits and
+  capacity (environment). Side findings: F164, F165, F166.
+- **Disposition:** accepted on the build branch; F166 goes with the tuner round, which pushes the branch.
