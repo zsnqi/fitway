@@ -608,6 +608,26 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     4-worker compare's time into its phases and takes a change only where that breakdown shows time it removes, never
     one that measures less; and every timing runs on a quiet machine. The bar is unchanged (item 54). Carried by R3 and
     R5 of `briefs/codex-vf-parallel-continue-2.md`.
+56. **pstack's ideas, not its plugin; B6 loosened; three timed runs** (the user, 2026-10-14, «I agree with your
+    recommendations», after the coordinator's reading of pstack (`cursor/plugins` at `ce649c03`) and its Claude Code and
+    Codex port (`michael-denyer/pstack-claude` at `94f5ce95`)):
+    - Nothing of pstack is installed: the port's plugin adds a session-start hook that routes every multi-file task
+      through `poteto-mode` (it would reach GPT Codex rounds, which keep hooks) and lets skills invoke themselves.
+    - **`correct`'s method** is adopted without the skill: a mistake class that happened twice is fixed at the highest
+      level that works (structure, then types, then a check whose error names the fix, then a test; prose last, for
+      judgment only), and each new check is proven to fail on the real past mistake. Its rule-to-enforcer table in the
+      agent instruction file is not adopted (an AGENTS.md change; ask first).
+    - **`benchmark-checklist`** is folded into brief rule B13: three alternating runs per side on a quiet machine,
+      every run with the median and range, the limiter, the errors counted and proof the work ran; more runs only
+      where they could change the decision, never to reach a fixed number.
+    - **`no-comments`** gets one report-only trial on the tool code we own (the verify-fitway CLI and
+      `scripts/agent-environment`): its `MUST KILL` flags become findings, nothing is deleted by it.
+    - The small encodings go as the coordinator proposed: F140 in the tuner round, F154 by launcher-fixes-2's automatic
+      resume, F158 with a test that pins SKILL.md's claims to the CLI in the verify-fitway fixes round; the BOM check,
+      the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check in `brief:check` and a check that `CLAUDE.md`'s
+      agent table matches the definitions go in one small extra round run beside the planned ones.
+    - **B6** now allows several small causes, related or not, in one round when each has its own outcome and check;
+      they split when one changes what another measures, needs a decision or another base, or outgrows one review.
 
 ## How this milestone's rounds run
 
@@ -619,7 +639,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 3. **Codex** is GPT-6.1 Sol at the level the task calls for (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation";
    Eclipse defects are `high`), launched by the coordinator with `pnpm codex:round`
    (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
-   briefs follow the brief rules B1-B12 in the checklist of `docs/agent-context/briefs/codex.md`.
+   briefs follow the brief rules B1-B13 in the checklist of `docs/agent-context/briefs/codex.md`.
 4. **Verifiers** use the verify-fitway skill (`.agents/skills/verify-fitway/SKILL.md`), which holds the verifier
    rules G1-G4, and its CLI instead of their own scripts (agent-environment-r03 round 4, 2026-10-07).
 5. **Claude Design** is paused (2026-10-02). It stays available for open visual questions; its output is reference

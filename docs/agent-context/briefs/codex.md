@@ -50,7 +50,7 @@ SHA; anything you could not do.
 
 ## Coordinator checklist (delete before launch)
 
-The brief rules B1-B12 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
+The brief rules B1-B13 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
 (`docs/phase-records/handoffs/agent-environment/codex-rounds.md`).
 
 - [ ] B1. Every supported way to open and run the artifact is named (HTTP, `file://`, sizes, reduced motion), with the ones the checks cover.
@@ -58,7 +58,10 @@ The brief rules B1-B12 live here. Codex follows a brief to the letter, so most f
 - [ ] B3. The Scope keeps its last sentence: an unmet outcome is measured and reported, never worked around.
 - [ ] B4. Goal, cause and outcomes only; the approach is left open.
 - [ ] B5. No verifier probe, threshold or held-out check, and no `fitway-grader` path.
-- [ ] B6. One change per round, aimed at one cause.
+- [ ] B6. Each outcome aims at one cause and has its own check. A round may group several small causes, related or
+      not, when each is verified on its own; split them when one changes what another measures, when one needs a
+      decision or another base, or when the brief outgrows one review. (user, 2026-10-14; the rounds that grouped five
+      independent causes graded cleanly)
 - [ ] B7. The baseline meets each required outcome under each condition, or that condition is marked "unchanged from
       the baseline"; every command an outcome requires was run on the baseline in that scope first (`git ls-files
       -ci` lists the tracked `.claude/` files the local exclude covers).
@@ -75,6 +78,9 @@ The brief rules B1-B12 live here. Codex follows a brief to the letter, so most f
       fix them before launch or name them as in scope (r03 round 3).
 - [ ] B11. Launch runs the `REVIEW.md` review when absent (or with `--new-review`) and stops; record every reading as closed or left open with why, and the current brief SHA-256, in its `dispositions.md` before launching.
 - [ ] B12. The readings the review keeps returning (`REVIEW.md` §"Recurring readings") are closed before it runs.
+- [ ] B13. A timed outcome runs each side three times, alternating, on a quiet machine, and reports every run with
+      the median and range, what limits the time, the errors counted, and proof the work ran; more runs only where
+      they could change the decision. (user, 2026-10-14; adapted from pstack's `benchmark-checklist`)
 - [ ] A test suite that needs a clean tree is run after the commit. A brief whose round adds ladder tests says CI runs them on Windows without Playwright Chromium or ui-forensics (`.github/workflows/checks.yml`), so a proof that needs a real browser is a script in the temp folder, run and reported (vf-speed and vf-hold, 2026-10-12: both first pushes failed CI for it).
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.

@@ -1,116 +1,111 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 01:35 +03:00 (vf-parallel relaunched on DeepSeek in a fresh Codex session; the coordinator is a fresh session too)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 11:15 +03:00 (handoff: the user starts a fresh session; nothing running; vf-parallel delivered `70cf9180` and is mid-grading)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-55), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B12 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-56), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
-- **Codex's rounds now run on DeepSeek V4.1 Flash** through the user's Open Design subscription (WORKING_AGREEMENTS
-  §"Delegation", 2026-10-13): the Codex CLI stays the harness; `pnpm codex:round <brief>` launches DeepSeek at `max`
-  (`--model gpt-6.1-sol <level>` for GPT). The key is the user-level variable `OPENDESIGN_API_KEY` (never read or
-  printed). Every DeepSeek call carries the route in `D:/fitway-temp/opendesign-smoke/route-args.txt`, a catalog the
-  launcher builds per run from Codex's cached `gpt-5.5` entry, and hooks off (F151: the Impeccable hook's message
-  makes Open Design refuse the request). The pre-launch review is DeepSeek at `max` reading the brief with the files
-  its Read first and Decisions lines name (`codex-rounds.md` §"Evaluation: DeepSeek for the brief review").
-  deepseek-route merged as `8dd8f8d8` (graded in `9da5739b`: brief 6/6, held-out 11/12; F150-F152).
-- **Done earlier on 2026-10-13:** vf-speed merged `ebbfecd6`; vf-hold merged `f2c89624` (F143, F144 fixed; F148, F149
-  found). Decision 50: Daily's light tuner goes, after shared-frame merges (it also ends F126). Decision 51: every
-  page in the concept before any production move (Settings, Operations and Monitoring, the public crowd page, the
-  front-desk screen, sign-in); the move's Product/Spec amendments and Readex Pro are accepted in principle. The
-  demo's direction is private: `D:/fitway-private/demo-plan.md` (read it before any demo material).
-- **The user's order of work (2026-10-13):** tool and testing fixes come before the next pages, since they make those
-  pages faster and better; small design issues nobody sees wait until after the demo; anything visible that would
-  make the demo look bad is fixed before it. Findings get two labels: who sees it (the owner on the page, our checks
-  slowed, a check we cannot run yet, setup) and its effect on the demo (blocks it, lowers it, waits).
-- **Owner screens:** Daily, Reports, Activity log and Access are built on owner-followup-r04-build (worktree
+- **Codex's rounds run on DeepSeek V4.1 Flash** through the user's Open Design subscription (WORKING_AGREEMENTS
+  §"Delegation"): `pnpm codex:round <brief>` runs the pre-launch review, stops for dispositions, then launches
+  DeepSeek at `max` with hooks off (F151). The key is the user-level `OPENDESIGN_API_KEY` (never read or printed).
+- **The user's order of work (2026-10-13):** tool and testing fixes before the next pages; small design issues nobody
+  sees wait until after the demo; anything visible that would make the demo look bad is fixed before it. Findings
+  carry `seen_by` and `demo` labels (decision 52). The demo's direction is private: `D:/fitway-private/demo-plan.md`.
+- **Owner screens:** Daily, Reports, Activity log and Access on owner-followup-r04-build (worktree
   D:/Projects/fitway-worktrees/owner-followup-r04-s04, clean at `4352181f`). Previews: eclipse-build (3174), LAN (3180).
-- **Done on the evening of 2026-10-13:** launcher-fixes merged as `47d233b2` (6/6, held-out 9/10; F150, F152, F153 fixed; F156 the test gap).
-- **shared-frame** reported at 22:19: 237 of 237 jobs, every F3 difference inside F126 (69 samples) or F148 (21), one
-  F126 item DIFFERENT after its rerun (Daily's tuner chip, `tuner-speed-reset`, English phone, 1 ms), no code change
-  (result `4352181f`). DeepSeek cannot view images, so no frame was looked at by the model. Graded so far: SH5, SH10
-  (folder only, its history file and evidence folder unchanged) and GH7 pass; SH4 partial (the four pages define the frame
-  once; `components.js` keeps its own copy of three frame words from the base, outside the brief's cause). SH1-SH3 and
-  SH6-SH9 need compares: run them after vf-parallel merges, on a pair it frees, with 4 workers; then the coordinator
-  looks at the F126 item's captures, records the round, merges, pushes.
-- **The environment block** in every brief template says a message without a tool call ends the run (`0361d77e`), a
-  mitigation of F154, not a proven fix (the replay's brief said so and it still ended early seven times).
-- **Claude Code on DeepSeek works** through Open Design's Anthropic route (DECISIONS 53): `--bare`, auto permission
-  mode, `deepseek-v4.1-flash[1m]` for a 1M window (the model's own; without the suffix Claude Code gives an unknown
-  model 200k), and `CLAUDE_CODE_MAX_OUTPUT_TOKENS=128000` (its default for an unknown model is 32K). A local echo
-  server showed it sends `output_config.effort` and adaptive thinking with display omitted (hence the empty thinking
-  blocks); three low and three max runs suggest the level reaches DeepSeek. Launch scripts run under the user's
-  allow rule for the launch scripts in the cc- folders under D:/fitway-temp, in this worktree (DECISIONS 53).
+- **vf-parallel delivered `70cf9180`** on `owner-r04-vf-parallel` (`0fbad66d` parallel compares, `f3601821` fewer
+  manifest rewrites, `70cf9180` compare skips the language sheets, about 59 s of serial work, which R5's breakdown
+  found; F158 the SKILL.md line it left stale). Codex's report: every outcome PASS; P2 medians of three on a quiet
+  machine, base against itself 917 s with 1 worker and 360 s with 4, result against base 922 s and 366 s, with kept
+  captures 500 s and 221 s; the CLI at `5493e888` took 1,083 s. One F154 resume (`resume-turn-ended-1.md`).
+- **vf-parallel's grading so far** (`D:/fitway-temp/owner-r04-vf-parallel-grade/queue.progress`; held-out rows
+  `D:/fitway-grader/owner-r04/vf-parallel-heldout.md`): the coordinator's own timing, alone, `5493e888` with 1 worker
+  1,136.6 s against `70cf9180` with 4 workers 375.0 s, the same 1,224 verdicts (3.0x). VP1, VP2, VP3, VP5, VP6, VP8,
+  VP9 and VP10 pass (VP3 Activity: 8 problem items whose error text differs, the same verdicts). Open:
+  - **VP4:** Activity's `g-dates-release` at 1 ms is NOT-HELD with 4 workers in `vp4-4` and its one rerun, EQUAL in
+    `vp4-1`; two pixels at (831,98) on both sides, F148's calendar icon, also seen with 1 worker in vf-hold's VH1.
+    Next: three alternating runs with 1 and 4 workers (B13) to see whether 4 workers raise its rate.
+  - **VP7:** both writers started together (4 workers each, kept captures on, fresh baseline `D:/fitway-temp/owner-r04-vf-parallel-grade/concepts/vp7`) gave
+    DIFFERENT on Reports `page`, `state=loading`, Arabic, desktop, reduced motion; the reader that reused their kept
+    bundle and the cache-off run were EQUAL. Next: look at that item's frames and region in `D:/fitway-temp/owner-r04-vf-parallel-grade/runs/vp7-w1` and
+    `D:/fitway-temp/owner-r04-vf-parallel-grade/runs/vp7-w2`; a load-sensitive capture of the loading state would fail P2's intent.
+  - **VP11** not run: scope (`git diff --stat 5493e888 70cf9180`), the SKILL.md hunks only in §"Compare" and its port
+    lines, recipe counts, CI on the pushed and the merged commit.
+- **The pstack reading (decision 56):** nothing installed; `correct`'s method adopted, `benchmark-checklist` folded
+  into B13 (three runs, more only where they could change the decision), B6 loosened (small causes may share a round
+  when each has its own outcome and check), one report-only `no-comments` trial on the tool code.
+- **Windows Update restarted the machine at 06:36** during grading (F159; the user's setting, never an agent's).
 
 ## Running now
 
-**vf-parallel** on DeepSeek V4.1 Flash at `max` since 01:33 on 2026-10-14: brief `codex-vf-parallel-continue-2.md` at
-`245dbcaf` (decision 55: each P2 command timed three times, medians; R5 first breaks a 4-worker compare's time into
-phases), run folder `D:/fitway-temp/codex-round-5baafff1-b258-4fcb-ae90-79f9d26e340d`, worktree
-`D:/Projects/fitway-worktrees/owner-r04-vf-parallel` from `f3601821`. Its reviews: `codex-vf-parallel-continue-2-1`
-(unparsed, F157; dispositions by hand in `coordinator-note.md`) and `-2` (2 and 5 closed). The machine stays quiet
-until it reports: no round, ladder, compare or replay beside it. The user, 2026-10-14: the Settings skeleton does
-not start in this session; the tool fixes and shared lows before Settings do, once the items above them are done.
+Nothing. The user's Codex desktop app is open (its own `codex.exe` processes); nothing of the coordinator's runs.
 
-DeepSeek ends runs early with a message and no tool call, under Codex and Claude Code alike (F154; nine times on
-2026-10-13): when a launcher exits, read its last message before treating it as a report, and resume on the thread
-with a message naming where it stopped (`resume-turn-ended-*.md` and `message.md` beside each run are the form). The
-replay's `D:/fitway-temp/cc-replay-deepseek-route-2-auto/launch.sh` resumes on its own until a report; the Codex launcher does not yet.
+DeepSeek ends runs early with a message and no tool call (F154; again on vf-parallel at 01:49): when a launcher exits,
+read its last message before treating it as a report, and resume on the thread with a message naming where it
+stopped (the `resume-turn-ended-1.md` beside vf-parallel's run folder is the form) until launcher-fixes-2's automatic resume lands.
 
 ## Next steps
 
-1. **vf-parallel in a fresh Codex session** (DECISIONS 54): brief
-   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-parallel-continue-2.md` on `f3601821`
-   (it reads `D:/fitway-temp/owner-r04-vf-parallel/STOPPED-2026-10-14.md`). Run its review (`pnpm codex:round
-   <brief>`), dispositions, launch, and run nothing else on the machine while it times P2. Then grade VP1-VP11
-   (`D:/fitway-grader/owner-r04/vf-parallel-heldout.md`) with the checks the first review left open (time the 1-worker
-   command with the CLI at `5493e888`, check each rerun's difference mask, watch the listening ports while compares
-   overlap); merge; CI. On `0fbad66d`, under load, P2 was 1.91x (self) and 2.11x (result against base).
-2. **shared-frame's compares** (SH1-SH3, SH6-SH9) on the merged CLI with 4 workers on a free pair; the F126 item's
-   captures; record the round in `codex-rounds.md` (graded so far under State); merge `4352181f`'s round record; push.
-3. **The Claude Code replay** (DECISIONS 53): resume session `33b78d33-32c0-4382-9cee-06544d23d9ed` with
-   `D:/fitway-temp/cc-replay-deepseek-route-2-auto/launch.sh`, or restart fresh from `4a151786` for a clean count;
-   then grade DR1-DR12 against Codex's 6/6 and 11/12, counting each resume as an intervention (seven so far,
-   `D:/fitway-temp/cc-replay-deepseek-route-2/STOPPED-2026-10-14.md`). Never run it while another round times.
-4. **Remove the light tuner** (decision 50); then the **`reports.css` split** (draft
-   `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); then the **tool fixes** F148, F140,
-   F131, F132, F136, F149 and F156 (DECISIONS 47); F154's harness side (an automatic resume when a run ends without
-   its report) is worth a launcher change if the environment line does not stop it.
+1. **Finish vf-parallel's grading:** VP4 and VP7 as above, VP11; then record the round in `codex-rounds.md` and
+   `rounds.tsv` (Codex's report is `D:/fitway-temp/codex-round-5baafff1-b258-4fcb-ae90-79f9d26e340d/last-message.md`;
+   tokens 90.7M input, 90.0M cached, 129k output; start load 89,495), merge `owner-r04-vf-parallel`, push, CI.
+2. **Then in parallel, each on its own pair or worktree:**
+   - **launcher-fixes-2:** brief `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-2.md` (`c609e08b`), review
+     `D:/fitway-temp/brief-review/codex-launcher-fixes-2-1` dispositioned for that hash; worktree
+     `D:/Projects/fitway-worktrees/owner-r04-launcher-fixes-2` at `a14586fe` needs `pnpm install` first; held-out
+     `D:/fitway-grader/owner-r04/launcher-fixes-2-heldout.md`.
+   - **shared-frame's compares:** run `D:/fitway-temp/owner-r04-shared-frame-grade/queue.sh` with bash (SH1-SH3, SH6-SH8 on
+     the merged CLI, 4 workers, pair 3186-3187; its SH6 recipes and the SH8 rail plant are beside it); SH9 with the
+     probe kit; the F126 item's captures; record the round; merge its record (the build branch is already at `4352181f`).
+   - **access-reason-cap-r01:** its blocker is gone (`eb87d094` removed the frontier check) and main never touched its
+     files since `312bd861`. Merge `origin/main` into `claude/busy-bartik-858366` keeping main's ledger, start the
+     `fitway-phase2-postgres` container, rerun its unit, integration and fast-ladder tests, an independent review,
+     then merge; update its resume file and the ledger (coordinator).
+3. **The tuner round** (decision 50) after shared-frame's grading: draft
+   `D:/fitway-temp/owner-r04-tuner-removal-draft/codex-tuner-removal.md` (fill its HEAD, CLI, pair and environment
+   block; review; it adds `.impeccable/config.json` at the build branch's root to the owned paths, F140). The live
+   moments the tuner alone starts (a new reading, reset, crowd level up and down) stay reachable by a key press under a
+   URL switch, nothing visible without it (coordinator, reported to the user on 2026-10-14).
+4. **The other tool rounds before Settings:** the `reports.css` split (draft
+   `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); the verify-fitway fixes F131,
+   F132, F136, F148, F149 and F158 with a test pinning SKILL.md's claims to the CLI; the encoding round of decision 56
+   (BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
+   definitions; each check proven on its real past mistake); the shared lows (decision 47); the `no-comments`
+   report-only trial; the Claude Code replay (DECISIONS 53, `D:/fitway-temp/cc-replay-deepseek-route-2/STOPPED-2026-10-14.md`).
 5. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
-6. After each resume point, fast-forward main once CI passes on it (DECISIONS 40).
+6. Fast-forward main once CI passes on this resume point's commit (DECISIONS 40).
 
 ## Waiting on the user
 
-Nothing.
+Nothing. Optional, the user's call: Windows Update's active hours or a pause on nights when rounds run (F159).
 
 ## Known risks
 
-- **DeepSeek runs:** start load about 87k tokens (every tool schema; GPT's was about 27k), mostly cached; trimming it
-  with a per-run setting is the coordinator's call (WORKING_AGREEMENTS). Open Design credit is not a constraint
-  (the user, 2026-10-13: run in parallel without weighing it, DECISIONS 53). Open Design names no host and no
-  retention period. A thread whose history holds a hook message cannot resume.
+- **DeepSeek runs:** start load about 89k tokens, mostly cached; Open Design credit is not a constraint (DECISIONS 53).
+  A thread whose history holds a hook message cannot resume.
 - **F126** makes a full compare fail at random until the tuner goes; **F148** can leave a release sample NOT-HELD:
   rerun such an item once before reading it as a regression.
-- **Briefs for refactors** need a limit that the moments still run along their timeline; `--timeline` measures it.
-- **Temp junctions:** a grader that links old-CLI `node_modules` removes the link after.
+- **Timed outcomes need a quiet machine** (B13): no other round, ladder or replay beside them.
+- **Temp junctions:** the vf-parallel grader's link `D:/fitway-temp/owner-r04-vf-parallel-grade/cli-5493e888/node_modules` was removed; relink it to time the old
+  CLI again, then remove it (never with a recursive delete).
+- **Test leftovers:** 26 empty `.port-49xxx-lease` folders from 2026-10-13 in `D:/fitway-verify-captures`; check whether
+  `70cf9180`'s suite still leaves them.
 - main has no branch protection; nothing deploys on a push to main. The main checkout D:/Projects/fitway keeps its local
   main at `bbb51709` and an uncommitted one-line AGENTS.md change from 2026-09-06; left untouched.
 - «مساءً», «ظهرًا», «ليلًا» on the busiest-time card are a deliberate exception to DESIGN_GUIDE.md §9 (DECISIONS 33, 34).
-- The preview server sends no cache headers; after a build, hard-reload. Ports: 3174 the user's preview; 3176-3177
-  builders, verifiers and Codex; 3178-3179 reviewers and the probe kit; 3180 the LAN preview.
-
-- **Timed outcomes need a quiet machine:** run no other round, ladder or replay while a round times (vf-parallel's
-  P2 timings on 2026-10-13 ran beside the Claude Code replay, DECISIONS 54).
+- Ports: 3174 the user's preview; 3176-3177, 3186-3187 and 3188-3189 the verification pairs (the CLI refuses others
+  and a busy pair); 3178-3179 reviewers and the probe kit; 3180 the LAN preview.
 
 ## Pointers
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
   commit that last changed this text.
-- DeepSeek: smoke runs `D:/fitway-temp/opendesign-smoke/`; the round's runs `D:/fitway-temp/codex-round-deepseek-route-1`
-  and `-2` (`REPORT.md`); its grading `D:/fitway-temp/owner-r04-deepseek-route-grade/`; review trials
-  `D:/fitway-temp/brief-review-trial/l5/` and `D:/fitway-temp/brief-review-trial/l7/`; held-out rows and scoring in `D:/fitway-grader/owner-r04/`.
-- Earlier grading evidence: `D:/fitway-temp/owner-r04-vf-hold-grade/`, `D:/fitway-temp/owner-r04-vf-speed-grade/`.
+- pstack reading (decision 56): GitHub cursor/plugins at `ce649c03` and michael-denyer/pstack-claude at `94f5ce95`;
+  the coordinator's copies of the skills it read are in the session scratchpad only, so read them again upstream.
+- Grading evidence: `D:/fitway-temp/owner-r04-vf-parallel-grade/`, earlier `D:/fitway-temp/owner-r04-vf-hold-grade/`
+  and `D:/fitway-temp/owner-r04-vf-speed-grade/` (the `7e28c713` and `4352181f` extracts).
 - GPT fallback: `bash D:/fitway-temp/resume-auto.sh <run folder> <message file>` switches saved Codex accounts.
 - Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
