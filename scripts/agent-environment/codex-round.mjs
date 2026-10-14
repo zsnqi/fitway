@@ -3,6 +3,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { constants, createReadStream } from "node:fs";
 import {
 	access,
+	appendFile,
 	mkdir,
 	open,
 	readdir,
@@ -34,6 +35,7 @@ const GPT_LEVELS = new Set(["medium", "high", "xhigh", "max"]);
 const DEEPSEEK_LEVELS = new Set(["high", "max"]);
 const DEFAULT_MODEL = DEEPSEEK_MODEL;
 const DEFAULT_DEEPSEEK_LEVEL = "max";
+const MAX_AUTO_RESUMES = 10;
 const MODEL_LEVELS = new Map([
 	[DEEPSEEK_MODEL, DEEPSEEK_LEVELS],
 	[GPT_MODEL, GPT_LEVELS],
@@ -50,6 +52,10 @@ Default run folder: ${process.platform === "win32" ? "D:/fitway-temp" : tmpdir()
 Launch runs the REVIEW.md review when absent and stops for coordinator dispositions.
 --new-review requests a fresh review and stops; resume never checks reviews.
 Resume allows unfinished changes, keeps each event stream, and updates last-message.md.
+When a run exits 0 without a report, it resumes automatically up to 10 times and
+appends each trigger to auto-resumes.log.
+A report names every brief outcome/limit ID on PASS or FAIL lines, or has a
+line starting STOPPED:.
 --message sends the exact text instead of the saved launch input.
 --message-file decodes UTF-8 (with or without a BOM) or UTF-16 files with a BOM,
 then sends UTF-8 without the BOM; invalid no-BOM bytes are refused;
@@ -498,31 +504,69 @@ function parseReadings(answer) {
 			.trim(),
 	}));
 	for (const reading of readings) {
-		const lines = reading.text.replace(/[*_`]/g, "").split(/\r?\n/);
-		const numbered = [1, 2, 3, 4].every((id) =>
-			lines.some((line) => new RegExp(`^\\s*${id}[.)]\\s+\\S`).test(line)),
-		);
-		const labels = [
-			/(?:outcome|limit|exploits|exploited)/i,
-			/literal reading/i,
-			/(?:what would go wrong|would go wrong|failure|consequence|delivered work)/i,
-			/(?:one.line change|change to (?:the )?brief|closing change|fix)/i,
-		];
-		const labelled = labels.every((label) =>
-			lines.some((line) => {
-				const field = line.replace(/^\s*(?:[-*]|\d+[.)])?\s*/, "");
-				const colon = field.indexOf(":");
-				return (
-					colon > 0 &&
-					label.test(field.slice(0, colon)) &&
-					field.slice(colon + 1).trim()
-				);
-			}),
-		);
-		if ((!numbered && !labelled) || !/\b[A-Z]+\d+\b/.test(reading.text))
-			return null;
+		const body = reading.text
+			.split(/\r?\n/)
+			.slice(1)
+			.filter((line) => line.trim()).length;
+		if (body < 3 || !/\b[A-Z]+\d+\b/.test(reading.text)) return null;
 	}
 	return readings;
+}
+
+function outcomeIdsFromBrief(input) {
+	const ids = new Set();
+	const text = Buffer.isBuffer(input) ? input.toString("utf8") : String(input);
+	let section = false;
+	for (const line of text.split(/\r?\n/)) {
+		const heading = line.match(/^##\s+(.+?)\s*$/)?.[1];
+		if (heading) {
+			section =
+				/^(?:Causes and required outcomes|Limits the result keeps)$/i.test(
+					heading,
+				);
+			continue;
+		}
+		if (!section) continue;
+		const outcome = line.match(/^- \*\*([A-Z]+\d+)\./);
+		if (outcome) ids.add(outcome[1]);
+	}
+	return ids;
+}
+
+function reportIds(message) {
+	const covered = new Set();
+	for (const line of message.split(/\r?\n/)) {
+		if (!/\b(?:PASS|FAIL)\b/.test(line)) continue;
+		for (const match of line.matchAll(
+			/\b([A-Z]+)(\d+)\s*[-\u2013\u2014]\s*(?:\1)?(\d+)\b/g,
+		)) {
+			const first = Number(match[2]);
+			const last = Number(match[3]);
+			for (
+				let number = Math.min(first, last);
+				number <= Math.max(first, last);
+				number += 1
+			)
+				covered.add(`${match[1]}${number}`);
+		}
+		for (const match of line.matchAll(/\b[A-Z]+\d+\b/g)) covered.add(match[0]);
+	}
+	return covered;
+}
+
+function isReport(message, outcomeIds) {
+	if (/^STOPPED:/m.test(message)) return true;
+	if (!outcomeIds.size) return true;
+	const covered = reportIds(message);
+	return [...outcomeIds].every((id) => covered.has(id));
+}
+
+function firstLine(message) {
+	return message.split(/\r?\n/, 1)[0] ?? "";
+}
+
+function autoResumeMessage(line) {
+	return `The run ended because a message without a tool call ends it. Its first line was: ${JSON.stringify(line)}. Continue toward the brief's outcomes, wait inside tool calls, and send a message only as your report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
 }
 
 async function optionalFile(filename) {
@@ -862,7 +906,12 @@ async function prepareLaunch(options) {
 			});
 	}
 	console.log(formatBriefResult(result));
-	return { metadata, input, executable };
+	return {
+		metadata,
+		input,
+		executable,
+		outcomeIds: outcomeIdsFromBrief(input),
+	};
 }
 
 // Compare bytes and file names, never Git status, timestamps, or the final report.
@@ -987,6 +1036,11 @@ async function prepareResume(options) {
 				? await readFile(path.join(options.run, "input.md"))
 				: Buffer.from(options.message, "utf8");
 	}
+	const launchInput =
+		options.message === undefined && options.messageFile === undefined
+			? input
+			: ((await optionalFile(path.join(options.run, "input.md"))) ??
+				Buffer.alloc(0));
 	const catalog =
 		metadata.model === DEEPSEEK_MODEL
 			? await readDeepSeekCatalog(options.run)
@@ -1005,6 +1059,7 @@ async function prepareResume(options) {
 		thread: await firstThread(options.run),
 		executable: await findCodex(),
 		catalog,
+		outcomeIds: outcomeIdsFromBrief(launchInput),
 	};
 }
 
@@ -1112,9 +1167,9 @@ async function recordStartLoad(run, thread) {
 	console.log(`Start load: no token count in ${session}`);
 }
 
-async function execute(options, prepared) {
-	const output = await capture(options.run, options.resume);
-	const { metadata, input, executable, thread } = prepared;
+async function runCodex(options, prepared, input, resume) {
+	const output = await capture(options.run, resume);
+	const { metadata, executable, thread } = prepared;
 	const catalogPath =
 		metadata.model === DEEPSEEK_MODEL
 			? path.join(options.run, "model-catalog.json")
@@ -1128,7 +1183,7 @@ async function execute(options, prepared) {
 		"--json",
 		"-o",
 		output.last,
-		...(options.resume ? ["resume", thread] : []),
+		...(resume ? ["resume", thread] : []),
 		"-",
 	];
 	console.log(`Run folder: ${options.run}`);
@@ -1179,7 +1234,40 @@ async function execute(options, prepared) {
 		await recordStartLoad(options.run, started).catch((error) =>
 			console.error(`codex-round: start load not recorded: ${error.message}`),
 		);
-	return code;
+	return { code, thread: started };
+}
+
+async function execute(options, prepared) {
+	let input = prepared.input;
+	let resume = options.resume;
+	let autoResumes = 0;
+	for (;;) {
+		const result = await runCodex(options, prepared, input, resume);
+		if (result.code === 0 && result.thread && /^[\w-]+$/.test(result.thread))
+			prepared.thread = result.thread;
+		if (result.code !== 0) return result.code;
+		const last = await optionalFile(path.join(options.run, "last-message.md"));
+		const message = last?.toString("utf8") ?? "";
+		if (isReport(message, prepared.outcomeIds)) return 0;
+		if (autoResumes >= MAX_AUTO_RESUMES) {
+			console.error(
+				`codex-round: run ended without a report after ${MAX_AUTO_RESUMES} automatic resumes`,
+			);
+			return 1;
+		}
+		const line = firstLine(message);
+		await appendFile(
+			path.join(options.run, "auto-resumes.log"),
+			`${JSON.stringify({
+				time: new Date().toISOString(),
+				exitCode: result.code,
+				firstLine: line,
+			})}\n`,
+		);
+		autoResumes += 1;
+		resume = true;
+		input = Buffer.from(autoResumeMessage(line), "utf8");
+	}
 }
 
 export async function main(args = process.argv.slice(2)) {

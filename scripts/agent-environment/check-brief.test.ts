@@ -15,6 +15,7 @@ import {
 	checkBrief,
 	formatBriefResult,
 	parseBriefArgs,
+	reviewSourcePlan,
 } from "./check-brief.mjs";
 import { git, put } from "./fixtures";
 
@@ -485,6 +486,68 @@ describe("brief-references: resolve a brief against its named Git worktree", () 
 });
 
 describe("brief-review-sources: the pre-launch source contract", () => {
+	it("checks each source's place before reading it", async () => {
+		const f = fixture();
+		const temporary = mkdtempSync(
+			path.join("D:/fitway-temp", "brief-source-place-"),
+		);
+		const checkout = path.join(f.commandRepository, "checkout-place-dir");
+		const outside = path.join(f.root, "outside-place-dir");
+		mkdirSync(checkout);
+		mkdirSync(outside);
+		try {
+			const plan = (value: string) =>
+				reviewSourcePlan(value, {
+					worktree: f.worktree,
+					head: f.head,
+					checkoutRoot: f.commandRepository,
+				});
+			await expect(plan(temporary)).rejects.toThrow(
+				"named review source is not a file",
+			);
+			await expect(plan(checkout)).rejects.toThrow(
+				"named review source is not a file",
+			);
+			await expect(plan(outside)).rejects.toThrow(
+				"absolute review source is outside D:/fitway-temp and the launcher checkout",
+			);
+		} finally {
+			rmSync(temporary, { recursive: true, force: true });
+		}
+	});
+
+	it("checks a repository source's type before reading it", async () => {
+		const f = fixture();
+		const source = "docs/gitlink-source";
+		const trace = path.join(f.root, "git-trace.jsonl");
+		git(
+			f.worktree,
+			"update-index",
+			"--add",
+			"--cacheinfo",
+			`160000,${"1".repeat(40)},${source}`,
+		);
+		git(f.worktree, "commit", "-m", "add gitlink review source");
+		const head = git(f.worktree, "rev-parse", "HEAD");
+		const previous = process.env.GIT_TRACE2_EVENT;
+		process.env.GIT_TRACE2_EVENT = trace;
+		try {
+			await expect(
+				reviewSourcePlan(source, {
+					worktree: f.worktree,
+					head,
+					checkoutRoot: f.commandRepository,
+				}),
+			).rejects.toThrow("named review source is not a file");
+		} finally {
+			if (previous === undefined) delete process.env.GIT_TRACE2_EVENT;
+			else process.env.GIT_TRACE2_EVENT = previous;
+		}
+		const events = readFileSync(trace, "utf8");
+		expect(events).toContain("ls-tree");
+		expect(events).not.toContain("show");
+	});
+
 	it("reports every refused source in one pass with its line", async () => {
 		const f = fixture();
 		const outside = path.join(f.root, "outside-review-source.txt");

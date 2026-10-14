@@ -43,6 +43,51 @@ const realReviewRoot = path.join(
 );
 const realReviews = [
 	[
+		"codex-deepseek-route-1",
+		5,
+		"9fb578a4f2058bb874de56b2444de6fd9a4916f39bd464959d3274b9ac8a0e47",
+	],
+	[
+		"codex-launcher-fixes-1",
+		5,
+		"a03abe85d0a910b4b06710b527648cbf94af46770694ec7ec1d92eaf10ef53ac",
+	],
+	[
+		"codex-launcher-fixes-2-1",
+		5,
+		"e2dc96567962afe9188852675f96a733d372f2d115d28db3ce18e7ec40395aae",
+	],
+	[
+		"codex-shared-frame-continue-2-1",
+		5,
+		"d5c51041342ab96bb6d0a1a87c494eac50a604ae223ef722318617b880574559",
+	],
+	[
+		"codex-shared-frame-continue-2-5",
+		5,
+		"5ea8019a401b3c35c068f4e00c30891f5224dd03903171136f7e17933408be52",
+	],
+	[
+		"codex-vf-parallel-1",
+		5,
+		"8dd1c09476355668752582451bb04c5278060248049ee6dd4a2706c089fd0123",
+	],
+	[
+		"codex-vf-parallel-continue-1",
+		5,
+		"3b8ac11ecc7603100c77d70f9986dc7547531650074a24cf2bb723aa92fd869d",
+	],
+	[
+		"codex-vf-parallel-continue-2-1",
+		5,
+		"207d917ccb6135b54403d8d97e60cf10334492199259fd2617b24e445322c705",
+	],
+	[
+		"codex-vf-parallel-continue-2-2",
+		5,
+		"5a141c9a5c552a2edbfae2786201cff48f4ddbcfc797ce460f2560216103c41c",
+	],
+	[
 		"gardener-fix-1",
 		5,
 		"4bdbb12f132f75b0941a7b1c48f36dba986f6cae1b9f0ace75985091700001bf",
@@ -83,6 +128,28 @@ const realReviews = [
 		"6f53ea7e1398754e61940614c6bbd9907eb52f35962d366340f25f0d5333c39b",
 	],
 ] as const;
+
+function expectedReviewBlocks(answer: string) {
+	const blocks = (starts: RegExpMatchArray[]) =>
+		starts.map((start, index) =>
+			answer
+				.slice(start.index, starts[index + 1]?.index ?? answer.length)
+				.trim(),
+		);
+	const numbered = [...answer.matchAll(/^\d+[.)]\s+\*\*[^\n]+\*\*\s*$/gm)];
+	if (numbered[0]?.index === 0) return blocks(numbered);
+	const atx = [
+		...answer.matchAll(
+			/^#{1,6}\s+(?:\d+[.)]\s+|Reading\s+\d+\b)[^\n]*\b[A-Z]+\d+\b[^\n]*$/gim,
+		),
+	];
+	if (atx[0]?.index === 0) return blocks(atx);
+	const bold = [
+		...answer.matchAll(/^\*\*\d+[.)]\s+[^\n]*\b[A-Z]+\d+\b[^\n]*\*\*\s*$/gm),
+	];
+	return blocks(bold);
+}
+
 const readingAnswer = `## Reading 1: R1
 
 1. Outcome exploited: R1.
@@ -191,11 +258,33 @@ process.stdin.on('end', () => {
   if (process.env.ROUND_WRITE_PATH) fs.writeFileSync(process.env.ROUND_WRITE_PATH, Buffer.from(process.env.ROUND_WRITE_CONTENT, 'base64'));
   if (process.env.ROUND_REMOVE_PATH) fs.unlinkSync(process.env.ROUND_REMOVE_PATH);
   fs.writeFileSync(process.env.ROUND_CAPTURE, JSON.stringify({args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64')}));
-  fs.writeFileSync(args[args.indexOf('-o') + 1], args.includes('resume') ? 'stand-in resumed message\\n' : 'stand-in last message\\n');
+  const sequenceFile = process.env.ROUND_SEQUENCE_FILE;
+  let sequenceIndex = 0;
+  if (sequenceFile) {
+    try { sequenceIndex = Number(fs.readFileSync(sequenceFile, 'utf8')) || 0; } catch {}
+    fs.writeFileSync(sequenceFile, String(sequenceIndex + 1));
+  }
+  const messages = process.env.ROUND_MESSAGES ? JSON.parse(process.env.ROUND_MESSAGES) : null;
+  const exits = process.env.ROUND_EXITS ? JSON.parse(process.env.ROUND_EXITS) : null;
+  const isResume = args.includes('resume');
+  const fallback = isResume ? 'stand-in resumed message\\n' : 'stand-in last message\\n';
+  const configuredMessage = isResume && process.env.ROUND_RESUME_MESSAGE !== undefined
+    ? process.env.ROUND_RESUME_MESSAGE
+    : process.env.ROUND_MESSAGE;
+  const message = messages
+    ? (messages[sequenceIndex] ?? messages[messages.length - 1])
+    : (configuredMessage ?? fallback);
+  const defaultExit = isResume && process.env.ROUND_RESUME_EXIT !== undefined
+    ? process.env.ROUND_RESUME_EXIT
+    : process.env.ROUND_EXIT;
+  const exitCode = exits
+    ? (exits[sequenceIndex] ?? exits[exits.length - 1])
+    : defaultExit;
+  fs.writeFileSync(args[args.indexOf('-o') + 1], message);
   process.stdout.write('{"type":"thread.star');
   process.stdout.write('ted","thread_id":"${thread}"}\\n');
   process.stdout.write('{"type":"item.completed","text":"العربية «»"}\\r\\n');
-  process.exitCode = Number(process.env.ROUND_EXIT || 0);
+  process.exitCode = Number(exitCode || 0);
 });\n`,
 	);
 	if (process.platform === "win32") {
@@ -1267,14 +1356,12 @@ describe("R1 real review answers", () => {
 	)("reads %s as exactly %i readings in order and permits an answered launch", (name, count, hash) => {
 		const answerFile = path.join(realReviewRoot, `${name}.md`);
 		const bytes = readFileSync(answerFile);
-		// Frozen hashes are from the coordinator's eight original last.md files.
+		// Frozen hashes are from the coordinator's real last.md files.
 		expect(createHash("sha256").update(bytes).digest("hex")).toBe(hash);
 		const answer = bytes.toString("utf8");
-		// The expected blocks come directly from the real numbered Markdown;
+		// The expected blocks come directly from each answer's own Markdown;
 		// no production parser or label dictionary shapes these expectations.
-		const blocks = answer
-			.split(/(?=^\d+\. \*\*)/m)
-			.map((block) => block.trim());
+		const blocks = expectedReviewBlocks(answer);
 		expect(blocks).toHaveLength(count);
 		const f = fixture();
 		rmSync(f.reviewRoot, { recursive: true });
@@ -1313,6 +1400,25 @@ describe("R1 real review answers", () => {
 		expect(
 			readFileSync(path.join(f.run, "review-dispositions.md"), "utf8"),
 		).toBe(dispositions);
+	});
+
+	it("accepts another heading level and field wording in the same structure", () => {
+		const f = fixture();
+		const answer = `#### 1. R1
+- Outcome reference: R1.
+- Concrete reading: The check can pass without the intent.
+- Repair note: Require the intended observable result.
+
+#### 2. L1
+- Limit reference: L1.
+- Concrete reading: A result can survive a changed input.
+- Repair note: Preserve the input as well.
+`;
+		f.answerReview(
+			answer,
+			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\nReading 2: closed\n`,
+		);
+		expect(f.invoke().status).toBe(0);
 	});
 
 	it.each([
@@ -1749,6 +1855,135 @@ describe("L2 resume", () => {
 	});
 });
 
+describe("K2 automatic resume", () => {
+	const report = "K1-K3: PASS\nL1-L2: PASS\n";
+	const outcomeBrief = (f: ReturnType<typeof fixture>) => {
+		const suffix = Buffer.from(
+			`
+## Causes and required outcomes
+
+- **K1.** Fixture cause one. Outcome: first result. Intent: first intent.
+- **K2.** Fixture cause two. Outcome: second result. Intent: second intent.
+- **K3.** Fixture cause three. Outcome: third result. Intent: third intent.
+
+## Limits the result keeps
+
+- **L1.** Fixture limit one. Outcome: first limit. Intent: first limit intent.
+- **L2.** Fixture limit two. Outcome: second limit. Intent: second limit intent.
+`,
+		);
+		writeFileSync(f.brief, Buffer.concat([f.bytes, suffix]));
+		git(f.coordinator, "add", ".");
+		git(f.coordinator, "commit", "-m", "add outcome ids");
+		f.answerReview(undefined, undefined, 2);
+	};
+	const resumeLog = (f: ReturnType<typeof fixture>) =>
+		readFileSync(path.join(f.run, "auto-resumes.log"), "utf8")
+			.trim()
+			.split(/\r?\n/)
+			.map((line) => JSON.parse(line));
+
+	it("resumes a run whose first turn ends without a report", () => {
+		const f = fixture();
+		outcomeBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: "Now let me test the implementation:\n",
+			ROUND_RESUME_MESSAGE: report,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		expect(f.captured().args).toContain(thread);
+		expect(
+			Buffer.from(f.captured().input, "base64").toString("utf8"),
+		).toContain("wait inside tool calls");
+		expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(true);
+		const log = resumeLog(f);
+		expect(log).toHaveLength(1);
+		expect(log[0]).toMatchObject({
+			exitCode: 0,
+			firstLine: "Now let me test the implementation:",
+		});
+		expect(log[0].time).toMatch(/^\d{4}-\d\d-\d\dT/);
+	});
+
+	it("does not resume after a complete report or a STOPPED line", () => {
+		for (const message of [report, "STOPPED: deliberate stop\n"]) {
+			const f = fixture();
+			outcomeBrief(f);
+			const result = f.invoke(undefined, { ROUND_MESSAGE: message });
+			expect(result.status, result.output).toBe(0);
+			expect(f.captured().args).not.toContain("resume");
+			expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(false);
+			expect(existsSync(path.join(f.run, "auto-resumes.log"))).toBe(false);
+		}
+	});
+
+	it("never resumes a nonzero exit", () => {
+		const f = fixture();
+		outcomeBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: "unfinished work\n",
+			ROUND_EXIT: "37",
+		});
+		expect(result.status, result.output).toBe(37);
+		expect(f.captured().args).not.toContain("resume");
+		expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(false);
+		expect(existsSync(path.join(f.run, "auto-resumes.log"))).toBe(false);
+	});
+
+	it.each([
+		["an omitted ID", "K1-K2: PASS\nL2: PASS\n"],
+		["IDs without PASS or FAIL", "K1 K2 K3 L1 L2\n"],
+	])("does not accept %s as a report", (_name, message) => {
+		const f = fixture();
+		outcomeBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: message,
+			ROUND_RESUME_MESSAGE: report,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(true);
+		expect(resumeLog(f)).toHaveLength(1);
+	});
+
+	it("auto-resumes after a manual resume command", () => {
+		const f = fixture();
+		outcomeBrief(f);
+		const sequence = {
+			ROUND_MESSAGES: JSON.stringify([
+				"launch incomplete\n",
+				"manual resume incomplete\n",
+				report,
+			]),
+			ROUND_EXITS: JSON.stringify([37, 0, 0]),
+			ROUND_SEQUENCE_FILE: path.join(f.root, "round-sequence"),
+		};
+		expect(f.invoke(undefined, sequence).status).toBe(37);
+		const result = f.invoke(["resume", f.run], sequence);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(true);
+		expect(existsSync(path.join(f.run, "events-resume-2.jsonl"))).toBe(true);
+		expect(resumeLog(f)).toMatchObject([
+			{ exitCode: 0, firstLine: "manual resume incomplete" },
+		]);
+	});
+
+	it("stops with exit 1 after ten automatic resumes", () => {
+		const f = fixture();
+		outcomeBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: "still working\n",
+			ROUND_RESUME_MESSAGE: "still working\n",
+		});
+		expect(result.status, result.output).toBe(1);
+		expect(result.stderr).toContain("after 10 automatic resumes");
+		expect(resumeLog(f)).toHaveLength(10);
+		expect(existsSync(path.join(f.run, "events-resume-10.jsonl"))).toBe(true);
+		expect(existsSync(path.join(f.run, "events-resume-11.jsonl"))).toBe(false);
+	});
+});
+
 describe("L5 start load", () => {
 	const record = (f: ReturnType<typeof fixture>) =>
 		JSON.parse(readFileSync(path.join(f.run, "start-load.json"), "utf8"));
@@ -2137,6 +2372,7 @@ it("prints the command's usage without starting Codex", () => {
 	expect(result.stdout).toContain(
 		"--message sends the exact text instead of the saved launch input.",
 	);
+	expect(result.stdout).toContain("resumes automatically up to 10 times");
 	expect(result.stdout).toContain(
 		"Models: deepseek-v4.1-flash (default), gpt-6.1-sol.",
 	);
