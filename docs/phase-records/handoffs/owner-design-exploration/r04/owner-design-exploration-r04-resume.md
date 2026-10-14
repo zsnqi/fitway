@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04`, 2026-10-14 17:55 +03:00 (handoff to a fresh session; nothing running: tuner-removal and vf-fixes stopped and saved at the user's request, launcher-fixes-3 reported; main at `4030ca3e`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-58), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-59), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -58,9 +58,9 @@ run folder has a `STOPPED-2026-10-14.md` saying where it stood:
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
 2. **Grade launcher-fixes-3** against its held-out rows, record it (`codex-rounds.md`, `rounds.tsv`, findings), merge,
-   CI, main. **Ask the user** whether and when to continue the two stopped rounds; a continuation is a fresh Codex
-   session from its side-branch commit above with a short continue brief (the vf-parallel precedent, DECISIONS 54), each measuring
-   on a quiet machine (F168: one verify-fitway suite at a time). The tuner round adds `.impeccable/config.json` at the build branch's root to the owned
+   CI, main. **Then continue the two stopped rounds** (DECISIONS 59): tuner-removal first, then vf-fixes, never both
+   at once (F168); each a fresh Codex session from its side-branch commit above with a short continue brief (DECISIONS
+   54's precedent), reviewed (B11) and graded on its existing held-out rows. The tuner round adds `.impeccable/config.json` at the build branch's root to the owned
    paths (F140); its live moments stay reachable by a key under a URL switch (coordinator, reported to the user on
    2026-10-14).
 3. **After the tuner merges:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the

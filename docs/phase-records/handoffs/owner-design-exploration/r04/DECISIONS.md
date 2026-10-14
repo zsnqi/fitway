@@ -645,6 +645,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     Open Design breaks or degrades; early ends (F154) keep costing real time after the automatic resume; a task needs a
     capability only Claude Code has; or Codex's start load or `apply_patch` failures become a measured bottleneck. The
     working Claude Code settings stay recorded in item 53, as a fallback beside GPT on Codex.
+59. **The two stopped rounds continue, one at a time, tuner first** (the user, 2026-10-14, «اي و طبيعي», after
+    asking the coordinator to stop tuner-removal and vf-fixes so the session could end; its context had grown large,
+    not a judgement of the rounds). Each continues in a fresh Codex session on DeepSeek from its saved side-branch
+    commit with a short continue brief (item 54's precedent): tuner-removal first, since it is furthest into its
+    measurements, cleans the build branch and its CI, and finishes on the CLI it started with; then vf-fixes. Never
+    both at once (F168, and load on the compares). They start in the next session, after launcher-fixes-3 is graded.
 
 ## How this milestone's rounds run
 
