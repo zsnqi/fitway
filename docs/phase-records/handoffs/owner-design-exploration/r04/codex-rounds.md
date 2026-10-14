@@ -1166,3 +1166,33 @@ checks live outside the repository and never appear here or in a brief. One line
   the continue brief's R2 did not make it re-run L1's tools. F170 (the brief's heading) cost one manual resume.
 - **Disposition:** not merged; `briefs/codex-tuner-removal-fix.md` brings `capture.mjs` back without the tuner, run at
   the base first, and takes the preset names out of README. Side findings: F170, F171.
+
+## tuner-removal-fix: `briefs/codex-tuner-removal-fix.md` (this folder, `763156e0`), result `c2fe4661` on `owner-followup-r04-build`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** the tuner round's grading failure: Daily's `capture.mjs` back with only its tuner parts removed, run at
+  the base first (C1), and README's measurements without the tuner's preset names (C2). The review's five readings:
+  three closed, two left open (both would add checks the base file never made). The first launch stopped on F172
+  (Codex's model list dropped `gpt-5.5`); the review and launch ran after the coordinator pinned the catalog source.
+  One run (`codex-round-2d7f3220-fbf8-4120-a1fe-779ad7e1c6c8`), one automatic resume (the brief's headings, so F170
+  did not recur), no intervention. Tokens: 102.0M input (100.6M cached), 196k output; start load 87,573.
+- **Codex's report** (that folder's `last-message.md`): C1, C2, L1 and L2 PASS; the base file flags 15 frames and the
+  result 11, the four more being the tuner's and presets' frames; static guard, `?motion=off` 9/9, intro 6/6 and every
+  motion check the same on both; the light measurements equal; three motion contact sheets vary between repeated runs
+  on either side. It reformatted the ignored local `.impeccable/config.local.json` so the local ladder's formatter
+  passed (F173).
+- **Brief rows** 4/4 by the coordinator's checks, with no held-out file (a fix round graded on its brief and the base):
+  - C1 pass: the coordinator's own run of the result (`D:/fitway-temp/owner-r04-tuner-grade/fix-capture-result/`,
+    log beside it) prints the same verdicts as Codex's result run line for line and exits 1 on the same 11 frames, as
+    the base run exits 1 on those 11 and the four tuner frames; 22 of its frames are byte-identical to Codex's base run
+    and its four new light crops to the base's "recommended" crops; the four that differ are motion sheets that vary
+    between the base's own two runs or between two result runs. Every removed block drives the tuner (its speed rows,
+    "Replay intro" button, Motion switch, presets, file check); the outside-plot guard runs as at the base, which
+    already skipped it for the STEP3 frames, and README now says so where it had said "16 of 16".
+  - C2 pass: the four rows read "Static light", "Low-haze calibration", "High-haze variant" and "High-haze
+    reconstruction", values unchanged; a case-insensitive search for the tuner, its presets' names and stored keys finds
+    only the word "alike" and the script's "v3 lights" header outside `HISTORY.md` and the evidence folder.
+  - L1 pass: only `capture.mjs` and `README.md`; README outside the capture account and the rows unchanged; INDEX
+    current (`build-index.mjs --check`, exit 0). L2 pass: CI green on the pushed `c2fe4661`.
+- **Failure causes:** none in the brief's rows; F173 is an environment edit outside the Scope.
+- **Disposition:** accepted; with it the tuner round's L1 failure is repaired and the build branch's tuner work
+  (`58e39ede`, `aeb7d35a`, `c2fe4661`) stands.

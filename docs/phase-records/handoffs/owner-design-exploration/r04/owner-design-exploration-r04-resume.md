@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 21:24 +03:00 (tuner-removal graded, not merged; tuner-removal-fix running; DeepSeek catalog pinned, F172; main at `8117ff5f`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 22:14 +03:00 (the tuner work accepted on the build branch at `c2fe4661`, CI green; vf-fixes' continue brief written, its review next; main at `79717c22`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-59), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -43,32 +43,23 @@
 
 ## Running now
 
-- **tuner-removal-fix**, launched about 21:20 on DeepSeek at `max`:
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal-fix.md` (`763156e0`, SHA-256
-  `77668bbf...`), review `D:/fitway-temp/brief-review/codex-tuner-removal-fix-2` (three closed, two left open), run
-  folder `D:/fitway-temp/codex-round-2d7f3220-fbf8-4120-a1fe-779ad7e1c6c8`, thread
-  `01a13ba8-12b5-78d3-9a53-74e884964f0c`, on `owner-followup-r04-build` from `aeb7d35a` in
-  `D:/Projects/fitway-worktrees/owner-followup-r04-s04`; its outcomes sit under the launcher's headings, so an early
-  end resumes on its own. Grade it against its brief and the base: `capture.mjs` run at the base and the result check
-  by check, the folder search, README and INDEX outside the named parts byte-identical, the ladder.
-- **tuner-removal is graded** (record in `codex-rounds.md`, row in `rounds.tsv`): `aeb7d35a` on `58e39ede`,
-pushed, CI green (F166 fixed); brief 7/10, held-out 9/10. The tuner is gone, its moments run on keys under
-`?live-keys=1` (`n`, `r`, `u`, `d`), every page compares unchanged. Not merged: `58e39ede` deleted Daily's
-`capture.mjs` whole (static guard, motion checks, light measurements) where L1 allowed removing only its tuner parts,
-and README still names the tuner's presets. The fix brief is
-`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-tuner-removal-fix.md` (`brief:check` PASS),
-with the base file at `D:/fitway-temp/owner-r04-tuner-removal-fix-sources/capture-4352181f.mjs`. Grading kit and
-evidence: `D:/fitway-temp/owner-r04-tuner-grade/`. vf-fixes stays stopped (`wip/vf-fixes-stopped-20261014`,
-`862dea71`; run folder `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`).
+Nothing. **The tuner work is accepted** on `owner-followup-r04-build` (`58e39ede`, `aeb7d35a`, `c2fe4661`; pushed, CI
+green): the tuner is gone, its moments run on keys under `?live-keys=1` (`n`, `r`, `u`, `d`), every page compares
+unchanged (tuner-removal, brief 7/10, held-out 9/10), and tuner-removal-fix (brief 4/4) restored Daily's `capture.mjs`
+without the tuner, with the same verdicts and stable frames as the base file. Records in `codex-rounds.md` and
+`rounds.tsv`; grading kit `D:/fitway-temp/owner-r04-tuner-grade/`. The previews on 3174 and 3180 serve the build
+worktree, so they show the tuner removed. **vf-fixes** is prepared: the coordinator moved `owner-r04-vf-fixes` onto
+the saved `862dea71` (`git reset --mixed`, files unchanged, tree clean) and wrote
+`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-fixes-continue.md` (`brief:check` PASS;
+outcomes under the launcher's headings, F170; R2 makes it report every deletion or loosened check, the tuner
+round's lesson).
 
 ## Next steps
 
 1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129).
-2. **tuner-removal-fix** (running, above): grade it (`capture.mjs` back with only its tuner parts gone, run at the base and the result check by check; README's
-   presets; L1's checks and the ladder), then merge the build branch's tuner work. **Then vf-fixes** from `862dea71`
-   with its own continue brief whose outcomes sit under "## Causes and required outcomes" (F170), never beside
-   another round (F168).
-3. **After the tuner merges:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
+2. **vf-fixes, continued:** `pnpm codex:round` on the continue brief (its review, B11), dispositions, launch; grade on
+   `D:/fitway-grader/owner-r04/vf-fixes-heldout.md` and the round's own V1-V7 and L1-L3, then merge, CI, main.
+3. **Now that the tuner is in:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
    `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown).
 4. **The other tool rounds before Settings:** the encoding round's brief can be drafted now from
    `D:/fitway-temp/owner-r04-encoding-draft/research-digest.md` (each check's real past mistake and where it sits; it
