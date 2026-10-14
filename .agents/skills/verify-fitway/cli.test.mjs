@@ -2928,7 +2928,10 @@ function interactiveKeyboardPage(kind) {
 			count: async () => 1,
 			evaluate: async (fn) =>
 				fn.toString().includes("localName")
-					? kind === "button"
+					? {
+							key: kind === "button" ? "Space" : "Enter",
+							navigation: kind !== "button",
+						}
 					: focus === "#control",
 			waitFor: async () => {},
 		}),
@@ -2985,7 +2988,7 @@ test("V4: keyboard activation uses Space for buttons and Enter for links", async
 });
 
 test("V7: navigation settles before the action returns and a wrong destination fails", async () => {
-	const button = interactiveKeyboardPage("button");
+	const button = interactiveKeyboardPage("link");
 	let settle;
 	let settled = false;
 	button.page.waitForNavigation = () =>
@@ -3025,6 +3028,40 @@ test("V7: navigation settles before the action returns and a wrong destination f
 		/wrong destination/,
 	);
 	assert.equal(error instanceof KeyboardReachError, false);
+
+	const pressed = interactiveKeyboardPage("button");
+	let settlePress;
+	let pressSettled = false;
+	let focusReads = 0;
+	pressed.page.waitForNavigation = () =>
+		new Promise((done) => {
+			settlePress = done;
+		}).then(() => {
+			pressSettled = true;
+		});
+	pressed.page.keyboard.press = () => {
+		setTimeout(() => settlePress(), 20);
+	};
+	const originalEvaluate = pressed.page.evaluate;
+	pressed.page.evaluate = async (fn) => {
+		if (fn.toString().includes("document.activeElement")) {
+			focusReads++;
+			if (focusReads === 2 && !pressSettled)
+				throw new Error("focus read before navigation settled");
+		}
+		return originalEvaluate(fn);
+	};
+	await performAction(
+		{},
+		pressed.page,
+		"press:Space",
+		"keyboard",
+		scratch,
+		"pressed-navigation",
+		{},
+	);
+	assert.equal(pressSettled, true);
+	assert.equal(focusReads, 2);
 });
 
 test("V5: SKILL names CLI options, ports and rendered artifacts without drift", async () => {
