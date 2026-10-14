@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-14 16:20 +03:00 (three DeepSeek rounds running: tuner-removal, launcher-fixes-3, vf-fixes; main at `862e45ba`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-14 17:10 +03:00 (handoff to a fresh session; three DeepSeek rounds running: tuner-removal, launcher-fixes-3, vf-fixes; main at `4030ca3e`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-58), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -48,8 +48,11 @@ Three DeepSeek rounds, each launched by `pnpm codex:round` with its review dispo
 - **vf-fixes** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-fixes.md`; F131, F132, F136, F149, F158, F161, F164), `D:/Projects/fitway-worktrees/owner-r04-vf-fixes`
   from `088711e0`, pair 3186-3187, run folder `D:/fitway-temp/codex-round-af865e5d-1ef1-4efc-b1b3-f0a3b6975895`.
 
-The launcher resumes a run that ends early by itself (up to 10 times); when it exits, read its last message and
-`auto-resumes.log` before treating it as a report.
+The three launchers were started as background shells of the previous session (`claude-code-desktop`, 2026-10-14),
+which stays open until they end; a fresh session does not receive their exit. A round has ended when its run folder
+holds `last-message.md` and no `codex.exe` of that run is alive
+(`Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match '<run id>' }`). The launcher resumes a run that
+ends early by itself (up to 10 times); read its last message and `auto-resumes.log` before treating it as a report.
 
 ## Next steps
 
@@ -60,7 +63,10 @@ The launcher resumes a run that ends early by itself (up to 10 times); when it e
    2026-10-14).
 3. **After the tuner merges:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
    `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown).
-4. **The other tool rounds before Settings:** the `reports.css` split (draft
+4. **The other tool rounds before Settings:** the encoding round's brief can be drafted now from
+   `D:/fitway-temp/owner-r04-encoding-draft/research-digest.md` (each check's real past mistake and where it sits; it
+   also found three build-branch round records saying "B3 held" for briefs without the sentence) and launched after
+   launcher-fixes-3 merges (same files); the `reports.css` split (draft
    `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); the encoding round of decision 56
    (F129 twice: K1 checks the frontier against the packets, and main moves only through a command that refuses a commit
    without a green CI run; BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
