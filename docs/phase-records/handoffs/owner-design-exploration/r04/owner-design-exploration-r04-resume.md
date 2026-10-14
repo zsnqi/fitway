@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-15 01:40 +03:00 (decision 61; vf-fixes graded and merged, `9c69abe5`; nothing running; the tuner work accepted at `c2fe4661`; main at `fbce5ce6`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-15 02:10 +03:00 (handover to a fresh coordinator session under decision 61; vf-fixes graded and merged at `1dbaebbf`, main at `1dbaebbf` with CI green; nothing running; the tuner work accepted at `c2fe4661`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-61), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -61,10 +61,12 @@ Nothing.
 2. **The user's topics are settled** (2026-10-15): of the Claude Desktop update's capabilities only side sessions
    were adopted, for the coordinator's handovers (decision 61); the Claude Code CLI on PATH was updated from 2.1.293
    to 2.1.300.
-3. **vf-fixes is merged** (above); the merge's CI, then main (step 1).
+3. **vf-fixes is merged** (above): merge `d56013ee`, main fast-forwarded to `1dbaebbf` after its CI passed
+   (2026-10-15). Main's run on `6db75be8` had failed on F174 alone; main skipped to `fbce5ce6`, then `1dbaebbf`.
 4. **Now that the tuner is in:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
    `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown); F175 and F176 go to the next verify-fitway round, F168 with them.
-5. **The encoding round, in a fresh session (the user, 2026-10-14), then the other tool rounds before Settings:**
+5. **Next: the encoding round** (the user, 2026-10-15: the new coordinator session first reviews the project's state,
+   then takes up the encoding round), **then the other tool rounds before Settings:**
    the encoding round's brief can be drafted now from
    `D:/fitway-temp/owner-r04-encoding-draft/research-digest.md` (each check's real past mistake and where it sits; it
    also found three build-branch round records saying "B3 held" for briefs without the sentence) and launched now that
