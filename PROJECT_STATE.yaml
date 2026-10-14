@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-13T20:55:00+03:00
+updatedAt: 2026-10-14T13:30:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
   report: .agents/skills/gardener/REPORT.md
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) is IN_PROGRESS, access-reason-cap-r01 is paused (on 2026-10-10 the user left its restart to the coordinator, who restarts it after the Owner CSS round closes and before Settings, its scope revisited first), agent-environment-r01 and r03 are DONE and agent-environment-r02 is SUPERSEDED by r03, all archived.
+  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) is IN_PROGRESS, access-reason-cap-r01 is DONE (restarted by the coordinator on 2026-10-14, integrated at bfc23713), agent-environment-r01 and r03 are DONE and agent-environment-r02 is SUPERSEDED by r03, all archived.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -68,42 +68,5 @@ milestones:
       browser: PENDING
       accessibility: PENDING
       visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
-  access-reason-cap-r01:
-    status: IN_PROGRESS
-    objective: >-
-      Cap the reason an owner gives when deactivating the front-desk PIN or an owner at the 240 characters the audit
-      log stores, so a longer reason is refused with its own message instead of failing on the audit write.
-    taskPacket: docs/phase-records/task-packets/access-reason-cap-r01.yaml
-    dependencies: []
-    ownerSession: claude-code-desktop:task_fdc69808
-    branch: claude/busy-bartik-858366
-    worktree: D:/Projects/fitway/.claude/worktrees/busy-bartik-858366
-    baseCommit: 312bd861edb2ac642c1a5f27cc358015af3f3267
-    ownedPaths:
-      - packages/api/src/access/** and its tests
-      - apps/web/src/components/owner/access/** and its message files and tests
-      - "SPEC.md: one line recording the 240-character audit reason limit only"
-      - "apps/server/src/phase11-access.integration.test.ts: one added test block for the 241-character reason refusal only"
-      - docs/phase-records/handoffs/access-reason-cap/**
-      - docs/phase-records/task-packets/access-reason-cap-r01.yaml
-    forbiddenPaths:
-      - migrations, packages/db/** schema, pnpm-lock.yaml and dependencies
-      - tests/browser/** including canonicals and screenshots
-      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
-      - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md, and all of SPEC.md except the one line above
-      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-      - CLAUDE.md, .claude/** and other milestones' handoffs and packets
-    sharedLeases: []
-    validationRepairAttempts: 0
-    handoff: docs/phase-records/handoffs/access-reason-cap/access-reason-cap-r01-resume.md
-    stopReason: null
-    gates:
-      unit: PENDING
-      integration: PENDING
-      browser: NOT_REQUIRED
-      accessibility: NOT_REQUIRED
-      visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null

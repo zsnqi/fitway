@@ -1,7 +1,7 @@
 schemaVersion: 1
 milestoneId: access-reason-cap-r01
 taskClass: backend-api-data
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/access-reason-cap-r01
 task:
   objective: >-
