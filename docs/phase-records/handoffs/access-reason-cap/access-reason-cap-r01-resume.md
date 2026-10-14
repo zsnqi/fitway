@@ -20,10 +20,11 @@ Complete. Restarted by the coordinator on 2026-10-14 (the user left its restart 
     pending result is never dropped and no second deactivation starts.
 - Evidence, all on `55780c02` or its predecessors named above: unit 5 files, 82 tests, exit 0
   (`D:/fitway-temp/access-reason-cap-r01/rerun-20261014/unit-55780c02.txt`); integration on the disposable
-  `fitway_integration_arc_r01_20261014`, 26 of 26 (`rerun-20261014/integration.txt`); each new test shown failing on
-  the code before its fix; CI green on `0ee0f618` (run 38541967359), `a71748bc` (38543937564) and `55780c02`
-  (38546139307). Independent review: `D:/fitway-temp/access-reason-cap-r01/review-20261014/` (first review,
-  `fix/` and `final/`), PASS at each step.
+  `fitway_integration_arc_r01_20261014`, 26 of 26
+  (`D:/fitway-temp/access-reason-cap-r01/rerun-20261014/integration.txt`); each new test shown failing on the code
+  before its fix; CI green on `0ee0f618` (run 38541967359), `a71748bc` (38543937564) and `55780c02` (38546139307).
+  Independent review, PASS at each step: `D:/fitway-temp/access-reason-cap-r01/review-20261014/` (the first review),
+  `D:/fitway-temp/access-reason-cap-r01/review-20261014/fix/` and `D:/fitway-temp/access-reason-cap-r01/review-20261014/final/`.
 
 ## Running now
 
