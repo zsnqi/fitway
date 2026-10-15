@@ -48,14 +48,14 @@ No Codex brief passes `brief:check` without the Scope that tells the agent to re
   - **Cause.** `checkBrief` applies `codexScopeProblem` only when the brief has a Report or a Scope section
     (`scripts/agent-environment/check-brief.mjs:908-917`), so a Codex brief with neither passes.
   - **Outcome.** `pnpm brief:check` reports `brief-scope` as a FAIL and exits nonzero on every Codex-role brief whose
-    Scope rule fails, whatever other sections it has or lacks, one with no Scope and no Report included; a test
-    proves that case.
+    Scope rule fails, whatever other sections it has or lacks, one with no Scope and no Report included, and one whose
+    sentence sits in an indented code block; a test proves each case.
   - **Intent.** A Codex brief cannot reach launch without the B3 sentence.
 - **S2. The fixtures that are Codex briefs.**
   - **Cause.** The Codex brief fixtures built in `codex-round.test.ts` (about line 407) and `path-tokens.test.ts`
     (about line 90) have no Scope section, so S1 alone fails the tests that use them.
-  - **Outcome.** Each such fixture gains a Scope section ending with the B3 sentence, and every test that uses it
-    keeps its assertions and its result.
+  - **Outcome.** Each such fixture gains a Scope section ending with the B3 sentence and changes in nothing else, and
+    every test that uses it keeps its assertions and its result.
   - **Intent.** The fixtures look like the briefs the launcher really receives.
 
 ## Limits the result keeps
