@@ -775,6 +775,19 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       overclaims, and DeepSeek finished in about 71 minutes against about 3 hours (measured). GPT-6.1 Sol stays the
       grader (decision 64) and the second reviewer of item 66's trial; Opus grades the rounds that matter (item 67).
 
+70. **Diagnosable logging: three tool fixes, the server's errors later** (the user, 2026-10-15, «اي موافق على
+    تحسيناتك», after the coordinator's review of the logging against the user's statement of pstack's "Diagnosable
+    Logging"; the name was not found verbatim in pstack's sources, so the review used the user's own wording: each
+    important step records its start, end, duration and result, a failure is diagnosable from the logs alone, and no
+    secret leaks or error is swallowed; `D:/fitway-temp/owner-r04-logging-review/REPORT.md`):
+    - The next launcher round takes F242 (a report's SHA and ladder checked against what ran) and F245 (each turn's
+      start, end, duration, exit, stop reason and HEAD in the run folder), with F234-F237; F246 (the ladder's failed
+      step and clock times) goes in the same round or the next small encoding round; F247 (dates and visible errors
+      in the resume scripts, outside the repository) is a coordinator edit.
+    - The server's error logs (only `error.name`; `edge-push.ts` 500 and 422 unlogged) wait for the move to
+      production (item 51), since they touch `apps/**` and need a privacy rule such as the edge's allow-list.
+    - Total durations for the gardener and verify-fitway, and a logger library, are not worth it now.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
