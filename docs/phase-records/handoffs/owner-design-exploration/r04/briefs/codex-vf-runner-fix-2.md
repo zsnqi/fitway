@@ -56,9 +56,11 @@ when it is free, and an arrival's ended rule is read per language as the runner 
   - **Cause.** `measureExemptRanges` (`cli.test.mjs:3437-3471`) ends a `measure` command's exemption only at `;`,
     `&&`, `||` or `|` standing as a whole token, so in one code span `... -- --max-stops 40; node $cli drive
     --no-such-flag` exempts the second command's invented option.
-  - **Outcome.** The exemption ends at a separator however it is written: `;`, `&&`, `||` or `|` alone, at the end
-    or start of a token, or inside one (`40;`, `40&&`, `;node`, `a|b`), in an inline span and in a fenced line; an
-    option after it is checked like any other; every form the V5 test refuses at the HEAD is still refused, and
+  - **Outcome.** The exemption is decided only from a parsed `measure` command's tool-argument range (a line that
+    holds `pnpm` or "tool arguments" exempts nothing), and it ends at an unquoted shell separator however it is
+    written: `;`, `&`, `&&`, `||`, `|` or a line end, alone, at the end or start of a token, or inside one (`40;`,
+    `40&&`, `;node`, `a|b`), in an inline span and in a fenced line, while a separator inside single or double
+    quotes (`--pattern 'a|b'`) ends nothing; an option after a separator is checked like any other; every form the V5 test refuses at the HEAD is still refused, and
     every form it accepts is still accepted, each kept as a case of that test.
   - **Intent.** Only a token the CLI hands to its tool unread is exempt, never the next command's.
 - **Y2. A verification port probed by a test (F183).**
@@ -68,7 +70,8 @@ when it is free, and an arrival's ended rule is read per language as the runner 
     it.
   - **Outcome.** With every port in 3174-3189 free, one full run of the four verify-fitway test files listens on,
     connects to and leases no port in that range, observed by a hook on `net` loaded into every Node process the
-    run starts; the same run with each verification pair held as a compare holds it (a listener and its lease)
+    run starts, with every port check the tests cause made through Node's `net` (no other program probes a port)
+    and the hook shown to count a planted listen on 3176; the same run with each verification pair held as a compare holds it (a listener and its lease)
     still passes in full; outside the tests a failing `doctor` still prints its `FIX` line naming a free pair, as
     at the HEAD; a test-only seam may stop the probe but never changes which port a command binds or reports.
   - **Intent.** A test run neither fails because a round holds a pair nor takes a pair a round is about to use.
@@ -76,13 +79,17 @@ when it is free, and an arrival's ended rule is read per language as the runner 
   - **Cause.** `state-rules.mjs:48-60` counts the before rules an `ends` entry names across languages, while the
     runner selects rules per language (`runner.mjs:110-112`), so a page with one `state=loading` rule for `ar` and
     one for `en` refuses an arrival that ends `{state: "loading"}` as matching several rules.
-  - **Outcome.** That recipe loads, and an item in each language lifts only its own language's rule beside the after
-    frame; two before rules with the same `when` that would both apply to one item (the same language, or one with
+  - **Outcome.** Which before rules apply to an item is decided by the same selection the runner uses
+    (`runner.mjs:110-112`); that recipe loads, and an item in each language lifts only its own language's rule
+    beside the after frame; an `ends` entry must match exactly one before rule in each language its `afterActions`
+    rule applies to, so one whose only match belongs to another language is refused; two before rules with the same `when` that would both apply to one item (the same language, or one with
     no `language`) are still refused; every refusal the HEAD's tests check still holds.
   - **Intent.** A declaration names one rule per item, the way the runner chooses rules.
 
 ## Limits the result keeps
 
+- **L0. New cases prove the repair.** Each case you add for Y1-Y3 fails on the HEAD's code with your production
+  change reverted (a test-only case runs against the HEAD's helper); report each failing output.
 - **L1. Today's behaviour elsewhere.** Every existing test keeps its assertions and still runs, none skipped,
   excluded or made conditional, the helpers and fixtures they use keep what they check (a change to one is reported
   with the outcome that needed it), and the suite runs at least as many tests as at the HEAD.
