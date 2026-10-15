@@ -60,7 +60,7 @@ tests did not try.
   `3bb0eae8` (run the old parser from `git show 3bb0eae8:<path>` in your temp folder). Intent: the change moved no
   answer it was not aimed at.
 - **G4. Read routes the round did not plant.** Outcome: each of these, planted alone ahead of `reviewSourcePlan` in
-  `copyReviewSources` with its result ignored, makes at least one test in `codex-round.test.ts` fail: a
+  `copyReviewSources` with its result ignored, makes the order test in `codex-round.test.ts` fail on its place-before-read assertion (not on a thrown setup error): a
   `git cat-file -p <head>:<source>` through `execFileSync`; an awaited `promisify(execFile)` call; a child started
   with `fork` that reads the source. Restore the file after each plant. Intent: the order test sees a source read by
   any route.
@@ -69,7 +69,7 @@ tests did not try.
   Intent: the guard fails only on a real early read.
 - **G6. The round kept its limits.** Outcome: `git diff --stat 3bb0eae8 954968b0` lists only the three paths the
   round's Scope allows; no `expect(` line present at `3bb0eae8` in `codex-round.test.ts` is missing at `954968b0`;
-  the test count at `954968b0` is at least that at `3bb0eae8`. Intent: nothing existing was weakened to pass.
+  the test count at `954968b0` is at least that at `3bb0eae8`; no existing test gained an early return, a skip or a condition; `codex-round.test.ts` passes whole at `954968b0`. Intent: nothing existing was weakened to pass.
 
 ## Limits the result keeps
 
