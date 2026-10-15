@@ -48,15 +48,15 @@ without a reason.
 - **F1. A Codex brief with neither Scope nor Report.**
   - **Cause.** `checkBrief` applies `codexScopeProblem` only when the brief has a Report or a Scope section
     (`scripts/agent-environment/check-brief.mjs:909-917`), so a Codex brief with neither passes `brief:check`.
-  - **Outcome.** `pnpm brief:check` reports `brief-scope` on every Codex-role brief whose Scope rule fails, whatever
-    other sections it has or lacks, a brief with no Scope and no Report included. Test fixtures that are Codex briefs
+  - **Outcome.** `pnpm brief:check` reports `brief-scope` as a FAIL and exits nonzero on every Codex-role brief whose
+    Scope rule fails, whatever other sections it has or lacks, a brief with no Scope and no Report included. Test fixtures that are Codex briefs
     without a Scope may gain one so that they keep their other results.
   - **Intent.** A Codex brief cannot reach launch without telling the agent to report an unmet outcome.
 - **F2. A listed BOM without a reason.**
   - **Cause.** `assertNoUnexpectedBom` (`scripts/verify-repository.mjs:92-112`) accepts any entry of
     `TRACKED_BOM_EXCEPTIONS` (`:29-60`), so an entry whose reason is empty passes.
   - **Outcome.** `pnpm check:repository` fails, naming the entry, when an entry's reason is empty or only whitespace,
-    when two entries name one path, or when an entry's path is not a tracked file that starts with a UTF-8 BOM.
+    when two entries name one file (compared as the same file whatever their case or separators), or when an entry's path is not a tracked file that starts with a UTF-8 BOM.
   - **Intent.** Each allowed BOM is a recorded, current decision, and a fixed file leaves the list.
 
 ## Limits the result keeps
