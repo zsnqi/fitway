@@ -1258,3 +1258,50 @@ checks live outside the repository and never appear here or in a brief. One line
   show; VF4's first form was the coordinator's row. Side findings: F174 (a unit test's timeout on main's CI), F175,
   F176; F168 stays open, its roots moved to another fixed folder.
 - **Disposition:** merged; F131, F132, F136, F149, F158, F161 and F164 fixed.
+
+## encoding-checks: `briefs/codex-encoding-checks.md` (this folder), continued by `codex-encoding-checks-fix.md`, result `c93f423d` on `owner-r04-encoding-checks`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** decision 62's checks half: K1 from the packets (C1, F129), `pnpm main:advance` (C2, F129), the BOM check
+  (C3, F140), B3 in `brief:check` (C4), `CLAUDE.md`'s agent table against the definitions (C5), decision 57's count
+  with B6, B8 and B13 wrapped (C6), Biome on tracked files only (C7, F173). Review: four readings closed, one left
+  open (branch protection), then granted by the user (decision 63). One run (`codex-round-ae11a8ef-...`), no
+  resume; start load 88,573.
+- **Codex's report:** C1-C7 and L1-L3 PASS at `7965e6c6`. CI failed on it: the C4 test read the five historical
+  briefs with `git show owner-followup-r04-build:...`, absent from CI's checkout (F179).
+- **Held-out** (`D:/fitway-grader/owner-r04/encoding-checks-heldout.md`; evidence and notes in
+  `D:/fitway-temp/owner-r04-encoding-checks-grade/`, `GRADE-NOTES.md`): EC1, EC2 (real dry runs and the real API:
+  `1dbaebbf`, `911e4a91` and `79f3efd6` refused on a failed newest run, `446bb9fa` on no run, `85290e95` accepted),
+  EC5, EC6, EC7 and EC8 pass; EC3 partial (an exception with an empty reason passed), EC4 partial (a Codex brief with
+  neither Scope nor Report passed the B3 rule).
+- **Fix:** `codex-encoding-checks-fix.md` (review: two closed, two left open) closed EC3 (`1378ee8e`, replayed: an
+  empty reason fails by name). Its F1 broke 176 tests whose fixtures are Codex briefs without a Scope, in
+  `codex-round.test.ts` (owned by encoding-launcher) and `path-tokens.test.ts`; the run stopped correctly
+  (`STOPPED:`), and the coordinator resumed it to restore F1's gate and vendor the historical briefs as fixtures
+  (`c93f423d`, CI green). F1 waits for a round that may change those fixtures (F180).
+- **Brief rows** 9/10 (C4 partial); **held-out** 7/8 after the fix. Brief-caused: none in the rows; the CI failure
+  traces to the brief's CI line, which did not say the checkout holds no other branch (now in the fix briefs).
+- **Disposition:** merged (`0906f2a2`); AGENTS.md and WORKFLOW.md name the command (`9deee692`), whose first real use
+  moved main from `1cce3b8d` to `9deee692`.
+
+## encoding-launcher: `briefs/codex-encoding-launcher.md` (this folder), continued by `codex-encoding-launcher-fix.md`, result `e315a2c2` on `owner-r04-encoding-launcher`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** decision 62's launcher half: bare readings (E1, F169), a preface (E2, F162), a silent read in the copy
+  path (E3, F156), every brief's outcome IDs (E4, F170), `--message` under Git Bash (E5), `TEMP`/`TMP` (E6, F110,
+  F118), test timeouts (E7, F174). Before launch E7's margin went from 3x to 8x: the baseline already met 3x
+  (5.4 s locally against 26.4 s on CI). Review: four closed, one left open. One run (`codex-round-ec7c6878-...`), one
+  automatic resume; start load 88,728.
+- **Codex's report:** E1-E7, L1, L2 PASS at `ba84fd20`; its own E4 list showed no IDs for most briefs.
+- **Held-out** (`D:/fitway-grader/owner-r04/encoding-launcher-heldout.md`; `D:/fitway-temp/owner-r04-encoding-launcher-grade/`):
+  EL1 and EL2 pass on five held-out answers (EL1's "still refused" form was the coordinator's error: column-0 items
+  are starts); EL6, EL7, EL8 pass; EL3 partial (a `git show` read passes); EL4 fail (the ID rule required the bold to
+  close after the ID, `- **K1.**`, as the brief wrote it, so most briefs yield none and would be refused, F178); EL5
+  fail (through `pnpm codex:round` the guard saw pnpm, not bash).
+- **Fix:** `codex-encoding-launcher-fix.md` (review: three closed, one left open), run `codex-round-ebda0632-...`, three
+  automatic resumes, start load 89,676. `2df1f970` closed G1 (every brief's exact IDs pinned) and G4 (the 8.3 test
+  probes every drive). Replays: G2 still failed (under pnpm the ancestor walk stops at an exited pnpm process, F181)
+  and G3's `git show` plant still passed (the test sees only reads through the launcher's instrumented helpers). The
+  coordinator resumed it once for G2: `e315a2c2` decides from `MSYSTEM` and the parent; replayed refused from Git
+  Bash through `pnpm -s`, passed from PowerShell. G3 accepted as partial; F156 stays open for the child-process route.
+- **Brief rows** 6/9 at first delivery (E3 partial, E4 and E5 fail), 8/9 after the fix; **held-out** 7/8 after the fix
+  (EL3 partial). Brief-caused: E4 (the literal `- **X1.**`, F178). Model-caused: E5's first test bypassed pnpm.
+- **Disposition:** merged after CI on `e315a2c2`.

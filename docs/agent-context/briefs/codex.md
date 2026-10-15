@@ -81,6 +81,7 @@ The brief rules B1-B13 live here. Codex follows a brief to the letter, so most f
 - [ ] B13. A timed outcome runs each side three times, alternating, on a quiet machine, and reports every run with the median and
       range, what limits the time, the errors counted, and proof the work ran; more runs only where they could change the
       decision. (user, 2026-10-14; adapted from pstack's `benchmark-checklist`)
-- [ ] A test suite that needs a clean tree is run after the commit. A brief whose round adds ladder tests says CI runs them on Windows without Playwright Chromium or ui-forensics (`.github/workflows/checks.yml`), so a proof that needs a real browser is a script in the temp folder, run and reported (vf-speed and vf-hold, 2026-10-12: both first pushes failed CI for it).
+- [ ] A test suite that needs a clean tree is run after the commit. A brief whose round adds ladder tests says CI runs them on Windows without Playwright Chromium or ui-forensics, from a checkout of the pushed commit alone with no other branch (`.github/workflows/checks.yml`; F179), so a proof that needs a real browser is a script in the temp folder, run and reported (vf-speed and vf-hold, 2026-10-12: both first pushes failed CI for it).
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
+- [ ] A format the brief writes out (a bullet, heading or ID pattern) is read as exact text: give the real form with its variants, never a shorthand (F178).
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.
