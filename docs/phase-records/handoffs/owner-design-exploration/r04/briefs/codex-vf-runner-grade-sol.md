@@ -56,9 +56,10 @@ The coordinator knows, row by row, whether this arm's delivered commit holds on 
 - **G2. A payload that never arrives.** Outcome: on a temp copy of the concept whose loaded phase never comes (its
   payload withheld), the `arrive=500` item is a problem or DIFFERENT, never EQUAL with a loading frame taken as
   arrived. Intent: a frame taken before the change is never accepted as the change.
-- **G3. The static proof still guards.** Outcome: with the runner's after-capture proof removed for a state that does
-  not change with time (planted in a temp copy of the result's CLI, or in the worktree and restored), at least one
-  test of `cli.test.mjs` fails on that proof. Intent: static states keep their second proof.
+- **G3. The static proof still guards.** Outcome: with the effect of the runner's after-capture proof disabled for a
+  state that does not change with time, its text left in place (planted in a temp copy of the result's CLI, or in the
+  worktree and restored), at least one test of `cli.test.mjs` fails because a static state that changed after its
+  capture was accepted. Intent: static states keep their second proof.
 - **G4. The full self compare unchanged.** Outcome: a full self compare (every page, `--feature all`, Arabic and
   English, desktop, tablet and phone, reduced motion, 4 workers) with the result's CLI and with `c699d3fb`'s CLI:
   the same item list and the same verdict for every item (give both counts and the list of non-EQUAL items). Intent:
@@ -70,7 +71,8 @@ The coordinator knows, row by row, whether this arm's delivered commit holds on 
   tools" in `SKILL.md`, outside any tool's argument list, fails the guide test; a real ui-forensics argument planted
   in the same place passes it. Intent: no reader meets an option the CLI lacks.
 - **G7. Limits.** Outcome: `git diff --stat c699d3fb HEAD` lists only files under `.agents/skills/verify-fitway/`;
-  no test present at `c699d3fb` is removed, skipped or made conditional; the suite's test count is at least the
+  no test present at `c699d3fb` is removed, skipped or made conditional, and none lost an
+  assertion line; the suite's test count is at least the
   base's. Intent: nothing was weakened to pass.
 
 ## Limits the result keeps
