@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import {
 	chmodSync,
 	copyFileSync,
+	type Dirent,
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
@@ -18,7 +19,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { setReviewSourcePlaceObserver } from "./check-brief.mjs";
-import { copyReviewSources } from "./codex-round.mjs";
+import { copyReviewSources, outcomeIdsFromBrief } from "./codex-round.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 
 vi.setConfig({ testTimeout: 60_000 });
@@ -348,6 +349,38 @@ function shortWindowsPath(value: string) {
 	if (result.status !== 0)
 		throw new Error(`short path lookup failed: ${result.stderr}`);
 	return result.stdout.trim();
+}
+
+function firstShortWindowsPath() {
+	const drives: string[] = [];
+	for (const letter of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+		const drive = `${letter}:/`;
+		try {
+			readdirSync(drive);
+			drives.push(drive);
+		} catch {
+			// A missing or unavailable drive is not a short-name candidate.
+		}
+	}
+	for (const drive of drives) {
+		let entries: Dirent[];
+		try {
+			entries = readdirSync(drive, { withFileTypes: true });
+		} catch {
+			continue;
+		}
+		for (const entry of entries) {
+			if (!entry.isDirectory()) continue;
+			const long = path.join(drive, entry.name);
+			try {
+				const short = shortWindowsPath(long);
+				if (short.includes("~")) return { drives, long, short };
+			} catch {
+				// Some system folders reject a short-name lookup.
+			}
+		}
+	}
+	return { drives };
 }
 
 afterEach(() => {
@@ -2000,6 +2033,57 @@ describe("C1 required changes", () => {
 	});
 });
 
+const briefOutcomeIds = [
+	["codex-deepseek-route.md", ["D1", "D2", "D3", "D4", "D5", "D6"]],
+	["codex-gardener-shared-files.md", ["G1", "G2", "G3", "L1", "L2"]],
+	["codex-gardener-shared-files-fix.md", ["X1", "X2", "X3", "L1", "L2"]],
+	["codex-launch-review.md", ["R1", "R2", "L1", "L2", "L3"]],
+	["codex-launcher-fixes.md", ["A1", "A2", "A3", "A4", "L1", "L2"]],
+	["codex-launcher-fixes-2.md", ["K1", "K2", "K3", "L1", "L2"]],
+	["codex-launcher-fixes-3.md", ["K1", "K2", "K3", "L1", "L2"]],
+	[
+		"codex-midmotion-compare.md",
+		[
+			"T1",
+			"T2",
+			"T3",
+			"T4",
+			"T5",
+			"T6",
+			"T7",
+			"T8",
+			"T9",
+			"L1",
+			"L2",
+			"L3",
+			"L4",
+		],
+	],
+	[
+		"codex-midmotion-compare-fix.md",
+		["X1", "X2", "X3", "X4", "X6", "X5", "L1", "L2", "L3"],
+	],
+	["codex-shared-frame-continue-2.md", ["R1", "R2", "R3", "R4"]],
+	["codex-tuner-removal.md", ["T1", "T2", "T3", "T4", "T5", "L1", "L2", "L3"]],
+	["codex-tuner-removal-continue.md", ["R1", "R2", "T2", "T5"]],
+	["codex-tuner-removal-fix.md", ["C1", "C2", "L1", "L2"]],
+	[
+		"codex-vf-fixes.md",
+		["V1", "V2", "V3", "V4", "V5", "V6", "V7", "L1", "L2", "L3"],
+	],
+	["codex-vf-fixes-continue.md", ["R1", "R2", "V1"]],
+	["codex-vf-hold.md", ["H1", "H2", "H3", "L1", "L2", "L3", "L4"]],
+	["codex-vf-parallel.md", ["P1", "P2", "P3", "P4", "L1", "L2", "L3"]],
+	["codex-vf-parallel-continue.md", ["R1", "R2", "R3"]],
+	["codex-vf-parallel-continue-2.md", ["R1", "R2", "R3", "R4", "R5"]],
+	["codex-vf-speed.md", ["S1", "S2", "S3", "S4", "L1", "L2", "L3"]],
+] as const;
+
+const briefRoot = path.join(
+	repository,
+	"docs/phase-records/handoffs/owner-design-exploration/r04/briefs",
+);
+
 describe("L1 launch", () => {
 	it("runs brief:check first and launches nothing for a failing brief", () => {
 		const f = fixture();
@@ -2028,6 +2112,37 @@ describe("L1 launch", () => {
 		refused(f, result, "brief has no outcome IDs");
 		expect(f.reviewCalls()).toEqual([]);
 		expect(existsSync(f.run)).toBe(false);
+	});
+	it("pins every current r04 brief to its exact outcome IDs", () => {
+		expect(
+			readdirSync(briefRoot)
+				.filter((name) => name.endsWith(".md"))
+				.sort(),
+		).toEqual(briefOutcomeIds.map(([name]) => name).sort());
+	});
+	it.each(briefOutcomeIds)("finds every outcome ID in %s", (name, expected) => {
+		expect(
+			[...outcomeIdsFromBrief(readFileSync(path.join(briefRoot, name)))].sort(),
+		).toEqual([...expected].sort());
+	});
+	it("ignores outcome IDs inside the environment block and fenced code", () => {
+		expect(
+			[
+				...outcomeIdsFromBrief(`- **A1.** Closed after the ID.
+- **B2. A reading's own lists.**
+- **C3** No full stop is not an ID.
+- **D4. Missing bold close is not an ID.
+
+<!-- environment:start v1 -->
+- **E5.** Environment example.
+<!-- environment:end -->
+
+\`\`\`markdown
+- **F6.** Fenced example.
+\`\`\`
+`),
+			].sort(),
+		).toEqual(["A1", "B2"]);
 	});
 	it("keeps exact HEAD input, argument order, events, last message, run folder and thread id", async () => {
 		const f = fixture();
@@ -2516,17 +2631,23 @@ describe("L3 refusals", () => {
 	});
 	it.skipIf(process.platform !== "win32")(
 		"expands an 8.3 TEMP for Codex and leaves other values unchanged",
-		() => {
+		({ skip }) => {
 			const f = fixture();
-			const long = path.join(f.root, "long-environment-folder");
-			mkdirSync(long);
-			const short = shortWindowsPath(long);
-			if (!short.includes("~")) return;
+			const probe = firstShortWindowsPath();
+			if (!("short" in probe))
+				skip(
+					`no available drive offers an 8.3 folder name; drives probed: ${
+						probe.drives.join(", ") || "none"
+					}`,
+				);
 			const tmp = "D:/fitway-temp-logs/round-normal";
-			const result = f.invoke(undefined, { TEMP: short, TMP: tmp });
+			const result = f.invoke(undefined, {
+				TEMP: probe.short,
+				TMP: tmp,
+			});
 			expect(result.status, result.output).toBe(0);
 			expect(f.captured().env).toEqual({
-				TEMP: realpathSync.native(long),
+				TEMP: realpathSync.native(probe.long),
 				TMP: tmp,
 			});
 		},
@@ -2792,40 +2913,152 @@ describe("L4 shell and byte parity", () => {
 		},
 	);
 	it.skipIf(process.platform !== "win32")(
-		"refuses --message under Git Bash and names --message-file",
+		"enforces the Git Bash --message guard through every launcher form",
 		() => {
 			const f = fixture();
 			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
-			rmSync(f.capture);
 			const gitBash = findGitBash(f.env.PATH);
-			const args = [
-				process.execPath,
-				script,
-				"resume",
-				f.run,
-				"--message",
-				"/api",
-			];
 			const bashQuote = (value: string) =>
 				`'${value.replaceAll("'", "'\\''")}'`;
-			const result = spawnSync(
-				gitBash,
-				[
-					"--noprofile",
-					"--norc",
-					"-c",
-					args.map((arg) => bashQuote(arg.replaceAll("\\", "/"))).join(" "),
-				],
+			const powershellQuote = (value: string) =>
+				`'${value.replaceAll("'", "''")}'`;
+			const windowsCommandLine = (parts: readonly string[]) =>
+				parts
+					.map((part) => (/[\s"]/.test(part) ? `"${part}"` : part))
+					.join(" ");
+			const resumeArgs = ["resume", f.run, "--message", "/api"];
+			const cases = [
 				{
-					cwd: f.coordinator,
-					env: f.env,
-					encoding: "utf8",
-					windowsHide: true,
+					name: "Git Bash pnpm",
+					refused: true,
+					run: () =>
+						spawnSync(
+							gitBash,
+							[
+								"--noprofile",
+								"--norc",
+								"-c",
+								["pnpm", "codex:round", ...resumeArgs]
+									.map((arg) => bashQuote(arg.replaceAll("\\", "/")))
+									.join(" "),
+							],
+							{
+								cwd: repository,
+								env: f.env,
+								encoding: "utf8",
+								windowsHide: true,
+							},
+						),
 				},
-			);
-			expect(result.status, result.stdout + result.stderr).toBe(1);
-			expect(result.stderr).toContain("--message-file");
-			expect(existsSync(f.capture)).toBe(false);
+				{
+					name: "Git Bash pnpm -s",
+					refused: true,
+					run: () =>
+						spawnSync(
+							gitBash,
+							[
+								"--noprofile",
+								"--norc",
+								"-c",
+								["pnpm", "-s", "codex:round", ...resumeArgs]
+									.map((arg) => bashQuote(arg.replaceAll("\\", "/")))
+									.join(" "),
+							],
+							{
+								cwd: repository,
+								env: f.env,
+								encoding: "utf8",
+								windowsHide: true,
+							},
+						),
+				},
+				{
+					name: "Git Bash node",
+					refused: true,
+					run: () =>
+						spawnSync(
+							gitBash,
+							[
+								"--noprofile",
+								"--norc",
+								"-c",
+								[process.execPath, script, ...resumeArgs]
+									.map((arg) => bashQuote(arg.replaceAll("\\", "/")))
+									.join(" "),
+							],
+							{
+								cwd: repository,
+								env: f.env,
+								encoding: "utf8",
+								windowsHide: true,
+							},
+						),
+				},
+				{
+					name: "PowerShell node",
+					refused: false,
+					run: () =>
+						spawnSync(
+							"powershell.exe",
+							[
+								"-NoProfile",
+								"-Command",
+								`& ${[process.execPath, script, ...resumeArgs]
+									.map(powershellQuote)
+									.join(" ")}`,
+							],
+							{
+								cwd: repository,
+								env: f.env,
+								encoding: "utf8",
+								windowsHide: true,
+							},
+						),
+				},
+				{
+					name: "cmd node",
+					refused: false,
+					run: () =>
+						spawnSync(
+							process.env.ComSpec ?? "C:\\Windows\\System32\\cmd.exe",
+							[
+								"/d",
+								"/s",
+								"/c",
+								`"${windowsCommandLine([
+									process.execPath,
+									script,
+									...resumeArgs,
+								])}"`,
+							],
+							{
+								cwd: repository,
+								env: f.env,
+								encoding: "utf8",
+								windowsHide: true,
+								windowsVerbatimArguments: true,
+							},
+						),
+				},
+			];
+
+			for (const entry of cases) {
+				rmSync(f.capture, { force: true });
+				const result = entry.run();
+				expect(
+					result.status,
+					`${entry.name}: ${result.stdout}${result.stderr}`,
+				).toBe(entry.refused ? 1 : 0);
+				if (entry.refused) {
+					expect(result.stderr).toContain("--message-file");
+					expect(existsSync(f.capture)).toBe(false);
+				} else {
+					expect(existsSync(f.capture)).toBe(true);
+					expect(f.captured().input).toBe(
+						Buffer.from("/api", "utf8").toString("base64"),
+					);
+				}
+			}
 		},
 	);
 	it.skipIf(process.platform !== "win32")(

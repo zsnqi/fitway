@@ -72,20 +72,33 @@ function resolvePath(value) {
 function runningInGitBash() {
 	if (process.platform !== "win32") return false;
 	try {
-		const parent = execFileSync(
+		const result = execFileSync(
 			path.join(
 				process.env.SystemRoot ?? "C:/Windows",
 				"System32",
-				"tasklist.exe",
+				"WindowsPowerShell",
+				"v1.0",
+				"powershell.exe",
 			),
-			["/FI", `PID eq ${process.ppid}`, "/FO", "CSV", "/NH"],
+			[
+				"-NoProfile",
+				"-NonInteractive",
+				"-Command",
+				`$processId = ${process.ppid}
+for ($depth = 0; $depth -lt 32 -and $processId -gt 0; $depth += 1) {
+         $parent = Get-CimInstance Win32_Process -Filter "ProcessId = $processId" -ErrorAction SilentlyContinue
+         if ($null -eq $parent) { break }
+         if ($parent.Name -ieq "bash.exe") { Write-Output "true"; break }
+         $processId = [int]$parent.ParentProcessId
+}`,
+			],
 			{
 				encoding: "utf8",
 				stdio: ["ignore", "pipe", "ignore"],
 				windowsHide: true,
 			},
 		);
-		return /^"bash\.exe"/i.test(parent);
+		return result.trim() === "true";
 	} catch {
 		return false;
 	}
@@ -702,11 +715,24 @@ function parseReadings(answer) {
 	return null;
 }
 
-function outcomeIdsFromBrief(input) {
+export function outcomeIdsFromBrief(input) {
 	const ids = new Set();
 	const text = Buffer.isBuffer(input) ? input.toString("utf8") : String(input);
 	let environment = false;
+	let fence;
 	for (const line of text.split(/\r?\n/)) {
+		const delimiter = line.match(/^ {0,3}(`{3,}|~{3,})/);
+		if (delimiter) {
+			if (!fence) fence = delimiter[1];
+			else if (
+				delimiter[1][0] === fence[0] &&
+				delimiter[1].length >= fence.length &&
+				/^ {0,3}(?:`+|~+)\s*$/.test(line)
+			)
+				fence = undefined;
+			continue;
+		}
+		if (fence) continue;
 		if (/^\s*<!--\s*environment:start\b/.test(line)) {
 			environment = true;
 			continue;
@@ -716,7 +742,7 @@ function outcomeIdsFromBrief(input) {
 			continue;
 		}
 		if (environment) continue;
-		const outcome = line.match(/^- \*\*([A-Z]+\d+)\.\*\*/);
+		const outcome = line.match(/^- \*\*([A-Z]+\d+)\.(?:\*\*|[^\n]*\*\*)/);
 		if (outcome) ids.add(outcome[1]);
 	}
 	return ids;
