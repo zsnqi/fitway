@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-15T23:40:00+03:00
+updatedAt: 2026-10-16T00:05:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
