@@ -6,6 +6,10 @@ export const stateWhenKey = (when = {}) =>
 		Object.entries(when).sort(([left], [right]) => left.localeCompare(right)),
 	);
 
+export const matchesStateRule = (rule, query, language) =>
+	(!rule.language || rule.language === language) &&
+	Object.entries(rule.when || {}).every(([key, value]) => query[key] === value);
+
 export function endedWhenKeys(rules) {
 	const ended = new Set();
 	for (const rule of rules)
@@ -45,18 +49,22 @@ export function validateStateRules(page, source = page?.page || "recipe") {
 					`${source}: ends[${endIndex}] must name an exact non-wildcard when object.`,
 				);
 			const key = stateWhenKey(declaration.when);
-			const matches = rules.filter(
-				(candidate) =>
-					!candidate.afterActions && stateWhenKey(candidate.when || {}) === key,
-			);
-			if (!matches.length)
-				throw new Error(
-					`${source}: ends[${endIndex}] ${JSON.stringify(declaration.when)} matches no before rule; use one exact when.`,
+			for (const language of rule.language ? [rule.language] : ["ar", "en"]) {
+				const matches = rules.filter(
+					(candidate) =>
+						!candidate.afterActions &&
+						stateWhenKey(candidate.when || {}) === key &&
+						matchesStateRule(candidate, declaration.when, language),
 				);
-			if (matches.length > 1)
-				throw new Error(
-					`${source}: ends[${endIndex}] ${JSON.stringify(declaration.when)} matches several before rules; use one exact when.`,
-				);
+				if (!matches.length)
+					throw new Error(
+						`${source}: ends[${endIndex}] ${JSON.stringify(declaration.when)} matches no before rule for ${language}; use one exact when.`,
+					);
+				if (matches.length > 1)
+					throw new Error(
+						`${source}: ends[${endIndex}] ${JSON.stringify(declaration.when)} matches several before rules for ${language}; use one exact when.`,
+					);
+			}
 		}
 	}
 	return page;

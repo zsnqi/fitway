@@ -372,7 +372,11 @@ export async function doctor(options) {
 	try {
 		return await doctorChecks(options);
 	} catch (error) {
-		const fix = await doctorFix(options, error);
+		const available =
+			process.env.VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE === "0"
+				? async () => {}
+				: portAvailable;
+		const fix = await doctorFix(options, error, available);
 		console.error(
 			`DOCTOR FAIL: ${error.message}\nFIX${fix.startsWith("BLOCKED:") ? " " : ": "}${fix}`,
 		);

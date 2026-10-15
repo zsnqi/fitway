@@ -1792,12 +1792,68 @@ test("delegated tool interruption finishes its own cleanup before the parent ret
 });
 
 const cliPath = fileURLToPath(new URL("./cli.mjs", import.meta.url));
-function runCli(args, cli = cliPath) {
+const portObserverPath = fileURLToPath(
+	new URL("./port-observer.cjs", import.meta.url),
+);
+function runCli(args, cli = cliPath, env = {}) {
 	return spawnSync(process.execPath, [cli, ...args], {
 		encoding: "utf8",
 		windowsHide: true,
+		env: {
+			...process.env,
+			VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE: "0",
+			...env,
+		},
 	});
 }
+
+test("Y2: a test-only doctor seam never probes a verification port", async () => {
+	const folder = resolve(scratch, "doctor-test-port-seam");
+	const port = await isolatedPort();
+	const log = resolve(scratch, "doctor-test-port-seam.jsonl");
+	await mkdir(folder);
+	await writeFile(
+		resolve(folder, "session.json"),
+		JSON.stringify({
+			concept,
+			pid: 2147483647,
+			port,
+			token: "test-only",
+		}),
+	);
+	const result = spawnSync(
+		process.execPath,
+		[
+			"--require",
+			portObserverPath,
+			cliPath,
+			"doctor",
+			"--concept",
+			concept,
+			"--session",
+			folder,
+		],
+		{
+			encoding: "utf8",
+			windowsHide: true,
+			env: {
+				...process.env,
+				VERIFY_FITWAY_PORT_HOOK_LOG: log,
+				VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE: "0",
+			},
+		},
+	);
+	assert.equal(result.status, 1, result.stdout + result.stderr);
+	assert.match(result.stderr, /FIX: .*--port 3176 /);
+	const observations = existsSync(log)
+		? (await readFile(log, "utf8"))
+				.trim()
+				.split("\n")
+				.filter(Boolean)
+				.map(JSON.parse)
+		: [];
+	assert.deepEqual(observations, [], result.stdout + result.stderr);
+});
 
 test("V1: no recipe file is SKIP, while a checked recipe still passes", async () => {
 	const empty = resolve(scratch, "no-recipes");
@@ -1945,6 +2001,7 @@ let captureCount=0;
 const capture=async(via,options,picture)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from(picture)};
 export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
+ let language=options.locale?.startsWith("ar")?"ar":"en";
  let focus="body", open=false;
  let now=0, next=0; const frames=new Map();
  const sandbox={position:0,document:{getAnimations:()=>[]},
@@ -1970,7 +2027,7 @@ const page={setDefaultTimeout(){},addInitScript:async(fn)=>{await appendFile(${J
   screenshot:async(options)=>{page.transitionOnCapture();return capture("native",options,page.picture())},
 context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
   evaluate:async(fn)=>fn.toString().includes("coarse")
-   ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
+   ? {language,direction:language==="ar"?"rtl":"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
 : fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
 locator:(selector)=>({first(){return this},count:async()=>1,
@@ -2851,6 +2908,69 @@ test("V1: afterActions state proofs run after the feature and must read the page
 	);
 });
 
+test("V1: ended rules lift only the matching language's before rule", async () => {
+	const features = [
+		{ id: "page", actions: [], proof: { selector: "main", visible: true } },
+	];
+	const { out, result } = await runnerFixture(
+		"ended-language-rules",
+		features,
+		{
+			inputs: "mouse",
+			languages: "ar,en",
+			mapStates: [
+				{
+					language: "ar",
+					when: { state: "loading" },
+					shows: "Arabic loading",
+					proof: { selector: "main", visible: true },
+				},
+				{
+					language: "en",
+					when: { state: "loading" },
+					shows: "English loading",
+					proof: { selector: "main", visible: true },
+				},
+				{
+					when: { arrive: "500" },
+					afterActions: true,
+					ends: [{ when: { state: "loading" } }],
+					shows: "Arrived",
+					proof: { expression: "document.body !== null" },
+				},
+			],
+			switches: [
+				{ name: "state", values: ["loading"], samples: [] },
+				{ name: "arrive", values: ["500"], samples: [] },
+			],
+			states: "state=loading&arrive=500",
+		},
+	);
+	assert.equal(result.status, 0, result.stderr + result.stdout);
+	const summaries = JSON.parse(
+		await readFile(resolve(out, "summary.json"), "utf8"),
+	);
+	assert.deepEqual(
+		summaries.map((item) => ({
+			afterFrameProof: item.afterFrameProof,
+			language: item.language,
+			proof: item.proof,
+		})),
+		[
+			{
+				afterFrameProof: [],
+				language: "ar",
+				proof: ["Arabic loading", "Arrived"],
+			},
+			{
+				afterFrameProof: [],
+				language: "en",
+				proof: ["English loading", "Arrived"],
+			},
+		],
+	);
+});
+
 test("V1: a time-changing state is captured before its declared after-action arrival", async () => {
 	const features = [{ id: "page", actions: [], proof: { ready: true } }];
 	const mapStates = [
@@ -3170,6 +3290,100 @@ test("V1: ended-rule declarations are exact and checked when recipes load", asyn
 		}),
 	);
 	assert.doesNotThrow(() => readRecipes(root));
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							language: "ar",
+							when: { state: "loading" },
+							shows: "Loading in Arabic",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							language: "en",
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { state: "loading" } }],
+							shows: "Arrived in English",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.throws(() => readRecipes(root), /matches no before rule/);
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							language: "ar",
+							when: { state: "loading" },
+							shows: "Loading in Arabic",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { state: "loading" },
+							shows: "Loading in every language",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							language: "ar",
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { state: "loading" } }],
+							shows: "Arrived in Arabic",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.throws(() => readRecipes(root), /matches several before rules/);
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							language: "ar",
+							when: { state: "loading" },
+							shows: "Loading in Arabic",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							language: "en",
+							when: { state: "loading" },
+							shows: "Loading in English",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { state: "loading" } }],
+							shows: "Arrived",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.doesNotThrow(() => readRecipes(root));
 });
 
 test("V2: an address-only feature is captured under keyboard", async () => {
@@ -3434,29 +3648,83 @@ function usageCliOptions(helpText) {
 	return options;
 }
 
+function shellSegments(command) {
+	const segments = [];
+	let current = [];
+	let tokenStart = null;
+	let quote = null;
+	const pushToken = (end) => {
+		if (tokenStart === null) return;
+		if (end > tokenStart)
+			current.push({
+				text: command.slice(tokenStart, end),
+				index: tokenStart,
+			});
+		tokenStart = null;
+	};
+	for (let index = 0; index < command.length; index++) {
+		const character = command[index];
+		if (quote) {
+			if (character === quote) quote = null;
+			continue;
+		}
+		if (character === "'" || character === '"') {
+			if (tokenStart === null) tokenStart = index;
+			quote = character;
+			continue;
+		}
+		if (/\s/.test(character)) {
+			pushToken(index);
+			continue;
+		}
+		const separator =
+			character === ";"
+				? ";"
+				: character === "&" || character === "|"
+					? command.startsWith(`${character}${character}`, index)
+						? `${character}${character}`
+						: character
+					: null;
+		if (!separator) {
+			if (tokenStart === null) tokenStart = index;
+			continue;
+		}
+		pushToken(index);
+		current.push({ text: separator, index, separator: true });
+		segments.push(current);
+		current = [];
+		index += separator.length - 1;
+	}
+	pushToken(command.length);
+	if (current.length) segments.push(current);
+	return segments;
+}
+
 function measureExemptRanges(skillText) {
 	const ranges = [];
 	const record = (command, offset) => {
-		const tokens = [...command.matchAll(/\S+/g)].map((match) => ({
-			text: match[0],
-			index: match.index,
-		}));
-		let commandIndex = 0;
-		if (tokens[0]?.text === "node" && tokens[1]?.text === "$cli")
-			commandIndex = 2;
-		if (tokens[commandIndex]?.text !== "measure") return;
-		const separator = tokens.findIndex(
-			(token, index) => index > commandIndex && token.text === "--",
-		);
-		if (separator < 0) return;
-		for (let index = separator + 1; index < tokens.length; index++) {
-			if (["&&", "||", ";", "|"].includes(tokens[index].text)) break;
-			const option = /^--[a-z][a-z0-9-]*/.exec(tokens[index].text);
-			if (option)
-				ranges.push({
-					start: offset + tokens[index].index,
-					end: offset + tokens[index].index + option[0].length,
-				});
+		for (const tokens of shellSegments(command)) {
+			const commandIndex =
+				tokens[0]?.text === "measure"
+					? 0
+					: tokens[0]?.text === "node" &&
+							tokens[1]?.text === "$cli" &&
+							tokens[2]?.text === "measure"
+						? 2
+						: -1;
+			if (commandIndex < 0) continue;
+			const separator = tokens.findIndex(
+				(token, index) => index > commandIndex && token.text === "--",
+			);
+			if (separator < 0) continue;
+			for (let index = separator + 1; index < tokens.length; index++) {
+				const option = /^--[a-z][a-z0-9-]*/.exec(tokens[index].text);
+				if (option)
+					ranges.push({
+						start: offset + tokens[index].index,
+						end: offset + tokens[index].index + option[0].length,
+					});
+			}
 		}
 	};
 	for (const match of skillText.matchAll(/`([^`\n]+)`/g))
@@ -3484,6 +3752,52 @@ function assertGuideOptions(skillText, helpText) {
 			assert.ok(cliOptions.has(match[0]), `${match[0]} is not a CLI option`);
 }
 
+const measureSeparatorRejectCases = [
+	[
+		"semicolon attached to the preceding token",
+		"`measure --tool focus -- --allowed;node $cli drive --invented-semicolon`",
+	],
+	[
+		"semicolon at the start of the next token",
+		"`measure --tool focus -- --allowed ;node $cli drive --invented-leading-semicolon`",
+	],
+	[
+		"semicolon separated from both commands",
+		"`measure --tool focus -- --max-stops 40; node $cli drive --invented-attached-semicolon`",
+	],
+	[
+		"single ampersand",
+		"`measure --tool focus -- --allowed & node $cli drive --invented-ampersand`",
+	],
+	[
+		"double ampersand attached to the preceding token",
+		"`measure --tool focus -- --max-stops 40&&node $cli drive --invented-and`",
+	],
+	[
+		"double pipe attached to the preceding token",
+		"`measure --tool focus -- --max-stops 40||node $cli drive --invented-or`",
+	],
+	[
+		"pipe inside a token",
+		"`measure --tool focus -- --max-stops a|b --invented-pipe`",
+	],
+	[
+		"fenced semicolon",
+		"```powershell\nmeasure --tool focus -- --allowed;node $cli drive --invented-fenced-semicolon\n```",
+	],
+];
+
+const measureSeparatorAcceptCases = [
+	[
+		"single-quoted pipe",
+		"`measure --tool focus -- --pattern 'a|b' --invented-single-quoted`",
+	],
+	[
+		"double-quoted pipe",
+		'`measure --tool focus -- --pattern "a|b" --invented-double-quoted`',
+	],
+];
+
 test("V5: SKILL names CLI options, ports and rendered artifacts without drift", async () => {
 	const skill = await readFile(
 		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
@@ -3499,6 +3813,7 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 		"`measure --invented-before -- --allowed`",
 		"`compare --concept x -- --invented-other`",
 		"`measure --tool focus -- --allowed && other --invented-other`",
+		...measureSeparatorRejectCases.map(([, text]) => text),
 	])
 		assert.throws(
 			() => assertGuideOptions(plant(text), help),
@@ -3509,6 +3824,7 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 		"`measure --tool focus --out <folder> -- --invented-tool`",
 		"`node $cli measure --tool focus --out <folder> -- --invented-tool-prefix`",
 		"```powershell\nmeasure --tool focus --out <folder> -- --invented-tool-fence\n```",
+		...measureSeparatorAcceptCases.map(([, text]) => text),
 	])
 		assert.doesNotThrow(() => assertGuideOptions(plant(text), help), text);
 	for (const pair of skill.match(/\b31\d\d-31\d\d\b/g) || [])
@@ -3526,6 +3842,30 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 		),
 		/comparisonCapture[\s\S]*break/,
 	);
+});
+
+test("Y1: every unquoted separator ends a measure tool-argument exemption", async () => {
+	const skill = await readFile(
+		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
+		"utf8",
+	);
+	const plant = (text) => `${skill}\n${text}\n`;
+	const leaked = [];
+	for (const [label, text] of measureSeparatorRejectCases) {
+		try {
+			assertGuideOptions(plant(text), help);
+			leaked.push(label);
+		} catch (error) {
+			assert.match(error.message, /--invented-/, label);
+		}
+	}
+	assert.deepEqual(
+		leaked,
+		[],
+		`Unquoted separators left the next option exempt: ${leaked.join(", ")}`,
+	);
+	for (const [label, text] of measureSeparatorAcceptCases)
+		assert.doesNotThrow(() => assertGuideOptions(plant(text), help), label);
 });
 
 test("V6: a released lease removes its empty port folder", async () => {
@@ -3693,6 +4033,10 @@ function runCliAsync(args) {
 		const child = spawn(process.execPath, [cliPath, ...args], {
 			windowsHide: true,
 			stdio: ["ignore", "pipe", "pipe"],
+			env: {
+				...process.env,
+				VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE: "0",
+			},
 		});
 		let stdout = "";
 		let stderr = "";

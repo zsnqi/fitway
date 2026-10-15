@@ -23,6 +23,7 @@ import {
 import { loadProbes } from "./probes.mjs";
 import {
 	endedWhenKeys,
+	matchesStateRule,
 	stateWhenKey,
 	validateStateRules,
 } from "./state-rules.mjs";
@@ -107,10 +108,6 @@ export function stateCases(page, options) {
 	});
 }
 
-const matches = (rule, query, language) =>
-	(!rule.language || rule.language === language) &&
-	Object.entries(rule.when || {}).every(([key, value]) => query[key] === value);
-
 const pageReadingProofKeys = new Set([
 	"attribute",
 	"checked",
@@ -140,7 +137,7 @@ function readsPage(proof) {
 function requestedProofs(page, state, language) {
 	validateStateRules(page);
 	const rules = page.states.filter((rule) =>
-		matches(rule, state.query, language),
+		matchesStateRule(rule, state.query, language),
 	);
 	for (const key of Object.keys(state.query))
 		if (
@@ -672,7 +669,7 @@ export async function drive(options) {
 												(feature.minWidth && cssWidth < feature.minWidth) ||
 												(feature.maxWidth && cssWidth > feature.maxWidth);
 											const absent = (feature.unreachable || []).find((rule) =>
-												matches(rule, effective.query, language),
+												matchesStateRule(rule, effective.query, language),
 											);
 											if (unavailable || absent) {
 												if (absent)
