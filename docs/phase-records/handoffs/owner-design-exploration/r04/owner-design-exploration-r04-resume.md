@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-15 22:20 +03:00 (vf-runner merged after two fix rounds; main to move once the merge's CI passes; nothing running)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-15 23:00 +03:00 (vf-runner merged after two fix rounds; main at `e64006d0`; nothing running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-71), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -40,8 +40,8 @@ Nothing.
 
 ## Next steps
 
-1. **Move main** once CI passes on the merge `f6ef81cf` (run started 21:52; main at `a28574a7`): `pnpm
-   main:advance f6ef81cf`; the records after it go with the next batch.
+1. **main is at `e64006d0`** (moved by `pnpm main:advance` after CI run 38795346728 passed in 1,305 s; the job's
+   timeout is now 30 minutes, decision 71). The commits after it go with the next batch.
 2. **Clean up the grading worktrees** of the vf-runner rounds (list below): unlink each `node_modules` junction first.
 3. **The next launcher round:** F234 (`brief:check` checks named rows), F235 (a wrapped one-line reading), F236 (the
    keyword test of a one-line reading), F237 (the Git Bash tests inside Codex's sandbox), F242 (a report's SHA and
