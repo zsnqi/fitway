@@ -40,8 +40,11 @@ cannot see; these merge with source-found dependencies, and a conflicting declar
 set `afterActions: true` when its effect appears only after the feature's actions; that proof must read the page
 with a selector or expression and is checked after those actions. An arrival rule may declare
 `ends: [{ when: { key: "value" } }]`; each exact non-wildcard `when` must match one before-action state rule on
-that page and removes only that rule from the after-frame proof. Omit `ends` to keep every before rule. The item
-summary's `afterFrameProof` names the before rules checked beside the after frame.
+that page and removes only that rule from the after-frame proof. A feature may declare the same `ends` instead of
+`changesState`; declaring both is refused, and a declaration whose items differ in actions or inputs is refused.
+With feature `ends`, every applying before rule not ended by the feature or an arrival is proved before and after
+the after frame. A feature with `changesState` alone keeps its existing behaviour. Omit `ends` to keep every before
+rule. The item summary's `afterFrameProof` names the before rules checked beside the after frame.
 A source edit alone is not drift. Uncovered openings/openers and vanished recipe selectors/markers fail
 with their names and source file/line; repair the recipe or source on the concept branch, then run:
 

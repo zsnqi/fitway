@@ -3386,6 +3386,289 @@ test("V1: ended-rule declarations are exact and checked when recipes load", asyn
 	assert.doesNotThrow(() => readRecipes(root));
 });
 
+test("V1: a feature's ended-rule declarations are exact for every item", async () => {
+	const root = resolve(scratch, "feature-ends-validation");
+	const recipePath = resolve(root, "verification-recipes.json");
+	await mkdir(root, { recursive: true });
+	const states = [
+		{
+			when: { state: "loading" },
+			shows: "Loading",
+			proof: { selector: "main", visible: true },
+		},
+	];
+	const feature = (overrides = {}) => ({
+		id: "close",
+		actions: ["activate:#close"],
+		proof: { selector: "#closed", hidden: true },
+		ends: [{ when: { state: "loading" } }],
+		...overrides,
+	});
+	const write = async (value, pageStates = states) => {
+		await writeFile(
+			recipePath,
+			JSON.stringify({
+				schema: 1,
+				pages: { "fixture.html": { features: [value], states: pageStates } },
+			}),
+		);
+	};
+
+	await write(feature());
+	assert.doesNotThrow(() => readRecipes(root));
+
+	for (const [value, message] of [
+		[feature({ changesState: true }), /both changesState and ends/],
+		[
+			feature({ ends: { when: { state: "loading" } } }),
+			/ends must be an array/,
+		],
+		[feature({ ends: [{ when: {} }] }), /non-wildcard when/],
+		[feature({ ends: [{ shows: "Loading" }] }), /may only name when/],
+		[
+			feature({ ends: [{ when: { state: "ready" } }] }),
+			/matches no before rule/,
+		],
+		[
+			feature({
+				items: [
+					{ actions: ["activate:#one"], input: "mouse" },
+					{ actions: ["activate:#two"], input: "mouse" },
+				],
+			}),
+			/actions and inputs/,
+		],
+		[
+			feature({
+				items: [
+					{ actions: ["activate:#one"], input: "mouse" },
+					{ actions: ["activate:#one"], input: "touch" },
+				],
+			}),
+			/actions and inputs/,
+		],
+		[
+			feature({ keyboardActions: ["activate:#different"] }),
+			/actions and inputs/,
+		],
+	]) {
+		await write(value);
+		assert.throws(() => readRecipes(root), message);
+	}
+
+	await write(feature(), [
+		...states,
+		{
+			when: { state: "loading" },
+			shows: "Loading again",
+			proof: { selector: "main", visible: true },
+		},
+	]);
+	assert.throws(() => readRecipes(root), /matches several before rules/);
+});
+
+test("V1: a feature ends only the before rules it declares", async () => {
+	const features = [
+		{
+			id: "page",
+			actions: [],
+			proof: { ready: true },
+			ends: [{ when: { state: "loading" } }],
+		},
+	];
+	const switches = [
+		{ name: "state", values: ["loading"], samples: [] },
+		{ name: "flag", values: ["1"], samples: [] },
+	];
+	const mapStates = [
+		{
+			when: { state: "loading" },
+			shows: "Ended",
+			proof: { expression: "window.__fixturePhase === 'loading'" },
+		},
+		{
+			when: { flag: "1" },
+			shows: "Survivor",
+			proof: { expression: "document.body !== null" },
+		},
+	];
+	const passing = await runnerFixture("feature-ends-pass", features, {
+		dynamicState: true,
+		capturePhases: [null, "ready"],
+		mapStates,
+		switches,
+		states: "state=loading&flag=1",
+	});
+	assert.equal(
+		passing.result.status,
+		0,
+		passing.result.stderr + passing.result.stdout,
+	);
+	const passingSummary = JSON.parse(
+		await readFile(resolve(passing.out, "summary.json"), "utf8"),
+	);
+	assert.deepEqual(passingSummary[0].proof, ["Ended", "Survivor"]);
+	assert.deepEqual(passingSummary[0].afterFrameProof, ["Survivor"]);
+
+	const failing = await runnerFixture(
+		"feature-ends-failing-survivor",
+		features,
+		{
+			dynamicState: true,
+			capturePhases: [null, "ready"],
+			mapStates: mapStates.map((rule) =>
+				rule.shows === "Survivor"
+					? {
+							...rule,
+							proof: { expression: "window.__fixturePhase === 'loading'" },
+						}
+					: rule,
+			),
+			switches,
+			states: "state=loading&flag=1",
+		},
+	);
+	assert.equal(
+		failing.result.status,
+		1,
+		failing.result.stderr + failing.result.stdout,
+	);
+	const failingSummary = JSON.parse(
+		await readFile(resolve(failing.out, "summary.json"), "utf8"),
+	);
+	assert.deepEqual(failingSummary[0].afterFrameProof, ["Survivor"]);
+	assert.match(failingSummary[0].problems.join(" "), /after-frame:post/);
+	assert.match(failingSummary[0].problems.join(" "), /Survivor/);
+});
+
+test("V1: failed state proofs name their rule and moment", async () => {
+	const states = (proof) => [
+		{
+			when: { state: "loading" },
+			shows: "Ended control",
+			proof: { expression: "document.body !== null" },
+		},
+		{
+			when: { flag: "1" },
+			shows: "Moment rule",
+			proof,
+		},
+	];
+	const switches = [
+		{ name: "state", values: ["loading"], samples: [] },
+		{ name: "flag", values: ["1"], samples: [] },
+	];
+	const feature = {
+		id: "page",
+		actions: [],
+		proof: { ready: true },
+		ends: [{ when: { state: "loading" } }],
+	};
+	const moments = [
+		{
+			moment: "before-frame:pre",
+			proof: { expression: "window.__fixturePhase === 'ready'" },
+			options: {},
+		},
+		{
+			moment: "before-frame:post",
+			proof: { expression: "window.__fixturePhase === 'loading'" },
+			options: { transitionOnCapture: true },
+		},
+		{
+			moment: "after-frame:pre",
+			proof: { expression: "window.__fixturePhase === 'loading'" },
+			options: { transitionAfterProofs: 2 },
+		},
+		{
+			moment: "after-frame:post",
+			proof: { expression: "window.__fixturePhase === 'loading'" },
+			options: { capturePhases: [null, "ready"] },
+		},
+	];
+	const allMoments = moments.map(({ moment }) => moment);
+	for (const { moment, proof, options } of moments) {
+		const { out, result } = await runnerFixture(
+			`state-proof-${moment.replace(":", "-")}`,
+			[feature],
+			{
+				dynamicState: true,
+				mapStates: states(proof),
+				switches,
+				states: "state=loading&flag=1",
+				...options,
+			},
+		);
+		assert.equal(result.status, 1, result.stderr + result.stdout);
+		const [summary] = JSON.parse(
+			await readFile(resolve(out, "summary.json"), "utf8"),
+		);
+		const message = summary.problems.join(" ");
+		assert.match(message, new RegExp(moment));
+		for (const other of allMoments.filter((candidate) => candidate !== moment))
+			assert.doesNotMatch(message, new RegExp(other));
+		assert.match(message, /Moment rule/);
+		assert.match(message, /\[\["flag","1"\]\]/);
+		assert.match(message, /language none/);
+		assert.match(message, /before rule/);
+	}
+});
+
+test("V1: equal state-proof shows labels keep distinct rules readable", async () => {
+	const run = async (name, when, query) => {
+		const { out, result } = await runnerFixture(
+			name,
+			[
+				{
+					id: "page",
+					actions: [],
+					proof: { ready: true },
+					ends: [{ when: { state: "loading" } }],
+				},
+			],
+			{
+				dynamicState: true,
+				mapStates: [
+					{
+						when: { state: "loading" },
+						shows: "Ended control",
+						proof: { expression: "document.body !== null" },
+					},
+					{
+						when,
+						shows: "Same label",
+						proof: { expression: "window.__fixturePhase === 'ready'" },
+					},
+				],
+				switches: [
+					{ name: "state", values: ["loading"], samples: [] },
+					{ name: query.key, values: [query.value], samples: [] },
+				],
+				states: `state=loading&${query.key}=${query.value}`,
+			},
+		);
+		assert.equal(result.status, 1, result.stderr + result.stdout);
+		const [summary] = JSON.parse(
+			await readFile(resolve(out, "summary.json"), "utf8"),
+		);
+		return summary.problems.join(" ");
+	};
+
+	const first = await run(
+		"state-proof-shared-shows-a",
+		{ flag: "1" },
+		{ key: "flag", value: "1" },
+	);
+	const second = await run(
+		"state-proof-shared-shows-b",
+		{ other: "2" },
+		{ key: "other", value: "2" },
+	);
+	assert.match(first, /Same label/);
+	assert.match(second, /Same label/);
+	assert.notEqual(first, second);
+});
+
 test("V2: an address-only feature is captured under keyboard", async () => {
 	const { result } = await runnerFixture(
 		"address-only-keyboard",
