@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04`, 2026-10-16 00:05 +03:00 (three tool rounds running on DeepSeek; main at `e64006d0`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-72), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-73), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -57,7 +57,10 @@ graded (Sol, or DeepSeek with two rows reproduced, decision 72) before it merges
    are merged; launcher-fixes-5 failed its grade and launcher-fixes-5-fix is running. Then **a small round for F250**
    (stand-in steps reach the ladder only from its tests, never from a real run's environment; the user asked for it
    after launcher-fixes-5-fix, through a side session, 2026-10-16), then main moves once for the batch.
-3. **The shared lows (decision 47)** on the build branch after vf-proofs merges, with the `ends` declarations for
+3. **The agent-tooling wave (decision 73)** in a fresh coordinator session, beside the shared lows: its own
+   `repository-infrastructure` milestone (F253), a short standing-rules pickup, one CLI contract with `pnpm tools`
+   (F251), a generated code map, map upkeep (F252).
+   **The shared lows (decision 47)** on the build branch after vf-proofs merges, with the `ends` declarations for
    the build branch's `changesState` features that vf-proofs' report lists (F241's rest); F248 waits for the next
    verify-fitway round.
 4. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
