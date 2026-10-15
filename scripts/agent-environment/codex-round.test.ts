@@ -554,7 +554,7 @@ process.stdin.on('end', () => {
 			2,
 		)}\n`,
 	);
-	const env = {
+	const env: NodeJS.ProcessEnv = {
 		...process.env,
 		PATH: `${bin}${path.delimiter}${process.env.PATH}`,
 		ROUND_CAPTURE: capture,
@@ -564,6 +564,7 @@ process.stdin.on('end', () => {
 		FITWAY_DEEPSEEK_CATALOG_SOURCE: path.join(codexHome, "models_cache.json"),
 		OPENDESIGN_API_KEY: "fixture-opendesign-key",
 	};
+	delete env.MSYSTEM;
 	const invokeRaw = (args: string[], extraEnv = {}, cwd = root) => {
 		const result = spawnSync(process.execPath, [script, ...args], {
 			cwd,
@@ -2927,8 +2928,7 @@ describe("L4 shell and byte parity", () => {
 					.map((part) => (/[\s"]/.test(part) ? `"${part}"` : part))
 					.join(" ");
 			const resumeArgs = ["resume", f.run, "--message", "/api"];
-			const nativeShellEnv = { ...f.env };
-			delete nativeShellEnv.MSYSTEM;
+			const gitBashEnv = { ...f.env, MSYSTEM: "MINGW64" };
 			const cases = [
 				{
 					name: "Git Bash pnpm",
@@ -2946,7 +2946,7 @@ describe("L4 shell and byte parity", () => {
 							],
 							{
 								cwd: repository,
-								env: f.env,
+								env: gitBashEnv,
 								encoding: "utf8",
 								windowsHide: true,
 							},
@@ -2968,7 +2968,7 @@ describe("L4 shell and byte parity", () => {
 							],
 							{
 								cwd: repository,
-								env: f.env,
+								env: gitBashEnv,
 								encoding: "utf8",
 								windowsHide: true,
 							},
@@ -2990,7 +2990,7 @@ describe("L4 shell and byte parity", () => {
 							],
 							{
 								cwd: repository,
-								env: f.env,
+								env: gitBashEnv,
 								encoding: "utf8",
 								windowsHide: true,
 							},
@@ -3011,7 +3011,7 @@ describe("L4 shell and byte parity", () => {
 							],
 							{
 								cwd: repository,
-								env: nativeShellEnv,
+								env: f.env,
 								encoding: "utf8",
 								windowsHide: true,
 							},
@@ -3035,7 +3035,7 @@ describe("L4 shell and byte parity", () => {
 							],
 							{
 								cwd: repository,
-								env: nativeShellEnv,
+								env: f.env,
 								encoding: "utf8",
 								windowsHide: true,
 								windowsVerbatimArguments: true,
@@ -3092,7 +3092,7 @@ describe("L4 shell and byte parity", () => {
 				["--noprofile", "--norc", "-c", command],
 				{
 					cwd: repository,
-					env: f.env,
+					env: { ...f.env, MSYSTEM: "MINGW64" },
 					encoding: "utf8",
 					windowsHide: true,
 				},

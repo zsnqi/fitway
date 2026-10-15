@@ -1,4 +1,4 @@
-import { execFileSync, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { constants, createReadStream } from "node:fs";
 import {
@@ -71,26 +71,7 @@ function resolvePath(value) {
 
 function runningInGitBash() {
 	if (process.platform !== "win32") return false;
-	if (!/^(?:MINGW|MSYS|UCRT|CLANG)/i.test(process.env.MSYSTEM ?? ""))
-		return false;
-	try {
-		const parent = execFileSync(
-			path.join(
-				process.env.SystemRoot ?? "C:/Windows",
-				"System32",
-				"tasklist.exe",
-			),
-			["/FI", `PID eq ${process.ppid}`, "/FO", "CSV", "/NH"],
-			{
-				encoding: "utf8",
-				stdio: ["ignore", "pipe", "ignore"],
-				windowsHide: true,
-			},
-		);
-		return !/^"(?:node|powershell|pwsh)\.exe"/i.test(parent);
-	} catch {
-		return true;
-	}
+	return /^(?:MINGW|MSYS|UCRT|CLANG)/i.test(process.env.MSYSTEM ?? "");
 }
 
 function pathIsWithin(root, candidate) {
