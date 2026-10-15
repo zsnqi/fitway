@@ -1347,3 +1347,25 @@ checks live outside the repository and never appear here or in a brief. One line
   load-sensitive diagnosis beside three rounds' compares, against B13's quiet machine), and the model's (a load label
   it did not check). F148, F165 and F171 carry the result; they stay open.
 - **Disposition:** report-only. A rerun of D1 and D2, if wanted, waits for a machine with no other round.
+## launcher-fixes-4: `briefs/codex-launcher-fixes-4.md` (this folder), result `954968b0` on `owner-r04-launcher-fixes-4`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** F182 (J1, one-line readings) and F156's child-process route (J2, after two failed repairs: the
+  observation moved off the launcher's own reports). Reviewed by both models (decision 66): DeepSeek returned five
+  readings, all closed, none raised by Sol; Sol returned one, closed, not raised by DeepSeek: row F182 was absent at
+  the brief's first HEAD `c699d3fb`, so Codex would have stopped on a missing source (F234: `brief:check` checks no
+  rows); the unused worktree moved to `3bb0eae8`. One run (`codex-round-52aae6d6-...`), two automatic resumes, about
+  35 minutes; start load 87,874; tokens 80.5M input (79.1M cached), 179k output (measured from the run's events).
+- **Codex's report:** J1, J2, L1 PASS; L2 FAIL locally (port 3176 held by reports-css, F183; the file alone passed
+  78/78) and two Git Bash tests failing in its sandbox (F237); CI on `954968b0` passed.
+- **Held-out** (`D:/fitway-grader/owner-r04/launcher-fixes-4-heldout.md`), graded by GPT-6.1 Sol `xhigh`
+  (`briefs/codex-launcher-fixes-4-grade.md`, run `codex-round-1f6251a7-...`; it first stopped on the round's brief
+  read at its own HEAD, older than the version launched, a coordinator brief gap, then hit an account usage limit and
+  was resumed on another saved account by `resume-auto.sh`, whose generic message replaced the coordinator's
+  clarification yet sufficed): LF2-LF6 pass; LF1 partial: answers with the parts reordered or with em-dash labels
+  read as 5, but five readings with reading 3 wrapped onto a column-0 line are refused whole (F235). The coordinator
+  reproduced LF1 from the grader's script (measured: `wrapped: count=0 refused=true`, the other two `count=5`).
+  The coordinator's own probe of the keyword test (`completeOneLineReading`) read two contrived non-readings as
+  readings and refused one complete unlabeled reading (measured on five synthetic lines; F236).
+- **Brief rows** 4/4; **held-out** 5/6 (LF1 partial). Brief-caused: none in the round. Model-caused: LF1's wrap.
+- **Disposition:** merged; LF1's failure is the safe one (the launcher stops and the review reruns). F156 and F182
+  are fixed; F235 and F236 go to the next launcher round.
