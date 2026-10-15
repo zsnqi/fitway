@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-15 13:15 +03:00 (handover to a fresh coordinator under decisions 61 and 64; the first parallel wave running)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-15 13:40 +03:00 (the first parallel wave stopped by the user and saved for resuming; handover to a session the user starts)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-64), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-65), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -39,21 +39,25 @@
 
 ## Running now
 
-The first parallel wave (decision 64), launched 2026-10-15 about 12:40-13:10 +03:00 by the previous coordinator;
-each launcher appends `exit=<code>` to its log in `D:/fitway-temp/owner-r04-encoding-coord/` when it ends (wait on
-those lines, never on process names: the Codex app keeps `codex.exe` running). Briefs in `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/`;
-dispositions in `D:/fitway-temp/brief-review/codex-<name>-<n>/dispositions.md`.
+Nothing. **The first parallel wave (decision 64) was stopped by the user on 2026-10-15 at about 13:30 +03:00**, to
+move coordination to a new session, not as a judgement of the rounds. Each worktree and temp folder is left as it
+stood; each round's progress is in `D:/fitway-temp/owner-r04-<name>/STOPPED-2026-10-15.md`, and a ready resume message
+in `D:/fitway-temp/owner-r04-encoding-coord/resume-wave1-<name>.md`. Briefs in
+`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-<name>.md`.
 
-| Round | Model | Worktree (branch of the same name) | Run folder | Log |
+| Round | Model | Worktree (branch of the same name) | Run folder | Reached |
 | --- | --- | --- | --- | --- |
-| reports-css + F160 | DeepSeek `max` | `owner-r04-reports-css` from `c2fe4661` (build branch) | `codex-round-6f244aad-...` | `launch-reports-css.log` |
-| vf-runner F168, F175, F176 | Sol `xhigh` | `owner-r04-vf-runner` from `c699d3fb` | `codex-round-6570b67a-...` | `launch-vf-runner.log` |
-| diagnosis F148, F165, F171 (report-only) | Sol `xhigh` | `owner-r04-diagnosis` | `codex-round-f84ff767-...` | `launch-diagnosis.log` |
-| no-comments trial (report-only) | DeepSeek `max` | `owner-r04-no-comments` | `codex-round-5175a893-...` | `launch-no-comments.log` |
+| reports-css + F160 | DeepSeek `max` | `owner-r04-reports-css` from `c2fe4661` | `codex-round-6f244aad-...` | split written (uncommitted, saved as `wip/reports-css-stopped-20261015` `10a93960`); C2 matrix begun |
+| vf-runner F168, F175, F176 | Sol `xhigh` | `owner-r04-vf-runner` from `c699d3fb` | `codex-round-6570b67a-...` | sources read; nothing changed |
+| diagnosis F148, F165, F171 | Sol `xhigh` | `owner-r04-diagnosis` | `codex-round-f84ff767-...` | concept extracted; no run yet |
+| no-comments trial | DeepSeek `max` | `owner-r04-no-comments` | `codex-round-5175a893-...` | 167 comments found by two agreeing passes; judging begun |
 
-Ports: reports-css 3176-3177, vf-runner 3186-3187, diagnosis 3188-3189. Held-out rows written before launch:
-`D:/fitway-grader/owner-r04/reports-css-heldout.md` and `vf-runner-heldout.md`.
-
+- **To resume a round on its own thread:** `pnpm codex:round resume D:/fitway-temp/<run folder> --message-file
+  D:/fitway-temp/owner-r04-encoding-coord/resume-wave1-<name>.md`, one launcher per round, each started as its own
+  background command; its log line `exit=` marks the end. Ports: reports-css 3176-3177, vf-runner 3186-3187, diagnosis
+  3188-3189; the killed compare left a dead claim (pid 33472) in `D:/fitway-verify-captures/.port-3176-lease` and
+  `.port-3177-lease`, which the CLI's next run removes. If a thread cannot resume, a fresh session gets a short
+  continue brief naming its STOPPED note (decisions 54 and 59), from the saved state.
 - **Grading by Sol** (decision 64): the launcher takes only `role: codex` briefs and `brief:check` refuses the words
   for held-out checks, so a grading round is a Codex brief written after the round delivers, outcomes being the
   checks themselves (no such words), run with `--model gpt-6.1-sol` at `xhigh` against a detached worktree of the
@@ -66,9 +70,10 @@ Ports: reports-css 3176-3177, vf-runner 3186-3187, diagnosis 3188-3189. Held-out
 
 ## Next steps
 
-1. Grade each wave-1 round as it ends (reports-css and vf-runner by a Sol grading round plus a reproduced row; the two
-   report-only rounds by reading their tables and sampling rows), record each in `codex-rounds.md` and `rounds.tsv`,
-   merge on green CI (reports-css into `owner-followup-r04-build`), then `pnpm main:advance` once.
+1. Resume the four wave-1 rounds (above), then grade each as it ends (reports-css and vf-runner by a Sol grading round
+   plus a reproduced row; the two report-only rounds by reading their tables and sampling rows), record each in
+   `codex-rounds.md` and `rounds.tsv`, merge on green CI (reports-css into `owner-followup-r04-build`), then
+   `pnpm main:advance` once.
 2. **Then:** the shared lows (decision 47) after reports-css merges; fixes for what diagnosis proves; F182 and F156's
    child-process route with the next launcher round; the Claude Code replay stays deferred (DECISIONS 58).
 3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public

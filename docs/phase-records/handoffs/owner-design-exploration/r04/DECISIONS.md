@@ -712,6 +712,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       launch, outside the round's worktree; the coordinator reproduces at least one row before using its verdict.
     - A round merges once its branch CI passes; main moves through `pnpm main:advance` once per batch.
     - The coordinator hands over to a fresh session (decision 61) once the wave is running.
+65. **Wave 1 stopped and saved; the user starts the next coordinator** (the user, 2026-10-15, «أوقف الجولات الأربع،
+    واحفظ وين وصلت كل جولة وحدّث الـResume Point عشان نقدر نستأنفها من نفس النقطة. أنا ببدأ الجلسة الجديدة بنفسي»).
+    The four launchers and their Codex processes were stopped; each worktree and temp folder is kept as it stood,
+    reports-css's uncommitted split is also recorded on `wip/reports-css-stopped-20261015`, and each round resumes on
+    its own thread from its STOPPED note (the resume point says how). The coordinator starts no session.
 
 ## How this milestone's rounds run
 
