@@ -49,11 +49,11 @@ The coordinator knows, row by row, whether reports-css's delivered commit holds 
 
 ## Causes and required outcomes
 
-- **G1. Where each rule lives.** Outcome: for each rule in the result's `shared.css`, at least one element on two
-  different pages matches it in some state; for each rule left in the result's `reports.css`, no element on Access,
+- **G1. Where each rule lives.** Outcome: for each selector of each rule in the result's `shared.css`, taken alone, at least one
+  element on two different pages matches it in some state; for each rule left in the result's `reports.css`, no element on Access,
   Activity or the components sheet's non-Reports specimens matches it in any state the recipes reach, by a DOM probe
   over every recipe state, Arabic and English. Intent: shared means used by more than one page.
-- **G2. What each page loads.** Outcome: Access's and Activity's heads no longer name `reports.css`; Reports and the
+- **G2. What each page loads.** Outcome: in the browser, Access and Activity load no `reports.css` by any route (head, import or script); Reports and the
   components sheet name both stylesheets; no page loads a stylesheet twice. Intent: no page carries another's styles.
 - **G3. Every page unchanged.** Outcome: a full compare, base against result, every page, `--feature all`, Arabic and
   English, desktop, tablet and phone, reduced motion, 4 workers: every item EQUAL apart from the capture problems
@@ -61,13 +61,13 @@ The coordinator knows, row by row, whether reports-css's delivered commit holds 
 - **G4. Motion unchanged.** Outcome: `--timeline` on Access's dialogs, Reports' segmented control and its table sort,
   Arabic, desktop and phone, full motion: no TIMELINE DIFFERENT; any NOT-HELD sample is one where the base compared
   with itself also varies (run that self compare and cite it). Intent: no moment moved.
-- **G5. Loading proofs under load.** Outcome: the base compared with itself, Reports and Access `--states all`, Arabic
+- **G5. Loading proofs under load.** Outcome: the result compared with itself and with the base, Reports and Access `--states all`, Arabic
   and English, desktop, reduced motion, 4 workers, while another compare runs on another pair: every `state=loading`
-  item EQUAL in 3 of 3 runs, and each captured loading frame shows the skeleton (crop one per page). Intent: a
+  item EQUAL in 3 of 3 runs, and each captured loading frame of the result shows the skeleton (crop one per page). Intent: a
   loading state is captured as loading on a busy machine.
 - **G6. No rule lost or doubled.** Outcome: the union of both stylesheets' rules at the result equals the base
   `reports.css`'s rules, comments aside, and no rule appears twice. Intent: the split moved, never rewrote.
-- **G7. Scope.** Outcome: `git diff --stat c2fe4661 23314b3a` lists only files the round's Scope allows;
+- **G7. Scope.** Outcome: `git diff --stat c2fe4661 23314b3a` lists only files the round's Scope allows, and every changed hunk is a stylesheet tag, one of the two loading proofs, a moved rule or a documentation line;
   the concept folder's `HISTORY.md` and its `evidence` folder are byte-identical; the folder's index check passes. Intent: nothing
   outside the split moved.
 
