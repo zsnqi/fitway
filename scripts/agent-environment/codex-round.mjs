@@ -557,6 +557,16 @@ function boldStart({ index, line }) {
 			number: Number(reading[1]),
 			bodyLines: 3,
 		};
+	const outcome = line.match(
+		/^ {0,3}\*\*([A-Z]+\d+)(?:[ \t]*[.):\u2013\u2014-][ \t]*[^\n]*?)?\*\*[ \t]*$/i,
+	);
+	if (outcome)
+		return {
+			type: "bold-id",
+			index,
+			outcomeId: outcome[1].toUpperCase(),
+			bodyLines: 3,
+		};
 	return null;
 }
 
@@ -634,7 +644,36 @@ function oneLineLabelGroup(value) {
 	return null;
 }
 
-function leadingOneLineLabel(value) {
+function escapeRegExp(value) {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const oneLineLabelNames = [
+	...new Set(oneLineLabelGroups.flatMap(([, labels]) => [...labels])),
+].sort((left, right) => right.length - left.length);
+
+function labelledParts(value) {
+	const content = value.replace(/[*_`]/g, "");
+	if (!content) return [];
+	const pattern = new RegExp(
+		`(^|[^\\p{L}\\p{N}])(${oneLineLabelNames
+			.map(escapeRegExp)
+			.join("|")})[ \\t]*[:\\-\\u2013\\u2014]`,
+		"giu",
+	);
+	const matches = [...content.matchAll(pattern)];
+	return matches.map((match, index) => ({
+		group: oneLineLabelGroup(match[2]),
+		text: content
+			.slice(
+				match.index + match[0].length,
+				matches[index + 1]?.index ?? content.length,
+			)
+			.trim(),
+	}));
+}
+
+function leadingOneLineLabelPart(value) {
 	const clause = value
 		.trim()
 		.replace(/^(?:[-+*]\s+|\d+[.)]\s+)?/, "")
@@ -644,23 +683,50 @@ function leadingOneLineLabel(value) {
 		if (![":", "-", "\u2013", "\u2014"].includes(separator)) continue;
 		const label = clause.slice(0, index).trim();
 		const text = clause.slice(index + 1).trim();
-		if (!text) continue;
 		const group = oneLineLabelGroup(label);
-		if (group) return group;
+		if (group) return { group, text };
 	}
 	return null;
 }
 
+function partHasText(value) {
+	return /\p{L}/u.test(
+		value
+			.replace(/\b[A-Z]+\d+\b/gi, " ")
+			.replace(/(?:^|\s)[-+*]\s+/g, " ")
+			.replace(/(?:^|\s)\d+[.)]\s+/g, " "),
+	);
+}
+
+function hasEmptyLabelledPart(value, lineBreaksContinue = false) {
+	return labelledParts(
+		lineBreaksContinue ? value.replace(/\r?\n/g, " ") : value,
+	).some((part) => !partHasText(part.text));
+}
+
+function completeLabelledReading(value) {
+	const groups = new Set();
+	for (const part of labelledParts(value)) {
+		if (!partHasText(part.text)) return false;
+		groups.add(part.group);
+	}
+	return groups.size === oneLineLabelGroups.length;
+}
+
 function completeOneLineReading(value) {
-	const content = value.replace(/[*_`]/g, "");
+	const content = value.replace(/[*_`]/g, "").replace(/\r?\n/g, " ");
 	if (!/\b[A-Z]+\d+\b/.test(content)) return false;
 	const clauses = content
-		.split(/\r?\n|(?<=[.!?;])\s+/)
+		.split(/(?<=[.!?;])\s+/)
 		.map((clause) => clause.trim())
 		.filter(Boolean);
-	const groups = new Set(
-		clauses.map((clause) => leadingOneLineLabel(clause)).filter(Boolean),
-	);
+	const groups = new Set();
+	for (const clause of clauses) {
+		const part = leadingOneLineLabelPart(clause);
+		if (!part) continue;
+		if (!partHasText(part.text)) return false;
+		groups.add(part.group);
+	}
 	return groups.size === oneLineLabelGroups.length;
 }
 
@@ -692,6 +758,13 @@ function proseBeforeStarts(text, starts) {
 	return true;
 }
 
+function hasIndentedBody(value) {
+	return value
+		.split(/\r?\n/)
+		.slice(1)
+		.some((line) => line.trim() && /^[ \t]/.test(line));
+}
+
 function bareReadingEnd(text, start, end) {
 	const match = text.slice(start.index, end).match(/\r?\n[ \t]*\r?\n/);
 	return match?.index === undefined ? end : start.index + match.index;
@@ -699,7 +772,17 @@ function bareReadingEnd(text, start, end) {
 
 function readingsFromStarts(text, starts) {
 	if (!starts.length || starts.length > 5) return null;
-	if (starts.some((start, index) => start.number !== index + 1)) return null;
+	const outcomeHeadings = starts.some((start) => start.outcomeId);
+	if (
+		outcomeHeadings &&
+		starts.some((start) => start.type !== "bold-id" || !start.outcomeId)
+	)
+		return null;
+	if (
+		!outcomeHeadings &&
+		starts.some((start, index) => start.number !== index + 1)
+	)
+		return null;
 	if (!proseBeforeStarts(text, starts)) return null;
 	const readings = starts.map((start, index) => {
 		const next = starts[index + 1]?.index ?? text.length;
@@ -718,7 +801,23 @@ function readingsFromStarts(text, starts) {
 	if (
 		readings.some(({ start, text, bodyLines }) => {
 			if (!/\b[A-Z]+\d+\b/.test(text)) return true;
-			if (start.type === "bare") return !completeOneLineReading(text);
+			if (hasEmptyLabelledPart(text, start.type === "bare")) return true;
+			if (start.type === "bold-id")
+				return (
+					!completeLabelledReading(text) ||
+					text
+						.split(/\r?\n/)
+						.slice(1)
+						.filter((line) => line.trim()).length < bodyLines
+				);
+			if (start.type === "bare") {
+				const lines = text.split(/\r?\n/);
+				const indented = hasIndentedBody(text);
+				if (completeOneLineReading(lines[0])) return false;
+				if (indented)
+					return lines.slice(1).filter((line) => line.trim()).length < 1;
+				return !completeOneLineReading(text);
+			}
 			return (
 				text
 					.split(/\r?\n/)

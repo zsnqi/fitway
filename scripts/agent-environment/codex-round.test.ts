@@ -282,6 +282,12 @@ function expectedReviewBlocks(answer: string) {
 		),
 	];
 	if (atx[0]?.index === 0) return blocks(atx);
+	const boldOutcome = [
+		...answer.matchAll(
+			/^\*\*[A-Z]+\d+(?:[ \t]*[.):\u2013\u2014-][^\n]*)?\*\*\s*$/gim,
+		),
+	];
+	if (boldOutcome[0]?.index === 0) return blocks(boldOutcome);
 	const bold = [
 		...answer.matchAll(/^\*\*\d+[.)]\s+[^\n]*\b[A-Z]+\d+\b[^\n]*\*\*\s*$/gm),
 	];
@@ -886,17 +892,23 @@ function comparison(f: ReturnType<typeof requiredFixture>, suffix = "") {
 	);
 }
 
+function jsonLinesIfPresent(filename: string) {
+	if (!existsSync(filename)) return [];
+	const text = readFileSync(filename, "utf8").trim();
+	if (!text) return [];
+	return text.split(/\r?\n/).map((line) => JSON.parse(line));
+}
+
 function reviewRefused(
 	f: ReturnType<typeof fixture>,
 	result: ReturnType<ReturnType<typeof fixture>["invoke"]>,
 	reason: string,
 ) {
-	// Check the consequence first, so a removed gate fails on an actual launch.
+	refused(f, result, reason);
 	expect(
 		existsSync(f.capture),
 		"refusal must prevent the stand-in launch",
 	).toBe(false);
-	refused(f, result, reason);
 	expect(result.stdout).toContain(
 		`Current brief SHA-256: ${briefHash(f.brief)}`,
 	);
@@ -1643,10 +1655,8 @@ describe("R1 pre-launch review", () => {
    1. Keep the list in the body.
    2. Do not split there.
    What goes wrong: the intent remains unmet.
-   Change: preserve the check.
 2) L1 can drift.
    Literal reading: a changed input survives.
-   What goes wrong: the intent remains unmet.
    Close: preserve the input.
 `;
 		f.answerReview(
@@ -1669,11 +1679,9 @@ The preface spans more than one paragraph.
 1. **R1** permits a shortcut.
    Literal reading: the check can pass.
    What goes wrong: the intent remains unmet.
-   Change: preserve the check.
 
 2. **L1** can drift.
    Literal reading: a changed input survives.
-   What goes wrong: the intent remains unmet.
    Close: preserve the input.
 `;
 		f.answerReview(
@@ -1684,6 +1692,21 @@ The preface spans more than one paragraph.
 		expect(result.status, result.output).toBe(0);
 		expect(readFileSync(path.join(f.run, "review-readings.md"), "utf8")).toBe(
 			answer,
+		);
+	});
+
+	it("applies the label rule to a bare reading whose lines all start at column 0", () => {
+		const f = fixture();
+		const answer = `1. V1. Literal reading:
+a check can pass. What goes wrong: the intent fails. Change: preserve it.
+`;
+		rmSync(f.reviewRoot, { recursive: true, force: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER: answer });
+		expect(result.stdout.match(/^Reading \d+:$/gm), result.output).toHaveLength(
+			1,
+		);
+		expect(result.stdout.replace(/\s+/g, " ")).toContain(
+			"Literal reading: a check can pass. What goes wrong: the intent fails. Change: preserve it.",
 		);
 	});
 
@@ -1735,6 +1758,30 @@ The preface spans more than one paragraph.
 				.join("\n"),
 		],
 		[
+			"an empty wrong label",
+			Array.from(
+				{ length: 5 },
+				(_, index) =>
+					`${index + 1}. V1. Literal reading: x. What goes wrong:. Change: z.`,
+			).join("\n"),
+		],
+		[
+			"a wrong label holding only a number",
+			Array.from(
+				{ length: 5 },
+				(_, index) =>
+					`${index + 1}. V1. Literal reading: x. What goes wrong: 3. Change: z.`,
+			).join("\n"),
+		],
+		[
+			"a wrong label holding only an outcome ID",
+			Array.from(
+				{ length: 5 },
+				(_, index) =>
+					`${index + 1}. V1. Literal reading: x. What goes wrong: V2. Change: z.`,
+			).join("\n"),
+		],
+		[
 			"keywords without labelled parts",
 			["V1", "V1", "L1", "V3", "V2"]
 				.map(
@@ -1773,7 +1820,7 @@ The preface spans more than one paragraph.
 		const answerFile = path.join(realReviewRoot, "g1-wrapped.md");
 		const bytes = readFileSync(answerFile);
 		expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-			"16c5ba5a570df7aec0ab67c9bf0f1e12cbd5abd7bd040d527a47afc6d629186a",
+			"239e4e15ab2380051668c6339410d7a284065ecffc6f488eebb1822a722c7eec",
 		);
 		const answer = bytes.toString("utf8");
 		const blocks = expectedReviewBlocks(answer);
@@ -1802,6 +1849,70 @@ The preface spans more than one paragraph.
 		const launched = f.invoke();
 		expect(launched.status, launched.output).toBe(0);
 		expect(readFileSync(path.join(f.run, "review-readings.md"))).toEqual(bytes);
+	});
+
+	it("reads each one-line reading when any word break is a line break", () => {
+		const f = fixture();
+		const answerFile = path.join(realReviewRoot, "g1-wrapped.md");
+		const bytes = readFileSync(answerFile);
+		const unwrapped = bytes.toString("utf8").replace("Gap:\na", "Gap: a");
+		const blocks = expectedReviewBlocks(unwrapped);
+		for (let index = 0; index < blocks.length; index += 1) {
+			const sourceBlock = blocks[index];
+			const sourceStart = unwrapped.indexOf(sourceBlock);
+			const wrapAt = sourceBlock.search(/ (?=\S)/);
+			const afterId = sourceBlock.indexOf(
+				" ",
+				sourceBlock.search(/\b[A-Z]+\d+\b/),
+			);
+			const splitAt = Math.max(wrapAt, afterId);
+			const wrapped =
+				unwrapped.slice(0, sourceStart + splitAt) +
+				"\n" +
+				unwrapped.slice(sourceStart + splitAt + 1);
+			rmSync(f.reviewRoot, { recursive: true, force: true });
+			const result = f.invoke(undefined, { REVIEW_ANSWER: wrapped });
+			expect(
+				result.stdout.match(/^Reading \d+:$/gm),
+				`wrapped reading ${index + 1}`,
+			).toHaveLength(5);
+			expect(result.stdout.replace(/\s+/g, " ")).toContain(
+				blocks[index].replace(/\s+/g, " "),
+			);
+		}
+	});
+
+	it.each([
+		[
+			"a heading",
+			`## Reading 1: R1
+1. Outcome reference: R1.
+2. Literal reading: The check can pass.
+3. What goes wrong:
+4. One-line change: Preserve the check.
+`,
+		],
+		[
+			"a bold line",
+			`**1. R1**
+1. Outcome reference: R1.
+2. Literal reading: The check can pass.
+3. What goes wrong: 3
+4. One-line change: Preserve the check.
+`,
+		],
+		[
+			"a bullet body",
+			`1. R1 permits a shortcut.
+   - Literal reading: The check can pass.
+   - What goes wrong: V2
+   - One-line change: Preserve the check.
+`,
+		],
+	])("refuses an explicitly empty label in %s", (_name, answer) => {
+		const f = fixture();
+		f.answerReview(answer);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
 	it("refuses a wrapped reading that loses its completing labels", () => {
@@ -1869,6 +1980,93 @@ The preface spans more than one paragraph.
 			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\n`,
 		);
 		expect(f.invoke().status).toBe(0);
+	});
+
+	it("reads bold outcome-ID headings as five labelled readings", () => {
+		const f = fixture();
+		const answerFile = path.join(realReviewRoot, "vf-proofs-grade-1.md");
+		const bytes = readFileSync(answerFile);
+		const answer = bytes.toString("utf8");
+		expect(createHash("sha256").update(bytes).digest("hex")).toBe(
+			"92afd884df15172f49ca6c0879b8df0a30a3c901cfe8acfd909fba3bf654af30",
+		);
+		const blocks = expectedReviewBlocks(answer);
+		expect(blocks).toHaveLength(5);
+		expect(blocks.map((block) => block.match(/\b[A-Z]+\d+\b/)?.[0])).toEqual([
+			"G9",
+			"G2",
+			"G3",
+			"G6",
+			"G7",
+		]);
+		rmSync(f.reviewRoot, { recursive: true, force: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER_FILE: answerFile });
+		expect(result.stdout.match(/^Reading \d+:$/gm), result.output).toHaveLength(
+			5,
+		);
+		const section = result.stdout
+			.split("Readings:\n")[1]
+			?.split("\nWrite coordinator dispositions to:")[0];
+		expect(section).toBe(
+			blocks
+				.map((block, index) => `Reading ${index + 1}:\n${block}`)
+				.join("\n\n"),
+		);
+	});
+
+	it("requires three labels on bold outcome-ID readings and refuses six", () => {
+		const accepted = fixture();
+		const answerFile = path.join(realReviewRoot, "vf-proofs-grade-1.md");
+		const answer = readFileSync(answerFile, "utf8");
+		rmSync(accepted.reviewRoot, { recursive: true, force: true });
+		const result = accepted.invoke(undefined, {
+			REVIEW_ANSWER_FILE: answerFile,
+		});
+		expect(result.stdout.match(/^Reading \d+:$/gm), result.output).toHaveLength(
+			5,
+		);
+
+		const f = fixture();
+		const firstWrong = answer.indexOf("- **What goes wrong:**");
+		const firstChange = answer.indexOf("\n**G2.", firstWrong);
+		const missing = `${answer.slice(0, firstWrong)}${answer.slice(firstChange)}`;
+		f.answerReview(missing);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
+
+		const tooMany = fixture();
+		tooMany.answerReview(
+			`${answer}\n**X9. Extra reading**\n- **Literal reading:** Extra text.\n- **What goes wrong:** Extra wrong.\n- **One-line change:** Extra change.\n`,
+		);
+		reviewRefused(
+			tooMany,
+			tooMany.invoke(),
+			"answer cannot be read as readings",
+		);
+	});
+
+	it("reads three bold outcome-ID readings with other IDs and an em dash", () => {
+		const f = fixture();
+		const answer = `**V3 \u2014 Preserve the check**
+- **Literal reading:** The check can pass.
+- **What goes wrong:** The intent can fail.
+- **One-line change:** Preserve both.
+
+**L1 - Keep the inputs**
+- **Literal reading:** An input can change.
+- **What goes wrong:** The proof can drift.
+- **One-line change:** Freeze the inputs.
+
+**P2 : Keep the comparison**
+- **Literal reading:** The comparison can pass.
+- **What goes wrong:** A row can move.
+- **One-line change:** Compare every row.
+`;
+		rmSync(f.reviewRoot, { recursive: true, force: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER: answer });
+		expect(result.stdout.match(/^Reading \d+:$/gm), result.output).toHaveLength(
+			3,
+		);
+		expect(result.stdout).toContain("**V3 \u2014 Preserve the check**");
 	});
 
 	it.each([
@@ -2649,10 +2847,7 @@ describe("K2 automatic resume", () => {
 		f.answerReview(undefined, undefined, 2);
 	};
 	const resumeLog = (f: ReturnType<typeof fixture>) =>
-		readFileSync(path.join(f.run, "auto-resumes.log"), "utf8")
-			.trim()
-			.split(/\r?\n/)
-			.map((line) => JSON.parse(line));
+		jsonLinesIfPresent(path.join(f.run, "auto-resumes.log"));
 
 	it("resumes a run whose first turn ends without a report", () => {
 		const f = fixture();
@@ -2689,16 +2884,7 @@ describe("K2 automatic resume", () => {
 		expect(result.status, result.output).toBe(0);
 		expect(result.stderr).toContain("launch stderr\n");
 		expect(result.stderr).toContain("resume stderr\n");
-		expect(readFileSync(path.join(f.run, "stderr.txt"), "utf8")).toBe(
-			"launch stderr\n",
-		);
-		expect(readFileSync(path.join(f.run, "stderr-resume.txt"), "utf8")).toBe(
-			"resume stderr\n",
-		);
-		const turns = readFileSync(path.join(f.run, "turns.jsonl"), "utf8")
-			.trim()
-			.split(/\r?\n/)
-			.map((line) => JSON.parse(line));
+		const turns = jsonLinesIfPresent(path.join(f.run, "turns.jsonl"));
 		expect(turns).toHaveLength(2);
 		expect(turns[0]).toMatchObject({
 			exitCode: 0,
@@ -2723,6 +2909,12 @@ describe("K2 automatic resume", () => {
 			);
 			expect(turn.durationMs).toBeGreaterThanOrEqual(0);
 		}
+		expect(readFileSync(path.join(f.run, "stderr.txt"), "utf8")).toBe(
+			"launch stderr\n",
+		);
+		expect(readFileSync(path.join(f.run, "stderr-resume.txt"), "utf8")).toBe(
+			"resume stderr\n",
+		);
 	});
 
 	it("quotes the trigger's first line exactly and handles a fence in the line", () => {
@@ -2878,6 +3070,8 @@ ${report}
 		const result = f.invoke(undefined, { ROUND_MESSAGE: claimReport() });
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
+		const turns = jsonLinesIfPresent(path.join(f.run, "turns.jsonl"));
+		expect(turns.at(-1)).toMatchObject({ stopReason: "report accepted" });
 		expect(existsSync(path.join(f.run, "auto-resumes.log"))).toBe(false);
 		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
 			'"stopReason":"report accepted"',
@@ -2894,6 +3088,8 @@ ${report}
 		});
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
+		const turns = jsonLinesIfPresent(path.join(f.run, "turns.jsonl"));
+		expect(turns.at(-1)).toMatchObject({ stopReason: "report accepted" });
 		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
 			'"stopReason":"report accepted"',
 		);
@@ -2907,6 +3103,7 @@ ${report}
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
 		const [entry] = resumeLog(f);
 		expect(entry.claimFailures).toEqual(
 			expect.arrayContaining([
@@ -2924,6 +3121,7 @@ ${report}
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
 		const [entry] = resumeLog(f);
 		expect(entry.claimFailures).toEqual(
 			expect.arrayContaining([
@@ -3004,6 +3202,9 @@ ${report}
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const message = Buffer.from(f.captured().input, "base64").toString("utf8");
+		expect(message).toContain(expected);
 		const [entry] = resumeLog(f);
 		expect(entry.claimFailures.join("\n")).toContain(expected);
 	});

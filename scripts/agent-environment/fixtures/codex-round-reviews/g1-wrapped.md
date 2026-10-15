@@ -7,4 +7,5 @@ What goes wrong: coverage can disappear. Change: keep each assertion.
 
 4. V3. Reading: the option is checked. Failure: a wrapper hides the option. Fix: resolve the executable.
 
-5. V2. As written: the replacement stays local. Gap: a collision returns. Close it: exercise the real text.
+5. V2. As written: the replacement stays local. Gap:
+a collision returns. Close it: exercise the real text.
