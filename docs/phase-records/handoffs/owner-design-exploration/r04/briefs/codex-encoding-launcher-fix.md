@@ -50,18 +50,18 @@ guard holds through the command people run, and two tests stop passing without c
     (`- **K1.**`), while the briefs write the ID and a title inside one bold (`- **K1. A reading's own lists.**`); so
     `codex-launcher-fixes-3.md` and `codex-deepseek-route.md` yield none and would be refused at launch.
   - **Outcome.** A bullet starting `- **`, then capital letters and digits, then a full stop counts its ID, whether the
-    bold closes after the ID or after a title, outside the environment block. Every brief in
+    bold closes after the ID or after a title, outside the environment block and fenced code. Every brief in
     `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` then yields its IDs, for example D1-D6 for
     `codex-deepseek-route.md`, K1-K3 with L1-L2 for `codex-launcher-fixes-3.md` and R1, R2, T2 and T5 for
-    `codex-tuner-removal-continue.md`; a test pins each brief's IDs, and a brief with none is still refused.
+    `codex-tuner-removal-continue.md`; a test pins each brief's exact set of IDs, and a brief with none is still refused.
   - **Intent.** The launcher waits for what each brief asks, and launches every brief that defines outcomes.
 - **G2. The Git Bash guard through pnpm.**
   - **Cause.** `runningInGitBash` (`codex-round.mjs:72-92`) looks only at the launcher's parent process, which is
     pnpm when the command is `pnpm codex:round`, so `pnpm codex:round resume <run> --message "/api"` from Git Bash is
     not refused; the test (`codex-round.test.ts:2795-2830`) starts node directly.
   - **Outcome.** From Git Bash, `--message` is refused naming `--message-file` whether the launcher is started by
-    `pnpm codex:round`, `pnpm -s codex:round` or `node` directly; from PowerShell and cmd it is not; a test covers the
-    pnpm route.
+    `pnpm codex:round`, `pnpm -s codex:round` or `node` directly; from PowerShell and cmd it is not; one table-driven
+    test runs all five through the repository's real `codex:round` script.
   - **Intent.** The guard holds for the command the coordinator actually types.
 - **G3. A read through a child process before the place check.**
   - **Cause.** With `git show <head>:<source>` run and its result ignored ahead of `reviewSourcePlan` in
@@ -72,8 +72,9 @@ guard holds through the command people run, and two tests stop passing without c
 - **G4. The 8.3 test passes without checking.**
   - **Cause.** "expands an 8.3 TEMP for Codex and leaves other values unchanged" (`codex-round.test.ts:2517-2533`)
     returns early as passed when its folder has no short name, which is always the case on this machine's drive D.
-  - **Outcome.** The test checks the expansion on a path that has a short name (on any drive that offers one), or
-    is reported as skipped with its reason; it never passes without checking.
+  - **Outcome.** The test checks the expansion on the first path it finds with a short name, probing every available
+    drive; it is reported as skipped, naming the drives probed, only when none offers one; it never passes without
+    checking.
   - **Intent.** A green run means the expansion was checked.
 
 ## Limits the result keeps
