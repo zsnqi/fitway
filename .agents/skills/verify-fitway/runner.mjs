@@ -644,6 +644,8 @@ export async function drive(options) {
 											const afterRules = rules.filter(
 												(rule) => rule.afterActions,
 											);
+											const recheckBeforeState =
+												!feature.changesState && afterRules.length === 0;
 											entry.stateProof = [];
 											for (const rule of beforeRules) {
 												await prove(current.page, rule.proof, language);
@@ -886,11 +888,11 @@ export async function drive(options) {
 														`CSS property unchanged: ${feature.proof.cssPropertyChanged}`,
 													);
 												await ui.twoFrames(current.page);
-												if (!feature.changesState)
+												if (recheckBeforeState)
 													for (const rule of beforeRules)
 														await prove(current.page, rule.proof, language);
 												await save("after");
-												if (!feature.changesState)
+												if (recheckBeforeState)
 													for (const rule of beforeRules)
 														await prove(current.page, rule.proof, language);
 												// A flow may change a state (retry/navigation). Its end proof owns that result;
