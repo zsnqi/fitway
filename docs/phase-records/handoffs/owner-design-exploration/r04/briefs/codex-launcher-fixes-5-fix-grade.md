@@ -7,7 +7,7 @@
   `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`.
 - **Read first, only these:**
   - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5.md`, whole, and `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5-fix.md`, whole: the two briefs of the result you grade (P1-P5 at `4964b95d`, T1-T5 on top); your contract is G1-G8 below;
-  - `D:/fitway-temp/owner-r04-launcher-fixes-5-grade/grade.cjs` and `supplement.cjs`, whole: the first grade's probes, which you may reuse.
+  - `D:/fitway-temp/owner-r04-launcher-fixes-5-grade/grade.cjs` and `D:/fitway-temp/owner-r04-launcher-fixes-5-grade/supplement.cjs`, whole: the first grade's probes, which you may reuse.
 
 <!-- environment:start v1 -->
 ## Environment
