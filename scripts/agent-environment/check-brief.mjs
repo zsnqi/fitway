@@ -906,14 +906,9 @@ export async function checkBrief({
 			);
 	const lineCount = lines(text);
 	if (role === "codex") {
-		const isFullBrief =
-			markdownSections(prose, "Report").length > 0 ||
-			markdownSections(prose, "Scope").length > 0;
-		if (isFullBrief) {
-			const scopeProblem = codexScopeProblem(prose);
-			if (scopeProblem)
-				report("brief-scope", scopeProblem.line, scopeProblem.message);
-		}
+		const scopeProblem = codexScopeProblem(prose);
+		if (scopeProblem)
+			report("brief-scope", scopeProblem.line, scopeProblem.message);
 	}
 	const outcomeIds = sectionIds(prose, [
 		"Causes and required outcomes",

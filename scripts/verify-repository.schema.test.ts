@@ -1298,7 +1298,46 @@ describe("tracked encoding and Claude agent definitions", () => {
 			assertNoUnexpectedBom({
 				repositoryRoot: root,
 				trackedFiles: ["new-bom.txt"],
+				exceptions: [],
 			}),
 		).toThrow(/new-bom\.txt.*BOM/);
+	});
+
+	it("requires every BOM exception to be reasoned, unique, tracked, and BOM-prefixed", () => {
+		const root = mkdtempSync(path.join(tmpdir(), "fitway-bom-exception-"));
+		temporaryRoots.push(root);
+		mkdirSync(path.join(root, "nested"));
+		writeFileSync(
+			path.join(root, "nested/bom.txt"),
+			Buffer.from([0xef, 0xbb, 0xbf, 0x78]),
+		);
+		writeFileSync(path.join(root, "plain.txt"), "plain");
+		const trackedFiles = ["nested/bom.txt", "plain.txt"];
+		const check = (exceptions: { path: string; reason: string }[]) =>
+			assertNoUnexpectedBom({
+				repositoryRoot: root,
+				trackedFiles,
+				exceptions,
+			});
+
+		expect(() => check([{ path: "nested/bom.txt", reason: " \t " }])).toThrow(
+			/nested[\\/]bom\.txt.*non-empty reason/,
+		);
+		expect(() =>
+			check([
+				{ path: "nested/bom.txt", reason: "Kept." },
+				{ path: "NESTED\\BOM.TXT", reason: "Also kept." },
+			]),
+		).toThrow(/NESTED[\\/]BOM\.TXT.*duplicates nested[\\/]bom\.txt/);
+		expect(() => check([{ path: "missing.txt", reason: "Kept." }])).toThrow(
+			/missing\.txt.*is not a tracked file/,
+		);
+		expect(() => check([{ path: "plain.txt", reason: "Kept." }])).toThrow(
+			/plain\.txt.*does not start with a UTF-8 BOM/,
+		);
+		expect(check([{ path: "NESTED\\BOM.TXT", reason: "Kept." }])).toEqual({
+			checked: 2,
+			allowed: 1,
+		});
 	});
 });

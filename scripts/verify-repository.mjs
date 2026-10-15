@@ -68,6 +68,13 @@ function normalizeGitPath(value) {
 	return value.replaceAll("\\", "/");
 }
 
+function bomExceptionPathKey(value) {
+	return normalizeGitPath(value)
+		.replace(/\/+/g, "/")
+		.replace(/^\.\//, "")
+		.toLowerCase();
+}
+
 function lineNumberAt(text, index) {
 	return text.slice(0, index).split(/\r?\n/).length;
 }
@@ -92,15 +99,38 @@ export function listTrackedFiles(cwd = root, patterns = []) {
 export function assertNoUnexpectedBom({
 	repositoryRoot = root,
 	trackedFiles = listTrackedFiles(repositoryRoot),
+	exceptions = TRACKED_BOM_EXCEPTIONS,
 } = {}) {
-	const allowed = new Map(
-		TRACKED_BOM_EXCEPTIONS.map((entry) => [entry.path, entry.reason]),
+	const trackedByPath = new Map(
+		trackedFiles.map((relativePath) => [
+			bomExceptionPathKey(relativePath),
+			relativePath,
+		]),
 	);
+	const seenExceptions = new Map();
+	const allowed = new Map();
+	for (const entry of exceptions) {
+		const pathKey = bomExceptionPathKey(entry.path);
+		if (!entry.reason?.trim())
+			fail(`BOM exception ${entry.path} must have a non-empty reason.`);
+		if (seenExceptions.has(pathKey))
+			fail(
+				`BOM exception ${entry.path} duplicates ${seenExceptions.get(pathKey)} for the same file.`,
+			);
+		seenExceptions.set(pathKey, entry.path);
+		const trackedPath = trackedByPath.get(pathKey);
+		if (!trackedPath)
+			fail(`BOM exception ${entry.path} is not a tracked file.`);
+		const bytes = readFileSync(path.resolve(repositoryRoot, trackedPath));
+		if (!bytes.subarray(0, UTF8_BOM.length).equals(UTF8_BOM))
+			fail(`BOM exception ${entry.path} does not start with a UTF-8 BOM.`);
+		allowed.set(pathKey, entry.reason);
+	}
 	let allowedCount = 0;
 	for (const relativePath of trackedFiles) {
 		const bytes = readFileSync(path.resolve(repositoryRoot, relativePath));
 		if (!bytes.subarray(0, UTF8_BOM.length).equals(UTF8_BOM)) continue;
-		if (allowed.has(relativePath)) {
+		if (allowed.has(bomExceptionPathKey(relativePath))) {
 			allowedCount += 1;
 			continue;
 		}

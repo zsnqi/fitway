@@ -1167,6 +1167,17 @@ describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostic
 				(problem: { rule: string }) => problem.rule === "brief-scope",
 			),
 		).toBe(true);
+
+		const missingWithoutReport = await f.check(
+			f.valid
+				.replace(/\n## Scope\n[\s\S]*?(?=\n## Report)/, "\n")
+				.replace(/\n## Report\n[\s\S]*$/, "\n"),
+		);
+		expect(
+			missingWithoutReport.problems.some(
+				(problem: { rule: string }) => problem.rule === "brief-scope",
+			),
+		).toBe(true);
 	});
 
 	it("rejects the five historical briefs and accepts every current r04 brief", () => {
