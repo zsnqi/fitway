@@ -49,6 +49,7 @@ import {
 	extractDependencies,
 	extractSwitches,
 	generateMap,
+	readRecipes,
 	repairRecipes,
 } from "./map.mjs";
 import { sourceProbe } from "./probes.mjs";
@@ -62,6 +63,7 @@ import {
 let scratch;
 let concept;
 let recipes;
+const heldSessions = [];
 const html =
 	'<main>Fixture</main><button id="ops-btn" aria-controls="ops-pop">Status</button><div id="ops-pop" role="dialog" hidden></div><script src="app.js"></script>';
 const js =
@@ -100,6 +102,8 @@ before(async () => {
 	await writeFile(recipes, JSON.stringify(authored()));
 });
 after(async () => {
+	for (const session of heldSessions.splice(0))
+		runCli(["cleanup", "--session", session]);
 	if (scratch) await rm(scratch, { recursive: true, force: true });
 });
 
@@ -1596,6 +1600,7 @@ test("help in a dependency-free clone succeeds and names installation", async ()
 		"probes.mjs",
 		"map.mjs",
 		"discover.mjs",
+		"state-rules.mjs",
 	])
 		await writeFile(
 			resolve(folder, name),
@@ -1787,12 +1792,68 @@ test("delegated tool interruption finishes its own cleanup before the parent ret
 });
 
 const cliPath = fileURLToPath(new URL("./cli.mjs", import.meta.url));
-function runCli(args, cli = cliPath) {
+const portObserverPath = fileURLToPath(
+	new URL("./port-observer.cjs", import.meta.url),
+);
+function runCli(args, cli = cliPath, env = {}) {
 	return spawnSync(process.execPath, [cli, ...args], {
 		encoding: "utf8",
 		windowsHide: true,
+		env: {
+			...process.env,
+			VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE: "0",
+			...env,
+		},
 	});
 }
+
+test("Y2: a test-only doctor seam never probes a verification port", async () => {
+	const folder = resolve(scratch, "doctor-test-port-seam");
+	const port = await isolatedPort();
+	const log = resolve(scratch, "doctor-test-port-seam.jsonl");
+	await mkdir(folder);
+	await writeFile(
+		resolve(folder, "session.json"),
+		JSON.stringify({
+			concept,
+			pid: 2147483647,
+			port,
+			token: "test-only",
+		}),
+	);
+	const result = spawnSync(
+		process.execPath,
+		[
+			"--require",
+			portObserverPath,
+			cliPath,
+			"doctor",
+			"--concept",
+			concept,
+			"--session",
+			folder,
+		],
+		{
+			encoding: "utf8",
+			windowsHide: true,
+			env: {
+				...process.env,
+				VERIFY_FITWAY_PORT_HOOK_LOG: log,
+				VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE: "0",
+			},
+		},
+	);
+	assert.equal(result.status, 1, result.stdout + result.stderr);
+	assert.match(result.stderr, /FIX: .*--port 3176 /);
+	const observations = existsSync(log)
+		? (await readFile(log, "utf8"))
+				.trim()
+				.split("\n")
+				.filter(Boolean)
+				.map(JSON.parse)
+		: [];
+	assert.deepEqual(observations, [], result.stdout + result.stderr);
+});
 
 test("V1: no recipe file is SKIP, while a checked recipe still passes", async () => {
 	const empty = resolve(scratch, "no-recipes");
@@ -1931,9 +1992,16 @@ async function runnerFixture(name, features, options = {}) {
 import {appendFile,writeFile} from "node:fs/promises";
 import {createContext,runInContext} from "node:vm";
 const motion=${JSON.stringify(options.scriptMotion || null)}, phase=${JSON.stringify(options.scriptPhase || 0)};
+const dynamicState=${JSON.stringify(Boolean(options.dynamicState))};
+const transitionOnCapture=${JSON.stringify(Boolean(options.transitionOnCapture))};
+const capturePhases=${JSON.stringify(options.capturePhases || [])};
+const transitionAfterProofs=${JSON.stringify(options.transitionAfterProofs ?? null)};
+let fixturePhase="loading", phaseReads=0;
+let captureCount=0;
 const capture=async(via,options,picture)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from(picture)};
 export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
+ let language=options.locale?.startsWith("ar")?"ar":"en";
  let focus="body", open=false;
  let now=0, next=0; const frames=new Map();
  const sandbox={position:0,document:{getAnimations:()=>[]},
@@ -1944,12 +2012,22 @@ export async function newContext(browser, options) {
  const tick=()=>{now+=16;for(const id of [...frames.keys()]){const callback=frames.get(id);if(callback){frames.delete(id);callback.call(sandbox,now)}}};
 const page={setDefaultTimeout(){},addInitScript:async(fn)=>{await appendFile(${JSON.stringify(resolve(root, "init.jsonl"))},"observer\\n");if(motion)run(fn)},
  startMotion:()=>{if(motion){runInContext('function move(){position++;if('+JSON.stringify(motion==='forever')+'||position<20)requestAnimationFrame(move)};requestAnimationFrame(move)',sandbox);for(let i=0;i<phase;i++)tick()}},
- tick,picture:()=>motion?JSON.stringify({x:sandbox.position}):"fixture",
- waitForFunction:async(fn,arg,options)=>{if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
- screenshot:async(options)=>capture("native",options,page.picture()),
+  tick,picture:()=>dynamicState?fixturePhase:motion?JSON.stringify({x:sandbox.position}):"fixture",
+  waitForFunction:async(fn,arg,options)=>{
+   if(dynamicState&&typeof fn==="string"&&fn.includes("__fixturePhase")){
+    if(transitionAfterProofs!==null&&phaseReads===transitionAfterProofs)fixturePhase="ready";
+    phaseReads++;
+    const wantsLoading=fn.includes("'loading'")||fn.includes('"loading"');
+    if(wantsLoading&&fixturePhase!=="loading")throw new Error("Timeout 5000 ms: loading state changed before capture");
+    if(!wantsLoading&&fixturePhase!=="ready")throw new Error("Timeout 5000 ms: arrival state not observed");
+    return;
+   }
+   if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
+ transitionOnCapture:()=>{const phase=capturePhases[captureCount++];if(transitionOnCapture)fixturePhase="ready";if(phase)fixturePhase=phase},
+  screenshot:async(options)=>{page.transitionOnCapture();return capture("native",options,page.picture())},
 context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
   evaluate:async(fn)=>fn.toString().includes("coarse")
-   ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
+   ? {language,direction:language==="ar"?"rtl":"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
 : fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
 locator:(selector)=>({first(){return this},count:async()=>1,
@@ -1964,7 +2042,7 @@ evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body
 }
 export const withParams=(url)=>url;
 export const preparePage=async(page)=>{page.startMotion();return {ready:true}};
-export const screenshot=async(page,options)=>capture("adapter",options,page.picture());
+export const screenshot=async(page,options)=>{page.transitionOnCapture();return capture("adapter",options,page.picture())};
 export const twoFrames=async(page)=>{page.tick();page.tick()};
 export const injectProbe=async()=>{};
 export const renderSheet=async()=>{};
@@ -2238,6 +2316,20 @@ export const renderSheet=async(browser,spec,file)=>writeFile(file,"stub sheet");
 		`const Module=require("node:module"),load=Module._load;
 Module._load=function(name,...args){return name==="@playwright/test"?{chromium:{executablePath:()=>process.execPath}}:load.call(this,name,...args)};`,
 	);
+	const session = resolve(root, "session");
+	const launched = runCli([
+		"launch",
+		"--concept",
+		build,
+		"--isolated-port",
+		String(await isolatedPort()),
+		"--idle-timeout-ms",
+		"60000",
+		"--out",
+		session,
+	]);
+	assert.equal(launched.status, 0, launched.stderr + launched.stdout);
+	heldSessions.push(session);
 	const invoke = (command, out, extra = []) =>
 		spawnSync(
 			process.execPath,
@@ -2250,6 +2342,7 @@ Module._load=function(name,...args){return name==="@playwright/test"?{chromium:{
 				tools,
 				"--out",
 				out,
+				...(command === "drive" ? ["--session", session] : []),
 				...extra,
 			],
 			{ encoding: "utf8", windowsHide: true },
@@ -2815,6 +2908,484 @@ test("V1: afterActions state proofs run after the feature and must read the page
 	);
 });
 
+test("V1: ended rules lift only the matching language's before rule", async () => {
+	const features = [
+		{ id: "page", actions: [], proof: { selector: "main", visible: true } },
+	];
+	const { out, result } = await runnerFixture(
+		"ended-language-rules",
+		features,
+		{
+			inputs: "mouse",
+			languages: "ar,en",
+			mapStates: [
+				{
+					language: "ar",
+					when: { state: "loading" },
+					shows: "Arabic loading",
+					proof: { selector: "main", visible: true },
+				},
+				{
+					language: "en",
+					when: { state: "loading" },
+					shows: "English loading",
+					proof: { selector: "main", visible: true },
+				},
+				{
+					when: { arrive: "500" },
+					afterActions: true,
+					ends: [{ when: { state: "loading" } }],
+					shows: "Arrived",
+					proof: { expression: "document.body !== null" },
+				},
+			],
+			switches: [
+				{ name: "state", values: ["loading"], samples: [] },
+				{ name: "arrive", values: ["500"], samples: [] },
+			],
+			states: "state=loading&arrive=500",
+		},
+	);
+	assert.equal(result.status, 0, result.stderr + result.stdout);
+	const summaries = JSON.parse(
+		await readFile(resolve(out, "summary.json"), "utf8"),
+	);
+	assert.deepEqual(
+		summaries.map((item) => ({
+			afterFrameProof: item.afterFrameProof,
+			language: item.language,
+			proof: item.proof,
+		})),
+		[
+			{
+				afterFrameProof: [],
+				language: "ar",
+				proof: ["Arabic loading", "Arrived"],
+			},
+			{
+				afterFrameProof: [],
+				language: "en",
+				proof: ["English loading", "Arrived"],
+			},
+		],
+	);
+});
+
+test("V1: a time-changing state is captured before its declared after-action arrival", async () => {
+	const features = [{ id: "page", actions: [], proof: { ready: true } }];
+	const mapStates = [
+		{
+			when: { state: "loading" },
+			shows: "Loading",
+			proof: { expression: "window.__fixturePhase === 'loading'" },
+		},
+		{
+			when: { arrive: "500" },
+			afterActions: true,
+			ends: [{ when: { state: "loading" } }],
+			shows: "Arrived",
+			proof: { expression: "window.__fixturePhase === 'ready'" },
+		},
+	];
+	const options = {
+		dynamicState: true,
+		transitionAfterProofs: 2,
+		mapStates,
+		switches: [
+			{ name: "state", values: ["loading"], samples: [] },
+			{ name: "arrive", values: ["500"], samples: [] },
+		],
+		states: "state=loading&arrive=500",
+	};
+	const passing = await runnerFixture("time-changing-pass", features, options);
+	assert.equal(
+		passing.result.status,
+		0,
+		passing.result.stderr + passing.result.stdout,
+	);
+	const passingManifest = JSON.parse(
+		await readFile(resolve(passing.out, "manifest.json"), "utf8"),
+	);
+	assert.equal(passingManifest.items[0].files.length, 2);
+	assert.equal(
+		await readFile(
+			resolve(passing.out, passingManifest.items[0].files[0]),
+			"utf8",
+		),
+		"loading",
+	);
+	assert.equal(
+		await readFile(
+			resolve(passing.out, passingManifest.items[0].files[1]),
+			"utf8",
+		),
+		"ready",
+	);
+	const passingSummary = JSON.parse(
+		await readFile(resolve(passing.out, "summary.json"), "utf8"),
+	);
+	assert.deepEqual(passingSummary[0].proof, ["Loading", "Arrived"]);
+
+	const forced = await runnerFixture("time-changing-forced", features, {
+		...options,
+		transitionOnCapture: true,
+	});
+	assert.equal(forced.result.status, 1);
+	const forcedSummary = JSON.parse(
+		await readFile(resolve(forced.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		forcedSummary[0].problems.join(" "),
+		/loading state changed before capture/,
+	);
+});
+
+test("V1: post-capture proofs hold every state an arrival does not end", async () => {
+	const features = [{ id: "page", actions: [], proof: { ready: true } }];
+	const switches = [
+		{ name: "state", values: ["loading"], samples: [] },
+		{ name: "arrive", values: ["500"], samples: [] },
+	];
+	const postBefore = await runnerFixture("post-before-proof", features, {
+		dynamicState: true,
+		capturePhases: ["ready"],
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Loading",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+			{
+				when: { arrive: "500" },
+				afterActions: true,
+				shows: "Arrived",
+				proof: { expression: "window.__fixturePhase === 'ready'" },
+			},
+		],
+		switches,
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		postBefore.result.status,
+		1,
+		postBefore.result.stderr + postBefore.result.stdout,
+	);
+	const postBeforeSummary = JSON.parse(
+		await readFile(resolve(postBefore.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		postBeforeSummary[0].problems.join(" "),
+		/loading state changed before capture/,
+	);
+	assert.ok(
+		postBeforeSummary[0].files.some((file) => file.endsWith("-before.png")),
+	);
+
+	const preAfter = await runnerFixture("pre-after-proof", features, {
+		dynamicState: true,
+		transitionAfterProofs: 4,
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Loading",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+			{
+				when: { arrive: "500" },
+				shows: "Arrival companion",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+			{
+				when: { arrive: "500" },
+				afterActions: true,
+				ends: [{ when: { state: "loading" } }],
+				shows: "Arrived",
+				proof: { expression: "window.__fixturePhase === 'ready'" },
+			},
+		],
+		switches,
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		preAfter.result.status,
+		1,
+		preAfter.result.stderr + preAfter.result.stdout,
+	);
+	const preAfterSummary = JSON.parse(
+		await readFile(resolve(preAfter.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		preAfterSummary[0].problems.join(" "),
+		/loading state changed before capture/,
+	);
+	assert.equal(
+		preAfterSummary[0].files.some((file) => file.endsWith("-after.png")),
+		false,
+	);
+
+	const postAfter = await runnerFixture("post-after-proof", features, {
+		dynamicState: true,
+		capturePhases: [null, "ready"],
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Loading",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+			{
+				when: { arrive: "500" },
+				afterActions: true,
+				shows: "Arrived",
+				proof: { expression: "document.body !== null" },
+			},
+		],
+		switches,
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		postAfter.result.status,
+		1,
+		postAfter.result.stderr + postAfter.result.stdout,
+	);
+	const postAfterSummary = JSON.parse(
+		await readFile(resolve(postAfter.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		postAfterSummary[0].problems.join(" "),
+		/loading state changed before capture/,
+	);
+	assert.deepEqual(postAfterSummary[0].afterFrameProof, ["Loading"]);
+	assert.ok(
+		postAfterSummary[0].files.some((file) => file.endsWith("-after.png")),
+	);
+
+	const afterAction = await runnerFixture("after-action-proof", features, {
+		dynamicState: true,
+		transitionAfterProofs: 0,
+		capturePhases: [null, "loading"],
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Static",
+				proof: { expression: "document.body !== null" },
+			},
+			{
+				when: { arrive: "500" },
+				afterActions: true,
+				shows: "Arrived",
+				proof: { expression: "window.__fixturePhase === 'ready'" },
+			},
+		],
+		switches,
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		afterAction.result.status,
+		1,
+		afterAction.result.stderr + afterAction.result.stdout,
+	);
+	const afterActionSummary = JSON.parse(
+		await readFile(resolve(afterAction.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		afterActionSummary[0].problems.join(" "),
+		/arrival state not observed/,
+	);
+	assert.deepEqual(afterActionSummary[0].afterFrameProof, ["Static"]);
+});
+
+test("V1: ended-rule declarations are exact and checked when recipes load", async () => {
+	const root = resolve(scratch, "ends-validation");
+	const recipePath = resolve(root, "verification-recipes.json");
+	await mkdir(root, { recursive: true });
+	const write = async (ends) => {
+		await writeFile(
+			recipePath,
+			JSON.stringify({
+				schema: 1,
+				pages: {
+					"fixture.html": {
+						features: [],
+						states: [
+							{
+								when: { state: "loading" },
+								shows: "Loading",
+								proof: { selector: "main", visible: true },
+							},
+							{
+								when: { arrive: "500" },
+								afterActions: true,
+								ends,
+								shows: "Arrived",
+								proof: { expression: "document.body !== null" },
+							},
+						],
+					},
+				},
+			}),
+		);
+	};
+	for (const [ends, message] of [
+		[[{ when: { state: "ready" } }], /matches no before rule/],
+		[[{ when: {} }], /non-wildcard when/],
+		[[{ shows: "Loading" }], /may only name when/],
+	]) {
+		await write(ends);
+		assert.throws(() => readRecipes(root), message);
+	}
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							when: { state: "loading" },
+							shows: "Loading one",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { state: "loading" },
+							shows: "Loading two",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { state: "loading" } }],
+							shows: "Arrived",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.throws(() => readRecipes(root), /matches several before rules/);
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							when: { state: "loading", arrive: "500" },
+							shows: "Loading",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { arrive: "500", state: "loading" } }],
+							shows: "Arrived",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.doesNotThrow(() => readRecipes(root));
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							language: "ar",
+							when: { state: "loading" },
+							shows: "Loading in Arabic",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							language: "en",
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { state: "loading" } }],
+							shows: "Arrived in English",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.throws(() => readRecipes(root), /matches no before rule/);
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							language: "ar",
+							when: { state: "loading" },
+							shows: "Loading in Arabic",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { state: "loading" },
+							shows: "Loading in every language",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							language: "ar",
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { state: "loading" } }],
+							shows: "Arrived in Arabic",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.throws(() => readRecipes(root), /matches several before rules/);
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							language: "ar",
+							when: { state: "loading" },
+							shows: "Loading in Arabic",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							language: "en",
+							when: { state: "loading" },
+							shows: "Loading in English",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { state: "loading" } }],
+							shows: "Arrived",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.doesNotThrow(() => readRecipes(root));
+});
+
 test("V2: an address-only feature is captured under keyboard", async () => {
 	const { result } = await runnerFixture(
 		"address-only-keyboard",
@@ -3064,17 +3635,198 @@ test("V7: navigation settles before the action returns and a wrong destination f
 	assert.equal(focusReads, 2);
 });
 
+function usageCliOptions(helpText) {
+	const options = new Set();
+	const lines = helpText.split(/\r?\n/);
+	const start = lines.findIndex((line) => line.trim() === "Commands:");
+	for (let index = start + 1; index < lines.length; index++) {
+		const line = lines[index];
+		if (!/^\s{2,}\S/.test(line)) break;
+		for (const match of line.matchAll(/--[a-z][a-z0-9-]*/g))
+			options.add(match[0]);
+	}
+	return options;
+}
+
+function shellSegments(command) {
+	const segments = [];
+	let current = [];
+	let tokenStart = null;
+	let quote = null;
+	const pushToken = (end) => {
+		if (tokenStart === null) return;
+		if (end > tokenStart)
+			current.push({
+				text: command.slice(tokenStart, end),
+				index: tokenStart,
+			});
+		tokenStart = null;
+	};
+	for (let index = 0; index < command.length; index++) {
+		const character = command[index];
+		if (quote) {
+			if (character === quote) quote = null;
+			continue;
+		}
+		if (character === "'" || character === '"') {
+			if (tokenStart === null) tokenStart = index;
+			quote = character;
+			continue;
+		}
+		if (/\s/.test(character)) {
+			pushToken(index);
+			continue;
+		}
+		const separator =
+			character === ";"
+				? ";"
+				: character === "&" || character === "|"
+					? command.startsWith(`${character}${character}`, index)
+						? `${character}${character}`
+						: character
+					: null;
+		if (!separator) {
+			if (tokenStart === null) tokenStart = index;
+			continue;
+		}
+		pushToken(index);
+		current.push({ text: separator, index, separator: true });
+		segments.push(current);
+		current = [];
+		index += separator.length - 1;
+	}
+	pushToken(command.length);
+	if (current.length) segments.push(current);
+	return segments;
+}
+
+function measureExemptRanges(skillText) {
+	const ranges = [];
+	const record = (command, offset) => {
+		for (const tokens of shellSegments(command)) {
+			const commandIndex =
+				tokens[0]?.text === "measure"
+					? 0
+					: tokens[0]?.text === "node" &&
+							tokens[1]?.text === "$cli" &&
+							tokens[2]?.text === "measure"
+						? 2
+						: -1;
+			if (commandIndex < 0) continue;
+			const separator = tokens.findIndex(
+				(token, index) => index > commandIndex && token.text === "--",
+			);
+			if (separator < 0) continue;
+			for (let index = separator + 1; index < tokens.length; index++) {
+				const option = /^--[a-z][a-z0-9-]*/.exec(tokens[index].text);
+				if (option)
+					ranges.push({
+						start: offset + tokens[index].index,
+						end: offset + tokens[index].index + option[0].length,
+					});
+			}
+		}
+	};
+	for (const match of skillText.matchAll(/`([^`\n]+)`/g))
+		record(match[1], match.index + 1);
+	for (const fence of skillText.matchAll(/```[^\n]*\n([\s\S]*?)```/g)) {
+		const body = fence[1];
+		const bodyStart = fence.index + fence[0].indexOf(body);
+		for (const line of body.matchAll(/[^\r\n]+/g))
+			record(line[0], bodyStart + line.index);
+	}
+	return ranges;
+}
+
+function assertGuideOptions(skillText, helpText) {
+	const cliOptions = usageCliOptions(helpText);
+	for (const option of cliOptions)
+		assert.ok(skillText.includes(option), `${option} is missing from SKILL.md`);
+	const exempt = measureExemptRanges(skillText);
+	for (const match of skillText.matchAll(/--[a-z][a-z0-9-]*/g))
+		if (
+			!exempt.some(
+				(range) => match.index >= range.start && match.index < range.end,
+			)
+		)
+			assert.ok(cliOptions.has(match[0]), `${match[0]} is not a CLI option`);
+}
+
+const measureSeparatorRejectCases = [
+	[
+		"semicolon attached to the preceding token",
+		"`measure --tool focus -- --allowed;node $cli drive --invented-semicolon`",
+	],
+	[
+		"semicolon at the start of the next token",
+		"`measure --tool focus -- --allowed ;node $cli drive --invented-leading-semicolon`",
+	],
+	[
+		"semicolon separated from both commands",
+		"`measure --tool focus -- --max-stops 40; node $cli drive --invented-attached-semicolon`",
+	],
+	[
+		"single ampersand",
+		"`measure --tool focus -- --allowed & node $cli drive --invented-ampersand`",
+	],
+	[
+		"double ampersand attached to the preceding token",
+		"`measure --tool focus -- --max-stops 40&&node $cli drive --invented-and`",
+	],
+	[
+		"double pipe attached to the preceding token",
+		"`measure --tool focus -- --max-stops 40||node $cli drive --invented-or`",
+	],
+	[
+		"pipe inside a token",
+		"`measure --tool focus -- --max-stops a|b --invented-pipe`",
+	],
+	[
+		"fenced semicolon",
+		"```powershell\nmeasure --tool focus -- --allowed;node $cli drive --invented-fenced-semicolon\n```",
+	],
+];
+
+const measureSeparatorAcceptCases = [
+	[
+		"single-quoted pipe",
+		"`measure --tool focus -- --pattern 'a|b' --invented-single-quoted`",
+	],
+	[
+		"double-quoted pipe",
+		'`measure --tool focus -- --pattern "a|b" --invented-double-quoted`',
+	],
+];
+
 test("V5: SKILL names CLI options, ports and rendered artifacts without drift", async () => {
 	const skill = await readFile(
 		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
 		"utf8",
 	);
-	const cliOptions = new Set(help.match(/--[a-z][a-z0-9-]*/g) || []);
-	for (const option of cliOptions)
-		assert.ok(skill.includes(option), `${option} is missing from SKILL.md`);
-	const beforeAdvanced = skill.split("## Evidence and advanced tools")[0];
-	for (const option of beforeAdvanced.match(/--[a-z][a-z0-9-]*/g) || [])
-		assert.ok(cliOptions.has(option), `${option} is not a CLI option`);
+	assertGuideOptions(skill, help);
+	const plant = (text) => `${skill}\n${text}\n`;
+	for (const text of [
+		"`--invented-prose`",
+		"```\n--invented-fence\n```",
+		"`pnpm --invented-pnpm`",
+		"measure --tool focus -- --invented-plain",
+		"`measure --invented-before -- --allowed`",
+		"`compare --concept x -- --invented-other`",
+		"`measure --tool focus -- --allowed && other --invented-other`",
+		...measureSeparatorRejectCases.map(([, text]) => text),
+	])
+		assert.throws(
+			() => assertGuideOptions(plant(text), help),
+			/--invented-/,
+			text,
+		);
+	for (const text of [
+		"`measure --tool focus --out <folder> -- --invented-tool`",
+		"`node $cli measure --tool focus --out <folder> -- --invented-tool-prefix`",
+		"```powershell\nmeasure --tool focus --out <folder> -- --invented-tool-fence\n```",
+		...measureSeparatorAcceptCases.map(([, text]) => text),
+	])
+		assert.doesNotThrow(() => assertGuideOptions(plant(text), help), text);
 	for (const pair of skill.match(/\b31\d\d-31\d\d\b/g) || [])
 		if (pair !== "3178-3185")
 			assert.ok(
@@ -3090,6 +3842,30 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 		),
 		/comparisonCapture[\s\S]*break/,
 	);
+});
+
+test("Y1: every unquoted separator ends a measure tool-argument exemption", async () => {
+	const skill = await readFile(
+		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
+		"utf8",
+	);
+	const plant = (text) => `${skill}\n${text}\n`;
+	const leaked = [];
+	for (const [label, text] of measureSeparatorRejectCases) {
+		try {
+			assertGuideOptions(plant(text), help);
+			leaked.push(label);
+		} catch (error) {
+			assert.match(error.message, /--invented-/, label);
+		}
+	}
+	assert.deepEqual(
+		leaked,
+		[],
+		`Unquoted separators left the next option exempt: ${leaked.join(", ")}`,
+	);
+	for (const [label, text] of measureSeparatorAcceptCases)
+		assert.doesNotThrow(() => assertGuideOptions(plant(text), help), label);
 });
 
 test("V6: a released lease removes its empty port folder", async () => {
@@ -3257,6 +4033,10 @@ function runCliAsync(args) {
 		const child = spawn(process.execPath, [cliPath, ...args], {
 			windowsHide: true,
 			stdio: ["ignore", "pipe", "pipe"],
+			env: {
+				...process.env,
+				VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE: "0",
+			},
 		});
 		let stdout = "";
 		let stderr = "";

@@ -57,8 +57,8 @@ Commands:
   drift-tree [--root <repository>]
   launch --concept <folder> [--port 3176] [--out <evidence-folder>] [--lan]
          [--isolated-port <49152-65535>] [--idle-timeout-ms <1-1800000>]
-  doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff]
-  drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>]
+  doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff] [--forensics <folder>]
+  drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>]
         [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...]
         [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone]
         [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176]
@@ -66,10 +66,10 @@ Commands:
         [--probes daily]
   compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>]
           [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
-          [all drive page/feature/state/axis options] [--out <evidence-folder>]
+          [all drive page/feature/state/axis options] [--out <evidence-folder>] [--forensics <folder>]
           [--timeline] [--timeline-times 1,100,200,...]
           [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]
-  measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>
+  measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] -- <tool arguments>
   cleanup --session <launch-folder|session.json>
 Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
 repair-recipes drops vanished selectors/markers and writes draft entries outside the concept.
@@ -372,7 +372,11 @@ export async function doctor(options) {
 	try {
 		return await doctorChecks(options);
 	} catch (error) {
-		const fix = await doctorFix(options, error);
+		const available =
+			process.env.VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE === "0"
+				? async () => {}
+				: portAvailable;
+		const fix = await doctorFix(options, error, available);
 		console.error(
 			`DOCTOR FAIL: ${error.message}\nFIX${fix.startsWith("BLOCKED:") ? " " : ": "}${fix}`,
 		);

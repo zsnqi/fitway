@@ -10,6 +10,7 @@ import {
 	symlink,
 	writeFile,
 } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -20,9 +21,8 @@ const skill = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(skill, "../../..");
 let scratch;
 before(async () => {
-	const root = "D:/fitway-temp/owner-r04-vf-fixes/parallel";
-	await mkdir(root, { recursive: true });
-	scratch = await mkdtemp(resolve(root, "fixtures-"));
+	scratch = await mkdtemp(resolve(tmpdir(), "verify-fitway-parallel-"));
+	await mkdir(resolve(scratch, "cache"), { recursive: true });
 });
 after(async () => {
 	await rm(scratch, { recursive: true, force: true });
@@ -37,10 +37,16 @@ async function fixture(name, mutation) {
 	))
 		await cp(resolve(skill, file), resolve(clone, file));
 	const cacheFile = resolve(clone, "baseline-cache.mjs");
+	const cacheLine = 'export const cacheRoot = "D:/fitway-verify-captures";';
+	const cacheSource = await readFile(cacheFile, "utf8");
+	assert.ok(
+		cacheSource.includes(cacheLine),
+		`Baseline cache root line absent: ${cacheLine}`,
+	);
 	await writeFile(
 		cacheFile,
-		(await readFile(cacheFile, "utf8")).replace(
-			'export const cacheRoot = "D:/fitway-verify-captures";',
+		cacheSource.replace(
+			cacheLine,
 			`export const cacheRoot = ${JSON.stringify(resolve(root, "cache"))};`,
 		),
 	);

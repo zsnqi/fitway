@@ -22,6 +22,12 @@ import {
 } from "./drive.mjs";
 import { loadProbes } from "./probes.mjs";
 import {
+	endedWhenKeys,
+	matchesStateRule,
+	stateWhenKey,
+	validateStateRules,
+} from "./state-rules.mjs";
+import {
 	captureTimeline,
 	observeTimeline,
 	timelineTimes,
@@ -102,10 +108,6 @@ export function stateCases(page, options) {
 	});
 }
 
-const matches = (rule, query, language) =>
-	(!rule.language || rule.language === language) &&
-	Object.entries(rule.when || {}).every(([key, value]) => query[key] === value);
-
 const pageReadingProofKeys = new Set([
 	"attribute",
 	"checked",
@@ -133,8 +135,9 @@ function readsPage(proof) {
 }
 
 function requestedProofs(page, state, language) {
+	validateStateRules(page);
 	const rules = page.states.filter((rule) =>
-		matches(rule, state.query, language),
+		matchesStateRule(rule, state.query, language),
 	);
 	for (const key of Object.keys(state.query))
 		if (
@@ -203,6 +206,7 @@ export function itemSummary(entry) {
 		result: entry.status,
 		problems: entry.problems,
 		proof: entry.stateProof,
+		afterFrameProof: entry.afterFrameProof,
 		featureProof: entry.featureProof,
 		heldPress: entry.heldPress,
 		dependencies: entry.dependencies,
@@ -644,7 +648,14 @@ export async function drive(options) {
 											const afterRules = rules.filter(
 												(rule) => rule.afterActions,
 											);
+											const endedBefore = endedWhenKeys(afterRules);
+											const afterFrameBeforeRules = beforeRules.filter(
+												(rule) =>
+													!endedBefore.has(stateWhenKey(rule.when || {})),
+											);
+											const recheckBeforeState = !feature.changesState;
 											entry.stateProof = [];
+											entry.afterFrameProof = [];
 											for (const rule of beforeRules) {
 												await prove(current.page, rule.proof, language);
 												entry.stateProof.push(rule.shows);
@@ -658,7 +669,7 @@ export async function drive(options) {
 												(feature.minWidth && cssWidth < feature.minWidth) ||
 												(feature.maxWidth && cssWidth > feature.maxWidth);
 											const absent = (feature.unreachable || []).find((rule) =>
-												matches(rule, effective.query, language),
+												matchesStateRule(rule, effective.query, language),
 											);
 											if (unavailable || absent) {
 												if (absent)
@@ -886,13 +897,18 @@ export async function drive(options) {
 														`CSS property unchanged: ${feature.proof.cssPropertyChanged}`,
 													);
 												await ui.twoFrames(current.page);
-												if (!feature.changesState)
-													for (const rule of beforeRules)
+												if (recheckBeforeState) {
+													for (const rule of afterFrameBeforeRules) {
 														await prove(current.page, rule.proof, language);
+														entry.afterFrameProof.push(rule.shows);
+													}
+												}
 												await save("after");
-												if (!feature.changesState)
-													for (const rule of beforeRules)
+												if (recheckBeforeState)
+													for (const rule of afterFrameBeforeRules)
 														await prove(current.page, rule.proof, language);
+												for (const rule of afterRules)
+													await prove(current.page, rule.proof, language);
 												// A flow may change a state (retry/navigation). Its end proof owns that result;
 												// the requested state was proved before the first user action.
 												entry.featureProof = actionRecipe.proof;
