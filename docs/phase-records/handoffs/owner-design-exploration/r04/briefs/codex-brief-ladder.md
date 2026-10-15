@@ -57,11 +57,13 @@ step shows how long it ran, when, and which step changed the repository.
     and decision items (`citedDecisionItems`, `check-brief.mjs:438-449`), but not rows, though checklist B10 lists
     them: launcher-fixes-4's brief named row F182 at a HEAD where it did not exist yet, and passed.
   - **Outcome.** A code-span path followed by `row <ID>` or `rows <IDs>` (IDs joined by commas and `and`, or a range
-    `F156-F160`) has each named row checked in that file at the brief's worktree, as decision items are: in a `.tsv`
-    a row is a line whose first field is the ID, in Markdown a table row whose first cell is the ID; a missing one is
-    reported as `brief-references` naming the ID, the file and the worktree; relative and absolute paths both
-    count, as for decision items. Tests cover one row, a list, a range, a missing row in each form and file kind,
-    and a row present only in the command repository, not the named worktree. Every brief under
+    `F156-F160`, each bare, each in backticks, or the whole list in one code span as the template writes it) has each
+    named row checked in that file: in a `.tsv` a row is a line whose first field is the ID, in Markdown a table row
+    whose first cell is the ID; a file inside the named worktree is read at the brief's named HEAD, as the review
+    copies it, and an absolute path outside it where it points; a missing row is reported as `brief-references`
+    naming the ID, the file and the HEAD. Tests cover one row, a list, a range, each spelling, a missing row in each
+    form and file kind, a row present only in the command repository, and a row present in the working copy but not
+    at the named HEAD. Every brief under
     `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` that passes at the HEAD and names only rows
     that exist in its worktree still passes; report any that now fail and why.
   - **Intent.** A brief cannot send an implementer to a row that is not there.
@@ -71,10 +73,12 @@ step shows how long it ran, when, and which step changed the repository.
     run, so it prints `git status` without naming the step that changed the repository.
   - **Outcome.** Every step's start and end line carries the local clock time with offset, and a failed step prints
     its end line with its duration and exit code or signal before the run stops; the repository is fingerprinted
-    after each step, and a mutation names the first step after which it appeared beside the `git status` lines. The
-    final `FAILED_VALIDATION: <message>` line and every exit code stay as at the HEAD. A test drives the ladder with
-    stand-in steps (one that passes, one that fails, one that writes an untracked file) and checks these lines; a
-    fast run on your tree reports how many seconds the added fingerprints took.
+    after each step, and when a fingerprint changes the ladder prints at once that step's label and the
+    `git status --short` of that moment, so the first mutation stays named even if a later step undoes it. The final
+    `FAILED_VALIDATION: <message>` line and every exit code stay as at the HEAD. A test runs `node scripts/verify.mjs`
+    itself in a subprocess with stand-in steps (one that passes, one that fails, one that writes an untracked file,
+    one that removes it again) and checks its output and exit code; a fast run on your tree reports how many seconds
+    the added fingerprints took.
   - **Intent.** A failed ladder can be diagnosed from its own output, without rerunning it.
 
 ## Limits the result keeps

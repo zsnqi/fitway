@@ -58,8 +58,9 @@ its run, with every turn's timeline kept in the run folder.
   - **Outcome.** `g1-wrapped.md` reads as exactly five readings with the IDs V1, V1, L1, V3 and V2, reading 3 holding
     both of its lines, as a test that runs the launcher's own review step on a copy under
     `scripts/agent-environment/fixtures/codex-round-reviews/`. A reading's lines up to the next start, blank line or
-    end are judged together, whether the continuation is at column 0 or indented; the same answer with reading 3 cut
-    after its first line is still refused.
+    end are judged together as one reading, by P2's rule, whether the continuation is at column 0 or indented, so a
+    continuation that does not complete the three parts leaves the answer refused; the same answer with reading 3
+    cut after its first line is still refused.
   - **Intent.** How a reviewer wraps a line never decides whether its answer is read.
 - **P2. A one-line reading decided by keywords (F236).**
   - **Cause (measured by the coordinator's probe).** `completeOneLineReading` (`codex-round.mjs:574-593`) passes a line
@@ -87,12 +88,16 @@ its run, with every turn's timeline kept in the run folder.
   - **Cause (measured).** `isReport` (`codex-round.mjs:764-769`) accepts any message that names every outcome ID beside
     PASS or FAIL; vf-runner-fix's resume reported commit `68e863793e6f` (no such object) and L2 PASS with no
     `git commit` and no `verify.mjs` command in its events.
-  - **Outcome.** Before a report is accepted (a `STOPPED:` line stays accepted as is), the launcher checks it against
-    the worktree and every events file of the run: a commit the report names exists, equals the worktree's HEAD, and
-    the tree is clean; a PASS on a line naming `verify.mjs` or `verify:fast` needs a completed fast-ladder command
-    with exit code 0 that started after the last completed `git commit`. A failed check is not accepted: the run
-    resumes automatically with a message naming each failed claim and what was found, counted and logged like any
-    automatic resume. Tests cover the evidence's case, a report-only round naming no commit, and each check alone.
+  - **Outcome.** Before a final message is accepted, with or without a `STOPPED:` line, the launcher checks its
+    claims against the worktree and every events file of the run. When the brief asks for a commit (its Report names
+    the commit SHA), the report names one, and it exists, equals the worktree's HEAD, differs from the launch HEAD,
+    follows a `git commit` that completed with exit code 0 in this run, and the tree is clean; a `STOPPED:` report
+    naming no commit passes this check. When the report marks PASS an outcome or limit whose text in the brief names
+    `verify.mjs fast` or `verify:fast`, however that line is worded, a fast-ladder command completed with exit code 0
+    after the last successful `git commit`. A failed check is not accepted: the run resumes automatically with a
+    message naming each failed claim and what was found, counted and logged like any automatic resume. Tests cover
+    the evidence's case, a report-only brief naming no commit, a `STOPPED:` report with a false PASS, and each check
+    alone.
   - **Intent.** A report that claims steps which never ran never reaches the coordinator as a finished round.
 - **P5. Each turn's timeline in the run folder (F245).**
   - **Cause (measured).** Run folders record no turn's start, end or duration, keep only the launch HEAD, leave the

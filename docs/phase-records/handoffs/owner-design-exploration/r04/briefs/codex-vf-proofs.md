@@ -62,7 +62,8 @@ beside the after frame, and a state proof that fails says which rule failed and 
     arrival's `ends` is (exact, non-wildcard, one before rule per language the feature runs in); for such a feature
     every before rule that applies to the item and is not ended, by it or by an arrival, is proved before and after
     the after frame and listed in `afterFrameProof`. A feature with both `changesState` and `ends` is refused at load,
-    and a feature with `changesState` alone behaves as at the HEAD. Tests, without a browser, show a not-ended rule
+    and so is a feature declaring `ends` whose items differ in their actions or inputs (one declaration must hold for
+    every item it covers); a feature with `changesState` alone behaves as at the HEAD. Tests, without a browser, show a not-ended rule
     that fails beside the after frame failing the item, an ended one lifted, and each refusal. SKILL.md documents it.
   - **Intent.** A state change lifts only what it really ends, so a state that should survive the action is still
     checked; the build branch's recipes can move to declarations one feature at a time.
@@ -70,16 +71,18 @@ beside the after frame, and a state proof that fails says which rule failed and 
   - **Cause (inferred from the Opus grader's plants).** `prove` (`drive.mjs:3-40`) waits with
     `page.waitForFunction`, so a failure reports only `page.waitForFunction: Timeout 5000ms exceeded.`, naming neither
     the rule nor the capture it failed beside.
-  - **Outcome.** A state proof that fails in `runner.mjs` throws an error that names the rule (its `shows`), whether
-    it is a before or an `afterActions` rule, and the moment: before or after the before frame, before or after the
-    after frame; Playwright's own message is kept in it; the same text reaches the item's problems in the run's JSON.
-    A test plants a failing rule at each of the four moments and checks the text.
+  - **Outcome.** A state proof that fails in `runner.mjs` throws an error that identifies the rule by its `shows`, its
+    canonical `when`, its language (or none) and whether it is a before or an `afterActions` rule, and holds exactly
+    one of the four moment tokens `before-frame:pre`, `before-frame:post`, `after-frame:pre`, `after-frame:post`;
+    Playwright's own message is kept in it, and the same text reaches the item's problems in the run's JSON. A test
+    plants a failing rule at each of the four moments and checks that its message holds that token and none of the
+    other three, and another plants two applying rules that share one `shows` and checks the messages differ.
   - **Intent.** A failed proof is read from the run's output, without a rerun with a probe.
 
 ## Limits the result keeps
 
 - **L0. New cases prove the repair.** Each case you add fails on the HEAD's code with your production change
-  reverted; report each failing output.
+  reverted, on its own assertion, not on a load, import or setup error; report each failing output.
 - **L1. Today's behaviour elsewhere.** Every existing test keeps its assertions and still runs, none skipped,
   excluded or made conditional, the helpers and fixtures they use keep what they check (a change to one is reported
   with the outcome that needed it), and the suite runs at least as many tests as at the HEAD; a recipe that loads at
