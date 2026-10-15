@@ -1463,3 +1463,25 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Disposition:** not merged yet; a second fix round (`briefs/codex-vf-runner-fix-2.md`, from `1ff1f9cf`) for the
   attached separator, the doctor's port probe and Opus's per-language `ends` refusal; F244 (a failed proof names no
   rule) is recorded for the next verify-fitway round.
+## vf-runner-fix-2: `briefs/codex-vf-runner-fix-2.md` (this folder), result `a8791d1a` on `owner-r04-vf-runner-ds` (from `1ff1f9cf`), DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** Y1 (F239: the exemption ends at any unquoted separator, attached or not), Y2 (F183: no test probes a
+  verification port even when free; `doctor`'s fix suggestion was the probe), Y3 (Opus's per-language `ends`
+  refusal), L0 (each new case fails on the HEAD's code). Both reviewers (decision 66): DeepSeek five readings, all
+  closed; Sol one, closed, not raised by DeepSeek in that form (an `ends` entry whose only match is in another
+  language). The brief told Codex its report is checked against the run's recorded commands (F242).
+- **Run (measured):** launched 21:02, report at 21:35; six automatic resumes, no intervention; 158.2M input tokens
+  (154.5M cached), 622k output; start load 42,538. The report's commit, `git rev-parse` and ladder all appear in the
+  events (`events-resume-3.jsonl:12`, `events-resume-5.jsonl:30`, exit 0).
+- **Grading:** GPT-6.1 Sol `xhigh` (`briefs/codex-vf-runner-fix-2-grade.md`, its review's five readings closed; run
+  `codex-round-a720d473-...`, account `ryshyjhad85`): G1-G6, G8, G9 and L1 PASS; G7 FAIL as written, because Y1's
+  parser lives in the test file, so copying the test file onto the base copies the repair; with the base parser
+  restored all eight new refusals fail, and the Y2 and Y3 cases fail on the base code: G7 PASS once settled
+  (grader-brief-caused). No Opus grade (a small repair round; decision 67 leaves it to the coordinator). The
+  coordinator replayed G3 (measured): with 3174-3189 free, the four test files pass 120/120 under a `net` hook,
+  873 events, none in 3174-3189.
+- **Brief rows** 6/6 (L2 by the merge's CI); **held-out** (`D:/fitway-grader/owner-r04/vf-runner-fix-2-heldout.md`)
+  9/9; overclaims 0; brief-caused failures 0.
+- **Disposition:** merged with the arm into the coordinator line (`f6ef81cf`); F168, F175, F176, F183 and F238-F240
+  are fixed. The trial's DeepSeek arm took three rounds to merge (the arm, two fixes), and DeepSeek's reports needed
+  a coordinator check against the run's commands once (F242).
