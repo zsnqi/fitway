@@ -2114,12 +2114,18 @@ describe("L1 launch", () => {
 		expect(f.reviewCalls()).toEqual([]);
 		expect(existsSync(f.run)).toBe(false);
 	});
-	it("pins every current r04 brief to its exact outcome IDs", () => {
-		expect(
-			readdirSync(briefRoot)
-				.filter((name) => name.endsWith(".md"))
-				.sort(),
-		).toEqual(briefOutcomeIds.map(([name]) => name).sort());
+	it("finds outcome IDs in every r04 brief, pinned or added later", () => {
+		// The folder grows with each round; a new brief must yield IDs without
+		// editing this test (F129's pinned-list failure, again on 8c642ad8).
+		const names = readdirSync(briefRoot).filter((name) => name.endsWith(".md"));
+		expect(names).toEqual(
+			expect.arrayContaining(briefOutcomeIds.map(([name]) => name)),
+		);
+		for (const name of names)
+			expect(
+				outcomeIdsFromBrief(readFileSync(path.join(briefRoot, name))).size,
+				name,
+			).toBeGreaterThan(0);
 	});
 	it.each(briefOutcomeIds)("finds every outcome ID in %s", (name, expected) => {
 		expect(
