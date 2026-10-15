@@ -54,26 +54,33 @@ proposed with the check that would prove it, so the next round can fix them with
     dates button differ by one or two edge pixels between two captures of one held moment early in the release: a
     reproduction that shows it at will, and a control that removes it while the moment stays held (for example a
     change in the concept, the CLI's hold, or the browser's flags, tried only in your temp copy), with the runs that
-    show each; or, if no cause is shown, each hypothesis tried and how it was ruled out.
+    show each; or, if no cause is shown, each hypothesis tried and how it was ruled out. "At will" means a named
+    command that shows it in at least 5 of 10 runs under stated load, and the control shows it in 0 of 10 under the
+    same load. Before a no-cause verdict, each of these is tried with a controlled run: machine load, worker count,
+    the browser's raster and compositing settings, the capture's timing, the concept's own animation and the icon's
+    raster.
   - **Intent.** The fix round changes the cause, not the check that sees it.
 - **D2. The press light under touch (F165).**
   - **Outcome.** The same kind of verdict for the whole control's press light differing between two captures under
     touch, at 1 ms and once at 100 ms, on every page, base and result alike.
   - **Intent.** As D1.
 - **D3. A long compare full of callback problems (F171).**
-  - **Outcome.** The same kind of verdict for Access's 4-worker timeline compare that once returned all 3,439 samples
+  - **Outcome.** The same kind of verdict, attributed only from A/B runs that vary one factor (load, workers, the
+    browser, the callbacks' presence), for Access's 4-worker timeline compare that once returned all 3,439 samples
     as callback problems while every settled item was EQUAL, and on a quiet rerun none: whether the machine's load,
     the workers, the browser, or the page's callbacks (`shared-frame.js:176`, `access.js:1305` in the concept) cause it.
   - **Intent.** A whole run of problems is either prevented or reported as what it is, never read as a regression.
 - **D4. Fixes proposed, not made.** For each verdict, the smallest change that would remove the cause, where it would
-  live, and the check that would prove it, with any risk to verdicts the CLI gives today.
+  live, and the check that would prove it, shown failing now and passing with the change in a temp copy, with any risk
+  to verdicts the CLI gives today. A retry, tolerance or reclassification in the CLI is proposed only where the cause
+  is shown to lie outside our code (the browser), and says so.
 
 ## Limits the result keeps
 
 - **L1. Nothing tracked changes.** No file in any worktree changes; `git status --short` in this worktree is empty at
   the end, and every experiment ran on copies in your temp folder.
-- **L2. Evidence kept.** Every run you cite has its command, its load and its output saved in your temp folder, and
-  the report names those paths.
+- **L2. Evidence kept.** Every run you make, cited or not, is a row in a chronological ledger in your temp folder
+  (command, load, outcome, output path), and every count or rate the report gives is reconciled against it.
 
 ## Scope
 

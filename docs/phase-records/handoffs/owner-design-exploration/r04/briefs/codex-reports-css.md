@@ -68,7 +68,8 @@ exactly as at the base.
     markup and classes those scripts write at runtime (report how you judged each rule). `reports.css` keeps only
     rules that can match on Reports alone (the components sheet's specimens of Reports included). Access and Activity
     load the shared stylesheet and not `reports.css`; Reports and the components sheet load both. A rule no page can
-    match is listed in your report and left in `reports.css`.
+    match is listed in your report and left in `reports.css`. The shared stylesheet holds nothing that can match on
+    one page only, and `reports.css` restates or overrides no shared rule's declarations for the same elements.
   - **Intent.** An edit to Reports' styles cannot change another page. Moving a rule by its selector's names while a
     script still gives another page that class at runtime defeats this (the daily-files round failed that way).
 - **C2. Every page unchanged at rest.**
@@ -83,7 +84,8 @@ exactly as at the base.
   - **Cause.** Reports' and Access's `state=loading` proofs (`verification-recipes.json` about lines 1286 and 4053)
     hold as soon as `.hb-load` exists, before the skeleton shows at 300 ms (`data-load="shown"`), so a capture lands
     before or after the skeleton depending on load.
-  - **Outcome.** Both proofs hold only once the skeleton is shown, as Daily's does; three compares of the base against
+  - **Outcome.** Both proofs hold only once the skeleton is shown, as Daily's does: a page probe shows each false
+    before `data-load="shown"` and true after, on the result; three compares of the base against
     itself on Reports and Access `--states all`, Arabic, desktop, reduced motion, with 4 workers, give `COMPARE EQUAL`
     for every `state=loading` item in every run.
   - **Intent.** A loading capture always shows what the user sees while loading.

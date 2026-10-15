@@ -44,16 +44,19 @@ symbol they would mark `MUST KILL`, each checked against the code, to decide wha
 ## Causes and required outcomes
 
 - **N1. Every comment judged.**
-  - **Outcome.** For every comment in the non-test `.mjs` files of `.agents/skills/verify-fitway/` and
-    `scripts/agent-environment/` at the HEAD, one row in `D:/fitway-temp/owner-r04-no-comments/comments.tsv`: file,
+  - **Outcome.** For every comment in every `.mjs` file under `.agents/skills/verify-fitway/` and
+    `scripts/agent-environment/` at the HEAD, recursively, except `*.test.mjs` and anything under a `fixtures` folder
+    (list the files included, with their comment counts, zero included), found by two independent passes whose
+    per-file counts agree, one row in `D:/fitway-temp/owner-r04-no-comments/comments.tsv`: file,
     line, the comment's first 80 characters, and `keep` with the keep-list clause that saves it or `delete` with the
-    reason; counts per file in the report.
+    reason; every suppression, workaround or long justification links to its `MUST KILL` row or says which rule spares
+    it.
   - **Intent.** The trial measures what the rules would do to our code before anyone adopts them.
 - **N2. Each `MUST KILL` checked.**
   - **Outcome.** For every symbol the rules would mark `MUST KILL`, one row in
     `D:/fitway-temp/owner-r04-no-comments/must-kill.tsv`: file, line, symbol, the one-line reason, the reshape that
     would make the comment unneeded (rename, extract, type or rearchitecture), and whether reading the code confirms
-    the reason (`confirmed`, `refuted` with why, or `unclear`).
+    the reason (`confirmed` or `refuted`, each citing the code line that shows it, or `unclear`, listed as open).
   - **Intent.** A flag the code does not bear out never becomes a finding.
 
 ## Limits the result keeps
