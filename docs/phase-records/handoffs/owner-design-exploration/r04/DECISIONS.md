@@ -788,6 +788,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       production (item 51), since they touch `apps/**` and need a privacy rule such as the edge's allow-list.
     - Total durations for the gardener and verify-fitway, and a logger library, are not worth it now.
 
+71. **CI's job timeout goes from 20 to 30 minutes** (the user, 2026-10-15, «Yes, raise timeout-minutes in
+    .github/workflows/checks.yml from 20 to 30, then rerun CI and move main»). Measured on the merge `f6ef81cf`: the
+    job's rerun spent 17.7 minutes in the ladder up to the unit tests (verify-fitway's tests 116.5 s, the unit tests
+    914.7 s) plus about 2.3 minutes of setup, and was cancelled at 20 minutes in the Python simulator tests (37 s on
+    `772400e4`). The line is the coordinator's lease in `PROJECT_STATE.yaml`; F146 (single tests over Vitest's
+    20 s) is unchanged.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
