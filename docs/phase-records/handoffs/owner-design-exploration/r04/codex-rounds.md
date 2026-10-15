@@ -1339,7 +1339,7 @@ checks live outside the repository and never appear here or in a brief. One line
   without the failing-before proof, since nothing reproduced); L1, L2 PASS (141 ledger rows in order).
 - **Grading (coordinator):** quoted verdict lines reproduced from `d1-full-02.log`, `d2-status-access-10.log` and
   `d3-subset-nocallback-4w.log` (measured); the D3 summary matches its counts (measured). The ledger's load column is
-  wrong: 128 of 141 rows say "quiet machine", yet the first run started at 13:00 while reports-css's and vf-runner's
+  wrong: 130 of 141 rows say "quiet machine", yet the first run started at 13:00 while reports-css's and vf-runner's
   resumed runs were comparing on 3176-3177 and 3186-3187 (measured from the start times against the resume times).
   So D1's and D2's "under stated load" does not hold, and the non-reproduction happened under unrecorded load.
   The D1 no-cause list also lacks its icon-raster control, and D2's reduced-motion control never ran.
