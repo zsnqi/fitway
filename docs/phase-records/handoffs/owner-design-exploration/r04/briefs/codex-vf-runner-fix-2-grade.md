@@ -51,7 +51,8 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G1. Attached separators.** Outcome: each alone in a temp copy of `SKILL.md`, in "## Compare" and after "## Evidence
   and advanced tools", inline and in a fenced line: `node $cli measure --tool focus --out x -- --max-stops 40;node
   $cli drive --no-such-flag`; the same with `40 &&node`, `40|node`, `--a||node $cli compare --no-such-flag` and
-  `40 & node $cli drive --no-such-flag`; and the prose line "After pnpm installs, the measure tool arguments take
+  `40 & node $cli drive --no-such-flag`; each of `;`, `&`, `&&`, `||` and `|` unquoted at a token's start (`;node`), end
+  (`40;`) and inside one (`40;node`), and a line end inside a fenced block between the two commands; and the prose line "After pnpm installs, the measure tool arguments take
   --no-such-flag.". Every one fails the guide test. Controls that pass: `node $cli measure --tool focus --out x --
   --max-stops 40 --forced-colors active` and `node $cli measure --tool focus --out x -- --pattern 'a|b;c' --max-stops
   40`. Intent: only a token handed to the tool unread is exempt.
@@ -60,7 +61,9 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   accepted controls still pass. Intent: the repair narrows nothing.
 - **G3. No verification port touched.** Outcome: with 3174-3189 free, a `--require` hook on `net` listen and connect,
   loaded into every Node process through `NODE_OPTIONS`, over one run of the four verify-fitway test files: zero
-  listens and connects in 3174-3189 (list per port), and the run passes in full; a planted `listen(3176)` in a throwaway
+  listens and connects in 3174-3189 (list per port), no lease folder `D:/fitway-verify-captures/.port-<port>-lease` for
+  a port in that range appears during the run (watch the folder), no non-Node process the run starts listens there
+  (sample `netstat` during the run), and the run passes in full; a planted `listen(3176)` in a throwaway
   script under the same hook is counted. Intent: a test run takes no pair a round may use.
 - **G4. Pairs held.** Outcome: with a listener and a lease (`reserveVerificationPorts` in `core.mjs`) on each of
   3176, 3177, 3186, 3187, 3188 and 3189, the four files pass in full. Intent: a held pair fails no test.
@@ -69,17 +72,18 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   seam changes tests only.
 - **G6. Ended rules per language.** Outcome: `D:/fitway-temp/owner-r04-vf-runner-fix-opus/vf9/lang_split.json`
   loads (`list` exits 0); a self compare of Reports `arrive=500&state=loading` with it, ar and en, tablet, 4 workers,
-  http: EQUAL, and each item's `afterFrameProof` omits its own language's loading rule; a copy with a second `en`
+  http: EQUAL, each item's `stateProof` lists its own language's loading rule and not the other's, and its
+  `afterFrameProof` omits that loading rule; a copy with a second `en`
   loading rule is refused as matching several; a copy whose only loading rule is `en`, with the arrival rule set to
   `language: "ar"`, is refused. Intent: a declaration names one rule per item.
 - **G7. The repair proven.** Outcome: each new Y1-Y3 test case fails on `1ff1f9cf`'s production code (copy the result's
   test file onto a base archive and run it; list each case and its result). Intent: the new cases see the defects.
 - **G8. Limits.** Outcome: `git diff --stat 1ff1f9cf HEAD` lists only files under `.agents/skills/verify-fitway/`;
-  no test present at `1ff1f9cf` is removed, skipped or made conditional, none lost an assertion line; each test
-  file's count is at least the base's. Intent: nothing was weakened to pass.
+  no test present at `1ff1f9cf` is removed, skipped or made conditional, none lost an assertion line, and no existing assertion's predicate or expected value changed (list each
+  pre-existing test whose body changed, with the change); each test file's count is at least the base's. Intent: nothing was weakened to pass.
 - **G9. Report against commands.** Outcome: the result's commit exists, is your HEAD, and the round's run folder
   (`D:/fitway-temp/codex-round-c1f77b90-e1f5-4a2f-9bc6-18f52852356c/`) records a `git commit` and a
-  `node scripts/verify.mjs fast` run after the last code change. Intent: the report rests on what ran.
+  `node scripts/verify.mjs fast` run on that HEAD that exited 0 (quote its exit status from the events). Intent: the report rests on what ran.
 
 ## Limits the result keeps
 
