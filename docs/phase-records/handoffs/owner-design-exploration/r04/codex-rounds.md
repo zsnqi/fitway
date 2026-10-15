@@ -1324,5 +1324,7 @@ checks live outside the repository and never appear here or in a brief. One line
   `assertOutsideGit`, `probes.mjs:8-11`) bear out their reasons.
 - **Reading:** by these rules seven comments in ten would go, and 50 symbols carry a policy only in prose, most in
   `codex-round.mjs` (8) and the verify-fitway runner, CLI and core.
-- **Disposition:** report-only; no finding opened. The comments hold tool policy nobody sees in the demo (decision
-  52's order), so a reshape waits until after it; the tables are the evidence if one is proposed.
+- **Disposition:** report-only. As decision 56 says, each of the 50 confirmed `MUST KILL` flags is a finding,
+  F184-F233 (`seen_by` `maintainer`, `demo` `waits`; decision 67); the `unclear` one is not. The table is kept as
+  `no-comments-must-kill.tsv` beside this file. Corrected on 2026-10-15: this record first said no finding was opened,
+  against decision 56 (coordinator's error, found in the poteto-mode review).

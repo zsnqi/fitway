@@ -739,6 +739,28 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       winner leads by two or more held-out rows, or has no overclaim where the other has one or more, rounds of its
       kind (a subtle runtime change with an unknown failure path) go to its model from then on; otherwise the split
       of decision 64 stays.
+67. **Three of pstack's principles, Opus as a chosen grader, and the no-comments flags as findings** (the user,
+    2026-10-15, «موافق على الاقتراحات 1 و4 و5، ونؤجل 3 و6. وبخصوص Opus كمراجع مستقل، موافق لكن بشكل انتقائي للمهام المهمة
+    أو المعقدة، مو لكل جولة، وEffort High يكفي. وصحّح سجل no-comments حسب قرار 56», after the coordinator's review of
+    `poteto-mode` in `cursor/plugins` at `e5136d82`, ten commits after item 56's reading, none changing its substance):
+    - **Separate before sharing, for ports.** A test or tool run binds only ports no other running round holds;
+      sharing is removed, not serialized by convention. The verify-fitway tests' fixed verification ports are F183,
+      for the next verify-fitway round.
+    - **A pickup checks what it builds on.** A coordinator taking over checks each claim of the resume point it acts on
+      (a time, a state, a disposition) against its source first, and records any that does not hold. The first two:
+      wave 1 stopped at about 12:37, not 13:30 (its run folders' last writes), and the no-comments record that opened
+      no finding against item 56.
+    - **Each claim says what it rests on.** Every claim the coordinator gives the user or writes in a record says in
+      the same sentence whether it was measured, inferred or a guess.
+    - **Deferred:** a time box in Codex briefs, and a status derived from the run folders instead of written by hand.
+    - **Opus grades the rounds that matter.** For a round the coordinator judges important or complex, not every round,
+      `owner-direction-verifier` (Opus, its `high`) grades beside Sol on the same held-out rows, from the result alone
+      and without Sol's verdict. Where the two disagree on a row, the coordinator's replay of that row decides. First
+      use: both arms of item 66's vf-runner trial, whose Sol grader shares a model with one arm; item 66's rule is
+      unchanged.
+    - **The no-comments flags.** As item 56 says, each confirmed `MUST KILL` flag is a finding (F184-F233; the one
+      `unclear` is not); the table is kept beside this file as `no-comments-must-kill.tsv`. They carry a fifth
+      `seen_by` label (coordinator), `maintainer`: the next agent or engineer who changes that code pays for it.
 
 ## How this milestone's rounds run
 
