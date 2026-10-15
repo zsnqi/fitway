@@ -699,6 +699,19 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     pushes and deletion; no pull request is required, so main still moves by a fast-forward push, and
     `pnpm main:advance` stays the agents' way to make one. If CI itself breaks so that no commit can pass, lifting the
     rule is the user's call. Applied by the coordinator with `gh api` on 2026-10-15.
+64. **Parallel rounds on both models, Sol as grader, and a handover once they start** (the user, 2026-10-15, «موافق
+    على خطة التشغيل المتوازي والتقييم بواسطة Sol، وكذلك السماح بنقل التنسيق إلى جلسة جديدة بعد بدء الجولات», after
+    noting the rounds' pace and that GPT-6.1 Sol's capacity problem seems solved, with ample credit on both):
+    - Up to four rounds at once on disjoint files, each in its own worktree; at most three running compares (one port
+      pair each); a timed outcome still waits for a quiet machine (B13).
+    - GPT-6.1 Sol at `xhigh` for rounds whose cause is unknown or whose change is subtle; DeepSeek V4.1 Flash at `max`
+      for well-specified mechanical rounds. The first wave: reports-css with F160 (DeepSeek), vf-runner with F168,
+      F175 and F176 (Sol), diagnosis of F148, F165 and F171 (Sol, report-only), the `no-comments` trial (DeepSeek,
+      report-only); the shared lows follow reports-css.
+    - A fresh Sol session grades each implementing round against the held-out rows the coordinator wrote before its
+      launch, outside the round's worktree; the coordinator reproduces at least one row before using its verdict.
+    - A round merges once its branch CI passes; main moves through `pnpm main:advance` once per batch.
+    - The coordinator hands over to a fresh session (decision 61) once the wave is running.
 
 ## How this milestone's rounds run
 
