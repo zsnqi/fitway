@@ -36,7 +36,8 @@
   attempt, with a one-line justification. (DECISIONS item 7)
 - **This round grades; it fixes nothing.** Keep scripts, plants and logs in
   `D:/fitway-temp/owner-r04-launcher-fixes-5-fix-grade/`. The base launcher is the same files at `5b81b3b7`, taken
-  with `git archive` outside every git tree. Run the launcher's review step and reading parser on copies only; start
+  with `git archive` outside every git tree; build both snapshots afresh in your own folder (never the first grade's base or head
+  folder) and check each copied `codex-round.mjs` against `git show <commit>:` before using it. Run the launcher's review step and reading parser on copies only; start
   no real Codex round. The worktree's `node_modules` is a junction to the round's root install only, so run the
   launcher's test file, not the whole ladder; the coordinator's CI run on the result decides the ladder.
 
@@ -48,12 +49,13 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 
 - **G1. Wrapped readings.** Outcome: `D:/fitway-temp/owner-r04-launcher-fixes-4-grade/g1-wrapped.md` with reading 5
   wrapped after `Gap:` reads as five; with reading 1 wrapped after `What goes wrong:` reads as five; with reading 2
-  wrapped at a space inside its literal reading reads as five; each with the same reading text as unwrapped apart
-  from the line break; reading 3's continuation indented two spaces reads as five; a blank line inside reading 3 is
+  wrapped at a space inside its literal reading reads as five; and reading 5 wrapped at each space between its words
+  in turn reads as five; each with the same trimmed reading text as unwrapped apart from the line break (compare the
+  texts); reading 3's continuation indented two spaces reads as five; a blank line inside reading 3 is
   refused; `1. V1 literal reading;` then column-0 `V2 risk.` is refused. Intent: layout never decides.
 - **G2. Empty parts.** Outcome: one-line readings whose "What goes wrong" part is `.`, `—`, `**`, `3` or `V2` are each
-  refused, and `What goes wrong: the 3 ports` reads; `**1. V1**` followed by the bullets `Literal reading: x`,
-  `What goes wrong: .` and `Change: z` is refused; the first grade's G2 rows (`supplement.log`) give the same results
+  refused, and `What goes wrong: the 3 ports` reads; for each of the three labels, an empty (`.`) part is refused in a
+  one-line reading, under a `**1. V1**` line as bullets, and under a `### 1. V1` heading as bullets; the first grade's G2 rows (`supplement.log`) give the same results
   apart from the empty part, now refused. Intent: each part says something, in every form.
 - **G3. Nothing lost.** Outcome: the `5b81b3b7` texts of the inline answers of "accepts bare numbered readings with
   indented bodies and lists" and "accepts readings after a multi-paragraph preface" read `2 [R1,L1]` with the result's
@@ -67,7 +69,8 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G5. The claim checks and timeline kept.** Outcome: the first grade's G5, G6 and G7 probes (`grade.cjs claims`
   and `reportonly`) give the same results at `34065b3d` as they gave at `4964b95d`. Intent: the fix lost nothing.
 - **G6. The repair proven.** Outcome: run from the result's test file on `5b81b3b7`'s production code, every case
-  added since `5b81b3b7` except those the fix brief names as guards fails first at an assertion on its outcome, never
+  added since `5b81b3b7` (enumerate the added test names from the diff and run the whole file) except those the fix
+  brief names as guards fails first at an assertion on its outcome, never
   at a check that a file exists or that a call did not throw, nor with `ENOENT`; list each case, its line and what it
   asserts. Intent: the cases see the defects.
 - **G7. Limits.** Outcome: `git diff --stat 5b81b3b7 HEAD` lists only `REVIEW.md` (inside §"Prompt"),
@@ -77,8 +80,10 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   (list each pre-existing test or helper whose body changed, with the change); the test file's count is at least the
   base's. Intent: nothing was weakened to pass.
 - **G8. Report against commands.** Outcome: the result's commit exists and is your HEAD; the round's run folder
-  (`D:/fitway-temp/codex-round-cef21179-08e8-41aa-836e-66afd664cb18/`) records the `git commit` and a
-  `node scripts/verify.mjs fast` run after it, with their exit statuses quoted from the events. Intent: the report
+  (`D:/fitway-temp/codex-round-cef21179-08e8-41aa-836e-66afd664cb18/`) records the `git commit` whose output names
+  `34065b3d` and a `node scripts/verify.mjs fast` run after it, with no later commit, with their exit statuses quoted
+  from the events. Also report whether the result's parser reads
+  `D:/fitway-temp/brief-review/codex-launcher-fixes-5-fix-grade-1/last.md` (the coordinator line's could not). Intent: the report
   rests on what ran.
 
 ## Limits the result keeps
