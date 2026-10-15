@@ -53,7 +53,10 @@ graded (Sol, or DeepSeek with two rows reproduced, decision 72) before it merges
 
 1. **main is at `e64006d0`** (moved by `pnpm main:advance` after CI run 38795346728 passed in 1,305 s; the job's
    timeout is now 30 minutes, decision 71). The commits after it go with the next batch.
-2. **Grade and merge the three running rounds** (Running now); then main moves once for the batch.
+2. **Grade and merge the three running rounds** (Running now): vf-proofs (`bb313de0`) and brief-ladder (`abf26cdf`)
+   are merged; launcher-fixes-5 failed its grade and launcher-fixes-5-fix is running. Then **a small round for F250**
+   (stand-in steps reach the ladder only from its tests, never from a real run's environment; the user asked for it
+   after launcher-fixes-5-fix, through a side session, 2026-10-16), then main moves once for the batch.
 3. **The shared lows (decision 47)** on the build branch after vf-proofs merges, with the `ends` declarations for
    the build branch's `changesState` features that vf-proofs' report lists (F241's rest); F248 waits for the next
    verify-fitway round.
