@@ -571,37 +571,107 @@ function numberedBoldStart({ index, line }) {
 	};
 }
 
+const oneLineLabelGroups = [
+	[
+		"literal",
+		new Set([
+			"literal",
+			"literally",
+			"literal reading",
+			"as written",
+			"reading",
+			"wording",
+		]),
+	],
+	[
+		"wrong",
+		new Set([
+			"what would go wrong",
+			"what goes wrong",
+			"goes wrong",
+			"go wrong",
+			"failure mode",
+			"failure",
+			"consequence",
+			"delivered work",
+			"delivered failure",
+			"unmet",
+			"break",
+			"breaks",
+			"risk",
+			"gap",
+		]),
+	],
+	[
+		"change",
+		new Set([
+			"one-line change",
+			"one line change",
+			"closing change",
+			"change to the brief",
+			"change",
+			"close",
+			"close it",
+			"fix",
+			"fixed",
+			"repair",
+			"remedy",
+			"remedies",
+			"require",
+			"required",
+			"requires",
+			"preserve",
+			"avoid",
+		]),
+	],
+];
+
+function oneLineLabelGroup(value) {
+	const label = value.trim().toLowerCase();
+	for (const [group, labels] of oneLineLabelGroups) {
+		if (labels.has(label)) return group;
+	}
+	return null;
+}
+
+function leadingOneLineLabel(value) {
+	const clause = value
+		.trim()
+		.replace(/^(?:[-+*]\s+|\d+[.)]\s+)?/, "")
+		.replace(/^[A-Z]+\d+\s*[.)]?\s*/i, "");
+	for (let index = 0; index < clause.length; index += 1) {
+		const separator = clause[index];
+		if (![":", "-", "\u2013", "\u2014"].includes(separator)) continue;
+		const label = clause.slice(0, index).trim();
+		const text = clause.slice(index + 1).trim();
+		if (!text) continue;
+		const group = oneLineLabelGroup(label);
+		if (group) return group;
+	}
+	return null;
+}
+
 function completeOneLineReading(value) {
 	const content = value.replace(/[*_`]/g, "");
+	if (!/\b[A-Z]+\d+\b/.test(content)) return false;
 	const clauses = content
-		.split(/(?<=[.!?:;])\s+/)
+		.split(/\r?\n|(?<=[.!?;])\s+/)
 		.map((clause) => clause.trim())
 		.filter(Boolean);
-	if (!/\b[A-Z]+\d+\b/.test(content)) return false;
-	const fields = [
-		/\b(?:literal(?:ly|\s+reading)?|as written|reading|wording)\b/i,
-		/\b(?:what (?:would )?go(?:es)? wrong|go(?:es)? wrong|failure(?: mode)?|consequence|delivered work|unmet|breaks?|risk|gap)\b/i,
-		/\b(?:one[- ]line change|closing change|change to (?:the )?brief|change|close it|fix(?:ed)?|repair|remed(?:y|ies)|require(?:d|s)?|preserve|avoid)\b/i,
-	];
-	const clauseIndexes = fields.map((field) =>
-		clauses.findIndex((clause) => field.test(clause)),
+	const groups = new Set(
+		clauses.map((clause) => leadingOneLineLabel(clause)).filter(Boolean),
 	);
-	return (
-		clauseIndexes.every((index) => index >= 0) &&
-		new Set(clauseIndexes).size === fields.length
-	);
+	return groups.size === oneLineLabelGroups.length;
 }
 
 function bareStart({ index, line }) {
 	const match = line.match(/^ {0,3}(\d+)[.)][ \t]+(.+)$/);
 	if (!match || !/\b[A-Z]+\d+\b/.test(match[2])) return null;
-	const complete = completeOneLineReading(match[2]);
 	return {
-		type: complete ? "one-line" : "bare",
+		type: "bare",
 		index,
 		number: Number(match[1]),
-		bodyLines: complete ? 0 : 1,
-		requiresIndentedBody: !complete,
+		bodyLines: 0,
 	};
 }
 
@@ -622,45 +692,40 @@ function proseBeforeStarts(text, starts) {
 	return true;
 }
 
-function hasIndentedBody(text, start, end) {
-	return text
-		.slice(start.index, end)
-		.split(/\r?\n/)
-		.slice(1)
-		.some((line) => line.trim() && /^[ \t]/.test(line));
+function bareReadingEnd(text, start, end) {
+	const match = text.slice(start.index, end).match(/\r?\n[ \t]*\r?\n/);
+	return match?.index === undefined ? end : start.index + match.index;
 }
 
 function readingsFromStarts(text, starts) {
 	if (!starts.length || starts.length > 5) return null;
 	if (starts.some((start, index) => start.number !== index + 1)) return null;
 	if (!proseBeforeStarts(text, starts)) return null;
+	const readings = starts.map((start, index) => {
+		const next = starts[index + 1]?.index ?? text.length;
+		const end =
+			start.type === "bare" ? bareReadingEnd(text, start, next) : next;
+		return {
+			id: index + 1,
+			text: text.slice(start.index, end).trim(),
+			bodyLines:
+				starts.length === 1 && start.type === "heading"
+					? Math.max(start.bodyLines, 3)
+					: start.bodyLines,
+			start,
+		};
+	});
 	if (
-		starts.some(
-			(start, index) =>
-				start.requiresIndentedBody &&
-				!hasIndentedBody(text, start, starts[index + 1]?.index ?? text.length),
-		)
-	)
-		return null;
-	const readings = starts.map((start, index) => ({
-		id: index + 1,
-		text: text
-			.slice(start.index, starts[index + 1]?.index ?? text.length)
-			.trim(),
-		bodyLines:
-			starts.length === 1 && start.type === "heading"
-				? Math.max(start.bodyLines, 3)
-				: start.bodyLines,
-	}));
-	if (
-		readings.some(
-			(reading) =>
-				!/\b[A-Z]+\d+\b/.test(reading.text) ||
-				reading.text
+		readings.some(({ start, text, bodyLines }) => {
+			if (!/\b[A-Z]+\d+\b/.test(text)) return true;
+			if (start.type === "bare") return !completeOneLineReading(text);
+			return (
+				text
 					.split(/\r?\n/)
 					.slice(1)
-					.filter((line) => line.trim()).length < reading.bodyLines,
-		)
+					.filter((line) => line.trim()).length < bodyLines
+			);
+		})
 	)
 		return null;
 	return readings.map(({ id, text }) => ({ id, text }));
@@ -740,10 +805,11 @@ export function outcomeIdsFromBrief(input) {
 	return ids;
 }
 
-function reportIds(message) {
-	const covered = new Set();
+function reportStatuses(message) {
+	const statuses = new Map();
 	for (const line of message.split(/\r?\n/)) {
-		if (!/\b(?:PASS|FAIL)\b/.test(line)) continue;
+		const status = line.match(/\b(PASS|FAIL)\b/)?.[1];
+		if (!status) continue;
 		for (const match of line.matchAll(
 			/\b([A-Z]+)(\d+)\s*[-\u2013\u2014]\s*(?:\1)?(\d+)\b/g,
 		)) {
@@ -754,11 +820,24 @@ function reportIds(message) {
 				number <= Math.max(first, last);
 				number += 1
 			)
-				covered.add(`${match[1]}${number}`);
+				statuses.set(`${match[1]}${number}`, status);
 		}
-		for (const match of line.matchAll(/\b[A-Z]+\d+\b/g)) covered.add(match[0]);
+		for (const match of line.matchAll(/\b[A-Z]+\d+\b/g))
+			statuses.set(match[0], status);
 	}
-	return covered;
+	return statuses;
+}
+
+function reportIds(message) {
+	return new Set(reportStatuses(message).keys());
+}
+
+function passedIds(message) {
+	return new Set(
+		[...reportStatuses(message)]
+			.filter(([, status]) => status === "PASS")
+			.map(([id]) => id),
+	);
 }
 
 function isReport(message, outcomeIds) {
@@ -783,6 +862,237 @@ function quoteLine(line) {
 
 function autoResumeMessage(line) {
 	return `The run ended because a message without a tool call ends it. Its first line was exactly:\n${quoteLine(line)}\nContinue toward the brief's outcomes, wait inside tool calls, and send a message only as your report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
+}
+
+function claimResumeMessage(failures) {
+	return `The report was not accepted because its claims did not match this run:\n${failures.map((failure) => `- ${failure}`).join("\n")}\nContinue toward the brief's outcomes, wait inside tool calls, and send a corrected report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
+}
+
+function reportSection(brief) {
+	const text = Buffer.isBuffer(brief) ? brief.toString("utf8") : String(brief);
+	const heading = text.match(/^##[ \t]+Report[ \t]*\r?$/m);
+	if (heading?.index === undefined) return "";
+	const remainder = text.slice(heading.index + heading[0].length);
+	const nextHeading = remainder.search(/^##[ \t]+/m);
+	return nextHeading < 0 ? remainder : remainder.slice(0, nextHeading);
+}
+
+function briefRequiresCommit(brief) {
+	return /\bcommit[ \t]+(?:sha|hash)\b/i.test(reportSection(brief));
+}
+
+function outcomeTextFromBrief(brief, id) {
+	const text = Buffer.isBuffer(brief) ? brief.toString("utf8") : String(brief);
+	const chunks = [];
+	let collecting = false;
+	for (const line of text.split(/\r?\n/)) {
+		const start = line.match(/^- \*\*([A-Z]+\d+)\./);
+		if (start) {
+			if (collecting) break;
+			collecting = start[1] === id;
+			if (collecting) chunks.push(line);
+			continue;
+		}
+		if (collecting && /^##[ \t]+/.test(line)) break;
+		if (collecting) chunks.push(line);
+	}
+	return chunks.join("\n");
+}
+
+function commitCandidates(message) {
+	const candidates = [];
+	for (const line of message.split(/\r?\n/)) {
+		if (!/\b(?:commit|HEAD)\b/i.test(line)) continue;
+		for (const match of line.matchAll(/\b[0-9a-f]{7,64}\b/gi))
+			candidates.push(match[0].toLowerCase());
+	}
+	if (!candidates.length) {
+		const all = [...message.matchAll(/\b[0-9a-f]{7,64}\b/gi)].map((match) =>
+			match[0].toLowerCase(),
+		);
+		const distinct = [...new Set(all)];
+		if (distinct.length === 1) candidates.push(distinct[0]);
+	}
+	return [...new Set(candidates)];
+}
+
+function eventFileOrder(name) {
+	if (name === "events.jsonl") return 0;
+	const match = name.match(/^events-resume(?:-(\d+))?\.jsonl$/);
+	if (!match) return null;
+	return match[1] ? Number(match[1]) : 1;
+}
+
+async function readRunCommandRecords(run) {
+	const files = (await readdir(run))
+		.map((name) => ({ name, order: eventFileOrder(name) }))
+		.filter(({ order }) => order !== null)
+		.sort((left, right) => left.order - right.order);
+	const records = [];
+	for (const { name } of files) {
+		const lines = (await readFile(path.join(run, name), "utf8")).split(/\r?\n/);
+		for (const line of lines) {
+			if (!line.trim()) continue;
+			let event;
+			try {
+				event = JSON.parse(line);
+			} catch {
+				continue;
+			}
+			if (!event || typeof event !== "object") continue;
+			const item = event.item ?? event.payload?.item ?? event.payload ?? event;
+			let command = item?.command ?? item?.cmd ?? event.command;
+			if (Array.isArray(command)) command = command.join(" ");
+			const exitCode =
+				item?.exit_code ?? item?.exitCode ?? event.exit_code ?? event.exitCode;
+			const status = item?.status ?? event.status;
+			if (typeof command !== "string" || !Number.isInteger(exitCode)) continue;
+			if (status !== undefined && status !== "completed") continue;
+			records.push({ command, exitCode });
+		}
+	}
+	return records;
+}
+
+function timestampWithOffset(date) {
+	const offsetMinutes = -date.getTimezoneOffset();
+	const sign = offsetMinutes < 0 ? "-" : "+";
+	const absolute = Math.abs(offsetMinutes);
+	const local = new Date(date.getTime() + offsetMinutes * 60_000);
+	const timestamp = local.toISOString().slice(0, -1);
+	const hours = String(Math.floor(absolute / 60)).padStart(2, "0");
+	const minutes = String(absolute % 60).padStart(2, "0");
+	return `${timestamp}${sign}${hours}:${minutes}`;
+}
+
+async function recordTurn(run, worktree, result, stopReason) {
+	const endedAt = new Date();
+	let head = null;
+	try {
+		head = readGit(worktree, ["rev-parse", "HEAD"]);
+	} catch {
+		// A missing head is recorded as null so the turn remains diagnosable.
+	}
+	const record = {
+		start: timestampWithOffset(result.startedAt),
+		end: timestampWithOffset(endedAt),
+		durationMs: Math.max(0, endedAt.getTime() - result.startedAt.getTime()),
+		exitCode: result.code,
+		stopReason,
+		head,
+		events: path.basename(result.events),
+		stderr: path.basename(result.stderr),
+	};
+	try {
+		await appendFile(
+			path.join(run, "turns.jsonl"),
+			`${JSON.stringify(record)}\n`,
+		);
+	} catch (error) {
+		console.error(`codex-round: turn record not written: ${error.message}`);
+	}
+}
+
+async function reportClaimFailures(message, brief, metadata, run) {
+	const failures = [];
+	const stopped = /^STOPPED:/m.test(message);
+	const candidates = commitCandidates(message);
+	let commands;
+	const runCommands = async () => {
+		commands ??= await readRunCommandRecords(run);
+		return commands;
+	};
+	if (candidates.length || briefRequiresCommit(brief)) {
+		let candidate;
+		let resolved;
+		for (const value of candidates) {
+			try {
+				resolved = readGit(metadata.worktree, [
+					"rev-parse",
+					`${value}^{commit}`,
+				]);
+				candidate = value;
+				break;
+			} catch {
+				// Try the next candidate before reporting the claim as missing.
+			}
+		}
+		if (!resolved) {
+			if (candidates.length)
+				failures.push(`commit ${candidates.join(", ")}: no such commit object`);
+			else if (!stopped) failures.push("commit: report names no commit SHA");
+		} else {
+			let head = null;
+			try {
+				head = readGit(metadata.worktree, ["rev-parse", "HEAD"]);
+			} catch (error) {
+				failures.push(
+					`commit ${candidate}: cannot read worktree HEAD: ${error.message}`,
+				);
+			}
+			if (head !== null && resolved !== head)
+				failures.push(
+					`commit ${candidate}: resolves to ${resolved}, not worktree HEAD ${head}`,
+				);
+			if (resolved === metadata.head)
+				failures.push(
+					`commit ${candidate}: equals launch HEAD ${metadata.head}`,
+				);
+			const commitRecords = (await runCommands())
+				.map((record, index) => ({ ...record, index }))
+				.filter(
+					({ command, exitCode }) =>
+						exitCode === 0 &&
+						/\bgit(?:\.exe)?\b[^\r\n]*\bcommit\b/i.test(command),
+				);
+			if (!commitRecords.length)
+				failures.push(
+					"commit: no successful git commit command with exit code 0 is recorded in this run's events",
+				);
+			let status;
+			try {
+				status = readGit(metadata.worktree, ["status", "--short"]);
+			} catch (error) {
+				failures.push(`commit: cannot read worktree status: ${error.message}`);
+			}
+			if (status)
+				failures.push("commit: worktree is not clean after the commit");
+		}
+	}
+
+	const verifyIds = [...passedIds(message)].filter((id) =>
+		/\bverify\.mjs[ \t]+fast\b|\bverify:fast\b/i.test(
+			outcomeTextFromBrief(brief, id),
+		),
+	);
+	if (verifyIds.length) {
+		const records = await runCommands();
+		const lastCommit = records.reduce(
+			(last, record, index) =>
+				record.exitCode === 0 &&
+				/\bgit(?:\.exe)?\b[^\r\n]*\bcommit\b/i.test(record.command)
+					? index
+					: last,
+			-1,
+		);
+		const lastFast = records.reduce(
+			(last, record, index) =>
+				record.exitCode === 0 &&
+				/\bverify\.mjs[ \t]+fast\b|\bverify:fast\b/i.test(record.command)
+					? index
+					: last,
+			-1,
+		);
+		if (lastFast < 0)
+			failures.push(
+				`verify.mjs fast: PASS is claimed for ${verifyIds.join(", ")} without a successful fast-ladder command in this run's events`,
+			);
+		else if (lastFast < lastCommit)
+			failures.push(
+				`verify.mjs fast: the last successful fast-ladder command precedes the last successful git commit in this run's events`,
+			);
+	}
+	return failures;
 }
 
 async function optionalFile(filename) {
@@ -1153,6 +1463,7 @@ async function prepareLaunch(options) {
 	return {
 		metadata,
 		input,
+		brief,
 		executable,
 		environment,
 		outcomeIds,
@@ -1307,6 +1618,7 @@ async function prepareResume(options) {
 	return {
 		metadata,
 		input,
+		brief: launchInput,
 		thread: await firstThread(options.run),
 		executable: await findCodex(),
 		catalog,
@@ -1315,10 +1627,16 @@ async function prepareResume(options) {
 	};
 }
 
-function startCodex(executable, args, worktree, environment = process.env) {
+function startCodex(
+	executable,
+	args,
+	worktree,
+	environment = process.env,
+	stderr = "inherit",
+) {
 	const options = {
 		cwd: worktree,
-		stdio: ["pipe", "pipe", "inherit"],
+		stdio: ["pipe", "pipe", stderr],
 		env: environment,
 		windowsHide: true,
 	};
@@ -1350,9 +1668,15 @@ async function capture(run, resume) {
 	for (let index = 1; ; index += 1) {
 		const suffix = !resume ? "" : `-resume${index === 1 ? "" : `-${index}`}`;
 		const events = path.join(run, `events${suffix}.jsonl`);
+		const stderr = path.join(run, `stderr${suffix}.txt`);
 		try {
 			const file = await open(events, "wx");
-			return { file, events, last: path.join(run, "last-message.md") };
+			return {
+				file,
+				events,
+				stderr,
+				last: path.join(run, "last-message.md"),
+			};
 		} catch (error) {
 			if (!resume || error.code !== "EEXIST") throw error;
 		}
@@ -1441,7 +1765,15 @@ async function runCodex(options, prepared, input, resume) {
 	];
 	console.log(`Run folder: ${options.run}`);
 	const stream = output.file.createWriteStream();
-	const child = startCodex(executable, args, metadata.worktree, environment);
+	const errorFile = await open(output.stderr, "wx");
+	const errorStream = errorFile.createWriteStream();
+	const child = startCodex(
+		executable,
+		args,
+		metadata.worktree,
+		environment,
+		"pipe",
+	);
 	let started = thread;
 	let reported = false;
 	const lines = createInterface({ input: child.stdout });
@@ -1462,6 +1794,8 @@ async function runCodex(options, prepared, input, resume) {
 		}
 	});
 	child.stdout.pipe(stream);
+	child.stderr.pipe(process.stderr, { end: false });
+	child.stderr.pipe(errorStream);
 	child.stdin.on("error", (error) => {
 		if (error.code !== "EPIPE") console.error(`codex-round: ${error.message}`);
 	});
@@ -1474,12 +1808,18 @@ async function runCodex(options, prepared, input, resume) {
 	child.stdin.end(input);
 	let code;
 	try {
-		[code] = await Promise.all([completion, finished(stream)]);
+		[code] = await Promise.all([
+			completion,
+			finished(stream),
+			finished(errorStream),
+		]);
 	} finally {
 		if (child.exitCode === null) child.kill();
 		lines.close();
 		stream.destroy();
+		errorStream.destroy();
 		await output.file.close();
+		await errorFile.close();
 	}
 	await recordRequiredChanges(metadata, output.events);
 	// A missing measurement never changes the run's exit code.
@@ -1487,7 +1827,12 @@ async function runCodex(options, prepared, input, resume) {
 		await recordStartLoad(options.run, started).catch((error) =>
 			console.error(`codex-round: start load not recorded: ${error.message}`),
 		);
-	return { code, thread: started };
+	return {
+		code,
+		thread: started,
+		events: output.events,
+		stderr: output.stderr,
+	};
 }
 
 async function execute(options, prepared) {
@@ -1495,19 +1840,60 @@ async function execute(options, prepared) {
 	let resume = options.resume;
 	let autoResumes = 0;
 	for (;;) {
+		const startedAt = new Date();
 		const result = await runCodex(options, prepared, input, resume);
 		if (result.code === 0 && result.thread && /^[\w-]+$/.test(result.thread))
 			prepared.thread = result.thread;
-		if (result.code !== 0) return result.code;
+		if (result.code !== 0) {
+			await recordTurn(
+				options.run,
+				prepared.metadata.worktree,
+				{ ...result, startedAt },
+				"non-zero exit",
+			);
+			return result.code;
+		}
 		const last = await optionalFile(path.join(options.run, "last-message.md"));
 		const message = last?.toString("utf8") ?? "";
-		if (isReport(message, prepared.outcomeIds)) return 0;
+		const report = isReport(message, prepared.outcomeIds);
+		const claimFailures = report
+			? await reportClaimFailures(
+					message,
+					prepared.brief,
+					prepared.metadata,
+					options.run,
+				)
+			: [];
+		if (report && !claimFailures.length) {
+			await recordTurn(
+				options.run,
+				prepared.metadata.worktree,
+				{ ...result, startedAt },
+				/^STOPPED:/m.test(message) ? "STOPPED" : "report accepted",
+			);
+			return 0;
+		}
 		if (autoResumes >= MAX_AUTO_RESUMES) {
+			await recordTurn(
+				options.run,
+				prepared.metadata.worktree,
+				{ ...result, startedAt },
+				"resume limit",
+			);
 			console.error(
 				`codex-round: run ended without a report after ${MAX_AUTO_RESUMES} automatic resumes`,
 			);
 			return 1;
 		}
+		const stopReason = claimFailures.length
+			? "claim check failed"
+			: "no report";
+		await recordTurn(
+			options.run,
+			prepared.metadata.worktree,
+			{ ...result, startedAt },
+			stopReason,
+		);
 		const line = firstLine(message);
 		await appendFile(
 			path.join(options.run, "auto-resumes.log"),
@@ -1515,11 +1901,17 @@ async function execute(options, prepared) {
 				time: new Date().toISOString(),
 				exitCode: result.code,
 				firstLine: line,
+				...(claimFailures.length ? { claimFailures } : {}),
 			})}\n`,
 		);
 		autoResumes += 1;
 		resume = true;
-		input = Buffer.from(autoResumeMessage(line), "utf8");
+		input = Buffer.from(
+			claimFailures.length
+				? claimResumeMessage(claimFailures)
+				: autoResumeMessage(line),
+			"utf8",
+		);
 	}
 }
 
