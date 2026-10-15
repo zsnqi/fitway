@@ -55,8 +55,9 @@ A real run of the ladder always runs its own steps, so a passing `verify.mjs` in
     `node scripts/verify.mjs fast` passes in 0.23 s with no step, exit 0.
   - **Outcome.** `node scripts/verify.mjs fast`, `phase --phase <name>` and `full`, and `pnpm verify:fast`, run exactly
     their own steps in their own order whatever the environment holds: no environment variable, argument or file a
-    real run can carry replaces, removes or adds a step. A test shows it with `FITWAY_VERIFY_TEST_STEPS` set to `[]`
-    and to a stand-in list, without doing the real steps' work (for example with a stand-in `pnpm` first on `PATH`
+    real run can carry replaces, removes or adds a step, and the entry point keeps no test-injection path. A test shows
+    it by launching the committed entry point with `FITWAY_VERIFY_TEST_STEPS` set to `[]`, to two different stand-in
+    lists and to malformed JSON, without doing the real steps' work (for example with a stand-in `pnpm` first on `PATH`
     that records the arguments and environment it is called with), checking for `fast`, for `phase --phase <name>`
     and for `full` that each fast step was called in order with its arguments and the Unit tests step with
     `UNIT_TEST_ENV`, then each mode's own steps. The two tests
