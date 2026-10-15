@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-15 02:40 +03:00 (the new coordinator session took over under decision 61; main at `911e4a91` with CI green; the two encoding rounds of decision 62 running)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-15 09:00 +03:00 (the encoding round of decision 62 merged as two rounds; main moved by `pnpm main:advance`; nothing running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-63), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -39,57 +39,32 @@
 
 ## Running now
 
-- **encoding-launcher** (decision 62): `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-encoding-launcher.md`, worktree
-  `D:/Projects/fitway-worktrees/owner-r04-encoding-launcher` (branch of the same name, from `945c07b5`), run
-  `D:/fitway-temp/codex-round-ec7c6878-0206-4712-822d-18c195cf796f`, DeepSeek at `max`. Review readings: four closed,
-  one left open (`D:/fitway-temp/brief-review/codex-encoding-launcher-1/dispositions.md`). Held-out rows EL1-EL8 in
-  `D:/fitway-grader/owner-r04/encoding-launcher-heldout.md`.
-- **encoding-checks** (decision 62): `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-encoding-checks.md`, worktree
-  `D:/Projects/fitway-worktrees/owner-r04-encoding-checks` (branch of the same name, from `945c07b5`), run
-  `D:/fitway-temp/codex-round-ae11a8ef-f311-4b20-a357-a7427974cee0`, DeepSeek at `max`. Review readings: four closed,
-  one left open for the user (branch protection, below). Held-out rows EC1-EC8 in
-  `D:/fitway-grader/owner-r04/encoding-checks-heldout.md`.
-- The coordinator's baseline timing of `codex-round.test.ts` and the review logs: `D:/fitway-temp/owner-r04-encoding-coord/`.
+Nothing.
 
-- **vf-fixes is graded and merged** (record in `codex-rounds.md` §"vf-fixes", row in `rounds.tsv`): result
-  `9c69abe5`, brief 12/12, held-out 8/9 (kit `D:/fitway-temp/owner-r04-vf-fixes-grade/`; its `node_modules` junctions
-  are listed in `JUNCTIONS.txt`, unlink them before removing the folder). F131, F132, F136, F149, F158, F161 and F164
-  fixed. VF3 partial: an arrival (`arrive=500` with `state=loading`) cannot be captured, because the runner proves
-  the before rules again after the before capture (F175, older than the round). New: F174 (a codex-round unit test
-  timed out on main's CI while the same commit passed on the branch), F176 (V5's test skips the advanced section).
-- **The tuner work is accepted** on `owner-followup-r04-build` (`58e39ede`, `aeb7d35a`, `c2fe4661`; pushed, CI
-  green): the tuner is gone, its moments run on keys under `?live-keys=1` (`n`, `r`, `u`, `d`). The previews on
-  3174 and 3180 serve the build worktree, so they show the tuner removed.
+- **The encoding round is merged as two rounds** (decision 62; records in `codex-rounds.md` §"encoding-checks" and
+  §"encoding-launcher", rows in `rounds.tsv`). encoding-checks `c93f423d` (merge `0906f2a2`): K1 from the packets,
+  `pnpm main:advance`, the BOM and agent-table checks, B3 in `brief:check`, ID counts without a length warning, Biome
+  on tracked files; held-out 7/8 (F180: the Scope rule for a Codex brief with neither Scope nor Report waits for
+  fixtures in `codex-round.test.ts` and `path-tokens.test.ts`). encoding-launcher `d6e603fc` (merge `3554065b`):
+  bare and prefaced readings, every brief's IDs, `--message` refused under Git Bash (`MSYSTEM`), `TEMP`/`TMP`
+  guarded, 8x test timeouts; held-out 7/8 (F156's child-process route). Fixed: F129, F162, F169, F170, F173, F174,
+  F177; new F178-F181. Grading kits: `D:/fitway-temp/owner-r04-encoding-{checks,launcher}-grade/` (each holds a
+  detached worktree `wt` with a pnpm-installed `node_modules`; remove it with `git worktree remove` after unlinking
+  any junction).
+- **main moves only through `pnpm main:advance`** (AGENTS.md, WORKFLOW.md §"Integration", `9deee692`), and GitHub
+  refuses a push to main without a passing `checks` run (decision 63; tested both ways).
 
 ## Next steps
 
-1. CI on this resume point's commit; fast-forward main to it only when that run's conclusion is success (F129); once
-   encoding-checks merges, only through `pnpm main:advance`. main's own run on `1dbaebbf` failed on F177 (fixed in
-   `945c07b5`); main moved to `911e4a91` after its branch run passed.
-2. **The user's topics are settled** (2026-10-15): of the Claude Desktop update's capabilities only side sessions
-   were adopted, for the coordinator's handovers (decision 61); the Claude Code CLI on PATH was updated from 2.1.293
-   to 2.1.300.
-3. **vf-fixes is merged** (above): merge `d56013ee`, main fast-forwarded to `1dbaebbf` after its CI passed
-   (2026-10-15). Main's run on `6db75be8` had failed on F174 alone; main skipped to `fbce5ce6`, then `1dbaebbf`.
-4. **Now that the tuner is in:** F160 (Reports' and Access's loading proofs wait for `data-load="shown"`) goes with the
-   `reports.css` split on the build branch; F148 and F165 need a diagnosis round of their own (cause unknown); F175 and F176 go to the next verify-fitway round, F168 with them.
-5. **Now: the encoding round, as two rounds** (decision 62, running above): grade each against its held-out rows,
-   merge what passes, then name `pnpm main:advance` in `AGENTS.md` ("Git, CI and verification") and
-   `docs/WORKFLOW.md` §"Integration" (the user's permission, decision 62). **Then the other tool rounds before
-   Settings.** The text below is the earlier plan, kept for its pointers:
-   the encoding round's brief can be drafted now from
-   `D:/fitway-temp/owner-r04-encoding-draft/research-digest.md` (each check's real past mistake and where it sits; it
-   also found three build-branch round records saying "B3 held" for briefs without the sentence) and launched now that
-   launcher-fixes-3 has merged (same files), and takes F169, F170, F171, F173, F174, F156's copy path and F162's preface form; the `reports.css` split (draft
-   `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); the encoding round of decision 56
-   (F129 twice: K1 checks the frontier against the packets, and main moves only through a command that refuses a commit
-   without a green CI run; BOM check, the launcher's `MSYS_NO_PATHCONV` and `TEMP` guards, a B3 check, `CLAUDE.md`'s agent table against the
-   definitions; each check proven on its real past mistake; and decision 57's outcome-and-limit count in `brief:check`
-   with its threshold from the past rounds, then B6, B8 and B13 unfolded); the shared lows (decision 47); the `no-comments`
-   report-only trial. The Claude Code replay is deferred (DECISIONS 58); its worktree
-   `D:/Projects/fitway-worktrees/owner-r04-cc-replay` (uncommitted launcher edits, not needed) can be removed once
-   its `node_modules` is checked for a junction and unlinked first.
-6. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
+1. CI on this resume point's commit, then `pnpm main:advance <commit>`.
+2. **The remaining tool rounds before Settings** (decisions 47 and 52), each its own round, parallel where files are
+   disjoint: F180 with the fixtures in `codex-round.test.ts` and `path-tokens.test.ts`; the `reports.css` split on the
+   build branch with F160 (draft `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); a
+   verify-fitway round for F168, F175 and F176; a diagnosis round for F148, F165 and F171 (causes unknown); the shared
+   lows (decision 47); the `no-comments` report-only trial (decision 56). The Claude Code replay is deferred
+   (DECISIONS 58); its worktree `D:/Projects/fitway-worktrees/owner-r04-cc-replay` can go once its `node_modules` is
+   checked for a junction and unlinked.
+3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
 
 ## Waiting on the user

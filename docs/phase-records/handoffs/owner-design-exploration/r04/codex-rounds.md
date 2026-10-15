@@ -1283,7 +1283,7 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Disposition:** merged (`0906f2a2`); AGENTS.md and WORKFLOW.md name the command (`9deee692`), whose first real use
   moved main from `1cce3b8d` to `9deee692`.
 
-## encoding-launcher: `briefs/codex-encoding-launcher.md` (this folder), continued by `codex-encoding-launcher-fix.md`, result `e315a2c2` on `owner-r04-encoding-launcher`, DeepSeek V4.1 Flash, level `max`
+## encoding-launcher: `briefs/codex-encoding-launcher.md` (this folder), continued by `codex-encoding-launcher-fix.md`, result `d6e603fc` on `owner-r04-encoding-launcher`, DeepSeek V4.1 Flash, level `max`
 
 - **Set-up:** decision 62's launcher half: bare readings (E1, F169), a preface (E2, F162), a silent read in the copy
   path (E3, F156), every brief's outcome IDs (E4, F170), `--message` under Git Bash (E5), `TEMP`/`TMP` (E6, F110,
@@ -1300,8 +1300,12 @@ checks live outside the repository and never appear here or in a brief. One line
   automatic resumes, start load 89,676. `2df1f970` closed G1 (every brief's exact IDs pinned) and G4 (the 8.3 test
   probes every drive). Replays: G2 still failed (under pnpm the ancestor walk stops at an exited pnpm process, F181)
   and G3's `git show` plant still passed (the test sees only reads through the launcher's instrumented helpers). The
-  coordinator resumed it once for G2: `e315a2c2` decides from `MSYSTEM` and the parent; replayed refused from Git
-  Bash through `pnpm -s`, passed from PowerShell. G3 accepted as partial; F156 stays open for the child-process route.
+  coordinator resumed it for G2: `e315a2c2` decided from `MSYSTEM` and the parent's name, passed the replays, and
+  failed CI (the runner's tree under pnpm differs); after that third failure the approach changed (AGENTS.md, two
+  failed repairs): `d6e603fc` decides from `MSYSTEM` alone and the tests set it explicitly; replayed refused from
+  Git Bash through `pnpm -s`, passed from PowerShell; CI green. G3 accepted as partial; F156 stays open for the
+  child-process route. The coordinator merged `e315a2c2` locally before reading its failed CI and reset it before
+  any push; the merge command now refuses unless the run's conclusion is success.
 - **Brief rows** 6/9 at first delivery (E3 partial, E4 and E5 fail), 8/9 after the fix; **held-out** 7/8 after the fix
   (EL3 partial). Brief-caused: E4 (the literal `- **X1.**`, F178). Model-caused: E5's first test bypassed pnpm.
-- **Disposition:** merged after CI on `e315a2c2`.
+- **Disposition:** merged (`3554065b`) after CI on `d6e603fc`.

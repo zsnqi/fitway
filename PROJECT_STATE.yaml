@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-15T02:30:00+03:00
+updatedAt: 2026-10-15T09:00:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -63,7 +63,6 @@ milestones:
       - CLAUDE.md, .claude/agents/** and .claude/skills/** (owned by agent-environment-r03 since 2026-10-07, now DONE; read only here)
     sharedLeases:
       - "package.json, the test:verification script only, a coordinator lease through 2026-10-19 (a per-test timeout and every verify-fitway test file, F145, DECISIONS 48)"
-      - "package.json, one new script entry for the main-advance command only, a coordinator lease to the encoding-checks round through 2026-10-19 (DECISIONS 62)"
     validationRepairAttempts: 0
     handoff: docs/phase-records/handoffs/owner-design-exploration/r04/owner-design-exploration-r04-resume.md
     stopReason: null
