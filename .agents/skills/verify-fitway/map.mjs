@@ -8,6 +8,7 @@ import {
 	repository,
 	ts,
 } from "./discover.mjs";
+import { validateStateRules } from "./state-rules.mjs";
 
 export { discoverElements, extractDependencies, repository };
 
@@ -194,6 +195,8 @@ export function readRecipes(
 	const recipes = JSON.parse(readFileSync(path, "utf8"));
 	if (recipes.schema !== 1 || !recipes.pages)
 		throw new Error(`Invalid recipes: ${path}; repair schema=1 and pages.`);
+	for (const [page, recipe] of Object.entries(recipes.pages))
+		validateStateRules(recipe, `${path}:${page}`);
 	return { recipes, path };
 }
 

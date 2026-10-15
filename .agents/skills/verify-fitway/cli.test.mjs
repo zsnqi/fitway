@@ -49,6 +49,7 @@ import {
 	extractDependencies,
 	extractSwitches,
 	generateMap,
+	readRecipes,
 	repairRecipes,
 } from "./map.mjs";
 import { sourceProbe } from "./probes.mjs";
@@ -62,6 +63,7 @@ import {
 let scratch;
 let concept;
 let recipes;
+const heldSessions = [];
 const html =
 	'<main>Fixture</main><button id="ops-btn" aria-controls="ops-pop">Status</button><div id="ops-pop" role="dialog" hidden></div><script src="app.js"></script>';
 const js =
@@ -100,6 +102,8 @@ before(async () => {
 	await writeFile(recipes, JSON.stringify(authored()));
 });
 after(async () => {
+	for (const session of heldSessions.splice(0))
+		runCli(["cleanup", "--session", session]);
 	if (scratch) await rm(scratch, { recursive: true, force: true });
 });
 
@@ -1596,6 +1600,7 @@ test("help in a dependency-free clone succeeds and names installation", async ()
 		"probes.mjs",
 		"map.mjs",
 		"discover.mjs",
+		"state-rules.mjs",
 	])
 		await writeFile(
 			resolve(folder, name),
@@ -1933,8 +1938,10 @@ import {createContext,runInContext} from "node:vm";
 const motion=${JSON.stringify(options.scriptMotion || null)}, phase=${JSON.stringify(options.scriptPhase || 0)};
 const dynamicState=${JSON.stringify(Boolean(options.dynamicState))};
 const transitionOnCapture=${JSON.stringify(Boolean(options.transitionOnCapture))};
+const capturePhases=${JSON.stringify(options.capturePhases || [])};
 const transitionAfterProofs=${JSON.stringify(options.transitionAfterProofs ?? null)};
 let fixturePhase="loading", phaseReads=0;
+let captureCount=0;
 const capture=async(via,options,picture)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from(picture)};
 export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
@@ -1959,7 +1966,7 @@ const page={setDefaultTimeout(){},addInitScript:async(fn)=>{await appendFile(${J
     return;
    }
    if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
-  transitionOnCapture:()=>{if(transitionOnCapture)fixturePhase="ready"},
+ transitionOnCapture:()=>{const phase=capturePhases[captureCount++];if(transitionOnCapture)fixturePhase="ready";if(phase)fixturePhase=phase},
   screenshot:async(options)=>{page.transitionOnCapture();return capture("native",options,page.picture())},
 context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
   evaluate:async(fn)=>fn.toString().includes("coarse")
@@ -2252,6 +2259,20 @@ export const renderSheet=async(browser,spec,file)=>writeFile(file,"stub sheet");
 		`const Module=require("node:module"),load=Module._load;
 Module._load=function(name,...args){return name==="@playwright/test"?{chromium:{executablePath:()=>process.execPath}}:load.call(this,name,...args)};`,
 	);
+	const session = resolve(root, "session");
+	const launched = runCli([
+		"launch",
+		"--concept",
+		build,
+		"--isolated-port",
+		String(await isolatedPort()),
+		"--idle-timeout-ms",
+		"60000",
+		"--out",
+		session,
+	]);
+	assert.equal(launched.status, 0, launched.stderr + launched.stdout);
+	heldSessions.push(session);
 	const invoke = (command, out, extra = []) =>
 		spawnSync(
 			process.execPath,
@@ -2264,6 +2285,7 @@ Module._load=function(name,...args){return name==="@playwright/test"?{chromium:{
 				tools,
 				"--out",
 				out,
+				...(command === "drive" ? ["--session", session] : []),
 				...extra,
 			],
 			{ encoding: "utf8", windowsHide: true },
@@ -2840,6 +2862,7 @@ test("V1: a time-changing state is captured before its declared after-action arr
 		{
 			when: { arrive: "500" },
 			afterActions: true,
+			ends: [{ when: { state: "loading" } }],
 			shows: "Arrived",
 			proof: { expression: "window.__fixturePhase === 'ready'" },
 		},
@@ -2895,6 +2918,258 @@ test("V1: a time-changing state is captured before its declared after-action arr
 		forcedSummary[0].problems.join(" "),
 		/loading state changed before capture/,
 	);
+});
+
+test("V1: post-capture proofs hold every state an arrival does not end", async () => {
+	const features = [{ id: "page", actions: [], proof: { ready: true } }];
+	const switches = [
+		{ name: "state", values: ["loading"], samples: [] },
+		{ name: "arrive", values: ["500"], samples: [] },
+	];
+	const postBefore = await runnerFixture("post-before-proof", features, {
+		dynamicState: true,
+		capturePhases: ["ready"],
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Loading",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+			{
+				when: { arrive: "500" },
+				afterActions: true,
+				shows: "Arrived",
+				proof: { expression: "window.__fixturePhase === 'ready'" },
+			},
+		],
+		switches,
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		postBefore.result.status,
+		1,
+		postBefore.result.stderr + postBefore.result.stdout,
+	);
+	const postBeforeSummary = JSON.parse(
+		await readFile(resolve(postBefore.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		postBeforeSummary[0].problems.join(" "),
+		/loading state changed before capture/,
+	);
+	assert.ok(
+		postBeforeSummary[0].files.some((file) => file.endsWith("-before.png")),
+	);
+
+	const preAfter = await runnerFixture("pre-after-proof", features, {
+		dynamicState: true,
+		transitionAfterProofs: 4,
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Loading",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+			{
+				when: { arrive: "500" },
+				shows: "Arrival companion",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+			{
+				when: { arrive: "500" },
+				afterActions: true,
+				ends: [{ when: { state: "loading" } }],
+				shows: "Arrived",
+				proof: { expression: "window.__fixturePhase === 'ready'" },
+			},
+		],
+		switches,
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		preAfter.result.status,
+		1,
+		preAfter.result.stderr + preAfter.result.stdout,
+	);
+	const preAfterSummary = JSON.parse(
+		await readFile(resolve(preAfter.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		preAfterSummary[0].problems.join(" "),
+		/loading state changed before capture/,
+	);
+	assert.equal(
+		preAfterSummary[0].files.some((file) => file.endsWith("-after.png")),
+		false,
+	);
+
+	const postAfter = await runnerFixture("post-after-proof", features, {
+		dynamicState: true,
+		capturePhases: [null, "ready"],
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Loading",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+			{
+				when: { arrive: "500" },
+				afterActions: true,
+				shows: "Arrived",
+				proof: { expression: "document.body !== null" },
+			},
+		],
+		switches,
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		postAfter.result.status,
+		1,
+		postAfter.result.stderr + postAfter.result.stdout,
+	);
+	const postAfterSummary = JSON.parse(
+		await readFile(resolve(postAfter.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		postAfterSummary[0].problems.join(" "),
+		/loading state changed before capture/,
+	);
+	assert.deepEqual(postAfterSummary[0].afterFrameProof, ["Loading"]);
+	assert.ok(
+		postAfterSummary[0].files.some((file) => file.endsWith("-after.png")),
+	);
+
+	const afterAction = await runnerFixture("after-action-proof", features, {
+		dynamicState: true,
+		transitionAfterProofs: 0,
+		capturePhases: [null, "loading"],
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Static",
+				proof: { expression: "document.body !== null" },
+			},
+			{
+				when: { arrive: "500" },
+				afterActions: true,
+				shows: "Arrived",
+				proof: { expression: "window.__fixturePhase === 'ready'" },
+			},
+		],
+		switches,
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		afterAction.result.status,
+		1,
+		afterAction.result.stderr + afterAction.result.stdout,
+	);
+	const afterActionSummary = JSON.parse(
+		await readFile(resolve(afterAction.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		afterActionSummary[0].problems.join(" "),
+		/arrival state not observed/,
+	);
+	assert.deepEqual(afterActionSummary[0].afterFrameProof, ["Static"]);
+});
+
+test("V1: ended-rule declarations are exact and checked when recipes load", async () => {
+	const root = resolve(scratch, "ends-validation");
+	const recipePath = resolve(root, "verification-recipes.json");
+	await mkdir(root, { recursive: true });
+	const write = async (ends) => {
+		await writeFile(
+			recipePath,
+			JSON.stringify({
+				schema: 1,
+				pages: {
+					"fixture.html": {
+						features: [],
+						states: [
+							{
+								when: { state: "loading" },
+								shows: "Loading",
+								proof: { selector: "main", visible: true },
+							},
+							{
+								when: { arrive: "500" },
+								afterActions: true,
+								ends,
+								shows: "Arrived",
+								proof: { expression: "document.body !== null" },
+							},
+						],
+					},
+				},
+			}),
+		);
+	};
+	for (const [ends, message] of [
+		[[{ when: { state: "ready" } }], /matches no before rule/],
+		[[{ when: {} }], /non-wildcard when/],
+		[[{ shows: "Loading" }], /may only name when/],
+	]) {
+		await write(ends);
+		assert.throws(() => readRecipes(root), message);
+	}
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							when: { state: "loading" },
+							shows: "Loading one",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { state: "loading" },
+							shows: "Loading two",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { state: "loading" } }],
+							shows: "Arrived",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.throws(() => readRecipes(root), /matches several before rules/);
+	await writeFile(
+		recipePath,
+		JSON.stringify({
+			schema: 1,
+			pages: {
+				"fixture.html": {
+					features: [],
+					states: [
+						{
+							when: { state: "loading", arrive: "500" },
+							shows: "Loading",
+							proof: { selector: "main", visible: true },
+						},
+						{
+							when: { arrive: "500" },
+							afterActions: true,
+							ends: [{ when: { arrive: "500", state: "loading" } }],
+							shows: "Arrived",
+							proof: { expression: "document.body !== null" },
+						},
+					],
+				},
+			},
+		}),
+	);
+	assert.doesNotThrow(() => readRecipes(root));
 });
 
 test("V2: an address-only feature is captured under keyboard", async () => {
@@ -3146,29 +3421,96 @@ test("V7: navigation settles before the action returns and a wrong destination f
 	assert.equal(focusReads, 2);
 });
 
+function usageCliOptions(helpText) {
+	const options = new Set();
+	const lines = helpText.split(/\r?\n/);
+	const start = lines.findIndex((line) => line.trim() === "Commands:");
+	for (let index = start + 1; index < lines.length; index++) {
+		const line = lines[index];
+		if (!/^\s{2,}\S/.test(line)) break;
+		for (const match of line.matchAll(/--[a-z][a-z0-9-]*/g))
+			options.add(match[0]);
+	}
+	return options;
+}
+
+function measureExemptRanges(skillText) {
+	const ranges = [];
+	const record = (command, offset) => {
+		const tokens = [...command.matchAll(/\S+/g)].map((match) => ({
+			text: match[0],
+			index: match.index,
+		}));
+		let commandIndex = 0;
+		if (tokens[0]?.text === "node" && tokens[1]?.text === "$cli")
+			commandIndex = 2;
+		if (tokens[commandIndex]?.text !== "measure") return;
+		const separator = tokens.findIndex(
+			(token, index) => index > commandIndex && token.text === "--",
+		);
+		if (separator < 0) return;
+		for (let index = separator + 1; index < tokens.length; index++) {
+			if (["&&", "||", ";", "|"].includes(tokens[index].text)) break;
+			const option = /^--[a-z][a-z0-9-]*/.exec(tokens[index].text);
+			if (option)
+				ranges.push({
+					start: offset + tokens[index].index,
+					end: offset + tokens[index].index + option[0].length,
+				});
+		}
+	};
+	for (const match of skillText.matchAll(/`([^`\n]+)`/g))
+		record(match[1], match.index + 1);
+	for (const fence of skillText.matchAll(/```[^\n]*\n([\s\S]*?)```/g)) {
+		const body = fence[1];
+		const bodyStart = fence.index + fence[0].indexOf(body);
+		for (const line of body.matchAll(/[^\r\n]+/g))
+			record(line[0], bodyStart + line.index);
+	}
+	return ranges;
+}
+
+function assertGuideOptions(skillText, helpText) {
+	const cliOptions = usageCliOptions(helpText);
+	for (const option of cliOptions)
+		assert.ok(skillText.includes(option), `${option} is missing from SKILL.md`);
+	const exempt = measureExemptRanges(skillText);
+	for (const match of skillText.matchAll(/--[a-z][a-z0-9-]*/g))
+		if (
+			!exempt.some(
+				(range) => match.index >= range.start && match.index < range.end,
+			)
+		)
+			assert.ok(cliOptions.has(match[0]), `${match[0]} is not a CLI option`);
+}
+
 test("V5: SKILL names CLI options, ports and rendered artifacts without drift", async () => {
 	const skill = await readFile(
 		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
 		"utf8",
 	);
-	const cliOptions = new Set(help.match(/--[a-z][a-z0-9-]*/g) || []);
-	for (const option of cliOptions)
-		assert.ok(skill.includes(option), `${option} is missing from SKILL.md`);
-	for (const match of skill.matchAll(/--[a-z][a-z0-9-]*/g)) {
-		const lineStart = skill.lastIndexOf("\n", match.index) + 1;
-		const lineEnd = skill.indexOf("\n", match.index);
-		const line = skill.slice(lineStart, lineEnd < 0 ? skill.length : lineEnd);
-		const optionIndex = match.index - lineStart;
-		const externalCommand =
-			/(?:^|[\s`])pnpm(?:[\s`]|$)/.test(line) && !line.includes("$cli");
-		const toolSeparator = line.search(/(?:^|\s)--(?:\s|$)/);
-		const measureToolArgument =
-			/(?:^|[\s`])measure(?:[\s`]|$)/.test(line) &&
-			((toolSeparator >= 0 && optionIndex > toolSeparator) ||
-				(/tool arguments/i.test(line) && !cliOptions.has(match[0])));
-		if (externalCommand || measureToolArgument) continue;
-		assert.ok(cliOptions.has(match[0]), `${match[0]} is not a CLI option`);
-	}
+	assertGuideOptions(skill, help);
+	const plant = (text) => `${skill}\n${text}\n`;
+	for (const text of [
+		"`--invented-prose`",
+		"```\n--invented-fence\n```",
+		"`pnpm --invented-pnpm`",
+		"measure --tool focus -- --invented-plain",
+		"`measure --invented-before -- --allowed`",
+		"`compare --concept x -- --invented-other`",
+		"`measure --tool focus -- --allowed && other --invented-other`",
+	])
+		assert.throws(
+			() => assertGuideOptions(plant(text), help),
+			/--invented-/,
+			text,
+		);
+	for (const text of [
+		"`measure --tool focus --out <folder> -- --invented-tool`",
+		"`node $cli measure --tool focus --out <folder> -- --invented-tool-prefix`",
+		"```powershell\nmeasure --tool focus --out <folder> -- --invented-tool-fence\n```",
+	])
+		assert.doesNotThrow(() => assertGuideOptions(plant(text), help), text);
 	for (const pair of skill.match(/\b31\d\d-31\d\d\b/g) || [])
 		if (pair !== "3178-3185")
 			assert.ok(

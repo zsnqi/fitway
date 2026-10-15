@@ -10,6 +10,7 @@ import {
 	symlink,
 	writeFile,
 } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -20,9 +21,8 @@ const skill = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(skill, "../../..");
 let scratch;
 before(async () => {
-	const root = "D:/fitway-temp/owner-r04-vf-runner-ds/parallel";
-	await mkdir(root, { recursive: true });
-	scratch = await mkdtemp(resolve(root, "run-"));
+	scratch = await mkdtemp(resolve(tmpdir(), "verify-fitway-parallel-"));
+	await mkdir(resolve(scratch, "cache"), { recursive: true });
 });
 after(async () => {
 	await rm(scratch, { recursive: true, force: true });

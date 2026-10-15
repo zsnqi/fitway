@@ -20,11 +20,11 @@ node $cli help
 node $cli list --concept $concept --recipes $recipes --page all
 ```
 
-`help` or `--help` prints the command and axis inventory.
+The `help` command prints the command and axis inventory.
 
 After resolving `$cli`, commands work from any shell directory. Plain folders and `git archive` extractions need
 no enclosing package.json: Playwright comes from this skill's repository. No new dependencies are installed.
-`help` needs only Node. It prints the checkout's `pnpm --dir <checkout> install --frozen-lockfile` command for discovery and browser tools.
+`help` needs only Node. It prints the checkout's frozen pnpm install command for discovery and browser tools.
 Commands that need an absent dependency print its package name and that install command, without a stack trace.
 On this Windows machine run browser commands in PowerShell, with the brief's required escalation for child processes.
 Git Bash may rewrite browser paths; use PowerShell for the examples below. All JSON is UTF-8 without a BOM.
@@ -38,7 +38,10 @@ opener controls, including every `aria-haspopup` value except `false`. Specimens
 A page recipe can declare `dependencies: [{switch, value, requires}]` for a switch relationship the source scan
 cannot see; these merge with source-found dependencies, and a conflicting declaration is refused. A state rule can
 set `afterActions: true` when its effect appears only after the feature's actions; that proof must read the page
-with a selector or expression and is checked after those actions.
+with a selector or expression and is checked after those actions. An arrival rule may declare
+`ends: [{ when: { key: "value" } }]`; each exact non-wildcard `when` must match one before-action state rule on
+that page and removes only that rule from the after-frame proof. Omit `ends` to keep every before rule. The item
+summary's `afterFrameProof` names the before rules checked beside the after frame.
 A source edit alone is not drift. Uncovered openings/openers and vanished recipe selectors/markers fail
 with their names and source file/line; repair the recipe or source on the concept branch, then run:
 
@@ -269,7 +272,8 @@ Personally inspect exact named rendered frames
 at the required sizes and languages; logs/hashes do not establish visual quality or human acceptance.
 
 `measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>` delegates to
-ui-forensics. `measure --colors forced` passes `--forced-colors active`; tool arguments can supply it directly.
+ui-forensics. `measure --colors forced` passes the tool's forced-colour argument; direct tool arguments can
+supply it too.
 Forced requests in tool arguments and frame/probe matrices also require 1.2.0 before delegation. Read that tool's help for advanced measurements. Extend this path when an adapter is missing instead
 of writing another server, launcher or capture loop. The concept is synthetic; preserve privacy and data semantics.
 

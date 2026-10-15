@@ -22,6 +22,11 @@ import {
 } from "./drive.mjs";
 import { loadProbes } from "./probes.mjs";
 import {
+	endedWhenKeys,
+	stateWhenKey,
+	validateStateRules,
+} from "./state-rules.mjs";
+import {
 	captureTimeline,
 	observeTimeline,
 	timelineTimes,
@@ -133,6 +138,7 @@ function readsPage(proof) {
 }
 
 function requestedProofs(page, state, language) {
+	validateStateRules(page);
 	const rules = page.states.filter((rule) =>
 		matches(rule, state.query, language),
 	);
@@ -203,6 +209,7 @@ export function itemSummary(entry) {
 		result: entry.status,
 		problems: entry.problems,
 		proof: entry.stateProof,
+		afterFrameProof: entry.afterFrameProof,
 		featureProof: entry.featureProof,
 		heldPress: entry.heldPress,
 		dependencies: entry.dependencies,
@@ -644,9 +651,14 @@ export async function drive(options) {
 											const afterRules = rules.filter(
 												(rule) => rule.afterActions,
 											);
-											const recheckBeforeState =
-												!feature.changesState && afterRules.length === 0;
+											const endedBefore = endedWhenKeys(afterRules);
+											const afterFrameBeforeRules = beforeRules.filter(
+												(rule) =>
+													!endedBefore.has(stateWhenKey(rule.when || {})),
+											);
+											const recheckBeforeState = !feature.changesState;
 											entry.stateProof = [];
+											entry.afterFrameProof = [];
 											for (const rule of beforeRules) {
 												await prove(current.page, rule.proof, language);
 												entry.stateProof.push(rule.shows);
@@ -888,13 +900,18 @@ export async function drive(options) {
 														`CSS property unchanged: ${feature.proof.cssPropertyChanged}`,
 													);
 												await ui.twoFrames(current.page);
-												if (recheckBeforeState)
-													for (const rule of beforeRules)
+												if (recheckBeforeState) {
+													for (const rule of afterFrameBeforeRules) {
 														await prove(current.page, rule.proof, language);
+														entry.afterFrameProof.push(rule.shows);
+													}
+												}
 												await save("after");
 												if (recheckBeforeState)
-													for (const rule of beforeRules)
+													for (const rule of afterFrameBeforeRules)
 														await prove(current.page, rule.proof, language);
+												for (const rule of afterRules)
+													await prove(current.page, rule.proof, language);
 												// A flow may change a state (retry/navigation). Its end proof owns that result;
 												// the requested state was proved before the first user action.
 												entry.featureProof = actionRecipe.proof;
