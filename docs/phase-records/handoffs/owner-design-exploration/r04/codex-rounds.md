@@ -1369,3 +1369,39 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Brief rows** 4/4; **held-out** 5/6 (LF1 partial). Brief-caused: none in the round. Model-caused: LF1's wrap.
 - **Disposition:** merged; LF1's failure is the safe one (the launcher stops and the review reruns). F156 and F182
   are fixed; F235 and F236 go to the next launcher round.
+## vf-runner, one brief on both models (decision 66): `briefs/codex-vf-runner.md` (Sol arm, result `78a1c34e` on `owner-r04-vf-runner`, GPT-6.1 Sol `xhigh`) and `briefs/codex-vf-runner-ds.md` (DeepSeek arm, result `3ac1770a` on `owner-r04-vf-runner-ds`, DeepSeek V4.1 Flash `max`), both from `c699d3fb`
+
+- **Set-up:** F175 (V1, a state that changes with time), F168 (V2, test roots), F176 (V3, the whole guide). The
+  DeepSeek arm's brief differs only in worktree, branch, temp folder and port pair (3188-3189, since the Sol arm held
+  3186-3187); its review's five readings were left open to keep the briefs identical.
+- **Runs (measured from the run folders):** Sol about 3 h 01 min of work around the user's wave-1 stop, 62.1M input
+  tokens (61.4M cached) and 61k output in the resumed turn, no automatic resume, one intervention (the stop and the
+  coordinator's resume message); DeepSeek about 71 min, 80.8M input (78.6M cached) and 144k output, one automatic
+  resume, no intervention. Both reported V1-V3 and L1 PASS and L2 FAIL locally (Sol: two Git Bash tests, F237;
+  DeepSeek: port 3176 held, F183); CI passed on both commits.
+- **Grading:** each arm by GPT-6.1 Sol `xhigh` (`codex-vf-runner-grade-sol.md`, `-grade-ds.md`, identical apart from
+  worktree and ports, the same two readings closed in both) and by Opus (`owner-direction-verifier`, `high`;
+  decision 67) from fresh worktrees without Sol's verdicts. Where graders disagreed, or two graders measured a row
+  differently, the coordinator's replay decided (all measured; `D:/fitway-temp/owner-r04-encoding-coord/vf-runner-trial-replays.md`):
+  - G1: both arms' CLIs capture the skeleton with a recipe whose loading proof needs `data-load="shown"`; with the
+    concept's own proof (F160 at `c2fe4661`) the before frame is the pre-skeleton wait, so Opus's G1 failure on the
+    Sol arm came from its recipe: PASS for both. The concept's recipes declare no arrival proof at all, so every
+    grader wrote one.
+  - G5 on the DeepSeek arm: Sol's grader saw P3 fail once at about 92% CPU; Opus and the coordinator's rerun of the
+    grader's own driver passed: PASS (P3 looks load-sensitive).
+  - G6 and G7, seven plants on the base and both arms, after "Evidence and advanced tools" and before "## Compare":
+    the Sol arm lets the three `measure` lines through; the DeepSeek arm lets a line holding "pnpm" and a line
+    holding "measure tool arguments" through; the base catches all seven before "## Compare". Both arms FAIL G6
+    and G7 (an existing guard narrowed), and each arm's "V3 PASS" is an overclaim.
+  - G3: no test of either arm notices the static after-capture proof disabled (both FAIL). Opus on the DeepSeek arm:
+    any `afterActions` rule also drops every static rule's post-capture proof on that item (`runner.mjs:647-648`).
+- **Brief rows** 3/5 each (V1, V2 and L2 hold; V3 and L1 do not). **Rows:** Sol arm G1 P, G2 P, G3 F, G4 P, G5 P, G6 F, G7 F = 4/7; DeepSeek arm the same, 4/7. Overclaims: one
+  each (V3). Other overclaims replayed and not found: the self compares, the full compare (the Sol arm's 1,656
+  items are 828 per transport, `http` and `file://`), the V1 tests, the cache-root seam.
+- **Rule as written:** rows tie, overclaims tie, interventions 0 against 1: the DeepSeek arm wins. The one Sol-arm
+  intervention was the user's wave-1 stop, not something the round needed; without it the arms tie on every count.
+  Neither arm leads by two rows and both overclaim, so decision 64's split stays. Brief-caused: G3 and the guide's
+  keyword exemptions (the brief asked for "an allowlisted non-CLI executable, judged per command" without naming
+  the allowlist, which the review's reading 4 had raised and was left open to keep the Sol arm's brief as run).
+- **Disposition:** only the DeepSeek arm can merge, after a fix round for G3, G6 and G7 (F238-F240); the Sol arm's
+  branch is kept unmerged.
