@@ -56,13 +56,17 @@ outcome IDs is read.
     `g1-wrapped.md` with reading 5 wrapped after `Gap:` the label has no text on its own line and the next line has
     no label: the answer is refused.
   - **Outcome.** In a reading whose lines are all at column 0, a line break continues the clause it falls in, so that
-    answer, and each of its five readings wrapped at any one label, read as five; a continuation that completes no
+    answer, and each of its five readings wrapped at any one space between its words, read as five, with the same
+    text as unwrapped; a continuation that completes no
     part still leaves the answer refused.
   - **Intent.** Where a reviewer's line wraps never decides whether its answer is read.
 - **T2. An empty part (G2).**
   - **Cause (measured).** A label counts when any character follows its separator, so
     `1. V1. Literal reading: x. What goes wrong:. Change: z.` is read.
-  - **Outcome.** A labelled part counts only when its text holds a letter or a digit; that answer is refused, and
+  - **Outcome.** A labelled part counts only when its text holds a letter outside any outcome ID or list marker, so
+    `What goes wrong: 3` or `What goes wrong: V2` alone counts for nothing; in every form the parser reads (headings,
+    bold lines, bullets), an explicitly labelled literal reading, what goes wrong or change with no such text refuses
+    the answer; that answer is refused, and
     every answer the HEAD's tests read still reads.
   - **Intent.** Each of the three parts says something.
 - **T3. Readings with indented bodies (G3).**
@@ -72,14 +76,17 @@ outcome IDs is read.
   - **Outcome.** Both tests hold their `5b81b3b7` answers again, unchanged, and read them as at `5b81b3b7`
     (`2 [R1,L1]` each): a bare numbered reading followed by an indented body line is read by the rule it had at
     `5b81b3b7`, and the label rule applies to a bare reading whose lines are all at column 0. The 75 review files the
-    grader replayed (`supplement.log`) still read to the same counts and IDs.
+    grader replayed (`supplement.log`) still read to the same counts, IDs and reading text (compared after trimming
+    each reading).
   - **Intent.** No answer that read before this milestone's parser work is refused now.
 - **T4. New cases fail at their own assertions (G8).**
   - **Cause (measured).** Run from the HEAD's test file on `5b81b3b7`'s production code, most new P1, P4 and P5 cases
     throw `ENOENT` reading `turns.jsonl`, `stderr.txt` or `auto-resumes.log` before their outcome assertion, and the
     wrapped-reading case fails its prerequisite on the uncut answer.
-  - **Outcome.** Each new case asserts the file or result it reads before reading it, so on `5b81b3b7`'s production
-    code every new P1, P2, P4, P5, T1-T3 and T5 case fails at an assertion on its outcome (report each with its line);
+  - **Outcome.** On `5b81b3b7`'s production code every new P1, P2, P4, P5, T1-T3 and T5 case fails first at an
+    assertion on the outcome itself (the reading count or text, whether the run resumed and with what message, a
+    timeline line's fields), never at a check that a file exists or that a call did not throw (report each with its
+    line);
     the "complete prose without labels" case is kept as a guard and said to be one.
   - **Intent.** A new case shows the defect, not a missing file.
 - **T5. Bold outcome-ID headings (F249).**
@@ -88,7 +95,8 @@ outcome IDs is read.
     number or `Reading N`, so the complete answer is refused.
   - **Outcome.** That answer reads as five readings with the IDs G9, G2, G3, G6 and G7 in order, as a test on a copy
     under `scripts/agent-environment/fixtures/codex-round-reviews/`; such a reading needs the three labelled parts in
-    its body, and a bold ID line with fewer is refused; more than five such headings are refused.
+    its body, and a bold ID line with fewer is refused; more than five such headings are refused; an answer of three
+    such readings with other IDs (`V3`, `L1`, `P2`), other titles and an em dash after the ID reads as three.
   - **Intent.** A complete answer is never refused for heading its readings by ID.
 
 ## Limits the result keeps
