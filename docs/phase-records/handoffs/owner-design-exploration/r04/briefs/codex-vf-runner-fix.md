@@ -7,7 +7,7 @@
   - `.agents/skills/verify-fitway/SKILL.md`, whole;
   - `.agents/skills/verify-fitway/runner.mjs` lines 636-660 and 880-900;
   - `.agents/skills/verify-fitway/cli.test.mjs` lines 1905-1990, 2163-2300, 2781-2900 and 3149-3200;
-  - `.agents/skills/verify-fitway/cli.mjs` lines 290-310 and 380-395;
+  - `.agents/skills/verify-fitway/cli.mjs` lines 55-135, 290-310 and 380-395;
   - `.agents/skills/verify-fitway/compare-speed.test.mjs` lines 1-60;
   - `.agents/skills/verify-fitway/compare-parallel.test.mjs` lines 1-60;
   - `docs/phase-records/handoffs/agent-environment/findings.tsv` rows F183, F238, F239 and F240.
@@ -65,13 +65,19 @@ verify-fitway tests share no folder and no port with any round or compare.
     `afterActions` rule, every before rule except the ones that arrival ends keeps its proof beside the after
     frame, and a test fails when such a rule turns false after either capture; which before rules an arrival ends is
     declared in the recipe and written in `SKILL.md`, never inferred from timing, from a proof failing, or from the
-    rules' order; a recipe whose `afterActions` rule declares no ended rule keeps every before rule's proof beside
-    the after frame. The two V1 tests added in `3ac1770a` keep their assertions. On the concept, Reports
-    `arrive=500` with `state=loading` and an arrival rule in the declared form (yours, in your temp folder, reading
-    the page's loaded phase) is EQUAL in three self compares (Arabic and English, desktop and phone, 4 workers), its
-    before frame showing loading and its after frame the loaded page; and a full self compare (every page,
-    `--feature all`, Arabic and English, desktop, tablet and phone, reduced motion, 4 workers) gives the same
-    verdict for every item as the CLI at `3ac1770a`.
+    rules' order; the declaration names each ended rule by its exact `when`, which must match exactly one before
+    rule of that item, and a wildcard, a `shows` label or a match of none or several is refused when the recipe
+    loads; a recipe whose `afterActions` rule declares no ended rule keeps every before rule's proof beside the
+    after frame; every `afterActions` rule is proven again after the after capture, and a test fails when one turns
+    false during it; the item's `summary.json` records which before rules were proven beside the after frame. The
+    two V1 tests added in `3ac1770a` keep their assertions. On the concept, Reports `arrive=500` with
+    `state=loading`, an arrival rule in the declared form ending the loading rule, and a second before rule on the
+    same item that the arrival does not end (both yours, in your temp folder, the arrival reading the page's loaded
+    phase) is EQUAL in three self compares (Arabic and English, desktop and phone, 4 workers), its before frame
+    showing loading, its after frame the loaded page, and its summary listing the second rule as proven beside the
+    after frame; and a full self compare (every page, `--feature all`, Arabic and English, desktop, tablet and phone,
+    reduced motion, 4 workers) gives the same verdict for every item as the CLI at `3ac1770a`. The waiver for a
+    feature that `changesState` stays as it is.
   - **Intent.** A frame is accepted as a state only while that state is proven, and an arrival lifts the proof only
     of the state it was declared to end.
 - **W2. The guide test's exemption (F239).**
@@ -79,12 +85,15 @@ verify-fitway tests share no folder and no port with any round or compare.
     with "tool arguments", whatever the option's place; before "## Compare" the base `c699d3fb` refused every
     invented option, and `3ac1770a` lets such lines through.
   - **Outcome.** Every `--option` in `SKILL.md`, in prose, an inline code span or a fenced block, in any section, is
-    one the CLI's `help` lists, with one exemption: a token after the ` -- ` separator of a `measure` command
+    a CLI option, meaning one named on a usage line of `help` that starts with a CLI command (not one `help`
+    mentions in prose or in a `pnpm` or tool command, such as `--forced-colors`, `--dir`, `--frozen-lockfile` or
+    `--help`), with one exemption: a token after the ` -- ` separator of a `measure` command
     (`measure --tool <name> ... -- <tool arguments>`), where that command is read whole from one inline code span or
     one line of a fenced block, and the exemption is decided by that command's own tokens, never by other words on
     its line or paragraph; an option before the separator, in another command on the same line, or after a `--` of
     any other command is still checked. Every invented option the base's test refused is refused again, wherever in
-    the guide it sits.
+    the guide it sits. A guide line that names another tool's option outside such a command may be reworded,
+    keeping what it tells the reader.
   - **Intent.** A reader of any part of the guide never meets an option that does not exist, and the only option the
     test does not check is one the CLI passes on to a tool unread.
 - **W3. Test roots (F240).**
@@ -92,7 +101,8 @@ verify-fitway tests share no folder and no port with any round or compare.
     own temp folder, named in the code, and the speed test's cache root sits beside the runs, not in one.
   - **Outcome.** Each run of either file makes its folder with its cache inside it under the system temp folder
     (`os.tmpdir()`), removes it after the run whether it passes or fails, and names no path under `D:/fitway-temp`;
-    two simultaneous runs of each file from two separate checkouts all pass, with disjoint folders, and leave none
+    two simultaneous runs of each file from two separate checkouts all pass, with disjoint folders, every cache file
+    a run's processes wrote lies in that run's own folder once links and junctions are resolved, and none is left
     behind; a changed cache-root line still fails a test, as at `3ac1770a`.
   - **Intent.** No checkout, round or CI run writes into another's folder.
 - **W4. Fixed ports in tests (F183).**
@@ -100,8 +110,10 @@ verify-fitway tests share no folder and no port with any round or compare.
     while a compare holds 3176-3177.
   - **Outcome.** With every verification pair (3176-3177, 3186-3187, 3188-3189) held as a running compare holds it,
     a listener on each port and its lease, each verify-fitway test file passes in full, and no test binds, connects
-    to or leases a port in 3174-3189; the CLI's options still accept only those three pairs from the command line,
-    and every port test keeps its assertions.
+    to or leases a port in 3174-3189; a port a test needs is allocated at run time, never a fixed number, and two
+    complete runs of `cli.test.mjs` from separate checkouts pass at once; the CLI's options still accept only those
+    three pairs from the command line, no option, environment variable or test mode remaps a `--port` given there
+    (the port a command reports is the one it binds), and every port test keeps its assertions.
   - **Intent.** A test run never fails, waits or blocks because a round compares on any pair.
 
 ## Limits the result keeps
