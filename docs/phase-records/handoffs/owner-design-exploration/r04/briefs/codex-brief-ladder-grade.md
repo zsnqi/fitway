@@ -54,8 +54,9 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G2. Every spelling.** Outcome: `rows F240-F242` passes; `rows F240-F299` fails naming the first missing ID;
   `row F9999` fails; rows `F9999` (in backticks) and rows `F234, F9999` (one code span, the template's spelling) each
   fail naming F9999; an absolute path to findings.tsv naming `rows F234 and F246` is checked like the relative path;
-  a row appended to the worktree's findings.tsv but not committed fails against the named HEAD. Intent: no spelling
-  escapes the check.
+  a row appended to the worktree's findings.tsv but not committed fails against the named HEAD; a mixed list
+  (`F234`, F9999 and `F246`) fails naming F9999; a Markdown file whose table has a row F1 passes on `row F1` and fails
+  on `row F2`; every failure names the ID, the file and the HEAD. Intent: no spelling escapes the check.
 - **G3. Nothing else moved.** Outcome: every brief in
   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` at `5b81b3b7` gives the same `brief:check` lines
   with the base and the HEAD checker, apart from new row lines, each of which names a row truly absent at its own
@@ -72,8 +73,9 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   `verify.mjs`'s fast, phase and full step lists, order, arguments and environment equal the base's (print and diff
   them); no test present at `5b81b3b7` is removed, skipped or made conditional, none lost an assertion line, and no
   existing assertion's predicate or expected value changed (list each pre-existing test or helper whose body
-  changed, with the change); each new Q1-Q2 case, run from the HEAD's test files on the base's production code, fails
-  at its own assertion. Intent: nothing was weakened to pass.
+  changed, with the change), and the collected test names equal the base's plus the new ones; each new Q1-Q2 case,
+  run from the HEAD's test files on the base's production code, fails at the assertion on that outcome's behaviour
+  and passes at HEAD. Intent: nothing was weakened to pass.
 - **G7. Report against commands.** Outcome: the result's commit exists and is your HEAD; the round's run folder
   (`D:/fitway-temp/codex-round-0b658846-8e7e-41a8-a134-00cfd66c49f4/`) records the `git commit` and a
   `node scripts/verify.mjs fast` run after it, with their exit statuses quoted from the events, and the reported
