@@ -571,15 +571,37 @@ function numberedBoldStart({ index, line }) {
 	};
 }
 
+function completeOneLineReading(value) {
+	const content = value.replace(/[*_`]/g, "");
+	const clauses = content
+		.split(/(?<=[.!?:;])\s+/)
+		.map((clause) => clause.trim())
+		.filter(Boolean);
+	if (!/\b[A-Z]+\d+\b/.test(content)) return false;
+	const fields = [
+		/\b(?:literal(?:ly|\s+reading)?|as written|reading|wording)\b/i,
+		/\b(?:what (?:would )?go(?:es)? wrong|go(?:es)? wrong|failure(?: mode)?|consequence|delivered work|unmet|breaks?|risk|gap)\b/i,
+		/\b(?:one[- ]line change|closing change|change to (?:the )?brief|change|close it|fix(?:ed)?|repair|remed(?:y|ies)|require(?:d|s)?|preserve|avoid)\b/i,
+	];
+	const clauseIndexes = fields.map((field) =>
+		clauses.findIndex((clause) => field.test(clause)),
+	);
+	return (
+		clauseIndexes.every((index) => index >= 0) &&
+		new Set(clauseIndexes).size === fields.length
+	);
+}
+
 function bareStart({ index, line }) {
 	const match = line.match(/^ {0,3}(\d+)[.)][ \t]+(.+)$/);
 	if (!match || !/\b[A-Z]+\d+\b/.test(match[2])) return null;
+	const complete = completeOneLineReading(match[2]);
 	return {
-		type: "bare",
+		type: complete ? "one-line" : "bare",
 		index,
 		number: Number(match[1]),
-		bodyLines: 1,
-		requiresIndentedBody: true,
+		bodyLines: complete ? 0 : 1,
+		requiresIndentedBody: !complete,
 	};
 }
 

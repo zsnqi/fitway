@@ -85,40 +85,69 @@ vi.mock("node:fs/promises", async (importOriginal) => {
 
 vi.mock("node:child_process", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("node:child_process")>();
-	const recordGitShow = (args: unknown[]) => {
+	const processStartValue = (args: unknown[]) => {
 		const command = args[0];
 		const commandArgs = args[1];
-		if (
-			command === "git" &&
-			Array.isArray(commandArgs) &&
-			commandArgs[0] === "show"
-		) {
-			const log = Reflect.get(
-				globalThis,
-				Symbol.for("fitway.review-source-access-test"),
-			);
-			if (Array.isArray(log))
-				log.push({
-					type: "read",
-					route: "git-show",
-					value: commandArgs[2],
-				});
-		}
+		return [
+			typeof command === "string" ? command : String(command),
+			...(Array.isArray(commandArgs)
+				? commandArgs.filter(
+						(value): value is string => typeof value === "string",
+					)
+				: []),
+		].join(" ");
 	};
+	const recordProcessStart = (route: string, args: unknown[]) => {
+		const value = processStartValue(args);
+		// The source plan uses ls-tree to decide whether a Git path is a file.
+		// That metadata lookup is not a read of the source bytes.
+		if (/(?:^|\s)git(?:\.exe)?\s+ls-tree(?:\s|$)/i.test(value)) return;
+		const log = Reflect.get(
+			globalThis,
+			Symbol.for("fitway.review-source-access-test"),
+		);
+		if (Array.isArray(log))
+			log.push({
+				type: "read",
+				route,
+				value,
+			});
+	};
+	const wrap = (route: string, method: (...values: unknown[]) => unknown) =>
+		vi.fn((...args: unknown[]) => {
+			recordProcessStart(route, args);
+			return method(...args);
+		});
 	return {
 		...actual,
-		execFileSync: vi.fn((...args: unknown[]) => {
-			recordGitShow(args);
-			return (
-				actual.execFileSync as unknown as (...values: unknown[]) => unknown
-			)(...args);
-		}),
-		spawnSync: vi.fn((...args: unknown[]) => {
-			recordGitShow(args);
-			return (actual.spawnSync as unknown as (...values: unknown[]) => unknown)(
-				...args,
-			);
-		}),
+		exec: wrap(
+			"child-process.exec",
+			actual.exec as unknown as (...values: unknown[]) => unknown,
+		),
+		execFile: wrap(
+			"child-process.execFile",
+			actual.execFile as unknown as (...values: unknown[]) => unknown,
+		),
+		execFileSync: wrap(
+			"child-process.execFileSync",
+			actual.execFileSync as unknown as (...values: unknown[]) => unknown,
+		),
+		execSync: wrap(
+			"child-process.execSync",
+			actual.execSync as unknown as (...values: unknown[]) => unknown,
+		),
+		fork: wrap(
+			"child-process.fork",
+			actual.fork as unknown as (...values: unknown[]) => unknown,
+		),
+		spawn: wrap(
+			"child-process.spawn",
+			actual.spawn as unknown as (...values: unknown[]) => unknown,
+		),
+		spawnSync: wrap(
+			"child-process.spawnSync",
+			actual.spawnSync as unknown as (...values: unknown[]) => unknown,
+		),
 	};
 });
 
@@ -190,6 +219,11 @@ const realReviews = [
 		"5a141c9a5c552a2edbfae2786201cff48f4ddbcfc797ce460f2560216103c41c",
 	],
 	[
+		"codex-vf-runner-1",
+		5,
+		"6f22457e49ac603719bf2532baaea281f6260a836065489fa364404b97eca44a",
+	],
+	[
 		"gardener-fix-1",
 		5,
 		"4bdbb12f132f75b0941a7b1c48f36dba986f6cae1b9f0ace75985091700001bf",
@@ -232,6 +266,11 @@ const realReviews = [
 ] as const;
 
 function expectedReviewBlocks(answer: string) {
+	const nonEmpty = answer
+		.split(/\r?\n/)
+		.map((line) => line.trim())
+		.filter(Boolean);
+	if (nonEmpty.every((line) => /^\d+[.)]\s+\S/.test(line))) return nonEmpty;
 	const blocks = (starts: RegExpMatchArray[]) =>
 		starts.map((start, index) =>
 			answer
@@ -1148,6 +1187,49 @@ describe("D5 review sources", () => {
 		}
 	});
 
+	it("checks each of two source places before that source's child-process read", async () => {
+		const f = fixture();
+		const first = "docs/ordered-first.md";
+		const second = "docs/ordered-second.md";
+		for (const source of [first, second]) {
+			const filename = path.join(f.worktree, ...source.split("/"));
+			mkdirSync(path.dirname(filename), { recursive: true });
+			writeFileSync(filename, `${source}\n`);
+		}
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", "two ordered review sources");
+		const head = git(f.worktree, "rev-parse", "HEAD");
+		const events = await captureReviewSourceAccess(() =>
+			copyReviewSources(
+				path.join(f.root, "ordered-two"),
+				`- **Read first, only these:**\n\n- \`${first}\`\n- \`${second}\`\n`,
+				f.worktree,
+				head,
+			),
+		);
+		const processEvents = events.filter(
+			(event) =>
+				event.type === "place" ||
+				(event.type === "read" &&
+					String(event.route).startsWith("child-process.")),
+		);
+		expect(
+			processEvents.map((event) => {
+				if (event.type === "place")
+					return { type: event.type, value: event.value };
+				let value = String(event.value);
+				if (value.includes(first)) value = first;
+				else if (value.includes(second)) value = second;
+				return { type: event.type, value };
+			}),
+		).toEqual([
+			{ type: "place", value: first },
+			{ type: "read", value: first },
+			{ type: "place", value: second },
+			{ type: "read", value: second },
+		]);
+	});
+
 	it("refuses a repository source changed after the brief's named HEAD", () => {
 		const f = fixture();
 		const source = path.join(f.worktree, "docs", "review-source.md");
@@ -1568,6 +1650,69 @@ The preface spans more than one paragraph.
 		expect(result.status, result.output).toBe(0);
 		expect(readFileSync(path.join(f.run, "review-readings.md"), "utf8")).toBe(
 			answer,
+		);
+	});
+
+	it("accepts complete one-line readings with other wording and no blank lines", () => {
+		const f = fixture();
+		const answer = [
+			"1) V1. Failure: the marker changes. As written: the proof holds. Repair: freeze the phase.",
+			"2) V1. Repair: require the general proof. Failure: the input drifts. As written: the check passes.",
+			"3) L1. Wording: existing assertions stay. Consequence: coverage can disappear. Change: keep each check.",
+			"4) V3. Risk: a wrapper hides the executable. Reading: the option is accepted. Fix: resolve the executable.",
+			"5) V2. As written: the replacement stays local. Repair: exercise the real text. Risk: a collision returns.",
+		].join("\n");
+		f.answerReview(
+			answer,
+			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\nReading 2: closed\nReading 3: closed\nReading 4: closed\nReading 5: closed\n`,
+		);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(readFileSync(path.join(f.run, "review-readings.md"), "utf8")).toBe(
+			answer,
+		);
+	});
+
+	it.each([
+		[
+			"a list of IDs",
+			["V1", "V1", "L1", "V3", "V2"]
+				.map((id, index) => `${index + 1}. ${id}`)
+				.join("\n"),
+		],
+		[
+			"a one-line summary",
+			[
+				"V1 asks for a literal reading, what goes wrong, and a one-line change.",
+				"V1 asks for a literal reading, what goes wrong, and a one-line change.",
+				"L1 asks for a literal reading, what goes wrong, and a one-line change.",
+				"V3 asks for a literal reading, what goes wrong, and a one-line change.",
+				"V2 asks for a literal reading, what goes wrong, and a one-line change.",
+			]
+				.map((line, index) => `${index + 1}. ${line}`)
+				.join("\n"),
+		],
+		[
+			"one field only",
+			["V1", "V1", "L1", "V3", "V2"]
+				.map(
+					(id, index) => `${index + 1}. ${id}. Literal reading: only one part.`,
+				)
+				.join("\n"),
+		],
+		[
+			"a line cut after its ID",
+			["V1", "V1", "L1", "V3", "V2"]
+				.map((id, index) => `${index + 1}. ${id}.`)
+				.join("\n"),
+		],
+	])("refuses an incomplete one-line reading: %s", (_kind, answer) => {
+		const f = fixture();
+		rmSync(f.reviewRoot, { recursive: true });
+		reviewRefused(
+			f,
+			f.invoke(undefined, { REVIEW_ANSWER: answer }),
+			"answer cannot be read as readings",
 		);
 	});
 
