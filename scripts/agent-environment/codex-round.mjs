@@ -71,36 +71,25 @@ function resolvePath(value) {
 
 function runningInGitBash() {
 	if (process.platform !== "win32") return false;
+	if (!/^(?:MINGW|MSYS|UCRT|CLANG)/i.test(process.env.MSYSTEM ?? ""))
+		return false;
 	try {
-		const result = execFileSync(
+		const parent = execFileSync(
 			path.join(
 				process.env.SystemRoot ?? "C:/Windows",
 				"System32",
-				"WindowsPowerShell",
-				"v1.0",
-				"powershell.exe",
+				"tasklist.exe",
 			),
-			[
-				"-NoProfile",
-				"-NonInteractive",
-				"-Command",
-				`$processId = ${process.ppid}
-for ($depth = 0; $depth -lt 32 -and $processId -gt 0; $depth += 1) {
-         $parent = Get-CimInstance Win32_Process -Filter "ProcessId = $processId" -ErrorAction SilentlyContinue
-         if ($null -eq $parent) { break }
-         if ($parent.Name -ieq "bash.exe") { Write-Output "true"; break }
-         $processId = [int]$parent.ParentProcessId
-}`,
-			],
+			["/FI", `PID eq ${process.ppid}`, "/FO", "CSV", "/NH"],
 			{
 				encoding: "utf8",
 				stdio: ["ignore", "pipe", "ignore"],
 				windowsHide: true,
 			},
 		);
-		return result.trim() === "true";
+		return !/^"(?:node|powershell|pwsh)\.exe"/i.test(parent);
 	} catch {
-		return false;
+		return true;
 	}
 }
 

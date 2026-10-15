@@ -2927,6 +2927,8 @@ describe("L4 shell and byte parity", () => {
 					.map((part) => (/[\s"]/.test(part) ? `"${part}"` : part))
 					.join(" ");
 			const resumeArgs = ["resume", f.run, "--message", "/api"];
+			const nativeShellEnv = { ...f.env };
+			delete nativeShellEnv.MSYSTEM;
 			const cases = [
 				{
 					name: "Git Bash pnpm",
@@ -3009,7 +3011,7 @@ describe("L4 shell and byte parity", () => {
 							],
 							{
 								cwd: repository,
-								env: f.env,
+								env: nativeShellEnv,
 								encoding: "utf8",
 								windowsHide: true,
 							},
@@ -3033,7 +3035,7 @@ describe("L4 shell and byte parity", () => {
 							],
 							{
 								cwd: repository,
-								env: f.env,
+								env: nativeShellEnv,
 								encoding: "utf8",
 								windowsHide: true,
 								windowsVerbatimArguments: true,
@@ -3059,6 +3061,52 @@ describe("L4 shell and byte parity", () => {
 					);
 				}
 			}
+		},
+	);
+	it.skipIf(process.platform !== "win32")(
+		"keeps the Git Bash guard when pnpm's parent has exited",
+		async () => {
+			const f = fixture();
+			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+			rmSync(f.capture, { force: true });
+			const gitBash = findGitBash(f.env.PATH);
+			const status = path.join(f.root, "detached-status.txt");
+			const log = path.join(f.root, "detached.log");
+			const bashQuote = (value: string) =>
+				`'${value.replaceAll("'", "'\\''")}'`;
+			const command = `(${[
+				"pnpm",
+				"-s",
+				"codex:round",
+				"resume",
+				f.run,
+				"--message",
+				"check /api now",
+			]
+				.map((arg) => bashQuote(arg.replaceAll("\\", "/")))
+				.join(
+					" ",
+				)} > ${bashQuote(log)} 2>&1; printf '%s' "$?" > ${bashQuote(status)}) &`;
+			const outer = spawnSync(
+				gitBash,
+				["--noprofile", "--norc", "-c", command],
+				{
+					cwd: repository,
+					env: f.env,
+					encoding: "utf8",
+					windowsHide: true,
+				},
+			);
+			expect(outer.status, outer.stdout + outer.stderr).toBe(0);
+			await vi.waitFor(
+				() => {
+					expect(existsSync(status)).toBe(true);
+				},
+				{ timeout: 30_000, interval: 25 },
+			);
+			expect(readFileSync(status, "utf8")).toBe("1");
+			expect(readFileSync(log, "utf8")).toContain("--message-file");
+			expect(existsSync(f.capture)).toBe(false);
 		},
 	);
 	it.skipIf(process.platform !== "win32")(
