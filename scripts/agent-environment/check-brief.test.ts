@@ -986,6 +986,112 @@ describe("brief-references: decision item citations", () => {
 	});
 });
 
+describe("brief-references: row citations", () => {
+	const kinds = ["tsv", "markdown"] as const;
+	const presentCases = [
+		["single row", "row F101", ["F101"]],
+		["comma list", "rows F101, F102", ["F101", "F102"]],
+		["and list", "rows F101 and F102", ["F101", "F102"]],
+		["range", "rows F101-F103", ["F101", "F102", "F103"]],
+		["separate backticks", "rows `F101`, `F102`", ["F101", "F102"]],
+		[
+			"whole list in one code span",
+			"rows `F101, F102 and F103`",
+			["F101", "F102", "F103"],
+		],
+	] as const;
+	const missingCases = [
+		["single row", "row F999", "F999"],
+		["comma list", "rows F101, F999", "F999"],
+		["and list", "rows F101 and F999", "F999"],
+		["range", "rows F109-F111", "F110"],
+		["separate backticks", "rows `F101`, `F999`", "F999"],
+		["whole list in one code span", "rows `F101, F999 and F102`", "F999"],
+	] as const;
+
+	function addRows(
+		f: ReturnType<typeof fixture>,
+		kind: (typeof kinds)[number],
+		ids: readonly string[],
+	) {
+		const file = kind === "tsv" ? "docs/rows.tsv" : "docs/rows.md";
+		const content =
+			kind === "tsv"
+				? `${ids.map((id) => `${id}\tvalue`).join("\n")}\n`
+				: [
+						"| ID | Value |",
+						"| --- | --- |",
+						...ids.map((id) => `| ${id} | value |`),
+						"",
+					].join("\n");
+		put(f.worktree, file, content);
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", `add ${kind} row fixture`);
+		return {
+			file,
+			head: git(f.worktree, "rev-parse", "--short", "HEAD"),
+		};
+	}
+
+	function brief(
+		f: ReturnType<typeof fixture>,
+		head: string,
+		file: string,
+		citation: string,
+	) {
+		return `${f.valid.replace(`, HEAD \`${f.head}\``, `, HEAD \`${head}\``)}\n\`${file}\` ${citation}.\n`;
+	}
+
+	for (const kind of kinds) {
+		it(`accepts every row citation form in ${kind}`, async () => {
+			const f = fixture();
+			const { file, head } = addRows(f, kind, ["F101", "F102", "F103"]);
+			for (const [, citation, ids] of presentCases) {
+				const result = await f.check(brief(f, head, file, citation));
+				expect(result.problems, `${citation}: ${ids.join(", ")}`).toEqual([]);
+			}
+		});
+
+		it(`reports every missing row form in ${kind}`, async () => {
+			const f = fixture();
+			const { file, head } = addRows(f, kind, ["F101", "F102", "F103"]);
+			for (const [, citation, missing] of missingCases) {
+				const result = await f.check(brief(f, head, file, citation));
+				const output = formatBriefResult(result);
+				expect(result.ok, `${citation}: ${output}`).toBe(false);
+				expect(output).toContain(`missing row ${missing} in ${file}`);
+				expect(output).toContain(`HEAD ${head}`);
+			}
+		});
+	}
+
+	it("does not read a row from the command repository", async () => {
+		const f = fixture();
+		put(f.commandRepository, "docs/command-rows.tsv", "F999\tvalue\n");
+		const result = await f.check(
+			`${f.valid}\n\`docs/command-rows.tsv\` row F999.\n`,
+		);
+		const output = formatBriefResult(result);
+		expect(result.ok).toBe(false);
+		expect(output).toContain("drift: missing");
+		expect(output).toContain("command-rows.tsv");
+	});
+
+	it("checks rows at the named HEAD, not the working copy", async () => {
+		const f = fixture();
+		put(
+			f.worktree,
+			"docs/guide.md",
+			"# Guide\n\n## Selected heading\nLast line.\n\n| ID | Value |\n| --- | --- |\n| F999 | working only |\n",
+		);
+		const result = await f.check(`${f.valid}\n\`docs/guide.md\` row F999.\n`);
+		const output = formatBriefResult(result);
+		expect(result.ok).toBe(false);
+		expect(output).toContain("missing row F999 in docs/guide.md");
+		expect(output).toContain(`HEAD ${f.head}`);
+	});
+});
+
 describe("brief-format: shared environment and brief role", () => {
 	it.each([
 		"codex",
