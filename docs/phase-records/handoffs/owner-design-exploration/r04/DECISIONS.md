@@ -795,6 +795,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     `772400e4`). The line is the coordinator's lease in `PROJECT_STATE.yaml`; F146 (single tests over Vitest's
     20 s) is unchanged.
 
+72. **Codex's limits do not hold the rounds back** (the user, 2026-10-15, «عادي مب مشكلة معي اربع حسابات codex او
+    خمسه ممكن و ايضا لو وصلت كل الحسابات الثلاث الحالية الي مسجله للحد مب مشكلة نقدر نكمل ب deepseek لان رصيده
+    مفتوح», agreeing to the session's plan: the grading worktrees cleaned, the launcher and verify-fitway rounds in
+    parallel, the shared lows after verify-fitway):
+    - Three GPT-6.1 Sol accounts are saved now; the user can add a fourth or fifth. The account rule stays: stay on the
+      current account until its limit, then switch.
+    - When every saved Sol account is limited, the work carries on through DeepSeek V4.1 Flash, whose balance is open.
+      Coordinator: that covers Sol's rounds, briefs' second reviews and grading; a DeepSeek grader then grades a
+      DeepSeek round, so the
+      coordinator reproduces two held-out rows instead of one, and Opus (item 67) grades a round a merge rests on.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the

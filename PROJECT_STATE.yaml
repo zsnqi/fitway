@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-15T09:00:00+03:00
+updatedAt: 2026-10-15T23:40:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -49,6 +49,7 @@ milestones:
       - scripts/check-agent-context.test.ts, its K1 live-frontier expectation only (from 2026-10-14, for access-reason-cap-r01's closure, F129; its earlier owner agent-environment-r03 is DONE)
       - scripts/check-agent-context.mjs and scripts/check-agent-context.test.ts, scripts/verify-repository.mjs and its tests, a new main-advance script with its test under scripts/agent-environment/, biome.json, .impeccable/config.json (its byte-order mark only) and docs/agent-context/briefs/codex.md (from 2026-10-15, the encoding-checks round, DECISIONS 62; their earlier owner agent-environment-r03 is DONE)
       - AGENTS.md and docs/WORKFLOW.md, the line that names how main moves only (from 2026-10-15, the user's permission in DECISIONS 62)
+      - scripts/verify.mjs, its step log and mutation guard only (from 2026-10-15, the brief-ladder round, F246, DECISIONS 70; its earlier owner agent-environment-r03 is DONE)
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
       - design-research/owner-visual-preferences/** (user-supplied reference; read only)
