@@ -20,9 +20,9 @@ const skill = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(skill, "../../..");
 let scratch;
 before(async () => {
-	const root = "D:/fitway-temp/owner-r04-vf-fixes/parallel";
+	const root = "D:/fitway-temp/owner-r04-vf-runner";
 	await mkdir(root, { recursive: true });
-	scratch = await mkdtemp(resolve(root, "fixtures-"));
+	scratch = await mkdtemp(resolve(root, "parallel-"));
 });
 after(async () => {
 	await rm(scratch, { recursive: true, force: true });
@@ -37,10 +37,18 @@ async function fixture(name, mutation) {
 	))
 		await cp(resolve(skill, file), resolve(clone, file));
 	const cacheFile = resolve(clone, "baseline-cache.mjs");
+	const cacheSource = await readFile(cacheFile, "utf8");
+	const cacheRootLine = 'export const cacheRoot = "D:/fitway-verify-captures";';
+	const cacheRootMatches = cacheSource.split(cacheRootLine).length - 1;
+	assert.equal(
+		cacheRootMatches,
+		1,
+		"baseline-cache.mjs cacheRoot seam changed; update the fixture explicitly",
+	);
 	await writeFile(
 		cacheFile,
-		(await readFile(cacheFile, "utf8")).replace(
-			'export const cacheRoot = "D:/fitway-verify-captures";',
+		cacheSource.replace(
+			cacheRootLine,
 			`export const cacheRoot = ${JSON.stringify(resolve(root, "cache"))};`,
 		),
 	);

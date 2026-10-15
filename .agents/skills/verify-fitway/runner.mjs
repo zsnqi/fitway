@@ -119,6 +119,34 @@ const pageReadingProofKeys = new Set([
 	"visible",
 ]);
 
+function proofExpressions(proof) {
+	if (!proof || typeof proof !== "object") return [];
+	if (typeof proof.expression === "string") return [proof.expression];
+	if (Array.isArray(proof.allOf)) return proof.allOf.flatMap(proofExpressions);
+	if (Array.isArray(proof.oneOf)) return proof.oneOf.flatMap(proofExpressions);
+	return [];
+}
+
+async function expressionValue(page, expression) {
+	const predicate = new Function(
+		`try { return Boolean(${expression}); } catch { return false; }`,
+	);
+	return Boolean(await page.evaluate(predicate));
+}
+
+async function assertTimedCaptureState(page, rules, expected, label) {
+	for (const rule of rules)
+		for (const expression of proofExpressions(rule.proof)) {
+			const actual = await expressionValue(page, expression);
+			if (actual !== expected)
+				throw new Error(
+					`${label} predicate ${
+						expected ? "changed before" : "was already true before"
+					} capture: ${expression}`,
+				);
+		}
+}
+
 function readsPage(proof) {
 	if (!proof || typeof proof !== "object") return false;
 	if (typeof proof.expression === "string") return true;
@@ -136,6 +164,27 @@ function requestedProofs(page, state, language) {
 	const rules = page.states.filter((rule) =>
 		matches(rule, state.query, language),
 	);
+	const arrivalValue = state.query.arrive;
+	const timedArrival =
+		state.query.state === "loading" &&
+		arrivalValue !== undefined &&
+		arrivalValue !== "never" &&
+		Number(arrivalValue) > 0;
+	if (timedArrival && !rules.some((rule) => rule.afterActions)) {
+		const live = page.states.find(
+			(rule) =>
+				rule.when?.state === "live" &&
+				!rule.afterActions &&
+				readsPage(rule.proof),
+		);
+		if (live)
+			rules.push({
+				...live,
+				when: { ...live.when, arrive: arrivalValue },
+				afterActions: true,
+				shows: `Arrival: ${live.shows}`,
+			});
+	}
 	for (const key of Object.keys(state.query))
 		if (
 			!["lang", "motion"].includes(key) &&
@@ -644,14 +693,34 @@ export async function drive(options) {
 											const afterRules = rules.filter(
 												(rule) => rule.afterActions,
 											);
+											const timedArrival =
+												Object.hasOwn(effective.query, "arrive") &&
+												afterRules.some(
+													(rule) => proofExpressions(rule.proof).length > 0,
+												);
 											entry.stateProof = [];
 											for (const rule of beforeRules) {
 												await prove(current.page, rule.proof, language);
 												entry.stateProof.push(rule.shows);
 											}
+											if (timedArrival)
+												await assertTimedCaptureState(
+													current.page,
+													afterRules,
+													false,
+													"Arrival",
+												);
 											await save("before");
-											for (const rule of beforeRules)
-												await prove(current.page, rule.proof, language);
+											if (timedArrival)
+												await assertTimedCaptureState(
+													current.page,
+													beforeRules,
+													true,
+													"Loading",
+												);
+											if (!timedArrival)
+												for (const rule of beforeRules)
+													await prove(current.page, rule.proof, language);
 											const unavailable =
 												(feature.widths === "phone" && cssWidth > 720) ||
 												(feature.widths === "wide" && cssWidth <= 720) ||
@@ -886,11 +955,11 @@ export async function drive(options) {
 														`CSS property unchanged: ${feature.proof.cssPropertyChanged}`,
 													);
 												await ui.twoFrames(current.page);
-												if (!feature.changesState)
+												if (!feature.changesState && !timedArrival)
 													for (const rule of beforeRules)
 														await prove(current.page, rule.proof, language);
 												await save("after");
-												if (!feature.changesState)
+												if (!feature.changesState && !timedArrival)
 													for (const rule of beforeRules)
 														await prove(current.page, rule.proof, language);
 												// A flow may change a state (retry/navigation). Its end proof owns that result;

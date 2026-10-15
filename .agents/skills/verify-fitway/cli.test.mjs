@@ -1931,10 +1931,12 @@ async function runnerFixture(name, features, options = {}) {
 import {appendFile,writeFile} from "node:fs/promises";
 import {createContext,runInContext} from "node:vm";
 const motion=${JSON.stringify(options.scriptMotion || null)}, phase=${JSON.stringify(options.scriptPhase || 0)};
+const transitionBeforeCapture=${JSON.stringify(Boolean(options.transitionBeforeCapture))};
 const capture=async(via,options,picture)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from(picture)};
 export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
  let focus="body", open=false;
+ let fixturePhase="loading";
  let now=0, next=0; const frames=new Map();
  const sandbox={position:0,document:{getAnimations:()=>[]},
  requestAnimationFrame:(callback)=>{const id=++next;frames.set(id,callback);return id},
@@ -1945,10 +1947,15 @@ export async function newContext(browser, options) {
 const page={setDefaultTimeout(){},addInitScript:async(fn)=>{await appendFile(${JSON.stringify(resolve(root, "init.jsonl"))},"observer\\n");if(motion)run(fn)},
  startMotion:()=>{if(motion){runInContext('function move(){position++;if('+JSON.stringify(motion==='forever')+'||position<20)requestAnimationFrame(move)};requestAnimationFrame(move)',sandbox);for(let i=0;i<phase;i++)tick()}},
  tick,picture:()=>motion?JSON.stringify({x:sandbox.position}):"fixture",
- waitForFunction:async(fn,arg,options)=>{if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
- screenshot:async(options)=>capture("native",options,page.picture()),
+ waitForFunction:async(fn,arg,options)=>{if(fn.toString().includes("__fixturePhase === 'ready'")){fixturePhase="ready";return}if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
+ screenshot:async(options)=>{if(transitionBeforeCapture)fixturePhase="ready";return capture("native",options,page.picture())},
+ beforeCapture:()=>{if(transitionBeforeCapture)fixturePhase="ready"},
 context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
-  evaluate:async(fn)=>fn.toString().includes("coarse")
+  evaluate:async(fn)=>fn.toString().includes("__fixturePhase === 'loading'")
+   ? fixturePhase==="loading"
+   : fn.toString().includes("__fixturePhase === 'ready'")
+   ? fixturePhase==="ready"
+   : fn.toString().includes("coarse")
    ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
 : fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
@@ -1964,7 +1971,7 @@ evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body
 }
 export const withParams=(url)=>url;
 export const preparePage=async(page)=>{page.startMotion();return {ready:true}};
-export const screenshot=async(page,options)=>capture("adapter",options,page.picture());
+export const screenshot=async(page,options)=>{page.beforeCapture?.();return capture("adapter",options,page.picture())};
 export const twoFrames=async(page)=>{page.tick();page.tick()};
 export const injectProbe=async()=>{};
 export const renderSheet=async()=>{};
@@ -2815,6 +2822,78 @@ test("V1: afterActions state proofs run after the feature and must read the page
 	);
 });
 
+test("V1: timed arrival captures loading before the transition and rejects a transition during capture", async () => {
+	const features = [
+		{ id: "page", actions: [], proof: { selector: "main", visible: true } },
+	];
+	const mapStates = [
+		{
+			when: { arrive: "500" },
+			shows: "Loading before arrival",
+			proof: {
+				expression: "window.__fixturePhase === 'loading'",
+			},
+		},
+		{
+			when: { arrive: "500" },
+			afterActions: true,
+			shows: "Payload arrived",
+			proof: {
+				expression: "window.__fixturePhase === 'ready'",
+			},
+		},
+	];
+	const fallback = await runnerFixture("timed-arrival-fallback", features, {
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Loading before arrival",
+				proof: {
+					expression: "window.__fixturePhase === 'loading'",
+				},
+			},
+			{
+				when: { state: "live" },
+				shows: "Live after arrival",
+				proof: {
+					expression: "window.__fixturePhase === 'ready'",
+				},
+			},
+		],
+		switches: [
+			{ name: "state", values: ["loading", "live"], samples: [] },
+			{ name: "arrive", values: ["500"], samples: [] },
+		],
+		states: "state=loading&arrive=500",
+	});
+	assert.equal(
+		fallback.result.status,
+		0,
+		fallback.result.stderr + fallback.result.stdout,
+	);
+	const passing = await runnerFixture("timed-arrival-pass", features, {
+		mapStates,
+		switches: [{ name: "arrive", values: ["500"], samples: [] }],
+		states: "arrive=500",
+	});
+	assert.equal(
+		passing.result.status,
+		0,
+		passing.result.stderr + passing.result.stdout,
+	);
+	const forced = await runnerFixture("timed-arrival-during-capture", features, {
+		mapStates,
+		switches: [{ name: "arrive", values: ["500"], samples: [] }],
+		states: "arrive=500",
+		transitionBeforeCapture: true,
+	});
+	assert.equal(forced.result.status, 1);
+	assert.match(
+		forced.result.stderr + forced.result.stdout,
+		/Loading predicate changed before capture/,
+	);
+});
+
 test("V2: an address-only feature is captured under keyboard", async () => {
 	const { result } = await runnerFixture(
 		"address-only-keyboard",
@@ -3064,6 +3143,37 @@ test("V7: navigation settles before the action returns and a wrong destination f
 	assert.equal(focusReads, 2);
 });
 
+function skillCommandOptions(skill) {
+	const options = [];
+	for (const line of skill.split(/\r?\n/))
+		for (const match of line.matchAll(/--[a-z][a-z0-9-]*/g)) {
+			const commandStart = line.search(/\bmeasure\b/);
+			const measureTail = commandStart < 0 ? "" : line.slice(commandStart);
+			const delimiter = /\s--(?:\s|$)/.exec(measureTail);
+			const delegated =
+				commandStart >= 0 &&
+				(delimiter
+					? match.index >= commandStart + delimiter.index
+					: /\bmeasure\s+--(?:tool|colors)\b/.test(measureTail) &&
+						match.index > commandStart);
+			options.push({
+				command: commandStart >= 0 ? "measure" : "guide",
+				option: match[0],
+				delegated,
+			});
+		}
+	return options;
+}
+
+function assertSkillCliOptions(skill, cliOptions) {
+	for (const { command, option, delegated } of skillCommandOptions(skill))
+		if (!delegated)
+			assert.ok(
+				cliOptions.has(option),
+				`${option} is not a CLI option in ${command}`,
+			);
+}
+
 test("V5: SKILL names CLI options, ports and rendered artifacts without drift", async () => {
 	const skill = await readFile(
 		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
@@ -3072,9 +3182,25 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 	const cliOptions = new Set(help.match(/--[a-z][a-z0-9-]*/g) || []);
 	for (const option of cliOptions)
 		assert.ok(skill.includes(option), `${option} is missing from SKILL.md`);
-	const beforeAdvanced = skill.split("## Evidence and advanced tools")[0];
-	for (const option of beforeAdvanced.match(/--[a-z][a-z0-9-]*/g) || [])
-		assert.ok(cliOptions.has(option), `${option} is not a CLI option`);
+	assertSkillCliOptions(skill, cliOptions);
+	assert.doesNotThrow(() =>
+		assertSkillCliOptions(
+			"```powershell\nnode $cli measure --tool diff -- --forced-colors active\n```",
+			cliOptions,
+		),
+	);
+	assert.throws(
+		() =>
+			assertSkillCliOptions(
+				"```powershell\nnode $cli compare --not-a-cli-option\n```",
+				cliOptions,
+			),
+		/--not-a-cli-option is not a CLI option/,
+	);
+	assert.throws(
+		() => assertSkillCliOptions(`${skill}\n--not-a-cli-option`, cliOptions),
+		/--not-a-cli-option is not a CLI option/,
+	);
 	for (const pair of skill.match(/\b31\d\d-31\d\d\b/g) || [])
 		if (pair !== "3178-3185")
 			assert.ok(
