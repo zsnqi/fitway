@@ -159,6 +159,18 @@ function requestedProofs(page, state, language) {
 	return rules;
 }
 
+async function proveStateRule(page, rule, language, moment) {
+	try {
+		await prove(page, rule.proof, language);
+	} catch (error) {
+		const kind = rule.afterActions ? "afterActions" : "before";
+		const languageLabel = rule.language || "none";
+		throw new Error(
+			`State proof failed at ${moment}: ${kind} rule ${JSON.stringify(rule.shows ?? null)} with when ${stateWhenKey(rule.when || {})} language ${languageLabel}; ${error.message}`,
+		);
+	}
+}
+
 const safe = (value) => value.replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 120);
 const captureIdentity = (item) =>
 	JSON.stringify([
@@ -648,7 +660,12 @@ export async function drive(options) {
 											const afterRules = rules.filter(
 												(rule) => rule.afterActions,
 											);
-											const endedBefore = endedWhenKeys(afterRules);
+											const endedBefore = endedWhenKeys([
+												...afterRules,
+												...(feature.ends !== undefined
+													? [{ afterActions: true, ends: feature.ends }]
+													: []),
+											]);
 											const afterFrameBeforeRules = beforeRules.filter(
 												(rule) =>
 													!endedBefore.has(stateWhenKey(rule.when || {})),
@@ -657,12 +674,22 @@ export async function drive(options) {
 											entry.stateProof = [];
 											entry.afterFrameProof = [];
 											for (const rule of beforeRules) {
-												await prove(current.page, rule.proof, language);
+												await proveStateRule(
+													current.page,
+													rule,
+													language,
+													"before-frame:pre",
+												);
 												entry.stateProof.push(rule.shows);
 											}
 											await save("before");
 											for (const rule of beforeRules)
-												await prove(current.page, rule.proof, language);
+												await proveStateRule(
+													current.page,
+													rule,
+													language,
+													"before-frame:post",
+												);
 											const unavailable =
 												(feature.widths === "phone" && cssWidth > 720) ||
 												(feature.widths === "wide" && cssWidth <= 720) ||
@@ -839,7 +866,12 @@ export async function drive(options) {
 															"Feature has no actions; compared at rest only",
 													};
 												for (const rule of afterRules) {
-													await prove(current.page, rule.proof, language);
+													await proveStateRule(
+														current.page,
+														rule,
+														language,
+														"after-frame:pre",
+													);
 													entry.stateProof.push(rule.shows);
 												}
 												if (feature.proof.countIncreased)
@@ -899,16 +931,31 @@ export async function drive(options) {
 												await ui.twoFrames(current.page);
 												if (recheckBeforeState) {
 													for (const rule of afterFrameBeforeRules) {
-														await prove(current.page, rule.proof, language);
+														await proveStateRule(
+															current.page,
+															rule,
+															language,
+															"after-frame:pre",
+														);
 														entry.afterFrameProof.push(rule.shows);
 													}
 												}
 												await save("after");
 												if (recheckBeforeState)
 													for (const rule of afterFrameBeforeRules)
-														await prove(current.page, rule.proof, language);
+														await proveStateRule(
+															current.page,
+															rule,
+															language,
+															"after-frame:post",
+														);
 												for (const rule of afterRules)
-													await prove(current.page, rule.proof, language);
+													await proveStateRule(
+														current.page,
+														rule,
+														language,
+														"after-frame:post",
+													);
 												// A flow may change a state (retry/navigation). Its end proof owns that result;
 												// the requested state was proved before the first user action.
 												entry.featureProof = actionRecipe.proof;
