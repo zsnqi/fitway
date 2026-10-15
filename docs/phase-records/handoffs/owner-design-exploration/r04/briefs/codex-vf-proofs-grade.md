@@ -51,22 +51,25 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   with the HEAD's CLI and the base CLI (diff the outputs); a self compare of Access's `language` feature, ar, wide,
   gives the same status and `afterFrameProof` with both CLIs. Intent: a recipe without feature `ends` runs as before.
 - **G2. Feature ends lifts one rule.** Outcome: in a copy of the recipes where Access's `language` feature drops
-  `changesState` and declares `ends` naming one before rule that applies to its item, the copy loads; that item's
-  `afterFrameProof` omits that rule and holds every other before rule that applies; a copy whose `ends` names a
+  `changesState` and declares `ends` naming one before rule that applies to its item, the copy loads; with that rule
+  planted true before the action and false after it, the item passes, its `afterFrameProof` omits that rule and
+  holds every other before rule that applies; a copy whose `ends` names a
   `when` no before rule has is refused at load; a copy with `changesState` and `ends` together is refused. The same
   lift holds for a second plant on another page (Reports' `page-retry`, ending `{state: "error"}`). Intent: a
   declaration lifts only what it names, on any feature.
 - **G3. A surviving rule is checked.** Outcome: in such a copy, each of two planted before rules with different
   `when` values that apply to the item, are not ended, hold before the action and are false after it, planted one at
   a time, fails that item with a message naming that rule's `shows`. Intent: a state that should survive the action is proved beside the after frame.
-- **G4. Several inputs.** Outcome: a feature whose items differ in actions or inputs and declares `ends` is refused
-  at load (plant one). Intent: one declaration never covers items it does not hold for.
+- **G4. Several inputs.** Outcome: a feature declaring `ends` whose items differ only in actions, one whose items
+  differ only in inputs, and one differing in both are each refused at load (three plants). Intent: one declaration never covers items it does not hold for.
 - **G5. Moments named.** Outcome: a planted failing rule at each of the four moments gives a message holding that
-  moment's token and none of the other three, the rule's `shows`, `when` and language, and Playwright's timeout
+  moment's token and none of the other three, the rule's `shows`, `when`, language and kind (before or
+  `afterActions`), and Playwright's timeout
   text; the run's JSON item problems hold the same text; two applying rules sharing one `shows` with different
   `when`, the second failing, give a message with the second's `when` and not the first's. Intent: a failure is read
   without a rerun.
-- **G6. Nothing else moved.** Outcome: a self compare of every item of each of the four pages, ar and en, wide,
+- **G6. Nothing else moved.** Outcome: a self compare of every item of each of the four pages, ar and en, wide and
+  phone,
   passes with both CLIs and gives the same JSON apart from timing fields and paths (report each page's item count). Intent: passing runs read as before.
 - **G7. The repair proven.** Outcome: each new S1-S2 test case fails on `5b81b3b7`'s production code at its own
   behavioural assertion, never at load, import, collection or setup (copy the result's test file onto a base archive
@@ -75,7 +78,8 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G8. Limits.** Outcome: `git diff --stat 5b81b3b7 HEAD` lists only files under `.agents/skills/verify-fitway/`; no
   test present at `5b81b3b7` is removed, skipped or made conditional, none lost an assertion line, and no existing
   assertion's predicate or expected value changed (list each pre-existing test whose body changed, with the change);
-  each test file's count is at least the base's. Intent: nothing was weakened to pass.
+  each test file's count is at least the base's; every pre-existing helper or fixture the diff changes is listed with
+  its change and why the tests that use it still check what they checked. Intent: nothing was weakened to pass.
 - **G9. Report against commands, and the inventory.** Outcome: the result's commit exists and is your HEAD; the
   round's run folder (`D:/fitway-temp/codex-round-2c7cab40-1cba-4527-b9ad-13e4eb9fe35b/`) records the `git commit`
   and the `node scripts/verify.mjs fast` run its report names, with their exit statuses quoted from the events; the
