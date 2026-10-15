@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: one-line review readings read, and a source read by a child process caught (owner-design-exploration-r04, launcher-fixes-4)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/owner-r04-launcher-fixes-4`, branch `owner-r04-launcher-fixes-4`, HEAD `c699d3fb`
+- **Worktree:** `D:/Projects/fitway-worktrees/owner-r04-launcher-fixes-4`, branch `owner-r04-launcher-fixes-4`, HEAD `3bb0eae8`
 - **Milestone:** `owner-design-exploration-r04`. Decisions: `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` item 62.
 - **Read first, only these:**
   - `scripts/agent-environment/codex-round.mjs` lines 518-720 and 799-818;
@@ -54,9 +54,10 @@ source read before its place is decided fails a test whatever program reads it.
     needs a body line (`numberedBoldStart`, `codex-round.mjs:564-572`); so `D:/fitway-temp/brief-review/codex-vf-runner-1/last.md`, whose five
     readings each hold REVIEW.md's four parts on one line, is refused as "cannot be read as readings".
   - **Outcome.** That answer reads as exactly five readings, each holding its whole line, with the IDs V1, V1, L1, V3
-    and V2 in order, as a test on a copy of it under `scripts/agent-environment/fixtures/codex-round-reviews/`. The
-    same holds with `)` in place of `.` after the number, with the labels not bold, and with the readings
-    separated by no blank line. A numbered one-line item that names an ID but gives only one of the four parts (a
+    and V2 in order, as a test that runs the launcher's own review step on a copy of it under
+    `scripts/agent-environment/fixtures/codex-round-reviews/` (the answer stops no launch). The same holds with `)` in
+    place of `.` after the number, with the labels not bold, with the four parts in another order or in other words,
+    and with the readings separated by no blank line. A numbered one-line item that names an ID but gives only one of the four parts (a
     list of IDs, or a one-line summary of what the brief asks) is still refused, and so is the same answer with any
     reading's line cut after its ID; every answer the existing tests and fixtures read still reads the same.
   - **Intent.** A complete answer never stops a launch for its layout, and the parser still refuses what is not a
@@ -67,17 +68,19 @@ source read before its place is decided fails a test whatever program reads it.
     `node:child_process` ahead of `reviewSourcePlan` in `copyReviewSources` (`codex-round.mjs:799-818`), its result
     ignored, passes every test. Two repairs (encoding-launcher E3, encoding-launcher-fix G3) widened what the launcher
     reports, and the plant still passed: the gap is that the observation depends on the code under test.
-  - **Outcome.** That plant, written in turn with `spawn`, `spawnSync`, `execFile`, `execFileSync`, `exec` and
-    `execSync`, each with its result ignored, makes at least one test fail for each of the three source kinds
-    (repository, checkout, temp) because it observed the process start before the place check; the existing file
-    read plants still fail. Report each plant with the failing test's name.
+  - **Outcome.** That plant, written in turn with every function of `node:child_process` that starts a process
+    (`fork` included), each with its result ignored, makes at least one test fail for each of the three source kinds
+    (repository, checkout, temp) because it observed the process start before the place check; with a brief naming two
+    sources, a plant that reads the second after the first's place check but before its own fails as well; the
+    existing file read plants still fail. Report each plant with the failing test's name.
   - **Intent.** A source touched before its place is decided fails CI by any route, without relying on the launcher
     to report its own reads.
 
 ## Limits the result keeps
 
 - **L1. Today's behaviour elsewhere.** Every existing test keeps its assertions and still runs, none skipped,
-  excluded or made conditional; launch, `resume` and the review keep their arguments, files and exit codes.
+  excluded or made conditional, and the helpers, mocks and fixtures they use keep what they check (a change to one is
+  reported with the outcome that needed it); launch, `resume` and the review keep their arguments, files and exit codes.
 - **L2. The ladder.** `node scripts/verify.mjs fast` passes on your committed tree, and `git status --short` is empty
   after your commit and after the ladder.
 
