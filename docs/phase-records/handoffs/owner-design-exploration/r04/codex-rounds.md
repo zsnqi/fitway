@@ -1405,3 +1405,23 @@ checks live outside the repository and never appear here or in a brief. One line
   the allowlist, which the review's reading 4 had raised and was left open to keep the Sol arm's brief as run).
 - **Disposition:** only the DeepSeek arm can merge, after a fix round for G3, G6 and G7 (F238-F240); the Sol arm's
   branch is kept unmerged.
+## reports-css: `briefs/codex-reports-css.md` (this folder), result `23314b3a` on `owner-r04-reports-css`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** decision 47's shared styles out of `reports.css` (C1-C3, C5) and F160's loading proofs (C4). One run
+  (`codex-round-6f244aad-...`), stopped with wave 1 and resumed on its thread, two automatic resumes.
+- **Codex's report:** C1-C5 and L1-L4 PASS: `shared.css` 57 rules, `reports.css` 318, union 375 as at the base;
+  C2's matrix 2,008 EQUAL, 0 DIFFERENT; no TIMELINE DIFFERENT; loading proofs EQUAL in 3 of 3 runs.
+- **Held-out** (`D:/fitway-grader/owner-r04/reports-css-heldout.md`), graded by GPT-6.1 Sol `xhigh`
+  (`briefs/codex-reports-css-grade.md`, across an account switch): RC2, RC3 (full compare 738 EQUAL, 0 DIFFERENT),
+  RC5 (the result's loading frames show the skeleton, 24/24 EQUAL under concurrent compares), RC6, RC7 pass; RC1 and
+  RC4 fail as graded. The coordinator's reading of the source (inferred, not a browser probe) settles RC1:
+  `.rbtn.is-disabled` is written by `reports.js` and `components.js` (two pages; the probe did not reach the
+  specimen's state); `.field-hint` and `.field-err .ico` are Access's alone, but Access no longer loads `reports.css`,
+  so they must sit in `shared.css` for Access to stay unchanged (a tension in the coordinator's C1 and RC1, not a
+  defect); `.field.is-disabled` stays in `reports.css`, which the components sheet loads. RC4's NOT-HELD on Access's
+  `pin-copy` (7, 2 and 2 pixels at 1, 61, 141 ms) is the item the diagnosis round measured NOT-HELD on the base
+  `c2fe4661` the same day (a 7-pixel glyph fringe, F126's family): the base's own variation.
+- **Brief rows** 9/9; **held-out** 7/7 after the coordinator's settling (5/7 as graded). Brief-caused: RC1's "two
+  pages" wording against C1's moved pages.
+- **Disposition:** fast-forwarded `owner-followup-r04-build` to `23314b3a` after its CI passed; no pixel changed, so no
+  visual acceptance is due. F160 is fixed; the shared lows (decision 47) can follow.
