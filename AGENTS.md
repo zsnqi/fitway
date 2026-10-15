@@ -31,7 +31,7 @@ Codex loads this file automatically and Claude loads it through `CLAUDE.md`; eve
 
 ## Git, CI and verification
 
-- `main` is the trunk. The coordinator pushes working branches, never forces a push, and fast-forwards `main` to a branch whose CI passed. Deploying or provisioning external systems needs the user's authorization.
+- `main` is the trunk. The coordinator pushes working branches, never forces a push, and moves `main` only with `pnpm main:advance <commit>`, which fast-forwards it to a pushed commit whose CI run passed and refuses anything else; GitHub's protection on `main` requires the same. Deploying or provisioning external systems needs the user's authorization.
 - CI (`.github/workflows/checks.yml`) runs the fast ladder, `scripts/verify.mjs fast`, on every push; the green CI run on a pushed commit is the verification a record cites. Locally, `pnpm verify:fast`, `pnpm verify:phase --phase <registered-name>`, and `pnpm verify:full` run the same ladder and add the database and browser suites CI does not run.
 - A passing run leaves `git status --short` unchanged. Integration tests accept only the explicitly named disposable database and marker.
 - `pnpm check:design-context` is the required entry check for any design or UI session; it is not part of the ladder.

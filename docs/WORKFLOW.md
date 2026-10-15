@@ -365,6 +365,8 @@ The coordinator integrates candidates one at a time in the order defined by `PHA
 5. confirm validation left the worktree clean;
 6. record the integrated commit and evidence, then close the milestone in one commit (see
    "Active ledger and closed history"), which also releases its scope and leases.
+7. move `main` with `pnpm main:advance <commit>` once that commit's CI run has passed (`--dry-run` shows
+   what it would do); never by a direct push.
 
 A worker branch being green is `READY_FOR_INTEGRATION`, never `DONE`. Pushing and the trunk follow
 `AGENTS.md`, "Git, CI and verification"; deploying or provisioning external systems needs the
