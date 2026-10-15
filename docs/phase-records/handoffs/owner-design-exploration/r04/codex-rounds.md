@@ -1309,3 +1309,20 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Brief rows** 6/9 at first delivery (E3 partial, E4 and E5 fail), 8/9 after the fix; **held-out** 7/8 after the fix
   (EL3 partial). Brief-caused: E4 (the literal `- **X1.**`, F178). Model-caused: E5's first test bypassed pnpm.
 - **Disposition:** merged (`3554065b`) after CI on `d6e603fc`.
+
+## no-comments: `briefs/codex-no-comments.md` (this folder), report-only, at `c699d3fb` on `owner-r04-no-comments`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** decision 56's report-only trial of pstack's comment rules on the tool code. Review: four closed, one
+  left open (reading 3: narration a rule deletes needs no proof; evidence is required where a flag would become a
+  finding). One run (`codex-round-5175a893-...`), stopped by the user with wave 1 (decision 65) and resumed on its
+  thread by the next coordinator; no automatic resume; start load 89,154.
+- **Codex's report:** N1, N2, L1, L2 PASS: 25 files, 167 comments found by two syntax-aware passes that agree on every
+  span (Acorn and Babel), 50 kept and 117 deleted; 51 `MUST KILL` symbols, 50 confirmed, none refuted, one unclear
+  (`probes.mjs:11`, whose external library is absent from the checkout). Tables in `D:/fitway-temp/owner-r04-no-comments/`.
+- **Grading (coordinator):** every row of `comments.tsv` checked against `c699d3fb` by a script (file, line and quoted
+  text: 0 mismatches of 167); three `MUST KILL` rows read against the code (`codex-round.mjs` `findCodex` and
+  `assertOutsideGit`, `probes.mjs:8-11`) bear out their reasons.
+- **Reading:** by these rules seven comments in ten would go, and 50 symbols carry a policy only in prose, most in
+  `codex-round.mjs` (8) and the verify-fitway runner, CLI and core.
+- **Disposition:** report-only; no finding opened. The comments hold tool policy nobody sees in the demo (decision
+  52's order), so a reshape waits until after it; the tables are the evidence if one is proposed.
