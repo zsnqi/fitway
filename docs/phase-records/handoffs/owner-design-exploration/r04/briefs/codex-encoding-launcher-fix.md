@@ -4,7 +4,6 @@
 - **Worktree:** `D:/Projects/fitway-worktrees/owner-r04-encoding-launcher`, branch `owner-r04-encoding-launcher`, HEAD `ba84fd20`
 - **Milestone:** `owner-design-exploration-r04`. Decisions: `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` items 56 and 62.
 - **Read first, only these:**
-  - `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-encoding-launcher.md` §"Causes and required outcomes";
   - `scripts/agent-environment/codex-round.mjs` lines 72-140, 322-345, 700-725 and 800-825;
   - `scripts/agent-environment/codex-round.test.ts` lines 320-350, 1060-1110, 2510-2535 and 2790-2830.
 
@@ -53,8 +52,8 @@ guard holds through the command people run, and two tests stop passing without c
   - **Outcome.** A bullet starting `- **`, then capital letters and digits, then a full stop counts its ID, whether the
     bold closes after the ID or after a title, outside the environment block. Every brief in
     `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` then yields its IDs, for example D1-D6 for
-    `codex-deepseek-route.md`, K1-K3 with L1-L2 for `codex-launcher-fixes-3.md` and E1-E7 with L1-L2 for
-    `codex-encoding-launcher.md`; a test pins each brief's IDs, and a brief with none is still refused.
+    `codex-deepseek-route.md`, K1-K3 with L1-L2 for `codex-launcher-fixes-3.md` and R1, R2, T2 and T5 for
+    `codex-tuner-removal-continue.md`; a test pins each brief's IDs, and a brief with none is still refused.
   - **Intent.** The launcher waits for what each brief asks, and launches every brief that defines outcomes.
 - **G2. The Git Bash guard through pnpm.**
   - **Cause.** `runningInGitBash` (`codex-round.mjs:72-92`) looks only at the launcher's parent process, which is
