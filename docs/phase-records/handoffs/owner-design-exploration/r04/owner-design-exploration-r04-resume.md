@@ -65,9 +65,11 @@ decided the winner; decision 66's rule as written was applied). Windows Update's
 - **Timed or load-sensitive work needs a quiet machine** (B13, decision 68); P3 of `compare-parallel.test.mjs` failed
   once at about 92% CPU.
 - **DeepSeek's catalog source** is pinned at `D:/fitway-private/codex/deepseek-catalog-source.json` (F172).
-- **Temp worktrees with node_modules junctions** (unlink each junction with `cmd /c rmdir` before `git worktree
-  remove`): `D:/fitway-temp/owner-r04-launcher-fixes-4-grade/wt`, `owner-r04-reports-css-grade/wt` (no junction),
-  `owner-r04-vf-runner-grade-sol/wt`, `-grade-ds/wt`, `-opus-sol/wt`, `-opus-ds/wt`, `owner-r04-vf-runner-replay-base/wt`.
+- **Temp worktrees with node_modules junctions** (unlink each junction with cmd's rmdir before `git worktree
+  remove`): `D:/fitway-temp/owner-r04-launcher-fixes-4-grade/wt`, `D:/fitway-temp/owner-r04-reports-css-grade/wt` (no
+  junction), `D:/fitway-temp/owner-r04-vf-runner-grade-sol/wt`, `D:/fitway-temp/owner-r04-vf-runner-grade-ds/wt`,
+  `D:/fitway-temp/owner-r04-vf-runner-opus-sol/wt`, `D:/fitway-temp/owner-r04-vf-runner-opus-ds/wt` and
+  `D:/fitway-temp/owner-r04-vf-runner-replay-base/wt`.
 - «مساءً», «ظهرًا», «ليلًا» on the busiest-time card are a deliberate exception to DESIGN_GUIDE.md §9 (DECISIONS 33, 34).
 - Ports: 3174 the user's preview; 3176-3177, 3186-3187 and 3188-3189 the verification pairs; 3178-3179 reviewers and
   the probe kit; 3180 the LAN preview.
@@ -78,8 +80,8 @@ decided the winner; decision 66's rule as written was applied). Windows Update's
 
 - Worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected HEAD the
   commit that last changed this text.
-- Trial evidence: `D:/fitway-temp/owner-r04-encoding-coord/vf-runner-trial-replays.md`, the graders' folders
-  `D:/fitway-temp/owner-r04-vf-runner-grade-{sol,ds}/` and `-opus-{sol,ds}/`, the arms' notes in
-  `D:/fitway-temp/owner-r04-vf-runner{,-ds}/trial-metrics.md`.
+- Trial evidence: `D:/fitway-temp/owner-r04-encoding-coord/vf-runner-trial-replays.md`, the graders' folders under
+  D:/fitway-temp/ (owner-r04-vf-runner-grade-sol, -grade-ds, -opus-sol, -opus-ds), and each arm's
+  trial-metrics.md in its own temp folder.
 - Held-out rows: `D:/fitway-grader/owner-r04/`.
 - Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
