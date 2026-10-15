@@ -1309,3 +1309,119 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Brief rows** 6/9 at first delivery (E3 partial, E4 and E5 fail), 8/9 after the fix; **held-out** 7/8 after the fix
   (EL3 partial). Brief-caused: E4 (the literal `- **X1.**`, F178). Model-caused: E5's first test bypassed pnpm.
 - **Disposition:** merged (`3554065b`) after CI on `d6e603fc`.
+
+## no-comments: `briefs/codex-no-comments.md` (this folder), report-only, at `c699d3fb` on `owner-r04-no-comments`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** decision 56's report-only trial of pstack's comment rules on the tool code. Review: four closed, one
+  left open (reading 3: narration a rule deletes needs no proof; evidence is required where a flag would become a
+  finding). One run (`codex-round-5175a893-...`), stopped by the user with wave 1 (decision 65) and resumed on its
+  thread by the next coordinator; no automatic resume; start load 89,154.
+- **Codex's report:** N1, N2, L1, L2 PASS: 25 files, 167 comments found by two syntax-aware passes that agree on every
+  span (Acorn and Babel), 50 kept and 117 deleted; 51 `MUST KILL` symbols, 50 confirmed, none refuted, one unclear
+  (`probes.mjs:11`, whose external library is absent from the checkout). Tables in `D:/fitway-temp/owner-r04-no-comments/`.
+- **Grading (coordinator):** every row of `comments.tsv` checked against `c699d3fb` by a script (file, line and quoted
+  text: 0 mismatches of 167); three `MUST KILL` rows read against the code (`codex-round.mjs` `findCodex` and
+  `assertOutsideGit`, `probes.mjs:8-11`) bear out their reasons.
+- **Reading:** by these rules seven comments in ten would go, and 50 symbols carry a policy only in prose, most in
+  `codex-round.mjs` (8) and the verify-fitway runner, CLI and core.
+- **Disposition:** report-only. As decision 56 says, each of the 50 confirmed `MUST KILL` flags is a finding,
+  F184-F233 (`seen_by` `maintainer`, `demo` `waits`; decision 67); the `unclear` one is not. The table is kept as
+  `no-comments-must-kill.tsv` beside this file. Corrected on 2026-10-15: this record first said no finding was opened,
+  against decision 56 (coordinator's error, found in the poteto-mode review).
+## diagnosis: `briefs/codex-diagnosis.md` (this folder), report-only, at `c699d3fb` on `owner-r04-diagnosis` with the concept at `c2fe4661`, GPT-6.1 Sol, level `xhigh`
+
+- **Set-up:** decision 64's report-only diagnosis of F148 (D1), F165 (D2) and F171 (D3), with fixes proposed (D4).
+  Review: five closed. One run (`codex-round-f84ff767-...`), stopped with wave 1 and resumed on its thread (the
+  interrupted tool call logged "output is missing" errors on resume, harmless); start load 28,351; ports 3188-3189.
+- **Codex's report:** D1 FAIL and D2 FAIL (no reproduction: 90 D1 runs across controls, workers, motion, raster,
+  fixed times and CPU load; 40 touch runs on the four pages); D3 PASS (the all-problems run did not recur: 3,438 of
+  3,439 samples EQUAL, one glyph-fringe NOT-HELD; every one-factor A/B control EQUAL); D4 FAIL as asked (proposals
+  without the failing-before proof, since nothing reproduced); L1, L2 PASS (141 ledger rows in order).
+- **Grading (coordinator):** quoted verdict lines reproduced from `d1-full-02.log`, `d2-status-access-10.log` and
+  `d3-subset-nocallback-4w.log` (measured); the D3 summary matches its counts (measured). The ledger's load column is
+  wrong: 130 of 141 rows say "quiet machine", yet the first run started at 13:00 while reports-css's and vf-runner's
+  resumed runs were comparing on 3176-3177 and 3186-3187 (measured from the start times against the resume times).
+  So D1's and D2's "under stated load" does not hold, and the non-reproduction happened under unrecorded load.
+  The D1 no-cause list also lacks its icon-raster control, and D2's reduced-motion control never ran.
+- **Brief rows** 3/6 (D3, L1, L2; D1, D2 and D4 fail as written). Cause: the coordinator's (decision 64 put a
+  load-sensitive diagnosis beside three rounds' compares, against B13's quiet machine), and the model's (a load label
+  it did not check). F148, F165 and F171 carry the result; they stay open.
+- **Disposition:** report-only. A rerun of D1 and D2, if wanted, waits for a machine with no other round.
+## launcher-fixes-4: `briefs/codex-launcher-fixes-4.md` (this folder), result `954968b0` on `owner-r04-launcher-fixes-4`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** F182 (J1, one-line readings) and F156's child-process route (J2, after two failed repairs: the
+  observation moved off the launcher's own reports). Reviewed by both models (decision 66): DeepSeek returned five
+  readings, all closed, none raised by Sol; Sol returned one, closed, not raised by DeepSeek: row F182 was absent at
+  the brief's first HEAD `c699d3fb`, so Codex would have stopped on a missing source (F234: `brief:check` checks no
+  rows); the unused worktree moved to `3bb0eae8`. One run (`codex-round-52aae6d6-...`), two automatic resumes, about
+  35 minutes; start load 87,874; tokens 80.5M input (79.1M cached), 179k output (measured from the run's events).
+- **Codex's report:** J1, J2, L1 PASS; L2 FAIL locally (port 3176 held by reports-css, F183; the file alone passed
+  78/78) and two Git Bash tests failing in its sandbox (F237); CI on `954968b0` passed.
+- **Held-out** (`D:/fitway-grader/owner-r04/launcher-fixes-4-heldout.md`), graded by GPT-6.1 Sol `xhigh`
+  (`briefs/codex-launcher-fixes-4-grade.md`, run `codex-round-1f6251a7-...`; it first stopped on the round's brief
+  read at its own HEAD, older than the version launched, a coordinator brief gap, then hit an account usage limit and
+  was resumed on another saved account by `resume-auto.sh`, whose generic message replaced the coordinator's
+  clarification yet sufficed): LF2-LF6 pass; LF1 partial: answers with the parts reordered or with em-dash labels
+  read as 5, but five readings with reading 3 wrapped onto a column-0 line are refused whole (F235). The coordinator
+  reproduced LF1 from the grader's script (measured: `wrapped: count=0 refused=true`, the other two `count=5`).
+  The coordinator's own probe of the keyword test (`completeOneLineReading`) read two contrived non-readings as
+  readings and refused one complete unlabeled reading (measured on five synthetic lines; F236).
+- **Brief rows** 4/4; **held-out** 5/6 (LF1 partial). Brief-caused: none in the round. Model-caused: LF1's wrap.
+- **Disposition:** merged; LF1's failure is the safe one (the launcher stops and the review reruns). F156 and F182
+  are fixed; F235 and F236 go to the next launcher round.
+## vf-runner, one brief on both models (decision 66): `briefs/codex-vf-runner.md` (Sol arm, result `78a1c34e` on `owner-r04-vf-runner`, GPT-6.1 Sol `xhigh`) and `briefs/codex-vf-runner-ds.md` (DeepSeek arm, result `3ac1770a` on `owner-r04-vf-runner-ds`, DeepSeek V4.1 Flash `max`), both from `c699d3fb`
+
+- **Set-up:** F175 (V1, a state that changes with time), F168 (V2, test roots), F176 (V3, the whole guide). The
+  DeepSeek arm's brief differs only in worktree, branch, temp folder and port pair (3188-3189, since the Sol arm held
+  3186-3187); its review's five readings were left open to keep the briefs identical.
+- **Runs (measured from the run folders):** Sol about 3 h 01 min of work around the user's wave-1 stop, 62.1M input
+  tokens (61.4M cached) and 61k output in the resumed turn, no automatic resume, one intervention (the stop and the
+  coordinator's resume message); DeepSeek about 71 min, 80.8M input (78.6M cached) and 144k output, one automatic
+  resume, no intervention. Both reported V1-V3 and L1 PASS and L2 FAIL locally (Sol: two Git Bash tests, F237;
+  DeepSeek: port 3176 held, F183); CI passed on both commits.
+- **Grading:** each arm by GPT-6.1 Sol `xhigh` (`codex-vf-runner-grade-sol.md`, `-grade-ds.md`, identical apart from
+  worktree and ports, the same two readings closed in both) and by Opus (`owner-direction-verifier`, `high`;
+  decision 67) from fresh worktrees without Sol's verdicts. Where graders disagreed, or two graders measured a row
+  differently, the coordinator's replay decided (all measured; `D:/fitway-temp/owner-r04-encoding-coord/vf-runner-trial-replays.md`):
+  - G1: both arms' CLIs capture the skeleton with a recipe whose loading proof needs `data-load="shown"`; with the
+    concept's own proof (F160 at `c2fe4661`) the before frame is the pre-skeleton wait, so Opus's G1 failure on the
+    Sol arm came from its recipe: PASS for both. The concept's recipes declare no arrival proof at all, so every
+    grader wrote one.
+  - G5 on the DeepSeek arm: Sol's grader saw P3 fail once at about 92% CPU; Opus and the coordinator's rerun of the
+    grader's own driver passed: PASS (P3 looks load-sensitive).
+  - G6 and G7, seven plants on the base and both arms, after "Evidence and advanced tools" and before "## Compare":
+    the Sol arm lets the three `measure` lines through; the DeepSeek arm lets a line holding "pnpm" and a line
+    holding "measure tool arguments" through; the base catches all seven before "## Compare". Both arms FAIL G6
+    and G7 (an existing guard narrowed), and each arm's "V3 PASS" is an overclaim.
+  - G3: no test of either arm notices the static after-capture proof disabled (both FAIL). Opus on the DeepSeek arm:
+    any `afterActions` rule also drops every static rule's post-capture proof on that item (`runner.mjs:647-648`).
+- **Brief rows** 3/5 each (V1, V2 and L2 hold; V3 and L1 do not). **Rows:** Sol arm G1 P, G2 P, G3 F, G4 P, G5 P, G6 F, G7 F = 4/7; DeepSeek arm the same, 4/7. Overclaims: one
+  each (V3). Other overclaims replayed and not found: the self compares, the full compare (the Sol arm's 1,656
+  items are 828 per transport, `http` and `file://`), the V1 tests, the cache-root seam.
+- **Rule as written:** rows tie, overclaims tie, interventions 0 against 1: the DeepSeek arm wins. The one Sol-arm
+  intervention was the user's wave-1 stop, not something the round needed; without it the arms tie on every count.
+  Neither arm leads by two rows and both overclaim, so decision 64's split stays. Brief-caused: G3 and the guide's
+  keyword exemptions (the brief asked for "an allowlisted non-CLI executable, judged per command" without naming
+  the allowlist, which the review's reading 4 had raised and was left open to keep the Sol arm's brief as run).
+- **Disposition:** only the DeepSeek arm can merge, after a fix round for G3, G6 and G7 (F238-F240); the Sol arm's
+  branch is kept unmerged.
+## reports-css: `briefs/codex-reports-css.md` (this folder), result `23314b3a` on `owner-r04-reports-css`, DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** decision 47's shared styles out of `reports.css` (C1-C3, C5) and F160's loading proofs (C4). One run
+  (`codex-round-6f244aad-...`), stopped with wave 1 and resumed on its thread, two automatic resumes.
+- **Codex's report:** C1-C5 and L1-L4 PASS: `shared.css` 57 rules, `reports.css` 318, union 375 as at the base;
+  C2's matrix 2,008 EQUAL, 0 DIFFERENT; no TIMELINE DIFFERENT; loading proofs EQUAL in 3 of 3 runs.
+- **Held-out** (`D:/fitway-grader/owner-r04/reports-css-heldout.md`), graded by GPT-6.1 Sol `xhigh`
+  (`briefs/codex-reports-css-grade.md`, across an account switch): RC2, RC3 (full compare 738 EQUAL, 0 DIFFERENT),
+  RC5 (the result's loading frames show the skeleton, 24/24 EQUAL under concurrent compares), RC6, RC7 pass; RC1 and
+  RC4 fail as graded. The coordinator's reading of the source (inferred, not a browser probe) settles RC1:
+  `.rbtn.is-disabled` is written by `reports.js` and `components.js` (two pages; the probe did not reach the
+  specimen's state); `.field-hint` and `.field-err .ico` are Access's alone, but Access no longer loads `reports.css`,
+  so they must sit in `shared.css` for Access to stay unchanged (a tension in the coordinator's C1 and RC1, not a
+  defect); `.field.is-disabled` stays in `reports.css`, which the components sheet loads. RC4's NOT-HELD on Access's
+  `pin-copy` (7, 2 and 2 pixels at 1, 61, 141 ms) is the item the diagnosis round measured NOT-HELD on the base
+  `c2fe4661` the same day (a 7-pixel glyph fringe, F126's family): the base's own variation.
+- **Brief rows** 9/9; **held-out** 7/7 after the coordinator's settling (5/7 as graded). Brief-caused: RC1's "two
+  pages" wording against C1's moved pages.
+- **Disposition:** fast-forwarded `owner-followup-r04-build` to `23314b3a` after its CI passed; no pixel changed, so no
+  visual acceptance is due. F160 is fixed; the shared lows (decision 47) can follow.

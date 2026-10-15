@@ -699,6 +699,81 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     pushes and deletion; no pull request is required, so main still moves by a fast-forward push, and
     `pnpm main:advance` stays the agents' way to make one. If CI itself breaks so that no commit can pass, lifting the
     rule is the user's call. Applied by the coordinator with `gh api` on 2026-10-15.
+64. **Parallel rounds on both models, Sol as grader, and a handover once they start** (the user, 2026-10-15, «موافق
+    على خطة التشغيل المتوازي والتقييم بواسطة Sol، وكذلك السماح بنقل التنسيق إلى جلسة جديدة بعد بدء الجولات», after
+    noting the rounds' pace and that GPT-6.1 Sol's capacity problem seems solved, with ample credit on both):
+    - Up to four rounds at once on disjoint files, each in its own worktree; at most three running compares (one port
+      pair each); a timed outcome still waits for a quiet machine (B13).
+    - GPT-6.1 Sol at `xhigh` for rounds whose cause is unknown or whose change is subtle; DeepSeek V4.1 Flash at `max`
+      for well-specified mechanical rounds. The first wave: reports-css with F160 (DeepSeek), vf-runner with F168,
+      F175 and F176 (Sol), diagnosis of F148, F165 and F171 (Sol, report-only), the `no-comments` trial (DeepSeek,
+      report-only); the shared lows follow reports-css.
+    - A fresh Sol session grades each implementing round against the held-out rows the coordinator wrote before its
+      launch, outside the round's worktree; the coordinator reproduces at least one row before using its verdict.
+    - A round merges once its branch CI passes; main moves through `pnpm main:advance` once per batch.
+    - The coordinator hands over to a fresh session (decision 61) once the wave is running.
+65. **Wave 1 stopped and saved; the user starts the next coordinator** (the user, 2026-10-15, «أوقف الجولات الأربع،
+    واحفظ وين وصلت كل جولة وحدّث الـResume Point عشان نقدر نستأنفها من نفس النقطة. أنا ببدأ الجلسة الجديدة بنفسي»).
+    The four launchers and their Codex processes were stopped; each worktree and temp folder is kept as it stood,
+    reports-css's uncommitted split is also recorded on `wip/reports-css-stopped-20261015`, and each round resumes on
+    its own thread from its STOPPED note (the resume point says how). The coordinator starts no session.
+66. **Two measured trials: both reviewers, and one brief on both models** (the user, 2026-10-15, «موافق على
+    الاقتراحين», after the coordinator's reading that the review runs on DeepSeek at `max`, fixed in the launcher, and
+    that the records cannot compare the two models: they never ran the same brief, Sol's rounds were mostly concept
+    work before the review step and brief rules B8-B13, DeepSeek's mostly tool code after them). Each rule below is
+    written before its runs; the coordinator records the result in `codex-rounds.md` and applies the rule as written.
+    - **Both reviewers.** Each brief of the next wave is reviewed twice on the same `prompt.md` and `sources/`: by the
+      launcher (DeepSeek `max`) and by GPT-6.1 Sol at `xhigh` through `REVIEW.md`'s command with the model changed, in
+      a copy of the review folder. For each reading the coordinator records closed or left open, and whether the other
+      reviewer also raised it; after the round, which of its brief-caused failures each review had flagged. Rule: Sol
+      becomes a second reviewer for every brief if, over at least four briefs, it averages at least one closed reading
+      per brief that DeepSeek did not raise; otherwise the review stays DeepSeek alone.
+    - **One brief on both models.** vf-runner (`briefs/codex-vf-runner.md`) runs twice from `c699d3fb`: its stopped Sol
+      run resumed as the Sol arm (worktree `owner-r04-vf-runner`), and a DeepSeek `max` arm in a new worktree
+      `owner-r04-vf-runner-ds` with a copy of the brief that differs only in its worktree, branch and temp folder; each
+      arm on its own port pair (the DeepSeek arm waits until one is free). Both are graded on the same held-out rows
+      (`D:/fitway-grader/owner-r04/vf-runner-heldout.md`) by the same grading procedure, and the coordinator replays
+      every PASS the report claims for V1-V3 in the real path, counting each that does not hold as an overclaim. Also
+      recorded: brief rows, automatic resumes and interventions, wall time, tokens. Rule: the arm with more held-out
+      rows passed wins; on a tie, fewer overclaims; then fewer interventions. Only the winning arm merges. If the
+      winner leads by two or more held-out rows, or has no overclaim where the other has one or more, rounds of its
+      kind (a subtle runtime change with an unknown failure path) go to its model from then on; otherwise the split
+      of decision 64 stays.
+67. **Three of pstack's principles, Opus as a chosen grader, and the no-comments flags as findings** (the user,
+    2026-10-15, «موافق على الاقتراحات 1 و4 و5، ونؤجل 3 و6. وبخصوص Opus كمراجع مستقل، موافق لكن بشكل انتقائي للمهام المهمة
+    أو المعقدة، مو لكل جولة، وEffort High يكفي. وصحّح سجل no-comments حسب قرار 56», after the coordinator's review of
+    `poteto-mode` in `cursor/plugins` at `e5136d82`, ten commits after item 56's reading, none changing its substance):
+    - **Separate before sharing, for ports.** A test or tool run binds only ports no other running round holds;
+      sharing is removed, not serialized by convention. The verify-fitway tests' fixed verification ports are F183,
+      for the next verify-fitway round.
+    - **A pickup checks what it builds on.** A coordinator taking over checks each claim of the resume point it acts on
+      (a time, a state, a disposition) against its source first, and records any that does not hold. The first two:
+      wave 1 stopped at about 12:37, not 13:30 (its run folders' last writes), and the no-comments record that opened
+      no finding against item 56.
+    - **Each claim says what it rests on.** Every claim the coordinator gives the user or writes in a record says in
+      the same sentence whether it was measured, inferred or a guess.
+    - **Deferred:** a time box in Codex briefs, and a status derived from the run folders instead of written by hand.
+    - **Opus grades the rounds that matter.** For a round the coordinator judges important or complex, not every round,
+      `owner-direction-verifier` (Opus, its `high`) grades beside Sol on the same held-out rows, from the result alone
+      and without Sol's verdict. Where the two disagree on a row, the coordinator's replay of that row decides. First
+      use: both arms of item 66's vf-runner trial, whose Sol grader shares a model with one arm; item 66's rule is
+      unchanged.
+    - **The no-comments flags.** As item 56 says, each confirmed `MUST KILL` flag is a finding (F184-F233; the one
+      `unclear` is not); the table is kept beside this file as `no-comments-must-kill.tsv`. They carry a fifth
+      `seen_by` label (coordinator), `maintainer`: the next agent or engineer who changes that code pays for it.
+68. **The diagnosis reruns on a quiet machine** (the user, 2026-10-15, «موافق», on the coordinator's reading that
+    the diagnosis round's 130 runs were labelled quiet while two other rounds compared): D1 (F148) and D2 (F165) run
+    again only when no other round, compare, ladder or grading runs on the machine, with the load measured beside
+    each run. Withdrawn by item 69.
+69. **No diagnosis rerun; DeepSeek for the subtle runtime rounds too** (the user, 2026-10-15, «نلغي إعادة D1 وD2
+    حاليًا، أشوف النتائج السابقة كافية وما يحتاج نكرر الاختبارات. وبخصوص تجربة النموذجين، أفضل DeepSeek للجولات المشابهة
+    لأنه أسرع بفارق واضح، حتى لو اعتبرنا النتيجة تعادلًا بعد استثناء إيقافي لجولة Sol»):
+    - Item 68 is withdrawn. F148 and F165 stay open as recorded (not reproduced in 130 runs); no further diagnosis is
+      planned, and an item they hit is rerun once before it is read as a regression, as before.
+    - Rounds of the vf-runner kind (a subtle runtime change with an unknown failure path) go to DeepSeek V4.1 Flash at
+      `max`, replacing decision 64's split for them: on the same brief the two arms scored the same rows and
+      overclaims, and DeepSeek finished in about 71 minutes against about 3 hours (measured). GPT-6.1 Sol stays the
+      grader (decision 64) and the second reviewer of item 66's trial; Opus grades the rounds that matter (item 67).
 
 ## How this milestone's rounds run
 
