@@ -52,8 +52,9 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G1. Post-capture proofs held by tests.** Outcome: in a temp copy of the result's CLI, each in turn: (a) delete
   the before rules' proof after the before frame; (b) delete the proof before the after frame; (c) delete the proof
   after it; (d) put back `3ac1770a`'s condition, so any `afterActions` rule skips every before rule's proof beside
-  the after frame. Each makes at least one fast-ladder test fail (name it); the unplanted copy passes. Intent: a
-  removed proof never goes unnoticed.
+  the after frame. Each makes at least one fast-ladder test fail (name it); the unplanted copy passes; and on a fixture item with one
+  ended and one unaffected before rule, `summary.json` lists exactly the unaffected rule as proven beside the after
+  frame and omits the ended one. Intent: a removed proof never goes unnoticed.
 - **G2. An arrival captured, other conditions.** Outcome: Reports `arrive=500` with `state=loading` and an arrival
   rule in the result's declared form, written by you and reading `window.__reports.phase`, English, tablet, 4
   workers, three self compares: EQUAL each time; crop the before frame (the skeleton) and the after frame (the loaded
@@ -70,19 +71,22 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   and check", "## Compare" and after "## Evidence and advanced tools": (a) `node $cli compare --no-such-flag`; (b)
   `node $cli measure --tool focus --no-such-flag --out x -- --max-stops 40`; (c) `node $cli compare --concept x --
   --no-such-flag`; (d) a table row `` | `--no-such-flag` | x | ``; (e) prose: "After pnpm installs, the measure tool
-  arguments take `--no-such-flag`."; (f) `node $cli measure --tool capture --no-such-flag`. Every one fails the
+  arguments take `--no-such-flag`."; (f) `node $cli measure --tool capture --no-such-flag`; (g) one inline span holding two commands, `node $cli
+  measure --tool focus --out x -- --max-stops 40; node $cli drive --no-such-flag`. Every one fails the
   guide test. Control: `node $cli measure --tool focus --out x -- --max-stops 40` in a fenced block passes, in every
   section. Intent: no reader meets an option the CLI lacks.
 - **G6. Test roots apart.** Outcome: `compare-speed.test.mjs` and `compare-parallel.test.mjs` run at once from two
   separate checkouts of the result (your worktree and a second detached one under your temp folder): all pass; the
   folders they made were under `os.tmpdir()` (traced, for example by a `--require` hook on `mkdtemp` and `mkdir`)
-  and disjoint; none remains after; `git grep fitway-temp` finds nothing in either file. Intent: no run writes
+  and disjoint; the resolved real path of every file the runs wrote under a cache folder lies inside that run's
+  own folder; none remains after; `git grep fitway-temp` finds nothing in either file. Intent: no run writes
   into another's folder.
 - **G7. Ports held.** Outcome: with a listener on each of 3176, 3177, 3186, 3187, 3188 and 3189 and a lease on each
   (`reserveVerificationPorts` in `core.mjs`), `cli.test.mjs`, `timeline-hold.test.mjs` and both compare test files
   pass in full. Intent: a compare on any pair never fails a test run.
 - **G8. Limits.** Outcome: `git diff --stat 54cb1ecb HEAD` lists only files under `.agents/skills/verify-fitway/`; no
-  test present at `54cb1ecb` is removed, skipped or made conditional, and none lost an assertion line; each test
+  test present at `54cb1ecb` is removed, skipped or made conditional, none lost an assertion line, and no existing
+  assertion's predicate or expected value changed (list each pre-existing test whose body changed, with the change); each test
   file's count is at least the base's. Intent: nothing was weakened to pass.
 - **G9. Declarations refused.** Outcome: a recipe whose arrival declares a wildcard, a `shows` label, or a `when`
   matching no before rule or two, is refused at load with a message, never run with a proof waived. Intent: a
@@ -92,8 +96,9 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G11. Tool flags are not CLI options.** Outcome: `node $cli drive --forced-colors active` in a fenced block of a
   temp copy of `SKILL.md` fails the guide test. Intent: a flag `help` names only in prose does not count.
 - **G12. Two CLI suites at once.** Outcome: two complete runs of `cli.test.mjs` from two checkouts at once both pass;
-  no test passes a fixed port number to a live listener or command (list each port literal the test files pass to
-  `listen`, a CLI `--port` or `--isolated-port`, with its source). Intent: test runs never share a port.
+  during one full run of the four verify-fitway test files, no process listens on, connects to or leases a port in
+  3174-3189 (observed, for example by a `--require` hook on `net` listen and connect and on the lease folder, and
+  listed per port). Intent: test runs never share a port.
 
 ## Limits the result keeps
 
