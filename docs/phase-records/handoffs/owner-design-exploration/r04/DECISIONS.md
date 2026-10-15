@@ -761,6 +761,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **The no-comments flags.** As item 56 says, each confirmed `MUST KILL` flag is a finding (F184-F233; the one
       `unclear` is not); the table is kept beside this file as `no-comments-must-kill.tsv`. They carry a fifth
       `seen_by` label (coordinator), `maintainer`: the next agent or engineer who changes that code pays for it.
+68. **The diagnosis reruns on a quiet machine** (the user, 2026-10-15, «موافق», on the coordinator's reading that
+    the diagnosis round's 130 runs were labelled quiet while two other rounds compared): D1 (F148) and D2 (F165) run
+    again only when no other round, compare, ladder or grading runs on the machine, with the load measured beside
+    each run.
 
 ## How this milestone's rounds run
 
