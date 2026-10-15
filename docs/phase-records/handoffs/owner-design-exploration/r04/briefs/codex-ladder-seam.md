@@ -57,7 +57,9 @@ A real run of the ladder always runs its own steps, so a passing `verify.mjs` in
     their own steps in their own order whatever the environment holds: no environment variable, argument or file a
     real run can carry replaces, removes or adds a step. A test shows it with `FITWAY_VERIFY_TEST_STEPS` set to `[]`
     and to a stand-in list, without doing the real steps' work (for example with a stand-in `pnpm` first on `PATH`
-    that records the arguments it is called with), checking that each fast step was called in order. The two tests
+    that records the arguments and environment it is called with), checking for `fast`, for `phase --phase <name>`
+    and for `full` that each fast step was called in order with its arguments and the Unit tests step with
+    `UNIT_TEST_ENV`, then each mode's own steps. The two tests
     of `scripts/verify.test.ts` keep every check they make and reach their stand-in steps only by a route a real run
     cannot take (such as importing an exported runner from the test, or a driver file the test writes).
   - **Intent.** The ladder's output and exit code always come from its real steps.
@@ -68,7 +70,8 @@ A real run of the ladder always runs its own steps, so a passing `verify.mjs` in
   ran; report its failing output.
 - **L1. Today's behaviour elsewhere.** F246's lines (clock times, a failed step's duration and exit code, the first
   mutating step named at once) and the final `FAILED_VALIDATION:` line stay as at the HEAD; the fast, phase and full
-  step lists, order, arguments and environment are unchanged; `parseFastSteps` run on the committed
+  step lists, order, arguments, commands and environment are unchanged (compare the materialized step objects with the
+  HEAD's); `parseFastSteps` run on the committed
   `scripts/verify.mjs` returns the same eight steps with the same arguments as on the HEAD's (report both); every
   existing test keeps its assertions and still runs.
 - **L2. The ladder.** `node scripts/verify.mjs fast` passes on your committed tree, and `git status --short` is empty
