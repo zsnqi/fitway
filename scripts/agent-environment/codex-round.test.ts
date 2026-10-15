@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import {
 	chmodSync,
 	copyFileSync,
+	type Dirent,
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
@@ -16,9 +17,110 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it } from "vitest";
-import { copyReviewSources } from "./codex-round.mjs";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { setReviewSourcePlaceObserver } from "./check-brief.mjs";
+import { copyReviewSources, outcomeIdsFromBrief } from "./codex-round.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
+
+vi.setConfig({ testTimeout: 60_000 });
+
+vi.mock("node:fs", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs")>();
+	return {
+		...actual,
+		readFileSync: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "readFileSync",
+					value: args[0],
+				});
+			return (
+				actual.readFileSync as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+		createReadStream: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "createReadStream",
+					value: args[0],
+				});
+			return (
+				actual.createReadStream as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+	};
+});
+
+vi.mock("node:fs/promises", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs/promises")>();
+	return {
+		...actual,
+		readFile: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "readFile",
+					value: args[0],
+				});
+			return (actual.readFile as unknown as (...values: unknown[]) => unknown)(
+				...args,
+			);
+		}),
+	};
+});
+
+vi.mock("node:child_process", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:child_process")>();
+	const recordGitShow = (args: unknown[]) => {
+		const command = args[0];
+		const commandArgs = args[1];
+		if (
+			command === "git" &&
+			Array.isArray(commandArgs) &&
+			commandArgs[0] === "show"
+		) {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "git-show",
+					value: commandArgs[2],
+				});
+		}
+	};
+	return {
+		...actual,
+		execFileSync: vi.fn((...args: unknown[]) => {
+			recordGitShow(args);
+			return (
+				actual.execFileSync as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+		spawnSync: vi.fn((...args: unknown[]) => {
+			recordGitShow(args);
+			return (actual.spawnSync as unknown as (...values: unknown[]) => unknown)(
+				...args,
+			);
+		}),
+	};
+});
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const script =
@@ -208,6 +310,79 @@ function initialize(root: string) {
 	git(root, "commit", "--allow-empty", "-m", "fixture base");
 }
 
+async function captureReviewSourceAccess(action: () => Promise<unknown>) {
+	const accessKey = Symbol.for("fitway.review-source-access-test");
+	const events: {
+		type: "place" | "read";
+		kind?: string;
+		route?: string;
+		value?: unknown;
+	}[] = [];
+	Reflect.set(globalThis, accessKey, events);
+	setReviewSourcePlaceObserver((event) => {
+		events.push({ type: "place", ...event });
+	});
+	try {
+		await action();
+		return events;
+	} finally {
+		setReviewSourcePlaceObserver(undefined);
+		Reflect.deleteProperty(globalThis, accessKey);
+	}
+}
+
+function shortWindowsPath(value: string) {
+	const result = spawnSync(
+		"powershell.exe",
+		[
+			"-NoProfile",
+			"-Command",
+			"(New-Object -ComObject Scripting.FileSystemObject).GetFolder($env:FITWAY_SHORT_PATH).ShortPath",
+		],
+		{
+			encoding: "utf8",
+			env: { ...process.env, FITWAY_SHORT_PATH: value },
+			windowsHide: true,
+		},
+	);
+	if (result.error) throw result.error;
+	if (result.status !== 0)
+		throw new Error(`short path lookup failed: ${result.stderr}`);
+	return result.stdout.trim();
+}
+
+function firstShortWindowsPath() {
+	const drives: string[] = [];
+	for (const letter of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+		const drive = `${letter}:/`;
+		try {
+			readdirSync(drive);
+			drives.push(drive);
+		} catch {
+			// A missing or unavailable drive is not a short-name candidate.
+		}
+	}
+	for (const drive of drives) {
+		let entries: Dirent[];
+		try {
+			entries = readdirSync(drive, { withFileTypes: true });
+		} catch {
+			continue;
+		}
+		for (const entry of entries) {
+			if (!entry.isDirectory()) continue;
+			const long = path.join(drive, entry.name);
+			try {
+				const short = shortWindowsPath(long);
+				if (short.includes("~")) return { drives, long, short };
+			} catch {
+				// Some system folders reject a short-name lookup.
+			}
+		}
+	}
+	return { drives };
+}
+
 afterEach(() => {
 	for (const root of roots.splice(0)) {
 		const absolute = realpathSync.native(root);
@@ -229,7 +404,7 @@ function fixture(eol = "\n") {
 	const head = git(worktree, "rev-parse", "HEAD");
 	const brief = path.join(coordinator, "brief.md");
 	const bytes = Buffer.from(
-		`<!-- brief-format: v1 role: codex -->\n# Fixture\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`fixture\`, HEAD \`${head.slice(0, 8)}\`\n\n${environment.replaceAll("\r\n", "\n")}\n## Goal\n\nالنص «كما هو»\n`.replaceAll(
+		`<!-- brief-format: v1 role: codex -->\n# Fixture\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`fixture\`, HEAD \`${head.slice(0, 8)}\`\n\n${environment.replaceAll("\r\n", "\n")}\n## Goal\n\nالنص «كما هو»\n\n## Causes and required outcomes\n\n- **K1.** Fixture outcome.\n`.replaceAll(
 			"\n",
 			eol,
 		),
@@ -248,7 +423,7 @@ const chunks = [];
 process.stdin.on('data', chunk => chunks.push(chunk));
 process.stdin.on('end', () => {
   if (args.includes('read-only')) {
-    const capture = {args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), files:fs.readdirSync(process.cwd())};
+    const capture = {args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), env:{TEMP:process.env.TEMP,TMP:process.env.TMP}, files:fs.readdirSync(process.cwd())};
     fs.appendFileSync(process.env.ROUND_REVIEW_CAPTURE, JSON.stringify(capture) + '\\n');
     if (!process.env.REVIEW_NO_ANSWER) fs.writeFileSync(args[args.indexOf('-o') + 1], process.env.REVIEW_ANSWER_FILE ? fs.readFileSync(process.env.REVIEW_ANSWER_FILE) : process.env.REVIEW_ANSWER || 'No such readings.\\n');
     process.stdout.write('stand-in review\\n');
@@ -257,7 +432,7 @@ process.stdin.on('end', () => {
   }
   if (process.env.ROUND_WRITE_PATH) fs.writeFileSync(process.env.ROUND_WRITE_PATH, Buffer.from(process.env.ROUND_WRITE_CONTENT, 'base64'));
   if (process.env.ROUND_REMOVE_PATH) fs.unlinkSync(process.env.ROUND_REMOVE_PATH);
-  fs.writeFileSync(process.env.ROUND_CAPTURE, JSON.stringify({args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64')}));
+  fs.writeFileSync(process.env.ROUND_CAPTURE, JSON.stringify({args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), env:{TEMP:process.env.TEMP,TMP:process.env.TMP}}));
   const sequenceFile = process.env.ROUND_SEQUENCE_FILE;
   let sequenceIndex = 0;
   if (sequenceFile) {
@@ -267,7 +442,7 @@ process.stdin.on('end', () => {
   const messages = process.env.ROUND_MESSAGES ? JSON.parse(process.env.ROUND_MESSAGES) : null;
   const exits = process.env.ROUND_EXITS ? JSON.parse(process.env.ROUND_EXITS) : null;
   const isResume = args.includes('resume');
-  const fallback = isResume ? 'stand-in resumed message\\n' : 'stand-in last message\\n';
+  const fallback = isResume ? 'stand-in resumed message\\nK1: PASS\\n' : 'stand-in last message\\nK1: PASS\\n';
   const configuredMessage = isResume && process.env.ROUND_RESUME_MESSAGE !== undefined
     ? process.env.ROUND_RESUME_MESSAGE
     : process.env.ROUND_MESSAGE;
@@ -379,7 +554,7 @@ process.stdin.on('end', () => {
 			2,
 		)}\n`,
 	);
-	const env = {
+	const env: NodeJS.ProcessEnv = {
 		...process.env,
 		PATH: `${bin}${path.delimiter}${process.env.PATH}`,
 		ROUND_CAPTURE: capture,
@@ -389,6 +564,7 @@ process.stdin.on('end', () => {
 		FITWAY_DEEPSEEK_CATALOG_SOURCE: path.join(codexHome, "models_cache.json"),
 		OPENDESIGN_API_KEY: "fixture-opendesign-key",
 	};
+	delete env.MSYSTEM;
 	const invokeRaw = (args: string[], extraEnv = {}, cwd = root) => {
 		const result = spawnSync(process.execPath, [script, ...args], {
 			cwd,
@@ -925,6 +1101,53 @@ describe("D5 review sources", () => {
 		).toEqual(Buffer.from("named head\n"));
 	});
 
+	it.each([
+		"repository",
+		"checkout",
+		"temp",
+	] as const)("checks %s review sources for the place before any read", async (kind) => {
+		const f = fixture();
+		let source: string;
+		let head = f.head;
+		let cleanup: (() => void) | undefined;
+		if (kind === "repository") {
+			const filename = path.join(f.worktree, "docs", "ordered-source.md");
+			mkdirSync(path.dirname(filename), { recursive: true });
+			writeFileSync(filename, "repository source\n");
+			git(f.worktree, "add", ".");
+			git(f.worktree, "commit", "-m", "ordered repository source");
+			head = git(f.worktree, "rev-parse", "HEAD");
+			source = "docs/ordered-source.md";
+		} else if (kind === "checkout") {
+			source = path
+				.join(repository, "docs/agent-context/briefs/REVIEW.md")
+				.replaceAll("\\", "/");
+		} else {
+			const directory = mkdtempSync(
+				path.join("D:/fitway-temp", "round-order-"),
+			);
+			source = path.join(directory, "source.md").replaceAll("\\", "/");
+			writeFileSync(source, "temporary source\n");
+			cleanup = () => rmSync(directory, { recursive: true, force: true });
+		}
+		try {
+			const events = await captureReviewSourceAccess(() =>
+				copyReviewSources(
+					path.join(f.root, `ordered-${kind}`),
+					`- **Read first, only these:**\n\n- \`${source}\`\n`,
+					f.worktree,
+					head,
+				),
+			);
+			const firstPlace = events.findIndex((event) => event.type === "place");
+			const firstRead = events.findIndex((event) => event.type === "read");
+			expect(firstPlace, kind).toBeGreaterThanOrEqual(0);
+			expect(firstRead, kind).toBeGreaterThan(firstPlace);
+		} finally {
+			cleanup?.();
+		}
+	});
+
 	it("refuses a repository source changed after the brief's named HEAD", () => {
 		const f = fixture();
 		const source = path.join(f.worktree, "docs", "review-source.md");
@@ -1301,6 +1524,79 @@ describe("R1 pre-launch review", () => {
 		expect(f.invoke().status).toBe(0);
 	});
 
+	it("accepts bare numbered readings with indented bodies and lists", () => {
+		const f = fixture();
+		const answer = `1. R1 permits a shortcut.
+   Literal reading: the check can pass.
+   1. Keep the list in the body.
+   2. Do not split there.
+   What goes wrong: the intent remains unmet.
+2) L1 can drift.
+   Literal reading: a changed input survives.
+   Close: preserve the input.
+`;
+		f.answerReview(
+			answer,
+			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\nReading 2: closed\n`,
+		);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(readFileSync(path.join(f.run, "review-readings.md"), "utf8")).toBe(
+			answer,
+		);
+	});
+
+	it("accepts readings after a multi-paragraph preface", () => {
+		const f = fixture();
+		const answer = `Five readings, most damaging first.
+
+The preface spans more than one paragraph.
+
+1. **R1** permits a shortcut.
+   Literal reading: the check can pass.
+   What goes wrong: the intent remains unmet.
+
+2. **L1** can drift.
+   Literal reading: a changed input survives.
+   Close: preserve the input.
+`;
+		f.answerReview(
+			answer,
+			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\nReading 2: closed\n`,
+		);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(readFileSync(path.join(f.run, "review-readings.md"), "utf8")).toBe(
+			answer,
+		);
+	});
+
+	it("reads the vf-fixes preface answer as exactly five readings", () => {
+		const f = fixture();
+		const answerFile = path.join(realReviewRoot, "codex-vf-fixes-1.md");
+		const answer = readFileSync(answerFile);
+		expect(createHash("sha256").update(answer).digest("hex")).toBe(
+			"ee52b45f9c317c02cdfa90dc64bf65643a5ea5db7b95fa22108dcb57ee1d8238",
+		);
+		rmSync(f.reviewRoot, { recursive: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER_FILE: answerFile });
+		expect(result.stdout.match(/^Reading \d+:$/gm)).toHaveLength(5);
+		reviewRefused(f, result, "record its dispositions before launching");
+		const folder = path.join(f.reviewRoot, "brief-1");
+		writeFileSync(
+			path.join(folder, "dispositions.md"),
+			`Brief SHA-256: ${briefHash(f.brief)}\n${Array.from(
+				{ length: 5 },
+				(_, index) => `Reading ${index + 1}: closed`,
+			).join("\n")}\n`,
+		);
+		const launched = f.invoke();
+		expect(launched.status, launched.output).toBe(0);
+		expect(readFileSync(path.join(f.run, "review-readings.md"))).toEqual(
+			answer,
+		);
+	});
+
 	it("accepts bold Reading headings with numbered labelled fields", () => {
 		const f = fixture();
 		const answer =
@@ -1538,6 +1834,19 @@ What goes wrong: the proof fails.
 		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
+	it("refuses a bare answer whose body lists look like reading starts", () => {
+		const f = fixture();
+		const answer = `1. R1 permits a shortcut.
+   Literal reading: the check can pass.
+   1. R1 names a body item.
+   2. L1 names another body item.
+2. L1 can drift.
+   Literal reading: a changed input survives.
+`;
+		f.answerReview(answer);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
+	});
+
 	it.each([
 		"No readings.",
 		"The brief has no such reading.",
@@ -1725,6 +2034,57 @@ describe("C1 required changes", () => {
 	});
 });
 
+const briefOutcomeIds = [
+	["codex-deepseek-route.md", ["D1", "D2", "D3", "D4", "D5", "D6"]],
+	["codex-gardener-shared-files.md", ["G1", "G2", "G3", "L1", "L2"]],
+	["codex-gardener-shared-files-fix.md", ["X1", "X2", "X3", "L1", "L2"]],
+	["codex-launch-review.md", ["R1", "R2", "L1", "L2", "L3"]],
+	["codex-launcher-fixes.md", ["A1", "A2", "A3", "A4", "L1", "L2"]],
+	["codex-launcher-fixes-2.md", ["K1", "K2", "K3", "L1", "L2"]],
+	["codex-launcher-fixes-3.md", ["K1", "K2", "K3", "L1", "L2"]],
+	[
+		"codex-midmotion-compare.md",
+		[
+			"T1",
+			"T2",
+			"T3",
+			"T4",
+			"T5",
+			"T6",
+			"T7",
+			"T8",
+			"T9",
+			"L1",
+			"L2",
+			"L3",
+			"L4",
+		],
+	],
+	[
+		"codex-midmotion-compare-fix.md",
+		["X1", "X2", "X3", "X4", "X6", "X5", "L1", "L2", "L3"],
+	],
+	["codex-shared-frame-continue-2.md", ["R1", "R2", "R3", "R4"]],
+	["codex-tuner-removal.md", ["T1", "T2", "T3", "T4", "T5", "L1", "L2", "L3"]],
+	["codex-tuner-removal-continue.md", ["R1", "R2", "T2", "T5"]],
+	["codex-tuner-removal-fix.md", ["C1", "C2", "L1", "L2"]],
+	[
+		"codex-vf-fixes.md",
+		["V1", "V2", "V3", "V4", "V5", "V6", "V7", "L1", "L2", "L3"],
+	],
+	["codex-vf-fixes-continue.md", ["R1", "R2", "V1"]],
+	["codex-vf-hold.md", ["H1", "H2", "H3", "L1", "L2", "L3", "L4"]],
+	["codex-vf-parallel.md", ["P1", "P2", "P3", "P4", "L1", "L2", "L3"]],
+	["codex-vf-parallel-continue.md", ["R1", "R2", "R3"]],
+	["codex-vf-parallel-continue-2.md", ["R1", "R2", "R3", "R4", "R5"]],
+	["codex-vf-speed.md", ["S1", "S2", "S3", "S4", "L1", "L2", "L3"]],
+] as const;
+
+const briefRoot = path.join(
+	repository,
+	"docs/phase-records/handoffs/owner-design-exploration/r04/briefs",
+);
+
 describe("L1 launch", () => {
 	it("runs brief:check first and launches nothing for a failing brief", () => {
 		const f = fixture();
@@ -1735,6 +2095,55 @@ describe("L1 launch", () => {
 			"brief:check failed",
 		);
 		expect(existsSync(f.run)).toBe(false);
+	});
+	it("refuses a brief with no outcome IDs before its review starts", () => {
+		const f = fixture();
+		writeFileSync(
+			f.brief,
+			f.bytes
+				.toString("utf8")
+				.replace(
+					"\n## Causes and required outcomes\n\n- **K1.** Fixture outcome.\n",
+					"\n",
+				),
+		);
+		git(f.coordinator, "add", ".");
+		git(f.coordinator, "commit", "-m", "remove outcome ids");
+		const result = f.invoke([f.brief, "high", "--new-review", "--run", f.run]);
+		refused(f, result, "brief has no outcome IDs");
+		expect(f.reviewCalls()).toEqual([]);
+		expect(existsSync(f.run)).toBe(false);
+	});
+	it("pins every current r04 brief to its exact outcome IDs", () => {
+		expect(
+			readdirSync(briefRoot)
+				.filter((name) => name.endsWith(".md"))
+				.sort(),
+		).toEqual(briefOutcomeIds.map(([name]) => name).sort());
+	});
+	it.each(briefOutcomeIds)("finds every outcome ID in %s", (name, expected) => {
+		expect(
+			[...outcomeIdsFromBrief(readFileSync(path.join(briefRoot, name)))].sort(),
+		).toEqual([...expected].sort());
+	});
+	it("ignores outcome IDs inside the environment block and fenced code", () => {
+		expect(
+			[
+				...outcomeIdsFromBrief(`- **A1.** Closed after the ID.
+- **B2. A reading's own lists.**
+- **C3** No full stop is not an ID.
+- **D4. Missing bold close is not an ID.
+
+<!-- environment:start v1 -->
+- **E5.** Environment example.
+<!-- environment:end -->
+
+\`\`\`markdown
+- **F6.** Fenced example.
+\`\`\`
+`),
+			].sort(),
+		).toEqual(["A1", "B2"]);
 	});
 	it("keeps exact HEAD input, argument order, events, last message, run folder and thread id", async () => {
 		const f = fixture();
@@ -1754,7 +2163,7 @@ describe("L1 launch", () => {
 		expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
 		expect(readFileSync(path.join(f.run, "input.md"))).toEqual(f.bytes);
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
-			"stand-in last message\n",
+			"stand-in last message\nK1: PASS\n",
 		);
 		expect(readFileSync(path.join(f.run, "events.jsonl"), "utf8")).toBe(
 			`{"type":"thread.started","thread_id":"${thread}"}\n{"type":"item.completed","text":"العربية «»"}\r\n`,
@@ -1808,7 +2217,7 @@ describe("L2 resume", () => {
 			readdirSync(f.run).filter((file) => file.endsWith(".jsonl")),
 		).toEqual(["events-resume-2.jsonl", "events-resume.jsonl", "events.jsonl"]);
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
-			"stand-in resumed message\n",
+			"stand-in resumed message\nK1: PASS\n",
 		);
 	});
 	it.each([
@@ -1935,6 +2344,14 @@ describe("L2 resume", () => {
 		);
 		refused(f, f.invoke(["resume", f.run]), "first event has no thread id");
 		expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(false);
+	});
+	it("refuses to resume a saved input with no outcome IDs", () => {
+		const f = fixture();
+		expect(f.invoke().status).toBe(0);
+		rmSync(f.capture);
+		writeFileSync(path.join(f.run, "input.md"), "No outcome IDs.\n");
+		refused(f, f.invoke(["resume", f.run]), "brief has no outcome IDs");
+		expect(existsSync(f.capture)).toBe(false);
 	});
 });
 
@@ -2165,6 +2582,77 @@ describe("L3 refusals", () => {
 		if (kind === "staged") git(f.worktree, "add", ".");
 		refused(f, f.invoke(), "uncommitted changes");
 	});
+	it.each([
+		"TEMP",
+		"TMP",
+	])("refuses %s inside D:/fitway-temp before review or Codex", (key) => {
+		const f = fixture();
+		const bad = path.join("D:/fitway-temp", `round-${key}`, "child");
+		rmSync(f.reviewRoot, { recursive: true });
+		const result = f.invoke([f.brief, "high", "--new-review", "--run", f.run], {
+			[key]: bad,
+		});
+		refused(f, result, key);
+		expect(result.stderr).toContain("D:/fitway-temp");
+		expect(f.reviewCalls()).toEqual([]);
+		expect(existsSync(f.run)).toBe(false);
+		expect(existsSync(f.reviewRoot)).toBe(false);
+	});
+	it("refuses a case-varied, relative TEMP through a junction into the gardener root", () => {
+		const f = fixture();
+		const link = path.join(f.root, "gardener-temp-link");
+		symlinkSync("D:/fitway-temp", link, "junction");
+		const bad = `${link.toUpperCase()}/child/../nested`;
+		delete f.env.TEMP;
+		delete f.env.TMP;
+		Object.assign(f.env, { temp: bad });
+		const result = f.invoke();
+		refused(f, result, "temp");
+		expect(result.stderr).toContain("temp");
+		expect(f.reviewCalls()).toEqual([]);
+		expect(existsSync(f.run)).toBe(false);
+	});
+	it("refuses a bad TEMP before Codex on resume", () => {
+		const f = fixture();
+		expect(f.invoke().status).toBe(0);
+		rmSync(f.capture);
+		const result = f.invoke(["resume", f.run], {
+			TEMP: "D:/FITWAY-TEMP/../fitway-temp/resume",
+		});
+		refused(f, result, "TEMP");
+		expect(existsSync(f.capture)).toBe(false);
+	});
+	it("keeps a sibling of D:/fitway-temp and other values unchanged", () => {
+		const f = fixture();
+		const temp = "D:/fitway-temp-logs/round-temp";
+		const tmp = "D:/fitway-temp-logs/round-tmp";
+		const result = f.invoke(undefined, { TEMP: temp, TMP: tmp });
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().env).toEqual({ TEMP: temp, TMP: tmp });
+	});
+	it.skipIf(process.platform !== "win32")(
+		"expands an 8.3 TEMP for Codex and leaves other values unchanged",
+		({ skip }) => {
+			const f = fixture();
+			const probe = firstShortWindowsPath();
+			if (!("short" in probe))
+				skip(
+					`no available drive offers an 8.3 folder name; drives probed: ${
+						probe.drives.join(", ") || "none"
+					}`,
+				);
+			const tmp = "D:/fitway-temp-logs/round-normal";
+			const result = f.invoke(undefined, {
+				TEMP: probe.short,
+				TMP: tmp,
+			});
+			expect(result.status, result.output).toBe(0);
+			expect(f.captured().env).toEqual({
+				TEMP: realpathSync.native(probe.long),
+				TMP: tmp,
+			});
+		},
+	);
 	it("refuses an unsupported level", () => {
 		const f = fixture();
 		refused(
@@ -2423,6 +2911,202 @@ describe("L4 shell and byte parity", () => {
 			);
 			expect(bash.status, bash.stdout + bash.stderr).toBe(0);
 			expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+		},
+	);
+	it.skipIf(process.platform !== "win32")(
+		"enforces the Git Bash --message guard through every launcher form",
+		() => {
+			const f = fixture();
+			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+			const gitBash = findGitBash(f.env.PATH);
+			const bashQuote = (value: string) =>
+				`'${value.replaceAll("'", "'\\''")}'`;
+			const powershellQuote = (value: string) =>
+				`'${value.replaceAll("'", "''")}'`;
+			const windowsCommandLine = (parts: readonly string[]) =>
+				parts
+					.map((part) => (/[\s"]/.test(part) ? `"${part}"` : part))
+					.join(" ");
+			const resumeArgs = ["resume", f.run, "--message", "/api"];
+			const gitBashEnv = { ...f.env, MSYSTEM: "MINGW64" };
+			const cases = [
+				{
+					name: "Git Bash pnpm",
+					refused: true,
+					run: () =>
+						spawnSync(
+							gitBash,
+							[
+								"--noprofile",
+								"--norc",
+								"-c",
+								["pnpm", "codex:round", ...resumeArgs]
+									.map((arg) => bashQuote(arg.replaceAll("\\", "/")))
+									.join(" "),
+							],
+							{
+								cwd: repository,
+								env: gitBashEnv,
+								encoding: "utf8",
+								windowsHide: true,
+							},
+						),
+				},
+				{
+					name: "Git Bash pnpm -s",
+					refused: true,
+					run: () =>
+						spawnSync(
+							gitBash,
+							[
+								"--noprofile",
+								"--norc",
+								"-c",
+								["pnpm", "-s", "codex:round", ...resumeArgs]
+									.map((arg) => bashQuote(arg.replaceAll("\\", "/")))
+									.join(" "),
+							],
+							{
+								cwd: repository,
+								env: gitBashEnv,
+								encoding: "utf8",
+								windowsHide: true,
+							},
+						),
+				},
+				{
+					name: "Git Bash node",
+					refused: true,
+					run: () =>
+						spawnSync(
+							gitBash,
+							[
+								"--noprofile",
+								"--norc",
+								"-c",
+								[process.execPath, script, ...resumeArgs]
+									.map((arg) => bashQuote(arg.replaceAll("\\", "/")))
+									.join(" "),
+							],
+							{
+								cwd: repository,
+								env: gitBashEnv,
+								encoding: "utf8",
+								windowsHide: true,
+							},
+						),
+				},
+				{
+					name: "PowerShell node",
+					refused: false,
+					run: () =>
+						spawnSync(
+							"powershell.exe",
+							[
+								"-NoProfile",
+								"-Command",
+								`& ${[process.execPath, script, ...resumeArgs]
+									.map(powershellQuote)
+									.join(" ")}`,
+							],
+							{
+								cwd: repository,
+								env: f.env,
+								encoding: "utf8",
+								windowsHide: true,
+							},
+						),
+				},
+				{
+					name: "cmd node",
+					refused: false,
+					run: () =>
+						spawnSync(
+							process.env.ComSpec ?? "C:\\Windows\\System32\\cmd.exe",
+							[
+								"/d",
+								"/s",
+								"/c",
+								`"${windowsCommandLine([
+									process.execPath,
+									script,
+									...resumeArgs,
+								])}"`,
+							],
+							{
+								cwd: repository,
+								env: f.env,
+								encoding: "utf8",
+								windowsHide: true,
+								windowsVerbatimArguments: true,
+							},
+						),
+				},
+			];
+
+			for (const entry of cases) {
+				rmSync(f.capture, { force: true });
+				const result = entry.run();
+				expect(
+					result.status,
+					`${entry.name}: ${result.stdout}${result.stderr}`,
+				).toBe(entry.refused ? 1 : 0);
+				if (entry.refused) {
+					expect(result.stderr).toContain("--message-file");
+					expect(existsSync(f.capture)).toBe(false);
+				} else {
+					expect(existsSync(f.capture)).toBe(true);
+					expect(f.captured().input).toBe(
+						Buffer.from("/api", "utf8").toString("base64"),
+					);
+				}
+			}
+		},
+	);
+	it.skipIf(process.platform !== "win32")(
+		"keeps the Git Bash guard when pnpm's parent has exited",
+		async () => {
+			const f = fixture();
+			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+			rmSync(f.capture, { force: true });
+			const gitBash = findGitBash(f.env.PATH);
+			const status = path.join(f.root, "detached-status.txt");
+			const log = path.join(f.root, "detached.log");
+			const bashQuote = (value: string) =>
+				`'${value.replaceAll("'", "'\\''")}'`;
+			const command = `(${[
+				"pnpm",
+				"-s",
+				"codex:round",
+				"resume",
+				f.run,
+				"--message",
+				"check /api now",
+			]
+				.map((arg) => bashQuote(arg.replaceAll("\\", "/")))
+				.join(
+					" ",
+				)} > ${bashQuote(log)} 2>&1; printf '%s' "$?" > ${bashQuote(status)}) &`;
+			const outer = spawnSync(
+				gitBash,
+				["--noprofile", "--norc", "-c", command],
+				{
+					cwd: repository,
+					env: { ...f.env, MSYSTEM: "MINGW64" },
+					encoding: "utf8",
+					windowsHide: true,
+				},
+			);
+			expect(outer.status, outer.stdout + outer.stderr).toBe(0);
+			await vi.waitFor(
+				() => {
+					expect(existsSync(status)).toBe(true);
+				},
+				{ timeout: 30_000, interval: 25 },
+			);
+			expect(readFileSync(status, "utf8")).toBe("1");
+			expect(readFileSync(log, "utf8")).toContain("--message-file");
+			expect(existsSync(f.capture)).toBe(false);
 		},
 	);
 	it.skipIf(process.platform !== "win32")(

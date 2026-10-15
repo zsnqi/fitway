@@ -36,6 +36,8 @@ const DEEPSEEK_LEVELS = new Set(["high", "max"]);
 const DEFAULT_MODEL = DEEPSEEK_MODEL;
 const DEFAULT_DEEPSEEK_LEVEL = "max";
 const MAX_AUTO_RESUMES = 10;
+const GARDENER_TEMP_ROOT =
+	process.platform === "win32" ? "D:/fitway-temp" : undefined;
 const MODEL_LEVELS = new Map([
 	[DEEPSEEK_MODEL, DEEPSEEK_LEVELS],
 	[GPT_MODEL, GPT_LEVELS],
@@ -65,6 +67,54 @@ Codex's session file under CODEX_HOME (default ~/.codex), unless the folder has 
 
 function resolvePath(value) {
 	return path.resolve(repositoryRoot, value.replaceAll("\\", "/"));
+}
+
+function runningInGitBash() {
+	if (process.platform !== "win32") return false;
+	return /^(?:MINGW|MSYS|UCRT|CLANG)/i.test(process.env.MSYSTEM ?? "");
+}
+
+function pathIsWithin(root, candidate) {
+	const relative = path.relative(root, candidate);
+	return (
+		relative === "" ||
+		(!relative.startsWith("..") && !path.isAbsolute(relative))
+	);
+}
+
+function hasShortWindowsSegment(value) {
+	return /(?:^|[\\/])[^\\/]*~\d+(?=[\\/]|$)/.test(value);
+}
+
+async function resolvedEnvironmentPath(value) {
+	try {
+		return await realpath(value);
+	} catch (error) {
+		if (error.code !== "ENOENT" && error.code !== "ENOTDIR") throw error;
+	}
+	const absolute = path.resolve(value);
+	const existing = await existingAncestor(absolute);
+	const resolved = await realpath(existing);
+	const missing = path.relative(existing, absolute);
+	return path.join(resolved, missing);
+}
+
+async function codexEnvironment(environment = process.env) {
+	const result = { ...environment };
+	if (process.platform !== "win32") return result;
+	const root = await pathKey(await resolvedEnvironmentPath(GARDENER_TEMP_ROOT));
+	for (const key of Object.keys(result)) {
+		if (!/^(?:TEMP|TMP)$/i.test(key)) continue;
+		const value = result[key];
+		if (typeof value !== "string" || value === "") continue;
+		const resolved = await resolvedEnvironmentPath(value);
+		if (pathIsWithin(root, await pathKey(resolved)))
+			throw new Error(
+				`${key} points inside ${GARDENER_TEMP_ROOT}: ${value}; set ${key} outside ${GARDENER_TEMP_ROOT}`,
+			);
+		if (hasShortWindowsSegment(value)) result[key] = resolved;
+	}
+	return result;
 }
 
 function levelsFor(model) {
@@ -264,6 +314,10 @@ function parseArgs(input) {
 		)
 			throw new Error(
 				"expected resume <folder> [--message <text> | --message-file <file>]",
+			);
+		if (args[2] === "--message" && runningInGitBash())
+			throw new Error(
+				"--message cannot be used from Git Bash because its text may already be rewritten; use --message-file <file>",
 			);
 		return {
 			resume: true,
@@ -517,9 +571,55 @@ function numberedBoldStart({ index, line }) {
 	};
 }
 
+function bareStart({ index, line }) {
+	const match = line.match(/^ {0,3}(\d+)[.)][ \t]+(.+)$/);
+	if (!match || !/\b[A-Z]+\d+\b/.test(match[2])) return null;
+	return {
+		type: "bare",
+		index,
+		number: Number(match[1]),
+		bodyLines: 1,
+		requiresIndentedBody: true,
+	};
+}
+
+function proseBeforeStarts(text, starts) {
+	const prefix = text.slice(0, starts[0].index);
+	if (!prefix.trim()) return true;
+	if (/\b[A-Z]+\d+\b/.test(prefix)) return false;
+	for (const record of markdownLineRecords(prefix)) {
+		const heading = headingStart(record);
+		if (
+			(heading && Number.isInteger(heading.number)) ||
+			boldStart(record) ||
+			numberedBoldStart(record) ||
+			bareStart(record)
+		)
+			return false;
+	}
+	return true;
+}
+
+function hasIndentedBody(text, start, end) {
+	return text
+		.slice(start.index, end)
+		.split(/\r?\n/)
+		.slice(1)
+		.some((line) => line.trim() && /^[ \t]/.test(line));
+}
+
 function readingsFromStarts(text, starts) {
 	if (!starts.length || starts.length > 5) return null;
 	if (starts.some((start, index) => start.number !== index + 1)) return null;
+	if (!proseBeforeStarts(text, starts)) return null;
+	if (
+		starts.some(
+			(start, index) =>
+				start.requiresIndentedBody &&
+				!hasIndentedBody(text, start, starts[index + 1]?.index ?? text.length),
+		)
+	)
+		return null;
 	const readings = starts.map((start, index) => ({
 		id: index + 1,
 		text: text
@@ -557,6 +657,7 @@ function parseReadings(answer) {
 	const headings = [];
 	const bold = [];
 	const numberedBold = [];
+	const bare = [];
 	for (const record of markdownLineRecords(text)) {
 		const heading = headingStart(record);
 		if (heading) headings.push(heading);
@@ -564,6 +665,8 @@ function parseReadings(answer) {
 		if (boldStartRecord) bold.push(boldStartRecord);
 		const numberedBoldRecord = numberedBoldStart(record);
 		if (numberedBoldRecord) numberedBold.push(numberedBoldRecord);
+		const bareRecord = bareStart(record);
+		if (bareRecord) bare.push(bareRecord);
 	}
 
 	if (headings.length) {
@@ -576,27 +679,40 @@ function parseReadings(answer) {
 			return null;
 		return readingsFromStarts(text, sameLevel);
 	}
-	if (bold.length && bold[0].index === 0) return readingsFromStarts(text, bold);
-	if (numberedBold.length && numberedBold[0].index === 0)
-		return readingsFromStarts(text, numberedBold);
+	if (bold.length) return readingsFromStarts(text, bold);
+	if (numberedBold.length) return readingsFromStarts(text, numberedBold);
+	if (bare.length) return readingsFromStarts(text, bare);
 	return null;
 }
 
-function outcomeIdsFromBrief(input) {
+export function outcomeIdsFromBrief(input) {
 	const ids = new Set();
 	const text = Buffer.isBuffer(input) ? input.toString("utf8") : String(input);
-	let section = false;
+	let environment = false;
+	let fence;
 	for (const line of text.split(/\r?\n/)) {
-		const heading = line.match(/^##\s+(.+?)\s*$/)?.[1];
-		if (heading) {
-			section =
-				/^(?:Causes and required outcomes|Limits the result keeps)$/i.test(
-					heading,
-				);
+		const delimiter = line.match(/^ {0,3}(`{3,}|~{3,})/);
+		if (delimiter) {
+			if (!fence) fence = delimiter[1];
+			else if (
+				delimiter[1][0] === fence[0] &&
+				delimiter[1].length >= fence.length &&
+				/^ {0,3}(?:`+|~+)\s*$/.test(line)
+			)
+				fence = undefined;
 			continue;
 		}
-		if (!section) continue;
-		const outcome = line.match(/^- \*\*([A-Z]+\d+)\./);
+		if (fence) continue;
+		if (/^\s*<!--\s*environment:start\b/.test(line)) {
+			environment = true;
+			continue;
+		}
+		if (/^\s*<!--\s*environment:end\b/.test(line)) {
+			environment = false;
+			continue;
+		}
+		if (environment) continue;
+		const outcome = line.match(/^- \*\*([A-Z]+\d+)\.(?:\*\*|[^\n]*\*\*)/);
 		if (outcome) ids.add(outcome[1]);
 	}
 	return ids;
@@ -625,7 +741,7 @@ function reportIds(message) {
 
 function isReport(message, outcomeIds) {
 	if (/^STOPPED:/m.test(message)) return true;
-	if (!outcomeIds.size) return true;
+	if (!outcomeIds.size) return false;
 	const covered = reportIds(message);
 	return [...outcomeIds].every((id) => covered.has(id));
 }
@@ -730,7 +846,14 @@ async function assertReviewSourcesAtLaunch(brief, worktree, namedHead, head) {
 	}
 }
 
-async function runReview(folder, executable, brief, worktree, head) {
+async function runReview(
+	folder,
+	executable,
+	brief,
+	worktree,
+	head,
+	environment,
+) {
 	const catalog = await readDeepSeekCatalog(folder);
 	const { args, prompt } = await reviewProcedure(
 		folder,
@@ -752,7 +875,7 @@ async function runReview(folder, executable, brief, worktree, head) {
 	);
 	const log = await open(path.join(folder, "review.log"), "wx");
 	const stream = log.createWriteStream();
-	const child = startCodex(executable, args, folder);
+	const child = startCodex(executable, args, folder, environment);
 	child.stdin.on("error", (error) => {
 		if (error.code !== "EPIPE") console.error(`codex-round: ${error.message}`);
 	});
@@ -783,7 +906,14 @@ async function runReview(folder, executable, brief, worktree, head) {
 	);
 }
 
-async function inspectBriefReview(options, executable, brief, worktree, head) {
+async function inspectBriefReview(
+	options,
+	executable,
+	brief,
+	worktree,
+	head,
+	environment,
+) {
 	const root = path.resolve(
 		process.env.FITWAY_BRIEF_REVIEW_ROOT ||
 			path.join(
@@ -812,7 +942,14 @@ async function inspectBriefReview(options, executable, brief, worktree, head) {
 			await mkdir(snapshot.folder);
 			await assertOutsideGit(snapshot.folder);
 			console.log(`Review folder: ${snapshot.folder}`);
-			await runReview(snapshot.folder, executable, brief, worktree, head);
+			await runReview(
+				snapshot.folder,
+				executable,
+				brief,
+				worktree,
+				head,
+				environment,
+			);
 		} else {
 			await assertOutsideGit(snapshot.folder);
 			console.log(`Review folder: ${snapshot.folder}`);
@@ -890,6 +1027,7 @@ async function inspectBriefReview(options, executable, brief, worktree, head) {
 }
 
 async function prepareLaunch(options) {
+	const environment = await codexEnvironment();
 	// The checker is the first launch gate; it never fills or rewrites the brief.
 	const result = await checkBrief({ repositoryRoot, briefPath: options.brief });
 	if (!result.ok) {
@@ -913,6 +1051,11 @@ async function prepareLaunch(options) {
 	await assertFresh(options.run);
 	const executable = await findCodex();
 	const brief = await readFile(options.brief);
+	const outcomeIds = outcomeIdsFromBrief(brief);
+	if (!outcomeIds.size)
+		throw new Error(
+			'brief has no outcome IDs; add each outcome and limit as a bullet such as "- **X1.**" outside its environment block',
+		);
 	const named = brief
 		.toString("utf8")
 		.replace(/<!--[\s\S]*?-->/g, "")
@@ -928,6 +1071,7 @@ async function prepareLaunch(options) {
 		brief,
 		worktree,
 		namedHead,
+		environment,
 	);
 	if (review.refusal === "new-review") throw new Error(review.reason);
 	if (review.refusal === "failed-review") throw new Error(review.reason);
@@ -988,7 +1132,8 @@ async function prepareLaunch(options) {
 		metadata,
 		input,
 		executable,
-		outcomeIds: outcomeIdsFromBrief(input),
+		environment,
+		outcomeIds,
 	};
 }
 
@@ -1077,6 +1222,7 @@ async function firstThread(run) {
 }
 
 async function prepareResume(options) {
+	const environment = await codexEnvironment();
 	await assertOutsideGit(options.run);
 	const metadata = JSON.parse(
 		await readFile(path.join(options.run, "run.json"), "utf8"),
@@ -1119,6 +1265,11 @@ async function prepareResume(options) {
 			? input
 			: ((await optionalFile(path.join(options.run, "input.md"))) ??
 				Buffer.alloc(0));
+	const outcomeIds = outcomeIdsFromBrief(launchInput);
+	if (!outcomeIds.size)
+		throw new Error(
+			'brief has no outcome IDs; add each outcome and limit as a bullet such as "- **X1.**" outside its environment block',
+		);
 	const catalog =
 		metadata.model === DEEPSEEK_MODEL
 			? await readDeepSeekCatalog(options.run)
@@ -1137,21 +1288,23 @@ async function prepareResume(options) {
 		thread: await firstThread(options.run),
 		executable: await findCodex(),
 		catalog,
-		outcomeIds: outcomeIdsFromBrief(launchInput),
+		environment,
+		outcomeIds,
 	};
 }
 
-function startCodex(executable, args, worktree) {
+function startCodex(executable, args, worktree, environment = process.env) {
 	const options = {
 		cwd: worktree,
 		stdio: ["pipe", "pipe", "inherit"],
+		env: environment,
 		windowsHide: true,
 	};
 	if (process.platform !== "win32" || !/\.(cmd|bat)$/i.test(executable))
 		return spawn(executable, args, options);
 	// Expand environment references once, with delayed expansion disabled. The
 	// values are quoted data; embedded percent references are not expanded again.
-	const env = { ...process.env, FITWAY_CODEX_COMMAND: executable };
+	const env = { ...environment, FITWAY_CODEX_COMMAND: executable };
 	const references = args.map((argument, index) => {
 		// cmd.exe strips unescaped quotes while expanding a quoted %VAR%.
 		// Keep embedded quotes in the child argv without re-interpreting %.
@@ -1247,7 +1400,7 @@ async function recordStartLoad(run, thread) {
 
 async function runCodex(options, prepared, input, resume) {
 	const output = await capture(options.run, resume);
-	const { metadata, executable, thread } = prepared;
+	const { environment, metadata, executable, thread } = prepared;
 	const catalogPath =
 		metadata.model === DEEPSEEK_MODEL
 			? path.join(options.run, "model-catalog.json")
@@ -1266,7 +1419,7 @@ async function runCodex(options, prepared, input, resume) {
 	];
 	console.log(`Run folder: ${options.run}`);
 	const stream = output.file.createWriteStream();
-	const child = startCodex(executable, args, metadata.worktree);
+	const child = startCodex(executable, args, metadata.worktree, environment);
 	let started = thread;
 	let reported = false;
 	const lines = createInterface({ input: child.stdout });
