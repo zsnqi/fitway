@@ -329,36 +329,103 @@ const UNIT_TEST_ENV = {
 	NODE_ENV: "test",
 };
 
-async function runStep(label, args, env = {}) {
-	console.log(`\n==> ${label}`);
+function localClock(date = new Date()) {
+	const pad = (value) => String(value).padStart(2, "0");
+	const offset = -date.getTimezoneOffset();
+	const sign = offset >= 0 ? "+" : "-";
+	const offsetHours = pad(Math.floor(Math.abs(offset) / 60));
+	const offsetMinutes = pad(Math.abs(offset) % 60);
+	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())} ${sign}${offsetHours}:${offsetMinutes}`;
+}
+
+function materializeStep(step) {
+	if (Array.isArray(step)) {
+		const [label, args, env = {}] = step;
+		return { label, args, env };
+	}
+	if (
+		step &&
+		typeof step.label === "string" &&
+		Array.isArray(step.args) &&
+		(step.command === undefined || typeof step.command === "string")
+	)
+		return {
+			label: step.label,
+			args: step.args,
+			env: step.env ?? {},
+			command: step.command,
+		};
+	throw new Error("Invalid verification step");
+}
+
+function configuredSteps() {
+	const encoded = process.env.FITWAY_VERIFY_TEST_STEPS;
+	if (!encoded) return null;
+	const steps = JSON.parse(encoded);
+	if (!Array.isArray(steps))
+		throw new Error("Verification steps must be an array");
+	return steps.map(materializeStep);
+}
+
+async function runStep({ label, args, env = {}, command }) {
+	console.log(`\n[${localClock()}] ==> ${label}`);
 	const started = performance.now();
-	await new Promise((resolve, reject) => {
-		const command =
-			process.platform === "win32"
-				? (process.env.ComSpec ?? "C:\\Windows\\System32\\cmd.exe")
-				: "pnpm";
-		const commandArgs =
-			process.platform === "win32" ? ["/d", "/s", "/c", "pnpm", ...args] : args;
-		const child = spawn(command, commandArgs, {
-			cwd: process.cwd(),
-			env: { ...process.env, ...env },
-			stdio: "inherit",
-			windowsHide: true,
+	let launchError;
+	let status = null;
+	let signal = null;
+	try {
+		await new Promise((resolve, reject) => {
+			const executable =
+				command ??
+				(process.platform === "win32"
+					? (process.env.ComSpec ?? "C:\\Windows\\System32\\cmd.exe")
+					: "pnpm");
+			const commandArgs =
+				command !== undefined
+					? args
+					: process.platform === "win32"
+						? ["/d", "/s", "/c", "pnpm", ...args]
+						: args;
+			let settled = false;
+			const child = spawn(executable, commandArgs, {
+				cwd: process.cwd(),
+				env: { ...process.env, ...env },
+				stdio: "inherit",
+				windowsHide: true,
+			});
+			child.once("error", (error) => {
+				settled = true;
+				launchError = error;
+				reject(error);
+			});
+			child.once("close", (code, closeSignal) => {
+				if (settled) return;
+				status = code;
+				signal = closeSignal;
+				if (code === 0) {
+					resolve();
+					return;
+				}
+				reject(
+					new Error(
+						`${label} failed${closeSignal ? ` with signal ${closeSignal}` : ` with exit code ${code}`}`,
+					),
+				);
+			});
 		});
-		child.once("error", reject);
-		child.once("close", (code, signal) => {
-			if (code === 0) {
-				resolve();
-				return;
-			}
-			reject(
-				new Error(
-					`${label} failed${signal ? ` with signal ${signal}` : ` with exit code ${code}`}`,
-				),
-			);
-		});
-	});
-	console.log(`<== ${label} (${elapsedSeconds(started)}s)`);
+	} catch (error) {
+		launchError ??= error;
+	}
+	const detail =
+		signal !== null
+			? `, signal ${signal}`
+			: status !== null
+				? `, exit code ${status}`
+				: "";
+	console.log(
+		`[${localClock()}] <== ${label} (${elapsedSeconds(started)}s${detail})`,
+	);
+	if (launchError) throw launchError;
 }
 
 function elapsedSeconds(started) {
@@ -406,8 +473,10 @@ function focusedSteps(phase) {
 async function main() {
 	const { mode, phase } = parseArguments();
 	const started = performance.now();
-	const before = await repositoryFingerprint();
-	const steps = fastSteps();
+	const initialFingerprint = await repositoryFingerprint();
+	let previousFingerprint = initialFingerprint;
+	let fingerprintSeconds = 0;
+	const steps = configuredSteps() ?? fastSteps();
 	if (mode === "phase") {
 		console.log(
 			`Focused profile: ${phases[phase].label}. Build and non-profile integration/browser tests are intentionally deferred to verify:full.`,
@@ -423,34 +492,50 @@ async function main() {
 	}
 
 	let failure;
-	try {
-		for (const [label, args, env] of steps) await runStep(label, args, env);
-	} catch (error) {
-		failure = error;
+	let mutationFailure;
+	for (const step of steps) {
+		const definition = materializeStep(step);
+		try {
+			await runStep(definition);
+		} catch (error) {
+			failure = error;
+		}
+		const fingerprintStarted = performance.now();
+		const after = await repositoryFingerprint();
+		fingerprintSeconds += (performance.now() - fingerprintStarted) / 1000;
+		if (after !== previousFingerprint) {
+			console.log(
+				`[${localClock()}] MUTATION: ${definition.label} changed the repository`,
+			);
+			await new Promise((resolve, reject) => {
+				const status = spawn("git", ["status", "--short"], {
+					cwd: process.cwd(),
+					stdio: "inherit",
+					windowsHide: true,
+				});
+				status.once("error", reject);
+				status.once("close", resolve);
+			});
+			mutationFailure ??= new Error(
+				"Verification changed tracked or untracked repository content; ignored build/test artifacts are permitted only under configured output directories",
+			);
+		}
+		previousFingerprint = after;
+		if (failure) break;
 	}
 
-	console.log("\n==> Repository mutation guard");
+	console.log(`\n[${localClock()}] ==> Repository mutation guard`);
 	const guardStarted = performance.now();
-	const after = await repositoryFingerprint();
-	if (before !== after) {
-		await new Promise((resolve) => {
-			const status = spawn("git", ["status", "--short"], {
-				cwd: process.cwd(),
-				stdio: "inherit",
-				windowsHide: true,
-			});
-			status.once("close", resolve);
-		});
-		const mutationFailure = new Error(
+	if (previousFingerprint !== initialFingerprint)
+		mutationFailure ??= new Error(
 			"Verification changed tracked or untracked repository content; ignored build/test artifacts are permitted only under configured output directories",
 		);
-		failure ??= mutationFailure;
-	}
 	console.log(
-		`<== Repository mutation guard (${elapsedSeconds(guardStarted)}s)`,
+		`[${localClock()}] <== Repository mutation guard (${elapsedSeconds(guardStarted)}s; step fingerprints ${fingerprintSeconds.toFixed(2)}s)`,
 	);
 
 	if (failure) throw failure;
+	if (mutationFailure) throw mutationFailure;
 	console.log(
 		`\nVerification ${mode} passed without repository mutation (${elapsedSeconds(started)}s).`,
 	);

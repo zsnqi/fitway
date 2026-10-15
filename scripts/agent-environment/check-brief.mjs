@@ -448,6 +448,85 @@ function citedDecisionItems(tail) {
 	return items;
 }
 
+function citedRows(tail) {
+	const citation = tail.match(/^\s+(rows?)\s+([^\r\n.;]+)/i);
+	if (!citation) return [];
+	const ids = [];
+	for (const part of citation[2]
+		.replaceAll("`", "")
+		.trim()
+		.split(/\s*(?:,|\band\b)\s*/i)
+		.filter(Boolean)) {
+		const range = part.match(
+			/^([A-Za-z]+(?:-[A-Za-z]+)*?)(\d+)-([A-Za-z]+(?:-[A-Za-z]+)*?)(\d+)$/,
+		);
+		if (range) {
+			if (range[1] !== range[3]) return [];
+			const start = Number(range[2]);
+			const end = Number(range[4]);
+			if (start > end) return [];
+			for (let number = start; number <= end; number += 1)
+				ids.push(`${range[1]}${number}`);
+			continue;
+		}
+		if (!/^[A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*\d+$/.test(part)) return [];
+		ids.push(part);
+	}
+	if (citation[1].toLowerCase() === "row" && ids.length !== 1) return [];
+	return [...new Set(ids)];
+}
+
+function tableRowId(line) {
+	const trimmed = line.trimStart();
+	const cells = trimmed.startsWith("|") ? trimmed.slice(1) : trimmed;
+	const separator = cells.indexOf("|");
+	return separator < 0 ? null : cells.slice(0, separator).trim();
+}
+
+function reportMissingRows(
+	content,
+	rowIds,
+	file,
+	absolute,
+	head,
+	line,
+	report,
+) {
+	const rows = new Set();
+	if (content !== null) {
+		if (/\.tsv$/i.test(file)) {
+			for (const row of content.split(/\r?\n/))
+				rows.add(row.split("\t", 1)[0].trim());
+		} else {
+			for (const row of content.split(/\r?\n/)) {
+				const id = tableRowId(row);
+				if (id) rows.add(id);
+			}
+		}
+	}
+	for (const id of rowIds)
+		if (!rows.has(id))
+			report(
+				"brief-references",
+				line,
+				`missing row ${id} in ${file} at HEAD ${head} (${absolute})`,
+			);
+}
+
+async function rowContent({ worktree, head, absolute, fallback, git }) {
+	if (head && isWithin(worktree, absolute)) {
+		const relative = path
+			.relative(path.resolve(worktree), path.resolve(absolute))
+			.replaceAll(path.sep, "/");
+		try {
+			return git(worktree, ["show", `${head}:${relative}`]);
+		} catch {
+			return null;
+		}
+	}
+	return fallback();
+}
+
 function numberedTopLevelEntries(text) {
 	const entries = new Set();
 	let fence = null;
@@ -654,7 +733,14 @@ async function validateWorktree(text, report, git) {
 	}
 }
 
-async function validateReferences(text, worktree, repositoryRoot, report, git) {
+async function validateReferences(
+	text,
+	worktree,
+	namedHead,
+	repositoryRoot,
+	report,
+	git,
+) {
 	const source = withoutComments(text);
 	const resolver = createPathReferenceResolver(worktree, git);
 	const references = [];
@@ -692,12 +778,29 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			continue;
 		}
 		const decisionItems = citedDecisionItems(tail);
+		const rowIds = citedRows(tail);
 		const reference = await resolver.reference(value);
 		if (!reference) {
-			if (decisionItems.length && path.isAbsolute(value)) {
+			if ((decisionItems.length || rowIds.length) && path.isAbsolute(value)) {
 				const absolute = path.resolve(value);
 				const details = await exists(absolute);
-				if (details?.isFile())
+				if (details?.isFile()) {
+					if (rowIds.length)
+						reportMissingRows(
+							await rowContent({
+								worktree,
+								head: namedHead,
+								absolute,
+								fallback: () => readFile(absolute, "utf8"),
+								git,
+							}),
+							rowIds,
+							value,
+							absolute,
+							namedHead,
+							line,
+							report,
+						);
 					reportMissingDecisionItems(
 						await readFile(absolute, "utf8"),
 						decisionItems,
@@ -706,6 +809,12 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 						worktree,
 						line,
 						report,
+					);
+				} else if (rowIds.length)
+					report(
+						"brief-references",
+						line,
+						`missing row file ${value} at HEAD ${namedHead}`,
 					);
 			}
 			continue;
@@ -716,6 +825,7 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			lineNumber: line,
 			heading: reference.heading ?? after?.[1],
 			decisionItems,
+			rowIds,
 			isNew: /^[ \t]+\(new\)(?=\s|[.,;:]|$)/.test(tail),
 		});
 	}
@@ -780,7 +890,12 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			);
 			continue;
 		}
-		if (!heading && reference.line === null && !reference.decisionItems.length)
+		if (
+			!heading &&
+			reference.line === null &&
+			!reference.decisionItems.length &&
+			!reference.rowIds.length
+		)
 			continue;
 		if (!details.isFile()) {
 			report(
@@ -816,6 +931,23 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 				reference.file,
 				absolute,
 				worktree,
+				line,
+				report,
+			);
+		}
+		if (reference.rowIds.length) {
+			reportMissingRows(
+				await rowContent({
+					worktree,
+					head: namedHead,
+					absolute,
+					fallback: () => readFile(absolute, "utf8"),
+					git,
+				}),
+				reference.rowIds,
+				reference.file,
+				absolute,
+				namedHead,
 				line,
 				report,
 			);
@@ -931,7 +1063,14 @@ export async function checkBrief({
 	const worktree = validatedWorktree?.root ?? null;
 	const namedHead = validatedWorktree?.head ?? null;
 	const requiredChanges = worktree
-		? await validateReferences(text, worktree, repositoryRoot, report, git)
+		? await validateReferences(
+				text,
+				worktree,
+				namedHead,
+				repositoryRoot,
+				report,
+				git,
+			)
 		: [];
 	if (role === "codex" && worktree && namedHead)
 		await validateReviewSources(text, {
