@@ -53,11 +53,12 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G2. Feature ends lifts one rule.** Outcome: in a copy of the recipes where Access's `language` feature drops
   `changesState` and declares `ends` naming one before rule that applies to its item, the copy loads; that item's
   `afterFrameProof` omits that rule and holds every other before rule that applies; a copy whose `ends` names a
-  `when` no before rule has is refused at load; a copy with `changesState` and `ends` together is refused. Intent:
-  a declaration lifts only what it names.
-- **G3. A surviving rule is checked.** Outcome: in such a copy, a planted before rule that applies to the item, is
-  not ended, holds before the action and is false after it fails that item with a message naming that rule's
-  `shows`. Intent: a state that should survive the action is proved beside the after frame.
+  `when` no before rule has is refused at load; a copy with `changesState` and `ends` together is refused. The same
+  lift holds for a second plant on another page (Reports' `page-retry`, ending `{state: "error"}`). Intent: a
+  declaration lifts only what it names, on any feature.
+- **G3. A surviving rule is checked.** Outcome: in such a copy, each of two planted before rules with different
+  `when` values that apply to the item, are not ended, hold before the action and are false after it, planted one at
+  a time, fails that item with a message naming that rule's `shows`. Intent: a state that should survive the action is proved beside the after frame.
 - **G4. Several inputs.** Outcome: a feature whose items differ in actions or inputs and declares `ends` is refused
   at load (plant one). Intent: one declaration never covers items it does not hold for.
 - **G5. Moments named.** Outcome: a planted failing rule at each of the four moments gives a message holding that
@@ -65,10 +66,11 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   text; the run's JSON item problems hold the same text; two applying rules sharing one `shows` with different
   `when`, the second failing, give a message with the second's `when` and not the first's. Intent: a failure is read
   without a rerun.
-- **G6. Nothing else moved.** Outcome: one passing self compare (Daily, ar, wide) gives the same JSON with both CLIs
-  apart from timing fields and paths. Intent: passing runs read as before.
-- **G7. The repair proven.** Outcome: each new S1-S2 test case fails on `5b81b3b7`'s production code (copy the
-  result's test file onto a base archive and run it; list each case and its result). Intent: the new cases see the
+- **G6. Nothing else moved.** Outcome: a self compare of every item of each of the four pages, ar and en, wide,
+  passes with both CLIs and gives the same JSON apart from timing fields and paths (report each page's item count). Intent: passing runs read as before.
+- **G7. The repair proven.** Outcome: each new S1-S2 test case fails on `5b81b3b7`'s production code at its own
+  behavioural assertion, never at load, import, collection or setup (copy the result's test file onto a base archive
+  and run it; list each case, its result and the failing assertion). Intent: the new cases see the
   defects.
 - **G8. Limits.** Outcome: `git diff --stat 5b81b3b7 HEAD` lists only files under `.agents/skills/verify-fitway/`; no
   test present at `5b81b3b7` is removed, skipped or made conditional, none lost an assertion line, and no existing
@@ -77,7 +79,8 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G9. Report against commands, and the inventory.** Outcome: the result's commit exists and is your HEAD; the
   round's run folder (`D:/fitway-temp/codex-round-2c7cab40-1cba-4527-b9ad-13e4eb9fe35b/`) records the `git commit`
   and the `node scripts/verify.mjs fast` run its report names, with their exit statuses quoted from the events; the
-  report's list of `changesState` features per page matches your own count from the concept's recipes. Intent: the
+  report's list of `changesState` features per page, by feature id, and of the before rules per page, by canonical
+  `when`, equals your own list from the concept's recipes (diff them). Intent: the
   report rests on what ran.
 
 ## Limits the result keeps
