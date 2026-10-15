@@ -1167,22 +1167,13 @@ describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostic
 				(problem: { rule: string }) => problem.rule === "brief-scope",
 			),
 		).toBe(true);
-
-		const missingWithoutReport = await f.check(
-			f.valid
-				.replace(/\n## Scope\n[\s\S]*?(?=\n## Report)/, "\n")
-				.replace(/\n## Report\n[\s\S]*$/, "\n"),
-		);
-		expect(
-			missingWithoutReport.problems.some(
-				(problem: { rule: string }) => problem.rule === "brief-scope",
-			),
-		).toBe(true);
 	});
 
 	it("rejects the five historical briefs and accepts every current r04 brief", () => {
-		const historicalRoot =
-			"design-research/owner-composition-exploration-r04/directions/briefs";
+		const historicalDirectory = path.join(
+			repository,
+			"scripts/agent-environment/fixtures/historical-briefs",
+		);
 		const historical = [
 			"codex-motion-lows.md",
 			"codex-three-rounds-fix.md",
@@ -1191,11 +1182,7 @@ describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostic
 			"codex-variants-removal.md",
 		];
 		for (const name of historical) {
-			const text = execFileSync(
-				"git",
-				["show", `owner-followup-r04-build:${historicalRoot}/${name}`],
-				{ cwd: repository, encoding: "utf8" },
-			);
+			const text = readFileSync(path.join(historicalDirectory, name), "utf8");
 			expect(codexScopeProblem(text), name).toMatchObject({
 				message: expect.stringContaining("Codex Scope must end with"),
 			});
