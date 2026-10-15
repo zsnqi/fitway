@@ -1485,3 +1485,42 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Disposition:** merged with the arm into the coordinator line (`f6ef81cf`); F168, F175, F176, F183 and F238-F240
   are fixed. The trial's DeepSeek arm took three rounds to merge (the arm, two fixes), and DeepSeek's reports needed
   a coordinator check against the run's commands once (F242).
+
+## vf-proofs: `briefs/codex-vf-proofs.md` (this folder), result `0eafd08c` on `owner-r04-vf-proofs` (from `5b81b3b7`), DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** S1 (F241's mechanism: a feature may declare `ends`; the before rules it does not end are proved beside
+  the after frame; `changesState` alone unchanged), S2 (F244: a failed state proof names its rule and one of four
+  moment tokens). Both reviewers (decision 66): DeepSeek five readings, four closed, one left open (an `ends` claim
+  is the recipe author's, as an arrival's); Sol two, one closed (rule identity, also DeepSeek's), one left open and
+  recorded as F248 (a re-proof that recovers within its wait). Launched in parallel with launcher-fixes-5 and
+  brief-ladder (decision 64).
+- **Run (measured):** launched 2026-10-15 23:45, one turn, no automatic resume, no intervention; start load 42,379.
+  The report's commit and its ladder (exit 1, the two F237 tests only, before the commit) appear in the events; the
+  report said L2 FAIL locally, honestly.
+- **Grading:** GPT-6.1 Sol `xhigh` (`briefs/codex-vf-proofs-grade.md`, two reviews: the first answer unreadable to the
+  launcher, F249, its readings closed by hand; the second's five readings four closed, one left open): G1-G8 and L1
+  PASS (1,988 compare JSON files equal across both CLIs, ar and en, wide and phone); G9 FAIL as written because the
+  report's inventory left out `components.html`, which has no `changesState` feature (grader-brief-caused, not a
+  defect). The coordinator reproduced G7 (measured): the four new tests fail on the base with AssertionError, 0/4,
+  and pass at the result, 4/4. CI run 38808348149 passed on `0eafd08c`.
+- **Brief rows** 5/5; **held-out** (`D:/fitway-grader/owner-r04/vf-proofs-heldout.md`) 9/9; overclaims 0;
+  brief-caused failures 0.
+- **Disposition:** merged into the coordinator line (`bb313de0`). F244 is fixed; F241 stays open until the build
+  branch's `changesState` features carry their `ends` declarations (the report lists them per page).
+
+## brief-ladder: `briefs/codex-brief-ladder.md` (this folder), result `166a4ba7` on `owner-r04-brief-ladder` (from `5b81b3b7`), DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** Q1 (F234: `brief:check` checks the rows a brief names, in every spelling, at the named HEAD), Q2 (F246:
+  every ladder line carries a clock time, a failed step its duration and exit code, and the first mutating step is
+  named at once). Both reviewers: DeepSeek five readings, two closed, three left open; Sol three, all closed (two not
+  raised by DeepSeek: the template's backticked IDs and naming a mutation at the moment it happens).
+- **Run (measured):** launched 23:45, five turns (four automatic resumes), no intervention; start load 42,299. The
+  report's commit and its post-commit ladder (exit 1, F237 only) appear in the events.
+- **Grading:** GPT-6.1 Sol `xhigh` (`briefs/codex-brief-ladder-grade.md`): G1-G5, G7 and L1 PASS (the case that
+  slipped through, F182 at `c699d3fb`, now fails; 39 briefs give identical results apart from none); G6 FAIL as
+  written because three added tests are positive controls that pass on the base (brief-caused: L0 asked every new
+  case to fail). The coordinator reproduced a missing row (measured): the result's checker fails `rows F234 and
+  F9999` naming F9999 and the HEAD; the coordinator line's checker passed it. CI passed on `166a4ba7`.
+- **Brief rows** 4/5 (L0 as written); **held-out** (`D:/fitway-grader/owner-r04/brief-ladder-heldout.md`) 8/8;
+  overclaims 0; brief-caused failures 1 (L0's wording for positive controls).
+- **Disposition:** merged into the coordinator line (`abf26cdf`); F234 and F246 are fixed.
