@@ -42,7 +42,7 @@ Nothing.
 
 1. **main is at `e64006d0`** (moved by `pnpm main:advance` after CI run 38795346728 passed in 1,305 s; the job's
    timeout is now 30 minutes, decision 71). The commits after it go with the next batch.
-2. **Clean up the grading worktrees** of the vf-runner rounds (list below): unlink each `node_modules` junction first.
+2. **Clean up the older grading worktrees** (Known risks lists them): unlink each `node_modules` junction first.
 3. **The next launcher round:** F234 (`brief:check` checks named rows), F235 (a wrapped one-line reading), F236 (the
    keyword test of a one-line reading), F237 (the Git Bash tests inside Codex's sandbox), F242 (a report's SHA and
    ladder checked against the run's commands), F245 (each turn's times, exit, stop reason and HEAD in the run
@@ -75,9 +75,8 @@ Nothing blocking. Optional: Windows Update's active hours (F159).
   --frozen-lockfile --offline`): `D:/fitway-temp/owner-r04-launcher-fixes-4-grade/wt`,
   `D:/fitway-temp/owner-r04-reports-css-grade/wt` (no junction), `D:/fitway-temp/owner-r04-vf-runner-grade-sol/wt`,
   `D:/fitway-temp/owner-r04-vf-runner-grade-ds/wt`, `D:/fitway-temp/owner-r04-vf-runner-opus-sol/wt`,
-  `D:/fitway-temp/owner-r04-vf-runner-opus-ds/wt`, `D:/fitway-temp/owner-r04-vf-runner-replay-base/wt`,
-  `D:/fitway-temp/owner-r04-vf-runner-fix-grade/wt` and `D:/fitway-temp/owner-r04-vf-runner-fix-opus/wt`
-  (junctions), `D:/fitway-temp/owner-r04-vf-runner-fix-2-grade/wt` (its own install, no junction).
+  `D:/fitway-temp/owner-r04-vf-runner-opus-ds/wt`, `D:/fitway-temp/owner-r04-vf-runner-replay-base/wt` (junctions); the three vf-runner-fix grading worktrees were removed
+  on 2026-10-15 after their junctions were unlinked.
 - «مساءً», «ظهرًا», «ليلًا» on the busiest-time card are a deliberate exception to DESIGN_GUIDE.md §9 (DECISIONS 33, 34).
 - Ports: 3174 the user's preview; 3176-3177, 3186-3187 and 3188-3189 the verification pairs; 3178-3179 reviewers and
   the probe kit; 3180 the LAN preview.
