@@ -717,6 +717,28 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     The four launchers and their Codex processes were stopped; each worktree and temp folder is kept as it stood,
     reports-css's uncommitted split is also recorded on `wip/reports-css-stopped-20261015`, and each round resumes on
     its own thread from its STOPPED note (the resume point says how). The coordinator starts no session.
+66. **Two measured trials: both reviewers, and one brief on both models** (the user, 2026-10-15, «موافق على
+    الاقتراحين», after the coordinator's reading that the review runs on DeepSeek at `max`, fixed in the launcher, and
+    that the records cannot compare the two models: they never ran the same brief, Sol's rounds were mostly concept
+    work before the review step and brief rules B8-B13, DeepSeek's mostly tool code after them). Each rule below is
+    written before its runs; the coordinator records the result in `codex-rounds.md` and applies the rule as written.
+    - **Both reviewers.** Each brief of the next wave is reviewed twice on the same `prompt.md` and `sources/`: by the
+      launcher (DeepSeek `max`) and by GPT-6.1 Sol at `xhigh` through `REVIEW.md`'s command with the model changed, in
+      a copy of the review folder. For each reading the coordinator records closed or left open, and whether the other
+      reviewer also raised it; after the round, which of its brief-caused failures each review had flagged. Rule: Sol
+      becomes a second reviewer for every brief if, over at least four briefs, it averages at least one closed reading
+      per brief that DeepSeek did not raise; otherwise the review stays DeepSeek alone.
+    - **One brief on both models.** vf-runner (`briefs/codex-vf-runner.md`) runs twice from `c699d3fb`: its stopped Sol
+      run resumed as the Sol arm (worktree `owner-r04-vf-runner`), and a DeepSeek `max` arm in a new worktree
+      `owner-r04-vf-runner-ds` with a copy of the brief that differs only in its worktree, branch and temp folder; each
+      arm on its own port pair (the DeepSeek arm waits until one is free). Both are graded on the same held-out rows
+      (`D:/fitway-grader/owner-r04/vf-runner-heldout.md`) by the same grading procedure, and the coordinator replays
+      every PASS the report claims for V1-V3 in the real path, counting each that does not hold as an overclaim. Also
+      recorded: brief rows, automatic resumes and interventions, wall time, tokens. Rule: the arm with more held-out
+      rows passed wins; on a tie, fewer overclaims; then fewer interventions. Only the winning arm merges. If the
+      winner leads by two or more held-out rows, or has no overclaim where the other has one or more, rounds of its
+      kind (a subtle runtime change with an unknown failure path) go to its model from then on; otherwise the split
+      of decision 64 stays.
 
 ## How this milestone's rounds run
 

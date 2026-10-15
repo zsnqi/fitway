@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04`, 2026-10-15 13:40 +03:00 (the first parallel wave stopped by the user and saved for resuming; handover to a session the user starts)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-65), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-66), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -74,9 +74,12 @@ in `D:/fitway-temp/owner-r04-encoding-coord/resume-wave1-<name>.md`. Briefs in
    plus a reproduced row; the two report-only rounds by reading their tables and sampling rows), record each in
    `codex-rounds.md` and `rounds.tsv`, merge on green CI (reports-css into `owner-followup-r04-build`), then
    `pnpm main:advance` once.
-2. **Then:** the shared lows (decision 47) after reports-css merges; fixes for what diagnosis proves; F182 and F156's
+2. **Two trials, rules fixed in decision 66:** vf-runner runs on both models (the stopped Sol run resumed as one arm,
+   a DeepSeek arm in a new worktree `owner-r04-vf-runner-ds` once a port pair is free), graded on the same rows with
+   every claimed PASS replayed; and each brief of the next wave reviewed by DeepSeek and by Sol `xhigh` side by side.
+3. **Then:** the shared lows (decision 47) after reports-css merges; fixes for what diagnosis proves; F182 and F156's
    child-process route with the next launcher round; the Claude Code replay stays deferred (DECISIONS 58).
-3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
+4. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
 
 ## Waiting on the user
