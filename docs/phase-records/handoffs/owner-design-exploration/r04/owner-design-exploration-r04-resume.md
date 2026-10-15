@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-15 09:00 +03:00 (the encoding round of decision 62 merged as two rounds; main moved by `pnpm main:advance`; nothing running)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-15 13:15 +03:00 (handover to a fresh coordinator under decisions 61 and 64; the first parallel wave running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-63), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-64), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -39,31 +39,38 @@
 
 ## Running now
 
-Nothing.
+The first parallel wave (decision 64), launched 2026-10-15 about 12:40-13:10 +03:00 by the previous coordinator;
+each launcher appends `exit=<code>` to its log in `D:/fitway-temp/owner-r04-encoding-coord/` when it ends (wait on
+those lines, never on process names: the Codex app keeps `codex.exe` running). Briefs in `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/`;
+dispositions in `D:/fitway-temp/brief-review/codex-<name>-<n>/dispositions.md`.
 
-- **The encoding round is merged as two rounds** (decision 62; records in `codex-rounds.md` §"encoding-checks" and
-  §"encoding-launcher", rows in `rounds.tsv`). encoding-checks `c93f423d` (merge `0906f2a2`): K1 from the packets,
-  `pnpm main:advance`, the BOM and agent-table checks, B3 in `brief:check`, ID counts without a length warning, Biome
-  on tracked files; held-out 7/8 (F180: the Scope rule for a Codex brief with neither Scope nor Report waits for
-  fixtures in `codex-round.test.ts` and `path-tokens.test.ts`). encoding-launcher `d6e603fc` (merge `3554065b`):
-  bare and prefaced readings, every brief's IDs, `--message` refused under Git Bash (`MSYSTEM`), `TEMP`/`TMP`
-  guarded, 8x test timeouts; held-out 7/8 (F156's child-process route). Fixed: F129, F162, F169, F170, F173, F174,
-  F177; new F178-F181. Grading kits: `D:/fitway-temp/owner-r04-encoding-{checks,launcher}-grade/` (each holds a
-  detached worktree `wt` with a pnpm-installed `node_modules`; remove it with `git worktree remove` after unlinking
-  any junction).
-- **main moves only through `pnpm main:advance`** (AGENTS.md, WORKFLOW.md §"Integration", `9deee692`), and GitHub
-  refuses a push to main without a passing `checks` run (decision 63; tested both ways).
+| Round | Model | Worktree (branch of the same name) | Run folder | Log |
+| --- | --- | --- | --- | --- |
+| reports-css + F160 | DeepSeek `max` | `owner-r04-reports-css` from `c2fe4661` (build branch) | `codex-round-6f244aad-...` | `launch-reports-css.log` |
+| vf-runner F168, F175, F176 | Sol `xhigh` | `owner-r04-vf-runner` from `c699d3fb` | `codex-round-6570b67a-...` | `launch-vf-runner.log` |
+| diagnosis F148, F165, F171 (report-only) | Sol `xhigh` | `owner-r04-diagnosis` | `codex-round-f84ff767-...` | `launch-diagnosis.log` |
+| no-comments trial (report-only) | DeepSeek `max` | `owner-r04-no-comments` | `codex-round-5175a893-...` | `launch-no-comments.log` |
+
+Ports: reports-css 3176-3177, vf-runner 3186-3187, diagnosis 3188-3189. Held-out rows written before launch:
+`D:/fitway-grader/owner-r04/reports-css-heldout.md` and `vf-runner-heldout.md`.
+
+- **Grading by Sol** (decision 64): the launcher takes only `role: codex` briefs and `brief:check` refuses the words
+  for held-out checks, so a grading round is a Codex brief written after the round delivers, outcomes being the
+  checks themselves (no such words), run with `--model gpt-6.1-sol` at `xhigh` against a detached worktree of the
+  result (`git worktree add --detach`), changing nothing tracked. Reproduce at least one row before using its verdict.
+- **Merging:** wait for the branch CI with the full SHA (`gh api repos/zsnqi/fitway/commits/<sha>/check-runs`; `gh run
+  list --commit` with a short SHA returns nothing), merge only on `success`, and move main once per batch with
+  `pnpm main:advance`. A push to the coordinator branch cancels its running CI (`cancel-in-progress`).
+- **The encoding round and scope-rule are merged** (records in `codex-rounds.md`; scope-rule `89a3bc95`, merge
+  `c699d3fb`, F180 fixed); main at `699c111f`; the coordinator line ahead of it only by records and briefs.
 
 ## Next steps
 
-1. CI on this resume point's commit, then `pnpm main:advance <commit>`.
-2. **The remaining tool rounds before Settings** (decisions 47 and 52), each its own round, parallel where files are
-   disjoint: F180 with the fixtures in `codex-round.test.ts` and `path-tokens.test.ts`; the `reports.css` split on the
-   build branch with F160 (draft `D:/fitway-temp/owner-r04-reports-css-draft/codex-reports-css-split-draft.md`); a
-   verify-fitway round for F168, F175 and F176; a diagnosis round for F148, F165 and F171 (causes unknown); the shared
-   lows (decision 47); the `no-comments` report-only trial (decision 56). The Claude Code replay is deferred
-   (DECISIONS 58); its worktree `D:/Projects/fitway-worktrees/owner-r04-cc-replay` can go once its `node_modules` is
-   checked for a junction and unlinked.
+1. Grade each wave-1 round as it ends (reports-css and vf-runner by a Sol grading round plus a reproduced row; the two
+   report-only rounds by reading their tables and sampling rows), record each in `codex-rounds.md` and `rounds.tsv`,
+   merge on green CI (reports-css into `owner-followup-r04-build`), then `pnpm main:advance` once.
+2. **Then:** the shared lows (decision 47) after reports-css merges; fixes for what diagnosis proves; F182 and F156's
+   child-process route with the next launcher round; the Claude Code replay stays deferred (DECISIONS 58).
 3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
 
