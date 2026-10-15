@@ -1424,4 +1424,42 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Brief rows** 9/9; **held-out** 7/7 after the coordinator's settling (5/7 as graded). Brief-caused: RC1's "two
   pages" wording against C1's moved pages.
 - **Disposition:** fast-forwarded `owner-followup-r04-build` to `23314b3a` after its CI passed; no pixel changed, so no
-  visual acceptance is due. F160 is fixed; the shared lows (decision 47) can follow.
+  visual acceptance is due. F160 is fixed; the shared lows (decision 47) can follow.## vf-runner-fix: `briefs/codex-vf-runner-fix.md` (this folder), result `1ff1f9cf` on `owner-r04-vf-runner-ds` (base `54cb1ecb`: `3ac1770a` plus the coordinator line), DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** F238 (W1, post-capture proofs tested and kept per declared ended rule), F239 (W2, the guide's exemption
+  per command), F240 (W3, test roots under `os.tmpdir()`), F183 (W4, no fixed ports in tests). The branch first
+  took the coordinator line (`54cb1ecb`) so the brief's findings rows existed at its HEAD (F234's gap). Reviewed by
+  both models (decision 66) on the same `prompt.md` and `sources/`: DeepSeek five readings, all closed; Sol four,
+  three closed (its 4 the same as DeepSeek's 2), one left open (the `changesState` waiver predates the round and
+  needs recipe declarations on the build branch: F241). Sol closed readings DeepSeek did not raise: 2 (an
+  `afterActions` rule unproven after the after capture; fixed high ports); DeepSeek's not raised by Sol: 4.
+- **Run (measured from the run folder `codex-round-0bf045c9-...`):** launched 18:43, one automatic resume (19:31),
+  one coordinator resume (19:37-19:58); 173.2M input tokens (171.0M cached), 315k output. The automatic resume's
+  report named commit `68e86379` (it does not exist) and L2 PASS, while that turn ran no `git commit` and no
+  `verify.mjs` (F242); the coordinator's resume message (`coordinator-resume-1.md`) asked for each step as a real
+  call: the first ladder failed on Biome formatting, the second and third passed, commit `1ff1f9cf`.
+- **CI on `1ff1f9cf` failed** in five launcher tests outside the round's scope: they relied on `D:/fitway-temp`
+  existing on the runner, which only the old compare tests had made (F243, fixed by the coordinator in `772400e4`).
+- **Grading:** GPT-6.1 Sol `xhigh` (`briefs/codex-vf-runner-fix-grade.md`, G1-G12, its review's five readings closed;
+  run `codex-round-761398f0-...`, account `ryshyjhad85`, no limit reached) and Opus (`owner-direction-verifier`,
+  `high`, decision 67) on the held-out rows (`D:/fitway-grader/owner-r04/vf-runner-fix-heldout.md`, VF1-VF12), each
+  from its own worktree. Sol: G5 and G8 FAIL, the rest PASS. Opus: VF8 FAIL (CI red), VF12 PARTIAL, the rest PASS,
+  with findings that the guide's exemption survives a separator written onto a token and that the tests still bind
+  3176 when it is free. The coordinator's replays (all measured):
+  - G5 (g): in a copy of the result, `... -- --max-stops 40; node $cli drive --no-such-flag` passes the guide test and
+    the same with ` ; ` fails it: the exemption ends only at a whole-token separator. W2 FAIL; at `c699d3fb` (main's
+    verify-fitway) that plant failed before "Evidence and advanced tools", so the merge would narrow a guard.
+  - G12 / VF12: with every port free, one run of `cli.test.mjs` passes 81/81 and listens on 3176 46 times (a `net`
+    hook through `NODE_OPTIONS`); Sol's G12 ran with its own holder on the pairs, so the lease check refused first.
+    W4 FAIL.
+  - G8: the V5 predicate changed as W2 required; the options no longer required in the guide (`--forced-colors`,
+    `--help`, `--dir`, `--frozen-lockfile`) are not CLI options by W2's definition; the other two changed test
+    bodies only add fixture setup. G8 PASS (the grading brief's wording conflicted with W2: grader-brief-caused).
+  - VF8: CI red came from F243, settled by the merge's CI.
+- **Brief rows** 4/6 (W2 and W4 do not hold); **held-out** VF 10/12 as graded, 11/12 once VF8's CI settles (VF12
+  fails); overclaims 3 (the commit and L2 in the automatic resume; W2's "another command's option refused"; W4's "no
+  test bound 3174-3189", measured only with the pairs held). Interventions 1. Brief-caused: W4's check named the
+  held condition and the free one only through "binds", which a held-port run cannot see.
+- **Disposition:** not merged yet; a second fix round (`briefs/codex-vf-runner-fix-2.md`, from `1ff1f9cf`) for the
+  attached separator, the doctor's port probe and Opus's per-language `ends` refusal; F244 (a failed proof names no
+  rule) is recorded for the next verify-fitway round.
