@@ -49,13 +49,14 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 
 - **G1. Wrapped readings.** Outcome: `D:/fitway-temp/owner-r04-launcher-fixes-4-grade/g1-wrapped.md` with reading 5
   wrapped after `Gap:` reads as five; with reading 1 wrapped after `What goes wrong:` reads as five; with reading 2
-  wrapped at a space inside its literal reading reads as five; and reading 5 wrapped at each space between its words
-  in turn reads as five; each with the same trimmed reading text as unwrapped apart from the line break (compare the
+  wrapped at a space inside its literal reading reads as five; reading 5 wrapped at each space between its words in
+  turn, and at two spaces at once, reads as five; each with the same trimmed reading text as unwrapped apart from the line break (compare the
   texts); reading 3's continuation indented two spaces reads as five; a blank line inside reading 3 is
   refused; `1. V1 literal reading;` then column-0 `V2 risk.` is refused. Intent: layout never decides.
 - **G2. Empty parts.** Outcome: one-line readings whose "What goes wrong" part is `.`, `—`, `**`, `3` or `V2` are each
   refused, and `What goes wrong: the 3 ports` reads; for each of the three labels, an empty (`.`) part is refused in a
-  one-line reading, under a `**1. V1**` line as bullets, and under a `### 1. V1` heading as bullets; the first grade's G2 rows (`supplement.log`) give the same results
+  one-line reading, under a `**1. V1**` line as bullets, and under a `### 1. V1` heading as bullets, and each label
+  holding only `???`, `3` or `V2` is refused in a one-line reading; the first grade's G2 rows (`supplement.log`) give the same results
   apart from the empty part, now refused. Intent: each part says something, in every form.
 - **G3. Nothing lost.** Outcome: the `5b81b3b7` texts of the inline answers of "accepts bare numbered readings with
   indented bodies and lists" and "accepts readings after a multi-paragraph preface" read `2 [R1,L1]` with the result's
