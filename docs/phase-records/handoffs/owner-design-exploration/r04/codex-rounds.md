@@ -1328,3 +1328,22 @@ checks live outside the repository and never appear here or in a brief. One line
   F184-F233 (`seen_by` `maintainer`, `demo` `waits`; decision 67); the `unclear` one is not. The table is kept as
   `no-comments-must-kill.tsv` beside this file. Corrected on 2026-10-15: this record first said no finding was opened,
   against decision 56 (coordinator's error, found in the poteto-mode review).
+## diagnosis: `briefs/codex-diagnosis.md` (this folder), report-only, at `c699d3fb` on `owner-r04-diagnosis` with the concept at `c2fe4661`, GPT-6.1 Sol, level `xhigh`
+
+- **Set-up:** decision 64's report-only diagnosis of F148 (D1), F165 (D2) and F171 (D3), with fixes proposed (D4).
+  Review: five closed. One run (`codex-round-f84ff767-...`), stopped with wave 1 and resumed on its thread (the
+  interrupted tool call logged "output is missing" errors on resume, harmless); start load 28,351; ports 3188-3189.
+- **Codex's report:** D1 FAIL and D2 FAIL (no reproduction: 90 D1 runs across controls, workers, motion, raster,
+  fixed times and CPU load; 40 touch runs on the four pages); D3 PASS (the all-problems run did not recur: 3,438 of
+  3,439 samples EQUAL, one glyph-fringe NOT-HELD; every one-factor A/B control EQUAL); D4 FAIL as asked (proposals
+  without the failing-before proof, since nothing reproduced); L1, L2 PASS (141 ledger rows in order).
+- **Grading (coordinator):** quoted verdict lines reproduced from `d1-full-02.log`, `d2-status-access-10.log` and
+  `d3-subset-nocallback-4w.log` (measured); the D3 summary matches its counts (measured). The ledger's load column is
+  wrong: 137 of 141 rows say "quiet machine", yet the first run started at 13:00 while reports-css's and vf-runner's
+  resumed runs were comparing on 3176-3177 and 3186-3187 (measured from the start times against the resume times).
+  So D1's and D2's "under stated load" does not hold, and the non-reproduction happened under unrecorded load.
+  The D1 no-cause list also lacks its icon-raster control, and D2's reduced-motion control never ran.
+- **Brief rows** 3/6 (D3, L1, L2; D1, D2 and D4 fail as written). Cause: the coordinator's (decision 64 put a
+  load-sensitive diagnosis beside three rounds' compares, against B13's quiet machine), and the model's (a load label
+  it did not check). F148, F165 and F171 carry the result; they stay open.
+- **Disposition:** report-only. A rerun of D1 and D2, if wanted, waits for a machine with no other round.
