@@ -56,8 +56,9 @@ whole text is held to the CLI's options.
     Reports' `arrive=500` with its declared companion `state=loading` fails on both sides once the payload lands
     (about 0.9 s) and the loading proof turns false.
   - **Outcome.** That item is captured on both sides: its before frame proven to show loading at the moment of
-    capture, and its arrival proven by reading the arrival itself (the page's own loaded phase), not by a selector
-    present in both phases; a self compare of it, Arabic and English, desktop and phone, three runs with 4 workers,
+    capture, and its arrival proven by reading the arrival itself (the page's own loaded phase): a predicate false in
+    the loading capture and true only after an observed transition; a transition forced between the loading proof and
+    the capture, in a test, never yields a pass; a self compare of it, Arabic and English, desktop and phone, three runs with 4 workers,
     is EQUAL every time; a state that does not change with time is still proven after its capture as before; a full
     self compare (every page, `--feature all`, Arabic and English, desktop, tablet and phone, reduced motion, 4
     workers) gives the same verdict for every item as the HEAD's CLI.
@@ -67,15 +68,16 @@ whole text is held to the CLI's options.
   - **Cause.** `compare-speed.test.mjs` and `compare-parallel.test.mjs` write under a fixed folder
     (`compare-speed.test.mjs:23`), and the speed test moves the cache root by a string replace that silently does
     nothing if its line changes.
-  - **Outcome.** Each run of either file works in a folder no other run shares and removes it after; the two files
-    run at once from two processes both pass; a change to the cache root's line that the replace no longer finds fails
+  - **Outcome.** Each run of either file works in a folder no other run shares and removes it after; two
+    simultaneous runs of each file, from two separate checkouts, all pass with disjoint scratch and cache folders; a change to the cache root's line that the replace no longer finds fails
     a test instead of passing silently.
   - **Intent.** Two worktrees running the ladder at once never collide.
 - **V3. The whole guide held to the CLI (F176).**
   - **Cause.** The test that refuses an option the CLI lacks reads `SKILL.md` only before "Evidence and advanced
     tools" (`cli.test.mjs:3075`); the same option planted after it passes.
-  - **Outcome.** An option the CLI lacks fails the test wherever it is planted in `SKILL.md`, except as an argument
-    of a named non-CLI tool the section documents, which the test recognises by that tool, not by position.
+  - **Outcome.** An option the CLI lacks fails the test wherever it is planted in `SKILL.md`: every option passed to the
+    CLI in any command is checked, and an option is exempt only as an argument the command passes to an allowlisted
+    non-CLI executable, judged per command, not by section or position.
   - **Intent.** A reader of any part of the guide never meets a CLI option that does not exist.
 
 ## Limits the result keeps
