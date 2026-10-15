@@ -764,7 +764,16 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 68. **The diagnosis reruns on a quiet machine** (the user, 2026-10-15, «موافق», on the coordinator's reading that
     the diagnosis round's 130 runs were labelled quiet while two other rounds compared): D1 (F148) and D2 (F165) run
     again only when no other round, compare, ladder or grading runs on the machine, with the load measured beside
-    each run.
+    each run. Withdrawn by item 69.
+69. **No diagnosis rerun; DeepSeek for the subtle runtime rounds too** (the user, 2026-10-15, «نلغي إعادة D1 وD2
+    حاليًا، أشوف النتائج السابقة كافية وما يحتاج نكرر الاختبارات. وبخصوص تجربة النموذجين، أفضل DeepSeek للجولات المشابهة
+    لأنه أسرع بفارق واضح، حتى لو اعتبرنا النتيجة تعادلًا بعد استثناء إيقافي لجولة Sol»):
+    - Item 68 is withdrawn. F148 and F165 stay open as recorded (not reproduced in 130 runs); no further diagnosis is
+      planned, and an item they hit is rerun once before it is read as a regression, as before.
+    - Rounds of the vf-runner kind (a subtle runtime change with an unknown failure path) go to DeepSeek V4.1 Flash at
+      `max`, replacing decision 64's split for them: on the same brief the two arms scored the same rows and
+      overclaims, and DeepSeek finished in about 71 minutes against about 3 hours (measured). GPT-6.1 Sol stays the
+      grader (decision 64) and the second reviewer of item 66's trial; Opus grades the rounds that matter (item 67).
 
 ## How this milestone's rounds run
 
