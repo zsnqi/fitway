@@ -819,7 +819,7 @@ Daily link carry `lang` (and `motion=off`).
 
 ### The table, form and dialog system
 
-Every part is built here, in `reports.css` and `reports.js`, for Activity Log, Access and Settings to reuse.
+Every part is built here in `reports.js`; the controls, dialogs, fields, alerts and notices that Owner pages reuse live in `shared.css`.
 Controls are 44 px tall (the design guide's minimum), focus is a 2 px chalk ring, and hover colours change at once, as
 on the Daily page.
 

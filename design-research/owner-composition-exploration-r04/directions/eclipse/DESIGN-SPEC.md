@@ -609,7 +609,7 @@ Step 3's second part (run `owner_states_r04_s19`). `components.html` shows each 
 | PRS-4 | R | A stored name is shown as typed, isolated (`bdi`), in either script and either language; it wraps between words, and anywhere when it has none (120 characters at 320 px). | Ac1, Ac3 |
 | REC-1 | R | **The record row:** a past change in a list, the whole row a link to its record. What was done in label type chalk (wrapping between words, anywhere as a last resort), who did it and when under it in caption type `--ink-3` with a middle dot (an unseen comma for a screen reader), and a 16 px chevron at the row's end, `--ink-3`, mirrored in Arabic. Rows ruled with TBL-2's line; the link 44 px at least (67 at rest: 13 px above and below the text), its hover (4% white, the chevron chalk) and its ring (FOC-1, inset) inside the rules with a radius of 12, reaching 12 px past the text on each side into the card's padding. | Ac2, Ac3 |
 
-Access-drawn shared rows (CHP-10, PRS-1…4, REC-1, BTN-10…11, DLG-7…11, FLD-8…10, EMP-6…7, STA-15) move into the shared form/dialog sheet for production and are shown on `components.html` in their states, AR and EN. Access composition classes stay in `access.css`.
+Access-drawn shared rows (CHP-10, PRS-1…4, REC-1, BTN-10…11, DLG-7…11, FLD-8…10, EMP-6…7, STA-15) move into `shared.css` for production and are shown on `components.html` in their states, AR and EN. Access composition classes stay in `access.css`.
 
 ## 4. Owner surface
 
