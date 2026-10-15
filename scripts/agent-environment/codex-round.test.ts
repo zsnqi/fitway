@@ -17,7 +17,7 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { setReviewSourcePlaceObserver } from "./check-brief.mjs";
 import { copyReviewSources, outcomeIdsFromBrief } from "./codex-round.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
@@ -877,6 +877,11 @@ function reviewRefused(
 	);
 	expect(existsSync(f.run)).toBe(false);
 }
+
+// Review sources must sit under D:/fitway-temp; a CI runner has no such folder until something makes it.
+beforeAll(() => {
+	mkdirSync("D:/fitway-temp", { recursive: true });
+});
 
 describe("D1 model choice, catalog, and resume", () => {
 	it("defaults to DeepSeek max and records the catalog and its hash", () => {

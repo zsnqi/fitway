@@ -11,7 +11,7 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import {
 	checkBrief,
 	codexScopeProblem,
@@ -238,6 +238,11 @@ async function captureReviewSourceAccess(action: () => Promise<unknown>) {
 		Reflect.deleteProperty(globalThis, accessKey);
 	}
 }
+
+// Review sources must sit under D:/fitway-temp; a CI runner has no such folder until something makes it.
+beforeAll(() => {
+	mkdirSync("D:/fitway-temp", { recursive: true });
+});
 
 describe("C1 must change references", () => {
 	it("accepts existing repository and absolute files and folders, including bare paths", async () => {
