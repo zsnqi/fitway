@@ -60,27 +60,32 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   reads is unchanged at HEAD or listed with its change and why. Intent: no answer that read before is refused now.
 - **G4. The Git Bash tests in the sandbox.** Outcome: in your own sandbox, `pnpm exec vitest run
   scripts/agent-environment/codex-round.test.ts -t "Git Bash"` passes at HEAD and fails at the base archive with
-  `sed` or `dirname` not found; the two tests run every launcher form they run at the base (list them). Intent: a
+  `sed` or `dirname` not found, both run in the same unmodified sandbox with no `PATH` or profile change of yours;
+  report the command that shows the missing piece; the two tests run every launcher form they run at the base (list
+  them). Intent: a
   round's local ladder fails only for a real fault.
 - **G5. False reports resumed.** Outcome: with the launcher's own test stand-ins, each of these is resumed with a
   message naming the failed claim: a report naming commit `0123456789ab` (no such object); one naming the real HEAD
   with an untracked file in the worktree; one claiming the ladder limit PASS where `verify.mjs fast` ran only before
   the last `git commit`; one marking the ladder limit `PASS (fast ladder)` without naming verify.mjs, with no ladder
   run; a `STOPPED:` report marking the ladder PASS with no ladder in its events; one naming the launch HEAD after a
-  `git commit` that exited 1. Intent: a claim that did not happen is never accepted.
+  `git commit` that exited 1; one naming an existing commit other than HEAD (`5b81b3b7`) with a clean tree and
+  otherwise valid events. Intent: a claim that did not happen is never accepted.
 - **G6. True reports accepted.** Outcome: a report-only brief's report naming no commit and no ladder is accepted; a
   report naming its commit by a 12-character SHA equal to HEAD, with a clean tree and a ladder after the commit, is
   accepted with no resume. Intent: the check refuses nothing true.
 - **G7. The timeline.** Outcome: after a stand-in launch plus one automatic resume, `turns.jsonl` holds two lines, the
-  first with stop reason "no report", each with start before end, a duration equal to their difference within 50 ms
-  and HEAD as `git rev-parse HEAD` gave at that turn's end; the turn's stderr file holds a planted stderr line, which
-  the console still shows. Intent: a round reads from its folder alone.
+  first with stop reason "no report" and the second with the accepted report's reason, each with its exit code and
+  events file, start before end, a duration equal to their difference within 50 ms
+  and HEAD as `git rev-parse HEAD` gave at that turn's end; a manual `resume` adds a third line; the turn's stderr
+  file holds a planted stderr line, which the console still shows; a timeline write made to fail prints its error and
+  leaves the exit code unchanged. Intent: a round reads from its folder alone.
 - **G8. Limits.** Outcome: `git diff --stat 5b81b3b7 HEAD` lists only the files the round's Scope names, and
   `REVIEW.md` changed only inside §"Prompt"; no test present at `5b81b3b7` is removed, skipped or made conditional,
   none lost an assertion line, and no existing assertion's predicate or expected value changed (list each
   pre-existing test or helper whose body changed, with the change, including `expectedReviewBlocks`); each test
-  file's count is at least the base's; each new P1, P2, P4 and P5 case fails on the base's production code at its own
-  assertion. Intent: nothing was weakened to pass.
+  file's count is at least the base's; each new P1, P2, P4 and P5 case, run from the HEAD's test file on the base's
+  production code, fails at the assertion on that outcome's input and expected behaviour. Intent: nothing was weakened to pass.
 - **G9. Report against commands.** Outcome: the result's commit exists and is your HEAD; the round's run folder
   (`D:/fitway-temp/codex-round-cbeae1b0-f192-467a-8c3a-d410e7c09a34/`) records the `git commit` and a
   `node scripts/verify.mjs fast` run after it, with their exit statuses quoted from the events. Intent: the report
@@ -89,6 +94,8 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 ## Limits the result keeps
 
 - **L1. Nothing tracked changes.** `git -C <worktree> status --short` is empty at the end, and no commit is made.
+- **L2. The result's ladder.** `node scripts/verify.mjs fast` at your HEAD, in your sandbox, exits 0 with a clean tree
+  (quote its last line); and G9's post-commit ladder event has exit status 0.
 
 ## Scope
 
@@ -98,5 +105,5 @@ around it: finish and measure the others, then stop and report. (B3)
 
 ## Report
 
-Each of G1-G9 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
+Each of G1-G9, L1 and L2 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
 input that failed; anything you could not run.
