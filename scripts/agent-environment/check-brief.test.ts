@@ -2,6 +2,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import {
 	mkdirSync,
 	mkdtempSync,
+	readdirSync,
 	readFileSync,
 	realpathSync,
 	rmSync,
@@ -13,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	checkBrief,
+	codexScopeProblem,
 	formatBriefResult,
 	parseBriefArgs,
 	reviewSourcePlan,
@@ -152,14 +154,7 @@ it("R4: checker diagnostics name their checks without colliding with B1-B10", as
 	const result = await f.check(text);
 	expect(
 		new Set(result.problems.map((problem: { rule: string }) => problem.rule)),
-	).toEqual(
-		new Set([
-			"brief-references",
-			"brief-format",
-			"brief-readiness",
-			"brief-length",
-		]),
-	);
+	).toEqual(new Set(["brief-references", "brief-format", "brief-readiness"]));
 	expect(formatBriefResult(result)).not.toMatch(/\b(?:FAIL|WARNING) B\d+:/);
 	const template = readFileSync(
 		path.join(repository, "docs/agent-context/briefs/codex.md"),
@@ -210,7 +205,7 @@ function fixture() {
 	git(commandRepository, "commit", "-m", "fixture base");
 	const head = git(commandRepository, "rev-parse", "--short", "HEAD");
 	git(commandRepository, "worktree", "add", "-b", "feature/build", worktree);
-	const valid = `<!-- brief-format: v1 role: codex -->\n# Fixture brief\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`\n\n${environment}\n## Goal\n\nRead \`docs/guide.md:4\` §"Selected heading".\n`;
+	const valid = `<!-- brief-format: v1 role: codex -->\n# Fixture brief\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`\n\n${environment}\n## Goal\n\nRead \`docs/guide.md:4\` §"Selected heading".\n\n## Scope\n\nWrite only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.\n\n## Report\n\nFixture report.\n`;
 	const briefPath = path.join(commandRepository, "brief.md");
 	const check = async (text = valid, fillEnvironment = false) => {
 		writeFileSync(briefPath, text);
@@ -1075,7 +1070,7 @@ describe("brief-format: shared environment and brief role", () => {
 	});
 });
 
-describe("brief-readiness and brief-length: launch readiness and diagnostics", () => {
+describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostics", () => {
 	it.each([
 		"coordinator checklist",
 		"COORDINATOR CHECKLIST",
@@ -1125,16 +1120,83 @@ describe("brief-readiness and brief-length: launch readiness and diagnostics", (
 			).toBe(true);
 	});
 
-	it("warns at 81 lines without failing; 80 lines has no warning", async () => {
+	it("prints outcome and limit ID counts without a length warning", async () => {
 		const f = fixture();
-		const base = f.valid.trimEnd().split(/\r?\n/);
-		const eighty = `${[...base, ...Array(80 - base.length).fill("Detail.")].join("\n")}\n`;
-		expect((await f.check(eighty)).problems).toEqual([]);
-		const result = await f.check(`${eighty}Detail.\n`);
-		expect(result.ok).toBe(true);
-		expect(formatBriefResult(result)).toMatch(
-			/:81: WARNING brief-length: 81 lines/,
+		const result = await f.check(
+			`${f.valid}\n## Causes and required outcomes\n\n- **C1.** First.\n- **C2.** Second.\n\n## Limits\n\n- **L1.** Keep it.\n\n${"Detail.\n".repeat(81)}`,
 		);
+		expect(result.ok).toBe(true);
+		expect(result.outcomeIds).toBe(2);
+		expect(result.limitIds).toBe(1);
+		expect(formatBriefResult(result)).toContain(
+			"INFO brief-ids: 2 outcome IDs, 1 limit IDs",
+		);
+		expect(formatBriefResult(result)).not.toContain("brief-length");
+	});
+
+	it("fails a Codex Scope with the wrong final visible sentence", async () => {
+		const f = fixture();
+		const sentence =
+			"If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.";
+		expect(codexScopeProblem(`## Scope\n\nOnly this.\n${sentence}`)).toBeNull();
+		expect(
+			codexScopeProblem(
+				"## Scope\n\nOnly this.\nIf an outcome cannot be met, do not work around it:\nfinish and measure the others, then stop and report.",
+			),
+		).toBeNull();
+		expect(codexScopeProblem("## Goal\n\nNo scope.\n")).toMatchObject({
+			line: 1,
+		});
+		expect(
+			codexScopeProblem(`## Scope\n\n${sentence}\n\n## Scope\n\n${sentence}\n`),
+		).toMatchObject({ line: 1 });
+		expect(
+			codexScopeProblem("## Scope\n\nWrong final sentence.\n"),
+		).toMatchObject({ line: 1 });
+		expect(
+			codexScopeProblem(
+				`## Scope\n\nUnmet outcomes are reported. ${sentence}\n<!-- ${sentence} -->\n\`${sentence}\`\n`,
+			),
+		).toBeNull();
+
+		const missing = await f.check(
+			f.valid.replace(/\n## Scope\n[\s\S]*?(?=\n## Report)/, "\n"),
+		);
+		expect(
+			missing.problems.some(
+				(problem: { rule: string }) => problem.rule === "brief-scope",
+			),
+		).toBe(true);
+	});
+
+	it("rejects the five historical briefs and accepts every current r04 brief", () => {
+		const historicalDirectory = path.join(
+			repository,
+			"scripts/agent-environment/fixtures/historical-briefs",
+		);
+		const historical = [
+			"codex-motion-lows.md",
+			"codex-three-rounds-fix.md",
+			"codex-one-clock.md",
+			"codex-narrow-sheet.md",
+			"codex-variants-removal.md",
+		];
+		for (const name of historical) {
+			const text = readFileSync(path.join(historicalDirectory, name), "utf8");
+			expect(codexScopeProblem(text), name).toMatchObject({
+				message: expect.stringContaining("Codex Scope must end with"),
+			});
+		}
+
+		const currentDirectory = path.join(
+			repository,
+			"docs/phase-records/handoffs/owner-design-exploration/r04/briefs",
+		);
+		for (const entry of readdirSync(currentDirectory)) {
+			if (!entry.endsWith(".md")) continue;
+			const text = readFileSync(path.join(currentDirectory, entry), "utf8");
+			expect(codexScopeProblem(text), entry).toBeNull();
+		}
 	});
 
 	it.each([
@@ -1160,7 +1222,7 @@ describe("brief-readiness and brief-length: launch readiness and diagnostics", (
 		).toBe(true);
 		for (const line of formatBriefResult(result).split("\n"))
 			expect(line).toMatch(
-				/:\d+: FAIL brief-(?:references|format|readiness|length):/,
+				/:\d+: (?:FAIL brief-(?:references|format|readiness|scope):|INFO brief-ids:)/,
 			);
 	});
 
@@ -1175,11 +1237,12 @@ describe("brief-readiness and brief-length: launch readiness and diagnostics", (
 			});
 		const pass = run(["brief.md"]);
 		expect(pass.status).toBe(0);
-		expect(pass.stdout).toContain("WARNING brief-length");
+		expect(pass.stdout).toContain("INFO brief-ids:");
+		expect(pass.stdout).not.toContain("brief-length");
 		writeFileSync(f.briefPath, `${f.valid}\n<unfilled>\n`);
 		const fail = run(["brief.md"]);
 		expect(fail.status).toBe(1);
-		expect(fail.stdout.trim().split("\n")).toHaveLength(1);
+		expect(fail.stdout.trim().split("\n")).toHaveLength(2);
 		expect(fail.stdout).toMatch(/:\d+: FAIL brief-readiness:/);
 		const missing = run(["missing.md"]);
 		expect(missing.status).toBe(1);

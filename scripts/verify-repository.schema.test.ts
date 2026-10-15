@@ -12,14 +12,18 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
 import { TERMINAL_STATUSES } from "./check-agent-context.mjs";
 import {
+	assertClaudeAgentTable,
 	assertGardenerReport,
+	assertNoUnexpectedBom,
 	assertProjectRecordUnion,
 	assertProjectStateInvariants,
+	listTrackedFiles,
 	scopePatterns,
+	TRACKED_BOM_EXCEPTIONS,
 	verifyGardenerRecord,
 } from "./verify-repository.mjs";
 
@@ -46,6 +50,49 @@ const validateHistory = ajv.compile(historySchema);
 
 const INTEGRATED_COMMIT = "4df79885ef7e039dcf2d27eb87cf41f8c78b73e2";
 const UPDATED_AT = "2026-09-15T14:35:00+03:00";
+const REAL_REPOSITORY = fileURLToPath(new URL("../", import.meta.url));
+const temporaryRoots: string[] = [];
+
+afterEach(() => {
+	for (const root of temporaryRoots.splice(0)) {
+		rmSync(root, { recursive: true, force: true });
+	}
+});
+
+function committedAgentFixture(commit: string) {
+	const root = mkdtempSync(path.join(tmpdir(), "fitway-agent-table-"));
+	temporaryRoots.push(root);
+	writeFileSync(
+		path.join(root, "CLAUDE.md"),
+		execFileSync("git", ["show", `${commit}:CLAUDE.md`], {
+			cwd: REAL_REPOSITORY,
+			encoding: "utf8",
+		}),
+	);
+	const trackedFiles = execFileSync(
+		"git",
+		["ls-tree", "-r", "--name-only", commit, "--", ".claude/agents"],
+		{
+			cwd: REAL_REPOSITORY,
+			encoding: "utf8",
+		},
+	)
+		.trim()
+		.split(/\r?\n/)
+		.filter(Boolean)
+		.map((entry) => entry.replaceAll("\\", "/"));
+	for (const relativePath of trackedFiles) {
+		const target = path.join(root, relativePath);
+		mkdirSync(path.dirname(target), { recursive: true });
+		writeFileSync(
+			target,
+			execFileSync("git", ["show", `${commit}:${relativePath}`], {
+				cwd: REAL_REPOSITORY,
+			}),
+		);
+	}
+	return { root, trackedFiles };
+}
 
 function milestone(overrides: Record<string, unknown> = {}) {
 	return {
@@ -1136,5 +1183,161 @@ describe("M1/M5: terminal record union without receipts", () => {
 				][index],
 			);
 		}
+	});
+});
+
+describe("tracked encoding and Claude agent definitions", () => {
+	it("fails both historical agent-table drifts and passes the current definitions", () => {
+		for (const commit of ["e86bc33e", "4d8e3f40"]) {
+			const fixture = committedAgentFixture(commit);
+			expect(
+				() =>
+					assertClaudeAgentTable({
+						repositoryRoot: fixture.root,
+						trackedFiles: fixture.trackedFiles,
+					}),
+				commit,
+			).toThrow(/is not tracked/);
+		}
+
+		expect(() =>
+			assertClaudeAgentTable({ repositoryRoot: REAL_REPOSITORY }),
+		).not.toThrow();
+	});
+
+	it("rejects model, effort, missing-definition, and extra-definition drift", () => {
+		const fixture = committedAgentFixture("HEAD");
+		const instructionsPath = path.join(fixture.root, "CLAUDE.md");
+		const instructions = readFileSync(instructionsPath, "utf8");
+		const designerRow =
+			"| `owner-direction-designer` | Opus | `xhigh` | new visual design and taste judgment |";
+		const builderRow =
+			"| `owner-direction-builder` | Opus | `high` | implementing an agreed, precisely specified decision |";
+		expect(instructions).toContain(designerRow);
+		expect(instructions).toContain(builderRow);
+
+		writeFileSync(
+			instructionsPath,
+			instructions.replace(designerRow, designerRow.replace("Opus", "Sonnet")),
+		);
+		expect(() =>
+			assertClaudeAgentTable({
+				repositoryRoot: fixture.root,
+				trackedFiles: fixture.trackedFiles,
+			}),
+		).toThrow(/model Sonnet does not match opus/);
+
+		writeFileSync(
+			instructionsPath,
+			instructions.replace(builderRow, builderRow.replace("`high`", "`low`")),
+		);
+		expect(() =>
+			assertClaudeAgentTable({
+				repositoryRoot: fixture.root,
+				trackedFiles: fixture.trackedFiles,
+			}),
+		).toThrow(/effort low does not match high/);
+
+		writeFileSync(instructionsPath, instructions);
+		const extraDefinition = ".claude/agents/extra-reviewer.md";
+		const extraAbsolute = path.join(fixture.root, extraDefinition);
+		mkdirSync(path.dirname(extraAbsolute), { recursive: true });
+		writeFileSync(
+			extraAbsolute,
+			"---\nname: extra-reviewer\nmodel: sonnet\neffort: low\n---\n",
+		);
+		expect(() =>
+			assertClaudeAgentTable({
+				repositoryRoot: fixture.root,
+				trackedFiles: [...fixture.trackedFiles, extraDefinition],
+			}),
+		).toThrow(/missing tracked definition/);
+
+		const missingDefinition = fixture.trackedFiles.find((entry) =>
+			entry.endsWith("/sonnet-scout.md"),
+		);
+		expect(missingDefinition).toBeDefined();
+		expect(() =>
+			assertClaudeAgentTable({
+				repositoryRoot: fixture.root,
+				trackedFiles: fixture.trackedFiles.filter(
+					(entry) => entry !== missingDefinition,
+				),
+			}),
+		).toThrow(/is not tracked/);
+	});
+
+	it("fails unexpected tracked BOMs and preserves only the named exceptions", () => {
+		const trackedFiles = listTrackedFiles(REAL_REPOSITORY);
+		const result = assertNoUnexpectedBom({
+			repositoryRoot: REAL_REPOSITORY,
+			trackedFiles,
+		});
+		expect(result.checked).toBe(trackedFiles.length);
+		expect(result.allowed).toBe(TRACKED_BOM_EXCEPTIONS.length);
+		for (const entry of TRACKED_BOM_EXCEPTIONS)
+			expect(entry.reason.trim().length).toBeGreaterThan(0);
+
+		const configBytes = readFileSync(
+			path.join(REAL_REPOSITORY, ".impeccable/config.json"),
+		);
+		expect(
+			configBytes.subarray(0, 3).equals(Buffer.from([0xef, 0xbb, 0xbf])),
+		).toBe(false);
+		expect(JSON.parse(configBytes.toString("utf8"))).toEqual({
+			buildPath: "code",
+		});
+
+		const root = mkdtempSync(path.join(tmpdir(), "fitway-bom-"));
+		temporaryRoots.push(root);
+		writeFileSync(
+			path.join(root, "new-bom.txt"),
+			Buffer.from([0xef, 0xbb, 0xbf, 0x78]),
+		);
+		expect(() =>
+			assertNoUnexpectedBom({
+				repositoryRoot: root,
+				trackedFiles: ["new-bom.txt"],
+				exceptions: [],
+			}),
+		).toThrow(/new-bom\.txt.*BOM/);
+	});
+
+	it("requires every BOM exception to be reasoned, unique, tracked, and BOM-prefixed", () => {
+		const root = mkdtempSync(path.join(tmpdir(), "fitway-bom-exception-"));
+		temporaryRoots.push(root);
+		mkdirSync(path.join(root, "nested"));
+		writeFileSync(
+			path.join(root, "nested/bom.txt"),
+			Buffer.from([0xef, 0xbb, 0xbf, 0x78]),
+		);
+		writeFileSync(path.join(root, "plain.txt"), "plain");
+		const trackedFiles = ["nested/bom.txt", "plain.txt"];
+		const check = (exceptions: { path: string; reason: string }[]) =>
+			assertNoUnexpectedBom({
+				repositoryRoot: root,
+				trackedFiles,
+				exceptions,
+			});
+
+		expect(() => check([{ path: "nested/bom.txt", reason: " \t " }])).toThrow(
+			/nested[\\/]bom\.txt.*non-empty reason/,
+		);
+		expect(() =>
+			check([
+				{ path: "nested/bom.txt", reason: "Kept." },
+				{ path: "NESTED\\BOM.TXT", reason: "Also kept." },
+			]),
+		).toThrow(/NESTED[\\/]BOM\.TXT.*duplicates nested[\\/]bom\.txt/);
+		expect(() => check([{ path: "missing.txt", reason: "Kept." }])).toThrow(
+			/missing\.txt.*is not a tracked file/,
+		);
+		expect(() => check([{ path: "plain.txt", reason: "Kept." }])).toThrow(
+			/plain\.txt.*does not start with a UTF-8 BOM/,
+		);
+		expect(check([{ path: "NESTED\\BOM.TXT", reason: "Kept." }])).toEqual({
+			checked: 2,
+			allowed: 1,
+		});
 	});
 });
