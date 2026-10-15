@@ -1,10 +1,5 @@
-/* Eclipse Reports: the second Eclipse page, and the table, form and dialog system that Activity Log, Access and
- * Settings will reuse. Loaded after style.css, which it never overrides for the Daily page: every rule here is scoped
- * to the Reports body (.rp) or to a class only Reports uses. The language is the Daily page's (the same glass cards,
- * lights, type, rail and frame); the composition is Reports' own. Concept only, synthetic data.
- * Step 4 (run owner_reports_r04_s20): the page takes the frame (body[data-frame], style.css "the frame"), and every
- * Reports component takes the spec's rules: type by role (TYP-3), the 4 px scale (SPC-1, SPC-5, SPC-6), the radii set
- * (RAD-1), one focus ring (FOC-1, FOC-2) and 44 px targets (BTN-1, CHP-1, SEG-2). */
+/* Eclipse Reports: Reports' own page composition and components.
+ * Shared controls, dialogs, fields and notices load from shared.css first. */
 
 html:has(> body.rp) {
   color-scheme: dark;
@@ -79,59 +74,6 @@ html:has(> body.rp) {
  * lit card every caption is --ink-2 (LGT-9). */
 .rp-trend:not(.lit) > .lamp { display: none; }
 .rp-trend.lit .stat-meta, .rp-trend.lit .unit, .rp-trend.lit .stat-aside { color: var(--ink-2); }
-
-/* --------------------------------------------------------- the segmented control
- * SEG-1…4: a group of toggle buttons (aria-pressed), one Tab stop each, the last opening the date dialog. A 44 px row in
- * a 1 px frame drawn inside (it adds no height); each segment is 44 tall (SEG-2); the inset ring (FOC-2). */
-.seg {
-  display: inline-flex;
-  height: 44px;
-  border-radius: 12px;
-  box-shadow: inset 0 0 0 1px var(--line-2);
-  background: rgba(255, 255, 255, 0.015);
-}
-.seg-b {
-  height: 44px;
-  padding-inline: 16px;
-  border-radius: 12px;
-  font-size: 13.5px;
-  line-height: 20px;
-  color: var(--ink-2);
-  white-space: nowrap;
-}
-@media (hover: hover) { .seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
-.seg-b[aria-pressed="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-light, transparent); }
-.seg-b:focus-visible { outline-offset: -4px; }
-
-/* ---------------------------------------------------------------- buttons
- * BTN-1…7: one button, 44 tall, radius 12, label type, icon 17 with an 8 gap, padding 16. Secondary (outline) and primary
- * (chalk); red stays the brand's and the data's, never a button's. */
-.rbtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 44px;
-  padding-inline: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--line-2);
-  background: rgba(255, 255, 255, 0.02);
-  font-size: 13.5px;
-  line-height: 20px;
-  color: var(--ink);
-  white-space: nowrap;
-  text-decoration: none;
-}
-.rbtn svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-@media (hover: hover) { .rbtn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); } }
-.rbtn-primary { border-color: var(--ink); background: var(--ink); color: #0d0c0d; font-weight: 500; }
-@media (hover: hover) { .rbtn-primary:hover { border-color: #fff; background: #fff; } }
-.rbtn:disabled, .rbtn.is-disabled { cursor: default; border-color: var(--line); background: transparent; color: var(--ink-3); }
-@media (hover: hover) { .rbtn.is-disabled:hover { cursor: default; border-color: var(--line); background: transparent; color: var(--ink-3); } }
-.rbtn-primary:disabled { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
-.icon-btn { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 12px; color: var(--ink-2); }
-@media (hover: hover) { .icon-btn:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
-.icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
 
 /* ----------------------------------------------------------------- switch
  * SWI-1…4: role switch, a 44 px box, radius 12, padding 12 / 16, gap 8, label type. */
@@ -307,75 +249,9 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
 .table-empty .ico { width: 22px; height: 22px; color: var(--ink-3); }
 @media (hover: hover) { .table tr.is-empty:hover > * { background: none; } }
 
-/* ------------------------------------------------------------------ dialog
- * DLG-1…6: the <dialog> covers the viewport: a scrim (the page stays visible, dimmed and softened) and a centred panel.
- * Inset 24, the close button's side 12, foot gap 8. On a phone the panel is a bottom sheet. */
-.dlg {
-  position: fixed;
-  inset: 0;
-  width: auto;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  margin: 0;
-  padding: 16px;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
-  overflow: hidden;
-  overscroll-behavior: contain;
-}
-.dlg::backdrop { background: transparent; }
-.dlg[open] { display: grid; place-items: center; }
-.dlg-scrim { position: absolute; inset: 0; background: rgba(4, 4, 5, 0.66); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
-.dlg-panel {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: min(468px, 100%);
-  max-height: 100%;
-  border-radius: 24px;
-  border: 1px solid var(--line-2);
-  background: rgba(17, 16, 17, 0.98);
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
-}
-.dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 12px 0 24px; }
-[dir="rtl"] .dlg-head { padding: 16px 24px 0 12px; }
-.dlg-head h2 { font-size: 19px; line-height: 28.5px; font-weight: 500; }
-.dlg-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 8px 24px 0; }
-.dlg-desc { font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
-.dlg-foot { display: flex; justify-content: flex-start; gap: 8px; padding: 24px; }
-
-/* ------------------------------------------------------------------- field
- * FLD-1…6: a label above (8 to the field), a 44 px input, padding 16, body type; the message 8 under it. */
 .field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block-start: 16px; }
-.field { min-width: 0; }
-.field-label { display: block; margin-block-end: 8px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
-.field-input {
-  display: block;
-  width: 100%;
-  height: 44px;
-  padding-inline: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--field-line);
-  background: var(--field);
-  color: var(--ink);
-  font: inherit;
-  font-size: 16px;
-  line-height: 24px;
-  font-variant-numeric: tabular-nums;
-  caret-color: var(--red-hi);
-}
-[dir="rtl"] .field-input { text-align: right; }
-@media (hover: hover) { .field-input:hover { border-color: rgba(255, 255, 255, 0.52); } }
-.field-input:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-color: rgba(255, 255, 255, 0.52); }
-.field.is-invalid .field-input { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); }
-.field.is-invalid .field-input:focus-visible { outline-color: var(--err); }
 .field.is-disabled .field-input { border-color: var(--line); background: transparent; color: var(--ink-3); cursor: not-allowed; }
 .field.is-disabled .field-label { color: var(--ink-3); }
-.field-err { display: flex; align-items: flex-start; gap: 8px; margin-block-start: 8px; font-size: 12px; line-height: 18px; color: var(--err); }
-.field-err .ico { width: 15px; height: 15px; margin-block-start: 1.5px; flex: none; }
-.field-hint { margin-block-start: 8px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
 
 /* ------------------------------------------------ the export dialog's states (DLG-4, STA-9, EMP-2, EMP-4) */
 html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
@@ -405,9 +281,6 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 .progress-bar { display: block; height: 4px; margin-block-start: 8px; overflow: hidden; border-radius: 2px; background: rgba(255, 255, 255, 0.08); }
 .progress-bar i { display: block; height: 100%; background: var(--ink); transform: scaleX(0); transform-origin: left; }
 [dir="rtl"] .progress-bar i { transform-origin: right; }
-.alert { display: flex; align-items: flex-start; gap: 8px; margin-block-start: 16px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--err-line); background: rgba(255, 107, 125, 0.06); font-size: 13.5px; line-height: 20px; color: var(--ink); }
-.alert .ico { width: 17px; height: 17px; margin-block-start: 1.5px; color: var(--err); }
-.done { padding-block: 8px 0; text-align: center; }
 /* The done mark: a 1 px ring (--line-3) and the check (chalk, 1.8 at the icon's 22 px), drawn in one 44 px SVG so
  * motion.js can draw both strokes: the ring from its top in the reading direction, then the check. A centred block of
  * its own, so no text line (and its baseline's descent) adds to the 12 px between the mark and the words (DLG-4). */
@@ -493,14 +366,6 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
   .n .sort { text-align: right; }
   [dir="ltr"] .n .sort { text-align: left; }
   /* The dialog is a bottom sheet; its actions share the width. */
-  .dlg { padding: 0; }
-  .dlg[open] { place-items: end stretch; }
-  .dlg-panel { width: 100%; max-height: calc(100dvh - 12px); border-radius: 24px 24px 0 0; border-block-end: 0; }
-  .dlg-head { padding: 12px 12px 0 20px; }
-  [dir="rtl"] .dlg-head { padding: 12px 20px 0 12px; }
-  .dlg-body { padding: 4px 20px 0; }
-  .dlg-foot { padding: 20px 20px max(20px, env(safe-area-inset-bottom)); }
-  .dlg-foot .rbtn { flex: 1 1 0; min-width: 0; }
 }
 @media (max-width: 400px) {
   .field-row { grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -508,10 +373,6 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
   .table tr > :first-child { padding-inline-start: 4px; }
   .table tr > :nth-child(4) { padding-inline-end: 4px; }
   .sort { margin-inline: -4px; padding-inline: 4px; }
-  .dlg-body, .dlg-head { padding-inline-start: 16px; }
-  [dir="rtl"] .dlg-head { padding-inline-start: 16px; }
-  .dlg-body { padding-inline-end: 16px; }
-  .dlg-foot { padding-inline: 16px; }
 }
 
 /* ------------------------------------------------------- the phone's figures
@@ -617,7 +478,6 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
  * its own); a face shows the choice in label type, 13.5 px, as before, and is as wide as the widest choice, as the
  * native select was: every choice sits in one cell and only the chosen one is seen (reports.js renderDays). Activity
  * log's person list takes the same face (activity.css). */
-.sel-face { display: block; min-width: 0; font-size: 13.5px; line-height: 20px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
 .dl-sort .sel-face { display: inline-grid; align-items: center; height: 44px; padding-inline: 38px; }
 .dl-sort .sel-face > span { grid-area: 1 / 1; }
 .dl-sort .sel-face > span:not(.is-on) { visibility: hidden; }
@@ -722,13 +582,3 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 }
 
 /* Dialog shells clear physical cutouts; mobile foot padding already clears the home indicator. */
-.dlg { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); padding-top: max(16px, env(safe-area-inset-top)); padding-bottom: max(16px, env(safe-area-inset-bottom)); }
-@media (max-width: 720px) {
-  .dlg { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); padding-top: env(safe-area-inset-top); padding-bottom: 0; }
-}
-
-/* A definite viewport cap lets a real dialog body scroll inside its shell insets.
- * Static specimens retain their containing frame's cap. No typed division is needed. */
-@media (min-width: 721px) {
-  .dlg > .dlg-panel { max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom))); }
-}

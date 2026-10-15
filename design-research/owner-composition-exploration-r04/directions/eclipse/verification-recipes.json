@@ -1283,7 +1283,7 @@
           },
           "shows": "Access loading state shows its loading badge and hidden status button",
           "proof": {
-            "expression": "window.__access?.phase === 'loading' && !!document.querySelector('.hb-load') && document.querySelector('#ops-btn')?.hidden === true"
+            "expression": "window.__access?.phase === 'loading' && !!document.querySelector('.hb-load') && document.querySelector('#ops-btn')?.hidden === true && document.documentElement.dataset.load === 'shown'"
           }
         },
         {
@@ -4050,7 +4050,7 @@
           },
           "shows": "Reports page state loading is visibly rendered",
           "proof": {
-            "expression": "window.__reports?.phase === 'loading' && !!document.querySelector('.hb-load')"
+            "expression": "window.__reports?.phase === 'loading' && !!document.querySelector('.hb-load') && document.documentElement.dataset.load === 'shown'"
           }
         },
         {
