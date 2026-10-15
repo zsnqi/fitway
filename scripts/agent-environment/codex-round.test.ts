@@ -16,9 +16,110 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { setReviewSourcePlaceObserver } from "./check-brief.mjs";
 import { copyReviewSources } from "./codex-round.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
+
+vi.setConfig({ testTimeout: 60_000 });
+
+vi.mock("node:fs", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs")>();
+	return {
+		...actual,
+		readFileSync: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "readFileSync",
+					value: args[0],
+				});
+			return (
+				actual.readFileSync as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+		createReadStream: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "createReadStream",
+					value: args[0],
+				});
+			return (
+				actual.createReadStream as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+	};
+});
+
+vi.mock("node:fs/promises", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs/promises")>();
+	return {
+		...actual,
+		readFile: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "readFile",
+					value: args[0],
+				});
+			return (actual.readFile as unknown as (...values: unknown[]) => unknown)(
+				...args,
+			);
+		}),
+	};
+});
+
+vi.mock("node:child_process", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:child_process")>();
+	const recordGitShow = (args: unknown[]) => {
+		const command = args[0];
+		const commandArgs = args[1];
+		if (
+			command === "git" &&
+			Array.isArray(commandArgs) &&
+			commandArgs[0] === "show"
+		) {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "git-show",
+					value: commandArgs[2],
+				});
+		}
+	};
+	return {
+		...actual,
+		execFileSync: vi.fn((...args: unknown[]) => {
+			recordGitShow(args);
+			return (
+				actual.execFileSync as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+		spawnSync: vi.fn((...args: unknown[]) => {
+			recordGitShow(args);
+			return (actual.spawnSync as unknown as (...values: unknown[]) => unknown)(
+				...args,
+			);
+		}),
+	};
+});
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const script =
@@ -208,6 +309,47 @@ function initialize(root: string) {
 	git(root, "commit", "--allow-empty", "-m", "fixture base");
 }
 
+async function captureReviewSourceAccess(action: () => Promise<unknown>) {
+	const accessKey = Symbol.for("fitway.review-source-access-test");
+	const events: {
+		type: "place" | "read";
+		kind?: string;
+		route?: string;
+		value?: unknown;
+	}[] = [];
+	Reflect.set(globalThis, accessKey, events);
+	setReviewSourcePlaceObserver((event) => {
+		events.push({ type: "place", ...event });
+	});
+	try {
+		await action();
+		return events;
+	} finally {
+		setReviewSourcePlaceObserver(undefined);
+		Reflect.deleteProperty(globalThis, accessKey);
+	}
+}
+
+function shortWindowsPath(value: string) {
+	const result = spawnSync(
+		"powershell.exe",
+		[
+			"-NoProfile",
+			"-Command",
+			"(New-Object -ComObject Scripting.FileSystemObject).GetFolder($env:FITWAY_SHORT_PATH).ShortPath",
+		],
+		{
+			encoding: "utf8",
+			env: { ...process.env, FITWAY_SHORT_PATH: value },
+			windowsHide: true,
+		},
+	);
+	if (result.error) throw result.error;
+	if (result.status !== 0)
+		throw new Error(`short path lookup failed: ${result.stderr}`);
+	return result.stdout.trim();
+}
+
 afterEach(() => {
 	for (const root of roots.splice(0)) {
 		const absolute = realpathSync.native(root);
@@ -229,7 +371,7 @@ function fixture(eol = "\n") {
 	const head = git(worktree, "rev-parse", "HEAD");
 	const brief = path.join(coordinator, "brief.md");
 	const bytes = Buffer.from(
-		`<!-- brief-format: v1 role: codex -->\n# Fixture\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`fixture\`, HEAD \`${head.slice(0, 8)}\`\n\n${environment.replaceAll("\r\n", "\n")}\n## Goal\n\nالنص «كما هو»\n`.replaceAll(
+		`<!-- brief-format: v1 role: codex -->\n# Fixture\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`fixture\`, HEAD \`${head.slice(0, 8)}\`\n\n${environment.replaceAll("\r\n", "\n")}\n## Goal\n\nالنص «كما هو»\n\n## Causes and required outcomes\n\n- **K1.** Fixture outcome.\n`.replaceAll(
 			"\n",
 			eol,
 		),
@@ -248,7 +390,7 @@ const chunks = [];
 process.stdin.on('data', chunk => chunks.push(chunk));
 process.stdin.on('end', () => {
   if (args.includes('read-only')) {
-    const capture = {args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), files:fs.readdirSync(process.cwd())};
+    const capture = {args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), env:{TEMP:process.env.TEMP,TMP:process.env.TMP}, files:fs.readdirSync(process.cwd())};
     fs.appendFileSync(process.env.ROUND_REVIEW_CAPTURE, JSON.stringify(capture) + '\\n');
     if (!process.env.REVIEW_NO_ANSWER) fs.writeFileSync(args[args.indexOf('-o') + 1], process.env.REVIEW_ANSWER_FILE ? fs.readFileSync(process.env.REVIEW_ANSWER_FILE) : process.env.REVIEW_ANSWER || 'No such readings.\\n');
     process.stdout.write('stand-in review\\n');
@@ -257,7 +399,7 @@ process.stdin.on('end', () => {
   }
   if (process.env.ROUND_WRITE_PATH) fs.writeFileSync(process.env.ROUND_WRITE_PATH, Buffer.from(process.env.ROUND_WRITE_CONTENT, 'base64'));
   if (process.env.ROUND_REMOVE_PATH) fs.unlinkSync(process.env.ROUND_REMOVE_PATH);
-  fs.writeFileSync(process.env.ROUND_CAPTURE, JSON.stringify({args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64')}));
+  fs.writeFileSync(process.env.ROUND_CAPTURE, JSON.stringify({args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), env:{TEMP:process.env.TEMP,TMP:process.env.TMP}}));
   const sequenceFile = process.env.ROUND_SEQUENCE_FILE;
   let sequenceIndex = 0;
   if (sequenceFile) {
@@ -267,7 +409,7 @@ process.stdin.on('end', () => {
   const messages = process.env.ROUND_MESSAGES ? JSON.parse(process.env.ROUND_MESSAGES) : null;
   const exits = process.env.ROUND_EXITS ? JSON.parse(process.env.ROUND_EXITS) : null;
   const isResume = args.includes('resume');
-  const fallback = isResume ? 'stand-in resumed message\\n' : 'stand-in last message\\n';
+  const fallback = isResume ? 'stand-in resumed message\\nK1: PASS\\n' : 'stand-in last message\\nK1: PASS\\n';
   const configuredMessage = isResume && process.env.ROUND_RESUME_MESSAGE !== undefined
     ? process.env.ROUND_RESUME_MESSAGE
     : process.env.ROUND_MESSAGE;
@@ -925,6 +1067,53 @@ describe("D5 review sources", () => {
 		).toEqual(Buffer.from("named head\n"));
 	});
 
+	it.each([
+		"repository",
+		"checkout",
+		"temp",
+	] as const)("checks %s review sources for the place before any read", async (kind) => {
+		const f = fixture();
+		let source: string;
+		let head = f.head;
+		let cleanup: (() => void) | undefined;
+		if (kind === "repository") {
+			const filename = path.join(f.worktree, "docs", "ordered-source.md");
+			mkdirSync(path.dirname(filename), { recursive: true });
+			writeFileSync(filename, "repository source\n");
+			git(f.worktree, "add", ".");
+			git(f.worktree, "commit", "-m", "ordered repository source");
+			head = git(f.worktree, "rev-parse", "HEAD");
+			source = "docs/ordered-source.md";
+		} else if (kind === "checkout") {
+			source = path
+				.join(repository, "docs/agent-context/briefs/REVIEW.md")
+				.replaceAll("\\", "/");
+		} else {
+			const directory = mkdtempSync(
+				path.join("D:/fitway-temp", "round-order-"),
+			);
+			source = path.join(directory, "source.md").replaceAll("\\", "/");
+			writeFileSync(source, "temporary source\n");
+			cleanup = () => rmSync(directory, { recursive: true, force: true });
+		}
+		try {
+			const events = await captureReviewSourceAccess(() =>
+				copyReviewSources(
+					path.join(f.root, `ordered-${kind}`),
+					`- **Read first, only these:**\n\n- \`${source}\`\n`,
+					f.worktree,
+					head,
+				),
+			);
+			const firstPlace = events.findIndex((event) => event.type === "place");
+			const firstRead = events.findIndex((event) => event.type === "read");
+			expect(firstPlace, kind).toBeGreaterThanOrEqual(0);
+			expect(firstRead, kind).toBeGreaterThan(firstPlace);
+		} finally {
+			cleanup?.();
+		}
+	});
+
 	it("refuses a repository source changed after the brief's named HEAD", () => {
 		const f = fixture();
 		const source = path.join(f.worktree, "docs", "review-source.md");
@@ -1301,6 +1490,79 @@ describe("R1 pre-launch review", () => {
 		expect(f.invoke().status).toBe(0);
 	});
 
+	it("accepts bare numbered readings with indented bodies and lists", () => {
+		const f = fixture();
+		const answer = `1. R1 permits a shortcut.
+   Literal reading: the check can pass.
+   1. Keep the list in the body.
+   2. Do not split there.
+   What goes wrong: the intent remains unmet.
+2) L1 can drift.
+   Literal reading: a changed input survives.
+   Close: preserve the input.
+`;
+		f.answerReview(
+			answer,
+			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\nReading 2: closed\n`,
+		);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(readFileSync(path.join(f.run, "review-readings.md"), "utf8")).toBe(
+			answer,
+		);
+	});
+
+	it("accepts readings after a multi-paragraph preface", () => {
+		const f = fixture();
+		const answer = `Five readings, most damaging first.
+
+The preface spans more than one paragraph.
+
+1. **R1** permits a shortcut.
+   Literal reading: the check can pass.
+   What goes wrong: the intent remains unmet.
+
+2. **L1** can drift.
+   Literal reading: a changed input survives.
+   Close: preserve the input.
+`;
+		f.answerReview(
+			answer,
+			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\nReading 2: closed\n`,
+		);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(readFileSync(path.join(f.run, "review-readings.md"), "utf8")).toBe(
+			answer,
+		);
+	});
+
+	it("reads the vf-fixes preface answer as exactly five readings", () => {
+		const f = fixture();
+		const answerFile = path.join(realReviewRoot, "codex-vf-fixes-1.md");
+		const answer = readFileSync(answerFile);
+		expect(createHash("sha256").update(answer).digest("hex")).toBe(
+			"ee52b45f9c317c02cdfa90dc64bf65643a5ea5db7b95fa22108dcb57ee1d8238",
+		);
+		rmSync(f.reviewRoot, { recursive: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER_FILE: answerFile });
+		expect(result.stdout.match(/^Reading \d+:$/gm)).toHaveLength(5);
+		reviewRefused(f, result, "record its dispositions before launching");
+		const folder = path.join(f.reviewRoot, "brief-1");
+		writeFileSync(
+			path.join(folder, "dispositions.md"),
+			`Brief SHA-256: ${briefHash(f.brief)}\n${Array.from(
+				{ length: 5 },
+				(_, index) => `Reading ${index + 1}: closed`,
+			).join("\n")}\n`,
+		);
+		const launched = f.invoke();
+		expect(launched.status, launched.output).toBe(0);
+		expect(readFileSync(path.join(f.run, "review-readings.md"))).toEqual(
+			answer,
+		);
+	});
+
 	it("accepts bold Reading headings with numbered labelled fields", () => {
 		const f = fixture();
 		const answer =
@@ -1538,6 +1800,19 @@ What goes wrong: the proof fails.
 		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
+	it("refuses a bare answer whose body lists look like reading starts", () => {
+		const f = fixture();
+		const answer = `1. R1 permits a shortcut.
+   Literal reading: the check can pass.
+   1. R1 names a body item.
+   2. L1 names another body item.
+2. L1 can drift.
+   Literal reading: a changed input survives.
+`;
+		f.answerReview(answer);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
+	});
+
 	it.each([
 		"No readings.",
 		"The brief has no such reading.",
@@ -1736,6 +2011,24 @@ describe("L1 launch", () => {
 		);
 		expect(existsSync(f.run)).toBe(false);
 	});
+	it("refuses a brief with no outcome IDs before its review starts", () => {
+		const f = fixture();
+		writeFileSync(
+			f.brief,
+			f.bytes
+				.toString("utf8")
+				.replace(
+					"\n## Causes and required outcomes\n\n- **K1.** Fixture outcome.\n",
+					"\n",
+				),
+		);
+		git(f.coordinator, "add", ".");
+		git(f.coordinator, "commit", "-m", "remove outcome ids");
+		const result = f.invoke([f.brief, "high", "--new-review", "--run", f.run]);
+		refused(f, result, "brief has no outcome IDs");
+		expect(f.reviewCalls()).toEqual([]);
+		expect(existsSync(f.run)).toBe(false);
+	});
 	it("keeps exact HEAD input, argument order, events, last message, run folder and thread id", async () => {
 		const f = fixture();
 		const result = f.invoke();
@@ -1754,7 +2047,7 @@ describe("L1 launch", () => {
 		expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
 		expect(readFileSync(path.join(f.run, "input.md"))).toEqual(f.bytes);
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
-			"stand-in last message\n",
+			"stand-in last message\nK1: PASS\n",
 		);
 		expect(readFileSync(path.join(f.run, "events.jsonl"), "utf8")).toBe(
 			`{"type":"thread.started","thread_id":"${thread}"}\n{"type":"item.completed","text":"العربية «»"}\r\n`,
@@ -1808,7 +2101,7 @@ describe("L2 resume", () => {
 			readdirSync(f.run).filter((file) => file.endsWith(".jsonl")),
 		).toEqual(["events-resume-2.jsonl", "events-resume.jsonl", "events.jsonl"]);
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
-			"stand-in resumed message\n",
+			"stand-in resumed message\nK1: PASS\n",
 		);
 	});
 	it.each([
@@ -1935,6 +2228,14 @@ describe("L2 resume", () => {
 		);
 		refused(f, f.invoke(["resume", f.run]), "first event has no thread id");
 		expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(false);
+	});
+	it("refuses to resume a saved input with no outcome IDs", () => {
+		const f = fixture();
+		expect(f.invoke().status).toBe(0);
+		rmSync(f.capture);
+		writeFileSync(path.join(f.run, "input.md"), "No outcome IDs.\n");
+		refused(f, f.invoke(["resume", f.run]), "brief has no outcome IDs");
+		expect(existsSync(f.capture)).toBe(false);
 	});
 });
 
@@ -2165,6 +2466,71 @@ describe("L3 refusals", () => {
 		if (kind === "staged") git(f.worktree, "add", ".");
 		refused(f, f.invoke(), "uncommitted changes");
 	});
+	it.each([
+		"TEMP",
+		"TMP",
+	])("refuses %s inside D:/fitway-temp before review or Codex", (key) => {
+		const f = fixture();
+		const bad = path.join("D:/fitway-temp", `round-${key}`, "child");
+		rmSync(f.reviewRoot, { recursive: true });
+		const result = f.invoke([f.brief, "high", "--new-review", "--run", f.run], {
+			[key]: bad,
+		});
+		refused(f, result, key);
+		expect(result.stderr).toContain("D:/fitway-temp");
+		expect(f.reviewCalls()).toEqual([]);
+		expect(existsSync(f.run)).toBe(false);
+		expect(existsSync(f.reviewRoot)).toBe(false);
+	});
+	it("refuses a case-varied, relative TEMP through a junction into the gardener root", () => {
+		const f = fixture();
+		const link = path.join(f.root, "gardener-temp-link");
+		symlinkSync("D:/fitway-temp", link, "junction");
+		const bad = `${link.toUpperCase()}/child/../nested`;
+		delete f.env.TEMP;
+		delete f.env.TMP;
+		Object.assign(f.env, { temp: bad });
+		const result = f.invoke();
+		refused(f, result, "temp");
+		expect(result.stderr).toContain("temp");
+		expect(f.reviewCalls()).toEqual([]);
+		expect(existsSync(f.run)).toBe(false);
+	});
+	it("refuses a bad TEMP before Codex on resume", () => {
+		const f = fixture();
+		expect(f.invoke().status).toBe(0);
+		rmSync(f.capture);
+		const result = f.invoke(["resume", f.run], {
+			TEMP: "D:/FITWAY-TEMP/../fitway-temp/resume",
+		});
+		refused(f, result, "TEMP");
+		expect(existsSync(f.capture)).toBe(false);
+	});
+	it("keeps a sibling of D:/fitway-temp and other values unchanged", () => {
+		const f = fixture();
+		const temp = "D:/fitway-temp-logs/round-temp";
+		const tmp = "D:/fitway-temp-logs/round-tmp";
+		const result = f.invoke(undefined, { TEMP: temp, TMP: tmp });
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().env).toEqual({ TEMP: temp, TMP: tmp });
+	});
+	it.skipIf(process.platform !== "win32")(
+		"expands an 8.3 TEMP for Codex and leaves other values unchanged",
+		() => {
+			const f = fixture();
+			const long = path.join(f.root, "long-environment-folder");
+			mkdirSync(long);
+			const short = shortWindowsPath(long);
+			if (!short.includes("~")) return;
+			const tmp = "D:/fitway-temp-logs/round-normal";
+			const result = f.invoke(undefined, { TEMP: short, TMP: tmp });
+			expect(result.status, result.output).toBe(0);
+			expect(f.captured().env).toEqual({
+				TEMP: realpathSync.native(long),
+				TMP: tmp,
+			});
+		},
+	);
 	it("refuses an unsupported level", () => {
 		const f = fixture();
 		refused(
@@ -2423,6 +2789,43 @@ describe("L4 shell and byte parity", () => {
 			);
 			expect(bash.status, bash.stdout + bash.stderr).toBe(0);
 			expect(Buffer.from(f.captured().input, "base64")).toEqual(message);
+		},
+	);
+	it.skipIf(process.platform !== "win32")(
+		"refuses --message under Git Bash and names --message-file",
+		() => {
+			const f = fixture();
+			expect(f.invoke(undefined, { ROUND_EXIT: "37" }).status).toBe(37);
+			rmSync(f.capture);
+			const gitBash = findGitBash(f.env.PATH);
+			const args = [
+				process.execPath,
+				script,
+				"resume",
+				f.run,
+				"--message",
+				"/api",
+			];
+			const bashQuote = (value: string) =>
+				`'${value.replaceAll("'", "'\\''")}'`;
+			const result = spawnSync(
+				gitBash,
+				[
+					"--noprofile",
+					"--norc",
+					"-c",
+					args.map((arg) => bashQuote(arg.replaceAll("\\", "/"))).join(" "),
+				],
+				{
+					cwd: f.coordinator,
+					env: f.env,
+					encoding: "utf8",
+					windowsHide: true,
+				},
+			);
+			expect(result.status, result.stdout + result.stderr).toBe(1);
+			expect(result.stderr).toContain("--message-file");
+			expect(existsSync(f.capture)).toBe(false);
 		},
 	);
 	it.skipIf(process.platform !== "win32")(
