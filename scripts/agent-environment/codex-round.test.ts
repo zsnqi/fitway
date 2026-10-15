@@ -404,7 +404,7 @@ function fixture(eol = "\n") {
 	const head = git(worktree, "rev-parse", "HEAD");
 	const brief = path.join(coordinator, "brief.md");
 	const bytes = Buffer.from(
-		`<!-- brief-format: v1 role: codex -->\n# Fixture\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`fixture\`, HEAD \`${head.slice(0, 8)}\`\n\n${environment.replaceAll("\r\n", "\n")}\n## Goal\n\nالنص «كما هو»\n\n## Causes and required outcomes\n\n- **K1.** Fixture outcome.\n`.replaceAll(
+		`<!-- brief-format: v1 role: codex -->\n# Fixture\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`fixture\`, HEAD \`${head.slice(0, 8)}\`\n\n${environment.replaceAll("\r\n", "\n")}\n## Goal\n\nالنص «كما هو»\n\n## Scope\n\nWrite only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.\n\n## Causes and required outcomes\n\n- **K1.** Fixture outcome.\n`.replaceAll(
 			"\n",
 			eol,
 		),

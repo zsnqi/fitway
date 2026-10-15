@@ -1169,6 +1169,41 @@ describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostic
 		).toBe(true);
 	});
 
+	it("fails brief:check when a Codex brief has no Scope or its sentence is indented code", async () => {
+		const f = fixture();
+		const sentence =
+			"If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.";
+		const cases = [
+			["no Scope and no Report", f.valid.slice(0, f.valid.indexOf("## Scope"))],
+			[
+				"Scope sentence in indented code",
+				f.valid.replace(
+					`## Scope\n\nWrite only in the fixture. ${sentence}`,
+					`## Scope\n\n    ${sentence}`,
+				),
+			],
+		] as const;
+
+		for (const [name, text] of cases) {
+			const result = await f.check(text);
+			expect(
+				result.problems.some(
+					(problem: { rule: string }) => problem.rule === "brief-scope",
+				),
+				name,
+			).toBe(true);
+
+			writeFileSync(f.briefPath, text);
+			const cli = spawnSync(process.execPath, [script, f.briefPath], {
+				cwd: f.commandRepository,
+				encoding: "utf8",
+				windowsHide: true,
+			});
+			expect(cli.status, name).toBe(1);
+			expect(cli.stdout, name).toContain("FAIL brief-scope:");
+		}
+	});
+
 	it("rejects the five historical briefs and accepts every current r04 brief", () => {
 		const historicalDirectory = path.join(
 			repository,

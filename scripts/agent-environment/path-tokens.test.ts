@@ -91,6 +91,10 @@ beforeAll(() => {
 # Fixture brief
 - **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`
 ${environment}
+## Scope
+
+Write only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.
+
 ## Goal
 `;
 }, 60_000);

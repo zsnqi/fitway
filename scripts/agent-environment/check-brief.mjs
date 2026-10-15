@@ -48,6 +48,16 @@ function withoutFencedCode(text) {
 	);
 }
 
+function withoutIndentedCode(text, source = text) {
+	const indented = source
+		.split(/\r?\n/)
+		.map((line) => /^(?: {4}|\t)/.test(line));
+	let line = 0;
+	return text.replace(/^[^\r\n]*(?:\r\n|\n|\r|$)/gm, (value) =>
+		indented[line++] ? mask(value) : value,
+	);
+}
+
 function withoutCode(text) {
 	let result = withoutFencedCode(text);
 	for (const span of codeSpans(result).reverse())
@@ -97,8 +107,9 @@ function sectionIds(text, patterns) {
 }
 
 export function codexScopeProblem(prose) {
+	const visibleProse = withoutComments(prose);
 	const scopeSections = markdownSections(
-		withoutCode(withoutComments(prose)),
+		withoutIndentedCode(withoutCode(visibleProse), visibleProse),
 		"Scope",
 	);
 	if (scopeSections.length !== 1)
@@ -881,6 +892,7 @@ export async function checkBrief({
 			prose.slice(0, block.start) +
 			mask(prose.slice(block.start, block.end)) +
 			prose.slice(block.end);
+	const scopeProse = prose;
 	prose = withoutComments(prose);
 	prose = withoutCode(prose);
 	for (const checklist of prose.matchAll(
@@ -906,14 +918,9 @@ export async function checkBrief({
 			);
 	const lineCount = lines(text);
 	if (role === "codex") {
-		const isFullBrief =
-			markdownSections(prose, "Report").length > 0 ||
-			markdownSections(prose, "Scope").length > 0;
-		if (isFullBrief) {
-			const scopeProblem = codexScopeProblem(prose);
-			if (scopeProblem)
-				report("brief-scope", scopeProblem.line, scopeProblem.message);
-		}
+		const scopeProblem = codexScopeProblem(scopeProse);
+		if (scopeProblem)
+			report("brief-scope", scopeProblem.line, scopeProblem.message);
 	}
 	const outcomeIds = sectionIds(prose, [
 		"Causes and required outcomes",
