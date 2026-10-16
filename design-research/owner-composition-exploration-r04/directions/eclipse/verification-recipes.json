@@ -95,7 +95,18 @@
             "line": 92
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
         },
         {
           "id": "phone-language",
@@ -115,7 +126,18 @@
             "line": 149
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
         },
         {
           "id": "pinCreate",
@@ -598,7 +620,13 @@
             "line": 40
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "state": "error"
+              }
+            }
+          ]
         },
         {
           "id": "add-owner",
@@ -773,7 +801,13 @@
             "line": 807
           },
           "covers": [],
-          "changesState": true,
+          "ends": [
+            {
+              "when": {
+                "records": "error"
+              }
+            }
+          ],
           "widths": "wide"
         },
         {
@@ -1041,7 +1075,13 @@
             "line": 1151
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "pin": "none"
+              }
+            }
+          ]
         },
         {
           "id": "refused-unauthorized",
@@ -1494,7 +1534,18 @@
             "line": 88
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
         },
         {
           "id": "phone-language",
@@ -1514,7 +1565,18 @@
             "line": 145
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
         },
         {
           "id": "kind-all",
@@ -1756,7 +1818,19 @@
           "covers": [
             "#reason-clear"
           ],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "find": "1",
+                "reason": "verification"
+              }
+            },
+            {
+              "when": {
+                "reason": "verification"
+              }
+            }
+          ]
         },
         {
           "id": "older",
@@ -1900,7 +1974,13 @@
             "line": 33
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "state": "error"
+              }
+            }
+          ]
         },
         {
           "id": "older-retry",
@@ -2886,7 +2966,18 @@
             "line": 88
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
         },
         {
           "id": "phone-language",
@@ -2906,7 +2997,18 @@
             "line": 150
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
         },
         {
           "id": "details",
@@ -2973,7 +3075,13 @@
             "line": 24
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "state": "error"
+              }
+            }
+          ]
         },
         {
           "id": "new-reading",
@@ -3340,7 +3448,18 @@
             "line": 90
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
         },
         {
           "id": "phone-language",
@@ -3360,7 +3479,18 @@
             "line": 150
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
         },
         {
           "id": "range",
@@ -3713,7 +3843,13 @@
             "line": 98
           },
           "covers": [],
-          "changesState": true
+          "ends": [
+            {
+              "when": {
+                "state": "error"
+              }
+            }
+          ]
         },
         {
           "id": "export-retry",

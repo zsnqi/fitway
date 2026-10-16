@@ -81,6 +81,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 bdi, .num { font-variant-numeric: tabular-nums; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+[data-focus-input="pointer"]:focus,
+[data-focus-input="pointer"]:focus-visible,
+[data-focus-input="pointer"]:focus .tile,
+[data-focus-input="pointer"]:focus .dp-n,
+[data-focus-input="pointer"]:focus-visible .tile,
+[data-focus-input="pointer"]:focus-visible .dp-n { outline: none !important; /* focus-ring: [data-focus-input="keyboard"]:focus:not(:focus-visible) */ }
+[data-focus-input="keyboard"]:focus:not(:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
+#brand[data-focus-input="keyboard"]:focus { outline: 2px solid var(--ink); outline-offset: 3px; }
 [dir="rtl"] .mirror { transform: scaleX(-1); }
 .skip {
   position: absolute;
@@ -106,6 +114,7 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   padding: 16px;
 }
 .main { min-width: 0; outline: none; }
+.main[data-focus-input="keyboard"]:focus { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
 /* #main is a programmatic target, tabindex=-1. */
 /* The first screen: header, cards and the chart. Its height is fixed to the viewport so the chart keeps its
  * geometry whether or not the details panel is open below it. */
@@ -199,7 +208,7 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   color: var(--ink-2);
   text-align: start;
 }
-.rail-item:focus-visible { outline: 2px solid transparent; }
+.rail-item:focus-visible { outline: none; /* focus-ring: .rail-item:focus-visible .tile */ }
 .rail-item:focus-visible .tile { outline: 2px solid var(--ink); outline-offset: 3px; }
 .tile {
   flex: none;
@@ -688,6 +697,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 }
 /* Only the programmatically focused status panel suppresses its default outline. */
 .fw-pop[tabindex="-1"] { outline: none; }
+.fw-pop[tabindex="-1"][data-focus-input="keyboard"]:focus { outline: 2px solid var(--ink); outline-offset: -4px; }
 .fw-pop[hidden] { display: none; }
 .ops-pop { width: min(288px, calc(100vw - 32px)); }
 .menu-pop { min-width: 200px; }
@@ -1197,9 +1207,15 @@ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea {
   :focus-visible { outline: 2px solid CanvasText !important; }
   /* Silent programmatic targets retain no ring, including in system colours. */
   .main:focus-visible, .cx-main:focus-visible, .fw-pop[tabindex="-1"]:focus-visible,
-  .dl #cards:focus, .rp #cards:focus, .ac-log:focus, .ac-msg:focus { outline: none !important; }
+  .dl #cards:focus, .rp #cards:focus, .ac-log:focus, .ac-msg:focus { outline: none !important; /* focus-ring: .main[data-focus-input="keyboard"]:focus */ }
+  .main[data-focus-input="keyboard"]:focus,
+  #brand[data-focus-input="keyboard"]:focus,
+  .fw-pop[tabindex="-1"][data-focus-input="keyboard"]:focus,
+  .dl #cards[data-focus-input="keyboard"]:focus,
+  .rp #cards[data-focus-input="keyboard"]:focus { outline: 2px solid CanvasText !important; }
+  [data-focus-input="keyboard"]:focus:not(:focus-visible) { outline: 2px solid CanvasText !important; outline-offset: 3px; }
   :where(.seg-b, .cx-seg-b, .wk-b):focus-visible:where([aria-pressed="true"], [aria-checked="true"]) { outline-color: HighlightText !important; }
-  .rail-item:focus-visible, .cx-ri:focus-visible, .dp-day:focus-visible { outline-color: transparent !important; }
+  .rail-item:focus-visible, .cx-ri:focus-visible, .dp-day:focus-visible { outline: none !important; /* focus-ring: .rail-item:focus-visible .tile */ }
   .rail-item:focus-visible .tile, .cx-ri:focus-visible .cx-tile, .dp-day:focus-visible .dp-n { outline-color: CanvasText !important; }
   /* Only data marks opt out; axis labels, readouts and other text retain system colours. */
   .plot-svg svg, .cx-plot > svg, .hc.v, .hc.few, .cx-hc.v, .cx-hc.few,

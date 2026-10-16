@@ -262,7 +262,8 @@ body.dl [hidden] { display: none !important; }
 .dl .btn:disabled { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
 @media (hover: hover) { .dl .btn:disabled:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; } }
 .dl .btn:disabled svg { stroke: var(--ink-3); }
-.dl #cards:focus { outline: none; }
+.dl #cards:focus { outline: none; /* focus-ring: .dl #cards[data-focus-input="keyboard"]:focus */ }
+.dl #cards[data-focus-input="keyboard"]:focus { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
 .roll-run { direction: ltr; unicode-bidi: isolate; }
 .roll-slot { display: inline-block; position: relative; vertical-align: baseline; clip-path: inset(0 -0.3em); }
 .roll-new { display: block; text-align: center; white-space: nowrap; }

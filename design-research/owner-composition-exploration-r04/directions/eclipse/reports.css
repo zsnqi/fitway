@@ -552,7 +552,8 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 .rp-msg .stat-say { flex-direction: column; gap: 16px; align-self: auto; max-width: 52ch; font-size: 15px; line-height: 22.5px; white-space: normal; }
 .rp-msg .stat-say .ico-err { width: 22px; height: 22px; }
 /* After the retry arrives, focus goes to the figures that replaced the alert, quietly: a region never shows the ring. */
-.rp #cards:focus { outline: none; } /* Retry assigns tabindex=-1; never a Tab stop. */
+.rp #cards:focus { outline: none; /* focus-ring: .rp #cards[data-focus-input="keyboard"]:focus */ } /* Retry assigns tabindex=-1; never a Tab stop. */
+.rp #cards[data-focus-input="keyboard"]:focus { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
 /* The retry's two labels share one cell, so the button is as wide as the wider of "Try again" and "Trying again…" and
  * keeps its width while it runs (STA-9); only the current label is seen. */
 .rp .rb-stack { display: inline-grid; }

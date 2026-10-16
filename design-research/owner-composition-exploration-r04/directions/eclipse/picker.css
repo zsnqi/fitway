@@ -49,7 +49,7 @@
 .dp-grid th { height: 22px; padding: 0 0 4px; font-size: 12px; line-height: 18px; font-weight: 400; color: var(--ink-3); text-align: center; white-space: nowrap; }
 .dp-grid td { height: 44px; padding: 0; text-align: center; }
 .dp-day { position: relative; display: grid; place-items: center; width: 100%; height: 44px; border-radius: 0; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.dp-day:focus-visible { outline: 2px solid transparent; }
+.dp-day:focus-visible { outline: 2px solid transparent; /* focus-ring: .dp-day:focus-visible .dp-n */ }
 .dp-n { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; font-size: 15px; line-height: 22.5px; font-variant-numeric: tabular-nums; }
 .dp-day:focus-visible .dp-n { outline: 2px solid var(--ink); outline-offset: 2px; }
 @media (hover: hover) { .dp-day:not(.is-off):not(.is-end):hover .dp-n { background: rgba(255, 255, 255, 0.06); } }

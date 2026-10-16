@@ -16,7 +16,7 @@ html:has(> body.acc) {
   scrollbar-gutter: stable;
   scrollbar-color: rgba(245, 243, 242, 0.2) #070707;
 }
-.acc :focus-visible, .acc #main:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.acc :focus-visible:not(.rail-item), .acc #main:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .acc .fw-mi:focus-visible, .acc .h-status:focus-visible { outline-offset: -4px; }
 .acc {
   --err: #ff6b7d;        /* error text and borders: 6.9:1 on the panel */
