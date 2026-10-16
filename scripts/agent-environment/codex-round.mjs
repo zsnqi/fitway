@@ -173,7 +173,7 @@ function shellTokens(command) {
 		}
 		token += character;
 	}
-	if (quote) throw new Error("review command has an unmatched quote");
+	if (quote) return null;
 	if (escaped) token += "\\";
 	if (token) tokens.push(token);
 	return tokens;
@@ -461,13 +461,13 @@ async function reviewProcedure(folder, catalogPath) {
 	const prompt = document.match(
 		/^## Prompt\r?\n\s*```text\r?\n([\s\S]*?)^```\s*$/m,
 	)?.[1];
-	const tokens = command
-		? shellTokens(command).map((token) =>
-				token
-					.replaceAll("<folder>", folder)
-					.replaceAll("<catalog>", catalogPath.replaceAll("\\", "/")),
-			)
-		: undefined;
+	const words = command ? shellTokens(command) : undefined;
+	if (words === null) throw new Error("review command has an unmatched quote");
+	const tokens = words?.map((token) =>
+		token
+			.replaceAll("<folder>", folder)
+			.replaceAll("<catalog>", catalogPath.replaceAll("\\", "/")),
+	);
 	const redirect = tokens?.indexOf("<");
 	const route = modelArgs(DEEPSEEK_MODEL, "max", catalogPath);
 	const routeStart = tokens?.indexOf("-m");
@@ -1129,41 +1129,8 @@ function commandStatusIsEvent(part) {
 	);
 }
 
-function shellWords(command) {
-	const words = [];
-	let current = "";
-	let quote = null;
-	for (let index = 0; index < command.length; index += 1) {
-		const character = command[index];
-		if (quote) {
-			if (character === quote) quote = null;
-			else if (
-				character === "\\" &&
-				quote === '"' &&
-				index + 1 < command.length
-			) {
-				current += command[index + 1];
-				index += 1;
-			} else current += character;
-			continue;
-		}
-		if (character === '"' || character === "'") quote = character;
-		else if (/\s/.test(character)) {
-			if (current) {
-				words.push(current);
-				current = "";
-			}
-		} else if (character === "\\" && index + 1 < command.length) {
-			current += command[index + 1];
-			index += 1;
-		} else current += character;
-	}
-	if (current) words.push(current);
-	return words;
-}
-
 function isGitCommitCommand(command) {
-	const words = shellWords(command);
+	const words = shellTokens(command) ?? [];
 	if (!/^git(?:\.exe)?$/i.test(words[0] ?? "")) return false;
 	let index = 1;
 	while (index < words.length) {
@@ -1193,7 +1160,7 @@ function isCommitCommand(command) {
 function isFastLadderCommand(command) {
 	const part = lastCommandPart(command);
 	if (!part || !commandStatusIsEvent(part)) return false;
-	const words = shellWords(part.text);
+	const words = shellTokens(part.text) ?? [];
 	return Boolean(
 		(words.length === 3 &&
 			/^node(?:\.exe)?$/i.test(words[0] ?? "") &&
