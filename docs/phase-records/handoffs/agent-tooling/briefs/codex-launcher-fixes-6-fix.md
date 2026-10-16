@@ -56,8 +56,8 @@ ran it, and the claim check reads as a few plain steps.
     ladder check whenever a PASS outcome's text names the fast ladder; a grading report names the commit it graded
     (the launch HEAD) and quotes the round's ladder, so the code-map grader was refused twice and then made a commit
     and ran the ladder to satisfy the check.
-  - **Outcome.** The commit and ladder checks apply only to a brief whose Report section asks for the commit SHA (the
-    existing `briefRequiresCommit` test, or a stricter one); for any other brief a report may name any commit and
+  - **Outcome.** The commit and ladder checks apply only to an implementing brief, recognised by its Scope's "commit
+    once when done" (every implementing brief carries it from the template; no grading brief does); for any other brief a report may name any commit and
     quote any ladder without a claim failure. Tests: a grading brief (no commit SHA asked) whose report names the launch
     HEAD and says PASS on an outcome naming `verify.mjs fast` is accepted; an implementing brief keeps every refusal.
   - **Intent.** The check holds implementers to their claims and never pushes a grader to commit.
@@ -67,7 +67,9 @@ ran it, and the claim check reads as a few plain steps.
   - **Outcome.** A commit counts only from a command whose program is `git` with `commit` as its subcommand (through
     the shell wrappers Codex uses: `powershell.exe -Command '...'`, `bash -lc '...'`), and the ladder only from a
     command that runs `node scripts/verify.mjs fast` or `pnpm verify:fast`; tests show `echo git commit` and an echo of the ladder's command
-    do not count, and each wrapper form of a real command does.
+    do not count, and each wrapper form of a real command does. The recognised invocation counts only when its own
+    status is the event's (no `||`, `;` or a later command that can mask it) and it can make a commit (`--dry-run` and
+    `--help` do not count), and the last counted commit's output names the worktree HEAD's abbreviated SHA.
   - **Intent.** The record of what ran is what ran.
 - **W3. The launch-HEAD refusal unchanged (review 1).**
   - **Outcome.** A report naming the launch HEAD as its commit gets the same failure lines as at `c286c4c9`, with no
