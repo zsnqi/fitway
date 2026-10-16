@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `37c768a0`, 2026-10-16 10:41 +03:00
+- **As of:** `codex/owner-redesign-r04` at `8647512c`, 2026-10-16 11:07 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -22,10 +22,9 @@
   D:/fitway-temp/codex-round-9be94292-833b-4ee1-b3ac-8240cca8f848; held-out rows
   D:/fitway-grader/agent-tooling/code-map-heldout.md.
 - **launcher-fixes-6** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6.md`, F254 and F255):
-  worktree D:/Projects/fitway-worktrees/tooling-launcher-fixes-6, branch `tooling-launcher-fixes-6` from `c286c4c9`;
-  DeepSeek review dispositioned (D:/fitway-temp/brief-review/codex-launcher-fixes-6-1/dispositions.md), Sol review
-  running in `codex-launcher-fixes-6-1-sol`; launch once its readings have dispositions. Held-out rows
-  D:/fitway-grader/agent-tooling/launcher-fixes-6-heldout.md.
+  worktree D:/Projects/fitway-worktrees/tooling-launcher-fixes-6, branch `tooling-launcher-fixes-6` from `c286c4c9`,
+  run folder D:/fitway-temp/codex-round-c7addb2e-0a77-44df-be1a-eba8a1a3fe8d; both reviews dispositioned (F256
+  recorded from Sol's reading 5); held-out rows D:/fitway-grader/agent-tooling/launcher-fixes-6-heldout.md.
 
 ## Next steps
 
