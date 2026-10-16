@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `8647512c`, 2026-10-16 11:07 +03:00
+- **As of:** `codex/owner-redesign-r04` at `cfbc9ea2`, 2026-10-16 13:43 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -17,26 +17,31 @@
 
 ## Running now
 
-- **code-map** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map.md`): worktree
-  D:/Projects/fitway-worktrees/tooling-code-map, branch `tooling-code-map` from `c286c4c9`, run folder
-  D:/fitway-temp/codex-round-9be94292-833b-4ee1-b3ac-8240cca8f848; held-out rows
-  D:/fitway-grader/agent-tooling/code-map-heldout.md.
-- **launcher-fixes-6** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6.md`, F254 and F255):
-  worktree D:/Projects/fitway-worktrees/tooling-launcher-fixes-6, branch `tooling-launcher-fixes-6` from `c286c4c9`,
-  run folder D:/fitway-temp/codex-round-c7addb2e-0a77-44df-be1a-eba8a1a3fe8d; both reviews dispositioned (F256
-  recorded from Sol's reading 5); held-out rows D:/fitway-grader/agent-tooling/launcher-fixes-6-heldout.md.
+- **code-map-fix** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-fix.md`), on `tooling-code-map`
+  from `df2640aa` (D:/Projects/fitway-worktrees/tooling-code-map), run folder
+  D:/fitway-temp/codex-round-8892703c-86e7-4629-9cfe-e5c3d5b74989: the diff review's nine findings
+  (D:/fitway-temp/code-review/code-map-1/) and the grade's G4 and G11 FAILs (the Sol grade of `df2640aa`,
+  D:/fitway-temp/codex-round-a2f0ef9b-6d16-401c-9554-271ec3365d99/last-message.md: 9 of 11 rows PASS). CI passed on
+  `df2640aa`.
+- **launcher-fixes-6-fix** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix.md`), on
+  `tooling-launcher-fixes-6` from `493c0adf` (D:/Projects/fitway-worktrees/tooling-launcher-fixes-6), run folder
+  D:/fitway-temp/codex-round-63f07391-335b-4dd8-9d6d-e1d9386c7893: the diff review's four findings, F257 and F258. Its
+  first grade was stopped (F258 risk); the fix result is graded instead. CI passed on `493c0adf`.
 
 ## Next steps
 
-1. **Grade and merge** each round: check the report's commit and ladder against its events, grade on its held-out
-   rows (a Sol grader; reproduce one row, two for a DeepSeek grader), merge into `agent-tooling-r01` after CI passes.
-2. **The CLI contract with `pnpm tools`** (F251; packet criterion 2), cut after both merges; its body is drafted in
-   the coordinator session's scratchpad and is rewritten against the merged HEAD before review.
-3. **Map upkeep** (F252, the README map check, a gardener pass), then **the lighter pickup** (packet criteria 4, 5).
+1. **Grade each fix result** with a fresh grading brief that names no commit SHA in its report (the F258 workaround in
+   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-grade.md`, until the fixed
+   launcher merges), then the diff review again (`docs/agent-context/briefs/CODE_REVIEW.md`), then merge into
+   `agent-tooling-r01` after CI.
+2. **The ratchet** (DECISIONS items 6 and 7), then **the CLI contract with `pnpm tools`** (F251, draft in the
+   coordinator's scratchpad), then **map upkeep** (F252, the gardener's scope, the do-not-copy list), then **the lighter
+   pickup**.
 
 ## Waiting on the user
 
-Nothing.
+- Whether the coordinator may move `C:/Users/Pc Force/.git` (an empty repository a grader created at 12:57, F259) to
+  D:/fitway-temp/quarantine-home-git-20261016; the classifier refused the move without the user's word.
 
 ## Known risks
 

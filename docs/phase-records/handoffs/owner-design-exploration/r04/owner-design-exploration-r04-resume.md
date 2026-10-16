@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `37c768a0`, 2026-10-16 10:41 +03:00
+- **As of:** `codex/owner-redesign-r04` at `cfbc9ea2`, 2026-10-16 13:43 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-74), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -37,27 +37,34 @@
 
 ## Running now
 
-- **shared-lows** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows.md`: F241's `ends` declarations for 16 features, the rail's ring on
-  Access, rings after a pointer and OWN-C9): worktree D:/Projects/fitway-worktrees/owner-r04-shared-lows, branch
-  `owner-r04-shared-lows` from `23314b3a`, ports 3176-3177, run folder
-  D:/fitway-temp/codex-round-bd3edec8-d939-4284-b853-7e796d42c26c; held-out rows
-  D:/fitway-grader/owner-r04/shared-lows-heldout.md. Both reviews dispositioned.
-- agent-tooling-r01's code-map round and launcher-fixes-6 (its resume point).
+- **shared-lows-fix** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-fix.md`), on
+  `owner-r04-shared-lows` from `89b9d814` (D:/Projects/fitway-worktrees/owner-r04-shared-lows), ports 3176-3177, run
+  folder D:/fitway-temp/codex-round-320134a4-149e-4492-8b83-faea0753f555: the diff review's three findings
+  (D:/fitway-temp/code-review/shared-lows-1/) and S3 on the phone. shared-lows itself (`89b9d814`) reported S1-S5 PASS
+  with two admitted gaps; its grading brief
+  (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-grade.md`, both reviews
+  dispositioned, grading checkout D:/fitway-temp/owner-r04-shared-lows-grade/wt) is retargeted to the fix result
+  before it runs.
+- agent-tooling-r01's code-map-fix and launcher-fixes-6-fix (its resume point).
 
 ## Next steps
 
 1. **main is at `3cde7a07`.** The commits after it go with the next batch.
-2. **Grade shared-lows** (a Sol grader on its held-out rows; the coordinator looks at the focus frames S2 and S3
-   change), merge into `owner-followup-r04-build` after its checks. Left for later, with their reasons: the dialogs'
-   parts splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148, decision
-   69).
+2. **Grade shared-lows-fix's result** (Sol, the grading brief retargeted; the coordinator looks at the ring frames),
+   then the diff review again, then merge into `owner-followup-r04-build`. Left for later, with their reasons: the
+   dialogs' parts splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148,
+   decision 69).
 3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Settings waits for
    agent-tooling-r01's wave (decision 73).
 
 ## Waiting on the user
 
-Nothing blocking. Optional: Windows Update's active hours (F159).
+- Whether the coordinator may move `C:/Users/Pc Force/.git` (a grader's empty repository, F259) to D:/fitway-temp;
+  agent-tooling-r01's resume point has it.
+- Drive C: 15 items wait for the user's decision in D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md (12.04 GB free
+  after the safe cleanup, measured).
+- Optional: Windows Update's active hours (F159).
 
 ## Known risks
 
