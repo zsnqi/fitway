@@ -155,7 +155,8 @@ html:has(> body.acc) {
 /* ------------------------------------------------------------------ the done sentence (new, DON-1)
  * After a change, one quiet sentence where it happened: a check (16 px, --ink-2), the sentence in label type --ink-2,
  * in the log's own words, and the way to the record, a text link in chalk with a quiet underline whose target is the
- * line's full 44 px. It stays until the next action; focus moves to it, with its ring. */
+ * line's full 44 px. It stays until the next action; focus moves to it, with its ring when a key moved it and none
+ * after a pointer (OWN-C9). */
 /* One paragraph, start-aligned (Reports' own ".done" centres its text): its single line centred in 44 px; where it wraps
  * (a long name, a phone), its lines hang after the check, and the link, never broken, keeps a 44 px target from its
  * own vertical padding. */

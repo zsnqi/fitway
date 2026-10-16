@@ -24,9 +24,34 @@
   "use strict";
   const root = document.documentElement;
   const setFocusInput = (input) => { root.dataset.focusInput = input; };
+  const params = new URLSearchParams(location.search);
+  const handedFocusInput = params.get("focus-input");
+  if (handedFocusInput === "keyboard" || handedFocusInput === "pointer") setFocusInput(handedFocusInput);
   document.addEventListener("pointerdown", () => setFocusInput("pointer"), { capture: true, passive: true });
   document.addEventListener("keydown", () => setFocusInput("keyboard"), true);
-  const params = new URLSearchParams(location.search);
+  document.addEventListener("click", (e) => {
+    const input = root.dataset.focusInput;
+    const anchor = e.target instanceof Element ? e.target.closest("a[href]") : null;
+    const rawHref = anchor?.getAttribute("href");
+    if (!anchor || !rawHref || rawHref === "#" || anchor.hasAttribute("download") || anchor.target && anchor.target !== "_self") return;
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (input !== "keyboard" && input !== "pointer") return;
+    const url = new URL(anchor.href, location.href);
+    const sameFile = url.protocol === "file:" && location.protocol === "file:";
+    if (url.origin !== location.origin && !sameFile) return;
+    if (url.protocol !== "http:" && url.protocol !== "https:" && url.protocol !== "file:") return;
+    if (url.origin === location.origin && url.pathname === location.pathname && url.search === location.search && url.hash) return;
+    url.searchParams.set("focus-input", input);
+    anchor.href = url.href;
+  }, true);
+  if (handedFocusInput === "keyboard" || handedFocusInput === "pointer") {
+    params.delete("focus-input");
+    try {
+      const url = new URL(location.href);
+      url.searchParams.delete("focus-input");
+      history.replaceState(history.state, "", url);
+    } catch (e) { /* file:// may refuse; the state above already carries the input */ }
+  }
   const URL_OFF = params.get("motion") === "off";
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
   let pageGate = () => true;

@@ -1384,7 +1384,7 @@
     phase = "ready";
     delete root.dataset.load;
     renderAll();
-    // After a retry, focus goes where the page begins, with its ring: the front desk's name.
+    // After a retry, focus goes where the page begins, with its ring when a key moved it and none after a pointer.
     if (hadFocus) $("#desk-title").focus({ preventScroll: true });
     say(L.arrivedSay);
     return true;

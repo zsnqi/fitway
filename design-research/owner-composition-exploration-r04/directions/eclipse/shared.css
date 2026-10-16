@@ -115,7 +115,6 @@
 @media (hover: hover) { .field-input:hover { border-color: rgba(255, 255, 255, 0.52); } }
 .field-input:focus-visible { border-color: rgba(255, 255, 255, 0.52); }
 .field.is-invalid .field-input { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); }
-.field.is-invalid .field-input:focus-visible { outline-color: var(--err); }
 
 .field-err { display: flex; align-items: flex-start; gap: 8px; margin-block-start: 8px; font-size: 12px; line-height: 18px; color: var(--err); }
 .field-err .ico { width: 15px; height: 15px; margin-block-start: 1.5px; flex: none; }

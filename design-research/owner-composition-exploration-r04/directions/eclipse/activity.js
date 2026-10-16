@@ -836,8 +836,8 @@
     delete root.dataset.load;
     loadFirst();
     renderAll();
-    // Focus goes on where the log begins, with its ring (the review's F2), as after "Show older": the first record, or
-    // the sentence that says nothing matched.
+    // Focus goes on where the log begins, with its ring when a key moved it and none after a pointer (F2, OWN-C9), as
+    // after "Show older": the first record, or the sentence that says nothing matched.
     if (hadFocus) {
       const first = $(".rec", bodyEl) || $(".ac-empty p", bodyEl);
       if (first) { first.tabIndex = -1; first.focus({ preventScroll: true }); }

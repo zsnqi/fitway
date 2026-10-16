@@ -80,43 +80,32 @@ a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 bdi, .num { font-variant-numeric: tabular-nums; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-:focus-visible,
-#brand:focus-visible,
-html[data-focus-input="keyboard"] #brand:focus,
-.fw-pop[tabindex="-1"]:focus-visible,
-html[data-focus-input="keyboard"] .fw-pop[tabindex="-1"]:focus,
-html[data-focus-input="keyboard"] :focus:not(:focus-visible),
-.rail-item:focus-visible > .tile,
-html[data-focus-input="keyboard"] .rail-item:focus:not(:focus-visible) > .tile,
-.cx-ri:focus-visible > .cx-tile,
-html[data-focus-input="keyboard"] .cx-ri:focus:not(:focus-visible) > .cx-tile,
+html[data-focus-input="keyboard"] :focus:not(:is(.rail-item, .cx-ri, .dp-day)),
+.fw-pop[tabindex="-1"]:focus,
+html[data-focus-input="keyboard"] .rail-item:focus > .tile,
+html[data-focus-input="keyboard"] .cx-ri:focus > .cx-tile,
+html[data-focus-input="keyboard"] .dp-day:focus > .dp-n,
+html[data-focus-input="keyboard"] :is(.ac-sel, .dl-sort):has(select:focus),
 .cx .is-focus,
 .cx-ri.is-focus > .cx-tile,
-.cx .dp-day.is-spec-focus > .dp-n,
-.dp-day:focus-visible > .dp-n,
-html[data-focus-input="keyboard"] .dp-day:focus:not(:focus-visible) > .dp-n,
-html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) {
-  outline: 2px solid var(--ink);
+.cx .dp-day.is-spec-focus > .dp-n {
+  outline: 2px solid var(--focus-ring-color, var(--ink));
   outline-offset: var(--focus-ring-offset, 3px);
 }
+:is(.field.is-invalid .field-input, .cx-field.is-invalid .cx-input) { --focus-ring-color: var(--err); }
+:where(html:not([data-focus-input="keyboard"]) :focus) { outline: none; /* focus-ring: html[data-focus-input="keyboard"] :focus:not(:is(.rail-item, .cx-ri, .dp-day)) */ }
 :is(.seg-b, .cx-seg-b, .sort, .cx-sort, .wk-b, .hc, .cx-hc, .fw-mi, .h-status, .cx-hstatus, .head-acts .hbadge) { --focus-ring-offset: -4px; }
 .fw-pop[tabindex="-1"] { --focus-ring-offset: -4px; }
 .acc-title:focus-visible,
 .prs-name:focus-visible,
 .acc .dlg-head h2:focus-visible,
 .acc-msg:focus-visible,
-html[data-focus-input="keyboard"] :is(.main, .acc-title, .prs-name, .acc .dlg-head h2, .acc-msg, .dl #cards, .rp #cards):focus:not(:focus-visible) { border-radius: 8px; }
+html[data-focus-input="keyboard"] :is(.main, .acc-title, .prs-name, .acc .dlg-head h2, .acc-msg, .dl #cards, .rp #cards):focus { border-radius: 8px; }
 :is(.rail-item, .cx-ri, .dp-day):focus-visible,
-html[data-focus-input="keyboard"] :is(.rail-item, .cx-ri, .dp-day):focus:not(:focus-visible) { outline: none; /* focus-ring: .rail-item:focus-visible > .tile */
-  /* focus-ring: html[data-focus-input="keyboard"] .rail-item:focus:not(:focus-visible) > .tile */
-  /* focus-ring: .cx-ri:focus-visible > .cx-tile */
-  /* focus-ring: html[data-focus-input="keyboard"] .cx-ri:focus:not(:focus-visible) > .cx-tile */
-  /* focus-ring: .dp-day:focus-visible > .dp-n */
-  /* focus-ring: html[data-focus-input="keyboard"] .dp-day:focus:not(:focus-visible) > .dp-n */ }
-html[data-focus-input="pointer"] :focus,
-html[data-focus-input="pointer"] :focus-visible,
-html[data-focus-input="pointer"] :focus > :is(.tile, .cx-tile, .dp-n),
-html[data-focus-input="pointer"] :focus-visible > :is(.tile, .cx-tile, .dp-n) { outline: none !important; /* focus-ring: html[data-focus-input="keyboard"] :focus:not(:focus-visible) */ }
+html[data-focus-input="keyboard"] :is(.rail-item, .cx-ri, .dp-day):focus:not(:focus-visible) { outline: none; /* focus-ring: html[data-focus-input="keyboard"] .rail-item:focus > .tile */
+  /* focus-ring: html[data-focus-input="keyboard"] .rail-item:focus > .tile */
+  /* focus-ring: html[data-focus-input="keyboard"] .cx-ri:focus > .cx-tile */
+  /* focus-ring: html[data-focus-input="keyboard"] .dp-day:focus > .dp-n */ }
 [dir="rtl"] .mirror { transform: scaleX(-1); }
 .skip {
   position: absolute;
@@ -141,7 +130,7 @@ html[data-focus-input="pointer"] :focus-visible > :is(.tile, .cx-tile, .dp-n) { 
   gap: 24px;
   padding: 16px;
 }
-.main { min-width: 0; outline: none; /* focus-ring: html[data-focus-input="keyboard"] :focus:not(:focus-visible) */ }
+.main { min-width: 0; outline: none; /* focus-ring: html[data-focus-input="keyboard"] :focus:not(:is(.rail-item, .cx-ri, .dp-day)) */ }
 /* #main is a programmatic target, tabindex=-1. */
 /* The first screen: header, cards and the chart. Its height is fixed to the viewport so the chart keeps its
  * geometry whether or not the details panel is open below it. */
@@ -1216,8 +1205,8 @@ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea {
   /* Native lists have one edge and one focus ring, both drawn by their wrapper. The list itself stays unseen under its
    * face (TYP-6), switched off too: the rule above shows a switched-off control at full opacity, which drew its 16 px
    * words over the face's. */
-  .ac-sel select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) */ }
-  .dl-sort select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) */ }
+  .ac-sel select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: html[data-focus-input="keyboard"] :is(.ac-sel, .dl-sort):has(select:focus) */ }
+  .dl-sort select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: html[data-focus-input="keyboard"] :is(.ac-sel, .dl-sort):has(select:focus) */ }
   .dl-sort.is-disabled .sel-face { opacity: 1 !important; }
   /* Crowd-level chip icon: retain the four bars in system colours (FOC-8). */
   .level .bars i { forced-color-adjust: none; background: Canvas; border: 1px solid CanvasText; }
@@ -1225,19 +1214,16 @@ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea {
   .brand .mk, .cx-brand-mk .mk, .hb-chev, .fw-mi svg { stroke: currentColor !important; }
   .brand .mk-dot, .cx-brand-mk .mk-dot { fill: currentColor !important; }
   /* Transparent normal-colour outlines retain their geometry; system colours make focus visible here. */
-  :focus-visible,
-  #brand:focus-visible,
-  html[data-focus-input="keyboard"] #brand:focus,
-  .fw-pop[tabindex="-1"]:focus-visible,
-  html[data-focus-input="keyboard"] .fw-pop[tabindex="-1"]:focus,
-  html[data-focus-input="keyboard"] :focus:not(:focus-visible),
-  .rail-item:focus-visible > .tile,
-  html[data-focus-input="keyboard"] .rail-item:focus:not(:focus-visible) > .tile,
-  .cx-ri:focus-visible > .cx-tile,
-  html[data-focus-input="keyboard"] .cx-ri:focus:not(:focus-visible) > .cx-tile,
-  .dp-day:focus-visible > .dp-n,
-  html[data-focus-input="keyboard"] .dp-day:focus:not(:focus-visible) > .dp-n,
-  html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) { outline-color: CanvasText !important; }
+  html[data-focus-input="keyboard"] :focus:not(:is(.rail-item, .cx-ri, .dp-day)),
+  .fw-pop[tabindex="-1"]:focus,
+  html[data-focus-input="keyboard"] .rail-item:focus > .tile,
+  html[data-focus-input="keyboard"] .cx-ri:focus > .cx-tile,
+  html[data-focus-input="keyboard"] .dp-day:focus > .dp-n,
+  html[data-focus-input="keyboard"] :is(.ac-sel, .dl-sort):has(select:focus),
+  .cx .is-focus,
+  .cx-ri.is-focus > .cx-tile,
+  .cx .dp-day.is-spec-focus > .dp-n { outline-color: var(--focus-ring-color, CanvasText) !important; }
+  :is(.field.is-invalid .field-input, .cx-field.is-invalid .cx-input) { --focus-ring-color: CanvasText !important; }
   :where(.seg-b, .cx-seg-b, .wk-b):focus-visible:where([aria-pressed="true"], [aria-checked="true"]) { outline-color: HighlightText !important; }
   /* Only data marks opt out; axis labels, readouts and other text retain system colours. */
   .plot-svg svg, .cx-plot > svg, .hc.v, .hc.few, .cx-hc.v, .cx-hc.few,

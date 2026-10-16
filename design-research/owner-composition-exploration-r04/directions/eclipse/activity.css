@@ -80,7 +80,7 @@ html:has(> body.ac) {
 @media (hover: hover) { .ac-sel:hover { box-shadow: inset 0 0 0 1px var(--line-3), inset 0 0 0 100vmax var(--press-light, transparent); background: rgba(255, 255, 255, 0.05); } }
 .ac-sel-ico { position: absolute; inset-inline-start: 16px; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .ac-sel::after { content: ""; position: absolute; top: 17px; inset-inline-end: 18px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.ac-sel select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) */ opacity: 0; cursor: pointer; }
+.ac-sel select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: html[data-focus-input="keyboard"] :is(.ac-sel, .dl-sort):has(select:focus) */ opacity: 0; cursor: pointer; }
 .ac-sel select option { background: #121112; color: var(--ink); }
 .ac-sel { max-width: 100%; }
 .ac-sel .sel-face { width: var(--sel-w, auto); padding-inline: 41px 40px; }
@@ -137,10 +137,10 @@ html:has(> body.ac) {
   .ac-loaded + .ac-body .day:first-child .day-h { padding-block-start: 4px; }
 }
 /* Focus that the page moves (the first record that "Show older" brought, or after a retry the first record or the empty
- * sentence) always shows its ring (the review's F2): FOC-2's inset ring, 2 px chalk, 4 px inside the row, so it keeps
- * 8 px from the row's words. */
+ * sentence) shows its ring when a key moved it and none after a pointer (F2, OWN-C9): FOC-2's inset ring, 2 px chalk,
+ * 4 px inside the row, so it keeps 8 px from the row's words. */
 .ac .rec:focus { --focus-ring-offset: -4px; border-radius: 12px; }
-.ac .rec.is-arrival { outline: 2px solid var(--ink); outline-offset: -4px; border-radius: 12px; }
+.ac .rec.is-arrival { border-radius: 12px; }
 .ac .ac-empty p:focus { --focus-ring-offset: 4px; border-radius: 8px; }
 .ac-body ol { margin: 0; padding: 0; list-style: none; }
 /* A day: its heading in label type at 500, the relative word chalk and the date --ink-2; more space above it than

@@ -44,7 +44,7 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-index { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 16px 8px 0; font: var(--t-caption); }
 .cx-index a { color: var(--ink-3); text-decoration: underline; text-decoration-color: rgba(245, 243, 242, 0.25); text-underline-offset: 3px; }
 @media (hover: hover) { .cx-index a:hover { color: var(--ink); } }
-.cx-main { outline: none; /* focus-ring: html[data-focus-input="keyboard"] :focus:not(:focus-visible) */ } /* #main is a programmatic target, tabindex=-1. */
+.cx-main { outline: none; /* focus-ring: html[data-focus-input="keyboard"] :focus:not(:is(.rail-item, .cx-ri, .dp-day)) */ } /* #main is a programmatic target, tabindex=-1. */
 
 .cx-sec { margin-block-start: 48px; padding-block-start: 24px; border-block-start: 1px solid var(--line); }
 .cx-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-inline: 8px; }
@@ -200,7 +200,6 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-input:focus-visible { border-color: rgba(255, 255, 255, 0.52); }
 .cx .cx-input.is-focus { border-color: rgba(255, 255, 255, 0.52); }
 .cx-field.is-invalid .cx-input { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); }
-.cx-field.is-invalid .cx-input:focus-visible, .cx .cx-field.is-invalid .cx-input.is-focus { outline-color: var(--err); }
 .cx-field.is-disabled .cx-input { border-color: var(--line); background: transparent; color: var(--ink-3); cursor: not-allowed; }
 .cx-field.is-disabled .cx-field-label { color: var(--ink-3); }
 .cx-err { display: flex; align-items: flex-start; gap: 8px; margin-block-start: 8px; font: var(--t-caption); color: var(--err); }
