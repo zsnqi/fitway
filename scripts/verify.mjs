@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { pathToFileURL } from "node:url";
 import { repositoryFingerprint } from "./repository-fingerprint.mjs";
 
 const phases = {
@@ -358,15 +359,6 @@ function materializeStep(step) {
 	throw new Error("Invalid verification step");
 }
 
-function configuredSteps() {
-	const encoded = process.env.FITWAY_VERIFY_TEST_STEPS;
-	if (!encoded) return null;
-	const steps = JSON.parse(encoded);
-	if (!Array.isArray(steps))
-		throw new Error("Verification steps must be an array");
-	return steps.map(materializeStep);
-}
-
 async function runStep({ label, args, env = {}, command }) {
 	console.log(`\n[${localClock()}] ==> ${label}`);
 	const started = performance.now();
@@ -470,13 +462,16 @@ function focusedSteps(phase) {
 	return steps;
 }
 
-async function main() {
-	const { mode, phase } = parseArguments();
+export async function runVerification({
+	mode,
+	phase,
+	steps: configuredSteps,
+} = {}) {
 	const started = performance.now();
 	const initialFingerprint = await repositoryFingerprint();
 	let previousFingerprint = initialFingerprint;
 	let fingerprintSeconds = 0;
-	const steps = configuredSteps() ?? fastSteps();
+	const steps = configuredSteps ?? fastSteps();
 	if (mode === "phase") {
 		console.log(
 			`Focused profile: ${phases[phase].label}. Build and non-profile integration/browser tests are intentionally deferred to verify:full.`,
@@ -544,7 +539,17 @@ async function main() {
 	}
 }
 
-main().catch((error) => {
-	console.error(`\nFAILED_VALIDATION: ${error.message}`);
-	process.exitCode = 1;
-});
+async function main() {
+	const { mode, phase } = parseArguments();
+	await runVerification({ mode, phase });
+}
+
+if (
+	process.argv[1] !== undefined &&
+	import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+	main().catch((error) => {
+		console.error(`\nFAILED_VALIDATION: ${error.message}`);
+		process.exitCode = 1;
+	});
+}
