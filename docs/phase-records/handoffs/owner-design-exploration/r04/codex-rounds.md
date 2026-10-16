@@ -1551,3 +1551,20 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Disposition:** merged into the coordinator line (`7cd265b2`); F235, F236, F237, F242, F245 and F249 are fixed.
   Two review answers this night were unreadable to the old launcher (F249 and quoted labels); the merged parser reads
   both.
+
+## ladder-seam: `briefs/codex-ladder-seam.md` (this folder), result `4131dd8c` on `owner-r04-ladder-seam` (from `c87bf5b3`), DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** V1 (F250, found by a side session and reproduced by the coordinator: `FITWAY_VERIFY_TEST_STEPS='[]'`
+  made the real ladder pass with no step); the user asked for it after launcher-fixes-5-fix. Both reviewers:
+  DeepSeek three readings (two closed, one left open: PATH is the machine's), Sol five (all closed).
+- **Run (measured):** the first round with the merged launcher (`7cd265b2`): eight turns in `turns.jsonl`, one "no
+  report", six "claim check failed" and one accepted; start load 91447. The six were F254: the report cited the base
+  SHA for comparison and the check read it as the commit claim. The commit and a post-commit ladder (exit 0, run
+  with Git's `usr/bin` put first on PATH because this worktree predates F237's fix, disclosed) appear in the events.
+- **Grading:** the coordinator (decision 67; a small round), on the held-out rows (measured): with the variable set,
+  `fast` and `phase --phase 2` start the real "Repository invariants" step; `verify.mjs` reads only
+  `FITWAY_PHASE`, `ComSpec` and the steps' own environment; `parseFastSteps` returns the same eight steps. CI
+  passed on `4131dd8c`.
+- **Brief rows** 4/4; **held-out** (`D:/fitway-grader/owner-r04/ladder-seam-heldout.md`) 6/6; overclaims 0.
+- **Disposition:** merged into the coordinator line (`bafb2b6e`); F250 is fixed; F254 recorded for the next launcher
+  round.

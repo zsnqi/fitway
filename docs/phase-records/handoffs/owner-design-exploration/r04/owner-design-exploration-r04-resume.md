@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-16 04:05 +03:00 (three rounds merged, ladder-seam running; main at `e64006d0`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-16 04:05 +03:00 (four rounds merged; main moving after CI)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-73), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -36,20 +36,14 @@
 
 ## Running now
 
-- **ladder-seam** (F250), DeepSeek `max`, launched 2026-10-16 about 04:00 from `f47e306e` (worktree
-  `D:/Projects/fitway-worktrees/owner-r04-ladder-seam` at `c87bf5b3`), run
-  `D:/fitway-temp/codex-round-4f7a5b9a-d022-4ae0-9c18-3766b54bbd01`; held-out rows
-  `D:/fitway-grader/owner-r04/ladder-seam-heldout.md`.
-
-The night's batch is merged on the coordinator line: vf-proofs (`bb313de0`), brief-ladder (`abf26cdf`) and
-launcher-fixes-5 with two fixes (`7cd265b2`); CI passed on `095ca99c`; main not yet moved.
+Nothing. The night's batch is merged on the coordinator line: vf-proofs (`bb313de0`), brief-ladder (`abf26cdf`),
+launcher-fixes-5 with two fixes (`7cd265b2`) and ladder-seam (`bafb2b6e`); main moves once its CI passes.
 
 ## Next steps
 
 1. **main is at `e64006d0`** (moved by `pnpm main:advance` after CI run 38795346728 passed in 1,305 s; the job's
    timeout is now 30 minutes, decision 71). The commits after it go with the next batch.
-2. **Grade and merge ladder-seam** (Running now), then push the coordinator line and move main once for the batch
-   (`pnpm main:advance`).
+2. **Move main** to the batch's last pushed commit once its CI passes (`pnpm main:advance`), if not yet done.
 3. **The agent-tooling wave (decision 73)** in a fresh coordinator session, beside the shared lows: its own
    `repository-infrastructure` milestone (F253), a short standing-rules pickup, one CLI contract with `pnpm tools`
    (F251), a generated code map, map upkeep (F252).
