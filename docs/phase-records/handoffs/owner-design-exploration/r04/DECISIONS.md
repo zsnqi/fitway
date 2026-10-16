@@ -850,7 +850,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       selection never draw the same line.
     - In forced colours the selection is a CanvasText edge backed by Canvas, with no dimming and full contrast. The
       coordinator proposed this exemption in the side session for accessibility, and the user approved it there on
-      2026-10-17: «بخصوص قرارك اي كان ممتاز موافق عليه».
+      2026-10-17: «بخصوص قرارك اي كان ممتاز موافق عليه». The user confirmed it in the coordinator session the same
+      night and named it their decision: «موافق على استثناء forced colours في الـ heatmap (بدون خفوت)، سجّله قراري».
     - Delivered in `51d5a783` (branch `owner-r04-heat-sel`; `owner-followup-r04-build` fast-forwarded to it):
       `check-concept-css` passed and CI passed (measured). Reports below 1280 px shows the day form, with no heat
       cells; its phone page is byte-identical before and after.
