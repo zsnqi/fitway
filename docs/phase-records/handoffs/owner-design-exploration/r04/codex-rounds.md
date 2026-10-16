@@ -1581,3 +1581,46 @@ checks live outside the repository and never appear here or in a brief. One line
   folder (`<review folder>-sol`), with its own `dispositions.md`.
 - **Pickup check (decision 67, measured):** the resume point's tally ("three briefs reviewed by both models") was
   stale; six more briefs had both reviews.
+
+## shared-lows-fix-2: `briefs/codex-shared-lows-fix-2.md` (this folder), result `4cc2db93` on `owner-r04-shared-lows` (from `9619f3ce`), DeepSeek V4.1 Flash, level `max`; review fix `538b280a`
+
+- **Set-up:** the shared-lows grade (`briefs/codex-shared-lows-grade.md`, G1-G16 at `f87906ea`) found four causes:
+  the brand item's second ring (its G4), a ring after a mouse arrival (G6), changes beyond the rings (G7) and the
+  error ring's colour outside `style.css` (G14). The coordinator first moved the specimen rings into the shared rule
+  (`9619f3ce`). Both reviewers.
+- **Run (measured):** four turns in `turns.jsonl`: two "no report", one "claim check failed" (F263) and one
+  accepted; start load 92343. Its report: P1-P4 PASS, L1 FAIL (7 Access timeline samples differing, 3 Activity
+  `clear-search` samples not held in forced colours). Its Sol diff review (`D:/fitway-temp/code-review/shared-lows-3/`)
+  gave three blocking findings, applied by a fixer at `538b280a`.
+- **Grading:** GPT-6.1 Sol `xhigh` (`briefs/codex-shared-lows-fix-2-grade.md`, G1-G11), run
+  `D:/fitway-temp/codex-round-3e6c4f04-9467-4931-a8c2-46e6b433af71`, resumed once on another account after a usage
+  limit. Verdict FAIL on G1, G2, G4, G5, G8, G9 and G11. The coordinator's reading (decision 67; its scripts and logs
+  are in `D:/fitway-temp/owner-r04-shared-lows-fix-2-grade/coordinator/`):
+  - G1 (680 reachable checks, 0 mismatches) and G2 (568 of 584 pass): the grading brief's wording. Components has no
+    `#brand` and an inert rail. On a product page opened directly in its error state at desktop size, `#retry` is
+    the last tabbable element, so Tab leaves the document (reproduced on Reports and Daily); Shift+Tab gives the
+    2 px ring, and at phone size the tab bar follows `#retry` and the ring shows.
+  - G4: 113 of 119 items differ outside the stroke. In 109 every difference above 8 colour units lies inside the
+    focused element's box; the other 4 are 6 to 9 anti-aliased pixels on a neighbouring button's corner (at most 30
+    units). Settled frames differ by at most 3 units outside the ring. The larger differences are mid-animation
+    samples of Access dialogs (the eye icon at 200-300 ms, equal again by 400 ms), attributed by elimination to the
+    mouse ring HEAD removes: no other rule for the field or the eye changed. The grading brief asked for no
+    differing pixel where P3 allowed the changes S1-S3 and Q1-Q4 require.
+  - G5: the four declarations brighten a field's border on focus to its hover colour: a field state, not a ring. The
+    grading brief counted a focus border as a ring; P4 asked only to list them, and the round's list left them out
+    (F265).
+  - G8: all 56 differences are ring changes. P2: the record arrival, Reports' range and export dialogs opened
+    directly, and the sort list chosen without a pointer or a key. P4: the forced-colour specimen rings (20). And the
+    selected heat cell's mark after a mouse click, which `9619f3ce`'s `!important` pointer rule hid and HEAD restores
+    to `23314b3a`'s appearance (reproduced on all three). The heat tooltip's other differences are at most 17 units
+    and look the same. The grading brief's list named only P1, P2 and the review fix.
+  - G9: the caret. Playwright's caret hiding does not hold in forced colours (F264, reproduced on a bare page).
+  - G11: the round edited `motion.js` after its last measurement (F265); this grade's G2, G3, G6 and G7 measured the
+    delivered code and pass.
+- **Brief rows** 5/8 in full (P1, P2, L2, L3, L4); P3 and P4 hold in substance but their reports were under-measured;
+  L1 failed on the tool (F264). **Held-out** (`D:/fitway-grader/owner-r04/shared-lows-heldout.md`): SL12, SL13 (the
+  coordinator, at phone size), SL15, SL16 and SL17 pass; SL14 was not run. Overclaims 2 (P3 and P4 reported as
+  measured in full). Grading-brief causes 5 (G1, G2, G4, G5, G8).
+- **Disposition:** `owner-followup-r04-build` fast-forwarded to `538b280a` (2026-10-17). The selected heat cell's mark
+  after a mouse click looks like the keyboard ring; it predates the rounds and stays, for the user's next look at
+  Reports.
