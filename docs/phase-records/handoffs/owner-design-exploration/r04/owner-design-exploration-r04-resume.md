@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `df7994f8`, 2026-10-17 00:28 +03:00
+- **As of:** `codex/owner-redesign-r04` at `586c5c56`, 2026-10-17 01:25 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-74), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -11,8 +11,9 @@
   (`pnpm codex:round <brief> [level] [--model gpt-6.1-sol]`); the launcher reviews first and stops for dispositions.
 - **The user's order of work (decision 52):** tool and testing fixes before the next pages; what nobody sees waits
   until after the demo; anything visible that would make the demo look bad is fixed before it.
-- **Owner screens:** Daily, Reports, Activity log and Access on `owner-followup-r04-build`, now at `23314b3a`
-  (reports-css merged: the shared styles in `shared.css`, F160's loading proofs; no pixel changed). Worktree
+- **Owner screens:** Daily, Reports, Activity log and Access on `owner-followup-r04-build`, now at `538b280a`
+  (2026-10-17, measured: the shared-lows series fast-forwarded in: one ring per control, a ring only when a key
+  brought focus there, across pages too; graded, `codex-rounds.md` §"shared-lows-fix-2"). Worktree
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`. Previews: eclipse-build (3174), LAN (3180).
 - **Wave 1 is done and recorded** in `codex-rounds.md` and `rounds.tsv`: no-comments (report-only; 50 `MUST KILL`
   findings F184-F233), diagnosis (report-only, 3/6; nothing reproduced under load it did not record), reports-css
@@ -37,44 +38,41 @@
 
 ## Running now
 
-- **The grade of shared-lows-fix-2** (GPT-6.1 Sol `xhigh`,
-  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-fix-2-grade.md`, G1-G11 after
-  both reviews), on the grading checkout D:/fitway-temp/owner-r04-shared-lows-grade/wt (branch
-  `grade-shared-lows-fix-2`) at `538b280a`, ports 3186-3187, run folder
-  D:/fitway-temp/codex-round-3e6c4f04-9467-4931-a8c2-46e6b433af71. Its first turn stopped at 00:14 on
-  smhsdxsz5h's usage limit (free again at 02:26); `D:/fitway-temp/resume-auto.sh ... limit-first` resumed it on
-  hhmam1435 (the run folder's `model-switch.md`). Watch it from the run folder's `turns.jsonl`; if the resume script
-  ends without a report, run it again from the run folder.
-- How it got here: shared-lows-fix-2 delivered `4cc2db93` (run D:/fitway-temp/codex-round-036b9ba0-94ca-452f-9036-2b9c9aaa6768:
-  P1-P4 PASS; L1 partial: 7 one-pixel field-edge ring segments in the Access timeline and 3 Activity `clear-search`
-  samples not held in forced colours); its Sol diff review (D:/fitway-temp/code-review/shared-lows-3/) gave three
-  blocking findings, applied by a fixer at `538b280a` (no ring on a pointer-focused popup; the URL cleanup only off
-  `file:`; one dead line), proven by a probe and per-page compares whose only differences were that popup's ring,
-  which the coordinator looked at. Fix-2 carries the last input across pages as a `focus-input` URL parameter that
-  `motion.js` writes on a link's click and removes on arrival (over http); no visitor data is stored.
+- **Nothing of this milestone runs** (measured 01:24). The fix-2 grade reported at 00:51 (run
+  D:/fitway-temp/codex-round-3e6c4f04-9467-4931-a8c2-46e6b433af71, report accepted): FAIL on G1, G2, G4, G5, G8, G9
+  and G11. The coordinator's reading, with reproductions (`codex-rounds.md` §"shared-lows-fix-2"; scripts and logs in
+  D:/fitway-temp/owner-r04-shared-lows-fix-2-grade/coordinator/): five rows from the grading brief's wording, the
+  caret in forced colours (F264, a tool defect, agent-tooling-r01's), and a report resting on less than it claims
+  (F265); the concept holds, and SL13 passes at phone size. Its grading checkout
+  D:/fitway-temp/owner-r04-shared-lows-grade/wt (branch `grade-shared-lows-fix-2`, its own install) is no longer
+  needed.
+- Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
+  click and removes on arrival (over http); no visitor data is stored.
 
 ## Next steps
 
-1. **main is at `fcc8365b`.** F263's launcher fix goes to main next (agent-tooling-r01's resume point); later r04
-   commits go with it.
-2. **Read the shared-lows-fix-2 grade** (reproduce one row; look at the ring frames G1-G3 and G8 cite), then merge
-   `owner-r04-shared-lows` into `owner-followup-r04-build`. Left for later, with their reasons: the dialogs' parts
-   splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
-3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
+1. **main is at `7da16cd9`** (F263's launcher fix, measured 01:20); this milestone's later commits go to main with
+   agent-tooling-r01's next integration.
+2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Settings waits for
-   agent-tooling-r01's ratchet and CLI contract (decision 73).
+   agent-tooling-r01's ratchet and CLI contract (decision 73). Left for later, with their reasons: the dialogs' parts
+   splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
+3. **Grading briefs for focus work** state a control's tab order (the first Tab can leave the page), keep a pixel
+   rule's allowances the round's brief gives, and list every outcome whose rings may differ (the five rows above).
 
 ## Waiting on the user
 
 - Drive C: 15 items wait for the user's decision in D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md (12.04 GB free
   after the safe cleanup, measured).
 - Optional: Windows Update's active hours (F159).
+- For the user's next look at Reports: a mouse click on a heat cell leaves its 2 px selection mark, as before the
+  rounds (`23314b3a`; `9619f3ce` had hidden it by accident); it looks like the keyboard ring. Keeping it is the user's
+  call.
 
 ## Known risks
 
 - **GPT-6.1 Sol accounts:** the user's rule (2026-10-15): stay on the current account until it reaches its limit,
-  then switch; at 22:20 `ryshyjhad85` was current and had carried both gradings and both second reviews without a
-  limit. `bash D:/fitway-temp/resume-auto.sh <run> <message> limit-first` switches saved accounts, but with
+  then switch; `hhmam1435` is current since 00:14 on 2026-10-17 (`smhsdxsz5h` limited until 02:26). `bash D:/fitway-temp/resume-auto.sh <run> <message> limit-first` switches saved accounts, but with
   `limit-first` it sends its own generic message (`D:/fitway-temp/resume-after-limit.md`), not the one passed.
 - **DeepSeek reports can claim steps that never ran** (F242): check a round's commit and ladder against its events
   before grading, until the launcher does.

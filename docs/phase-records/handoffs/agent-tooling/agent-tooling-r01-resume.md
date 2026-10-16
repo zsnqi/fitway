@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `df7994f8`, 2026-10-17 00:28 +03:00
+- **As of:** `codex/owner-redesign-r04` at `586c5c56`, 2026-10-17 01:25 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,42 +37,40 @@
 
 ## Running now
 
-- **No Codex round of this milestone runs.** The coordinator's local fast ladder on `9609525b` (F263's second commit,
-  committed by the coordinator from the fixer's staged work while the fixer's own ladder ran, so that ladder failed its
-  mutation guard at 00:27; 1,866 tests passed in it) runs in D:/Projects/fitway-worktrees/tooling-launcher-ansi, log
-  D:/fitway-temp/tooling-launcher-ansi/verify2.log;
-  CI runs on `9609525b` (CI passed on `a4593baf`), and CI's rerun of the ratchet's run 38964003198 on `7c28d15a`
-  (its first run failed on Windows `0xC0000142` process starts in `codex-round.test.ts`, which the ratchet does not
-  touch).
-- **The ratchet** delivered `7c28d15a` on `tooling-ratchet` (D:/Projects/fitway-worktrees/tooling-ratchet, run
-  D:/fitway-temp/codex-round-c8aa5fb0-1f2a-4231-80f0-7c783796af3b): H1-H6 PASS; baseline
-  CODE_HEALTH_BASELINE.json on that branch (217 files; duplication 733 at an 8-line window, type escapes 60,
-  suppressions 10, repeated workarounds 8, long functions 324, giant files 34); `pnpm check:code-health` and
-  `pnpm code-health:baseline`; H4 proven on codex-round.mjs's growth 2,208 to 2,323 and on fix-3's duplicated body.
-  Its commit message is "Ratchet": the round re-committed the same tree ten times under F263 (all ten share tree
-  `7a6da90c`). Its Sol diff review (D:/fitway-temp/code-review/ratchet-1/) gave nine blocking findings, all to
-  ratchet-fix.
-- **F263** (`findings.tsv`): launcher-fixes-6's commit check read Git's header with a line-anchored pattern, and
-  PowerShell's terminal escape codes precede it on the same line, so every commit made through PowerShell was
-  refused. Fixed on `tooling-launcher-ansi`: `a4593baf` strips the escape codes (a new test file with the real
-  recorded output), and `9609525b` moves the reader into a module of its own, commit-header.mjs on that branch, without a
-  suppression, after the diff review blocked the `biome-ignore` (D:/fitway-temp/code-review/launcher-ansi-1/);
-  `codex-round.mjs` went from 2,323 to 2,316 lines.
+- **ratchet-fix** (DeepSeek V4.1 Flash `max`, `docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix.md`
+  at HEAD `e115f646`, K1-K6 and L0-L2), launched at 01:24 on 2026-10-17 in D:/Projects/fitway-worktrees/tooling-ratchet,
+  run folder D:/fitway-temp/codex-round-3911ed9e-70c8-440e-960b-77c265e16d07, launcher log
+  D:/fitway-temp/tooling-ratchet/launch-ratchet-fix.log. Watch it from the run folder's `turns.jsonl`; on a usage
+  limit or a stop without a report, resume from the run folder. It is the first implementing round under F263's fix.
+- How it got here: the ratchet delivered `7c28d15a` on `tooling-ratchet` (run
+  D:/fitway-temp/codex-round-c8aa5fb0-1f2a-4231-80f0-7c783796af3b): H1-H6 PASS; baseline CODE_HEALTH_BASELINE.json on
+  that branch (217 files; duplication 733 at an 8-line window, type escapes 60, suppressions 10, repeated
+  workarounds 8, long functions 324, giant files 34); `pnpm check:code-health` and `pnpm code-health:baseline`; H4
+  proven on codex-round.mjs's growth 2,208 to 2,323 and on fix-3's duplicated body. Its commit message is "Ratchet":
+  the round re-committed the same tree ten times under F263. Its Sol diff review
+  (D:/fitway-temp/code-review/ratchet-1/) gave nine blocking findings, all in ratchet-fix. CI passed on `7c28d15a` on
+  its rerun (the first failed on Windows `0xC0000142` process starts). `e115f646` merges F263's fix into
+  `tooling-ratchet` with the code map regenerated and the baseline lowered for codex-round.mjs (2,324 to 2,317 lines,
+  the tightening rule); `check:code-health` passed and CI passed on it (measured).
+- **F263 is fixed and on main** (measured): `a4593baf` strips terminal escape codes before reading Git's commit
+  header, and `9609525b` moves the reader into commit-header.mjs without a suppression (diff review
+  D:/fitway-temp/code-review/launcher-ansi-1/); the local fast ladder passed on `9609525b` (1,866 tests, no
+  mutation) and CI too; `agent-tooling-r01` fast-forwarded to it, the coordinator line merged it at `7da16cd9`, and
+  `pnpm main:advance` moved main from `fcc8365b` to `7da16cd9`.
 
 ## Next steps
 
-1. **F263 to main:** when the local ladder and CI pass on `9609525b`, fast-forward `agent-tooling-r01` to it, merge
-   into the coordinator line, wait for CI, `pnpm main:advance`. Implementing rounds wait for this: under the old
-   check they loop on claim refusals until the resume limit.
-2. **ratchet-fix** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix.md`, `df7994f8`, both reviews
-   dispositioned, every reading closed): first merge `agent-tooling-r01` (with F263) into `tooling-ratchet`,
-   regenerating the code map and the code-health baseline in the merge (codex-round.mjs falls to 2,316 lines; the
-   ratchet's tightening rule requires the lower count), set the brief's HEAD to that merge, rerun `brief:check`,
-   then launch with the fixed launcher. Held-out rows HR1-HR12 are in the grader's folder.
-3. **Grade the ratchet with its fix** (Sol), then merge into `agent-tooling-r01` and on to main.
-4. **The CLI contract with `pnpm tools`** (F251; draft at D:/fitway-temp/agent-tooling-drafts/cli-contract-body.md),
+1. **Read ratchet-fix's report** against its events (commit, ladder, each K row's failing case at `e115f646`), then a
+   Sol diff review (`docs/agent-context/briefs/CODE_REVIEW.md`) and a mechanical fixer for any blocking finding.
+2. **Grade the ratchet with its fix** (Sol; held-out rows HR1-HR12 in the grader's folder), then merge
+   `tooling-ratchet` into `agent-tooling-r01`, the coordinator line and main.
+3. **The CLI contract with `pnpm tools`** (F251; draft at D:/fitway-temp/agent-tooling-drafts/cli-contract-body.md),
    adding the report fields the wave's open readings wait on; then **map upkeep** (F252), then **the lighter pickup**.
    Each later brief drops the prose rules the ratchet now enforces (function and module length, duplication).
+4. **verify-fitway's caret in forced colours** (F264, found by r04's fix-2 grade): Playwright's caret hiding does not
+   hold there, so timeline samples on a focused field read NOT-HELD; it joins the next verify-fitway round. F265 (a
+   round's edit after its last measurement passes the claim check) is a candidate for the CLI contract's report
+   fields.
 
 ## Waiting on the user
 
