@@ -45,15 +45,17 @@
 
 ## Goal
 
-The map lists every callable and every test that covers or runs it, and a drift names what drifted.
+The map lists every callable of the forms `codex-code-map.md` defines, now with constructors, and every test that covers
+or runs it, and a drift names what drifted.
 
 ## Causes and required outcomes
 
 - **N1. Constructors (grade G3, G7).**
   - **Cause (measured by the grader and reproduced by the coordinator).** `BaselineCache`'s constructor
     (`.agents/skills/verify-fitway/baseline-cache.mjs` L108-113) has no entry, while its methods do.
-  - **Outcome.** Every class constructor in a mapped file has its own entry with its range and coverage (a test that
-    constructs the class with `new` covers it). Tested.
+  - **Outcome.** Every class's own `constructor` method in a mapped file has its own entry with its range and coverage;
+    a test that constructs the class with `new` covers it. A class without its own constructor gets no entry, and
+    `super()` or `Reflect.construct` does not count as coverage. Tested.
   - **Intent.** Behaviour in a constructor is findable.
 - **N2. Re-export lists (grade G2, G13).**
   - **Cause (measured by the grader).** A module that imports a name and lists it in a local `export { ... }` passes its
@@ -64,19 +66,24 @@ The map lists every callable and every test that covers or runs it, and a drift 
   - **Intent.** The map says who tests a function however it is re-exported.
 - **N3. Commands run through built paths (grade G11).**
   - **Cause (measured).** A test that runs a module through a path built at runtime is not found:
-    `scripts/verify.test.ts` runs `path.join(root, "scripts", "verify.mjs")`; the grader also lists
-    `codex-round.test.ts` for `codex-round.mjs`, `check-brief.test.ts` for `new-handoff.mjs` and
-    `.agents/skills/gardener/round16.test.ts` for `remove-worktree.mjs`.
-  - **Outcome.** A test runs a module as a command when it starts node (or a pnpm script that runs it) with that module's
-    path given as a literal, a `path.join` or `path.resolve` of literal segments and a root the test computes, a URL of
-    the module, or a `process.cwd()` path; the four relations above are listed, and the map adds no relation your own
-    `git grep` of the tests cannot show. Tested with each form.
+    `scripts/verify.test.ts` runs `path.join(root, "scripts", "verify.mjs")`, and
+    `scripts/agent-environment/codex-round.test.ts` runs its `script` constant, a `path.join` of the repository root
+    and the tool's repository path after an environment fallback.
+  - **Outcome.** A test runs a module as a command when it starts `node` or `process.execPath` with that module as the
+    entrypoint (the first argument that is not an option), or runs a pnpm script whose `package.json` command is
+    `node <that module>`, the module's path given as a literal, a `path.join` or `path.resolve` of literal segments and a
+    root the test computes, a URL of the module, or a `process.cwd()` path. A path passed to another program (such as
+    `git add`), placed after the entrypoint, or given to `node --check` adds no relation. The two relations above are
+    listed; a path rebuilt by other calls (`scripts/agent-environment/check-brief.test.ts` upper-cases its folder) or a
+    command the tool under test prints (`.agents/skills/gardener/round16.test.ts`) need not be found. The map adds no
+    relation your own `git grep` of the tests cannot show. Tested with each form and each refusal.
   - **Intent.** A command-run tool points at the tests that run it.
 - **N4. A drift that names itself (grade G14).**
   - **Cause (measured).** In check mode a dropped or added command-test entry prints only `line 167 differs`.
   - **Outcome.** Check mode names each difference by its file and its callable or command relation (missing, extra, or
-    changed range), as validation does, and still exits 1 with the regenerate command. Tested for a dropped and an added
-    entry and a moved callable.
+    changed range): each missing or extra callable and relation by its file, name and kind, never only as a count. It
+    still exits 1 with the regenerate command. Tested for a dropped and an added command-test entry, a missing callable
+    and a moved callable.
   - **Intent.** An agent reading a drift knows what changed without diffing the map.
 - **N5. One way to ask Git for files (grade G15).**
   - **Cause (measured).** `listUntrackedMappedSourceFiles` wraps `git ls-files` a second time beside `listTrackedFiles`.
@@ -89,7 +96,8 @@ The map lists every callable and every test that covers or runs it, and a drift 
 - **L0. New cases prove the repair.** Each case you add names the outcome it tests (N1-N5), fails at this HEAD at an
   assertion on that outcome's behaviour (not at a missing helper, import, fixture or setup: a fixture repository has an
   initial commit before a case relies on `HEAD`), and passes unchanged on your result; the cases you commit are the
-  ones you showed failing, and the fast ladder runs them. N5 is shown by `git grep`. Report each failing output.
+  ones you showed failing, and the fast ladder runs them. Fixture cases use module, function and script names of
+  your own, none that this brief names. N5 is shown by `git grep`. Report each failing output.
 - **L1. The earlier outcomes.** Every outcome and limit of `codex-code-map.md` and `codex-code-map-fix.md` still holds
   (report each again); every test at this HEAD keeps its assertions and still runs; no module over 500 lines, no
   function over 80.
