@@ -55,12 +55,14 @@ resume point is made by the command meant to make it.
     `reportClaimFailures` takes the first that resolves as the claim, so a report that cites the base commit before its
     own is refused as "not worktree HEAD"; ladder-seam's report was resumed six times for it.
   - **Outcome.** The commit check accepts a report when a SHA it names (full, or an abbreviation of at least 7 hex
-    digits) resolves to the worktree HEAD, whatever other commits it cites and in whatever order; when commits it names
-    resolve but none to the worktree HEAD, it refuses with a failure that names them and the HEAD; every other refusal
+    digits) resolves to the worktree HEAD and that HEAD descends from the launch HEAD, whatever other commits it cites
+    and in whatever order; when commits it names resolve but none to the worktree HEAD, it refuses with a failure that names them and the HEAD; every other refusal
     of the check stays as at the HEAD: no SHA names an existing commit, the claimed commit equals the launch HEAD, no
     successful `git commit` in the run's events, a tree not clean after the commit, and the fast-ladder order check.
-    Tests cover a base cited before the HEAD, an abbreviation of the HEAD beside a full base SHA, an existing commit
-    that is not the HEAD named alone, and the F242 case (a SHA that names no commit, alone).
+    A HEAD that does not descend from the launch HEAD (the worktree reset to another branch's commit) is refused,
+    naming both. Tests cover a base cited before the HEAD, an abbreviation of the HEAD beside a full base SHA, an
+    existing commit that is not the HEAD named alone, a HEAD that does not descend from the launch HEAD, and the F242
+    case (a SHA that names no commit, alone).
   - **Intent.** A report is refused for claiming work that did not happen, never for citing history.
 - **V2. handoff:new cannot open a milestone (F255).**
   - **Cause (measured by the coordinator).** With the ledger naming a new milestone whose handoff file does not exist
@@ -68,15 +70,18 @@ resume point is made by the command meant to make it.
     template, though its usage and `HANDOFF_TEMPLATE.md` say it creates the file when absent.
   - **Outcome.** For a milestone in the ledger with its task packet, whose handoff file (and its directory) does not
     exist yet, the command creates it from the template block, with `--dir` and without it (then in the directory the
-    ledger's handoff path names), exits 0 and prints the path; a second run changes only the As of line; every refusal
+    ledger's handoff path names), exits 0 and prints the path; afterwards the ledger's `handoff` names the created file
+    and `pnpm context:show --milestone <id>` prints it; a second run changes only the As of line; every refusal
     at the HEAD stays (an unknown milestone, a milestone without a packet, an invalid packet, `--dir` naming a file).
     Tests cover each case on a scratch repository the test makes.
   - **Intent.** Opening a milestone needs no hand-made file.
 
 ## Limits the result keeps
 
-- **L0. New cases prove the repair.** Each case you add for V1 and V2 fails on the HEAD's production code at its
-  assertion; report each failing output.
+- **L0. New cases prove the repair.** Each case you add names the outcome it tests (V1 or V2), fails on the HEAD's
+  production code at an assertion on that outcome's behaviour (not at a missing helper, import or fixture), and passes
+  unchanged on your result; the cases you commit are the ones you showed failing, and the fast ladder runs them.
+  Report each failing output.
 - **L1. Today's behaviour elsewhere.** Every test at the HEAD keeps its assertions and still runs, none skipped,
   excluded or made conditional; every fixture file at the HEAD stays byte for byte; launch, `resume`, the review and
   `handoff:new` keep their arguments, output for the cases above and exit codes.
