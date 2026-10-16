@@ -51,29 +51,34 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 ## Causes and required outcomes
 
 - **G1. A cited base.** Outcome: a report line "Base commit B (for comparison); commit C2." with B as its full 40-hex SHA and C2 as its SHA gives no
-  commit failure; so does "Compared with B at base; HEAD after commit: C2" with C2 abbreviated to its first 7 hex. Intent: history may be
-  cited.
+  commit failure; so does "Compared with B at base; HEAD after commit: C2" with C2 abbreviated to its first 7 hex; and so does "Commit: C2; base: B", the base cited after. Intent:
+  history may be cited, in any order.
 - **G2. The wrong commit.** Outcome: a report naming only "Commit: C1" (with its SHA) is refused, and the failure names C1 and the
   HEAD. Intent: a claim must be the HEAD.
 - **G3. A commit that does not exist.** Outcome: a report naming only a fabricated 12-hex SHA on a commit line is
   refused "no such commit object" (F242 kept). Intent: as G2.
 - **G4. No commit.** Outcome: with HEAD reset to B and the brief requiring a commit, a report naming B is refused as the
   launch HEAD. Intent: as G2.
-- **G5. Other refusals kept.** Outcome: a report naming C2 with a dirty tree is refused as not clean; a report naming
+- **G5. Other refusals kept.** Outcome: a report naming C2 with a dirty tree is refused as not clean; with no
+  successful `git commit` in the events it is refused; with the only successful `verify.mjs fast` before the commit and
+  a PASS claimed for an outcome that names the ladder it is refused; a report naming
   C2 with HEAD moved to a commit of another branch that does not descend from B is refused naming both; a report naming
   an empty commit (`git commit --allow-empty` on top of B as HEAD) is refused. Intent: the repair loosened nothing else.
 - **G6. Hashes that are not commits.** Outcome: a report naming C2 and also a 64-hex SHA-256 on a line with "HEAD" is
   accepted. Intent: a brief's hash cited beside the commit does not block it.
 - **G7. A new milestone's first resume point.** Outcome: in a copy of the repository whose ledger names a new milestone
   with a packet and a handoff file that does not exist (its directory absent), `pnpm handoff:new --milestone <id>`
-  exits 0, the file exists, starts with the resume-point marker and names the milestone in its title, the ledger's
+  exits 0 both with `--dir <a new directory>` and without it, the file exists, starts with the resume-point marker and names the milestone in its title, the ledger's
   `handoff` names it, and `pnpm context:show --milestone <id>` prints it; a second run changes only the As of line
-  (byte compare otherwise); `--milestone` for an id not in the ledger still fails "Unknown active milestone". Intent:
+  (byte compare otherwise); each refusal of the base still holds: an id not in the ledger ("Unknown active
+  milestone"), a milestone without a packet, an invalid packet, and `--dir` naming a file. Intent:
   opening a milestone needs no hand-made file.
 - **G8. The repair proven, nothing weakened.** Outcome: run from the result's test files on `c286c4c9`'s production
   code, every case added since `c286c4c9` fails at an assertion on its outcome, never at a missing module, export,
-  helper, fixture or setup (list each case and what it asserts); `git diff --stat c286c4c9 HEAD` lists only the four
-  files the report names; no test present at `c286c4c9` is removed, skipped, made conditional or lost an assertion,
+  helper, fixture or setup (list each case and what it asserts), and passes unchanged on the result, inside the fast
+  ladder's unit-test run the events record; `git diff --name-only c286c4c9 HEAD` is exactly
+  `scripts/agent-environment/codex-round.mjs`, `codex-round.test.ts`, `new-handoff.mjs` and `new-handoff.test.ts` (with
+  `resume-point.mjs` allowed); no test present at `c286c4c9` is removed, skipped, made conditional or lost an assertion,
   and no existing assertion's predicate or expected value changed (list each pre-existing test body that changed).
   Intent: the cases see the defects and nothing was loosened to pass.
 - **G9. Report against commands.** Outcome: the result's commit exists and is your HEAD; the round's run folder
