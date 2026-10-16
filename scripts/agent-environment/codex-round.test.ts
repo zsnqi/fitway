@@ -19,7 +19,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { setReviewSourcePlaceObserver } from "./check-brief.mjs";
-import { copyReviewSources, outcomeIdsFromBrief } from "./codex-round.mjs";
+import {
+	copyReviewSources,
+	outcomeIdsFromBrief,
+	parseReadings,
+} from "./codex-round.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 
 vi.setConfig({ testTimeout: 60_000 });
@@ -265,6 +269,17 @@ const realReviews = [
 	],
 ] as const;
 
+const quotedLabelReviews = [
+	[
+		"codex-launcher-fixes-5-fix-1",
+		"2dc01640551a7a65338889276ee1814f31fc6843fc78fa69715111e5d0bb5843",
+	],
+	[
+		"codex-launcher-fixes-5-fix-grade-2",
+		"c23a47c01d77ee729fe5a4838314bb6427228eda5731b0c984026df7726f4931",
+	],
+] as const;
+
 function expectedReviewBlocks(answer: string) {
 	const blocks = (starts: RegExpMatchArray[]) =>
 		starts.map((start, index) =>
@@ -292,6 +307,12 @@ function expectedReviewBlocks(answer: string) {
 		...answer.matchAll(/^\*\*\d+[.)]\s+[^\n]*\b[A-Z]+\d+\b[^\n]*\*\*\s*$/gm),
 	];
 	return blocks(bold);
+}
+
+function readingSnapshot(readings: ReturnType<typeof parseReadings>) {
+	return readings === null
+		? null
+		: readings.map(({ id, text }) => ({ id, text: text.trim() }));
 }
 
 const readingAnswer = `## Reading 1: R1
@@ -2184,6 +2205,52 @@ describe("R1 real review answers", () => {
 		expect(
 			readFileSync(path.join(f.run, "review-dispositions.md"), "utf8"),
 		).toBe(dispositions);
+	});
+
+	it.each(
+		quotedLabelReviews,
+	)("reads %s quoted-label answer exactly as the pre-parser result", (name, hash) => {
+		const answerFile = path.join(realReviewRoot, `${name}.md`);
+		const bytes = readFileSync(answerFile);
+		expect(createHash("sha256").update(bytes).digest("hex")).toBe(hash);
+		const answer = bytes.toString("utf8");
+		const expected = expectedReviewBlocks(answer).map((text, index) => ({
+			id: index + 1,
+			text,
+		}));
+		expect(readingSnapshot(parseReadings(answer))).toEqual(expected);
+	});
+
+	it.each([
+		["a code span", "`", "`"],
+		["straight double quotes", '"', '"'],
+		["curly double quotes", "\u201c", "\u201d"],
+	])("does not read a label quoted in %s as a labelled part", (_name, open, close) => {
+		const quote = (label: string) => `${open}${label}: 1${close}`;
+		const answer = `**V1. Quoted labels**
+- **Literal reading:** The prose ends with ${quote("Literal reading")}
+- **What goes wrong:** The prose ends with ${quote("What goes wrong")}
+- **One-line change:** The prose ends with ${quote("Change")}
+`;
+		expect(readingSnapshot(parseReadings(answer))).toEqual([
+			{ id: 1, text: answer.trim() },
+		]);
+	});
+
+	it.each([
+		"Literal reading",
+		"What goes wrong",
+		"Change",
+	])("does not count %s in the middle of a sentence as a label", (label) => {
+		const probe = label.toLowerCase();
+		const answer = `**V1. Middle labels**
+- **Literal reading:** The prose says the ${probe}: small; it also ends with the ${probe}: 3.
+- **What goes wrong:** The reading still has its own labelled part.
+- **One-line change:** Keep the examples as prose.
+`;
+		expect(readingSnapshot(parseReadings(answer))).toEqual([
+			{ id: 1, text: answer.trim() },
+		]);
 	});
 
 	it("accepts another heading level and field wording in the same structure", () => {

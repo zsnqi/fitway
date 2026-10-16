@@ -652,18 +652,88 @@ const oneLineLabelNames = [
 	...new Set(oneLineLabelGroups.flatMap(([, labels]) => [...labels])),
 ].sort((left, right) => right.length - left.length);
 
+function maskedLabelText(value) {
+	const chars = value.split("");
+	const mask = (start, end) => {
+		for (let index = start; index < end; index += 1) chars[index] = "\u0000";
+	};
+
+	for (let start = 0; start < chars.length; ) {
+		if (chars[start] !== "`") {
+			start += 1;
+			continue;
+		}
+		let delimiterLength = 1;
+		while (chars[start + delimiterLength] === "`") delimiterLength += 1;
+		let cursor = start + delimiterLength;
+		let end = -1;
+		while (cursor < chars.length) {
+			if (chars[cursor] !== "`") {
+				cursor += 1;
+				continue;
+			}
+			let closingLength = 1;
+			while (chars[cursor + closingLength] === "`") closingLength += 1;
+			if (closingLength === delimiterLength) {
+				end = cursor + closingLength;
+				break;
+			}
+			cursor += closingLength;
+		}
+		if (end < 0) {
+			start += delimiterLength;
+			continue;
+		}
+		mask(start, end);
+		start = end;
+	}
+
+	for (const [open, close] of [
+		['"', '"'],
+		["\u201c", "\u201d"],
+	]) {
+		for (let index = 0; index < chars.length; index += 1) {
+			if (chars[index] !== open) continue;
+			let end = -1;
+			for (let cursor = index + 1; cursor < chars.length; cursor += 1) {
+				if (chars[cursor] !== close) continue;
+				end = cursor;
+				break;
+			}
+			if (end < 0) {
+				mask(index, chars.length);
+				break;
+			}
+			mask(index, end + 1);
+			index = end;
+		}
+	}
+
+	return chars.join("");
+}
+
+function labelStartsClause(value, index) {
+	const lineStart = value.lastIndexOf("\n", index - 1) + 1;
+	const linePrefix = value.slice(lineStart, index);
+	if (/^[ \t]*(?:[-+*][ \t]+|\d+[.)][ \t]+)?$/.test(linePrefix)) return true;
+	if (/[ \t]*(?:[-+*]|\d+[.)])[ \t]+$/.test(linePrefix)) return true;
+	return /[.!?;]$/.test(linePrefix.replace(/[ \t]+$/, ""));
+}
+
 function labelledParts(value) {
-	const content = value.replace(/[*_`]/g, "");
-	if (!content) return [];
+	const searchable = maskedLabelText(value).replace(/[*_`]/g, " ");
+	const content = value.replace(/[*_`]/g, " ");
 	const pattern = new RegExp(
-		`(^|[^\\p{L}\\p{N}])(${oneLineLabelNames
+		`(?<![\\p{L}\\p{N}])(${oneLineLabelNames
 			.map(escapeRegExp)
 			.join("|")})[ \\t]*[:\\-\\u2013\\u2014]`,
 		"giu",
 	);
-	const matches = [...content.matchAll(pattern)];
+	const matches = [...searchable.matchAll(pattern)].filter((match) =>
+		labelStartsClause(searchable, match.index),
+	);
 	return matches.map((match, index) => ({
-		group: oneLineLabelGroup(match[2]),
+		group: oneLineLabelGroup(match[1]),
 		text: content
 			.slice(
 				match.index + match[0].length,
@@ -671,22 +741,6 @@ function labelledParts(value) {
 			)
 			.trim(),
 	}));
-}
-
-function leadingOneLineLabelPart(value) {
-	const clause = value
-		.trim()
-		.replace(/^(?:[-+*]\s+|\d+[.)]\s+)?/, "")
-		.replace(/^[A-Z]+\d+\s*[.)]?\s*/i, "");
-	for (let index = 0; index < clause.length; index += 1) {
-		const separator = clause[index];
-		if (![":", "-", "\u2013", "\u2014"].includes(separator)) continue;
-		const label = clause.slice(0, index).trim();
-		const text = clause.slice(index + 1).trim();
-		const group = oneLineLabelGroup(label);
-		if (group) return { group, text };
-	}
-	return null;
 }
 
 function partHasText(value) {
@@ -714,16 +768,10 @@ function completeLabelledReading(value) {
 }
 
 function completeOneLineReading(value) {
-	const content = value.replace(/[*_`]/g, "").replace(/\r?\n/g, " ");
+	const content = value.replace(/\r?\n/g, " ");
 	if (!/\b[A-Z]+\d+\b/.test(content)) return false;
-	const clauses = content
-		.split(/(?<=[.!?;])\s+/)
-		.map((clause) => clause.trim())
-		.filter(Boolean);
 	const groups = new Set();
-	for (const clause of clauses) {
-		const part = leadingOneLineLabelPart(clause);
-		if (!part) continue;
+	for (const part of labelledParts(content)) {
 		if (!partHasText(part.text)) return false;
 		groups.add(part.group);
 	}
@@ -830,7 +878,7 @@ function readingsFromStarts(text, starts) {
 	return readings.map(({ id, text }) => ({ id, text }));
 }
 
-function parseReadings(answer) {
+export function parseReadings(answer) {
 	const text = answer.trim();
 	const plain = text.replace(/[*_`]/g, "");
 	if (
