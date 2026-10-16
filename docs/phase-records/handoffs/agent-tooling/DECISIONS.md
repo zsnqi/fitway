@@ -24,3 +24,35 @@ through these pointers, not copied here.
    since every launcher round meets it; then the CLI contract with `pnpm tools`, which the code map and the lighter
    pickup both list; then the code map and map upkeep; then the lighter pickup. Rounds on disjoint files may run side by
    side (r04 decision 64). r04's shared lows on the build branch run beside this wave and touch none of its files.
+6. **Code quality for agent-written code: a diff review, a ratchet, and the same on production** (the user,
+   2026-10-16, through a forked side session that relayed it with its review, `D:/fitway-temp/code-quality-review-
+   20261016/REPORT.md`: «موافق على جميع اقتراحاتك لتحسين Code Quality ومنع انتشار الأنماط السيئة في الـCodebase، خصوصًا
+   الـRatchet ومراجعة جودة الكود قبل الدمج، وأبي الضمانات تشمل كود الإنتاج مستقبلًا»). The coordinator reproduced the
+   measurements the plan rests on: `codex-round.mjs` is 2,091 lines (447 on 2026-10-10), `apps/web/tsconfig.json` does
+   not extend the base config, Biome excludes `design-research`; the weekly gardener task exists (next run
+   2026-10-16 14:00), though its last pass, 2026-10-09, was blocked.
+   - **Diff review before every merge** (recommendation 1), from 2026-10-16: `docs/agent-context/briefs/CODE_REVIEW.md`,
+     a fresh Sol at `xhigh` (Opus for a round that matters) on the diff, the brief and the touched files; blocking
+     findings go to a fix round on the same branch, the rest to `findings.tsv` as `maintainer`. It covers r04's
+     concept rounds too. First use: code-map and launcher-fixes-6.
+   - **The ratchet** (recommendation 2), the next round of this wave, before the CLI contract, so later rounds are
+     measured by it: per-file counts of duplicate blocks, type and lint escapes, suppressions and repeated
+     workarounds, from the gardener's code-health scanner, committed as a baseline; the fast ladder fails when a change
+     raises a count in a file it touches, and a file already over the giant-file size may not grow. An exception sits
+     on its line with a reason and an expiry, and the coordinator lists open exceptions in the resume point for the
+     user. It covers the tooling, `apps/` and `packages/` from its first day (recommendation 6); the concept joins
+     when the build branch takes this line's tooling.
+   - **A pattern seen twice becomes a check** (recommendation 4): r04 decision 56's `correct` method applied to code
+     shape; each new check is proven to fail on the real past case.
+   - **Map upkeep widens** (recommendations 3 and 5): the gardener's blocked pass fixed and its scope widened to
+     `apps/` and `packages/`; the code map marks the callables that carry counted debt or an open finding as "do not
+     copy", and briefs point to that list.
+   - **Briefs** gain one line (pstack's `principle-subtract-before-you-add`): no validator, parser, option or guard
+     beyond what an outcome needs.
+   - **Production** (recommendation 6) is r04 decision 74.
+   - **Not adopted now:** dependency-cruiser boundaries (`setup-ts-deep-modules`, unfinished upstream) until the move to
+     production restructures the packages; refreshing the user-level `handoff` and `implement` skills waits for a
+     quiet moment, since those are the user's global files.
+7. **The wave's order after item 6** (coordinator): code-map and launcher-fixes-6 merge after grading and the diff
+   review; then the ratchet; then the CLI contract with `pnpm tools`; then map upkeep with the gardener's scope and the
+   "do not copy" list; then the lighter pickup.

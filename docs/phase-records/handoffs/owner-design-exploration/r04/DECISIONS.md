@@ -831,6 +831,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       of its files; Settings starts after both. The wave starts in a fresh coordinator session (the user's
       permission), from the resume point and this item.
 
+74. **Code quality from the production move's first day** (the user, 2026-10-16, through a forked side session:
+    «... وأبي الضمانات تشمل كود الإنتاج مستقبلًا»; the whole approval and its plan are agent-tooling-r01 DECISIONS item 6,
+    `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`). When item 51's move to production comes:
+    - Production code is written from the concept's spec and behaviour, never copied from the concept's files (the
+      concept is outside Biome and carries counted debt); item 51's restructure into shared modules stands.
+    - The ratchet and the diff review apply to `apps/` and `packages/` from the move's first commit; the ratchet counts
+      them from its own first day, before the move.
+    - Agent-environment DECISIONS item 20's production checks stand, `apps/web` as strict as the base config among
+      them (today `apps/web/tsconfig.json` does not extend it, measured 2026-10-16).
+    - This milestone's concept rounds get the diff review before they merge, from 2026-10-16.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
