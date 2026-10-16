@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `cfbc9ea2`, 2026-10-16 13:43 +03:00
+- **As of:** `codex/owner-redesign-r04` at `f714fd03`, 2026-10-16 19:10 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -15,28 +15,37 @@
   (r04 decision 66's rule applied, `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`
   §"Evaluation: both reviewers, decision 66's rule applied").
 
+- **code-map** is integrated: `agent-tooling-r01` fast-forwarded to `e080324d` and pushed (CI passed). The chain:
+  code-map-fix-3 (`6ba59f03`, run D:/fitway-temp/codex-round-fd9fda9f-43de-474a-ba61-72cb48dfa054), the diff review's
+  four findings (D:/fitway-temp/code-review/code-map-3/) applied by a fixer at `e080324d`, then the Sol grade (run
+  D:/fitway-temp/codex-round-56a3b941-033d-43b0-946c-6878da89f738): 14 PASS; G10 FAIL counted the round's intermediate
+  red runs, and the coordinator reproduced all five committed N cases failing against `572d94c4`'s generator at their
+  assertions; G15 FAIL counted `describe` containers as functions (the grading brief's wording). Map: 48 files, 603
+  callables, 473 without a covering test.
+- **launcher-fixes-6-fix-2** delivered `42ce5333` (run D:/fitway-temp/codex-round-67683b06-56af-47fa-bed2-b2ee881bc629);
+  the diff review's two findings (D:/fitway-temp/code-review/launcher-fixes-6-3/) were applied by a fixer at `51bf35d9`.
+
 ## Running now
 
-- **code-map-fix** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-fix.md`), on `tooling-code-map`
-  from `df2640aa` (D:/Projects/fitway-worktrees/tooling-code-map), run folder
-  D:/fitway-temp/codex-round-8892703c-86e7-4629-9cfe-e5c3d5b74989: the diff review's nine findings
-  (D:/fitway-temp/code-review/code-map-1/) and the grade's G4 and G11 FAILs (the Sol grade of `df2640aa`,
-  D:/fitway-temp/codex-round-a2f0ef9b-6d16-401c-9554-271ec3365d99/last-message.md: 9 of 11 rows PASS). CI passed on
-  `df2640aa`.
-- **launcher-fixes-6-fix** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix.md`), on
-  `tooling-launcher-fixes-6` from `493c0adf` (D:/Projects/fitway-worktrees/tooling-launcher-fixes-6), run folder
-  D:/fitway-temp/codex-round-63f07391-335b-4dd8-9d6d-e1d9386c7893: the diff review's four findings, F257 and F258. Its
-  first grade was stopped (F258 risk); the fix result is graded instead. CI passed on `493c0adf`.
+- **launcher-fixes-6-fix-3** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix-3.md`), on
+  `tooling-launcher-fixes-6` from `51bf35d9` (D:/Projects/fitway-worktrees/tooling-launcher-fixes-6), run folder
+  D:/fitway-temp/codex-round-ad5b4b6c-3edf-4c88-b94f-a00455bc6e4b: Y1 escaped quotes and Y2 comments, from the Sol grade
+  of `51bf35d9` (D:/fitway-temp/tooling-launcher-fixes-6-fix-2-grade/report.md, run folder
+  D:/fitway-temp/codex-round-cf20b9cb-8869-4d57-8405-c7fecf578632: 12 PASS; G9 FAIL was the grading brief's error, the
+  first fixer also touched `new-handoff.test.ts`; G11 escaped quotes a real defect; G14 comments a finding). Held-out
+  rows H16-H18 are in the grader's folder. CI passed on `51bf35d9`.
 
 ## Next steps
 
-1. **Grade each fix result** with a fresh grading brief that names no commit SHA in its report (the F258 workaround in
-   `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-grade.md`, until the fixed
-   launcher merges), then the diff review again (`docs/agent-context/briefs/CODE_REVIEW.md`), then merge into
-   `agent-tooling-r01` after CI.
-2. **The ratchet** (DECISIONS items 6 and 7), then **the CLI contract with `pnpm tools`** (F251, draft in the
-   coordinator's scratchpad), then **map upkeep** (F252, the gardener's scope, the do-not-copy list), then **the lighter
-   pickup**.
+1. **launcher-fixes-6-fix-3:** check its commit and ladder against the events, push, run the diff review
+   (`D:/fitway-temp/code-review/make-folder.sh launcher-fixes-6 <worktree> 51bf35d9 <result> <brief>`), then grade with a
+   fresh brief from `codex-launcher-fixes-6-fix-2-grade.md` plus Y1-Y2 and H16-H18, still naming no SHA in its report
+   (F258 until this result merges). Then merge `tooling-launcher-fixes-6` into `agent-tooling-r01`: both branches touch
+   the map's sources, so run `pnpm map:tooling` in the merge and let CI decide.
+2. **Merge `agent-tooling-r01` into the coordinator line, then `pnpm main:advance`** on the pushed, green commit; the
+   coordinator line's launcher then carries the F255-F258 fixes.
+3. **The ratchet** (DECISIONS items 6 and 7), then **the CLI contract with `pnpm tools`** (F251, draft at
+   D:/fitway-temp/agent-tooling-drafts/cli-contract-body.md), then **map upkeep** (F252), then **the lighter pickup**.
 
 ## Waiting on the user
 

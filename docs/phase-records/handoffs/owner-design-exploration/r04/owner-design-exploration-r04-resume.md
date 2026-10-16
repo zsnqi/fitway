@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `cfbc9ea2`, 2026-10-16 13:43 +03:00
+- **As of:** `codex/owner-redesign-r04` at `f714fd03`, 2026-10-16 19:10 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-74), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -37,23 +37,23 @@
 
 ## Running now
 
-- **shared-lows-fix** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-fix.md`), on
-  `owner-r04-shared-lows` from `89b9d814` (D:/Projects/fitway-worktrees/owner-r04-shared-lows), ports 3176-3177, run
-  folder D:/fitway-temp/codex-round-320134a4-149e-4492-8b83-faea0753f555: the diff review's three findings
-  (D:/fitway-temp/code-review/shared-lows-1/) and S3 on the phone. shared-lows itself (`89b9d814`) reported S1-S5 PASS
-  with two admitted gaps; its grading brief
-  (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-grade.md`, both reviews
-  dispositioned, grading checkout D:/fitway-temp/owner-r04-shared-lows-grade/wt) is retargeted to the fix result
-  before it runs.
-- agent-tooling-r01's code-map-fix and launcher-fixes-6-fix (its resume point).
+- **The grade of shared-lows and its fix** (GPT-6.1 Sol `xhigh`,
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-grade.md`, G1-G16 after both
+  reviews), on the grading checkout D:/fitway-temp/owner-r04-shared-lows-grade/wt at `f87906ea`, ports 3186-3187, run
+  folder D:/fitway-temp/codex-round-8395d9ec-800f-4f8f-af3b-10a45cfa7218. shared-lows-fix delivered `f87906ea` (run
+  D:/fitway-temp/codex-round-320134a4-149e-4492-8b83-faea0753f555, three turns; commit and CSS check in its events, CI
+  passed, pushed): Q1-Q4 PASS; L1 partial, the S5 timeline left Access `pin-copy` at 1 ms and 100 ms not held, which
+  the round blames on the baseline's clipboard promise (G15 measures it).
+- **The diff review of `f87906ea`** (`docs/agent-context/briefs/CODE_REVIEW.md`, D:/fitway-temp/code-review/shared-lows-2/).
+- agent-tooling-r01's launcher-fixes-6-fix-3 (its resume point); code-map is integrated there.
 
 ## Next steps
 
 1. **main is at `3cde7a07`.** The commits after it go with the next batch.
-2. **Grade shared-lows-fix's result** (Sol, the grading brief retargeted; the coordinator looks at the ring frames),
-   then the diff review again, then merge into `owner-followup-r04-build`. Left for later, with their reasons: the
-   dialogs' parts splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148,
-   decision 69).
+2. **Read the shared-lows grade** (reproduce one row; the coordinator looks at the ring frames G4-G7 cite) and the
+   diff review's findings (a fixer for blocking ones); then merge `owner-r04-shared-lows` into
+   `owner-followup-r04-build`. Left for later, with their reasons: the dialogs' parts splitting under a planted stall
+   (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Settings waits for
    agent-tooling-r01's wave (decision 73).
