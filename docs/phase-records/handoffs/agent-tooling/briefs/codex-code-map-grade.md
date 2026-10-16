@@ -49,23 +49,27 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   `scripts/agent-environment/codex-round.mjs`, the map's start line is within 2 of the line `grep -n` gives for the
   declaration and its end line closes that function; report the map's covering tests for each and whether each listed
   test file imports and calls it. Intent: entries point at the code.
-- **G2. No invented coverage.** Outcome: pick three callables the map lists as covered and three it lists as uncovered,
-  at random (report your seed); for each covered one a listed test file imports and calls it; for each uncovered one no
-  `*.test.*` file in the repository imports and calls it (`git grep`). Intent: coverage claims hold.
+- **G2. No invented coverage.** Outcome: with your own scanner (not the generator's code), every test file the map
+  lists for every covered callable imports that name from that module and calls it (report the count checked and each
+  miss); for ten callables it lists as uncovered, at random (report your seed), no `*.test.*` file in the repository
+  imports and calls it (`git grep`). Intent: coverage claims hold.
 - **G3. Every file.** Outcome: the map's file list equals `git ls-files` of the brief's M1 folders and files with tests
   excluded (report both counts and any difference). Intent: nothing is skipped.
 - **G4. Drift fails.** Outcome: in a scratch copy of the tree, adding `export function heldOutProbe() {}` to a mapped
-  file makes `node scripts/agent-environment/generate-tooling-map.mjs --check` exit 1 with a line containing
-  `FAIL:` and the regenerate command; removing it again exits 0. Intent: a stale map is caught.
+  file makes `pnpm check:tooling-map` (the command the ladder step runs) exit 1 with a line containing `FAIL:` and the
+  regenerate command; removing it again exits 0; and the step in the committed `scripts/verify.mjs` runs that command
+  in `fast` with no condition that can skip it (quote the lines). Intent: a stale map is caught.
 - **G5. Line endings.** Outcome: a fresh clone of the result into `D:/fitway-temp/tooling-code-map-grade/` with
   `core.autocrlf=true` regenerates a map byte-identical to the committed one. Intent: Windows checkouts agree.
 - **G6. Moved code.** Outcome: in a scratch copy, moving one mapped function down by 20 lines with nothing else changed
   makes `--check` fail. Intent: lines are checked, not only names.
-- **G7. Class members.** Outcome: a class method in a mapped file (for example in
-  `.agents/skills/verify-fitway/baseline-cache.mjs`) has its own entry with its lines. Intent: behaviour in methods is
-  findable.
-- **G8. Import is not coverage.** Outcome: in a scratch copy, a new test file that imports an uncovered function and
-  never calls it leaves that function uncovered after regeneration. Intent: as G2.
+- **G7. Every form.** Outcome: a class method in a mapped file (for example in
+  `.agents/skills/verify-fitway/baseline-cache.mjs`) has its own entry with its lines; in a scratch copy, adding and
+  then removing each of a `const` arrow function, a default export, a getter and a static method in a mapped file makes
+  `--check` fail after each change and pass when restored. Intent: behaviour in any form is findable.
+- **G8. Import is not coverage.** Outcome: in G5's clone, a new test file added with `git add` that imports an
+  uncovered function and never calls it leaves that function uncovered after regeneration, and the same file with one
+  call added makes the map list it as covering (proving the generator saw the file). Intent: as G2.
 - **G9. Size, time, ladder.** Outcome: the map is at most 80 KB; three `--check` runs on this machine take under 15 s
   each (report them); `parseFastSteps` (`.agents/skills/gardener/facts.mjs`) on the committed `scripts/verify.mjs`
   returns the base's eight steps plus the new one in the order the report states, and with
@@ -74,8 +78,9 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
 - **G10. Report against commands.** Outcome: the result's commit exists and is your HEAD; the round's run folder
   (`D:/fitway-temp/codex-round-9be94292-833b-4ee1-b3ac-8240cca8f848/`) records the `git commit` whose output names
   `df2640aa` and a `node scripts/verify.mjs fast` run after it with exit 0, with no later commit, quoted from the
-  events; the report's L0 claim (28 tests failing before the implementation) is checked: say at what each of those
-  failures failed, from the events, and whether any failed only because a module or export was missing. Intent: the
+  events; the report's L0 claim (28 tests failing before the implementation) is checked: classify each of those
+  failures, from the events, as an assertion on M1 or M2 behaviour or as a missing module, export, helper, fixture or
+  setup; G10 fails if any is the latter. Intent: the
   report rests on what ran.
 
 ## Limits the result keeps
