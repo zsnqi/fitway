@@ -64,10 +64,13 @@ where the keyboard put focus and nowhere a pointer or a finger did.
     `clear-search`, `page-retry`; Daily: `language`, `phone-language`, `page-retry`; Reports: `language`,
     `phone-language`, `page-retry`), so the CLI proves none of their before states beside the after frame.
   - **Outcome.** Each of these features declares `ends` in place of `changesState`, naming exactly the before rules its
-    own actions change (for example, a language switch ends the rule of the language it leaves); for each feature a
+    own actions change (for example, a language switch ends the rule of the language it leaves), each ended rule shown
+    to hold before the action and not after it (a scratch proof outside the tree, reported per rule); for each feature a
     compare of the result against itself (`--feature <id>`, `ar,en`, desktop and phone, reduced motion, 4 workers)
     passes with the item summary's `afterFrameProof` listing the kept rules, and a planted break of one kept rule (in a
-    scratch copy outside the tree) fails at `after-frame`. Report each feature's ended and kept rules. A feature that
+    scratch copy outside the tree) fails at `after-frame`. No state rule or feature of the base is removed, and no
+    rule's `when` or proof changes: the recipes differ from the base only in these declarations (report the rule and
+    feature counts per page at the base and the result). Report each feature's ended and kept rules. A feature that
     keeps `changesState` is listed in your report with the reason.
   - **Intent.** After an action, the frames prove everything the action leaves as it was.
 - **S2. The rail's ring on Access.**
@@ -76,13 +79,15 @@ where the keyboard put focus and nowhere a pointer or a finger did.
     two rings.
   - **Outcome.** A keyboard-focused rail item shows the same rings on Access as on the other four pages, measured as the
     computed outline of the item and of its tile on each page, collapsed and open, desktop and tablet, both languages,
-    and in forced colours; every other element on Access keeps its focus ring as at the base.
+    and in forced colours: on every page the tile shows FOC-1's visible 2 px ring and the item none, confirmed on the
+    rendered frame; every other element on Access keeps its focus ring as at the base.
   - **Intent.** One ring per control, the same control alike on every page (FOC-1).
 - **S3. Rings after a pointer.**
   - **Cause (recorded 2026-10-05, not measured since).** A tapped Retry on Access's desk moves focus to the desk title,
     which shows its ring; OWN-C9 says "programmatic focus always shows its ring", which no longer matches the pages.
-  - **Outcome.** Where a page's script moves focus after an activation (each retry on every page, Access's done
-    sentences and refusals, the desk and records titles), the focused element shows its ring when the activation was a
+  - **Outcome.** Wherever a page's script moves focus after an activation (every `focus()` call a click, tap or key
+    can reach on the five pages: retries, done sentences, refusals, titles, dialogs' first controls and their return,
+    the code's view, invalid fields; inventory them all), the focused element shows its ring when the activation was a
     key, and none when it was a mouse click or a touch; measured for each such place, by key, mouse and touch, both
     languages, desktop and phone; focus still lands where it lands at the base; OWN-C9's sentence, and any row that
     restates it, says this rule. Report each place with its three results at the base and at the result.
@@ -91,8 +96,8 @@ where the keyboard put focus and nowhere a pointer or a finger did.
 ## Limits the result keeps
 
 - **S4. Every page unchanged at rest.** As F2 of the shared-frame brief against the base, over every feature, state,
-  language, size, input, motion and `file://`, apart from the focus frames S2 and S3 change, each listed in your report
-  with what changed in it.
+  language, size, input, motion and `file://`, apart from the focus rings S2 and S3 change: in those frames only the
+  ring's own outline may differ, any other difference fails, and each such frame is listed in your report.
 - **S5. Every moment unchanged.** As F3 of the shared-frame brief, with its NOT-HELD rule and its reruns.
 - **L1. The checks pass.** As the shared-frame brief's L1; `check-concept-css.mjs` passes on the folder.
 - **L2. Only the folder.** `HISTORY.md` and the evidence folder are unchanged.
