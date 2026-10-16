@@ -164,13 +164,16 @@ function shellScan(command, shell = "bash") {
 			events.push(shellEvent(character, character === "'" ? "" : character));
 			continue;
 		}
+		if (character === escapeCharacter && index + 1 < command.length) {
+			const next = command[++index];
+			events.push(shellEvent(character + next, next));
+			wordStarted = true;
+			continue;
+		}
 		if (quote === '"') {
 			if (character === '"') {
 				quote = null;
 				events.push(shellEvent(character, ""));
-			} else if (character === escapeCharacter && index + 1 < command.length) {
-				const next = command[++index];
-				events.push(shellEvent(character + next, next));
 			} else events.push(shellEvent(character, character));
 			continue;
 		}
@@ -178,12 +181,6 @@ function shellScan(command, shell = "bash") {
 			quote = character;
 			wordStarted = true;
 			events.push(shellEvent(character, ""));
-			continue;
-		}
-		if (character === escapeCharacter && index + 1 < command.length) {
-			const next = command[++index];
-			events.push(shellEvent(character + next, next));
-			wordStarted = true;
 			continue;
 		}
 		if (character === "#" && !wordStarted) {

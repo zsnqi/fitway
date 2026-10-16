@@ -3479,23 +3479,17 @@ ${report}
 	});
 
 	it.each([
-		["bash", `bash -lc 'git commit -m "fix #12"'`],
-		["PowerShell", `powershell.exe -Command 'git commit -m "fix #12"'`],
-	])("Y2 guard keeps a quoted hash in %s", (_name, command) => {
-		const f = fixture();
-		const result = invokeClaim(
-			f,
-			commandEvent(command, 0, claimOutput) +
-				commandEvent("node scripts/verify.mjs fast"),
-		);
-		expect(result.status, result.output).toBe(0);
-		expect(f.captured().args).not.toContain("resume");
-	});
-
-	it.each([
-		["bash", `bash -lc 'git commit -m a#b'`],
-		["PowerShell", `powershell.exe -Command 'git commit -m a#b'`],
-	])("Y2 guard keeps a hash inside a %s word", (_name, command) => {
+		["a quoted hash in bash", `bash -lc 'git commit -m "fix #12"'`],
+		[
+			"a quoted hash in PowerShell",
+			`powershell.exe -Command 'git commit -m "fix #12"'`,
+		],
+		["a hash inside a bash word", `bash -lc 'git commit -m a#b'`],
+		[
+			"a hash inside a PowerShell word",
+			`powershell.exe -Command 'git commit -m a#b'`,
+		],
+	])("Y2 guard keeps %s", (_name, command) => {
 		const f = fixture();
 		const result = invokeClaim(
 			f,
