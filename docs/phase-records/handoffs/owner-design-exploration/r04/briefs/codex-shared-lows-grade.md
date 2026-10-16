@@ -6,7 +6,7 @@
   the coordinator branch, at
   `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`.
 - **Read first, only these:**
-  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows.md` and `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-fix.md`, whole (the two rounds you grade, S1-S5 then Q1-Q4 on top; your contract is G1-G15 below);
+  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows.md` and `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-fix.md`, whole (the two rounds you grade, S1-S5 then Q1-Q4 on top; your contract is G1-G16 below);
   - `D:/fitway-temp/codex-round-320134a4-149e-4492-8b83-faea0753f555/last-message.md`, whole (the fix's report);
   - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/.agents/skills/verify-fitway/SKILL.md`, the CLI's guide.
 
@@ -63,10 +63,10 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   Activity's `clear-search` ending its two find rules from what each action does in the page's script (quote the
   lines). Intent: the frames keep proving what the action leaves alone.
 - **G2. A kept rule still fails when broken.** Outcome: a self-compare of Access `page-retry` (Arabic, desktop,
-  reduced motion) shows `afterFrameProof` naming the motion and language rules it keeps, and your own planted break of
-  the motion rule's proof in a scratch copy fails at the after frame; then for each of the other fourteen features with
-  `ends`, a self-compare shows its `afterFrameProof`, and a planted break of one rule it keeps fails at the after
-  frame (report each). Intent: as G1.
+  reduced motion) shows `afterFrameProof` naming the motion and language rules it keeps, and a scratch copy whose page
+  script makes the action also turn motion on (your own plant) fails at the after frame; then for each of the other
+  fourteen features with `ends`, a self-compare shows its `afterFrameProof`, and a plant that makes the action also
+  change one rule it keeps fails at the after frame (report each). Intent: as G1.
 - **G3. The recipes changed only there.** Outcome: per page, the rule and feature counts at the base and the result
   are equal, and the recipes' diff touches only `changesState` and `ends` lines. Intent: nothing else was loosened.
 - **G4. The rail's ring.** Outcome: on each of the five pages, Tab to each rail item, collapsed and open rail, desktop
@@ -81,21 +81,24 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
 - **G6. Phone and tablet coverage (Q4).** Outcome: for every place the fix's Q4 lists, run key, mouse and touch on
   the phone in Arabic and English; report each place's result, and every place where a pointer or touch leaves a ring
   or a key leaves none; then every `focus(` call in the five pages' scripts (`git grep`; the fix counts 68) that the
-  list does not reach, by key, mouse and touch, desktop, Arabic, saying why each is unreachable on the phone; for five
-  of the 56 scenarios the fix calls absent at 390 px, open the page at 390 px and confirm the target is absent.
+  list does not reach, by key, mouse and touch, desktop, Arabic, saying why each is unreachable on the phone; for every
+  distinct target the fix calls absent at 390 px, open the page at 390 px in Arabic and English and confirm it is
+  absent.
   Intent: S3 holds at the phone size the demo shows.
 - **G7. Ring-only differences.** Outcome: for the 122 differing items of the report's all-features compare (its
   `D:/fitway-temp/owner-r04-shared-lows/s4-all-features/comparison.json`) and the 264 differing timeline samples (`D:/fitway-temp/owner-r04-shared-lows/s5-access-focus/comparison.json`), with
   your own mask of each focused element's ring band only (from its border box grown by the outline offset to that
   box grown again by the outline width, from the computed styles), no pixel outside the band differs, the element's
-  own interior included; report the count checked and every exception with its crop. Intent: only the ring
+  own interior included; inside the band, every differing pixel takes the ring's computed outline colour on the side
+  that draws the ring, or matches its surroundings on the side without it; report the count checked and every
+  exception with its crop. Intent: only the ring
   changed (the report says no mask pass was run).
 - **G8. The spec.** Outcome: OWN-C9 no longer says programmatic focus always shows its ring and states the input rule;
   FOC-1 is unchanged. Intent: the spec says what the pages do.
 - **G9. `motion.js`.** Outcome: say what the lines `motion.js` gained since the base do, which S or Q outcome needs
   them, and whether
-  a press, its release light or any moment's timing changes (a self-compare of Daily's press moments, Arabic, desktop,
-  full motion, against the base); if the added lines run on any path other than focus, compare that path's timeline on
+  a press, its release light or any moment's timing changes (a compare of Daily's press moments between your HEAD and
+  the base, Arabic, desktop, full motion, with a same-side repeat for any sample not held); if the added lines run on any path other than focus, compare that path's timeline on
   every page it reaches, Arabic and English, reduced and full motion. Intent: no moment changed beyond the rings.
 - **G10. Untouched records.** Outcome: `git diff --name-only` between the base and the result lists only files inside
   the concept folder that the round's Scope allows; `HISTORY.md` and the evidence folder are byte-equal to the base; the checks the
@@ -122,6 +125,9 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   against itself and twice on your HEAD against the first result: report whether the two samples are held on each
   run, and judge from `access.js`'s clipboard handling (quote the lines; say whether they changed since the first
   result) whether the gap is the baseline's or the fix's. Intent: the coordinator knows whether L1's gap is real.
+- **G16. Frames since the first result.** Outcome: a fresh compare of Access and Daily, every feature, Arabic and
+  English, desktop and phone, reduced motion, between your HEAD and the first result: every item equal apart from what
+  G15 explains; report the counts and look at any differing crop. Intent: the fix's stylesheet moves changed no frame.
 
 ## Limits the result keeps
 
@@ -135,5 +141,5 @@ it: finish and measure the others, then stop and report. (B3)
 
 ## Report
 
-Each of G1-G15 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
+Each of G1-G16 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
 input that failed and its crop; anything you could not run.
