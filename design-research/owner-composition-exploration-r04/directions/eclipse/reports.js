@@ -19,9 +19,6 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const root = document.documentElement;
-  // Native selects also match :focus-visible after a pointer press. Their frames ring only for keyboard use.
-  document.addEventListener("pointerdown", () => { root.dataset.listPointer = ""; }, { capture: true, passive: true });
-  document.addEventListener("keydown", () => { delete root.dataset.listPointer; }, true);
 
   // The day table's parts shared with the component sheet (K5): a sortable column's header, a day's row header and the
   // single-day exception, so the sheet's specimen is built by the page's own components.

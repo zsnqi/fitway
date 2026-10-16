@@ -123,7 +123,6 @@
 .k-ahead { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line-2); }
 .k-none { background: none; }
 .scroller { max-height: 420px; margin-block-start: 12px; overflow: auto; border: 1px solid var(--line-2); border-radius: 16px; }
-.scroller:focus-visible { outline-offset: 3px; }
 .minutes-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.5px; line-height: 20px; }
 .minutes-table th, .minutes-table td { height: 36px; padding: 0 16px; text-align: start; vertical-align: middle; font-weight: 400; }
 .minutes-table thead th { position: sticky; top: 0; z-index: 1; height: 44px; background: #121112; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; border-block-end: 1px solid var(--line-2); }
@@ -262,8 +261,6 @@ body.dl [hidden] { display: none !important; }
 .dl .btn:disabled { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
 @media (hover: hover) { .dl .btn:disabled:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; } }
 .dl .btn:disabled svg { stroke: var(--ink-3); }
-.dl #cards:focus { outline: none; /* focus-ring: .dl #cards[data-focus-input="keyboard"]:focus */ }
-.dl #cards[data-focus-input="keyboard"]:focus { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
 .roll-run { direction: ltr; unicode-bidi: isolate; }
 .roll-slot { display: inline-block; position: relative; vertical-align: baseline; clip-path: inset(0 -0.3em); }
 .roll-new { display: block; text-align: center; white-space: nowrap; }

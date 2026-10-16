@@ -159,8 +159,8 @@ html:has(> body.rp) {
 .heat.show-n .hc.v .hv { position: static; width: auto; height: auto; overflow: visible; clip-path: none; color: var(--ink); }
 /* PAT-7: the busiest hour, a small chalk point in its inline-end top corner (the subtitle names it, the key shows it). */
 .hc.is-top::after { content: ""; position: absolute; top: 5px; inset-inline-end: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1.5px rgba(15, 14, 15, 0.55); }
-/* The selected cell and keyboard focus: FOC-2's inset ring (K-22, PAT-11). */
-.hc.is-sel, .hc:focus-visible { outline: 2px solid var(--ink); outline-offset: -4px; z-index: 1; }
+/* The selected cell: FOC-2's inset ring (K-22, PAT-11); keyboard focus draws the shared ring. */
+.hc.is-sel { outline: 2px solid var(--ink); outline-offset: -4px; z-index: 1; }
 /* The readout (PAT-9): the tooltip box, its text by role (CHT-13). */
 .heat-tip { left: 0; top: 0; width: max-content; z-index: 5; }
 .rp .tip-t { gap: 8px; font-size: 12px; line-height: 15px; }
@@ -237,7 +237,6 @@ html:has(> body.rp) {
  * right in Arabic, the left in English, decision 16) and the arrow follows it; the inset ring (FOC-2). */
 .sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 12px; font-size: inherit; line-height: inherit; color: inherit; }
 @media (hover: hover) { .sort:hover { color: var(--ink); } }
-.sort:focus-visible { outline-offset: -4px; }
 .sort-ico { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
 .sort:focus-visible .sort-ico { opacity: 0.5; }
 @media (hover: hover) { .sort:hover .sort-ico { opacity: 0.5; } }
@@ -412,7 +411,6 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 .wk-b { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; height: 76px; padding: 12px 6px 9px; border-radius: 12px; color: var(--ink-2); }
 @media (hover: hover) { .wk-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
 .wk-b[aria-checked="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-light, transparent); }
-.wk-b:focus-visible { outline-offset: -4px; }
 .wk-col { display: flex; flex: none; align-items: flex-end; justify-content: center; height: 26px; }
 .wk-bar { display: block; width: 12px; height: calc(max(var(--h), 0.1) * 26px); border-radius: 3px; background: var(--c); }
 .wk-bar.is-zero { height: 3px; background: rgba(245, 243, 242, 0.38); }
@@ -483,10 +481,9 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 .dl-sort .sel-face > span:not(.is-on) { visibility: hidden; }
 .dl-sort { position: relative; display: inline-flex; align-items: center; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2), inset 0 0 0 100vmax var(--press-light, transparent); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
 @media (hover: hover) { .dl-sort:hover { box-shadow: inset 0 0 0 1px var(--line-3), inset 0 0 0 100vmax var(--press-light, transparent); background: rgba(255, 255, 255, 0.05); } }
-html:not([data-list-pointer]) .dl-sort:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .rp .dl-sort .sort-ico { position: absolute; inset-inline-start: 14px; display: block; opacity: 1; pointer-events: none; }
 .dl-sort::after { content: ""; position: absolute; top: 17px; inset-inline-end: 17px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.dl-sort select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: html:not([data-list-pointer]) .dl-sort:has(select:focus-visible) */ opacity: 0; cursor: pointer; }
+.dl-sort select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) */ opacity: 0; cursor: pointer; }
 .dl-sort select option { background: #121112; color: var(--ink); }
 .day-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
 .dli { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "day pk" "more pt" "note note"; align-items: baseline; column-gap: 16px; row-gap: 2px; padding: 12px 8px; border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
@@ -551,9 +548,6 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 .rp-msg { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; }
 .rp-msg .stat-say { flex-direction: column; gap: 16px; align-self: auto; max-width: 52ch; font-size: 15px; line-height: 22.5px; white-space: normal; }
 .rp-msg .stat-say .ico-err { width: 22px; height: 22px; }
-/* After the retry arrives, focus goes to the figures that replaced the alert, quietly: a region never shows the ring. */
-.rp #cards:focus { outline: none; /* focus-ring: .rp #cards[data-focus-input="keyboard"]:focus */ } /* Retry assigns tabindex=-1; never a Tab stop. */
-.rp #cards[data-focus-input="keyboard"]:focus { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 8px; }
 /* The retry's two labels share one cell, so the button is as wide as the wider of "Try again" and "Trying again…" and
  * keeps its width while it runs (STA-9); only the current label is seen. */
 .rp .rb-stack { display: inline-grid; }

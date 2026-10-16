@@ -22,19 +22,10 @@
  * room (layout animations), the label roll and the done mark need more than a transition (README "Motion", 12). */
 (() => {
   "use strict";
-  let focusInput = "";
-  const markFocused = (el, input = focusInput) => {
-    if (input && el instanceof HTMLElement) el.dataset.focusInput = input;
-  };
-  document.addEventListener("pointerdown", () => {
-    focusInput = "pointer";
-    markFocused(document.activeElement);
-  }, true);
-  document.addEventListener("keydown", () => {
-    focusInput = "keyboard";
-    markFocused(document.activeElement);
-  }, true);
-  document.addEventListener("focusin", (event) => markFocused(event.target), true);
+  const root = document.documentElement;
+  const setFocusInput = (input) => { root.dataset.focusInput = input; };
+  document.addEventListener("pointerdown", () => setFocusInput("pointer"), { capture: true, passive: true });
+  document.addEventListener("keydown", () => setFocusInput("keyboard"), true);
   const params = new URLSearchParams(location.search);
   const URL_OFF = params.get("motion") === "off";
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
