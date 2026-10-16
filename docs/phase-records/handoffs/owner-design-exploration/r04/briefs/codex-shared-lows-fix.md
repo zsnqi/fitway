@@ -59,13 +59,13 @@ as at this HEAD.
 - **Q1. Two input trackers (review 1).**
   - **Cause (measured).** `motion.js` records the last input as `data-focus-input` on the focused element, while
     `activity.js` and `reports.js` record it as `data-list-pointer` on the root for their native lists.
-  - **Outcome.** One script installs the listeners and alone writes the last input, in one form; the lists' rings and
+  - **Outcome.** One script installs one set of listeners and alone writes one value for the last input, in one form; the lists' rings and
     the rings after a moved focus only read it; no page script keeps a listener or state of its own for it.
   - **Intent.** One source for "how did focus get here".
 - **Q2. An annotation that names the wrong element (review 2).**
-  - **Outcome.** `activity.css` keeps no outline suppression for `.ac-log` or `.ac-msg` (neither takes focus; show it
-    from the scripts) and no `focus-ring` annotation that names an element it does not style, in its normal and its
-    forced-colours blocks.
+  - **Outcome.** No stylesheet in the folder keeps an outline suppression for `.ac-log` or `.ac-msg` (neither takes
+    focus; show it from the scripts), and every `focus-ring` annotation left in the folder names the element that draws
+    the ring its rule suppresses, in normal and forced-colours blocks.
   - **Intent.** An annotation the CSS check reads says what the rule does.
 - **Q3. One ring rule (review 3).**
   - **Outcome.** Each ring form is declared once in `style.css` for every element that takes it, whether focus came
