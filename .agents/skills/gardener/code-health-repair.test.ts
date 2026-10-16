@@ -23,9 +23,7 @@ describe("round 24 repair controls", () => {
 	it("ignores code patterns in TypeScript strings, templates, regexes and comments", () => {
 		const text = [
 			'const quoted = "value: any; value as unknown as Target; @ts-ignore; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run, 0); TODO FIXME HACK workaround !important // biome-ignore eslint-disable";',
-			"const template = `value: any; value as unknown as Target; @ts-expect-error; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run); TODO FIXME HACK workaround !important " +
-				"$" +
-				"{setTimeout(run, 0)}`;",
+			"const template = `value: any; value as unknown as Target; @ts-expect-error; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run, 0); TODO FIXME HACK workaround !important`;",
 			"// value: any; value as unknown as Target; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run, 0); !important",
 			"/* value: any; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run); */",
 			"const pattern = /any|setTimeout(run, 0)|TODO/;",

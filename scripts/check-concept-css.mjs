@@ -1,7 +1,6 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-
 export const RULES = [
 	"ungated-hover",
 	"transition-all",
@@ -9,7 +8,6 @@ export const RULES = [
 	"outline-without-ring",
 	"focus-ring",
 ];
-
 // Keep offsets intact: diagnostics refer to the original file, including CRLF.
 function maskComments(source) {
 	const comments = [];
@@ -35,13 +33,11 @@ function maskComments(source) {
 	if (quote) throw new Error("Unclosed CSS string");
 	return { masked, comments };
 }
-
 function maskStrings(value) {
 	return value.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, (s) =>
 		s.replace(/./g, " "),
 	);
 }
-
 // Delimit only outside strings, escapes, functions and attribute selectors.
 function delimiter(source, start, stops) {
 	let quote = "";
@@ -63,7 +59,6 @@ function delimiter(source, start, stops) {
 	}
 	return source.length;
 }
-
 function selectors(text, offset = 0) {
 	const result = [];
 	let start = 0;
@@ -79,14 +74,12 @@ function selectors(text, offset = 0) {
 	}
 	return result;
 }
-
 function normalize(selector) {
 	return selector
 		.trim()
 		.replace(/\s+/g, " ")
 		.replace(/\s*([>+~])\s*/g, "$1");
 }
-
 function parseCss(source, file) {
 	const { masked, comments } = maskComments(source);
 	const rules = [];
@@ -161,7 +154,6 @@ function parseCss(source, file) {
 	block(0, null, []);
 	return rules;
 }
-
 const focusPseudo = /:(?:focus-visible|focus-within|focus)(?![\w-])/g;
 function positiveFocus(selector) {
 	// Remove negated selector lists before looking for the focus state.
@@ -199,7 +191,6 @@ function focusBase(selector) {
 	}
 	return normalize(selector.replace(focusPseudo, ""));
 }
-
 // Split Boolean queries / selector compounds without splitting functions or attributes.
 function splitOutside(text, separator) {
 	const masked = maskStrings(text);
@@ -225,7 +216,6 @@ function splitOutside(text, separator) {
 	parts.push(text.slice(start).trim());
 	return parts.filter(Boolean);
 }
-
 function functionEnd(text, open) {
 	let depth = 1;
 	for (let i = open + 1; i < text.length; i++) {
@@ -234,7 +224,6 @@ function functionEnd(text, open) {
 	}
 	return text.length;
 }
-
 function hoverOnly(query) {
 	const text = query.replace(/^@media\s+/i, "").trim();
 	// A leading media-type `not` negates the whole query, including its hover test.
@@ -250,7 +239,6 @@ function hoverOnly(query) {
 		return hoverOnly(text.slice(1, -1));
 	return false;
 }
-
 function programmaticSubject(selector) {
 	const subject = splitOutside(selector, /^(?:\s+|[>+~])/).at(-1) ?? "";
 	// Only an attribute on the subject is proof; ancestors and selector alternatives
@@ -272,7 +260,6 @@ function programmaticSubject(selector) {
 	}
 	return false;
 }
-
 function ancestorFocusBases(selector) {
 	const subject = splitOutside(selector, /^(?:\s+|[>+~])/).at(-1) ?? "";
 	const masked = maskStrings(subject);
@@ -316,7 +303,6 @@ function ancestorFocusBases(selector) {
 		];
 	});
 }
-
 function focusPaintBase(selector) {
 	// Moved paint still has a resting subject: `.button .tile` or `.wrapper`.
 	let text = selector;
@@ -330,7 +316,6 @@ function focusPaintBase(selector) {
 	}
 	return normalize(text.replace(focusPseudo, ""));
 }
-
 function removesOutline(property, value) {
 	const zero = /^[+-]?(?:0+(?:\.0*)?|\.0+)(?:[a-z%]+)?$/i;
 	if (property === "outline-width") return zero.test(value);
@@ -342,7 +327,6 @@ function removesOutline(property, value) {
 		.split(/\s+/)
 		.some((token) => /^(?:none|hidden)$/i.test(token) || zero.test(token));
 }
-
 function visible(value) {
 	return (
 		value &&
@@ -354,7 +338,6 @@ function visible(value) {
 		!/(?:rgba|hsla)\([^)]*,\s*0(?:\.0*)?\s*\)|\/\s*0(?:\.0*)?\s*\)/i.test(value)
 	);
 }
-
 function hasRing(rule, expand = (value) => value) {
 	const values = new Map();
 	for (const d of rule.declarations) {
@@ -442,26 +425,9 @@ function hasRing(rule, expand = (value) => value) {
 	}
 	return false;
 }
-
 function focusClass(selector) {
 	return /\.is-(?:spec-)?focus(?![\w-])/i.test(maskStrings(selector));
 }
-
-function focusRingDeclarations(rule, expand) {
-	if (
-		!rule.selectors.some(
-			(selector) =>
-				positiveFocus(selector.text).length > 0 || focusClass(selector.text),
-		)
-	)
-		return [];
-	return rule.declarations.filter(
-		(declaration) =>
-			declaration.property === "outline" &&
-			hasRing({ declarations: [declaration] }, expand),
-	);
-}
-
 function hasEaseIn(value) {
 	if (/(?<![\w-])ease-in(?![\w-])/i.test(value)) return true;
 	return [...value.matchAll(/cubic-bezier\(\s*([^)]*)\)/gi)].some((match) => {
@@ -471,149 +437,181 @@ function hasEaseIn(value) {
 		);
 	});
 }
-
-/** Static source lint, not a browser cascade or visibility proof.
- * Moved rings: outline: none; /* focus-ring: .button:focus-visible .tile *\/
- * The exact named selector must exist and set a visible outline/shadow/border.
- */
-export function lintSources(sources) {
-	const rules = sources.flatMap(({ css, file }) => parseCss(css, file));
-	const findings = [];
-	const sourceByFile = new Map(sources.map((s) => [s.file, s.css]));
-	const tokens = new Map();
-	for (const rule of rules)
-		for (const d of rule.declarations) {
-			if (d.property.startsWith("--")) {
-				const values = tokens.get(d.property) ?? new Set();
-				values.add(d.value);
-				tokens.set(d.property, values);
-			}
-		}
-	function expand(value, seen = new Set()) {
-		return value.replace(
-			/var\(\s*(--[\w-]+)\s*(?:,\s*([^()]*))?\)/g,
-			(_, name, fallback) => {
-				if (seen.has(name)) return "";
-				return [...(tokens.get(name) ?? []), fallback ?? ""]
-					.map((v) => expand(v, new Set([...seen, name])))
-					.join(" ");
-			},
-		);
-	}
-	const focusRings = new Map();
-	function hasFocusRing(rule, selector) {
-		if (focusRings.has(selector)) return focusRings.get(selector);
+const FOCUS_PAINTS = [/^outline(?:-|$)/, /^border(?:-|$)/, /^box-shadow$/];
+function createFocusRingAnalyzer(rules, expand) {
+	const cache = new Map();
+	const hasFocusRing = (rule, selector) => {
+		if (cache.has(selector)) return cache.get(selector);
 		if (!positiveFocus(selector.text).length) return false;
 		const base = focusBase(selector.text) ?? focusPaintBase(selector.text);
 		const baseline = rules
 			.filter(
-				(r) =>
-					r.media.join("\n") === rule.media.join("\n") &&
-					r.selectors.some(
-						(s) => !positiveFocus(s.text).length && normalize(s.text) === base,
+				(item) =>
+					item.media.join("\n") === rule.media.join("\n") &&
+					item.selectors.some(
+						(candidate) =>
+							!positiveFocus(candidate.text).length &&
+							normalize(candidate.text) === base,
 					),
 			)
-			.flatMap((r) => r.declarations);
-		// A focus rule may inherit border geometry, but repeating the permanent
-		// decoration does not visibly change it. Compare each kind of paint separately
-		// so removing an outline cannot turn an unchanged shadow into a focus ring.
-		const paints = [/^outline(?:-|$)/, /^border(?:-|$)/, /^box-shadow$/];
-		const result = paints.some((paint) => {
-			const before = baseline.filter((d) => paint.test(d.property));
-			const after = rule.declarations.filter((d) => paint.test(d.property));
-			const values = new Map(before.map((d) => [d.property, expand(d.value)]));
+			.flatMap((candidate) => candidate.declarations);
+		const result = FOCUS_PAINTS.some((paint) => {
+			const before = baseline.filter((declaration) =>
+				paint.test(declaration.property),
+			);
+			const old = new Map(
+				before.map((declaration) => [
+					declaration.property,
+					expand(declaration.value),
+				]),
+			);
+			const after = rule.declarations.filter((declaration) =>
+				paint.test(declaration.property),
+			);
 			return (
-				after.some((d) => values.get(d.property) !== expand(d.value)) &&
-				hasRing({ declarations: [...before, ...after] }, expand)
+				after.some(
+					(declaration) =>
+						old.get(declaration.property) !== expand(declaration.value),
+				) && hasRing({ declarations: [...before, ...after] }, expand)
 			);
 		});
-		focusRings.set(selector, result);
+		cache.set(selector, result);
 		return result;
+	};
+	return {
+		hasFocusRing,
+		ringRules: rules.filter((item) =>
+			item.selectors.some((selector) => hasFocusRing(item, selector)),
+		),
+	};
+}
+function collectFocusRingFindings(rules, expand, finding) {
+	const groups = new Map();
+	for (const rule of rules)
+		for (const selector of rule.selectors) {
+			if (!positiveFocus(selector.text).length && !focusClass(selector.text))
+				continue;
+			const key = normalize(selector.text);
+			const entries = groups.get(key) ?? [];
+			entries.push(
+				...rule.declarations
+					.filter(({ property }) => property.startsWith("outline"))
+					.map((declaration) => ({ rule, declaration })),
+			);
+			groups.set(key, entries);
+		}
+	const rings = new Map();
+	for (const entries of groups.values()) {
+		if (
+			!hasRing(
+				{ declarations: entries.map(({ declaration }) => declaration) },
+				expand,
+			)
+		)
+			continue;
+		const final = new Map(
+			entries.map((entry) => [entry.declaration.property, entry]),
+		);
+		for (const entry of final.values())
+			rings.set(`${entry.rule.file}\0${entry.declaration.offset}`, entry);
 	}
-	const ringRules = rules.filter((rule) =>
-		rule.selectors.some((s) => hasFocusRing(rule, s)),
-	);
-	const styleFiles = new Set(
-		sources
-			.map(({ file }) => file.replaceAll("\\", "/"))
-			.filter((file) => file.endsWith("style.css")),
-	);
-	const conceptFocusRings = rules.flatMap((rule) =>
-		focusRingDeclarations(rule, expand).map((declaration) => ({
-			rule,
-			declaration,
-		})),
-	);
-	for (const { rule, declaration } of conceptFocusRings) {
-		const file = rule.file.replaceAll("\\", "/");
-		if (styleFiles.size && !file.endsWith("style.css"))
+	const styleRings = [];
+	for (const entry of rings.values()) {
+		if (entry.rule.file.replaceAll("\\", "/") === "style.css")
+			styleRings.push(entry);
+		else
 			finding(
-				rule,
-				declaration.offset,
+				entry.rule,
+				entry.declaration.offset,
 				"focus-ring",
 				"focus-ring declaration outside style.css",
 			);
 	}
-	if (styleFiles.size) {
-		const styleRings = conceptFocusRings.filter(({ rule }) =>
-			rule.file.replaceAll("\\", "/").endsWith("style.css"),
+	if (styleRings.length !== 1) {
+		const first = styleRings[0];
+		finding(
+			first?.rule ?? { file: "style.css", line: 1 },
+			first?.declaration.offset ?? 0,
+			"focus-ring",
+			`expected one focus-ring declaration in style.css; found ${styleRings.length}`,
 		);
-		if (styleRings.length !== 1) {
-			const first = styleRings[0];
-			finding(
-				first?.rule ?? { file: "style.css" },
-				first?.declaration.offset ?? 0,
-				"focus-ring",
-				`expected one focus-ring declaration in style.css; found ${styleRings.length}`,
-			);
-		}
 	}
-	function finding(rule, offset, id, detail) {
-		const line = sourceByFile
-			.get(rule.file)
-			.slice(0, offset)
-			.split("\n").length;
-		findings.push({
-			file: rule.file,
-			line,
-			rule: id,
-			detail: detail.replace(/\s+/g, " "),
-		});
-	}
-	for (const rule of rules) {
-		if (!rule.media.some(hoverOnly)) {
-			for (const selector of rule.rawSelectors) {
-				if (/:hover(?![\w-])/i.test(maskStrings(selector.text)))
-					finding(rule, selector.offset, "ungated-hover", selector.text);
+}
+function movedFocusSelectors(declaration) {
+	return declaration.comments.flatMap((comment) =>
+		[...comment.text.matchAll(/focus-ring:\s*([^\r\n]+)/g)].map((match) =>
+			normalize(match[1]),
+		),
+	);
+}
+function focusRingIsReplaced(
+	rule,
+	selector,
+	declaration,
+	ringRules,
+	hasFocusRing,
+) {
+	const base = focusBase(selector.text) ?? normalize(selector.text);
+	for (const ringRule of ringRules)
+		for (const ringSelector of ringRule.selectors) {
+			if (!hasFocusRing(ringRule, ringSelector)) continue;
+			if (ancestorFocusBases(ringSelector.text).includes(base)) return true;
+			const candidateBase = focusBase(ringSelector.text);
+			if (candidateBase === base) {
+				const same =
+					ringRule.file === rule.file &&
+					normalize(ringSelector.text) === normalize(selector.text);
+				if (
+					same &&
+					ringRule.declarations.every(
+						(replacement) => replacement.offset < declaration.offset,
+					)
+				)
+					continue;
+				return (
+					!declaration.important ||
+					ringRule.declarations.some((replacement) => replacement.important)
+				);
 			}
+			if (
+				ringRule.file !== rule.file ||
+				!["", "*"].includes(candidateBase) ||
+				positiveFocus(selector.text).length ||
+				declaration.important
+			)
+				continue;
+			if (!/^(?:\*|[a-z][\w-]*|\.[\w-]+)$/i.test(base)) continue;
+			if (
+				!base.startsWith(".") ||
+				ringRule.declarations.some(
+					(replacement) => replacement.offset > declaration.offset,
+				)
+			)
+				return true;
 		}
-		for (const d of rule.declarations) {
-			const value = maskStrings(expand(d.value));
-			if (
-				["transition", "transition-property"].includes(d.property) &&
-				/(?<![\w-])all(?![\w-])/i.test(value)
-			)
-				finding(rule, d.offset, "transition-all", `${d.property}: ${d.value}`);
-			if (
-				[
-					"transition",
-					"transition-timing-function",
-					"animation",
-					"animation-timing-function",
-				].includes(d.property) &&
-				hasEaseIn(value)
-			)
-				finding(rule, d.offset, "ease-in", `${d.property}: ${d.value}`);
-			if (!removesOutline(d.property, value)) continue;
-			const moved = d.comments.flatMap((c) =>
-				[...c.text.matchAll(/focus-ring:\s*([^\r\n]+)/g)].map((m) =>
-					normalize(m[1]),
-				),
-			);
+	return false;
+}
+function collectOutlineFindings(
+	rules,
+	expand,
+	hasFocusRing,
+	ringRules,
+	finding,
+) {
+	for (const rule of rules) {
+		const outlineDeclarations = rule.declarations.filter((declaration) =>
+			declaration.property.startsWith("outline"),
+		);
+		for (const declaration of rule.declarations) {
+			const value = maskStrings(expand(declaration.value));
+			if (!removesOutline(declaration.property, value)) continue;
+			const moved = movedFocusSelectors(declaration);
 			const declaredRing = moved.some((selector) =>
-				ringRules.some((r) =>
-					r.selectors.some(
-						(s) => normalize(s.text) === selector && hasFocusRing(r, s),
+				ringRules.some((ringRule) =>
+					ringRule.selectors.some(
+						(candidate) =>
+							normalize(candidate.text) === selector &&
+							hasFocusRing(ringRule, candidate),
 					),
 				),
 			);
@@ -622,77 +620,112 @@ export function lintSources(sources) {
 				// A base border/shadow is decoration. An outline restored in the same
 				// rule, or a ring actually painted in a focus state, can replace removal.
 				if (
-					hasRing(
-						{
-							declarations: rule.declarations.filter((item) =>
-								item.property.startsWith("outline"),
-							),
-						},
-						expand,
-					) ||
+					hasRing({ declarations: outlineDeclarations }, expand) ||
 					(focusBase(selector.text) !== null && hasFocusRing(rule, selector))
 				)
 					return false;
-				const base = focusBase(selector.text) ?? normalize(selector.text);
-				return !ringRules.some((r) =>
-					r.selectors.some((s) => {
-						if (!hasFocusRing(r, s)) return false;
-						if (ancestorFocusBases(s.text).includes(base)) return true;
-						const candidateBase = focusBase(s.text);
-						if (candidateBase === base) {
-							if (
-								r.file === rule.file &&
-								normalize(s.text) === normalize(selector.text) &&
-								r.declarations.every(
-									(replacement) => replacement.offset < d.offset,
-								)
-							)
-								return false;
-							if (
-								d.important &&
-								!r.declarations.some((replacement) => replacement.important)
-							)
-								return false;
-							return true;
-						}
-						// A universal focus outline can replace a simple base removal.
-						// Cross-file cascade order is unknown, so only prove this within
-						// one file. A focused class removal outranks the universal ring.
-						if (
-							r.file !== rule.file ||
-							!["", "*"].includes(candidateBase) ||
-							positiveFocus(selector.text).length ||
-							d.important
-						)
-							return false;
-						if (!/^(?:\*|[a-z][\w-]*|\.[\w-]+)$/i.test(base)) return false;
-						return (
-							!base.startsWith(".") ||
-							r.declarations.some(
-								(replacement) => replacement.offset > d.offset,
-							)
-						);
-					}),
+				return !focusRingIsReplaced(
+					rule,
+					selector,
+					declaration,
+					ringRules,
+					hasFocusRing,
 				);
 			});
-			if (uncovered.length)
+			if (uncovered.length) {
+				const detail = `${uncovered.map((selector) => selector.text).join(", ")} { ${declaration.property}: ${declaration.value} }; ${
+					moved
+						.map(
+							(selector) =>
+								`declared focus-ring: ${selector} draws no visible ring`,
+						)
+						.join("; ") || "no focus ring"
+				}`;
+				finding(rule, declaration.offset, "outline-without-ring", detail);
+			}
+		}
+	}
+}
+// Static source lint: a moved-ring comment must name a selector that paints.
+export function lintSources(
+	sources,
+	{ checkFocusRing = sources.some(({ file }) => file === "style.css") } = {},
+) {
+	const rules = sources.flatMap(({ css, file }) => parseCss(css, file));
+	const findings = [];
+	const sourceByFile = new Map(
+		sources.map((source) => [source.file, source.css]),
+	);
+	const tokens = new Map();
+	for (const rule of rules)
+		for (const declaration of rule.declarations) {
+			if (!declaration.property.startsWith("--")) continue;
+			const values = tokens.get(declaration.property) ?? new Set();
+			values.add(declaration.value);
+			tokens.set(declaration.property, values);
+		}
+	const expand = (value, seen = new Set()) =>
+		value.replace(
+			/var\(\s*(--[\w-]+)\s*(?:,\s*([^()]*))?\)/g,
+			(_, name, fallback) => {
+				if (seen.has(name)) return "";
+				return [...(tokens.get(name) ?? []), fallback ?? ""]
+					.map((item) => expand(item, new Set([...seen, name])))
+					.join(" ");
+			},
+		);
+	const finding = (rule, offset, id, detail) => {
+		const source = sourceByFile.get(rule.file);
+		const line =
+			source === undefined
+				? (rule.line ?? 1)
+				: source.slice(0, offset).split("\n").length;
+		findings.push({
+			file: rule.file,
+			line,
+			rule: id,
+			detail: detail.replace(/\s+/g, " "),
+		});
+	};
+	const { hasFocusRing, ringRules } = createFocusRingAnalyzer(rules, expand);
+	if (checkFocusRing) collectFocusRingFindings(rules, expand, finding);
+	for (const rule of rules) {
+		if (!rule.media.some(hoverOnly)) {
+			for (const selector of rule.rawSelectors) {
+				if (/:hover(?![\w-])/i.test(maskStrings(selector.text)))
+					finding(rule, selector.offset, "ungated-hover", selector.text);
+			}
+		}
+		for (const declaration of rule.declarations) {
+			const value = maskStrings(expand(declaration.value));
+			if (
+				["transition", "transition-property"].includes(declaration.property) &&
+				/(?<![\w-])all(?![\w-])/i.test(value)
+			)
 				finding(
 					rule,
-					d.offset,
-					"outline-without-ring",
-					`${uncovered.map((s) => s.text).join(", ")} { ${d.property}: ${d.value} }; ${
-						moved.length
-							? moved
-									.map(
-										(selector) =>
-											`declared focus-ring: ${selector} draws no visible ring`,
-									)
-									.join("; ")
-							: "no focus ring"
-					}`,
+					declaration.offset,
+					"transition-all",
+					`${declaration.property}: ${declaration.value}`,
+				);
+			if (
+				[
+					"transition",
+					"transition-timing-function",
+					"animation",
+					"animation-timing-function",
+				].includes(declaration.property) &&
+				hasEaseIn(value)
+			)
+				finding(
+					rule,
+					declaration.offset,
+					"ease-in",
+					`${declaration.property}: ${declaration.value}`,
 				);
 		}
 	}
+	collectOutlineFindings(rules, expand, hasFocusRing, ringRules, finding);
 	findings.sort(
 		(a, b) =>
 			a.file.localeCompare(b.file) ||
@@ -701,7 +734,6 @@ export function lintSources(sources) {
 	);
 	return findings;
 }
-
 export async function inspectFolder(folder) {
 	const root = path.resolve(folder);
 	if (!(await stat(root)).isDirectory())
@@ -722,9 +754,12 @@ export async function inspectFolder(folder) {
 		}
 	}
 	await visit(root);
-	return { root, files: sources.length, findings: lintSources(sources) };
+	return {
+		root,
+		files: sources.length,
+		findings: lintSources(sources, { checkFocusRing: true }),
+	};
 }
-
 export async function main(args = process.argv.slice(2), write = console.log) {
 	const folders = args.filter((arg) => arg !== "--");
 	if (folders.length !== 1)
@@ -747,7 +782,6 @@ export async function main(args = process.argv.slice(2), write = console.log) {
 	);
 	return result.findings.length ? 1 : 0;
 }
-
 if (
 	process.argv[1] &&
 	import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href

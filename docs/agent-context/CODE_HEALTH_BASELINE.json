@@ -10,9 +10,6 @@
 		".agents/skills/gardener/code-health-source.mjs": {
 			"longFunctions": 1
 		},
-		".agents/skills/gardener/code-health.mjs": {
-			"duplication": 1
-		},
 		".agents/skills/gardener/code-health.test.ts": {
 			"duplication": 1,
 			"longFunctions": 3
@@ -698,9 +695,6 @@
 			"typeEscapes": 5,
 			"longFunctions": 7,
 			"giantFiles": 1424
-		},
-		"scripts/agent-environment/code-health-baseline.mjs": {
-			"duplication": 1
 		},
 		"scripts/agent-environment/code-health-ratchet.test.ts": {
 			"duplication": 5,

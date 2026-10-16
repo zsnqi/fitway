@@ -3,18 +3,41 @@ import ts from "typescript";
 import { scanDuplication } from "./code-health-duplication.mjs";
 import { scanSource } from "./code-health-source.mjs";
 
-export const MEASURES = [
-	"giantFiles",
-	"typeEscapes",
-	"suppressions",
-	"repeatedWorkarounds",
-	"longFunctions",
-	"accessibilityOverrides",
-	"duplication",
-	"boundaryBreaks",
+export { scanSource };
+
+const MEASURE_DEFINITIONS = [
+	{ name: "giantFiles", baseline: true, lineCount: true },
+	{ name: "typeEscapes", baseline: true, baselineOrder: 1 },
+	{ name: "suppressions", baseline: true, baselineOrder: 2 },
+	{ name: "repeatedWorkarounds", baseline: true, baselineOrder: 3 },
+	{ name: "longFunctions", baseline: true, baselineOrder: 4 },
+	{ name: "accessibilityOverrides" },
+	{
+		name: "duplication",
+		baseline: true,
+		baselineOrder: 0,
+		duplication: true,
+	},
+	{ name: "boundaryBreaks" },
 ];
 
-const SOURCE_EXTENSIONS = new Set([
+export const MEASURES = Object.freeze(
+	MEASURE_DEFINITIONS.map(({ name }) => name),
+);
+export const BASELINE_MEASURES = Object.freeze(
+	MEASURE_DEFINITIONS.filter(
+		({ baseline, lineCount }) => baseline && !lineCount,
+	)
+		.sort((left, right) => left.baselineOrder - right.baselineOrder)
+		.map(({ name }) => name),
+);
+export const GIANT_FILE_MEASURE = MEASURE_DEFINITIONS.find(
+	({ lineCount }) => lineCount,
+).name;
+export const DUPLICATION_MEASURE = MEASURE_DEFINITIONS.find(
+	({ duplication }) => duplication,
+).name;
+export const SOURCE_EXTENSIONS = Object.freeze([
 	".js",
 	".mjs",
 	".cjs",
@@ -23,10 +46,11 @@ const SOURCE_EXTENSIONS = new Set([
 	".css",
 	".html",
 ]);
+const SOURCE_EXTENSION_SET = new Set(SOURCE_EXTENSIONS);
 const IMPORT_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts", ".tsx", ".css"];
 
 function sourceFile(file) {
-	return SOURCE_EXTENSIONS.has(path.extname(file).toLowerCase());
+	return SOURCE_EXTENSION_SET.has(path.extname(file).toLowerCase());
 }
 
 function lines(text) {
@@ -321,7 +345,9 @@ function scanBoundaryBreaks(files, sharedFiles) {
 }
 
 export function scanScope(files, { sharedFiles = [] } = {}) {
-	const source = files.map(scanSource);
+	const source = files.map((file) =>
+		scanSource({ ...file, extensions: SOURCE_EXTENSION_SET }),
+	);
 	const measures = {
 		giantFiles: scanGiantFiles(files),
 		typeEscapes: source.flatMap((item) => item.typeEscapes),

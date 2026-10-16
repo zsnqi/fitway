@@ -21,6 +21,10 @@ const checkScript = path.join(
 	"scripts/agent-environment/check-code-health.mjs",
 );
 const baselinePath = "docs/agent-context/CODE_HEALTH_BASELINE.json";
+const cleanHealthFile = {
+	file: "scripts/clean.ts",
+	text: "export const clean = 1;\n",
+};
 const roots: string[] = [];
 
 afterEach(() => {
@@ -103,8 +107,6 @@ describe("code-health ratchet commands", () => {
 	it.each([
 		[
 			"duplication",
-			"scripts/clean.ts",
-			"export const clean = 1;\n",
 			"scripts/plant.ts",
 			`${Array.from(
 				{ length: 8 },
@@ -114,31 +116,11 @@ describe("code-health ratchet commands", () => {
 				(_, index) => `const copied${index} = ${index};`,
 			).join("\n")}\n`,
 		],
-		[
-			"typeEscapes",
-			"scripts/clean.ts",
-			"export const clean = 1;\n",
-			"scripts/plant.ts",
-			"const value: any = 1;\n",
-		],
-		[
-			"suppressions",
-			"scripts/clean.ts",
-			"export const clean = 1;\n",
-			"scripts/plant.ts",
-			"// biome-ignore lint\n",
-		],
-		[
-			"repeatedWorkarounds",
-			"scripts/clean.ts",
-			"export const clean = 1;\n",
-			"scripts/plant.ts",
-			"setTimeout(run, 0);\n",
-		],
+		["typeEscapes", "scripts/plant.ts", "const value: any = 1;\n"],
+		["suppressions", "scripts/plant.ts", "// biome-ignore lint\n"],
+		["repeatedWorkarounds", "scripts/plant.ts", "setTimeout(run, 0);\n"],
 		[
 			"longFunctions",
-			"scripts/clean.ts",
-			"export const clean = 1;\n",
 			"scripts/plant.ts",
 			[
 				"function long() {",
@@ -146,9 +128,9 @@ describe("code-health ratchet commands", () => {
 				"}",
 			].join("\n"),
 		],
-	])("H2 rejects a rise in %s", (measure, cleanFile, clean, plantedFile, planted) => {
+	])("H2 rejects a rise in %s", (measure, plantedFile, planted) => {
 		const root = fixture();
-		write(root, cleanFile, clean);
+		write(root, cleanHealthFile.file, cleanHealthFile.text);
 		writeBaseline(root);
 		write(root, plantedFile, planted);
 		const result = run(checkScript, root);
@@ -231,5 +213,58 @@ describe("code-health ratchet commands", () => {
 		expect(result.stdout).toContain("scripts/sample.ts:1");
 		expect(result.stdout).toContain("typeEscapes");
 		expect(result.stdout).toContain(until);
+	});
+
+	it.each([
+		["an impossible date", "2026-02-30", "; reason=temporary"],
+		["an unpadded date", "2026-2-3", "; reason=temporary"],
+		["an empty reason", day(10), "; reason="],
+		["a missing reason", day(10), ""],
+	])("K3 rejects %s in an exception", (_name, until, tail) => {
+		const root = fixture();
+		write(
+			root,
+			"scripts/sample.ts",
+			`const value: any = 1; // code-health-exception: typeEscapes; until=${until}${tail}\n`,
+		);
+		writeBaseline(root);
+		const result = run(checkScript, root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain("scripts/sample.ts:1");
+		expect(result.stdout).toContain("invalid code-health exception");
+	});
+
+	it("K4 counts a long function inside a template substitution", () => {
+		const root = fixture();
+		write(root, "scripts/sample.ts", "export const clean = 1;\n");
+		writeBaseline(root);
+		const body = Array.from(
+			{ length: 80 },
+			(_, index) => `    void ${index};`,
+		).join("\n");
+		write(
+			root,
+			"scripts/sample.ts",
+			["const value = `${", "  function long() {", body, "  }", "}`;"].join(
+				"\n",
+			),
+		);
+		const result = run(checkScript, root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain("scripts/sample.ts: longFunctions");
+	});
+
+	it("K4 counts a suppression marker inside a template substitution", () => {
+		const root = fixture();
+		write(root, "scripts/sample.ts", "export const clean = 1;\n");
+		writeBaseline(root);
+		write(
+			root,
+			"scripts/sample.ts",
+			"const value = `$" + "{/* biome-ignore lint */ source}`;\n",
+		);
+		const result = run(checkScript, root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain("scripts/sample.ts: suppressions");
 	});
 });

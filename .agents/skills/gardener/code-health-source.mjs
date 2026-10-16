@@ -9,7 +9,6 @@ function literal(node) {
 	return (
 		ts.isStringLiteral(node) ||
 		ts.isNoSubstitutionTemplateLiteral(node) ||
-		ts.isTemplateExpression(node) ||
 		node.kind === ts.SyntaxKind.RegularExpressionLiteral
 	);
 }
@@ -17,7 +16,27 @@ function literal(node) {
 function visitCode(node, visit) {
 	if (literal(node)) return;
 	visit(node);
+	if (ts.isTemplateExpression(node)) {
+		for (const span of node.templateSpans) visitCode(span.expression, visit);
+		return;
+	}
 	ts.forEachChild(node, (child) => visitCode(child, visit));
+}
+
+function scanLongFunctions(source, text, offset, add) {
+	visitCode(source, (node) => {
+		if (!ts.isFunctionLike(node) || !node.body) return;
+		const startLine = text
+			.slice(0, node.getStart(source))
+			.split(/\r?\n/).length;
+		const endLine = text.slice(0, node.body.end).split(/\r?\n/).length;
+		if (endLine - startLine + 1 > 80)
+			add(
+				"longFunctions",
+				offset + node.getStart(source),
+				`${endLine - startLine + 1} lines`,
+			);
+	});
 }
 
 function callNamed(node, name) {
@@ -54,6 +73,14 @@ function script(text, offset, isTypeScript, isTsx, add, addComment) {
 	);
 	const spans = [];
 	const findLiterals = (node) => {
+		if (ts.isTemplateExpression(node)) {
+			spans.push([node.head.getStart(source), node.head.end]);
+			for (const span of node.templateSpans) {
+				findLiterals(span.expression);
+				spans.push([span.literal.getStart(source), span.literal.end]);
+			}
+			return;
+		}
 		if (literal(node)) {
 			spans.push([node.getStart(source), node.end]);
 			return;
@@ -91,16 +118,9 @@ function script(text, offset, isTypeScript, isTsx, add, addComment) {
 		}
 		token = scanner.scan();
 	}
+	scanLongFunctions(source, text, offset, add);
 	visitCode(source, (node) => {
 		const start = offset + node.getStart(source);
-		if (ts.isFunctionLike(node) && node.body) {
-			const startLine = text
-				.slice(0, node.getStart(source))
-				.split(/\r?\n/).length;
-			const endLine = text.slice(0, node.body.end).split(/\r?\n/).length;
-			if (endLine - startLine + 1 > 80)
-				add("longFunctions", start, `${endLine - startLine + 1} lines`);
-		}
 		if (isTypeScript && node.kind === ts.SyntaxKind.AnyKeyword)
 			add("typeEscapes", start, "any used as a type");
 		if (isTypeScript && cast(node)) {
@@ -233,7 +253,7 @@ function html(text, add, addComment) {
 	}
 }
 
-export function scanSource({ file, text }) {
+export function scanSource({ file, text, extensions }) {
 	const result = {
 		typeEscapes: [],
 		suppressions: [],
@@ -241,6 +261,7 @@ export function scanSource({ file, text }) {
 		accessibilityOverrides: [],
 		longFunctions: [],
 	};
+	const comments = [];
 	const add = (measure, index, detail) => {
 		result[measure].push({
 			file,
@@ -250,6 +271,7 @@ export function scanSource({ file, text }) {
 		});
 	};
 	const addComment = (comment, offset) => {
+		comments.push({ text: comment, offset });
 		for (const match of comment.matchAll(
 			/\b(?:TODO|FIXME|HACK|workaround)\b/gi,
 		))
@@ -262,7 +284,7 @@ export function scanSource({ file, text }) {
 	const ext = path.extname(file).toLowerCase();
 	if (ext === ".css") css(text, 0, add, addComment);
 	else if (ext === ".html") html(text, add, addComment);
-	else if ([".js", ".mjs", ".cjs", ".ts", ".tsx"].includes(ext))
+	else if (extensions.has(ext))
 		script(
 			text,
 			0,
@@ -276,5 +298,5 @@ export function scanSource({ file, text }) {
 			.sort((a, b) => a.index - b.index)
 			.map(({ index, ...item }) => item);
 	}
-	return result;
+	return { ...result, comments };
 }

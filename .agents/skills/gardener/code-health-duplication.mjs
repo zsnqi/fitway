@@ -1,4 +1,4 @@
-export const DUPLICATION_WINDOW_LINES = 8;
+const DUPLICATION_WINDOW_LINES = 8;
 
 export function scanDuplication(files) {
 	const sequences = new Map();

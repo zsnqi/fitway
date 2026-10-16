@@ -2,7 +2,14 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
-import { scanScope } from "../../.agents/skills/gardener/code-health.mjs";
+import {
+	BASELINE_MEASURES,
+	DUPLICATION_MEASURE,
+	GIANT_FILE_MEASURE,
+	SOURCE_EXTENSIONS,
+	scanScope,
+	scanSource,
+} from "../../.agents/skills/gardener/code-health.mjs";
 import { listTrackedFiles } from "../verify-repository.mjs";
 
 export const BASELINE_RELATIVE_PATH =
@@ -15,33 +22,24 @@ export const HEALTH_ROOTS = Object.freeze([
 	"apps",
 	"packages",
 ]);
-export const BASELINE_MEASURES = Object.freeze([
-	"duplication",
-	"typeEscapes",
-	"suppressions",
-	"repeatedWorkarounds",
-	"longFunctions",
-]);
-export const BASELINE_GIANT_MEASURE = "giantFiles";
-
-const SOURCE_EXTENSIONS = new Set([
-	".js",
-	".mjs",
-	".cjs",
-	".ts",
-	".tsx",
-	".css",
-	".html",
-]);
-const EXCEPTION_PATTERN =
-	/code-health-exception:\s*([A-Za-z]+)\s*;\s*until=(\d{4}-\d{2}-\d{2})\s*;\s*reason=([^\r\n]+)/g;
+const SOURCE_EXTENSION_SET = new Set(SOURCE_EXTENSIONS);
+const EXCEPTION_MARKER = /code-health-exception:/g;
 
 function date(value = new Date()) {
 	return value.toISOString().slice(0, 10);
 }
 
 function dateValue(value) {
-	const [year, month, day] = value.split("-").map(Number);
+	const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+	if (!match) return Number.NaN;
+	const [, year, month, day] = match.map(Number);
+	const calendar = new Date(Date.UTC(year, month - 1, day));
+	if (
+		calendar.getUTCFullYear() !== year ||
+		calendar.getUTCMonth() !== month - 1 ||
+		calendar.getUTCDate() !== day
+	)
+		return Number.NaN;
 	return Date.UTC(year, month - 1, day);
 }
 
@@ -61,7 +59,9 @@ export function listCodeHealthFiles(root = process.cwd()) {
 		...listTrackedFiles(root, HEALTH_ROOTS, { untracked: true }),
 	]);
 	return [...files]
-		.filter((file) => SOURCE_EXTENSIONS.has(path.extname(file).toLowerCase()))
+		.filter((file) =>
+			SOURCE_EXTENSION_SET.has(path.extname(file).toLowerCase()),
+		)
 		.map(normalizePath)
 		.sort((left, right) => left.localeCompare(right, "en"));
 }
@@ -76,14 +76,22 @@ export function readCodeHealthFiles(root = process.cwd()) {
 function parseExceptions(files) {
 	const exceptions = [];
 	for (const file of files) {
-		for (const [index, line] of file.text.split(/\r?\n/).entries()) {
-			for (const match of line.matchAll(EXCEPTION_PATTERN)) {
+		const { comments } = scanSource({
+			...file,
+			extensions: SOURCE_EXTENSION_SET,
+		});
+		for (const comment of comments) {
+			for (const match of comment.text.matchAll(EXCEPTION_MARKER)) {
+				const fields = comment.text.slice(match.index + match[0].length);
+				const index = comment.offset + match.index;
 				exceptions.push({
 					file: normalizePath(file.file),
-					line: index + 1,
-					measure: match[1],
-					until: match[2],
-					reason: match[3].replace(/\s*(?:\*\/|-->)\s*$/, "").trim(),
+					line: file.text.slice(0, index).split(/\r?\n/).length,
+					measure: fields.match(/^\s*([A-Za-z]+)\s*;/)?.[1] ?? "",
+					until: fields.match(/\buntil=([^\s;]*)/)?.[1] ?? "",
+					reason: (fields.match(/\breason=([^\r\n]*)/)?.[1] ?? "")
+						.replace(/\s*(?:\*\/|-->)\s*$/, "")
+						.trim(),
 				});
 			}
 		}
@@ -108,9 +116,7 @@ function exceptionStatus(exceptions, today) {
 				detail: "exception reason is empty",
 			});
 		else if (
-			![...BASELINE_MEASURES, BASELINE_GIANT_MEASURE].includes(
-				exception.measure,
-			)
+			![...BASELINE_MEASURES, GIANT_FILE_MEASURE].includes(exception.measure)
 		)
 			invalid.push({
 				...exception,
@@ -170,35 +176,25 @@ export function snapshotCodeHealth(files, { today = date() } = {}) {
 	const counts = new Map();
 	const hits = new Map();
 
-	for (const measure of [
-		"typeEscapes",
-		"suppressions",
-		"repeatedWorkarounds",
-		"longFunctions",
-	]) {
-		for (const hit of report[measure].hits) {
-			if (!excepted(exceptions, hit.file, measure, [hit.line], today))
-				addCount(counts, hits, hit.file, measure, [hit.line]);
+	for (const measure of BASELINE_MEASURES) {
+		if (measure === DUPLICATION_MEASURE) {
+			for (const hit of report[measure].hits) {
+				for (const [file, lines] of hitLinesByFile(hit)) {
+					if (!excepted(exceptions, file, measure, lines, today))
+						addCount(counts, hits, file, measure, [...new Set(lines)]);
+				}
+			}
+		} else {
+			for (const hit of report[measure].hits) {
+				if (!excepted(exceptions, hit.file, measure, [hit.line], today))
+					addCount(counts, hits, hit.file, measure, [hit.line]);
+			}
 		}
 	}
 
-	for (const hit of report.duplication.hits) {
-		for (const [file, lines] of hitLinesByFile(hit)) {
-			if (!excepted(exceptions, file, "duplication", lines, today))
-				addCount(counts, hits, file, "duplication", [...new Set(lines)]);
-		}
-	}
-
-	for (const hit of report.giantFiles.hits) {
-		if (!excepted(exceptions, hit.file, BASELINE_GIANT_MEASURE, [1], today))
-			addCount(
-				counts,
-				hits,
-				hit.file,
-				BASELINE_GIANT_MEASURE,
-				[1],
-				hit.lineCount,
-			);
+	for (const hit of report[GIANT_FILE_MEASURE].hits) {
+		if (!excepted(exceptions, hit.file, GIANT_FILE_MEASURE, [1], today))
+			addCount(counts, hits, hit.file, GIANT_FILE_MEASURE, [1], hit.lineCount);
 	}
 
 	return {
@@ -232,7 +228,7 @@ export function baselineFromSnapshot(snapshot) {
 	);
 	for (const file of paths) {
 		const values = {};
-		for (const measure of [...BASELINE_MEASURES, BASELINE_GIANT_MEASURE]) {
+		for (const measure of [...BASELINE_MEASURES, GIANT_FILE_MEASURE]) {
 			const value = measureValue(snapshot.counts[file], measure);
 			if (value > 0) values[measure] = value;
 		}
@@ -263,7 +259,7 @@ export function compareCodeHealth(baseline, snapshot) {
 	].sort((left, right) => left.localeCompare(right, "en"));
 	const changes = [];
 	for (const file of paths) {
-		for (const measure of [...BASELINE_MEASURES, BASELINE_GIANT_MEASURE]) {
+		for (const measure of [...BASELINE_MEASURES, GIANT_FILE_MEASURE]) {
 			const before = measureValue(beforeFiles[file], measure);
 			const after = measureValue(afterFiles[file], measure);
 			if (before === after) continue;
