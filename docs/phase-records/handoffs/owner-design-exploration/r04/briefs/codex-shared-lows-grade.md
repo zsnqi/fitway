@@ -68,8 +68,9 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   frame (report each). Intent: as G1.
 - **G3. The recipes changed only there.** Outcome: per page, the rule and feature counts at the base and the result
   are equal, and the recipes' diff touches only `changesState` and `ends` lines. Intent: nothing else was loosened.
-- **G4. The rail's ring.** Outcome: on Access, Tab to a rail item, collapsed rail, desktop, Arabic and English: the
-  item's computed outline is none or transparent (as on Reports) and its tile shows a visible 2 px ring; a button
+- **G4. The rail's ring.** Outcome: on each of the five pages, Tab to each rail item, collapsed and open rail, desktop
+  and tablet, Arabic and English: the item's computed outline is none or transparent and its tile shows a visible 2 px
+  ring, confirmed on the rendered frame; a button
   inside Access's content still shows its 2 px ring at a 3 px offset; in forced colours the tile ring is `CanvasText`
   and the item shows no second ring. Intent: one ring per control.
 - **G5. Rings after a pointer.** Outcome: Access's desk retry in its failed state (`fail=1`): after a mouse click the
@@ -92,7 +93,8 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   a press, its release light or any moment's timing changes (a self-compare of Daily's press moments, Arabic, desktop,
   full motion, against the base); if the added lines run on any path other than focus, compare that path's timeline on
   every page it reaches, Arabic and English, reduced and full motion. Intent: no moment changed beyond the rings.
-- **G10. Untouched records.** Outcome: `HISTORY.md` and the evidence folder are byte-equal to the base; the checks the
+- **G10. Untouched records.** Outcome: `git diff --name-only` between the base and the result lists only files inside
+  the concept folder that the round's Scope allows; `HISTORY.md` and the evidence folder are byte-equal to the base; the checks the
   shared-frame brief's L1 names pass on the result. Intent: only the concept's own files changed.
 - **G11. Report against commands.** Outcome: the result's commit exists and is your HEAD, and the round's run folder
   (`D:/fitway-temp/codex-round-bd3edec8-d939-4284-b853-7e796d42c26c/`) records a successful `git commit` whose output
