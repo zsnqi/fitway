@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-16 04:05 +03:00 (four rounds merged; main moving after CI)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-16 04:05 +03:00 (the night's four rounds merged; main at `3cde7a07`; nothing running)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-73), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -36,19 +36,19 @@
 
 ## Running now
 
-Nothing. The night's batch is merged on the coordinator line: vf-proofs (`bb313de0`), brief-ladder (`abf26cdf`),
-launcher-fixes-5 with two fixes (`7cd265b2`) and ladder-seam (`bafb2b6e`); main moves once its CI passes.
+Nothing. The night's batch (vf-proofs `bb313de0`, brief-ladder `abf26cdf`, launcher-fixes-5 with two fixes
+`7cd265b2`, ladder-seam `bafb2b6e`) is merged, and main is at `3cde7a07` (`pnpm main:advance` after its CI passed;
+measured). Their worktrees and grading checkouts are removed.
 
 ## Next steps
 
-1. **main is at `e64006d0`** (moved by `pnpm main:advance` after CI run 38795346728 passed in 1,305 s; the job's
-   timeout is now 30 minutes, decision 71). The commits after it go with the next batch.
-2. **Move main** to the batch's last pushed commit once its CI passes (`pnpm main:advance`), if not yet done.
-3. **The agent-tooling wave (decision 73)** in a fresh coordinator session, beside the shared lows: its own
-   `repository-infrastructure` milestone (F253), a short standing-rules pickup, one CLI contract with `pnpm tools`
-   (F251), a generated code map, map upkeep (F252).
-   **The shared lows (decision 47)** on the build branch after vf-proofs merges, with the `ends` declarations for
-   the build branch's `changesState` features that vf-proofs' report lists (F241's rest); F248 waits for the next
+1. **main is at `3cde7a07`.** The commits after it go with the next batch.
+2. **The agent-tooling wave (decision 73)**, in a fresh coordinator session (the user's permission, 2026-10-16): its
+   own `repository-infrastructure` milestone taking r04's tool paths (F253), a short standing-rules pickup, one CLI
+   contract with `pnpm tools` (F251), a generated code map, map upkeep (F252); with it the launcher's F254 (a cited
+   base SHA read as the commit claim).
+3. **Beside it, the shared lows (decision 47)** on the build branch, with the `ends` declarations for the build
+   branch's `changesState` features that vf-proofs' report lists (F241's rest); F248 waits for the next
    verify-fitway round.
 4. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
