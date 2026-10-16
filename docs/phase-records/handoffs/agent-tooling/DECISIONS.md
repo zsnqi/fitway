@@ -56,3 +56,10 @@ through these pointers, not copied here.
 7. **The wave's order after item 6** (coordinator): code-map and launcher-fixes-6 merge after grading and the diff
    review; then the ratchet; then the CLI contract with `pnpm tools`; then map upkeep with the gardener's scope and the
    "do not copy" list; then the lighter pickup.
+8. **Grading checkouts get their own install, never a junction** (coordinator, 2026-10-16, after the second time a
+   `git worktree remove` followed a `node_modules` junction and emptied the round's install: 2026-10-15 in r04, and
+   2026-10-16 for `tooling-launcher-fixes-6`, restored by `pnpm install --frozen-lockfile --offline`, measured). By r04
+   decision 56's method the fix is structural: a grading or scratch checkout runs `pnpm install --frozen-lockfile
+   --offline` (about 10 s) instead of linking another worktree's `node_modules`, so a removal has nothing to follow.
+   Any junction left from before is unlinked with `cmd /c rmdir` first; `.agents/skills/gardener/remove-worktree.mjs`
+   is the removal path for worktrees that still carry one.
