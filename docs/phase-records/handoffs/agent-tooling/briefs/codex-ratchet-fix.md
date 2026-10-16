@@ -58,24 +58,30 @@ gardener and the ratchet count from one source.
 ## Causes and required outcomes
 
 - **K1. A ring written in longhand (review 1).** Outcome: a focus rule outside the concept's `style.css` that draws
-  the ring through `outline-width`, `outline-style` and `outline-color` longhands (in any mix with the shorthand) is a
-  finding, as the shorthand is. Tested.
-- **K2. A concept without `style.css` (review 2).** Outcome: the ring check runs when `style.css` is missing, and
-  reports the missing ring as a finding. Tested.
-- **K3. Strict exceptions (review 3).** Outcome: an exception whose date is not a real calendar date (for example
-  `2026-02-30`) or whose reason is empty is a finding naming its line. Tested.
-- **K4. Functions inside template substitutions (review 4).** Outcome: a function inside `${...}` of a template
-  literal is measured by the long-function scan like any other; the template's text stays masked. Tested.
-- **K5. One source of truth (review 5).** Outcome: the baseline command takes its measure names and file extensions
-  from the gardener's scanner (exported once there), holding no list of its own. `git grep` shows it.
+  the ring through `outline-width`, `outline-style` and `outline-color` longhands (in any mix with the shorthand), the
+  declarations combined over every rule with the same focus selector, is a finding, as the shorthand is. Tested, a
+  split across two rules included.
+- **K2. A concept without `style.css` (review 2).** Outcome: the ring check names the concept folder's own
+  `style.css` by its exact path, runs when that file is missing, and reports the missing ring as a finding; a file
+  that only ends in `style.css`, or one in a subfolder, does not stand in for it. Tested with both.
+- **K3. Strict exceptions (review 3).** Outcome: the exception marker is found first and its fields read after, so
+  an exception whose date is not a real calendar date (for example `2026-02-30` or `2026-2-3`) or whose reason is
+  empty or missing is a finding naming its line. Tested.
+- **K4. Template substitutions (review 4).** Outcome: only a template literal's own text is masked; its `${...}`
+  substitutions are scanned for every measure, so a long function or a suppression marker inside one counts. Tested
+  with both.
+- **K5. One source of truth (review 5).** Outcome: the measure names and file extensions are declared once, in the
+  gardener's scanner, and both the scanner's own dispatch and the baseline's counting and validation read them there;
+  neither holds a list of its own (`git grep` shows it).
 - **K6. Plain parts (reviews 6, 7, 8, 9).** Outcome: the focus-ring collection and validation leave `lintSources` for
   a helper of their own; the AST long-function scan and its line accounting leave `script` for a helper of their own;
   the ratchet test's table rows share one clean fixture and vary only the planted measure; `DUPLICATION_WINDOW_LINES`
-  is private unless another module reads it. No function you touch exceeds 80 lines.
+  is private unless another runtime module (not a test) reads it. No function you touch exceeds 80 lines.
 
 ## Limits the result keeps
 
-- **L0. New cases prove the repair.** Each case you add names the outcome it tests (K1-K4), fails at this HEAD at an
+- **L0. New cases prove the repair.** Each case you add names the outcome it tests (K1-K4), runs the public command
+  (`scripts/check-concept-css.mjs` or `pnpm check:code-health`'s entry) on a fixture, fails at this HEAD at an
   assertion on that outcome's behaviour (not at a missing helper, import or fixture), and passes unchanged on your
   result; the cases you commit are the ones you showed failing, and the fast ladder runs them. Report each failing
   output.
