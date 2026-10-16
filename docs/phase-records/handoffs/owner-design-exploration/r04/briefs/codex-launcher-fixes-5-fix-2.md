@@ -58,7 +58,10 @@ work, and every case the grader passed still holds.
     a line, a bullet or a clause, as P2 said; both files read as at `5b81b3b7`, with the same trimmed reading text,
     as tests on copies under `scripts/agent-environment/fixtures/codex-round-reviews/`; every case in
     `parser-cases.cjs` gives the result the grader recorded at `34065b3d`, and every review file and fixture the
-    grader replayed (`D:/fitway-temp/owner-r04-launcher-fixes-5-fix-grade/`) reads as there or as at `5b81b3b7`.
+    grader replayed (`D:/fitway-temp/owner-r04-launcher-fixes-5-fix-grade/`) gives the same count, IDs and trimmed
+    reading text as at `34065b3d`, apart from answers refused there only for a quoted label, which match `5b81b3b7`;
+    a label word in the middle of a sentence (`the change: small` inside a literal reading) is not a part, tested
+    for each of the three labels.
   - **Intent.** A reviewer may quote the labels it discusses without its answer being refused.
 
 ## Limits the result keeps
