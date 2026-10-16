@@ -57,8 +57,8 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   test file imports and calls it. Intent: entries point at the code.
 - **G2. No invented coverage.** Outcome: with your own scanner (not the generator's code), every test file the map
   lists for every covered callable imports that name from that module and calls it (report the count checked and each
-  miss); for ten callables it lists as uncovered, at random (report your seed), no `*.test.*` file in the repository
-  imports and calls it (`git grep`). Intent: coverage claims hold.
+  miss); and the complete relation your scanner derives (every callable with every test file that imports and calls
+  it) equals the map's, every "uncovered" claim included (report each difference). Intent: coverage claims hold.
 - **G3. Every file and callable.** Outcome: the map's file list equals `git ls-files` of the brief's M1 folders and
   files with tests excluded (report both counts and any difference); and with your own scanner on the TypeScript
   compiler API (not the generator's code), the set of (file, name, start line, end line) for every callable form the
@@ -72,15 +72,17 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
 - **G6. Moved code.** Outcome: in a scratch copy, moving one mapped function down by 20 lines with nothing else changed
   makes `--check` fail. Intent: lines are checked, not only names.
 - **G7. Every form.** Outcome: a class method in a mapped file (for example in
-  `.agents/skills/verify-fitway/baseline-cache.mjs`) has its own entry with its lines; in a scratch copy, adding and
+  `.agents/skills/verify-fitway/baseline-cache.mjs`) has its own entry with its lines, and so does a class constructor; in a scratch copy, adding and
   then removing each of a `const` arrow function, a default export, a getter and a static method in a mapped file makes
-  `--check` fail after each change and pass when restored. Intent: behaviour in any form is findable.
+  `--check` fail after each change and pass when restored, and after each addition the regenerated map holds an entry
+  for that callable itself with its exact range. Intent: behaviour in any form is findable.
 - **G8. Import is not coverage.** Outcome: in G5's clone, a new test file added with `git add` that imports an
   uncovered function and never calls it leaves that function uncovered after regeneration, and the same file with one
   call added makes the map list it as covering (proving the generator saw the file). Intent: as G2.
 - **G9. Size, time, ladder.** Outcome: the map is at most 80 KB; three `--check` runs on this machine take under 15 s
   each (report them); `parseFastSteps` (`.agents/skills/gardener/facts.mjs`) on the committed `scripts/verify.mjs`
-  returns the base's eight steps plus the new one in the order the report states, and with
+  returns the base's eight steps plus the new one in the order the report states, the eight keep the base's commands
+  and environment, and the `package.json` scripts they run are byte-equal to the base's, and with
   `FITWAY_VERIFY_TEST_STEPS=[]` set, `scripts/verify.mjs`'s step list is unchanged (the F250 seam stays closed).
   Intent: the step is cheap and the ladder kept its shape.
 - **G11. Command coverage.** Outcome: for every mapped module that some test runs as a command (spawns or execs its
@@ -90,14 +92,18 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   (`D:/fitway-temp/codex-round-9be94292-833b-4ee1-b3ac-8240cca8f848/` and
   `D:/fitway-temp/codex-round-8892703c-86e7-4629-9cfe-e5c3d5b74989/`) each record a successful `git commit`; classify
   the second round's L0 red run (9 failed of 36) from its events, each as an assertion on K1-K5 behaviour or a missing
-  module, export, helper, fixture or setup; G10 fails if any is the latter (say so without SHAs).
+  module, export, helper, fixture or setup; G10 fails if any is the latter (say so without SHAs). The first round's
+  classification is the first grade's G10 (`D:/fitway-temp/codex-round-a2f0ef9b-6d16-401c-9554-271ec3365d99/last-message.md`);
+  check that those cases are unchanged on your HEAD and pass.
 - **G12. An ordinary step (K1).** Outcome: `scripts/verify.mjs` holds no code that names the map step and no
   step-skipping branch for any label; the step's command lives only in `package.json`; in a scratch copy, a drifted map
   makes the ladder's `runVerification` path fail at that step. Intent: nothing can skip it.
 - **G13. Forms and coverage (K2).** Outcome: in scratch copies, a parenthesized function expression and a
   parenthesized default-export class are mapped; a getter and a setter of one name are two entries, a test that only
   reads the property covers only the getter and one that only assigns covers only the setter; a test that dynamically
-  imports a mapped module and calls a destructured name covers it; a callable re-exported from another module is
+  imports a mapped module and calls a destructured, a named, a default or a namespace binding of it covers that callable
+  (each form planted); a test that runs a mapped module through a path built with `process.cwd()` lists it at module
+  level; a callable re-exported from another module is
   covered by a test that imports it through the re-export; `.agents/skills/verify-fitway/cli.mjs` and
   `port-observer.cjs` list `cli.test.mjs` at module level. Intent: the map lists what is there and who tests it.
 - **G14. Command tests and untracked files (K3).** Outcome: a map edited to drop one module-level command test, and one
@@ -107,7 +113,9 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   `listTrackedFiles` exists in the generator's modules (`git grep`); each module of the generator is at most 500 lines
   and each function at most 80 (your own count), with no module-level mutable state shared between them; no helper is
   defined twice across them (`unwrapParenthesized`, the file-list diagnostic); `git diff --name-only` from the base
-  to your HEAD lists only the files the two briefs' Scopes allow plus the generated map. Intent: one paved path, parts a
+  to your HEAD lists only the files the two briefs' Scopes allow plus the generated map, and each file's hunks keep to
+  its Scope's restriction (`package.json` its `scripts` section with no dependency change, `scripts/verify-repository.mjs`
+  only to share `listTrackedFiles`, `.agents/skills/gardener/facts.mjs` only `parseFastSteps`). Intent: one paved path, parts a
   reader can hold. Intent: the
   report rests on what ran.
 
