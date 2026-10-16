@@ -50,10 +50,10 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 
 ## Causes and required outcomes
 
-- **G1. A cited base.** Outcome: a report line "Base commit <B, 40 hex> (for comparison); commit <C2>." gives no
-  commit failure; so does "Compared with <B> at base; HEAD after commit: <first 7 hex of C2>". Intent: history may be
+- **G1. A cited base.** Outcome: a report line "Base commit B (for comparison); commit C2." with B as its full 40-hex SHA and C2 as its SHA gives no
+  commit failure; so does "Compared with B at base; HEAD after commit: C2" with C2 abbreviated to its first 7 hex. Intent: history may be
   cited.
-- **G2. The wrong commit.** Outcome: a report naming only "Commit: <C1>" is refused, and the failure names C1 and the
+- **G2. The wrong commit.** Outcome: a report naming only "Commit: C1" (with its SHA) is refused, and the failure names C1 and the
   HEAD. Intent: a claim must be the HEAD.
 - **G3. A commit that does not exist.** Outcome: a report naming only a fabricated 12-hex SHA on a commit line is
   refused "no such commit object" (F242 kept). Intent: as G2.
