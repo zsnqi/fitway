@@ -273,6 +273,7 @@ describe("verification ladder entry point", () => {
 		const fastStepArgs = [
 			["check:repository"],
 			["check:verification-map"],
+			["check:tooling-map"],
 			["test:verification"],
 			["check"],
 			["exec", "node", "scripts/check-owner-tokens.mjs"],
@@ -353,7 +354,11 @@ describe("verification ladder entry point", () => {
 				calls.map((call) => call.args),
 				context,
 			).toEqual([...fastStepArgs, ...testCase.ownStepArgs]);
-			expect(calls[6]?.env, context).toEqual(unitTestEnv);
+			const unitCall = calls.find(
+				(call) => JSON.stringify(call.args) === JSON.stringify(["test"]),
+			);
+			expect(unitCall, context).toBeDefined();
+			expect(unitCall?.env, context).toEqual(unitTestEnv);
 		}
 	});
 });

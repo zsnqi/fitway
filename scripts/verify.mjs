@@ -428,6 +428,7 @@ function fastSteps() {
 	return [
 		["Repository invariants", ["check:repository"]],
 		["Verification map drift", ["check:verification-map"]],
+		["Agent tooling map drift", ["check:tooling-map"]],
 		["Verification CLI contracts", ["test:verification"]],
 		["Biome check", ["check"]],
 		[

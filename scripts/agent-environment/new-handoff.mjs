@@ -149,6 +149,7 @@ export async function createResumePoint({
 	const handoffDetails = await repositoryPath(
 		repositoryRoot,
 		milestone.handoff,
+		{ allowMissing: true },
 	);
 	const oldHandoff = handoffDetails.normalized;
 	const targetDirectory = directory ?? path.posix.dirname(oldHandoff);
