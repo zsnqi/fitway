@@ -59,8 +59,8 @@ as at this HEAD.
 - **Q1. Two input trackers (review 1).**
   - **Cause (measured).** `motion.js` records the last input as `data-focus-input` on the focused element, while
     `activity.js` and `reports.js` record it as `data-list-pointer` on the root for their native lists.
-  - **Outcome.** One script records the last input, in one form, and both the lists' rings and the rings after a moved
-    focus read it; no page script keeps its own tracker.
+  - **Outcome.** One script installs the listeners and alone writes the last input, in one form; the lists' rings and
+    the rings after a moved focus only read it; no page script keeps a listener or state of its own for it.
   - **Intent.** One source for "how did focus get here".
 - **Q2. An annotation that names the wrong element (review 2).**
   - **Outcome.** `activity.css` keeps no outline suppression for `.ac-log` or `.ac-msg` (neither takes focus; show it
@@ -68,12 +68,14 @@ as at this HEAD.
     forced-colours blocks.
   - **Intent.** An annotation the CSS check reads says what the rule does.
 - **Q3. One ring rule (review 3).**
-  - **Outcome.** The ring after a keyboard-moved focus (2 px ink at 3 px, radius 8 where the base gives one) is
-    declared once in `style.css` for every element that takes it, not repeated in `daily.css`, `reports.css` or
-    elsewhere.
+  - **Outcome.** Each ring form is declared once in `style.css` for every element that takes it, whether focus came
+    by Tab or by a script after a key: FOC-1's (2 px ink at 3 px, radius 8 where the base gives one) and FOC-2's inset
+    variant; a page stylesheet keeps only what places an element's ring differently (an offset FOC-6 records), not a
+    copy of the ring.
   - **Intent.** A change to the ring is one edit.
 - **Q4. The phone (the round's S3, reported as partly covered).**
-  - **Outcome.** Every place the round's S3 inventory lists is measured on the phone in Arabic and English, by key,
+  - **Outcome.** Every `focus()` call in the five pages' scripts that a click, tap or key can reach (count them from the
+    source and reconcile with the round's S3 inventory) is measured on the phone in Arabic and English, by key,
     mouse and touch, at this fix's result: a key leaves a ring, a pointer or touch none. Report each place.
   - **Intent.** S3 holds at the size the demo shows.
 
