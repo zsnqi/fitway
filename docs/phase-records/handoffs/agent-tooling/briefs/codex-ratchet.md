@@ -64,9 +64,11 @@ the fast ladder naming it, and every count the ladder holds only falls.
   - **Outcome.** One command (`pnpm code-health:baseline`) writes a committed baseline under `docs/agent-context/` that
     holds, for every tracked source file (`.js`, `.mjs`, `.cjs`, `.ts`, `.tsx`, `.css`, `.html`) under those four roots, its count of each measure that is not zero: duplicate
     blocks it takes part in, type escapes, suppressions, repeated workarounds, and functions longer than 80 lines (a new
-    measure, counted from the callable ranges `tooling-map-parser.mjs` already finds); and, for a file over the
-    giant-file size, its line count. The ratchet and the gardener's report count through the same functions. Two runs
-    give byte-identical files whatever the checkout's line endings.
+    measure, over every function and method node, nested callbacks and object-literal methods included); and, for a
+    file over the giant-file size, its line count. Every extension listed passes through all of these (a case each for
+    `.cjs` and `.tsx`). The ratchet and the gardener's report count through the same functions. Two runs give
+    byte-identical files whatever the checkout's line endings. The command refuses to write a count, or a giant file's
+    line count, above the committed baseline's, naming it: a rise goes through an exception (H5), never a rewrite.
   - **Intent.** The debt that exists is written down once.
 - **H2. The ladder holds the line.**
   - **Outcome.** A fast-ladder step runs `pnpm check:code-health` (an ordinary step, as the code map's) and fails when
@@ -93,7 +95,8 @@ the fast ladder naming it, and every count the ladder holds only falls.
   - **Intent.** Each check is proven on a case that happened (DECISIONS item 6).
 - **H5. Exceptions with a reason and an end.**
   - **Outcome.** A hit can carry an exception on its own line, naming the measure, a reason and an expiry date, in one
-    form; an excepted hit is not counted until its date, after which the check fails naming the line; `pnpm
+    form; an expiry more than 90 days after the day the check runs is a finding; an excepted hit is not counted until
+    its date, after which the check fails naming the line; `pnpm
     check:code-health --exceptions` lists every open exception with its file, line, measure, reason and date. Tested.
   - **Intent.** A deliberate exception is visible and ends.
 - **H6. The concept's ring is declared once.**
@@ -103,7 +106,8 @@ the fast ladder naming it, and every count the ladder holds only falls.
   - **Outcome.** `scripts/check-concept-css.mjs` reports a finding for each focus-ring declaration outside the
     concept's `style.css`: an outline with a width, a style and a colour that is not transparent, under a focus
     selector or a specimen's focus class; the folder `design-research/owner-composition-exploration-r04/directions/eclipse/`
-    fails at `f87906ea` with those copies named and passes at `9619f3ce` and `4cc2db93`. Tested.
+    fails at `f87906ea` with those copies named and passes at `9619f3ce` and `4cc2db93`; `style.css` declares the
+    ring once, and a second declaration there, or none, is a finding. Tested.
   - **Intent.** One ring, declared once, kept that way.
 
 ## Limits the result keeps
