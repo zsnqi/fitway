@@ -56,19 +56,25 @@ The coordinator knows, row by row, whether the delivered ratchet holds on checks
 - **G1. The baseline, written once (H1).** Outcome: `pnpm code-health:baseline` run twice in the worktree leaves
   `docs/agent-context/CODE_HEALTH_BASELINE.json` byte-identical to the committed file (report its SHA-256 each time and
   `git status --short`); a fresh clone of the result HEAD made with `core.autocrlf=true` regenerates it byte-identical;
-  every file the baseline lists is a tracked `.js`, `.mjs`, `.cjs`, `.ts`, `.tsx`, `.css` or `.html` file under
-  `scripts/`, `.agents/skills/`, `apps/` or `packages/` (report the count and any exception); in a scratch copy, a new
+  the files the baseline command scans equal `git ls-files` under `scripts/`, `.agents/skills/`, `apps/` and
+  `packages/` filtered to `.js`, `.mjs`, `.cjs`, `.ts`, `.tsx`, `.css` and `.html` (report both counts and every
+  difference), and every file the baseline lists is among them; no count and no giant file's line count in the result's
+  baseline is above its value in `7c28d15a`'s baseline (list every rise and every file new to the baseline; a rise is a
+  FAIL); in a scratch copy, a new
   `.cjs` file and a new `.tsx` file, each planted with a suppression, a `TODO` marker, an 85-line function and a
   12-line block copied from an existing file (and the `.tsx` one with `as any`), make the baseline command exit
   non-zero naming each planted file with each planted measure, and leave the baseline unchanged (a rise goes through
-  an exception, never a rewrite). Intent: the debt that exists is written down once, the same everywhere.
+  an exception, never a rewrite); with one planted rise, the command still refuses it after the working baseline file
+  is deleted, and after it is edited to hold the raised count (H1 names the committed baseline).
+  Intent: the debt that exists is written down once, the same everywhere.
 - **G2. The ladder holds the line (H2, HR1, HR2, HR5).** Outcome: in scratch copies, one plant each on a clean copy,
   the check exits 1 and its output names the file, the measure, the baseline, the current count, the hits' lines and
   `run pnpm code-health:baseline`: a 12-line block copied from an existing file into a new file under
   `scripts/agent-environment/` (duplication); `as any` added to a file under `apps/web/src` (type escapes); a
   `biome-ignore` comment added to a file (suppressions); a `TODO` marker added (repeated workarounds); an 85-line
   function added to an existing file (long functions); one line added to `scripts/agent-environment/codex-round.mjs`
-  (giant-file growth, both line counts named); the same line added to a file under 800 lines passes. The committed
+  (giant-file growth, both line counts named); a third copy, in the same file, of a block that file already counts as
+  duplicated (its count rises); the same line added to a file under 800 lines passes. The committed
   `scripts/verify.mjs` runs `pnpm check:code-health` in `fast` with no condition that can skip it (quote the lines).
   Intent: debt cannot rise unseen.
 - **G3. Only tightening (H2, HR3).** Outcome: in a scratch copy, deleting one of a listed file's duplicate blocks
@@ -77,9 +83,10 @@ The coordinator knows, row by row, whether the delivered ratchet holds on checks
   committed with the change that earned it.
 - **G4. Duplicates of the size agents make (H3, HR8).** Outcome: with the result's scanner, the duplication count of
   `scripts/agent-environment/codex-round.test.ts` at `f2418199` is above its count at `51bf35d9` and at `18c670fc`
-  (report all three); for one file the baseline lists, the gardener's code-health collection (`collectCodeHealth`,
-  which the gardener's report calls) and the ratchet give the same duplication count (name the file, both numbers, and
-  the function both reach). Intent: one counting path sees copies of the size agents make.
+  (report all three); for every file both the gardener's code-health collection (`collectCodeHealth`, which the
+  gardener's report calls) and the ratchet scan at the result HEAD, the two give the same per-file count of every
+  baseline measure (report the number of files compared, how many have a non-zero count, every difference, and the
+  function both reach). Intent: one counting path sees copies of the size agents make.
 - **G5. Real past cases (H4).** Outcome: in scratch copies of real history, the check with the parent's baseline fails
   on `codex-round.mjs` growing from `81eb36bb` to `42ce5333` (giant-file growth, 2,208 to 2,323 lines) and on
   `f2418199`'s duplicated body against `51bf35d9`'s baseline, naming each; report both outputs and how you built each
@@ -99,12 +106,15 @@ The coordinator knows, row by row, whether the delivered ratchet holds on checks
   subfolder, does not stand in for it; a second ring declared in `style.css` is a finding. Intent: one ring, kept that
   way.
 - **G8. Template substitutions (K4, HR12).** Outcome: in a scratch copy, an 85-line arrow function inside a template
-  literal's `${...}` counts as a long function, and a suppression marker inside a `${...}` counts; the same marker in
-  the template's own text does not. Intent: code inside a template is code.
+  literal's `${...}` counts as a long function, and a suppression marker, a `TODO` comment and (in a `.ts` file)
+  `as any` inside a `${...}` each count; the same marker in the template's own text does not.
+  Intent: code inside a template is code.
 - **G9. One source of truth (K5, review edit 1).** Outcome: `git grep` over `scripts/` and `.agents/skills/` shows each
   measure's name declared once and the file extensions once, in the gardener's scanner modules, with no list of either
   in `code-health-baseline.mjs` or `check-code-health.mjs` (quote the grep lines; `tooling-map-parser.mjs`'s own set is
-  out of scope); `scanSource` takes no extension parameter. Intent: the gardener and the ratchet cannot disagree.
+  out of scope); `scanSource` takes no extension parameter; neither of those two files holds a threshold, window or
+  line normalization of its own (grep for the 800-line, 80-line and duplication-window values and quote the lines).
+  Intent: the gardener and the ratchet cannot disagree.
 - **G10. Plain parts (K6, review edits 2 and 3).** Outcome: every function `3f80f091` or the result HEAD added or
   changed is at most 80 lines (your own count, listed by file and name); the focus-ring collection is outside
   `lintSources`, the long-function scan and the comment scan outside `script`; the ratchet test's table rows share one
@@ -116,10 +126,13 @@ The coordinator knows, row by row, whether the delivered ratchet holds on checks
   commit and given its own `pnpm install --frozen-lockfile --offline`), every case `3f80f091` added
   fails at an assertion on its K outcome, never at a missing module, export, helper, fixture or setup (list each case,
   its K row and what it asserts), and every such case passes on the result. Intent: the cases see the defects.
-- **G12. Nothing weakened (L1 of both briefs).** Outcome: across `git diff fcc8365b HEAD`, no test present at
-  `fcc8365b` is removed, skipped, made conditional or lost an assertion, and no existing assertion's predicate or
-  expected value changed; list each pre-existing test body that changed and judge it (a mechanical adaptation passes;
-  a change that reduces what the original assertions exercise fails); `parseFastSteps`
+- **G12. Nothing weakened (L1 of both briefs).** Outcome: across `git diff fcc8365b HEAD` and `git diff e115f646 HEAD`,
+  no test present at `fcc8365b` or at `e115f646` is removed, skipped, made conditional or lost an assertion, and no
+  existing assertion's predicate or expected value changed; list each pre-existing test body that changed, and every
+  changed fixture, helper or setup those tests use, and judge each (a mechanical adaptation passes; a change that
+  reduces what the original assertions exercise fails); no commit since `fcc8365b` changes `.github/`, a
+  `vitest*.config.*` file, `scripts/run-vitest.mjs` or a test glob, and each commit's `git diff --name-only` lies
+  within its brief's Scope (`e115f646` brings the launcher fix's files from its merge); `parseFastSteps`
   (`.agents/skills/gardener/facts.mjs`) on the committed `scripts/verify.mjs` returns `fcc8365b`'s steps plus the
   code-health step, order kept (report both lists); the gardener's collection keeps its measures (list them at
   `fcc8365b` and at the result), the long-function measure added. Intent: nothing was loosened to pass.
@@ -129,7 +142,9 @@ The coordinator knows, row by row, whether the delivered ratchet holds on checks
   commands in one line. Intent: the step is cheap and findable.
 - **G14. Reports against commands.** Outcome: the fix's run folder
   `D:/fitway-temp/codex-round-3911ed9e-70c8-440e-960b-77c265e16d07/` records a successful `git commit` whose result
-  header names `3f80f091` and a successful `node scripts/verify.mjs fast` after it with no later commit. The ratchet's
+  header names `3f80f091` and a successful `node scripts/verify.mjs fast` after it with no later commit, and no event
+  between that commit and the ladder's start writes a tracked file (the tree the ladder ran on is the commit's). The
+  ratchet's
   run folder `D:/fitway-temp/codex-round-c8aa5fb0-1f2a-4231-80f0-7c783796af3b/` re-committed one tree under a launcher
   defect (its `turns.jsonl` ends at `7c28d15a` on a resume limit): show that the commit its last successful
   `node scripts/verify.mjs fast` ran after has the same tree as `7c28d15a` (`git rev-parse <commit>^{tree}`) and that no
