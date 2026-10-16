@@ -40,8 +40,7 @@
 
 ## Waiting on the user
 
-- Whether the coordinator may move `C:/Users/Pc Force/.git` (an empty repository a grader created at 12:57, F259) to
-  D:/fitway-temp/quarantine-home-git-20261016; the classifier refused the move without the user's word.
+Nothing.
 
 ## Known risks
 

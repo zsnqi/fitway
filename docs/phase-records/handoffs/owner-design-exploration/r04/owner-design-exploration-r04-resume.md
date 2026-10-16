@@ -60,8 +60,6 @@
 
 ## Waiting on the user
 
-- Whether the coordinator may move `C:/Users/Pc Force/.git` (a grader's empty repository, F259) to D:/fitway-temp;
-  agent-tooling-r01's resume point has it.
 - Drive C: 15 items wait for the user's decision in D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md (12.04 GB free
   after the safe cleanup, measured).
 - Optional: Windows Update's active hours (F159).
