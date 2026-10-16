@@ -3348,6 +3348,233 @@ ${report}
 		);
 	});
 
+	it.each([
+		[
+			"a -C option",
+			(f: ReturnType<typeof fixture>) =>
+				`git -C ${JSON.stringify(f.worktree)} commit -m claim-fixture`,
+		],
+		["a -c option", () => "git -c user.name=x commit -m claim-fixture"],
+		["--no-pager", () => "git --no-pager commit -m claim-fixture"],
+		[
+			"an earlier && command",
+			() => "git add -A && git commit -m claim-fixture",
+		],
+		["an earlier ; command", () => "git add -A; git commit -m claim-fixture"],
+		[
+			"an earlier newline command",
+			() => "git add -A\ngit commit -m claim-fixture",
+		],
+		[
+			"quoted separators in the message",
+			() => 'git commit -m "fix; tests | more"',
+		],
+	])("X1 accepts a commit after %s", (_name, command) => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(command(f), 0, "[fixture __HEAD_SHORT__] claim fixture") +
+				commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("X1 accepts an earlier command before the exact fast ladder", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					"git commit -m claim-fixture",
+					0,
+					"[fixture __HEAD_SHORT__] claim fixture",
+				) + commandEvent("pnpm test && node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it.each([
+		[
+			"X1 guard refuses a filtered ladder",
+			"node scripts/verify.mjs fast --testNamePattern claim",
+		],
+		[
+			"X1 guard refuses a ladder followed by a command",
+			"node scripts/verify.mjs fast && echo later",
+		],
+		["X1 guard refuses a piped ladder", "node scripts/verify.mjs fast | cat"],
+	])("%s", (_name, ladder) => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					"git commit -m claim-fixture",
+					0,
+					"[fixture __HEAD_SHORT__] claim fixture",
+				) + commandEvent(ladder),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"without a successful fast-ladder command",
+		);
+	});
+
+	it.each([
+		[
+			"X1 guard refuses a commit followed by &&",
+			"git commit -m claim-fixture && echo later",
+		],
+		["X1 guard refuses a piped commit", "git commit -m claim-fixture | cat"],
+		[
+			"X1 guard refuses a commit after ||",
+			"false || git commit -m claim-fixture",
+		],
+		[
+			"X1 guard refuses a commit after |",
+			"false | git commit -m claim-fixture",
+		],
+	])("%s", (_name, commit) => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(commit, 0, "[fixture __HEAD_SHORT__] claim fixture") +
+				commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"no successful git commit command",
+		);
+	});
+
+	it.each([
+		[
+			"X2 refuses HEAD's prefix in a subject under another header",
+			"[fixture deadbeef] subject __HEAD_SHORT__",
+		],
+		[
+			"X2 refuses HEAD's prefix in a subject under a root-commit header",
+			"[fixture (root-commit) deadbeef] subject __HEAD_SHORT__",
+		],
+	])("%s", (_name, output) => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent("git commit -m claim-fixture", 0, output) +
+				commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"git commit output does not name worktree HEAD",
+		);
+	});
+
+	it("X2 guard accepts a root-commit result header", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					"git commit -m claim-fixture",
+					0,
+					"[fixture (root-commit) __HEAD_SHORT__] claim fixture",
+				) + commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("X3 accepts worktree HEAD named on a non-commit line", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE:
+				`${claimReport()}Base commit: \`${f.head}\`\n` +
+				"Delivered revision: `__HEAD__`\n",
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					"git commit -m claim-fixture",
+					0,
+					"[fixture __HEAD_SHORT__] claim fixture",
+				) + commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("X3 guard refuses a report whose named revisions miss worktree HEAD", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE:
+				`${claimReport()}Base commit: \`${f.head}\`\n` +
+				"Delivered revision: `68e863793e6f`\n",
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					"git commit -m claim-fixture",
+					0,
+					"[fixture __HEAD_SHORT__] claim fixture",
+				) + commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain("not worktree HEAD");
+	});
+
 	it("V1 rejects a HEAD that does not descend from the launch HEAD", () => {
 		const f = fixture();
 		claimBrief(f);

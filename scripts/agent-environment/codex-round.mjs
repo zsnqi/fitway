@@ -1049,20 +1049,13 @@ function outcomeTextFromBrief(brief, id) {
 }
 
 function commitCandidates(message) {
-	const candidates = [];
-	for (const line of message.split(/\r?\n/)) {
-		if (!/\b(?:commit|HEAD)\b/i.test(line)) continue;
-		for (const match of line.matchAll(/\b[0-9a-f]{7,64}\b/gi))
-			candidates.push(match[0].toLowerCase());
-	}
-	if (!candidates.length) {
-		const all = [...message.matchAll(/\b[0-9a-f]{7,64}\b/gi)].map((match) =>
-			match[0].toLowerCase(),
-		);
-		const distinct = [...new Set(all)];
-		if (distinct.length === 1) candidates.push(distinct[0]);
-	}
-	return [...new Set(candidates)];
+	return [
+		...new Set(
+			[...message.matchAll(/\b[0-9a-f]{7,64}\b/gi)].map((match) =>
+				match[0].toLowerCase(),
+			),
+		),
+	];
 }
 
 function unwrapCommand(command) {
@@ -1078,23 +1071,137 @@ function unwrapCommand(command) {
 	return text;
 }
 
-function unmaskedCommand(command) {
+function commandParts(command) {
 	const text = unwrapCommand(command);
-	return /[;&|\r\n]/.test(text) ? null : text;
+	const parts = [];
+	let current = "";
+	let quote = null;
+	let separator = null;
+	for (let index = 0; index < text.length; index += 1) {
+		const character = text[index];
+		if (quote) {
+			current += character;
+			if (character === quote) quote = null;
+			continue;
+		}
+		if (character === '"' || character === "'") {
+			quote = character;
+			current += character;
+			continue;
+		}
+		if (character === "\\" && index + 1 < text.length) {
+			current += character + text[index + 1];
+			index += 1;
+			continue;
+		}
+		if (character === "\r") continue;
+		let next = null;
+		if (character === ";" || character === "\n") next = character;
+		else if (
+			(character === "&" || character === "|") &&
+			text[index + 1] === character
+		) {
+			next = character + character;
+			index += 1;
+		} else if (character === "&" || character === "|") next = character;
+		if (next === null) {
+			current += character;
+			continue;
+		}
+		if (current.trim()) parts.push({ text: current.trim(), separator });
+		current = "";
+		separator = next;
+	}
+	if (current.trim()) parts.push({ text: current.trim(), separator });
+	return parts;
+}
+
+function lastCommandPart(command) {
+	return commandParts(command).at(-1) ?? null;
+}
+
+function commandStatusIsEvent(part) {
+	return (
+		part?.separator === null ||
+		part?.separator === "&&" ||
+		part?.separator === ";" ||
+		part?.separator === "\n"
+	);
+}
+
+function shellWords(command) {
+	const words = [];
+	let current = "";
+	let quote = null;
+	for (let index = 0; index < command.length; index += 1) {
+		const character = command[index];
+		if (quote) {
+			if (character === quote) quote = null;
+			else if (
+				character === "\\" &&
+				quote === '"' &&
+				index + 1 < command.length
+			) {
+				current += command[index + 1];
+				index += 1;
+			} else current += character;
+			continue;
+		}
+		if (character === '"' || character === "'") quote = character;
+		else if (/\s/.test(character)) {
+			if (current) {
+				words.push(current);
+				current = "";
+			}
+		} else if (character === "\\" && index + 1 < command.length) {
+			current += command[index + 1];
+			index += 1;
+		} else current += character;
+	}
+	if (current) words.push(current);
+	return words;
+}
+
+function isGitCommitCommand(command) {
+	const words = shellWords(command);
+	if (!/^git(?:\.exe)?$/i.test(words[0] ?? "")) return false;
+	let index = 1;
+	while (index < words.length) {
+		if (words[index] === "--no-pager") {
+			index += 1;
+			continue;
+		}
+		if (words[index] === "-C" || words[index] === "-c") {
+			index += 2;
+			continue;
+		}
+		break;
+	}
+	if (!/^commit$/i.test(words[index] ?? "")) return false;
+	return !words
+		.slice(index + 1)
+		.some((word) => /^--(?:dry-run|help)$/i.test(word));
 }
 
 function isCommitCommand(command) {
-	const text = unmaskedCommand(command);
-	if (!text || !/^git(?:\.exe)?\s+commit(?:\s|$)/i.test(text)) return false;
-	return !/(?:^|\s)--(?:dry-run|help)(?:\s|$)/i.test(text);
+	const part = lastCommandPart(command);
+	return Boolean(
+		part && commandStatusIsEvent(part) && isGitCommitCommand(part.text),
+	);
 }
 
 function isFastLadderCommand(command) {
-	const text = unmaskedCommand(command);
+	const part = lastCommandPart(command);
+	if (!part || !commandStatusIsEvent(part)) return false;
+	const words = shellWords(part.text);
 	return Boolean(
-		text &&
-			(/^node(?:\.exe)?\s+scripts\/verify\.mjs\s+fast(?:\s|$)/i.test(text) ||
-				/^pnpm(?:\.cmd)?\s+verify:fast(?:\s|$)/i.test(text)),
+		(words.length === 3 &&
+			/^node(?:\.exe)?$/i.test(words[0] ?? "") &&
+			words[1] === "scripts/verify.mjs" &&
+			words[2] === "fast") ||
+			(words.length === 2 &&
+				/^pnpm(?:\.cmd)?$/i.test(words[0] ?? "") &&
+				words[1] === "verify:fast"),
 	);
 }
 
@@ -1269,6 +1376,14 @@ function lineageAndDiffFailures(worktree, head, matching, launchHead) {
 	return failures;
 }
 
+function commitHeaderSha(output) {
+	for (const line of String(output).split(/\r?\n/)) {
+		const match = line.match(/^\[.*?(?: \(root-commit\))? ([0-9a-f]{7,64})\]/i);
+		if (match) return match[1].toLowerCase();
+	}
+	return null;
+}
+
 function commitRecordFailures(records, worktree, head) {
 	const commits = records.filter(
 		({ command, exitCode }) => exitCode === 0 && isCommitCommand(command),
@@ -1279,8 +1394,8 @@ function commitRecordFailures(records, worktree, head) {
 		];
 	const failures = [];
 	const abbreviated = head?.slice(0, 7);
-	const output = String(commits.at(-1).output).toLowerCase();
-	if (abbreviated && !output.includes(abbreviated.toLowerCase()))
+	const recorded = commitHeaderSha(commits.at(-1).output);
+	if (abbreviated && (!recorded || !head.toLowerCase().startsWith(recorded)))
 		failures.push(
 			`commit: the last successful git commit output does not name worktree HEAD ${abbreviated}`,
 		);
