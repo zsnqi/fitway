@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `586c5c56`, 2026-10-17 01:25 +03:00
+- **As of:** `codex/owner-redesign-r04` at `6088e735`, 2026-10-17 02:28 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -40,8 +40,13 @@
 - **ratchet-fix** (DeepSeek V4.1 Flash `max`, `docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix.md`
   at HEAD `e115f646`, K1-K6 and L0-L2), launched at 01:24 on 2026-10-17 in D:/Projects/fitway-worktrees/tooling-ratchet,
   run folder D:/fitway-temp/codex-round-3911ed9e-70c8-440e-960b-77c265e16d07, launcher log
-  D:/fitway-temp/tooling-ratchet/launch-ratchet-fix.log. Watch it from the run folder's `turns.jsonl`; on a usage
-  limit or a stop without a report, resume from the run folder. It is the first implementing round under F263's fix.
+  D:/fitway-temp/tooling-ratchet/launch-ratchet-fix.log. Measured at 02:27: the first turn committed `3f80f091`
+  ("Fix code-health ratchet review findings") and reported K1-K6 PASS, but the claim check refused it (the run's last
+  fast ladder came before its commit, `auto-resumes.log`), and the launcher resumed it on its own at 02:16 (turn 2,
+  `events-resume.jsonl`). The launcher's chain is alive (sh 40876, pnpm 6988, cmd 16008, node 14736) with its codex
+  (PID 18380); a compacted session may not get the background task's notice, so watch the run folder's
+  `turns.jsonl` (a `report accepted` line ends it) or the launcher process. If the launcher dies without a report, resume from
+  the run folder (`--run`).
 - How it got here: the ratchet delivered `7c28d15a` on `tooling-ratchet` (run
   D:/fitway-temp/codex-round-c8aa5fb0-1f2a-4231-80f0-7c783796af3b): H1-H6 PASS; baseline CODE_HEALTH_BASELINE.json on
   that branch (217 files; duplication 733 at an 8-line window, type escapes 60, suppressions 10, repeated

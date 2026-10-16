@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `6468253a`, 2026-10-17 02:26 +03:00
+- **As of:** `codex/owner-redesign-r04` at `6088e735`, 2026-10-17 02:28 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-75), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -39,7 +39,7 @@
 
 ## Running now
 
-- **Nothing of this milestone runs** (measured 01:24). The fix-2 grade reported at 00:51 (run
+- **Nothing of this milestone runs** (measured 02:27; agent-tooling-r01's ratchet-fix runs, its resume point). The fix-2 grade reported at 00:51 (run
   D:/fitway-temp/codex-round-3e6c4f04-9467-4931-a8c2-46e6b433af71, report accepted): FAIL on G1, G2, G4, G5, G8, G9
   and G11. The coordinator's reading, with reproductions (`codex-rounds.md` §"shared-lows-fix-2"; scripts and logs in
   D:/fitway-temp/owner-r04-shared-lows-fix-2-grade/coordinator/): five rows from the grading brief's wording, the
