@@ -1,12 +1,13 @@
 <!-- brief-format: v1 role: codex -->
-# Codex brief: grade shared-lows by running these checks (owner-design-exploration-r04, shared-lows-grade)
+# Codex brief: grade shared-lows and its fix by running these checks (owner-design-exploration-r04, shared-lows-fix-grade)
 
-- **Worktree:** `D:/fitway-temp/owner-r04-shared-lows-grade/wt`, branch `grade-shared-lows`, HEAD `89b9d814`
+- **Worktree:** `D:/fitway-temp/owner-r04-shared-lows-grade/wt`, branch `grade-shared-lows-fix`, HEAD `f87906ea`
 - **Milestone:** `owner-design-exploration-r04`. Decisions: numbers 64, 67 and 74 of the milestone's DECISIONS file on
   the coordinator branch, at
   `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`.
 - **Read first, only these:**
-  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows.md`, whole (the round you grade; your contract is G1-G11 below);
+  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows.md` and `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-fix.md`, whole (the two rounds you grade, S1-S5 then Q1-Q4 on top; your contract is G1-G15 below);
+  - `D:/fitway-temp/codex-round-320134a4-149e-4492-8b83-faea0753f555/last-message.md`, whole (the fix's report);
   - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/.agents/skills/verify-fitway/SKILL.md`, the CLI's guide.
 
 <!-- environment:start v1 -->
@@ -41,8 +42,8 @@
   only; if one is held by a process you did not start, never stop it; ports 3174 and 3180 serve the user's preview.
   Another grader runs on this machine meanwhile: record the load beside every timed or compared run.
 - **The base** is the concept folder `design-research/owner-composition-exploration-r04/directions/eclipse/` at
-  `23314b3a`, the result the same folder at `89b9d814`; take each with `git archive` and extract it outside every
-  git tree.
+  `23314b3a`, the first result the same folder at `89b9d814`, and the result at `f87906ea`; take each with
+  `git archive` and extract it outside every git tree.
 - **Your report names no commit by its SHA and holds no hexadecimal word of seven or more characters:** call the
   graded commit "the result HEAD", and name folders without their hash parts. The launcher's claim check reads any
   such word as a commit claim and would refuse a grader's report (F258). You make no commit, in any folder, and run no
@@ -77,10 +78,12 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   desk title holds focus and shows no ring; after Enter it shows the ring; after a tap on the phone in Arabic it shows
   none. Daily's page-retry: by keyboard the ring shows where focus lands, by mouse none. Intent: a finger leaves no
   ring; a key always does.
-- **G6. Phone and tablet coverage.** Outcome: for every place the report's S3 lists, run key, mouse and touch on the
-  phone in Arabic and English (the report covered six phone placements); report each place's result, and every place
-  where a pointer or touch leaves a ring or a key leaves none; then every `focus()` call in the five pages' scripts that
-  the report's list does not name (`git grep`), by key, mouse and touch, desktop, Arabic. Intent: S3 holds at the phone size the demo shows.
+- **G6. Phone and tablet coverage (Q4).** Outcome: for every place the fix's Q4 lists, run key, mouse and touch on
+  the phone in Arabic and English; report each place's result, and every place where a pointer or touch leaves a ring
+  or a key leaves none; then every `focus(` call in the five pages' scripts (`git grep`; the fix counts 68) that the
+  list does not reach, by key, mouse and touch, desktop, Arabic, saying why each is unreachable on the phone; for five
+  of the 56 scenarios the fix calls absent at 390 px, open the page at 390 px and confirm the target is absent.
+  Intent: S3 holds at the phone size the demo shows.
 - **G7. Ring-only differences.** Outcome: for the 122 differing items of the report's all-features compare (its
   `D:/fitway-temp/owner-r04-shared-lows/s4-all-features/comparison.json`) and the 264 differing timeline samples (`D:/fitway-temp/owner-r04-shared-lows/s5-access-focus/comparison.json`), with
   your own mask of each focused element's ring band only (from its border box grown by the outline offset to that
@@ -89,16 +92,36 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   changed (the report says no mask pass was run).
 - **G8. The spec.** Outcome: OWN-C9 no longer says programmatic focus always shows its ring and states the input rule;
   FOC-1 is unchanged. Intent: the spec says what the pages do.
-- **G9. `motion.js`.** Outcome: say what the 13 added lines of `motion.js` do, which S outcome needs them, and whether
+- **G9. `motion.js`.** Outcome: say what the lines `motion.js` gained since the base do, which S or Q outcome needs
+  them, and whether
   a press, its release light or any moment's timing changes (a self-compare of Daily's press moments, Arabic, desktop,
   full motion, against the base); if the added lines run on any path other than focus, compare that path's timeline on
   every page it reaches, Arabic and English, reduced and full motion. Intent: no moment changed beyond the rings.
 - **G10. Untouched records.** Outcome: `git diff --name-only` between the base and the result lists only files inside
   the concept folder that the round's Scope allows; `HISTORY.md` and the evidence folder are byte-equal to the base; the checks the
   shared-frame brief's L1 names pass on the result. Intent: only the concept's own files changed.
-- **G11. Report against commands.** Outcome: the result's commit exists and is your HEAD, and the round's run folder
+- **G11. Report against commands.** Outcome: the result's commit exists and is your HEAD; the first round's run folder
   (`D:/fitway-temp/codex-round-bd3edec8-d939-4284-b853-7e796d42c26c/`) records a successful `git commit` whose output
-  names the result HEAD (say so, without writing its SHA). Intent: the report rests on what ran.
+  names the first result, and the fix's run folder (`D:/fitway-temp/codex-round-320134a4-149e-4492-8b83-faea0753f555/`)
+  one whose output names your HEAD, with the CSS check passing after it (say so, without writing SHAs). Intent: the
+  report rests on what ran.
+- **G12. One input tracker (Q1).** Outcome: `git grep` in the five pages' scripts and `motion.js` for `pointerdown`,
+  `keydown`, `focusInput` and `listPointer`: exactly one listener pair writes the last-input state, in `motion.js`, and
+  every page's ring rule reads that state; no `listPointer` remains. On Activity's list tiles and a native select on
+  Access, a mouse press then a Tab shows the ring, and a key then a mouse press hides it. Intent: one place decides
+  which input came last.
+- **G13. Annotations (Q2).** Outcome: for every `focus-ring` annotation in the concept's CSS, name the element whose
+  outline the annotated rule suppresses and confirm the annotation names that element (list each); the `.ac-log` and
+  `.ac-msg` suppression is gone. Intent: an annotation tells the truth.
+- **G14. One ring rule (Q3).** Outcome: list every declaration in the concept's CSS that sets `outline`,
+  `outline-offset` or a focus `box-shadow` under `:focus`, `:focus-visible` or the scripted-focus state: FOC-1 and FOC-2
+  are declared once, in `style.css`, and each page stylesheet's remaining focus declarations only place the ring
+  (offset or position, as FOC-6 allows); report any other. Intent: one ring, defined once.
+- **G15. The timeline left incomplete (L1).** Outcome: the fix's S5 timeline left two samples not held, both Access
+  `pin-copy` (English, desktop, mouse, full motion, at 1 ms and 100 ms). Run that timeline twice on the first result
+  against itself and twice on your HEAD against the first result: report whether the two samples are held on each
+  run, and judge from `access.js`'s clipboard handling (quote the lines; say whether they changed since the first
+  result) whether the gap is the baseline's or the fix's. Intent: the coordinator knows whether L1's gap is real.
 
 ## Limits the result keeps
 
@@ -112,5 +135,5 @@ it: finish and measure the others, then stop and report. (B3)
 
 ## Report
 
-Each of G1-G11 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
+Each of G1-G15 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
 input that failed and its crop; anything you could not run.
