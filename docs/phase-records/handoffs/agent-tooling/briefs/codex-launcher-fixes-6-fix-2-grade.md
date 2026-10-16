@@ -4,7 +4,7 @@
 - **Worktree:** `D:/fitway-temp/tooling-launcher-fixes-6-fix-grade/wt`, branch `grade-launcher-fixes-6-fix-2`, HEAD `51bf35d9`
 - **Milestone:** `agent-tooling-r01`. Decisions: `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 2, 5 and 8.
 - **Read first, only these:**
-  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6.md`, `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix.md` and `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix-2.md`, whole: the three briefs of the result you grade (V1-V2, then W1-W5, then four review edits by a fixer, then X1-X3, then two review edits by a fixer in the last commit); your contract is G1-G13 below;
+  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6.md`, `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix.md` and `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix-2.md`, whole: the three briefs of the result you grade (V1-V2, then W1-W5, then four review edits by a fixer, then X1-X3, then two review edits by a fixer in the last commit); your contract is G1-G14 below;
   - `scripts/agent-environment/codex-round.mjs`, `commitCandidates`, `reportClaimFailures` and the helpers they call;
   - `scripts/agent-environment/new-handoff.mjs`, `createResumePoint`.
 
@@ -89,8 +89,9 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
 - **G8. The second fix proven, nothing weakened.** Outcome: run from the result's `codex-round.test.ts` on the second
   fix's base production code (`codex-round.mjs` at `81eb36bb`), every case added since `81eb36bb` that its name does not
   call a guard fails at an assertion on its X outcome, never at a missing module, export, helper, fixture or setup (list
-  each case and what it asserts), a case named a guard may pass there, and every added case passes unchanged on the
-  result; `git diff --name-only c286c4c9 HEAD` is exactly `scripts/agent-environment/codex-round.mjs`,
+  each case and what it asserts), a case named a guard may pass there only when the refusal or acceptance it asserts
+  already held at `81eb36bb` (show it), each of X1, X2 and X3 has at least one case that fails there, and every added
+  case passes on the result; `git diff --name-only c286c4c9 HEAD` is exactly `scripts/agent-environment/codex-round.mjs`,
   `codex-round.test.ts`, `new-handoff.mjs` and `new-handoff.test.ts` (with `resume-point.mjs` allowed); no test present
   at `c286c4c9` or at `81eb36bb` is removed, skipped, made conditional or lost an assertion, and no existing assertion's
   predicate or expected value changed; list each pre-existing test body that changed since `81eb36bb` and judge it, and
@@ -119,7 +120,9 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
     `git -C <worktree> -c user.name=x commit -m x`; `git --no-pager commit -m x`; `git commit -m "fix; tests"`;
     `git commit -m "a | b"`; `git add -A && git commit -m x`; `git add -A && git commit -m "a; b | c"`;
     `git add -A; git commit -m x` and `git add -A`, a newline, then `git commit -m x` (the commit is the last command,
-    so its status is the event's; the coordinator accepts this reading of X1);
+    so its status is the event's; the coordinator accepts this reading of X1); a message holding an escaped quote
+    before a separator, written with `\"` in the bash wrapper and with PowerShell's backtick escape in the PowerShell
+    wrapper;
   - refused: `echo git commit -m x`; `git commit --dry-run -m x`; `git commit --help`; `git commit -m x || true`
     after a failed commit; `git commit -m x; echo ok`; `git commit -m x && echo x`; `git commit -m x | cat`; a commit
     followed by a newline and `echo ok`.
@@ -139,6 +142,11 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   every `node:child_process` API: `spawn`, `spawnSync`, `exec`, `execSync`, `execFile`, `execFileSync`, `fork`).
   Intent: the fixes kept scope and shape.
 
+- **G14. Comments (reported for the next round).** Outcome: in the bash wrapper, `echo ok # ; git commit -m x` whose
+  output holds a result header naming the HEAD, and `echo ok #` followed by `&&` and the ladder, are each refused,
+  since nothing after `#` runs; the same with PowerShell's `#` in the PowerShell wrapper. A FAIL here is recorded as a
+  finding for the next launcher round and does not reopen X1. Intent: a comment never counts as a run.
+
 ## Limits the result keeps
 
 - **L1. Nothing tracked changes.** `git -C <worktree> status --short` is empty at the end, and no commit is made.
@@ -151,5 +159,5 @@ report. (B3)
 
 ## Report
 
-Each of G1-G13 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
+Each of G1-G14 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
 input that failed; anything you could not run.
