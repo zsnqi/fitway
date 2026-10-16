@@ -329,6 +329,62 @@ describe("gardener code-health fixtures", () => {
 		});
 	});
 
+	it("H1 counts long functions over methods, nesting and the listed extensions", () => {
+		const body = Array.from(
+			{ length: 80 },
+			(_, index) => `                void ${index};`,
+		).join("\n");
+		const result = scanScope([
+			{
+				file: "long.tsx",
+				text: [
+					"const object = {",
+					"        method() {",
+					body,
+					"        },",
+					"};",
+				].join("\n"),
+			},
+			{
+				file: "nested.cjs",
+				text: [
+					"function outer() {",
+					"        const inner = () => {",
+					body,
+					"        };",
+					"}",
+				].join("\n"),
+			},
+		]);
+		expect(result.longFunctions?.total ?? 0).toBe(3);
+	});
+
+	it("H3 counts a copied callback body below the old ten-line window", () => {
+		const body = [
+			"const f = fixture();",
+			"const result = invokeClaim(",
+			"  f,",
+			"  commandEvent(command, 0, claimOutput) +",
+			'    commandEvent("node scripts/verify.mjs fast"),',
+			");",
+			"expect(result.status, result.output).toBe(0);",
+			'expect(f.captured().args).not.toContain("resume");',
+			"});",
+		].join("\n");
+		const result = scanScope([
+			{
+				file: "codex-round.test.ts",
+				text: [
+					'it.each([["bash", "one"]])("case one", (_name, command) => {',
+					body,
+					'it.each([["PowerShell", "two"]])("case two", (_name, command) => {',
+					body,
+				].join("\n"),
+			},
+		]);
+		expect(result.duplication.total).toBe(1);
+	});
+
 	it("reports a clean fixture with zero totals", () => {
 		const report = scanScope(
 			[

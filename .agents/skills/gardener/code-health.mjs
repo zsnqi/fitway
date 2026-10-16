@@ -8,13 +8,22 @@ export const MEASURES = [
 	"typeEscapes",
 	"suppressions",
 	"repeatedWorkarounds",
+	"longFunctions",
 	"accessibilityOverrides",
 	"duplication",
 	"boundaryBreaks",
 ];
 
-const SOURCE_EXTENSIONS = new Set([".js", ".mjs", ".ts", ".css", ".html"]);
-const IMPORT_EXTENSIONS = [".js", ".mjs", ".ts", ".css"];
+const SOURCE_EXTENSIONS = new Set([
+	".js",
+	".mjs",
+	".cjs",
+	".ts",
+	".tsx",
+	".css",
+	".html",
+]);
+const IMPORT_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts", ".tsx", ".css"];
 
 function sourceFile(file) {
 	return SOURCE_EXTENSIONS.has(path.extname(file).toLowerCase());
@@ -173,7 +182,13 @@ export function linkedReferences(text, extension) {
 		return htmlLinkedReferences(text);
 	}
 	if (extension === ".css") return cssLinkedReferences(text);
-	if (extension === ".js" || extension === ".mjs" || extension === ".ts") {
+	if (
+		extension === ".js" ||
+		extension === ".mjs" ||
+		extension === ".cjs" ||
+		extension === ".ts" ||
+		extension === ".tsx"
+	) {
 		return javascriptLinkedReferences(text, extension);
 	}
 	return [];
@@ -242,7 +257,14 @@ function scanGiantFiles(files) {
 		.filter((item) => sourceFile(item.file))
 		.flatMap((item) => {
 			const count = lines(item.text).length;
-			return count > 800 ? [hit(item.file, 1, `${count} lines`)] : [];
+			return count > 800
+				? [
+						{
+							...hit(item.file, 1, `${count} lines`),
+							lineCount: count,
+						},
+					]
+				: [];
 		});
 }
 
@@ -305,6 +327,7 @@ export function scanScope(files, { sharedFiles = [] } = {}) {
 		typeEscapes: source.flatMap((item) => item.typeEscapes),
 		suppressions: source.flatMap((item) => item.suppressions),
 		repeatedWorkarounds: source.flatMap((item) => item.repeatedWorkarounds),
+		longFunctions: source.flatMap((item) => item.longFunctions),
 		accessibilityOverrides: source.flatMap(
 			(item) => item.accessibilityOverrides,
 		),

@@ -7,6 +7,7 @@ export const RULES = [
 	"transition-all",
 	"ease-in",
 	"outline-without-ring",
+	"focus-ring",
 ];
 
 // Keep offsets intact: diagnostics refer to the original file, including CRLF.
@@ -442,6 +443,25 @@ function hasRing(rule, expand = (value) => value) {
 	return false;
 }
 
+function focusClass(selector) {
+	return /\.is-(?:spec-)?focus(?![\w-])/i.test(maskStrings(selector));
+}
+
+function focusRingDeclarations(rule, expand) {
+	if (
+		!rule.selectors.some(
+			(selector) =>
+				positiveFocus(selector.text).length > 0 || focusClass(selector.text),
+		)
+	)
+		return [];
+	return rule.declarations.filter(
+		(declaration) =>
+			declaration.property === "outline" &&
+			hasRing({ declarations: [declaration] }, expand),
+	);
+}
+
 function hasEaseIn(value) {
 	if (/(?<![\w-])ease-in(?![\w-])/i.test(value)) return true;
 	return [...value.matchAll(/cubic-bezier\(\s*([^)]*)\)/gi)].some((match) => {
@@ -513,6 +533,41 @@ export function lintSources(sources) {
 	const ringRules = rules.filter((rule) =>
 		rule.selectors.some((s) => hasFocusRing(rule, s)),
 	);
+	const styleFiles = new Set(
+		sources
+			.map(({ file }) => file.replaceAll("\\", "/"))
+			.filter((file) => file.endsWith("style.css")),
+	);
+	const conceptFocusRings = rules.flatMap((rule) =>
+		focusRingDeclarations(rule, expand).map((declaration) => ({
+			rule,
+			declaration,
+		})),
+	);
+	for (const { rule, declaration } of conceptFocusRings) {
+		const file = rule.file.replaceAll("\\", "/");
+		if (styleFiles.size && !file.endsWith("style.css"))
+			finding(
+				rule,
+				declaration.offset,
+				"focus-ring",
+				"focus-ring declaration outside style.css",
+			);
+	}
+	if (styleFiles.size) {
+		const styleRings = conceptFocusRings.filter(({ rule }) =>
+			rule.file.replaceAll("\\", "/").endsWith("style.css"),
+		);
+		if (styleRings.length !== 1) {
+			const first = styleRings[0];
+			finding(
+				first?.rule ?? { file: "style.css" },
+				first?.declaration.offset ?? 0,
+				"focus-ring",
+				`expected one focus-ring declaration in style.css; found ${styleRings.length}`,
+			);
+		}
+	}
 	function finding(rule, offset, id, detail) {
 		const line = sourceByFile
 			.get(rule.file)

@@ -36,6 +36,8 @@
 		"start-load": "node scripts/agent-environment/start-load.mjs",
 		"map:tooling": "node scripts/agent-environment/generate-tooling-map.mjs",
 		"check:tooling-map": "node scripts/agent-environment/generate-tooling-map.mjs --check",
+		"code-health:baseline": "node scripts/agent-environment/code-health-baseline.mjs",
+		"check:code-health": "node scripts/agent-environment/check-code-health.mjs",
 		"check:design-context": "node scripts/check-design-context.mjs",
 		"check:verification-map": "node .agents/skills/verify-fitway/cli.mjs drift-tree",
 		"test:verification": "node --test --test-timeout=120000 \".agents/skills/verify-fitway/*.test.mjs\"",

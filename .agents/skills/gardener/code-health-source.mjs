@@ -40,12 +40,17 @@ function cast(node) {
 	return ts.isAsExpression(node) || ts.isTypeAssertionExpression(node);
 }
 
-function script(text, offset, isTypeScript, add, addComment) {
+function script(text, offset, isTypeScript, isTsx, add, addComment) {
 	const source = ts.createSourceFile(
-		isTypeScript ? "source.ts" : "source.js",
+		isTsx ? "source.tsx" : isTypeScript ? "source.ts" : "source.js",
 		text,
 		ts.ScriptTarget.Latest,
 		true,
+		isTsx
+			? ts.ScriptKind.TSX
+			: isTypeScript
+				? ts.ScriptKind.TS
+				: ts.ScriptKind.JS,
 	);
 	const spans = [];
 	const findLiterals = (node) => {
@@ -88,6 +93,14 @@ function script(text, offset, isTypeScript, add, addComment) {
 	}
 	visitCode(source, (node) => {
 		const start = offset + node.getStart(source);
+		if (ts.isFunctionLike(node) && node.body) {
+			const startLine = text
+				.slice(0, node.getStart(source))
+				.split(/\r?\n/).length;
+			const endLine = text.slice(0, node.body.end).split(/\r?\n/).length;
+			if (endLine - startLine + 1 > 80)
+				add("longFunctions", start, `${endLine - startLine + 1} lines`);
+		}
 		if (isTypeScript && node.kind === ts.SyntaxKind.AnyKeyword)
 			add("typeEscapes", start, "any used as a type");
 		if (isTypeScript && cast(node)) {
@@ -203,7 +216,7 @@ function html(text, add, addComment) {
 			const offset = match.index + openingTag.length;
 			if (match[1].toLowerCase() === "style")
 				css(match[2], offset, add, addComment);
-			else script(match[2], offset, false, add, addComment);
+			else script(match[2], offset, false, false, add, addComment);
 		}
 		const attributes =
 			/([^\s=<>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
@@ -226,6 +239,7 @@ export function scanSource({ file, text }) {
 		suppressions: [],
 		repeatedWorkarounds: [],
 		accessibilityOverrides: [],
+		longFunctions: [],
 	};
 	const add = (measure, index, detail) => {
 		result[measure].push({
@@ -248,8 +262,15 @@ export function scanSource({ file, text }) {
 	const ext = path.extname(file).toLowerCase();
 	if (ext === ".css") css(text, 0, add, addComment);
 	else if (ext === ".html") html(text, add, addComment);
-	else if ([".js", ".mjs", ".ts"].includes(ext))
-		script(text, 0, ext === ".ts", add, addComment);
+	else if ([".js", ".mjs", ".cjs", ".ts", ".tsx"].includes(ext))
+		script(
+			text,
+			0,
+			ext === ".ts" || ext === ".tsx",
+			ext === ".tsx",
+			add,
+			addComment,
+		);
 	for (const measure of Object.keys(result)) {
 		result[measure] = result[measure]
 			.sort((a, b) => a.index - b.index)

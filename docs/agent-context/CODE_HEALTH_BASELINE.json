@@ -1,0 +1,843 @@
+{
+	"version": 1,
+	"files": {
+		".agents/skills/gardener/cleanup.mjs": {
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/code-health-repair.test.ts": {
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/code-health-source.mjs": {
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/code-health.mjs": {
+			"duplication": 1
+		},
+		".agents/skills/gardener/code-health.test.ts": {
+			"duplication": 1,
+			"longFunctions": 3
+		},
+		".agents/skills/gardener/facts.test.ts": {
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/records.mjs": {
+			"duplication": 2
+		},
+		".agents/skills/gardener/records.test.ts": {
+			"duplication": 4,
+			"longFunctions": 3
+		},
+		".agents/skills/gardener/regressions.test.ts": {
+			"duplication": 4,
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/round12.test.ts": {
+			"duplication": 7,
+			"longFunctions": 3
+		},
+		".agents/skills/gardener/round15.test.ts": {
+			"duplication": 2,
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/round16.test.ts": {
+			"duplication": 8,
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/round16b.test.ts": {
+			"duplication": 12,
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/round16c.test.ts": {
+			"duplication": 10,
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/round27.test.ts": {
+			"duplication": 6,
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/round8b.test.ts": {
+			"duplication": 7,
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/survey.mjs": {
+			"duplication": 1,
+			"longFunctions": 5,
+			"giantFiles": 1233
+		},
+		".agents/skills/verify-fitway/baseline-cache.mjs": {
+			"duplication": 1
+		},
+		".agents/skills/verify-fitway/cli.mjs": {
+			"duplication": 1,
+			"longFunctions": 2,
+			"giantFiles": 827
+		},
+		".agents/skills/verify-fitway/cli.test.mjs": {
+			"duplication": 25,
+			"suppressions": 1,
+			"longFunctions": 8,
+			"giantFiles": 4584
+		},
+		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
+			"duplication": 8,
+			"longFunctions": 1
+		},
+		".agents/skills/verify-fitway/compare-runtime.mjs": {
+			"longFunctions": 1
+		},
+		".agents/skills/verify-fitway/compare-speed.test.mjs": {
+			"duplication": 7,
+			"longFunctions": 1
+		},
+		".agents/skills/verify-fitway/compare.mjs": {
+			"duplication": 3,
+			"longFunctions": 1,
+			"giantFiles": 922
+		},
+		".agents/skills/verify-fitway/core.mjs": {
+			"longFunctions": 1
+		},
+		".agents/skills/verify-fitway/discover.mjs": {
+			"longFunctions": 3
+		},
+		".agents/skills/verify-fitway/drive.mjs": {
+			"duplication": 2,
+			"longFunctions": 2
+		},
+		".agents/skills/verify-fitway/map.mjs": {
+			"longFunctions": 5
+		},
+		".agents/skills/verify-fitway/reaches.mjs": {
+			"longFunctions": 4
+		},
+		".agents/skills/verify-fitway/runner.mjs": {
+			"duplication": 3,
+			"longFunctions": 2,
+			"giantFiles": 1131
+		},
+		".agents/skills/verify-fitway/timeline-hold.test.mjs": {
+			"duplication": 2,
+			"longFunctions": 2
+		},
+		".agents/skills/verify-fitway/timeline.mjs": {
+			"suppressions": 1,
+			"longFunctions": 2,
+			"giantFiles": 807
+		},
+		"apps/server/src/access-repository.ts": {
+			"duplication": 14
+		},
+		"apps/server/src/access-service.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"apps/server/src/alert-notifier.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/alert-repository.ts": {
+			"longFunctions": 2
+		},
+		"apps/server/src/analytics-repository.ts": {
+			"duplication": 5
+		},
+		"apps/server/src/audit-repository.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/auth/postgres-auth-repository.ts": {
+			"duplication": 5
+		},
+		"apps/server/src/auth/routes.ts": {
+			"longFunctions": 1
+		},
+		"apps/server/src/command-repository.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/cron.test.ts": {
+			"duplication": 2,
+			"longFunctions": 2
+		},
+		"apps/server/src/edge-push.test.ts": {
+			"longFunctions": 1
+		},
+		"apps/server/src/health-incident-repository.ts": {
+			"duplication": 4
+		},
+		"apps/server/src/index.ts": {
+			"longFunctions": 1
+		},
+		"apps/server/src/occupancy-repositories.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"apps/server/src/openapi.test.ts": {
+			"duplication": 2,
+			"longFunctions": 2
+		},
+		"apps/server/src/openapi.ts": {
+			"duplication": 4,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase10-csv-transport.integration.test.ts": {
+			"duplication": 13,
+			"typeEscapes": 2,
+			"longFunctions": 3
+		},
+		"apps/server/src/phase10-domain.integration.test.ts": {
+			"duplication": 8,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase10-ui-csv.integration.test.ts": {
+			"duplication": 11,
+			"typeEscapes": 1,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase11-access.integration.test.ts": {
+			"duplication": 7,
+			"typeEscapes": 1,
+			"longFunctions": 2,
+			"giantFiles": 1056
+		},
+		"apps/server/src/phase11-audit-generalization.integration.test.ts": {
+			"duplication": 6,
+			"longFunctions": 2,
+			"giantFiles": 842
+		},
+		"apps/server/src/phase11-audit.integration.test.ts": {
+			"duplication": 18,
+			"typeEscapes": 2,
+			"longFunctions": 3
+		},
+		"apps/server/src/phase11-health.integration.test.ts": {
+			"duplication": 8,
+			"typeEscapes": 2,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase11-settings.integration.test.ts": {
+			"duplication": 13,
+			"typeEscapes": 1,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase2.integration.test.ts": {
+			"duplication": 9,
+			"typeEscapes": 3,
+			"longFunctions": 5,
+			"giantFiles": 1544
+		},
+		"apps/server/src/phase4-auth.integration.test.ts": {
+			"duplication": 2,
+			"typeEscapes": 1,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase4-health.integration.test.ts": {
+			"duplication": 10,
+			"typeEscapes": 2,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase5-command-domain.integration.test.ts": {
+			"duplication": 17,
+			"typeEscapes": 4,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase6-offline.integration.test.ts": {
+			"duplication": 17,
+			"typeEscapes": 2,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase7-integration.integration.test.ts": {
+			"duplication": 16,
+			"typeEscapes": 9,
+			"longFunctions": 10,
+			"giantFiles": 1948
+		},
+		"apps/server/src/phase8-alert-evaluator.integration.test.ts": {
+			"duplication": 13,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase8-integration.integration.test.ts": {
+			"duplication": 11,
+			"longFunctions": 3,
+			"giantFiles": 883
+		},
+		"apps/server/src/phase9-analytics.integration.test.ts": {
+			"duplication": 10,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase9-owner-ui.integration.test.ts": {
+			"duplication": 16,
+			"typeEscapes": 1,
+			"longFunctions": 3
+		},
+		"apps/server/src/public-occupancy.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/reporting-repository.test.ts": {
+			"duplication": 5,
+			"longFunctions": 1
+		},
+		"apps/server/src/reporting-repository.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"apps/server/src/reset-repository.test.ts": {
+			"duplication": 5,
+			"typeEscapes": 1,
+			"longFunctions": 2
+		},
+		"apps/server/src/reset-repository.ts": {
+			"duplication": 1
+		},
+		"apps/server/src/retention-repository.test.ts": {
+			"longFunctions": 1
+		},
+		"apps/server/src/settings-repository.test.ts": {
+			"duplication": 1,
+			"typeEscapes": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/settings-repository.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/settings-service.test.ts": {
+			"duplication": 2
+		},
+		"apps/web/src/components/crowd-signal.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/login/login.css": {
+			"duplication": 4
+		},
+		"apps/web/src/components/occupancy-status.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/access/owner-access-view.test.tsx": {
+			"duplication": 9,
+			"longFunctions": 3,
+			"giantFiles": 1317
+		},
+		"apps/web/src/components/owner/access/owner-access-view.tsx": {
+			"duplication": 4,
+			"longFunctions": 2,
+			"giantFiles": 1039
+		},
+		"apps/web/src/components/owner/access/owner-access.css": {
+			"duplication": 6
+		},
+		"apps/web/src/components/owner/audit/owner-audit-section.tsx": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/audit/owner-audit-view.test.tsx": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/audit/owner-audit-view.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/audit/owner-audit.css": {
+			"duplication": 5
+		},
+		"apps/web/src/components/owner/health/owner-health-section.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/health/owner-health-view.tsx": {
+			"duplication": 4,
+			"longFunctions": 3
+		},
+		"apps/web/src/components/owner/health/owner-health.css": {
+			"duplication": 6
+		},
+		"apps/web/src/components/owner/owner-analytics-view.test.tsx": {
+			"duplication": 5,
+			"longFunctions": 5,
+			"giantFiles": 902
+		},
+		"apps/web/src/components/owner/owner-analytics-view.tsx": {
+			"duplication": 1,
+			"longFunctions": 3,
+			"giantFiles": 1514
+		},
+		"apps/web/src/components/owner/owner-analytics.css": {
+			"duplication": 4,
+			"giantFiles": 1409
+		},
+		"apps/web/src/components/owner/owner-date-field.css": {
+			"duplication": 2
+		},
+		"apps/web/src/components/owner/owner-date-field.tsx": {
+			"longFunctions": 2
+		},
+		"apps/web/src/components/owner/owner-retained-disclosure.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/owner-scroll-region.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/owner-select.css": {
+			"duplication": 3
+		},
+		"apps/web/src/components/owner/owner-select.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/owner-shell.css": {
+			"duplication": 4
+		},
+		"apps/web/src/components/owner/owner-shell.tsx": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/reporting/messages.ts": {
+			"duplication": 1
+		},
+		"apps/web/src/components/owner/reporting/owner-analytics-mode-switch.test.tsx": {
+			"duplication": 6,
+			"repeatedWorkarounds": 1,
+			"longFunctions": 4
+		},
+		"apps/web/src/components/owner/reporting/owner-analytics-mode-switch.tsx": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting-export.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting-section.tsx": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting-view.test.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting-view.tsx": {
+			"duplication": 1,
+			"longFunctions": 3,
+			"giantFiles": 883
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting.css": {
+			"duplication": 6,
+			"giantFiles": 1598
+		},
+		"apps/web/src/components/owner/reporting/owner-section-switch.tsx": {
+			"longFunctions": 3
+		},
+		"apps/web/src/components/owner/settings/messages.ts": {
+			"duplication": 2
+		},
+		"apps/web/src/components/owner/settings/owner-settings-draft.ts": {
+			"duplication": 1
+		},
+		"apps/web/src/components/owner/settings/owner-settings-section.test.tsx": {
+			"duplication": 6,
+			"repeatedWorkarounds": 1,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/settings/owner-settings-section.tsx": {
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/settings/owner-settings-view.tsx": {
+			"duplication": 3,
+			"longFunctions": 2
+		},
+		"apps/web/src/components/owner/settings/owner-settings.css": {
+			"duplication": 2,
+			"giantFiles": 892
+		},
+		"apps/web/src/components/public-states.test.tsx": {
+			"duplication": 2,
+			"longFunctions": 2
+		},
+		"apps/web/src/components/skip-link.tsx": {
+			"duplication": 1
+		},
+		"apps/web/src/components/staff/operational-snapshot-view.test.tsx": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/staff/operational-snapshot-view.tsx": {
+			"longFunctions": 2
+		},
+		"apps/web/src/components/staff/staff-board-shell.tsx": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/staff/staff-board.css": {
+			"duplication": 4,
+			"giantFiles": 1297
+		},
+		"apps/web/src/components/staff/staff.css": {
+			"duplication": 3,
+			"giantFiles": 949
+		},
+		"apps/web/src/hooks/use-owner-access.test.tsx": {
+			"duplication": 4,
+			"repeatedWorkarounds": 1,
+			"longFunctions": 1
+		},
+		"apps/web/src/hooks/use-owner-access.ts": {
+			"duplication": 3
+		},
+		"apps/web/src/hooks/use-owner-audit.test.tsx": {
+			"duplication": 3,
+			"repeatedWorkarounds": 1,
+			"longFunctions": 2
+		},
+		"apps/web/src/hooks/use-owner-daily-analytics.test.tsx": {
+			"duplication": 3,
+			"repeatedWorkarounds": 2
+		},
+		"apps/web/src/hooks/use-owner-reporting.test.tsx": {
+			"duplication": 6,
+			"repeatedWorkarounds": 1,
+			"longFunctions": 2
+		},
+		"apps/web/src/hooks/use-owner-reporting.ts": {
+			"longFunctions": 1
+		},
+		"apps/web/src/hooks/use-owner-settings.test.tsx": {
+			"duplication": 10,
+			"repeatedWorkarounds": 1
+		},
+		"apps/web/src/hooks/use-public-occupancy.test.tsx": {
+			"duplication": 9,
+			"longFunctions": 1
+		},
+		"apps/web/src/hooks/use-public-occupancy.ts": {
+			"longFunctions": 1
+		},
+		"apps/web/src/i18n/locale.test.ts": {
+			"typeEscapes": 1
+		},
+		"apps/web/src/index.css": {
+			"duplication": 3,
+			"giantFiles": 1347
+		},
+		"apps/web/src/routes/login.tsx": {
+			"duplication": 1,
+			"suppressions": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/access/procedures.ts": {
+			"suppressions": 7
+		},
+		"packages/api/src/alerts/evaluator.test.ts": {
+			"longFunctions": 2
+		},
+		"packages/api/src/alerts/message.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/analytics/daily-analytics.test.ts": {
+			"duplication": 4,
+			"longFunctions": 1
+		},
+		"packages/api/src/analytics/daily-analytics.ts": {
+			"duplication": 3,
+			"longFunctions": 1
+		},
+		"packages/api/src/analytics/reporting/contracts.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/analytics/reporting/csv-transport.test.ts": {
+			"duplication": 3,
+			"longFunctions": 1
+		},
+		"packages/api/src/analytics/reporting/queries.test.ts": {
+			"duplication": 3,
+			"longFunctions": 1
+		},
+		"packages/api/src/analytics/reporting/reporting.test.ts": {
+			"duplication": 3,
+			"longFunctions": 5
+		},
+		"packages/api/src/analytics/reporting/reporting.ts": {
+			"duplication": 6,
+			"longFunctions": 2
+		},
+		"packages/api/src/audit/governance.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/audit/governance.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/audit/list.test.ts": {
+			"duplication": 4,
+			"longFunctions": 2
+		},
+		"packages/api/src/audit/list.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/auth/session-router.test.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/commands/service.test.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"packages/api/src/commands/service.ts": {
+			"longFunctions": 1
+		},
+		"packages/api/src/context.ts": {
+			"duplication": 3
+		},
+		"packages/api/src/cron/runner.test.ts": {
+			"longFunctions": 1
+		},
+		"packages/api/src/edge-push.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/edge-push.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/health/evaluator.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/health/incidents.test.ts": {
+			"duplication": 3,
+			"longFunctions": 2
+		},
+		"packages/api/src/health/incidents.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"packages/api/src/health/snapshot.test.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"packages/api/src/occupancy/business-day.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/occupancy/engine.test.ts": {
+			"duplication": 5,
+			"longFunctions": 1
+		},
+		"packages/api/src/occupancy/engine.ts": {
+			"duplication": 1,
+			"longFunctions": 2
+		},
+		"packages/api/src/occupancy/schedule.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/occupancy/schedule.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/offline/reconciliation.test.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/public-occupancy.test.ts": {
+			"longFunctions": 1
+		},
+		"packages/api/src/public/payload-builder.test.ts": {
+			"duplication": 1,
+			"typeEscapes": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/public/payload-builder.ts": {
+			"longFunctions": 1
+		},
+		"packages/api/src/reset/evaluator.test.ts": {
+			"duplication": 17,
+			"longFunctions": 2,
+			"giantFiles": 954
+		},
+		"packages/api/src/reset/evaluator.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/reset/runner.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"packages/api/src/retention/policy.test.ts": {
+			"longFunctions": 1
+		},
+		"packages/api/src/settings/contracts.test.ts": {
+			"longFunctions": 1
+		},
+		"packages/api/src/settings/procedures.test.ts": {
+			"duplication": 3,
+			"typeEscapes": 3,
+			"longFunctions": 1
+		},
+		"packages/auth/src/access.test.ts": {
+			"longFunctions": 1
+		},
+		"packages/auth/src/access.ts": {
+			"duplication": 1
+		},
+		"packages/auth/src/auth-service.test.ts": {
+			"longFunctions": 1
+		},
+		"packages/auth/src/crypto.ts": {
+			"duplication": 1
+		},
+		"packages/db/src/schema/application.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"packages/ui/src/styles/globals.css": {
+			"duplication": 1
+		},
+		"scripts/agent-environment/advance-main.test.ts": {
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/check-brief.mjs": {
+			"duplication": 6,
+			"longFunctions": 3,
+			"giantFiles": 1142
+		},
+		"scripts/agent-environment/check-brief.test.ts": {
+			"duplication": 5,
+			"typeEscapes": 5,
+			"longFunctions": 7,
+			"giantFiles": 1424
+		},
+		"scripts/agent-environment/code-health-baseline.mjs": {
+			"duplication": 1
+		},
+		"scripts/agent-environment/code-health-ratchet.test.ts": {
+			"duplication": 5,
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/codex-round.mjs": {
+			"duplication": 4,
+			"longFunctions": 3,
+			"giantFiles": 2324
+		},
+		"scripts/agent-environment/codex-round.test.ts": {
+			"duplication": 18,
+			"typeEscapes": 10,
+			"longFunctions": 14,
+			"giantFiles": 4485
+		},
+		"scripts/agent-environment/context-ending.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/generate-tooling-map.test.ts": {
+			"duplication": 5,
+			"longFunctions": 2,
+			"giantFiles": 900
+		},
+		"scripts/agent-environment/new-handoff.mjs": {
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/new-handoff.test.ts": {
+			"duplication": 1,
+			"longFunctions": 2
+		},
+		"scripts/agent-environment/path-tokens.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/quiet-tooling.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/resume-point.mjs": {
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/resume-point.test.ts": {
+			"duplication": 5,
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/start-load.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/tooling-map-coverage.mjs": {
+			"duplication": 1
+		},
+		"scripts/agent-environment/tooling-map-imports.mjs": {
+			"duplication": 2
+		},
+		"scripts/check-agent-context.mjs": {
+			"duplication": 3,
+			"longFunctions": 5,
+			"giantFiles": 1168
+		},
+		"scripts/check-agent-context.test.ts": {
+			"duplication": 11,
+			"typeEscapes": 6,
+			"longFunctions": 2,
+			"giantFiles": 2136
+		},
+		"scripts/check-concept-css.mjs": {
+			"longFunctions": 2
+		},
+		"scripts/check-concept-css.test.ts": {
+			"longFunctions": 1
+		},
+		"scripts/demo/cli.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/demo/seed.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/demo/seed.ts": {
+			"duplication": 6,
+			"typeEscapes": 1,
+			"longFunctions": 1
+		},
+		"scripts/demo/text-update.test.ts": {
+			"duplication": 1,
+			"longFunctions": 2
+		},
+		"scripts/demo/text-update.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/owner-supersession-policy.mjs": {
+			"duplication": 1,
+			"longFunctions": 2
+		},
+		"scripts/run-vitest.mjs": {
+			"duplication": 1
+		},
+		"scripts/run-vitest.test.ts": {
+			"duplication": 5
+		},
+		"scripts/show-agent-context.mjs": {
+			"longFunctions": 1
+		},
+		"scripts/show-agent-context.test.ts": {
+			"longFunctions": 2
+		},
+		"scripts/verify-repository.mjs": {
+			"duplication": 2,
+			"longFunctions": 5,
+			"giantFiles": 961
+		},
+		"scripts/verify-repository.schema.test.ts": {
+			"duplication": 10,
+			"longFunctions": 6,
+			"giantFiles": 1344
+		},
+		"scripts/verify.mjs": {
+			"duplication": 3
+		},
+		"scripts/verify.test.ts": {
+			"duplication": 6,
+			"longFunctions": 2
+		},
+		"scripts/visual-authority.mjs": {
+			"duplication": 1,
+			"longFunctions": 2,
+			"giantFiles": 848
+		},
+		"scripts/visual-authority.test.ts": {
+			"duplication": 5,
+			"longFunctions": 5,
+			"giantFiles": 2028
+		}
+	}
+}

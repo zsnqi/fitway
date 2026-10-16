@@ -1,3 +1,5 @@
+export const DUPLICATION_WINDOW_LINES = 8;
+
 export function scanDuplication(files) {
 	const sequences = new Map();
 	const sources = new Map(
@@ -7,8 +9,12 @@ export function scanDuplication(files) {
 		]),
 	);
 	for (const [file, values] of sources) {
-		for (let line = 0; line + 10 <= values.length; line++) {
-			const block = values.slice(line, line + 10);
+		for (
+			let line = 0;
+			line + DUPLICATION_WINDOW_LINES <= values.length;
+			line++
+		) {
+			const block = values.slice(line, line + DUPLICATION_WINDOW_LINES);
 			if (block.some((value) => !value)) continue;
 			const key = block.join("\n");
 			const places = sequences.get(key) ?? [];
@@ -22,7 +28,7 @@ export function scanDuplication(files) {
 	for (const places of sequences.values()) {
 		if (places.length < 2) continue;
 		let before = 0;
-		let after = 10;
+		let after = DUPLICATION_WINDOW_LINES;
 		const common = (shift) => {
 			const value = sources.get(places[0].file)[places[0].line - 1 + shift];
 			return (
@@ -52,6 +58,7 @@ export function scanDuplication(files) {
 					occurrences.push({ file, line: line + 1 });
 			}
 		}
+		if (occurrences.length < 2) continue;
 		occurrences.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
 		blocks.set(content, {
 			...occurrences[0],

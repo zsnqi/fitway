@@ -274,6 +274,7 @@ describe("verification ladder entry point", () => {
 			["check:repository"],
 			["check:verification-map"],
 			["check:tooling-map"],
+			["check:code-health"],
 			["test:verification"],
 			["check"],
 			["exec", "node", "scripts/check-owner-tokens.mjs"],

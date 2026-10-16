@@ -400,6 +400,65 @@ describe("concept CSS planted findings", () => {
 			).map((f) => f.rule),
 		).toEqual(["outline-without-ring"]);
 	});
+
+	it("H6 keeps the concept focus ring only in style.css", () => {
+		const sources = [
+			{
+				file: "style.css",
+				css: ":focus-visible { outline: 2px solid var(--ink); }",
+			},
+			{
+				file: "components.css",
+				css: [
+					".cx .is-focus { outline: 2px solid var(--ink); }",
+					".cx .field.is-spec-focus { outline: 1px solid red; }",
+					".selected { outline: 2px solid var(--ink); }",
+				].join("\n"),
+			},
+		];
+		expect(
+			lintSources(sources)
+				.filter((finding) => finding.rule === "focus-ring")
+				.map(({ file, line }) => [file, line]),
+		).toEqual([
+			["components.css", 1],
+			["components.css", 2],
+		]);
+	});
+
+	it("H6 requires exactly one focus ring in style.css", () => {
+		expect(
+			lintSources([
+				{
+					file: "style.css",
+					css: ":focus-visible { outline: 2px solid red; }\n:focus { outline: 1px solid red; }",
+				},
+			]).filter((finding) => finding.rule === "focus-ring"),
+		).toEqual([
+			{
+				file: "style.css",
+				line: 1,
+				rule: "focus-ring",
+				detail: "expected one focus-ring declaration in style.css; found 2",
+			},
+		]);
+
+		expect(
+			lintSources([
+				{
+					file: "style.css",
+					css: ":root { color: red; }",
+				},
+			]).filter((finding) => finding.rule === "focus-ring"),
+		).toEqual([
+			{
+				file: "style.css",
+				line: 1,
+				rule: "focus-ring",
+				detail: "expected one focus-ring declaration in style.css; found 0",
+			},
+		]);
+	});
 });
 
 describe("concept CSS CLI and read-only folder contract", () => {
