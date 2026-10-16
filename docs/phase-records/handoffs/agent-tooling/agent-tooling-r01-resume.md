@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `6088e735`, 2026-10-17 02:28 +03:00
+- **As of:** `codex/owner-redesign-r04` at `f508f0b5`, 2026-10-17 02:31 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,16 +37,16 @@
 
 ## Running now
 
-- **ratchet-fix** (DeepSeek V4.1 Flash `max`, `docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix.md`
-  at HEAD `e115f646`, K1-K6 and L0-L2), launched at 01:24 on 2026-10-17 in D:/Projects/fitway-worktrees/tooling-ratchet,
-  run folder D:/fitway-temp/codex-round-3911ed9e-70c8-440e-960b-77c265e16d07, launcher log
-  D:/fitway-temp/tooling-ratchet/launch-ratchet-fix.log. Measured at 02:27: the first turn committed `3f80f091`
-  ("Fix code-health ratchet review findings") and reported K1-K6 PASS, but the claim check refused it (the run's last
-  fast ladder came before its commit, `auto-resumes.log`), and the launcher resumed it on its own at 02:16 (turn 2,
-  `events-resume.jsonl`). The launcher's chain is alive (sh 40876, pnpm 6988, cmd 16008, node 14736) with its codex
-  (PID 18380); a compacted session may not get the background task's notice, so watch the run folder's
-  `turns.jsonl` (a `report accepted` line ends it) or the launcher process. If the launcher dies without a report, resume from
-  the run folder (`--run`).
+- **ratchet-fix's Sol diff review** (`docs/agent-context/briefs/CODE_REVIEW.md`), folder
+  D:/fitway-temp/code-review/ratchet-fix-1 (diff `e115f646..3f80f091`), started 02:33 on account hhmam1435 from a
+  Bash background task; it ends with `last.md` written (`review.log` holds the run). CI runs on `3f80f091` (pushed
+  02:32).
+- **ratchet-fix is done** (measured): DeepSeek V4.1 Flash `max`, run
+  D:/fitway-temp/codex-round-3911ed9e-70c8-440e-960b-77c265e16d07, result `3f80f091` on `tooling-ratchet`
+  ("Fix code-health ratchet review findings", 10 files, +556/-409). Turn 1 was refused because its fast ladder ran
+  before its commit; turn 2 reran the ladder on the commit (`811.24s`, no mutation) and the report was accepted at
+  02:30. It reports K1-K6, H1-H6 and L0-L2 PASS; baseline 217 to 215 files, duplication 733 to 731, the rest
+  unchanged; `scripts/check-concept-css.mjs` is 797 lines (the giant-file line is 800).
 - How it got here: the ratchet delivered `7c28d15a` on `tooling-ratchet` (run
   D:/fitway-temp/codex-round-c8aa5fb0-1f2a-4231-80f0-7c783796af3b): H1-H6 PASS; baseline CODE_HEALTH_BASELINE.json on
   that branch (217 files; duplication 733 at an 8-line window, type escapes 60, suppressions 10, repeated
@@ -65,8 +65,8 @@
 
 ## Next steps
 
-1. **Read ratchet-fix's report** against its events (commit, ladder, each K row's failing case at `e115f646`), then a
-   Sol diff review (`docs/agent-context/briefs/CODE_REVIEW.md`) and a mechanical fixer for any blocking finding.
+1. **Disposition the diff review's findings** (`Finding N: blocking|...` in the folder's `dispositions.md`); a
+   mechanical fixer (`owner-direction-fixer`, frozen edits) or a fix round applies the blocking ones.
 2. **Grade the ratchet with its fix** (Sol; held-out rows HR1-HR12 in the grader's folder), then merge
    `tooling-ratchet` into `agent-tooling-r01`, the coordinator line and main.
 3. **The CLI contract with `pnpm tools`** (F251; draft at D:/fitway-temp/agent-tooling-drafts/cli-contract-body.md),
