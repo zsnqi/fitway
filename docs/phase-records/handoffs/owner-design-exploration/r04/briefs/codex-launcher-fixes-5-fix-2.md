@@ -54,7 +54,8 @@ work, and every case the grader passed still holds.
     word anywhere in the text, so a reading that quotes `` `Literal reading: 1` `` or `` `What goes wrong:` `` in its
     prose yields an empty part, and the T2 rule refuses the whole answer: both files above are refused at `34065b3d`,
     while `5b81b3b7` reads them as `5 [T4,T3,T5,T1,T2]` and `5 [G3,G1,G2,G4,G6]`.
-  - **Outcome.** Text inside a code span or quotation marks is never a label, and a label counts only where it begins
+  - **Outcome.** Text inside a code span, straight double quotes or curly double quotes is never a label (single
+    quotes are left alone, since they double as apostrophes), each form tested, and a label counts only where it begins
     a line, a bullet or a clause, as P2 said; both files read as at `5b81b3b7`, with the same trimmed reading text,
     as tests on copies under `scripts/agent-environment/fixtures/codex-round-reviews/`; every case in
     `parser-cases.cjs` gives the result the grader recorded at `34065b3d`, and every review file and fixture the
@@ -66,10 +67,11 @@ work, and every case the grader passed still holds.
 
 ## Limits the result keeps
 
-- **L0. New cases prove the repair.** Each case you add fails on `34065b3d`'s production code at an assertion on the
-  reading count or text; report each failing output.
+- **L0. New cases prove the repair.** Each case you add compares the parser's exact readings (count, IDs and trimmed
+  text) with expected values frozen from `5b81b3b7`'s parser, and fails on `34065b3d`'s production code at that
+  comparison; report each failing output.
 - **L1. Today's behaviour elsewhere.** Every test at `34065b3d` keeps its assertions and still runs, none skipped,
-  excluded or made conditional; launch, `resume` and the review keep their arguments and exit codes.
+  excluded or made conditional; every fixture file at `34065b3d` stays byte for byte, new ones only added; launch, `resume` and the review keep their arguments and exit codes.
 - **L2. The ladder.** `node scripts/verify.mjs fast` passes on your committed tree, and `git status --short` is empty
   after your commit and after the ladder.
 
