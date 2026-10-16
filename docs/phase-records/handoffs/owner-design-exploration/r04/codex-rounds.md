@@ -1524,3 +1524,30 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Brief rows** 4/5 (L0 as written); **held-out** (`D:/fitway-grader/owner-r04/brief-ladder-heldout.md`) 8/8;
   overclaims 0; brief-caused failures 1 (L0's wording for positive controls).
 - **Disposition:** merged into the coordinator line (`abf26cdf`); F234 and F246 are fixed.
+
+## launcher-fixes-5 with fix and fix-2: `briefs/codex-launcher-fixes-5.md`, `-fix.md` and `-fix-2.md` (this folder), results `4964b95d`, `34065b3d` and `0949bea1` on `owner-r04-launcher-fixes-5` (from `5b81b3b7`), DeepSeek V4.1 Flash, level `max`
+
+- **Set-up:** P1 (F235, wrapped readings), P2 (F236, readings known by labelled parts; REVIEW.md asks for the labels),
+  P3 (F237, the Git Bash tests in Codex's sandbox), P4 (F242, a report's commit and ladder checked against the run),
+  P5 (F245, a per-turn `turns.jsonl` and stderr file). Both reviewers on each brief (decision 66): the first brief
+  DeepSeek five (four closed), Sol four (two closed); fix DeepSeek five (all closed), Sol three (two closed); fix-2
+  DeepSeek five (three closed), Sol five (four closed).
+- **Runs (measured):** the first in two turns, start load 42,630; fix in three, 42,719; fix-2 in four, 91,488 (it read
+  the grader's case file whole). Each report's commit and post-commit ladder appear in its events; the first and fix
+  named every check PASS and the ladder passed locally (P3 at work).
+- **Grading:** GPT-6.1 Sol `xhigh` on `4964b95d`: FAIL. G5-G7 and G9 PASS (all seven false reports resumed; the
+  timeline right), but G1 (a reading wrapped after `Gap:` refused), G2 (an empty part read), G3 (two inline test
+  answers rewritten to fit the stricter parser, brief-caused: P1 had applied the label rule to indented
+  continuations) and G8 (new cases failing on ENOENT before their assertions). The accepted change: the test that
+  lists events files now filters `events*.jsonl`, since P5 adds `turns.jsonl`. Sol on `34065b3d` (account switched
+  to `smhsdxsz5h` at a usage limit, decision 72): all PASS except G3, two real review answers refused; the
+  coordinator traced it (measured): `labelledParts` took a label quoted inside a reading's prose as an empty part.
+  fix-2 graded by the coordinator (decision 67; a small repair): three parsers replayed on 88 review answers and
+  fixtures (measured): the result refuses none the base read and gives the base's text wherever the base reads; five
+  answers `34065b3d` refused now read; an unquoted empty part is still refused. CI passed on `0949bea1`.
+- **Brief rows** 7/8 after fix-2 (L1's predicate change accepted); **held-out**
+  (`D:/fitway-grader/owner-r04/launcher-fixes-5*-heldout.md`) all after fix-2; overclaims 0; brief-caused failures 1
+  (G3's rewritten answers).
+- **Disposition:** merged into the coordinator line (`7cd265b2`); F235, F236, F237, F242, F245 and F249 are fixed.
+  Two review answers this night were unreadable to the old launcher (F249 and quoted labels); the merged parser reads
+  both.

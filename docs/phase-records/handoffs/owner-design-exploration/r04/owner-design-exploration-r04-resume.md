@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-16 00:05 +03:00 (three tool rounds running on DeepSeek; main at `e64006d0`)
+- **As of:** `codex/owner-redesign-r04`, 2026-10-16 04:05 +03:00 (three rounds merged, ladder-seam running; main at `e64006d0`)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-73), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -36,27 +36,20 @@
 
 ## Running now
 
-Three DeepSeek rounds at `max`, launched 2026-10-16 about 00:00 from `a944207f` (worktrees at `5b81b3b7`), each
-reviewed by DeepSeek and GPT-6.1 Sol first (dispositions in each `D:/fitway-temp/brief-review/codex-<name>-1[-sol]/`):
+- **ladder-seam** (F250), DeepSeek `max`, launched 2026-10-16 about 04:00 from `f47e306e` (worktree
+  `D:/Projects/fitway-worktrees/owner-r04-ladder-seam` at `c87bf5b3`), run
+  `D:/fitway-temp/codex-round-4f7a5b9a-d022-4ae0-9c18-3766b54bbd01`; held-out rows
+  `D:/fitway-grader/owner-r04/ladder-seam-heldout.md`.
 
-- **launcher-fixes-5** (F235, F236, F237, F242, F245): `D:/Projects/fitway-worktrees/owner-r04-launcher-fixes-5`,
-  run `D:/fitway-temp/codex-round-cbeae1b0-f192-467a-8c3a-d410e7c09a34`.
-- **brief-ladder** (F234, F246): `D:/Projects/fitway-worktrees/owner-r04-brief-ladder`,
-  run `D:/fitway-temp/codex-round-0b658846-8e7e-41a8-a134-00cfd66c49f4`.
-- **vf-proofs** (F241's mechanism, F244): `D:/Projects/fitway-worktrees/owner-r04-vf-proofs`,
-  run `D:/fitway-temp/codex-round-2c7cab40-1cba-4527-b9ad-13e4eb9fe35b`.
-
-Held-out rows: `D:/fitway-grader/owner-r04/{launcher-fixes-5,brief-ladder,vf-proofs}-heldout.md`. Each round is
-graded (Sol, or DeepSeek with two rows reproduced, decision 72) before it merges.
+The night's batch is merged on the coordinator line: vf-proofs (`bb313de0`), brief-ladder (`abf26cdf`) and
+launcher-fixes-5 with two fixes (`7cd265b2`); CI passed on `095ca99c`; main not yet moved.
 
 ## Next steps
 
 1. **main is at `e64006d0`** (moved by `pnpm main:advance` after CI run 38795346728 passed in 1,305 s; the job's
    timeout is now 30 minutes, decision 71). The commits after it go with the next batch.
-2. **Grade and merge the three running rounds** (Running now): vf-proofs (`bb313de0`) and brief-ladder (`abf26cdf`)
-   are merged; launcher-fixes-5 failed its grade and launcher-fixes-5-fix is running. Then **a small round for F250**
-   (stand-in steps reach the ladder only from its tests, never from a real run's environment; the user asked for it
-   after launcher-fixes-5-fix, through a side session, 2026-10-16), then main moves once for the batch.
+2. **Grade and merge ladder-seam** (Running now), then push the coordinator line and move main once for the batch
+   (`pnpm main:advance`).
 3. **The agent-tooling wave (decision 73)** in a fresh coordinator session, beside the shared lows: its own
    `repository-infrastructure` milestone (F253), a short standing-rules pickup, one CLI contract with `pnpm tools`
    (F251), a generated code map, map upkeep (F252).
