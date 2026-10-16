@@ -59,18 +59,24 @@ whole scripts, and that file is never out of date on a green ladder.
     lists, for every JavaScript and TypeScript source file (tests excluded) under `scripts/agent-environment/`,
     `.agents/skills/verify-fitway/`, `.agents/skills/gardener/`, and the files `scripts/verify.mjs`,
     `scripts/check-agent-context.mjs`, `scripts/show-agent-context.mjs`, `scripts/verify-repository.mjs`,
-    `scripts/check-design-context.mjs`, `scripts/check-concept-css.mjs` and `scripts/run-vitest.mjs`: each exported
-    function or class and each top-level function, with its start and end line, and the test files that cover it,
-    where a test file covers it when it imports that name from that module, or runs that module as a command and the
-    name is reached from the module's entry. A function no test covers is listed as such. Report how many files and
-    functions the map lists, and how many have no covering test.
+    `scripts/check-design-context.mjs`, `scripts/check-concept-css.mjs` and `scripts/run-vitest.mjs`: every
+    top-level callable (function declarations, `const`/`let` bindings to arrow or function expressions, default
+    exports, classes and each of their methods, getters, setters and static members), with its start and end line,
+    and the test files that cover it, where a test file covers it when it imports that name from that module (not a
+    type-only import) and calls it, or calls a method on an instance of that class; a module some test runs as a
+    command lists those tests once, at module level, without claiming its functions. A callable no test covers is
+    listed as such. A test compares the map's file list with `git ls-files` of those folders and files (tests
+    excluded) and fails on any file missing or extra, and checks for every entry that its line range encloses a
+    declaration of that name in that file and that every test file it lists exists and calls it. Report how many files and callables the map lists, and how many
+    have no covering test.
   - **Intent.** One file answers "where is X and what tests it" for every tool an agent runs; a map that skips files
     or invents coverage defeats it.
 - **M2. The map never drifts.**
-  - **Outcome.** A fast-ladder step regenerates the map in memory and fails when it differs from the committed file,
-    printing `<command>: FAIL: <what differs> (run <the command that regenerates it>)` and exit 1; it passes on your
-    committed tree. A test shows it fails after a planted change (a function added to a mapped file in a scratch copy
-    the test makes) and passes on the unchanged tree. Two runs of the generator give byte-identical files on Windows,
+  - **Outcome.** A fast-ladder step runs the same generator in a check mode, regenerates the map in memory and fails when it differs from the committed file,
+    printing `<command>: FAIL: <what differs> (run <the command that regenerates it>)` and exit 1, and the ladder
+    fails with it; it passes on your committed tree. Tests show it fails after each planted change in a scratch copy the test makes (a source file added
+    and one removed in a mapped folder, a callable of each form above added and one removed, a function moved down by
+    some lines, a test's call to a function removed) and passes on the unchanged tree. Two runs of the generator give byte-identical files on Windows,
     whatever the checkout's line endings.
   - **Intent.** A green ladder means the map matches the code.
 
