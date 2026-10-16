@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04`, 2026-10-16 04:05 +03:00 (the night's four rounds merged; main at `3cde7a07`; nothing running)
+- **As of:** `codex/owner-redesign-r04` at `37c768a0`, 2026-10-16 10:41 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-73), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -23,35 +23,37 @@
   vf-runner-fix-2 (`a8791d1a`: 6/6, 9/9 held-out, no overclaim). F168, F175, F176, F183 and F238-F240 are fixed.
   The Sol arm's branch `owner-r04-vf-runner` stays unmerged. `772400e4` made the launcher tests create
   `D:/fitway-temp` themselves (F243: CI had it only from the old compare tests).
-- **Diagnosable logging (decision 70):** F242 and F245 go to the next launcher round, F246 with it or the next
-  encoding round; F247 is done (dated lines and visible account errors in `D:/fitway-temp/resume-auto.sh` and
-  `resume-any.sh`, backups `.bak-20261015`); the server's error logs wait for production.
-- **Decision 66's reviewer tally (measured):** three briefs reviewed by both models: launcher-fixes-4 (Sol 1 closed
-  reading DeepSeek did not raise; DeepSeek 5), vf-runner-fix (Sol 2; DeepSeek 4), vf-runner-fix-2 (Sol 1; DeepSeek
-  5): Sol averages 1.33 per brief; the rule needs at least four briefs. Grading briefs had the DeepSeek review only.
-- **Pickup check (decision 67, measured):** the last resume point's "main at `699c111f`" did not hold; main was already at
-  `a28574a7`, so its step 1 had been done.
+- **Diagnosable logging (decision 70):** F242, F245 and F246 are fixed (launcher-fixes-5, brief-ladder); F247 is
+  done; the server's error logs wait for production.
+- **The tools moved (decision 73, F253):** agent-tooling-r01 owns the tool paths from 2026-10-16
+  (`docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md`); this milestone uses them and changes none.
+  The same coordinator session runs both.
+- **Both reviewers on every brief from 2026-10-16** (decision 66's rule met: 13 Sol readings closed that DeepSeek did
+  not raise over nine briefs, measured; `codex-rounds.md` §"Evaluation: both reviewers, decision 66's rule applied").
+- **Pickup check (decision 67, measured, 2026-10-16):** main at `3cde7a07` and nothing running both held; the
+  reviewer tally here (three briefs) was stale.
 - **Decision 67 in force:** pickups check the resume point's claims against their sources; every claim says measured,
   inferred or guess; Opus (`owner-direction-verifier`, high) grades chosen rounds beside Sol.
 
 ## Running now
 
-Nothing. The night's batch (vf-proofs `bb313de0`, brief-ladder `abf26cdf`, launcher-fixes-5 with two fixes
-`7cd265b2`, ladder-seam `bafb2b6e`) is merged, and main is at `3cde7a07` (`pnpm main:advance` after its CI passed;
-measured). Their worktrees and grading checkouts are removed.
+- **shared-lows** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows.md`: F241's `ends` declarations for 16 features, the rail's ring on
+  Access, rings after a pointer and OWN-C9): worktree D:/Projects/fitway-worktrees/owner-r04-shared-lows, branch
+  `owner-r04-shared-lows` from `23314b3a`, ports 3176-3177, run folder
+  D:/fitway-temp/codex-round-bd3edec8-d939-4284-b853-7e796d42c26c; held-out rows
+  D:/fitway-grader/owner-r04/shared-lows-heldout.md. Both reviews dispositioned.
+- agent-tooling-r01's code-map round and launcher-fixes-6 (its resume point).
 
 ## Next steps
 
 1. **main is at `3cde7a07`.** The commits after it go with the next batch.
-2. **The agent-tooling wave (decision 73)**, in a fresh coordinator session (the user's permission, 2026-10-16): its
-   own `repository-infrastructure` milestone taking r04's tool paths (F253), a short standing-rules pickup, one CLI
-   contract with `pnpm tools` (F251), a generated code map, map upkeep (F252); with it the launcher's F254 (a cited
-   base SHA read as the commit claim).
-3. **Beside it, the shared lows (decision 47)** on the build branch, with the `ends` declarations for the build
-   branch's `changesState` features that vf-proofs' report lists (F241's rest); F248 waits for the next
-   verify-fitway round.
-4. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
-   crowd page, the front-desk screen, sign-in; then the demo materials (private plan).
+2. **Grade shared-lows** (a Sol grader on its held-out rows; the coordinator looks at the focus frames S2 and S3
+   change), merge into `owner-followup-r04-build` after its checks. Left for later, with their reasons: the dialogs'
+   parts splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148, decision
+   69).
+3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
+   crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Settings waits for
+   agent-tooling-r01's wave (decision 73).
 
 ## Waiting on the user
 

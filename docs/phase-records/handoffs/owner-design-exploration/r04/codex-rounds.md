@@ -1568,3 +1568,16 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Brief rows** 4/4; **held-out** (`D:/fitway-grader/owner-r04/ladder-seam-heldout.md`) 6/6; overclaims 0.
 - **Disposition:** merged into the coordinator line (`bafb2b6e`); F250 is fixed; F254 recorded for the next launcher
   round.
+
+## Evaluation: both reviewers, decision 66's rule applied (2026-10-16)
+
+- **Count (measured by a Sonnet researcher from each brief's two review folders and dispositions under
+  `D:/fitway-temp/brief-review/`; the coordinator reproduced ladder-seam's row):** Sol readings the coordinator closed
+  that DeepSeek did not raise, per brief: launcher-fixes-4 1, vf-runner-fix 2, vf-runner-fix-2 1 (borderline),
+  vf-proofs 0, brief-ladder 2, launcher-fixes-5 1, launcher-fixes-5-fix 1, launcher-fixes-5-fix-2 2 (borderline, up to
+  3), ladder-seam 3: 13 over nine briefs, 1.44 per brief (12 to 14 with the borderline calls, 1.33 to 1.56).
+- **Rule result:** at least four briefs and at least one such reading per brief, so GPT-6.1 Sol at `xhigh` is a second
+  reviewer for every brief from 2026-10-16, on the same `prompt.md` and `sources/` in a copy of the launcher's review
+  folder (`<review folder>-sol`), with its own `dispositions.md`.
+- **Pickup check (decision 67, measured):** the resume point's tally ("three briefs reviewed by both models") was
+  stale; six more briefs had both reviews.
