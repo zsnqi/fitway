@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `6088e735`, 2026-10-17 02:28 +03:00
+- **As of:** `codex/owner-redesign-r04` at `7ed0bb0f`, 2026-10-17 02:29 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-75), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -68,8 +68,6 @@
 - Drive C: 15 items wait for the user's decision in D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md (12.04 GB free
   after the safe cleanup, measured).
 - Optional: Windows Update's active hours (F159).
-- Optional: decision 75's forced-colours exemption (no dimming, full contrast) is the coordinator's call; the user's
-  word can change it.
 
 ## Known risks
 
