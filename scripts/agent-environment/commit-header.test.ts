@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { commitHeaderSha } from "./codex-round.mjs";
+import { commitHeaderSha } from "./commit-header.mjs";
 
 const escapePrefix =
 	"\u001b[?9001h\u001b[?1004h\u001b[?25l\u001b[2J\u001b[m\u001b[H\u001b]0;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\u0007\u001b[?25h";

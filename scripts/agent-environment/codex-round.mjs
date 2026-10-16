@@ -25,6 +25,7 @@ import {
 	namedReviewSourceEntries,
 	reviewSourcePlan,
 } from "./check-brief.mjs";
+import { commitHeaderSha } from "./commit-header.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 
@@ -1375,14 +1376,6 @@ function lineageAndDiffFailures(worktree, head, matching, launchHead) {
 			`commit ${matching.candidate}: worktree HEAD ${head} has an empty diff against launch HEAD ${launchHead}`,
 		);
 	return failures;
-}
-
-export function commitHeaderSha(output) {
-	// biome-ignore lint/suspicious/noControlCharactersInRegex: PowerShell output carries terminal escape codes (CSI, OSC)
-	const ansi = /\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07\x1b]*(?:\x07|\x1b\\))/g;
-	const header = /^\[.*?(?: \(root-commit\))? ([0-9a-f]{7,64})\]/im;
-	const match = String(output).replace(ansi, "").match(header);
-	return match ? match[1].toLowerCase() : null;
 }
 
 function commitRecordFailures(records, worktree, head) {
