@@ -65,13 +65,16 @@ reader can hold, and every gap the review and the grade found is closed.
     two entries with their own coverage, a property read
     covering only the getter and an assignment or update only the setter; the dead `process.cwd()` branch is removed or made to work, whichever an
     outcome needs (say which); a test's dynamic import of a mapped module counts as an import for coverage, its bindings (named, destructured,
-    default, namespace) resolved by the same rules as a static import's; and
+    default, namespace) resolved by the same rules as a static import's, and coverage follows a re-export to the module
+    that defines the name (the existing parser test keeps covering `parseCallables` wherever it moves); and
     `.agents/skills/verify-fitway/cli.mjs` and `port-observer.cjs`, which `cli.test.mjs` runs as commands, list it at
     module level. Each with a test.
   - **Intent.** The map lists what is there and who tests it.
 - **K3. A validator that skips a field (review 7).**
   - **Outcome.** The map's validation checks each file's module-level command tests against the command invocations it
-    detects in the test files, failing on any missing or extra entry, as it checks callables' tests.
+    detects in the test files, failing on any missing or extra entry, as it checks callables' tests; and the check
+    mode fails, naming the file, when a mapped folder holds an untracked source file (a test adds one without staging
+    it).
   - **Intent.** As K2.
 - **K4. One way to list tracked files (review 6).**
   - **Outcome.** The generator lists tracked files through `listTrackedFiles` of `scripts/verify-repository.mjs` (or one
