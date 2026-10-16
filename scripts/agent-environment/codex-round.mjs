@@ -25,6 +25,7 @@ import {
 	namedReviewSourceEntries,
 	reviewSourcePlan,
 } from "./check-brief.mjs";
+import { commitHeaderSha } from "./commit-header.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 
@@ -1375,14 +1376,6 @@ function lineageAndDiffFailures(worktree, head, matching, launchHead) {
 			`commit ${matching.candidate}: worktree HEAD ${head} has an empty diff against launch HEAD ${launchHead}`,
 		);
 	return failures;
-}
-
-function commitHeaderSha(output) {
-	for (const line of String(output).split(/\r?\n/)) {
-		const match = line.match(/^\[.*?(?: \(root-commit\))? ([0-9a-f]{7,64})\]/i);
-		if (match) return match[1].toLowerCase();
-	}
-	return null;
 }
 
 function commitRecordFailures(records, worktree, head) {
