@@ -331,6 +331,5 @@ export async function checkToolingMap({ root = process.cwd() } = {}) {
 		errors: [`generated map differs: ${differences.join("; ")}`],
 		generated,
 		committed,
-		parsed,
 	};
 }

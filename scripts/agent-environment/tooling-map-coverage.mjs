@@ -40,6 +40,7 @@ function memberEntriesByOwner(entries) {
 }
 
 function memberKinds(staticMember, operation) {
+	if (operation === "construct") return new Set(["constructor"]);
 	const prefix = staticMember ? "static-" : "";
 	if (operation === "call")
 		return new Set([`${prefix}method`, `${prefix}property`]);
@@ -361,13 +362,10 @@ function recordNodeCoverage(node, context) {
 		);
 		markCoverage(context.coverage, owner, context.testPath);
 		const constructorEntry = owner
-			? context.membersByOwner.byOwner
-					.get(context.membersByOwner.key(owner))
-					?.find(
-						(member) =>
-							member.kind === "constructor" &&
-							member.memberName === "constructor",
-					)
+			? memberByName(context.membersByOwner, owner, "constructor", {
+					staticMember: false,
+					operation: "construct",
+				})
 			: null;
 		markCoverage(context.coverage, constructorEntry, context.testPath);
 	}

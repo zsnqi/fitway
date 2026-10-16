@@ -539,23 +539,23 @@ Counts: 48 files, 603 callables, 473 without a covering test.
 
 - `markCoverage` [function] L22-L28; tests: none
 - `memberEntriesByOwner` [function] L30-L40; tests: none
-- `memberKinds` [function] L42-L47; tests: none
-- `memberByName` [function] L49-L63; tests: none
-- `resolveUrlNode` [function] L65-L76; tests: none
-- `isProcessCwdCall` [function] L78-L87; tests: none
-- `resolvePathValues` [function] L89-L113; tests: none
-- `resolveStringValues` [function] L115-L173; tests: none
-- `resolveStringArray` [function] L175-L193; tests: none
-- `repositoryRelative` [function] L195-L208; tests: none
-- `buildStaticContext` [function] L210-L243; tests: none
-- `childProcessImports` [function] L245-L262; tests: none
-- `commandArguments` [function] L264-L272; tests: none
-- `firstNonOption` [function] L274-L280; tests: none
-- `commandCoverage` [function] L282-L334; tests: none
-- `recordMemberCoverage` [function] L336-L353; tests: none
-- `recordNodeCoverage` [function] L355-L382; tests: none
-- `analyzeTestFile` [function] L384-L442; tests: none
-- `analyzeCoverage` [function] L444-L477; tests: none
+- `memberKinds` [function] L42-L48; tests: none
+- `memberByName` [function] L50-L64; tests: none
+- `resolveUrlNode` [function] L66-L77; tests: none
+- `isProcessCwdCall` [function] L79-L88; tests: none
+- `resolvePathValues` [function] L90-L114; tests: none
+- `resolveStringValues` [function] L116-L174; tests: none
+- `resolveStringArray` [function] L176-L194; tests: none
+- `repositoryRelative` [function] L196-L209; tests: none
+- `buildStaticContext` [function] L211-L244; tests: none
+- `childProcessImports` [function] L246-L263; tests: none
+- `commandArguments` [function] L265-L273; tests: none
+- `firstNonOption` [function] L275-L281; tests: none
+- `commandCoverage` [function] L283-L335; tests: none
+- `recordMemberCoverage` [function] L337-L354; tests: none
+- `recordNodeCoverage` [function] L356-L380; tests: none
+- `analyzeTestFile` [function] L382-L440; tests: none
+- `analyzeCoverage` [function] L442-L475; tests: none
 
 ## `scripts/agent-environment/tooling-map-document.mjs`
 
@@ -576,26 +576,26 @@ Counts: 48 files, 603 callables, 473 without a covering test.
 - `diffCallables` [function] L231-L271; tests: none
 - `diffToolingMaps` [function] L273-L284; tests: none
 - `validateToolingMap` [function] L286-L295; tests: `scripts/agent-environment/generate-tooling-map.test.ts`
-- `checkToolingMap` [function] L297-L336; tests: `scripts/agent-environment/generate-tooling-map.test.ts`
+- `checkToolingMap` [function] L297-L335; tests: `scripts/agent-environment/generate-tooling-map.test.ts`
 
 ## `scripts/agent-environment/tooling-map-imports.mjs`
 
 - `memberOperation` [function] L39-L57; tests: none
 - `moduleCandidates` [function] L59-L83; tests: none
 - `directExportsByFile` [function] L85-L97; tests: none
-- `importBindings` [function] L99-L126; tests: none
-- `addReExports` [function] L128-L147; tests: none
-- `reExportsByFile` [function] L149-L168; tests: none
-- `resolveExportsByFile` [function] L170-L206; tests: none
-- `classEntryFromExpression` [function] L208-L228; tests: none
-- `visit` [function] L230-L233; tests: none
-- `dynamicModuleTarget` [function] L235-L262; tests: none
-- `dynamicExportTarget` [function] L264-L282; tests: none
-- `addObjectImportBindings` [function] L284-L291; tests: none
-- `addDynamicImportBindings` [function] L293-L332; tests: none
-- `addStaticImportBindings` [function] L334-L373; tests: none
-- `resolveTestImports` [function] L375-L403; tests: none
-- `memberAccessTarget` [function] L405-L437; tests: none
+- `importBindings` [function] L99-L128; tests: none
+- `addReExports` [function] L130-L149; tests: none
+- `reExportsByFile` [function] L151-L170; tests: none
+- `resolveExportsByFile` [function] L172-L208; tests: none
+- `classEntryFromExpression` [function] L210-L230; tests: none
+- `visit` [function] L232-L235; tests: none
+- `dynamicModuleTarget` [function] L237-L264; tests: none
+- `dynamicExportTarget` [function] L266-L284; tests: none
+- `addObjectImportBindings` [function] L286-L293; tests: none
+- `addDynamicImportBindings` [function] L295-L334; tests: none
+- `addStaticImportBindings` [function] L336-L358; tests: none
+- `resolveTestImports` [function] L360-L388; tests: none
+- `memberAccessTarget` [function] L390-L422; tests: none
 
 ## `scripts/agent-environment/tooling-map-parser.mjs`
 

@@ -103,6 +103,83 @@ function expectDriftFailure(
 	expect(result.errors.join("\n")).toContain(fragment);
 }
 
+// One N3 form per row: the mapped module's suffix, the test-file lines that run (or only mention) it, and whether
+// the map must list the test as running it.
+const commandForms: [name: string, lines: string[], runs: boolean][] = [
+	[
+		"literal",
+		[
+			'const literal = "scripts/agent-environment/tooling-command-literal.mjs";',
+			"spawnSync(process.execPath, [literal]);",
+		],
+		true,
+	],
+	[
+		"node",
+		[
+			'spawnSync("node", ["scripts/agent-environment/tooling-command-node.mjs"]);',
+		],
+		true,
+	],
+	[
+		"joined",
+		[
+			"function runJoined(root) {",
+			'  spawnSync(process.execPath, [path.join(root, "scripts", "agent-environment", "tooling-command-joined.mjs")]);',
+			"}",
+			"runJoined(process.cwd());",
+		],
+		true,
+	],
+	[
+		"resolved",
+		[
+			"function runResolved(root) {",
+			'  spawnSync(process.execPath, [path.resolve(root, "scripts", "agent-environment", "tooling-command-resolved.mjs")]);',
+			"}",
+			"runResolved(process.cwd());",
+		],
+		true,
+	],
+	[
+		"url",
+		[
+			'spawnSync(process.execPath, [fileURLToPath(new URL("./tooling-command-url.mjs", import.meta.url))]);',
+		],
+		true,
+	],
+	[
+		"cwd",
+		[
+			'spawnSync(process.execPath, [path.join(process.cwd(), "scripts", "agent-environment", "tooling-command-cwd.mjs")]);',
+		],
+		true,
+	],
+	["pnpm", ['spawnSync("pnpm", ["fixture:tooling-command"]);'], true],
+	[
+		"other-program",
+		[
+			'spawnSync("git", ["add", path.join(process.cwd(), "scripts/agent-environment/tooling-command-other-program.mjs")]);',
+		],
+		false,
+	],
+	[
+		"entry",
+		[
+			'spawnSync(process.execPath, ["scripts/agent-environment/tooling-command-entry.mjs", path.join(process.cwd(), "scripts/agent-environment/tooling-command-after-entry.mjs")]);',
+		],
+		true,
+	],
+	["after-entry", [], false],
+	[
+		"check",
+		[
+			'spawnSync(process.execPath, ["--check", path.join(process.cwd(), "scripts/agent-environment/tooling-command-check.mjs")]);',
+		],
+		false,
+	],
+];
+
 describe("M1: generated agent-tooling code map", () => {
 	it("finds every callable form with a declaration-enclosing line range", async () => {
 		const source = [
@@ -410,20 +487,7 @@ describe("M1: generated agent-tooling code map", () => {
 
 	it("N3: follows node entrypoints and pnpm node scripts only", async () => {
 		const root = fixture();
-		const mapped = [
-			"literal",
-			"node",
-			"joined",
-			"resolved",
-			"url",
-			"cwd",
-			"pnpm",
-			"entry",
-			"other-program",
-			"after-entry",
-			"check",
-		];
-		for (const name of mapped) {
+		for (const [name] of commandForms) {
 			write(
 				root,
 				`scripts/agent-environment/tooling-command-${name}.mjs`,
@@ -437,23 +501,7 @@ describe("M1: generated agent-tooling code map", () => {
 				'import { spawnSync } from "node:child_process";',
 				'import path from "node:path";',
 				'import { fileURLToPath } from "node:url";',
-				'const literal = "scripts/agent-environment/tooling-command-literal.mjs";',
-				"spawnSync(process.execPath, [literal]);",
-				'spawnSync("node", ["scripts/agent-environment/tooling-command-node.mjs"]);',
-				"function runJoined(root) {",
-				'  spawnSync(process.execPath, [path.join(root, "scripts", "agent-environment", "tooling-command-joined.mjs")]);',
-				"}",
-				"runJoined(process.cwd());",
-				"function runResolved(root) {",
-				'  spawnSync(process.execPath, [path.resolve(root, "scripts", "agent-environment", "tooling-command-resolved.mjs")]);',
-				"}",
-				"runResolved(process.cwd());",
-				'spawnSync(process.execPath, [fileURLToPath(new URL("./tooling-command-url.mjs", import.meta.url))]);',
-				'spawnSync(process.execPath, [path.join(process.cwd(), "scripts", "agent-environment", "tooling-command-cwd.mjs")]);',
-				'spawnSync("pnpm", ["fixture:tooling-command"]);',
-				'spawnSync("git", ["add", path.join(process.cwd(), "scripts/agent-environment/tooling-command-other-program.mjs")]);',
-				'spawnSync(process.execPath, ["scripts/agent-environment/tooling-command-entry.mjs", path.join(process.cwd(), "scripts/agent-environment/tooling-command-after-entry.mjs")]);',
-				'spawnSync(process.execPath, ["--check", path.join(process.cwd(), "scripts/agent-environment/tooling-command-check.mjs")]);',
+				...commandForms.flatMap(([, lines]) => lines),
 				"",
 			].join("\n"),
 		);
@@ -477,28 +525,12 @@ describe("M1: generated agent-tooling code map", () => {
 			built.files.map((file) => [file.path, file.commandTests]),
 		);
 		const testPath = "scripts/agent-environment/tooling-command.test.mjs";
-		for (const name of [
-			"literal",
-			"node",
-			"joined",
-			"resolved",
-			"url",
-			"cwd",
-			"pnpm",
-			"entry",
-		]) {
+		for (const [name, , runs] of commandForms) {
 			expect(
 				commandTests.get(
 					`scripts/agent-environment/tooling-command-${name}.mjs`,
 				),
-			).toEqual([testPath]);
-		}
-		for (const name of ["other-program", "after-entry", "check"]) {
-			expect(
-				commandTests.get(
-					`scripts/agent-environment/tooling-command-${name}.mjs`,
-				),
-			).toEqual([]);
+			).toEqual(runs ? [testPath] : []);
 		}
 	});
 
@@ -730,15 +762,8 @@ describe("M2: fast-ladder drift check", () => {
 		);
 		writeMap(addedMap);
 		const addedCommand = await checkToolingMap({ root });
-		expect(
-			addedCommand.parsed.find(
-				(file) => file.path === "scripts/agent-environment/tooling-command.mjs",
-			)?.commandTests,
-		).toEqual([
-			"scripts/agent-environment/tooling-command.test.mjs",
-			"scripts/agent-environment/tooling-source.test.mjs",
-		]);
-		expect(addedCommand.errors.join("\n")).toContain(
+		expectDriftFailure(
+			addedCommand,
 			"extra command test relation for scripts/agent-environment/tooling-command.mjs: scripts/agent-environment/tooling-source.test.mjs",
 		);
 

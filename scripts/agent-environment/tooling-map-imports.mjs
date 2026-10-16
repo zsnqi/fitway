@@ -113,6 +113,8 @@ function importBindings(sourceFile) {
 				imported: "default",
 			});
 		const named = clause?.namedBindings;
+		if (named && ts.isNamespaceImport(named))
+			bindings.set(named.name.text, { specifier, imported: "*" });
 		if (!named || !ts.isNamedImports(named)) continue;
 		for (const element of named.elements) {
 			if (element.isTypeOnly) continue;
@@ -340,35 +342,18 @@ function addStaticImportBindings(
 	importsByLocal,
 	namespaceImports,
 ) {
-	for (const statement of sourceFile.statements) {
-		if (
-			!ts.isImportDeclaration(statement) ||
-			!ts.isStringLiteral(statement.moduleSpecifier) ||
-			statement.importClause?.isTypeOnly
-		)
-			continue;
-		const targetFile = moduleCandidates(
-			statement.moduleSpecifier.text,
-			testPath,
-			root,
-		).find((candidate) => sourceSet.has(candidate));
+	for (const [local, { specifier, imported }] of importBindings(sourceFile)) {
+		const targetFile = moduleCandidates(specifier, testPath, root).find(
+			(candidate) => sourceSet.has(candidate),
+		);
 		if (!targetFile) continue;
 		const targetExports = exportsByFile.get(targetFile) ?? new Map();
-		const clause = statement.importClause;
-		if (clause?.name) {
-			const target = targetExports.get("default");
-			if (target) importsByLocal.set(clause.name.text, target);
+		if (imported === "*") {
+			namespaceImports.set(local, targetExports);
+			continue;
 		}
-		const bindings = clause?.namedBindings;
-		if (bindings && ts.isNamespaceImport(bindings))
-			namespaceImports.set(bindings.name.text, targetExports);
-		if (!bindings || !ts.isNamedImports(bindings)) continue;
-		for (const element of bindings.elements) {
-			if (element.isTypeOnly) continue;
-			const imported = (element.propertyName ?? element.name).text;
-			const target = targetExports.get(imported);
-			if (target) importsByLocal.set(element.name.text, target);
-		}
+		const target = targetExports.get(imported);
+		if (target) importsByLocal.set(local, target);
 	}
 }
 
