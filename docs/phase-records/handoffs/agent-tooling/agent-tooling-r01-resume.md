@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `fcc8365b`, 2026-10-16 22:25 +03:00
+- **As of:** `codex/owner-redesign-r04` at `df7994f8`, 2026-10-17 00:28 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,18 +37,42 @@
 
 ## Running now
 
-- Nothing in this milestone. r04's shared-lows-fix-2 runs on its own branch (r04's resume point).
+- **No Codex round of this milestone runs.** The coordinator's local fast ladder on `9609525b` (F263's second commit,
+  committed by the coordinator from the fixer's staged work while the fixer's own ladder ran, so that ladder failed its
+  mutation guard at 00:27; 1,866 tests passed in it) runs in D:/Projects/fitway-worktrees/tooling-launcher-ansi, log
+  D:/fitway-temp/tooling-launcher-ansi/verify2.log;
+  CI runs on `9609525b` (CI passed on `a4593baf`), and CI's rerun of the ratchet's run 38964003198 on `7c28d15a`
+  (its first run failed on Windows `0xC0000142` process starts in `codex-round.test.ts`, which the ratchet does not
+  touch).
+- **The ratchet** delivered `7c28d15a` on `tooling-ratchet` (D:/Projects/fitway-worktrees/tooling-ratchet, run
+  D:/fitway-temp/codex-round-c8aa5fb0-1f2a-4231-80f0-7c783796af3b): H1-H6 PASS; baseline
+  CODE_HEALTH_BASELINE.json on that branch (217 files; duplication 733 at an 8-line window, type escapes 60,
+  suppressions 10, repeated workarounds 8, long functions 324, giant files 34); `pnpm check:code-health` and
+  `pnpm code-health:baseline`; H4 proven on codex-round.mjs's growth 2,208 to 2,323 and on fix-3's duplicated body.
+  Its commit message is "Ratchet": the round re-committed the same tree ten times under F263 (all ten share tree
+  `7a6da90c`). Its Sol diff review (D:/fitway-temp/code-review/ratchet-1/) gave nine blocking findings, all to
+  ratchet-fix.
+- **F263** (`findings.tsv`): launcher-fixes-6's commit check read Git's header with a line-anchored pattern, and
+  PowerShell's terminal escape codes precede it on the same line, so every commit made through PowerShell was
+  refused. Fixed on `tooling-launcher-ansi`: `a4593baf` strips the escape codes (a new test file with the real
+  recorded output), and `9609525b` moves the reader into a module of its own, commit-header.mjs on that branch, without a
+  suppression, after the diff review blocked the `biome-ignore` (D:/fitway-temp/code-review/launcher-ansi-1/);
+  `codex-round.mjs` went from 2,323 to 2,316 lines.
 
 ## Next steps
 
-1. **The ratchet** (DECISIONS items 6 and 7), its first checks taken from the data above, each one removing the
-   matching prose rule from the briefs once it lands: a duplication ratchet (promote the gardener's
-   `.agents/skills/gardener/code-health-duplication.mjs` into the ladder, the count may only fall); function and
-   module length limits as a lint rule (today briefs carry them as prose: 60 or 80 lines a function, 500 a module);
-   and a `scripts/check-concept-css.mjs` rule that the focus ring is declared only in the concept's `style.css`.
-2. **The CLI contract with `pnpm tools`** (F251; draft at D:/fitway-temp/agent-tooling-drafts/cli-contract-body.md),
-   adding the report fields the wave's open readings wait on.
-3. **Map upkeep** (F252, the gardener's scope, the do-not-copy list), then **the lighter pickup**.
+1. **F263 to main:** when the local ladder and CI pass on `9609525b`, fast-forward `agent-tooling-r01` to it, merge
+   into the coordinator line, wait for CI, `pnpm main:advance`. Implementing rounds wait for this: under the old
+   check they loop on claim refusals until the resume limit.
+2. **ratchet-fix** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix.md`, `df7994f8`, both reviews
+   dispositioned, every reading closed): first merge `agent-tooling-r01` (with F263) into `tooling-ratchet`,
+   regenerating the code map and the code-health baseline in the merge (codex-round.mjs falls to 2,316 lines; the
+   ratchet's tightening rule requires the lower count), set the brief's HEAD to that merge, rerun `brief:check`,
+   then launch with the fixed launcher. Held-out rows HR1-HR12 are in the grader's folder.
+3. **Grade the ratchet with its fix** (Sol), then merge into `agent-tooling-r01` and on to main.
+4. **The CLI contract with `pnpm tools`** (F251; draft at D:/fitway-temp/agent-tooling-drafts/cli-contract-body.md),
+   adding the report fields the wave's open readings wait on; then **map upkeep** (F252), then **the lighter pickup**.
+   Each later brief drops the prose rules the ratchet now enforces (function and module length, duplication).
 
 ## Waiting on the user
 
@@ -62,8 +86,11 @@ Nothing.
 - A busy machine fails the local fast ladder on `scripts/check-agent-context.test.ts` K1, at its 20 s timeout (F261);
   CI on the same commit decides.
 - Sol reviews run with `codex exec ... - < prompt.md` from Bash: PowerShell 5.1 pipes the prompt as ASCII. Three Sol
-  accounts reached their limit on 2026-10-16 (hhmam1435 until 23:33, then ryshyjhad85; smhsdxsz5h current):
-  `D:/fitway-temp/resume-auto.sh <run> D:/fitway-temp/resume-after-limit.md limit-first` switches and resumes.
+  accounts take turns: on 2026-10-16/17 hhmam1435, ryshyjhad85 and smhsdxsz5h each reached a limit; hhmam1435 is
+  current since 00:14 on 2026-10-17 (smhsdxsz5h free at 02:26); `node D:/fitway-temp/codex-accounts.mjs list` shows
+  them, and `D:/fitway-temp/resume-auto.sh <run> D:/fitway-temp/resume-after-limit.md limit-first` switches and resumes.
+- Never commit in a worktree where a fixer may still be running: a commit during its ladder trips the mutation guard
+  (2026-10-17, F263's second commit).
 - Never pipe `pnpm codex:round` through `head`: a closed pipe can stop the launcher; write its output to a log file.
 
 ## Pointers

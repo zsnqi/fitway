@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `fcc8365b`, 2026-10-16 22:25 +03:00
+- **As of:** `codex/owner-redesign-r04` at `df7994f8`, 2026-10-17 00:28 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-74), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -37,28 +37,29 @@
 
 ## Running now
 
-- **shared-lows-fix-2** (`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-fix-2.md`,
-  both reviews dispositioned), on `owner-r04-shared-lows` from `9619f3ce` (D:/Projects/fitway-worktrees/owner-r04-shared-lows),
-  ports 3176-3177, run folder D:/fitway-temp/codex-round-036b9ba0-94ca-452f-9036-2b9c9aaa6768: P1 the brand rail item's
-  second ring, P2 a ring after a mouse or touch arrival from another page, P3 every non-ring difference since
-  `23314b3a` named or reverted, P4 the error ring's colour declared once. Held-out rows SL15-SL17 are in the grader's
-  folder. Its launcher may auto-resume it after a "no report" turn; check its commit and checks against the events.
-- How it got here: shared-lows-fix delivered `f87906ea` (Q1-Q4); the Sol diff review's two findings
-  (D:/fitway-temp/code-review/shared-lows-2/) were applied at `9619f3ce` (Components compare 384 equal; its one
-  difference and Access's eight are compare instability, F262); the Sol grade of `f87906ea`
-  (D:/fitway-temp/codex-round-8395d9ec-800f-4f8f-af3b-10a45cfa7218, three Sol accounts) gave 8 PASS and 8 FAIL, of
-  which G4, G6 and G7 are real (the coordinator looked at their frames) and G10-G14 were the grading brief's errors, the
-  grader's own path slip, pre-existing wording findings or the specimen rings the review fixer removed.
+- **The grade of shared-lows-fix-2** (GPT-6.1 Sol `xhigh`,
+  `docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-fix-2-grade.md`, G1-G11 after
+  both reviews), on the grading checkout D:/fitway-temp/owner-r04-shared-lows-grade/wt (branch
+  `grade-shared-lows-fix-2`) at `538b280a`, ports 3186-3187, run folder
+  D:/fitway-temp/codex-round-3e6c4f04-9467-4931-a8c2-46e6b433af71. Its first turn stopped at 00:14 on
+  smhsdxsz5h's usage limit (free again at 02:26); `D:/fitway-temp/resume-auto.sh ... limit-first` resumed it on
+  hhmam1435 (the run folder's `model-switch.md`). Watch it from the run folder's `turns.jsonl`; if the resume script
+  ends without a report, run it again from the run folder.
+- How it got here: shared-lows-fix-2 delivered `4cc2db93` (run D:/fitway-temp/codex-round-036b9ba0-94ca-452f-9036-2b9c9aaa6768:
+  P1-P4 PASS; L1 partial: 7 one-pixel field-edge ring segments in the Access timeline and 3 Activity `clear-search`
+  samples not held in forced colours); its Sol diff review (D:/fitway-temp/code-review/shared-lows-3/) gave three
+  blocking findings, applied by a fixer at `538b280a` (no ring on a pointer-focused popup; the URL cleanup only off
+  `file:`; one dead line), proven by a probe and per-page compares whose only differences were that popup's ring,
+  which the coordinator looked at. Fix-2 carries the last input across pages as a `focus-input` URL parameter that
+  `motion.js` writes on a link's click and removes on arrival (over http); no visitor data is stored.
 
 ## Next steps
 
-1. **main is at `fcc8365b`** (2026-10-16): the agent-tooling wave and every r04 commit up to it; later commits go
-   with the next batch.
-2. **shared-lows-fix-2:** check its result against the events, push, run the Sol diff review (a fixer for blocking
-   findings), then grade it with a fresh brief from `codex-shared-lows-grade.md` (G4, G6, G7 and G14 retargeted, P1-P4,
-   SL15-SL17); the coordinator looks at the ring frames. Then merge `owner-r04-shared-lows` into
-   `owner-followup-r04-build`. Left for later, with their reasons: the dialogs' parts splitting under a planted stall
-   (report-only, under load only) and the key's glyph softening (F148, decision 69).
+1. **main is at `fcc8365b`.** F263's launcher fix goes to main next (agent-tooling-r01's resume point); later r04
+   commits go with it.
+2. **Read the shared-lows-fix-2 grade** (reproduce one row; look at the ring frames G1-G3 and G8 cite), then merge
+   `owner-r04-shared-lows` into `owner-followup-r04-build`. Left for later, with their reasons: the dialogs' parts
+   splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **Then the pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Settings waits for
    agent-tooling-r01's ratchet and CLI contract (decision 73).
