@@ -75,12 +75,16 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   `reset` and `pinChange` and every other item of
   `D:/fitway-temp/owner-r04-shared-lows-grade/pixels/exception-catalogue.tsv` whose class is
   `outside-ring-away-from-edges`: no pixel outside the stroke differs; report the count checked and every exception
-  with its crop. Intent: the rounds changed rings and nothing else a reader sees.
+  with its crop; do the same for five rows each of the catalogue's `rounded-contour-fringe` and
+  `rectangular-corners-and-composite-colour` classes, saving your mask beside each crop. Intent: the rounds changed
+  rings and nothing else a reader sees.
 - **G5. The ring and the error colour, once (P4).** Outcome: list every declaration in the concept's CSS that draws
-  a focus ring (an outline with a width, a style and a visible colour, a focus `box-shadow`, or a pseudo-element)
+  a focus ring (an outline with a width, a style and a visible colour, a focus `border` or `box-shadow`, or a
+  pseudo-element)
   under a focus selector or a specimen focus class: all in `style.css`, the error colour too; every invalid field's
   computed ring colour is equal in normal and forced colours; in a scratch copy a change of that one error-colour
-  declaration changes every field's ring. Intent: a change to a ring is one edit.
+  declaration changes every field's ring, and a change of the shared ring's width changes the ring of a keyboard focus
+  on a rail item, a button, a field, a picker day and a popup alike. Intent: a change to a ring is one edit.
 - **G6. Rings after a pointer, kept (the earlier rounds).** Outcome: Access's desk retry in its failed state
   (`fail=1`): a mouse click leaves the desk title focused with no ring, Enter shows the ring, a tap on the phone in
   Arabic shows none; Daily's page retry: a key leaves the ring where focus lands, a mouse none. Intent: the fix kept
@@ -88,15 +92,20 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
 - **G7. One input tracker (Q1).** Outcome: `git grep` in the concept's scripts: one listener pair writes the
   last-input state, in `motion.js`, which alone writes and reads the `focus-input` URL parameter; no page script keeps
   its own; on Activity's `.ac-sel` and Reports' `#dl-sort` native selects, a mouse press then Tab shows the wrapper's
-  ring, and a key then a mouse press hides it. Intent: one place decides which input came last.
+  ring, and a key then a mouse press hides it; `git grep` for `localStorage`, `sessionStorage` and `document.cookie` in
+  the concept's scripts shows none holding the last input. Intent: one place decides which input came last, and it
+  keeps nothing about the visitor.
 - **G8. Frames since the round's launch.** Outcome: a fresh compare of the five pages, every feature, Arabic and
   English, desktop and phone, reduced motion, normal and forced colours, between your HEAD and `9619f3ce`: every
   differing item is a ring P1, P2 or the review fix changes (name which for each) or an item that also differs
-  baseline against baseline; report the counts and look at three differing crops. Intent: nothing else moved.
+  baseline against baseline in the same region (a difference outside that region counts against the result);
+  report the counts and look at one crop for each distinct feature and region that differs. Intent: nothing else
+  moved.
 - **G9. The timelines it left.** Outcome: the round's report lists 7 differing Access timeline samples (one-pixel
   field-edge ring segments) and 3 Activity `clear-search` samples not held in forced colours. Run each of those
   timelines twice on your HEAD against itself and once against `9619f3ce`: say whether each sample is held on your
-  HEAD alone and whether its difference is a ring segment; quote the lines. Intent: the coordinator knows whether L1's
+  HEAD alone and whether its difference is a ring segment; a sample still not held on your HEAD after both runs is a
+  FAIL item; quote the lines. Intent: the coordinator knows whether L1's
   gaps are real.
 - **G10. Untouched records.** Outcome: `git diff --name-only 9619f3ce HEAD` lists only files inside the concept folder
   that the round's Scope allows; `HISTORY.md` and the evidence folder are byte-equal to `9619f3ce`; `check-concept-css.mjs`
