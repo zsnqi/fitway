@@ -6,7 +6,7 @@
 - **Read first, only these:**
   - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-fix.md`, whole: the round before; its outcomes and limits still hold;
   - `D:/fitway-temp/codex-round-53b5644e-6f33-4e33-a46d-94116c388eb9/last-message.md`, whole: the grade, rows G2, G3, G11, G13, G14 and G15;
-  - `scripts/agent-environment/tooling-map-parser.mjs`, `tooling-map-imports.mjs`, `tooling-map-coverage.mjs` and `tooling-map-document.mjs`, whole;
+  - `scripts/agent-environment/tooling-map-parser.mjs`, `scripts/agent-environment/tooling-map-imports.mjs`, `scripts/agent-environment/tooling-map-coverage.mjs` and `scripts/agent-environment/tooling-map-document.mjs`, whole;
   - `scripts/verify-repository.mjs`, `listTrackedFiles`.
 
 <!-- environment:start v1 -->
