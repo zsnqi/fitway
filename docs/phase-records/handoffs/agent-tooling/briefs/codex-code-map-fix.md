@@ -56,18 +56,22 @@ reader can hold, and every gap the review and the grade found is closed.
     special-cases the same label with its own command beside `package.json`'s `check:tooling-map`
     (`scripts/verify.mjs` at this HEAD).
   - **Outcome.** The step is an ordinary entry of `fastSteps` run by the same path as every other step, with no code in
-    `scripts/verify.mjs` that names it, no skip, and one place that holds its command; a test shows the ladder fails
+    `scripts/verify.mjs` that names it, no step-skipping branch left in `runStep` for any label, and one place that
+    holds its command; a test shows the ladder fails
     when the map drifts.
   - **Intent.** A green ladder means the map matched (F252's silent-skip class must not return).
 - **K2. Callables the generator misses or misreads (review 2, 3, 4 and 8; grade G11).**
   - **Outcome.** Parenthesized function and class expressions are mapped; a getter and a setter of the same name are
-    two entries with their own coverage; the dead `process.cwd()` branch is removed or made to work, whichever an
-    outcome needs (say which); a test's dynamic import of a mapped module counts as an import for coverage; and
+    two entries with their own coverage, a property read
+    covering only the getter and an assignment or update only the setter; the dead `process.cwd()` branch is removed or made to work, whichever an
+    outcome needs (say which); a test's dynamic import of a mapped module counts as an import for coverage, its bindings (named, destructured,
+    default, namespace) resolved by the same rules as a static import's; and
     `.agents/skills/verify-fitway/cli.mjs` and `port-observer.cjs`, which `cli.test.mjs` runs as commands, list it at
     module level. Each with a test.
   - **Intent.** The map lists what is there and who tests it.
 - **K3. A validator that skips a field (review 7).**
-  - **Outcome.** The map's validation checks each file's module-level command tests as it checks callables' tests.
+  - **Outcome.** The map's validation checks each file's module-level command tests against the command invocations it
+    detects in the test files, failing on any missing or extra entry, as it checks callables' tests.
   - **Intent.** As K2.
 - **K4. One way to list tracked files (review 6).**
   - **Outcome.** The generator lists tracked files through `listTrackedFiles` of `scripts/verify-repository.mjs` (or one
@@ -75,7 +79,8 @@ reader can hold, and every gap the review and the grade found is closed.
   - **Intent.** One paved path.
 - **K5. A module one reader can hold (review 9).**
   - **Outcome.** `generate-tooling-map.mjs` is split so parsing, coverage analysis and the map's writing and checking
-    each live in their own module, none over 500 lines, with the command line unchanged; the map's own entries for them
+    each live in their own module, none over 500 lines and no function over 80, each exposing a few named functions
+    and sharing no mutable state with the others, with the command line unchanged; the map's own entries for them
     are regenerated.
   - **Intent.** The next change to the map touches one part.
 
