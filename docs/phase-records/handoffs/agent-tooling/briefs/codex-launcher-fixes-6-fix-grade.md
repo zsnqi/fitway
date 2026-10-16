@@ -1,10 +1,10 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: grade launcher-fixes-6 and its fix by running these checks (agent-tooling-r01, launcher-fixes-6-fix-grade)
 
-- **Worktree:** `D:/fitway-temp/tooling-launcher-fixes-6-fix-grade/wt`, branch `grade-launcher-fixes-6-fix`, HEAD `9b89acd1`
+- **Worktree:** `D:/fitway-temp/tooling-launcher-fixes-6-fix-grade/wt`, branch `grade-launcher-fixes-6-fix`, HEAD `81eb36bb`
 - **Milestone:** `agent-tooling-r01`. Decisions: `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 2 and 5.
 - **Read first, only these:**
-  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6.md`, whole, and `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix.md`, whole: the two briefs of the result you grade (V1-V2, then W1-W5 on top); your contract is G1-G13 below;
+  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6.md`, whole, and `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix.md`, whole: the two briefs of the result you grade (V1-V2, then W1-W5 on top, then four review edits by a fixer in the last commit); your contract is G1-G13 below;
   - `scripts/agent-environment/codex-round.mjs`, `commitCandidates` and `reportClaimFailures`;
   - `scripts/agent-environment/new-handoff.mjs`, `createResumePoint`.
 
