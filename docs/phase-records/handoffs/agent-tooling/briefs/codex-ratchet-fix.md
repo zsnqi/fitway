@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: the ratchet's review findings: rings in longhand, strict exceptions, template functions, one source of truth (agent-tooling-r01, ratchet-fix)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-ratchet`, branch `tooling-ratchet`, HEAD `7c28d15a`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-ratchet`, branch `tooling-ratchet`, HEAD `e115f646`
 - **Milestone:** `agent-tooling-r01`. Decisions: items 5, 6, 7 and 8 of `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`.
 - **Read first, only these:**
   - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet.md`, whole: the round this fixes; its outcomes and limits still hold;
