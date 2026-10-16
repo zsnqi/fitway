@@ -160,7 +160,9 @@ html:has(> body.rp) {
 /* PAT-7: the busiest hour, a small chalk point in its inline-end top corner (the subtitle names it, the key shows it). */
 .hc.is-top::after { content: ""; position: absolute; top: 5px; inset-inline-end: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1.5px rgba(15, 14, 15, 0.55); }
 /* The selected cell: FOC-2's inset ring (K-22, PAT-11); keyboard focus draws the shared ring. */
-.hc.is-sel { outline: 2px solid var(--ink); outline-offset: -4px; z-index: 1; }
+/* The selected cell: a flush edge, for every input; the other cells step back while it holds. */
+.hc.is-sel { box-shadow: inset 0 0 0 2px var(--ink); z-index: 1; }
+@media not (forced-colors: active) { .heat:has(.hc.is-sel) .hc:not(.is-sel) { opacity: 0.45; } }
 /* The readout (PAT-9): the tooltip box, its text by role (CHT-13). */
 .heat-tip { left: 0; top: 0; width: max-content; z-index: 5; }
 .rp .tip-t { gap: 8px; font-size: 12px; line-height: 15px; }

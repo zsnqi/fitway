@@ -93,8 +93,10 @@ html[data-focus-input="keyboard"] :is(.ac-sel, .dl-sort):has(select:focus),
 }
 :is(.field.is-invalid .field-input, .cx-field.is-invalid .cx-input) { --focus-ring-color: var(--err); }
 :where(html:not([data-focus-input="keyboard"]) :focus) { outline: none; /* focus-ring: html[data-focus-input="keyboard"] :focus:not(:is(.rail-item, .cx-ri, .dp-day)) */ }
-:is(.seg-b, .cx-seg-b, .sort, .cx-sort, .wk-b, .hc, .cx-hc, .fw-mi, .h-status, .cx-hstatus, .head-acts .hbadge) { --focus-ring-offset: -4px; }
+:is(.seg-b, .cx-seg-b, .sort, .cx-sort, .wk-b, .fw-mi, .h-status, .cx-hstatus, .head-acts .hbadge) { --focus-ring-offset: -4px; }
 .fw-pop[tabindex="-1"] { --focus-ring-offset: -4px; }
+/* A heat cell's ring sits outside it; inside is the selection's edge. */
+:is(.hc, .cx-hc) { --focus-ring-offset: 2px; }
 .acc-title:focus-visible,
 .prs-name:focus-visible,
 .acc .dlg-head h2:focus-visible,
@@ -1230,7 +1232,6 @@ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea {
   .heat-key .k0, .cx-legend .k0 { forced-color-adjust: auto; color: CanvasText !important; border: 1px solid CanvasText; }
   .plot-svg svg text, .cx-plot > svg text, .hc :where(.hv, .run), .cx-hc :where(.hv, .run) { forced-color-adjust: auto; color: CanvasText !important; fill: CanvasText; }
   .hc :where(.hv, .run), .cx-hc :where(.hv, .run) { background: Canvas; }
-  .hc.is-sel, .cx-hc.is-sel { forced-color-adjust: none; outline: 1px solid CanvasText; outline-offset: -2px; box-shadow: inset 0 0 0 3px Canvas; }
-  /* Back an inset ring with Canvas, so it remains legible over every heat-ramp colour. */
-  .hc:focus-visible, .cx-hc:focus-visible { box-shadow: inset 0 0 0 6px Canvas; outline-color: CanvasText !important; }
+  /* The selected cell's edge, backed by Canvas so it holds over every heat-ramp colour; the others keep full contrast. */
+  :is(.heat, .cx-heat) :is(.hc, .cx-hc).is-sel { forced-color-adjust: none; box-shadow: inset 0 0 0 2px CanvasText, inset 0 0 0 4px Canvas; }
 }
