@@ -140,41 +140,91 @@ function validateModelLevel(model, level) {
 	return level;
 }
 
-function shellTokens(command) {
-	const tokens = [];
-	let token = "";
+function shellSeparator(text, index) {
+	const character = text[index];
+	if (character === ";" || character === "\n") return character;
+	if ((character === "&" || character === "|") && text[index + 1] === character)
+		return character + character;
+	return character === "&" || character === "|" ? character : null;
+}
+
+function shellEvent(raw, value, whitespace = false) {
+	return whitespace ? { raw, whitespace: true } : { raw, value };
+}
+
+function shellScan(command, shell = "bash") {
+	const events = [];
+	const escapeCharacter = shell === "powershell" ? "`" : "\\";
 	let quote = null;
-	let escaped = false;
-	for (const character of command.trim()) {
-		if (escaped) {
-			token += character;
-			escaped = false;
+	let wordStarted = false;
+	for (let index = 0; index < command.length; index += 1) {
+		const character = command[index];
+		if (quote === "'") {
+			if (character === "'") quote = null;
+			events.push(shellEvent(character, character === "'" ? "" : character));
 			continue;
 		}
-		if (character === "\\" && quote !== "'") {
-			escaped = true;
+		if (character === escapeCharacter && index + 1 < command.length) {
+			const next = command[++index];
+			events.push(shellEvent(character + next, next));
+			wordStarted = true;
 			continue;
 		}
-		if (quote) {
-			if (character === quote) quote = null;
-			else token += character;
+		if (quote === '"') {
+			if (character === '"') {
+				quote = null;
+				events.push(shellEvent(character, ""));
+			} else events.push(shellEvent(character, character));
 			continue;
 		}
 		if (character === "'" || character === '"') {
 			quote = character;
+			wordStarted = true;
+			events.push(shellEvent(character, ""));
 			continue;
 		}
-		if (/\s/.test(character)) {
+		if (character === "#" && !wordStarted) {
+			while (index + 1 < command.length && !/[\r\n]/.test(command[index + 1]))
+				index += 1;
+			continue;
+		}
+		if (character === "\r") {
+			events.push(shellEvent("", "", true));
+			continue;
+		}
+		const separator = shellSeparator(command, index);
+		if (separator !== null) {
+			events.push({ raw: separator, separator });
+			wordStarted = false;
+			if (separator.length === 2) index += 1;
+			continue;
+		}
+		const whitespace = /\s/.test(character);
+		events.push(shellEvent(character, character, whitespace));
+		wordStarted = !whitespace;
+	}
+	return { events, unmatchedQuote: quote !== null };
+}
+
+function shellTokens(command, shell = "bash") {
+	const { events, unmatchedQuote } = shellScan(command.trim(), shell);
+	if (unmatchedQuote) return null;
+	const tokens = [];
+	let token = "";
+	for (const event of events) {
+		if (event.whitespace || event.separator === "\n") {
 			if (token) {
 				tokens.push(token);
 				token = "";
 			}
 			continue;
 		}
-		token += character;
+		if (event.separator !== undefined) {
+			token += event.raw;
+			continue;
+		}
+		token += event.value;
 	}
-	if (quote) throw new Error("review command has an unmatched quote");
-	if (escaped) token += "\\";
 	if (token) tokens.push(token);
 	return tokens;
 }
@@ -461,13 +511,13 @@ async function reviewProcedure(folder, catalogPath) {
 	const prompt = document.match(
 		/^## Prompt\r?\n\s*```text\r?\n([\s\S]*?)^```\s*$/m,
 	)?.[1];
-	const tokens = command
-		? shellTokens(command).map((token) =>
-				token
-					.replaceAll("<folder>", folder)
-					.replaceAll("<catalog>", catalogPath.replaceAll("\\", "/")),
-			)
-		: undefined;
+	const words = command ? shellTokens(command) : undefined;
+	if (words === null) throw new Error("review command has an unmatched quote");
+	const tokens = words?.map((token) =>
+		token
+			.replaceAll("<folder>", folder)
+			.replaceAll("<catalog>", catalogPath.replaceAll("\\", "/")),
+	);
 	const redirect = tokens?.indexOf("<");
 	const route = modelArgs(DEEPSEEK_MODEL, "max", catalogPath);
 	const routeStart = tokens?.indexOf("-m");
@@ -1015,9 +1065,9 @@ function claimResumeMessage(failures) {
 	return `The report was not accepted because its claims did not match this run:\n${failures.map((failure) => `- ${failure}`).join("\n")}\nContinue toward the brief's outcomes, wait inside tool calls, and send a corrected report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
 }
 
-function reportSection(brief) {
+function briefScopeSection(brief) {
 	const text = Buffer.isBuffer(brief) ? brief.toString("utf8") : String(brief);
-	const heading = text.match(/^##[ \t]+Report[ \t]*\r?$/m);
+	const heading = text.match(/^##[ \t]+Scope[ \t]*\r?$/m);
 	if (heading?.index === undefined) return "";
 	const remainder = text.slice(heading.index + heading[0].length);
 	const nextHeading = remainder.search(/^##[ \t]+/m);
@@ -1025,7 +1075,9 @@ function reportSection(brief) {
 }
 
 function briefRequiresCommit(brief) {
-	return /\bcommit[ \t]+(?:sha|hash)\b/i.test(reportSection(brief));
+	return /\bcommit[ \t]+once[ \t]+when[ \t]+done\b/i.test(
+		briefScopeSection(brief).replace(/\s+/g, " "),
+	);
 }
 
 function outcomeTextFromBrief(brief, id) {
@@ -1047,20 +1099,111 @@ function outcomeTextFromBrief(brief, id) {
 }
 
 function commitCandidates(message) {
-	const candidates = [];
-	for (const line of message.split(/\r?\n/)) {
-		if (!/\b(?:commit|HEAD)\b/i.test(line)) continue;
-		for (const match of line.matchAll(/\b[0-9a-f]{7,64}\b/gi))
-			candidates.push(match[0].toLowerCase());
+	return [
+		...new Set(
+			[...message.matchAll(/\b[0-9a-f]{7,64}\b/gi)].map((match) =>
+				match[0].toLowerCase(),
+			),
+		),
+	];
+}
+
+function unwrapCommand(command) {
+	const text = command.trim();
+	const wrappers = [
+		{
+			shell: "powershell",
+			pattern:
+				/^(?:"[^"]*powershell(?:\.exe)?"|powershell(?:\.exe)?)(?:\s+-[^\s]+)*\s+-Command\s+(['"])([\s\S]*)\1$/i,
+		},
+		{
+			shell: "bash",
+			pattern:
+				/^(?:"[^"]*bash(?:\.exe)?"|bash(?:\.exe)?)(?:\s+-[^\s]+)*\s+-lc\s+(['"])([\s\S]*)\1$/i,
+		},
+	];
+	for (const wrapper of wrappers) {
+		const match = text.match(wrapper.pattern);
+		if (match) return { text: match[2].trim(), shell: wrapper.shell };
 	}
-	if (!candidates.length) {
-		const all = [...message.matchAll(/\b[0-9a-f]{7,64}\b/gi)].map((match) =>
-			match[0].toLowerCase(),
-		);
-		const distinct = [...new Set(all)];
-		if (distinct.length === 1) candidates.push(distinct[0]);
+	return { text, shell: "bash" };
+}
+
+function commandParts(command) {
+	const { text, shell } = unwrapCommand(command);
+	const { events } = shellScan(text, shell);
+	const parts = [];
+	let current = "";
+	let separator = null;
+	for (const event of events) {
+		if (event.separator === undefined) {
+			current += event.raw;
+			continue;
+		}
+		if (current.trim()) parts.push({ text: current.trim(), separator, shell });
+		current = "";
+		separator = event.separator;
 	}
-	return [...new Set(candidates)];
+	if (current.trim()) parts.push({ text: current.trim(), separator, shell });
+	return parts;
+}
+
+function lastCommandPart(command) {
+	return commandParts(command).at(-1) ?? null;
+}
+
+function commandStatusIsEvent(part) {
+	return (
+		part?.separator === null ||
+		part?.separator === "&&" ||
+		part?.separator === ";" ||
+		part?.separator === "\n"
+	);
+}
+
+function isGitCommitCommand(command, shell = "bash") {
+	const words = shellTokens(command, shell) ?? [];
+	if (!/^git(?:\.exe)?$/i.test(words[0] ?? "")) return false;
+	let index = 1;
+	while (index < words.length) {
+		if (words[index] === "--no-pager") {
+			index += 1;
+			continue;
+		}
+		if (words[index] === "-C" || words[index] === "-c") {
+			index += 2;
+			continue;
+		}
+		break;
+	}
+	if (!/^commit$/i.test(words[index] ?? "")) return false;
+	return !words
+		.slice(index + 1)
+		.some((word) => /^--(?:dry-run|help)$/i.test(word));
+}
+
+function isCommitCommand(command) {
+	const part = lastCommandPart(command);
+	return Boolean(
+		part &&
+			commandStatusIsEvent(part) &&
+			isGitCommitCommand(part.text, part.shell),
+	);
+}
+
+function isFastLadderCommand(command) {
+	const part = lastCommandPart(command);
+	if (!part || !commandStatusIsEvent(part)) return false;
+	const words = shellTokens(part.text, part.shell) ?? [];
+	return Boolean(
+		(words.length === 3 &&
+			/^node(?:\.exe)?$/i.test(words[0] ?? "") &&
+			words[1] === "scripts/verify.mjs" &&
+			words[2] === "fast") ||
+			(words.length === 2 &&
+				/^pnpm(?:\.cmd)?$/i.test(words[0] ?? "") &&
+				words[1] === "verify:fast"),
+	);
 }
 
 function eventFileOrder(name) {
@@ -1092,10 +1235,20 @@ async function readRunCommandRecords(run) {
 			if (Array.isArray(command)) command = command.join(" ");
 			const exitCode =
 				item?.exit_code ?? item?.exitCode ?? event.exit_code ?? event.exitCode;
+			const output =
+				item?.aggregated_output ??
+				item?.output ??
+				event.aggregated_output ??
+				event.output ??
+				"";
 			const status = item?.status ?? event.status;
 			if (typeof command !== "string" || !Number.isInteger(exitCode)) continue;
 			if (status !== undefined && status !== "completed") continue;
-			records.push({ command, exitCode });
+			records.push({
+				command,
+				exitCode,
+				output: typeof output === "string" ? output : "",
+			});
 		}
 	}
 	return records;
@@ -1140,108 +1293,187 @@ async function recordTurn(run, worktree, result, stopReason) {
 	}
 }
 
-async function reportClaimFailures(message, brief, metadata, run) {
-	const failures = [];
-	const stopped = /^STOPPED:/m.test(message);
+function resolveCommitCandidates(message, worktree, launchHead, stopped) {
 	const candidates = commitCandidates(message);
+	const resolved = [];
+	for (const candidate of candidates) {
+		try {
+			resolved.push({
+				candidate,
+				resolved: readGit(worktree, ["rev-parse", `${candidate}^{commit}`]),
+			});
+		} catch {
+			// A candidate that does not resolve cannot confirm the claim.
+		}
+	}
+	const failures = [];
+	if (!resolved.length) {
+		if (candidates.length)
+			failures.push(`commit ${candidates.join(", ")}: no such commit object`);
+		else if (!stopped) failures.push("commit: report names no commit SHA");
+		return { failures, resolved, head: null, matching: null };
+	}
+	let head = null;
+	try {
+		head = readGit(worktree, ["rev-parse", "HEAD"]);
+	} catch (error) {
+		failures.push(`commit: cannot read worktree HEAD: ${error.message}`);
+	}
+	const matching =
+		head === null ? null : resolved.find(({ resolved }) => resolved === head);
+	if (head !== null && !matching)
+		failures.push(
+			`commit ${resolved.map(({ candidate }) => candidate).join(", ")}: resolves to ${resolved
+				.map(({ resolved }) => resolved)
+				.join(", ")}, not worktree HEAD ${head}`,
+		);
+	const launchClaims = resolved.filter(
+		({ resolved }) => resolved === launchHead,
+	);
+	if (launchClaims.length && (!matching || matching.resolved === launchHead))
+		failures.push(
+			`commit ${launchClaims.map(({ candidate }) => candidate).join(", ")}: equals launch HEAD ${launchHead}`,
+		);
+	return { failures, resolved, head, matching };
+}
+
+function lineageAndDiffFailures(worktree, head, matching, launchHead) {
+	if (
+		!matching ||
+		head === null ||
+		head === launchHead ||
+		typeof launchHead !== "string"
+	)
+		return [];
+	const failures = [];
+	let descends = true;
+	try {
+		readGit(worktree, ["merge-base", "--is-ancestor", launchHead, head]);
+	} catch (error) {
+		descends = false;
+		if (error.status === 1) {
+			failures.push(
+				`commit ${matching.candidate}: worktree HEAD ${head} does not descend from launch HEAD ${launchHead}`,
+			);
+		} else {
+			failures.push(
+				`commit ${matching.candidate}: cannot verify worktree HEAD descends from launch HEAD ${launchHead}: ${error.message}`,
+			);
+		}
+	}
+	if (!descends) return failures;
+	let diff;
+	try {
+		diff = readGit(worktree, ["diff", "--name-only", launchHead, head]);
+	} catch (error) {
+		failures.push(
+			`commit ${matching.candidate}: cannot read the diff from launch HEAD ${launchHead} to worktree HEAD ${head}: ${error.message}`,
+		);
+	}
+	if (diff === "")
+		failures.push(
+			`commit ${matching.candidate}: worktree HEAD ${head} has an empty diff against launch HEAD ${launchHead}`,
+		);
+	return failures;
+}
+
+function commitHeaderSha(output) {
+	for (const line of String(output).split(/\r?\n/)) {
+		const match = line.match(/^\[.*?(?: \(root-commit\))? ([0-9a-f]{7,64})\]/i);
+		if (match) return match[1].toLowerCase();
+	}
+	return null;
+}
+
+function commitRecordFailures(records, worktree, head) {
+	const commits = records.filter(
+		({ command, exitCode }) => exitCode === 0 && isCommitCommand(command),
+	);
+	if (!commits.length)
+		return [
+			"commit: no successful git commit command with exit code 0 is recorded in this run's events",
+		];
+	const failures = [];
+	const abbreviated = head?.slice(0, 7);
+	const recorded = commitHeaderSha(commits.at(-1).output);
+	if (abbreviated && (!recorded || !head.toLowerCase().startsWith(recorded)))
+		failures.push(
+			`commit: the last successful git commit output does not name worktree HEAD ${abbreviated}`,
+		);
+	let status;
+	try {
+		status = readGit(worktree, ["status", "--short"]);
+	} catch (error) {
+		failures.push(`commit: cannot read worktree status: ${error.message}`);
+	}
+	if (status) failures.push("commit: worktree is not clean after the commit");
+	return failures;
+}
+
+function ladderRecordFailures(records, verifyIds) {
+	const lastCommit = records.reduce(
+		(last, record, index) =>
+			record.exitCode === 0 && isCommitCommand(record.command) ? index : last,
+		-1,
+	);
+	const lastFast = records.reduce(
+		(last, record, index) =>
+			record.exitCode === 0 && isFastLadderCommand(record.command)
+				? index
+				: last,
+		-1,
+	);
+	if (lastFast < 0)
+		return [
+			`verify.mjs fast: PASS is claimed for ${verifyIds.join(", ")} without a successful fast-ladder command in this run's events`,
+		];
+	if (lastFast < lastCommit)
+		return [
+			"verify.mjs fast: the last successful fast-ladder command precedes the last successful git commit in this run's events",
+		];
+	return [];
+}
+
+async function reportClaimFailures(message, brief, metadata, run) {
+	if (!briefRequiresCommit(brief)) return [];
 	let commands;
 	const runCommands = async () => {
 		commands ??= await readRunCommandRecords(run);
 		return commands;
 	};
-	if (candidates.length || briefRequiresCommit(brief)) {
-		let candidate;
-		let resolved;
-		for (const value of candidates) {
-			try {
-				resolved = readGit(metadata.worktree, [
-					"rev-parse",
-					`${value}^{commit}`,
-				]);
-				candidate = value;
-				break;
-			} catch {
-				// Try the next candidate before reporting the claim as missing.
-			}
-		}
-		if (!resolved) {
-			if (candidates.length)
-				failures.push(`commit ${candidates.join(", ")}: no such commit object`);
-			else if (!stopped) failures.push("commit: report names no commit SHA");
-		} else {
-			let head = null;
-			try {
-				head = readGit(metadata.worktree, ["rev-parse", "HEAD"]);
-			} catch (error) {
-				failures.push(
-					`commit ${candidate}: cannot read worktree HEAD: ${error.message}`,
-				);
-			}
-			if (head !== null && resolved !== head)
-				failures.push(
-					`commit ${candidate}: resolves to ${resolved}, not worktree HEAD ${head}`,
-				);
-			if (resolved === metadata.head)
-				failures.push(
-					`commit ${candidate}: equals launch HEAD ${metadata.head}`,
-				);
-			const commitRecords = (await runCommands())
-				.map((record, index) => ({ ...record, index }))
-				.filter(
-					({ command, exitCode }) =>
-						exitCode === 0 &&
-						/\bgit(?:\.exe)?\b[^\r\n]*\bcommit\b/i.test(command),
-				);
-			if (!commitRecords.length)
-				failures.push(
-					"commit: no successful git commit command with exit code 0 is recorded in this run's events",
-				);
-			let status;
-			try {
-				status = readGit(metadata.worktree, ["status", "--short"]);
-			} catch (error) {
-				failures.push(`commit: cannot read worktree status: ${error.message}`);
-			}
-			if (status)
-				failures.push("commit: worktree is not clean after the commit");
-		}
+	const claimed = resolveCommitCandidates(
+		message,
+		metadata.worktree,
+		metadata.head,
+		/^STOPPED:/m.test(message),
+	);
+	const failures = [...claimed.failures];
+	if (claimed.resolved.length) {
+		failures.push(
+			...lineageAndDiffFailures(
+				metadata.worktree,
+				claimed.head,
+				claimed.matching,
+				metadata.head,
+			),
+		);
+		failures.push(
+			...commitRecordFailures(
+				await runCommands(),
+				metadata.worktree,
+				claimed.head,
+			),
+		);
 	}
-
 	const verifyIds = [...passedIds(message)].filter((id) =>
 		/\bverify\.mjs[ \t]+fast\b|\bverify:fast\b/i.test(
 			outcomeTextFromBrief(brief, id),
 		),
 	);
-	if (verifyIds.length) {
-		const records = await runCommands();
-		const lastCommit = records.reduce(
-			(last, record, index) =>
-				record.exitCode === 0 &&
-				/\bgit(?:\.exe)?\b[^\r\n]*\bcommit\b/i.test(record.command)
-					? index
-					: last,
-			-1,
-		);
-		const lastFast = records.reduce(
-			(last, record, index) =>
-				record.exitCode === 0 &&
-				/\bverify\.mjs[ \t]+fast\b|\bverify:fast\b/i.test(record.command)
-					? index
-					: last,
-			-1,
-		);
-		if (lastFast < 0)
-			failures.push(
-				`verify.mjs fast: PASS is claimed for ${verifyIds.join(", ")} without a successful fast-ladder command in this run's events`,
-			);
-		else if (lastFast < lastCommit)
-			failures.push(
-				`verify.mjs fast: the last successful fast-ladder command precedes the last successful git commit in this run's events`,
-			);
-	}
+	if (verifyIds.length)
+		failures.push(...ladderRecordFailures(await runCommands(), verifyIds));
 	return failures;
 }
-
 async function optionalFile(filename) {
 	try {
 		return await readFile(filename);

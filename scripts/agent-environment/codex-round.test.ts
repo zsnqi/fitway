@@ -514,6 +514,8 @@ process.stdin.on('end', () => {
   if (turnStderr) process.stderr.write(turnStderr);
   let commit = null;
   if (!isResume && process.env.ROUND_COMMIT) {
+    if (process.env.ROUND_RESET_HARD) execFileSync('git', ['reset', '--hard', process.env.ROUND_RESET_HARD], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
+    if (process.env.ROUND_COMMIT_STAGE_ALL === '1') execFileSync('git', ['add', '-A'], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
     execFileSync('git', ['commit', '--allow-empty', '-m', process.env.ROUND_COMMIT], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
     commit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd:process.cwd(), encoding:'utf8', windowsHide:true}).trim();
   }
@@ -533,7 +535,10 @@ process.stdin.on('end', () => {
   let message = messages
     ? (messages[sequenceIndex] ?? messages[messages.length - 1])
     : (configuredMessage ?? fallback);
-  if (commit) message = message.replaceAll('__HEAD__', commit);
+  const renderCommit = (value) => commit
+    ? value.replaceAll('__HEAD__', commit).replaceAll('__HEAD_SHORT__', commit.slice(0, 7))
+    : value;
+  message = renderCommit(message);
   const defaultExit = isResume && process.env.ROUND_RESUME_EXIT !== undefined
     ? process.env.ROUND_RESUME_EXIT
     : process.env.ROUND_EXIT;
@@ -543,12 +548,12 @@ process.stdin.on('end', () => {
   fs.writeFileSync(args[args.indexOf('-o') + 1], message);
   process.stdout.write('{"type":"thread.star');
   process.stdout.write('ted","thread_id":"${thread}"}\\n');
-  if (process.env.ROUND_PRE_EVENTS) process.stdout.write(process.env.ROUND_PRE_EVENTS);
+  if (process.env.ROUND_PRE_EVENTS) process.stdout.write(renderCommit(process.env.ROUND_PRE_EVENTS));
   if (commit && process.env.ROUND_NO_COMMIT_EVENT !== '1') {
-    process.stdout.write(JSON.stringify({type:'item.completed', item:{type:'command_execution', command:'git commit -m ' + JSON.stringify(process.env.ROUND_COMMIT), exit_code:0, status:'completed'}}) + '\\n');
+    process.stdout.write(JSON.stringify({type:'item.completed', item:{type:'command_execution', command:'git commit -m ' + JSON.stringify(process.env.ROUND_COMMIT), aggregated_output:'[fixture ' + commit.slice(0, 7) + '] ' + process.env.ROUND_COMMIT, exit_code:0, status:'completed'}}) + '\\n');
   }
   const extraEvents = isResume ? process.env.ROUND_RESUME_EVENTS : process.env.ROUND_EVENTS;
-  if (extraEvents) process.stdout.write(extraEvents);
+  if (extraEvents) process.stdout.write(renderCommit(extraEvents));
   process.stdout.write('{"type":"item.completed","text":"العربية «»"}\\r\\n');
   process.exitCode = Number(exitCode || 0);
 });\n`,
@@ -3081,12 +3086,13 @@ describe("K2 automatic resume", () => {
 
 describe("L3 report claims", () => {
 	const cleanStop = "STOPPED: corrected evidence unavailable\n";
-	const commandEvent = (command: string, exitCode = 0) =>
+	const commandEvent = (command: string, exitCode = 0, aggregatedOutput = "") =>
 		`${JSON.stringify({
 			type: "item.completed",
 			item: {
 				type: "command_execution",
 				command,
+				aggregated_output: aggregatedOutput,
 				exit_code: exitCode,
 				status: "completed",
 			},
@@ -3120,16 +3126,48 @@ describe("L3 report claims", () => {
 
 ${report}
 `;
-		writeFileSync(f.brief, Buffer.concat([f.bytes, Buffer.from(suffix)]));
+		const scope = commit
+			? "Write only in the fixture. Commit once when done. If an outcome"
+			: "Write only in the fixture. If an outcome";
+		const source = f.bytes
+			.toString("utf8")
+			.replace("Write only in the fixture. If an outcome", scope);
+		writeFileSync(
+			f.brief,
+			Buffer.concat([Buffer.from(source), Buffer.from(suffix)]),
+		);
 		git(f.coordinator, "add", ".");
 		git(f.coordinator, "commit", "-m", "add report claims");
 		f.answerReview(undefined, undefined, 2);
 	};
+	const commitEnvironment = (
+		f: ReturnType<typeof fixture>,
+	): NodeJS.ProcessEnv => ({
+		ROUND_COMMIT: "claim fixture",
+		ROUND_WRITE_PATH: path.join(f.worktree, "claim-change.txt"),
+		ROUND_WRITE_CONTENT: Buffer.from("claim change").toString("base64"),
+		ROUND_COMMIT_STAGE_ALL: "1",
+	});
 	const resumeLog = (f: ReturnType<typeof fixture>) =>
 		readFileSync(path.join(f.run, "auto-resumes.log"), "utf8")
 			.trim()
 			.split(/\r?\n/)
 			.map((line) => JSON.parse(line));
+	const claimOutput = "[fixture __HEAD_SHORT__] claim fixture";
+	const invokeClaim = (
+		f: ReturnType<typeof fixture>,
+		events: string,
+		message = claimReport("__HEAD__"),
+	) => {
+		claimBrief(f);
+		return f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: message,
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS: events,
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+	};
 
 	it("accepts a report-only brief that names no commit", () => {
 		const f = fixture();
@@ -3145,13 +3183,34 @@ ${report}
 		);
 	});
 
+	it("W1 accepts a grading report that names the launch HEAD and quotes the ladder outcome", () => {
+		const f = fixture();
+		claimBrief(f, { commit: false });
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: claimReport(f.head),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
 	it("accepts a report backed by the commit and fast-ladder events", () => {
 		const f = fixture();
 		claimBrief(f);
 		const result = f.invoke(undefined, {
-			ROUND_COMMIT: "claim fixture",
+			...commitEnvironment(f),
 			ROUND_MESSAGE: claimReport("__HEAD__"),
-			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					"powershell.exe -Command 'git commit -m claim-fixture'",
+					0,
+					"[fixture __HEAD_SHORT__] claim fixture",
+				) +
+				commandEvent("powershell.exe -Command 'node scripts/verify.mjs fast'"),
 		});
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
@@ -3160,6 +3219,488 @@ ${report}
 		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
 			'"stopReason":"report accepted"',
 		);
+	});
+
+	it("V1 accepts a report that cites the base commit before its own HEAD", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE:
+				`${claimReport()}Base commit: \`${f.head}\`\n` +
+				"Commit SHA: `__HEAD__`\n",
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					"bash -lc 'git commit -m claim-fixture'",
+					0,
+					"[fixture __HEAD_SHORT__] claim fixture",
+				) + commandEvent("bash -lc 'node scripts/verify.mjs fast'"),
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("V1 accepts an abbreviated worktree HEAD beside a full base SHA", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE:
+				`${claimReport()}Base commit: \`${f.head}\`\n` +
+				"Commit SHA: `__HEAD_SHORT__`\n",
+			ROUND_EVENTS: commandEvent("pnpm verify:fast"),
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("W2 does not count commands named only in echoed text", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent("echo git commit") +
+				commandEvent("echo node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining("no successful git commit command"),
+				expect.stringContaining("without a successful fast-ladder command"),
+			]),
+		);
+	});
+
+	it.each([
+		"--dry-run",
+		"--help",
+	])("W2 does not count git commit %s", (option) => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					`git commit ${option} -m claim-fixture`,
+					0,
+					"[fixture __HEAD_SHORT__] claim fixture",
+				) + commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"no successful git commit command",
+		);
+	});
+
+	it.each([
+		";",
+		"||",
+	])("W2 does not count a command masked with %s", (separator) => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					`git commit -m claim-fixture ${separator} echo later`,
+					0,
+					"[fixture __HEAD_SHORT__] claim fixture",
+				) +
+				commandEvent(`node scripts/verify.mjs fast ${separator} echo later`),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining("no successful git commit command"),
+				expect.stringContaining("without a successful fast-ladder command"),
+			]),
+		);
+	});
+
+	it("W2 requires the last commit output to name worktree HEAD", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_NO_COMMIT_EVENT: "1",
+			ROUND_EVENTS:
+				commandEvent(
+					"git commit -m claim-fixture",
+					0,
+					"[fixture deadbeef] claim fixture",
+				) + commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"git commit output does not name worktree HEAD",
+		);
+	});
+
+	it.each([
+		[
+			"a -C option",
+			(f: ReturnType<typeof fixture>) =>
+				`git -C ${JSON.stringify(f.worktree)} commit -m claim-fixture`,
+		],
+		["a -c option", () => "git -c user.name=x commit -m claim-fixture"],
+		["--no-pager", () => "git --no-pager commit -m claim-fixture"],
+		[
+			"an earlier && command",
+			() => "git add -A && git commit -m claim-fixture",
+		],
+		["an earlier ; command", () => "git add -A; git commit -m claim-fixture"],
+		[
+			"an earlier newline command",
+			() => "git add -A\ngit commit -m claim-fixture",
+		],
+		[
+			"quoted separators in the message",
+			() => 'git commit -m "fix; tests | more"',
+		],
+	])("X1 accepts a commit after %s", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(command(f), 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it.each([
+		["bash", `bash -lc 'git commit -m "a \\"; b | c"'`],
+		["PowerShell", `powershell.exe -Command 'git commit -m "a \`"; b | c"'`],
+	])("Y1 accepts an escaped quote in a %s commit message", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(command, 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("Y1 guard refuses a PowerShell backslash before a separator", () => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(
+				`powershell.exe -Command 'git commit -m a \\; echo later'`,
+				0,
+				claimOutput,
+			) + commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"no successful git commit command",
+		);
+	});
+
+	it.each([
+		[
+			"bash",
+			`bash -lc 'echo "[fixture __HEAD_SHORT__] claim fixture" # ; git commit -m x'`,
+		],
+		[
+			"PowerShell",
+			`powershell.exe -Command 'echo "[fixture __HEAD_SHORT__] claim fixture" # ; git commit -m x'`,
+		],
+	])("Y2 ignores a commented commit in %s", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(command, 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"no successful git commit command",
+		);
+	});
+
+	it.each([
+		["bash", `bash -lc 'echo ok # && node scripts/verify.mjs fast'`],
+		[
+			"PowerShell",
+			`powershell.exe -Command 'echo ok # && node scripts/verify.mjs fast'`,
+		],
+	])("Y2 ignores a commented ladder in %s", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
+				commandEvent(command),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"without a successful fast-ladder command",
+		);
+	});
+
+	it.each([
+		["a quoted hash in bash", `bash -lc 'git commit -m "fix #12"'`],
+		[
+			"a quoted hash in PowerShell",
+			`powershell.exe -Command 'git commit -m "fix #12"'`,
+		],
+		["a hash inside a bash word", `bash -lc 'git commit -m a#b'`],
+		[
+			"a hash inside a PowerShell word",
+			`powershell.exe -Command 'git commit -m a#b'`,
+		],
+	])("Y2 guard keeps %s", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(command, 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+	});
+
+	it("X1 accepts an earlier command before the exact fast ladder", () => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
+				commandEvent("pnpm test && node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it.each([
+		[
+			"X1 guard refuses a filtered ladder",
+			"node scripts/verify.mjs fast --testNamePattern claim",
+		],
+		[
+			"X1 guard refuses a ladder followed by a command",
+			"node scripts/verify.mjs fast && echo later",
+		],
+		["X1 guard refuses a piped ladder", "node scripts/verify.mjs fast | cat"],
+	])("%s", (_name, ladder) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
+				commandEvent(ladder),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"without a successful fast-ladder command",
+		);
+	});
+
+	it.each([
+		[
+			"X1 guard refuses a commit followed by &&",
+			"git commit -m claim-fixture && echo later",
+		],
+		["X1 guard refuses a piped commit", "git commit -m claim-fixture | cat"],
+		[
+			"X1 guard refuses a commit after ||",
+			"false || git commit -m claim-fixture",
+		],
+		[
+			"X1 guard refuses a commit after |",
+			"false | git commit -m claim-fixture",
+		],
+	])("%s", (_name, commit) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(commit, 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"no successful git commit command",
+		);
+	});
+
+	it.each([
+		[
+			"X2 refuses HEAD's prefix in a subject under another header",
+			"[fixture deadbeef] subject __HEAD_SHORT__",
+		],
+		[
+			"X2 refuses HEAD's prefix in a subject under a root-commit header",
+			"[fixture (root-commit) deadbeef] subject __HEAD_SHORT__",
+		],
+	])("%s", (_name, output) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent("git commit -m claim-fixture", 0, output) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"git commit output does not name worktree HEAD",
+		);
+	});
+
+	it("X2 guard accepts a root-commit result header", () => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(
+				"git commit -m claim-fixture",
+				0,
+				"[fixture (root-commit) __HEAD_SHORT__] claim fixture",
+			) + commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("X3 accepts worktree HEAD named on a non-commit line", () => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+			`${claimReport()}Base commit: \`${f.head}\`\n` +
+				"Delivered revision: `__HEAD__`\n",
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("X3 guard refuses a report whose named revisions miss worktree HEAD", () => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+			`${claimReport()}Base commit: \`${f.head}\`\n` +
+				"Delivered revision: `68e863793e6f`\n",
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain("not worktree HEAD");
+	});
+
+	it("V1 rejects a HEAD that does not descend from the launch HEAD", () => {
+		const f = fixture();
+		claimBrief(f);
+		git(f.worktree, "checkout", "--orphan", "other");
+		writeFileSync(path.join(f.worktree, "other.txt"), "other branch");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", "other branch");
+		const otherHead = git(f.worktree, "rev-parse", "HEAD");
+		git(f.worktree, "checkout", "fixture");
+
+		const result = f.invoke(undefined, {
+			ROUND_COMMIT: "claim fixture",
+			ROUND_RESET_HARD: otherHead,
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const message = Buffer.from(f.captured().input, "base64").toString("utf8");
+		expect(message).toContain("does not descend from launch HEAD");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"does not descend from launch HEAD",
+		);
+	});
+
+	it("V1 rejects an empty commit whose diff against the launch HEAD is empty", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_COMMIT: "claim fixture",
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const message = Buffer.from(f.captured().input, "base64").toString("utf8");
+		expect(message).toContain("empty diff against launch HEAD");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"empty diff against launch HEAD",
+		);
+	});
+
+	it("W3 keeps the launch-HEAD refusal without an empty-diff failure", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: claimReport(f.head),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures).toEqual([
+			`commit ${f.head}: equals launch HEAD ${f.head}`,
+			"commit: no successful git commit command with exit code 0 is recorded in this run's events",
+			"verify.mjs fast: PASS is claimed for L2 without a successful fast-ladder command in this run's events",
+		]);
 	});
 
 	it("rejects the measured false report with no commit or ladder evidence", () => {
