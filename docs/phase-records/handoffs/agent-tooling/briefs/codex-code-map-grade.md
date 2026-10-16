@@ -4,7 +4,7 @@
 - **Worktree:** `D:/fitway-temp/tooling-code-map-grade/wt`, branch `grade-code-map`, HEAD `df2640aa`
 - **Milestone:** `agent-tooling-r01`. Decisions: `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 2 and 5.
 - **Read first, only these:**
-  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map.md`, whole: the brief of the result you grade; your contract is G1-G10 below;
+  - `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map.md`, whole: the brief of the result you grade; your contract is G1-G11 below;
   - `docs/agent-context/AGENT_TOOLING_CODE_MAP.md`, its first 60 lines;
   - `scripts/agent-environment/generate-tooling-map.mjs`, its exports and command-line handling.
 
@@ -53,8 +53,10 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   lists for every covered callable imports that name from that module and calls it (report the count checked and each
   miss); for ten callables it lists as uncovered, at random (report your seed), no `*.test.*` file in the repository
   imports and calls it (`git grep`). Intent: coverage claims hold.
-- **G3. Every file.** Outcome: the map's file list equals `git ls-files` of the brief's M1 folders and files with tests
-  excluded (report both counts and any difference). Intent: nothing is skipped.
+- **G3. Every file and callable.** Outcome: the map's file list equals `git ls-files` of the brief's M1 folders and
+  files with tests excluded (report both counts and any difference); and with your own scanner on the TypeScript
+  compiler API (not the generator's code), the set of (file, name, start line, end line) for every callable form the
+  brief's M1 names equals the map's (report both counts and every difference). Intent: nothing is skipped.
 - **G4. Drift fails.** Outcome: in a scratch copy of the tree, adding `export function heldOutProbe() {}` to a mapped
   file makes `pnpm check:tooling-map` (the command the ladder step runs) exit 1 with a line containing `FAIL:` and the
   regenerate command; removing it again exits 0; and the step in the committed `scripts/verify.mjs` runs that command
@@ -75,6 +77,9 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   returns the base's eight steps plus the new one in the order the report states, and with
   `FITWAY_VERIFY_TEST_STEPS=[]` set, `scripts/verify.mjs`'s step list is unchanged (the F250 seam stays closed).
   Intent: the step is cheap and the ladder kept its shape.
+- **G11. Command coverage.** Outcome: for every mapped module that some test runs as a command (spawns or execs its
+  path, or a `pnpm` script that runs it), the map's module-level list of such tests equals the set your own `git grep`
+  finds (report missing and extra entries). Intent: command-driven tools point at their tests too.
 - **G10. Report against commands.** Outcome: the result's commit exists and is your HEAD; the round's run folder
   (`D:/fitway-temp/codex-round-9be94292-833b-4ee1-b3ac-8240cca8f848/`) records the `git commit` whose output names
   `df2640aa` and a `node scripts/verify.mjs fast` run after it with exit 0, with no later commit, quoted from the
@@ -95,5 +100,5 @@ report. (B3)
 
 ## Report
 
-Each of G1-G10 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
+Each of G1-G11 and L1 as PASS or FAIL with the command and the output line that proves it, and for a FAIL the item or
 input that failed; anything you could not run.
