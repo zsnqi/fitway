@@ -1,5 +1,4 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { repositoryFingerprint } from "./repository-fingerprint.mjs";
 
@@ -341,17 +340,6 @@ function localClock(date = new Date()) {
 }
 
 function materializeStep(step) {
-	if (
-		Array.isArray(step) &&
-		step[0] === "Agent tooling map drift" &&
-		step[1]?.[0] === "check:tooling-map"
-	) {
-		return {
-			label: step[0],
-			command: process.execPath,
-			args: ["scripts/agent-environment/generate-tooling-map.mjs", "--check"],
-		};
-	}
 	if (Array.isArray(step)) {
 		const [label, args, env = {}] = step;
 		return { label, args, env };
@@ -372,13 +360,6 @@ function materializeStep(step) {
 }
 
 async function runStep({ label, args, env = {}, command }) {
-	if (label === "Agent tooling map drift" && !existsSync("package.json")) {
-		console.log(`\n[${localClock()}] ==> ${label}`);
-		console.log(
-			`[${localClock()}] <== ${label} (0.00s, SKIP: package manifest is absent)`,
-		);
-		return;
-	}
 	console.log(`\n[${localClock()}] ==> ${label}`);
 	const started = performance.now();
 	let launchError;
