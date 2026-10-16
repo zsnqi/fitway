@@ -68,11 +68,13 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   and files with tests excluded (report both counts and any difference); and with your own scanner on the TypeScript
   compiler API (not the generator's code), the set of (file, name, start line, end line) for every callable form the
   first brief's M1 names, plus every class's own `constructor`, equals the map's (report both counts and every
-  difference). A class without its own constructor has no constructor entry. Intent: nothing is skipped.
+  difference). Before using your scanner, run it on a fixture file of your own holding one callable of every M1 form
+  and a constructor, against expected entries you wrote by hand. A class without its own constructor has no constructor entry. Intent: nothing is skipped.
 - **G4. Drift fails.** Outcome: in a scratch copy of the tree, adding `export function heldOutProbe() {}` to a mapped
   file makes `pnpm check:tooling-map` (the command the ladder step runs) exit 1 with a line containing `FAIL:` and the
   regenerate command; removing it again exits 0; and the step in the committed `scripts/verify.mjs` runs that command
-  in `fast` with no condition that can skip it (quote the lines). Intent: a stale map is caught.
+  in `fast` with no condition that can skip it (quote the lines); `docs/agent-context/README.md` names the map file
+  and its regenerate command (quote the line). Intent: a stale map is caught, and an agent finds the map.
 - **G5. Line endings.** Outcome: a fresh clone of the result into `D:/fitway-temp/tooling-code-map-fix-3-grade/` with
   `core.autocrlf=true` regenerates a map byte-identical to the committed one. Intent: Windows checkouts agree.
 - **G6. Moved code.** Outcome: in a scratch copy, moving one mapped function down by 20 lines with nothing else changed
@@ -100,7 +102,10 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   the three generator modules it names, the generator's test file and the regenerated map, changing the map only in
   line ranges (say so); classify the third round's L0 red runs from its events, each failing case as an assertion on
   N1-N4 behaviour or a missing module, export, helper, fixture or setup; G10 fails if any is the latter (say so without
-  SHAs). Intent: the report rests on what ran.
+  SHAs). The run's events between its commit and its ladder hold no edit to a tracked file. No test case present at the
+  base or at the third fix's base is removed, skipped or made conditional, and none lost an assertion: compare the
+  suites, and list each pre-existing case whose body changed with your judgement (a mechanical adaptation, or a
+  weakening, which fails G10). Intent: the report rests on what ran, and nothing earlier was loosened.
 - **G11. Command coverage (N3).** Outcome: with your own scan of the test files, list every place a test starts
   `node` or `process.execPath` with a mapped module as its entrypoint (the first argument that is not an option), or
   runs a pnpm script whose `package.json` command is `node <mapped module>`, the path given as a literal, a
@@ -110,8 +115,11 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
   for `scripts/agent-environment/codex-round.mjs` among them. A path rebuilt through other calls (the check-brief test
   upper-cases its folder) or a command printed by the tool under test (the gardener round-16 test) need not appear; say
   which places you set aside on these grounds. In a scratch copy, a test that passes a mapped module's path to `git
-  add`, after another entrypoint, or to `node --check` adds no relation. Intent: command-run tools point at the tests
-  that run them, and at no others.
+  add`, after another entrypoint, or to `node --check` adds no relation, and one planted test per N3 form (a literal,
+  `node`, `process.execPath`, `path.join` and `path.resolve` from a computed root, a module URL, a `process.cwd()` path,
+  a pnpm script) adds exactly its module-level relation on regeneration. List, as a finding and not a FAIL, any place a
+  test starts a mapped module by another form (`node.exe`, `pnpm exec node`, `npx`, a helper of its own). Intent:
+  command-run tools point at the tests that run them, and at no others.
 - **G12. An ordinary step (K1).** Outcome: `scripts/verify.mjs` holds no code that names the map step and no
   step-skipping branch for any label; the step's command lives only in `package.json`; in a scratch copy, a drifted map
   makes the ladder's `runVerification` path fail at that step. Intent: nothing can skip it.
@@ -126,8 +134,8 @@ The coordinator knows, row by row, whether the delivered map holds on checks its
 - **G14. A drift that names itself (K3, N4).** Outcome: `pnpm check:tooling-map` on a map edited to drop one
   module-level command test, one edited to add a false one, and one edited to drop a callable's line each exits 1
   naming that file and that relation or callable (missing or extra, with its name and kind), never only a line number
-  or a count; an untracked source file in a mapped folder fails the check naming the file; the output still holds the
-  regenerate command. Intent: an agent reading a drift knows what changed.
+  or a count; one map edited with all three changes at once names every one of them in one run; an untracked source
+  file in a mapped folder fails the check naming the file; the output still holds the regenerate command. Intent: an agent reading a drift knows what changed.
 - **G15. One path, small parts (K4, K5, N5, the review edits).** Outcome: the generator's modules hold no `git
   ls-files` call (`git grep`), and tracked and untracked listings go through one helper in
   `scripts/verify-repository.mjs`; each module of the generator is at most 500 lines and each function at most 80,

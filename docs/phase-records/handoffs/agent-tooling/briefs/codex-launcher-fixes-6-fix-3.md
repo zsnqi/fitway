@@ -57,9 +57,9 @@ A command's quotes, escapes and comments are read as the shell that ran it reads
   - **Outcome.** Quoting and escaping are decided in one place that both the part splitter and the word tokenizer use,
     with the rules of the shell that ran the command: inside double quotes a backslash escapes the next character in
     bash, a backtick escapes the next character in PowerShell, and single quotes keep every character literal in both.
-    Those two commands count as commits; every case X1 and the earlier rounds cover keeps its result. Tested in both
-    wrappers.
-  - **Intent.** A commit message never decides whether its commit counts.
+    Those two commands count as commits, while `\;` in the PowerShell wrapper escapes nothing (a backslash is literal
+    there); every case X1 and the earlier rounds cover keeps its result. Tested in both wrappers.
+  - **Intent.** A commit message's quotes and separators never decide whether its commit counts.
 - **Y2. Comments (grade G14).**
   - **Cause (measured by the grader).** `echo ok # ; git commit -m x` and `echo ok #` followed by `&&` and the ladder
     count as a commit and a ladder run in both wrappers, though nothing after the `#` runs.
@@ -79,7 +79,7 @@ A command's quotes, escapes and comments are read as the shell that ran it reads
 - **L1. The earlier outcomes.** Every outcome and limit of `codex-launcher-fixes-6.md`, `codex-launcher-fixes-6-fix.md`
   and `codex-launcher-fixes-6-fix-2.md` still holds (report each again), with the coordinator's reading of X1 that a
   commit after `;` or a newline counts when it is the last command; every test at this HEAD keeps its assertions and
-  still runs; no helper of the claim check exceeds 60 lines, and no second loop tracks quotes.
+  still runs, and no test helper, fixture, setup or mock body at this HEAD changes (what you need is added new); no helper of the claim check exceeds 60 lines, and no second loop tracks quotes.
 - **L2. The ladder.** `node scripts/verify.mjs fast` passes on your committed tree, and `git status --short` is empty
   after your commit and after the ladder.
 
