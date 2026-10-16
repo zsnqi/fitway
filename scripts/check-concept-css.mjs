@@ -646,6 +646,43 @@ function collectOutlineFindings(
 		}
 	}
 }
+
+function collectRuleFindings(rules, expand, finding) {
+	for (const rule of rules) {
+		if (!rule.media.some(hoverOnly))
+			for (const selector of rule.rawSelectors)
+				if (/:hover(?![\w-])/i.test(maskStrings(selector.text)))
+					finding(rule, selector.offset, "ungated-hover", selector.text);
+		for (const declaration of rule.declarations) {
+			const value = maskStrings(expand(declaration.value));
+			if (
+				["transition", "transition-property"].includes(declaration.property) &&
+				/(?<![\w-])all(?![\w-])/i.test(value)
+			)
+				finding(
+					rule,
+					declaration.offset,
+					"transition-all",
+					`${declaration.property}: ${declaration.value}`,
+				);
+			if (
+				[
+					"transition",
+					"transition-timing-function",
+					"animation",
+					"animation-timing-function",
+				].includes(declaration.property) &&
+				hasEaseIn(value)
+			)
+				finding(
+					rule,
+					declaration.offset,
+					"ease-in",
+					`${declaration.property}: ${declaration.value}`,
+				);
+		}
+	}
+}
 // Static source lint: a moved-ring comment must name a selector that paints.
 export function lintSources(
 	sources,
@@ -689,42 +726,7 @@ export function lintSources(
 	};
 	const { hasFocusRing, ringRules } = createFocusRingAnalyzer(rules, expand);
 	if (checkFocusRing) collectFocusRingFindings(rules, expand, finding);
-	for (const rule of rules) {
-		if (!rule.media.some(hoverOnly)) {
-			for (const selector of rule.rawSelectors) {
-				if (/:hover(?![\w-])/i.test(maskStrings(selector.text)))
-					finding(rule, selector.offset, "ungated-hover", selector.text);
-			}
-		}
-		for (const declaration of rule.declarations) {
-			const value = maskStrings(expand(declaration.value));
-			if (
-				["transition", "transition-property"].includes(declaration.property) &&
-				/(?<![\w-])all(?![\w-])/i.test(value)
-			)
-				finding(
-					rule,
-					declaration.offset,
-					"transition-all",
-					`${declaration.property}: ${declaration.value}`,
-				);
-			if (
-				[
-					"transition",
-					"transition-timing-function",
-					"animation",
-					"animation-timing-function",
-				].includes(declaration.property) &&
-				hasEaseIn(value)
-			)
-				finding(
-					rule,
-					declaration.offset,
-					"ease-in",
-					`${declaration.property}: ${declaration.value}`,
-				);
-		}
-	}
+	collectRuleFindings(rules, expand, finding);
 	collectOutlineFindings(rules, expand, hasFocusRing, ringRules, finding);
 	findings.sort(
 		(a, b) =>

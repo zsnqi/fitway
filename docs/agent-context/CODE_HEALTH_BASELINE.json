@@ -7,9 +7,6 @@
 		".agents/skills/gardener/code-health-repair.test.ts": {
 			"longFunctions": 2
 		},
-		".agents/skills/gardener/code-health-source.mjs": {
-			"longFunctions": 1
-		},
 		".agents/skills/gardener/code-health.test.ts": {
 			"duplication": 1,
 			"longFunctions": 3
@@ -764,7 +761,7 @@
 			"giantFiles": 2136
 		},
 		"scripts/check-concept-css.mjs": {
-			"longFunctions": 2
+			"longFunctions": 1
 		},
 		"scripts/check-concept-css.test.ts": {
 			"longFunctions": 1

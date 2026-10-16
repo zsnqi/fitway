@@ -1,9 +1,9 @@
 import path from "node:path";
 import ts from "typescript";
 import { scanDuplication } from "./code-health-duplication.mjs";
-import { scanSource } from "./code-health-source.mjs";
+import { isSourceFile, scanSource } from "./code-health-source.mjs";
 
-export { scanSource };
+export { isSourceFile, scanSource };
 
 const MEASURE_DEFINITIONS = [
 	{ name: "giantFiles", baseline: true, lineCount: true },
@@ -37,21 +37,7 @@ export const GIANT_FILE_MEASURE = MEASURE_DEFINITIONS.find(
 export const DUPLICATION_MEASURE = MEASURE_DEFINITIONS.find(
 	({ duplication }) => duplication,
 ).name;
-export const SOURCE_EXTENSIONS = Object.freeze([
-	".js",
-	".mjs",
-	".cjs",
-	".ts",
-	".tsx",
-	".css",
-	".html",
-]);
-const SOURCE_EXTENSION_SET = new Set(SOURCE_EXTENSIONS);
 const IMPORT_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts", ".tsx", ".css"];
-
-function sourceFile(file) {
-	return SOURCE_EXTENSION_SET.has(path.extname(file).toLowerCase());
-}
 
 function lines(text) {
 	return text.split(/\r?\n/);
@@ -278,7 +264,7 @@ export function deriveSharedFiles(files, { specimenPages = [] } = {}) {
 
 function scanGiantFiles(files) {
 	return files
-		.filter((item) => sourceFile(item.file))
+		.filter((item) => isSourceFile(item.file))
 		.flatMap((item) => {
 			const count = lines(item.text).length;
 			return count > 800
@@ -345,9 +331,7 @@ function scanBoundaryBreaks(files, sharedFiles) {
 }
 
 export function scanScope(files, { sharedFiles = [] } = {}) {
-	const source = files.map((file) =>
-		scanSource({ ...file, extensions: SOURCE_EXTENSION_SET }),
-	);
+	const source = files.map((file) => scanSource(file));
 	const measures = {
 		giantFiles: scanGiantFiles(files),
 		typeEscapes: source.flatMap((item) => item.typeEscapes),
@@ -464,7 +448,7 @@ export async function collectCodeHealth({
 				throw new Error(
 					"configured concept folder has no readable tracked files",
 				);
-			const files = listed.filter(sourceFile).map((file) => ({
+			const files = listed.filter(isSourceFile).map((file) => ({
 				file,
 				text: gitText(git, ["show", `${source}:${file}`]),
 			}));

@@ -1,6 +1,20 @@
 import path from "node:path";
 import ts from "typescript";
 
+const SOURCE_EXTENSIONS = new Set([
+	".js",
+	".mjs",
+	".cjs",
+	".ts",
+	".tsx",
+	".css",
+	".html",
+]);
+
+export function isSourceFile(file) {
+	return SOURCE_EXTENSIONS.has(path.extname(file).toLowerCase());
+}
+
 function blank(text) {
 	return text.replace(/[^\r\n]/g, " ");
 }
@@ -59,18 +73,7 @@ function cast(node) {
 	return ts.isAsExpression(node) || ts.isTypeAssertionExpression(node);
 }
 
-function script(text, offset, isTypeScript, isTsx, add, addComment) {
-	const source = ts.createSourceFile(
-		isTsx ? "source.tsx" : isTypeScript ? "source.ts" : "source.js",
-		text,
-		ts.ScriptTarget.Latest,
-		true,
-		isTsx
-			? ts.ScriptKind.TSX
-			: isTypeScript
-				? ts.ScriptKind.TS
-				: ts.ScriptKind.JS,
-	);
+function scanComments(source, text, offset, isTypeScript, add, addComment) {
 	const spans = [];
 	const findLiterals = (node) => {
 		if (ts.isTemplateExpression(node)) {
@@ -88,7 +91,7 @@ function script(text, offset, isTypeScript, isTsx, add, addComment) {
 		ts.forEachChild(node, findLiterals);
 	};
 	findLiterals(source);
-	// Mask complete literals before scanning trivia, including template interpolations.
+	// Mask literal text before scanning trivia; template substitutions stay visible.
 	let masked = "";
 	let cursor = 0;
 	for (const [start, end] of spans.sort((a, b) => a[0] - b[0])) {
@@ -118,6 +121,21 @@ function script(text, offset, isTypeScript, isTsx, add, addComment) {
 		}
 		token = scanner.scan();
 	}
+}
+
+function script(text, offset, isTypeScript, isTsx, add, addComment) {
+	const source = ts.createSourceFile(
+		isTsx ? "source.tsx" : isTypeScript ? "source.ts" : "source.js",
+		text,
+		ts.ScriptTarget.Latest,
+		true,
+		isTsx
+			? ts.ScriptKind.TSX
+			: isTypeScript
+				? ts.ScriptKind.TS
+				: ts.ScriptKind.JS,
+	);
+	scanComments(source, text, offset, isTypeScript, add, addComment);
 	scanLongFunctions(source, text, offset, add);
 	visitCode(source, (node) => {
 		const start = offset + node.getStart(source);
@@ -253,7 +271,7 @@ function html(text, add, addComment) {
 	}
 }
 
-export function scanSource({ file, text, extensions }) {
+export function scanSource({ file, text }) {
 	const result = {
 		typeEscapes: [],
 		suppressions: [],
@@ -284,7 +302,7 @@ export function scanSource({ file, text, extensions }) {
 	const ext = path.extname(file).toLowerCase();
 	if (ext === ".css") css(text, 0, add, addComment);
 	else if (ext === ".html") html(text, add, addComment);
-	else if (extensions.has(ext))
+	else if (SOURCE_EXTENSIONS.has(ext))
 		script(
 			text,
 			0,

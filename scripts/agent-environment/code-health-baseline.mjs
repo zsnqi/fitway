@@ -6,7 +6,7 @@ import {
 	BASELINE_MEASURES,
 	DUPLICATION_MEASURE,
 	GIANT_FILE_MEASURE,
-	SOURCE_EXTENSIONS,
+	isSourceFile,
 	scanScope,
 	scanSource,
 } from "../../.agents/skills/gardener/code-health.mjs";
@@ -22,7 +22,6 @@ export const HEALTH_ROOTS = Object.freeze([
 	"apps",
 	"packages",
 ]);
-const SOURCE_EXTENSION_SET = new Set(SOURCE_EXTENSIONS);
 const EXCEPTION_MARKER = /code-health-exception:/g;
 
 function date(value = new Date()) {
@@ -59,9 +58,7 @@ export function listCodeHealthFiles(root = process.cwd()) {
 		...listTrackedFiles(root, HEALTH_ROOTS, { untracked: true }),
 	]);
 	return [...files]
-		.filter((file) =>
-			SOURCE_EXTENSION_SET.has(path.extname(file).toLowerCase()),
-		)
+		.filter(isSourceFile)
 		.map(normalizePath)
 		.sort((left, right) => left.localeCompare(right, "en"));
 }
@@ -76,10 +73,7 @@ export function readCodeHealthFiles(root = process.cwd()) {
 function parseExceptions(files) {
 	const exceptions = [];
 	for (const file of files) {
-		const { comments } = scanSource({
-			...file,
-			extensions: SOURCE_EXTENSION_SET,
-		});
+		const { comments } = scanSource(file);
 		for (const comment of comments) {
 			for (const match of comment.text.matchAll(EXCEPTION_MARKER)) {
 				const fields = comment.text.slice(match.index + match[0].length);
