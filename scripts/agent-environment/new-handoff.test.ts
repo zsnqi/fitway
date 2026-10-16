@@ -281,10 +281,7 @@ describe("M4: one resume file and one ledger pointer", () => {
 		}
 	});
 	it("CLI help describes the stable file and has no lease option", () => {
-		const result = spawnSync(process.execPath, [script, "--help"], {
-			encoding: "utf8",
-			windowsHide: true,
-		});
+		const result = runProcess(process.cwd(), [script, "--help"]);
 		expect(result.status).toBe(0);
 		expect(result.stdout).toContain("writes <milestone-id>-resume.md");
 		expect(result.stdout).not.toContain("lease-hours");
@@ -307,11 +304,7 @@ describe("M4: one resume file and one ledger pointer", () => {
 	)("invalid arguments do not write %j", async ({ args }) => {
 		const { root } = fixture(roots);
 		const before = snapshot(root);
-		const result = spawnSync(process.execPath, [script, ...args], {
-			cwd: root,
-			encoding: "utf8",
-			windowsHide: true,
-		});
+		const result = runProcess(root, [script, ...args]);
 		expect(result.status).toBe(1);
 		expect(snapshot(root)).toEqual(before);
 		expect(existsSync(path.join(root, target))).toBe(false);
@@ -349,7 +342,7 @@ describe("V2: handoff:new opens a milestone", () => {
 			recursive: true,
 			force: true,
 		});
-		return { root, ledgerHandoff };
+		return { root };
 	}
 
 	it.each([
