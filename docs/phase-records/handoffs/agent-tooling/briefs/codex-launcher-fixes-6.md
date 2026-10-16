@@ -60,8 +60,8 @@ resume point is made by the command meant to make it.
     of the check stays as at the HEAD: no SHA names an existing commit, the claimed commit equals the launch HEAD, no
     successful `git commit` in the run's events, a tree not clean after the commit, and the fast-ladder order check.
     A HEAD that does not descend from the launch HEAD (the worktree reset to another branch's commit) is refused,
-    naming both. Tests cover a base cited before the HEAD, an abbreviation of the HEAD beside a full base SHA, an
-    existing commit that is not the HEAD named alone, a HEAD that does not descend from the launch HEAD, and the F242
+    naming both, and so is a HEAD whose diff against the launch HEAD is empty. Tests cover a base cited before the HEAD, an abbreviation of the HEAD beside a full base SHA, an
+    existing commit that is not the HEAD named alone, a HEAD that does not descend from the launch HEAD, an empty commit, and the F242
     case (a SHA that names no commit, alone).
   - **Intent.** A report is refused for claiming work that did not happen, never for citing history.
 - **V2. handoff:new cannot open a milestone (F255).**
@@ -73,7 +73,7 @@ resume point is made by the command meant to make it.
     ledger's handoff path names), exits 0 and prints the path; afterwards the ledger's `handoff` names the created file
     and `pnpm context:show --milestone <id>` prints it; a second run changes only the As of line; every refusal
     at the HEAD stays (an unknown milestone, a milestone without a packet, an invalid packet, `--dir` naming a file).
-    Tests cover each case on a scratch repository the test makes.
+    Tests cover each case by running the command as a process on a scratch repository the test makes.
   - **Intent.** Opening a milestone needs no hand-made file.
 
 ## Limits the result keeps
