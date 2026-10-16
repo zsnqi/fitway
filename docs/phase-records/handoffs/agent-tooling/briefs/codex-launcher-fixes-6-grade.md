@@ -68,7 +68,8 @@ The coordinator knows, row by row, whether the delivered commit holds on checks 
   accepted. Intent: a brief's hash cited beside the commit does not block it.
 - **G7. A new milestone's first resume point.** Outcome: in a copy of the repository whose ledger names a new milestone
   with a packet and a handoff file that does not exist (its directory absent), `pnpm handoff:new --milestone <id>`
-  exits 0 both with `--dir <a new directory>` and without it, the file exists, starts with the resume-point marker and names the milestone in its title, the ledger's
+  exits 0 both with `--dir <a new directory>` and without it, the file exists and equals `docs/agent-context/HANDOFF_TEMPLATE.md`'s template block with the milestone substituted,
+  apart from the As of line and the branch and SHA it fills, the ledger's
   `handoff` names it, and `pnpm context:show --milestone <id>` prints it; a second run changes only the As of line
   (byte compare otherwise); each refusal of the base still holds: an id not in the ledger ("Unknown active
   milestone"), a milestone without a packet, an invalid packet, and `--dir` naming a file. Intent:
