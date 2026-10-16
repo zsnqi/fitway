@@ -4,6 +4,7 @@ import ts from "typescript";
 import {
 	classEntryFromExpression,
 	memberAccessTarget,
+	memberOperation,
 	resolveExportsByFile,
 	resolveTestImports,
 	visit,
@@ -18,25 +19,6 @@ const CHILD_PROCESS_FUNCTIONS = new Set([
 	"spawn",
 	"spawnSync",
 ]);
-const ASSIGNMENT_OPERATORS = new Set([
-	ts.SyntaxKind.EqualsToken,
-	ts.SyntaxKind.PlusEqualsToken,
-	ts.SyntaxKind.MinusEqualsToken,
-	ts.SyntaxKind.AsteriskEqualsToken,
-	ts.SyntaxKind.AsteriskAsteriskEqualsToken,
-	ts.SyntaxKind.SlashEqualsToken,
-	ts.SyntaxKind.PercentEqualsToken,
-	ts.SyntaxKind.AmpersandEqualsToken,
-	ts.SyntaxKind.BarEqualsToken,
-	ts.SyntaxKind.CaretEqualsToken,
-	ts.SyntaxKind.LessThanLessThanEqualsToken,
-	ts.SyntaxKind.GreaterThanGreaterThanEqualsToken,
-	ts.SyntaxKind.GreaterThanGreaterThanGreaterThanEqualsToken,
-	ts.SyntaxKind.AmpersandAmpersandEqualsToken,
-	ts.SyntaxKind.BarBarEqualsToken,
-	ts.SyntaxKind.QuestionQuestionEqualsToken,
-]);
-
 function markCoverage(coverage, entry, testPath) {
 	if (!entry) return;
 	const key = `${entry.path}:${entry.lineStart}:${entry.kind}:${entry.name}`;
@@ -104,11 +86,49 @@ function isProcessCwdCall(node) {
 	);
 }
 
+function resolvePathValues(node, context) {
+	if (
+		!ts.isPropertyAccessExpression(node.expression) ||
+		(node.expression.name.text !== "join" &&
+			node.expression.name.text !== "resolve")
+	)
+		return null;
+	const resolvedArguments = node.arguments.map((argument) =>
+		resolveStringValues(argument, context),
+	);
+	const literalSuffix = [];
+	for (let index = resolvedArguments.length - 1; index >= 0; index -= 1) {
+		const resolved = resolvedArguments[index];
+		if (resolved.length !== 1) break;
+		literalSuffix.unshift(resolved[0]);
+	}
+	if (literalSuffix.length === 0) return [];
+	if (literalSuffix.length !== resolvedArguments.length)
+		return [path.posix.join(...literalSuffix)];
+	return [
+		node.expression.name.text === "resolve"
+			? path.posix.resolve(...literalSuffix)
+			: path.posix.join(...literalSuffix),
+	];
+}
+
 function resolveStringValues(node, context) {
 	const { sourceFile, constants, seen } = context;
 	if (!node) return [];
 	if (ts.isParenthesizedExpression(node))
 		return resolveStringValues(node.expression, context);
+	if (
+		ts.isBinaryExpression(node) &&
+		(node.operatorToken.kind === ts.SyntaxKind.BarBarToken ||
+			node.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken)
+	) {
+		return [
+			...new Set([
+				...resolveStringValues(node.left, context),
+				...resolveStringValues(node.right, context),
+			]),
+		];
+	}
 	if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node))
 		return [node.text];
 	if (ts.isTemplateExpression(node)) {
@@ -131,24 +151,8 @@ function resolveStringValues(node, context) {
 	}
 	if (ts.isCallExpression(node)) {
 		if (isProcessCwdCall(node)) return ["."];
-		if (
-			ts.isPropertyAccessExpression(node.expression) &&
-			(node.expression.name.text === "join" ||
-				node.expression.name.text === "resolve")
-		) {
-			const values = [];
-			for (const argument of node.arguments) {
-				const resolved = resolveStringValues(argument, context);
-				if (resolved.length !== 1) return [];
-				values.push(resolved[0]);
-			}
-			if (values.length === 0) return [];
-			return [
-				node.expression.name.text === "resolve"
-					? path.posix.resolve(...values)
-					: path.posix.join(...values),
-			];
-		}
+		const pathValues = resolvePathValues(node, context);
+		if (pathValues) return pathValues;
 		if (
 			node.expression.getText(sourceFile) === "fileURLToPath" &&
 			node.arguments.length === 1
@@ -257,7 +261,32 @@ function childProcessImports(sourceFile) {
 	return names;
 }
 
-function commandCoverage(sourceFile, root, testPath, sourceFiles, constants) {
+function commandArguments(node, context) {
+	const argument = node.arguments[1];
+	if (
+		!argument ||
+		(!ts.isArrayLiteralExpression(argument) && !ts.isIdentifier(argument))
+	)
+		return [];
+	return resolveStringArray(argument, context);
+}
+
+function firstNonOption(values, { rejectCheck = false } = {}) {
+	for (const value of values) {
+		if (rejectCheck && (value === "--check" || value === "-c")) return null;
+		if (!value.startsWith("-")) return value;
+	}
+	return null;
+}
+
+function commandCoverage(
+	sourceFile,
+	root,
+	testPath,
+	sourceFiles,
+	constants,
+	packageScripts,
+) {
 	const result = new Set();
 	const childProcess = childProcessImports(sourceFile);
 	if (childProcess.size === 0) return result;
@@ -268,42 +297,40 @@ function commandCoverage(sourceFile, root, testPath, sourceFiles, constants) {
 			!childProcess.has(node.expression.text)
 		)
 			return;
-		for (const argument of node.arguments) {
-			if (!ts.isArrayLiteralExpression(argument) && !ts.isIdentifier(argument))
+		const context = {
+			sourceFile,
+			constants,
+			seen: new Set(),
+			testPath,
+		};
+		const argumentsForCommand = commandArguments(node, context);
+		const executableArgument = node.arguments[0];
+		const executables =
+			ts.isPropertyAccessExpression(executableArgument) &&
+			ts.isIdentifier(executableArgument.expression) &&
+			executableArgument.expression.text === "process" &&
+			executableArgument.name.text === "execPath"
+				? ["node"]
+				: resolveStringValues(executableArgument, context);
+		for (const executable of executables) {
+			const name = path.posix.basename(normalizePath(executable)).toLowerCase();
+			if (name === "node" || name === "node.exe") {
+				const entrypoint = firstNonOption(argumentsForCommand, {
+					rejectCheck: true,
+				});
+				if (entrypoint) {
+					const relative = repositoryRelative(entrypoint, root, testPath);
+					if (sourceFiles.has(relative)) result.add(relative);
+				}
 				continue;
-			const candidates = resolveStringArray(argument, {
-				sourceFile,
-				constants,
-				seen: new Set(),
-				testPath,
-			});
-			for (const candidate of candidates) {
-				const relative = repositoryRelative(candidate, root, testPath);
-				if (sourceFiles.has(relative)) result.add(relative);
 			}
+			if (name !== "pnpm" && name !== "pnpm.cmd") continue;
+			const script = firstNonOption(argumentsForCommand);
+			const source = script ? packageScripts.get(script) : null;
+			if (source) result.add(source);
 		}
 	});
 	return result;
-}
-
-function memberOperation(node) {
-	const parent = node.parent;
-	if (ts.isCallExpression(parent) && parent.expression === node) return "call";
-	if (
-		ts.isBinaryExpression(parent) &&
-		parent.left === node &&
-		ASSIGNMENT_OPERATORS.has(parent.operatorToken.kind)
-	)
-		return "write";
-	if (
-		(ts.isPrefixUnaryExpression(parent) ||
-			ts.isPostfixUnaryExpression(parent)) &&
-		parent.operand === node &&
-		(parent.operator === ts.SyntaxKind.PlusPlusToken ||
-			parent.operator === ts.SyntaxKind.MinusMinusToken)
-	)
-		return "write";
-	return "read";
 }
 
 function recordMemberCoverage(node, context) {
@@ -327,15 +354,22 @@ function recordMemberCoverage(node, context) {
 
 function recordNodeCoverage(node, context) {
 	if (ts.isNewExpression(node)) {
-		markCoverage(
-			context.coverage,
-			classEntryFromExpression(
-				node.expression,
-				context.importsByLocal,
-				context.namespaceImports,
-			),
-			context.testPath,
+		const owner = classEntryFromExpression(
+			node.expression,
+			context.importsByLocal,
+			context.namespaceImports,
 		);
+		markCoverage(context.coverage, owner, context.testPath);
+		const constructorEntry = owner
+			? context.membersByOwner.byOwner
+					.get(context.membersByOwner.key(owner))
+					?.find(
+						(member) =>
+							member.kind === "constructor" &&
+							member.memberName === "constructor",
+					)
+			: null;
+		markCoverage(context.coverage, constructorEntry, context.testPath);
 	}
 	if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
 		markCoverage(
@@ -355,6 +389,7 @@ async function analyzeTestFile({
 	membersByOwner,
 	coverage,
 	commandCoverageByFile,
+	packageScripts,
 }) {
 	const text = await readFile(path.join(root, testPath), "utf8");
 	const sourceFile = ts.createSourceFile(
@@ -385,6 +420,7 @@ async function analyzeTestFile({
 		testPath,
 		sourceSet,
 		staticContext.constants,
+		packageScripts,
 	)) {
 		const tests = commandCoverageByFile.get(source) ?? new Set();
 		tests.add(testPath);
@@ -411,6 +447,7 @@ export async function analyzeCoverage({
 	testFiles,
 	parsedByFile,
 	sourcesByFile,
+	packageScripts,
 }) {
 	const sourceSet = new Set(files);
 	const exportsByFile = resolveExportsByFile({
@@ -433,6 +470,7 @@ export async function analyzeCoverage({
 			membersByOwner,
 			coverage,
 			commandCoverageByFile,
+			packageScripts,
 		});
 	}
 	return { coverage, commandCoverageByFile };

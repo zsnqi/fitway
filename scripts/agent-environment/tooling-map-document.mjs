@@ -8,6 +8,7 @@ import {
 	listTestFiles,
 	listUntrackedMappedSourceFiles,
 	MAP_RELATIVE_PATH,
+	normalizePath,
 	parseCallables,
 	REGENERATE_COMMAND,
 	uniqueSorted,
@@ -64,11 +65,37 @@ async function readMappedSources(repositoryRoot, files) {
 	return sourcesByFile;
 }
 
+async function packageNodeScripts(repositoryRoot, sourceFiles) {
+	let packageJson;
+	try {
+		packageJson = JSON.parse(
+			await readFile(path.join(repositoryRoot, "package.json"), "utf8"),
+		);
+	} catch (error) {
+		if (error?.code === "ENOENT") return new Map();
+		throw error;
+	}
+	const result = new Map();
+	for (const [name, command] of Object.entries(packageJson.scripts ?? {})) {
+		const match = /^node\s+(?:"([^"]+)"|'([^']+)'|(\S+))/.exec(
+			String(command).trim(),
+		);
+		if (!match) continue;
+		const modulePath = normalizePath(match[1] ?? match[2] ?? match[3]);
+		if (sourceFiles.has(modulePath)) result.set(name, modulePath);
+	}
+	return result;
+}
+
 export async function buildToolingMap({ root = process.cwd() } = {}) {
 	const repositoryRoot = path.resolve(root);
 	const files = listMappedSourceFiles(repositoryRoot);
 	const testFiles = listTestFiles(repositoryRoot);
 	const sourcesByFile = await readMappedSources(repositoryRoot, files);
+	const packageScripts = await packageNodeScripts(
+		repositoryRoot,
+		new Set(files),
+	);
 	const parsedByFile = files.map((file) => ({
 		path: file,
 		callables: parseCallables(file, sourcesByFile.get(file) ?? ""),
@@ -79,6 +106,7 @@ export async function buildToolingMap({ root = process.cwd() } = {}) {
 		testFiles,
 		parsedByFile,
 		sourcesByFile,
+		packageScripts,
 	});
 	for (const file of parsedByFile) {
 		for (const entry of file.callables)
@@ -175,64 +203,84 @@ function fileListDifference(expectedFiles, parsedFiles) {
 	return `file list differs: missing [${missing.join(", ")}]; extra [${extra.join(", ")}]`;
 }
 
-function validateCommandTests({
-	expectedFile,
-	parsedFile,
-	trackedTests,
-	errors,
-}) {
-	if (!setsEqual(expectedFile.commandTests, parsedFile.commandTests)) {
-		errors.push(
-			`command test coverage differs for ${expectedFile.path}: expected [${expectedFile.commandTests.join(", ")}]; found [${parsedFile.commandTests.join(", ")}]`,
-		);
-	}
-	for (const test of parsedFile.commandTests) {
-		if (!trackedTests.has(test))
-			errors.push(`command test file is missing or untracked: ${test}`);
-		if (!expectedFile.commandTests.includes(test))
-			errors.push(
-				`command test evidence is missing for ${expectedFile.path}: ${test}`,
-			);
-	}
+function diffCommandTests(expectedFile, parsedFile) {
+	const missing = listDifference(
+		expectedFile.commandTests,
+		parsedFile.commandTests,
+	);
+	const extra = listDifference(
+		parsedFile.commandTests,
+		expectedFile.commandTests,
+	);
+	return [
+		...missing.map(
+			(test) =>
+				`command test coverage differs for ${expectedFile.path}: missing command test relation for ${expectedFile.path}: ${test}`,
+		),
+		...extra.map(
+			(test) =>
+				`command test coverage differs for ${expectedFile.path}: extra command test relation for ${expectedFile.path}: ${test}`,
+		),
+	];
 }
 
-function validateCallables({ expected, parsed, trackedTests, errors }) {
-	const parsedEntries = parsed.flatMap((file) => file.callables);
-	const expectedEntries = expected.callables;
-	for (const entry of parsedEntries) {
-		const match = expectedEntries.find(
-			(candidate) =>
-				candidate.path === entry.path &&
-				candidate.name === entry.name &&
-				candidate.kind === entry.kind &&
-				candidate.lineStart === entry.lineStart &&
-				candidate.lineEnd === entry.lineEnd,
-		);
-		if (!match) {
+function callableIdentity(entry) {
+	return `${entry.path}\0${entry.name}\0${entry.kind}`;
+}
+
+function diffCallables(expectedFiles, parsedFiles) {
+	const expected = new Map(
+		expectedFiles
+			.flatMap((file) => file.callables)
+			.map((entry) => [callableIdentity(entry), entry]),
+	);
+	const parsed = new Map(
+		parsedFiles
+			.flatMap((file) => file.callables)
+			.map((entry) => [callableIdentity(entry), entry]),
+	);
+	const errors = [];
+	for (const [identity, entry] of expected) {
+		const parsedEntry = parsed.get(identity);
+		if (!parsedEntry) {
 			errors.push(
-				`line range differs for ${entry.path} ${entry.name} [${entry.kind}]`,
+				`missing callable ${entry.path} ${entry.name} [${entry.kind}]`,
 			);
 			continue;
 		}
-		if (!setsEqual(match.tests, entry.tests))
+		if (
+			entry.lineStart !== parsedEntry.lineStart ||
+			entry.lineEnd !== parsedEntry.lineEnd
+		) {
+			errors.push(
+				`callable range differs for ${entry.path} ${entry.name} [${entry.kind}]: expected L${entry.lineStart}-L${entry.lineEnd}, found L${parsedEntry.lineStart}-L${parsedEntry.lineEnd}`,
+			);
+			continue;
+		}
+		if (!setsEqual(entry.tests, parsedEntry.tests)) {
 			errors.push(
 				`test coverage differs for ${entry.path} ${entry.name} [${entry.kind}]`,
 			);
-		for (const test of entry.tests) {
-			if (!trackedTests.has(test)) {
-				errors.push(`test file is missing or untracked: ${test}`);
-				continue;
-			}
-			if (!match.tests.includes(test))
-				errors.push(
-					`test call evidence is missing for ${entry.path} ${entry.name}: ${test}`,
-				);
 		}
 	}
-	if (parsedEntries.length !== expectedEntries.length)
-		errors.push(
-			`callable list differs: expected ${expectedEntries.length}, found ${parsedEntries.length}`,
-		);
+	for (const [identity, entry] of parsed) {
+		if (!expected.has(identity))
+			errors.push(`extra callable ${entry.path} ${entry.name} [${entry.kind}]`);
+	}
+	return errors;
+}
+
+function diffToolingMaps(expectedFiles, parsedFiles) {
+	const errors = [];
+	const fileListError = fileListDifference(expectedFiles, parsedFiles);
+	if (fileListError) errors.push(fileListError);
+	const parsedByPath = new Map(parsedFiles.map((file) => [file.path, file]));
+	for (const expectedFile of expectedFiles) {
+		const parsedFile = parsedByPath.get(expectedFile.path);
+		if (parsedFile) errors.push(...diffCommandTests(expectedFile, parsedFile));
+	}
+	errors.push(...diffCallables(expectedFiles, parsedFiles));
+	return errors;
 }
 
 export async function validateToolingMap({ root = process.cwd(), text } = {}) {
@@ -242,34 +290,8 @@ export async function validateToolingMap({ root = process.cwd(), text } = {}) {
 		(await readFile(path.join(repositoryRoot, MAP_RELATIVE_PATH), "utf8"));
 	const expected = await buildToolingMap({ root: repositoryRoot });
 	const parsed = parseToolingMap(committed);
-	const trackedTests = new Set(listTestFiles(repositoryRoot));
-	const errors = [];
-	const fileListError = fileListDifference(expected.files, parsed);
-	if (fileListError) errors.push(fileListError);
-	const parsedByPath = new Map(parsed.map((file) => [file.path, file]));
-	for (const expectedFile of expected.files) {
-		const parsedFile = parsedByPath.get(expectedFile.path);
-		if (!parsedFile) continue;
-		validateCommandTests({
-			expectedFile,
-			parsedFile,
-			trackedTests,
-			errors,
-		});
-	}
-	validateCallables({ expected, parsed, trackedTests, errors });
+	const errors = diffToolingMaps(expected.files, parsed);
 	return { ok: errors.length === 0, errors, expected, parsed };
-}
-
-function firstDifference(committed, generated) {
-	const committedLines = committed.replace(/\r\n?/g, "\n").split("\n");
-	const generatedLines = generated.split("\n");
-	const length = Math.max(committedLines.length, generatedLines.length);
-	for (let index = 0; index < length; index += 1) {
-		if (committedLines[index] !== generatedLines[index])
-			return `line ${index + 1} differs`;
-	}
-	return "content differs";
 }
 
 export async function checkToolingMap({ root = process.cwd() } = {}) {
@@ -301,13 +323,14 @@ export async function checkToolingMap({ root = process.cwd() } = {}) {
 	}
 	if (committed.replace(/\r\n?/g, "\n") === generated.text)
 		return { ok: true, errors: [], generated, committed };
-	const fileListError = fileListDifference(
-		generated.files,
-		parseToolingMap(committed),
-	);
-	const errors = [
-		fileListError ??
-			`generated map differs (${firstDifference(committed, generated.text)})`,
-	];
-	return { ok: false, errors, generated, committed };
+	const parsed = parseToolingMap(committed);
+	const differences = diffToolingMaps(generated.files, parsed);
+	if (differences.length === 0) differences.push("content differs");
+	return {
+		ok: false,
+		errors: [`generated map differs: ${differences.join("; ")}`],
+		generated,
+		committed,
+		parsed,
+	};
 }

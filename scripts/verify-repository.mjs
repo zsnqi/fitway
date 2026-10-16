@@ -84,10 +84,15 @@ function normalizeClaudeModel(value) {
 	return CLAUDE_MODEL_ALIASES.get(normalized) ?? normalized;
 }
 
-export function listTrackedFiles(cwd = root, patterns = []) {
-	const output = execFileSync("git", ["ls-files", "-z", "--", ...patterns], {
-		cwd,
-	});
+export function listTrackedFiles(
+	cwd = root,
+	patterns = [],
+	{ untracked = false } = {},
+) {
+	const args = ["ls-files"];
+	if (untracked) args.push("--others", "--exclude-standard");
+	args.push("-z", "--", ...patterns);
+	const output = execFileSync("git", args, { cwd });
 	return output
 		.toString("utf8")
 		.split("\0")

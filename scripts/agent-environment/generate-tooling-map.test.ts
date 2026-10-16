@@ -230,6 +230,63 @@ describe("M1: generated agent-tooling code map", () => {
 		]);
 	});
 
+	it("N1: maps constructors and counts only new expressions as coverage", async () => {
+		const root = fixture({
+			source: [
+				"export class Inventory {",
+				"  constructor(size) { this.size = size; }",
+				"  initialize() { return this.size; }",
+				"}",
+				"export class Implicit {}",
+				"",
+			].join("\n"),
+			test: [
+				'import { Inventory } from "./tooling-source.mjs";',
+				"const inventory = new Inventory(3);",
+				"inventory.initialize();",
+				"",
+			].join("\n"),
+		});
+		const built = await buildToolingMap({ root });
+		const constructorEntry = callable(
+			built,
+			"Inventory.constructor",
+			"constructor",
+		);
+		expect(constructorEntry?.lineStart).toBe(2);
+		expect(constructorEntry?.lineEnd).toBe(2);
+		expect(constructorEntry?.tests).toEqual([
+			"scripts/agent-environment/tooling-source.test.mjs",
+		]);
+		expect(
+			callable(built, "Implicit.constructor", "constructor"),
+		).toBeUndefined();
+	});
+
+	it("N1: refuses super() and Reflect.construct as constructor coverage", async () => {
+		const root = fixture({
+			source: [
+				"export class Vault {",
+				"  constructor(code) { this.code = code; }",
+				"}",
+				"",
+			].join("\n"),
+			test: [
+				'import { Vault } from "./tooling-source.mjs";',
+				"class Derived extends Vault {",
+				"  constructor() { super(7); }",
+				"}",
+				"new Derived();",
+				"Reflect.construct(Vault, [7]);",
+				"",
+			].join("\n"),
+		});
+		const built = await buildToolingMap({ root });
+		expect(callable(built, "Vault.constructor", "constructor")?.tests).toEqual(
+			[],
+		);
+	});
+
 	it("K2: separates getter reads from setter writes", async () => {
 		const root = fixture({
 			source: [
@@ -314,6 +371,134 @@ describe("M1: generated agent-tooling code map", () => {
 					name === "defaultExport" ? "default-function" : "function",
 				)?.tests,
 			).toEqual([testPath]);
+		}
+	});
+
+	it("N2: follows local export lists and aliases to the defining callable", async () => {
+		const root = fixture({
+			source: [
+				"export function originalName() {}",
+				"export function aliasSource() {}",
+				"",
+			].join("\n"),
+			test: [
+				'import { forwardedName, aliasName } from "./tooling-local-reexport.mjs";',
+				"forwardedName();",
+				"aliasName();",
+				"",
+			].join("\n"),
+		});
+		write(
+			root,
+			"scripts/agent-environment/tooling-local-reexport.mjs",
+			[
+				'import { originalName as importedName, aliasSource } from "./tooling-source.mjs";',
+				"export { importedName as forwardedName, aliasSource as aliasName };",
+				"",
+			].join("\n"),
+		);
+		git(root, "add", ".");
+		const built = await buildToolingMap({ root });
+		const testPath = "scripts/agent-environment/tooling-source.test.mjs";
+		expect(callable(built, "originalName", "function")?.tests).toEqual([
+			testPath,
+		]);
+		expect(callable(built, "aliasSource", "function")?.tests).toEqual([
+			testPath,
+		]);
+	});
+
+	it("N3: follows node entrypoints and pnpm node scripts only", async () => {
+		const root = fixture();
+		const mapped = [
+			"literal",
+			"node",
+			"joined",
+			"resolved",
+			"url",
+			"cwd",
+			"pnpm",
+			"entry",
+			"other-program",
+			"after-entry",
+			"check",
+		];
+		for (const name of mapped) {
+			write(
+				root,
+				`scripts/agent-environment/tooling-command-${name}.mjs`,
+				"export function commandOnly() {}\n",
+			);
+		}
+		write(
+			root,
+			"scripts/agent-environment/tooling-command.test.mjs",
+			[
+				'import { spawnSync } from "node:child_process";',
+				'import path from "node:path";',
+				'import { fileURLToPath } from "node:url";',
+				'const literal = "scripts/agent-environment/tooling-command-literal.mjs";',
+				"spawnSync(process.execPath, [literal]);",
+				'spawnSync("node", ["scripts/agent-environment/tooling-command-node.mjs"]);',
+				"function runJoined(root) {",
+				'  spawnSync(process.execPath, [path.join(root, "scripts", "agent-environment", "tooling-command-joined.mjs")]);',
+				"}",
+				"runJoined(process.cwd());",
+				"function runResolved(root) {",
+				'  spawnSync(process.execPath, [path.resolve(root, "scripts", "agent-environment", "tooling-command-resolved.mjs")]);',
+				"}",
+				"runResolved(process.cwd());",
+				'spawnSync(process.execPath, [fileURLToPath(new URL("./tooling-command-url.mjs", import.meta.url))]);',
+				'spawnSync(process.execPath, [path.join(process.cwd(), "scripts", "agent-environment", "tooling-command-cwd.mjs")]);',
+				'spawnSync("pnpm", ["fixture:tooling-command"]);',
+				'spawnSync("git", ["add", path.join(process.cwd(), "scripts/agent-environment/tooling-command-other-program.mjs")]);',
+				'spawnSync(process.execPath, ["scripts/agent-environment/tooling-command-entry.mjs", path.join(process.cwd(), "scripts/agent-environment/tooling-command-after-entry.mjs")]);',
+				'spawnSync(process.execPath, ["--check", path.join(process.cwd(), "scripts/agent-environment/tooling-command-check.mjs")]);',
+				"",
+			].join("\n"),
+		);
+		write(
+			root,
+			"package.json",
+			`${JSON.stringify(
+				{
+					scripts: {
+						"fixture:tooling-command":
+							"node scripts/agent-environment/tooling-command-pnpm.mjs",
+					},
+				},
+				null,
+				2,
+			)}\n`,
+		);
+		git(root, "add", ".");
+		const built = await buildToolingMap({ root });
+		const commandTests = new Map(
+			built.files.map((file) => [file.path, file.commandTests]),
+		);
+		const testPath = "scripts/agent-environment/tooling-command.test.mjs";
+		for (const name of [
+			"literal",
+			"node",
+			"joined",
+			"resolved",
+			"url",
+			"cwd",
+			"pnpm",
+			"entry",
+		]) {
+			expect(
+				commandTests.get(
+					`scripts/agent-environment/tooling-command-${name}.mjs`,
+				),
+			).toEqual([testPath]);
+		}
+		for (const name of ["other-program", "after-entry", "check"]) {
+			expect(
+				commandTests.get(
+					`scripts/agent-environment/tooling-command-${name}.mjs`,
+				),
+			).toEqual([]);
 		}
 	});
 
@@ -517,6 +702,62 @@ describe("M2: fast-ladder drift check", () => {
 		expectDriftFailure(
 			await checkToolingMap({ root: coverageRoot }),
 			"generated map differs",
+		);
+	});
+
+	it("N4: check mode names changed callables and command-test relations", async () => {
+		const root = fixture({
+			commandSource: "export function commandOnly() {}\n",
+			commandTest:
+				'import { spawnSync } from "node:child_process";\nspawnSync(process.execPath, ["scripts/agent-environment/tooling-command.mjs"]);\n',
+		});
+		const built = await buildToolingMap({ root });
+		const mapPath = "docs/agent-context/AGENT_TOOLING_CODE_MAP.md";
+		const writeMap = (text: string) => write(root, mapPath, text);
+
+		writeMap(built.text.replace(/^- Command run by:.*\n/m, ""));
+		const droppedCommand = await checkToolingMap({ root });
+		expect(droppedCommand.errors.join("\n")).toContain(
+			"missing command test relation for scripts/agent-environment/tooling-command.mjs: scripts/agent-environment/tooling-command.test.mjs",
+		);
+
+		const addedMap = built.text.replace(
+			"- Command run by: `scripts/agent-environment/tooling-command.test.mjs`",
+			"- Command run by: `scripts/agent-environment/tooling-command.test.mjs`, `scripts/agent-environment/tooling-source.test.mjs`",
+		);
+		expect(addedMap).toContain(
+			"scripts/agent-environment/tooling-source.test.mjs",
+		);
+		writeMap(addedMap);
+		const addedCommand = await checkToolingMap({ root });
+		expect(
+			addedCommand.parsed.find(
+				(file) => file.path === "scripts/agent-environment/tooling-command.mjs",
+			)?.commandTests,
+		).toEqual([
+			"scripts/agent-environment/tooling-command.test.mjs",
+			"scripts/agent-environment/tooling-source.test.mjs",
+		]);
+		expect(addedCommand.errors.join("\n")).toContain(
+			"extra command test relation for scripts/agent-environment/tooling-command.mjs: scripts/agent-environment/tooling-source.test.mjs",
+		);
+
+		writeMap(built.text.replace(/^- `covered`.*\n/m, ""));
+		const missingCallable = await checkToolingMap({ root });
+		expect(missingCallable.errors.join("\n")).toContain(
+			"missing callable scripts/agent-environment/tooling-source.mjs covered [function]",
+		);
+
+		writeMap(built.text);
+		write(
+			root,
+			"scripts/agent-environment/tooling-source.mjs",
+			"// moved\n// moved\nexport function covered() {}\nexport function uncovered() {}\n",
+		);
+		git(root, "add", ".");
+		const movedCallable = await checkToolingMap({ root });
+		expect(movedCallable.errors.join("\n")).toContain(
+			"callable range differs for scripts/agent-environment/tooling-source.mjs covered [function]",
 		);
 	});
 

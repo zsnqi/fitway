@@ -1,4 +1,3 @@
-import { execFileSync } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import ts from "typescript";
@@ -66,24 +65,10 @@ export function listTestFiles(root = process.cwd()) {
 }
 
 export function listUntrackedMappedSourceFiles(root = process.cwd()) {
-	const bytes = execFileSync(
-		"git",
-		["ls-files", "--others", "--exclude-standard", "-z", "--", ...MAPPED_PATHS],
-		{
-			cwd: root,
-			encoding: "buffer",
-			maxBuffer: 16 * 1024 * 1024,
-			stdio: ["ignore", "pipe", "pipe"],
-			windowsHide: true,
-		},
-	);
 	return uniqueSorted(
-		bytes
-			.toString("utf8")
-			.split("\0")
-			.filter(Boolean)
-			.map(normalizePath)
-			.filter(isMappedSourceFile),
+		listTrackedFiles(root, MAPPED_PATHS, { untracked: true }).filter(
+			isMappedSourceFile,
+		),
 	);
 }
 
@@ -164,6 +149,7 @@ function hasStaticModifier(node) {
 }
 
 function memberKind(member, staticMember) {
+	if (ts.isConstructorDeclaration(member)) return "constructor";
 	if (ts.isGetAccessorDeclaration(member))
 		return staticMember ? "static-getter" : "getter";
 	if (ts.isSetAccessorDeclaration(member))
@@ -196,12 +182,15 @@ function addClassEntry(
 	for (const member of declaration.members) {
 		if (
 			!ts.isMethodDeclaration(member) &&
+			!ts.isConstructorDeclaration(member) &&
 			!ts.isGetAccessorDeclaration(member) &&
 			!ts.isSetAccessorDeclaration(member) &&
 			!ts.isPropertyDeclaration(member)
 		)
 			continue;
-		const memberName = propertyNameText(member.name, sourceFile);
+		const memberName = ts.isConstructorDeclaration(member)
+			? "constructor"
+			: propertyNameText(member.name, sourceFile);
 		if (!memberName) continue;
 		if (
 			ts.isPropertyDeclaration(member) &&

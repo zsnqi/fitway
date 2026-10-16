@@ -17,6 +17,45 @@ const MODULE_EXTENSIONS = [
 	".tsx",
 ];
 
+const ASSIGNMENT_OPERATORS = new Set([
+	ts.SyntaxKind.EqualsToken,
+	ts.SyntaxKind.PlusEqualsToken,
+	ts.SyntaxKind.MinusEqualsToken,
+	ts.SyntaxKind.AsteriskEqualsToken,
+	ts.SyntaxKind.AsteriskAsteriskEqualsToken,
+	ts.SyntaxKind.SlashEqualsToken,
+	ts.SyntaxKind.PercentEqualsToken,
+	ts.SyntaxKind.AmpersandEqualsToken,
+	ts.SyntaxKind.BarEqualsToken,
+	ts.SyntaxKind.CaretEqualsToken,
+	ts.SyntaxKind.LessThanLessThanEqualsToken,
+	ts.SyntaxKind.GreaterThanGreaterThanEqualsToken,
+	ts.SyntaxKind.GreaterThanGreaterThanGreaterThanEqualsToken,
+	ts.SyntaxKind.AmpersandAmpersandEqualsToken,
+	ts.SyntaxKind.BarBarEqualsToken,
+	ts.SyntaxKind.QuestionQuestionEqualsToken,
+]);
+
+export function memberOperation(node) {
+	const parent = node.parent;
+	if (ts.isCallExpression(parent) && parent.expression === node) return "call";
+	if (
+		ts.isBinaryExpression(parent) &&
+		parent.left === node &&
+		ASSIGNMENT_OPERATORS.has(parent.operatorToken.kind)
+	)
+		return "write";
+	if (
+		(ts.isPrefixUnaryExpression(parent) ||
+			ts.isPostfixUnaryExpression(parent)) &&
+		parent.operand === node &&
+		(parent.operator === ts.SyntaxKind.PlusPlusToken ||
+			parent.operator === ts.SyntaxKind.MinusMinusToken)
+	)
+		return "write";
+	return "read";
+}
+
 function moduleCandidates(specifier, importer, root) {
 	const normalized = specifier.replaceAll("\\", "/");
 	const importerDirectory = path.posix.dirname(normalizePath(importer));
@@ -57,6 +96,56 @@ function directExportsByFile(parsedByFile) {
 	return byFile;
 }
 
+function importBindings(sourceFile) {
+	const bindings = new Map();
+	for (const statement of sourceFile.statements) {
+		if (
+			!ts.isImportDeclaration(statement) ||
+			!ts.isStringLiteral(statement.moduleSpecifier) ||
+			statement.importClause?.isTypeOnly
+		)
+			continue;
+		const specifier = statement.moduleSpecifier.text;
+		const clause = statement.importClause;
+		if (clause?.name)
+			bindings.set(clause.name.text, {
+				specifier,
+				imported: "default",
+			});
+		const named = clause?.namedBindings;
+		if (!named || !ts.isNamedImports(named)) continue;
+		for (const element of named.elements) {
+			if (element.isTypeOnly) continue;
+			bindings.set(element.name.text, {
+				specifier,
+				imported: (element.propertyName ?? element.name).text,
+			});
+		}
+	}
+	return bindings;
+}
+
+function addReExports(statement, imports, entries) {
+	if (!ts.isExportDeclaration(statement) || statement.isTypeOnly) return;
+	if (!statement.exportClause) {
+		if (ts.isStringLiteral(statement.moduleSpecifier))
+			entries.push({
+				specifier: statement.moduleSpecifier.text,
+				star: true,
+			});
+		return;
+	}
+	if (!ts.isNamedExports(statement.exportClause)) return;
+	for (const specifier of statement.exportClause.elements) {
+		if (specifier.isTypeOnly) continue;
+		const local = (specifier.propertyName ?? specifier.name).text;
+		const imported = statement.moduleSpecifier
+			? { specifier: statement.moduleSpecifier.text, imported: local }
+			: imports.get(local);
+		if (imported) entries.push({ ...imported, exported: specifier.name.text });
+	}
+}
+
 function reExportsByFile(sourcesByFile) {
 	const byFile = new Map();
 	for (const [file, source] of sourcesByFile) {
@@ -70,28 +159,9 @@ function reExportsByFile(sourcesByFile) {
 				: ts.ScriptKind.JS,
 		);
 		const entries = [];
-		for (const statement of sourceFile.statements) {
-			if (
-				!ts.isExportDeclaration(statement) ||
-				!statement.moduleSpecifier ||
-				!ts.isStringLiteral(statement.moduleSpecifier) ||
-				statement.isTypeOnly
-			)
-				continue;
-			if (!statement.exportClause) {
-				entries.push({ specifier: statement.moduleSpecifier.text, star: true });
-				continue;
-			}
-			if (!ts.isNamedExports(statement.exportClause)) continue;
-			for (const specifier of statement.exportClause.elements) {
-				if (specifier.isTypeOnly) continue;
-				entries.push({
-					specifier: statement.moduleSpecifier.text,
-					imported: (specifier.propertyName ?? specifier.name).text,
-					exported: specifier.name.text,
-				});
-			}
-		}
+		const imports = importBindings(sourceFile);
+		for (const statement of sourceFile.statements)
+			addReExports(statement, imports, entries);
 		byFile.set(file, entries);
 	}
 	return byFile;
