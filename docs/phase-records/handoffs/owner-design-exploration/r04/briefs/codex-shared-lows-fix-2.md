@@ -72,7 +72,8 @@ changed nothing else a reader sees.
   - **Outcome.** Focus placed on arrival after a navigation shows the ring only when a key started that navigation: a
     click or a tap on the link leaves none, Enter on it leaves the ring, and a page opened directly (no previous input)
     shows no ring until a key is pressed. No identity, record or per-visitor value is stored to do it (AGENTS.md).
-    Measured for Access's record navigation, Arabic and English, desktop and phone, key, mouse and touch.
+    Measured for every navigation that places focus on arrival, on all five pages (list each source and
+    destination), Arabic and English, desktop and phone, key, mouse and touch, normal and forced colours.
   - **Intent.** How focus got there decides its ring, across pages too.
 - **P3. Changes beyond the rings (grade G7).**
   - **Cause (measured by the grader).** Between `23314b3a` and this HEAD, focused fields in an error or with an inner
@@ -81,13 +82,17 @@ changed nothing else a reader sees.
   - **Outcome.** For every item the grade lists (`D:/fitway-temp/owner-r04-shared-lows-grade/pixels/exception-catalogue.tsv`,
     the rows whose class is `outside-ring-away-from-edges`), name each differing region outside the ring band and its
     cause in the code; a change that S1-S3 or Q1-Q4 does not require is reverted to `23314b3a`'s appearance, and one they
-    do require is named with the outcome. Report the table.
+    do require is named with the outcome. For five rows of each of the catalogue's two other classes
+    (`rounded-contour-fringe`, `rectangular-corners-and-composite-colour`), say whether every differing pixel belongs
+    to the ring's own stroke, and handle any that does not as above. Report the table.
   - **Intent.** The rounds changed rings and nothing else a reader sees, or say what else and why.
 - **P4. The error ring's colour, once (grade G14).**
   - **Cause (measured by the grader).** The error colour of a focused field's ring is declared in `shared.css` (around
     line 118) and `components.css` (around line 206), outside `style.css`'s ring rules.
   - **Outcome.** The error ring's colour is declared once, in `style.css`, for every field that takes it (components'
-    specimens included); page stylesheets keep only placement.
+    specimens included); page stylesheets keep only placement. Every field's computed error-ring colour is equal, in
+    normal and forced colours, and a scratch change of that one declaration (not committed) changes every one. List
+    any stylesheet outside `style.css` that draws a focus ring by `box-shadow`, `border` or a pseudo-element.
   - **Intent.** A change to a ring is one edit (Q3).
 
 ## Limits the result keeps
