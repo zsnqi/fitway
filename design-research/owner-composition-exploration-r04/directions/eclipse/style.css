@@ -81,7 +81,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 bdi, .num { font-variant-numeric: tabular-nums; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 html[data-focus-input="keyboard"] :focus:not(:is(.rail-item, .cx-ri, .dp-day)),
-.fw-pop[tabindex="-1"]:focus,
 html[data-focus-input="keyboard"] .rail-item:focus > .tile,
 html[data-focus-input="keyboard"] .cx-ri:focus > .cx-tile,
 html[data-focus-input="keyboard"] .dp-day:focus > .dp-n,

@@ -45,12 +45,11 @@
     anchor.href = url.href;
   }, true);
   if (handedFocusInput === "keyboard" || handedFocusInput === "pointer") {
-    params.delete("focus-input");
-    try {
+    if (location.protocol !== "file:") {
       const url = new URL(location.href);
       url.searchParams.delete("focus-input");
       history.replaceState(history.state, "", url);
-    } catch (e) { /* file:// may refuse; the state above already carries the input */ }
+    }
   }
   const URL_OFF = params.get("motion") === "off";
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
