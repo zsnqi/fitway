@@ -19,7 +19,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { setReviewSourcePlaceObserver } from "./check-brief.mjs";
-import { copyReviewSources, outcomeIdsFromBrief } from "./codex-round.mjs";
+import {
+	copyReviewSources,
+	outcomeIdsFromBrief,
+	parseReadings,
+} from "./codex-round.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 
 vi.setConfig({ testTimeout: 60_000 });
@@ -265,18 +269,26 @@ const realReviews = [
 	],
 ] as const;
 
+const quotedLabelReviews = [
+	[
+		"codex-launcher-fixes-5-fix-1",
+		"2dc01640551a7a65338889276ee1814f31fc6843fc78fa69715111e5d0bb5843",
+	],
+	[
+		"codex-launcher-fixes-5-fix-grade-2",
+		"c23a47c01d77ee729fe5a4838314bb6427228eda5731b0c984026df7726f4931",
+	],
+] as const;
+
 function expectedReviewBlocks(answer: string) {
-	const nonEmpty = answer
-		.split(/\r?\n/)
-		.map((line) => line.trim())
-		.filter(Boolean);
-	if (nonEmpty.every((line) => /^\d+[.)]\s+\S/.test(line))) return nonEmpty;
 	const blocks = (starts: RegExpMatchArray[]) =>
 		starts.map((start, index) =>
 			answer
 				.slice(start.index, starts[index + 1]?.index ?? answer.length)
 				.trim(),
 		);
+	const numberedLines = [...answer.matchAll(/^\d+[.)]\s+\S[^\n]*$/gm)];
+	if (numberedLines[0]?.index === 0) return blocks(numberedLines);
 	const numbered = [...answer.matchAll(/^\d+[.)]\s+\*\*[^\n]+\*\*\s*$/gm)];
 	if (numbered[0]?.index === 0) return blocks(numbered);
 	const atx = [
@@ -285,10 +297,22 @@ function expectedReviewBlocks(answer: string) {
 		),
 	];
 	if (atx[0]?.index === 0) return blocks(atx);
+	const boldOutcome = [
+		...answer.matchAll(
+			/^\*\*[A-Z]+\d+(?:[ \t]*[.):\u2013\u2014-][^\n]*)?\*\*\s*$/gim,
+		),
+	];
+	if (boldOutcome[0]?.index === 0) return blocks(boldOutcome);
 	const bold = [
 		...answer.matchAll(/^\*\*\d+[.)]\s+[^\n]*\b[A-Z]+\d+\b[^\n]*\*\*\s*$/gm),
 	];
 	return blocks(bold);
+}
+
+function readingSnapshot(readings: ReturnType<typeof parseReadings>) {
+	return readings === null
+		? null
+		: readings.map(({ id, text }) => ({ id, text: text.trim() }));
 }
 
 const readingAnswer = `## Reading 1: R1
@@ -327,6 +351,19 @@ function findGitBash(searchPath = process.env.PATH ?? "") {
 	throw new Error(
 		"Git for Windows Bash is missing (required for shell parity)",
 	);
+}
+
+function gitBashEnvironment(gitBash: string, environment: NodeJS.ProcessEnv) {
+	const root = path.resolve(path.dirname(gitBash), "..", "..");
+	const gitPath = [
+		path.join(root, "usr", "bin"),
+		path.join(root, "mingw64", "bin"),
+		path.join(root, "mingw32", "bin"),
+		environment.PATH,
+	]
+		.filter((value): value is string => Boolean(value))
+		.join(path.delimiter);
+	return { ...environment, MSYSTEM: "MINGW64", PATH: gitPath };
 }
 
 function git(root: string, ...args: string[]) {
@@ -457,6 +494,7 @@ function fixture(eol = "\n") {
 	writeFileSync(
 		standin,
 		`const fs = require('node:fs');
+const { execFileSync } = require('node:child_process');
 const args = process.argv.slice(2);
 const chunks = [];
 process.stdin.on('data', chunk => chunks.push(chunk));
@@ -469,8 +507,16 @@ process.stdin.on('end', () => {
     process.exitCode = Number(process.env.REVIEW_EXIT || 0);
     return;
   }
+  const isResume = args.includes('resume');
   if (process.env.ROUND_WRITE_PATH) fs.writeFileSync(process.env.ROUND_WRITE_PATH, Buffer.from(process.env.ROUND_WRITE_CONTENT, 'base64'));
   if (process.env.ROUND_REMOVE_PATH) fs.unlinkSync(process.env.ROUND_REMOVE_PATH);
+  const turnStderr = isResume ? process.env.ROUND_RESUME_STDERR : process.env.ROUND_STDERR;
+  if (turnStderr) process.stderr.write(turnStderr);
+  let commit = null;
+  if (!isResume && process.env.ROUND_COMMIT) {
+    execFileSync('git', ['commit', '--allow-empty', '-m', process.env.ROUND_COMMIT], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
+    commit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd:process.cwd(), encoding:'utf8', windowsHide:true}).trim();
+  }
   fs.writeFileSync(process.env.ROUND_CAPTURE, JSON.stringify({args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), env:{TEMP:process.env.TEMP,TMP:process.env.TMP}}));
   const sequenceFile = process.env.ROUND_SEQUENCE_FILE;
   let sequenceIndex = 0;
@@ -480,14 +526,14 @@ process.stdin.on('end', () => {
   }
   const messages = process.env.ROUND_MESSAGES ? JSON.parse(process.env.ROUND_MESSAGES) : null;
   const exits = process.env.ROUND_EXITS ? JSON.parse(process.env.ROUND_EXITS) : null;
-  const isResume = args.includes('resume');
   const fallback = isResume ? 'stand-in resumed message\\nK1: PASS\\n' : 'stand-in last message\\nK1: PASS\\n';
   const configuredMessage = isResume && process.env.ROUND_RESUME_MESSAGE !== undefined
     ? process.env.ROUND_RESUME_MESSAGE
     : process.env.ROUND_MESSAGE;
-  const message = messages
+  let message = messages
     ? (messages[sequenceIndex] ?? messages[messages.length - 1])
     : (configuredMessage ?? fallback);
+  if (commit) message = message.replaceAll('__HEAD__', commit);
   const defaultExit = isResume && process.env.ROUND_RESUME_EXIT !== undefined
     ? process.env.ROUND_RESUME_EXIT
     : process.env.ROUND_EXIT;
@@ -497,6 +543,12 @@ process.stdin.on('end', () => {
   fs.writeFileSync(args[args.indexOf('-o') + 1], message);
   process.stdout.write('{"type":"thread.star');
   process.stdout.write('ted","thread_id":"${thread}"}\\n');
+  if (process.env.ROUND_PRE_EVENTS) process.stdout.write(process.env.ROUND_PRE_EVENTS);
+  if (commit && process.env.ROUND_NO_COMMIT_EVENT !== '1') {
+    process.stdout.write(JSON.stringify({type:'item.completed', item:{type:'command_execution', command:'git commit -m ' + JSON.stringify(process.env.ROUND_COMMIT), exit_code:0, status:'completed'}}) + '\\n');
+  }
+  const extraEvents = isResume ? process.env.ROUND_RESUME_EVENTS : process.env.ROUND_EVENTS;
+  if (extraEvents) process.stdout.write(extraEvents);
   process.stdout.write('{"type":"item.completed","text":"العربية «»"}\\r\\n');
   process.exitCode = Number(exitCode || 0);
 });\n`,
@@ -861,17 +913,23 @@ function comparison(f: ReturnType<typeof requiredFixture>, suffix = "") {
 	);
 }
 
+function jsonLinesIfPresent(filename: string) {
+	if (!existsSync(filename)) return [];
+	const text = readFileSync(filename, "utf8").trim();
+	if (!text) return [];
+	return text.split(/\r?\n/).map((line) => JSON.parse(line));
+}
+
 function reviewRefused(
 	f: ReturnType<typeof fixture>,
 	result: ReturnType<ReturnType<typeof fixture>["invoke"]>,
 	reason: string,
 ) {
-	// Check the consequence first, so a removed gate fails on an actual launch.
+	refused(f, result, reason);
 	expect(
 		existsSync(f.capture),
 		"refusal must prevent the stand-in launch",
 	).toBe(false);
-	refused(f, result, reason);
 	expect(result.stdout).toContain(
 		`Current brief SHA-256: ${briefHash(f.brief)}`,
 	);
@@ -1658,6 +1716,21 @@ The preface spans more than one paragraph.
 		);
 	});
 
+	it("applies the label rule to a bare reading whose lines all start at column 0", () => {
+		const f = fixture();
+		const answer = `1. V1. Literal reading:
+a check can pass. What goes wrong: the intent fails. Change: preserve it.
+`;
+		rmSync(f.reviewRoot, { recursive: true, force: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER: answer });
+		expect(result.stdout.match(/^Reading \d+:$/gm), result.output).toHaveLength(
+			1,
+		);
+		expect(result.stdout.replace(/\s+/g, " ")).toContain(
+			"Literal reading: a check can pass. What goes wrong: the intent fails. Change: preserve it.",
+		);
+	});
+
 	it("accepts complete one-line readings with other wording and no blank lines", () => {
 		const f = fixture();
 		const answer = [
@@ -1706,6 +1779,48 @@ The preface spans more than one paragraph.
 				.join("\n"),
 		],
 		[
+			"an empty wrong label",
+			Array.from(
+				{ length: 5 },
+				(_, index) =>
+					`${index + 1}. V1. Literal reading: x. What goes wrong:. Change: z.`,
+			).join("\n"),
+		],
+		[
+			"a wrong label holding only a number",
+			Array.from(
+				{ length: 5 },
+				(_, index) =>
+					`${index + 1}. V1. Literal reading: x. What goes wrong: 3. Change: z.`,
+			).join("\n"),
+		],
+		[
+			"a wrong label holding only an outcome ID",
+			Array.from(
+				{ length: 5 },
+				(_, index) =>
+					`${index + 1}. V1. Literal reading: x. What goes wrong: V2. Change: z.`,
+			).join("\n"),
+		],
+		[
+			"keywords without labelled parts",
+			["V1", "V1", "L1", "V3", "V2"]
+				.map(
+					(id, index) =>
+						`${index + 1}. ${id} literal reading; ${id} risk; ${id} change.`,
+				)
+				.join("\n"),
+		],
+		[
+			"complete prose without labels",
+			["V1", "V1", "L1", "V3", "V2"]
+				.map(
+					(id, index) =>
+						`${index + 1}. ${id}. The proof passes. The phase drifts. Freeze the phase.`,
+				)
+				.join("\n"),
+		],
+		[
 			"a line cut after its ID",
 			["V1", "V1", "L1", "V3", "V2"]
 				.map((id, index) => `${index + 1}. ${id}.`)
@@ -1719,6 +1834,136 @@ The preface spans more than one paragraph.
 			f.invoke(undefined, { REVIEW_ANSWER: answer }),
 			"answer cannot be read as readings",
 		);
+	});
+
+	it("reads a wrapped one-line reading as one block", () => {
+		const f = fixture();
+		const answerFile = path.join(realReviewRoot, "g1-wrapped.md");
+		const bytes = readFileSync(answerFile);
+		expect(createHash("sha256").update(bytes).digest("hex")).toBe(
+			"239e4e15ab2380051668c6339410d7a284065ecffc6f488eebb1822a722c7eec",
+		);
+		const answer = bytes.toString("utf8");
+		const blocks = expectedReviewBlocks(answer);
+		expect(blocks.map((block) => block.match(/\b[A-Z]+\d+\b/)?.[0])).toEqual([
+			"V1",
+			"V1",
+			"L1",
+			"V3",
+			"V2",
+		]);
+		expect(blocks[2]).toContain(
+			"What goes wrong: coverage can disappear. Change: keep each assertion.",
+		);
+		rmSync(f.reviewRoot, { recursive: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER_FILE: answerFile });
+		expect(result.stdout.match(/^Reading \d+:$/gm)).toHaveLength(5);
+		expect(result.stdout).toContain(`Reading 3:\n${blocks[2]}`);
+		const folder = path.join(f.reviewRoot, "brief-1");
+		writeFileSync(
+			path.join(folder, "dispositions.md"),
+			`Brief SHA-256: ${briefHash(f.brief)}\n${Array.from(
+				{ length: 5 },
+				(_, index) => `Reading ${index + 1}: closed`,
+			).join("\n")}\n`,
+		);
+		const launched = f.invoke();
+		expect(launched.status, launched.output).toBe(0);
+		expect(readFileSync(path.join(f.run, "review-readings.md"))).toEqual(bytes);
+	});
+
+	it("reads each one-line reading when any word break is a line break", () => {
+		const f = fixture();
+		const answerFile = path.join(realReviewRoot, "g1-wrapped.md");
+		const bytes = readFileSync(answerFile);
+		const unwrapped = bytes.toString("utf8").replace("Gap:\na", "Gap: a");
+		const blocks = expectedReviewBlocks(unwrapped);
+		for (let index = 0; index < blocks.length; index += 1) {
+			const sourceBlock = blocks[index];
+			const sourceStart = unwrapped.indexOf(sourceBlock);
+			const wrapAt = sourceBlock.search(/ (?=\S)/);
+			const afterId = sourceBlock.indexOf(
+				" ",
+				sourceBlock.search(/\b[A-Z]+\d+\b/),
+			);
+			const splitAt = Math.max(wrapAt, afterId);
+			const wrapped =
+				unwrapped.slice(0, sourceStart + splitAt) +
+				"\n" +
+				unwrapped.slice(sourceStart + splitAt + 1);
+			rmSync(f.reviewRoot, { recursive: true, force: true });
+			const result = f.invoke(undefined, { REVIEW_ANSWER: wrapped });
+			expect(
+				result.stdout.match(/^Reading \d+:$/gm),
+				`wrapped reading ${index + 1}`,
+			).toHaveLength(5);
+			expect(result.stdout.replace(/\s+/g, " ")).toContain(
+				blocks[index].replace(/\s+/g, " "),
+			);
+		}
+	});
+
+	it.each([
+		[
+			"a heading",
+			`## Reading 1: R1
+1. Outcome reference: R1.
+2. Literal reading: The check can pass.
+3. What goes wrong:
+4. One-line change: Preserve the check.
+`,
+		],
+		[
+			"a bold line",
+			`**1. R1**
+1. Outcome reference: R1.
+2. Literal reading: The check can pass.
+3. What goes wrong: 3
+4. One-line change: Preserve the check.
+`,
+		],
+		[
+			"a bullet body",
+			`1. R1 permits a shortcut.
+   - Literal reading: The check can pass.
+   - What goes wrong: V2
+   - One-line change: Preserve the check.
+`,
+		],
+	])("refuses an explicitly empty label in %s", (_name, answer) => {
+		const f = fixture();
+		f.answerReview(answer);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
+	});
+
+	it("refuses a wrapped reading that loses its completing labels", () => {
+		const answerFile = path.join(realReviewRoot, "g1-wrapped.md");
+		const accepted = fixture();
+		rmSync(accepted.reviewRoot, { recursive: true });
+		const acceptedResult = accepted.invoke(undefined, {
+			REVIEW_ANSWER_FILE: answerFile,
+		});
+		expect(acceptedResult.stdout.match(/^Reading \d+:$/gm)).toHaveLength(5);
+
+		const f = fixture();
+		const answer = readFileSync(answerFile, "utf8").replace(
+			"What goes wrong: coverage can disappear. Change: keep each assertion.\n",
+			"",
+		);
+		f.answerReview(answer);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
+	});
+
+	it.each([
+		["keywords in clauses", "V1 literal reading; V2 risk; V3 change."],
+		[
+			"labels that do not start the clauses",
+			"V1 reading: as written. The risk is a gap. Change it.",
+		],
+	])("refuses a one-line reading with %s", (_name, answer) => {
+		const f = fixture();
+		f.answerReview(`1. ${answer}\n`);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
 	it("reads the vf-fixes preface answer as exactly five readings", () => {
@@ -1756,6 +2001,93 @@ The preface spans more than one paragraph.
 			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\n`,
 		);
 		expect(f.invoke().status).toBe(0);
+	});
+
+	it("reads bold outcome-ID headings as five labelled readings", () => {
+		const f = fixture();
+		const answerFile = path.join(realReviewRoot, "vf-proofs-grade-1.md");
+		const bytes = readFileSync(answerFile);
+		const answer = bytes.toString("utf8");
+		expect(createHash("sha256").update(bytes).digest("hex")).toBe(
+			"92afd884df15172f49ca6c0879b8df0a30a3c901cfe8acfd909fba3bf654af30",
+		);
+		const blocks = expectedReviewBlocks(answer);
+		expect(blocks).toHaveLength(5);
+		expect(blocks.map((block) => block.match(/\b[A-Z]+\d+\b/)?.[0])).toEqual([
+			"G9",
+			"G2",
+			"G3",
+			"G6",
+			"G7",
+		]);
+		rmSync(f.reviewRoot, { recursive: true, force: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER_FILE: answerFile });
+		expect(result.stdout.match(/^Reading \d+:$/gm), result.output).toHaveLength(
+			5,
+		);
+		const section = result.stdout
+			.split("Readings:\n")[1]
+			?.split("\nWrite coordinator dispositions to:")[0];
+		expect(section).toBe(
+			blocks
+				.map((block, index) => `Reading ${index + 1}:\n${block}`)
+				.join("\n\n"),
+		);
+	});
+
+	it("requires three labels on bold outcome-ID readings and refuses six", () => {
+		const accepted = fixture();
+		const answerFile = path.join(realReviewRoot, "vf-proofs-grade-1.md");
+		const answer = readFileSync(answerFile, "utf8");
+		rmSync(accepted.reviewRoot, { recursive: true, force: true });
+		const result = accepted.invoke(undefined, {
+			REVIEW_ANSWER_FILE: answerFile,
+		});
+		expect(result.stdout.match(/^Reading \d+:$/gm), result.output).toHaveLength(
+			5,
+		);
+
+		const f = fixture();
+		const firstWrong = answer.indexOf("- **What goes wrong:**");
+		const firstChange = answer.indexOf("\n**G2.", firstWrong);
+		const missing = `${answer.slice(0, firstWrong)}${answer.slice(firstChange)}`;
+		f.answerReview(missing);
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
+
+		const tooMany = fixture();
+		tooMany.answerReview(
+			`${answer}\n**X9. Extra reading**\n- **Literal reading:** Extra text.\n- **What goes wrong:** Extra wrong.\n- **One-line change:** Extra change.\n`,
+		);
+		reviewRefused(
+			tooMany,
+			tooMany.invoke(),
+			"answer cannot be read as readings",
+		);
+	});
+
+	it("reads three bold outcome-ID readings with other IDs and an em dash", () => {
+		const f = fixture();
+		const answer = `**V3 \u2014 Preserve the check**
+- **Literal reading:** The check can pass.
+- **What goes wrong:** The intent can fail.
+- **One-line change:** Preserve both.
+
+**L1 - Keep the inputs**
+- **Literal reading:** An input can change.
+- **What goes wrong:** The proof can drift.
+- **One-line change:** Freeze the inputs.
+
+**P2 : Keep the comparison**
+- **Literal reading:** The comparison can pass.
+- **What goes wrong:** A row can move.
+- **One-line change:** Compare every row.
+`;
+		rmSync(f.reviewRoot, { recursive: true, force: true });
+		const result = f.invoke(undefined, { REVIEW_ANSWER: answer });
+		expect(result.stdout.match(/^Reading \d+:$/gm), result.output).toHaveLength(
+			3,
+		);
+		expect(result.stdout).toContain("**V3 \u2014 Preserve the check**");
 	});
 
 	it.each([
@@ -1873,6 +2205,52 @@ describe("R1 real review answers", () => {
 		expect(
 			readFileSync(path.join(f.run, "review-dispositions.md"), "utf8"),
 		).toBe(dispositions);
+	});
+
+	it.each(
+		quotedLabelReviews,
+	)("reads %s quoted-label answer exactly as the pre-parser result", (name, hash) => {
+		const answerFile = path.join(realReviewRoot, `${name}.md`);
+		const bytes = readFileSync(answerFile);
+		expect(createHash("sha256").update(bytes).digest("hex")).toBe(hash);
+		const answer = bytes.toString("utf8");
+		const expected = expectedReviewBlocks(answer).map((text, index) => ({
+			id: index + 1,
+			text,
+		}));
+		expect(readingSnapshot(parseReadings(answer))).toEqual(expected);
+	});
+
+	it.each([
+		["a code span", "`", "`"],
+		["straight double quotes", '"', '"'],
+		["curly double quotes", "\u201c", "\u201d"],
+	])("does not read a label quoted in %s as a labelled part", (_name, open, close) => {
+		const quote = (label: string) => `${open}${label}: 1${close}`;
+		const answer = `**V1. Quoted labels**
+- **Literal reading:** The prose ends with ${quote("Literal reading")}
+- **What goes wrong:** The prose ends with ${quote("What goes wrong")}
+- **One-line change:** The prose ends with ${quote("Change")}
+`;
+		expect(readingSnapshot(parseReadings(answer))).toEqual([
+			{ id: 1, text: answer.trim() },
+		]);
+	});
+
+	it.each([
+		"Literal reading",
+		"What goes wrong",
+		"Change",
+	])("does not count %s in the middle of a sentence as a label", (label) => {
+		const probe = label.toLowerCase();
+		const answer = `**V1. Middle labels**
+- **Literal reading:** The prose says the ${probe}: small; it also ends with the ${probe}: 3.
+- **What goes wrong:** The reading still has its own labelled part.
+- **One-line change:** Keep the examples as prose.
+`;
+		expect(readingSnapshot(parseReadings(answer))).toEqual([
+			{ id: 1, text: answer.trim() },
+		]);
 	});
 
 	it("accepts another heading level and field wording in the same structure", () => {
@@ -2370,7 +2748,9 @@ describe("L2 resume", () => {
 		}
 		expect(readFileSync(path.join(f.run, "events.jsonl"))).toEqual(original);
 		expect(
-			readdirSync(f.run).filter((file) => file.endsWith(".jsonl")),
+			readdirSync(f.run).filter(
+				(file) => file.startsWith("events") && file.endsWith(".jsonl"),
+			),
 		).toEqual(["events-resume-2.jsonl", "events-resume.jsonl", "events.jsonl"]);
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
 			"stand-in resumed message\nK1: PASS\n",
@@ -2534,10 +2914,7 @@ describe("K2 automatic resume", () => {
 		f.answerReview(undefined, undefined, 2);
 	};
 	const resumeLog = (f: ReturnType<typeof fixture>) =>
-		readFileSync(path.join(f.run, "auto-resumes.log"), "utf8")
-			.trim()
-			.split(/\r?\n/)
-			.map((line) => JSON.parse(line));
+		jsonLinesIfPresent(path.join(f.run, "auto-resumes.log"));
 
 	it("resumes a run whose first turn ends without a report", () => {
 		const f = fixture();
@@ -2560,6 +2937,51 @@ describe("K2 automatic resume", () => {
 			firstLine: "Now let me test the implementation:",
 		});
 		expect(log[0].time).toMatch(/^\d{4}-\d\d-\d\dT/);
+	});
+
+	it("writes one timeline line and stderr file per turn", () => {
+		const f = fixture();
+		outcomeBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: "launch without a report\n",
+			ROUND_RESUME_MESSAGE: report,
+			ROUND_STDERR: "launch stderr\n",
+			ROUND_RESUME_STDERR: "resume stderr\n",
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(result.stderr).toContain("launch stderr\n");
+		expect(result.stderr).toContain("resume stderr\n");
+		const turns = jsonLinesIfPresent(path.join(f.run, "turns.jsonl"));
+		expect(turns).toHaveLength(2);
+		expect(turns[0]).toMatchObject({
+			exitCode: 0,
+			stopReason: "no report",
+			head: f.head,
+			events: "events.jsonl",
+			stderr: "stderr.txt",
+		});
+		expect(turns[1]).toMatchObject({
+			exitCode: 0,
+			stopReason: "report accepted",
+			head: f.head,
+			events: "events-resume.jsonl",
+			stderr: "stderr-resume.txt",
+		});
+		for (const turn of turns) {
+			expect(turn.start).toMatch(
+				/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}[+-]\d\d:\d\d$/,
+			);
+			expect(turn.end).toMatch(
+				/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}[+-]\d\d:\d\d$/,
+			);
+			expect(turn.durationMs).toBeGreaterThanOrEqual(0);
+		}
+		expect(readFileSync(path.join(f.run, "stderr.txt"), "utf8")).toBe(
+			"launch stderr\n",
+		);
+		expect(readFileSync(path.join(f.run, "stderr-resume.txt"), "utf8")).toBe(
+			"resume stderr\n",
+		);
 	});
 
 	it("quotes the trigger's first line exactly and handles a fence in the line", () => {
@@ -2654,6 +3076,204 @@ describe("K2 automatic resume", () => {
 		expect(resumeLog(f)).toHaveLength(10);
 		expect(existsSync(path.join(f.run, "events-resume-10.jsonl"))).toBe(true);
 		expect(existsSync(path.join(f.run, "events-resume-11.jsonl"))).toBe(false);
+	});
+});
+
+describe("L3 report claims", () => {
+	const cleanStop = "STOPPED: corrected evidence unavailable\n";
+	const commandEvent = (command: string, exitCode = 0) =>
+		`${JSON.stringify({
+			type: "item.completed",
+			item: {
+				type: "command_execution",
+				command,
+				exit_code: exitCode,
+				status: "completed",
+			},
+		})}\n`;
+	const claimReport = (commit?: string) =>
+		`K1: PASS\nC1: PASS\nC2: PASS\nL1: PASS\nL2: PASS\n${
+			commit ? `Commit SHA: \`${commit}\`\n` : ""
+		}`;
+	const claimBrief = (
+		f: ReturnType<typeof fixture>,
+		{ verify = true, commit = true } = {},
+	) => {
+		const limit = verify
+			? "Run `node scripts/verify.mjs fast` on the committed tree."
+			: "Report the observed result without naming a ladder command.";
+		const report = commit
+			? "Each outcome and limit as PASS or FAIL. Name the commit SHA."
+			: "Each outcome and limit as PASS or FAIL. Name each evidence command.";
+		const suffix = `
+## Causes and required outcomes
+
+- **C1.** Fixture cause one.
+- **C2.** Fixture cause two.
+
+## Limits the result keeps
+
+- **L1.** Fixture limit one.
+- **L2.** ${limit}
+
+## Report
+
+${report}
+`;
+		writeFileSync(f.brief, Buffer.concat([f.bytes, Buffer.from(suffix)]));
+		git(f.coordinator, "add", ".");
+		git(f.coordinator, "commit", "-m", "add report claims");
+		f.answerReview(undefined, undefined, 2);
+	};
+	const resumeLog = (f: ReturnType<typeof fixture>) =>
+		readFileSync(path.join(f.run, "auto-resumes.log"), "utf8")
+			.trim()
+			.split(/\r?\n/)
+			.map((line) => JSON.parse(line));
+
+	it("accepts a report-only brief that names no commit", () => {
+		const f = fixture();
+		claimBrief(f, { verify: false, commit: false });
+		const result = f.invoke(undefined, { ROUND_MESSAGE: claimReport() });
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		const turns = jsonLinesIfPresent(path.join(f.run, "turns.jsonl"));
+		expect(turns.at(-1)).toMatchObject({ stopReason: "report accepted" });
+		expect(existsSync(path.join(f.run, "auto-resumes.log"))).toBe(false);
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("accepts a report backed by the commit and fast-ladder events", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_COMMIT: "claim fixture",
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		const turns = jsonLinesIfPresent(path.join(f.run, "turns.jsonl"));
+		expect(turns.at(-1)).toMatchObject({ stopReason: "report accepted" });
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("rejects the measured false report with no commit or ladder evidence", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: claimReport("68e863793e6f"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining("no such commit object"),
+				expect.stringContaining("without a successful fast-ladder command"),
+			]),
+		);
+	});
+
+	it("checks a STOPPED report's false PASS claims", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_MESSAGE: "STOPPED: could not finish\nL2: PASS\n",
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining("without a successful fast-ladder command"),
+			]),
+		);
+	});
+
+	it.each<
+		[string, (f: ReturnType<typeof fixture>) => NodeJS.ProcessEnv, string]
+	>([
+		[
+			"a missing commit object",
+			() => ({ ROUND_MESSAGE: claimReport("68e863793e6f") }),
+			"no such commit object",
+		],
+		[
+			"a commit that is not worktree HEAD",
+			(f) => ({
+				ROUND_COMMIT: "claim fixture",
+				ROUND_MESSAGE: claimReport(f.head),
+				ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			}),
+			"not worktree HEAD",
+		],
+		[
+			"a commit equal to launch HEAD",
+			(f) => ({
+				ROUND_COMMIT: "claim fixture",
+				ROUND_MESSAGE: claimReport(f.head),
+				ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			}),
+			"equals launch HEAD",
+		],
+		[
+			"no successful git commit event",
+			() => ({
+				ROUND_COMMIT: "claim fixture",
+				ROUND_NO_COMMIT_EVENT: "1",
+				ROUND_MESSAGE: claimReport("__HEAD__"),
+				ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			}),
+			"no successful git commit command",
+		],
+		[
+			"a dirty worktree",
+			(f) => ({
+				ROUND_COMMIT: "claim fixture",
+				ROUND_MESSAGE: claimReport("__HEAD__"),
+				ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+				ROUND_WRITE_PATH: path.join(f.worktree, "dirty.txt"),
+				ROUND_WRITE_CONTENT: Buffer.from("dirty").toString("base64"),
+			}),
+			"worktree is not clean",
+		],
+		[
+			"no fast-ladder event",
+			() => ({
+				ROUND_COMMIT: "claim fixture",
+				ROUND_MESSAGE: claimReport("__HEAD__"),
+			}),
+			"without a successful fast-ladder command",
+		],
+		[
+			"a fast-ladder event before the commit",
+			() => ({
+				ROUND_COMMIT: "claim fixture",
+				ROUND_MESSAGE: claimReport("__HEAD__"),
+				ROUND_PRE_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			}),
+			"precedes the last successful git commit",
+		],
+	])("rejects %s", (_name, environment, expected) => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...environment(f),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const message = Buffer.from(f.captured().input, "base64").toString("utf8");
+		expect(message).toContain(expected);
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(expected);
 	});
 });
 
@@ -3084,7 +3704,7 @@ describe("L4 shell and byte parity", () => {
 					.map((part) => (/[\s"]/.test(part) ? `"${part}"` : part))
 					.join(" ");
 			const resumeArgs = ["resume", f.run, "--message", "/api"];
-			const gitBashEnv = { ...f.env, MSYSTEM: "MINGW64" };
+			const gitBashEnv = gitBashEnvironment(gitBash, f.env);
 			const cases = [
 				{
 					name: "Git Bash pnpm",
@@ -3248,7 +3868,7 @@ describe("L4 shell and byte parity", () => {
 				["--noprofile", "--norc", "-c", command],
 				{
 					cwd: repository,
-					env: { ...f.env, MSYSTEM: "MINGW64" },
+					env: gitBashEnvironment(gitBash, f.env),
 					encoding: "utf8",
 					windowsHide: true,
 				},

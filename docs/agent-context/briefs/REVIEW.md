@@ -73,9 +73,9 @@ leave the brief's goal or a stated intent unmet? Use the sources to judge what t
 List at most five such readings, the most damaging first. For each give:
 
 1. the outcome or limit it exploits (its ID);
-2. the literal reading;
-3. what would go wrong in the delivered work;
-4. a one-line change to the brief that closes it.
+2. `Literal reading:` the literal reading;
+3. `What goes wrong:` what would go wrong in the delivered work;
+4. `Change:` a one-line change to the brief that closes it.
 
 If the brief has no such reading, say so. Do not comment on style, length, tone or anything else. Return your answer
 as your final message, as plain Markdown.
