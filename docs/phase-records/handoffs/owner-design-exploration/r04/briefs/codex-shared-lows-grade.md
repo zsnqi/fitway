@@ -59,7 +59,9 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   lines). Intent: the frames keep proving what the action leaves alone.
 - **G2. A kept rule still fails when broken.** Outcome: a self-compare of Access `page-retry` (Arabic, desktop,
   reduced motion) shows `afterFrameProof` naming the motion and language rules it keeps, and your own planted break of
-  the motion rule's proof in a scratch copy fails at the after frame. Intent: as G1.
+  the motion rule's proof in a scratch copy fails at the after frame; then for each of the other fourteen features with
+  `ends`, a self-compare shows its `afterFrameProof`, and a planted break of one rule it keeps fails at the after
+  frame (report each). Intent: as G1.
 - **G3. The recipes changed only there.** Outcome: per page, the rule and feature counts at the base and the result
   are equal, and the recipes' diff touches only `changesState` and `ends` lines. Intent: nothing else was loosened.
 - **G4. The rail's ring.** Outcome: on Access, Tab to a rail item, collapsed rail, desktop, Arabic and English: the
@@ -72,17 +74,20 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
   ring; a key always does.
 - **G6. Phone and tablet coverage.** Outcome: for every place the report's S3 lists, run key, mouse and touch on the
   phone in Arabic and English (the report covered six phone placements); report each place's result, and every place
-  where a pointer or touch leaves a ring or a key leaves none. Intent: S3 holds at the phone size the demo shows.
+  where a pointer or touch leaves a ring or a key leaves none; then every `focus()` call in the five pages' scripts that
+  the report's list does not name (`git grep`), by key, mouse and touch, desktop, Arabic. Intent: S3 holds at the phone size the demo shows.
 - **G7. Ring-only differences.** Outcome: for the 122 differing items of the report's all-features compare (its
   `D:/fitway-temp/owner-r04-shared-lows/s4-all-features/comparison.json`) and the 264 differing timeline samples (`D:/fitway-temp/owner-r04-shared-lows/s5-access-focus/comparison.json`), with
-  your own mask of each focused element's ring box (its outline rectangle grown by the outline width and offset), no
-  pixel outside the mask differs; report the count checked and every exception with its crop. Intent: only the ring
+  your own mask of each focused element's ring band only (from its border box grown by the outline offset to that
+  box grown again by the outline width, from the computed styles), no pixel outside the band differs, the element's
+  own interior included; report the count checked and every exception with its crop. Intent: only the ring
   changed (the report says no mask pass was run).
 - **G8. The spec.** Outcome: OWN-C9 no longer says programmatic focus always shows its ring and states the input rule;
   FOC-1 is unchanged. Intent: the spec says what the pages do.
 - **G9. `motion.js`.** Outcome: say what the 13 added lines of `motion.js` do, which S outcome needs them, and whether
   a press, its release light or any moment's timing changes (a self-compare of Daily's press moments, Arabic, desktop,
-  full motion, against the base). Intent: no moment changed beyond the rings.
+  full motion, against the base); if the added lines run on any path other than focus, compare that path's timeline on
+  every page it reaches, Arabic and English, reduced and full motion. Intent: no moment changed beyond the rings.
 - **G10. Untouched records.** Outcome: `HISTORY.md` and the evidence folder are byte-equal to the base; the checks the
   shared-frame brief's L1 names pass on the result. Intent: only the concept's own files changed.
 - **G11. Report against commands.** Outcome: the result's commit exists and is your HEAD, and the round's run folder
