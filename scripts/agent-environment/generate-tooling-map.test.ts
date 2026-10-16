@@ -14,7 +14,6 @@ import { parseFastSteps } from "../../.agents/skills/gardener/facts.mjs";
 import {
 	buildToolingMap,
 	checkToolingMap,
-	MAP_RELATIVE_PATH,
 	validateToolingMap,
 	writeToolingMap,
 } from "./tooling-map-document.mjs";
@@ -631,5 +630,3 @@ describe("L1: ladder integration", () => {
 		]);
 	});
 });
-
-void MAP_RELATIVE_PATH;

@@ -1,6 +1,10 @@
 import path from "node:path";
 import ts from "typescript";
-import { normalizePath, propertyNameText } from "./tooling-map-parser.mjs";
+import {
+	normalizePath,
+	propertyNameText,
+	unwrapParenthesized,
+} from "./tooling-map-parser.mjs";
 
 const MODULE_EXTENSIONS = [
 	".mjs",
@@ -12,13 +16,6 @@ const MODULE_EXTENSIONS = [
 	".jsx",
 	".tsx",
 ];
-
-function unwrapParenthesized(node) {
-	let expression = node;
-	while (expression && ts.isParenthesizedExpression(expression))
-		expression = expression.expression;
-	return expression;
-}
 
 function moduleCandidates(specifier, importer, root) {
 	const normalized = specifier.replaceAll("\\", "/");
@@ -138,11 +135,6 @@ export function resolveExportsByFile({
 	return resolved;
 }
 
-export function resolveImportedTarget(importsByLocal, name) {
-	const targets = importsByLocal.get(name) ?? [];
-	return targets.length === 1 ? targets[0] : null;
-}
-
 export function classEntryFromExpression(
 	expression,
 	importsByLocal,
@@ -150,7 +142,7 @@ export function classEntryFromExpression(
 ) {
 	const unwrapped = unwrapParenthesized(expression);
 	if (ts.isIdentifier(unwrapped)) {
-		const target = resolveImportedTarget(importsByLocal, unwrapped.text);
+		const target = importsByLocal.get(unwrapped.text) ?? null;
 		return target?.kind.includes("class") ? target : null;
 	}
 	if (
@@ -224,7 +216,7 @@ function addObjectImportBindings(bindings, exports, importsByLocal) {
 		if (!ts.isIdentifier(element.name)) continue;
 		const imported = (element.propertyName ?? element.name).text;
 		const target = exports.get(imported);
-		if (target) importsByLocal.set(element.name.text, [target]);
+		if (target) importsByLocal.set(element.name.text, target);
 	}
 }
 
@@ -265,7 +257,7 @@ function addDynamicImportBindings(
 			sourceSet,
 			exportsByFile,
 		);
-		if (target) importsByLocal.set(node.name.text, [target]);
+		if (target) importsByLocal.set(node.name.text, target);
 	});
 }
 
@@ -295,7 +287,7 @@ function addStaticImportBindings(
 		const clause = statement.importClause;
 		if (clause?.name) {
 			const target = targetExports.get("default");
-			if (target) importsByLocal.set(clause.name.text, [target]);
+			if (target) importsByLocal.set(clause.name.text, target);
 		}
 		const bindings = clause?.namedBindings;
 		if (bindings && ts.isNamespaceImport(bindings))
@@ -305,7 +297,7 @@ function addStaticImportBindings(
 			if (element.isTypeOnly) continue;
 			const imported = (element.propertyName ?? element.name).text;
 			const target = targetExports.get(imported);
-			if (target) importsByLocal.set(element.name.text, [target]);
+			if (target) importsByLocal.set(element.name.text, target);
 		}
 	}
 }
@@ -355,10 +347,7 @@ export function memberAccessTarget(access, context) {
 			.get(access.expression.text)
 			?.get(name);
 		if (namespaceTarget) return { entry: namespaceTarget };
-		const imported = resolveImportedTarget(
-			context.importsByLocal,
-			access.expression.text,
-		);
+		const imported = context.importsByLocal.get(access.expression.text) ?? null;
 		if (imported?.kind.includes("class"))
 			return { owner: imported, name, staticMember: true };
 		const instance = context.staticContext.instances.get(

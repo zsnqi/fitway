@@ -166,6 +166,15 @@ function listDifference(left, right) {
 	return left.filter((value) => !rightSet.has(value));
 }
 
+function fileListDifference(expectedFiles, parsedFiles) {
+	const expectedPaths = expectedFiles.map((file) => file.path);
+	const parsedPaths = parsedFiles.map((file) => file.path);
+	if (setsEqual(expectedPaths, parsedPaths)) return null;
+	const missing = listDifference(expectedPaths, parsedPaths);
+	const extra = listDifference(parsedPaths, expectedPaths);
+	return `file list differs: missing [${missing.join(", ")}]; extra [${extra.join(", ")}]`;
+}
+
 function validateCommandTests({
 	expectedFile,
 	parsedFile,
@@ -235,15 +244,8 @@ export async function validateToolingMap({ root = process.cwd(), text } = {}) {
 	const parsed = parseToolingMap(committed);
 	const trackedTests = new Set(listTestFiles(repositoryRoot));
 	const errors = [];
-	const expectedPaths = expected.files.map((file) => file.path);
-	const parsedPaths = parsed.map((file) => file.path);
-	if (!setsEqual(expectedPaths, parsedPaths)) {
-		const missing = listDifference(expectedPaths, parsedPaths);
-		const extra = listDifference(parsedPaths, expectedPaths);
-		errors.push(
-			`file list differs: missing [${missing.join(", ")}]; extra [${extra.join(", ")}]`,
-		);
-	}
+	const fileListError = fileListDifference(expected.files, parsed);
+	if (fileListError) errors.push(fileListError);
 	const parsedByPath = new Map(parsed.map((file) => [file.path, file]));
 	for (const expectedFile of expected.files) {
 		const parsedFile = parsedByPath.get(expectedFile.path);
@@ -299,20 +301,13 @@ export async function checkToolingMap({ root = process.cwd() } = {}) {
 	}
 	if (committed.replace(/\r\n?/g, "\n") === generated.text)
 		return { ok: true, errors: [], generated, committed };
-	const parsed = parseToolingMap(committed);
-	const expectedPaths = generated.files.map((file) => file.path);
-	const actualPaths = parsed.map((file) => file.path);
-	const errors = [];
-	if (!setsEqual(expectedPaths, actualPaths)) {
-		const missing = listDifference(expectedPaths, actualPaths);
-		const extra = listDifference(actualPaths, expectedPaths);
-		errors.push(
-			`file list differs: missing [${missing.join(", ")}]; extra [${extra.join(", ")}]`,
-		);
-	} else {
-		errors.push(
+	const fileListError = fileListDifference(
+		generated.files,
+		parseToolingMap(committed),
+	);
+	const errors = [
+		fileListError ??
 			`generated map differs (${firstDifference(committed, generated.text)})`,
-		);
-	}
+	];
 	return { ok: false, errors, generated, committed };
 }

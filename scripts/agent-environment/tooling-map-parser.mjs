@@ -121,7 +121,7 @@ function declarationLineRange(node, sourceFile) {
 	return { lineStart: start, lineEnd: end };
 }
 
-function unwrapParenthesized(node) {
+export function unwrapParenthesized(node) {
 	let expression = node;
 	while (expression && ts.isParenthesizedExpression(expression))
 		expression = expression.expression;
@@ -136,17 +136,6 @@ function isCallableExpression(node) {
 			ts.isFunctionExpression(expression) ||
 			ts.isClassExpression(expression))
 	);
-}
-
-function callableKindForVariable(expression, isDefault) {
-	const initializer = unwrapParenthesized(expression);
-	if (ts.isArrowFunction(initializer))
-		return isDefault ? "default-arrow" : "arrow";
-	if (ts.isFunctionExpression(initializer))
-		return isDefault ? "default-function-expression" : "function-expression";
-	if (ts.isClassExpression(initializer))
-		return isDefault ? "default-class-expression" : "class-expression";
-	return null;
 }
 
 function addEntry(entries, sourceFile, file, rangeNode, input) {
@@ -298,25 +287,23 @@ function addVariableStatement(entries, sourceFile, file, statement) {
 		}
 		addEntry(entries, sourceFile, file, declaration, {
 			name,
-			kind: callableKindForVariable(expression, false),
+			kind: ts.isArrowFunction(expression) ? "arrow" : "function-expression",
 			exportNames: isExported(statement) ? [name] : [],
 		});
 	}
 }
 
-function addExportAssignment(entries, sourceFile, file, statement) {
-	if (statement.isExportEquals) return;
-	const expression = unwrapParenthesized(statement.expression);
-	if (!isCallableExpression(expression)) return;
+function addDefaultCallable(entries, sourceFile, file, node, rangeNode) {
+	const expression = unwrapParenthesized(node);
 	if (ts.isClassExpression(expression)) {
 		addClassEntry(entries, sourceFile, file, expression, {
 			name: expression.name?.text ?? null,
 			defaultExport: true,
-			rangeNode: statement,
+			rangeNode,
 		});
 		return;
 	}
-	addEntry(entries, sourceFile, file, statement, {
+	addEntry(entries, sourceFile, file, rangeNode, {
 		name: "default",
 		declarationName: null,
 		kind: ts.isArrowFunction(expression)
@@ -324,6 +311,18 @@ function addExportAssignment(entries, sourceFile, file, statement) {
 			: "default-function-expression",
 		exportNames: ["default"],
 	});
+}
+
+function addExportAssignment(entries, sourceFile, file, statement) {
+	if (statement.isExportEquals) return;
+	if (!isCallableExpression(statement.expression)) return;
+	addDefaultCallable(
+		entries,
+		sourceFile,
+		file,
+		statement.expression,
+		statement,
+	);
 }
 
 function addCommonJsExport(entries, sourceFile, file, statement) {
@@ -343,23 +342,7 @@ function addCommonJsExport(entries, sourceFile, file, statement) {
 		!isCallableExpression(assignment.right)
 	)
 		return;
-	const expression = unwrapParenthesized(assignment.right);
-	if (ts.isClassExpression(expression)) {
-		addClassEntry(entries, sourceFile, file, expression, {
-			name: expression.name?.text ?? null,
-			defaultExport: true,
-			rangeNode: assignment,
-		});
-		return;
-	}
-	addEntry(entries, sourceFile, file, assignment, {
-		name: "default",
-		declarationName: null,
-		kind: ts.isArrowFunction(expression)
-			? "default-arrow"
-			: "default-function-expression",
-		exportNames: ["default"],
-	});
+	addDefaultCallable(entries, sourceFile, file, assignment.right, assignment);
 }
 
 export function parseCallables(file, source) {

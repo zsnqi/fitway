@@ -5,7 +5,6 @@ import {
 	classEntryFromExpression,
 	memberAccessTarget,
 	resolveExportsByFile,
-	resolveImportedTarget,
 	resolveTestImports,
 	visit,
 } from "./tooling-map-imports.mjs";
@@ -341,7 +340,7 @@ function recordNodeCoverage(node, context) {
 	if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
 		markCoverage(
 			context.coverage,
-			resolveImportedTarget(context.importsByLocal, node.expression.text),
+			context.importsByLocal.get(node.expression.text) ?? null,
 			context.testPath,
 		);
 	}
