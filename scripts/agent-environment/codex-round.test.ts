@@ -535,7 +535,10 @@ process.stdin.on('end', () => {
   let message = messages
     ? (messages[sequenceIndex] ?? messages[messages.length - 1])
     : (configuredMessage ?? fallback);
-  if (commit) message = message.replaceAll('__HEAD__', commit).replaceAll('__HEAD_SHORT__', commit.slice(0, 7));
+  const renderCommit = (value) => commit
+    ? value.replaceAll('__HEAD__', commit).replaceAll('__HEAD_SHORT__', commit.slice(0, 7))
+    : value;
+  message = renderCommit(message);
   const defaultExit = isResume && process.env.ROUND_RESUME_EXIT !== undefined
     ? process.env.ROUND_RESUME_EXIT
     : process.env.ROUND_EXIT;
@@ -543,9 +546,6 @@ process.stdin.on('end', () => {
     ? (exits[sequenceIndex] ?? exits[exits.length - 1])
     : defaultExit;
   fs.writeFileSync(args[args.indexOf('-o') + 1], message);
-  const renderCommit = (value) => commit
-    ? value.replaceAll('__HEAD__', commit).replaceAll('__HEAD_SHORT__', commit.slice(0, 7))
-    : value;
   process.stdout.write('{"type":"thread.star');
   process.stdout.write('ted","thread_id":"${thread}"}\\n');
   if (process.env.ROUND_PRE_EVENTS) process.stdout.write(renderCommit(process.env.ROUND_PRE_EVENTS));
@@ -3142,13 +3142,11 @@ ${report}
 	};
 	const commitEnvironment = (
 		f: ReturnType<typeof fixture>,
-		extra: NodeJS.ProcessEnv = {},
 	): NodeJS.ProcessEnv => ({
 		ROUND_COMMIT: "claim fixture",
 		ROUND_WRITE_PATH: path.join(f.worktree, "claim-change.txt"),
 		ROUND_WRITE_CONTENT: Buffer.from("claim change").toString("base64"),
 		ROUND_COMMIT_STAGE_ALL: "1",
-		...extra,
 	});
 	const resumeLog = (f: ReturnType<typeof fixture>) =>
 		readFileSync(path.join(f.run, "auto-resumes.log"), "utf8")

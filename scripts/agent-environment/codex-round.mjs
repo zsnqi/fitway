@@ -1015,9 +1015,9 @@ function claimResumeMessage(failures) {
 	return `The report was not accepted because its claims did not match this run:\n${failures.map((failure) => `- ${failure}`).join("\n")}\nContinue toward the brief's outcomes, wait inside tool calls, and send a corrected report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
 }
 
-function briefSection(brief, name) {
+function briefScopeSection(brief) {
 	const text = Buffer.isBuffer(brief) ? brief.toString("utf8") : String(brief);
-	const heading = text.match(new RegExp(`^##[ \\t]+${name}[ \\t]*\\r?$`, "m"));
+	const heading = text.match(/^##[ \t]+Scope[ \t]*\r?$/m);
 	if (heading?.index === undefined) return "";
 	const remainder = text.slice(heading.index + heading[0].length);
 	const nextHeading = remainder.search(/^##[ \t]+/m);
@@ -1026,7 +1026,7 @@ function briefSection(brief, name) {
 
 function briefRequiresCommit(brief) {
 	return /\bcommit[ \t]+once[ \t]+when[ \t]+done\b/i.test(
-		briefSection(brief, "Scope").replace(/\s+/g, " "),
+		briefScopeSection(brief).replace(/\s+/g, " "),
 	);
 }
 
