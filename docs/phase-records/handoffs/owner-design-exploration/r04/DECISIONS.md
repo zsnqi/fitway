@@ -841,6 +841,18 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - Agent-environment DECISIONS item 20's production checks stand, `apps/web` as strict as the base config among
       them (today `apps/web/tsconfig.json` does not extend it, measured 2026-10-16).
     - This milestone's concept rounds get the diff review before they merge, from 2026-10-16.
+75. **The selected heat cell, apart from the keyboard ring** (the user, 2026-10-17, through a forked side session:
+    option C, after the shared-lows-fix-2 grade showed that a mouse click left a selection mark drawn like the keyboard
+    ring; `codex-rounds.md` §"shared-lows-fix-2"). On Reports' and Components' heat maps:
+    - The selected cell takes a flush 2 px inner edge (`box-shadow: inset`) for every input, mouse, touch and key
+      alike; while one cell is selected the other cells dim to 0.45, in normal colours only.
+    - The keyboard ring sits outside the cell (`--focus-ring-offset: 2px` for `.hc` and `.cx-hc`), so the ring and the
+      selection never draw the same line.
+    - In forced colours the selection is a CanvasText edge backed by Canvas, with no dimming and full contrast. This
+      exemption is the coordinator's call, made in the side session for accessibility; the user has not ruled on it.
+    - Delivered in `51d5a783` (branch `owner-r04-heat-sel`; `owner-followup-r04-build` fast-forwarded to it):
+      `check-concept-css` passed and CI passed (measured). Reports below 1280 px shows the day form, with no heat
+      cells; its phone page is byte-identical before and after.
 
 ## How this milestone's rounds run
 

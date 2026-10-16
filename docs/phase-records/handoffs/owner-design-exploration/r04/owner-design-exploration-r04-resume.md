@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `586c5c56`, 2026-10-17 01:25 +03:00
+- **As of:** `codex/owner-redesign-r04` at `6468253a`, 2026-10-17 02:26 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-74), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-75), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -11,9 +11,10 @@
   (`pnpm codex:round <brief> [level] [--model gpt-6.1-sol]`); the launcher reviews first and stops for dispositions.
 - **The user's order of work (decision 52):** tool and testing fixes before the next pages; what nobody sees waits
   until after the demo; anything visible that would make the demo look bad is fixed before it.
-- **Owner screens:** Daily, Reports, Activity log and Access on `owner-followup-r04-build`, now at `538b280a`
-  (2026-10-17, measured: the shared-lows series fast-forwarded in: one ring per control, a ring only when a key
-  brought focus there, across pages too; graded, `codex-rounds.md` §"shared-lows-fix-2"). Worktree
+- **Owner screens:** Daily, Reports, Activity log and Access on `owner-followup-r04-build`, now at `51d5a783`
+  (2026-10-17, measured): the shared-lows series (one ring per control, a ring only when a key brought focus there,
+  across pages too; graded, `codex-rounds.md` §"shared-lows-fix-2"), then the user's heat-cell selection (decision
+  75: a flush inner edge for every input, the other cells dimmed, the keyboard ring outside the cell). Worktree
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`. Previews: eclipse-build (3174), LAN (3180).
 - **Wave 1 is done and recorded** in `codex-rounds.md` and `rounds.tsv`: no-comments (report-only; 50 `MUST KILL`
   findings F184-F233), diagnosis (report-only, 3/6; nothing reproduced under load it did not record), reports-css
@@ -57,7 +58,9 @@
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Settings waits for
    agent-tooling-r01's ratchet and CLI contract (decision 73). Left for later, with their reasons: the dialogs' parts
    splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
-3. **Grading briefs for focus work** state a control's tab order (the first Tab can leave the page), keep a pixel
+3. **F266:** Components' heat tooltip covers the selected cell after a click (measured; Reports places its tip below
+   the cell); it goes with the next concept round that touches Components.
+4. **Grading briefs for focus work** state a control's tab order (the first Tab can leave the page), keep a pixel
    rule's allowances the round's brief gives, and list every outcome whose rings may differ (the five rows above).
 
 ## Waiting on the user
@@ -65,9 +68,8 @@
 - Drive C: 15 items wait for the user's decision in D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md (12.04 GB free
   after the safe cleanup, measured).
 - Optional: Windows Update's active hours (F159).
-- For the user's next look at Reports: a mouse click on a heat cell leaves its 2 px selection mark, as before the
-  rounds (`23314b3a`; `9619f3ce` had hidden it by accident); it looks like the keyboard ring. Keeping it is the user's
-  call.
+- Optional: decision 75's forced-colours exemption (no dimming, full contrast) is the coordinator's call; the user's
+  word can change it.
 
 ## Known risks
 
