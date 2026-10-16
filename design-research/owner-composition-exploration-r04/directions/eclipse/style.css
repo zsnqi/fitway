@@ -90,6 +90,9 @@ html[data-focus-input="keyboard"] :focus:not(:focus-visible),
 html[data-focus-input="keyboard"] .rail-item:focus:not(:focus-visible) > .tile,
 .cx-ri:focus-visible > .cx-tile,
 html[data-focus-input="keyboard"] .cx-ri:focus:not(:focus-visible) > .cx-tile,
+.cx .is-focus,
+.cx-ri.is-focus > .cx-tile,
+.cx .dp-day.is-spec-focus > .dp-n,
 .dp-day:focus-visible > .dp-n,
 html[data-focus-input="keyboard"] .dp-day:focus:not(:focus-visible) > .dp-n,
 html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) {
@@ -1216,7 +1219,6 @@ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea {
   .ac-sel select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) */ }
   .dl-sort select { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; /* focus-ring: html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) */ }
   .dl-sort.is-disabled .sel-face { opacity: 1 !important; }
-  html:not([data-focus-input="pointer"]) :is(.ac-sel, .dl-sort):has(select:focus-visible) { outline-color: CanvasText !important; }
   /* Crowd-level chip icon: retain the four bars in system colours (FOC-8). */
   .level .bars i { forced-color-adjust: none; background: Canvas; border: 1px solid CanvasText; }
   /* Control glyphs follow their system text colour, including the logo and explicit chalk strokes. */

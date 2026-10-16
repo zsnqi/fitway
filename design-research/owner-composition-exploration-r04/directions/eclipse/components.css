@@ -137,7 +137,6 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx .hbadge.cx-hstatus.is-hover { background: rgba(255, 255, 255, 0.05); }
 @media (hover: hover) { .cx .hbadge.cx-hstatus:hover { background: rgba(255, 255, 255, 0.05); } }
 .cx .hbadge.cx-hstatus.is-hover .hb-chev { transform: rotate(180deg); }
-.cx .hbadge.cx-hstatus.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
 .cx-hdr-end .hbadge.cx-hstatus { margin-block-start: -4px; }
 .cx-hdr-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-block-start: 16px; }
 .cx-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font: var(--t-caption); color: var(--ink-2); }
@@ -168,8 +167,7 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-icon-btn .cx-ico { width: 18px; height: 18px; }
 .cx-icon-btn.is-hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
 @media (hover: hover) { .cx-icon-btn:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
-/* FOC-1 drawn on a specimen: the same ring as :focus-visible. */
-.cx .is-focus { outline: 2px solid var(--ink); outline-offset: 3px; }
+/* FOC-1 drawn on a specimen: style.css's shared ring rule lists .cx .is-focus. */
 
 /* ------------------------------------------------------ segmented control */
 .cx-seg { display: inline-flex; height: 44px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.015); }
@@ -177,7 +175,6 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-seg-b.is-hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
 @media (hover: hover) { .cx-seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
 .cx-seg-b[aria-pressed="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42), inset 0 0 0 100vmax var(--press-light, transparent); }
-.cx .cx-seg-b.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
 .cx-seg.is-full { display: flex; width: 100%; }
 .cx-seg.is-full .cx-seg-b { flex: 1 1 0; min-width: 0; padding-inline: 8px; }
 .cx-phone { width: 358px; max-width: 100%; }
@@ -201,7 +198,7 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-input.is-hover { border-color: rgba(255, 255, 255, 0.52); }
 @media (hover: hover) { .cx-input:hover { border-color: rgba(255, 255, 255, 0.52); } }
 .cx-input:focus-visible { border-color: rgba(255, 255, 255, 0.52); }
-.cx .cx-input.is-focus { outline: 2px solid var(--ink); outline-offset: 3px; border-color: rgba(255, 255, 255, 0.52); }
+.cx .cx-input.is-focus { border-color: rgba(255, 255, 255, 0.52); }
 .cx-field.is-invalid .cx-input { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); }
 .cx-field.is-invalid .cx-input:focus-visible, .cx .cx-field.is-invalid .cx-input.is-focus { outline-color: var(--err); }
 .cx-field.is-disabled .cx-input { border-color: var(--line); background: transparent; color: var(--ink-3); cursor: not-allowed; }
@@ -318,7 +315,6 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .n .cx-sort { text-align: right; }
 [dir="rtl"] .n .cx-sort { flex-direction: row; }
 [dir="ltr"] .n .cx-sort { flex-direction: row; text-align: left; }
-.cx .cx-sort.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
 .cx-sort .cx-ico { width: 14px; height: 14px; opacity: 0; }
 .cx-sort.is-hover .cx-ico, .cx-sort.is-focus .cx-ico, .cx-sort:focus-visible .cx-ico { opacity: 0.5; }
 @media (hover: hover) { .cx-sort:hover .cx-ico { opacity: 0.5; } }
@@ -474,7 +470,6 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-ri.is-hover .cx-tile { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); }
 @media (hover: hover) { .cx-ri:hover .cx-tile { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); } }
 .cx-ri[aria-current="page"] .cx-tile { background: var(--red); border-color: var(--red); color: #fff; }
-.cx-ri.is-focus .cx-tile { outline: 2px solid var(--ink); outline-offset: 3px; }
 .cx .cx-ri.is-focus { outline: 2px solid transparent; }
 .cx-glyph { font: var(--t-label); font-weight: 500; letter-spacing: 0.04em; }
 .cx-brand-mk .mk { fill: none; stroke: var(--ink); }
@@ -528,16 +523,12 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx .cx-bar-spec .tabbar { position: relative; inset: auto; display: block; }
 .cx .tb-item.is-hover { color: var(--ink); }
 .cx .tb-item.is-hover .tb-tile { background: rgba(255, 255, 255, 0.06); }
-.cx .tb-item.is-focus { outline: 2px solid var(--ink); outline-offset: 3px; }
-.cx .fw-mi.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
 .cx .field-input.is-hover, .cx .field-input.is-focus { border-color: rgba(255, 255, 255, 0.52); }
 .cx .ac-search { position: relative; }
 .cx .ac-search .field-input { padding-inline-end: 44px; }
 .cx .ac-search .field-input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
 .cx .ac-search .field-input::-webkit-search-decoration { -webkit-appearance: none; }
 .cx .ac-clear { position: absolute; top: 0; inset-inline-end: 0; }
-.cx .field-input.is-focus, .cx .rbtn.is-focus { outline: 2px solid var(--ink); outline-offset: 3px; }
-.cx .dp-day.is-spec-focus .dp-n { outline: 2px solid var(--ink); outline-offset: 2px; }
 .cx-picker-specimens .dlg-body { padding-block-end: 24px; }
 .cx-dialogs .dlg-panel, .cx-picker-specimens .dlg-panel { max-width: 100%; }
 .cx-frame > .dlg-panel { position: absolute; inset: auto 0 0; width: 100%; max-height: 100%; border-radius: 24px 24px 0 0; border-block-end: 0; }
