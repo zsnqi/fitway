@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `f508f0b5`, 2026-10-17 02:31 +03:00
+- **As of:** `codex/owner-redesign-r04` at `fb9f4dd0`, 2026-10-17 02:43 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,16 +37,25 @@
 
 ## Running now
 
-- **ratchet-fix's Sol diff review** (`docs/agent-context/briefs/CODE_REVIEW.md`), folder
-  D:/fitway-temp/code-review/ratchet-fix-1 (diff `e115f646..3f80f091`), started 02:33 on account hhmam1435 from a
-  Bash background task; it ends with `last.md` written (`review.log` holds the run). CI runs on `3f80f091` (pushed
-  02:32).
+- **The ratchet's grade, at its two brief reviews** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-grade.md`, committed `fb9f4dd0`; G1-G14 over
+  H1-H6, K1-K6, the review edits and the held-out rows HR1-HR12): the launcher's DeepSeek review in
+  D:/fitway-temp/brief-review/codex-ratchet-grade-1 (log D:/fitway-temp/tooling-ratchet-grade/launch-1.log) and Sol
+  `xhigh` in `codex-ratchet-grade-1-sol`, both started about 02:40. The grading checkout is
+  D:/fitway-temp/tooling-ratchet-grade/wt (branch `grade-ratchet` at `b3946bc3`); it still needs its own
+  `pnpm install --frozen-lockfile --offline` before the grade launches.
+- **The review fixer's ladder** (`owner-direction-fixer`, medium) runs on `tooling-ratchet` after its commit
+  `b3946bc3` ("one extension list; script and lintSources under 80 lines"): the diff matches the frozen edits
+  (checked by the coordinator); the baseline fell by two long functions; `scripts/check-concept-css.mjs` is 799 lines
+  by `wc -l`, 800 as the ratchet counts (the giant-file line is over 800). Not pushed yet.
+- **ratchet-fix's Sol diff review** (D:/fitway-temp/code-review/ratchet-fix-1) gave three blocking findings, all
+  checked against `3f80f091` and dispositioned in its `dispositions.md`: `scanSource`'s extension parameter every
+  caller filled alike (D2), `script` at 98 lines and `lintSources` at 87 against K6's 80 (D5; ratchet-fix's report
+  had claimed K6). CI on `3f80f091` was still running at 02:42.
 - **ratchet-fix is done** (measured): DeepSeek V4.1 Flash `max`, run
   D:/fitway-temp/codex-round-3911ed9e-70c8-440e-960b-77c265e16d07, result `3f80f091` on `tooling-ratchet`
   ("Fix code-health ratchet review findings", 10 files, +556/-409). Turn 1 was refused because its fast ladder ran
   before its commit; turn 2 reran the ladder on the commit (`811.24s`, no mutation) and the report was accepted at
-  02:30. It reports K1-K6, H1-H6 and L0-L2 PASS; baseline 217 to 215 files, duplication 733 to 731, the rest
-  unchanged; `scripts/check-concept-css.mjs` is 797 lines (the giant-file line is 800).
+  02:30. It reports K1-K6, H1-H6 and L0-L2 PASS; baseline 217 to 215 files, duplication 733 to 731.
 - How it got here: the ratchet delivered `7c28d15a` on `tooling-ratchet` (run
   D:/fitway-temp/codex-round-c8aa5fb0-1f2a-4231-80f0-7c783796af3b): H1-H6 PASS; baseline CODE_HEALTH_BASELINE.json on
   that branch (217 files; duplication 733 at an 8-line window, type escapes 60, suppressions 10, repeated
@@ -65,17 +74,20 @@
 
 ## Next steps
 
-1. **Disposition the diff review's findings** (`Finding N: blocking|...` in the folder's `dispositions.md`); a
-   mechanical fixer (`owner-direction-fixer`, frozen edits) or a fix round applies the blocking ones.
-2. **Grade the ratchet with its fix** (Sol; held-out rows HR1-HR12 in the grader's folder), then merge
-   `tooling-ratchet` into `agent-tooling-r01`, the coordinator line and main.
+1. **When the fixer's ladder passes:** push `tooling-ratchet` (`b3946bc3`), watch its CI, install the grading
+   checkout, disposition both brief reviews (`Reading N: closed|left open: <why>` and the brief's SHA-256 in each
+   folder's `dispositions.md`), and launch the grade: `pnpm codex:round
+   docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-grade.md xhigh --model gpt-6.1-sol` (output to a log).
+2. **Read the grade**, reproduce at least one row (decision 67), record it (`codex-rounds.md`, `rounds.tsv`), then
+   merge `tooling-ratchet` into `agent-tooling-r01`, the coordinator line (`check:tooling-map`, `check:repository`)
+   and main through `pnpm main:advance` after CI.
 3. **The CLI contract with `pnpm tools`** (F251; draft at D:/fitway-temp/agent-tooling-drafts/cli-contract-body.md),
    adding the report fields the wave's open readings wait on; then **map upkeep** (F252), then **the lighter pickup**.
    Each later brief drops the prose rules the ratchet now enforces (function and module length, duplication).
 4. **verify-fitway's caret in forced colours** (F264, found by r04's fix-2 grade): Playwright's caret hiding does not
    hold there, so timeline samples on a focused field read NOT-HELD; it joins the next verify-fitway round. F265 (a
    round's edit after its last measurement passes the claim check) is a candidate for the CLI contract's report
-   fields.
+   fields. `scripts/check-concept-css.mjs` sits at the giant-file line: the next change that grows it splits it.
 
 ## Waiting on the user
 
