@@ -1377,12 +1377,12 @@ function lineageAndDiffFailures(worktree, head, matching, launchHead) {
 	return failures;
 }
 
-function commitHeaderSha(output) {
-	for (const line of String(output).split(/\r?\n/)) {
-		const match = line.match(/^\[.*?(?: \(root-commit\))? ([0-9a-f]{7,64})\]/i);
-		if (match) return match[1].toLowerCase();
-	}
-	return null;
+export function commitHeaderSha(output) {
+	// biome-ignore lint/suspicious/noControlCharactersInRegex: PowerShell output carries terminal escape codes (CSI, OSC)
+	const ansi = /\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07\x1b]*(?:\x07|\x1b\\))/g;
+	const header = /^\[.*?(?: \(root-commit\))? ([0-9a-f]{7,64})\]/im;
+	const match = String(output).replace(ansi, "").match(header);
+	return match ? match[1].toLowerCase() : null;
 }
 
 function commitRecordFailures(records, worktree, head) {
