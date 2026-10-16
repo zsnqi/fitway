@@ -55,16 +55,18 @@ commit is found on whatever line it stands.
     <worktree> commit -m x`, `git commit -m "fix; tests"` and `git add -A && git commit -m x` do not count.
   - **Outcome.** A command is read as the shell that ran it would split it (quotes respected, for PowerShell
     `-Command` and `bash -lc` wrappers as today): a `git` invocation whose subcommand is `commit`, after any global
-    options (`-C <path>`, `-c <name>=<value>`, `--no-pager`), counts when it is the last command of a chain joined only
-    by `&&`, or the only command; `;`, `||`, `|` or a newline outside quotes, and a command after the commit, make it not
-    count; `--dry-run` and `--help` never count. The ladder is read the same way. Tests cover `git -C <worktree> commit`,
-    `git -c user.name=x commit`, a quoted `;` and `|` in a message, `git add -A && git commit`, `git commit && echo x`
+    options (`-C <path>`, `-c <name>=<value>`, `--no-pager`), counts when it is the last command of its chain, so that its status is the event's: commands
+    before it joined by `&&`, `;` or a newline are fine; `||` or `|` touching it, or any command after it, make it not
+    count; `--dry-run` and `--help` never count. The ladder is read the same way and counts only with its exact arguments
+    (`node scripts/verify.mjs fast` or `pnpm verify:fast`, nothing appended that filters or selects tests). Tests cover `git -C <worktree> commit`,
+    `git -c user.name=x commit`, a quoted `;` and `|` in a message, `git add -A && git commit`, `git add -A; git commit`, `git commit && echo x`
     (refused), and every case W2 already covers.
   - **Intent.** The record of what ran is what ran, for every way an agent writes it.
 - **X2. A commit named in its subject (grade G11).**
   - **Cause (measured).** `commitRecordFailures` accepts the last commit when its output contains the HEAD's first
     seven characters anywhere, so a commit whose subject mentions them passes.
-  - **Outcome.** The commit's identity is read from Git's result header (`[<branch> <abbreviated sha>]` or
+  - **Outcome.** The commit's identity is read only from the first line of the commit's output that is Git's result
+    header (`[<branch> <abbreviated sha>]` or
     `[<branch> (root-commit) <abbreviated sha>]`) and compared with the worktree HEAD; a subject containing the HEAD's
     prefix under another commit's header is refused. Tested.
   - **Intent.** The commit that ran is the commit claimed.
@@ -80,7 +82,8 @@ commit is found on whatever line it stands.
 
 - **L0. New cases prove the repair.** Each case you add names the outcome it tests (X1-X3), fails at this HEAD at an
   assertion on that outcome's behaviour (not at a missing helper, import or fixture), and passes unchanged on your
-  result; the cases you commit are the ones you showed failing, and the fast ladder runs them. A case that guards a
+  result; the cases you commit are the ones you showed failing, and the fast ladder runs them; each clause of X1-X3
+  has at least one red case and one refusal guard. A case that guards a
   refusal kept from this HEAD is named a guard and may pass at this HEAD. Report each failing output.
 - **L1. The earlier outcomes.** Every outcome and limit of `codex-launcher-fixes-6.md` and `codex-launcher-fixes-6-fix.md`
   still holds (report each again), and every test at this HEAD keeps its assertions and still runs; no helper of the
