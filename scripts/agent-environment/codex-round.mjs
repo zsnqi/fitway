@@ -140,41 +140,94 @@ function validateModelLevel(model, level) {
 	return level;
 }
 
-function shellTokens(command) {
-	const tokens = [];
-	let token = "";
+function shellSeparator(text, index) {
+	const character = text[index];
+	if (character === ";" || character === "\n") return character;
+	if ((character === "&" || character === "|") && text[index + 1] === character)
+		return character + character;
+	return character === "&" || character === "|" ? character : null;
+}
+
+function shellEvent(raw, value, whitespace = false) {
+	return whitespace ? { raw, whitespace: true } : { raw, value };
+}
+
+function shellScan(command, shell = "bash") {
+	const events = [];
+	const escapeCharacter = shell === "powershell" ? "`" : "\\";
 	let quote = null;
-	let escaped = false;
-	for (const character of command.trim()) {
-		if (escaped) {
-			token += character;
-			escaped = false;
+	let wordStarted = false;
+	for (let index = 0; index < command.length; index += 1) {
+		const character = command[index];
+		if (quote === "'") {
+			if (character === "'") quote = null;
+			events.push(shellEvent(character, character === "'" ? "" : character));
 			continue;
 		}
-		if (character === "\\" && quote !== "'") {
-			escaped = true;
-			continue;
-		}
-		if (quote) {
-			if (character === quote) quote = null;
-			else token += character;
+		if (quote === '"') {
+			if (character === '"') {
+				quote = null;
+				events.push(shellEvent(character, ""));
+			} else if (character === escapeCharacter && index + 1 < command.length) {
+				const next = command[++index];
+				events.push(shellEvent(character + next, next));
+			} else events.push(shellEvent(character, character));
 			continue;
 		}
 		if (character === "'" || character === '"') {
 			quote = character;
+			wordStarted = true;
+			events.push(shellEvent(character, ""));
 			continue;
 		}
-		if (/\s/.test(character)) {
+		if (character === escapeCharacter && index + 1 < command.length) {
+			const next = command[++index];
+			events.push(shellEvent(character + next, next));
+			wordStarted = true;
+			continue;
+		}
+		if (character === "#" && !wordStarted) {
+			while (index + 1 < command.length && !/[\r\n]/.test(command[index + 1]))
+				index += 1;
+			continue;
+		}
+		if (character === "\r") {
+			events.push(shellEvent("", "", true));
+			continue;
+		}
+		const separator = shellSeparator(command, index);
+		if (separator !== null) {
+			events.push({ raw: separator, separator });
+			wordStarted = false;
+			if (separator.length === 2) index += 1;
+			continue;
+		}
+		const whitespace = /\s/.test(character);
+		events.push(shellEvent(character, character, whitespace));
+		wordStarted = !whitespace;
+	}
+	return { events, unmatchedQuote: quote !== null };
+}
+
+function shellTokens(command, shell = "bash") {
+	const { events, unmatchedQuote } = shellScan(command.trim(), shell);
+	if (unmatchedQuote) return null;
+	const tokens = [];
+	let token = "";
+	for (const event of events) {
+		if (event.whitespace || event.separator === "\n") {
 			if (token) {
 				tokens.push(token);
 				token = "";
 			}
 			continue;
 		}
-		token += character;
+		if (event.separator !== undefined) {
+			token += event.raw;
+			continue;
+		}
+		token += event.value;
 	}
-	if (quote) return null;
-	if (escaped) token += "\\";
 	if (token) tokens.push(token);
 	return tokens;
 }
@@ -1061,58 +1114,40 @@ function commitCandidates(message) {
 function unwrapCommand(command) {
 	const text = command.trim();
 	const wrappers = [
-		/^(?:"[^"]*powershell(?:\.exe)?"|powershell(?:\.exe)?)(?:\s+-[^\s]+)*\s+-Command\s+(['"])([\s\S]*)\1$/i,
-		/^(?:"[^"]*bash(?:\.exe)?"|bash(?:\.exe)?)(?:\s+-[^\s]+)*\s+-lc\s+(['"])([\s\S]*)\1$/i,
+		{
+			shell: "powershell",
+			pattern:
+				/^(?:"[^"]*powershell(?:\.exe)?"|powershell(?:\.exe)?)(?:\s+-[^\s]+)*\s+-Command\s+(['"])([\s\S]*)\1$/i,
+		},
+		{
+			shell: "bash",
+			pattern:
+				/^(?:"[^"]*bash(?:\.exe)?"|bash(?:\.exe)?)(?:\s+-[^\s]+)*\s+-lc\s+(['"])([\s\S]*)\1$/i,
+		},
 	];
-	for (const pattern of wrappers) {
-		const match = text.match(pattern);
-		if (match) return match[2].trim();
+	for (const wrapper of wrappers) {
+		const match = text.match(wrapper.pattern);
+		if (match) return { text: match[2].trim(), shell: wrapper.shell };
 	}
-	return text;
+	return { text, shell: "bash" };
 }
 
 function commandParts(command) {
-	const text = unwrapCommand(command);
+	const { text, shell } = unwrapCommand(command);
+	const { events } = shellScan(text, shell);
 	const parts = [];
 	let current = "";
-	let quote = null;
 	let separator = null;
-	for (let index = 0; index < text.length; index += 1) {
-		const character = text[index];
-		if (quote) {
-			current += character;
-			if (character === quote) quote = null;
+	for (const event of events) {
+		if (event.separator === undefined) {
+			current += event.raw;
 			continue;
 		}
-		if (character === '"' || character === "'") {
-			quote = character;
-			current += character;
-			continue;
-		}
-		if (character === "\\" && index + 1 < text.length) {
-			current += character + text[index + 1];
-			index += 1;
-			continue;
-		}
-		if (character === "\r") continue;
-		let next = null;
-		if (character === ";" || character === "\n") next = character;
-		else if (
-			(character === "&" || character === "|") &&
-			text[index + 1] === character
-		) {
-			next = character + character;
-			index += 1;
-		} else if (character === "&" || character === "|") next = character;
-		if (next === null) {
-			current += character;
-			continue;
-		}
-		if (current.trim()) parts.push({ text: current.trim(), separator });
+		if (current.trim()) parts.push({ text: current.trim(), separator, shell });
 		current = "";
-		separator = next;
+		separator = event.separator;
 	}
-	if (current.trim()) parts.push({ text: current.trim(), separator });
+	if (current.trim()) parts.push({ text: current.trim(), separator, shell });
 	return parts;
 }
 
@@ -1129,8 +1164,8 @@ function commandStatusIsEvent(part) {
 	);
 }
 
-function isGitCommitCommand(command) {
-	const words = shellTokens(command) ?? [];
+function isGitCommitCommand(command, shell = "bash") {
+	const words = shellTokens(command, shell) ?? [];
 	if (!/^git(?:\.exe)?$/i.test(words[0] ?? "")) return false;
 	let index = 1;
 	while (index < words.length) {
@@ -1153,14 +1188,16 @@ function isGitCommitCommand(command) {
 function isCommitCommand(command) {
 	const part = lastCommandPart(command);
 	return Boolean(
-		part && commandStatusIsEvent(part) && isGitCommitCommand(part.text),
+		part &&
+			commandStatusIsEvent(part) &&
+			isGitCommitCommand(part.text, part.shell),
 	);
 }
 
 function isFastLadderCommand(command) {
 	const part = lastCommandPart(command);
 	if (!part || !commandStatusIsEvent(part)) return false;
-	const words = shellTokens(part.text) ?? [];
+	const words = shellTokens(part.text, part.shell) ?? [];
 	return Boolean(
 		(words.length === 3 &&
 			/^node(?:\.exe)?$/i.test(words[0] ?? "") &&

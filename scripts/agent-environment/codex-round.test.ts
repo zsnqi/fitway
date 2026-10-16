@@ -3398,6 +3398,114 @@ ${report}
 		);
 	});
 
+	it.each([
+		["bash", `bash -lc 'git commit -m "a \\"; b | c"'`],
+		["PowerShell", `powershell.exe -Command 'git commit -m "a \`"; b | c"'`],
+	])("Y1 accepts an escaped quote in a %s commit message", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(command, 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("Y1 guard refuses a PowerShell backslash before a separator", () => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(
+				`powershell.exe -Command 'git commit -m a \\; echo later'`,
+				0,
+				claimOutput,
+			) + commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"no successful git commit command",
+		);
+	});
+
+	it.each([
+		[
+			"bash",
+			`bash -lc 'echo "[fixture __HEAD_SHORT__] claim fixture" # ; git commit -m x'`,
+		],
+		[
+			"PowerShell",
+			`powershell.exe -Command 'echo "[fixture __HEAD_SHORT__] claim fixture" # ; git commit -m x'`,
+		],
+	])("Y2 ignores a commented commit in %s", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(command, 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"no successful git commit command",
+		);
+	});
+
+	it.each([
+		["bash", `bash -lc 'echo ok # && node scripts/verify.mjs fast'`],
+		[
+			"PowerShell",
+			`powershell.exe -Command 'echo ok # && node scripts/verify.mjs fast'`,
+		],
+	])("Y2 ignores a commented ladder in %s", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
+				commandEvent(command),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"without a successful fast-ladder command",
+		);
+	});
+
+	it.each([
+		["bash", `bash -lc 'git commit -m "fix #12"'`],
+		["PowerShell", `powershell.exe -Command 'git commit -m "fix #12"'`],
+	])("Y2 guard keeps a quoted hash in %s", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(command, 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+	});
+
+	it.each([
+		["bash", `bash -lc 'git commit -m a#b'`],
+		["PowerShell", `powershell.exe -Command 'git commit -m a#b'`],
+	])("Y2 guard keeps a hash inside a %s word", (_name, command) => {
+		const f = fixture();
+		const result = invokeClaim(
+			f,
+			commandEvent(command, 0, claimOutput) +
+				commandEvent("node scripts/verify.mjs fast"),
+		);
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+	});
+
 	it("X1 accepts an earlier command before the exact fast ladder", () => {
 		const f = fixture();
 		const result = invokeClaim(
