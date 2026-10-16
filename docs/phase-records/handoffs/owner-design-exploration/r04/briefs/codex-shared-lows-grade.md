@@ -43,6 +43,10 @@
 - **The base** is the concept folder `design-research/owner-composition-exploration-r04/directions/eclipse/` at
   `23314b3a`, the result the same folder at `89b9d814`; take each with `git archive` and extract it outside every
   git tree.
+- **Your report names no commit by its SHA and holds no hexadecimal word of seven or more characters:** call the
+  graded commit "the result HEAD", and name folders without their hash parts. The launcher's claim check reads any
+  such word as a commit claim and would refuse a grader's report (F258). You make no commit, in any folder, and run no
+  ladder.
 - **Look at the frames** you cite for S2, S3 and S4: open the PNG crops yourself and say what you saw.
 
 ## Goal
@@ -91,8 +95,8 @@ The coordinator knows, row by row, whether the delivered concept holds on checks
 - **G10. Untouched records.** Outcome: `HISTORY.md` and the evidence folder are byte-equal to the base; the checks the
   shared-frame brief's L1 names pass on the result. Intent: only the concept's own files changed.
 - **G11. Report against commands.** Outcome: the result's commit exists and is your HEAD, and the round's run folder
-  (`D:/fitway-temp/codex-round-bd3edec8-d939-4284-b853-7e796d42c26c/`) records the `git commit` whose output names
-  `89b9d814`, quoted from the events. Intent: the report rests on what ran.
+  (`D:/fitway-temp/codex-round-bd3edec8-d939-4284-b853-7e796d42c26c/`) records a successful `git commit` whose output
+  names the result HEAD (say so, without writing its SHA). Intent: the report rests on what ran.
 
 ## Limits the result keeps
 
