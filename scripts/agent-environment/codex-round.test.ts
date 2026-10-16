@@ -514,6 +514,8 @@ process.stdin.on('end', () => {
   if (turnStderr) process.stderr.write(turnStderr);
   let commit = null;
   if (!isResume && process.env.ROUND_COMMIT) {
+    if (process.env.ROUND_RESET_HARD) execFileSync('git', ['reset', '--hard', process.env.ROUND_RESET_HARD], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
+    if (process.env.ROUND_COMMIT_STAGE_ALL === '1') execFileSync('git', ['add', '-A'], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
     execFileSync('git', ['commit', '--allow-empty', '-m', process.env.ROUND_COMMIT], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
     commit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd:process.cwd(), encoding:'utf8', windowsHide:true}).trim();
   }
@@ -533,7 +535,7 @@ process.stdin.on('end', () => {
   let message = messages
     ? (messages[sequenceIndex] ?? messages[messages.length - 1])
     : (configuredMessage ?? fallback);
-  if (commit) message = message.replaceAll('__HEAD__', commit);
+  if (commit) message = message.replaceAll('__HEAD__', commit).replaceAll('__HEAD_SHORT__', commit.slice(0, 7));
   const defaultExit = isResume && process.env.ROUND_RESUME_EXIT !== undefined
     ? process.env.ROUND_RESUME_EXIT
     : process.env.ROUND_EXIT;
@@ -3125,6 +3127,16 @@ ${report}
 		git(f.coordinator, "commit", "-m", "add report claims");
 		f.answerReview(undefined, undefined, 2);
 	};
+	const commitEnvironment = (
+		f: ReturnType<typeof fixture>,
+		extra: NodeJS.ProcessEnv = {},
+	): NodeJS.ProcessEnv => ({
+		ROUND_COMMIT: "claim fixture",
+		ROUND_WRITE_PATH: path.join(f.worktree, "claim-change.txt"),
+		ROUND_WRITE_CONTENT: Buffer.from("claim change").toString("base64"),
+		ROUND_COMMIT_STAGE_ALL: "1",
+		...extra,
+	});
 	const resumeLog = (f: ReturnType<typeof fixture>) =>
 		readFileSync(path.join(f.run, "auto-resumes.log"), "utf8")
 			.trim()
@@ -3149,7 +3161,7 @@ ${report}
 		const f = fixture();
 		claimBrief(f);
 		const result = f.invoke(undefined, {
-			ROUND_COMMIT: "claim fixture",
+			...commitEnvironment(f),
 			ROUND_MESSAGE: claimReport("__HEAD__"),
 			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
 		});
@@ -3159,6 +3171,86 @@ ${report}
 		expect(turns.at(-1)).toMatchObject({ stopReason: "report accepted" });
 		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
 			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("V1 accepts a report that cites the base commit before its own HEAD", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE:
+				`${claimReport()}Base commit: \`${f.head}\`\n` +
+				"Commit SHA: `__HEAD__`\n",
+			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("V1 accepts an abbreviated worktree HEAD beside a full base SHA", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			...commitEnvironment(f),
+			ROUND_MESSAGE:
+				`${claimReport()}Base commit: \`${f.head}\`\n` +
+				"Commit SHA: `__HEAD_SHORT__`\n",
+			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).not.toContain("resume");
+		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
+			'"stopReason":"report accepted"',
+		);
+	});
+
+	it("V1 rejects a HEAD that does not descend from the launch HEAD", () => {
+		const f = fixture();
+		claimBrief(f);
+		git(f.worktree, "checkout", "--orphan", "other");
+		writeFileSync(path.join(f.worktree, "other.txt"), "other branch");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", "other branch");
+		const otherHead = git(f.worktree, "rev-parse", "HEAD");
+		git(f.worktree, "checkout", "fixture");
+
+		const result = f.invoke(undefined, {
+			ROUND_COMMIT: "claim fixture",
+			ROUND_RESET_HARD: otherHead,
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const message = Buffer.from(f.captured().input, "base64").toString("utf8");
+		expect(message).toContain("does not descend from launch HEAD");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"does not descend from launch HEAD",
+		);
+	});
+
+	it("V1 rejects an empty commit whose diff against the launch HEAD is empty", () => {
+		const f = fixture();
+		claimBrief(f);
+		const result = f.invoke(undefined, {
+			ROUND_COMMIT: "claim fixture",
+			ROUND_MESSAGE: claimReport("__HEAD__"),
+			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			ROUND_RESUME_MESSAGE: cleanStop,
+		});
+		expect(result.status, result.output).toBe(0);
+		expect(f.captured().args).toContain("resume");
+		const message = Buffer.from(f.captured().input, "base64").toString("utf8");
+		expect(message).toContain("empty diff against launch HEAD");
+		const [entry] = resumeLog(f);
+		expect(entry.claimFailures.join("\n")).toContain(
+			"empty diff against launch HEAD",
 		);
 	});
 

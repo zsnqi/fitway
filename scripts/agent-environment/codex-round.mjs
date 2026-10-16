@@ -1150,21 +1150,21 @@ async function reportClaimFailures(message, brief, metadata, run) {
 		return commands;
 	};
 	if (candidates.length || briefRequiresCommit(brief)) {
-		let candidate;
-		let resolved;
+		const resolvedCandidates = [];
 		for (const value of candidates) {
 			try {
-				resolved = readGit(metadata.worktree, [
-					"rev-parse",
-					`${value}^{commit}`,
-				]);
-				candidate = value;
-				break;
+				resolvedCandidates.push({
+					candidate: value,
+					resolved: readGit(metadata.worktree, [
+						"rev-parse",
+						`${value}^{commit}`,
+					]),
+				});
 			} catch {
-				// Try the next candidate before reporting the claim as missing.
+				// A candidate that does not resolve cannot confirm the claim.
 			}
 		}
-		if (!resolved) {
+		if (!resolvedCandidates.length) {
 			if (candidates.length)
 				failures.push(`commit ${candidates.join(", ")}: no such commit object`);
 			else if (!stopped) failures.push("commit: report names no commit SHA");
@@ -1173,18 +1173,73 @@ async function reportClaimFailures(message, brief, metadata, run) {
 			try {
 				head = readGit(metadata.worktree, ["rev-parse", "HEAD"]);
 			} catch (error) {
-				failures.push(
-					`commit ${candidate}: cannot read worktree HEAD: ${error.message}`,
-				);
+				failures.push(`commit: cannot read worktree HEAD: ${error.message}`);
 			}
-			if (head !== null && resolved !== head)
+			const matching =
+				head === null
+					? null
+					: resolvedCandidates.find(({ resolved }) => resolved === head);
+			if (head !== null && !matching)
 				failures.push(
-					`commit ${candidate}: resolves to ${resolved}, not worktree HEAD ${head}`,
+					`commit ${resolvedCandidates
+						.map(({ candidate }) => candidate)
+						.join(", ")}: resolves to ${resolvedCandidates
+						.map(({ resolved }) => resolved)
+						.join(", ")}, not worktree HEAD ${head}`,
 				);
-			if (resolved === metadata.head)
+			const launchClaims = resolvedCandidates.filter(
+				({ resolved }) => resolved === metadata.head,
+			);
+			if (
+				launchClaims.length &&
+				(!matching || matching.resolved === metadata.head)
+			)
 				failures.push(
-					`commit ${candidate}: equals launch HEAD ${metadata.head}`,
+					`commit ${launchClaims
+						.map(({ candidate }) => candidate)
+						.join(", ")}: equals launch HEAD ${metadata.head}`,
 				);
+			if (matching && head !== null && typeof metadata.head === "string") {
+				let descends = true;
+				try {
+					readGit(metadata.worktree, [
+						"merge-base",
+						"--is-ancestor",
+						metadata.head,
+						head,
+					]);
+				} catch (error) {
+					descends = false;
+					if (error.status === 1) {
+						failures.push(
+							`commit ${matching.candidate}: worktree HEAD ${head} does not descend from launch HEAD ${metadata.head}`,
+						);
+					} else {
+						failures.push(
+							`commit ${matching.candidate}: cannot verify worktree HEAD descends from launch HEAD ${metadata.head}: ${error.message}`,
+						);
+					}
+				}
+				if (descends) {
+					let diff;
+					try {
+						diff = readGit(metadata.worktree, [
+							"diff",
+							"--name-only",
+							metadata.head,
+							head,
+						]);
+					} catch (error) {
+						failures.push(
+							`commit ${matching.candidate}: cannot read the diff from launch HEAD ${metadata.head} to worktree HEAD ${head}: ${error.message}`,
+						);
+					}
+					if (diff === "")
+						failures.push(
+							`commit ${matching.candidate}: worktree HEAD ${head} has an empty diff against launch HEAD ${metadata.head}`,
+						);
+				}
+			}
 			const commitRecords = (await runCommands())
 				.map((record, index) => ({ ...record, index }))
 				.filter(
