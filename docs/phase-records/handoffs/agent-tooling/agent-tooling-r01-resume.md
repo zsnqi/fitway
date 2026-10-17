@@ -59,7 +59,8 @@
   `57dad1c0`'s owner parser): through the resolver and the owner options step, `doctor --quiet true --transports`,
   `measure --feature --states --languages --sizes --inputs --motions --transports` and `drive --timeline
   --timeline-times --tools --quiet` give the values the old parser gave.
-- **The re-grade is running:** brief `briefs/codex-cli-contract-regrade.md` (`4774dace`, then `d95e2ee2`; Q1, Q4, Q5,
+- **The re-grade is running:** brief
+  `docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-regrade.md` (`4774dace`, then `d95e2ee2`; Q1, Q4, Q5,
   Q6, Q9 and Q10 at `47f18b0e`, Q4 and Q5 widened by the diff review's fixes); both brief reviews in
   D:/fitway-temp/brief-review/codex-cli-contract-regrade-1 (DeepSeek) and `-1-sol` (Sol `xhigh`), dispositions there
   (seven readings closed, three left open with reasons); launched at 14:35 as run
