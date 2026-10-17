@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `ccd5331c`, 2026-10-17 07:21 +03:00
+- **As of:** `codex/owner-redesign-r04` at `a178e198`, 2026-10-17 08:50 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,12 +37,18 @@
 
 ## Running now
 
-- **cli-contract-fix** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-fix.md`, E1-E5: one
-  registry-driven resolver with a compatibility table, one declaration per command, nothing left over, the giant
-  files' deleted blank lines restored with room made by moving code, one failure prefix; both brief reviews closed,
-  seven readings): DeepSeek V4.1 Flash `max`, run D:/fitway-temp/codex-round-e40f5755-2e65-42e0-820e-2822e7541bb4,
-  started 07:20, worktree D:/Projects/fitway-worktrees/tooling-cli-contract (HEAD `cb1cfe65`). Held-out rows CCF1-CCF6
-  appended to D:/fitway-grader/agent-tooling/cli-contract-heldout.md.
+- **The cli-contract-fix review edits** (`owner-direction-builder`, frozen specification): a fixed compatibility
+  table written from the `57dad1c0` parsers and checked through each command's own argument step (the fix round's E1
+  had built it from the registry), one `drift-tree` mapping, one fixture copier, no unreachable check; worktree
+  D:/Projects/fitway-worktrees/tooling-cli-contract on `dda8e020`, scratch D:/fitway-temp/tooling-cli-contract/builder/.
+  Dispositions in D:/fitway-temp/code-review/cli-contract-fix-1/dispositions.md. CI runs on `dda8e020` (pushed 08:36).
+- **cli-contract-fix is done** (measured): run D:/fitway-temp/codex-round-e40f5755-2e65-42e0-820e-2822e7541bb4, result
+  `dda8e020` ("fix agent CLI contract parsing", 27 files); one registry-driven resolver returning
+  `{command, options, positionals, passthrough, fixedArgs}`, 14 private parsers removed, verify-fitway importing the
+  contract unconditionally, the five giant files below their `57dad1c0` counts with no comment removed (checked by the
+  coordinator), `check:concept-css` one prefix. Its local ladder failed once on F261's K1 timeout and the file passed
+  alone; CI decides. The grading brief for the contract with its fix is drafted (Q1-Q12, in the coordinator's
+  scratchpad) and gets its HEAD after the builder.
 - **The CLI contract round is done** (measured): run D:/fitway-temp/codex-round-58a64b69-6ef3-461d-9ac7-4460520447ce,
   result `cb1cfe65` ("unify agent command contract", 29 files, +2247/-489; first report refused because its ladder
   preceded its commit, the second accepted; ladder after the commit `980.60s`). It reports C1-C5 and L0-L4 PASS and
