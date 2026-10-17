@@ -14,6 +14,7 @@ import { createServer, request } from "node:http";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
+import { authored, html, js, writeConcept } from "./concept-fixture.mjs";
 import { copyAllFixture, copyHelpFixture } from "./fixture-copy.mjs";
 import { verificationTest } from "./skip-gate.mjs";
 
@@ -65,42 +66,11 @@ let scratch;
 let concept;
 let recipes;
 const heldSessions = [];
-const html =
-	'<main>Fixture</main><button id="ops-btn" aria-controls="ops-pop">Status</button><div id="ops-pop" role="dialog" hidden></div><script src="app.js"></script>';
-const js =
-	'const params=new URLSearchParams(location.search);const state=params.get("state")||"live";if(["live","loading","error"].includes(state)){};window.__fixture={ready:true};';
-const authored = () => ({
-	schema: 1,
-	pages: {
-		"index.html": {
-			features: [
-				{
-					id: "status",
-					marker: "ops-btn",
-					source: { file: "index.html", line: 1 },
-					actions: ["activate:#ops-btn"],
-					proof: { selector: "#ops-pop", visible: true },
-					covers: ["#ops-pop"],
-				},
-			],
-			states: [
-				{
-					when: {},
-					shows: "Visible fixture",
-					proof: { selector: "main", visible: true },
-				},
-			],
-		},
-	},
-});
 before(async () => {
 	scratch = await mkdtemp(resolve(tmpdir(), "verify-fitway-unit-"));
 	concept = resolve(scratch, "concept");
 	recipes = resolve(concept, "verification-recipes.json");
-	await mkdir(concept);
-	await writeFile(resolve(concept, "index.html"), html);
-	await writeFile(resolve(concept, "app.js"), js);
-	await writeFile(recipes, JSON.stringify(authored()));
+	await writeConcept(concept);
 });
 after(async () => {
 	for (const session of heldSessions.splice(0))
@@ -1846,21 +1816,6 @@ test("Y2: a test-only doctor seam never probes a verification port", async () =>
 				.map(JSON.parse)
 		: [];
 	assert.deepEqual(observations, [], result.stdout + result.stderr);
-});
-test("V1: no recipe file is SKIP, while a checked recipe still passes", async () => {
-	const empty = resolve(scratch, "no-recipes");
-	await mkdir(empty);
-	const skipped = runCli(["drift-tree", "--root", empty]);
-	assert.equal(skipped.status, 0, skipped.stderr);
-	assert.match(skipped.stdout, /no recipe file was found/i);
-	assert.match(skipped.stdout, /verification-recipes.json/);
-	assert.doesNotMatch(skipped.stdout, /PASS/);
-	const checked = runCli(["drift-tree", "--root", concept]);
-	assert.equal(checked.status, 0, checked.stderr);
-	assert.match(
-		checked.stdout,
-		/DRIFT PASS: 1 recipe files found and checked\./,
-	);
 });
 test("V2: dependency-free discovery and browser commands name the package and install once", async () => {
 	const folder = resolve(scratch, "cold/.agents/skills/verify-fitway");
