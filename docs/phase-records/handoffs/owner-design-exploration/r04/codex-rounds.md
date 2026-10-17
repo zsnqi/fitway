@@ -1849,3 +1849,82 @@ checks live outside the repository and never appear here or in a brief. One line
   the fixture writer repeated in both suites), fixed in `eee192ce`. In the same commit the tests call
   `checkVerificationMaps` instead of spawning `cli.mjs`, because `generate-tooling-map.test.ts` K2 pins the exact list
   of tests that spawn `cli.mjs` across the repository (F277).
+
+## agent-tooling-r01: report-fields: `../../agent-tooling/briefs/codex-report-fields.md`, result `610b54a6` on `tooling-report-fields` (from `cf5d7858`), DeepSeek V4.1 Flash 1017, level `max`; review builders `d2fad437` and `a90da2e2`
+
+- **Scope (DECISIONS items 9 and 11; r04 decision 76):** a Codex brief's first line says what it delivers
+  (`delivers: commit` or `delivers: report`), the report names its commit in one field of a fenced `report` block of
+  JSON lines, each PASS row names the command as run and one line of its output and is matched against the run's
+  events, evidence older than the last edit inside the worktree does not count (F265), and every check is appended to
+  `report-checks.jsonl` in the run folder. Run by a side session beside r04's Settings and the verification-map round
+  (F252); disjoint files except the two generated files (`AGENT_TOOLING_CODE_MAP.md`, `CODE_HEALTH_BASELINE.json`),
+  which are regenerated after the second merge.
+- **Brief reviews** (`D:/fitway-temp/brief-review/codex-report-fields-1` and `-1-sol`): DeepSeek five readings, Sol
+  three. Closed four: a record's position is its `item.started` event (both reviewers), an edit to any worktree file
+  counts whether or not the commit keeps it (Sol), the record names the match that satisfied the check (Sol), and the
+  coordinator's own: real PowerShell outputs wrap long lines at column 80 with a line break and a cursor move, so a
+  wrapped line is matched as the terminal displayed it. Left open: whether a row's command tests its ID (exit 0 cannot
+  be required: L0's red runs exit non-zero), edits made by shell commands (no `file_change` item), F256's working
+  directory, and the `STOPPED:` line kept as the base read it (R5 now records it).
+- **Run** (`codex-round-ba3f61b1-...`, start load 44,895): 2 h 20 min to a message without a tool call just before
+  its commit, then one automatic resume of 5 min that committed `610b54a6` and ran the ladder; 306.3M input tokens
+  (304.2M cached) and 409k output; no intervention. The coordinator's slip: the baseline fast ladder was still running
+  in the round's worktree when the round launched, so its 37 failures came from Codex's edits in progress and the
+  baseline is CI run 39040522121 on `cf5d7858` instead.
+- **Report against events (measured):** the commit is in the events with its output naming `610b54a6`; the fast ladder
+  after it failed at the verify-fitway step (P3 of `compare-parallel.test.mjs`, F278: passed 11/11 alone and in CI),
+  reported honestly as L3 FAIL. L1 was claimed PASS from two test files while `path-tokens.test.ts`, never reached by
+  the stopped ladder, failed 47 cases in CI run 39056883988 (F279): its fixture brief kept the old first line.
+- **Diff review** (`D:/fitway-temp/code-review/report-fields-1/`, Sol `xhigh`; the two copied event fixtures and the
+  generated map left out of `diff.patch`, said in the prompt): four blocking findings (a second wrapper reader, a
+  second fake Codex runner, the production normalizer copied into a test, an unused `headOverride`); the coordinator
+  added two, measured with probes in `D:/fitway-temp/tooling-report-fields-coordinator/`: rows did not match commands
+  with the wrapper's quoting removed (the reader returned the quoted body), and the console join guessed an overlap of
+  up to eight characters (a line ending `abab` lost three). `owner-direction-builder` applied the six and the
+  `path-tokens` fixture as `d2fad437` (`shell-words.mjs` shared by commit detection and row matching, one fake Codex
+  runner, the join at the cursor column; `codex-round.mjs` 2104 lines, its test 4366); the coordinator re-ran both
+  probes (both repaired); CI passed on it (run 39064247063).
+- **The grade** (`../../agent-tooling/briefs/codex-report-fields-grade.md` at `d2fad437`, G1-G9 holding the rows the
+  coordinator wrote before the result; GPT-6.1 Sol `xhigh`, run `codex-round-8f100a76-...`, 40 min, report accepted
+  first time). Brief reviews: DeepSeek review 1's answer could not be read as readings (its five readings taken by
+  hand: four closed, one in part), so a fresh DeepSeek review (`codex-report-fields-grade-2`: one closed, four left
+  open) and Sol's review 1 (two closed, three left open). G2, G3, G4, G6, G7 and L1 PASS (G2 also on 14
+  accepted-control mutations, each breaking one condition); G1, G5, G8, G9 FAIL. The coordinator's reading:
+  - **Real defects (three):** G5, a command that exits non-zero is recorded as `item.completed` with
+    `"status": "failed"` (7 of the 54 completed commands in F265's events file), and the row matcher drops it, so a
+    row backed by a red run can never match (reproduced by the coordinator with record 32:
+    `probe-failed-status.mjs`, 0 records read); G1, the field is taken from the first line anywhere in `input.md`
+    that looks like a brief-format line, so a brief whose first line has none resumes on a later or fenced one
+    (reproduced by reading `recordedBriefDelivery`); G8 in part, four new cases throw a `TypeError` before their
+    assertion on the base.
+  - **The grading brief's wording (two):** G8's 14 cases that cannot load on the base import a module the base lacks,
+    and its seven mechanically refactored test bodies come from the coordinator's own instruction to share one fake
+    Codex runner; G9, every claim of the round's report is backed by a recorded command and the commit is recorded,
+    but its 9 quoted lines collapse Vitest's doubled spaces (`Tests  19 passed (19)`), which the new matcher would
+    refuse. The coordinator decided that matching collapses runs of spaces and tabs inside a line (a whole displayed
+    line is still required).
+  - A `STOPPED:` line inside a fenced excerpt is still taken as a stop, as at the base (left open in both reviews).
+- **Disposition:** a second `owner-direction-builder` applies the three defects and the whitespace decision
+  (`D:/fitway-temp/tooling-report-fields-coordinator/builder-2-brief.md`); the coordinator reproduces each fixed row
+  instead of a second grade (each is a single input).
+- **The second builder** (`owner-direction-builder`) committed the four as `a90da2e2`: a `failed` command is a record
+  for row matching while the commit and ladder checks still need exit 0; the field is read from the recorded brief's
+  first line (after the launch note) only; runs of spaces and tabs inside a line compare as one; the four commit-line
+  cases assert before reading the record. The coordinator reproduced each fixed row
+  (`D:/fitway-temp/tooling-report-fields-coordinator/`: `probe-failed-status.mjs` reads record 32;
+  `probe-g1-ws.mjs` gives the field from the first line and after the launch note and none from a later or fenced
+  line, matches `Tests 19 passed (19)` against the doubled-space line and refuses `19 passed (19)`). Its local ladder
+  failed in 18 files under load (44 of 45 failures per-test timeouts, F261 and F281; one `verify.test.ts` case,
+  "ignores test injection and runs its own steps", failed its assertion), and each of the 18 files passed alone;
+  CI passed on it (run 39069967909). The builder noted that a `failed` record with exit code 0 would now count for
+  the commit and ladder checks; none of the 1,681 `failed` command records under `D:/fitway-temp/codex-round-*` has
+  exit code 0 (measured). A Sol diff review of both builders' commits
+  (`D:/fitway-temp/code-review/report-fields-builders-1/`) gave no findings. The giant files:
+  `codex-round.mjs` 2104 (2279 at the base), its test 4366 (4484), `check-brief.mjs` 1128 (1132), its test 1410
+  (1423).
+- **Rows:** 6/10 as graded (G8 and G9 the grading brief's wording, so 8/10 on the round's substance); the rows the
+  coordinator wrote before the result 19/20 (record 32's wrapped line failed on the `failed` status). Overclaims: L1
+  (F279). Side findings F278-F281.
+- **After the merge:** briefs written from the template start with the `delivers` line and ask for the `report`
+  block; a run launched by the earlier launcher (no field in its `input.md`) cannot be resumed by this one and is
+  finished with the launcher it started with.
