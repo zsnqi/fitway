@@ -141,7 +141,9 @@ function findOption(entry, command, token) {
 	return acceptedOptions(entry, command).find((option) => option.name === name);
 }
 
-function validateOption(entry, option, token, next, state) {
+// A refusal names the selected subcommand's usage, else the command's.
+function validateOption(entry, option, token, next, state, command = null) {
+	const usage = (command ?? entry).usage;
 	if (!option)
 		reject(
 			entry.name,
@@ -162,7 +164,7 @@ function validateOption(entry, option, token, next, state) {
 			reject(
 				entry.name,
 				`${option.name} requires a value`,
-				option.missingFix ?? `run ${entry.usage}`,
+				option.missingFix ?? `run ${usage}`,
 			);
 		return { value: optionValue(token), option };
 	}
@@ -170,7 +172,7 @@ function validateOption(entry, option, token, next, state) {
 		reject(
 			entry.name,
 			`${option.name} requires a value`,
-			option.missingFix ?? `run ${entry.usage}`,
+			option.missingFix ?? `run ${usage}`,
 		);
 	state.skip = true;
 	return { value: next, option };
@@ -387,6 +389,7 @@ export function resolveToolArguments(
 			argument,
 			commandArgs[index + 1],
 			state,
+			command,
 		);
 		parsed.options[optionKey(result.option)] = result.option.takesValue
 			? result.value

@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
+import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 import {
 	assertOutsideGit,
 	comparisonPorts,
@@ -69,8 +70,6 @@ async function capture(options, setup, out) {
 export async function compare(inputOptions, services) {
 	comparisonPorts(inputOptions);
 	const workers = Number(inputOptions.workers ?? 1);
-	if (!Number.isInteger(workers) || workers < 1 || workers > 4)
-		throw new Error("--workers requires an integer from 1 to 4.");
 	return compareOwned({ ...inputOptions, workers }, services);
 }
 
@@ -89,9 +88,10 @@ async function compareOwned(
 	assertOutsideGit(out);
 	const ports = comparisonPorts(options);
 	if (options.session)
-		throw new Error("compare owns its previews; omit --session.");
-	if (!options.baseline)
-		throw new Error("compare requires --baseline <absolute concept folder>.");
+		throw new ToolStartupError(
+			"compare owns its previews; omit --session.",
+			"drop --session; compare launches and stops its own previews",
+		);
 	// Preserve malformed-input diagnostics, but refuse an occupied valid input's
 	// pair before browser/tool/map prerequisite work.
 	if (

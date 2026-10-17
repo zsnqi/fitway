@@ -114,8 +114,7 @@
 		},
 		".agents/skills/verify-fitway/timeline.mjs": {
 			"suppressions": 1,
-			"longFunctions": 2,
-			"giantFiles": 806
+			"longFunctions": 2
 		},
 		"apps/server/src/access-repository.ts": {
 			"duplication": 24
@@ -704,7 +703,7 @@
 		"scripts/agent-environment/codex-round.mjs": {
 			"duplication": 6,
 			"longFunctions": 3,
-			"giantFiles": 2303
+			"giantFiles": 2287
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
 			"duplication": 44,
@@ -756,7 +755,7 @@
 		"scripts/check-agent-context.mjs": {
 			"duplication": 5,
 			"longFunctions": 5,
-			"giantFiles": 1146
+			"giantFiles": 1132
 		},
 		"scripts/check-agent-context.test.ts": {
 			"duplication": 22,

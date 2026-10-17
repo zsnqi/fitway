@@ -2139,7 +2139,7 @@ test("R20 V2: drive, compare and measure refuse forced requests with ui-forensic
 				fileURLToPath(new URL("./cli.mjs", import.meta.url)),
 				command,
 				"--forensics",
-				tools,
+				...(command === "compare" ? [tools, "--baseline", concept] : [tools]),
 				...(command === "measure" ? [] : ["--concept", concept]),
 				...axes,
 			],

@@ -312,7 +312,7 @@ const ownerCommands = [
 				integer: [1, 4],
 			}),
 		],
-		requiredOptions: ["--concept"],
+		requiredOptions: ["--concept", "--baseline"],
 		exitCodes: exits(
 			[0, "Compare passed."],
 			[1, "Differences or command failure."],
@@ -368,6 +368,8 @@ const ownerCommands = [
 			value("--token", "Session token."),
 			value("--idle-timeout-ms", "Idle timeout in milliseconds.", {
 				sample: "60000",
+				integer: [1, 1800000],
+				valueNote: "at most 30 minutes",
 			}),
 		],
 		requiredOptions: ["--concept"],

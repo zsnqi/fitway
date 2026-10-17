@@ -38,6 +38,7 @@ function prepareFixtures() {
 	fs.writeFileSync(fresh("serve-spec.json"), JSON.stringify({ serve: true }));
 }
 
+const compare = ["compare", "--concept", repository, "--baseline", repository];
 const measure = (out: string, ...rest: string[]) => [
 	"measure",
 	"--tool",
@@ -125,8 +126,29 @@ export const STARTUP_CASES: StartupCase[] = [
 	},
 	{
 		command: "verify:owner",
-		args: ["compare", "--concept", repository],
-		fix: "pass --baseline",
+		args: [...compare, "--timeline-times", "soon"],
+		fix: "pass --timeline-times like",
+	},
+	{
+		command: "verify:owner",
+		args: [...compare, "--session", path.join(repository, "package.json")],
+		fix: "drop --session",
+	},
+	{
+		command: "verify:owner",
+		args: ["measure", "--tool", "focus", "--out"],
+		fix: "run pnpm verify:owner measure --tool",
+	},
+	{
+		command: "verify:owner",
+		args: ["list", "--concept", repository, "--page"],
+		fix: "run pnpm verify:owner list --concept",
+	},
+	{
+		command: "check:agent-context",
+		args: ["--milestone", "nosuch-r99"],
+		fix: "pass --milestone one of:",
+		processes: true,
 	},
 	{
 		command: "verify:owner",
@@ -162,7 +184,6 @@ export const STARTUP_CASES: StartupCase[] = [
 		command: "verify:owner",
 		args: measure(fresh("spec"), "--", "--spec", fresh("serve-spec.json")),
 		fix: "remove serve",
-		files: true,
 	},
 	{
 		command: "gardener:survey",
@@ -216,8 +237,8 @@ export function startupProbes(): Probe[] {
 // `process.argv[1]` (am I the entry?), is `process.argv.slice(2)` passed straight to
 // beginToolCommand or resolveToolArguments; and no code compares an argument with an
 // option name (a string starting with `--`), the core of any private option loop or
-// switch. Code that compares other tokens (a downstream tool's arguments, a review
-// command's words) says so in a `tool-contract:` comment on that line or the three above.
+// switch. Code that reads other tokens (a downstream tool's arguments, the words of a
+// command an agent ran) lives in a module that is not a registered entry.
 const DIRECT_ARGV =
 	/(?:beginToolCommand|resolveToolArguments)\(\s*(?:"[^"]*"|\[[^\]]*\]|[\w.]+)\s*,\s*process\.argv\.slice\(2\)\s*[,)]/g;
 const OPTION_COMPARISONS = [
@@ -258,11 +279,9 @@ export function argumentReadViolations(file: string, text: string) {
 	for (const pattern of OPTION_COMPARISONS)
 		for (const match of code.matchAll(pattern)) {
 			const line = lineAt(match.index ?? 0);
-			const context = lines.slice(Math.max(0, line - 4), line).join("\n");
-			if (!context.includes("tool-contract:"))
-				violations.push(
-					`${file}:${line}: argument compared with an option name: ${lines[line - 1].trim()}`,
-				);
+			violations.push(
+				`${file}:${line}: argument compared with an option name: ${lines[line - 1].trim()}`,
+			);
 		}
 	return violations;
 }

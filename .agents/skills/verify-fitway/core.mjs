@@ -126,12 +126,6 @@ export async function preview({
 }) {
 	if (!Number.isInteger(port) || port < 0 || port > 65535)
 		throw new Error(`Invalid port: ${port}`);
-	if (
-		!Number.isInteger(idleTimeoutMs) ||
-		idleTimeoutMs < 1 ||
-		idleTimeoutMs > 30 * 60 * 1000
-	)
-		throw new Error("Idle timeout must be 1-1800000 ms (at most 30 minutes).");
 	const root = realpathSync(concept);
 	if (port !== 0) await portAvailable(port, portLease);
 	const sockets = new Set();

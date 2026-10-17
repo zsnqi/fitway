@@ -11,9 +11,11 @@ const HELP_MODULES = [
 	"compare.mjs",
 	"runner.mjs",
 	"timeline.mjs",
+	"timeline-times.mjs",
 	"drive.mjs",
 	"probes.mjs",
 	"map.mjs",
+	"measure-arguments.mjs",
 	"discover.mjs",
 	"state-rules.mjs",
 ];

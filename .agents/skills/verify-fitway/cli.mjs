@@ -51,6 +51,10 @@ import {
 	repairRecipes,
 	repository,
 } from "./map.mjs";
+import {
+	refuseOutputArguments,
+	refuseServingSpecs,
+} from "./measure-arguments.mjs";
 import { drive } from "./runner.mjs";
 
 const self = fileURLToPath(import.meta.url);
@@ -311,18 +315,8 @@ export async function doctor(options) {
 async function launch(options) {
 	const concept = canonical(options.concept);
 	let port = verificationPort(options.port || 3176);
-	if (options["isolated-port"] !== undefined) {
+	if (options["isolated-port"] !== undefined)
 		port = Number(options["isolated-port"]);
-		if (!Number.isInteger(port) || port < 49152 || port > 65535)
-			throw new Error("--isolated-port requires a port in 49152-65535.");
-	}
-	if (options["idle-timeout-ms"] !== undefined) {
-		const idle = Number(options["idle-timeout-ms"]);
-		if (!Number.isInteger(idle) || idle < 1 || idle > 1800000)
-			throw new Error(
-				"Idle timeout must be 1-1800000 ms (at most 30 minutes).",
-			);
-	}
 	const out = options.out || freshOutput();
 	assertOutsideGit(out);
 	if (existsSync(resolve(out, "session.json")))
@@ -546,36 +540,7 @@ export async function main(input, services = {}) {
 			);
 		const tools = forensicsPath(options);
 		const tool = options.tool;
-		if (
-			![
-				"focus",
-				"motion",
-				"a11y",
-				"probe",
-				"perf",
-				"capture",
-				"sheet",
-				"diff",
-			].includes(tool)
-		)
-			throw new Error("Unknown measure tool; see help.");
-		if (
-			// tool-contract: the measurement tool's passthrough arguments
-			options.extra.some((arg) =>
-				[
-					"--out",
-					"--serve",
-					"--ref-serve",
-					"--refServe",
-					"--json",
-					"--html",
-				].includes(arg.split("=")[0]),
-			)
-		)
-			throw new ToolStartupError(
-				"Pass output only as measure --out; use the maintained launch URL, not --serve.",
-				"drop the tool's --out, --serve, --ref-serve, --json and --html; measure --out names the output",
-			);
+		refuseOutputArguments(options.extra);
 		const heldRequested = options.extra.some((arg) =>
 			/(?:^|[=:])(?:hold|release)(?::|$)/.test(arg),
 		);
@@ -597,28 +562,9 @@ export async function main(input, services = {}) {
 					`Held presses require ui-forensics >=1.3.1; found ${version}`,
 				);
 		}
+		// Refused before the evidence folder exists (C4: nothing written before a refusal).
+		refuseServingSpecs(options.extra);
 		await outputFile(options.out, "tool-output");
-		for (let index = 0; index < options.extra.length; index++) {
-			const argument = options.extra[index];
-			// tool-contract: the measurement tool's passthrough arguments
-			if (!["--spec", "--frames"].includes(argument.split("=")[0])) continue;
-			const path = argument.includes("=")
-				? argument.slice(argument.indexOf("=") + 1)
-				: options.extra[index + 1];
-			const spec = JSON.parse(readFileSync(path, "utf8"));
-			const inspect = (value) => {
-				if (!value || typeof value !== "object") return;
-				for (const [key, childValue] of Object.entries(value)) {
-					if (["serve", "refServe", "ref-serve"].includes(key) && childValue)
-						throw new ToolStartupError(
-							"Tool spec starts a server; use target.url from the maintained preview.",
-							"remove serve/refServe from the spec and set target.url to the launched preview",
-						);
-					inspect(childValue);
-				}
-			};
-			inspect(spec);
-		}
 		if (tool === "diff") {
 			await child(process.platform === "win32" ? "py" : "python3", [
 				resolve(tools, "scripts/img/diff_map.py"),
@@ -710,11 +656,6 @@ export async function main(input, services = {}) {
 		}
 		return;
 	}
-	if (command === "compare" && !options.baseline)
-		throw new ToolStartupError(
-			"compare requires --baseline <absolute concept folder>.",
-			"pass --baseline <absolute baseline folder>",
-		);
 	if (command === "compare")
 		return compare(
 			{ ...options, out: options.out || freshOutput() },

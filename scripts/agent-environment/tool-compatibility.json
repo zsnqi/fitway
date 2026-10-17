@@ -2021,16 +2021,6 @@
 						"extra": []
 					}
 				}
-			},
-			{
-				"args": ["compare", "--concept", "<repo>"],
-				"expect": {
-					"command": "compare",
-					"options": {
-						"concept": "<repo>",
-						"extra": []
-					}
-				}
 			}
 		],
 		"verify:fast": [
@@ -2347,6 +2337,11 @@
 				"FITWAY_PHASE": null
 			},
 			"reason": "C3: an option-shaped token in a value position is that option's missing value, not its value; 57dad1c0 dropped every -- first"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["compare", "--concept", "<repo>"],
+			"reason": "C4: --baseline is compare's required option in the registry, refused before any work; 57dad1c0's parser took the command and compare() refused it at start"
 		}
 	]
 }

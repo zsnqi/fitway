@@ -1,20 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import { outputFile } from "./core.mjs";
 
-export function timelineTimes(value) {
-	if (value === undefined) return null;
-	const times = String(value).split(",").map(Number);
-	if (
-		!times.length ||
-		times.some(
-			(t) => !Number.isFinite(t) || t < 0 || t > Number.MAX_SAFE_INTEGER,
-		)
-	)
-		throw new Error(
-			"--timeline-times requires finite nonnegative comma-separated milliseconds",
-		);
-	return [...new Set(times)].sort((a, b) => a - b);
-}
+export { timelineTimes } from "./timeline-times.mjs";
 
 // Installed before source scripts. Page clocks share a logical origin even during
 // startup; the observer alone keeps native clocks for scheduling outside captures.

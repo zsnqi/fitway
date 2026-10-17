@@ -26,6 +26,7 @@ import {
 	reviewSourcePlan,
 } from "./check-brief.mjs";
 import { commitHeaderSha } from "./commit-header.mjs";
+import { isGitCommitWords } from "./git-commit-words.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 import {
@@ -1138,24 +1139,7 @@ function commandStatusIsEvent(part) {
 }
 
 function isGitCommitCommand(command, shell = "bash") {
-	const words = shellTokens(command, shell) ?? [];
-	if (!/^git(?:\.exe)?$/i.test(words[0] ?? "")) return false;
-	let index = 1; // tool-contract: a shell command's words, not this command's arguments
-	while (index < words.length) {
-		if (words[index] === "--no-pager") {
-			index += 1;
-			continue;
-		}
-		if (words[index] === "-C" || words[index] === "-c") {
-			index += 2;
-			continue;
-		}
-		break;
-	}
-	if (!/^commit$/i.test(words[index] ?? "")) return false;
-	return !words
-		.slice(index + 1)
-		.some((word) => /^--(?:dry-run|help)$/i.test(word));
+	return isGitCommitWords(shellTokens(command, shell) ?? []);
 }
 
 function isCommitCommand(command) {
