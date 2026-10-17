@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `7ed0bb0f`, 2026-10-17 02:29 +03:00
+- **As of:** `codex/owner-redesign-r04` at `ba52aacd`, 2026-10-17 17:40 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-75), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -55,9 +55,11 @@
 1. **main is at `b56aa416`** (agent-tooling-r01's ratchet with this milestone's records, measured 05:10 on
    2026-10-17); later commits go to main with agent-tooling-r01's next integration.
 2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
-   crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Settings waits for
-   agent-tooling-r01's CLI contract (the ratchet is on main; decision 73). Left for later, with their reasons: the dialogs' parts
-   splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
+   crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Decision 76 (the demo first):
+   Settings starts as soon as agent-tooling-r01's CLI contract is on main, with that milestone's report-fields round
+   and the verification-map part of map upkeep (F252) beside it; what is visible and would make the demo look bad is
+   fixed first, Arabic without compromise. Left for later, with their reasons: the dialogs' parts splitting under a
+   planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **F266:** Components' heat tooltip covers the selected cell after a click (measured; Reports places its tip below
    the cell); it goes with the next concept round that touches Components.
 4. **Grading briefs for focus work** state a control's tab order (the first Tab can leave the page), keep a pixel

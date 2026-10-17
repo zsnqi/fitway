@@ -855,6 +855,21 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - Delivered in `51d5a783` (branch `owner-r04-heat-sel`; `owner-followup-r04-build` fast-forwarded to it):
       `check-concept-css` passed and CI passed (measured). Reports below 1280 px shows the day form, with no heat
       cells; its phone page is byte-identical before and after.
+76. **The demo first: the order after the CLI contract** (the user, 2026-10-17, through a forked side session, after
+    it read the demo plan in `D:/fitway-private/demo-plan.md`: «اي فهمتني صح و موافق على الترتيب و بخصوص الثلاث الباقية
+    عادي تشتغل بجانب الديمو يعني ب التوازي لو يمدي ما يحتاج نأجلها اعتقد»).
+    - **The goal, as the user confirmed it:** reach the gym owner as fast as possible with a demo built from every
+      concept page. What is visible and would make the demo look bad is fixed first, and Arabic gets no compromise;
+      invisible issues wait. A tool fix goes before pages only when it makes the pages faster or better.
+    - **The order:** (1) the CLI contract closes and reaches main; (2) Settings starts straight after, with
+      agent-tooling's report-fields round beside it (disjoint files, item 64): the claimed-commit field and structured
+      report rows serve every page round, since DeepSeek reports overclaim (F242, F265, and V3 again on the 1017
+      replay); (3) also beside Settings, the verification-map part of map upkeep (F252: `check:verification-map`
+      prints `DRIFT SKIP` and passes, so a new page's recipes could drift unseen), before more pages are added;
+      (4) the other three tooling rounds (the ratchet's code-line count, the giant-file split, the lighter pickup)
+      run beside the pages and the demo, in parallel where capacity allows; they are neither deferred nor gating.
+    - This replaces item 73's "Settings starts after both" and agent-tooling-r01 DECISIONS item 10's order (the split
+      before report-fields); agent-tooling-r01 DECISIONS item 11 points here.
 
 ## How this milestone's rounds run
 

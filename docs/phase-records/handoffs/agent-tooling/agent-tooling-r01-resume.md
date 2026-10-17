@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `9260e954`, 2026-10-17 14:35 +03:00
+- **As of:** `codex/owner-redesign-r04` at `ba52aacd`, 2026-10-17 17:40 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-10), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -65,9 +65,9 @@
   start-up exception and launch's missing-value usage, Q4; repair-recipes without `--out` refused, Q6, reproduced by
   the coordinator from both sources; one condensed declaration, Q9; 13 compatibility cases throwing on old code, Q10)
   and four readings the grading brief's wording. CI passed on `47f18b0e` (run 39027454092).
-- **The third builder is running** (`owner-direction-builder`, in the coordinator session; brief
-  D:/fitway-temp/tooling-cli-contract-regrade/builder-3-brief.md, scratch D:/fitway-temp/tooling-cli-contract/builder-3/)
-  on `tooling-cli-contract` from `47f18b0e`, one commit, then its local ladder.
+- **The third builder's commit `cf5d7858`** holds the five fixes (records: `codex-rounds.md`); its Sol diff review
+  (D:/fitway-temp/code-review/cli-contract-regrade-builder-1) gave no findings; the coordinator reproduced each fixed
+  row; its side observations are F274-F276. Pushed; CI run 39040522121 was in progress at the As-of time.
 - **The grade is done and recorded** (run D:/fitway-temp/codex-round-2751f7b6-26f9-41ec-8f47-6f7fd2501184;
   `codex-rounds.md` §"agent-tooling-r01: the CLI contract and cli-contract-fix", `rounds.tsv`): 6/12 as graded, six
   real defects (Q6 reproduced by the coordinator through the resolver: `--feature` and `--quiet` refused), Q8 the
@@ -82,21 +82,18 @@
 
 ## Next steps
 
-1. **The CLI contract:** read the third builder's report (if it never arrives, check its commit against
-   builder-3-brief.md yourself); push `tooling-cli-contract` and wait for CI; a Sol diff review
-   (`docs/agent-context/briefs/CODE_REVIEW.md`) with dispositions; reproduce each fixed row yourself (repair-recipes
-   without `--out` through the resolver, the handoff:new and launch lines, the restored declaration, the 13 cases on
-   `97f61712`) instead of a third grade; then merge `tooling-cli-contract` into `agent-tooling-r01`, the coordinator
-   line and main through `pnpm main:advance`.
-2. **Then, by DECISIONS item 10** (the user, 2026-10-17): a ratchet round whose giant-file measure counts code lines
-   only (not blank or comment lines; F272), then a round that splits the giant files into modules
-   (`scripts/agent-environment/codex-round.mjs`, `.agents/skills/gardener/survey.mjs`,
-   `scripts/check-agent-context.mjs`, `scripts/agent-environment/check-brief.mjs` and the others over the line); briefs
-   keep the "move code, never delete text" line until both are in.
-3. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
-   F265 a candidate; F270, a committed baseline rise CI cannot see, may join a ratchet round), **map upkeep** (F252)
-   and **the lighter pickup**. F264 (verify-fitway's caret in forced colours) joins the next verify-fitway round;
-   F269 (test suites counted as long functions) waits for a ratchet round.
+1. **The CLI contract:** when CI run 39040522121 on `cf5d7858` passes, merge `tooling-cli-contract` into
+   `agent-tooling-r01` (regenerate the map if it drifts), then the coordinator line, and move main with
+   `pnpm main:advance` after that merge's CI passes.
+2. **Beside r04's Settings, by DECISIONS item 11** (r04 decision 76, the user, 2026-10-17): report-fields (DECISIONS
+   item 9: the claimed-commit field, a machine brief role, structured report rows; F265 a candidate; F270 may join a
+   ratchet round) and the verification-map part of map upkeep (F252: `check:verification-map` prints `DRIFT SKIP`
+   and passes), on files disjoint from Settings.
+3. **Beside the pages and the demo, where capacity allows** (neither deferred nor gating): the ratchet's code-line
+   count (F272) and the split of the giant files (DECISIONS item 10; briefs keep the "move code, never delete text"
+   line until both are in), and the lighter pickup. F264 (verify-fitway's caret in forced colours) joins the next
+   verify-fitway round; F269 waits for a ratchet round; F273-F276 are the CLI contract's leftovers (start-up lines,
+   a duplicate option, inventory gaps) for a later contract round.
 
 ## Waiting on the user
 

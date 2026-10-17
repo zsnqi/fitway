@@ -84,3 +84,9 @@ through these pointers, not copied here.
       both are in. No check tries to detect such deletions from a diff.
     - The order of item 9 becomes: the CLI contract, then the ratchet's code-line count, then the split round, then
       report-fields, map upkeep and the lighter pickup.
+11. **The order after the CLI contract follows the demo** (the user, 2026-10-17, through a forked side session; read
+    in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` item 76). Report-fields and the
+    verification-map part of map upkeep (F252) run beside r04's Settings once the CLI contract is on main; the
+    ratchet's code-line count, the giant-file split and the lighter pickup run beside the pages and the demo where
+    capacity allows, neither deferred nor gating. This replaces item 10's order (the split before report-fields);
+    item 10's two rounds and its brief line stand.
