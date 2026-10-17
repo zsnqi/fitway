@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `75475749`, 2026-10-17 03:07 +03:00
+- **As of:** `codex/owner-redesign-r04` at `f15a4441`, 2026-10-17 03:14 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,15 +37,17 @@
 
 ## Running now
 
-- **The ratchet's grade** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-grade.md`, `3eb3e942`: G1-G14
-  over H1-H6, K1-K6, the review edits and the held-out rows HR1-HR12, after both brief reviews, dispositions in
-  D:/fitway-temp/brief-review/codex-ratchet-grade-1 and `-1-sol`): GPT-6.1 Sol `xhigh`, run
-  D:/fitway-temp/codex-round-f73f808c-d927-474f-a8bb-facc8041863f, grading checkout
-  D:/fitway-temp/tooling-ratchet-grade/wt (branch `grade-ratchet` at `b3946bc3`, its own install). Its first turn hit
-  hhmam1435's usage limit (until 05:17); `resume-auto.sh` moved it to ryshyjhad85 at 02:57 and it runs there (log
-  D:/fitway-temp/tooling-ratchet-grade/resume-1.log).
-- **CI on `b3946bc3`** (pushed after the fixer's ladder, which passed: `804.60s`, no mutation, measured in
-  D:/fitway-temp/tooling-ratchet/fixer/ladder.log). CI on `3f80f091` passed (measured).
+- **ratchet-fix-2's two brief reviews** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix-2.md`,
+  N1-N4 from the grade's four real defects): DeepSeek in D:/fitway-temp/brief-review/codex-ratchet-fix-2-1 (log
+  D:/fitway-temp/tooling-ratchet/fix-2-launch-1.log) and Sol `xhigh` in `codex-ratchet-fix-2-1-sol`, both started
+  about 03:13. Held-out rows HR13-HR18 appended to D:/fitway-grader/agent-tooling/ratchet-heldout.md. After the
+  dispositions it launches on DeepSeek `max` in `tooling-ratchet` (at `b3946bc3`, clean).
+- **The ratchet's grade is done and recorded** (run D:/fitway-temp/codex-round-f73f808c-d927-474f-a8bb-facc8041863f;
+  `codex-rounds.md` §"agent-tooling-r01: the ratchet, ratchet-fix and the review fixer", `rounds.tsv`, F267-F269):
+  7/14 as graded, held-out 10/12; four real defects (a deleted or edited working baseline lets a rise through; a third
+  copy in one file is not counted; the gardener and the ratchet count lines one apart; the concept's one shared ring
+  counts as three, reproduced by the coordinator) and three rows of the grading brief's wording. Not merged.
+- **CI on `b3946bc3`** was running (pushed 03:00); CI on `3f80f091` passed (measured).
 - **The CLI contract is ready to launch** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract.md`, C1-C5
   and L0-L4; its HEAD line still names `b3946bc3`): both reviews done and dispositioned (DeepSeek five readings closed,
   Sol three closed and one left open by narrowing the goal to failures to start), worktree
@@ -79,11 +81,12 @@
 
 ## Next steps
 
-1. **Read the grade**, reproduce at least one row (decision 67), record it (`codex-rounds.md`, `rounds.tsv`); a FAIL on
-   the result goes to a fixer or a fix round before the merge.
+1. **ratchet-fix-2:** disposition both reviews, launch, then its Sol diff review, fixer, and a grade of N1-N4 with
+   HR13-HR18 (and HR7, HR8 again); the coordinator reproduces at least one row.
 2. **Merge** `tooling-ratchet` into `agent-tooling-r01`, then the coordinator line (`check:tooling-map`,
    `check:repository`), then main through `pnpm main:advance` after CI.
-3. **Launch the CLI contract** from that integration commit: move `tooling-cli-contract` to it, set the brief's HEAD
+3. **Launch the CLI contract** from that integration commit (it waits for ratchet-fix-2, which changes files it
+   touches): move `tooling-cli-contract` to it, set the brief's HEAD
    line, rewrite both dispositions' `Brief SHA-256`, and run `pnpm codex:round
    docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract.md max` (output to a log); then its diff review,
    fixer and grade (CC1-CC11).
