@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { parseBriefFormat } from "./brief-format.mjs";
 import { readGit } from "./git-context.mjs";
 import { lineAt, lines } from "./markdown-lines.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
@@ -17,8 +18,6 @@ import { beginToolCommand, resolveToolArguments } from "./tool-contract.mjs";
 const ENVIRONMENT_PATH = "docs/agent-context/briefs/ENVIRONMENT.md";
 const START = "<!-- environment:start v1 -->";
 const END = "<!-- environment:end -->";
-const FORMAT =
-	/^<!-- brief-format: v1 role: (codex|builder|designer|verifier) -->\r?\n/;
 const CODEX_SCOPE_FINAL_SENTENCE =
 	"If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.";
 
@@ -989,13 +988,9 @@ export async function checkBrief({
 		block = environmentBlock(text);
 		filled = true;
 	}
-	const role = text.match(FORMAT)?.[1];
-	if (!role)
-		report(
-			"brief-format",
-			1,
-			"must start with <!-- brief-format: v1 role: codex|builder|designer|verifier --> using one role",
-		);
+	const format = parseBriefFormat(text);
+	const role = format.role;
+	if (format.problem) report("brief-format", 1, format.problem);
 	if (!block)
 		report(
 			"brief-format",
@@ -1077,6 +1072,7 @@ export async function checkBrief({
 	return {
 		briefPath: absoluteBrief,
 		role,
+		delivers: format.delivers ?? null,
 		worktree,
 		requiredChanges,
 		lineCount,

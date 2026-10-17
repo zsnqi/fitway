@@ -1,0 +1,211 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
+import {
+	afterEachReportFixture,
+	autoResumes,
+	commandRecord,
+	commitChange,
+	eventsText,
+	fileChange,
+	harness,
+	measurementCommand,
+	measurementOutput,
+	measurementTurn,
+	oneCharacterDifferent,
+	reportChecks,
+	reportEventCases,
+	reportMessage,
+	row,
+} from "./codex-report-fields-fixture.ts";
+
+afterEach(afterEachReportFixture);
+const cases = reportEventCases();
+describe("R3 structured report rows match run events", () => {
+	it.each(
+		cases,
+	)("matches $name and refuses a one-character difference", (item) => {
+		if (item.wide)
+			expect(
+				(item.event.item as { aggregated_output: string }).aggregated_output
+					.length,
+			).toBeGreaterThanOrEqual(813357);
+
+		const accepted = harness();
+		accepted.setTurns([
+			{
+				message: reportMessage([row("O1", item.command, item.output)]),
+				events: eventsText([item.event]),
+			},
+		]);
+		const acceptedResult = accepted.invoke();
+		expect(acceptedResult.status, acceptedResult.output).toBe(0);
+		expect(reportChecks(accepted)[0]).toMatchObject({
+			accepted: true,
+			rows: [
+				{
+					id: "O1",
+					status: "PASS",
+					events: "events-resume.jsonl",
+					line: 1,
+				},
+			],
+		});
+
+		for (const changed of [
+			row("O1", oneCharacterDifferent(item.command), item.output),
+			row("O1", item.command, oneCharacterDifferent(item.output)),
+		]) {
+			const refused = harness();
+			refused.setTurns([
+				{
+					message: reportMessage([changed]),
+					events: eventsText([item.event]),
+				},
+				{ message: "STOPPED: stop after refusal\n" },
+			]);
+			const refusedResult = refused.invoke();
+			expect(refusedResult.status, refusedResult.output).toBe(0);
+			expect(autoResumes(refused)[0].claimFailures.join("\n")).toContain(
+				"PASS row O1 has no matching record",
+			);
+		}
+	});
+});
+
+describe("R3 prose status is not a report row", () => {
+	it("does not treat prose status words as report rows", () => {
+		const f = harness();
+		f.setTurns([
+			{ message: "O1: PASS\nThis prose is not the report block.\n" },
+			{ message: "STOPPED: stop after no report\n" },
+		]);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(autoResumes(f)[0].firstLine).toContain("O1: PASS");
+		expect(readFileSync(f.fixtureInput, "utf8")).toContain(
+			"A report needs the `report` block or a `STOPPED:` line",
+		);
+	});
+});
+
+describe("R4 and R5 evidence freshness and records", () => {
+	it("refuses F265 stale evidence and accepts a post-edit repeat", () => {
+		for (const repeated of [false, true]) {
+			const f = harness({
+				delivers: "commit",
+				scope: "Finish and report.",
+			});
+			const commit = commitChange(f);
+			const first = commandRecord(
+				measurementCommand,
+				measurementOutput,
+				"item-measure-1",
+			);
+			const edit = fileChange(path.join(f.worktree, "file.txt"), "item-edit");
+			const second = repeated
+				? commandRecord(measurementCommand, measurementOutput, "item-measure-2")
+				: [];
+			f.setTurns([
+				{
+					message: reportMessage(
+						[row("O1", measurementCommand, measurementOutput.trim())],
+						[commit.head.slice(0, 7)],
+					),
+					events: eventsText([...first, edit, ...second, ...commit.event]),
+				},
+				...(repeated ? [] : [{ message: "STOPPED: stop after refusal\n" }]),
+			]);
+			const result = f.invoke();
+			expect(result.status, result.output).toBe(0);
+			if (repeated) {
+				expect(reportChecks(f)[0]).toMatchObject({
+					accepted: true,
+					rows: [
+						{
+							id: "O1",
+							events: "events-resume.jsonl",
+							line: 4,
+						},
+					],
+				});
+			} else {
+				const failure = autoResumes(f)[0].claimFailures.join("\n");
+				expect(failure).toContain("PASS row O1");
+				expect(failure).toContain(path.join(f.worktree, "file.txt"));
+				expect(failure).toContain("events-resume.jsonl:3");
+			}
+		}
+	});
+});
+
+describe("R4 command start and restored edits", () => {
+	it("uses the command start, so a command spanning an edit is stale", () => {
+		const f = harness({ delivers: "commit", scope: "Finish and report." });
+		const commit = commitChange(f);
+		const [started] = commandRecord(
+			measurementCommand,
+			measurementOutput,
+			"item-measure",
+		);
+		const completed = commandRecord(
+			measurementCommand,
+			measurementOutput,
+			"item-measure",
+		)[1];
+		f.setTurns([
+			{
+				message: reportMessage(
+					[row("O1", measurementCommand, measurementOutput.trim())],
+					[commit.head.slice(0, 7)],
+				),
+				events: eventsText([
+					started,
+					fileChange(path.join(f.worktree, "file.txt")),
+					completed,
+					...commit.event,
+				]),
+			},
+			{ message: "STOPPED: stop after refusal\n" },
+		]);
+		expect(f.invoke().status).toBe(0);
+		expect(autoResumes(f)[0].claimFailures.join("\n")).toContain(
+			"events-resume.jsonl:2",
+		);
+	});
+
+	it("still refuses when the edited worktree file is restored", () => {
+		const f = harness({ delivers: "commit", scope: "Finish and report." });
+		const commit = commitChange(f);
+		const file = path.join(f.worktree, "file.txt");
+		f.setTurns([
+			measurementTurn(commit, [
+				fileChange(file, "item-edit"),
+				fileChange(file, "item-restore"),
+			]),
+			{ message: "STOPPED: stop after refusal\n" },
+		]);
+		expect(f.invoke().status).toBe(0);
+		expect(autoResumes(f)[0].claimFailures.join("\n")).toContain(
+			"events-resume.jsonl:4",
+		);
+	});
+});
+
+describe("R4 ignores edits outside the worktree", () => {
+	it("ignores a later edit outside the worktree", () => {
+		const f = harness({ delivers: "commit", scope: "Finish and report." });
+		const commit = commitChange(f);
+		f.setTurns([
+			measurementTurn(commit, [
+				fileChange(path.join(f.root, "temp.txt"), "item-temp"),
+			]),
+		]);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(reportChecks(f)[0]).toMatchObject({
+			accepted: true,
+			rows: [{ id: "O1", events: "events-resume.jsonl", line: 1 }],
+		});
+	});
+});
