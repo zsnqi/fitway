@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: one command contract: a registry, `--help`, unknown options refused by name, failures that say how to fix them (agent-tooling-r01, cli-contract)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-cli-contract`, branch `tooling-cli-contract`, HEAD `b3946bc3`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-cli-contract`, branch `tooling-cli-contract`, HEAD `57dad1c0`
 - **Milestone:** `agent-tooling-r01`. Decisions: items 5, 6, 7, 8 and 9 of `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`.
 - **Read first, only these:**
   - `package.json`, its `scripts` section;
@@ -59,8 +59,8 @@
   the files you change are over its 800-line giant-file line and cannot grow (`scripts/verify-repository.mjs`,
   `scripts/check-agent-context.mjs`, `scripts/agent-environment/check-brief.mjs`,
   `scripts/agent-environment/codex-round.mjs`, `.agents/skills/verify-fitway/cli.mjs`,
-  `.agents/skills/gardener/survey.mjs`), and `scripts/check-concept-css.mjs` stands at exactly 800 as it counts. A
-  count your change lowers is written into the baseline with `pnpm code-health:baseline` in the same commit.
+  `.agents/skills/gardener/survey.mjs`). A count your change lowers is written into the baseline with `pnpm
+  code-health:baseline` in the same commit.
 
 ## Goal
 
@@ -70,7 +70,7 @@ name, and, when it cannot start, says what failed and how to fix it; one listing
 ## Causes and required outcomes
 
 - **C1. One registry, one listing (F251).**
-  - **Cause (measured by the coordinator at this HEAD).** The commands are known only from `package.json` and the
+  - **Cause (measured by the coordinator at `b3946bc3`, whose commands this HEAD keeps).** The commands are known only from `package.json` and the
     skills' prose, so an agent learns each one's usage by trial: 21 agent-facing entry points answer `--help` and an
     unknown option in more than seven different forms (C2, C3).
   - **Outcome.** One registry file holds one entry per agent-facing command: its `pnpm` name with its exact
