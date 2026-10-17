@@ -5,6 +5,7 @@ import {
 	checkCodeHealth,
 	formatCodeHealthChange,
 } from "./code-health-baseline.mjs";
+import { beginToolCommand } from "./tool-contract.mjs";
 
 function main(args = process.argv.slice(2)) {
 	if (args.some((argument) => argument !== "--exceptions"))
@@ -47,6 +48,7 @@ if (
 	import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
 	try {
+		beginToolCommand("check:code-health", process.argv.slice(2));
 		main();
 	} catch (error) {
 		console.error(`${CHECK_COMMAND}: FAIL: ${error.message}`);

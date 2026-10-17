@@ -9,6 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { samePath } from "./path-identity.mjs";
+import { beginToolCommand, toolFailure } from "./tool-contract.mjs";
 
 const WORK_TOOLS = new Set(["Edit", "Write", "Agent", "Task", "NotebookEdit"]);
 export const BASELINE_FILE = fileURLToPath(
@@ -254,6 +255,7 @@ if (
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
+		beginToolCommand("start-load", process.argv.slice(2));
 		const { values } = parseArgs({
 			options: {
 				root: { type: "string" },
@@ -286,9 +288,12 @@ if (
 			);
 		}
 	} catch (error) {
-		console.error(
-			`start-load FAILED: ${error instanceof Error ? error.message : String(error)}`,
-		);
+		const fix = /--limit/.test(error.message)
+			? "pass --limit <positive integer>"
+			: /--since/.test(error.message)
+				? "pass --since YYYY-MM-DD"
+				: "check the named transcript path; run pnpm start-load --help";
+		console.error(toolFailure("start-load", error, fix));
 		process.exitCode = 1;
 	}
 }

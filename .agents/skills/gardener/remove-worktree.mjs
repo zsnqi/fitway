@@ -1,6 +1,7 @@
 import { realpath, unlink } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { beginToolCommand } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { inside, key } from "./facts.mjs";
 import {
 	collectGit,
@@ -80,6 +81,7 @@ if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
+	beginToolCommand("gardener:remove-worktree", process.argv.slice(2));
 	const [checkoutFlag, checkout, worktreeFlag, target, ...extra] =
 		process.argv.slice(2);
 	if (

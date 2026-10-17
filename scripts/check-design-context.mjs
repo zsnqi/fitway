@@ -19,6 +19,7 @@ import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 
 const repositoryRoot = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
@@ -278,6 +279,7 @@ async function main() {
 	);
 }
 
+beginToolCommand("check:design-context", process.argv.slice(2));
 main().catch((error) => {
 	console.error(`check:design-context FAILED: ${error.message}`);
 	process.exitCode = 1;

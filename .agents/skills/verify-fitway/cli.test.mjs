@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, watch } from "node:fs";
 import {
+	copyFile,
 	mkdir,
 	mkdtemp,
 	readdir,
@@ -1589,23 +1590,23 @@ test("listener parsing preserves IPv6 and IPv4 addresses; LAN URLs use real exte
 test("help in a dependency-free clone succeeds and names installation", async () => {
 	const folder = resolve(scratch, "clone/.agents/skills/verify-fitway");
 	await mkdir(folder, { recursive: true });
-	for (const name of [
-		"cli.mjs",
-		"colors.mjs",
-		"core.mjs",
-		"compare.mjs",
-		"runner.mjs",
-		"timeline.mjs",
-		"drive.mjs",
-		"probes.mjs",
-		"map.mjs",
-		"discover.mjs",
-		"state-rules.mjs",
-	])
-		await writeFile(
-			resolve(folder, name),
-			await readFile(fileURLToPath(new URL(`./${name}`, import.meta.url))),
-		);
+	await Promise.all(
+		[
+			"cli.mjs",
+			"colors.mjs",
+			"core.mjs",
+			"compare.mjs",
+			"runner.mjs",
+			"timeline.mjs",
+			"drive.mjs",
+			"probes.mjs",
+			"map.mjs",
+			"discover.mjs",
+			"state-rules.mjs",
+		].map((name) =>
+			copyFile(new URL(`./${name}`, import.meta.url), resolve(folder, name)),
+		),
+	);
 	const result = spawnSync(
 		process.execPath,
 		[resolve(folder, "cli.mjs"), "help"],
@@ -1616,7 +1617,6 @@ test("help in a dependency-free clone succeeds and names installation", async ()
 	assert.match(result.stdout, /pnpm --dir .* install --frozen-lockfile/);
 	assert.doesNotMatch(result.stderr, /Cannot find module/);
 });
-
 test("quiet comparison children keep diff JSON and diagnostics off success output, and preserve failure diagnostics", async () => {
 	const noisy = resolve(scratch, "noisy-diff.mjs");
 	const caller = resolve(scratch, "quiet-caller.mjs");
@@ -1806,7 +1806,6 @@ function runCli(args, cli = cliPath, env = {}) {
 		},
 	});
 }
-
 test("Y2: a test-only doctor seam never probes a verification port", async () => {
 	const folder = resolve(scratch, "doctor-test-port-seam");
 	const port = await isolatedPort();
@@ -1854,7 +1853,6 @@ test("Y2: a test-only doctor seam never probes a verification port", async () =>
 		: [];
 	assert.deepEqual(observations, [], result.stdout + result.stderr);
 });
-
 test("V1: no recipe file is SKIP, while a checked recipe still passes", async () => {
 	const empty = resolve(scratch, "no-recipes");
 	await mkdir(empty);
@@ -1870,7 +1868,6 @@ test("V1: no recipe file is SKIP, while a checked recipe still passes", async ()
 		/DRIFT PASS: 1 recipe files found and checked\./,
 	);
 });
-
 test("V2: dependency-free discovery and browser commands name the package and install once", async () => {
 	const folder = resolve(scratch, "cold/.agents/skills/verify-fitway");
 	await mkdir(folder, { recursive: true });
@@ -1933,7 +1930,6 @@ try {playwright()} catch(error) {console.error(error.message + "\\nFIX: " + erro
 		/Cannot find module|Require stack|\n\s+at /,
 	);
 });
-
 test("V3: doctor and drive setup failures print one fault block", () => {
 	for (const command of ["doctor", "drive", "compare"]) {
 		const result = runCli([
@@ -2097,7 +2093,6 @@ catch(error){if(!(core.ReportedFailure && error instanceof core.ReportedFailure)
 		}),
 	};
 }
-
 test("R20 V1: colours multiply states and reach the context, manifest and FRAME; default stays normal", async () => {
 	const features = [{ id: "page", proof: { selector: "main", visible: true } }];
 	const { result, out } = await runnerFixture("colours", features, {
@@ -2128,7 +2123,6 @@ test("R20 V1: colours multiply states and reach the context, manifest and FRAME;
 	assert.equal(invalid.result.status, 1);
 	assert.match(invalid.result.stderr, /Unsupported.*sepia.*normal.*forced/);
 });
-
 test("R20 V2: drive, compare and measure refuse forced requests with ui-forensics 1.1.0 before rendering", async () => {
 	const tools = resolve(scratch, "old-forensics");
 	await mkdir(resolve(tools, "scripts/web"), { recursive: true });
@@ -2171,7 +2165,6 @@ test("R20 V2: drive, compare and measure refuse forced requests with ui-forensic
 		assert.doesNotMatch(result.stdout, /FRAME|DRIVE PASS|COMPARE|MEASURE PASS/);
 	}
 });
-
 test("R20 V2: measurement matrices and inline options also fail closed, with the tool's whitespace handling", async () => {
 	const tools = resolve(scratch, "matrix-old-forensics");
 	await mkdir(resolve(tools, "scripts/web"), { recursive: true });
@@ -2365,7 +2358,6 @@ Module._load=function(name,...args){return name==="@playwright/test"?{chromium:{
 	];
 	return { root, tools, invoke, driveArgs };
 }
-
 test("R21: CLI saves a held frame, records classification, and releases before the next item", async () => {
 	const { root, invoke, driveArgs } = await heldCliFixture("held-cli");
 	const out = resolve(root, "out");
@@ -2410,7 +2402,6 @@ test("R21: CLI saves a held frame, records classification, and releases before t
 		"cleanup never released the press",
 	);
 });
-
 test("R22: bare release reaches the tool in a recipe before the next item", async () => {
 	const { root, invoke, driveArgs } = await heldCliFixture(
 		"bare-release",
@@ -2474,7 +2465,6 @@ test("R22: keyboard refuses bare release before reaching the tool", async () => 
 	);
 	assert.equal(reached, false);
 });
-
 test("R21: CLI keyboard input refuses a held press before reaching the tool", async () => {
 	const { root, invoke, driveArgs } = await heldCliFixture("held-keyboard");
 	const out = resolve(root, "out");

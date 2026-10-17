@@ -13,6 +13,7 @@ import {
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parse as parseYaml } from "yaml";
+import { beginToolCommand } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { repositoryFingerprint } from "../../../scripts/repository-fingerprint.mjs";
 import { collectCodeHealth } from "./code-health.mjs";
 import {
@@ -40,13 +41,11 @@ import {
 } from "./facts.mjs";
 import { readGit } from "./git-reader.mjs";
 import { collectRecordSurvey } from "./records.mjs";
-
 export const root = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
 	"../../..",
 );
 export const defaultTempRoot = "D:/fitway-temp";
-
 export function collectSurveyCodeHealth({
 	readGit = git,
 	previousReportText = null,
@@ -1206,6 +1205,7 @@ if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
+	beginToolCommand("gardener:survey", process.argv.slice(2));
 	main(process.argv.slice(2)).catch((error) => {
 		console.error(`SURVEY BLOCKED: ${error.message}`);
 		process.exitCode = 1;

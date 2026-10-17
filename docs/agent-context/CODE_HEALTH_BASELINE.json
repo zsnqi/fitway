@@ -63,14 +63,13 @@
 		},
 		".agents/skills/verify-fitway/cli.mjs": {
 			"duplication": 1,
-			"longFunctions": 2,
-			"giantFiles": 826
+			"longFunctions": 2
 		},
 		".agents/skills/verify-fitway/cli.test.mjs": {
 			"duplication": 61,
 			"suppressions": 1,
 			"longFunctions": 8,
-			"giantFiles": 4583
+			"giantFiles": 4573
 		},
 		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
 			"duplication": 9,
@@ -690,7 +689,7 @@
 		"scripts/agent-environment/check-brief.mjs": {
 			"duplication": 10,
 			"longFunctions": 3,
-			"giantFiles": 1141
+			"giantFiles": 1140
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
 			"duplication": 5,
@@ -705,7 +704,7 @@
 		"scripts/agent-environment/codex-round.mjs": {
 			"duplication": 6,
 			"longFunctions": 3,
-			"giantFiles": 2316
+			"giantFiles": 2315
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
 			"duplication": 44,
@@ -811,7 +810,7 @@
 		"scripts/verify-repository.mjs": {
 			"duplication": 2,
 			"longFunctions": 5,
-			"giantFiles": 960
+			"giantFiles": 959
 		},
 		"scripts/verify-repository.schema.test.ts": {
 			"duplication": 19,

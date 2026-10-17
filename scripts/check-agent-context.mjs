@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
-
+import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 export const AGENTS_INSTRUCTION_CAP_BYTES = 120_000;
 // Conservative growth warning well below the documented cumulative instruction cap. It is a
 // warning only: a routing invariant or the documented cap itself is what fails.
@@ -39,7 +39,6 @@ export const TASK_CLASSES = [
 	"visual-authority-change",
 	"repository-infrastructure",
 ];
-
 const CONTEXT_FILES = [
 	"AGENTS.md",
 	"PROJECT_STATE.yaml",
@@ -1156,6 +1155,7 @@ const isMain =
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
 	try {
+		beginToolCommand("check:agent-context", process.argv.slice(2));
 		const options = parseArgs(process.argv.slice(2));
 		const result = await checkAgentContext(options);
 		console.log(formatAgentContextResult(result, options));

@@ -47,7 +47,8 @@ import {
 import { drive } from "./runner.mjs";
 
 const self = fileURLToPath(import.meta.url);
-export const help = `verify-fitway: node <absolute-skill-folder>/cli.mjs <command> [options]
+let beginToolCommand = () => {};
+export let help = `verify-fitway: node <absolute-skill-folder>/cli.mjs <command> [options]
 Commands:
   help
   map --concept <folder> [--recipes <file>] [--out <evidence-folder>]
@@ -55,61 +56,20 @@ Commands:
   list --concept <folder> [--recipes <file>] [--map <file>] [--page <page>|all]
   drift --concept <folder> [--recipes <file>] [--map <verification-map.json>]
   drift-tree [--root <repository>]
-  launch --concept <folder> [--port 3176] [--out <evidence-folder>] [--lan]
-         [--isolated-port <49152-65535>] [--idle-timeout-ms <1-1800000>]
+  launch --concept <folder> [--port 3176] [--out <evidence-folder>] [--lan] [--isolated-port <49152-65535>] [--idle-timeout-ms <1-1800000>]
   doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff] [--forensics <folder>]
-  drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>]
-        [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...]
-        [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone]
-        [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176]
-        [--colors normal,forced] [--cache no-store|none]
-        [--probes daily]
-  compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>]
-          [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
-          [all drive page/feature/state/axis options] [--out <evidence-folder>] [--forensics <folder>]
-          [--timeline] [--timeline-times 1,100,200,...]
-          [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]
-  measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] -- <tool arguments>
+  drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>] [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...] [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone] [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176] [--colors normal,forced] [--cache no-store|none] [--probes daily]
+  compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>] [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177] [--timeline] [--timeline-times 1,100,200,...] [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]
+  measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] [--colors normal|forced] -- <tool arguments>
   cleanup --session <launch-folder|session.json>
-Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
-repair-recipes drops vanished selectors/markers and writes draft entries outside the concept.
-Every use rediscovers source facts; --map is an optional prior map for drift provenance.
-map writes <out>/verification-map.json; generated maps are evidence, never committed.
-Output defaults to a fresh D:/fitway-temp/verify-fitway-*; git trees/links into them are refused.
-Sizes: desktop=1440x900, boundary=1024x900, tablet=768x1024, phone=390x844,
-       narrow=320x844, zoom=1440x900 at 200% (720x450 CSS px, phone frame).
---page and --feature select one path; the remaining axes multiply its frames.
-States all sweeps every discovered switch value/sample; dependencies are applied or refused.
-Use --states 'state=live,state=loading,...' for only the page's data states.
-list prints features, states, switches, dependencies, reach and observable proof.
-PASS requires state and feature proof. NOT-REACHABLE means state/feature unavailable by recipe (cannot be reached).
-KEYBOARD-UNREACHABLE means the pointer feature's keyboard path failed; PROBLEM names a measuring error.
-Items have a short *-summary.json beside the full record; filenames include feature and state.
-compare repeats differing items in fresh contexts, with exact pixel regions and diff images.
---timeline compares held frames after the last action as well as the settled result.
-Default times start at 1 ms, with gaps <=100 ms through the longest finite movement.
---timeline-times names other finite nonnegative milliseconds; implies --timeline.
-NOT-HELD names the time and the two same-side captures when their pixels or dimensions differ; callback file/line sources remain in the report.
-Known limits: CSS-only openings and some dynamic/delegated opener relationships are not exhaustively discovered.
-Doctor can block when a missing standalone input has no authoritative recovery source.
-Open numeric/text domains have representative samples in the map; --query accepts other values.
-Touch uses hasTouch/coarse pointer and real taps; full means no-preference.
-Keyboard uses Tab and key presses only; full evidence records focus at every key.
-Unreached keyboard targets fail with the element where focus stopped; keyboardActions can supply roving keys.
-Colours default to normal; forced requires ui-forensics >=1.2.0 and renders Chromium forced colours.
-measure --colors normal|forced maps to tool --forced-colors none|active.
-measure calls the installed ui-forensics tool; its own --help describes further arguments.
---port accepts only ports in 3176-3177, 3186-3187 and 3188-3189; compare requires one ordered pair.
-Ports 3174 and 3178-3185 belong to other previews. --workers defaults to 1 (maximum 4).
-launch --isolated-port selects a separate high port (49152-65535) for isolated tests.
---port stays restricted to those three pairs even with --isolated-port; busy ports are always refused.
-Previews stop after 30 minutes without a request; requests renew the timeout.
-launch --idle-timeout-ms can shorten that bound for tests, never extend it.
---forensics <folder> overrides the machine-level ui-forensics location.
-Git Bash: use Windows D:/ absolute paths and quote --query; no /api-style arguments cross shells.
-help and preview lifecycle need only Node. For discovery/drive/compare/doctor, install checkout dependencies:
-  pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile
-`;
+  pnpm --dir '<repository>' install --frozen-lockfile`;
+try {
+	const contract = await import(
+		"../../../scripts/agent-environment/tool-contract.mjs"
+	);
+	beginToolCommand = contract.beginToolCommand;
+	help = contract.renderToolHelp("verify:owner");
+} catch {}
 
 function parse(argv) {
 	const command = argv.shift() || "help";
@@ -816,7 +776,10 @@ export async function main(argv = process.argv.slice(2), services = {}) {
 	throw new Error(`Unknown command: ${command}; run help.`);
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === self)
+if (process.argv[1] && resolve(process.argv[1]) === self) {
+	const args = process.argv.slice(2);
+	const checkMap = process.env.npm_lifecycle_event === "check:verification-map";
+	beginToolCommand(checkMap ? "check:verification-map" : "verify:owner", args);
 	main().catch((error) => {
 		if (!(error instanceof ReportedFailure))
 			console.error(
@@ -824,3 +787,4 @@ if (process.argv[1] && resolve(process.argv[1]) === self)
 			);
 		process.exitCode = 1;
 	});
+}

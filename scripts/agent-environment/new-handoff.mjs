@@ -11,6 +11,7 @@ import {
 	repositoryPath,
 	resumePointFilename,
 } from "./resume-point.mjs";
+import { beginToolCommand } from "./tool-contract.mjs";
 
 const STATE_PATH = "PROJECT_STATE.yaml";
 const TEMPLATE_PATH = "docs/agent-context/HANDOFF_TEMPLATE.md";
@@ -274,6 +275,7 @@ if (
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
+		beginToolCommand("handoff:new", process.argv.slice(2));
 		const options = parseHandoffArgs(process.argv.slice(2));
 		if (options.help)
 			console.log(

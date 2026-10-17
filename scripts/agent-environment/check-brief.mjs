@@ -11,6 +11,7 @@ import {
 	exists,
 	referenceTarget,
 } from "./path-reference.mjs";
+import { beginToolCommand } from "./tool-contract.mjs";
 
 const ENVIRONMENT_PATH = "docs/agent-context/briefs/ENVIRONMENT.md";
 const START = "<!-- environment:start v1 -->";
@@ -19,16 +20,13 @@ const FORMAT =
 	/^<!-- brief-format: v1 role: (codex|builder|designer|verifier) -->\r?\n/;
 const CODEX_SCOPE_FINAL_SENTENCE =
 	"If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.";
-
 function lineAt(text, index) {
 	return text.slice(0, index).split("\n").length;
 }
-
 function lines(text) {
 	const parts = text.split(/\r?\n/);
 	return text.endsWith("\n") ? parts.length - 1 : parts.length;
 }
-
 function mask(text) {
 	return text.replace(/[^\r\n]/g, " ");
 }
@@ -1116,6 +1114,7 @@ if (
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
+		beginToolCommand("brief:check", process.argv.slice(2));
 		const options = parseBriefArgs(process.argv.slice(2));
 		if (options.help)
 			console.log("Usage: pnpm brief:check [--] <brief> [--fill-environment]");

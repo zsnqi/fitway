@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
 import { behindUpstreamWarning } from "./agent-environment/git-context.mjs";
 import { hasResumePointMarker } from "./agent-environment/resume-point.mjs";
+import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import { inspectPath } from "./check-agent-context.mjs";
 
 const root = process.cwd();
@@ -301,6 +302,7 @@ const isMain =
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
 	try {
+		beginToolCommand("context:show", process.argv.slice(2));
 		await main();
 	} catch (error) {
 		console.error(

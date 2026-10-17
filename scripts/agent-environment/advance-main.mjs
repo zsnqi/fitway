@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { beginToolCommand } from "./tool-contract.mjs";
 
 const REMOTE = "origin";
 const REMOTE_MAIN = "refs/heads/main";
@@ -212,6 +213,7 @@ if (
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
 	try {
+		beginToolCommand("main:advance", process.argv.slice(2));
 		const options = parseArgs(process.argv.slice(2));
 		await advanceMain(options);
 	} catch (error) {

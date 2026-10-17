@@ -28,6 +28,7 @@ import {
 import { commitHeaderSha } from "./commit-header.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
+import { beginToolCommand, toolFailure } from "./tool-contract.mjs";
 
 const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
 const GPT_MODEL = "gpt-6.1-sol";
@@ -65,16 +66,13 @@ then sends UTF-8 without the BOM; invalid no-BOM bytes are refused;
 use this shell-safe form for quotes, backslashes, Unicode or multiline text.
 After a run, start-load.json records the thread's first request (input tokens) from
 Codex's session file under CODEX_HOME (default ~/.codex), unless the folder has one.`;
-
 function resolvePath(value) {
 	return path.resolve(repositoryRoot, value.replaceAll("\\", "/"));
 }
-
 function runningInGitBash() {
 	if (process.platform !== "win32") return false;
 	return /^(?:MINGW|MSYS|UCRT|CLANG)/i.test(process.env.MSYSTEM ?? "");
 }
-
 function pathIsWithin(root, candidate) {
 	const relative = path.relative(root, candidate);
 	return (
@@ -82,11 +80,9 @@ function pathIsWithin(root, candidate) {
 		(!relative.startsWith("..") && !path.isAbsolute(relative))
 	);
 }
-
 function hasShortWindowsSegment(value) {
 	return /(?:^|[\\/])[^\\/]*~\d+(?=[\\/]|$)/.test(value);
 }
-
 async function resolvedEnvironmentPath(value) {
 	try {
 		return await realpath(value);
@@ -99,7 +95,6 @@ async function resolvedEnvironmentPath(value) {
 	const missing = path.relative(existing, absolute);
 	return path.join(resolved, missing);
 }
-
 async function codexEnvironment(environment = process.env) {
 	const result = { ...environment };
 	if (process.platform !== "win32") return result;
@@ -117,11 +112,9 @@ async function codexEnvironment(environment = process.env) {
 	}
 	return result;
 }
-
 function levelsFor(model) {
 	return MODEL_LEVELS.get(model);
 }
-
 function validateModelLevel(model, level) {
 	const levels = levelsFor(model);
 	if (!levels)
@@ -140,7 +133,6 @@ function validateModelLevel(model, level) {
 		);
 	return level;
 }
-
 function shellSeparator(text, index) {
 	const character = text[index];
 	if (character === ";" || character === "\n") return character;
@@ -148,11 +140,9 @@ function shellSeparator(text, index) {
 		return character + character;
 	return character === "&" || character === "|" ? character : null;
 }
-
 function shellEvent(raw, value, whitespace = false) {
 	return whitespace ? { raw, whitespace: true } : { raw, value };
 }
-
 function shellScan(command, shell = "bash") {
 	const events = [];
 	const escapeCharacter = shell === "powershell" ? "`" : "\\";
@@ -206,7 +196,6 @@ function shellScan(command, shell = "bash") {
 	}
 	return { events, unmatchedQuote: quote !== null };
 }
-
 function shellTokens(command, shell = "bash") {
 	const { events, unmatchedQuote } = shellScan(command.trim(), shell);
 	if (unmatchedQuote) return null;
@@ -229,7 +218,6 @@ function shellTokens(command, shell = "bash") {
 	if (token) tokens.push(token);
 	return tokens;
 }
-
 function modelArgs(model, level, catalogPath) {
 	if (model === GPT_MODEL)
 		return ["-m", GPT_MODEL, "-c", `model_reasoning_effort=${level}`];
@@ -254,16 +242,13 @@ function modelArgs(model, level, catalogPath) {
 	}
 	throw new Error(`unsupported model: ${model}`);
 }
-
 function requireDeepSeekKey() {
 	if (!process.env.OPENDESIGN_API_KEY?.trim())
 		throw new Error("OPENDESIGN_API_KEY is required for DeepSeek");
 }
-
 function catalogPathFor(catalog) {
 	return catalog ? path.join(catalog.run, "model-catalog.json") : undefined;
 }
-
 function deepSeekCatalogEntry(source) {
 	const entry = JSON.parse(JSON.stringify(source));
 	entry.slug = DEEPSEEK_MODEL;
@@ -2295,6 +2280,15 @@ export async function main(args = process.argv.slice(2)) {
 			console.log(HELP);
 			return 0;
 		}
+		const requiredPath = options.resume ? options.run : options.brief;
+		try {
+			await access(requiredPath);
+			if (options.messageFile) await access(options.messageFile);
+		} catch {
+			throw new Error(
+				`${options.resume ? "folder" : "brief file"} not found: ${requiredPath}`,
+			);
+		}
 		const prepared = options.resume
 			? await prepareResume(options)
 			: await prepareLaunch(options);
@@ -2304,7 +2298,10 @@ export async function main(args = process.argv.slice(2)) {
 			const brief = await optionalFile(options.brief).catch(() => undefined);
 			if (brief) console.log(`Current brief SHA-256: ${sha256(brief)}`);
 		}
-		console.error(`codex-round: ${error.message.replace(/[\r\n]+/g, " ")}`);
+		const fix = /not found:/.test(error.message)
+			? "pass an existing path; run pnpm codex:round --help"
+			: "run pnpm codex:round --help";
+		console.error(toolFailure("codex:round", error, fix));
 		return 1;
 	}
 }
@@ -2312,5 +2309,7 @@ export async function main(args = process.argv.slice(2)) {
 if (
 	process.argv[1] &&
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
-)
+) {
+	beginToolCommand("codex:round", process.argv.slice(2));
 	process.exitCode = await main();
+}

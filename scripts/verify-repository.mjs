@@ -9,6 +9,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
 import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs";
+import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import {
 	checkAgentContext,
 	formatAgentContextWarnings,
@@ -17,15 +18,12 @@ import {
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
 const root = process.cwd();
-
 function fail(message) {
 	throw new Error(message);
 }
-
 const UTF8_BOM = Buffer.from([0xef, 0xbb, 0xbf]);
 const CLAUDE_AGENT_DIRECTORY = ".claude/agents";
 const CLAUDE_INSTRUCTIONS_FILE = "CLAUDE.md";
-
 export const TRACKED_BOM_EXCEPTIONS = Object.freeze([
 	{
 		path: "apps/server/src/phase11-settings.integration.test.ts",
@@ -953,6 +951,7 @@ if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
+	beginToolCommand("check:repository", process.argv.slice(2));
 	main().catch((error) => {
 		console.error(`FAILED_VALIDATION: ${error.message}`);
 		process.exitCode = 1;

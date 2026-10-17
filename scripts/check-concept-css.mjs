@@ -2,6 +2,10 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import {
+	beginToolCommand,
+	toolFailure,
+} from "./agent-environment/tool-contract.mjs";
+import {
 	functionEnd,
 	maskStrings,
 	normalize,
@@ -619,12 +623,24 @@ if (
 	process.argv[1] &&
 	import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
 ) {
+	beginToolCommand("check:concept-css", process.argv.slice(2));
 	main()
 		.then((code) => {
 			process.exitCode = code;
 		})
 		.catch((error) => {
-			console.error(`ERROR: ${error.message}`);
+			const startup = /ENOENT|ENOTDIR|EISDIR|Usage:/i.test(error.message);
+			console.error(
+				startup
+					? toolFailure(
+							"check:concept-css",
+							`ERROR: ${error.message}`,
+							/ENOENT|ENOTDIR|EISDIR/i.test(error.message)
+								? "pass an existing folder; Usage: pnpm check:concept-css -- <folder>"
+								: "Usage: pnpm check:concept-css -- <folder>; moved ring declaration: outline: none; /* focus-ring: .button:focus-visible .tile */",
+						)
+					: `ERROR: ${error.message}`,
+			);
 			process.exitCode = 2;
 		});
 }

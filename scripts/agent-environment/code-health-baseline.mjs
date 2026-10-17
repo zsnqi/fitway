@@ -13,6 +13,7 @@ import {
 } from "../../.agents/skills/gardener/code-health.mjs";
 import { countDuplicationCopies } from "../../.agents/skills/gardener/code-health-duplication.mjs";
 import { listTrackedFiles } from "../verify-repository.mjs";
+import { beginToolCommand } from "./tool-contract.mjs";
 
 export const BASELINE_RELATIVE_PATH =
 	"docs/agent-context/CODE_HEALTH_BASELINE.json";
@@ -365,6 +366,7 @@ if (
 	import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
 ) {
 	try {
+		beginToolCommand("code-health:baseline", process.argv.slice(2));
 		runCodeHealthBaseline();
 	} catch (error) {
 		console.error(`${BASELINE_COMMAND}: FAIL: ${error.message}`);

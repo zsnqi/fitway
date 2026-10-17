@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
+import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import { repositoryFingerprint } from "./repository-fingerprint.mjs";
 
 const phases = {
@@ -550,6 +551,9 @@ if (
 	process.argv[1] !== undefined &&
 	import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
+	const mode = process.argv[2];
+	if (["fast", "phase", "full"].includes(mode))
+		beginToolCommand(`verify:${mode}`, process.argv.slice(2));
 	main().catch((error) => {
 		console.error(`\nFAILED_VALIDATION: ${error.message}`);
 		process.exitCode = 1;
