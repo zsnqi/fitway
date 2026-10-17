@@ -79,8 +79,10 @@ own runs did not make.
   exists: list the output folder before and after), `pnpm main:advance` with no commit (exit 1, and with `GIT_TRACE=1`
   no `git fetch` or `git push`), `pnpm check:concept-css -- D:/no/such/folder` (exactly one line starting
   `check:concept-css: FAIL:`, no `ERROR:`, exit 2 as E5 keeps) and an unexpected exception you inject into
-  `check:concept-css`'s start-up in a scratch copy (the same form). Intent: an agent reading a failure knows its next
-  step.
+  `check:concept-css`'s start-up in a scratch copy (the same form), and another injected into `handoff:new`'s start-up
+  (the same form). Each probe supplies every other argument its command requires, so its line names the defect under
+  test, and the same probe with only that value made usable gets past that refusal (show both lines). Intent: an agent
+  reading a failure knows its next step.
 - **Q5. The contract test catches drift (C5).** Outcome: in a scratch copy, each of these plants, one at a time, makes
   the contract test or a check it runs fail naming the command or its file: one command's help printing to stderr
   instead of stdout; one refusal line in another form; one command's help path starting a `git` process; another's
@@ -98,17 +100,20 @@ own runs did not make.
   `doctor` among them), and check that `scripts/agent-environment/tool-compatibility.json` holds a row for each, or that
   the repository's record of forms refused on purpose names it with its reason (find that record and name its path; list
   every form missing from both). Run every row of the table through the resolver and the command's own options step and
-  compare the received values with the row (report the count and every mismatch); in particular `verify:owner doctor
-  --concept <folder> --quiet true` and `verify:owner measure --feature <f> --states <s> --languages <l>` give the values
-  `57dad1c0`'s parsers gave (show both). `main:advance HEAD -- --dry-run` appears in the record of forms refused on
-  purpose. Intent: one parser, and nothing an agent relied on changed unrecorded.
+  compare the received values with the row and with what `57dad1c0`'s parser of that command gives for the same
+  arguments (run the old parser from `git archive`; report the count and every mismatch with either); in particular
+  `verify:owner doctor --concept <folder> --quiet true` and `verify:owner measure --feature <f> --states <s> --languages
+  <l>` give the values `57dad1c0`'s parsers gave (show both). `main:advance HEAD -- --dry-run` appears in the record of
+  forms refused on purpose. Intent: one parser, and nothing an agent relied on changed unrecorded.
 - **Q9. Giant files keep their shape (E4, F272).** Outcome: `scripts/agent-environment/codex-round.mjs`,
   `scripts/agent-environment/check-brief.mjs`, `scripts/verify-repository.mjs`, `scripts/check-agent-context.mjs` and
   `.agents/skills/gardener/survey.mjs` each have at most their `wc -l` at `57dad1c0` (2316, 1141, 960, 1167, 1228) and
   lost no comment line; every blank line `git diff 57dad1c0 HEAD` removes from them sits next to code removed or moved
   in the same hunk (list each one that does not); classify every line the five files lost since `57dad1c0` as a removed
-  parser, code moved to a named module, or other (report the counts per file); a line saved by condensing code that
-  stays (joined statements, merged declarations) is a FAIL. `pnpm codex:round --help` at the result carries every help
+  parser, code moved to a named module, or other (report the counts per file); a line classed as moved is found in its
+  named module (quote one moved block per module), and every line classed as other is listed with what it did; a line
+  saved by condensing code that stays (joined statements, merged declarations), or a removed line of behaviour or of
+  text a command prints that survives nowhere, is a FAIL. `pnpm codex:round --help` at the result carries every help
   explanation line `57dad1c0`'s launcher printed (take `57dad1c0`'s help with `git archive`, run it outside the scratch
   copy with arguments that only print help, compare after joining wrapped lines, and list any line missing); `pnpm
   check:code-health` passes. Intent: room is made by moving code, and nothing an agent read was dropped.
@@ -117,8 +122,10 @@ own runs did not make.
   own install), every case `dda8e020` added, apart from the compatibility rows the fix brief exempts, fails at an
   assertion on its E outcome, never at a missing module, export, helper, fixture or setup (list each); (b) the same with
   `97f61712`'s production code: every case `97f61712..47f18b0e` adds or changes, apart from R20 V2 (its change only
-  passes compare's now-required `--baseline`), fails at an assertion, never at a missing module, export, helper, fixture
-  or setup (list each); both sets pass on the result. Intent: the cases see the defects.
+  passes compare's now-required `--baseline`), fails at an assertion on the behaviour its finding names (a source-scan
+  case on the scan's verdict for the planted code, never on the presence of new source text or registry metadata alone),
+  never at a missing module, export, helper, fixture or setup (list each); both sets pass on the result. Intent: the
+  cases see the defects.
 
 ## Limits the result keeps
 
