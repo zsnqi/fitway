@@ -1819,3 +1819,33 @@ checks live outside the repository and never appear here or in a brief. One line
   the guide's unnamed allowlist.
 - **Reading:** on this one brief, 1017 kept the existing guard 0910 narrowed and closed one of its two exemptions,
   with fewer tokens and no intervention; it still overclaims V3. One run, and the brief-caused rows did not move.
+
+## agent-tooling-r01: the verification map (F252): results `14eab215` and `eee192ce` on `tooling-verification-map` (from `cf5d7858`), written by a side session (Opus 5.5), no Codex round
+
+- **Why no Codex round:** the fix was small and fully specifiable once the cause was measured, so the side session
+  that the coordinator started for it wrote it itself under r04 decision 76 and agent-tooling DECISIONS item 11.
+- **The cause (measured):** `drift-tree` walked the checkout for `verification-recipes.json` and printed `DRIFT SKIP`
+  with exit 0 when it found none. Only six branches carry a recipe file (`owner-followup-r04-build` and five older
+  concept branches); main, the coordinator line and `agent-tooling-r01` hold an older Eclipse folder without recipes,
+  so the fast ladder passed there having checked nothing.
+- **The fix:** a checkout without a recipe file checks the concept at the branch declared in
+  `.agents/skills/verify-fitway/concept-source.json` (`{"concept", "ref"}`, now
+  `refs/remotes/origin/owner-followup-r04-build`), read from Git through a private index into a scratch folder, and
+  names the branch and commit it checked. No recipe file and no declaration, a declared ref missing from the clone,
+  or a declared concept without recipes each fail with a `FIX:` line. A checkout with recipe files checks them as
+  before. The tree walk moved from `map.mjs` into `drift-tree.mjs`; the shared concept fixture moved out of the giant
+  `cli.test.mjs` (4,551 to 4,506 lines, baseline tightened); `drift-tree.test.mjs` plants drifts in the tree and on
+  the declared branch. Rejected: failing wherever the tree has no recipes (main and every line without them would go
+  red until the build branch merges), and dropping the step from the fast ladder (a second silent skip). When the
+  pages move to another branch, `ref` changes with them; until then CI on any line checks the build branch's concept
+  (CI checks out with `fetch-depth: 0`).
+- **Evidence:** the mutation that restores the old pass-with-nothing behaviour fails three of the four new tests
+  (D2-D4); on the real concept (`D:/fitway-temp/verification-map-f252`) renaming `#menu-btn` in `access.html` fails
+  with `access.html:142: uncovered opener` and two `selector gone` lines, both from an extracted tree and through the
+  declared ref in a scratch clone (a planted commit at the ref), and deleting the ref fails with the fetch `FIX:`.
+  The local fast ladder passed on `eee192ce` (`verify-fast-4.log`, its map step `DRIFT PASS: ... at
+  refs/remotes/origin/owner-followup-r04-build (e17824ef)`, `git status` unchanged); CI passed on `eee192ce` (run 39047606205; its map step checked the build branch at `e17824ef`).
+- **Diff review** (`D:/fitway-temp/code-review/verification-map-1/`, GPT-6.1 Sol `xhigh`): one blocking finding (D1,
+  the fixture writer repeated in both suites), fixed in `eee192ce`. In the same commit the tests call
+  `checkVerificationMaps` instead of spawning `cli.mjs`, because `generate-tooling-map.test.ts` K2 pins the exact list
+  of tests that spawn `cli.mjs` across the repository (F277).
