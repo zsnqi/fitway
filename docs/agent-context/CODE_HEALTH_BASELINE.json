@@ -56,7 +56,7 @@
 		".agents/skills/gardener/survey.mjs": {
 			"duplication": 1,
 			"longFunctions": 5,
-			"giantFiles": 1224
+			"giantFiles": 1223
 		},
 		".agents/skills/verify-fitway/baseline-cache.mjs": {
 			"duplication": 1
@@ -79,7 +79,7 @@
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare-speed.test.mjs": {
-			"duplication": 7,
+			"duplication": 6,
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare.mjs": {
@@ -756,7 +756,7 @@
 		"scripts/check-agent-context.mjs": {
 			"duplication": 5,
 			"longFunctions": 5,
-			"giantFiles": 1151
+			"giantFiles": 1146
 		},
 		"scripts/check-agent-context.test.ts": {
 			"duplication": 22,
@@ -810,7 +810,7 @@
 		"scripts/verify-repository.mjs": {
 			"duplication": 2,
 			"longFunctions": 5,
-			"giantFiles": 955
+			"giantFiles": 953
 		},
 		"scripts/verify-repository.schema.test.ts": {
 			"duplication": 19,

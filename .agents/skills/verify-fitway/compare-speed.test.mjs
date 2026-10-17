@@ -4,7 +4,6 @@ import {
 	cp,
 	mkdir,
 	mkdtemp,
-	readdir,
 	readFile,
 	rm,
 	symlink,
@@ -14,6 +13,7 @@ import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { copyAllFixture } from "./fixture-copy.mjs";
 import { verificationTest } from "./skip-gate.mjs";
 
 const test = verificationTest(nodeTest);
@@ -31,21 +31,7 @@ after(async () => {
 async function fixture(name, mutation) {
 	const root = resolve(scratch, name);
 	const clone = resolve(root, "repo/.agents/skills/verify-fitway");
-	await mkdir(clone, { recursive: true });
-	for (const file of (await readdir(skill)).filter(
-		(f) => f.endsWith(".mjs") && !f.endsWith(".test.mjs"),
-	))
-		await cp(resolve(skill, file), resolve(clone, file));
-	const contractFolder = resolve(root, "repo/scripts/agent-environment");
-	await mkdir(contractFolder, { recursive: true });
-	await Promise.all(
-		["tool-contract.mjs", "tool-registry.mjs"].map((file) =>
-			cp(
-				resolve(repository, "scripts/agent-environment", file),
-				resolve(contractFolder, file),
-			),
-		),
-	);
+	await copyAllFixture(clone);
 	const cacheFile = resolve(clone, "baseline-cache.mjs");
 	const cacheLine = 'export const cacheRoot = "D:/fitway-verify-captures";';
 	const cacheSource = await readFile(cacheFile, "utf8");

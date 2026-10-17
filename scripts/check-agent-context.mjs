@@ -15,6 +15,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
 import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
+import { agentContextOptions } from "./check-agent-context-options.mjs";
 
 export const AGENTS_INSTRUCTION_CAP_BYTES = 120_000;
 // Conservative growth warning well below the documented cumulative instruction cap. It is a
@@ -1132,15 +1133,9 @@ const isMain =
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
 	try {
-		const parsed = beginToolCommand(
-			"check:agent-context",
-			process.argv.slice(2),
+		const options = agentContextOptions(
+			beginToolCommand("check:agent-context", process.argv.slice(2)),
 		);
-		const options = {
-			milestoneId: parsed.options.milestoneId ?? null,
-			checkTracked: !parsed.options.noTracked,
-			verbose: parsed.options.verbose === true,
-		};
 		const result = await checkAgentContext(options);
 		console.log(formatAgentContextResult(result, options));
 		if (!result.ok) process.exitCode = 1;

@@ -267,6 +267,10 @@ export async function agentContextEnding({
 	return lines.join("\n");
 }
 
+export function contextShowMilestone(parsed) {
+	return parsed.options.milestoneId ?? null;
+}
+
 async function main(milestoneId) {
 	const plan = await buildAgentContextPlan({
 		repositoryRoot: root,
@@ -283,7 +287,7 @@ const isMain =
 if (isMain) {
 	try {
 		const parsed = beginToolCommand("context:show", process.argv.slice(2));
-		await main(parsed.options.milestoneId ?? null);
+		await main(contextShowMilestone(parsed));
 	} catch (error) {
 		console.error(
 			`context:show FAILED: ${error instanceof Error ? error.message : String(error)}`,

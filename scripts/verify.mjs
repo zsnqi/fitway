@@ -281,7 +281,7 @@ Optional Playwright isolation:
 `);
 }
 
-function verificationOptions(parsed) {
+export function verificationOptions(parsed) {
 	const mode = parsed.fixedArgs[0];
 	if (!new Set(["fast", "phase", "full"]).has(mode)) {
 		throw new Error(`Unknown verification mode: ${mode}`);

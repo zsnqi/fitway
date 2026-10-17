@@ -337,7 +337,7 @@ function decodeMessageFile(bytes, filename) {
 	return Buffer.from(text, "utf8");
 }
 
-function codexOptions(parsed) {
+export function codexOptions(parsed) {
 	const positionals = parsed.positionals;
 	if (positionals[0] === "resume") {
 		if (

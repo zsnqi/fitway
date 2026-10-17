@@ -246,12 +246,19 @@ function formatReads(rows) {
 	].join("\n");
 }
 
+export function startLoadOptions(parsed) {
+	const { reads, root, limit, since, json } = parsed.options;
+	return { reads, root, limit, since, json };
+}
+
 if (
 	process.argv[1] &&
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
-		const { options } = beginToolCommand("start-load", process.argv.slice(2));
+		const options = startLoadOptions(
+			beginToolCommand("start-load", process.argv.slice(2)),
+		);
 		if (options.reads)
 			console.log(formatReads(startReads(readFileSync(options.reads, "utf8"))));
 		else {

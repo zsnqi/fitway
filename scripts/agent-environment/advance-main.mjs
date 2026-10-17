@@ -145,9 +145,7 @@ export function listChecksRuns(cwd, sha) {
 	return runs;
 }
 
-function advanceOptions(parsed) {
-	if (parsed.positionals.length !== 1)
-		throw new MainAdvanceError("expected exactly one commit");
+export function advanceOptions(parsed) {
 	return {
 		commit: parsed.positionals[0],
 		dryRun: parsed.options.dryRun === true,

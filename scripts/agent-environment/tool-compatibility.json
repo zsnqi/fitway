@@ -1,0 +1,1377 @@
+{
+	"about": [
+		"Every argument form each agent command's parser accepted at 57dad1c0, read from that parser (git show 57dad1c0:<file>), and the options its logic received, written out by hand.",
+		"tool-compatibility.test.ts runs each row through the shared resolver and the command's own argument step. Never regenerate these rows from tool-registry.mjs.",
+		"<repo>/x stands for the repository root joined with x; <default-run> for codex:round's fresh D:/fitway-temp/codex-round-<uuid> folder; env sets (or, as null, removes) a variable for the row."
+	],
+	"commandsWithoutRows": {
+		"tools": "new in cb1cfe65; 57dad1c0 had no pnpm tools"
+	},
+	"rows": {
+		"check:repository": [
+			{ "args": [], "expect": { "verbose": false } },
+			{ "args": ["--verbose"], "expect": { "verbose": true } }
+		],
+		"check:concept-css": [
+			{ "args": ["--", "."], "expect": ["."] },
+			{ "args": ["."], "expect": ["."] }
+		],
+		"check:agent-context": [
+			{
+				"args": [],
+				"expect": {
+					"milestoneId": null,
+					"checkTracked": true,
+					"verbose": false
+				}
+			},
+			{
+				"args": ["--milestone", "agent-tooling-r01"],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"checkTracked": true,
+					"verbose": false
+				}
+			},
+			{
+				"args": ["--no-tracked"],
+				"expect": {
+					"milestoneId": null,
+					"checkTracked": false,
+					"verbose": false
+				}
+			},
+			{
+				"args": ["--verbose"],
+				"expect": { "milestoneId": null, "checkTracked": true, "verbose": true }
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--no-tracked",
+					"--verbose"
+				],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"checkTracked": false,
+					"verbose": true
+				}
+			}
+		],
+		"context:show": [
+			{
+				"args": ["--milestone", "agent-tooling-r01"],
+				"expect": "agent-tooling-r01"
+			},
+			{
+				"args": ["--", "--milestone", "agent-tooling-r01"],
+				"expect": "agent-tooling-r01"
+			}
+		],
+		"handoff:new": [
+			{
+				"args": ["--milestone", "agent-tooling-r01"],
+				"expect": { "milestoneId": "agent-tooling-r01" }
+			},
+			{
+				"args": ["--", "--milestone", "agent-tooling-r01"],
+				"expect": { "milestoneId": "agent-tooling-r01" }
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--dir",
+					"docs/phase-records/handoffs/agent-tooling"
+				],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"directory": "docs/phase-records/handoffs/agent-tooling"
+				}
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--now",
+					"2026-10-17T00:00:00Z"
+				],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"now": "2026-10-17T00:00:00Z"
+				}
+			}
+		],
+		"brief:check": [
+			{
+				"args": ["AGENTS.md"],
+				"expect": { "briefPath": "AGENTS.md", "fillEnvironment": false }
+			},
+			{
+				"args": ["--", "AGENTS.md"],
+				"expect": { "briefPath": "AGENTS.md", "fillEnvironment": false }
+			},
+			{
+				"args": ["AGENTS.md", "--fill-environment"],
+				"expect": { "briefPath": "AGENTS.md", "fillEnvironment": true }
+			},
+			{
+				"args": ["--fill-environment", "AGENTS.md"],
+				"expect": { "briefPath": "AGENTS.md", "fillEnvironment": true }
+			},
+			{
+				"args": ["--", "AGENTS.md", "--fill-environment"],
+				"expect": { "briefPath": "AGENTS.md", "fillEnvironment": true }
+			}
+		],
+		"main:advance": [
+			{ "args": ["HEAD"], "expect": { "commit": "HEAD", "dryRun": false } },
+			{
+				"args": ["--", "HEAD"],
+				"expect": { "commit": "HEAD", "dryRun": false }
+			},
+			{
+				"args": ["--dry-run", "HEAD"],
+				"expect": { "commit": "HEAD", "dryRun": true }
+			},
+			{
+				"args": ["HEAD", "--dry-run"],
+				"expect": { "commit": "HEAD", "dryRun": true }
+			},
+			{
+				"args": ["--", "--dry-run", "HEAD"],
+				"expect": { "commit": "HEAD", "dryRun": true }
+			}
+		],
+		"codex:round": [
+			{
+				"args": ["AGENTS.md"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "max",
+					"model": "deepseek-v4.1-flash",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["--", "AGENTS.md"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "max",
+					"model": "deepseek-v4.1-flash",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["AGENTS.md", "high"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "high",
+					"model": "deepseek-v4.1-flash",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["AGENTS.md", "--model", "gpt-6.1-sol"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"model": "gpt-6.1-sol",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["--model", "gpt-6.1-sol", "AGENTS.md", "xhigh"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "xhigh",
+					"model": "gpt-6.1-sol",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["AGENTS.md", "--run", "round-output"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "max",
+					"model": "deepseek-v4.1-flash",
+					"newReview": false,
+					"run": "<repo>/round-output"
+				}
+			},
+			{
+				"args": ["AGENTS.md", "--new-review"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "max",
+					"model": "deepseek-v4.1-flash",
+					"newReview": true,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["resume", "round-output"],
+				"expect": { "resume": true, "run": "<repo>/round-output" }
+			},
+			{
+				"args": ["--", "resume", "round-output"],
+				"expect": { "resume": true, "run": "<repo>/round-output" }
+			},
+			{
+				"args": ["resume", "round-output", "--message", "continue"],
+				"env": { "MSYSTEM": null },
+				"expect": {
+					"resume": true,
+					"run": "<repo>/round-output",
+					"message": "continue"
+				}
+			},
+			{
+				"args": ["resume", "round-output", "--message-file", "package.json"],
+				"expect": {
+					"resume": true,
+					"run": "<repo>/round-output",
+					"messageFile": "<repo>/package.json"
+				}
+			}
+		],
+		"start-load": [
+			{ "args": [], "expect": {} },
+			{ "args": ["--root", "."], "expect": { "root": "." } },
+			{ "args": ["--root=."], "expect": { "root": "." } },
+			{ "args": ["--limit", "25"], "expect": { "limit": "25" } },
+			{ "args": ["--limit=25"], "expect": { "limit": "25" } },
+			{
+				"args": ["--since", "2026-10-01"],
+				"expect": { "since": "2026-10-01" }
+			},
+			{ "args": ["--since=2026-10-01"], "expect": { "since": "2026-10-01" } },
+			{
+				"args": ["--reads", "package.json"],
+				"expect": { "reads": "package.json" }
+			},
+			{
+				"args": ["--reads=package.json"],
+				"expect": { "reads": "package.json" }
+			},
+			{ "args": ["--json"], "expect": { "json": true } },
+			{
+				"args": [
+					"--root",
+					".",
+					"--limit",
+					"5",
+					"--since",
+					"2026-10-01",
+					"--json"
+				],
+				"expect": {
+					"root": ".",
+					"limit": "5",
+					"since": "2026-10-01",
+					"json": true
+				}
+			}
+		],
+		"map:tooling": [
+			{ "args": [], "expect": { "check": false } },
+			{ "args": ["--check"], "expect": { "check": true } }
+		],
+		"check:tooling-map": [{ "args": ["--check"], "expect": { "check": true } }],
+		"code-health:baseline": [
+			{ "args": [], "expect": { "options": {}, "positionals": [] } }
+		],
+		"check:code-health": [
+			{ "args": [], "expect": { "exceptions": false } },
+			{ "args": ["--exceptions"], "expect": { "exceptions": true } }
+		],
+		"check:design-context": [
+			{ "args": [], "expect": { "options": {}, "positionals": [] } }
+		],
+		"check:verification-map": [
+			{
+				"args": ["drift-tree"],
+				"expect": { "command": "drift-tree", "options": { "extra": [] } }
+			},
+			{
+				"args": ["drift-tree", "--root", "."],
+				"expect": {
+					"command": "drift-tree",
+					"options": { "root": ".", "extra": [] }
+				}
+			}
+		],
+		"verify:owner": [
+			{
+				"args": [],
+				"expect": { "command": "help", "options": { "extra": [] } }
+			},
+			{
+				"args": ["help"],
+				"expect": { "command": "help", "options": { "extra": [] } }
+			},
+			{
+				"args": ["map", "--concept", "."],
+				"expect": {
+					"command": "map",
+					"options": { "concept": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["map", "--concept", ".", "--recipes", "package.json"],
+				"expect": {
+					"command": "map",
+					"options": { "concept": ".", "recipes": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["map", "--concept", ".", "--out", "evidence"],
+				"expect": {
+					"command": "map",
+					"options": { "concept": ".", "out": "evidence", "extra": [] }
+				}
+			},
+			{
+				"args": ["repair-recipes", "--concept", ".", "--out", "evidence"],
+				"expect": {
+					"command": "repair-recipes",
+					"options": { "concept": ".", "out": "evidence", "extra": [] }
+				}
+			},
+			{
+				"args": [
+					"repair-recipes",
+					"--concept",
+					".",
+					"--recipes",
+					"package.json",
+					"--out",
+					"evidence"
+				],
+				"expect": {
+					"command": "repair-recipes",
+					"options": {
+						"concept": ".",
+						"recipes": "package.json",
+						"out": "evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["list", "--concept", "."],
+				"expect": {
+					"command": "list",
+					"options": { "concept": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["list", "--concept", ".", "--recipes", "package.json"],
+				"expect": {
+					"command": "list",
+					"options": { "concept": ".", "recipes": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["list", "--concept", ".", "--map", "package.json"],
+				"expect": {
+					"command": "list",
+					"options": { "concept": ".", "map": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["list", "--concept", ".", "--page", "all"],
+				"expect": {
+					"command": "list",
+					"options": { "concept": ".", "page": "all", "extra": [] }
+				}
+			},
+			{
+				"args": ["drift", "--concept", "."],
+				"expect": {
+					"command": "drift",
+					"options": { "concept": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["drift", "--concept", ".", "--recipes", "package.json"],
+				"expect": {
+					"command": "drift",
+					"options": { "concept": ".", "recipes": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["drift", "--concept", ".", "--map", "package.json"],
+				"expect": {
+					"command": "drift",
+					"options": { "concept": ".", "map": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["drift-tree"],
+				"expect": { "command": "drift-tree", "options": { "extra": [] } }
+			},
+			{
+				"args": ["drift-tree", "--root", "."],
+				"expect": {
+					"command": "drift-tree",
+					"options": { "root": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["launch", "--concept", "."],
+				"expect": {
+					"command": "launch",
+					"options": { "concept": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["launch", "--concept", ".", "--port", "3176"],
+				"expect": {
+					"command": "launch",
+					"options": { "concept": ".", "port": "3176", "extra": [] }
+				}
+			},
+			{
+				"args": ["launch", "--concept", ".", "--out", "evidence"],
+				"expect": {
+					"command": "launch",
+					"options": { "concept": ".", "out": "evidence", "extra": [] }
+				}
+			},
+			{
+				"args": ["launch", "--concept", ".", "--lan"],
+				"expect": {
+					"command": "launch",
+					"options": { "concept": ".", "lan": true, "extra": [] }
+				}
+			},
+			{
+				"args": ["launch", "--concept", ".", "--isolated-port", "49152"],
+				"expect": {
+					"command": "launch",
+					"options": { "concept": ".", "isolated-port": "49152", "extra": [] }
+				}
+			},
+			{
+				"args": ["launch", "--concept", ".", "--idle-timeout-ms", "60000"],
+				"expect": {
+					"command": "launch",
+					"options": { "concept": ".", "idle-timeout-ms": "60000", "extra": [] }
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "."],
+				"expect": {
+					"command": "doctor",
+					"options": { "concept": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["doctor", "--concept", ".", "--recipes", "package.json"],
+				"expect": {
+					"command": "doctor",
+					"options": { "concept": ".", "recipes": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["doctor", "--concept", ".", "--map", "package.json"],
+				"expect": {
+					"command": "doctor",
+					"options": { "concept": ".", "map": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["doctor", "--concept", ".", "--session", "package.json"],
+				"expect": {
+					"command": "doctor",
+					"options": { "concept": ".", "session": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["doctor", "--concept", ".", "--port", "3176"],
+				"expect": {
+					"command": "doctor",
+					"options": { "concept": ".", "port": "3176", "extra": [] }
+				}
+			},
+			{
+				"args": ["doctor", "--concept", ".", "--tools", "diff"],
+				"expect": {
+					"command": "doctor",
+					"options": { "concept": ".", "tools": "diff", "extra": [] }
+				}
+			},
+			{
+				"args": ["doctor", "--concept", ".", "--forensics", "."],
+				"expect": {
+					"command": "doctor",
+					"options": { "concept": ".", "forensics": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", "."],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--recipes", "package.json"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "recipes": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--map", "package.json"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "map": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--session", "package.json"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "session": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--out", "evidence"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "out": "evidence", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--forensics", "."],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "forensics": ".", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--page", "index.html"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "page": "index.html", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--feature", "all"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "feature": "all", "extra": [] }
+				}
+			},
+			{
+				"args": [
+					"drive",
+					"--concept",
+					".",
+					"--states",
+					"state=live,state=loading"
+				],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": ".",
+						"states": "state=live,state=loading",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"drive",
+					"--concept",
+					".",
+					"--query",
+					"view=contract&range=week"
+				],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": ".",
+						"query": "view=contract&range=week",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--languages", "ar,en"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "languages": "ar,en", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--sizes", "desktop,tablet,phone"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": ".",
+						"sizes": "desktop,tablet,phone",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--inputs", "mouse,touch,keyboard"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": ".",
+						"inputs": "mouse,touch,keyboard",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--motions", "reduce,full"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "motions": "reduce,full", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--transports", "http,file"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "transports": "http,file", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--port", "3176"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "port": "3176", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--colors", "normal,forced"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "colors": "normal,forced", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--cache", "none"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "cache": "none", "extra": [] }
+				}
+			},
+			{
+				"args": ["drive", "--concept", ".", "--probes", "daily"],
+				"expect": {
+					"command": "drive",
+					"options": { "concept": ".", "probes": "daily", "extra": [] }
+				}
+			},
+			{
+				"args": ["compare", "--concept", ".", "--baseline", "."],
+				"expect": {
+					"command": "compare",
+					"options": { "concept": ".", "baseline": ".", "extra": [] }
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--recipes",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--baseline-recipes",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"baseline-recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--baseline-map",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"baseline-map": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--baseline-port",
+					"3177"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"baseline-port": "3177",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--map",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"map": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--session",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"session": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--out",
+					"evidence"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"out": "evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--forensics",
+					"."
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"forensics": ".",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--page",
+					"index.html"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"page": "index.html",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--feature",
+					"all"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"feature": "all",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--states",
+					"all"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"states": "all",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--query",
+					"view=contract"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"query": "view=contract",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--languages",
+					"ar,en"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"languages": "ar,en",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--sizes",
+					"desktop,phone"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"sizes": "desktop,phone",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--inputs",
+					"mouse,keyboard"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"inputs": "mouse,keyboard",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--motions",
+					"reduce"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"motions": "reduce",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--transports",
+					"http"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"transports": "http",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--port",
+					"3176"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"port": "3176",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--colors",
+					"normal"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"colors": "normal",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--cache",
+					"no-store"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"cache": "no-store",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--probes",
+					"daily"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"probes": "daily",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["compare", "--concept", ".", "--baseline", ".", "--timeline"],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"timeline": true,
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--timeline-times",
+					"1,100,200"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"timeline-times": "1,100,200",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--affected-pages"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"affected-pages": true,
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--baseline-cache",
+					"off"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"baseline-cache": "off",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					".",
+					"--baseline",
+					".",
+					"--workers",
+					"2"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": ".",
+						"baseline": ".",
+						"workers": "2",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["measure", "--tool", "focus", "--out", "evidence"],
+				"expect": {
+					"command": "measure",
+					"options": { "tool": "focus", "out": "evidence", "extra": [] }
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"evidence",
+					"--forensics",
+					"."
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "evidence",
+						"forensics": ".",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"evidence",
+					"--colors",
+					"forced"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "evidence",
+						"colors": "forced",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"evidence",
+					"--",
+					"--url",
+					"http://127.0.0.1:3176/",
+					"--help"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "evidence",
+						"extra": ["--url", "http://127.0.0.1:3176/", "--help"]
+					}
+				}
+			},
+			{
+				"args": ["cleanup", "--session", "package.json"],
+				"expect": {
+					"command": "cleanup",
+					"options": { "session": "package.json", "extra": [] }
+				}
+			},
+			{
+				"args": [
+					"_serve",
+					"--concept",
+					".",
+					"--port",
+					"3176",
+					"--token",
+					"session-token",
+					"--lan",
+					"--idle-timeout-ms",
+					"60000"
+				],
+				"expect": {
+					"command": "_serve",
+					"options": {
+						"concept": ".",
+						"port": "3176",
+						"token": "session-token",
+						"lan": true,
+						"idle-timeout-ms": "60000",
+						"extra": []
+					}
+				}
+			}
+		],
+		"verify:fast": [
+			{
+				"args": ["fast"],
+				"env": { "FITWAY_PHASE": null },
+				"expect": { "mode": "fast" }
+			}
+		],
+		"verify:phase": [
+			{
+				"args": ["phase", "--phase", "1"],
+				"env": { "FITWAY_PHASE": null },
+				"expect": { "mode": "phase", "phase": "1" }
+			},
+			{
+				"args": ["phase", "--", "--phase", "1"],
+				"env": { "FITWAY_PHASE": null },
+				"expect": { "mode": "phase", "phase": "1" }
+			},
+			{
+				"args": ["phase"],
+				"env": { "FITWAY_PHASE": "1" },
+				"expect": { "mode": "phase", "phase": "1" }
+			},
+			{
+				"args": ["phase", "--phase", "1"],
+				"env": { "FITWAY_PHASE": "1" },
+				"expect": { "mode": "phase", "phase": "1" }
+			}
+		],
+		"verify:full": [
+			{
+				"args": ["full"],
+				"env": { "FITWAY_PHASE": null },
+				"expect": { "mode": "full" }
+			}
+		],
+		"gardener:survey": [
+			{
+				"args": ["--out", "<repo>/survey-out"],
+				"expect": { "out": "<repo>/survey-out", "tempRoot": "D:/fitway-temp" }
+			},
+			{
+				"args": [
+					"--out",
+					"<repo>/survey-out",
+					"--temp-root",
+					"<repo>/temp-root"
+				],
+				"expect": { "out": "<repo>/survey-out", "tempRoot": "<repo>/temp-root" }
+			},
+			{
+				"args": [
+					"--temp-root",
+					"<repo>/temp-root",
+					"--out",
+					"<repo>/survey-out"
+				],
+				"expect": { "out": "<repo>/survey-out", "tempRoot": "<repo>/temp-root" }
+			},
+			{
+				"args": [
+					"--out",
+					"<repo>/survey-out",
+					"--final-report",
+					"<repo>/REPORT.md"
+				],
+				"expect": {
+					"out": "<repo>/survey-out",
+					"tempRoot": "D:/fitway-temp",
+					"finalReport": "<repo>/REPORT.md"
+				}
+			}
+		],
+		"gardener:remove-worktree": [
+			{
+				"args": ["--checkout", "<repo>", "--worktree", "<repo>"],
+				"expect": { "checkout": "<repo>", "worktree": "<repo>" }
+			}
+		]
+	}
+}

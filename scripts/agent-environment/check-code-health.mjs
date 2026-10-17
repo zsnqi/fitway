@@ -7,9 +7,13 @@ import {
 } from "./code-health-baseline.mjs";
 import { beginToolCommand } from "./tool-contract.mjs";
 
+export function codeHealthOptions(parsed) {
+	return { exceptions: parsed.options.exceptions === true };
+}
+
 function main(options) {
 	const result = checkCodeHealth();
-	if (options.exceptions === true) {
+	if (options.exceptions) {
 		for (const exception of result.openExceptions)
 			console.log(
 				`${exception.file}:${exception.line} ${exception.measure} until=${exception.until} reason=${exception.reason}`,
@@ -47,7 +51,7 @@ if (
 ) {
 	try {
 		const parsed = beginToolCommand("check:code-health", process.argv.slice(2));
-		main(parsed.options);
+		main(codeHealthOptions(parsed));
 	} catch (error) {
 		console.error(`${CHECK_COMMAND}: FAIL: ${error.message}`);
 		process.exitCode = 1;

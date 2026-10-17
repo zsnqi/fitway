@@ -619,12 +619,17 @@ export async function main(args = process.argv.slice(2), write = console.log) {
 	);
 	return result.findings.length ? 1 : 0;
 }
+
+export function conceptCssArguments(parsed) {
+	return parsed.positionals;
+}
+
 if (
 	process.argv[1] &&
 	import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
 ) {
 	const parsed = beginToolCommand("check:concept-css", process.argv.slice(2));
-	main(parsed.positionals)
+	main(conceptCssArguments(parsed))
 		.then((code) => {
 			process.exitCode = code;
 		})

@@ -77,13 +77,19 @@ export async function removeWorktree(checkout, target) {
 	console.log(`REMOVED worktree: ${tree.path}`);
 }
 
+export function removeWorktreeOptions(parsed) {
+	return {
+		checkout: parsed.options.checkout,
+		worktree: parsed.options.worktree,
+	};
+}
+
 if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-	const { options } = beginToolCommand(
-		"gardener:remove-worktree",
-		process.argv.slice(2),
+	const options = removeWorktreeOptions(
+		beginToolCommand("gardener:remove-worktree", process.argv.slice(2)),
 	);
 	removeWorktree(options.checkout, options.worktree).catch((error) => {
 		console.error(`REFUSED: ${error.message}`);

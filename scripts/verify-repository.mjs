@@ -12,6 +12,7 @@ import {
 	bomExceptionPathKey,
 	normalizeGitPath,
 } from "./agent-environment/git-path-key.mjs";
+import { lineAt } from "./agent-environment/markdown-lines.mjs";
 import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs";
 import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import {
@@ -19,6 +20,7 @@ import {
 	formatAgentContextWarnings,
 	TERMINAL_STATUSES,
 } from "./check-agent-context.mjs";
+import { repositoryOptions } from "./verify-repository-options.mjs";
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
 const root = process.cwd();
@@ -68,10 +70,6 @@ const CLAUDE_MODEL_ALIASES = new Map([
 	["sonnet", "sonnet"],
 	["haiku 5.5", "claude-haiku-5-5"],
 ]);
-
-function lineNumberAt(text, index) {
-	return text.slice(0, index).split(/\r?\n/).length;
-}
 
 function normalizeClaudeModel(value) {
 	const normalized = String(value).trim().toLowerCase().replace(/\s+/g, " ");
@@ -168,7 +166,7 @@ export function assertClaudeAgentTable({
 			name,
 			model: match[2].trim(),
 			effort: match[3].trim(),
-			line: lineNumberAt(instructions, match.index),
+			line: lineAt(instructions, match.index),
 		};
 		if (rows.has(name))
 			fail(
@@ -948,7 +946,7 @@ if (
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
 	const parsed = beginToolCommand("check:repository", process.argv.slice(2));
-	main(parsed.options).catch((error) => {
+	main(repositoryOptions(parsed)).catch((error) => {
 		console.error(`FAILED_VALIDATION: ${error.message}`);
 		process.exitCode = 1;
 	});

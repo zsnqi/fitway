@@ -483,16 +483,18 @@ async function cleanup(path) {
 	await jsonOutput(folder, "session.json", { ...session, stopped: true });
 }
 
+export function ownerCommandOptions(parsed) {
+	return {
+		command: parsed.command?.name ?? parsed.fixedArgs[0] ?? "help",
+		options: { ...parsed.options, extra: parsed.passthrough.slice() },
+	};
+}
+
 export async function main(input = process.argv.slice(2), services = {}) {
 	const parsed = Array.isArray(input)
 		? resolveToolArguments("verify:owner", input)
 		: input;
-	const command =
-		parsed.entry.name === "check:verification-map"
-			? "drift-tree"
-			: (parsed.command?.name ?? "help");
-	const options = parsed.options;
-	options.extra = parsed.passthrough.slice();
+	const { command, options } = ownerCommandOptions(parsed);
 	if (parsed.help || command === "help") return console.log(help);
 	if (
 		["drive", "compare"].includes(command) &&

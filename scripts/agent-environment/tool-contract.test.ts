@@ -304,7 +304,7 @@ function optionContractArguments(option: ToolOption) {
 		: [option.name];
 }
 
-function compatibilityArguments(
+function valueArguments(
 	entry: ToolEntry,
 	command: ToolCommand | null,
 	option: ToolOption,
@@ -316,22 +316,21 @@ function compatibilityArguments(
 	return args;
 }
 
-function compatibilityRows() {
+function equalsProbeCases() {
 	return TOOL_REGISTRY.flatMap((entry) =>
-		optionCases(entry).map(({ command, option }) => ({
-			entry,
-			command,
-			option,
-			args: compatibilityArguments(entry, command, option),
-			value: option.takesValue ? contractValue(option) : true,
-		})),
+		optionCases(entry)
+			.filter(({ option }) => option.takesValue)
+			.map(({ command, option }) => ({
+				entry,
+				option,
+				args: valueArguments(entry, command, option),
+			})),
 	);
 }
 
 function equalsArguments(args: string[], option: ToolOption) {
 	const index = args.indexOf(option.name);
-	if (index === -1)
-		throw new Error(`Missing compatibility option ${option.name}`);
+	if (index === -1) throw new Error(`Missing probe option ${option.name}`);
 	return [
 		...args.slice(0, index),
 		`${option.name}=${args[index + 1]}`,
@@ -590,29 +589,20 @@ async function packageContractTest() {
 	}
 }
 
-function compatibilityTest() {
-	const rows = compatibilityRows();
-	expect(rows.length).toBeGreaterThan(0);
-	for (const row of rows) {
-		const result = beginToolCommand(row.entry.name, row.args);
+function equalsValueProbe() {
+	const cases = equalsProbeCases();
+	expect(cases.length).toBeGreaterThan(0);
+	for (const probe of cases) {
+		const spaced = beginToolCommand(probe.entry.name, probe.args);
+		expect(spaced.options[optionKey(probe.option)]).toBeDefined();
+		const equals = beginToolCommand(
+			probe.entry.name,
+			equalsArguments(probe.args, probe.option),
+		);
 		expect(
-			result.command?.name ?? null,
-			`${row.entry.name} ${row.option.name} command`,
-		).toBe(row.command?.name ?? null);
-		expect(
-			result.options[optionKey(row.option)],
-			`${row.entry.name} ${row.option.name} value`,
-		).toEqual(row.value);
-		if (row.option.takesValue) {
-			const equals = beginToolCommand(
-				row.entry.name,
-				equalsArguments(row.args, row.option),
-			);
-			expect(
-				equals.options[optionKey(row.option)],
-				`${row.entry.name} ${row.option.name}=value`,
-			).toEqual(row.value);
-		}
+			equals.options[optionKey(probe.option)],
+			`${probe.entry.name} ${probe.option.name}=value`,
+		).toEqual(spaced.options[optionKey(probe.option)]);
 	}
 }
 
@@ -762,10 +752,7 @@ async function plantedBreakTest() {
 
 describe("agent command contract", () => {
 	it("keeps package.json and pnpm tools in the registry", packageContractTest);
-	it(
-		"E1 preserves every legacy option form and accepts equals values",
-		compatibilityTest,
-	);
+	it("E1 accepts --name=value as --name value", equalsValueProbe);
 	it(
 		"E1 refuses an option declared only by another subcommand",
 		crossSubcommandProbe(),

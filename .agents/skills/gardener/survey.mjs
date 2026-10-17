@@ -906,12 +906,11 @@ export function parseOptions(input = process.argv.slice(2)) {
 				validate: false,
 			})
 		: input;
+	const resolved = (value) => (value ? path.resolve(value) : undefined);
 	return {
 		out: path.resolve(parsed.options.out),
-		tempRoot: path.resolve(parsed.options.tempRoot ?? defaultTempRoot),
-		finalReport: parsed.options.finalReport
-			? path.resolve(parsed.options.finalReport)
-			: undefined,
+		tempRoot: resolved(parsed.options.tempRoot) ?? defaultTempRoot,
+		finalReport: resolved(parsed.options.finalReport),
 	};
 }
 

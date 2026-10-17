@@ -8,6 +8,13 @@ import {
 	writeToolingMap,
 } from "./tooling-map-document.mjs";
 
+export function toolingMapOptions(parsed) {
+	return {
+		check:
+			parsed.options.check === true || parsed.fixedArgs.includes("--check"),
+	};
+}
+
 async function main(check) {
 	if (check) {
 		const result = await checkToolingMap();
@@ -38,9 +45,7 @@ if (isMain) {
 		(lifecycle !== "map:tooling" && args[0] === "--check")
 			? "check:tooling-map"
 			: "map:tooling";
-	const parsed = beginToolCommand(name, args);
-	const check =
-		parsed.options.check === true || parsed.fixedArgs.includes("--check");
+	const { check } = toolingMapOptions(beginToolCommand(name, args));
 	main(check).catch((error) => {
 		const command = check ? CHECK_COMMAND : REGENERATE_COMMAND;
 		console.error(
