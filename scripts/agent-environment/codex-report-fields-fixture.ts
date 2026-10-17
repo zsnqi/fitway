@@ -26,6 +26,12 @@ export const realCommitOutput = path.join(
 	repository,
 	"scripts/agent-environment/fixtures/report-fields/real-commit-output.json",
 );
+// The report-fields round's own test summary (its events.jsonl line 1206), recorded with
+// doubled spaces in "Tests  19 passed (19)".
+export const realTestSummary = path.join(
+	repository,
+	"scripts/agent-environment/fixtures/report-fields/real-test-summary.jsonl",
+);
 export const environment = readFileSync(
 	path.join(repository, "docs/agent-context/briefs/ENVIRONMENT.md"),
 	"utf8",
@@ -84,6 +90,8 @@ export function commandRecord(
 	id = "item-command",
 	exitCode = 0,
 ) {
+	// Codex completes a command that exits non-zero with status "failed".
+	const status = exitCode === 0 ? "completed" : "failed";
 	return [
 		{
 			type: "item.started",
@@ -104,7 +112,7 @@ export function commandRecord(
 				command,
 				aggregated_output: output,
 				exit_code: exitCode,
-				status: "completed",
+				status,
 			},
 		},
 	];
@@ -194,6 +202,12 @@ function recordedItem(lines: string[], line: number) {
 	return JSON.parse(lines[line - 1]).item;
 }
 
+// Records 32 and 228 completed with status "failed" and exit code 1; each is used exactly as
+// recorded.
+function recordedEvent(lines: string[], line: number) {
+	return JSON.parse(lines[line - 1]);
+}
+
 // The wrapper's quoted body as recorded, by plain text search: what the launcher matched before
 // it removed the wrapper's quoting, and must no longer match.
 function rawBody(recorded: string) {
@@ -205,9 +219,9 @@ function rawBody(recorded: string) {
 
 export function reportEventCases() {
 	const resumeLines = readFileSync(realEvents, "utf8").split(/\r?\n/);
-	const singleQuote = recordedItem(resumeLines, 32);
+	const singleQuote = recordedEvent(resumeLines, 32);
 	const doubleQuote = recordedItem(resumeLines, 151);
-	const widest = recordedItem(resumeLines, 228);
+	const widest = recordedEvent(resumeLines, 228);
 	const doubleQuoteEscapes = recordedItem(resumeLines, 150);
 	const singleQuoteJoins = recordedItem(resumeLines, 160);
 	const ansi = JSON.parse(readFileSync(realCommitOutput, "utf8"));
@@ -218,7 +232,7 @@ export function reportEventCases() {
 	return [
 		{
 			name: "a PowerShell single-quote command and a console-wrapped line",
-			event: completedEvent(singleQuote.command, singleQuote.aggregated_output),
+			event: singleQuote,
 			command: `${compareCommand} --page all --feature all --languages en --sizes desktop,phone --inputs mouse --motions reduce --transports http --colors normal --workers 4 --out ${String.raw`D:\fitway-temp\owner-r04-shared-lows\compare-9619-en-normal`}`,
 			output:
 				"COMPARE NOT-REACHABLE: access.html/language default en phone mouse reduce http normal; State/feature cannot be reached: Feature path unavailable at 390 CSS pixels by its recipe; State/feature cannot be reached: Feature path unavailable at 390 CSS pixels by its recipe",
@@ -231,7 +245,7 @@ export function reportEventCases() {
 		},
 		{
 			name: "a multi-line command and the widest recorded output",
-			event: completedEvent(widest.command, widest.aggregated_output),
+			event: widest,
 			command: `${compareCommand} --page access.html --feature pinOff,reset,off,mine,validate-reset,validate-mine,page-retry,password-refused,refused-owner_email_taken --languages ar,en --sizes desktop,phone --inputs mouse --motions full --transports http --colors normal,forced --timeline --workers 4 --out ${String.raw`D:\fitway-temp\owner-r04-shared-lows\timeline-access-9619`}`,
 			output:
 				"COMPARE EQUAL: access.html/pinOff default ar desktop mouse full http normal",

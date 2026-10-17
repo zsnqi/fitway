@@ -13,6 +13,9 @@ const TERMINAL_ESCAPES = new RegExp(
 const COMMIT = /^[0-9a-f]{7,64}$/i;
 const ROW_KEYS = ["command", "id", "output", "status"];
 const COMMIT_KEYS = ["commit"];
+// A command that exits non-zero completes with status "failed" and its exit code: it is still a
+// record for row matching, and the commit and fast-ladder checks require exit code 0.
+const COMMAND_STATUSES = new Set([undefined, "completed", "failed"]);
 
 function sameKeys(value, expected) {
 	return (
@@ -199,7 +202,7 @@ export async function readRunActivity(run, worktree) {
 				if (
 					typeof command === "string" &&
 					Number.isInteger(exitCode) &&
-					(status === undefined || status === "completed")
+					COMMAND_STATUSES.has(status)
 				) {
 					const started = id ? starts.get(`${name}\n${id}`) : undefined;
 					records.push({
@@ -256,14 +259,23 @@ export function outputLines(output) {
 	return logical.map((line) => line.replace(TERMINAL_ESCAPES, "").trim());
 }
 
+// A row's output and each displayed line compare with every run of spaces and tabs inside them
+// collapsed to one space; the output must still be one whole displayed line.
+function collapseBlanks(text) {
+	return text.trim().replace(/[ \t]+/g, " ");
+}
+
 function rowMatches(row, record) {
 	if (
 		row.command !== record.command &&
 		row.command !== unwrapCommand(record.command).text
 	)
 		return false;
-	const expected = row.output.trim();
-	return Boolean(expected) && outputLines(record.output).includes(expected);
+	const expected = collapseBlanks(row.output);
+	return (
+		Boolean(expected) &&
+		outputLines(record.output).some((line) => collapseBlanks(line) === expected)
+	);
 }
 
 export async function matchReportRows(

@@ -30,13 +30,15 @@ export function parseBriefFormat(input) {
 	return { role, delivers, problem: undefined };
 }
 
-// A launch note can precede the recorded brief in input.md.
+// The field is read from the recorded brief's first line only: input.md's first line, or the
+// first line after the launcher's launch note and its one blank line.
+const LAUNCH_NOTE =
+	/^Launch note: HEAD [0-9a-f]{7,64} only adds this brief over the named HEAD\.\r?\n\r?\n/;
+
 export function recordedBriefDelivery(input) {
 	const text = Buffer.isBuffer(input) ? input.toString("utf8") : String(input);
-	for (const line of text.split(/\r?\n/)) {
-		if (!line.startsWith("<!-- brief-format:")) continue;
-		const parsed = parseBriefFormat(`${line}\n`);
-		return parsed.role === "codex" ? parsed.delivers : undefined;
-	}
-	return undefined;
+	const [first] = text.replace(LAUNCH_NOTE, "").split(/\r?\n/, 1);
+	if (!first.startsWith("<!-- brief-format:")) return undefined;
+	const parsed = parseBriefFormat(`${first}\n`);
+	return parsed.role === "codex" ? parsed.delivers : undefined;
 }

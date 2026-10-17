@@ -1,9 +1,11 @@
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { outputLines } from "./codex-report.mjs";
 import {
 	afterEachReportFixture,
 	autoResumes,
+	brief,
 	commandRecord,
 	commitChange,
 	eventsText,
@@ -13,6 +15,7 @@ import {
 	measurementOutput,
 	measurementTurn,
 	oneCharacterDifferent,
+	realTestSummary,
 	reportChecks,
 	reportEventCases,
 	reportMessage,
@@ -71,6 +74,98 @@ describe("R3 structured report rows match run events", () => {
 				"PASS row O1 has no matching record",
 			);
 		}
+	});
+});
+
+describe("R3 a command that exits non-zero is still a record", () => {
+	const ladder = "node scripts/verify.mjs fast";
+	const commitBrief = brief({
+		delivers: "commit",
+		scope: "Finish and report.",
+	});
+	it.each([
+		{
+			name: "git commit",
+			input: commitBrief,
+			command: 'git commit -m "fixture change"',
+			output: (head: string) => `[fixture ${head.slice(0, 7)}] fixture change`,
+			refusal: "no successful git commit command with exit code 0",
+		},
+		{
+			name: "fast ladder",
+			input: commitBrief.replace(
+				"- **O1.** Fixture outcome.",
+				`- **O1.** \`${ladder}\` passes.`,
+			),
+			command: ladder,
+			output: () => "VERIFY FAIL: unit",
+			refusal: "without a successful fast-ladder command",
+		},
+	])("matches a failed $name row, and its check still requires exit code 0", (item) => {
+		const f = harness({ input: item.input });
+		const commit = commitChange(f);
+		const failed = commandRecord(
+			item.command,
+			`${item.output(commit.head)}\n`,
+			"item-failed",
+			1,
+		);
+		f.setTurns([
+			{
+				message: reportMessage(
+					[row("O1", item.command, item.output(commit.head))],
+					[commit.head.slice(0, 7)],
+				),
+				events: eventsText(
+					item.name === "git commit" ? failed : [...commit.event, ...failed],
+				),
+			},
+			{ message: "STOPPED: stop after refusal\n" },
+		]);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(0);
+		const failures = autoResumes(f)[0].claimFailures.join("\n");
+		expect(failures).not.toContain("PASS row O1 has no matching record");
+		expect(failures).toContain(item.refusal);
+	});
+});
+
+describe("R3 runs of blanks inside a displayed line compare as one space", () => {
+	const recorded = JSON.parse(readFileSync(realTestSummary, "utf8"));
+	const command =
+		"pnpm exec vitest run scripts/agent-environment/codex-report-fields.test.ts scripts/agent-environment/codex-report-events.test.ts";
+	it("matches the round's quote of a doubled-space line and still needs the whole line", () => {
+		expect(outputLines(recorded.item.aggregated_output)).toContain(
+			"Tests  19 passed (19)",
+		);
+		for (const quote of ["Tests 19 passed (19)", "Tests\t19  passed (19)"]) {
+			const accepted = harness();
+			accepted.setTurns([
+				{
+					message: reportMessage([row("O1", command, quote)]),
+					events: eventsText([recorded]),
+				},
+			]);
+			const result = accepted.invoke();
+			expect(reportChecks(accepted)[0], quote).toMatchObject({
+				accepted: true,
+				rows: [{ id: "O1", events: "events-resume.jsonl", line: 1 }],
+			});
+			expect(result.status, result.output).toBe(0);
+		}
+		const refused = harness();
+		refused.setTurns([
+			{
+				message: reportMessage([row("O1", command, "19 passed")]),
+				events: eventsText([recorded]),
+			},
+			{ message: "STOPPED: stop after refusal\n" },
+		]);
+		const result = refused.invoke();
+		expect(result.status, result.output).toBe(0);
+		expect(autoResumes(refused)[0].claimFailures.join("\n")).toContain(
+			"PASS row O1 has no matching record",
+		);
 	});
 });
 

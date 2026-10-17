@@ -119,6 +119,43 @@ describe("R1 launcher delivery authority", () => {
 	});
 });
 
+describe("R1 the field is read from the recorded brief's first line only", () => {
+	const header = "<!-- brief-format: v1 role: codex delivers: report -->";
+	it.each([
+		["on a later line", `# Grade fixture\n\n${header}`],
+		[
+			"in a fenced example",
+			`# Grade fixture\n\n\`\`\`markdown\n${header}\n\`\`\``,
+		],
+	])("refuses a field %s before the child starts", (_name, start) => {
+		const f = harness({ input: brief().replace(header, start) });
+		f.setTurns([{ message: "STOPPED: should not start\n" }]);
+		const result = f.invoke();
+		expect(result.status, result.output).toBe(1);
+		expect(result.output).toContain("delivers");
+		expect(existsSync(f.counter)).toBe(false);
+	});
+
+	it("reads the field from the first line after the launch note only", () => {
+		const note =
+			"Launch note: HEAD 0123456789abcdef0123456789abcdef01234567 only adds this brief over the named HEAD.\n\n";
+		const late = harness({ input: `${note}# Grade fixture\n\n${brief()}` });
+		late.setTurns([{ message: "STOPPED: should not start\n" }]);
+		const lateResult = late.invoke();
+		expect(lateResult.status, lateResult.output).toBe(1);
+		expect(lateResult.output).toContain("delivers");
+		expect(existsSync(late.counter)).toBe(false);
+
+		const first = harness({ input: `${note}${brief()}` });
+		first.setTurns([
+			{ message: reportMessage([row("O1", "not run", "not run", "FAIL")]) },
+		]);
+		const firstResult = first.invoke();
+		expect(firstResult.status, firstResult.output).toBe(0);
+		expect(readFileSync(first.counter, "utf8")).toBe("1");
+	});
+});
+
 describe("R2 report commit field", () => {
 	it("accepts one commit line and ignores other hashes", () => {
 		const f = harness({ delivers: "commit", scope: "Finish and report." });
@@ -158,17 +195,19 @@ describe("R2 report commit field", () => {
 		]);
 		const result = f.invoke();
 		expect(result.status, result.output).toBe(0);
-		expect(autoResumes(f)[0].claimFailures.join("\n")).toContain(
-			"no such commit object",
-		);
 		const [refused] = reportChecks(f);
 		expect(refused).toMatchObject({
 			accepted: false,
 			commitSha: "68e863793e6f",
 			commitResolved: null,
 		});
+		expect(autoResumes(f)[0].claimFailures.join("\n")).toContain(
+			"no such commit object",
+		);
 	});
+});
 
+describe("R2 report commit lines that are refused", () => {
 	it.each([
 		["no commit line", [], "no commit line"],
 		[
@@ -196,6 +235,7 @@ describe("R2 report commit field", () => {
 		]);
 		const result = f.invoke();
 		expect(result.status, result.output).toBe(0);
+		expect(reportChecks(f)[0]).toMatchObject({ accepted: false });
 		expect(autoResumes(f)[0].claimFailures.join("\n")).toContain(message);
 	});
 });
