@@ -1724,6 +1724,31 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Disposition:** a second `owner-direction-builder` applies the six; then a short Sol re-grade of those rows, then
   the merge chain.
 
+- **The grade builder and its diff review:** `owner-direction-builder` committed the six as `1085b6fc` and its Sol
+  diff review's three blocking findings, with five the coordinator added, as `47f18b0e`; its report never reached the
+  coordinator, who checked the commit against the dispositions; CI passed on `47f18b0e` (run 39027454092).
+- **The re-grade** (`../../agent-tooling/briefs/codex-cli-contract-regrade.md`, Q1, Q4, Q5, Q6, Q9 and Q10 at
+  `47f18b0e`; both brief reviews, seven readings closed and three left open), GPT-6.1 Sol `xhigh`, run
+  `codex-round-56efe90d-...`: Q1 and L1 PASS; Q4, Q5, Q6, Q9, Q10 FAIL. The coordinator's reading:
+  - **Real defects (five):** Q4, an unexpected start-up exception in `handoff:new` prints `handoff:new FAILED: ...`
+    (`new-handoff.mjs` line 311, reproduced by reading), and `verify:owner launch --idle-timeout-ms` with no value
+    names the top-level help, not launch's usage; Q6, `verify:owner repair-recipes --concept <folder>` without
+    `--out` worked at `57dad1c0` (`cli.mjs` line 721 falls back to a fresh folder) and is now refused, with no
+    refusal record (reproduced by the coordinator from both sources); Q9, one kept declaration in `codex-round.mjs`
+    (`const words = shellTokens(command, shell) ?? [];`) condensed into a call; Q10, 13 compatibility cases
+    (doctor, drive and measure options) throw before their assertions on `97f61712`.
+  - **The grading brief's wording (four):** Q10(b) counted compatibility and refusal rows that already held on
+    `97f61712` (regression guards, which part (a) exempted and part (b) did not) and three verification fixtures that
+    copy the new help-notes module; Q4, `verify:phase`'s kept `FAILED_VALIDATION:` line (C4 keeps it) and
+    `codex:round`'s usage line pointing to help; Q5, an option removed from the registry while still read is caught
+    by the compatibility test in the ladder, not by the contract test itself (F273 for options without a row).
+  - Holding: 205 refusal probes in one line with usable controls; every planted drift but one caught by the contract
+    test; all 186 table rows agree with the old parsers and the resolver; 0 comment lines lost, 21 of 21 help lines
+    kept; Q10(a) passes.
+- **Disposition:** a third `owner-direction-builder` applies the five on `tooling-cli-contract`, with a Sol diff
+  review; the coordinator reproduces each fixed row instead of a third grade (each is a single input or line), then
+  the merge chain.
+
 ## DeepSeek V4.1 Flash 1017 (2026-10-17, the user's records note)
 
 - **The upgrade (measured 2026-10-17 by a forked side session; the coordinator recomputed the baseline below):**
