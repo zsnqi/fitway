@@ -116,9 +116,9 @@ name, and, when it cannot start, says what failed and how to fix it; one listing
     folder named on its command line that does not exist) prints one line `<command>: FAIL: <what> (<how to fix>)` on
     stderr and exits 1, where `<how to fix>` names the concrete next step (the missing argument and its form, the path
     that was not found) rather than only pointing at `--help`, unless a test at this HEAD asserts another code for
-    that failure, which then stays (name each). A check's own findings keep their format; a line another tool or test already reads (`FAILED_VALIDATION:` in
-    `scripts/verify.mjs`, the launcher's review and claim lines) is kept after it, unchanged. List in your report every
-    failure message you changed, with its before and after.
+    that failure, which then stays (name each). A check's own findings keep their format; a line another tool or test
+    already reads (`FAILED_VALIDATION:` in `scripts/verify.mjs`, the launcher's review and claim lines) is kept after
+    it, unchanged. List in your report every failure message you changed, with its before and after.
   - **Intent.** An agent reading a failure knows its next step without opening the script.
 - **C5. One contract test.**
   - **Outcome.** One test, its cases generated from the registry, runs every registered command with `--help` and
