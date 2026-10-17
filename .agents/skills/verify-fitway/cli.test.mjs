@@ -14,7 +14,7 @@ import { createServer, request } from "node:http";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
-import { authored, html, js } from "./concept-fixture.mjs";
+import { authored, html, js, writeConcept } from "./concept-fixture.mjs";
 import { copyAllFixture, copyHelpFixture } from "./fixture-copy.mjs";
 import { verificationTest } from "./skip-gate.mjs";
 
@@ -70,10 +70,7 @@ before(async () => {
 	scratch = await mkdtemp(resolve(tmpdir(), "verify-fitway-unit-"));
 	concept = resolve(scratch, "concept");
 	recipes = resolve(concept, "verification-recipes.json");
-	await mkdir(concept);
-	await writeFile(resolve(concept, "index.html"), html);
-	await writeFile(resolve(concept, "app.js"), js);
-	await writeFile(recipes, JSON.stringify(authored()));
+	await writeConcept(concept);
 });
 after(async () => {
 	for (const session of heldSessions.splice(0))

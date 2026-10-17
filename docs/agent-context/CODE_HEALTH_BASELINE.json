@@ -69,7 +69,7 @@
 			"duplication": 61,
 			"suppressions": 1,
 			"longFunctions": 8,
-			"giantFiles": 4509
+			"giantFiles": 4506
 		},
 		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
 			"duplication": 9,
