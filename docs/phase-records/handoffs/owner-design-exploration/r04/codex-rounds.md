@@ -1723,3 +1723,28 @@ checks live outside the repository and never appear here or in a brief. One line
   review, not the grade).
 - **Disposition:** a second `owner-direction-builder` applies the six; then a short Sol re-grade of those rows, then
   the merge chain.
+
+## DeepSeek V4.1 Flash 1017 (2026-10-17, the user's records note)
+
+- **The upgrade (measured 2026-10-17 by a forked side session; the coordinator recomputed the baseline below):**
+  DeepSeek's change log (https://api-docs.deepseek.com/updates/), entry 2026-10-17, upgrades V4.1 Flash in place to
+  DeepSeek-V4.1-Flash-1017, with the same API id `deepseek-flash`, price and calling method and no announced cutover
+  time. OpenDesign lists no new id (`deepseek-v4.1-flash-1017` returns 404); `deepseek-v4.1-flash`, the launcher's
+  `DEEPSEEK_MODEL` (`scripts/agent-environment/codex-round.mjs` line 34), is still listed and the default, and a test
+  request to it answered as `deepseek-flash`. The launcher needs no change; that we run on 1017 is inferred from the
+  in-place upgrade upstream.
+- **Which release a round ran on:** DeepSeek rounds launched after the 2026-10-17 announcement run on 1017; rounds
+  before it ran on the 0910 release; the DeepSeek rounds dated 2026-10-17 in `rounds.tsv` (ratchet, ratchet-fix-2,
+  cli-contract) ran on 0910 or 1017, since the cutover time is unknown. Sol rounds and Sol reviews are unaffected.
+- **Recording:** from the next DeepSeek launch onward, `rounds.tsv` records the model as `deepseek-v4.1-flash-1017`, so
+  the two releases never mix in one count; earlier rows keep `deepseek-v4.1-flash`. Nothing validates the column's
+  values (the gardener's `records.mjs` checks its header only), so the new value needs no code change.
+- **The 0910 baseline** (`rounds.tsv`, the 23 rows whose model is `deepseek-v4.1-flash` alone): brief rows 129/165
+  (78%), held-out rows 139/159 (87%), first attempt 15/23, mean attempts 1.39, 20 brief-caused fails, 18
+  interventions, 13 post-acceptance defects. All 13 defects come from the three Sol-graded rounds (ratchet,
+  ratchet-fix-2, cli-contract: brief rows 16/34, 47%).
+- **How to compare:** grading got stricter on 2026-10-17, so a 1017 round is compared only with rounds graded the same
+  way (Sol `xhigh` with held-out rows), round type for round type. A handful of rounds is a hint, not a measurement.
+- **Vendor benchmarks, 0910 to 1017** (vendor-reported; no independent 1017 numbers yet): Terminal-Bench 4.0 31.2 to
+  42.3, ProgramBench 20.3 to 29.1, HLE without tools 36.8 to 42.6, Automation-Bench 54.8 to 60.5, DeepSWE 74.2 to
+  77.0, NL2Repo 65.4 to 68.2, Agents' Last Exam 31.8 to 35.4; none comparable went down.
