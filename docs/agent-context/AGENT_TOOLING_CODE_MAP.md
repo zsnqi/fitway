@@ -736,14 +736,14 @@ Counts: 51 files, 655 callables, 523 without a covering test.
 - `focusClass` [function] L422-L424; tests: none
 - `hasEaseIn` [function] L425-L433; tests: none
 - `createFocusRingAnalyzer` [function] L435-L481; tests: none
-- `collectFocusRingFindings` [function] L482-L535; tests: none
-- `movedFocusSelectors` [function] L536-L542; tests: none
-- `focusRingIsReplaced` [function] L543-L589; tests: none
-- `collectOutlineFindings` [function] L590-L644; tests: none
-- `collectRuleFindings` [function] L645-L680; tests: none
-- `lintSources` [function] L682-L733; tests: `scripts/check-concept-css.test.ts`
-- `inspectFolder` [function] L734-L759; tests: `scripts/check-concept-css.test.ts`
-- `main` [function] L760-L781; tests: none
+- `collectFocusRingFindings` [function] L482-L536; tests: none
+- `movedFocusSelectors` [function] L537-L543; tests: none
+- `focusRingIsReplaced` [function] L544-L590; tests: none
+- `collectOutlineFindings` [function] L591-L645; tests: none
+- `collectRuleFindings` [function] L646-L681; tests: none
+- `lintSources` [function] L683-L734; tests: `scripts/check-concept-css.test.ts`
+- `inspectFolder` [function] L735-L760; tests: `scripts/check-concept-css.test.ts`
+- `main` [function] L761-L782; tests: none
 - Command run by: `scripts/check-concept-css.test.ts`
 
 ## `scripts/check-design-context.mjs`
