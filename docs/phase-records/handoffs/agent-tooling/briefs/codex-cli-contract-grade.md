@@ -58,45 +58,54 @@ The coordinator knows, row by row, whether the delivered command contract holds 
   `package.json` invocation (compare with your own reading of `package.json`); in a scratch copy, adding a script
   named `check:heldout` that runs a new `check-heldout.mjs` under `scripts/` and, separately, one named
   `check:heldout2` that runs the same file through `node --trace-warnings` to `package.json` without a registry entry
-  each make the registry test fail. Intent: one command finds every tool.
-- **Q2. Help is safe (C2, CC1, CC3, CC7, CC8, CC9).** Outcome: for every registered command, `--help` and `-h` alone,
-  first, after a positional and between options print its help on stdout and exit 0 with no process started and no
-  file written (use the contract's own side-effect observer, or watch the tree, the temp folder and child processes
-  yourself; say which); `pnpm verify:fast --help` and `pnpm verify:phase --help` return in under 2 s with no ladder
-  step; `pnpm code-health:baseline --help` and `pnpm map:tooling --help` leave their files' modification times
-  unchanged; `pnpm brief:check -- <a real brief> -h` prints help and no PASS or FAIL line; `pnpm verify:owner measure
-  --help` prints the measure subcommand's help and starts no browser; through the resolver, `verify:owner measure
-  --tool focus --out x -- --help` keeps `--help` in the passthrough and `codex:round resume <folder> --message --help`
-  keeps it as the message. Intent: asking a tool how to use it is always safe.
+  each make the registry test fail, and so does a third, `check:heldout3`, run through a wrapper (`cmd /c node ...` or
+  an environment prefix); the test classifies scripts by the product list alone, not by their command's shape (quote
+  the classifying code). Intent: one command finds every tool.
+- **Q2. Help is safe (C2, CC1, CC3, CC7, CC8, CC9).** Outcome: for every registered command and every `verify:owner`
+  subcommand, `--help` and `-h` alone, first, after a positional and between options print its help on stdout and exit
+  0 with no process started and no file written (use the contract's own side-effect observer, or watch the tree, the
+  temp folder and child processes yourself; say which); `pnpm verify:fast --help` and `pnpm verify:phase --help`
+  return in under 2 s with no ladder step; `pnpm code-health:baseline --help` and `pnpm map:tooling --help` leave
+  their files' modification times unchanged; `pnpm brief:check -- <a real brief> -h` prints help and no PASS or FAIL
+  line; `pnpm verify:owner measure --help` prints the measure subcommand's help and starts no browser; through the
+  resolver, `verify:owner measure --tool focus --out x -- --help` keeps `--help` in the passthrough and `codex:round
+  resume <folder> --message --help` keeps it as the message. Intent: asking a tool how to use it is always safe.
 - **Q3. Unknown options refused (C3, E1, CC2, CC6).** Outcome: every registered command given `--bogus` first, and
   after a known option, prints exactly `<command>: FAIL: unknown option --bogus (run <command> --help)` on stderr and
   exits 1 before any work; `pnpm check:concept-css -- <the eclipse folder> --bogus` refuses before reading any CSS;
   `verify:owner map` given an option only another subcommand declares is refused by name; an option-shaped token in a
   value position that is not free text (for example `--run --new-reveiw` through the resolver) is refused as that
   option's missing value. Intent: a mistyped option never runs a different check.
-- **Q4. Start-up failures say how to fix them (C4, E5, CC4, CCF2, CCF5).** Outcome: for each registered command, one
-  start-up failure it refuses before any work prints one stderr line `<command>: FAIL: <what> (<how to fix>)` whose
-  fix names the concrete step (list each command, its input and its line); `pnpm main:advance` with no commit prints
-  such a line, exits 1, and with `GIT_TRACE=1` runs no `git fetch` or `git push`; `pnpm check:concept-css --
-  D:/no/such/folder` prints exactly one stderr line, starting `check:concept-css: FAIL:`, with no `ERROR:` and no stack
-  trace, exit 2; `pnpm handoff:new --milestone` (no value) prints one such line. Intent: an agent reading a failure
-  knows its next step.
-- **Q5. The contract test catches drift (C5, CC11, CCF6).** Outcome: in a scratch copy, each of these plants makes
-  the contract test fail naming the command: one command's help printing to stderr instead of stdout; one refusal
-  line in another form; one command's help path starting a `git` process; one command re-gaining a private loop over
-  option names that accepts an undeclared option (the test or a check names it; report which); and removing an option
-  from the registry while the command still reads it. Report each plant and the failing line. Intent: a tool cannot
-  drift from the contract unseen.
+- **Q4. Start-up failures say how to fix them (C4, E5, CC4, CCF2, CCF5).** Outcome: for each registered command, every
+  start-up failure class it has (each `failureCases` entry the registry declares, a missing required argument, an
+  unusable value, a missing named path) prints one stderr line `<command>: FAIL: <what> (<how to fix>)` whose fix
+  names the concrete step (list each command, its input and its line); `pnpm main:advance` with no commit prints such
+  a line, exits 1, and with `GIT_TRACE=1` runs no `git fetch` or `git push`; `pnpm check:concept-css --
+  D:/no/such/folder` prints exactly one stderr line, starting `check:concept-css: FAIL:`, with no `ERROR:` and no
+  stack trace, exit 2, and so does an unexpected exception you inject into its start-up in a scratch copy; `pnpm
+  handoff:new --milestone` (no value) prints one such line. Intent: an agent reading a failure knows its next step.
+- **Q5. The contract test catches drift (C5, CC11, CCF6).** Outcome: in a scratch copy, each of these plants makes the
+  contract test fail naming the command: one command's help printing to stderr instead of stdout; one refusal line in
+  another form; one command's help path starting a `git` process; another's starting a non-git process; a help path
+  writing a file outside the repository; one deleting a file there; an unknown option placed after a positional
+  accepted; one command re-gaining a private loop over option names that accepts an undeclared option (the test or a
+  check names it; report which); and removing an option from the registry while the command still reads it. Report
+  each plant and the failing line. Intent: a tool cannot drift from the contract unseen.
 - **Q6. One parser, today's behaviour kept (E1, CCF1, CCF2).** Outcome: `git grep` over `scripts/` and
   `.agents/skills/` finds no `parseArgs`, `parseHandoffArgs`, `parseBriefArgs` or other loop or table of option names
-  in a registered command (quote the greps), and the shared resolver has no branch on a command's name; the
-  compatibility table has a row for every option the registry declares (count both); in a scratch copy, these
-  existing invocations give the same exit code and the same output at `57dad1c0` and at the result (compare, apart
-  from times and paths): `pnpm context:show --milestone agent-tooling-r01`, `pnpm check:agent-context --milestone
-  agent-tooling-r01`, `pnpm brief:check -- docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet.md`,
-  `pnpm start-load -- --limit 2 --json`, `pnpm handoff:new --milestone agent-tooling-r01 --now 2026-10-17T00:00:00Z`
-  and `node scripts/verify.mjs phase --phase <a registered phase>` stopped before its steps through the resolver.
-  Intent: one parser, and nothing an agent relied on changed.
+  in a registered command (quote the greps), and the shared resolver has no branch on a command's name; write your own
+  inventory of every argument form the base commands accepted at `57dad1c0` (read each old parser with `git show`;
+  options, `--name=value` where accepted, flags, positionals, fixed arguments), and check that
+  `scripts/agent-environment/tool-compatibility.json` holds a row for each, or names it among the forms refused on
+  purpose under C3 or C4 (list every form missing from both); run every row of that table through the resolver and the
+  command's own options step and compare the received values with the row (report the count and every mismatch); in a
+  scratch copy, these existing invocations give the same exit code and the same output at `57dad1c0` and at the result
+  (compare, apart from times and paths): `pnpm context:show --milestone agent-tooling-r01`, `pnpm check:agent-context
+  --milestone agent-tooling-r01`, `pnpm brief:check --
+  docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet.md`, `pnpm start-load -- --limit 2 --json`, `pnpm
+  handoff:new --milestone agent-tooling-r01 --now 2026-10-17T00:00:00Z` and `node scripts/verify.mjs phase --phase <a
+  registered phase>` stopped before its steps through the resolver. Intent: one parser, and nothing an agent relied on
+  changed.
 - **Q7. One declaration (E2, CCF3).** Outcome: `.agents/skills/verify-fitway/cli.mjs` imports the contract with no
   `try`/`catch` around it and holds no usage text of its own, and `pnpm verify:owner --help` prints the registry's
   help; each command's fixed arguments appear once in the registry (quote them); `tool-contract.test.ts` has no `as`
@@ -108,7 +117,10 @@ The coordinator knows, row by row, whether the delivered command contract holds 
   `scripts/agent-environment/check-brief.mjs`, `scripts/verify-repository.mjs`, `scripts/check-agent-context.mjs` and
   `.agents/skills/gardener/survey.mjs` each have at most their `wc -l` at `57dad1c0` (2316, 1141, 960, 1167, 1228) and
   lost no comment line; every blank line `git diff 57dad1c0 HEAD` removes from them sits next to code removed or moved
-  in the same hunk (list each one that does not); `pnpm check:code-health` passes. Intent: room is made by moving code.
+  in the same hunk (list each one that does not); classify every line the five files lost since `57dad1c0` as a
+  removed parser, code moved to a named module, or other (report the counts per file); a line saved by condensing code
+  that stays (joined statements, merged declarations) is a FAIL; `pnpm check:code-health` passes. Intent: room is made
+  by moving code.
 - **Q10. The fix's cases prove it (L0).** Outcome: run from the result's test files on `cb1cfe65`'s production code
   (`git archive` of `cb1cfe65` with the result's test files over it, made a git repository with one commit and given its
   own install), every case `dda8e020` added, apart from the compatibility rows the brief exempts, fails at an assertion
