@@ -703,13 +703,13 @@
 		"scripts/agent-environment/codex-round.mjs": {
 			"duplication": 6,
 			"longFunctions": 3,
-			"giantFiles": 2213
+			"giantFiles": 2104
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
 			"duplication": 42,
 			"typeEscapes": 10,
 			"longFunctions": 14,
-			"giantFiles": 4455
+			"giantFiles": 4366
 		},
 		"scripts/agent-environment/context-ending.test.ts": {
 			"duplication": 1,

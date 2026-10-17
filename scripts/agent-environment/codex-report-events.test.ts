@@ -1,6 +1,6 @@
-import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import { outputLines } from "./codex-report.mjs";
 import {
 	afterEachReportFixture,
 	autoResumes,
@@ -39,7 +39,6 @@ describe("R3 structured report rows match run events", () => {
 			},
 		]);
 		const acceptedResult = accepted.invoke();
-		expect(acceptedResult.status, acceptedResult.output).toBe(0);
 		expect(reportChecks(accepted)[0]).toMatchObject({
 			accepted: true,
 			rows: [
@@ -51,10 +50,12 @@ describe("R3 structured report rows match run events", () => {
 				},
 			],
 		});
+		expect(acceptedResult.status, acceptedResult.output).toBe(0);
 
 		for (const changed of [
 			row("O1", oneCharacterDifferent(item.command), item.output),
 			row("O1", item.command, oneCharacterDifferent(item.output)),
+			...(item.raw ? [row("O1", item.raw, item.output)] : []),
 		]) {
 			const refused = harness();
 			refused.setTurns([
@@ -83,7 +84,7 @@ describe("R3 prose status is not a report row", () => {
 		const result = f.invoke();
 		expect(result.status, result.output).toBe(0);
 		expect(autoResumes(f)[0].firstLine).toContain("O1: PASS");
-		expect(readFileSync(f.fixtureInput, "utf8")).toContain(
+		expect(f.lastInput()).toContain(
 			"A report needs the `report` block or a `STOPPED:` line",
 		);
 	});
@@ -207,5 +208,28 @@ describe("R4 ignores edits outside the worktree", () => {
 			accepted: true,
 			rows: [{ id: "O1", events: "events-resume.jsonl", line: 1 }],
 		});
+	});
+});
+
+describe("R3 a console-wrapped line joins at the cursor column", () => {
+	it("keeps a repeated pattern before the column the cursor moves to", () => {
+		const esc = String.fromCharCode(27);
+		const previous = `${"x".repeat(76)}abab`;
+		// Columns 1 to 79 of the previous line, then the segment written from column 80.
+		const kept = `${"x".repeat(76)}aba`;
+		expect(previous).toHaveLength(80);
+		expect(outputLines(`${previous}\r\n${esc}[23;80Hbab tail\r\nnext`)).toEqual(
+			[`${kept}bab tail`, "next"],
+		);
+	});
+
+	it("counts the column on the last row of a line the console already wrapped", () => {
+		const esc = String.fromCharCode(27);
+		// Row 1 is 80 "y"; the first move rewrites column 80 and fills row 2 with "z"; the second
+		// move rewrites column 80 of row 2 (the 160th character) and adds "end".
+		const output = `${"y".repeat(80)}\r\n${esc}[23;80Hy${"z".repeat(80)}\r\n${esc}[23;80Hzend`;
+		expect(outputLines(output)).toEqual([
+			`${"y".repeat(80)}${"z".repeat(80)}end`,
+		]);
 	});
 });

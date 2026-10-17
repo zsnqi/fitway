@@ -37,6 +37,7 @@ import { commitHeaderSha } from "./commit-header.mjs";
 import { commandStatusIsEvent, isGitCommitWords } from "./git-commit-words.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
+import { shellScan, shellTokens, unwrapCommand } from "./shell-words.mjs";
 import {
 	beginToolCommand,
 	resolveToolArguments,
@@ -131,95 +132,6 @@ function validateModelLevel(model, level) {
 			`unsupported reasoning level for ${model}: ${level}; use ${[...levels].join(", ")}`,
 		);
 	return level;
-}
-
-function shellSeparator(text, index) {
-	const character = text[index];
-	if (character === ";" || character === "\n") return character;
-	if ((character === "&" || character === "|") && text[index + 1] === character)
-		return character + character;
-	return character === "&" || character === "|" ? character : null;
-}
-
-function shellEvent(raw, value, whitespace = false) {
-	return whitespace ? { raw, whitespace: true } : { raw, value };
-}
-
-function shellScan(command, shell = "bash") {
-	const events = [];
-	const escapeCharacter = shell === "powershell" ? "`" : "\\";
-	let quote = null;
-	let wordStarted = false;
-	for (let index = 0; index < command.length; index += 1) {
-		const character = command[index];
-		if (quote === "'") {
-			if (character === "'") quote = null;
-			events.push(shellEvent(character, character === "'" ? "" : character));
-			continue;
-		}
-		if (character === escapeCharacter && index + 1 < command.length) {
-			const next = command[++index];
-			events.push(shellEvent(character + next, next));
-			wordStarted = true;
-			continue;
-		}
-		if (quote === '"') {
-			if (character === '"') {
-				quote = null;
-				events.push(shellEvent(character, ""));
-			} else events.push(shellEvent(character, character));
-			continue;
-		}
-		if (character === "'" || character === '"') {
-			quote = character;
-			wordStarted = true;
-			events.push(shellEvent(character, ""));
-			continue;
-		}
-		if (character === "#" && !wordStarted) {
-			while (index + 1 < command.length && !/[\r\n]/.test(command[index + 1]))
-				index += 1;
-			continue;
-		}
-		if (character === "\r") {
-			events.push(shellEvent("", "", true));
-			continue;
-		}
-		const separator = shellSeparator(command, index);
-		if (separator !== null) {
-			events.push({ raw: separator, separator });
-			wordStarted = false;
-			if (separator.length === 2) index += 1;
-			continue;
-		}
-		const whitespace = /\s/.test(character);
-		events.push(shellEvent(character, character, whitespace));
-		wordStarted = !whitespace;
-	}
-	return { events, unmatchedQuote: quote !== null };
-}
-
-function shellTokens(command, shell = "bash") {
-	const { events, unmatchedQuote } = shellScan(command.trim(), shell);
-	if (unmatchedQuote) return null;
-	const tokens = [];
-	let token = "";
-	for (const event of events) {
-		if (event.whitespace || event.separator === "\n") {
-			if (token) {
-				tokens.push(token);
-				token = "";
-			}
-			continue;
-		}
-		if (event.separator !== undefined) {
-			token += event.raw;
-			continue;
-		}
-		token += event.value;
-	}
-	if (token) tokens.push(token);
-	return tokens;
 }
 
 function modelArgs(model, level, catalogPath) {
@@ -1024,27 +936,6 @@ function outcomeTextFromBrief(brief, id) {
 		if (collecting) chunks.push(line);
 	}
 	return chunks.join("\n");
-}
-
-function unwrapCommand(command) {
-	const text = command.trim();
-	const wrappers = [
-		{
-			shell: "powershell",
-			pattern:
-				/^(?:"[^"]*powershell(?:\.exe)?"|powershell(?:\.exe)?)(?:\s+-[^\s]+)*\s+-Command\s+(['"])([\s\S]*)\1$/i,
-		},
-		{
-			shell: "bash",
-			pattern:
-				/^(?:"[^"]*bash(?:\.exe)?"|bash(?:\.exe)?)(?:\s+-[^\s]+)*\s+-lc\s+(['"])([\s\S]*)\1$/i,
-		},
-	];
-	for (const wrapper of wrappers) {
-		const match = text.match(wrapper.pattern);
-		if (match) return { text: match[2].trim(), shell: wrapper.shell };
-	}
-	return { text, shell: "bash" };
 }
 
 function commandParts(command) {

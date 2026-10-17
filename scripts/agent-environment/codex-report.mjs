@@ -1,11 +1,11 @@
 import { appendFile, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathKey } from "./path-identity.mjs";
+import { unwrapCommand } from "./shell-words.mjs";
 
 const ESC = String.fromCharCode(27);
 const BEL = String.fromCharCode(7);
 const CURSOR = new RegExp(`^${ESC}\\[(\\d+);(\\d+)H`);
-const BEFORE_ESC = new RegExp(`^[^${ESC}]*`);
 const TERMINAL_ESCAPES = new RegExp(
 	`${ESC}(?:\\[[0-?]*[ -/]*[@-~]|\\][^${BEL}${ESC}]*(?:${BEL}|${ESC}\\\\))`,
 	"g",
@@ -230,35 +230,27 @@ export async function readRunActivity(run, worktree) {
 	return { records, edits };
 }
 
-function unwrapCommand(command) {
-	const text = command.trim();
-	for (const pattern of [
-		/^(?:"[^"]*powershell(?:\.exe)?"|powershell(?:\.exe)?)(?:\s+-[^\s]+)*\s+-Command\s+(['"])([\s\S]*)\1$/i,
-		/^(?:"[^"]*bash(?:\.exe)?"|bash(?:\.exe)?)(?:\s+-[^\s]+)*\s+-lc\s+(['"])([\s\S]*)\1$/i,
-	]) {
-		const match = text.match(pattern);
-		if (match) return match[2].trim();
-	}
-	return text;
-}
+// A console-wrapped line arrives as a line break and a cursor move to the column the next
+// character is written at, on the screen row where the previous line's text ends: the displayed
+// line is the previous line's text (escape sequences removed) before that column of its last
+// row, then the segment; a last row shorter than the column shows blanks up to it. Codex runs
+// commands in an 80-column console (its records move the cursor to columns 1-80 and rows 1-24),
+// and a line the console already wrapped fills its earlier rows.
+const CONSOLE_COLUMNS = 80;
 
 export function outputLines(output) {
 	const logical = [];
-	for (let segment of String(output).split(/\r?\n/)) {
+	for (const segment of String(output).split(/\r?\n/)) {
 		const cursor = segment.match(CURSOR);
-		if (cursor && Number(cursor[2]) > 1 && logical.length) {
-			segment = segment.slice(cursor[0].length);
-			const lead = segment.match(BEFORE_ESC)?.[0] ?? "";
-			let overlap = 0;
-			for (let size = Math.min(8, lead.length); size > 0; size -= 1)
-				if (logical.at(-1).endsWith(lead.slice(0, size))) {
-					overlap = size;
-					break;
-				}
-			const current = logical.pop();
-			logical.push(
-				`${overlap ? current.slice(0, -overlap) : current}${segment}`,
-			);
+		const column = cursor ? Number(cursor[2]) : 0;
+		if (column > 1 && logical.length) {
+			const shown = Array.from(logical.pop().replace(TERMINAL_ESCAPES, ""));
+			const lastRow =
+				Math.floor(Math.max(shown.length - 1, 0) / CONSOLE_COLUMNS) *
+				CONSOLE_COLUMNS;
+			const before = shown.slice(0, lastRow + column - 1);
+			while (before.length < lastRow + column - 1) before.push(" ");
+			logical.push(`${before.join("")}${segment.slice(cursor[0].length)}`);
 		} else logical.push(segment);
 	}
 	return logical.map((line) => line.replace(TERMINAL_ESCAPES, "").trim());
@@ -267,7 +259,7 @@ export function outputLines(output) {
 function rowMatches(row, record) {
 	if (
 		row.command !== record.command &&
-		row.command !== unwrapCommand(record.command)
+		row.command !== unwrapCommand(record.command).text
 	)
 		return false;
 	const expected = row.output.trim();
