@@ -1,9 +1,7 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
-	chmodSync,
 	copyFileSync,
-	type Dirent,
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
@@ -24,6 +22,14 @@ import {
 	outcomeIdsFromBrief,
 	parseReadings,
 } from "./codex-round.mjs";
+import { firstShortWindowsPath } from "./codex-round-path-fixture.mjs";
+import {
+	commandEvent,
+	fallbackEvidenceEvent,
+	fallbackReportMessage,
+	structuredReport,
+} from "./codex-round-report-fixture.mjs";
+import { runLauncher, writeCodexStandin } from "./codex-standin-fixture.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 
 vi.setConfig({ testTimeout: 60_000 });
@@ -402,58 +408,6 @@ async function captureReviewSourceAccess(action: () => Promise<unknown>) {
 	}
 }
 
-function shortWindowsPath(value: string) {
-	const result = spawnSync(
-		"powershell.exe",
-		[
-			"-NoProfile",
-			"-Command",
-			"(New-Object -ComObject Scripting.FileSystemObject).GetFolder($env:FITWAY_SHORT_PATH).ShortPath",
-		],
-		{
-			encoding: "utf8",
-			env: { ...process.env, FITWAY_SHORT_PATH: value },
-			windowsHide: true,
-		},
-	);
-	if (result.error) throw result.error;
-	if (result.status !== 0)
-		throw new Error(`short path lookup failed: ${result.stderr}`);
-	return result.stdout.trim();
-}
-
-function firstShortWindowsPath() {
-	const drives: string[] = [];
-	for (const letter of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
-		const drive = `${letter}:/`;
-		try {
-			readdirSync(drive);
-			drives.push(drive);
-		} catch {
-			// A missing or unavailable drive is not a short-name candidate.
-		}
-	}
-	for (const drive of drives) {
-		let entries: Dirent[];
-		try {
-			entries = readdirSync(drive, { withFileTypes: true });
-		} catch {
-			continue;
-		}
-		for (const entry of entries) {
-			if (!entry.isDirectory()) continue;
-			const long = path.join(drive, entry.name);
-			try {
-				const short = shortWindowsPath(long);
-				if (short.includes("~")) return { drives, long, short };
-			} catch {
-				// Some system folders reject a short-name lookup.
-			}
-		}
-	}
-	return { drives };
-}
-
 afterEach(() => {
 	for (const root of roots.splice(0)) {
 		const absolute = realpathSync.native(root);
@@ -475,7 +429,7 @@ function fixture(eol = "\n") {
 	const head = git(worktree, "rev-parse", "HEAD");
 	const brief = path.join(coordinator, "brief.md");
 	const bytes = Buffer.from(
-		`<!-- brief-format: v1 role: codex -->\n# Fixture\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`fixture\`, HEAD \`${head.slice(0, 8)}\`\n\n${environment.replaceAll("\r\n", "\n")}\n## Goal\n\nالنص «كما هو»\n\n## Scope\n\nWrite only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.\n\n## Causes and required outcomes\n\n- **K1.** Fixture outcome.\n`.replaceAll(
+		`<!-- brief-format: v1 role: codex delivers: report -->\n# Fixture\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`fixture\`, HEAD \`${head.slice(0, 8)}\`\n\n${environment.replaceAll("\r\n", "\n")}\n## Goal\n\nالنص «كما هو»\n\n## Scope\n\nWrite only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.\n\n## Causes and required outcomes\n\n- **K1.** Fixture outcome.\n`.replaceAll(
 			"\n",
 			eol,
 		),
@@ -484,88 +438,7 @@ function fixture(eol = "\n") {
 	git(coordinator, "add", ".");
 	git(coordinator, "commit", "-m", "tracked brief");
 	const bin = path.join(root, "bin");
-	mkdirSync(bin);
-	const standin = path.join(bin, "stand-in.cjs");
-	writeFileSync(
-		standin,
-		`const fs = require('node:fs');
-const { execFileSync } = require('node:child_process');
-const args = process.argv.slice(2);
-const chunks = [];
-process.stdin.on('data', chunk => chunks.push(chunk));
-process.stdin.on('end', () => {
-  if (args.includes('read-only')) {
-    const capture = {args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), env:{TEMP:process.env.TEMP,TMP:process.env.TMP}, files:fs.readdirSync(process.cwd())};
-    fs.appendFileSync(process.env.ROUND_REVIEW_CAPTURE, JSON.stringify(capture) + '\\n');
-    if (!process.env.REVIEW_NO_ANSWER) fs.writeFileSync(args[args.indexOf('-o') + 1], process.env.REVIEW_ANSWER_FILE ? fs.readFileSync(process.env.REVIEW_ANSWER_FILE) : process.env.REVIEW_ANSWER || 'No such readings.\\n');
-    process.stdout.write('stand-in review\\n');
-    process.exitCode = Number(process.env.REVIEW_EXIT || 0);
-    return;
-  }
-  const isResume = args.includes('resume');
-  if (process.env.ROUND_WRITE_PATH) fs.writeFileSync(process.env.ROUND_WRITE_PATH, Buffer.from(process.env.ROUND_WRITE_CONTENT, 'base64'));
-  if (process.env.ROUND_REMOVE_PATH) fs.unlinkSync(process.env.ROUND_REMOVE_PATH);
-  const turnStderr = isResume ? process.env.ROUND_RESUME_STDERR : process.env.ROUND_STDERR;
-  if (turnStderr) process.stderr.write(turnStderr);
-  let commit = null;
-  if (!isResume && process.env.ROUND_COMMIT) {
-    if (process.env.ROUND_RESET_HARD) execFileSync('git', ['reset', '--hard', process.env.ROUND_RESET_HARD], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
-    if (process.env.ROUND_COMMIT_STAGE_ALL === '1') execFileSync('git', ['add', '-A'], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
-    execFileSync('git', ['commit', '--allow-empty', '-m', process.env.ROUND_COMMIT], {cwd:process.cwd(), stdio:'ignore', windowsHide:true});
-    commit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd:process.cwd(), encoding:'utf8', windowsHide:true}).trim();
-  }
-  fs.writeFileSync(process.env.ROUND_CAPTURE, JSON.stringify({args, cwd:process.cwd(), input:Buffer.concat(chunks).toString('base64'), env:{TEMP:process.env.TEMP,TMP:process.env.TMP}}));
-  const sequenceFile = process.env.ROUND_SEQUENCE_FILE;
-  let sequenceIndex = 0;
-  if (sequenceFile) {
-    try { sequenceIndex = Number(fs.readFileSync(sequenceFile, 'utf8')) || 0; } catch {}
-    fs.writeFileSync(sequenceFile, String(sequenceIndex + 1));
-  }
-  const messages = process.env.ROUND_MESSAGES ? JSON.parse(process.env.ROUND_MESSAGES) : null;
-  const exits = process.env.ROUND_EXITS ? JSON.parse(process.env.ROUND_EXITS) : null;
-  const fallback = isResume ? 'stand-in resumed message\\nK1: PASS\\n' : 'stand-in last message\\nK1: PASS\\n';
-  const configuredMessage = isResume && process.env.ROUND_RESUME_MESSAGE !== undefined
-    ? process.env.ROUND_RESUME_MESSAGE
-    : process.env.ROUND_MESSAGE;
-  let message = messages
-    ? (messages[sequenceIndex] ?? messages[messages.length - 1])
-    : (configuredMessage ?? fallback);
-  const renderCommit = (value) => commit
-    ? value.replaceAll('__HEAD__', commit).replaceAll('__HEAD_SHORT__', commit.slice(0, 7))
-    : value;
-  message = renderCommit(message);
-  const defaultExit = isResume && process.env.ROUND_RESUME_EXIT !== undefined
-    ? process.env.ROUND_RESUME_EXIT
-    : process.env.ROUND_EXIT;
-  const exitCode = exits
-    ? (exits[sequenceIndex] ?? exits[exits.length - 1])
-    : defaultExit;
-  fs.writeFileSync(args[args.indexOf('-o') + 1], message);
-  process.stdout.write('{"type":"thread.star');
-  process.stdout.write('ted","thread_id":"${thread}"}\\n');
-  if (process.env.ROUND_PRE_EVENTS) process.stdout.write(renderCommit(process.env.ROUND_PRE_EVENTS));
-  if (commit && process.env.ROUND_NO_COMMIT_EVENT !== '1') {
-    process.stdout.write(JSON.stringify({type:'item.completed', item:{type:'command_execution', command:'git commit -m ' + JSON.stringify(process.env.ROUND_COMMIT), aggregated_output:'[fixture ' + commit.slice(0, 7) + '] ' + process.env.ROUND_COMMIT, exit_code:0, status:'completed'}}) + '\\n');
-  }
-  const extraEvents = isResume ? process.env.ROUND_RESUME_EVENTS : process.env.ROUND_EVENTS;
-  if (extraEvents) process.stdout.write(renderCommit(extraEvents));
-  process.stdout.write('{"type":"item.completed","text":"العربية «»"}\\r\\n');
-  process.exitCode = Number(exitCode || 0);
-});\n`,
-	);
-	if (process.platform === "win32") {
-		writeFileSync(
-			path.join(bin, "codex.cmd"),
-			`@"${process.execPath}" "%~dp0stand-in.cjs" %*\r\n`,
-		);
-	} else {
-		const executable = path.join(bin, "codex");
-		writeFileSync(
-			executable,
-			`#!/bin/sh\nexec '${process.execPath.replaceAll("'", "'\\''")}' '${standin.replaceAll("'", "'\\''")}' "$@"\n`,
-		);
-		chmodSync(executable, 0o755);
-	}
+	writeCodexStandin(bin, thread);
 	const capture = path.join(root, "capture.json");
 	const reviewCapture = path.join(root, "review-capture.jsonl");
 	const reviewRoot = path.join(root, "reviews");
@@ -657,18 +530,15 @@ process.stdin.on('end', () => {
 	};
 	delete env.MSYSTEM;
 	const invokeRaw = (args: string[], extraEnv = {}, cwd = root) => {
-		const result = spawnSync(process.execPath, [script, ...args], {
+		const result = runLauncher(script, args, {
 			cwd,
 			env: { ...env, ...extraEnv },
-			encoding: "utf8",
-			windowsHide: true,
 		});
-		if (result.error) throw result.error;
 		if (process.env.FITWAY_ROUND_TEST_SCRIPT && existsSync(capture))
 			console.log(
 				`Mutation evidence: stand-in recorded ${captured().args.includes("resume") ? "resume" : "launch"}; status ${result.status}`,
 			);
-		return { ...result, output: result.stdout + result.stderr };
+		return result;
 	};
 	const invoke = (args?: string[], extraEnv = {}, cwd = root) => {
 		const effective = args ?? [brief, "high", "--run", run];
@@ -2697,10 +2567,10 @@ describe("L1 launch", () => {
 		expect(Buffer.from(f.captured().input, "base64")).toEqual(f.bytes);
 		expect(readFileSync(path.join(f.run, "input.md"))).toEqual(f.bytes);
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
-			"stand-in last message\nK1: PASS\n",
+			fallbackReportMessage("stand-in last message"),
 		);
 		expect(readFileSync(path.join(f.run, "events.jsonl"), "utf8")).toBe(
-			`{"type":"thread.started","thread_id":"${thread}"}\n{"type":"item.completed","text":"العربية «»"}\r\n`,
+			`{"type":"thread.started","thread_id":"${thread}"}\n${fallbackEvidenceEvent()}{"type":"item.completed","text":"العربية «»"}\r\n`,
 		);
 		expect(git(f.worktree, "status", "--short")).toBe("");
 	});
@@ -2753,7 +2623,7 @@ describe("L2 resume", () => {
 			),
 		).toEqual(["events-resume-2.jsonl", "events-resume.jsonl", "events.jsonl"]);
 		expect(readFileSync(path.join(f.run, "last-message.md"), "utf8")).toBe(
-			"stand-in resumed message\nK1: PASS\n",
+			fallbackReportMessage("stand-in resumed message"),
 		);
 	});
 	it.each([
@@ -2897,7 +2767,18 @@ describe("L2 resume", () => {
 });
 
 describe("K2 automatic resume", () => {
-	const report = "K1-K3: PASS\nL1-L2: PASS\n";
+	const evidenceCommand = "fixture evidence";
+	const evidenceOutput = "fixture evidence PASS\n";
+	const report = structuredReport(
+		["K1", "K2", "K3", "L1", "L2"],
+		evidenceCommand,
+		evidenceOutput.trim(),
+	);
+	const evidenceEvent = commandEvent(evidenceCommand, 0, evidenceOutput);
+	const reportEnvironment = {
+		ROUND_EVENTS: evidenceEvent,
+		ROUND_RESUME_EVENTS: evidenceEvent,
+	};
 	const outcomeBrief = (f: ReturnType<typeof fixture>) => {
 		const suffix = Buffer.from(
 			`
@@ -2925,6 +2806,7 @@ describe("K2 automatic resume", () => {
 		const f = fixture();
 		outcomeBrief(f);
 		const result = f.invoke(undefined, {
+			...reportEnvironment,
 			ROUND_MESSAGE: "Now let me test the implementation:\n",
 			ROUND_RESUME_MESSAGE: report,
 		});
@@ -2948,6 +2830,7 @@ describe("K2 automatic resume", () => {
 		const f = fixture();
 		outcomeBrief(f);
 		const result = f.invoke(undefined, {
+			...reportEnvironment,
 			ROUND_MESSAGE: "launch without a report\n",
 			ROUND_RESUME_MESSAGE: report,
 			ROUND_STDERR: "launch stderr\n",
@@ -2995,6 +2878,7 @@ describe("K2 automatic resume", () => {
 		const f = fixture();
 		outcomeBrief(f);
 		const result = f.invoke(undefined, {
+			...reportEnvironment,
 			ROUND_MESSAGE: `${first}\nsecond line\n`,
 			ROUND_RESUME_MESSAGE: report,
 		});
@@ -3010,7 +2894,10 @@ describe("K2 automatic resume", () => {
 		for (const message of [report, "STOPPED: deliberate stop\n"]) {
 			const f = fixture();
 			outcomeBrief(f);
-			const result = f.invoke(undefined, { ROUND_MESSAGE: message });
+			const result = f.invoke(undefined, {
+				...(message === report ? reportEnvironment : {}),
+				ROUND_MESSAGE: message,
+			});
 			expect(result.status, result.output).toBe(0);
 			expect(f.captured().args).not.toContain("resume");
 			expect(existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(false);
@@ -3038,6 +2925,7 @@ describe("K2 automatic resume", () => {
 		const f = fixture();
 		outcomeBrief(f);
 		const result = f.invoke(undefined, {
+			...reportEnvironment,
 			ROUND_MESSAGE: message,
 			ROUND_RESUME_MESSAGE: report,
 		});
@@ -3050,6 +2938,7 @@ describe("K2 automatic resume", () => {
 		const f = fixture();
 		outcomeBrief(f);
 		const sequence = {
+			...reportEnvironment,
 			ROUND_MESSAGES: JSON.stringify([
 				"launch incomplete\n",
 				"manual resume incomplete\n",
@@ -3086,21 +2975,16 @@ describe("K2 automatic resume", () => {
 
 describe("L3 report claims", () => {
 	const cleanStop = "STOPPED: corrected evidence unavailable\n";
-	const commandEvent = (command: string, exitCode = 0, aggregatedOutput = "") =>
-		`${JSON.stringify({
-			type: "item.completed",
-			item: {
-				type: "command_execution",
-				command,
-				aggregated_output: aggregatedOutput,
-				exit_code: exitCode,
-				status: "completed",
-			},
-		})}\n`;
+	const claimCommand = "fixture evidence";
+	const claimEvidenceOutput = "fixture evidence PASS\n";
+	const claimEvidence = commandEvent(claimCommand, 0, claimEvidenceOutput);
 	const claimReport = (commit?: string) =>
-		`K1: PASS\nC1: PASS\nC2: PASS\nL1: PASS\nL2: PASS\n${
-			commit ? `Commit SHA: \`${commit}\`\n` : ""
-		}`;
+		structuredReport(
+			["K1", "C1", "C2", "L1", "L2"],
+			claimCommand,
+			claimEvidenceOutput.trim(),
+			commit,
+		);
 	const claimBrief = (
 		f: ReturnType<typeof fixture>,
 		{ verify = true, commit = true } = {},
@@ -3131,6 +3015,7 @@ ${report}
 			: "Write only in the fixture. If an outcome";
 		const source = f.bytes
 			.toString("utf8")
+			.replace("delivers: report", `delivers: ${commit ? "commit" : "report"}`)
 			.replace("Write only in the fixture. If an outcome", scope);
 		writeFileSync(
 			f.brief,
@@ -3154,25 +3039,35 @@ ${report}
 			.split(/\r?\n/)
 			.map((line) => JSON.parse(line));
 	const claimOutput = "[fixture __HEAD_SHORT__] claim fixture";
-	const invokeClaim = (
+	const invokeReport = (
 		f: ReturnType<typeof fixture>,
+		message: string,
 		events: string,
-		message = claimReport("__HEAD__"),
+		extra: NodeJS.ProcessEnv = {},
 	) => {
 		claimBrief(f);
 		return f.invoke(undefined, {
 			...commitEnvironment(f),
 			ROUND_MESSAGE: message,
 			ROUND_NO_COMMIT_EVENT: "1",
-			ROUND_EVENTS: events,
+			ROUND_EVENTS: claimEvidence + events,
 			ROUND_RESUME_MESSAGE: cleanStop,
+			...extra,
 		});
 	};
+	const invokeClaim = (
+		f: ReturnType<typeof fixture>,
+		events: string,
+		message = claimReport("__HEAD__"),
+	) => invokeReport(f, message, events);
 
 	it("accepts a report-only brief that names no commit", () => {
 		const f = fixture();
 		claimBrief(f, { verify: false, commit: false });
-		const result = f.invoke(undefined, { ROUND_MESSAGE: claimReport() });
+		const result = f.invoke(undefined, {
+			ROUND_EVENTS: claimEvidence,
+			ROUND_MESSAGE: claimReport(),
+		});
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
 		const turns = jsonLinesIfPresent(path.join(f.run, "turns.jsonl"));
@@ -3187,7 +3082,8 @@ ${report}
 		const f = fixture();
 		claimBrief(f, { commit: false });
 		const result = f.invoke(undefined, {
-			ROUND_MESSAGE: claimReport(f.head),
+			ROUND_EVENTS: claimEvidence,
+			ROUND_MESSAGE: `Base commit: \`${f.head}\`\n${claimReport()}`,
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);
@@ -3199,19 +3095,16 @@ ${report}
 
 	it("accepts a report backed by the commit and fast-ladder events", () => {
 		const f = fixture();
-		claimBrief(f);
-		const result = f.invoke(undefined, {
-			...commitEnvironment(f),
-			ROUND_MESSAGE: claimReport("__HEAD__"),
-			ROUND_NO_COMMIT_EVENT: "1",
-			ROUND_EVENTS:
-				commandEvent(
-					"powershell.exe -Command 'git commit -m claim-fixture'",
-					0,
-					"[fixture __HEAD_SHORT__] claim fixture",
-				) +
+		const result = invokeReport(
+			f,
+			claimReport("__HEAD__"),
+			commandEvent(
+				"powershell.exe -Command 'git commit -m claim-fixture'",
+				0,
+				"[fixture __HEAD_SHORT__] claim fixture",
+			) +
 				commandEvent("powershell.exe -Command 'node scripts/verify.mjs fast'"),
-		});
+		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
 		const turns = jsonLinesIfPresent(path.join(f.run, "turns.jsonl"));
@@ -3223,20 +3116,15 @@ ${report}
 
 	it("V1 accepts a report that cites the base commit before its own HEAD", () => {
 		const f = fixture();
-		claimBrief(f);
-		const result = f.invoke(undefined, {
-			...commitEnvironment(f),
-			ROUND_MESSAGE:
-				`${claimReport()}Base commit: \`${f.head}\`\n` +
-				"Commit SHA: `__HEAD__`\n",
-			ROUND_NO_COMMIT_EVENT: "1",
-			ROUND_EVENTS:
-				commandEvent(
-					"bash -lc 'git commit -m claim-fixture'",
-					0,
-					"[fixture __HEAD_SHORT__] claim fixture",
-				) + commandEvent("bash -lc 'node scripts/verify.mjs fast'"),
-		});
+		const result = invokeReport(
+			f,
+			`Base commit: \`${f.head}\`\n${claimReport("__HEAD__")}`,
+			commandEvent(
+				"bash -lc 'git commit -m claim-fixture'",
+				0,
+				"[fixture __HEAD_SHORT__] claim fixture",
+			) + commandEvent("bash -lc 'node scripts/verify.mjs fast'"),
+		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
 		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
@@ -3246,14 +3134,12 @@ ${report}
 
 	it("V1 accepts an abbreviated worktree HEAD beside a full base SHA", () => {
 		const f = fixture();
-		claimBrief(f);
-		const result = f.invoke(undefined, {
-			...commitEnvironment(f),
-			ROUND_MESSAGE:
-				`${claimReport()}Base commit: \`${f.head}\`\n` +
-				"Commit SHA: `__HEAD_SHORT__`\n",
-			ROUND_EVENTS: commandEvent("pnpm verify:fast"),
-		});
+		const result = invokeReport(
+			f,
+			`Base commit: \`${f.head}\`\n${claimReport("__HEAD_SHORT__")}`,
+			commandEvent("pnpm verify:fast"),
+			{ ROUND_NO_COMMIT_EVENT: "0" },
+		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
 		expect(readFileSync(path.join(f.run, "turns.jsonl"), "utf8")).toContain(
@@ -3263,16 +3149,12 @@ ${report}
 
 	it("W2 does not count commands named only in echoed text", () => {
 		const f = fixture();
-		claimBrief(f);
-		const result = f.invoke(undefined, {
-			...commitEnvironment(f),
-			ROUND_MESSAGE: claimReport("__HEAD__"),
-			ROUND_NO_COMMIT_EVENT: "1",
-			ROUND_EVENTS:
-				commandEvent("echo git commit") +
+		const result = invokeReport(
+			f,
+			claimReport("__HEAD__"),
+			commandEvent("echo git commit") +
 				commandEvent("echo node scripts/verify.mjs fast"),
-			ROUND_RESUME_MESSAGE: cleanStop,
-		});
+		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).toContain("resume");
 		const [entry] = resumeLog(f);
@@ -3289,19 +3171,15 @@ ${report}
 		"--help",
 	])("W2 does not count git commit %s", (option) => {
 		const f = fixture();
-		claimBrief(f);
-		const result = f.invoke(undefined, {
-			...commitEnvironment(f),
-			ROUND_MESSAGE: claimReport("__HEAD__"),
-			ROUND_NO_COMMIT_EVENT: "1",
-			ROUND_EVENTS:
-				commandEvent(
-					`git commit ${option} -m claim-fixture`,
-					0,
-					"[fixture __HEAD_SHORT__] claim fixture",
-				) + commandEvent("node scripts/verify.mjs fast"),
-			ROUND_RESUME_MESSAGE: cleanStop,
-		});
+		const result = invokeReport(
+			f,
+			claimReport("__HEAD__"),
+			commandEvent(
+				`git commit ${option} -m claim-fixture`,
+				0,
+				"[fixture __HEAD_SHORT__] claim fixture",
+			) + commandEvent("node scripts/verify.mjs fast"),
+		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).toContain("resume");
 		const [entry] = resumeLog(f);
@@ -3315,20 +3193,15 @@ ${report}
 		"||",
 	])("W2 does not count a command masked with %s", (separator) => {
 		const f = fixture();
-		claimBrief(f);
-		const result = f.invoke(undefined, {
-			...commitEnvironment(f),
-			ROUND_MESSAGE: claimReport("__HEAD__"),
-			ROUND_NO_COMMIT_EVENT: "1",
-			ROUND_EVENTS:
-				commandEvent(
-					`git commit -m claim-fixture ${separator} echo later`,
-					0,
-					"[fixture __HEAD_SHORT__] claim fixture",
-				) +
-				commandEvent(`node scripts/verify.mjs fast ${separator} echo later`),
-			ROUND_RESUME_MESSAGE: cleanStop,
-		});
+		const result = invokeReport(
+			f,
+			claimReport("__HEAD__"),
+			commandEvent(
+				`git commit -m claim-fixture ${separator} echo later`,
+				0,
+				"[fixture __HEAD_SHORT__] claim fixture",
+			) + commandEvent(`node scripts/verify.mjs fast ${separator} echo later`),
+		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).toContain("resume");
 		const [entry] = resumeLog(f);
@@ -3342,19 +3215,15 @@ ${report}
 
 	it("W2 requires the last commit output to name worktree HEAD", () => {
 		const f = fixture();
-		claimBrief(f);
-		const result = f.invoke(undefined, {
-			...commitEnvironment(f),
-			ROUND_MESSAGE: claimReport("__HEAD__"),
-			ROUND_NO_COMMIT_EVENT: "1",
-			ROUND_EVENTS:
-				commandEvent(
-					"git commit -m claim-fixture",
-					0,
-					"[fixture deadbeef] claim fixture",
-				) + commandEvent("node scripts/verify.mjs fast"),
-			ROUND_RESUME_MESSAGE: cleanStop,
-		});
+		const result = invokeReport(
+			f,
+			claimReport("__HEAD__"),
+			commandEvent(
+				"git commit -m claim-fixture",
+				0,
+				"[fixture deadbeef] claim fixture",
+			) + commandEvent("node scripts/verify.mjs fast"),
+		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).toContain("resume");
 		const [entry] = resumeLog(f);
@@ -3609,14 +3478,13 @@ ${report}
 		);
 	});
 
-	it("X3 accepts worktree HEAD named on a non-commit line", () => {
+	it("X3 ignores worktree HEAD named only on a non-commit line", () => {
 		const f = fixture();
 		const result = invokeClaim(
 			f,
 			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
 				commandEvent("node scripts/verify.mjs fast"),
-			`${claimReport()}Base commit: \`${f.head}\`\n` +
-				"Delivered revision: `__HEAD__`\n",
+			`Base commit: \`${f.head}\`\n${claimReport("__HEAD__")}`,
 		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
@@ -3625,19 +3493,18 @@ ${report}
 		);
 	});
 
-	it("X3 guard refuses a report whose named revisions miss worktree HEAD", () => {
+	it("X3 guard ignores the real HEAD cited only outside the commit line", () => {
 		const f = fixture();
 		const result = invokeClaim(
 			f,
 			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
 				commandEvent("node scripts/verify.mjs fast"),
-			`${claimReport()}Base commit: \`${f.head}\`\n` +
-				"Delivered revision: `68e863793e6f`\n",
+			`The real HEAD is ${f.head}.\n${claimReport("68e863793e6f")}`,
 		);
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).toContain("resume");
 		const [entry] = resumeLog(f);
-		expect(entry.claimFailures.join("\n")).toContain("not worktree HEAD");
+		expect(entry.claimFailures.join("\n")).toContain("no such commit object");
 	});
 
 	it("V1 rejects a HEAD that does not descend from the launch HEAD", () => {
@@ -3654,7 +3521,8 @@ ${report}
 			ROUND_COMMIT: "claim fixture",
 			ROUND_RESET_HARD: otherHead,
 			ROUND_MESSAGE: claimReport("__HEAD__"),
-			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			ROUND_EVENTS:
+				claimEvidence + commandEvent("node scripts/verify.mjs fast"),
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);
@@ -3673,7 +3541,8 @@ ${report}
 		const result = f.invoke(undefined, {
 			ROUND_COMMIT: "claim fixture",
 			ROUND_MESSAGE: claimReport("__HEAD__"),
-			ROUND_EVENTS: commandEvent("node scripts/verify.mjs fast"),
+			ROUND_EVENTS:
+				claimEvidence + commandEvent("node scripts/verify.mjs fast"),
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);
@@ -3690,6 +3559,7 @@ ${report}
 		const f = fixture();
 		claimBrief(f);
 		const result = f.invoke(undefined, {
+			ROUND_EVENTS: claimEvidence,
 			ROUND_MESSAGE: claimReport(f.head),
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
@@ -3707,6 +3577,7 @@ ${report}
 		const f = fixture();
 		claimBrief(f);
 		const result = f.invoke(undefined, {
+			ROUND_EVENTS: claimEvidence,
 			ROUND_MESSAGE: claimReport("68e863793e6f"),
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
@@ -3725,7 +3596,16 @@ ${report}
 		const f = fixture();
 		claimBrief(f);
 		const result = f.invoke(undefined, {
-			ROUND_MESSAGE: "STOPPED: could not finish\nL2: PASS\n",
+			ROUND_MESSAGE: `STOPPED: could not finish\n${[
+				"```report",
+				JSON.stringify({
+					id: "L2",
+					status: "PASS",
+					command: "not run",
+					output: "L2: PASS",
+				}),
+				"```",
+			].join("\n")}\n`,
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);
@@ -3805,8 +3685,10 @@ ${report}
 	])("rejects %s", (_name, environment, expected) => {
 		const f = fixture();
 		claimBrief(f);
+		const settings = environment(f);
 		const result = f.invoke(undefined, {
-			...environment(f),
+			...settings,
+			ROUND_EVENTS: claimEvidence + (settings.ROUND_EVENTS ?? ""),
 			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);

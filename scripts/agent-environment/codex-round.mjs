@@ -18,6 +18,7 @@ import { createInterface } from "node:readline";
 import { finished } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
 import { TextDecoder } from "node:util";
+import { recordedBriefDelivery } from "./brief-format.mjs";
 import {
 	checkBrief,
 	formatBriefResult,
@@ -25,10 +26,18 @@ import {
 	namedReviewSourceEntries,
 	reviewSourcePlan,
 } from "./check-brief.mjs";
+import {
+	appendReportCheck,
+	matchReportRows,
+	parseReport,
+	passedIds,
+	readRunActivity,
+} from "./codex-report.mjs";
 import { commitHeaderSha } from "./commit-header.mjs";
 import { commandStatusIsEvent, isGitCommitWords } from "./git-commit-words.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
+import { shellScan, shellTokens, unwrapCommand } from "./shell-words.mjs";
 import {
 	beginToolCommand,
 	resolveToolArguments,
@@ -123,95 +132,6 @@ function validateModelLevel(model, level) {
 			`unsupported reasoning level for ${model}: ${level}; use ${[...levels].join(", ")}`,
 		);
 	return level;
-}
-
-function shellSeparator(text, index) {
-	const character = text[index];
-	if (character === ";" || character === "\n") return character;
-	if ((character === "&" || character === "|") && text[index + 1] === character)
-		return character + character;
-	return character === "&" || character === "|" ? character : null;
-}
-
-function shellEvent(raw, value, whitespace = false) {
-	return whitespace ? { raw, whitespace: true } : { raw, value };
-}
-
-function shellScan(command, shell = "bash") {
-	const events = [];
-	const escapeCharacter = shell === "powershell" ? "`" : "\\";
-	let quote = null;
-	let wordStarted = false;
-	for (let index = 0; index < command.length; index += 1) {
-		const character = command[index];
-		if (quote === "'") {
-			if (character === "'") quote = null;
-			events.push(shellEvent(character, character === "'" ? "" : character));
-			continue;
-		}
-		if (character === escapeCharacter && index + 1 < command.length) {
-			const next = command[++index];
-			events.push(shellEvent(character + next, next));
-			wordStarted = true;
-			continue;
-		}
-		if (quote === '"') {
-			if (character === '"') {
-				quote = null;
-				events.push(shellEvent(character, ""));
-			} else events.push(shellEvent(character, character));
-			continue;
-		}
-		if (character === "'" || character === '"') {
-			quote = character;
-			wordStarted = true;
-			events.push(shellEvent(character, ""));
-			continue;
-		}
-		if (character === "#" && !wordStarted) {
-			while (index + 1 < command.length && !/[\r\n]/.test(command[index + 1]))
-				index += 1;
-			continue;
-		}
-		if (character === "\r") {
-			events.push(shellEvent("", "", true));
-			continue;
-		}
-		const separator = shellSeparator(command, index);
-		if (separator !== null) {
-			events.push({ raw: separator, separator });
-			wordStarted = false;
-			if (separator.length === 2) index += 1;
-			continue;
-		}
-		const whitespace = /\s/.test(character);
-		events.push(shellEvent(character, character, whitespace));
-		wordStarted = !whitespace;
-	}
-	return { events, unmatchedQuote: quote !== null };
-}
-
-function shellTokens(command, shell = "bash") {
-	const { events, unmatchedQuote } = shellScan(command.trim(), shell);
-	if (unmatchedQuote) return null;
-	const tokens = [];
-	let token = "";
-	for (const event of events) {
-		if (event.whitespace || event.separator === "\n") {
-			if (token) {
-				tokens.push(token);
-				token = "";
-			}
-			continue;
-		}
-		if (event.separator !== undefined) {
-			token += event.raw;
-			continue;
-		}
-		token += event.value;
-	}
-	if (token) tokens.push(token);
-	return tokens;
 }
 
 function modelArgs(model, level, catalogPath) {
@@ -979,48 +899,6 @@ export function outcomeIdsFromBrief(input) {
 	return ids;
 }
 
-function reportStatuses(message) {
-	const statuses = new Map();
-	for (const line of message.split(/\r?\n/)) {
-		const status = line.match(/\b(PASS|FAIL)\b/)?.[1];
-		if (!status) continue;
-		for (const match of line.matchAll(
-			/\b([A-Z]+)(\d+)\s*[-\u2013\u2014]\s*(?:\1)?(\d+)\b/g,
-		)) {
-			const first = Number(match[2]);
-			const last = Number(match[3]);
-			for (
-				let number = Math.min(first, last);
-				number <= Math.max(first, last);
-				number += 1
-			)
-				statuses.set(`${match[1]}${number}`, status);
-		}
-		for (const match of line.matchAll(/\b[A-Z]+\d+\b/g))
-			statuses.set(match[0], status);
-	}
-	return statuses;
-}
-
-function reportIds(message) {
-	return new Set(reportStatuses(message).keys());
-}
-
-function passedIds(message) {
-	return new Set(
-		[...reportStatuses(message)]
-			.filter(([, status]) => status === "PASS")
-			.map(([id]) => id),
-	);
-}
-
-function isReport(message, outcomeIds) {
-	if (/^STOPPED:/m.test(message)) return true;
-	if (!outcomeIds.size) return false;
-	const covered = reportIds(message);
-	return [...outcomeIds].every((id) => covered.has(id));
-}
-
 function firstLine(message) {
 	return message.split(/\r?\n/, 1)[0] ?? "";
 }
@@ -1035,26 +913,11 @@ function quoteLine(line) {
 }
 
 function autoResumeMessage(line) {
-	return `The run ended because a message without a tool call ends it. Its first line was exactly:\n${quoteLine(line)}\nContinue toward the brief's outcomes, wait inside tool calls, and send a message only as your report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
+	return `The run ended because a message without a tool call ends it. Its first line was exactly:\n${quoteLine(line)}\nA report needs the \`report\` block or a \`STOPPED:\` line. Continue toward the brief's outcomes, wait inside tool calls, and send the block or the stop line when you are done.\n`;
 }
 
 function claimResumeMessage(failures) {
 	return `The report was not accepted because its claims did not match this run:\n${failures.map((failure) => `- ${failure}`).join("\n")}\nContinue toward the brief's outcomes, wait inside tool calls, and send a corrected report, or a line \`STOPPED: <reason>\` when you stop on purpose.\n`;
-}
-
-function briefScopeSection(brief) {
-	const text = Buffer.isBuffer(brief) ? brief.toString("utf8") : String(brief);
-	const heading = text.match(/^##[ \t]+Scope[ \t]*\r?$/m);
-	if (heading?.index === undefined) return "";
-	const remainder = text.slice(heading.index + heading[0].length);
-	const nextHeading = remainder.search(/^##[ \t]+/m);
-	return nextHeading < 0 ? remainder : remainder.slice(0, nextHeading);
-}
-
-function briefRequiresCommit(brief) {
-	return /\bcommit[ \t]+once[ \t]+when[ \t]+done\b/i.test(
-		briefScopeSection(brief).replace(/\s+/g, " "),
-	);
 }
 
 function outcomeTextFromBrief(brief, id) {
@@ -1073,37 +936,6 @@ function outcomeTextFromBrief(brief, id) {
 		if (collecting) chunks.push(line);
 	}
 	return chunks.join("\n");
-}
-
-function commitCandidates(message) {
-	return [
-		...new Set(
-			[...message.matchAll(/\b[0-9a-f]{7,64}\b/gi)].map((match) =>
-				match[0].toLowerCase(),
-			),
-		),
-	];
-}
-
-function unwrapCommand(command) {
-	const text = command.trim();
-	const wrappers = [
-		{
-			shell: "powershell",
-			pattern:
-				/^(?:"[^"]*powershell(?:\.exe)?"|powershell(?:\.exe)?)(?:\s+-[^\s]+)*\s+-Command\s+(['"])([\s\S]*)\1$/i,
-		},
-		{
-			shell: "bash",
-			pattern:
-				/^(?:"[^"]*bash(?:\.exe)?"|bash(?:\.exe)?)(?:\s+-[^\s]+)*\s+-lc\s+(['"])([\s\S]*)\1$/i,
-		},
-	];
-	for (const wrapper of wrappers) {
-		const match = text.match(wrapper.pattern);
-		if (match) return { text: match[2].trim(), shell: wrapper.shell };
-	}
-	return { text, shell: "bash" };
 }
 
 function commandParts(command) {
@@ -1158,54 +990,6 @@ function isFastLadderCommand(command) {
 	);
 }
 
-function eventFileOrder(name) {
-	if (name === "events.jsonl") return 0;
-	const match = name.match(/^events-resume(?:-(\d+))?\.jsonl$/);
-	if (!match) return null;
-	return match[1] ? Number(match[1]) : 1;
-}
-
-async function readRunCommandRecords(run) {
-	const files = (await readdir(run))
-		.map((name) => ({ name, order: eventFileOrder(name) }))
-		.filter(({ order }) => order !== null)
-		.sort((left, right) => left.order - right.order);
-	const records = [];
-	for (const { name } of files) {
-		const lines = (await readFile(path.join(run, name), "utf8")).split(/\r?\n/);
-		for (const line of lines) {
-			if (!line.trim()) continue;
-			let event;
-			try {
-				event = JSON.parse(line);
-			} catch {
-				continue;
-			}
-			if (!event || typeof event !== "object") continue;
-			const item = event.item ?? event.payload?.item ?? event.payload ?? event;
-			let command = item?.command ?? item?.cmd ?? event.command;
-			if (Array.isArray(command)) command = command.join(" ");
-			const exitCode =
-				item?.exit_code ?? item?.exitCode ?? event.exit_code ?? event.exitCode;
-			const output =
-				item?.aggregated_output ??
-				item?.output ??
-				event.aggregated_output ??
-				event.output ??
-				"";
-			const status = item?.status ?? event.status;
-			if (typeof command !== "string" || !Number.isInteger(exitCode)) continue;
-			if (status !== undefined && status !== "completed") continue;
-			records.push({
-				command,
-				exitCode,
-				output: typeof output === "string" ? output : "",
-			});
-		}
-	}
-	return records;
-}
-
 function timestampWithOffset(date) {
 	const offsetMinutes = -date.getTimezoneOffset();
 	const sign = offsetMinutes < 0 ? "-" : "+";
@@ -1245,8 +1029,7 @@ async function recordTurn(run, worktree, result, stopReason) {
 	}
 }
 
-function resolveCommitCandidates(message, worktree, launchHead, stopped) {
-	const candidates = commitCandidates(message);
+function resolveCommitClaim(candidates, worktree, launchHead) {
 	const resolved = [];
 	for (const candidate of candidates) {
 		try {
@@ -1262,7 +1045,6 @@ function resolveCommitCandidates(message, worktree, launchHead, stopped) {
 	if (!resolved.length) {
 		if (candidates.length)
 			failures.push(`commit ${candidates.join(", ")}: no such commit object`);
-		else if (!stopped) failures.push("commit: report names no commit SHA");
 		return { failures, resolved, head: null, matching: null };
 	}
 	let head = null;
@@ -1378,45 +1160,65 @@ function ladderRecordFailures(records, verifyIds) {
 	return [];
 }
 
-async function reportClaimFailures(message, brief, metadata, run) {
-	if (!briefRequiresCommit(brief)) return [];
-	let commands;
-	const runCommands = async () => {
-		commands ??= await readRunCommandRecords(run);
-		return commands;
-	};
-	const claimed = resolveCommitCandidates(
-		message,
-		metadata.worktree,
-		metadata.head,
-		/^STOPPED:/m.test(message),
-	);
-	const failures = [...claimed.failures];
-	if (claimed.resolved.length) {
-		failures.push(
-			...lineageAndDiffFailures(
-				metadata.worktree,
-				claimed.head,
-				claimed.matching,
-				metadata.head,
+async function reportClaimFailures(
+	report,
+	brief,
+	metadata,
+	run,
+	delivers,
+	events,
+) {
+	const activity = await readRunActivity(run, metadata.worktree);
+	const rowMatch = await matchReportRows(report, activity, {
+		worktree: metadata.worktree,
+		freshEvidence: delivers === "commit",
+	});
+	const failures = [...report.failures, ...rowMatch.failures];
+	let claimed = { resolved: [], head: null, matching: null };
+	if (delivers === "commit") {
+		claimed = resolveCommitClaim(
+			report.commitShas,
+			metadata.worktree,
+			metadata.head,
+		);
+		failures.push(...claimed.failures);
+		if (claimed.resolved.length) {
+			failures.push(
+				...lineageAndDiffFailures(
+					metadata.worktree,
+					claimed.head,
+					claimed.matching,
+					metadata.head,
+				),
+			);
+			failures.push(
+				...commitRecordFailures(
+					activity.records,
+					metadata.worktree,
+					claimed.head,
+				),
+			);
+		}
+		const verifyIds = [...passedIds(report)].filter((id) =>
+			/\bverify\.mjs[ \t]+fast\b|\bverify:fast\b/i.test(
+				outcomeTextFromBrief(brief, id),
 			),
 		);
-		failures.push(
-			...commitRecordFailures(
-				await runCommands(),
-				metadata.worktree,
-				claimed.head,
-			),
-		);
+		if (verifyIds.length)
+			failures.push(...ladderRecordFailures(activity.records, verifyIds));
 	}
-	const verifyIds = [...passedIds(message)].filter((id) =>
-		/\bverify\.mjs[ \t]+fast\b|\bverify:fast\b/i.test(
-			outcomeTextFromBrief(brief, id),
-		),
-	);
-	if (verifyIds.length)
-		failures.push(...ladderRecordFailures(await runCommands(), verifyIds));
-	return failures;
+	const record = {
+		events: path.basename(events),
+		accepted: false,
+		stopped: report.stopped,
+		delivers,
+		commitSha: report.commitShas[0] ?? null,
+		commitResolved:
+			claimed.matching?.resolved ?? claimed.resolved[0]?.resolved ?? null,
+		rows: rowMatch.rows,
+		refusals: failures,
+	};
+	return { failures, record };
 }
 async function optionalFile(filename) {
 	try {
@@ -1787,6 +1589,7 @@ async function prepareLaunch(options) {
 		metadata,
 		input,
 		brief,
+		delivers: result.delivers,
 		executable,
 		environment,
 		outcomeIds,
@@ -1926,6 +1729,11 @@ async function prepareResume(options) {
 		throw new Error(
 			'brief has no outcome IDs; add each outcome and limit as a bullet such as "- **X1.**" outside its environment block',
 		);
+	const delivers = recordedBriefDelivery(launchInput);
+	if (!delivers)
+		throw new Error(
+			"brief has no delivers field; add delivers: commit or delivers: report to its first line",
+		);
 	const catalog =
 		metadata.model === DEEPSEEK_MODEL
 			? await readDeepSeekCatalog(options.run)
@@ -1942,6 +1750,7 @@ async function prepareResume(options) {
 		metadata,
 		input,
 		brief: launchInput,
+		delivers,
 		thread: await firstThread(options.run),
 		executable: await findCodex(),
 		catalog,
@@ -2158,6 +1967,21 @@ async function runCodex(options, prepared, input, resume) {
 	};
 }
 
+async function evaluateReport(report, prepared, run, events) {
+	if (!report.present) return [];
+	const checked = await reportClaimFailures(
+		report,
+		prepared.brief,
+		prepared.metadata,
+		run,
+		prepared.delivers,
+		events,
+	);
+	checked.record.accepted = !checked.failures.length;
+	await appendReportCheck(run, checked.record);
+	return checked.failures;
+}
+
 async function execute(options, prepared) {
 	let input = prepared.input;
 	let resume = options.resume;
@@ -2178,21 +2002,22 @@ async function execute(options, prepared) {
 		}
 		const last = await optionalFile(path.join(options.run, "last-message.md"));
 		const message = last?.toString("utf8") ?? "";
-		const report = isReport(message, prepared.outcomeIds);
-		const claimFailures = report
-			? await reportClaimFailures(
-					message,
-					prepared.brief,
-					prepared.metadata,
-					options.run,
-				)
-			: [];
-		if (report && !claimFailures.length) {
+		const report = parseReport(message, {
+			delivers: prepared.delivers,
+			outcomeIds: prepared.outcomeIds,
+		});
+		const claimFailures = await evaluateReport(
+			report,
+			prepared,
+			options.run,
+			result.events,
+		);
+		if (report.present && !claimFailures.length) {
 			await recordTurn(
 				options.run,
 				prepared.metadata.worktree,
 				{ ...result, startedAt },
-				/^STOPPED:/m.test(message) ? "STOPPED" : "report accepted",
+				report.stopped ? "STOPPED" : "report accepted",
 			);
 			return 0;
 		}

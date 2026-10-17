@@ -688,13 +688,13 @@
 		"scripts/agent-environment/check-brief.mjs": {
 			"duplication": 10,
 			"longFunctions": 3,
-			"giantFiles": 1132
+			"giantFiles": 1128
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
-			"duplication": 5,
+			"duplication": 3,
 			"typeEscapes": 5,
 			"longFunctions": 7,
-			"giantFiles": 1423
+			"giantFiles": 1410
 		},
 		"scripts/agent-environment/code-health-ratchet.test.ts": {
 			"duplication": 10,
@@ -703,13 +703,13 @@
 		"scripts/agent-environment/codex-round.mjs": {
 			"duplication": 6,
 			"longFunctions": 3,
-			"giantFiles": 2279
+			"giantFiles": 2104
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
-			"duplication": 44,
+			"duplication": 42,
 			"typeEscapes": 10,
 			"longFunctions": 14,
-			"giantFiles": 4484
+			"giantFiles": 4366
 		},
 		"scripts/agent-environment/context-ending.test.ts": {
 			"duplication": 1,

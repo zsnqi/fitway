@@ -87,7 +87,7 @@ beforeAll(() => {
 	git(foreignRepository, "add", ".");
 	git(foreignRepository, "commit", "-m", "foreign fixture");
 	git(foreignRepository, "branch", "feature/command-only");
-	brief = `<!-- brief-format: v1 role: codex -->
+	brief = `<!-- brief-format: v1 role: codex delivers: report -->
 # Fixture brief
 - **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`
 ${environment}

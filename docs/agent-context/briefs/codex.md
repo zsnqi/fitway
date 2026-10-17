@@ -1,4 +1,4 @@
-<!-- brief-format: v1 role: codex -->
+<!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: <title> (<milestone-id>, round <n>)
 
 - **Worktree:** `D:/Projects/fitway-worktrees/<worktree>`, branch `<branch>`, HEAD `<short-sha>`
@@ -47,8 +47,18 @@ work around it: finish and measure the others, then stop and report. (B3)
 
 ## Report
 
-Each outcome as PASS or FAIL with the command and the output line that proves it; the files you changed; the commit
-SHA; anything you could not do.
+Send one fenced `report` block as your final message. Put one JSON object on each line:
+
+```report
+{"commit":"<SHA>"}
+{"id":"<ID>","status":"PASS","command":"<command exactly as run>","output":"<one line copied from its output>"}
+{"id":"<LIMIT>","status":"FAIL","command":"<command>","output":"<output line>"}
+```
+
+For `delivers: commit`, include exactly one `commit` line. For `delivers: report`, omit it. Add one row for every
+outcome and limit ID the brief defines. A PASS command must match a command started after the last edit inside the
+worktree, and its output must be one line the command printed. Outside the block, also list the files you changed and
+anything you could not do.
 
 ## Coordinator checklist (delete before launch)
 
@@ -56,6 +66,8 @@ The brief rules B1-B13 live here. Codex follows a brief to the letter, so most f
 (`docs/phase-records/handoffs/agent-environment/codex-rounds.md`).
 
 - [ ] B1. Every supported way to open and run the artifact is named (HTTP, `file://`, sizes, reduced motion), with the ones the checks cover.
+- [ ] Set `delivers: commit` when the round delivers a commit; use `delivers: report` when the round only grades,
+      reviews, investigates, or otherwise must not commit.
 - [ ] B2. Before requiring equality to a baseline, the baseline is checked for the defect being removed.
 - [ ] B3. The Scope keeps its last sentence: an unmet outcome is measured and reported, never worked around.
 - [ ] B4. Goal, cause and outcomes only; the approach is left open.

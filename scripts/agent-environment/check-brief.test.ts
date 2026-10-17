@@ -20,6 +20,7 @@ import {
 	reviewSourcePlan,
 	setReviewSourcePlaceObserver,
 } from "./check-brief.mjs";
+import { captureReviewSourceAccess } from "./check-brief-review-access-fixture.mjs";
 import { copyReviewSources } from "./codex-round.mjs";
 import { git, put } from "./fixtures";
 
@@ -205,7 +206,7 @@ function fixture() {
 	git(commandRepository, "commit", "-m", "fixture base");
 	const head = git(commandRepository, "rev-parse", "--short", "HEAD");
 	git(commandRepository, "worktree", "add", "-b", "feature/build", worktree);
-	const valid = `<!-- brief-format: v1 role: codex -->\n# Fixture brief\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`\n\n${environment}\n## Goal\n\nRead \`docs/guide.md:4\` §"Selected heading".\n\n## Scope\n\nWrite only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.\n\n## Report\n\nFixture report.\n`;
+	const valid = `<!-- brief-format: v1 role: codex delivers: report -->\n# Fixture brief\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`\n\n${environment}\n## Goal\n\nRead \`docs/guide.md:4\` §"Selected heading".\n\n## Scope\n\nWrite only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.\n\n## Report\n\nFixture report.\n`;
 	const briefPath = path.join(commandRepository, "brief.md");
 	const check = async (text = valid, fillEnvironment = false) => {
 		writeFileSync(briefPath, text);
@@ -216,27 +217,6 @@ function fixture() {
 		});
 	};
 	return { root, commandRepository, worktree, head, valid, briefPath, check };
-}
-
-async function captureReviewSourceAccess(action: () => Promise<unknown>) {
-	const accessKey = Symbol.for("fitway.review-source-access-test");
-	const events: {
-		type: "place" | "read";
-		kind?: string;
-		route?: string;
-		value?: unknown;
-	}[] = [];
-	Reflect.set(globalThis, accessKey, events);
-	setReviewSourcePlaceObserver((event) => {
-		events.push({ type: "place", ...event });
-	});
-	try {
-		await action();
-		return events;
-	} finally {
-		setReviewSourcePlaceObserver(undefined);
-		Reflect.deleteProperty(globalThis, accessKey);
-	}
 }
 
 // Review sources must sit under D:/fitway-temp; a CI runner has no such folder until something makes it.
@@ -1101,7 +1081,10 @@ describe("brief-format: shared environment and brief role", () => {
 	])("accepts role %s and ignores line-ending differences", async (role) => {
 		const f = fixture();
 		const text = f.valid
-			.replace("role: codex", `role: ${role}`)
+			.replace(
+				"role: codex delivers: report",
+				role === "codex" ? "role: codex delivers: report" : `role: ${role}`,
+			)
 			.replace(/\r?\n/g, "\r\n");
 		expect((await f.check(text)).ok).toBe(true);
 	});
@@ -1227,7 +1210,11 @@ describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostic
 		).toHaveLength(2);
 		for (const role of ["builder", "designer", "verifier"])
 			expect(
-				(await f.check(text.replace("role: codex", `role: ${role}`))).ok,
+				(
+					await f.check(
+						text.replace("role: codex delivers: report", `role: ${role}`),
+					)
+				).ok,
 			).toBe(true);
 	});
 
