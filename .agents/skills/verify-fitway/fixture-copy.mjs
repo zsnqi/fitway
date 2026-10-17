@@ -22,11 +22,12 @@ async function copyContract(folder) {
 	const target = resolve(folder, "../../../scripts/agent-environment");
 	await mkdir(target, { recursive: true });
 	await Promise.all(
-		["tool-contract.mjs", "tool-registry.mjs"].map((name) =>
-			copyFile(
-				resolve(repository, "scripts/agent-environment", name),
-				resolve(target, name),
-			),
+		["tool-contract.mjs", "tool-registry.mjs", "tool-help-notes.mjs"].map(
+			(name) =>
+				copyFile(
+					resolve(repository, "scripts/agent-environment", name),
+					resolve(target, name),
+				),
 		),
 	);
 }

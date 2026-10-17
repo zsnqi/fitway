@@ -34,7 +34,11 @@ function fixture() {
 			path.join(root, "scripts", file),
 		);
 	}
-	for (const file of ["tool-contract.mjs", "tool-registry.mjs"]) {
+	for (const file of [
+		"tool-contract.mjs",
+		"tool-registry.mjs",
+		"tool-help-notes.mjs",
+	]) {
 		copyFileSync(
 			path.join(repository, "scripts", "agent-environment", file),
 			path.join(root, "scripts", "agent-environment", file),

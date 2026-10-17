@@ -597,7 +597,7 @@ export async function inspectFolder(folder) {
 		findings: lintSources(sources, { checkFocusRing: true }),
 	};
 }
-export async function main(args = process.argv.slice(2), write = console.log) {
+export async function main(args, write = console.log) {
 	const folders = args.filter((arg) => arg !== "--");
 	if (folders.length !== 1)
 		throw new Error(

@@ -17,6 +17,8 @@ import {
 	beginToolCommand,
 	renderToolHelp,
 	resolveToolArguments,
+	ToolStartupError,
+	toolStartupLine,
 } from "../../../scripts/agent-environment/tool-contract.mjs";
 import {
 	colorsAxis,
@@ -292,6 +294,8 @@ export async function doctor(options) {
 	try {
 		return await doctorChecks(options);
 	} catch (error) {
+		// A value the command cannot use is a start-up failure (C4), not a doctor finding.
+		if (error instanceof ToolStartupError) throw error;
 		const available =
 			process.env.VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE === "0"
 				? async () => {}
@@ -322,8 +326,9 @@ async function launch(options) {
 	const out = options.out || freshOutput();
 	assertOutsideGit(out);
 	if (existsSync(resolve(out, "session.json")))
-		throw new Error(
+		throw new ToolStartupError(
 			`Launch folder already has a session; cleanup --session '${out}' and use a fresh folder.`,
+			`run cleanup --session '${out}', then pass a fresh --out folder`,
 		);
 	await outputFile(out, "session.json");
 	await portAvailable(port);
@@ -490,7 +495,7 @@ export function ownerCommandOptions(parsed) {
 	};
 }
 
-export async function main(input = process.argv.slice(2), services = {}) {
+export async function main(input, services = {}) {
 	const parsed = Array.isArray(input)
 		? resolveToolArguments("verify:owner", input)
 		: input;
@@ -535,8 +540,9 @@ export async function main(input = process.argv.slice(2), services = {}) {
 	if (command === "measure") {
 		assertOutsideGit(options.out);
 		if (existsSync(options.out) && readdirSync(options.out).length)
-			throw new Error(
+			throw new ToolStartupError(
 				"measure requires a fresh empty output folder; this prevents descendant links or old evidence from redirecting writes.",
+				"pass --out a new or empty folder outside Git",
 			);
 		const tools = forensicsPath(options);
 		const tool = options.tool;
@@ -554,6 +560,7 @@ export async function main(input = process.argv.slice(2), services = {}) {
 		)
 			throw new Error("Unknown measure tool; see help.");
 		if (
+			// tool-contract: the measurement tool's passthrough arguments
 			options.extra.some((arg) =>
 				[
 					"--out",
@@ -565,8 +572,9 @@ export async function main(input = process.argv.slice(2), services = {}) {
 				].includes(arg.split("=")[0]),
 			)
 		)
-			throw new Error(
+			throw new ToolStartupError(
 				"Pass output only as measure --out; use the maintained launch URL, not --serve.",
+				"drop the tool's --out, --serve, --ref-serve, --json and --html; measure --out names the output",
 			);
 		const heldRequested = options.extra.some((arg) =>
 			/(?:^|[=:])(?:hold|release)(?::|$)/.test(arg),
@@ -592,6 +600,7 @@ export async function main(input = process.argv.slice(2), services = {}) {
 		await outputFile(options.out, "tool-output");
 		for (let index = 0; index < options.extra.length; index++) {
 			const argument = options.extra[index];
+			// tool-contract: the measurement tool's passthrough arguments
 			if (!["--spec", "--frames"].includes(argument.split("=")[0])) continue;
 			const path = argument.includes("=")
 				? argument.slice(argument.indexOf("=") + 1)
@@ -601,8 +610,9 @@ export async function main(input = process.argv.slice(2), services = {}) {
 				if (!value || typeof value !== "object") return;
 				for (const [key, childValue] of Object.entries(value)) {
 					if (["serve", "refServe", "ref-serve"].includes(key) && childValue)
-						throw new Error(
+						throw new ToolStartupError(
 							"Tool spec starts a server; use target.url from the maintained preview.",
+							"remove serve/refServe from the spec and set target.url to the launched preview",
 						);
 					inspect(childValue);
 				}
@@ -700,6 +710,11 @@ export async function main(input = process.argv.slice(2), services = {}) {
 		}
 		return;
 	}
+	if (command === "compare" && !options.baseline)
+		throw new ToolStartupError(
+			"compare requires --baseline <absolute concept folder>.",
+			"pass --baseline <absolute baseline folder>",
+		);
 	if (command === "compare")
 		return compare(
 			{ ...options, out: options.out || freshOutput() },
@@ -747,14 +762,14 @@ export async function main(input = process.argv.slice(2), services = {}) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === self) {
-	const args = process.argv.slice(2);
-	const checkMap = process.env.npm_lifecycle_event === "check:verification-map";
 	const parsed = beginToolCommand(
-		checkMap ? "check:verification-map" : "verify:owner",
-		args,
+		["verify:owner", "check:verification-map"],
+		process.argv.slice(2),
 	);
 	main(parsed).catch((error) => {
-		if (!(error instanceof ReportedFailure))
+		const line = toolStartupLine(parsed.entry.name, error);
+		if (line) console.error(line);
+		else if (!(error instanceof ReportedFailure))
 			console.error(
 				`FAIL: ${error.message}${error.fix ? `\nFIX: ${error.fix}` : ""}`,
 			);

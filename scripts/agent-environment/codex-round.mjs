@@ -1140,7 +1140,7 @@ function commandStatusIsEvent(part) {
 function isGitCommitCommand(command, shell = "bash") {
 	const words = shellTokens(command, shell) ?? [];
 	if (!/^git(?:\.exe)?$/i.test(words[0] ?? "")) return false;
-	let index = 1;
+	let index = 1; // tool-contract: a shell command's words, not this command's arguments
 	while (index < words.length) {
 		if (words[index] === "--no-pager") {
 			index += 1;
@@ -2262,7 +2262,7 @@ async function execute(options, prepared) {
 	}
 }
 
-export async function main(args = process.argv.slice(2)) {
+export async function main(args) {
 	let options;
 	try {
 		options = Array.isArray(args)

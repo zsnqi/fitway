@@ -1,7 +1,16 @@
+import {
+	CODEX_ROUND_NOTES,
+	CONCEPT_CSS_NOTES,
+	NODE_USAGE_NOTES,
+	OWNER_NOTES,
+	TOOLING_MAP_EXITS,
+	TOOLING_MAP_NOTES,
+} from "./tool-help-notes.mjs";
+
 const flag = (
 	name,
 	description,
-	{ key = name.slice(2), sample = null } = {},
+	{ key = name.slice(2), sample = null, once = false } = {},
 ) => ({
 	name,
 	key,
@@ -9,6 +18,7 @@ const flag = (
 	freeText: false,
 	description,
 	sample,
+	once,
 });
 
 const value = (
@@ -22,6 +32,9 @@ const value = (
 		absolute = false,
 		missingFix = null,
 		key = name.slice(2),
+		integer = null,
+		choices = null,
+		valueNote = null,
 	} = {},
 ) => ({
 	name,
@@ -34,6 +47,9 @@ const value = (
 	pathLabel,
 	absolute,
 	missingFix,
+	integer,
+	choices,
+	valueNote,
 });
 
 const nodeInvocation = (entrypoint) => `node ${entrypoint}`;
@@ -50,12 +66,17 @@ const executableEntry = (entry, kind) => {
 const packageEntry = (entry) => executableEntry(entry, "package");
 const nodeEntry = (entry) => executableEntry(entry, "node");
 
+const MEASURE_TOOLS = "focus motion a11y probe perf capture sheet diff".split(
+	" ",
+);
+
 const exits = (...codes) => codes.map(([code, meaning]) => ({ code, meaning }));
 
 const ownerOptions = {
 	concept: value("--concept", "Concept folder.", {
 		sample: "visual-exploration/public-live/aurora-preview",
 		pathKind: "directory",
+		absolute: true,
 	}),
 	recipes: value("--recipes", "Verification recipe file.", {
 		sample: "verification-recipes.json",
@@ -65,7 +86,7 @@ const ownerOptions = {
 		sample: "verification-map.json",
 		pathKind: "file",
 	}),
-	out: value("--out", "Fresh evidence output folder."),
+	out: value("--out", "Fresh evidence output folder.", { absolute: true }),
 	page: value("--page", "Page name or all.", { sample: "all" }),
 	feature: value("--feature", "Feature name, list, or all.", { sample: "all" }),
 	states: value("--states", "State selection.", { sample: "default" }),
@@ -99,6 +120,13 @@ const ownerOptions = {
 	root: value("--root", "Repository root.", {
 		sample: ".",
 		pathKind: "directory",
+	}),
+	quiet: value("--quiet", "Omit the pass line (any value counts).", {
+		sample: "true",
+	}),
+	timeline: flag("--timeline", "Compare settled and held frames."),
+	timelineTimes: value("--timeline-times", "Timeline sample times.", {
+		sample: "1,100,200",
 	}),
 };
 
@@ -170,7 +198,7 @@ const ownerCommands = [
 	{
 		name: "drift",
 		usage:
-			"pnpm verify:owner drift --concept <folder> [--recipes <file>] [--map <file>]",
+			"pnpm verify:owner drift --concept <folder> [--recipes <file>] [--map <verification-map.json>]",
 		purpose: "Report source and recipe drift.",
 		options: [ownerOptions.concept, ownerOptions.recipes, ownerOptions.map],
 		requiredOptions: ["--concept"],
@@ -200,10 +228,15 @@ const ownerCommands = [
 			ownerOptions.port,
 			ownerOptions.out,
 			flag("--lan", "Listen on LAN."),
-			value("--isolated-port", "Isolated high port.", { sample: "49152" }),
+			value("--isolated-port", "Isolated high port.", {
+				sample: "49152",
+				integer: [49152, 65535],
+			}),
 			value("--idle-timeout-ms", "Idle timeout in milliseconds.", {
 				sample: "60000",
 				missingFix: "at most 30 minutes; run pnpm verify:owner --help",
+				integer: [1, 1800000],
+				valueNote: "at most 30 minutes",
 			}),
 		],
 		requiredOptions: ["--concept"],
@@ -215,7 +248,7 @@ const ownerCommands = [
 	{
 		name: "doctor",
 		usage:
-			"pnpm verify:owner doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff] [--forensics <folder>]",
+			"pnpm verify:owner doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff] [--forensics <folder>] [--transports http,file] [--quiet <any>]",
 		purpose: "Diagnose verification readiness.",
 		options: [
 			ownerOptions.concept,
@@ -225,6 +258,8 @@ const ownerCommands = [
 			ownerOptions.port,
 			ownerOptions.tools,
 			ownerOptions.forensics,
+			ownerOptions.transports,
+			ownerOptions.quiet,
 		],
 		requiredOptions: ["--concept"],
 		exitCodes: exits([0, "Doctor passed."], [1, "Doctor reported a problem."]),
@@ -232,22 +267,30 @@ const ownerCommands = [
 	{
 		name: "drive",
 		usage:
-			"pnpm verify:owner drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>] [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...] [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone] [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176] [--colors normal,forced] [--cache no-store|none] [--probes daily]",
+			"pnpm verify:owner drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>] [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...] [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone] [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176] [--colors normal,forced] [--cache no-store|none] [--probes daily] [--tools diff] [--timeline] [--timeline-times 1,100,200,...] [--quiet <any>]",
 		purpose: "Drive responsive and interaction evidence.",
-		options: [ownerOptions.concept, ...driveOptions],
+		options: [
+			ownerOptions.concept,
+			...driveOptions,
+			ownerOptions.tools,
+			ownerOptions.timeline,
+			ownerOptions.timelineTimes,
+			ownerOptions.quiet,
+		],
 		requiredOptions: ["--concept"],
 		exitCodes: exits([0, "Drive passed."], [1, "Findings or command failure."]),
 	},
 	{
 		name: "compare",
 		usage:
-			"pnpm verify:owner compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>] [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177] [all drive options] [--out <evidence-folder>] [--forensics <folder>] [--timeline] [--timeline-times 1,100,200,...] [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]",
+			"pnpm verify:owner compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>] [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177] [all drive page/feature/state/axis options] [--out <evidence-folder>] [--forensics <folder>] [--timeline] [--timeline-times 1,100,200,...] [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]",
 		purpose: "Compare a build against a baseline.",
 		options: [
 			ownerOptions.concept,
 			value("--baseline", "Baseline folder.", {
 				sample: "visual-exploration/baseline",
 				pathKind: "directory",
+				absolute: true,
 			}),
 			ownerOptions.recipes,
 			value("--baseline-recipes", "Baseline recipe file.", {
@@ -260,13 +303,14 @@ const ownerCommands = [
 			}),
 			value("--baseline-port", "Baseline preview port.", { sample: "3177" }),
 			...driveOptions,
-			flag("--timeline", "Compare settled and held frames."),
-			value("--timeline-times", "Timeline sample times.", {
-				sample: "1,100,200",
-			}),
+			ownerOptions.timeline,
+			ownerOptions.timelineTimes,
 			flag("--affected-pages", "Compare affected pages."),
 			value("--baseline-cache", "Baseline cache mode.", { sample: "off" }),
-			value("--workers", "Parallel workers.", { sample: "1" }),
+			value("--workers", "Parallel workers.", {
+				sample: "1",
+				integer: [1, 4],
+			}),
 		],
 		requiredOptions: ["--concept"],
 		exitCodes: exits(
@@ -277,13 +321,23 @@ const ownerCommands = [
 	{
 		name: "measure",
 		usage:
-			"pnpm verify:owner measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] [--colors normal|forced] -- <tool arguments>",
+			"pnpm verify:owner measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] [--colors normal|forced] [--feature <name>] [--states <state>] [--languages <list>] [--sizes <list>] [--inputs <list>] [--motions <list>] [--transports <list>] -- <tool arguments>",
 		purpose: "Run one specialized measurement tool.",
 		options: [
-			value("--tool", "Measurement tool.", { sample: "focus" }),
+			value("--tool", "Measurement tool.", {
+				sample: "focus",
+				choices: MEASURE_TOOLS,
+			}),
 			ownerOptions.out,
 			ownerOptions.forensics,
 			ownerOptions.colors,
+			ownerOptions.feature,
+			ownerOptions.states,
+			ownerOptions.languages,
+			ownerOptions.sizes,
+			ownerOptions.inputs,
+			ownerOptions.motions,
+			ownerOptions.transports,
 		],
 		requiredOptions: ["--tool", "--out"],
 		passthrough: true,
@@ -308,7 +362,7 @@ const ownerCommands = [
 		usage: "pnpm verify:owner _serve --concept <folder> [options]",
 		purpose: "Internal preview server.",
 		options: [
-			ownerOptions.concept,
+			{ ...ownerOptions.concept, absolute: false },
 			ownerOptions.port,
 			flag("--lan", "Listen on LAN."),
 			value("--token", "Session token."),
@@ -337,11 +391,7 @@ const ownerEntry = {
 	],
 	globalOptions: [],
 	commands: ownerCommands,
-	extraHelp: [
-		"Previews stop after 30 minutes without a request; requests renew the timeout.",
-		"To run discovery and drive checks, install checkout dependencies:",
-		"  pnpm --dir '<repository>' install --frozen-lockfile",
-	],
+	extraHelp: OWNER_NOTES,
 	exitCodes: exits(
 		[0, "Command passed or help printed."],
 		[1, "Command refused or verification failed."],
@@ -383,6 +433,7 @@ export const TOOL_REGISTRY = Object.freeze([
 		],
 		deferPositionalFailures: true,
 		failureExitCode: 2,
+		extraHelp: CONCEPT_CSS_NOTES,
 		failureCases: [
 			{ args: [], fix: "Usage: pnpm check:concept-css -- <folder>" },
 			{ args: ["contract-missing-folder"], fix: "existing folder" },
@@ -409,6 +460,7 @@ export const TOOL_REGISTRY = Object.freeze([
 			}),
 			flag("--verbose", "Print warnings."),
 		],
+		extraHelp: NODE_USAGE_NOTES["check:agent-context"],
 		exitCodes: exits(
 			[0, "Context checks passed."],
 			[1, "Context checks failed."],
@@ -426,6 +478,7 @@ export const TOOL_REGISTRY = Object.freeze([
 			}),
 		],
 		requiredOptions: ["--milestone"],
+		extraHelp: NODE_USAGE_NOTES["context:show"],
 		exitCodes: exits(
 			[0, "Context plan printed."],
 			[1, "Context plan refused."],
@@ -461,6 +514,7 @@ export const TOOL_REGISTRY = Object.freeze([
 		options: [
 			flag("--fill-environment", "Fill the shared environment block.", {
 				key: "fillEnvironment",
+				once: true,
 			}),
 		],
 		positionals: [
@@ -535,12 +589,7 @@ export const TOOL_REGISTRY = Object.freeze([
 		],
 		skipPositionalPaths: true,
 		deferPositionalFailures: true,
-		extraHelp: [
-			"--message sends the exact text instead of the saved launch input.",
-			"When a run exits 0 without a report, it resumes automatically up to 10 times and appends each trigger to auto-resumes.log.",
-			"Models: deepseek-v4.1-flash (default), gpt-6.1-sol.",
-			"Levels: deepseek-v4.1-flash: high, max (default max); gpt-6.1-sol: medium, high, xhigh, max.",
-		],
+		extraHelp: CODEX_ROUND_NOTES,
 		exitCodes: exits(
 			[0, "Round completed."],
 			[1, "Command refused or failed."],
@@ -571,6 +620,7 @@ export const TOOL_REGISTRY = Object.freeze([
 				fix: "positive integer",
 			},
 		],
+		extraHelp: NODE_USAGE_NOTES["start-load"],
 		exitCodes: exits([0, "Report printed."], [1, "Command refused or failed."]),
 	}),
 	packageEntry({
@@ -581,7 +631,8 @@ export const TOOL_REGISTRY = Object.freeze([
 		purpose: "Regenerate the agent tooling code map.",
 		usage: "pnpm map:tooling [--check]",
 		options: [flag("--check", "Check without writing.")],
-		exitCodes: exits([0, "Map written or checked."], [1, "Map drift."]),
+		extraHelp: TOOLING_MAP_NOTES,
+		exitCodes: exits(...TOOLING_MAP_EXITS),
 	}),
 	packageEntry({
 		name: "check:tooling-map",
@@ -592,7 +643,8 @@ export const TOOL_REGISTRY = Object.freeze([
 		usage: "pnpm check:tooling-map",
 		options: [],
 		fixedArgs: ["--check"],
-		exitCodes: exits([0, "Map is current."], [1, "Map drift."]),
+		extraHelp: TOOLING_MAP_NOTES,
+		exitCodes: exits(...TOOLING_MAP_EXITS),
 	}),
 	packageEntry({
 		name: "code-health:baseline",
@@ -683,6 +735,7 @@ export const TOOL_REGISTRY = Object.freeze([
 			}),
 		],
 		requiredOptions: ["--out"],
+		extraHelp: NODE_USAGE_NOTES["gardener:survey"],
 		exitCodes: exits([0, "Survey complete."], [1, "Survey blocked."]),
 	}),
 	nodeEntry({
@@ -702,6 +755,7 @@ export const TOOL_REGISTRY = Object.freeze([
 			}),
 		],
 		requiredOptions: ["--checkout", "--worktree"],
+		extraHelp: NODE_USAGE_NOTES["gardener:remove-worktree"],
 		exitCodes: exits([0, "Worktree removed."], [1, "Removal refused."]),
 	}),
 ]);

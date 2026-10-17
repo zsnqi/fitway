@@ -1,557 +1,42 @@
-import { spawn } from "node:child_process";
-import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
+import { beginToolCommand, toolEntry } from "./tool-contract.mjs";
+import { sourceScanTest, startupProbes } from "./tool-contract-cases";
 import {
-	beginToolCommand,
-	renderToolHelp,
-	toolEntry,
-} from "./tool-contract.mjs";
-import { TOOL_REGISTRY } from "./tool-registry.mjs";
-
-type ToolValue = {
-	name: string;
-	sample: string | null;
-	pathKind?: string | null;
-	pathLabel?: string;
-	absolute?: boolean;
-};
-type ToolOption = ToolValue & {
-	key?: string;
-	takesValue: boolean;
-	freeText: boolean;
-};
-type ToolPosition = ToolValue & {
-	required: boolean;
-};
-type ToolCommand = {
-	name: string;
-	options: ToolOption[];
-	requiredOptions: string[];
-	positionals?: ToolPosition[];
-};
-type ToolEntry = {
-	name: string;
-	invocation: string;
-	kind: "package" | "node";
-	usage: string;
-	options: ToolOption[];
-	commands?: ToolCommand[];
-	positionals?: ToolPosition[];
-	requiredOptions?: string[];
-	failureName?: string;
-	failureExitCode?: number;
-	deferPositionalFailures?: boolean;
-	failureCases?: Array<{ args: string[]; fix: string }>;
-	invalidValues?: Array<{ args: string[]; fix: string }>;
-};
-type Probe = { label: string; run: () => Promise<void> };
-
-const repository = fileURLToPath(new URL("../../", import.meta.url));
-const observer = path.join(
+	contractProbes,
+	equalsArguments,
+	equalsProbeCases,
+	noSideEffects,
+	optionKey,
 	repository,
-	"scripts/agent-environment/tool-contract-observer.cjs",
-);
-const runRoot = fs.mkdtempSync(path.join(tmpdir(), "fitway-tool-contract-"));
-const unknown = "--__contract_unknown";
+	runEntry,
+	runNode,
+	runPool,
+	runRoot,
+	unknown,
+	unknownProbe,
+} from "./tool-contract-probes";
+import { TOOL_REGISTRY } from "./tool-registry.mjs";
 
 afterAll(() => fs.rmSync(runRoot, { recursive: true, force: true }));
 
+// C1's product scripts: exact names, and the families written with a star (dev*, db:*, ...).
+const PRODUCT_SCRIPT =
+	/^(?:dev.*|build|check-types|db:.*|edge:.*|deploy.*|env:.*|demo:.*|owner:review|test.*|check|format)$/;
+
 function agentScript(name: string, script: string) {
-	return (
-		!/^(?:dev|build|check-types|db:|edge:|deploy|env:|demo:|owner:review|test|check$|format$)/.test(
-			name,
-		) && Boolean(script)
-	);
+	return !PRODUCT_SCRIPT.test(name) && Boolean(script);
 }
 
-function optionArguments(option: ToolOption) {
-	return option.takesValue
-		? [option.name, option.sample ?? "contract-value"]
-		: [option.name];
-}
-
-function commandPrefix(command: ToolCommand | null) {
-	return command ? [command.name] : [];
-}
-
-function contractValue(option?: ToolValue) {
-	if (!option) return "contract-value";
-	if (option.absolute) return repository;
-	if (option.pathKind === "file") return path.join(repository, "package.json");
-	if (option.pathKind) return repository;
-	return option.sample ?? "contract-value";
-}
-
-function requiredArguments(
-	entry: ToolEntry,
-	command: ToolCommand | null = null,
-	overrides: Record<string, string | null> = {},
-) {
-	const args = commandPrefix(command);
-	const options = command?.options ?? entry.options ?? [];
-	for (const name of command?.requiredOptions ?? entry.requiredOptions ?? []) {
-		const option = options.find((candidate) => candidate.name === name);
-		const value =
-			overrides[name] === null
-				? undefined
-				: (overrides[name] ?? contractValue(option));
-		if (option?.takesValue && value !== undefined) args.push(name, value);
-		else if (!option?.takesValue) args.push(name);
-	}
-	const positions = command?.positionals ?? entry.positionals ?? [];
-	for (let index = 0; index < positions.length; index += 1) {
-		if (!positions[index].required) continue;
-		const value =
-			overrides[`#${index}`] === null
-				? undefined
-				: (overrides[`#${index}`] ??
-					(positions[index].pathKind
-						? contractValue(positions[index])
-						: positions[index].sample));
-		if (value !== undefined) args.push(value);
-	}
-	return args;
-}
-
-function runNode({
-	invocation,
-	nodeArgs,
-	args,
-	commandName,
-	cwd = repository,
-	clearPhase = false,
-}: {
-	invocation?: string;
-	nodeArgs?: string[];
-	args: string[];
-	commandName: string;
-	cwd?: string;
-	clearPhase?: boolean;
-}) {
-	const parts = invocation
-		? invocation.split(" ")
-		: ["node", ...(nodeArgs ?? [])];
-	if (parts[0] !== "node") throw new Error(`Unsupported probe: ${invocation}`);
-	const logPath = path.join(runRoot, `${randomUUID()}.jsonl`);
-	const observerOption = `--require=${observer}`;
-	const env: NodeJS.ProcessEnv = {
-		...process.env,
-		FITWAY_TOOL_CONTRACT_LOG: logPath,
-		NODE_OPTIONS: [process.env.NODE_OPTIONS, observerOption]
-			.filter(Boolean)
-			.join(" "),
-	};
-	for (const key of Object.keys(env))
-		if (key.toLowerCase() === "npm_lifecycle_event") delete env[key];
-	env.npm_lifecycle_event = commandName;
-	if (clearPhase) delete env.FITWAY_PHASE;
-	return new Promise<{
-		status: number | null;
-		stdout: string;
-		stderr: string;
-		events: Array<Record<string, unknown>>;
-	}>((resolve, reject) => {
-		const child = spawn(
-			process.execPath,
-			["--require", observer, ...parts.slice(1), ...args],
-			{ cwd, env, windowsHide: true },
-		);
-		let stdout = "";
-		let stderr = "";
-		let timedOut = false;
-		child.stdout?.setEncoding("utf8");
-		child.stderr?.setEncoding("utf8");
-		child.stdout?.on("data", (chunk) => {
-			stdout += chunk;
-		});
-		child.stderr?.on("data", (chunk) => {
-			stderr += chunk;
-		});
-		const timer = setTimeout(() => {
-			timedOut = true;
-			child.kill();
-		}, 15_000);
-		child.once("error", reject);
-		child.once("close", (status) => {
-			clearTimeout(timer);
-			const events = fs.existsSync(logPath)
-				? fs
-						.readFileSync(logPath, "utf8")
-						.split(/\r?\n/)
-						.filter(Boolean)
-						.map((line) => JSON.parse(line))
-				: [];
-			fs.rmSync(logPath, { force: true });
-			if (timedOut) {
-				reject(
-					new Error(`Probe timed out: ${invocation ?? nodeArgs?.join(" ")}`),
-				);
-				return;
-			}
-			resolve({ status, stdout, stderr, events });
-		});
-	});
-}
-
-function noSideEffects(events: Array<Record<string, unknown>>) {
-	expect(events, `command side effects: ${JSON.stringify(events)}`).toEqual([]);
-}
-
-function runEntry(entry: ToolEntry, args: string[], clearPhase = false) {
-	return runNode({
-		invocation: entry.invocation,
-		args,
-		commandName: entry.name,
-		clearPhase,
-	});
-}
-
-function helpProbe(
-	entry: ToolEntry,
-	args: string[],
-	command: string | null = null,
-) {
-	return async () => {
-		const result = await runEntry(entry, args);
-		expect(result.status, result.stderr).toBe(0);
-		expect(result.stderr).toBe("");
-		expect(result.stdout).toBe(renderToolHelp(entry.name, command));
-		noSideEffects(result.events);
-	};
-}
-
-function unknownProbe(entry: ToolEntry, args: string[]) {
-	return async () => {
-		const result = await runEntry(entry, args);
-		expect(result.status).toBe(1);
-		expect(result.stdout).toBe("");
-		expect(result.stderr).toBe(
-			`${entry.name}: FAIL: unknown option ${unknown} (run ${entry.name} --help)\n`,
-		);
-		noSideEffects(result.events);
-	};
-}
-
-function missingValueProbe(entry: ToolEntry, args: string[], option: string) {
-	return async () => {
-		const result = await runEntry(entry, args);
-		expect(result.status).toBe(1);
-		expect(result.stdout).toBe("");
-		expect(result.stderr.trim().split(/\r?\n/)).toHaveLength(1);
-		expect(result.stderr).toMatch(
-			new RegExp(
-				`^${escapeRegExp(entry.name)}: FAIL: ${escapeRegExp(option)} requires a value \\(.+\\)\\n$`,
-			),
-		);
-		noSideEffects(result.events);
-	};
-}
-
-function failureProbe(
-	entry: ToolEntry,
-	args: string[],
-	{
-		fix,
-		name = entry.failureName ?? entry.name,
-		exitCode = entry.failureExitCode ?? 1,
-		clearPhase = false,
-	}: {
-		fix: string;
-		name?: string;
-		exitCode?: number;
-		clearPhase?: boolean;
-	},
-) {
-	return async () => {
-		const result = await runEntry(entry, args, clearPhase);
-		expect(result.status).toBe(exitCode);
-		expect(result.stdout).toBe("");
-		expect(result.stderr.trim().split(/\r?\n/)).toHaveLength(1);
-		expect(result.stderr).toMatch(
-			new RegExp(`^${escapeRegExp(name)}: FAIL: .+ \\(.+\\)\\n$`),
-		);
-		expect(result.stderr).toContain(fix);
-		noSideEffects(result.events);
-	};
-}
-
-function escapeRegExp(value: string) {
-	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function optionCases(entry: ToolEntry) {
-	if (!entry.commands?.length)
-		return (entry.options ?? []).map((option) => ({
-			command: null as ToolCommand | null,
-			option,
-		}));
-	return entry.commands.flatMap((command) =>
-		command.options.map((option) => ({ command, option })),
-	);
-}
-
-function optionKey(option: ToolOption) {
-	return option.key ?? option.name.slice(2);
-}
-
-function optionContractArguments(option: ToolOption) {
-	return option.takesValue
-		? [option.name, contractValue(option)]
-		: [option.name];
-}
-
-function valueArguments(
-	entry: ToolEntry,
-	command: ToolCommand | null,
-	option: ToolOption,
-) {
-	const args = requiredArguments(entry, command);
-	const required = command?.requiredOptions ?? entry.requiredOptions ?? [];
-	if (!required.includes(option.name))
-		args.push(...optionContractArguments(option));
-	return args;
-}
-
-function equalsProbeCases() {
-	return TOOL_REGISTRY.flatMap((entry) =>
-		optionCases(entry)
-			.filter(({ option }) => option.takesValue)
-			.map(({ command, option }) => ({
-				entry,
-				option,
-				args: valueArguments(entry, command, option),
-			})),
-	);
-}
-
-function equalsArguments(args: string[], option: ToolOption) {
-	const index = args.indexOf(option.name);
-	if (index === -1) throw new Error(`Missing probe option ${option.name}`);
-	return [
-		...args.slice(0, index),
-		`${option.name}=${args[index + 1]}`,
-		...args.slice(index + 2),
-	];
-}
-
-function helpProbes(entry: ToolEntry) {
-	const probes: Probe[] = [];
-	const commands = (entry.commands ?? []).filter(
-		(command) => !command.internal,
-	);
-	const positional = entry.positionals?.[0];
-
-	for (const help of ["--help", "-h"]) {
-		probes.push({
-			label: `${entry.name} ${help}`,
-			run: helpProbe(entry, [help]),
-		});
-		if (positional)
-			probes.push({
-				label: `${entry.name} after positional ${help}`,
-				run: helpProbe(entry, [positional.sample, help]),
-			});
-	}
-
-	const between =
-		commands
-			.map((command) => ({ command, options: command.options }))
-			.find(({ options }) => options.length >= 2) ??
-		((entry.options?.length ?? 0) >= 2
-			? { command: null, options: entry.options }
-			: null);
-	if (between) {
-		const prefix = commandPrefix(between.command);
-		for (const help of ["--help", "-h"])
-			probes.push({
-				label: `${entry.name} between options ${help}`,
-				run: helpProbe(
-					entry,
-					[
-						...prefix,
-						...optionArguments(between.options[0]),
-						help,
-						...optionArguments(between.options[1]),
-					],
-					between.command?.name ?? null,
-				),
-			});
-	}
-
-	for (const command of commands)
-		for (const help of ["--help", "-h"])
-			probes.push({
-				label: `${entry.name} ${command.name} ${help}`,
-				run: helpProbe(entry, [command.name, help], command.name),
-			});
-	return probes;
-}
-
-function optionProbes(entry: ToolEntry) {
-	const probes: Probe[] = [];
-	probes.push({
-		label: `${entry.name} unknown first`,
-		run: unknownProbe(entry, [unknown]),
-	});
-	const cases = optionCases(entry);
-	if (cases[0])
-		probes.push({
-			label: `${entry.name} unknown after known`,
-			run: unknownProbe(entry, [
-				...commandPrefix(cases[0].command),
-				...optionArguments(cases[0].option),
-				unknown,
-			]),
-		});
-
-	for (const { command, option } of cases) {
-		probes.push({
-			label: `${entry.name} accepts ${option.name}`,
-			run: unknownProbe(entry, [
-				...commandPrefix(command),
-				...optionArguments(option),
-				unknown,
-			]),
-		});
-		if (option.takesValue)
-			probes.push({
-				label: `${entry.name} ${option.name} missing value`,
-				run: missingValueProbe(
-					entry,
-					[...commandPrefix(command), option.name],
-					option.name,
-				),
-			});
-	}
-	return probes;
-}
-
-function optionFailureProbes(entry: ToolEntry) {
-	const probes: Probe[] = [];
-	const commands = (entry.commands ?? []).filter(
-		(command) => !command.internal,
-	);
-	for (const command of commands.length ? commands : [null]) {
-		const options = command?.options ?? entry.options ?? [];
-		const required = command?.requiredOptions ?? entry.requiredOptions ?? [];
-		for (const optionName of required) {
-			const option = options.find((candidate) => candidate.name === optionName);
-			if (!option) continue;
-			probes.push({
-				label:
-					`${entry.name} ${command?.name ?? ""} missing ${optionName}`.trim(),
-				run: failureProbe(
-					entry,
-					requiredArguments(entry, command, { [optionName]: null }),
-					{ fix: entry.usage },
-				),
-			});
-		}
-		for (const option of options) {
-			if (!option.pathKind) continue;
-			const missingPath = option.absolute
-				? path.join(tmpdir(), "fitway-contract-missing-path")
-				: "contract-missing-path";
-			const args = requiredArguments(entry, command, {
-				[option.name]: missingPath,
-			});
-			if (!required.includes(option.name)) args.push(option.name, missingPath);
-			probes.push({
-				label:
-					`${entry.name} ${command?.name ?? ""} missing path ${option.name}`.trim(),
-				run: failureProbe(entry, args, { fix: "existing" }),
-			});
-		}
-		for (const option of options) {
-			if (!option.absolute) continue;
-			const args = requiredArguments(entry, command, {
-				[option.name]: "relative-contract-path",
-			});
-			if (!required.includes(option.name))
-				args.push(option.name, "relative-contract-path");
-			probes.push({
-				label:
-					`${entry.name} ${command?.name ?? ""} relative ${option.name}`.trim(),
-				run: failureProbe(entry, args, { fix: "absolute" }),
-			});
-		}
-	}
-	return probes;
-}
-
-function remainingFailureProbes(entry: ToolEntry) {
-	const probes: Probe[] = [];
-	if (!entry.deferPositionalFailures) {
-		const requiredPositions = (entry.positionals ?? [])
-			.map((position, index) => ({ position, index }))
-			.filter(({ position }) => position.required);
-		for (const { position, index } of requiredPositions) {
-			probes.push({
-				label: `${entry.name} missing ${position.name}`,
-				run: failureProbe(
-					entry,
-					requiredArguments(entry, null, { [`#${index}`]: null }),
-					{ fix: entry.usage },
-				),
-			});
-			if (position.pathKind)
-				probes.push({
-					label: `${entry.name} missing path ${position.name}`,
-					run: failureProbe(
-						entry,
-						requiredArguments(entry, null, {
-							[`#${index}`]: "contract-missing-path",
-						}),
-						{ fix: "existing", name: entry.failureName ?? entry.name },
-					),
-				});
-		}
-	}
-	for (const invalid of entry.invalidValues ?? [])
-		probes.push({
-			label: `${entry.name} invalid value`,
-			run: failureProbe(entry, invalid.args, { fix: invalid.fix }),
-		});
-	for (const failure of entry.failureCases ?? [])
-		probes.push({
-			label: `${entry.name} failure ${failure.args.join(" ") || "(none)"}`,
-			run: failureProbe(entry, failure.args, {
-				fix: failure.fix,
-				exitCode: entry.failureExitCode,
-			}),
-		});
-	return probes;
-}
-
-function contractProbes(entry: ToolEntry) {
-	return [
-		...helpProbes(entry),
-		...optionProbes(entry),
-		...optionFailureProbes(entry),
-		...remainingFailureProbes(entry),
-	];
-}
-
-async function runPool<T, R>(
-	items: T[],
-	worker: (item: T) => Promise<R>,
-	limit = 10,
-) {
-	const results = new Array<R>(items.length);
-	let next = 0;
-	await Promise.all(
-		Array.from({ length: Math.min(limit, items.length) }, async () => {
-			while (next < items.length) {
-				const index = next++;
-				results[index] = await worker(items[index]);
-			}
-		}),
-	);
-	return results;
+function productListTest() {
+	for (const name of ["build", "check", "format", "check-types", "dev:web"])
+		expect(agentScript(name, "node x.mjs"), name).toBe(false);
+	for (const name of ["db:push", "deploy:edge", "test:unit", "owner:review"])
+		expect(agentScript(name, "node x.mjs"), name).toBe(false);
+	for (const name of ["build:heldout", "check:heldout", "format:heldout"])
+		expect(agentScript(name, "node x.mjs"), name).toBe(true);
 }
 
 async function packageContractTest() {
@@ -594,15 +79,15 @@ function equalsValueProbe() {
 	expect(cases.length).toBeGreaterThan(0);
 	for (const probe of cases) {
 		const spaced = beginToolCommand(probe.entry.name, probe.args);
-		expect(spaced.options[optionKey(probe.option)]).toBeDefined();
+		expect(spaced.options?.[optionKey(probe.option)]).toBeDefined();
 		const equals = beginToolCommand(
 			probe.entry.name,
 			equalsArguments(probe.args, probe.option),
 		);
 		expect(
-			equals.options[optionKey(probe.option)],
+			equals.options?.[optionKey(probe.option)],
 			`${probe.entry.name} ${probe.option.name}=value`,
-		).toEqual(spaced.options[optionKey(probe.option)]);
+		).toEqual(spaced.options?.[optionKey(probe.option)]);
 	}
 }
 
@@ -630,7 +115,7 @@ function freeTextValueProbe() {
 		"--message",
 		"--help",
 	]);
-	expect(result.options.message).toBe("--help");
+	expect(result.options?.message).toBe("--help");
 }
 
 function passthroughHelpProbe() {
@@ -661,7 +146,12 @@ async function startFailurePrefixTest() {
 }
 
 async function generatedContractTest() {
-	const probes = TOOL_REGISTRY.flatMap(contractProbes);
+	await runProbes(TOOL_REGISTRY.flatMap(contractProbes));
+}
+
+async function runProbes(
+	probes: Array<{ label: string; run: () => Promise<void> }>,
+) {
 	const failures = (
 		await runPool(probes, async (probe) => {
 			try {
@@ -768,5 +258,15 @@ describe("agent command contract", () => {
 	it(
 		"reports planted refusal, process, and outside-write breaks",
 		plantedBreakTest,
+	);
+	it("C1 classifies product scripts by exact name or family", productListTest);
+	it(
+		"C4 refuses each value a command finds it cannot use, in one line with its fix",
+		() => runProbes(startupProbes()),
+		60_000,
+	);
+	it(
+		"C3 entry modules read arguments only through the shared contract",
+		sourceScanTest,
 	);
 });

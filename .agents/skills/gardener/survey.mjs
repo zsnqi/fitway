@@ -16,6 +16,7 @@ import { parse as parseYaml } from "yaml";
 import {
 	beginToolCommand,
 	resolveToolArguments,
+	toolStartupLine,
 } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { repositoryFingerprint } from "../../../scripts/repository-fingerprint.mjs";
 import { collectCodeHealth } from "./code-health.mjs";
@@ -44,6 +45,7 @@ import {
 } from "./facts.mjs";
 import { readGit } from "./git-reader.mjs";
 import { collectRecordSurvey } from "./records.mjs";
+import { validateOutput } from "./survey-output.mjs";
 
 export const root = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
@@ -762,30 +764,6 @@ function checkFailed(check) {
 	return !check.notRun && check.exitCode !== 0;
 }
 
-function validateOutput(out, worktrees, tempRoot) {
-	if (
-		!path.isAbsolute(out) ||
-		!inside(tempRoot, out) ||
-		key(out) === key(tempRoot)
-	)
-		throw new Error(
-			`--out must be an absolute fresh directory under ${tempRoot}`,
-		);
-	if (existsSync(out))
-		throw new Error(`Output directory already exists: ${out}`);
-	let ancestor = path.dirname(out);
-	while (!existsSync(ancestor)) ancestor = path.dirname(ancestor);
-	const resolved = path.join(
-		realpathSync.native(ancestor),
-		path.relative(ancestor, out),
-	);
-	if (
-		!inside(realpathSync.native(tempRoot), resolved) ||
-		worktrees.some((worktree) => inside(worktree.path, resolved))
-	)
-		throw new Error("Output aliases a worktree or escapes the temp root");
-}
-
 export function formatReport(report) {
 	const lines = [
 		"# Gardener survey",
@@ -900,7 +878,7 @@ export function formatReport(report) {
 	return lines.join("\n");
 }
 
-export function parseOptions(input = process.argv.slice(2)) {
+export function parseOptions(input) {
 	const parsed = Array.isArray(input)
 		? resolveToolArguments("gardener:survey", input, {
 				validate: false,
@@ -1202,6 +1180,8 @@ if (
 ) {
 	const parsed = beginToolCommand("gardener:survey", process.argv.slice(2));
 	main(parsed).catch((error) => {
+		const line = toolStartupLine("gardener:survey", error);
+		if (line) console.error(line);
 		console.error(`SURVEY BLOCKED: ${error.message}`);
 		process.exitCode = 1;
 	});

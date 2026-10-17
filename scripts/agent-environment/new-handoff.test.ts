@@ -447,4 +447,22 @@ describe("V2: handoff:new opens a milestone", () => {
 		expect(result.output).toContain("--dir must target a directory");
 		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
 	});
+
+	it.each([
+		[["--milestone", "missing-r01"], `pass --milestone one of: ${MILESTONE}`],
+		[["--milestone", MILESTONE, "--dir", "not-a-directory"], "pass --dir"],
+		[["--milestone", MILESTONE, "--dir", "../outside"], "pass --dir"],
+	])("C4 refuses the value in %j with one line that names the fix", (args, fix) => {
+		const { root } = openableFixture();
+		put(root, "not-a-directory", "file");
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		const result = runHandoff(root, [...args, "--now", NOW]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe("");
+		expect(result.stderr).toMatch(
+			/^handoff:new: FAIL: [^\r\n]+ \([^\r\n]+\)\r?\n$/,
+		);
+		expect(result.stderr).toContain(fix);
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
+	});
 });

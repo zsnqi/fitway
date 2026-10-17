@@ -1,6 +1,10 @@
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
-import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
+import {
+	beginToolCommand,
+	ToolStartupError,
+	toolStartupLine,
+} from "./agent-environment/tool-contract.mjs";
 import { repositoryFingerprint } from "./repository-fingerprint.mjs";
 
 const phases = {
@@ -292,15 +296,23 @@ export function verificationOptions(parsed) {
 		process.env.FITWAY_PHASE &&
 		parsed.options.phase !== process.env.FITWAY_PHASE
 	) {
-		throw new Error("FITWAY_PHASE and --phase must agree when both are set");
+		throw new ToolStartupError(
+			"FITWAY_PHASE and --phase must agree when both are set",
+			"pass the same --phase as FITWAY_PHASE, or unset FITWAY_PHASE",
+		);
 	}
 	if (mode === "phase" && (!phase || !(phase in phases))) {
-		throw new Error(
+		throw new ToolStartupError(
 			`verify:phase requires one of: ${Object.keys(phases).join(", ")}`,
+			`pass --phase <${Object.keys(phases).join("|")}>`,
+			{ what: `unknown phase ${phase ?? "(none)"}` },
 		);
 	}
 	if (mode !== "phase" && phase) {
-		throw new Error("--phase is valid only with verify:phase");
+		throw new ToolStartupError(
+			"--phase is valid only with verify:phase",
+			"unset FITWAY_PHASE, or run pnpm verify:phase --phase <phase>",
+		);
 	}
 	return { mode, phase };
 }
@@ -538,15 +550,20 @@ if (
 	process.argv[1] !== undefined &&
 	import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
-	const mode = process.argv[2];
-	if (["fast", "phase", "full"].includes(mode)) {
-		const parsed = beginToolCommand(`verify:${mode}`, process.argv.slice(2));
-		main(parsed).catch((error) => {
-			console.error(`\nFAILED_VALIDATION: ${error.message}`);
-			process.exitCode = 1;
-		});
-	} else {
-		usage();
-		process.exit(mode === "--help" || mode === "-h" ? 0 : 1);
-	}
+	const parsed = beginToolCommand(
+		["verify:fast", "verify:phase", "verify:full"],
+		process.argv.slice(2),
+		{
+			unmatched: ({ help }) => {
+				usage();
+				process.exit(help ? 0 : 1);
+			},
+		},
+	);
+	main(parsed).catch((error) => {
+		const line = toolStartupLine(parsed.entry.name, error);
+		if (line) console.error(line);
+		console.error(`\nFAILED_VALIDATION: ${error.message}`);
+		process.exitCode = 1;
+	});
 }

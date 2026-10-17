@@ -10,8 +10,7 @@ import {
 
 export function toolingMapOptions(parsed) {
 	return {
-		check:
-			parsed.options.check === true || parsed.fixedArgs.includes("--check"),
+		check: parsed.options.check === true || parsed.fixedArgs.length > 0,
 	};
 }
 
@@ -38,14 +37,12 @@ const isMain =
 	import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isMain) {
-	const args = process.argv.slice(2);
-	const lifecycle = process.env.npm_lifecycle_event;
-	const name =
-		lifecycle === "check:tooling-map" ||
-		(lifecycle !== "map:tooling" && args[0] === "--check")
-			? "check:tooling-map"
-			: "map:tooling";
-	const { check } = toolingMapOptions(beginToolCommand(name, args));
+	const { check } = toolingMapOptions(
+		beginToolCommand(
+			["check:tooling-map", "map:tooling"],
+			process.argv.slice(2),
+		),
+	);
 	main(check).catch((error) => {
 		const command = check ? CHECK_COMMAND : REGENERATE_COMMAND;
 		console.error(

@@ -11,7 +11,12 @@ import {
 	repositoryPath,
 	resumePointFilename,
 } from "./resume-point.mjs";
-import { beginToolCommand, resolveToolArguments } from "./tool-contract.mjs";
+import {
+	beginToolCommand,
+	resolveToolArguments,
+	ToolStartupError,
+	toolStartupLine,
+} from "./tool-contract.mjs";
 
 const STATE_PATH = "PROJECT_STATE.yaml";
 const TEMPLATE_PATH = "docs/agent-context/HANDOFF_TEMPLATE.md";
@@ -84,7 +89,10 @@ function parseNow(value) {
 	);
 	const now = new Date(value);
 	if (!match || !Number.isFinite(now.getTime()))
-		throw new Error("--now requires an ISO-8601 timestamp with a UTC offset");
+		throw new ToolStartupError(
+			"--now requires an ISO-8601 timestamp with a UTC offset",
+			"pass --now like 2026-10-17T09:00:00+03:00, or omit --now for the current time",
+		);
 	const [, year, month, day, hour, minute, second, offset] = match;
 	const lastDay = new Date(
 		Date.UTC(Number(year), Number(month), 0),
@@ -99,7 +107,10 @@ function parseNow(value) {
 		+second > 59 ||
 		(offset !== "Z" && (+offset.slice(1, 3) > 23 || +offset.slice(4) > 59))
 	)
-		throw new Error("--now requires a valid ISO-8601 timestamp");
+		throw new ToolStartupError(
+			"--now requires a valid ISO-8601 timestamp",
+			"pass --now a real date and time like 2026-10-17T09:00:00+03:00, or omit --now",
+		);
 	return now;
 }
 
@@ -112,6 +123,13 @@ export function localTimestamp(now) {
 	};
 }
 
+function activeMilestoneFix(milestones) {
+	const ids = Object.keys(milestones ?? {});
+	return ids.length
+		? `pass --milestone one of: ${ids.join(", ")}`
+		: "PROJECT_STATE.yaml has no active milestone; ask the coordinator to open one";
+}
+
 function replaceHeader(text, name, value) {
 	const pattern = new RegExp(`^- \\*\\*${name}:\\*\\*[^\\r\\n]*`, "gm");
 	if ([...text.matchAll(pattern)].length !== 1)
@@ -120,7 +138,7 @@ function replaceHeader(text, name, value) {
 }
 
 export async function createResumePoint({
-	repositoryRoot = readGit(process.cwd(), ["rev-parse", "--show-toplevel"]),
+	repositoryRoot: suppliedRoot,
 	milestoneId,
 	directory,
 	now: nowValue,
@@ -128,13 +146,23 @@ export async function createResumePoint({
 	writeFileImpl = writeFile,
 }) {
 	if (!ID_PATTERN.test(milestoneId ?? ""))
-		throw new Error("--milestone requires a lowercase milestone id");
+		throw new ToolStartupError(
+			"--milestone requires a lowercase milestone id",
+			"pass --milestone <milestone-id>: lowercase letters, digits, - or _, as under milestones in PROJECT_STATE.yaml",
+			{ what: `--milestone requires a lowercase milestone id: ${milestoneId}` },
+		);
 	const now = parseNow(nowValue);
+	const repositoryRoot =
+		suppliedRoot ?? readGit(process.cwd(), ["rev-parse", "--show-toplevel"]);
 	const stateDetails = await repositoryPath(repositoryRoot, STATE_PATH);
 	const stateText = await readFile(stateDetails.absolute, "utf8");
 	const state = yamlDocument(stateText, STATE_PATH).toJS();
 	const milestone = state.milestones?.[milestoneId];
-	if (!milestone) throw new Error(`Unknown active milestone: ${milestoneId}`);
+	if (!milestone)
+		throw new ToolStartupError(
+			`Unknown active milestone: ${milestoneId}`,
+			activeMilestoneFix(state.milestones),
+		);
 	if (!milestone.taskPacket)
 		throw new Error(`${milestoneId}: a registered task packet is required`);
 	// Validate the active packet identity and lifecycle before writing.
@@ -146,13 +174,21 @@ export async function createResumePoint({
 	);
 	const oldHandoff = handoffDetails.normalized;
 	const targetDirectory = directory ?? path.posix.dirname(oldHandoff);
+	const directoryFix = `pass --dir a repository-relative folder, or omit --dir to keep ${path.posix.dirname(oldHandoff)}`;
 	const directoryDetails = await repositoryPath(
 		repositoryRoot,
 		targetDirectory,
 		{ allowMissing: true },
-	);
+	).catch((error) => {
+		throw directory === undefined
+			? error
+			: new ToolStartupError(error.message, directoryFix);
+	});
 	if (directoryDetails.exists && !directoryDetails.isDirectory)
-		throw new Error(`--dir must target a directory: ${targetDirectory}`);
+		throw new ToolStartupError(
+			`--dir must target a directory: ${targetDirectory}`,
+			directoryFix,
+		);
 	const timestamp = localTimestamp(now);
 	const newPath = path.posix.join(
 		directoryDetails.normalized,
@@ -271,7 +307,8 @@ if (
 		console.log((await createResumePoint(parseHandoffArgs(parsed))).output);
 	} catch (error) {
 		console.error(
-			`handoff:new FAILED: ${error instanceof Error ? error.message : String(error)}`,
+			toolStartupLine("handoff:new", error) ??
+				`handoff:new FAILED: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		process.exitCode = 1;
 	}

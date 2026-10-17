@@ -5,7 +5,11 @@ import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
 import { behindUpstreamWarning } from "./agent-environment/git-context.mjs";
 import { hasResumePointMarker } from "./agent-environment/resume-point.mjs";
-import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
+import {
+	beginToolCommand,
+	ToolStartupError,
+	toolStartupLine,
+} from "./agent-environment/tool-contract.mjs";
 import { inspectPath } from "./check-agent-context.mjs";
 
 const root = process.cwd();
@@ -164,8 +168,11 @@ export async function buildAgentContextPlan({
 	}
 	const milestone = active[selectedId];
 	if (!milestone)
-		throw new Error(
+		throw new ToolStartupError(
 			`requested milestone does not exist in PROJECT_STATE.yaml: ${selectedId}`,
+			Object.keys(active).length
+				? `pass --milestone one of: ${Object.keys(active).join(", ")}`
+				: "PROJECT_STATE.yaml has no active milestone; ask the coordinator to open one",
 		);
 	if (!Object.hasOwn(milestone, "taskPacket"))
 		throw new Error(
@@ -290,7 +297,8 @@ if (isMain) {
 		await main(contextShowMilestone(parsed));
 	} catch (error) {
 		console.error(
-			`context:show FAILED: ${error instanceof Error ? error.message : String(error)}`,
+			toolStartupLine("context:show", error) ??
+				`context:show FAILED: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		process.exitCode = 1;
 	}

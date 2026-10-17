@@ -183,7 +183,15 @@ function existingPath(value, kind) {
 	return true;
 }
 
-function validateOptionPaths(entry, parsed, available, failureName, exitCode) {
+function validateOptionPaths(
+	entry,
+	command,
+	parsed,
+	available,
+	failureName,
+	exitCode,
+) {
+	const usage = (command ?? entry).usage;
 	for (const option of available) {
 		if (!Object.hasOwn(parsed.options, optionKey(option))) continue;
 		const value = parsed.options[optionKey(option)];
@@ -191,7 +199,7 @@ function validateOptionPaths(entry, parsed, available, failureName, exitCode) {
 			reject(
 				failureName,
 				`${option.name} requires an absolute path: ${value}`,
-				`pass an absolute path; run ${entry.usage}`,
+				`pass an absolute path; run ${usage}`,
 				exitCode,
 			);
 		if (!option.pathKind) continue;
@@ -202,7 +210,44 @@ function validateOptionPaths(entry, parsed, available, failureName, exitCode) {
 				option.pathLabel
 					? `${option.pathLabel} not found: ${value}`
 					: `${option.name} path not found: ${value}`,
-				`pass an existing ${option.pathKind}; run ${entry.usage}`,
+				`pass an existing ${option.pathKind}; run ${usage}`,
+			);
+	}
+}
+
+// C4 for a value the command cannot use, declared on the option: an integer range (read with
+// Number(), as the commands read it), a fixed set of choices, or an option given at most once.
+function validateOptionValues(parsed, available, failureName, exitCode) {
+	for (const option of available) {
+		const key = optionKey(option);
+		if (!Object.hasOwn(parsed.options, key)) continue;
+		const value = parsed.options[key];
+		if (option.once && parsed.counts[key] > 1)
+			reject(
+				failureName,
+				`${option.name} given ${parsed.counts[key]} times`,
+				`pass ${option.name} once`,
+				exitCode,
+			);
+		if (option.integer) {
+			const [min, max] = option.integer;
+			const number = Number(value);
+			if (!Number.isInteger(number) || number < min || number > max)
+				reject(
+					failureName,
+					`${option.name} must be an integer from ${min} to ${max}: ${value}`,
+					[`pass ${option.name} <${min}-${max}>`, option.valueNote]
+						.filter(Boolean)
+						.join("; "),
+					exitCode,
+				);
+		}
+		if (option.choices && !option.choices.includes(value))
+			reject(
+				failureName,
+				`${option.name} must be one of ${option.choices.join(", ")}: ${value}`,
+				`pass ${option.name} ${option.choices.join("|")}`,
+				exitCode,
 			);
 	}
 }
@@ -218,7 +263,7 @@ function validateParsed(entry, command, parsed) {
 			reject(
 				failureName,
 				`missing required option ${option}`,
-				`run ${entry.usage}`,
+				`run ${subject.usage}`,
 				exitCode,
 			);
 	}
@@ -270,7 +315,8 @@ function validateParsed(entry, command, parsed) {
 				);
 		}
 	}
-	validateOptionPaths(entry, parsed, available, failureName, exitCode);
+	validateOptionPaths(entry, command, parsed, available, failureName, exitCode);
+	validateOptionValues(parsed, available, failureName, exitCode);
 }
 
 export function resolveToolArguments(
@@ -353,7 +399,30 @@ export function resolveToolArguments(
 	return parsed;
 }
 
-export function beginToolCommand(name, args = process.argv.slice(2)) {
+// One entry file can serve several registered commands (verify.mjs's modes, the tooling map's
+// write and check, the Owner CLI and its map check). Given their names, the command is the one
+// npm named, if its fixed arguments lead the arguments, or else the first whose fixed arguments
+// do; with none, unmatched({ help }) runs and the result is null.
+function selectToolName(names, args) {
+	const matching = names.filter((name) =>
+		toolEntry(name).fixedArgs.every(
+			(argument, index) => args[index] === argument,
+		),
+	);
+	const lifecycle = process.env.npm_lifecycle_event;
+	return matching.includes(lifecycle) ? lifecycle : (matching[0] ?? null);
+}
+
+export function beginToolCommand(
+	names,
+	args = process.argv.slice(2),
+	{ unmatched } = {},
+) {
+	const name = Array.isArray(names) ? selectToolName(names, args) : names;
+	if (name === null) {
+		unmatched?.({ help: args[0] === "--help" || args[0] === "-h" });
+		return null;
+	}
 	try {
 		const parsed = resolveToolArguments(name, args);
 		if (parsed.help) {
@@ -366,6 +435,28 @@ export function beginToolCommand(name, args = process.argv.slice(2)) {
 		process.stderr.write(`${error.message}\n`);
 		process.exit(error.exitCode);
 	}
+}
+
+// A start-up failure a command finds itself, after the resolver: a value it cannot use. Its
+// message stays the text callers and tests read; the entry prints it as C4's line through
+// toolStartupLine, which returns null for any other error so the entry keeps its own form.
+export class ToolStartupError extends Error {
+	constructor(message, startupFix, { what = message } = {}) {
+		super(message);
+		this.name = "ToolStartupError";
+		this.startupWhat = what;
+		this.startupFix = startupFix;
+	}
+}
+
+export function toolStartupLine(name, error) {
+	if (error?.name !== "ToolStartupError" || !error.startupFix) return null;
+	const entry = toolEntry(name);
+	return toolFailure(
+		entry.failureName ?? entry.name,
+		error.startupWhat,
+		error.startupFix,
+	);
 }
 
 export function toolFailure(name, error, fix) {

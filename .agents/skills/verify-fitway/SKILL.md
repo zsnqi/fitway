@@ -71,7 +71,8 @@ Missing standalone inputs without
 an authoritative recovery source print `FIX BLOCKED`; not every doctor failure has an automatic repair command.
 It checks Chromium, the user's
 machine-level ui-forensics skill, the concept probe kit, recipe coverage, and port ownership; `--tools diff` adds
-Python/numpy/Pillow. Missing machine-level tools block browser verification in cloud sessions.
+Python/numpy/Pillow. Missing machine-level tools block browser verification in cloud sessions. `--quiet <any value>` on doctor or drive
+omits the pass lines, as it did before the shared command contract.
 
 ## Launch and drive
 
