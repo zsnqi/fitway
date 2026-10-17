@@ -623,24 +623,17 @@ if (
 	process.argv[1] &&
 	import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
 ) {
-	beginToolCommand("check:concept-css", process.argv.slice(2));
-	main()
+	const parsed = beginToolCommand("check:concept-css", process.argv.slice(2));
+	main(parsed.positionals)
 		.then((code) => {
 			process.exitCode = code;
 		})
 		.catch((error) => {
-			const startup = /ENOENT|ENOTDIR|EISDIR|Usage:/i.test(error.message);
-			console.error(
-				startup
-					? toolFailure(
-							"check:concept-css",
-							`ERROR: ${error.message}`,
-							/ENOENT|ENOTDIR|EISDIR/i.test(error.message)
-								? "pass an existing folder; Usage: pnpm check:concept-css -- <folder>"
-								: "Usage: pnpm check:concept-css -- <folder>; moved ring declaration: outline: none; /* focus-ring: .button:focus-visible .tile */",
-						)
-					: `ERROR: ${error.message}`,
-			);
+			const detail = error.message.replace(/^ERROR:\s*/, "");
+			const fix = /ENOENT|ENOTDIR|EISDIR/i.test(detail)
+				? "pass an existing folder; run pnpm check:concept-css -- <folder>"
+				: "run pnpm check:concept-css -- <folder> after fixing the reported error";
+			console.error(toolFailure("check:concept-css", detail, fix));
 			process.exitCode = 2;
 		});
 }

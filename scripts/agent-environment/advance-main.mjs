@@ -145,21 +145,13 @@ export function listChecksRuns(cwd, sha) {
 	return runs;
 }
 
-function parseArgs(args) {
-	let dryRun = false;
-	let commit = null;
-	for (const argument of args) {
-		if (argument === "--dry-run") dryRun = true;
-		else if (argument === "--") continue;
-		else if (argument.startsWith("-"))
-			throw new MainAdvanceError(`unknown option: ${argument}`);
-		else if (commit !== null)
-			throw new MainAdvanceError("expected exactly one commit");
-		else commit = argument;
-	}
-	if (!commit)
-		throw new MainAdvanceError("usage: pnpm main:advance [--dry-run] <commit>");
-	return { commit, dryRun };
+function advanceOptions(parsed) {
+	if (parsed.positionals.length !== 1)
+		throw new MainAdvanceError("expected exactly one commit");
+	return {
+		commit: parsed.positionals[0],
+		dryRun: parsed.options.dryRun === true,
+	};
 }
 
 export async function advanceMain({
@@ -213,8 +205,8 @@ if (
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
 	try {
-		beginToolCommand("main:advance", process.argv.slice(2));
-		const options = parseArgs(process.argv.slice(2));
+		const parsed = beginToolCommand("main:advance", process.argv.slice(2));
+		const options = advanceOptions(parsed);
 		await advanceMain(options);
 	} catch (error) {
 		console.error(

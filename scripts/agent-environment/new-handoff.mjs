@@ -11,33 +11,25 @@ import {
 	repositoryPath,
 	resumePointFilename,
 } from "./resume-point.mjs";
-import { beginToolCommand } from "./tool-contract.mjs";
+import { beginToolCommand, resolveToolArguments } from "./tool-contract.mjs";
 
 const STATE_PATH = "PROJECT_STATE.yaml";
 const TEMPLATE_PATH = "docs/agent-context/HANDOFF_TEMPLATE.md";
 const ID_PATTERN = /^[a-z0-9][a-z0-9_-]*$/;
 
 export function parseHandoffArgs(inputArgs) {
-	const args = inputArgs[0] === "--" ? inputArgs.slice(1) : inputArgs;
-	const options = {};
-	const names = new Map([
-		["--milestone", "milestoneId"],
-		["--dir", "directory"],
-		["--now", "now"],
-	]);
-	for (let index = 0; index < args.length; index += 1) {
-		const argument = args[index];
-		if (argument === "--help" || argument === "-h") return { help: true };
-		const name = names.get(argument);
-		if (!name) throw new Error(`Unknown argument: ${argument}`);
-		if (Object.hasOwn(options, name))
-			throw new Error(`Duplicate argument: ${argument}`);
-		const value = args[++index];
-		if (!value || value.startsWith("--"))
-			throw new Error(`${argument} requires a value`);
-		options[name] = value;
+	try {
+		const parsed = Array.isArray(inputArgs)
+			? resolveToolArguments("handoff:new", inputArgs, {
+					validate: false,
+				})
+			: inputArgs;
+		return parsed.options;
+	} catch (error) {
+		const unknown = error.message.match(/unknown option (--[^ ]+)/)?.[1];
+		if (unknown) throw new Error(`Unknown argument: ${unknown}`);
+		throw error;
 	}
-	return options;
 }
 
 function yamlDocument(text, label) {
@@ -275,13 +267,8 @@ if (
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
-		beginToolCommand("handoff:new", process.argv.slice(2));
-		const options = parseHandoffArgs(process.argv.slice(2));
-		if (options.help)
-			console.log(
-				"Usage: pnpm handoff:new [--] --milestone <milestone-id> [--dir <repo-relative dir>] [--now <ISO-8601>] (writes <milestone-id>-resume.md)",
-			);
-		else console.log((await createResumePoint(options)).output);
+		const parsed = beginToolCommand("handoff:new", process.argv.slice(2));
+		console.log((await createResumePoint(parseHandoffArgs(parsed))).output);
 	} catch (error) {
 		console.error(
 			`handoff:new FAILED: ${error instanceof Error ? error.message : String(error)}`,

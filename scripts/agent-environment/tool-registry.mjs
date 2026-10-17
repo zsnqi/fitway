@@ -1,5 +1,10 @@
-const flag = (name, description, sample = null) => ({
+const flag = (
 	name,
+	description,
+	{ key = name.slice(2), sample = null } = {},
+) => ({
+	name,
+	key,
 	takesValue: false,
 	freeText: false,
 	description,
@@ -16,9 +21,11 @@ const value = (
 		pathLabel = null,
 		absolute = false,
 		missingFix = null,
+		key = name.slice(2),
 	} = {},
 ) => ({
 	name,
+	key,
 	takesValue: true,
 	freeText,
 	description,
@@ -29,11 +36,19 @@ const value = (
 	missingFix,
 });
 
-const nodeInvocation = (entrypoint, fixedArgs = []) =>
-	["node", entrypoint, ...fixedArgs].join(" ");
+const nodeInvocation = (entrypoint) => `node ${entrypoint}`;
 
-const packageEntry = (entry) => ({ ...entry, kind: "package" });
-const nodeEntry = (entry) => ({ ...entry, kind: "node" });
+const executableEntry = (entry, kind) => {
+	const fixedArgs = entry.fixedArgs ?? [];
+	return {
+		...entry,
+		kind,
+		fixedArgs,
+		invocation: [entry.invocation, ...fixedArgs].join(" "),
+	};
+};
+const packageEntry = (entry) => executableEntry(entry, "package");
+const nodeEntry = (entry) => executableEntry(entry, "node");
 
 const exits = (...codes) => codes.map(([code, meaning]) => ({ code, meaning }));
 
@@ -320,6 +335,7 @@ const ownerEntry = {
 				.map((option) => [option.name, option]),
 		).values(),
 	],
+	globalOptions: [],
 	commands: ownerCommands,
 	extraHelp: [
 		"Previews stop after 30 minutes without a request; requests renew the timeout.",
@@ -386,8 +402,11 @@ export const TOOL_REGISTRY = Object.freeze([
 		options: [
 			value("--milestone", "Restrict checks to one milestone.", {
 				sample: "agent-tooling-r01",
+				key: "milestoneId",
 			}),
-			flag("--no-tracked", "Skip tracked-file checks."),
+			flag("--no-tracked", "Skip tracked-file checks.", {
+				key: "noTracked",
+			}),
 			flag("--verbose", "Print warnings."),
 		],
 		exitCodes: exits(
@@ -403,6 +422,7 @@ export const TOOL_REGISTRY = Object.freeze([
 		options: [
 			value("--milestone", "Milestone id.", {
 				sample: "agent-tooling-r01",
+				key: "milestoneId",
 			}),
 		],
 		requiredOptions: ["--milestone"],
@@ -420,9 +440,11 @@ export const TOOL_REGISTRY = Object.freeze([
 		options: [
 			value("--milestone", "Milestone id.", {
 				sample: "agent-tooling-r01",
+				key: "milestoneId",
 			}),
 			value("--dir", "Handoff directory.", {
 				sample: "docs/phase-records/handoffs/agent-tooling",
+				key: "directory",
 			}),
 			value("--now", "Deterministic ISO-8601 timestamp.", {
 				sample: "2026-10-17T00:00:00Z",
@@ -436,7 +458,11 @@ export const TOOL_REGISTRY = Object.freeze([
 		invocation: nodeInvocation("scripts/agent-environment/check-brief.mjs"),
 		purpose: "Validate an agent brief.",
 		usage: "pnpm brief:check [--] <brief> [--fill-environment]",
-		options: [flag("--fill-environment", "Fill the shared environment block.")],
+		options: [
+			flag("--fill-environment", "Fill the shared environment block.", {
+				key: "fillEnvironment",
+			}),
+		],
 		positionals: [
 			{
 				name: "brief",
@@ -457,7 +483,11 @@ export const TOOL_REGISTRY = Object.freeze([
 		invocation: nodeInvocation("scripts/agent-environment/advance-main.mjs"),
 		purpose: "Fast-forward main to a pushed commit with a passing CI run.",
 		usage: "pnpm main:advance [--dry-run] <commit>",
-		options: [flag("--dry-run", "Check without pushing.")],
+		options: [
+			flag("--dry-run", "Check without pushing.", {
+				key: "dryRun",
+			}),
+		],
 		positionals: [{ name: "commit", required: true, sample: "HEAD" }],
 		exitCodes: exits(
 			[0, "Main advanced or dry run passed."],
@@ -473,7 +503,9 @@ export const TOOL_REGISTRY = Object.freeze([
 		options: [
 			value("--model", "Model name.", { sample: "gpt-6.1-sol" }),
 			value("--run", "Round output folder.", { sample: "round-output" }),
-			flag("--new-review", "Start a fresh review."),
+			flag("--new-review", "Start a fresh review.", {
+				key: "newReview",
+			}),
 			value("--message", "Resume message text.", {
 				sample: "continue",
 				freeText: true,
@@ -484,6 +516,7 @@ export const TOOL_REGISTRY = Object.freeze([
 				sample: "message.txt",
 				pathKind: "file",
 				pathLabel: "message file",
+				key: "messageFile",
 				missingFix:
 					"expected resume <folder> [--message <text> | --message-file <file>]",
 			}),
@@ -494,8 +527,14 @@ export const TOOL_REGISTRY = Object.freeze([
 				required: true,
 				sample: "AGENTS.md",
 			},
+			{
+				name: "level",
+				required: false,
+				sample: "max",
+			},
 		],
 		skipPositionalPaths: true,
+		deferPositionalFailures: true,
 		extraHelp: [
 			"--message sends the exact text instead of the saved launch input.",
 			"When a run exits 0 without a report, it resumes automatically up to 10 times and appends each trigger to auto-resumes.log.",
@@ -548,7 +587,6 @@ export const TOOL_REGISTRY = Object.freeze([
 		name: "check:tooling-map",
 		invocation: nodeInvocation(
 			"scripts/agent-environment/generate-tooling-map.mjs",
-			["--check"],
 		),
 		purpose: "Check the agent tooling code map for drift.",
 		usage: "pnpm check:tooling-map",
@@ -589,9 +627,7 @@ export const TOOL_REGISTRY = Object.freeze([
 	}),
 	packageEntry({
 		name: "check:verification-map",
-		invocation: nodeInvocation(".agents/skills/verify-fitway/cli.mjs", [
-			"drift-tree",
-		]),
+		invocation: nodeInvocation(".agents/skills/verify-fitway/cli.mjs"),
 		purpose: "Check committed verification maps for drift.",
 		usage: "pnpm check:verification-map [--root <repository>]",
 		options: [ownerOptions.root],
@@ -601,7 +637,7 @@ export const TOOL_REGISTRY = Object.freeze([
 	packageEntry(ownerEntry),
 	packageEntry({
 		name: "verify:fast",
-		invocation: nodeInvocation("scripts/verify.mjs", ["fast"]),
+		invocation: nodeInvocation("scripts/verify.mjs"),
 		purpose: "Run the fast verification ladder.",
 		usage: "pnpm verify:fast",
 		options: [],
@@ -610,7 +646,7 @@ export const TOOL_REGISTRY = Object.freeze([
 	}),
 	packageEntry({
 		name: "verify:phase",
-		invocation: nodeInvocation("scripts/verify.mjs", ["phase"]),
+		invocation: nodeInvocation("scripts/verify.mjs"),
 		purpose: "Run the fast ladder plus one focused phase.",
 		usage: "pnpm verify:phase --phase <phase>",
 		options: [
@@ -622,7 +658,7 @@ export const TOOL_REGISTRY = Object.freeze([
 	}),
 	packageEntry({
 		name: "verify:full",
-		invocation: nodeInvocation("scripts/verify.mjs", ["full"]),
+		invocation: nodeInvocation("scripts/verify.mjs"),
 		purpose: "Run every local verification gate.",
 		usage: "pnpm verify:full",
 		options: [],
@@ -637,8 +673,14 @@ export const TOOL_REGISTRY = Object.freeze([
 			"node .agents/skills/gardener/survey.mjs --out <absolute-fresh-run> [--temp-root <absolute-temp-root>] [--final-report <absolute-file>]",
 		options: [
 			value("--out", "Fresh survey output folder.", { absolute: true }),
-			value("--temp-root", "Absolute temp root.", { absolute: true }),
-			value("--final-report", "Absolute rolling report.", { absolute: true }),
+			value("--temp-root", "Absolute temp root.", {
+				absolute: true,
+				key: "tempRoot",
+			}),
+			value("--final-report", "Absolute rolling report.", {
+				absolute: true,
+				key: "finalReport",
+			}),
 		],
 		requiredOptions: ["--out"],
 		exitCodes: exits([0, "Survey complete."], [1, "Survey blocked."]),

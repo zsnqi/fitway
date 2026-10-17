@@ -15,6 +15,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
 import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
+
 export const AGENTS_INSTRUCTION_CAP_BYTES = 120_000;
 // Conservative growth warning well below the documented cumulative instruction cap. It is a
 // warning only: a routing invariant or the documented cap itself is what fails.
@@ -39,6 +40,7 @@ export const TASK_CLASSES = [
 	"visual-authority-change",
 	"repository-infrastructure",
 ];
+
 const CONTEXT_FILES = [
 	"AGENTS.md",
 	"PROJECT_STATE.yaml",
@@ -1125,38 +1127,20 @@ export function formatAgentContextResult(result, options = {}) {
 	return lines.join("\n");
 }
 
-function parseArgs(args) {
-	let milestoneId = null;
-	let checkTracked = true;
-	let verbose = false;
-	for (let index = 0; index < args.length; index += 1) {
-		const argument = args[index];
-		if (argument === "--milestone") {
-			milestoneId = args[++index];
-			if (!milestoneId) throw new Error("--milestone requires a value");
-		} else if (argument === "--no-tracked") {
-			checkTracked = false;
-		} else if (argument === "--verbose") {
-			verbose = true;
-		} else if (argument === "--help" || argument === "-h") {
-			console.log(
-				"Usage: node scripts/check-agent-context.mjs [--milestone <id>] [--no-tracked] [--verbose]",
-			);
-			process.exit(0);
-		} else {
-			throw new Error(`Unknown argument: ${argument}`);
-		}
-	}
-	return { milestoneId, checkTracked, verbose };
-}
-
 const isMain =
 	process.argv[1] &&
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
 	try {
-		beginToolCommand("check:agent-context", process.argv.slice(2));
-		const options = parseArgs(process.argv.slice(2));
+		const parsed = beginToolCommand(
+			"check:agent-context",
+			process.argv.slice(2),
+		);
+		const options = {
+			milestoneId: parsed.options.milestoneId ?? null,
+			checkTracked: !parsed.options.noTracked,
+			verbose: parsed.options.verbose === true,
+		};
 		const result = await checkAgentContext(options);
 		console.log(formatAgentContextResult(result, options));
 		if (!result.ok) process.exitCode = 1;

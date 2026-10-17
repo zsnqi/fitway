@@ -5,27 +5,33 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
-import { renderToolHelp, toolEntry } from "./tool-contract.mjs";
+import {
+	beginToolCommand,
+	renderToolHelp,
+	toolEntry,
+} from "./tool-contract.mjs";
 import { TOOL_REGISTRY } from "./tool-registry.mjs";
 
-type ToolOption = {
+type ToolValue = {
 	name: string;
-	takesValue: boolean;
-	freeText: boolean;
 	sample: string | null;
 	pathKind?: string | null;
+	pathLabel?: string;
 	absolute?: boolean;
+};
+type ToolOption = ToolValue & {
+	key?: string;
+	takesValue: boolean;
+	freeText: boolean;
+};
+type ToolPosition = ToolValue & {
+	required: boolean;
 };
 type ToolCommand = {
 	name: string;
 	options: ToolOption[];
 	requiredOptions: string[];
-	positionals?: Array<{
-		name: string;
-		required: boolean;
-		sample: string;
-		pathKind?: string | null;
-	}>;
+	positionals?: ToolPosition[];
 };
 type ToolEntry = {
 	name: string;
@@ -34,13 +40,7 @@ type ToolEntry = {
 	usage: string;
 	options: ToolOption[];
 	commands?: ToolCommand[];
-	positionals?: Array<{
-		name: string;
-		required: boolean;
-		sample: string;
-		pathKind?: string | null;
-		pathLabel?: string;
-	}>;
+	positionals?: ToolPosition[];
 	requiredOptions?: string[];
 	failureName?: string;
 	failureExitCode?: number;
@@ -62,10 +62,9 @@ afterAll(() => fs.rmSync(runRoot, { recursive: true, force: true }));
 
 function agentScript(name: string, script: string) {
 	return (
-		/^(?:node|tsx)\s+(?:\.\/)?(?:scripts|\.agents\/skills)\//.test(script) &&
 		!/^(?:dev|build|check-types|db:|edge:|deploy|env:|demo:|owner:review|test|check$|format$)/.test(
 			name,
-		)
+		) && Boolean(script)
 	);
 }
 
@@ -79,11 +78,11 @@ function commandPrefix(command: ToolCommand | null) {
 	return command ? [command.name] : [];
 }
 
-function contractValue(option?: ToolOption) {
+function contractValue(option?: ToolValue) {
 	if (!option) return "contract-value";
-	if (option.absolute) return path.join(runRoot, option.name.slice(2));
+	if (option.absolute) return repository;
 	if (option.pathKind === "file") return path.join(repository, "package.json");
-	if (option.pathKind === "directory") return repository;
+	if (option.pathKind) return repository;
 	return option.sample ?? "contract-value";
 }
 
@@ -111,7 +110,7 @@ function requiredArguments(
 				? undefined
 				: (overrides[`#${index}`] ??
 					(positions[index].pathKind
-						? contractValue(positions[index] as ToolOption)
+						? contractValue(positions[index])
 						: positions[index].sample));
 		if (value !== undefined) args.push(value);
 	}
@@ -293,6 +292,51 @@ function optionCases(entry: ToolEntry) {
 	return entry.commands.flatMap((command) =>
 		command.options.map((option) => ({ command, option })),
 	);
+}
+
+function optionKey(option: ToolOption) {
+	return option.key ?? option.name.slice(2);
+}
+
+function optionContractArguments(option: ToolOption) {
+	return option.takesValue
+		? [option.name, contractValue(option)]
+		: [option.name];
+}
+
+function compatibilityArguments(
+	entry: ToolEntry,
+	command: ToolCommand | null,
+	option: ToolOption,
+) {
+	const args = requiredArguments(entry, command);
+	const required = command?.requiredOptions ?? entry.requiredOptions ?? [];
+	if (!required.includes(option.name))
+		args.push(...optionContractArguments(option));
+	return args;
+}
+
+function compatibilityRows() {
+	return TOOL_REGISTRY.flatMap((entry) =>
+		optionCases(entry).map(({ command, option }) => ({
+			entry,
+			command,
+			option,
+			args: compatibilityArguments(entry, command, option),
+			value: option.takesValue ? contractValue(option) : true,
+		})),
+	);
+}
+
+function equalsArguments(args: string[], option: ToolOption) {
+	const index = args.indexOf(option.name);
+	if (index === -1)
+		throw new Error(`Missing compatibility option ${option.name}`);
+	return [
+		...args.slice(0, index),
+		`${option.name}=${args[index + 1]}`,
+		...args.slice(index + 2),
+	];
 }
 
 function helpProbes(entry: ToolEntry) {
@@ -512,6 +556,9 @@ async function runPool<T, R>(
 }
 
 async function packageContractTest() {
+	expect(agentScript("wrapped:tool", "node --flag scripts/example.mjs")).toBe(
+		true,
+	);
 	const packageJson = JSON.parse(
 		fs.readFileSync(path.join(repository, "package.json"), "utf8"),
 	);
@@ -540,6 +587,86 @@ async function packageContractTest() {
 	for (const entry of TOOL_REGISTRY) {
 		expect(result.stdout).toContain(entry.name);
 		expect(result.stdout).toContain(entry.invocation);
+	}
+}
+
+function compatibilityTest() {
+	const rows = compatibilityRows();
+	expect(rows.length).toBeGreaterThan(0);
+	for (const row of rows) {
+		const result = beginToolCommand(row.entry.name, row.args);
+		expect(
+			result.command?.name ?? null,
+			`${row.entry.name} ${row.option.name} command`,
+		).toBe(row.command?.name ?? null);
+		expect(
+			result.options[optionKey(row.option)],
+			`${row.entry.name} ${row.option.name} value`,
+		).toEqual(row.value);
+		if (row.option.takesValue) {
+			const equals = beginToolCommand(
+				row.entry.name,
+				equalsArguments(row.args, row.option),
+			);
+			expect(
+				equals.options[optionKey(row.option)],
+				`${row.entry.name} ${row.option.name}=value`,
+			).toEqual(row.value);
+		}
+	}
+}
+
+function crossSubcommandProbe() {
+	return async () => {
+		const result = await runEntry(toolEntry("verify:owner"), [
+			"list",
+			"--lan",
+			"--concept",
+			"contract-missing-folder",
+		]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe("");
+		expect(result.stderr).toBe(
+			"verify:owner: FAIL: unknown option --lan (run verify:owner --help)\n",
+		);
+		noSideEffects(result.events);
+	};
+}
+
+function freeTextValueProbe() {
+	const result = beginToolCommand("codex:round", [
+		"resume",
+		"AGENTS.md",
+		"--message",
+		"--help",
+	]);
+	expect(result.options.message).toBe("--help");
+}
+
+function passthroughHelpProbe() {
+	const result = beginToolCommand("verify:owner", [
+		"measure",
+		"--tool",
+		"focus",
+		"--out",
+		path.join(runRoot, "measure"),
+		"--",
+		"--help",
+	]);
+	expect(result.passthrough).toEqual(["--help"]);
+}
+
+async function startFailurePrefixTest() {
+	for (const folder of ["contract-missing-folder", "AGENTS.md"]) {
+		const result = await runEntry(toolEntry("check:concept-css"), [folder]);
+		expect(result.status).toBe(2);
+		expect(result.stdout).toBe("");
+		expect(result.stderr.trim().split(/\r?\n/)).toHaveLength(1);
+		expect(result.stderr).toMatch(
+			/^check:concept-css: FAIL: [^\r\n]+ \([^\r\n]+\)\r?\n$/,
+		);
+		expect(result.stderr).not.toMatch(/ERROR:|\\s+at\\s/);
+		noSideEffects(result.events);
 	}
 }
 
@@ -635,6 +762,17 @@ async function plantedBreakTest() {
 
 describe("agent command contract", () => {
 	it("keeps package.json and pnpm tools in the registry", packageContractTest);
+	it(
+		"E1 preserves every legacy option form and accepts equals values",
+		compatibilityTest,
+	);
+	it(
+		"E1 refuses an option declared only by another subcommand",
+		crossSubcommandProbe(),
+	);
+	it("E1 keeps option-shaped free text as a value", freeTextValueProbe);
+	it("E1 keeps --help after a passthrough separator", passthroughHelpProbe);
+	it("E5 writes one clean start-up line", startFailurePrefixTest);
 	it(
 		"generates every help, refusal, and start-up case from the registry",
 		generatedContractTest,

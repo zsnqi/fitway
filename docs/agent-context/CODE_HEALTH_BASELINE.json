@@ -56,7 +56,7 @@
 		".agents/skills/gardener/survey.mjs": {
 			"duplication": 1,
 			"longFunctions": 5,
-			"giantFiles": 1228
+			"giantFiles": 1224
 		},
 		".agents/skills/verify-fitway/baseline-cache.mjs": {
 			"duplication": 1
@@ -69,7 +69,7 @@
 			"duplication": 61,
 			"suppressions": 1,
 			"longFunctions": 8,
-			"giantFiles": 4573
+			"giantFiles": 4551
 		},
 		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
 			"duplication": 9,
@@ -689,7 +689,7 @@
 		"scripts/agent-environment/check-brief.mjs": {
 			"duplication": 10,
 			"longFunctions": 3,
-			"giantFiles": 1140
+			"giantFiles": 1132
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
 			"duplication": 5,
@@ -704,7 +704,7 @@
 		"scripts/agent-environment/codex-round.mjs": {
 			"duplication": 6,
 			"longFunctions": 3,
-			"giantFiles": 2315
+			"giantFiles": 2303
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
 			"duplication": 44,
@@ -756,7 +756,7 @@
 		"scripts/check-agent-context.mjs": {
 			"duplication": 5,
 			"longFunctions": 5,
-			"giantFiles": 1167
+			"giantFiles": 1151
 		},
 		"scripts/check-agent-context.test.ts": {
 			"duplication": 22,
@@ -810,7 +810,7 @@
 		"scripts/verify-repository.mjs": {
 			"duplication": 2,
 			"longFunctions": 5,
-			"giantFiles": 959
+			"giantFiles": 955
 		},
 		"scripts/verify-repository.schema.test.ts": {
 			"duplication": 19,

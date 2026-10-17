@@ -8,6 +8,10 @@ import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
+import {
+	bomExceptionPathKey,
+	normalizeGitPath,
+} from "./agent-environment/git-path-key.mjs";
 import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs";
 import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import {
@@ -18,12 +22,15 @@ import {
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
 const root = process.cwd();
+
 function fail(message) {
 	throw new Error(message);
 }
+
 const UTF8_BOM = Buffer.from([0xef, 0xbb, 0xbf]);
 const CLAUDE_AGENT_DIRECTORY = ".claude/agents";
 const CLAUDE_INSTRUCTIONS_FILE = "CLAUDE.md";
+
 export const TRACKED_BOM_EXCEPTIONS = Object.freeze([
 	{
 		path: "apps/server/src/phase11-settings.integration.test.ts",
@@ -61,17 +68,6 @@ const CLAUDE_MODEL_ALIASES = new Map([
 	["sonnet", "sonnet"],
 	["haiku 5.5", "claude-haiku-5-5"],
 ]);
-
-function normalizeGitPath(value) {
-	return value.replaceAll("\\", "/");
-}
-
-function bomExceptionPathKey(value) {
-	return normalizeGitPath(value)
-		.replace(/\/+/g, "/")
-		.replace(/^\.\//, "")
-		.toLowerCase();
-}
 
 function lineNumberAt(text, index) {
 	return text.slice(0, index).split(/\r?\n/).length;
@@ -764,7 +760,7 @@ export async function verifyGardenerRecord(state, read = readBytes) {
 	);
 }
 
-async function main() {
+async function main(options = {}) {
 	execFileSync("git", ["diff", "HEAD", "--check", "--"], {
 		cwd: root,
 		stdio: "inherit",
@@ -936,7 +932,7 @@ async function main() {
 		);
 	}
 	for (const line of formatAgentContextWarnings(agentContext, {
-		verbose: process.argv.slice(2).includes("--verbose"),
+		verbose: options.verbose === true,
 		warningPrefix: "Agent context warning: ",
 	})) {
 		console.warn(line);
@@ -951,8 +947,8 @@ if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-	beginToolCommand("check:repository", process.argv.slice(2));
-	main().catch((error) => {
+	const parsed = beginToolCommand("check:repository", process.argv.slice(2));
+	main(parsed.options).catch((error) => {
 		console.error(`FAILED_VALIDATION: ${error.message}`);
 		process.exitCode = 1;
 	});

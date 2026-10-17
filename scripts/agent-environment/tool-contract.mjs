@@ -9,13 +9,6 @@ export function toolEntry(name) {
 	return entry;
 }
 
-export function invocationArguments(entry) {
-	const parts = entry.invocation.split(" ");
-	if (parts[0] !== "node")
-		throw new Error(`Unsupported invocation: ${entry.invocation}`);
-	return parts.slice(1);
-}
-
 function optionName(token) {
 	const equals = token.indexOf("=");
 	return equals === -1 ? token : token.slice(0, equals);
@@ -26,15 +19,19 @@ function optionValue(token) {
 	return equals === -1 ? undefined : token.slice(equals + 1);
 }
 
+function optionKey(option) {
+	return option.key ?? option.name.slice(2);
+}
+
 function commandOptions(entry, command) {
-	return command?.options ?? entry.options ?? [];
+	if (!entry.commands?.length) return entry.options ?? [];
+	if (!command) return entry.options ?? [];
+	return [...(entry.globalOptions ?? []), ...(command.options ?? [])];
 }
 
 function acceptedOptions(entry, command) {
-	if (command?.internal) return command.options;
-	return entry.commands?.length
-		? entry.options
-		: commandOptions(entry, command);
+	if (!entry.commands?.length) return entry.options ?? [];
+	return [...(entry.globalOptions ?? []), ...(command?.options ?? [])];
 }
 
 function visibleCommands(entry) {
@@ -105,10 +102,15 @@ export function renderToolTable(entries = TOOL_REGISTRY) {
 	].join("\n");
 }
 
-function fail(name, what, fix, exitCode = 1) {
-	const line = `${name}: FAIL: ${String(what).replace(/[\r\n]+/g, " ")} (${fix})`;
-	process.stderr.write(`${line}\n`);
-	process.exit(exitCode);
+class ToolArgumentError extends Error {
+	constructor(message, exitCode = 1) {
+		super(message);
+		this.exitCode = exitCode;
+	}
+}
+
+function reject(name, what, fix, exitCode = 1) {
+	throw new ToolArgumentError(toolFailure(name, what, fix), exitCode);
 }
 
 function scanForHelp(entry, command, args) {
@@ -141,23 +143,23 @@ function findOption(entry, command, token) {
 
 function validateOption(entry, option, token, next, state) {
 	if (!option)
-		fail(
+		reject(
 			entry.name,
 			`unknown option ${optionName(token)}`,
 			`run ${entry.name} --help`,
 		);
 	if (!option.takesValue) {
 		if (optionValue(token) !== undefined && optionValue(token) !== "")
-			fail(
+			reject(
 				entry.name,
 				`${option.name} does not take a value`,
 				`pass ${option.name} without a value; run ${entry.name} --help`,
 			);
-		return null;
+		return { option };
 	}
 	if (optionValue(token) !== undefined) {
 		if (optionValue(token) === "")
-			fail(
+			reject(
 				entry.name,
 				`${option.name} requires a value`,
 				option.missingFix ?? `run ${entry.usage}`,
@@ -165,7 +167,7 @@ function validateOption(entry, option, token, next, state) {
 		return { value: optionValue(token), option };
 	}
 	if (next === undefined || (!option.freeText && next.startsWith("-")))
-		fail(
+		reject(
 			entry.name,
 			`${option.name} requires a value`,
 			option.missingFix ?? `run ${entry.usage}`,
@@ -181,33 +183,76 @@ function existingPath(value, kind) {
 	return true;
 }
 
+function validateOptionPaths(entry, parsed, available, failureName, exitCode) {
+	for (const option of available) {
+		if (!Object.hasOwn(parsed.options, optionKey(option))) continue;
+		const value = parsed.options[optionKey(option)];
+		if (option.absolute && !path.isAbsolute(value))
+			reject(
+				failureName,
+				`${option.name} requires an absolute path: ${value}`,
+				`pass an absolute path; run ${entry.usage}`,
+				exitCode,
+			);
+		if (!option.pathKind) continue;
+		const candidate = path.resolve(process.cwd(), value);
+		if (!existingPath(candidate, option.pathKind))
+			reject(
+				entry.name,
+				option.pathLabel
+					? `${option.pathLabel} not found: ${value}`
+					: `${option.name} path not found: ${value}`,
+				`pass an existing ${option.pathKind}; run ${entry.usage}`,
+			);
+	}
+}
+
 function validateParsed(entry, command, parsed) {
 	const subject = command ?? entry;
 	const failureName = entry.failureName ?? entry.name;
+	const exitCode = entry.failureExitCode ?? 1;
+	const available = acceptedOptions(entry, command);
 	for (const option of subject.requiredOptions ?? entry.requiredOptions ?? []) {
-		if (!parsed.has.has(option))
-			fail(
+		const declared = available.find((candidate) => candidate.name === option);
+		if (!declared || !Object.hasOwn(parsed.options, optionKey(declared)))
+			reject(
 				failureName,
 				`missing required option ${option}`,
 				`run ${entry.usage}`,
+				exitCode,
 			);
 	}
 	for (const requirement of entry.requiredOptionsWhen ?? []) {
-		if (!parsed.has.has(requirement.option) && !process.env[requirement.env])
-			fail(
+		const declared = (entry.options ?? []).find(
+			(candidate) => candidate.name === requirement.option,
+		);
+		if (
+			(!declared || !Object.hasOwn(parsed.options, optionKey(declared))) &&
+			!process.env[requirement.env]
+		)
+			reject(
 				failureName,
 				`missing required option ${requirement.option}`,
 				`run ${entry.usage}`,
+				exitCode,
 			);
 	}
 	const positions = subject.positionals ?? entry.positionals ?? [];
 	if (!entry.deferPositionalFailures) {
 		const requiredCount = positions.filter((item) => item.required).length;
 		if (parsed.positionals.length < requiredCount)
-			fail(
+			reject(
 				failureName,
 				`missing required ${positions[0]?.name ?? "argument"}`,
 				`run ${entry.usage}`,
+				exitCode,
+			);
+		if (parsed.positionals.length > positions.length)
+			reject(
+				failureName,
+				`unexpected argument ${parsed.positionals[positions.length]}`,
+				`run ${entry.usage}`,
+				exitCode,
 			);
 	}
 	if (!entry.skipPositionalPaths && !entry.deferPositionalFailures) {
@@ -217,57 +262,73 @@ function validateParsed(entry, command, parsed) {
 			const raw = parsed.positionals[index];
 			const candidate = path.resolve(process.cwd(), raw);
 			if (!existingPath(candidate, position.pathKind))
-				fail(
+				reject(
 					entry.failureName ?? entry.name,
 					`${position.pathLabel ?? position.name} not found: ${raw}`,
 					`pass an existing ${position.pathLabel ?? position.name}; run ${entry.usage}`,
+					exitCode,
 				);
 		}
 	}
-	for (const item of parsed.values) {
-		if (item.option.absolute && !path.isAbsolute(item.value))
-			fail(
-				failureName,
-				`${item.option.name} requires an absolute path: ${item.value}`,
-				`pass an absolute path; run ${entry.usage}`,
-			);
-		if (!item.option.pathKind) continue;
-		const candidate = path.resolve(process.cwd(), item.value);
-		if (!existingPath(candidate, item.option.pathKind))
-			fail(
-				entry.name,
-				item.option.pathLabel
-					? `${item.option.pathLabel} not found: ${item.value}`
-					: `${item.option.name} path not found: ${item.value}`,
-				`pass an existing ${item.option.pathKind}; run ${entry.usage}`,
-			);
-	}
+	validateOptionPaths(entry, parsed, available, failureName, exitCode);
 }
 
-export function beginToolCommand(name, args = process.argv.slice(2)) {
+export function resolveToolArguments(
+	name,
+	args = process.argv.slice(2),
+	{ validate = true } = {},
+) {
 	const entry = toolEntry(name);
 	const fixed = entry.fixedArgs ?? [];
 	const hasFixed = fixed.every((argument, index) => args[index] === argument);
 	const commandArgs = hasFixed ? args.slice(fixed.length) : args;
-	const command = selectCommand(entry, commandArgs);
+	const command =
+		selectCommand(entry, commandArgs) ??
+		(hasFixed ? selectCommand(entry, fixed) : null);
 	const help = scanForHelp(entry, command, commandArgs);
-	if (help) {
-		process.stdout.write(helpText(entry, help.command));
-		process.exit(0);
-	}
+	if (help)
+		return {
+			entry,
+			command: help.command,
+			fixedArgs: hasFixed ? fixed : [],
+			options: {},
+			counts: {},
+			positionals: [],
+			passthrough: [],
+			help: true,
+		};
 	if (entry.commands?.length) {
 		const first = commandArgs.find((argument) => !argument.startsWith("-"));
 		if (first && !command)
-			fail(entry.name, `unknown command ${first}`, `run ${entry.name} --help`);
+			reject(
+				entry.name,
+				`unknown command ${first}`,
+				`run ${entry.name} --help`,
+			);
 	}
-	const parsed = { has: new Set(), positionals: [], values: [] };
+	const parsed = {
+		entry,
+		command,
+		fixedArgs: hasFixed ? fixed : [],
+		options: {},
+		counts: {},
+		positionals: [],
+		passthrough: [],
+		help: false,
+	};
 	const passthrough = selectedPassthrough(entry, command);
 	for (let index = 0; index < commandArgs.length; index += 1) {
 		const argument = commandArgs[index];
 		if (argument === "--") {
-			if (passthrough) break;
-			continue;
+			if (index === 0 && !passthrough) continue;
+			if (passthrough) {
+				parsed.passthrough = commandArgs.slice(index + 1);
+				break;
+			}
+			parsed.positionals.push(...commandArgs.slice(index + 1));
+			break;
 		}
+		if (index === 0 && command && argument === command.name) continue;
 		if (!argument.startsWith("-") || argument === "-") {
 			parsed.positionals.push(argument);
 			continue;
@@ -281,19 +342,33 @@ export function beginToolCommand(name, args = process.argv.slice(2)) {
 			commandArgs[index + 1],
 			state,
 		);
-		if (option) parsed.has.add(option.name);
-		if (result) parsed.values.push(result);
+		parsed.options[optionKey(result.option)] = result.option.takesValue
+			? result.value
+			: true;
+		const key = optionKey(result.option);
+		parsed.counts[key] = (parsed.counts[key] ?? 0) + 1;
 		if (state.skip) index += 1;
 	}
-	validateParsed(entry, command, parsed);
-	return { entry, command };
+	if (validate) validateParsed(entry, command, parsed);
+	return parsed;
+}
+
+export function beginToolCommand(name, args = process.argv.slice(2)) {
+	try {
+		const parsed = resolveToolArguments(name, args);
+		if (parsed.help) {
+			process.stdout.write(helpText(parsed.entry, parsed.command));
+			process.exit(0);
+		}
+		return parsed;
+	} catch (error) {
+		if (!(error instanceof ToolArgumentError)) throw error;
+		process.stderr.write(`${error.message}\n`);
+		process.exit(error.exitCode);
+	}
 }
 
 export function toolFailure(name, error, fix) {
 	const detail = error instanceof Error ? error.message : String(error);
 	return `${name}: FAIL: ${detail.replace(/[\r\n]+/g, " ")} (${fix})`;
-}
-
-export function failTool(name, what, fix, exitCode = 1) {
-	fail(name, what, fix, exitCode);
 }

@@ -7,11 +7,9 @@ import {
 } from "./code-health-baseline.mjs";
 import { beginToolCommand } from "./tool-contract.mjs";
 
-function main(args = process.argv.slice(2)) {
-	if (args.some((argument) => argument !== "--exceptions"))
-		throw new Error(`Usage: ${CHECK_COMMAND} [--exceptions]`);
+function main(options) {
 	const result = checkCodeHealth();
-	if (args.includes("--exceptions")) {
+	if (options.exceptions === true) {
 		for (const exception of result.openExceptions)
 			console.log(
 				`${exception.file}:${exception.line} ${exception.measure} until=${exception.until} reason=${exception.reason}`,
@@ -48,8 +46,8 @@ if (
 	import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
 	try {
-		beginToolCommand("check:code-health", process.argv.slice(2));
-		main();
+		const parsed = beginToolCommand("check:code-health", process.argv.slice(2));
+		main(parsed.options);
 	} catch (error) {
 		console.error(`${CHECK_COMMAND}: FAIL: ${error.message}`);
 		process.exitCode = 1;

@@ -13,7 +13,10 @@ import {
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parse as parseYaml } from "yaml";
-import { beginToolCommand } from "../../../scripts/agent-environment/tool-contract.mjs";
+import {
+	beginToolCommand,
+	resolveToolArguments,
+} from "../../../scripts/agent-environment/tool-contract.mjs";
 import { repositoryFingerprint } from "../../../scripts/repository-fingerprint.mjs";
 import { collectCodeHealth } from "./code-health.mjs";
 import {
@@ -41,11 +44,13 @@ import {
 } from "./facts.mjs";
 import { readGit } from "./git-reader.mjs";
 import { collectRecordSurvey } from "./records.mjs";
+
 export const root = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
 	"../../..",
 );
 export const defaultTempRoot = "D:/fitway-temp";
+
 export function collectSurveyCodeHealth({
 	readGit = git,
 	previousReportText = null,
@@ -895,28 +900,19 @@ export function formatReport(report) {
 	return lines.join("\n");
 }
 
-export function parseOptions(args) {
-	const options = { tempRoot: defaultTempRoot };
-	for (let index = 0; index < args.length; index += 2) {
-		if (
-			!["--out", "--temp-root", "--final-report"].includes(args[index]) ||
-			!args[index + 1] ||
-			!path.isAbsolute(args[index + 1])
-		)
-			throw new Error(
-				"Usage: node <checkout>/.agents/skills/gardener/survey.mjs --out <absolute-fresh-run> [--temp-root <absolute-temp-root>]",
-			);
-		const field =
-			args[index] === "--out"
-				? "out"
-				: args[index] === "--final-report"
-					? "finalReport"
-					: "tempRoot";
-		if (field === "out" && options.out) throw new Error("Duplicate --out");
-		options[field] = path.resolve(args[index + 1]);
-	}
-	if (!options.out) throw new Error("--out is required");
-	return options;
+export function parseOptions(input = process.argv.slice(2)) {
+	const parsed = Array.isArray(input)
+		? resolveToolArguments("gardener:survey", input, {
+				validate: false,
+			})
+		: input;
+	return {
+		out: path.resolve(parsed.options.out),
+		tempRoot: path.resolve(parsed.options.tempRoot ?? defaultTempRoot),
+		finalReport: parsed.options.finalReport
+			? path.resolve(parsed.options.finalReport)
+			: undefined,
+	};
 }
 
 export function finalFolderSelection(folders, rollingReport) {
@@ -1000,9 +996,9 @@ export function consoleSummary(report, out) {
 	return `SURVEY ${report.outcome.toUpperCase()}: ${path.join(out, "REPORT.md")} (collection=${report.complete ? "complete" : "blocked"}; ${report.git?.worktrees.filter((item) => item.coordinatorReview).length ?? 0} worktrees await coordinator review; ${report.git?.worktrees.filter((item) => item.mergedClean).length ?? 0} merged clean worktrees; ${report.git?.worktrees.filter((item) => item.linksWithheld).length ?? 0} worktrees withheld for links; ${report.git?.worktrees.filter((item) => item.mergedCleanWithheldForLinks).length ?? 0} merged clean worktrees withheld for links; ${report.folders?.filter((item) => item.gone).length ?? 0} temp folders gone; ${report.checks.filter(checkFailed).length} failing/blocked checks; ${report.checks.filter((item) => item.notRun).length} not-run checks; repository unchanged=${report.repositoryUnchanged})`;
 }
 
-async function main(args) {
+async function main(input) {
 	process.env.GIT_OPTIONAL_LOCKS = "0";
-	const { out, tempRoot, finalReport } = parseOptions(args);
+	const { out, tempRoot, finalReport } = parseOptions(input);
 	const registrations = parseWorktreePorcelain(
 		git(["worktree", "list", "--porcelain"]),
 	);
@@ -1205,8 +1201,8 @@ if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-	beginToolCommand("gardener:survey", process.argv.slice(2));
-	main(process.argv.slice(2)).catch((error) => {
+	const parsed = beginToolCommand("gardener:survey", process.argv.slice(2));
+	main(parsed).catch((error) => {
 		console.error(`SURVEY BLOCKED: ${error.message}`);
 		process.exitCode = 1;
 	});

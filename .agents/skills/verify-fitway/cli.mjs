@@ -14,6 +14,11 @@ import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+	beginToolCommand,
+	renderToolHelp,
+	resolveToolArguments,
+} from "../../../scripts/agent-environment/tool-contract.mjs";
+import {
 	colorsAxis,
 	measurementColors,
 	requireForcedColors,
@@ -47,52 +52,7 @@ import {
 import { drive } from "./runner.mjs";
 
 const self = fileURLToPath(import.meta.url);
-let beginToolCommand = () => {};
-export let help = `verify-fitway: node <absolute-skill-folder>/cli.mjs <command> [options]
-Commands:
-  help
-  map --concept <folder> [--recipes <file>] [--out <evidence-folder>]
-  repair-recipes --concept <folder> [--recipes <stale-file>] --out <evidence-folder>
-  list --concept <folder> [--recipes <file>] [--map <file>] [--page <page>|all]
-  drift --concept <folder> [--recipes <file>] [--map <verification-map.json>]
-  drift-tree [--root <repository>]
-  launch --concept <folder> [--port 3176] [--out <evidence-folder>] [--lan] [--isolated-port <49152-65535>] [--idle-timeout-ms <1-1800000>]
-  doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff] [--forensics <folder>]
-  drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>] [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...] [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone] [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176] [--colors normal,forced] [--cache no-store|none] [--probes daily]
-  compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>] [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177] [--timeline] [--timeline-times 1,100,200,...] [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]
-  measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] [--colors normal|forced] -- <tool arguments>
-  cleanup --session <launch-folder|session.json>
-  pnpm --dir '<repository>' install --frozen-lockfile`;
-try {
-	const contract = await import(
-		"../../../scripts/agent-environment/tool-contract.mjs"
-	);
-	beginToolCommand = contract.beginToolCommand;
-	help = contract.renderToolHelp("verify:owner");
-} catch {}
-
-function parse(argv) {
-	const command = argv.shift() || "help";
-	const options = { extra: [] };
-	while (argv.length) {
-		const item = argv.shift();
-		if (item === "--") {
-			options.extra = argv;
-			break;
-		}
-		if (!item.startsWith("--")) throw new Error(`Unexpected argument: ${item}`);
-		const key = item.slice(2);
-		if (["lan", "timeline", "affected-pages"].includes(key))
-			options[key] = true;
-		else {
-			const value = argv.shift();
-			if (!value || value.startsWith("--"))
-				throw new Error(`${item} requires a value`);
-			options[key] = value;
-		}
-	}
-	return { command, options };
-}
+export const help = renderToolHelp("verify:owner");
 
 export function playwright(_concept) {
 	// Tools belong to this checkout. Inputs may be an archive or a plain folder.
@@ -523,9 +483,17 @@ async function cleanup(path) {
 	await jsonOutput(folder, "session.json", { ...session, stopped: true });
 }
 
-export async function main(argv = process.argv.slice(2), services = {}) {
-	const { command, options } = parse(argv);
-	if (command === "help" || command === "--help") return console.log(help);
+export async function main(input = process.argv.slice(2), services = {}) {
+	const parsed = Array.isArray(input)
+		? resolveToolArguments("verify:owner", input)
+		: input;
+	const command =
+		parsed.entry.name === "check:verification-map"
+			? "drift-tree"
+			: (parsed.command?.name ?? "help");
+	const options = parsed.options;
+	options.extra = parsed.passthrough.slice();
+	if (parsed.help || command === "help") return console.log(help);
 	if (
 		["drive", "compare"].includes(command) &&
 		colorsAxis(options.colors).includes("forced")
@@ -779,8 +747,11 @@ export async function main(argv = process.argv.slice(2), services = {}) {
 if (process.argv[1] && resolve(process.argv[1]) === self) {
 	const args = process.argv.slice(2);
 	const checkMap = process.env.npm_lifecycle_event === "check:verification-map";
-	beginToolCommand(checkMap ? "check:verification-map" : "verify:owner", args);
-	main().catch((error) => {
+	const parsed = beginToolCommand(
+		checkMap ? "check:verification-map" : "verify:owner",
+		args,
+	);
+	main(parsed).catch((error) => {
 		if (!(error instanceof ReportedFailure))
 			console.error(
 				`FAIL: ${error.message}${error.fix ? `\nFIX: ${error.fix}` : ""}`,

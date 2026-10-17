@@ -111,26 +111,6 @@ function selectorText(selector) {
 	return `${selector?.kind ?? "unknown"}=${JSON.stringify(selector?.value ?? "")}`;
 }
 
-function parseArgs(inputArgs) {
-	const args = inputArgs[0] === "--" ? inputArgs.slice(1) : inputArgs;
-	let milestoneId = null;
-	for (let index = 0; index < args.length; index += 1) {
-		const argument = args[index];
-		if (argument === "--milestone") {
-			milestoneId = args[++index];
-			if (!milestoneId) throw new Error("--milestone requires a value");
-		} else if (argument === "--help" || argument === "-h") {
-			console.log(
-				"Usage: node scripts/show-agent-context.mjs --milestone <id>",
-			);
-			process.exit(0);
-		} else {
-			throw new Error(`Unknown argument: ${argument}`);
-		}
-	}
-	return milestoneId;
-}
-
 function printSource(lines, source, prefix = "") {
 	lines.push(
 		`${prefix}- ${source.role ? `${source.role}: ` : ""}${source.path} (${selectorText(source.selector)})`,
@@ -287,10 +267,10 @@ export async function agentContextEnding({
 	return lines.join("\n");
 }
 
-async function main() {
+async function main(milestoneId) {
 	const plan = await buildAgentContextPlan({
 		repositoryRoot: root,
-		milestoneId: parseArgs(process.argv.slice(2)),
+		milestoneId,
 	});
 	console.log(plan);
 	const ending = await agentContextEnding({ repositoryRoot: root, plan });
@@ -302,8 +282,8 @@ const isMain =
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
 	try {
-		beginToolCommand("context:show", process.argv.slice(2));
-		await main();
+		const parsed = beginToolCommand("context:show", process.argv.slice(2));
+		await main(parsed.options.milestoneId ?? null);
 	} catch (error) {
 		console.error(
 			`context:show FAILED: ${error instanceof Error ? error.message : String(error)}`,

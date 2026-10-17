@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, watch } from "node:fs";
 import {
-	copyFile,
 	mkdir,
 	mkdtemp,
 	readdir,
@@ -15,6 +14,7 @@ import { createServer, request } from "node:http";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
+import { copyAllFixture, copyHelpFixture } from "./fixture-copy.mjs";
 import { verificationTest } from "./skip-gate.mjs";
 
 const test = verificationTest(nodeTest);
@@ -1589,24 +1589,7 @@ test("listener parsing preserves IPv6 and IPv4 addresses; LAN URLs use real exte
 
 test("help in a dependency-free clone succeeds and names installation", async () => {
 	const folder = resolve(scratch, "clone/.agents/skills/verify-fitway");
-	await mkdir(folder, { recursive: true });
-	await Promise.all(
-		[
-			"cli.mjs",
-			"colors.mjs",
-			"core.mjs",
-			"compare.mjs",
-			"runner.mjs",
-			"timeline.mjs",
-			"drive.mjs",
-			"probes.mjs",
-			"map.mjs",
-			"discover.mjs",
-			"state-rules.mjs",
-		].map((name) =>
-			copyFile(new URL(`./${name}`, import.meta.url), resolve(folder, name)),
-		),
-	);
+	await copyHelpFixture(folder);
 	const result = spawnSync(
 		process.execPath,
 		[resolve(folder, "cli.mjs"), "help"],
@@ -1806,6 +1789,17 @@ function runCli(args, cli = cliPath, env = {}) {
 		},
 	});
 }
+function sessionCommandArgs(command, folder, out) {
+	if (command === "cleanup") return [command, "--session", folder];
+	return [
+		command,
+		"--concept",
+		concept,
+		"--session",
+		folder,
+		...(command === "drive" ? ["--out", out] : []),
+	];
+}
 test("Y2: a test-only doctor seam never probes a verification port", async () => {
 	const folder = resolve(scratch, "doctor-test-port-seam");
 	const port = await isolatedPort();
@@ -1870,16 +1864,7 @@ test("V1: no recipe file is SKIP, while a checked recipe still passes", async ()
 });
 test("V2: dependency-free discovery and browser commands name the package and install once", async () => {
 	const folder = resolve(scratch, "cold/.agents/skills/verify-fitway");
-	await mkdir(folder, { recursive: true });
-	for (const name of await readdir(
-		fileURLToPath(new URL(".", import.meta.url)),
-	)) {
-		if (!name.endsWith(".mjs") || name.endsWith(".test.mjs")) continue;
-		await writeFile(
-			resolve(folder, name),
-			await readFile(new URL(name, import.meta.url)),
-		);
-	}
+	await copyAllFixture(folder);
 	const cli = resolve(folder, "cli.mjs");
 	for (const command of [
 		"map",
@@ -1895,8 +1880,9 @@ test("V2: dependency-free discovery and browser commands name the package and in
 						command,
 						"--concept",
 						concept,
-						"--out",
-						resolve(scratch, `cold-${command}`),
+						...(["map", "repair-recipes"].includes(command)
+							? ["--out", resolve(scratch, `cold-${command}`)]
+							: []),
 					],
 			cli,
 		);
@@ -1936,10 +1922,10 @@ test("V3: doctor and drive setup failures print one fault block", () => {
 			command,
 			"--concept",
 			concept,
-			"--baseline",
-			concept,
-			"--out",
-			resolve(scratch, `one-block-${command}`),
+			...(command === "compare" ? ["--baseline", concept] : []),
+			...(command === "doctor"
+				? []
+				: ["--out", resolve(scratch, `one-block-${command}`)]),
 		]);
 		assert.equal(result.status, 1);
 		assert.equal(
@@ -2154,8 +2140,7 @@ test("R20 V2: drive, compare and measure refuse forced requests with ui-forensic
 				command,
 				"--forensics",
 				tools,
-				"--concept",
-				concept,
+				...(command === "measure" ? [] : ["--concept", concept]),
 				...axes,
 			],
 			{ encoding: "utf8", windowsHide: true },
@@ -4210,8 +4195,7 @@ test("W1: port options keep other previews excluded, and help names isolation an
 				command,
 				"--concept",
 				concept,
-				"--baseline",
-				concept,
+				...(command === "compare" ? ["--baseline", concept] : []),
 				"--port",
 				String(port),
 			]);
@@ -4367,15 +4351,13 @@ test("R17 V2: foreign status, body and silence name the session port without sto
 			"disconnect",
 		]) {
 			for (const command of ["cleanup", "doctor", "drive"]) {
-				const result = await runCliAsync([
-					command,
-					"--concept",
-					concept,
-					"--session",
-					folder,
-					"--out",
-					resolve(scratch, `foreign-${mode}-${command}`),
-				]);
+				const result = await runCliAsync(
+					sessionCommandArgs(
+						command,
+						folder,
+						resolve(scratch, `foreign-${mode}-${command}`),
+					),
+				);
 				assert.equal(result.status, 1, `${mode}/${command}: ${result.stdout}`);
 				assert.match(
 					result.stderr,
@@ -4433,15 +4415,13 @@ test("R19 V1: a verified preview sharing its port names every foreign pid and re
 			server.listen(session.port, "127.0.0.2", done);
 		});
 		for (const command of ["doctor", "cleanup", "drive"]) {
-			const result = await runCliAsync([
-				command,
-				"--concept",
-				concept,
-				"--session",
-				folder,
-				"--out",
-				resolve(scratch, `shared-${command}`),
-			]);
+			const result = await runCliAsync(
+				sessionCommandArgs(
+					command,
+					folder,
+					resolve(scratch, `shared-${command}`),
+				),
+			);
 			assert.equal(result.status, 1, result.stdout);
 			assert.match(
 				result.stderr,
@@ -4485,15 +4465,13 @@ test("W2: detached idle preview exits, frees its port, cleans idempotently and s
 	try {
 		await waitForExit(session);
 		for (const command of ["doctor", "drive"]) {
-			const result = runCli([
-				command,
-				"--concept",
-				concept,
-				"--session",
-				folder,
-				"--out",
-				resolve(scratch, `expired-${command}`),
-			]);
+			const result = runCli(
+				sessionCommandArgs(
+					command,
+					folder,
+					resolve(scratch, `expired-${command}`),
+				),
+			);
 			assert.equal(result.status, 1);
 			assert.match(result.stderr, /Session preview.*stopped or is unreachable/);
 			assert.match(

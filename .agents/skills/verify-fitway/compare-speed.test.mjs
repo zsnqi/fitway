@@ -36,6 +36,16 @@ async function fixture(name, mutation) {
 		(f) => f.endsWith(".mjs") && !f.endsWith(".test.mjs"),
 	))
 		await cp(resolve(skill, file), resolve(clone, file));
+	const contractFolder = resolve(root, "repo/scripts/agent-environment");
+	await mkdir(contractFolder, { recursive: true });
+	await Promise.all(
+		["tool-contract.mjs", "tool-registry.mjs"].map((file) =>
+			cp(
+				resolve(repository, "scripts/agent-environment", file),
+				resolve(contractFolder, file),
+			),
+		),
+	);
 	const cacheFile = resolve(clone, "baseline-cache.mjs");
 	const cacheLine = 'export const cacheRoot = "D:/fitway-verify-captures";';
 	const cacheSource = await readFile(cacheFile, "utf8");

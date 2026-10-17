@@ -281,31 +281,18 @@ Optional Playwright isolation:
 `);
 }
 
-function parseArguments() {
-	const args = process.argv.slice(2).filter((argument) => argument !== "--");
-	const mode = args.shift();
-	if (!mode || mode === "--help" || mode === "-h") {
-		usage();
-		process.exit(mode ? 0 : 1);
-	}
+function verificationOptions(parsed) {
+	const mode = parsed.fixedArgs[0];
 	if (!new Set(["fast", "phase", "full"]).has(mode)) {
 		throw new Error(`Unknown verification mode: ${mode}`);
 	}
-	let phase = process.env.FITWAY_PHASE;
-	while (args.length > 0) {
-		const argument = args.shift();
-		if (argument === "--phase") {
-			const argumentPhase = args.shift();
-			if (!argumentPhase) throw new Error("--phase requires a value");
-			if (phase && phase !== argumentPhase) {
-				throw new Error(
-					"FITWAY_PHASE and --phase must agree when both are set",
-				);
-			}
-			phase = argumentPhase;
-			continue;
-		}
-		throw new Error(`Unknown argument: ${argument}`);
+	const phase = parsed.options.phase ?? process.env.FITWAY_PHASE;
+	if (
+		parsed.options.phase &&
+		process.env.FITWAY_PHASE &&
+		parsed.options.phase !== process.env.FITWAY_PHASE
+	) {
+		throw new Error("FITWAY_PHASE and --phase must agree when both are set");
 	}
 	if (mode === "phase" && (!phase || !(phase in phases))) {
 		throw new Error(
@@ -542,8 +529,8 @@ export async function runVerification({
 	}
 }
 
-async function main() {
-	const { mode, phase } = parseArguments();
+async function main(parsed) {
+	const { mode, phase } = verificationOptions(parsed);
 	await runVerification({ mode, phase });
 }
 
@@ -552,10 +539,14 @@ if (
 	import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
 	const mode = process.argv[2];
-	if (["fast", "phase", "full"].includes(mode))
-		beginToolCommand(`verify:${mode}`, process.argv.slice(2));
-	main().catch((error) => {
-		console.error(`\nFAILED_VALIDATION: ${error.message}`);
-		process.exitCode = 1;
-	});
+	if (["fast", "phase", "full"].includes(mode)) {
+		const parsed = beginToolCommand(`verify:${mode}`, process.argv.slice(2));
+		main(parsed).catch((error) => {
+			console.error(`\nFAILED_VALIDATION: ${error.message}`);
+			process.exitCode = 1;
+		});
+	} else {
+		usage();
+		process.exit(mode === "--help" || mode === "-h" ? 0 : 1);
+	}
 }

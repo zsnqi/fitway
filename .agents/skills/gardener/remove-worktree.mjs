@@ -81,24 +81,12 @@ if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-	beginToolCommand("gardener:remove-worktree", process.argv.slice(2));
-	const [checkoutFlag, checkout, worktreeFlag, target, ...extra] =
-		process.argv.slice(2);
-	if (
-		checkoutFlag !== "--checkout" ||
-		worktreeFlag !== "--worktree" ||
-		extra.length ||
-		!checkout ||
-		!target
-	) {
-		console.error(
-			"Usage: node remove-worktree.mjs --checkout <absolute-checkout> --worktree <absolute-worktree>",
-		);
+	const { options } = beginToolCommand(
+		"gardener:remove-worktree",
+		process.argv.slice(2),
+	);
+	removeWorktree(options.checkout, options.worktree).catch((error) => {
+		console.error(`REFUSED: ${error.message}`);
 		process.exitCode = 1;
-	} else {
-		removeWorktree(checkout, target).catch((error) => {
-			console.error(`REFUSED: ${error.message}`);
-			process.exitCode = 1;
-		});
-	}
+	});
 }
