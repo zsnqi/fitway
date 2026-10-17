@@ -1624,3 +1624,34 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Disposition:** `owner-followup-r04-build` fast-forwarded to `538b280a` (2026-10-17). The selected heat cell's mark
   after a mouse click looks like the keyboard ring; it predates the rounds and stays, for the user's next look at
   Reports.
+
+## agent-tooling-r01: the ratchet, ratchet-fix and the review fixer: `../../agent-tooling/briefs/codex-ratchet.md` and `codex-ratchet-fix.md`, results `7c28d15a`, `3f80f091` and `b3946bc3` on `tooling-ratchet` (from `fcc8365b`), DeepSeek V4.1 Flash, level `max`
+
+- **The rounds.** The ratchet (run `codex-round-c8aa5fb0-...`, ten automatic resumes under F263, start load 91,701)
+  reported H1-H6 PASS and L2 FAIL locally (P3 of `compare-parallel.test.mjs` twice; CI passed on its rerun). Its Sol
+  diff review (`D:/fitway-temp/code-review/ratchet-1/`) gave nine blocking findings, all sent to ratchet-fix (run
+  `codex-round-3911ed9e-...`, start load 167,160; its first report refused by the claim check because its ladder ran
+  before its commit, the second accepted). ratchet-fix's Sol diff review (`code-review/ratchet-fix-1/`) gave three
+  blocking findings (an extension parameter every caller filled alike; `script` 98 and `lintSources` 87 lines against
+  K6's 80), applied by `owner-direction-fixer` with frozen edits in `b3946bc3` (diff checked by the coordinator; its
+  local ladder passed, `804.60s`, no mutation).
+- **The grade** (`../../agent-tooling/briefs/codex-ratchet-grade.md`, G1-G14 over H1-H6, K1-K6, the review edits and
+  the held-out rows HR1-HR12 from `D:/fitway-grader/agent-tooling/ratchet-heldout.md`; both brief reviews, ten readings
+  closed and one in part), GPT-6.1 Sol `xhigh`, run `codex-round-f73f808c-...` (one usage limit, resumed on the next
+  account): 7 PASS, 7 FAIL, L1 PASS. The coordinator's reading:
+  - **Real defects (four):** G1, a deleted or edited working baseline lets `code-health:baseline` write a rise (H1
+    names the committed baseline); G2, a third copy of a block a file already counts as duplicated leaves its count
+    unchanged (the count is per group, not per copy); G4, the gardener's report and the ratchet count a file's lines one
+    apart (the report's Git reader trims the final newline; 17 giant files differ by one; the duplication differences
+    come from the two scopes, by design); G7, the concept's one shared ring in `style.css` (`outline` with
+    `outline-offset`) counts as three declarations, so the eclipse folder fails at `9619f3ce`, `4cc2db93` and
+    `51d5a783`, and `f87906ea`'s ten copies are reported twice each (reproduced by the coordinator:
+    `D:/fitway-temp/tooling-ratchet-grade/coordinator/g7-9619.log`). ratchet-fix's report had claimed H6 (F267).
+  - **The grading brief's wording (three):** G10 counted test suites' `describe` callbacks as touched functions (every
+    production function is at most 80 lines; F269); G12 found mechanical expected-value changes (the fast-step lists
+    gaining the step, fixture file counts gaining `style.css`) and two test files the ratchet's Scope did not list but
+    its step required; G14 asked for a successful ladder in the ratchet's run, which reported its local ladder as
+    failing and left L2 to CI.
+- **Brief rows** 7/14 as graded (3 brief-caused); **held-out** HR 10/12 (HR7 and HR8 fail with G7 and G4).
+  Overclaims: 1 (F267). The grade's clone needed `core.longpaths` (F268).
+- **Disposition:** not merged; ratchet-fix-2 takes the four defects.
