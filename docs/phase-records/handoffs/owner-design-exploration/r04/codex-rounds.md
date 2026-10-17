@@ -1749,6 +1749,19 @@ checks live outside the repository and never appear here or in a brief. One line
   review; the coordinator reproduces each fixed row instead of a third grade (each is a single input or line), then
   the merge chain.
 
+- **The third builder** (`owner-direction-builder`, brief D:/fitway-temp/tooling-cli-contract-regrade/builder-3-brief.md)
+  committed the five as `cf5d7858`: `repair-recipes` without `--out` accepted again with two compatibility rows; a
+  shared `runToolStartup` gives `handoff:new`, `context:show` and `check:agent-context` the C4 line for an unexpected
+  start-up exception; a missing value after a subcommand names that subcommand's usage (93 value options checked);
+  the declaration restored, with `commandStatusIsEvent` moved out (`codex-round.mjs` 2279 lines); the compatibility
+  runner asserts on a refusal instead of throwing. Its local fast ladder failed three times on per-test timeouts only
+  under load, each file passing alone; it hit a usage limit once and was resumed. Its Sol diff review
+  (`D:/fitway-temp/code-review/cli-contract-regrade-builder-1/`) gave no findings. The coordinator reproduced each fixed
+  row: both `repair-recipes` forms through the resolver, an exception injected through `runToolStartup`, `launch
+  --idle-timeout-ms` with no value, the restored declaration, and the 13 rows failing at their assertion (line 544) on
+  `97f61712` in the builder's archive run (inspected, not re-run); known refusals keep their own fixes. The builder's
+  side observations are F274-F276.
+
 ## DeepSeek V4.1 Flash 1017 (2026-10-17, the user's records note)
 
 - **The upgrade (measured 2026-10-17 by a forked side session; the coordinator recomputed the baseline below):**
