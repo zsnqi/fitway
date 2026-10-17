@@ -70,3 +70,17 @@ through these pointers, not copied here.
    growing; joined to the CLI contract's 21 commands they would make one round carry two contracts. The order of
    item 7 becomes: the CLI contract (F251), then report-fields (with F265 as a candidate), then map upkeep, then the
    lighter pickup.
+10. **The giant-file line counts code, and the giant files are split** (the user, 2026-10-17, on the coordinator's
+    proposal: «موافق يلا سجله»). Three rounds made room under the ratchet's 800-line line by deleting text instead of
+    moving code: ratchet-fix-2 six comments, cli-contract 26 blank lines from five giant files, cli-contract-fix 17
+    lines of the launcher's help explanations (F272; each caught by a diff review or a grade and repaired).
+    - The ratchet's giant-file measure counts code lines only, not blank lines or comment lines, so deleting either
+      buys nothing; usage and help text belongs in the command registry, where the CLI contract put it.
+    - A round of its own then splits the giant files (`scripts/agent-environment/codex-round.mjs`,
+      `.agents/skills/gardener/survey.mjs`, `scripts/check-agent-context.mjs`,
+      `scripts/agent-environment/check-brief.mjs` and the others over the line) into modules, so later rounds stop
+      meeting the line.
+    - Briefs keep "room is made by moving code out, never by deleting blank lines, comments or explanations" until
+      both are in. No check tries to detect such deletions from a diff.
+    - The order of item 9 becomes: the CLI contract, then the ratchet's code-line count, then the split round, then
+      report-fields, map upkeep and the lighter pickup.

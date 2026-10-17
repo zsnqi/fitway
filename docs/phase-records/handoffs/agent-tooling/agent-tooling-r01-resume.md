@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `310014a0`, 2026-10-17 10:14 +03:00
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at `d0d140f8`, 2026-10-17 10:23 +03:00
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-10), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -84,10 +84,15 @@
 1. **The CLI contract:** check the builder's commit and ladder, then a short Sol re-grade of Q1, Q4, Q5, Q6, Q9 and
    Q10 only (the grading brief's rows, with a `--no-hardlinks` scratch copy), reproduce one row, then merge
    `tooling-cli-contract` into `agent-tooling-r01`, the coordinator line and main.
-2. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
-   F265 a candidate; F270, a committed baseline rise CI cannot see, and F272, the giant-file measure counting blank lines, may join a ratchet round), **map upkeep** (F252) and **the
-   lighter pickup**. F264 (verify-fitway's caret in forced colours) joins the next verify-fitway round; F269 (test
-   suites counted as long functions) waits for a ratchet round.
+2. **Then, by DECISIONS item 10** (the user, 2026-10-17): a ratchet round whose giant-file measure counts code lines
+   only (not blank or comment lines; F272), then a round that splits the giant files into modules
+   (`scripts/agent-environment/codex-round.mjs`, `.agents/skills/gardener/survey.mjs`,
+   `scripts/check-agent-context.mjs`, `scripts/agent-environment/check-brief.mjs` and the others over the line); briefs
+   keep the "move code, never delete text" line until both are in.
+3. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
+   F265 a candidate; F270, a committed baseline rise CI cannot see, may join a ratchet round), **map upkeep** (F252)
+   and **the lighter pickup**. F264 (verify-fitway's caret in forced colours) joins the next verify-fitway round;
+   F269 (test suites counted as long functions) waits for a ratchet round.
 
 ## Waiting on the user
 
