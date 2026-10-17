@@ -1,27 +1,51 @@
 import path from "node:path";
 import ts from "typescript";
-import { scanDuplication } from "./code-health-duplication.mjs";
-import { scanSource } from "./code-health-source.mjs";
+import {
+	countDuplicationCopies,
+	scanDuplication,
+} from "./code-health-duplication.mjs";
+import { isSourceFile, scanSource } from "./code-health-source.mjs";
 
-export const MEASURES = [
-	"giantFiles",
-	"typeEscapes",
-	"suppressions",
-	"repeatedWorkarounds",
-	"accessibilityOverrides",
-	"duplication",
-	"boundaryBreaks",
+export { isSourceFile, scanSource };
+
+const MEASURE_DEFINITIONS = [
+	{ name: "giantFiles", baseline: true, lineCount: true },
+	{ name: "typeEscapes", baseline: true, baselineOrder: 1 },
+	{ name: "suppressions", baseline: true, baselineOrder: 2 },
+	{ name: "repeatedWorkarounds", baseline: true, baselineOrder: 3 },
+	{ name: "longFunctions", baseline: true, baselineOrder: 4 },
+	{ name: "accessibilityOverrides" },
+	{
+		name: "duplication",
+		baseline: true,
+		baselineOrder: 0,
+		duplication: true,
+	},
+	{ name: "boundaryBreaks" },
 ];
 
-const SOURCE_EXTENSIONS = new Set([".js", ".mjs", ".ts", ".css", ".html"]);
-const IMPORT_EXTENSIONS = [".js", ".mjs", ".ts", ".css"];
+export const MEASURES = Object.freeze(
+	MEASURE_DEFINITIONS.map(({ name }) => name),
+);
+export const BASELINE_MEASURES = Object.freeze(
+	MEASURE_DEFINITIONS.filter(
+		({ baseline, lineCount }) => baseline && !lineCount,
+	)
+		.sort((left, right) => left.baselineOrder - right.baselineOrder)
+		.map(({ name }) => name),
+);
+export const GIANT_FILE_MEASURE = MEASURE_DEFINITIONS.find(
+	({ lineCount }) => lineCount,
+).name;
+export const DUPLICATION_MEASURE = MEASURE_DEFINITIONS.find(
+	({ duplication }) => duplication,
+).name;
+const IMPORT_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts", ".tsx", ".css"];
 
-function sourceFile(file) {
-	return SOURCE_EXTENSIONS.has(path.extname(file).toLowerCase());
-}
-
-function lines(text) {
-	return text.split(/\r?\n/);
+function countLines(text) {
+	if (!text) return 0;
+	const breaks = text.match(/\r\n|\r|\n/g)?.length ?? 0;
+	return breaks + (/(?:\r\n|\r|\n)$/.test(text) ? 0 : 1);
 }
 
 function hit(file, line, detail) {
@@ -173,7 +197,13 @@ export function linkedReferences(text, extension) {
 		return htmlLinkedReferences(text);
 	}
 	if (extension === ".css") return cssLinkedReferences(text);
-	if (extension === ".js" || extension === ".mjs" || extension === ".ts") {
+	if (
+		extension === ".js" ||
+		extension === ".mjs" ||
+		extension === ".cjs" ||
+		extension === ".ts" ||
+		extension === ".tsx"
+	) {
 		return javascriptLinkedReferences(text, extension);
 	}
 	return [];
@@ -239,10 +269,17 @@ export function deriveSharedFiles(files, { specimenPages = [] } = {}) {
 
 function scanGiantFiles(files) {
 	return files
-		.filter((item) => sourceFile(item.file))
+		.filter((item) => isSourceFile(item.file))
 		.flatMap((item) => {
-			const count = lines(item.text).length;
-			return count > 800 ? [hit(item.file, 1, `${count} lines`)] : [];
+			const count = countLines(item.text);
+			return count > 800
+				? [
+						{
+							...hit(item.file, 1, `${count} lines`),
+							lineCount: count,
+						},
+					]
+				: [];
 		});
 }
 
@@ -299,12 +336,13 @@ function scanBoundaryBreaks(files, sharedFiles) {
 }
 
 export function scanScope(files, { sharedFiles = [] } = {}) {
-	const source = files.map(scanSource);
+	const source = files.map((file) => scanSource(file));
 	const measures = {
 		giantFiles: scanGiantFiles(files),
 		typeEscapes: source.flatMap((item) => item.typeEscapes),
 		suppressions: source.flatMap((item) => item.suppressions),
 		repeatedWorkarounds: source.flatMap((item) => item.repeatedWorkarounds),
+		longFunctions: source.flatMap((item) => item.longFunctions),
 		accessibilityOverrides: source.flatMap(
 			(item) => item.accessibilityOverrides,
 		),
@@ -314,7 +352,13 @@ export function scanScope(files, { sharedFiles = [] } = {}) {
 	return Object.fromEntries(
 		MEASURES.map((name) => [
 			name,
-			{ total: measures[name].length, hits: measures[name] },
+			{
+				total:
+					name === DUPLICATION_MEASURE
+						? countDuplicationCopies(measures[name])
+						: measures[name].length,
+				hits: measures[name],
+			},
 		]),
 	);
 }
@@ -389,8 +433,8 @@ function addTrends(scope, previous) {
 	return scope;
 }
 
-function gitText(git, args) {
-	return git(args);
+function gitText(git, args, options) {
+	return git(args, undefined, options);
 }
 
 export async function collectCodeHealth({
@@ -415,9 +459,11 @@ export async function collectCodeHealth({
 				throw new Error(
 					"configured concept folder has no readable tracked files",
 				);
-			const files = listed.filter(sourceFile).map((file) => ({
+			const files = listed.filter(isSourceFile).map((file) => ({
 				file,
-				text: gitText(git, ["show", `${source}:${file}`]),
+				text: gitText(git, ["show", `${source}:${file}`], {
+					trimEnd: false,
+				}),
 			}));
 			const sharedFiles =
 				name === "concept"

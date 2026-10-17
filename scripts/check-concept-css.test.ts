@@ -400,6 +400,144 @@ describe("concept CSS planted findings", () => {
 			).map((f) => f.rule),
 		).toEqual(["outline-without-ring"]);
 	});
+
+	it("H6 keeps the concept focus ring only in style.css", () => {
+		const sources = [
+			{
+				file: "style.css",
+				css: ":focus-visible { outline: 2px solid var(--ink); }",
+			},
+			{
+				file: "components.css",
+				css: [
+					".cx .is-focus { outline: 2px solid var(--ink); }",
+					".cx .field.is-spec-focus { outline: 1px solid red; }",
+					".selected { outline: 2px solid var(--ink); }",
+				].join("\n"),
+			},
+		];
+		expect(
+			lintSources(sources)
+				.filter((finding) => finding.rule === "focus-ring")
+				.map(({ file, line }) => [file, line]),
+		).toEqual([
+			["components.css", 1],
+			["components.css", 2],
+		]);
+	});
+
+	it("H6 requires exactly one focus ring in style.css", () => {
+		expect(
+			lintSources([
+				{
+					file: "style.css",
+					css: ":focus-visible { outline: 2px solid red; }\n:focus { outline: 1px solid red; }",
+				},
+			]).filter((finding) => finding.rule === "focus-ring"),
+		).toEqual([
+			{
+				file: "style.css",
+				line: 1,
+				rule: "focus-ring",
+				detail: "expected one focus-ring declaration in style.css; found 2",
+			},
+		]);
+
+		expect(
+			lintSources([
+				{
+					file: "style.css",
+					css: ":root { color: red; }",
+				},
+			]).filter((finding) => finding.rule === "focus-ring"),
+		).toEqual([
+			{
+				file: "style.css",
+				line: 1,
+				rule: "focus-ring",
+				detail: "expected one focus-ring declaration in style.css; found 0",
+			},
+		]);
+	});
+
+	it("K1 finds focus rings drawn by longhands across rules", () => {
+		const root = fixture({
+			"style.css": ":focus-visible { outline: 2px solid red; }\n",
+			"components.css": [
+				".button.is-focus { outline-width: 2px; }",
+				".button.is-focus { outline-style: solid; }",
+			].join("\n"),
+		});
+		const result = run(root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain("components.css:1: focus-ring");
+		expect(result.stdout).toContain("COUNT focus-ring: 1");
+	});
+
+	it("N4 counts a multi-selector style ring once", () => {
+		const root = fixture({
+			"style.css": [
+				":focus-visible,",
+				"#brand:focus-visible,",
+				".cx .is-focus {",
+				"  outline: 2px solid red;",
+				"  outline-offset: 3px;",
+				"}",
+			].join("\n"),
+		});
+		const result = run(root);
+		expect(result.status, result.stderr).toBe(0);
+		expect(result.stdout).toContain("PASS: 1 CSS files, 0 findings");
+	});
+
+	it("N4 counts ten copies in components.css once each", () => {
+		const root = fixture({
+			"style.css": ":focus-visible { outline: 2px solid red; }\n",
+			"components.css": Array.from(
+				{ length: 10 },
+				(_, index) =>
+					`.copy-${index}.is-focus { outline: 2px solid red; outline-offset: 3px; }`,
+			).join("\n"),
+		});
+		const result = run(root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain("COUNT focus-ring: 10");
+	});
+
+	it("N4 separates the same selector by file and media", () => {
+		const root = fixture({
+			"style.css": ".shared:focus-visible { outline: 2px solid red; }\n",
+			"components.css": [
+				".shared:focus-visible { outline: 2px solid red; }",
+				"@media (min-width: 1px) {",
+				"  .shared:focus-visible { outline: 2px solid blue; }",
+				"}",
+			].join("\n"),
+		});
+		const result = run(root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain("COUNT focus-ring: 2");
+	});
+
+	it.each([
+		[
+			"a suffix-only file",
+			{ "otherstyle.css": ".button.is-focus { outline: 2px solid red; }\n" },
+			"otherstyle.css:1",
+		],
+		[
+			"a nested file",
+			{ "nested/style.css": ".button.is-focus { outline: 2px solid red; }\n" },
+			"nested/style.css:1",
+		],
+	])("K2 requires the concept's exact style.css rather than %s", (_name, files, outside) => {
+		const result = run(fixture(files));
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain(
+			"style.css:1: focus-ring: expected one focus-ring declaration in style.css; found 0",
+		);
+		expect(result.stdout).toContain(`${outside}: focus-ring`);
+	});
 });
 
 describe("concept CSS CLI and read-only folder contract", () => {
@@ -407,6 +545,7 @@ describe("concept CSS CLI and read-only folder contract", () => {
 		const root = fixture({
 			"nested folder/hover.css": ".a:hover { color: red; }\n",
 			"motion.CSS": ".a { transition: all 1s ease-in; outline: none; }",
+			"style.css": ":focus-visible { outline: 2px solid red; }\n",
 			"ignored.txt": ":hover",
 		});
 		const before = snapshot(root);
@@ -422,8 +561,8 @@ describe("concept CSS CLI and read-only folder contract", () => {
 			"outline-without-ring",
 		])
 			expect(result.stdout).toContain(`COUNT ${rule}: 1`);
-		expect(result.stdout).toContain("FAIL: 2 CSS files, 4 findings");
-		expect((await inspectFolder(root)).files).toBe(2);
+		expect(result.stdout).toContain("FAIL: 3 CSS files, 4 findings");
+		expect((await inspectFolder(root)).files).toBe(3);
 		expect(snapshot(root)).toEqual(before);
 	});
 
@@ -431,10 +570,11 @@ describe("concept CSS CLI and read-only folder contract", () => {
 		const result = run(
 			fixture({
 				"clean.css": "@media (hover:hover) { .a:hover { color:red; } }",
+				"style.css": ":focus-visible { outline: 2px solid red; }\n",
 			}),
 		);
 		expect(result.status, result.stderr).toBe(0);
-		expect(result.stdout).toContain("PASS: 1 CSS files, 0 findings");
+		expect(result.stdout).toContain("PASS: 2 CSS files, 0 findings");
 	});
 
 	it("reports no CSS as incomplete, with a distinct nonzero exit", () => {

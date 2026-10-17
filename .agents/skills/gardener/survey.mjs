@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, lstatSync, realpathSync } from "node:fs";
 import {
@@ -38,6 +38,7 @@ import {
 	references,
 	TRUNK_REF,
 } from "./facts.mjs";
+import { readGit } from "./git-reader.mjs";
 import { collectRecordSurvey } from "./records.mjs";
 
 export const root = path.resolve(
@@ -65,13 +66,8 @@ export function filesystemPath(absolute) {
 		: absolute;
 }
 
-export function git(args, cwd = root) {
-	return execFileSync("git", ["--no-optional-locks", ...args], {
-		cwd,
-		encoding: "utf8",
-		windowsHide: true,
-		maxBuffer: 32 * 1024 * 1024,
-	}).trimEnd();
+export function git(args, cwd = root, options = {}) {
+	return readGit(args, cwd, options);
 }
 
 async function record(source, kind, checkout = root) {

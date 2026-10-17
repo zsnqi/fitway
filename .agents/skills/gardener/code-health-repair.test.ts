@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { snapshotCodeHealth } from "../../../scripts/agent-environment/code-health-baseline.mjs";
 import { collectCodeHealth, scanScope } from "./code-health.mjs";
 import { formatReport } from "./survey.mjs";
 
@@ -23,9 +24,7 @@ describe("round 24 repair controls", () => {
 	it("ignores code patterns in TypeScript strings, templates, regexes and comments", () => {
 		const text = [
 			'const quoted = "value: any; value as unknown as Target; @ts-ignore; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run, 0); TODO FIXME HACK workaround !important // biome-ignore eslint-disable";',
-			"const template = `value: any; value as unknown as Target; @ts-expect-error; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run); TODO FIXME HACK workaround !important " +
-				"$" +
-				"{setTimeout(run, 0)}`;",
+			"const template = `value: any; value as unknown as Target; @ts-expect-error; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run, 0); TODO FIXME HACK workaround !important`;",
 			"// value: any; value as unknown as Target; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run, 0); !important",
 			"/* value: any; requestAnimationFrame(() => requestAnimationFrame(run)); setTimeout(run); */",
 			"const pattern = /any|setTimeout(run, 0)|TODO/;",
@@ -160,7 +159,7 @@ describe("round 24 repair controls", () => {
 			},
 			{ file: "c.js", text: `heading\n\n${block}` },
 		]);
-		expect(result.duplication.total).toBe(1);
+		expect(result.duplication.total).toBe(3);
 		expect(result.duplication.hits[0]).toMatchObject({
 			lineCount: 12,
 			places: [
@@ -169,6 +168,22 @@ describe("round 24 repair controls", () => {
 				{ file: "c.js", line: 3 },
 			],
 		});
+	});
+
+	it("N2 exempts only the copy carrying the exception", () => {
+		const block = Array.from(
+			{ length: 8 },
+			(_, index) => `const marked${index} = ${index};`,
+		);
+		const marked = [
+			`${block[0]} // code-health-exception: duplication; until=2026-11-17; reason=test`,
+			...block.slice(1),
+		].join("\n");
+		const result = snapshotCodeHealth(
+			[{ file: "marked.ts", text: `${marked}\n${block.join("\n")}\n` }],
+			{ today: "2026-10-17" },
+		);
+		expect(result.counts["marked.ts"]?.duplication).toBe(1);
 	});
 
 	it("does not count the test fixtures' source text as code defects", () => {
@@ -223,8 +238,8 @@ describe("round 24 repair controls", () => {
 		});
 		expect(next.scopes[0].measures.duplication).toMatchObject({
 			total: 0,
-			previous: 1,
-			trend: -1,
+			previous: 3,
+			trend: -3,
 		});
 	});
 });

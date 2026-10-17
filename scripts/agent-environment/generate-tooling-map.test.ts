@@ -884,6 +884,7 @@ describe("L1: ladder integration", () => {
 			["Repository invariants", ["check:repository"]],
 			["Verification map drift", ["check:verification-map"]],
 			["Agent tooling map drift", ["check:tooling-map"]],
+			["Code health ratchet", ["check:code-health"]],
 			["Verification CLI contracts", ["test:verification"]],
 			["Biome check", ["check"]],
 			[
