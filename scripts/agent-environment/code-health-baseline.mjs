@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -10,6 +11,7 @@ import {
 	scanScope,
 	scanSource,
 } from "../../.agents/skills/gardener/code-health.mjs";
+import { countDuplicationCopies } from "../../.agents/skills/gardener/code-health-duplication.mjs";
 import { listTrackedFiles } from "../verify-repository.mjs";
 
 export const BASELINE_RELATIVE_PATH =
@@ -133,15 +135,32 @@ function exceptionStatus(exceptions, today) {
 	return { invalid, expired, open };
 }
 
-function hitLinesByFile(hit) {
-	if (!hit.places) return new Map([[hit.file, [hit.line]]]);
-	const result = new Map();
-	for (const place of hit.places) {
-		const lines = result.get(place.file) ?? [];
-		lines.push(place.line);
-		result.set(place.file, lines);
+function duplicationCopyLines(hit, place, text) {
+	if (!text || !Number.isInteger(hit.lineCount) || hit.lineCount < 1)
+		return [place.line];
+	const lines = [];
+	const source = text.split(/\r?\n/);
+	let index = place.line - 1;
+	while (index > 0 && source[index - 1].includes("code-health-exception:")) {
+		index--;
+		lines.push(index + 1);
 	}
-	return result;
+	let codeLines = 0;
+	for (; index < source.length && codeLines < hit.lineCount; index++) {
+		const line = source[index];
+		if (line.includes("code-health-exception:")) lines.push(index + 1);
+		else if (line.trim()) {
+			lines.push(index + 1);
+			codeLines++;
+		}
+	}
+	while (
+		index < source.length &&
+		source[index].includes("code-health-exception:")
+	) {
+		lines.push(++index);
+	}
+	return lines.length ? lines : [place.line];
 }
 
 function excepted(exceptions, file, measure, lines, today) {
@@ -172,12 +191,15 @@ export function snapshotCodeHealth(files, { today = date() } = {}) {
 
 	for (const measure of BASELINE_MEASURES) {
 		if (measure === DUPLICATION_MEASURE) {
-			for (const hit of report[measure].hits) {
-				for (const [file, lines] of hitLinesByFile(hit)) {
-					if (!excepted(exceptions, file, measure, lines, today))
-						addCount(counts, hits, file, measure, [...new Set(lines)]);
-				}
-			}
+			const sources = new Map(
+				files.map(({ file, text }) => [normalizePath(file), text]),
+			);
+			countDuplicationCopies(report[measure].hits, (hit, place) => {
+				const file = normalizePath(place.file);
+				const lines = duplicationCopyLines(hit, place, sources.get(file));
+				if (!excepted(exceptions, file, measure, lines, today))
+					addCount(counts, hits, file, measure, [place.line]);
+			});
 		} else {
 			for (const hit of report[measure].hits) {
 				if (!excepted(exceptions, hit.file, measure, [hit.line], today))
@@ -231,18 +253,36 @@ export function baselineFromSnapshot(snapshot) {
 	return { version: 1, files };
 }
 
+function parseCodeHealthBaseline(text) {
+	const value = JSON.parse(text);
+	if (value?.version !== 1 || !value.files || typeof value.files !== "object")
+		throw new Error("unsupported baseline shape");
+	return value;
+}
+
 export function readCodeHealthBaseline(root = process.cwd()) {
 	try {
-		const value = JSON.parse(
+		return parseCodeHealthBaseline(
 			readFileSync(path.join(root, BASELINE_RELATIVE_PATH), "utf8"),
 		);
-		if (value?.version !== 1 || !value.files || typeof value.files !== "object")
-			throw new Error("unsupported baseline shape");
-		return value;
 	} catch (error) {
 		if (error.code === "ENOENT") return null;
 		throw error;
 	}
+}
+
+export function readCommittedCodeHealthBaseline(root = process.cwd()) {
+	const result = spawnSync(
+		"git",
+		["--no-optional-locks", "show", `HEAD:${BASELINE_RELATIVE_PATH}`],
+		{
+			cwd: root,
+			encoding: "utf8",
+			windowsHide: true,
+			maxBuffer: 32 * 1024 * 1024,
+		},
+	);
+	return result.status === 0 ? parseCodeHealthBaseline(result.stdout) : null;
 }
 
 export function compareCodeHealth(baseline, snapshot) {
@@ -276,7 +316,7 @@ export function writeCodeHealthBaseline({
 } = {}) {
 	const snapshot = snapshotCodeHealth(readCodeHealthFiles(root), { today });
 	const baseline = baselineFromSnapshot(snapshot);
-	const previous = readCodeHealthBaseline(root);
+	const previous = readCommittedCodeHealthBaseline(root);
 	const changes = previous ? compareCodeHealth(previous, snapshot) : [];
 	const rises = changes.filter((change) => change.direction === "rise");
 	if (rises.length)
@@ -302,8 +342,16 @@ export function checkCodeHealth({ root = process.cwd(), today = date() } = {}) {
 			`${BASELINE_RELATIVE_PATH} is missing; run ${BASELINE_COMMAND}`,
 		);
 	const snapshot = snapshotCodeHealth(readCodeHealthFiles(root), { today });
+	const committed = readCommittedCodeHealthBaseline(root);
+	const inflation = committed
+		? compareCodeHealth(committed, {
+				counts: baseline.files,
+				hits: {},
+			}).filter((change) => change.direction === "rise")
+		: [];
 	return {
 		changes: compareCodeHealth(baseline, snapshot),
+		inflation,
 		invalidExceptions: snapshot.invalidExceptions,
 		expiredExceptions: snapshot.expiredExceptions,
 		openExceptions: snapshot.openExceptions,

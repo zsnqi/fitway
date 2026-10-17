@@ -471,7 +471,51 @@ describe("concept CSS planted findings", () => {
 		const result = run(root);
 		expect(result.status, result.stderr).toBe(1);
 		expect(result.stdout).toContain("components.css:1: focus-ring");
-		expect(result.stdout).toContain("components.css:2: focus-ring");
+		expect(result.stdout).toContain("COUNT focus-ring: 1");
+	});
+
+	it("N4 counts a multi-selector style ring once", () => {
+		const root = fixture({
+			"style.css": [
+				":focus-visible,",
+				"#brand:focus-visible,",
+				".cx .is-focus {",
+				"  outline: 2px solid red;",
+				"  outline-offset: 3px;",
+				"}",
+			].join("\n"),
+		});
+		const result = run(root);
+		expect(result.status, result.stderr).toBe(0);
+		expect(result.stdout).toContain("PASS: 1 CSS files, 0 findings");
+	});
+
+	it("N4 counts ten copies in components.css once each", () => {
+		const root = fixture({
+			"style.css": ":focus-visible { outline: 2px solid red; }\n",
+			"components.css": Array.from(
+				{ length: 10 },
+				(_, index) =>
+					`.copy-${index}.is-focus { outline: 2px solid red; outline-offset: 3px; }`,
+			).join("\n"),
+		});
+		const result = run(root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain("COUNT focus-ring: 10");
+	});
+
+	it("N4 separates the same selector by file and media", () => {
+		const root = fixture({
+			"style.css": ".shared:focus-visible { outline: 2px solid red; }\n",
+			"components.css": [
+				".shared:focus-visible { outline: 2px solid red; }",
+				"@media (min-width: 1px) {",
+				"  .shared:focus-visible { outline: 2px solid blue; }",
+				"}",
+			].join("\n"),
+		});
+		const result = run(root);
+		expect(result.status, result.stderr).toBe(1);
 		expect(result.stdout).toContain("COUNT focus-ring: 2");
 	});
 

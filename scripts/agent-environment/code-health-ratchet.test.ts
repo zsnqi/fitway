@@ -77,6 +77,13 @@ function day(offset: number) {
 	return date.toISOString().slice(0, 10);
 }
 
+function repeatedSource(prefix: string) {
+	return Array.from(
+		{ length: 8 },
+		(_, index) => `const ${prefix}${index} = ${index};`,
+	).join("\n");
+}
+
 describe("code-health ratchet commands", () => {
 	it("H1 writes a deterministic committed baseline", () => {
 		const root = fixture();
@@ -137,7 +144,11 @@ describe("code-health ratchet commands", () => {
 		expect(result.status, result.stderr).toBe(1);
 		expect(result.stdout).toContain(plantedFile);
 		expect(result.stdout).toContain(measure);
-		expect(result.stdout).toContain("baseline=0 current=1");
+		expect(result.stdout).toContain(
+			measure === "duplication"
+				? "baseline=0 current=2"
+				: "baseline=0 current=1",
+		);
 		expect(result.stdout).toContain("run pnpm code-health:baseline");
 	});
 
@@ -266,5 +277,113 @@ describe("code-health ratchet commands", () => {
 		const result = run(checkScript, root);
 		expect(result.status, result.stderr).toBe(1);
 		expect(result.stdout).toContain("scripts/sample.ts: suppressions");
+	});
+
+	it.each([
+		"deleted",
+		"inflated",
+	])("N1 ignores a %s working baseline when protecting HEAD", (state) => {
+		const root = fixture();
+		write(root, "scripts/sample.ts", "export const clean = 1;\n");
+		writeBaseline(root);
+		git(root, "add", "--all");
+		git(root, "commit", "-qm", "baseline");
+		write(root, "scripts/sample.ts", "const value: any = 1;\n");
+		if (state === "deleted") {
+			rmSync(path.join(root, baselinePath), { force: true });
+		} else {
+			const baseline = JSON.parse(
+				readFileSync(path.join(root, baselinePath), "utf8"),
+			);
+			baseline.files["scripts/sample.ts"] = { typeEscapes: 1 };
+			write(root, baselinePath, `${JSON.stringify(baseline, null, "\t")}\n`);
+		}
+		const result = run(baselineScript, root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stderr).toContain(
+			"scripts/sample.ts: typeEscapes baseline=0 current=1",
+		);
+	});
+
+	it("N1 check rejects an uncommitted baseline inflation", () => {
+		const root = fixture();
+		write(root, "scripts/sample.ts", "export const clean = 1;\n");
+		writeBaseline(root);
+		git(root, "add", "--all");
+		git(root, "commit", "-qm", "baseline");
+		write(root, "scripts/sample.ts", "const value: any = 1;\n");
+		const baseline = JSON.parse(
+			readFileSync(path.join(root, baselinePath), "utf8"),
+		);
+		baseline.files["scripts/sample.ts"] = { typeEscapes: 1 };
+		write(root, baselinePath, `${JSON.stringify(baseline, null, "\t")}\n`);
+		const result = run(checkScript, root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain(
+			"scripts/sample.ts: typeEscapes baseline=0 current=1",
+		);
+	});
+
+	it("N2 counts a third copy in one file, including inserted blanks", () => {
+		const root = fixture();
+		const block = repeatedSource("copy");
+		write(root, "scripts/copy.ts", `${block}\n${block}\n`);
+		writeBaseline(root);
+		const copyWithBlankLines = block.split("\n").join("\n\n");
+		write(
+			root,
+			"scripts/copy.ts",
+			`${block}\n${block}\n${copyWithBlankLines}\n`,
+		);
+		const result = run(checkScript, root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain(
+			"scripts/copy.ts: duplication baseline=2 current=3",
+		);
+	});
+
+	it("N2 raises the count of a second file that receives another copy", () => {
+		const root = fixture();
+		const block = repeatedSource("other");
+		write(root, "scripts/a.ts", `${block}\n`);
+		write(root, "scripts/b.ts", `${block}\n`);
+		writeBaseline(root);
+		write(root, "scripts/b.ts", `${block}\n${block}\n`);
+		const result = run(checkScript, root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain(
+			"scripts/b.ts: duplication baseline=1 current=2",
+		);
+	});
+
+	it("N3 counts trailing line breaks through the command's reader", () => {
+		const root = fixture();
+		const source = (prefix: string) =>
+			Array.from(
+				{ length: 801 },
+				(_, index) => `const ${prefix}${index} = ${index};`,
+			);
+		write(root, "scripts/lf.ts", `${source("lf").join("\n")}\n\n`);
+		write(root, "scripts/crlf.ts", `${source("crlf").join("\r\n")}\r\n`);
+		write(root, "scripts/final.ts", source("final").join("\n"));
+		write(
+			root,
+			baselinePath,
+			`${JSON.stringify(
+				{
+					version: 1,
+					files: {
+						"scripts/crlf.ts": { giantFiles: 801 },
+						"scripts/final.ts": { giantFiles: 801 },
+						"scripts/lf.ts": { giantFiles: 802 },
+					},
+				},
+				null,
+				"\t",
+			)}\n`,
+		);
+		const result = run(checkScript, root);
+		expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
+		expect(result.stdout).toContain("PASS: code health");
 	});
 });

@@ -18,11 +18,16 @@ function main(args = process.argv.slice(2)) {
 	}
 	const failed =
 		result.changes.length +
+		result.inflation.length +
 		result.invalidExceptions.length +
 		result.expiredExceptions.length;
 	if (failed) {
 		for (const change of result.changes)
 			console.log(formatCodeHealthChange(change));
+		for (const change of result.inflation)
+			console.log(
+				`working baseline inflation: ${formatCodeHealthChange(change)}`,
+			);
 		for (const exception of result.invalidExceptions)
 			console.log(
 				`${exception.file}:${exception.line}: invalid code-health exception: ${exception.measure} until=${exception.until} reason=${exception.reason}; ${exception.detail}`,

@@ -491,42 +491,58 @@ function collectFocusRingFindings(rules, expand, finding) {
 		for (const selector of rule.selectors) {
 			if (!positiveFocus(selector.text).length && !focusClass(selector.text))
 				continue;
-			const key = normalize(selector.text);
-			const entries = groups.get(key) ?? [];
-			entries.push(
-				...rule.declarations
-					.filter(({ property }) => property.startsWith("outline"))
-					.map((declaration) => ({ rule, declaration })),
-			);
-			groups.set(key, entries);
+			if (
+				!rule.declarations.some(({ property }) =>
+					property.startsWith("outline"),
+				)
+			)
+				continue;
+			const key = [
+				rule.file,
+				rule.media.join("\n"),
+				normalize(selector.text),
+			].join("\0");
+			const grouped = groups.get(key) ?? [];
+			grouped.push(rule);
+			groups.set(key, grouped);
 		}
 	const rings = new Map();
-	for (const entries of groups.values()) {
-		if (
-			!hasRing(
-				{ declarations: entries.map(({ declaration }) => declaration) },
-				expand,
-			)
-		)
-			continue;
-		const final = new Map(
-			entries.map((entry) => [entry.declaration.property, entry]),
+	for (const grouped of groups.values()) {
+		const participating = [...new Set(grouped)];
+		const declarations = participating.flatMap((rule) =>
+			rule.declarations.filter(({ property }) =>
+				property.startsWith("outline"),
+			),
 		);
-		for (const entry of final.values())
-			rings.set(`${entry.rule.file}\0${entry.declaration.offset}`, entry);
+		if (!declarations.length || !hasRing({ declarations }, expand)) continue;
+		const key = participating
+			.map(
+				(rule) =>
+					`${rule.file}\0${rule.declarations[0]?.offset ?? rule.line ?? 1}`,
+			)
+			.sort()
+			.join("\0");
+		if (rings.has(key)) continue;
+		const declaration =
+			declarations.find(({ property }) => property !== "outline-offset") ??
+			declarations[0];
+		const rule =
+			participating.find((candidate) =>
+				candidate.declarations.includes(declaration),
+			) ?? participating[0];
+		rings.set(key, { rule, declaration });
 	}
-	const styleRings = [];
-	for (const entry of rings.values()) {
-		if (entry.rule.file.replaceAll("\\", "/") === "style.css")
-			styleRings.push(entry);
-		else
+	const styleRings = [...rings.values()].filter(
+		(entry) => entry.rule.file.replaceAll("\\", "/") === "style.css",
+	);
+	for (const entry of rings.values())
+		if (!styleRings.includes(entry))
 			finding(
 				entry.rule,
 				entry.declaration.offset,
 				"focus-ring",
 				"focus-ring declaration outside style.css",
 			);
-	}
 	if (styleRings.length !== 1) {
 		const first = styleRings[0];
 		finding(

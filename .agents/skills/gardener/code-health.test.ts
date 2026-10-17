@@ -317,7 +317,7 @@ describe("gardener code-health fixtures", () => {
 		expect(report.typeEscapes.total).toBe(4);
 		expect(report.suppressions.total).toBe(2);
 		expect(report.repeatedWorkarounds.total).toBe(6);
-		expect(report.duplication.total).toBe(1);
+		expect(report.duplication.total).toBe(2);
 		expect(report.duplication.hits[0].places).toEqual([
 			{ file: "first.js", line: 1 },
 			{ file: "second.js", line: 1 },
@@ -382,7 +382,7 @@ describe("gardener code-health fixtures", () => {
 				].join("\n"),
 			},
 		]);
-		expect(result.duplication.total).toBe(1);
+		expect(result.duplication.total).toBe(2);
 	});
 
 	it("reports a clean fixture with zero totals", () => {

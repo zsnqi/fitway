@@ -1,6 +1,9 @@
 import path from "node:path";
 import ts from "typescript";
-import { scanDuplication } from "./code-health-duplication.mjs";
+import {
+	countDuplicationCopies,
+	scanDuplication,
+} from "./code-health-duplication.mjs";
 import { isSourceFile, scanSource } from "./code-health-source.mjs";
 
 export { isSourceFile, scanSource };
@@ -39,8 +42,10 @@ export const DUPLICATION_MEASURE = MEASURE_DEFINITIONS.find(
 ).name;
 const IMPORT_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts", ".tsx", ".css"];
 
-function lines(text) {
-	return text.split(/\r?\n/);
+function countLines(text) {
+	if (!text) return 0;
+	const breaks = text.match(/\r\n|\r|\n/g)?.length ?? 0;
+	return breaks + (/(?:\r\n|\r|\n)$/.test(text) ? 0 : 1);
 }
 
 function hit(file, line, detail) {
@@ -266,7 +271,7 @@ function scanGiantFiles(files) {
 	return files
 		.filter((item) => isSourceFile(item.file))
 		.flatMap((item) => {
-			const count = lines(item.text).length;
+			const count = countLines(item.text);
 			return count > 800
 				? [
 						{
@@ -347,7 +352,13 @@ export function scanScope(files, { sharedFiles = [] } = {}) {
 	return Object.fromEntries(
 		MEASURES.map((name) => [
 			name,
-			{ total: measures[name].length, hits: measures[name] },
+			{
+				total:
+					name === DUPLICATION_MEASURE
+						? countDuplicationCopies(measures[name])
+						: measures[name].length,
+				hits: measures[name],
+			},
 		]),
 	);
 }
@@ -422,8 +433,8 @@ function addTrends(scope, previous) {
 	return scope;
 }
 
-function gitText(git, args) {
-	return git(args);
+function gitText(git, args, options) {
+	return git(args, undefined, options);
 }
 
 export async function collectCodeHealth({
@@ -450,7 +461,9 @@ export async function collectCodeHealth({
 				);
 			const files = listed.filter(isSourceFile).map((file) => ({
 				file,
-				text: gitText(git, ["show", `${source}:${file}`]),
+				text: gitText(git, ["show", `${source}:${file}`], {
+					trimEnd: false,
+				}),
 			}));
 			const sharedFiles =
 				name === "concept"

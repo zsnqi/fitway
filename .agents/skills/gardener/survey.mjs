@@ -65,13 +65,14 @@ export function filesystemPath(absolute) {
 		: absolute;
 }
 
-export function git(args, cwd = root) {
-	return execFileSync("git", ["--no-optional-locks", ...args], {
+export function git(args, cwd = root, { trimEnd = true } = {}) {
+	const output = execFileSync("git", ["--no-optional-locks", ...args], {
 		cwd,
 		encoding: "utf8",
 		windowsHide: true,
 		maxBuffer: 32 * 1024 * 1024,
-	}).trimEnd();
+	});
+	return trimEnd ? output.trimEnd() : output;
 }
 
 async function record(source, kind, checkout = root) {

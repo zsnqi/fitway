@@ -8,7 +8,7 @@
 			"longFunctions": 2
 		},
 		".agents/skills/gardener/code-health.test.ts": {
-			"duplication": 1,
+			"duplication": 2,
 			"longFunctions": 3
 		},
 		".agents/skills/gardener/facts.test.ts": {
@@ -18,7 +18,7 @@
 			"duplication": 2
 		},
 		".agents/skills/gardener/records.test.ts": {
-			"duplication": 4,
+			"duplication": 6,
 			"longFunctions": 3
 		},
 		".agents/skills/gardener/regressions.test.ts": {
@@ -50,7 +50,7 @@
 			"longFunctions": 1
 		},
 		".agents/skills/gardener/round8b.test.ts": {
-			"duplication": 7,
+			"duplication": 8,
 			"longFunctions": 2
 		},
 		".agents/skills/gardener/survey.mjs": {
@@ -64,16 +64,16 @@
 		".agents/skills/verify-fitway/cli.mjs": {
 			"duplication": 1,
 			"longFunctions": 2,
-			"giantFiles": 827
+			"giantFiles": 826
 		},
 		".agents/skills/verify-fitway/cli.test.mjs": {
-			"duplication": 25,
+			"duplication": 61,
 			"suppressions": 1,
 			"longFunctions": 8,
-			"giantFiles": 4584
+			"giantFiles": 4583
 		},
 		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
-			"duplication": 8,
+			"duplication": 9,
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare-runtime.mjs": {
@@ -84,9 +84,9 @@
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare.mjs": {
-			"duplication": 3,
+			"duplication": 6,
 			"longFunctions": 1,
-			"giantFiles": 922
+			"giantFiles": 921
 		},
 		".agents/skills/verify-fitway/core.mjs": {
 			"longFunctions": 1
@@ -95,7 +95,7 @@
 			"longFunctions": 3
 		},
 		".agents/skills/verify-fitway/drive.mjs": {
-			"duplication": 2,
+			"duplication": 3,
 			"longFunctions": 2
 		},
 		".agents/skills/verify-fitway/map.mjs": {
@@ -105,9 +105,9 @@
 			"longFunctions": 4
 		},
 		".agents/skills/verify-fitway/runner.mjs": {
-			"duplication": 3,
+			"duplication": 5,
 			"longFunctions": 2,
-			"giantFiles": 1131
+			"giantFiles": 1130
 		},
 		".agents/skills/verify-fitway/timeline-hold.test.mjs": {
 			"duplication": 2,
@@ -116,10 +116,10 @@
 		".agents/skills/verify-fitway/timeline.mjs": {
 			"suppressions": 1,
 			"longFunctions": 2,
-			"giantFiles": 807
+			"giantFiles": 806
 		},
 		"apps/server/src/access-repository.ts": {
-			"duplication": 14
+			"duplication": 24
 		},
 		"apps/server/src/access-service.ts": {
 			"duplication": 2,
@@ -140,17 +140,17 @@
 			"longFunctions": 1
 		},
 		"apps/server/src/auth/postgres-auth-repository.ts": {
-			"duplication": 5
+			"duplication": 6
 		},
 		"apps/server/src/auth/routes.ts": {
 			"longFunctions": 1
 		},
 		"apps/server/src/command-repository.ts": {
-			"duplication": 1,
+			"duplication": 2,
 			"longFunctions": 1
 		},
 		"apps/server/src/cron.test.ts": {
-			"duplication": 2,
+			"duplication": 7,
 			"longFunctions": 2
 		},
 		"apps/server/src/edge-push.test.ts": {
@@ -171,96 +171,96 @@
 			"longFunctions": 2
 		},
 		"apps/server/src/openapi.ts": {
-			"duplication": 4,
+			"duplication": 6,
 			"longFunctions": 1
 		},
 		"apps/server/src/phase10-csv-transport.integration.test.ts": {
-			"duplication": 13,
+			"duplication": 17,
 			"typeEscapes": 2,
 			"longFunctions": 3
 		},
 		"apps/server/src/phase10-domain.integration.test.ts": {
-			"duplication": 8,
+			"duplication": 12,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase10-ui-csv.integration.test.ts": {
-			"duplication": 11,
+			"duplication": 18,
 			"typeEscapes": 1,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase11-access.integration.test.ts": {
-			"duplication": 7,
+			"duplication": 13,
 			"typeEscapes": 1,
 			"longFunctions": 2,
-			"giantFiles": 1056
+			"giantFiles": 1055
 		},
 		"apps/server/src/phase11-audit-generalization.integration.test.ts": {
-			"duplication": 6,
+			"duplication": 12,
 			"longFunctions": 2,
-			"giantFiles": 842
+			"giantFiles": 841
 		},
 		"apps/server/src/phase11-audit.integration.test.ts": {
-			"duplication": 18,
+			"duplication": 21,
 			"typeEscapes": 2,
 			"longFunctions": 3
 		},
 		"apps/server/src/phase11-health.integration.test.ts": {
-			"duplication": 8,
+			"duplication": 14,
 			"typeEscapes": 2,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase11-settings.integration.test.ts": {
-			"duplication": 13,
+			"duplication": 19,
 			"typeEscapes": 1,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase2.integration.test.ts": {
-			"duplication": 9,
+			"duplication": 18,
 			"typeEscapes": 3,
 			"longFunctions": 5,
-			"giantFiles": 1544
+			"giantFiles": 1543
 		},
 		"apps/server/src/phase4-auth.integration.test.ts": {
-			"duplication": 2,
+			"duplication": 5,
 			"typeEscapes": 1,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase4-health.integration.test.ts": {
-			"duplication": 10,
+			"duplication": 14,
 			"typeEscapes": 2,
 			"longFunctions": 1
 		},
 		"apps/server/src/phase5-command-domain.integration.test.ts": {
-			"duplication": 17,
+			"duplication": 28,
 			"typeEscapes": 4,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase6-offline.integration.test.ts": {
-			"duplication": 17,
+			"duplication": 24,
 			"typeEscapes": 2,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase7-integration.integration.test.ts": {
-			"duplication": 16,
+			"duplication": 32,
 			"typeEscapes": 9,
 			"longFunctions": 10,
-			"giantFiles": 1948
+			"giantFiles": 1947
 		},
 		"apps/server/src/phase8-alert-evaluator.integration.test.ts": {
-			"duplication": 13,
+			"duplication": 16,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase8-integration.integration.test.ts": {
-			"duplication": 11,
+			"duplication": 17,
 			"longFunctions": 3,
-			"giantFiles": 883
+			"giantFiles": 882
 		},
 		"apps/server/src/phase9-analytics.integration.test.ts": {
-			"duplication": 10,
+			"duplication": 12,
 			"longFunctions": 2
 		},
 		"apps/server/src/phase9-owner-ui.integration.test.ts": {
-			"duplication": 16,
+			"duplication": 17,
 			"typeEscapes": 1,
 			"longFunctions": 3
 		},
@@ -269,7 +269,7 @@
 			"longFunctions": 1
 		},
 		"apps/server/src/reporting-repository.test.ts": {
-			"duplication": 5,
+			"duplication": 14,
 			"longFunctions": 1
 		},
 		"apps/server/src/reporting-repository.ts": {
@@ -277,7 +277,7 @@
 			"longFunctions": 1
 		},
 		"apps/server/src/reset-repository.test.ts": {
-			"duplication": 5,
+			"duplication": 6,
 			"typeEscapes": 1,
 			"longFunctions": 2
 		},
@@ -303,30 +303,30 @@
 			"longFunctions": 1
 		},
 		"apps/web/src/components/login/login.css": {
-			"duplication": 4
+			"duplication": 5
 		},
 		"apps/web/src/components/occupancy-status.tsx": {
 			"longFunctions": 1
 		},
 		"apps/web/src/components/owner/access/owner-access-view.test.tsx": {
-			"duplication": 9,
+			"duplication": 28,
 			"longFunctions": 3,
-			"giantFiles": 1317
+			"giantFiles": 1316
 		},
 		"apps/web/src/components/owner/access/owner-access-view.tsx": {
-			"duplication": 4,
+			"duplication": 5,
 			"longFunctions": 2,
-			"giantFiles": 1039
+			"giantFiles": 1038
 		},
 		"apps/web/src/components/owner/access/owner-access.css": {
-			"duplication": 6
+			"duplication": 7
 		},
 		"apps/web/src/components/owner/audit/owner-audit-section.tsx": {
-			"duplication": 1,
+			"duplication": 2,
 			"longFunctions": 1
 		},
 		"apps/web/src/components/owner/audit/owner-audit-view.test.tsx": {
-			"duplication": 2,
+			"duplication": 5,
 			"longFunctions": 1
 		},
 		"apps/web/src/components/owner/audit/owner-audit-view.tsx": {
@@ -338,26 +338,29 @@
 		"apps/web/src/components/owner/health/owner-health-section.tsx": {
 			"longFunctions": 1
 		},
+		"apps/web/src/components/owner/health/owner-health-view.test.tsx": {
+			"duplication": 1
+		},
 		"apps/web/src/components/owner/health/owner-health-view.tsx": {
-			"duplication": 4,
+			"duplication": 6,
 			"longFunctions": 3
 		},
 		"apps/web/src/components/owner/health/owner-health.css": {
 			"duplication": 6
 		},
 		"apps/web/src/components/owner/owner-analytics-view.test.tsx": {
-			"duplication": 5,
+			"duplication": 10,
 			"longFunctions": 5,
-			"giantFiles": 902
+			"giantFiles": 901
 		},
 		"apps/web/src/components/owner/owner-analytics-view.tsx": {
-			"duplication": 1,
+			"duplication": 2,
 			"longFunctions": 3,
-			"giantFiles": 1514
+			"giantFiles": 1513
 		},
 		"apps/web/src/components/owner/owner-analytics.css": {
 			"duplication": 4,
-			"giantFiles": 1409
+			"giantFiles": 1408
 		},
 		"apps/web/src/components/owner/owner-date-field.css": {
 			"duplication": 2
@@ -388,44 +391,45 @@
 			"duplication": 1
 		},
 		"apps/web/src/components/owner/reporting/owner-analytics-mode-switch.test.tsx": {
-			"duplication": 6,
+			"duplication": 7,
 			"repeatedWorkarounds": 1,
 			"longFunctions": 4
 		},
 		"apps/web/src/components/owner/reporting/owner-analytics-mode-switch.tsx": {
-			"duplication": 1,
+			"duplication": 2,
 			"longFunctions": 1
 		},
 		"apps/web/src/components/owner/reporting/owner-reporting-export.tsx": {
 			"longFunctions": 1
 		},
 		"apps/web/src/components/owner/reporting/owner-reporting-section.tsx": {
-			"duplication": 2,
+			"duplication": 5,
 			"longFunctions": 1
 		},
 		"apps/web/src/components/owner/reporting/owner-reporting-view.test.tsx": {
+			"duplication": 1,
 			"longFunctions": 1
 		},
 		"apps/web/src/components/owner/reporting/owner-reporting-view.tsx": {
 			"duplication": 1,
 			"longFunctions": 3,
-			"giantFiles": 883
+			"giantFiles": 882
 		},
 		"apps/web/src/components/owner/reporting/owner-reporting.css": {
-			"duplication": 6,
-			"giantFiles": 1598
+			"duplication": 11,
+			"giantFiles": 1597
 		},
 		"apps/web/src/components/owner/reporting/owner-section-switch.tsx": {
 			"longFunctions": 3
 		},
 		"apps/web/src/components/owner/settings/messages.ts": {
-			"duplication": 2
+			"duplication": 3
 		},
 		"apps/web/src/components/owner/settings/owner-settings-draft.ts": {
 			"duplication": 1
 		},
 		"apps/web/src/components/owner/settings/owner-settings-section.test.tsx": {
-			"duplication": 6,
+			"duplication": 11,
 			"repeatedWorkarounds": 1,
 			"longFunctions": 1
 		},
@@ -433,22 +437,22 @@
 			"longFunctions": 1
 		},
 		"apps/web/src/components/owner/settings/owner-settings-view.tsx": {
-			"duplication": 3,
+			"duplication": 6,
 			"longFunctions": 2
 		},
 		"apps/web/src/components/owner/settings/owner-settings.css": {
 			"duplication": 2,
-			"giantFiles": 892
+			"giantFiles": 891
 		},
 		"apps/web/src/components/public-states.test.tsx": {
-			"duplication": 2,
+			"duplication": 4,
 			"longFunctions": 2
 		},
 		"apps/web/src/components/skip-link.tsx": {
 			"duplication": 1
 		},
 		"apps/web/src/components/staff/operational-snapshot-view.test.tsx": {
-			"duplication": 2,
+			"duplication": 5,
 			"longFunctions": 1
 		},
 		"apps/web/src/components/staff/operational-snapshot-view.tsx": {
@@ -460,31 +464,31 @@
 		},
 		"apps/web/src/components/staff/staff-board.css": {
 			"duplication": 4,
-			"giantFiles": 1297
+			"giantFiles": 1296
 		},
 		"apps/web/src/components/staff/staff.css": {
-			"duplication": 3,
-			"giantFiles": 949
+			"duplication": 4,
+			"giantFiles": 948
 		},
 		"apps/web/src/hooks/use-owner-access.test.tsx": {
-			"duplication": 4,
+			"duplication": 6,
 			"repeatedWorkarounds": 1,
 			"longFunctions": 1
 		},
 		"apps/web/src/hooks/use-owner-access.ts": {
-			"duplication": 3
+			"duplication": 4
 		},
 		"apps/web/src/hooks/use-owner-audit.test.tsx": {
-			"duplication": 3,
+			"duplication": 5,
 			"repeatedWorkarounds": 1,
 			"longFunctions": 2
 		},
 		"apps/web/src/hooks/use-owner-daily-analytics.test.tsx": {
-			"duplication": 3,
+			"duplication": 5,
 			"repeatedWorkarounds": 2
 		},
 		"apps/web/src/hooks/use-owner-reporting.test.tsx": {
-			"duplication": 6,
+			"duplication": 7,
 			"repeatedWorkarounds": 1,
 			"longFunctions": 2
 		},
@@ -492,11 +496,11 @@
 			"longFunctions": 1
 		},
 		"apps/web/src/hooks/use-owner-settings.test.tsx": {
-			"duplication": 10,
+			"duplication": 12,
 			"repeatedWorkarounds": 1
 		},
 		"apps/web/src/hooks/use-public-occupancy.test.tsx": {
-			"duplication": 9,
+			"duplication": 28,
 			"longFunctions": 1
 		},
 		"apps/web/src/hooks/use-public-occupancy.ts": {
@@ -506,8 +510,8 @@
 			"typeEscapes": 1
 		},
 		"apps/web/src/index.css": {
-			"duplication": 3,
-			"giantFiles": 1347
+			"duplication": 5,
+			"giantFiles": 1346
 		},
 		"apps/web/src/routes/login.tsx": {
 			"duplication": 1,
@@ -533,10 +537,10 @@
 			"longFunctions": 1
 		},
 		"packages/api/src/analytics/reporting/contracts.ts": {
-			"duplication": 1
+			"duplication": 2
 		},
 		"packages/api/src/analytics/reporting/csv-transport.test.ts": {
-			"duplication": 3,
+			"duplication": 4,
 			"longFunctions": 1
 		},
 		"packages/api/src/analytics/reporting/queries.test.ts": {
@@ -544,11 +548,11 @@
 			"longFunctions": 1
 		},
 		"packages/api/src/analytics/reporting/reporting.test.ts": {
-			"duplication": 3,
+			"duplication": 5,
 			"longFunctions": 5
 		},
 		"packages/api/src/analytics/reporting/reporting.ts": {
-			"duplication": 6,
+			"duplication": 8,
 			"longFunctions": 2
 		},
 		"packages/api/src/audit/governance.test.ts": {
@@ -559,7 +563,7 @@
 			"duplication": 1
 		},
 		"packages/api/src/audit/list.test.ts": {
-			"duplication": 4,
+			"duplication": 9,
 			"longFunctions": 2
 		},
 		"packages/api/src/audit/list.ts": {
@@ -570,14 +574,14 @@
 			"duplication": 2
 		},
 		"packages/api/src/commands/service.test.ts": {
-			"duplication": 2,
+			"duplication": 4,
 			"longFunctions": 1
 		},
 		"packages/api/src/commands/service.ts": {
 			"longFunctions": 1
 		},
 		"packages/api/src/context.ts": {
-			"duplication": 3
+			"duplication": 4
 		},
 		"packages/api/src/cron/runner.test.ts": {
 			"longFunctions": 1
@@ -587,13 +591,13 @@
 			"longFunctions": 1
 		},
 		"packages/api/src/edge-push.ts": {
-			"duplication": 1
+			"duplication": 2
 		},
 		"packages/api/src/health/evaluator.ts": {
 			"duplication": 2
 		},
 		"packages/api/src/health/incidents.test.ts": {
-			"duplication": 3,
+			"duplication": 4,
 			"longFunctions": 2
 		},
 		"packages/api/src/health/incidents.ts": {
@@ -608,7 +612,7 @@
 			"duplication": 1
 		},
 		"packages/api/src/occupancy/engine.test.ts": {
-			"duplication": 5,
+			"duplication": 6,
 			"longFunctions": 1
 		},
 		"packages/api/src/occupancy/engine.ts": {
@@ -623,7 +627,7 @@
 			"duplication": 2
 		},
 		"packages/api/src/offline/reconciliation.test.ts": {
-			"duplication": 1
+			"duplication": 2
 		},
 		"packages/api/src/public-occupancy.test.ts": {
 			"longFunctions": 1
@@ -637,16 +641,16 @@
 			"longFunctions": 1
 		},
 		"packages/api/src/reset/evaluator.test.ts": {
-			"duplication": 17,
+			"duplication": 44,
 			"longFunctions": 2,
-			"giantFiles": 954
+			"giantFiles": 953
 		},
 		"packages/api/src/reset/evaluator.ts": {
 			"duplication": 1,
 			"longFunctions": 1
 		},
 		"packages/api/src/reset/runner.test.ts": {
-			"duplication": 1,
+			"duplication": 3,
 			"longFunctions": 1
 		},
 		"packages/api/src/retention/policy.test.ts": {
@@ -667,61 +671,62 @@
 			"duplication": 1
 		},
 		"packages/auth/src/auth-service.test.ts": {
+			"duplication": 1,
 			"longFunctions": 1
 		},
 		"packages/auth/src/crypto.ts": {
-			"duplication": 1
+			"duplication": 2
 		},
 		"packages/db/src/schema/application.ts": {
 			"duplication": 2,
 			"longFunctions": 1
 		},
 		"packages/ui/src/styles/globals.css": {
-			"duplication": 1
+			"duplication": 8
 		},
 		"scripts/agent-environment/advance-main.test.ts": {
 			"longFunctions": 1
 		},
 		"scripts/agent-environment/check-brief.mjs": {
-			"duplication": 6,
+			"duplication": 10,
 			"longFunctions": 3,
-			"giantFiles": 1142
+			"giantFiles": 1141
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
 			"duplication": 5,
 			"typeEscapes": 5,
 			"longFunctions": 7,
-			"giantFiles": 1424
+			"giantFiles": 1423
 		},
 		"scripts/agent-environment/code-health-ratchet.test.ts": {
-			"duplication": 5,
+			"duplication": 10,
 			"longFunctions": 1
 		},
 		"scripts/agent-environment/codex-round.mjs": {
-			"duplication": 4,
+			"duplication": 6,
 			"longFunctions": 3,
-			"giantFiles": 2317
+			"giantFiles": 2316
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
-			"duplication": 18,
+			"duplication": 44,
 			"typeEscapes": 10,
 			"longFunctions": 14,
-			"giantFiles": 4485
+			"giantFiles": 4484
 		},
 		"scripts/agent-environment/context-ending.test.ts": {
 			"duplication": 1,
 			"longFunctions": 1
 		},
 		"scripts/agent-environment/generate-tooling-map.test.ts": {
-			"duplication": 5,
+			"duplication": 7,
 			"longFunctions": 2,
-			"giantFiles": 900
+			"giantFiles": 899
 		},
 		"scripts/agent-environment/new-handoff.mjs": {
 			"longFunctions": 1
 		},
 		"scripts/agent-environment/new-handoff.test.ts": {
-			"duplication": 1,
+			"duplication": 3,
 			"longFunctions": 2
 		},
 		"scripts/agent-environment/path-tokens.test.ts": {
@@ -744,21 +749,21 @@
 			"longFunctions": 1
 		},
 		"scripts/agent-environment/tooling-map-coverage.mjs": {
-			"duplication": 1
-		},
-		"scripts/agent-environment/tooling-map-imports.mjs": {
 			"duplication": 2
 		},
+		"scripts/agent-environment/tooling-map-imports.mjs": {
+			"duplication": 4
+		},
 		"scripts/check-agent-context.mjs": {
-			"duplication": 3,
+			"duplication": 5,
 			"longFunctions": 5,
-			"giantFiles": 1168
+			"giantFiles": 1167
 		},
 		"scripts/check-agent-context.test.ts": {
-			"duplication": 11,
+			"duplication": 22,
 			"typeEscapes": 6,
 			"longFunctions": 2,
-			"giantFiles": 2136
+			"giantFiles": 2135
 		},
 		"scripts/check-concept-css.mjs": {
 			"longFunctions": 1
@@ -767,7 +772,7 @@
 			"longFunctions": 1
 		},
 		"scripts/demo/cli.ts": {
-			"duplication": 1,
+			"duplication": 2,
 			"longFunctions": 1
 		},
 		"scripts/demo/seed.test.ts": {
@@ -775,7 +780,7 @@
 			"longFunctions": 1
 		},
 		"scripts/demo/seed.ts": {
-			"duplication": 6,
+			"duplication": 9,
 			"typeEscapes": 1,
 			"longFunctions": 1
 		},
@@ -795,7 +800,7 @@
 			"duplication": 1
 		},
 		"scripts/run-vitest.test.ts": {
-			"duplication": 5
+			"duplication": 6
 		},
 		"scripts/show-agent-context.mjs": {
 			"longFunctions": 1
@@ -806,29 +811,29 @@
 		"scripts/verify-repository.mjs": {
 			"duplication": 2,
 			"longFunctions": 5,
-			"giantFiles": 961
+			"giantFiles": 960
 		},
 		"scripts/verify-repository.schema.test.ts": {
-			"duplication": 10,
+			"duplication": 19,
 			"longFunctions": 6,
-			"giantFiles": 1344
+			"giantFiles": 1343
 		},
 		"scripts/verify.mjs": {
 			"duplication": 3
 		},
 		"scripts/verify.test.ts": {
-			"duplication": 6,
+			"duplication": 8,
 			"longFunctions": 2
 		},
 		"scripts/visual-authority.mjs": {
 			"duplication": 1,
 			"longFunctions": 2,
-			"giantFiles": 848
+			"giantFiles": 847
 		},
 		"scripts/visual-authority.test.ts": {
-			"duplication": 5,
+			"duplication": 9,
 			"longFunctions": 5,
-			"giantFiles": 2028
+			"giantFiles": 2027
 		}
 	}
 }
