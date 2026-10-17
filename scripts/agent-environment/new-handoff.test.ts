@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
 import {
@@ -22,6 +22,7 @@ import {
 	replaceYamlScalars,
 } from "./new-handoff.mjs";
 import { validateResumePoint } from "./resume-point.mjs";
+import { toolEntry } from "./tool-contract.mjs";
 
 const roots: string[] = [];
 const script = fileURLToPath(new URL("./new-handoff.mjs", import.meta.url));
@@ -445,6 +446,59 @@ describe("V2: handoff:new opens a milestone", () => {
 		]);
 		expect(result.status).toBe(1);
 		expect(result.output).toContain("--dir must target a directory");
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
+	});
+
+	it.each([
+		[["--milestone", "missing-r01"], `pass --milestone one of: ${MILESTONE}`],
+		[["--milestone", MILESTONE, "--dir", "not-a-directory"], "pass --dir"],
+		[["--milestone", MILESTONE, "--dir", "../outside"], "pass --dir"],
+	])("C4 refuses the value in %j with one line that names the fix", (args, fix) => {
+		const { root } = openableFixture();
+		put(root, "not-a-directory", "file");
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		const result = runHandoff(root, [...args, "--now", NOW]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe("");
+		expect(result.stderr).toMatch(
+			/^handoff:new: FAIL: [^\r\n]+ \([^\r\n]+\)\r?\n$/,
+		);
+		expect(result.stderr).toContain(fix);
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
+	});
+
+	it("C4 prints a start-up exception as one line naming the usage", () => {
+		const { root } = openableFixture();
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		// The test's own preload makes beginToolCommand throw an ordinary error, as a start-up
+		// defect would; the command reads no test flag.
+		put(
+			root,
+			"startup-throws.mjs",
+			[
+				"const isArray = Array.isArray;",
+				"Array.isArray = (value) => {",
+				'\tif (value === "handoff:new") throw new Error("injected start-up failure");',
+				"\treturn isArray(value);",
+				"};",
+				"",
+			].join("\n"),
+		);
+		const preload = pathToFileURL(path.join(root, "startup-throws.mjs")).href;
+		const result = runProcess(root, [
+			"--import",
+			preload,
+			script,
+			"--milestone",
+			MILESTONE,
+			"--now",
+			NOW,
+		]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe("");
+		expect(result.stderr).toBe(
+			`handoff:new: FAIL: injected start-up failure (run ${toolEntry("handoff:new").usage} after fixing the reported error)\n`,
+		);
 		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
 	});
 });

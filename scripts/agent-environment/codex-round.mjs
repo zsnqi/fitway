@@ -26,8 +26,14 @@ import {
 	reviewSourcePlan,
 } from "./check-brief.mjs";
 import { commitHeaderSha } from "./commit-header.mjs";
+import { commandStatusIsEvent, isGitCommitWords } from "./git-commit-words.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
+import {
+	beginToolCommand,
+	resolveToolArguments,
+	toolFailure,
+} from "./tool-contract.mjs";
 
 const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
 const GPT_MODEL = "gpt-6.1-sol";
@@ -43,28 +49,6 @@ const MODEL_LEVELS = new Map([
 	[DEEPSEEK_MODEL, DEEPSEEK_LEVELS],
 	[GPT_MODEL, GPT_LEVELS],
 ]);
-const HELP = `Usage: pnpm codex:round [--] <brief> [<level>] [--model <model>] [--run <folder>] [--new-review]
-       pnpm codex:round [--] resume <folder> [--message <text> | --message-file <file>]
-       node <repository>/scripts/agent-environment/codex-round.mjs <brief> [<level>] [--model <model>] [--run <folder>] [--new-review]
-       node <repository>/scripts/agent-environment/codex-round.mjs resume <folder> [--message <text> | --message-file <file>]
-
-Models: deepseek-v4.1-flash (default), gpt-6.1-sol.
-Levels: deepseek-v4.1-flash: high, max (default max); gpt-6.1-sol: medium, high, xhigh, max.
-Relative brief and run paths start at the repository root, in either shell.
-Default run folder: ${process.platform === "win32" ? "D:/fitway-temp" : tmpdir()}/codex-round-<id>.
-Launch runs the REVIEW.md review when absent and stops for coordinator dispositions.
---new-review requests a fresh review and stops; resume never checks reviews.
-Resume allows unfinished changes, keeps each event stream, and updates last-message.md.
-When a run exits 0 without a report, it resumes automatically up to 10 times and
-appends each trigger to auto-resumes.log.
-A report names every brief outcome/limit ID on PASS or FAIL lines, or has a
-line starting STOPPED:.
---message sends the exact text instead of the saved launch input.
---message-file decodes UTF-8 (with or without a BOM) or UTF-16 files with a BOM,
-then sends UTF-8 without the BOM; invalid no-BOM bytes are refused;
-use this shell-safe form for quotes, backslashes, Unicode or multiline text.
-After a run, start-load.json records the thread's first request (input tokens) from
-Codex's session file under CODEX_HOME (default ~/.codex), unless the folder has one.`;
 
 function resolvePath(value) {
 	return path.resolve(repositoryRoot, value.replaceAll("\\", "/"));
@@ -354,58 +338,48 @@ function decodeMessageFile(bytes, filename) {
 	return Buffer.from(text, "utf8");
 }
 
-function parseArgs(input) {
-	const args = input[0] === "--" ? input.slice(1) : input;
-	if (args.length === 1 && ["--help", "-h"].includes(args[0]))
-		return { help: true };
-	if (args[0] === "resume") {
+export function codexOptions(parsed) {
+	const positionals = parsed.positionals;
+	if (positionals[0] === "resume") {
 		if (
-			![2, 4].includes(args.length) ||
-			(args.length === 4 && !["--message", "--message-file"].includes(args[2]))
+			positionals.length !== 2 ||
+			parsed.options.model !== undefined ||
+			parsed.options.run !== undefined ||
+			parsed.options.newReview === true
 		)
 			throw new Error(
 				"expected resume <folder> [--message <text> | --message-file <file>]",
 			);
-		if (args[2] === "--message" && runningInGitBash())
+		if (
+			parsed.options.message !== undefined &&
+			parsed.options.messageFile !== undefined
+		)
+			throw new Error(
+				"expected resume <folder> [--message <text> | --message-file <file>]",
+			);
+		if (parsed.options.message !== undefined && runningInGitBash())
 			throw new Error(
 				"--message cannot be used from Git Bash because its text may already be rewritten; use --message-file <file>",
 			);
 		return {
 			resume: true,
-			run: resolvePath(args[1]),
-			message: args[2] === "--message" ? args[3] : undefined,
+			run: resolvePath(positionals[1]),
+			message: parsed.options.message,
 			messageFile:
-				args[2] === "--message-file" ? resolvePath(args[3]) : undefined,
+				parsed.options.messageFile === undefined
+					? undefined
+					: resolvePath(parsed.options.messageFile),
 		};
 	}
-	let run;
-	let model = DEFAULT_MODEL;
-	let modelSeen = false;
-	let newReview = false;
-	const positionals = [];
-	for (let index = 0; index < args.length; index += 1) {
-		const argument = args[index];
-		if (argument === "--model") {
-			if (modelSeen || !args[index + 1] || args[index + 1].startsWith("-"))
-				throw new Error("--model requires <deepseek-v4.1-flash|gpt-6.1-sol>");
-			model = args[++index];
-			modelSeen = true;
-		} else if (argument === "--run") {
-			if (run || !args[index + 1]) throw new Error("--run requires a folder");
-			run = resolvePath(args[++index]);
-		} else if (argument === "--new-review") {
-			if (newReview) throw new Error("--new-review was repeated");
-			newReview = true;
-		} else if (argument.startsWith("-")) {
-			throw new Error(`unexpected launch option: ${argument}`);
-		} else {
-			positionals.push(argument);
-		}
-	}
+	if (parsed.options.message !== undefined)
+		throw new Error("unexpected launch option: --message");
+	if (parsed.options.messageFile !== undefined)
+		throw new Error("unexpected launch option: --message-file");
 	if (positionals.length < 1 || positionals.length > 2)
 		throw new Error(
 			"expected <brief> [<level>] [--model <model>] [--run <folder>] [--new-review]",
 		);
+	const model = parsed.options.model ?? DEFAULT_MODEL;
 	const level =
 		positionals[1] ??
 		(model === DEEPSEEK_MODEL ? DEFAULT_DEEPSEEK_LEVEL : undefined);
@@ -413,9 +387,11 @@ function parseArgs(input) {
 		brief: resolvePath(positionals[0]),
 		level,
 		model,
-		newReview,
+		newReview: parsed.options.newReview === true,
 		run:
-			run ??
+			(parsed.options.run === undefined
+				? undefined
+				: resolvePath(parsed.options.run)) ??
 			path.join(
 				process.platform === "win32" ? "D:/fitway-temp" : tmpdir(),
 				`codex-round-${randomUUID()}`,
@@ -1153,34 +1129,9 @@ function lastCommandPart(command) {
 	return commandParts(command).at(-1) ?? null;
 }
 
-function commandStatusIsEvent(part) {
-	return (
-		part?.separator === null ||
-		part?.separator === "&&" ||
-		part?.separator === ";" ||
-		part?.separator === "\n"
-	);
-}
-
 function isGitCommitCommand(command, shell = "bash") {
 	const words = shellTokens(command, shell) ?? [];
-	if (!/^git(?:\.exe)?$/i.test(words[0] ?? "")) return false;
-	let index = 1;
-	while (index < words.length) {
-		if (words[index] === "--no-pager") {
-			index += 1;
-			continue;
-		}
-		if (words[index] === "-C" || words[index] === "-c") {
-			index += 2;
-			continue;
-		}
-		break;
-	}
-	if (!/^commit$/i.test(words[index] ?? "")) return false;
-	return !words
-		.slice(index + 1)
-		.some((word) => /^--(?:dry-run|help)$/i.test(word));
+	return isGitCommitWords(words);
 }
 
 function isCommitCommand(command) {
@@ -2287,13 +2238,20 @@ async function execute(options, prepared) {
 	}
 }
 
-export async function main(args = process.argv.slice(2)) {
+export async function main(args) {
 	let options;
 	try {
-		options = parseArgs(args);
-		if (options.help) {
-			console.log(HELP);
-			return 0;
+		options = Array.isArray(args)
+			? codexOptions(resolveToolArguments("codex:round", args))
+			: codexOptions(args);
+		const requiredPath = options.resume ? options.run : options.brief;
+		try {
+			await access(requiredPath);
+			if (options.messageFile) await access(options.messageFile);
+		} catch {
+			throw new Error(
+				`${options.resume ? "folder" : "brief file"} not found: ${requiredPath}`,
+			);
 		}
 		const prepared = options.resume
 			? await prepareResume(options)
@@ -2304,7 +2262,10 @@ export async function main(args = process.argv.slice(2)) {
 			const brief = await optionalFile(options.brief).catch(() => undefined);
 			if (brief) console.log(`Current brief SHA-256: ${sha256(brief)}`);
 		}
-		console.error(`codex-round: ${error.message.replace(/[\r\n]+/g, " ")}`);
+		const fix = /not found:/.test(error.message)
+			? "pass an existing path; run pnpm codex:round --help"
+			: "run pnpm codex:round --help";
+		console.error(toolFailure("codex:round", error, fix));
 		return 1;
 	}
 }
@@ -2312,5 +2273,7 @@ export async function main(args = process.argv.slice(2)) {
 if (
 	process.argv[1] &&
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
-)
-	process.exitCode = await main();
+) {
+	const parsed = beginToolCommand("codex:round", process.argv.slice(2));
+	process.exitCode = await main(parsed);
+}

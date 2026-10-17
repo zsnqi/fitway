@@ -27,7 +27,6 @@ import {
 import { pathKey, samePath } from "./path-identity.mjs";
 
 vi.setConfig({ testTimeout: 60_000 });
-
 vi.mock("node:fs", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("node:fs")>();
 	return {
@@ -64,7 +63,6 @@ vi.mock("node:fs", async (importOriginal) => {
 		}),
 	};
 });
-
 vi.mock("node:fs/promises", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("node:fs/promises")>();
 	return {
@@ -86,7 +84,6 @@ vi.mock("node:fs/promises", async (importOriginal) => {
 		}),
 	};
 });
-
 vi.mock("node:child_process", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("node:child_process")>();
 	const processStartValue = (args: unknown[]) => {
@@ -154,7 +151,6 @@ vi.mock("node:child_process", async (importOriginal) => {
 		),
 	};
 });
-
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const script =
 	process.env.FITWAY_ROUND_TEST_SCRIPT ||
@@ -279,7 +275,6 @@ const quotedLabelReviews = [
 		"c23a47c01d77ee729fe5a4838314bb6427228eda5731b0c984026df7726f4931",
 	],
 ] as const;
-
 function expectedReviewBlocks(answer: string) {
 	const blocks = (starts: RegExpMatchArray[]) =>
 		starts.map((start, index) =>
@@ -2863,16 +2858,21 @@ describe("L2 resume", () => {
 		);
 	});
 	it.each([
-		[["--message"]],
-		[["--unknown", "text"]],
-		[["--message", "text", "extra"]],
-	])("refuses malformed resume options %j without starting Codex", (options) => {
-		const f = fixture();
-		refused(
-			f,
-			f.invoke(["resume", f.run, ...options]),
+		[
+			["--message"],
 			"expected resume <folder> [--message <text> | --message-file <file>]",
-		);
+		],
+		[
+			["--unknown", "text"],
+			"codex:round: FAIL: unknown option --unknown (run codex:round --help)",
+		],
+		[
+			["--message", "text", "extra"],
+			"expected resume <folder> [--message <text> | --message-file <file>]",
+		],
+	])("refuses malformed resume options %j without starting Codex", (options, reason) => {
+		const f = fixture();
+		refused(f, f.invoke(["resume", f.run, ...options]), reason);
 		expect(existsSync(f.run)).toBe(false);
 	});
 	it("refuses a run whose first event has no thread", () => {

@@ -14,6 +14,13 @@ import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+	beginToolCommand,
+	renderToolHelp,
+	resolveToolArguments,
+	ToolStartupError,
+	toolStartupLine,
+} from "../../../scripts/agent-environment/tool-contract.mjs";
+import {
 	colorsAxis,
 	measurementColors,
 	requireForcedColors,
@@ -44,95 +51,14 @@ import {
 	repairRecipes,
 	repository,
 } from "./map.mjs";
+import {
+	refuseOutputArguments,
+	refuseServingSpecs,
+} from "./measure-arguments.mjs";
 import { drive } from "./runner.mjs";
 
 const self = fileURLToPath(import.meta.url);
-export const help = `verify-fitway: node <absolute-skill-folder>/cli.mjs <command> [options]
-Commands:
-  help
-  map --concept <folder> [--recipes <file>] [--out <evidence-folder>]
-  repair-recipes --concept <folder> [--recipes <stale-file>] --out <evidence-folder>
-  list --concept <folder> [--recipes <file>] [--map <file>] [--page <page>|all]
-  drift --concept <folder> [--recipes <file>] [--map <verification-map.json>]
-  drift-tree [--root <repository>]
-  launch --concept <folder> [--port 3176] [--out <evidence-folder>] [--lan]
-         [--isolated-port <49152-65535>] [--idle-timeout-ms <1-1800000>]
-  doctor --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--port 3176] [--tools diff] [--forensics <folder>]
-  drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>]
-        [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...]
-        [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone]
-        [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176]
-        [--colors normal,forced] [--cache no-store|none]
-        [--probes daily]
-  compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>]
-          [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177]
-          [all drive page/feature/state/axis options] [--out <evidence-folder>] [--forensics <folder>]
-          [--timeline] [--timeline-times 1,100,200,...]
-          [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]
-  measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] -- <tool arguments>
-  cleanup --session <launch-folder|session.json>
-Recipes default to <concept>/verification-recipes.json; --recipes supplies an external file.
-repair-recipes drops vanished selectors/markers and writes draft entries outside the concept.
-Every use rediscovers source facts; --map is an optional prior map for drift provenance.
-map writes <out>/verification-map.json; generated maps are evidence, never committed.
-Output defaults to a fresh D:/fitway-temp/verify-fitway-*; git trees/links into them are refused.
-Sizes: desktop=1440x900, boundary=1024x900, tablet=768x1024, phone=390x844,
-       narrow=320x844, zoom=1440x900 at 200% (720x450 CSS px, phone frame).
---page and --feature select one path; the remaining axes multiply its frames.
-States all sweeps every discovered switch value/sample; dependencies are applied or refused.
-Use --states 'state=live,state=loading,...' for only the page's data states.
-list prints features, states, switches, dependencies, reach and observable proof.
-PASS requires state and feature proof. NOT-REACHABLE means state/feature unavailable by recipe (cannot be reached).
-KEYBOARD-UNREACHABLE means the pointer feature's keyboard path failed; PROBLEM names a measuring error.
-Items have a short *-summary.json beside the full record; filenames include feature and state.
-compare repeats differing items in fresh contexts, with exact pixel regions and diff images.
---timeline compares held frames after the last action as well as the settled result.
-Default times start at 1 ms, with gaps <=100 ms through the longest finite movement.
---timeline-times names other finite nonnegative milliseconds; implies --timeline.
-NOT-HELD names the time and the two same-side captures when their pixels or dimensions differ; callback file/line sources remain in the report.
-Known limits: CSS-only openings and some dynamic/delegated opener relationships are not exhaustively discovered.
-Doctor can block when a missing standalone input has no authoritative recovery source.
-Open numeric/text domains have representative samples in the map; --query accepts other values.
-Touch uses hasTouch/coarse pointer and real taps; full means no-preference.
-Keyboard uses Tab and key presses only; full evidence records focus at every key.
-Unreached keyboard targets fail with the element where focus stopped; keyboardActions can supply roving keys.
-Colours default to normal; forced requires ui-forensics >=1.2.0 and renders Chromium forced colours.
-measure --colors normal|forced maps to tool --forced-colors none|active.
-measure calls the installed ui-forensics tool; its own --help describes further arguments.
---port accepts only ports in 3176-3177, 3186-3187 and 3188-3189; compare requires one ordered pair.
-Ports 3174 and 3178-3185 belong to other previews. --workers defaults to 1 (maximum 4).
-launch --isolated-port selects a separate high port (49152-65535) for isolated tests.
---port stays restricted to those three pairs even with --isolated-port; busy ports are always refused.
-Previews stop after 30 minutes without a request; requests renew the timeout.
-launch --idle-timeout-ms can shorten that bound for tests, never extend it.
---forensics <folder> overrides the machine-level ui-forensics location.
-Git Bash: use Windows D:/ absolute paths and quote --query; no /api-style arguments cross shells.
-help and preview lifecycle need only Node. For discovery/drive/compare/doctor, install checkout dependencies:
-  pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile
-`;
-
-function parse(argv) {
-	const command = argv.shift() || "help";
-	const options = { extra: [] };
-	while (argv.length) {
-		const item = argv.shift();
-		if (item === "--") {
-			options.extra = argv;
-			break;
-		}
-		if (!item.startsWith("--")) throw new Error(`Unexpected argument: ${item}`);
-		const key = item.slice(2);
-		if (["lan", "timeline", "affected-pages"].includes(key))
-			options[key] = true;
-		else {
-			const value = argv.shift();
-			if (!value || value.startsWith("--"))
-				throw new Error(`${item} requires a value`);
-			options[key] = value;
-		}
-	}
-	return { command, options };
-}
+export const help = renderToolHelp("verify:owner");
 
 export function playwright(_concept) {
 	// Tools belong to this checkout. Inputs may be an archive or a plain folder.
@@ -372,6 +298,8 @@ export async function doctor(options) {
 	try {
 		return await doctorChecks(options);
 	} catch (error) {
+		// A value the command cannot use is a start-up failure (C4), not a doctor finding.
+		if (error instanceof ToolStartupError) throw error;
 		const available =
 			process.env.VERIFY_FITWAY_TEST_DOCTOR_PORT_PROBE === "0"
 				? async () => {}
@@ -387,23 +315,14 @@ export async function doctor(options) {
 async function launch(options) {
 	const concept = canonical(options.concept);
 	let port = verificationPort(options.port || 3176);
-	if (options["isolated-port"] !== undefined) {
+	if (options["isolated-port"] !== undefined)
 		port = Number(options["isolated-port"]);
-		if (!Number.isInteger(port) || port < 49152 || port > 65535)
-			throw new Error("--isolated-port requires a port in 49152-65535.");
-	}
-	if (options["idle-timeout-ms"] !== undefined) {
-		const idle = Number(options["idle-timeout-ms"]);
-		if (!Number.isInteger(idle) || idle < 1 || idle > 1800000)
-			throw new Error(
-				"Idle timeout must be 1-1800000 ms (at most 30 minutes).",
-			);
-	}
 	const out = options.out || freshOutput();
 	assertOutsideGit(out);
 	if (existsSync(resolve(out, "session.json")))
-		throw new Error(
+		throw new ToolStartupError(
 			`Launch folder already has a session; cleanup --session '${out}' and use a fresh folder.`,
+			`run cleanup --session '${out}', then pass a fresh --out folder`,
 		);
 	await outputFile(out, "session.json");
 	await portAvailable(port);
@@ -563,9 +482,19 @@ async function cleanup(path) {
 	await jsonOutput(folder, "session.json", { ...session, stopped: true });
 }
 
-export async function main(argv = process.argv.slice(2), services = {}) {
-	const { command, options } = parse(argv);
-	if (command === "help" || command === "--help") return console.log(help);
+export function ownerCommandOptions(parsed) {
+	return {
+		command: parsed.command?.name ?? parsed.fixedArgs[0] ?? "help",
+		options: { ...parsed.options, extra: parsed.passthrough.slice() },
+	};
+}
+
+export async function main(input, services = {}) {
+	const parsed = Array.isArray(input)
+		? resolveToolArguments("verify:owner", input)
+		: input;
+	const { command, options } = ownerCommandOptions(parsed);
+	if (parsed.help || command === "help") return console.log(help);
 	if (
 		["drive", "compare"].includes(command) &&
 		colorsAxis(options.colors).includes("forced")
@@ -605,39 +534,13 @@ export async function main(argv = process.argv.slice(2), services = {}) {
 	if (command === "measure") {
 		assertOutsideGit(options.out);
 		if (existsSync(options.out) && readdirSync(options.out).length)
-			throw new Error(
+			throw new ToolStartupError(
 				"measure requires a fresh empty output folder; this prevents descendant links or old evidence from redirecting writes.",
+				"pass --out a new or empty folder outside Git",
 			);
 		const tools = forensicsPath(options);
 		const tool = options.tool;
-		if (
-			![
-				"focus",
-				"motion",
-				"a11y",
-				"probe",
-				"perf",
-				"capture",
-				"sheet",
-				"diff",
-			].includes(tool)
-		)
-			throw new Error("Unknown measure tool; see help.");
-		if (
-			options.extra.some((arg) =>
-				[
-					"--out",
-					"--serve",
-					"--ref-serve",
-					"--refServe",
-					"--json",
-					"--html",
-				].includes(arg.split("=")[0]),
-			)
-		)
-			throw new Error(
-				"Pass output only as measure --out; use the maintained launch URL, not --serve.",
-			);
+		refuseOutputArguments(options.extra);
 		const heldRequested = options.extra.some((arg) =>
 			/(?:^|[=:])(?:hold|release)(?::|$)/.test(arg),
 		);
@@ -659,26 +562,9 @@ export async function main(argv = process.argv.slice(2), services = {}) {
 					`Held presses require ui-forensics >=1.3.1; found ${version}`,
 				);
 		}
+		// Refused before the evidence folder exists (C4: nothing written before a refusal).
+		refuseServingSpecs(options.extra);
 		await outputFile(options.out, "tool-output");
-		for (let index = 0; index < options.extra.length; index++) {
-			const argument = options.extra[index];
-			if (!["--spec", "--frames"].includes(argument.split("=")[0])) continue;
-			const path = argument.includes("=")
-				? argument.slice(argument.indexOf("=") + 1)
-				: options.extra[index + 1];
-			const spec = JSON.parse(readFileSync(path, "utf8"));
-			const inspect = (value) => {
-				if (!value || typeof value !== "object") return;
-				for (const [key, childValue] of Object.entries(value)) {
-					if (["serve", "refServe", "ref-serve"].includes(key) && childValue)
-						throw new Error(
-							"Tool spec starts a server; use target.url from the maintained preview.",
-						);
-					inspect(childValue);
-				}
-			};
-			inspect(spec);
-		}
 		if (tool === "diff") {
 			await child(process.platform === "win32" ? "py" : "python3", [
 				resolve(tools, "scripts/img/diff_map.py"),
@@ -816,11 +702,18 @@ export async function main(argv = process.argv.slice(2), services = {}) {
 	throw new Error(`Unknown command: ${command}; run help.`);
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === self)
-	main().catch((error) => {
-		if (!(error instanceof ReportedFailure))
+if (process.argv[1] && resolve(process.argv[1]) === self) {
+	const parsed = beginToolCommand(
+		["verify:owner", "check:verification-map"],
+		process.argv.slice(2),
+	);
+	main(parsed).catch((error) => {
+		const line = toolStartupLine(parsed.entry.name, error);
+		if (line) console.error(line);
+		else if (!(error instanceof ReportedFailure))
 			console.error(
 				`FAIL: ${error.message}${error.fix ? `\nFIX: ${error.fix}` : ""}`,
 			);
 		process.exitCode = 1;
 	});
+}

@@ -19,6 +19,7 @@ import {
 	resolve,
 	sep,
 } from "node:path";
+import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 
 // A command already printed this failure's outcome block; callers still fail.
 export class ReportedFailure extends Error {}
@@ -64,7 +65,10 @@ export function assertOutsideGit(target) {
 	for (const start of [resolve(target), resolved]) {
 		for (let dir = start; ; dir = dirname(dir)) {
 			if (existsSync(resolve(dir, ".git")))
-				throw new Error(`Refusing output inside git working tree: ${target}`);
+				throw new ToolStartupError(
+					`Refusing output inside git working tree: ${target}`,
+					"pass --out a folder outside every Git working tree, such as one under D:/fitway-temp",
+				);
 			if (dir === dirname(dir)) break;
 		}
 	}
@@ -122,12 +126,6 @@ export async function preview({
 }) {
 	if (!Number.isInteger(port) || port < 0 || port > 65535)
 		throw new Error(`Invalid port: ${port}`);
-	if (
-		!Number.isInteger(idleTimeoutMs) ||
-		idleTimeoutMs < 1 ||
-		idleTimeoutMs > 30 * 60 * 1000
-	)
-		throw new Error("Idle timeout must be 1-1800000 ms (at most 30 minutes).");
 	const root = realpathSync(concept);
 	if (port !== 0) await portAvailable(port, portLease);
 	const sockets = new Set();
@@ -338,8 +336,10 @@ const portPairMessage = (port) => {
 };
 export function verificationPort(port) {
 	if (!verificationPairs.flat().includes(Number(port)))
-		throw new Error(
+		throw new ToolStartupError(
 			`Port ${port} is outside the verification allocation; choose 3176 or 3177, or a port in the pairs ${verificationPairNames()}. Ports 3174 and 3178-3185 belong to other previews.`,
+			`choose 3176 or 3177, or a port in the pairs ${verificationPairNames()}; ports 3174 and 3178-3185 belong to other previews`,
+			{ what: `port ${port} is outside the verification allocation` },
 		);
 	return Number(port);
 }

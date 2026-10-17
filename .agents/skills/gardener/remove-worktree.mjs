@@ -1,6 +1,7 @@
 import { realpath, unlink } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { beginToolCommand } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { inside, key } from "./facts.mjs";
 import {
 	collectGit,
@@ -76,27 +77,22 @@ export async function removeWorktree(checkout, target) {
 	console.log(`REMOVED worktree: ${tree.path}`);
 }
 
+export function removeWorktreeOptions(parsed) {
+	return {
+		checkout: parsed.options.checkout,
+		worktree: parsed.options.worktree,
+	};
+}
+
 if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-	const [checkoutFlag, checkout, worktreeFlag, target, ...extra] =
-		process.argv.slice(2);
-	if (
-		checkoutFlag !== "--checkout" ||
-		worktreeFlag !== "--worktree" ||
-		extra.length ||
-		!checkout ||
-		!target
-	) {
-		console.error(
-			"Usage: node remove-worktree.mjs --checkout <absolute-checkout> --worktree <absolute-worktree>",
-		);
+	const options = removeWorktreeOptions(
+		beginToolCommand("gardener:remove-worktree", process.argv.slice(2)),
+	);
+	removeWorktree(options.checkout, options.worktree).catch((error) => {
+		console.error(`REFUSED: ${error.message}`);
 		process.exitCode = 1;
-	} else {
-		removeWorktree(checkout, target).catch((error) => {
-			console.error(`REFUSED: ${error.message}`);
-			process.exitCode = 1;
-		});
-	}
+	});
 }

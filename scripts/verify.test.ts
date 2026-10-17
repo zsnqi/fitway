@@ -27,10 +27,21 @@ function fixture() {
 	const root = mkdtempSync(path.join(tmpdir(), "fitway-verify-test-"));
 	roots.push(root);
 	mkdirSync(path.join(root, "scripts"));
+	mkdirSync(path.join(root, "scripts", "agent-environment"));
 	for (const file of ["verify.mjs", "repository-fingerprint.mjs"]) {
 		copyFileSync(
 			path.join(repository, "scripts", file),
 			path.join(root, "scripts", file),
+		);
+	}
+	for (const file of [
+		"tool-contract.mjs",
+		"tool-registry.mjs",
+		"tool-help-notes.mjs",
+	]) {
+		copyFileSync(
+			path.join(repository, "scripts", "agent-environment", file),
+			path.join(root, "scripts", "agent-environment", file),
 		);
 	}
 	writeFileSync(

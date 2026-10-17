@@ -1,32 +1,21 @@
 import process from "node:process";
 import { pathToFileURL } from "node:url";
+import { beginToolCommand } from "./tool-contract.mjs";
 import {
 	CHECK_COMMAND,
 	checkToolingMap,
-	MAP_RELATIVE_PATH,
 	REGENERATE_COMMAND,
 	writeToolingMap,
 } from "./tooling-map-document.mjs";
 
-function usage() {
-	console.log(`Usage: pnpm map:tooling [--check]
-
-Writes ${MAP_RELATIVE_PATH} from tracked JavaScript and TypeScript in the mapped tool paths.
-Use --check to regenerate in memory and fail when the committed map differs.
-
-Exit codes:
-  0  map written or committed map is current
-  1  invalid option, missing map, or drift`);
+export function toolingMapOptions(parsed) {
+	return {
+		check: parsed.options.check === true || parsed.fixedArgs.length > 0,
+	};
 }
 
-async function main(args = process.argv.slice(2)) {
-	if (args.includes("--help") || args.includes("-h")) {
-		usage();
-		return;
-	}
-	if (args.length > 1 || (args.length === 1 && args[0] !== "--check"))
-		throw new Error(`Unknown option: ${args.join(" ")}`);
-	if (args[0] === "--check") {
+async function main(check) {
+	if (check) {
 		const result = await checkToolingMap();
 		if (!result.ok) {
 			console.error(
@@ -48,10 +37,14 @@ const isMain =
 	import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isMain) {
-	main().catch((error) => {
-		const command = process.argv.includes("--check")
-			? CHECK_COMMAND
-			: REGENERATE_COMMAND;
+	const { check } = toolingMapOptions(
+		beginToolCommand(
+			["check:tooling-map", "map:tooling"],
+			process.argv.slice(2),
+		),
+	);
+	main(check).catch((error) => {
+		const command = check ? CHECK_COMMAND : REGENERATE_COMMAND;
 		console.error(
 			`${command}: FAIL: ${error.message} (run ${REGENERATE_COMMAND})`,
 		);

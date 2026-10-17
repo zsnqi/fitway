@@ -13,6 +13,7 @@ conservative 24,000-byte warning threshold is reported but is not itself a failu
 `ROUTES.yaml` names the minimum initial route for each task class. It does not copy authority text.
 `TASK_PACKET_TEMPLATE.yaml` is a template, not authority. A packet is coordinator-authored derived
 context; it never resolves a conflict with a cited source.
+`pnpm tools` lists every agent command and its exact invocation from `scripts/agent-environment/tool-registry.mjs`.
 The generated agent tooling map is `docs/agent-context/AGENT_TOOLING_CODE_MAP.md`; regenerate it with `pnpm map:tooling`.
 The code-health baseline is `docs/agent-context/CODE_HEALTH_BASELINE.json`; tighten it with `pnpm code-health:baseline` and enforce it with `pnpm check:code-health`.
 The packet path remains stable for the lifetime of its milestone and becomes immutable evidence

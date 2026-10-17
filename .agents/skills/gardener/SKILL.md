@@ -44,7 +44,9 @@ For folder, branch, registration, or worktree proposals, read
 `.agents/skills/gardener/CLEANUP.md` before reviewing generated cleanup scripts
 and their safety evidence.
 
-The console states `SURVEY CLEAN` or `SURVEY BLOCKED` first. Read both
+The console states `SURVEY CLEAN` or `SURVEY BLOCKED` first, except when the survey cannot start:
+a value it cannot use (such as `--out`) prints `gardener:survey: FAIL: <what> (<how to fix>)` first,
+then `SURVEY BLOCKED`. Read both
 `REPORT.md` and `survey.json` in the output. Collection runs local checks
 without housekeeping; removal safety is defined in CLEANUP.md.
 

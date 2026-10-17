@@ -2,6 +2,11 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import {
+	beginToolCommand,
+	ToolStartupError,
+	toolStartupLine,
+} from "./tool-contract.mjs";
 
 const REMOTE = "origin";
 const REMOTE_MAIN = "refs/heads/main";
@@ -32,8 +37,18 @@ function git(cwd, args, options = {}) {
 
 function resolveCommit(cwd, revision) {
 	if (!/^[0-9a-f]{7,40}$/i.test(revision))
-		throw new MainAdvanceError(`commit must be a hexadecimal SHA: ${revision}`);
-	const result = git(cwd, ["rev-parse", "--verify", `${revision}^{commit}`]);
+		throw new ToolStartupError(
+			`commit must be a hexadecimal SHA: ${revision}`,
+			"pass the commit's SHA (7-40 hex digits), for example from git rev-parse HEAD",
+		);
+	const result = git(cwd, ["rev-parse", "--verify", `${revision}^{commit}`], {
+		allowFailure: true,
+	});
+	if (result.status !== 0)
+		throw new ToolStartupError(
+			`commit not found in this clone: ${revision}`,
+			"pass a commit this clone has; run git fetch first if it was pushed from elsewhere",
+		);
 	return result.stdout.trim();
 }
 
@@ -144,21 +159,11 @@ export function listChecksRuns(cwd, sha) {
 	return runs;
 }
 
-function parseArgs(args) {
-	let dryRun = false;
-	let commit = null;
-	for (const argument of args) {
-		if (argument === "--dry-run") dryRun = true;
-		else if (argument === "--") continue;
-		else if (argument.startsWith("-"))
-			throw new MainAdvanceError(`unknown option: ${argument}`);
-		else if (commit !== null)
-			throw new MainAdvanceError("expected exactly one commit");
-		else commit = argument;
-	}
-	if (!commit)
-		throw new MainAdvanceError("usage: pnpm main:advance [--dry-run] <commit>");
-	return { commit, dryRun };
+export function advanceOptions(parsed) {
+	return {
+		commit: parsed.positionals[0],
+		dryRun: parsed.options.dryRun === true,
+	};
 }
 
 export async function advanceMain({
@@ -212,11 +217,13 @@ if (
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
 	try {
-		const options = parseArgs(process.argv.slice(2));
+		const parsed = beginToolCommand("main:advance", process.argv.slice(2));
+		const options = advanceOptions(parsed);
 		await advanceMain(options);
 	} catch (error) {
 		console.error(
-			`main:advance:1: FAIL: ${error.message.replace(/[\r\n]+/g, " ")}`,
+			toolStartupLine("main:advance", error) ??
+				`main:advance:1: FAIL: ${error.message.replace(/[\r\n]+/g, " ")}`,
 		);
 		process.exitCode = 1;
 	}

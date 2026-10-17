@@ -1,13 +1,15 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 
 export function colorsAxis(value = "normal") {
 	const values = value.split(",");
 	for (const color of values)
 		if (!["normal", "forced"].includes(color))
-			throw new Error(
+			throw new ToolStartupError(
 				`Unsupported colours axis ${color}; choose normal,forced`,
+				"pass --colors normal, forced or normal,forced",
 			);
 	return values;
 }
@@ -39,10 +41,14 @@ export function measurementColors(options) {
 	if (options.colors !== undefined) {
 		const colors = colorsAxis(options.colors);
 		if (colors.length !== 1)
-			throw new Error("measure --colors takes one value: normal or forced");
+			throw new ToolStartupError(
+				"measure --colors takes one value: normal or forced",
+				"pass measure --colors normal or --colors forced",
+			);
 		if (args.some((arg) => /^--forced-colors(?:=|$)/.test(arg)))
-			throw new Error(
+			throw new ToolStartupError(
 				"Supply either measure --colors or tool --forced-colors, not both",
+				"drop one: measure --colors or the tool's --forced-colors",
 			);
 		args.push("--forced-colors", colors[0] === "forced" ? "active" : "none");
 	}
@@ -75,7 +81,10 @@ export function measurementColors(options) {
 	}
 	for (const value of values)
 		if (!["none", "active"].includes(value))
-			throw new Error(`--forced-colors is none or active (got ${value})`);
+			throw new ToolStartupError(
+				`--forced-colors is none or active (got ${value})`,
+				"pass the tool --forced-colors none or active",
+			);
 	return {
 		args,
 		forced: values.includes("active"),

@@ -1,0 +1,2374 @@
+{
+	"about": [
+		"Every argument form each agent command's parser accepted at 57dad1c0, read from that parser (git show 57dad1c0:<file>), and the options its logic received, written out by hand.",
+		"tool-compatibility.test.ts runs each row through the shared resolver and the command's own argument step. Never regenerate these rows from tool-registry.mjs.",
+		"<repo>/x stands for the repository root joined with x; <default-run> for codex:round's fresh D:/fitway-temp/codex-round-<uuid> folder; env sets (or, as null, removes) a variable for the row.",
+		"intentionalRefusals lists each argument form a 57dad1c0 parser accepted that the commands now refuse on purpose, with an example and its C3/C4 reason; tool-compatibility.test.ts holds the base inventory of accepted forms, read from those parsers, and fails when one is in neither rows nor intentionalRefusals."
+	],
+	"commandsWithoutRows": {
+		"tools": "new in cb1cfe65; 57dad1c0 had no pnpm tools"
+	},
+	"rows": {
+		"check:repository": [
+			{
+				"args": [],
+				"expect": {
+					"verbose": false
+				}
+			},
+			{
+				"args": ["--verbose"],
+				"expect": {
+					"verbose": true
+				}
+			},
+			{
+				"args": ["--verbose", "--verbose"],
+				"expect": {
+					"verbose": true
+				}
+			},
+			{
+				"args": ["--"],
+				"expect": {
+					"verbose": false
+				}
+			}
+		],
+		"check:concept-css": [
+			{
+				"args": ["--", "."],
+				"expect": ["."]
+			},
+			{
+				"args": ["."],
+				"expect": ["."]
+			},
+			{
+				"args": [".", "--"],
+				"expect": ["."]
+			},
+			{
+				"args": ["--", "--", "."],
+				"expect": ["."]
+			}
+		],
+		"check:agent-context": [
+			{
+				"args": [],
+				"expect": {
+					"milestoneId": null,
+					"checkTracked": true,
+					"verbose": false
+				}
+			},
+			{
+				"args": ["--milestone", "agent-tooling-r01"],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"checkTracked": true,
+					"verbose": false
+				}
+			},
+			{
+				"args": ["--no-tracked"],
+				"expect": {
+					"milestoneId": null,
+					"checkTracked": false,
+					"verbose": false
+				}
+			},
+			{
+				"args": ["--verbose"],
+				"expect": {
+					"milestoneId": null,
+					"checkTracked": true,
+					"verbose": true
+				}
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--no-tracked",
+					"--verbose"
+				],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"checkTracked": false,
+					"verbose": true
+				}
+			},
+			{
+				"args": ["--verbose", "--verbose"],
+				"expect": {
+					"milestoneId": null,
+					"checkTracked": true,
+					"verbose": true
+				}
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--milestone",
+					"owner-design-exploration-r04"
+				],
+				"expect": {
+					"milestoneId": "owner-design-exploration-r04",
+					"checkTracked": true,
+					"verbose": false
+				}
+			}
+		],
+		"context:show": [
+			{
+				"args": ["--milestone", "agent-tooling-r01"],
+				"expect": "agent-tooling-r01"
+			},
+			{
+				"args": ["--", "--milestone", "agent-tooling-r01"],
+				"expect": "agent-tooling-r01"
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--milestone",
+					"owner-design-exploration-r04"
+				],
+				"expect": "owner-design-exploration-r04"
+			}
+		],
+		"handoff:new": [
+			{
+				"args": ["--milestone", "agent-tooling-r01"],
+				"expect": {
+					"milestoneId": "agent-tooling-r01"
+				}
+			},
+			{
+				"args": ["--", "--milestone", "agent-tooling-r01"],
+				"expect": {
+					"milestoneId": "agent-tooling-r01"
+				}
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--dir",
+					"docs/phase-records/handoffs/agent-tooling"
+				],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"directory": "docs/phase-records/handoffs/agent-tooling"
+				}
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--now",
+					"2026-10-17T00:00:00Z"
+				],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"now": "2026-10-17T00:00:00Z"
+				}
+			},
+			{
+				"args": [
+					"--milestone",
+					"agent-tooling-r01",
+					"--dir",
+					"docs/phase-records/handoffs/agent-tooling",
+					"--now",
+					"2026-10-17T00:00:00Z"
+				],
+				"expect": {
+					"milestoneId": "agent-tooling-r01",
+					"directory": "docs/phase-records/handoffs/agent-tooling",
+					"now": "2026-10-17T00:00:00Z"
+				}
+			}
+		],
+		"brief:check": [
+			{
+				"args": ["AGENTS.md"],
+				"expect": {
+					"briefPath": "AGENTS.md",
+					"fillEnvironment": false
+				}
+			},
+			{
+				"args": ["--", "AGENTS.md"],
+				"expect": {
+					"briefPath": "AGENTS.md",
+					"fillEnvironment": false
+				}
+			},
+			{
+				"args": ["AGENTS.md", "--fill-environment"],
+				"expect": {
+					"briefPath": "AGENTS.md",
+					"fillEnvironment": true
+				}
+			},
+			{
+				"args": ["--fill-environment", "AGENTS.md"],
+				"expect": {
+					"briefPath": "AGENTS.md",
+					"fillEnvironment": true
+				}
+			},
+			{
+				"args": ["--", "AGENTS.md", "--fill-environment"],
+				"expect": {
+					"briefPath": "AGENTS.md",
+					"fillEnvironment": true
+				}
+			}
+		],
+		"main:advance": [
+			{
+				"args": ["HEAD"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": false
+				}
+			},
+			{
+				"args": ["--", "HEAD"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": false
+				}
+			},
+			{
+				"args": ["--dry-run", "HEAD"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": true
+				}
+			},
+			{
+				"args": ["HEAD", "--dry-run"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": true
+				}
+			},
+			{
+				"args": ["--", "--dry-run", "HEAD"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": true
+				}
+			},
+			{
+				"args": ["--dry-run", "--dry-run", "HEAD"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": true
+				}
+			},
+			{
+				"args": ["HEAD", "--"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": false
+				}
+			},
+			{
+				"args": ["--", "--", "HEAD"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": false
+				}
+			},
+			{
+				"args": ["--dry-run", "--", "HEAD"],
+				"expect": {
+					"commit": "HEAD",
+					"dryRun": true
+				}
+			}
+		],
+		"codex:round": [
+			{
+				"args": ["AGENTS.md"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "max",
+					"model": "deepseek-v4.1-flash",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["--", "AGENTS.md"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "max",
+					"model": "deepseek-v4.1-flash",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["AGENTS.md", "high"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "high",
+					"model": "deepseek-v4.1-flash",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["AGENTS.md", "--model", "gpt-6.1-sol"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"model": "gpt-6.1-sol",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["--model", "gpt-6.1-sol", "AGENTS.md", "xhigh"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "xhigh",
+					"model": "gpt-6.1-sol",
+					"newReview": false,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["AGENTS.md", "--run", "round-output"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "max",
+					"model": "deepseek-v4.1-flash",
+					"newReview": false,
+					"run": "<repo>/round-output"
+				}
+			},
+			{
+				"args": ["AGENTS.md", "--new-review"],
+				"expect": {
+					"brief": "<repo>/AGENTS.md",
+					"level": "max",
+					"model": "deepseek-v4.1-flash",
+					"newReview": true,
+					"run": "<default-run>"
+				}
+			},
+			{
+				"args": ["resume", "round-output"],
+				"expect": {
+					"resume": true,
+					"run": "<repo>/round-output"
+				}
+			},
+			{
+				"args": ["--", "resume", "round-output"],
+				"expect": {
+					"resume": true,
+					"run": "<repo>/round-output"
+				}
+			},
+			{
+				"args": ["resume", "round-output", "--message", "continue"],
+				"env": {
+					"MSYSTEM": null
+				},
+				"expect": {
+					"resume": true,
+					"run": "<repo>/round-output",
+					"message": "continue"
+				}
+			},
+			{
+				"args": ["resume", "round-output", "--message-file", "package.json"],
+				"expect": {
+					"resume": true,
+					"run": "<repo>/round-output",
+					"messageFile": "<repo>/package.json"
+				}
+			},
+			{
+				"args": ["resume", "round-output", "--message", "--help"],
+				"env": {
+					"MSYSTEM": null
+				},
+				"expect": {
+					"resume": true,
+					"run": "<repo>/round-output",
+					"message": "--help"
+				}
+			}
+		],
+		"start-load": [
+			{
+				"args": [],
+				"expect": {}
+			},
+			{
+				"args": ["--root", "."],
+				"expect": {
+					"root": "."
+				}
+			},
+			{
+				"args": ["--root=."],
+				"expect": {
+					"root": "."
+				}
+			},
+			{
+				"args": ["--limit", "25"],
+				"expect": {
+					"limit": "25"
+				}
+			},
+			{
+				"args": ["--limit=25"],
+				"expect": {
+					"limit": "25"
+				}
+			},
+			{
+				"args": ["--since", "2026-10-01"],
+				"expect": {
+					"since": "2026-10-01"
+				}
+			},
+			{
+				"args": ["--since=2026-10-01"],
+				"expect": {
+					"since": "2026-10-01"
+				}
+			},
+			{
+				"args": ["--reads", "package.json"],
+				"expect": {
+					"reads": "package.json"
+				}
+			},
+			{
+				"args": ["--reads=package.json"],
+				"expect": {
+					"reads": "package.json"
+				}
+			},
+			{
+				"args": ["--json"],
+				"expect": {
+					"json": true
+				}
+			},
+			{
+				"args": [
+					"--root",
+					".",
+					"--limit",
+					"5",
+					"--since",
+					"2026-10-01",
+					"--json"
+				],
+				"expect": {
+					"root": ".",
+					"limit": "5",
+					"since": "2026-10-01",
+					"json": true
+				}
+			},
+			{
+				"args": ["--limit", "5", "--limit", "6"],
+				"expect": {
+					"limit": "6"
+				}
+			},
+			{
+				"args": ["--"],
+				"expect": {}
+			},
+			{
+				"args": ["--json", "--"],
+				"expect": {
+					"json": true
+				}
+			},
+			{
+				"args": ["--json", "--json"],
+				"expect": {
+					"json": true
+				}
+			}
+		],
+		"map:tooling": [
+			{
+				"args": [],
+				"expect": {
+					"check": false
+				}
+			},
+			{
+				"args": ["--check"],
+				"expect": {
+					"check": true
+				}
+			}
+		],
+		"check:tooling-map": [
+			{
+				"args": ["--check"],
+				"expect": {
+					"check": true
+				}
+			}
+		],
+		"code-health:baseline": [
+			{
+				"args": [],
+				"expect": {
+					"options": {},
+					"positionals": []
+				}
+			}
+		],
+		"check:code-health": [
+			{
+				"args": [],
+				"expect": {
+					"exceptions": false
+				}
+			},
+			{
+				"args": ["--exceptions"],
+				"expect": {
+					"exceptions": true
+				}
+			},
+			{
+				"args": ["--exceptions", "--exceptions"],
+				"expect": {
+					"exceptions": true
+				}
+			}
+		],
+		"check:design-context": [
+			{
+				"args": [],
+				"expect": {
+					"options": {},
+					"positionals": []
+				}
+			}
+		],
+		"check:verification-map": [
+			{
+				"args": ["drift-tree"],
+				"expect": {
+					"command": "drift-tree",
+					"options": {
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drift-tree", "--root", "."],
+				"expect": {
+					"command": "drift-tree",
+					"options": {
+						"root": ".",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drift-tree", "--root", ".", "--root", "."],
+				"expect": {
+					"command": "drift-tree",
+					"options": {
+						"root": ".",
+						"extra": []
+					}
+				}
+			}
+		],
+		"verify:owner": [
+			{
+				"args": [],
+				"expect": {
+					"command": "help",
+					"options": {
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["help"],
+				"expect": {
+					"command": "help",
+					"options": {
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["map", "--concept", "<repo>"],
+				"expect": {
+					"command": "map",
+					"options": {
+						"concept": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["map", "--concept", "<repo>", "--recipes", "package.json"],
+				"expect": {
+					"command": "map",
+					"options": {
+						"concept": "<repo>",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["map", "--concept", "<repo>", "--out", "<repo>/evidence"],
+				"expect": {
+					"command": "map",
+					"options": {
+						"concept": "<repo>",
+						"out": "<repo>/evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["repair-recipes", "--concept", "<repo>"],
+				"expect": {
+					"command": "repair-recipes",
+					"options": {
+						"concept": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"repair-recipes",
+					"--concept",
+					"<repo>",
+					"--recipes",
+					"package.json"
+				],
+				"expect": {
+					"command": "repair-recipes",
+					"options": {
+						"concept": "<repo>",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"repair-recipes",
+					"--concept",
+					"<repo>",
+					"--out",
+					"<repo>/evidence"
+				],
+				"expect": {
+					"command": "repair-recipes",
+					"options": {
+						"concept": "<repo>",
+						"out": "<repo>/evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"repair-recipes",
+					"--concept",
+					"<repo>",
+					"--recipes",
+					"package.json",
+					"--out",
+					"<repo>/evidence"
+				],
+				"expect": {
+					"command": "repair-recipes",
+					"options": {
+						"concept": "<repo>",
+						"recipes": "package.json",
+						"out": "<repo>/evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["list", "--concept", "<repo>"],
+				"expect": {
+					"command": "list",
+					"options": {
+						"concept": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["list", "--concept", "<repo>", "--recipes", "package.json"],
+				"expect": {
+					"command": "list",
+					"options": {
+						"concept": "<repo>",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["list", "--concept", "<repo>", "--map", "package.json"],
+				"expect": {
+					"command": "list",
+					"options": {
+						"concept": "<repo>",
+						"map": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["list", "--concept", "<repo>", "--page", "all"],
+				"expect": {
+					"command": "list",
+					"options": {
+						"concept": "<repo>",
+						"page": "all",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drift", "--concept", "<repo>"],
+				"expect": {
+					"command": "drift",
+					"options": {
+						"concept": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drift", "--concept", "<repo>", "--recipes", "package.json"],
+				"expect": {
+					"command": "drift",
+					"options": {
+						"concept": "<repo>",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drift", "--concept", "<repo>", "--map", "package.json"],
+				"expect": {
+					"command": "drift",
+					"options": {
+						"concept": "<repo>",
+						"map": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drift-tree"],
+				"expect": {
+					"command": "drift-tree",
+					"options": {
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drift-tree", "--root", "."],
+				"expect": {
+					"command": "drift-tree",
+					"options": {
+						"root": ".",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["launch", "--concept", "<repo>"],
+				"expect": {
+					"command": "launch",
+					"options": {
+						"concept": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["launch", "--concept", "<repo>", "--port", "3176"],
+				"expect": {
+					"command": "launch",
+					"options": {
+						"concept": "<repo>",
+						"port": "3176",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["launch", "--concept", "<repo>", "--out", "<repo>/evidence"],
+				"expect": {
+					"command": "launch",
+					"options": {
+						"concept": "<repo>",
+						"out": "<repo>/evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["launch", "--concept", "<repo>", "--lan"],
+				"expect": {
+					"command": "launch",
+					"options": {
+						"concept": "<repo>",
+						"lan": true,
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["launch", "--concept", "<repo>", "--isolated-port", "49152"],
+				"expect": {
+					"command": "launch",
+					"options": {
+						"concept": "<repo>",
+						"isolated-port": "49152",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["launch", "--concept", "<repo>", "--idle-timeout-ms", "60000"],
+				"expect": {
+					"command": "launch",
+					"options": {
+						"concept": "<repo>",
+						"idle-timeout-ms": "60000",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>"],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>", "--recipes", "package.json"],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>", "--map", "package.json"],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"map": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>", "--session", "package.json"],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"session": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>", "--port", "3176"],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"port": "3176",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>", "--tools", "diff"],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"tools": "diff",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>", "--forensics", "."],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"forensics": ".",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--recipes", "package.json"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--map", "package.json"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"map": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--session", "package.json"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"session": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--out", "<repo>/evidence"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"out": "<repo>/evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--forensics", "."],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"forensics": ".",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--page", "index.html"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"page": "index.html",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--feature", "all"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"feature": "all",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"drive",
+					"--concept",
+					"<repo>",
+					"--states",
+					"state=live,state=loading"
+				],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"states": "state=live,state=loading",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"drive",
+					"--concept",
+					"<repo>",
+					"--query",
+					"view=contract&range=week"
+				],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"query": "view=contract&range=week",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--languages", "ar,en"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"languages": "ar,en",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"drive",
+					"--concept",
+					"<repo>",
+					"--sizes",
+					"desktop,tablet,phone"
+				],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"sizes": "desktop,tablet,phone",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"drive",
+					"--concept",
+					"<repo>",
+					"--inputs",
+					"mouse,touch,keyboard"
+				],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"inputs": "mouse,touch,keyboard",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--motions", "reduce,full"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"motions": "reduce,full",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--transports", "http,file"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"transports": "http,file",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--port", "3176"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"port": "3176",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--colors", "normal,forced"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"colors": "normal,forced",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--cache", "none"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"cache": "none",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--probes", "daily"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"probes": "daily",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["compare", "--concept", "<repo>", "--baseline", "<repo>"],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--recipes",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--baseline-recipes",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"baseline-recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--baseline-map",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"baseline-map": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--baseline-port",
+					"3177"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"baseline-port": "3177",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--map",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"map": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--session",
+					"package.json"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"session": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--out",
+					"<repo>/evidence"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"out": "<repo>/evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--forensics",
+					"."
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"forensics": ".",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--page",
+					"index.html"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"page": "index.html",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--feature",
+					"all"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"feature": "all",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--states",
+					"all"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"states": "all",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--query",
+					"view=contract"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"query": "view=contract",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--languages",
+					"ar,en"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"languages": "ar,en",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--sizes",
+					"desktop,phone"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"sizes": "desktop,phone",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--inputs",
+					"mouse,keyboard"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"inputs": "mouse,keyboard",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--motions",
+					"reduce"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"motions": "reduce",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--transports",
+					"http"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"transports": "http",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--port",
+					"3176"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"port": "3176",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--colors",
+					"normal"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"colors": "normal",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--cache",
+					"no-store"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"cache": "no-store",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--probes",
+					"daily"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"probes": "daily",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--timeline"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"timeline": true,
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--timeline-times",
+					"1,100,200"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"timeline-times": "1,100,200",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--affected-pages"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"affected-pages": true,
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--baseline-cache",
+					"off"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"baseline-cache": "off",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"compare",
+					"--concept",
+					"<repo>",
+					"--baseline",
+					"<repo>",
+					"--workers",
+					"2"
+				],
+				"expect": {
+					"command": "compare",
+					"options": {
+						"concept": "<repo>",
+						"baseline": "<repo>",
+						"workers": "2",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["measure", "--tool", "focus", "--out", "<repo>/evidence"],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--forensics",
+					"."
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"forensics": ".",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--colors",
+					"forced"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"colors": "forced",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--",
+					"--url",
+					"http://127.0.0.1:3176/",
+					"--help"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"extra": ["--url", "http://127.0.0.1:3176/", "--help"]
+					}
+				}
+			},
+			{
+				"args": ["cleanup", "--session", "package.json"],
+				"expect": {
+					"command": "cleanup",
+					"options": {
+						"session": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"_serve",
+					"--concept",
+					".",
+					"--port",
+					"3176",
+					"--token",
+					"session-token",
+					"--lan",
+					"--idle-timeout-ms",
+					"60000"
+				],
+				"expect": {
+					"command": "_serve",
+					"options": {
+						"concept": ".",
+						"port": "3176",
+						"token": "session-token",
+						"lan": true,
+						"idle-timeout-ms": "60000",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"list",
+					"--concept",
+					"<repo>",
+					"--page",
+					"index.html",
+					"--page",
+					"all"
+				],
+				"expect": {
+					"command": "list",
+					"options": {
+						"concept": "<repo>",
+						"page": "all",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>", "--transports", "file"],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"transports": "file",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["doctor", "--concept", "<repo>", "--quiet", "true"],
+				"expect": {
+					"command": "doctor",
+					"options": {
+						"concept": "<repo>",
+						"quiet": "true",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--tools", "diff"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"tools": "diff",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--timeline"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"timeline": true,
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"drive",
+					"--concept",
+					"<repo>",
+					"--timeline-times",
+					"1,100,200"
+				],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"timeline-times": "1,100,200",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": ["drive", "--concept", "<repo>", "--quiet", "true"],
+				"expect": {
+					"command": "drive",
+					"options": {
+						"concept": "<repo>",
+						"quiet": "true",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--feature",
+					"menu"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"feature": "menu",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--states",
+					"state=live"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"states": "state=live",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--languages",
+					"ar"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"languages": "ar",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--sizes",
+					"phone"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"sizes": "phone",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--inputs",
+					"keyboard"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"inputs": "keyboard",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--motions",
+					"reduce"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"motions": "reduce",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"measure",
+					"--tool",
+					"focus",
+					"--out",
+					"<repo>/evidence",
+					"--transports",
+					"http"
+				],
+				"expect": {
+					"command": "measure",
+					"options": {
+						"tool": "focus",
+						"out": "<repo>/evidence",
+						"transports": "http",
+						"extra": []
+					}
+				}
+			}
+		],
+		"verify:fast": [
+			{
+				"args": ["fast"],
+				"env": {
+					"FITWAY_PHASE": null
+				},
+				"expect": {
+					"mode": "fast"
+				}
+			},
+			{
+				"args": ["fast", "--"],
+				"env": {
+					"FITWAY_PHASE": null
+				},
+				"expect": {
+					"mode": "fast"
+				}
+			}
+		],
+		"verify:phase": [
+			{
+				"args": ["phase", "--phase", "1"],
+				"env": {
+					"FITWAY_PHASE": null
+				},
+				"expect": {
+					"mode": "phase",
+					"phase": "1"
+				}
+			},
+			{
+				"args": ["phase", "--", "--phase", "1"],
+				"env": {
+					"FITWAY_PHASE": null
+				},
+				"expect": {
+					"mode": "phase",
+					"phase": "1"
+				}
+			},
+			{
+				"args": ["phase"],
+				"env": {
+					"FITWAY_PHASE": "1"
+				},
+				"expect": {
+					"mode": "phase",
+					"phase": "1"
+				}
+			},
+			{
+				"args": ["phase", "--phase", "1"],
+				"env": {
+					"FITWAY_PHASE": "1"
+				},
+				"expect": {
+					"mode": "phase",
+					"phase": "1"
+				}
+			},
+			{
+				"args": ["phase", "--phase", "1", "--"],
+				"env": {
+					"FITWAY_PHASE": null
+				},
+				"expect": {
+					"mode": "phase",
+					"phase": "1"
+				}
+			},
+			{
+				"args": ["phase", "--phase", "1", "--phase", "1"],
+				"env": {
+					"FITWAY_PHASE": null
+				},
+				"expect": {
+					"mode": "phase",
+					"phase": "1"
+				}
+			}
+		],
+		"verify:full": [
+			{
+				"args": ["full"],
+				"env": {
+					"FITWAY_PHASE": null
+				},
+				"expect": {
+					"mode": "full"
+				}
+			}
+		],
+		"gardener:survey": [
+			{
+				"args": ["--out", "<repo>/survey-out"],
+				"expect": {
+					"out": "<repo>/survey-out",
+					"tempRoot": "D:/fitway-temp"
+				}
+			},
+			{
+				"args": [
+					"--out",
+					"<repo>/survey-out",
+					"--temp-root",
+					"<repo>/temp-root"
+				],
+				"expect": {
+					"out": "<repo>/survey-out",
+					"tempRoot": "<repo>/temp-root"
+				}
+			},
+			{
+				"args": [
+					"--temp-root",
+					"<repo>/temp-root",
+					"--out",
+					"<repo>/survey-out"
+				],
+				"expect": {
+					"out": "<repo>/survey-out",
+					"tempRoot": "<repo>/temp-root"
+				}
+			},
+			{
+				"args": [
+					"--out",
+					"<repo>/survey-out",
+					"--final-report",
+					"<repo>/REPORT.md"
+				],
+				"expect": {
+					"out": "<repo>/survey-out",
+					"tempRoot": "D:/fitway-temp",
+					"finalReport": "<repo>/REPORT.md"
+				}
+			},
+			{
+				"args": [
+					"--out",
+					"<repo>/survey-out",
+					"--temp-root",
+					"<repo>/temp-a",
+					"--temp-root",
+					"<repo>/temp-root"
+				],
+				"expect": {
+					"out": "<repo>/survey-out",
+					"tempRoot": "<repo>/temp-root"
+				}
+			},
+			{
+				"args": [
+					"--out",
+					"<repo>/survey-out",
+					"--temp-root",
+					"<repo>/temp-root",
+					"--final-report",
+					"<repo>/REPORT.md"
+				],
+				"expect": {
+					"out": "<repo>/survey-out",
+					"tempRoot": "<repo>/temp-root",
+					"finalReport": "<repo>/REPORT.md"
+				}
+			}
+		],
+		"gardener:remove-worktree": [
+			{
+				"args": ["--checkout", "<repo>", "--worktree", "<repo>"],
+				"expect": {
+					"checkout": "<repo>",
+					"worktree": "<repo>"
+				}
+			}
+		]
+	},
+	"intentionalRefusals": [
+		{
+			"command": "check:repository",
+			"args": ["--bogus"],
+			"reason": "C3: an argument the command does not take is refused by name before any work; 57dad1c0 read only --verbose and ignored the rest"
+		},
+		{
+			"command": "check:repository",
+			"args": ["extra"],
+			"reason": "C4: an argument the command does not take is a start-up failure, refused before any work; 57dad1c0 ignored it"
+		},
+		{
+			"command": "code-health:baseline",
+			"args": ["--bogus"],
+			"reason": "C3: an argument the command does not take is refused by name before any work; 57dad1c0 read no arguments and rewrote its baseline"
+		},
+		{
+			"command": "code-health:baseline",
+			"args": ["extra"],
+			"reason": "C4: an argument the command does not take is a start-up failure, refused before any work; 57dad1c0 ignored it"
+		},
+		{
+			"command": "check:design-context",
+			"args": ["--bogus"],
+			"reason": "C3: an argument the command does not take is refused by name before any work; 57dad1c0 read no arguments"
+		},
+		{
+			"command": "check:design-context",
+			"args": ["extra"],
+			"reason": "C4: an argument the command does not take is a start-up failure, refused before any work; 57dad1c0 ignored it"
+		},
+		{
+			"command": "check:concept-css",
+			"args": ["-folder"],
+			"reason": "C3: an argument the command does not take is refused by name before any work; 57dad1c0 took a folder starting with - as the folder"
+		},
+		{
+			"command": "check:agent-context",
+			"args": ["--milestone", "--verbose"],
+			"reason": "C3: an option-shaped token in a value position is that option's missing value, not its value"
+		},
+		{
+			"command": "context:show",
+			"args": [],
+			"reason": "C4: --milestone is the registered usage's required argument; 57dad1c0 silently planned the first open milestone instead"
+		},
+		{
+			"command": "context:show",
+			"args": ["--milestone", "--verbose"],
+			"reason": "C3: an option-shaped token in a value position is that option's missing value, not its value"
+		},
+		{
+			"command": "handoff:new",
+			"args": ["--milestone", "agent-tooling-r01", "--dir", "-x"],
+			"reason": "C3: an option-shaped token in a value position is that option's missing value, not its value"
+		},
+		{
+			"command": "main:advance",
+			"args": ["HEAD", "--", "--dry-run"],
+			"reason": "C3: a -- after the first argument ends options, so a later --dry-run is an argument the command does not take; 57dad1c0 dropped every --"
+		},
+		{
+			"command": "codex:round",
+			"args": ["AGENTS.md", "--run", "--new-reveiw"],
+			"reason": "C3: an option-shaped token in a value position is that option's missing value, not its value (C3 names this typo, which 57dad1c0 took as the run folder)"
+		},
+		{
+			"command": "start-load",
+			"args": ["--root="],
+			"reason": "C4: an empty value is a value the command cannot use; node:util parseArgs took it"
+		},
+		{
+			"command": "check:verification-map",
+			"args": ["drift-tree", "--anything", "x"],
+			"reason": "C3: an argument the command does not take is refused by name before any work; the 57dad1c0 Owner parser took any --key value"
+		},
+		{
+			"command": "check:verification-map",
+			"args": ["drift-tree", "--", "x"],
+			"reason": "C4: an argument the command does not take is a start-up failure, refused before any work; only measure passes arguments on after --, and 57dad1c0 stored them unread"
+		},
+		{
+			"command": "check:verification-map",
+			"args": ["drift-tree", "--root", "-x"],
+			"reason": "C3: an option-shaped token in a value position is that option's missing value, not its value"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["list", "--concept", "<repo>", "--anything", "x"],
+			"reason": "C3: an argument the command does not take is refused by name before any work; the 57dad1c0 parser took any --key value for every subcommand"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["list", "--concept", "<repo>", "--lan"],
+			"reason": "C3: an argument the command does not take is refused by name before any work; an option only another subcommand declares (E1), which 57dad1c0 accepted and list never read"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["doctor", "--concept", "<repo>", "--portLease", "3176"],
+			"reason": "C3: an argument the command does not take is refused by name before any work; portLease, captureOnly, comparisonCapture, compareRuntime and timelineTimesByItem are state compare sets internally, never options"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["drive", "--concept", "<repo>", "--", "x"],
+			"reason": "C4: an argument the command does not take is a start-up failure, refused before any work; only measure passes arguments on after --, and 57dad1c0 stored them unread for every other subcommand"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["list", "--concept", "<repo>", "--page", "-x"],
+			"reason": "C3: an option-shaped token in a value position is that option's missing value, not its value"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["map", "--concept", "."],
+			"reason": "C4: a relative --concept is a value the command cannot use, now refused before any work; 57dad1c0's parser took it and canonical() refused it at start (Use an absolute path)"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["map", "--concept", "<repo>", "--out", "evidence"],
+			"reason": "C4: a relative --out is a value the command cannot use, now refused before any work; 57dad1c0's parser took it and assertOutsideGit() refused it at start"
+		},
+		{
+			"command": "verify:fast",
+			"args": ["--", "fast"],
+			"env": {
+				"FITWAY_PHASE": null
+			},
+			"reason": "C1/C4: the mode is the registered invocation's fixed first argument (node scripts/verify.mjs fast); 57dad1c0 dropped every -- before reading it"
+		},
+		{
+			"command": "verify:phase",
+			"args": ["phase", "--phase", "--", "1"],
+			"env": {
+				"FITWAY_PHASE": null
+			},
+			"reason": "C3: an option-shaped token in a value position is that option's missing value, not its value; 57dad1c0 dropped every -- first"
+		},
+		{
+			"command": "verify:owner",
+			"args": ["compare", "--concept", "<repo>"],
+			"reason": "C4: --baseline is compare's required option in the registry, refused before any work; 57dad1c0's parser took the command and compare() refused it at start"
+		}
+	]
+}

@@ -56,21 +56,20 @@
 		".agents/skills/gardener/survey.mjs": {
 			"duplication": 1,
 			"longFunctions": 5,
-			"giantFiles": 1228
+			"giantFiles": 1203
 		},
 		".agents/skills/verify-fitway/baseline-cache.mjs": {
 			"duplication": 1
 		},
 		".agents/skills/verify-fitway/cli.mjs": {
 			"duplication": 1,
-			"longFunctions": 2,
-			"giantFiles": 826
+			"longFunctions": 2
 		},
 		".agents/skills/verify-fitway/cli.test.mjs": {
 			"duplication": 61,
 			"suppressions": 1,
 			"longFunctions": 8,
-			"giantFiles": 4583
+			"giantFiles": 4551
 		},
 		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
 			"duplication": 9,
@@ -80,7 +79,7 @@
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare-speed.test.mjs": {
-			"duplication": 7,
+			"duplication": 6,
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare.mjs": {
@@ -115,8 +114,7 @@
 		},
 		".agents/skills/verify-fitway/timeline.mjs": {
 			"suppressions": 1,
-			"longFunctions": 2,
-			"giantFiles": 806
+			"longFunctions": 2
 		},
 		"apps/server/src/access-repository.ts": {
 			"duplication": 24
@@ -690,7 +688,7 @@
 		"scripts/agent-environment/check-brief.mjs": {
 			"duplication": 10,
 			"longFunctions": 3,
-			"giantFiles": 1141
+			"giantFiles": 1132
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
 			"duplication": 5,
@@ -705,7 +703,7 @@
 		"scripts/agent-environment/codex-round.mjs": {
 			"duplication": 6,
 			"longFunctions": 3,
-			"giantFiles": 2316
+			"giantFiles": 2279
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
 			"duplication": 44,
@@ -757,7 +755,7 @@
 		"scripts/check-agent-context.mjs": {
 			"duplication": 5,
 			"longFunctions": 5,
-			"giantFiles": 1167
+			"giantFiles": 1132
 		},
 		"scripts/check-agent-context.test.ts": {
 			"duplication": 22,
@@ -811,7 +809,7 @@
 		"scripts/verify-repository.mjs": {
 			"duplication": 2,
 			"longFunctions": 5,
-			"giantFiles": 960
+			"giantFiles": 953
 		},
 		"scripts/verify-repository.schema.test.ts": {
 			"duplication": 19,

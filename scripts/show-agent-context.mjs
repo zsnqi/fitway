@@ -5,6 +5,12 @@ import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
 import { behindUpstreamWarning } from "./agent-environment/git-context.mjs";
 import { hasResumePointMarker } from "./agent-environment/resume-point.mjs";
+import {
+	beginToolCommand,
+	runToolStartup,
+	ToolStartupError,
+	toolStartupLine,
+} from "./agent-environment/tool-contract.mjs";
 import { inspectPath } from "./check-agent-context.mjs";
 
 const root = process.cwd();
@@ -110,26 +116,6 @@ function selectorText(selector) {
 	return `${selector?.kind ?? "unknown"}=${JSON.stringify(selector?.value ?? "")}`;
 }
 
-function parseArgs(inputArgs) {
-	const args = inputArgs[0] === "--" ? inputArgs.slice(1) : inputArgs;
-	let milestoneId = null;
-	for (let index = 0; index < args.length; index += 1) {
-		const argument = args[index];
-		if (argument === "--milestone") {
-			milestoneId = args[++index];
-			if (!milestoneId) throw new Error("--milestone requires a value");
-		} else if (argument === "--help" || argument === "-h") {
-			console.log(
-				"Usage: node scripts/show-agent-context.mjs --milestone <id>",
-			);
-			process.exit(0);
-		} else {
-			throw new Error(`Unknown argument: ${argument}`);
-		}
-	}
-	return milestoneId;
-}
-
 function printSource(lines, source, prefix = "") {
 	lines.push(
 		`${prefix}- ${source.role ? `${source.role}: ` : ""}${source.path} (${selectorText(source.selector)})`,
@@ -183,8 +169,11 @@ export async function buildAgentContextPlan({
 	}
 	const milestone = active[selectedId];
 	if (!milestone)
-		throw new Error(
+		throw new ToolStartupError(
 			`requested milestone does not exist in PROJECT_STATE.yaml: ${selectedId}`,
+			Object.keys(active).length
+				? `pass --milestone one of: ${Object.keys(active).join(", ")}`
+				: "PROJECT_STATE.yaml has no active milestone; ask the coordinator to open one",
 		);
 	if (!Object.hasOwn(milestone, "taskPacket"))
 		throw new Error(
@@ -286,10 +275,14 @@ export async function agentContextEnding({
 	return lines.join("\n");
 }
 
-async function main() {
+export function contextShowMilestone(parsed) {
+	return parsed.options.milestoneId ?? null;
+}
+
+async function main(milestoneId) {
 	const plan = await buildAgentContextPlan({
 		repositoryRoot: root,
-		milestoneId: parseArgs(process.argv.slice(2)),
+		milestoneId,
 	});
 	console.log(plan);
 	const ending = await agentContextEnding({ repositoryRoot: root, plan });
@@ -300,11 +293,17 @@ const isMain =
 	process.argv[1] &&
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
+	const milestoneId = runToolStartup("context:show", () =>
+		contextShowMilestone(
+			beginToolCommand("context:show", process.argv.slice(2)),
+		),
+	);
 	try {
-		await main();
+		await main(milestoneId);
 	} catch (error) {
 		console.error(
-			`context:show FAILED: ${error instanceof Error ? error.message : String(error)}`,
+			toolStartupLine("context:show", error) ??
+				`context:show FAILED: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		process.exitCode = 1;
 	}

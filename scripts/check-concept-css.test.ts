@@ -600,7 +600,8 @@ describe("concept CSS CLI and read-only folder contract", () => {
 		]) {
 			const result = run(target);
 			expect(result.status).toBe(2);
-			expect(result.stderr).toContain("ERROR:");
+			expect(result.stderr).toContain("check:concept-css: FAIL:");
+			expect(result.stderr).not.toContain("ERROR:");
 		}
 	});
 

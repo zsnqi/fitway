@@ -7,8 +7,8 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseArgs } from "node:util";
 import { samePath } from "./path-identity.mjs";
+import { beginToolCommand, toolFailure } from "./tool-contract.mjs";
 
 const WORK_TOOLS = new Set(["Edit", "Write", "Agent", "Task", "NotebookEdit"]);
 export const BASELINE_FILE = fileURLToPath(
@@ -246,49 +246,46 @@ function formatReads(rows) {
 	].join("\n");
 }
 
-const USAGE =
-	"Usage: node scripts/agent-environment/start-load.mjs [--root <transcripts dir>] [--limit <sessions, default 25>] [--since <YYYY-MM-DD>] [--json] | --reads <transcript.jsonl>";
+export function startLoadOptions(parsed) {
+	const { reads, root, limit, since, json } = parsed.options;
+	return { reads, root, limit, since, json };
+}
 
 if (
 	process.argv[1] &&
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
-		const { values } = parseArgs({
-			options: {
-				root: { type: "string" },
-				limit: { type: "string" },
-				since: { type: "string" },
-				reads: { type: "string" },
-				json: { type: "boolean" },
-				help: { type: "boolean" },
-			},
-		});
-		if (values.help) console.log(USAGE);
-		else if (values.reads)
-			console.log(formatReads(startReads(readFileSync(values.reads, "utf8"))));
+		const options = startLoadOptions(
+			beginToolCommand("start-load", process.argv.slice(2)),
+		);
+		if (options.reads)
+			console.log(formatReads(startReads(readFileSync(options.reads, "utf8"))));
 		else {
-			const limit = Number(values.limit ?? 25);
+			const limit = Number(options.limit ?? 25);
 			if (!Number.isInteger(limit) || limit < 1)
-				throw new Error(`--limit must be a positive integer: ${values.limit}`);
-			if (values.since && Number.isNaN(Date.parse(values.since)))
-				throw new Error(`--since is not a date: ${values.since}`);
+				throw new Error(`--limit must be a positive integer: ${options.limit}`);
+			if (options.since && Number.isNaN(Date.parse(options.since)))
+				throw new Error(`--since is not a date: ${options.since}`);
 			const result = measureStartLoad({
-				root: values.root ?? transcriptRoot(),
+				root: options.root ?? transcriptRoot(),
 				limit,
-				since: values.since ?? null,
+				since: options.since ?? null,
 			});
 			const baseline = JSON.parse(readFileSync(BASELINE_FILE, "utf8"));
 			console.log(
-				values.json
+				options.json
 					? JSON.stringify(result, null, 2)
 					: formatReport(result, baseline),
 			);
 		}
 	} catch (error) {
-		console.error(
-			`start-load FAILED: ${error instanceof Error ? error.message : String(error)}`,
-		);
+		const fix = /--limit/.test(error.message)
+			? "pass --limit <positive integer>"
+			: /--since/.test(error.message)
+				? "pass --since YYYY-MM-DD"
+				: "check the named transcript path; run pnpm start-load --help";
+		console.error(toolFailure("start-load", error, fix));
 		process.exitCode = 1;
 	}
 }

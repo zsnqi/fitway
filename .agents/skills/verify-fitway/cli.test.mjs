@@ -14,6 +14,7 @@ import { createServer, request } from "node:http";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
+import { copyAllFixture, copyHelpFixture } from "./fixture-copy.mjs";
 import { verificationTest } from "./skip-gate.mjs";
 
 const test = verificationTest(nodeTest);
@@ -1588,24 +1589,7 @@ test("listener parsing preserves IPv6 and IPv4 addresses; LAN URLs use real exte
 
 test("help in a dependency-free clone succeeds and names installation", async () => {
 	const folder = resolve(scratch, "clone/.agents/skills/verify-fitway");
-	await mkdir(folder, { recursive: true });
-	for (const name of [
-		"cli.mjs",
-		"colors.mjs",
-		"core.mjs",
-		"compare.mjs",
-		"runner.mjs",
-		"timeline.mjs",
-		"drive.mjs",
-		"probes.mjs",
-		"map.mjs",
-		"discover.mjs",
-		"state-rules.mjs",
-	])
-		await writeFile(
-			resolve(folder, name),
-			await readFile(fileURLToPath(new URL(`./${name}`, import.meta.url))),
-		);
+	await copyHelpFixture(folder);
 	const result = spawnSync(
 		process.execPath,
 		[resolve(folder, "cli.mjs"), "help"],
@@ -1616,7 +1600,6 @@ test("help in a dependency-free clone succeeds and names installation", async ()
 	assert.match(result.stdout, /pnpm --dir .* install --frozen-lockfile/);
 	assert.doesNotMatch(result.stderr, /Cannot find module/);
 });
-
 test("quiet comparison children keep diff JSON and diagnostics off success output, and preserve failure diagnostics", async () => {
 	const noisy = resolve(scratch, "noisy-diff.mjs");
 	const caller = resolve(scratch, "quiet-caller.mjs");
@@ -1806,7 +1789,17 @@ function runCli(args, cli = cliPath, env = {}) {
 		},
 	});
 }
-
+function sessionCommandArgs(command, folder, out) {
+	if (command === "cleanup") return [command, "--session", folder];
+	return [
+		command,
+		"--concept",
+		concept,
+		"--session",
+		folder,
+		...(command === "drive" ? ["--out", out] : []),
+	];
+}
 test("Y2: a test-only doctor seam never probes a verification port", async () => {
 	const folder = resolve(scratch, "doctor-test-port-seam");
 	const port = await isolatedPort();
@@ -1854,7 +1847,6 @@ test("Y2: a test-only doctor seam never probes a verification port", async () =>
 		: [];
 	assert.deepEqual(observations, [], result.stdout + result.stderr);
 });
-
 test("V1: no recipe file is SKIP, while a checked recipe still passes", async () => {
 	const empty = resolve(scratch, "no-recipes");
 	await mkdir(empty);
@@ -1870,19 +1862,9 @@ test("V1: no recipe file is SKIP, while a checked recipe still passes", async ()
 		/DRIFT PASS: 1 recipe files found and checked\./,
 	);
 });
-
 test("V2: dependency-free discovery and browser commands name the package and install once", async () => {
 	const folder = resolve(scratch, "cold/.agents/skills/verify-fitway");
-	await mkdir(folder, { recursive: true });
-	for (const name of await readdir(
-		fileURLToPath(new URL(".", import.meta.url)),
-	)) {
-		if (!name.endsWith(".mjs") || name.endsWith(".test.mjs")) continue;
-		await writeFile(
-			resolve(folder, name),
-			await readFile(new URL(name, import.meta.url)),
-		);
-	}
+	await copyAllFixture(folder);
 	const cli = resolve(folder, "cli.mjs");
 	for (const command of [
 		"map",
@@ -1898,8 +1880,9 @@ test("V2: dependency-free discovery and browser commands name the package and in
 						command,
 						"--concept",
 						concept,
-						"--out",
-						resolve(scratch, `cold-${command}`),
+						...(["map", "repair-recipes"].includes(command)
+							? ["--out", resolve(scratch, `cold-${command}`)]
+							: []),
 					],
 			cli,
 		);
@@ -1933,17 +1916,16 @@ try {playwright()} catch(error) {console.error(error.message + "\\nFIX: " + erro
 		/Cannot find module|Require stack|\n\s+at /,
 	);
 });
-
 test("V3: doctor and drive setup failures print one fault block", () => {
 	for (const command of ["doctor", "drive", "compare"]) {
 		const result = runCli([
 			command,
 			"--concept",
 			concept,
-			"--baseline",
-			concept,
-			"--out",
-			resolve(scratch, `one-block-${command}`),
+			...(command === "compare" ? ["--baseline", concept] : []),
+			...(command === "doctor"
+				? []
+				: ["--out", resolve(scratch, `one-block-${command}`)]),
 		]);
 		assert.equal(result.status, 1);
 		assert.equal(
@@ -2097,7 +2079,6 @@ catch(error){if(!(core.ReportedFailure && error instanceof core.ReportedFailure)
 		}),
 	};
 }
-
 test("R20 V1: colours multiply states and reach the context, manifest and FRAME; default stays normal", async () => {
 	const features = [{ id: "page", proof: { selector: "main", visible: true } }];
 	const { result, out } = await runnerFixture("colours", features, {
@@ -2128,7 +2109,6 @@ test("R20 V1: colours multiply states and reach the context, manifest and FRAME;
 	assert.equal(invalid.result.status, 1);
 	assert.match(invalid.result.stderr, /Unsupported.*sepia.*normal.*forced/);
 });
-
 test("R20 V2: drive, compare and measure refuse forced requests with ui-forensics 1.1.0 before rendering", async () => {
 	const tools = resolve(scratch, "old-forensics");
 	await mkdir(resolve(tools, "scripts/web"), { recursive: true });
@@ -2159,9 +2139,8 @@ test("R20 V2: drive, compare and measure refuse forced requests with ui-forensic
 				fileURLToPath(new URL("./cli.mjs", import.meta.url)),
 				command,
 				"--forensics",
-				tools,
-				"--concept",
-				concept,
+				...(command === "compare" ? [tools, "--baseline", concept] : [tools]),
+				...(command === "measure" ? [] : ["--concept", concept]),
 				...axes,
 			],
 			{ encoding: "utf8", windowsHide: true },
@@ -2171,7 +2150,6 @@ test("R20 V2: drive, compare and measure refuse forced requests with ui-forensic
 		assert.doesNotMatch(result.stdout, /FRAME|DRIVE PASS|COMPARE|MEASURE PASS/);
 	}
 });
-
 test("R20 V2: measurement matrices and inline options also fail closed, with the tool's whitespace handling", async () => {
 	const tools = resolve(scratch, "matrix-old-forensics");
 	await mkdir(resolve(tools, "scripts/web"), { recursive: true });
@@ -2365,7 +2343,6 @@ Module._load=function(name,...args){return name==="@playwright/test"?{chromium:{
 	];
 	return { root, tools, invoke, driveArgs };
 }
-
 test("R21: CLI saves a held frame, records classification, and releases before the next item", async () => {
 	const { root, invoke, driveArgs } = await heldCliFixture("held-cli");
 	const out = resolve(root, "out");
@@ -2410,7 +2387,6 @@ test("R21: CLI saves a held frame, records classification, and releases before t
 		"cleanup never released the press",
 	);
 });
-
 test("R22: bare release reaches the tool in a recipe before the next item", async () => {
 	const { root, invoke, driveArgs } = await heldCliFixture(
 		"bare-release",
@@ -2474,7 +2450,6 @@ test("R22: keyboard refuses bare release before reaching the tool", async () => 
 	);
 	assert.equal(reached, false);
 });
-
 test("R21: CLI keyboard input refuses a held press before reaching the tool", async () => {
 	const { root, invoke, driveArgs } = await heldCliFixture("held-keyboard");
 	const out = resolve(root, "out");
@@ -4220,8 +4195,7 @@ test("W1: port options keep other previews excluded, and help names isolation an
 				command,
 				"--concept",
 				concept,
-				"--baseline",
-				concept,
+				...(command === "compare" ? ["--baseline", concept] : []),
 				"--port",
 				String(port),
 			]);
@@ -4377,15 +4351,13 @@ test("R17 V2: foreign status, body and silence name the session port without sto
 			"disconnect",
 		]) {
 			for (const command of ["cleanup", "doctor", "drive"]) {
-				const result = await runCliAsync([
-					command,
-					"--concept",
-					concept,
-					"--session",
-					folder,
-					"--out",
-					resolve(scratch, `foreign-${mode}-${command}`),
-				]);
+				const result = await runCliAsync(
+					sessionCommandArgs(
+						command,
+						folder,
+						resolve(scratch, `foreign-${mode}-${command}`),
+					),
+				);
 				assert.equal(result.status, 1, `${mode}/${command}: ${result.stdout}`);
 				assert.match(
 					result.stderr,
@@ -4443,15 +4415,13 @@ test("R19 V1: a verified preview sharing its port names every foreign pid and re
 			server.listen(session.port, "127.0.0.2", done);
 		});
 		for (const command of ["doctor", "cleanup", "drive"]) {
-			const result = await runCliAsync([
-				command,
-				"--concept",
-				concept,
-				"--session",
-				folder,
-				"--out",
-				resolve(scratch, `shared-${command}`),
-			]);
+			const result = await runCliAsync(
+				sessionCommandArgs(
+					command,
+					folder,
+					resolve(scratch, `shared-${command}`),
+				),
+			);
 			assert.equal(result.status, 1, result.stdout);
 			assert.match(
 				result.stderr,
@@ -4495,15 +4465,13 @@ test("W2: detached idle preview exits, frees its port, cleans idempotently and s
 	try {
 		await waitForExit(session);
 		for (const command of ["doctor", "drive"]) {
-			const result = runCli([
-				command,
-				"--concept",
-				concept,
-				"--session",
-				folder,
-				"--out",
-				resolve(scratch, `expired-${command}`),
-			]);
+			const result = runCli(
+				sessionCommandArgs(
+					command,
+					folder,
+					resolve(scratch, `expired-${command}`),
+				),
+			);
 			assert.equal(result.status, 1);
 			assert.match(result.stderr, /Session preview.*stopped or is unreachable/);
 			assert.match(

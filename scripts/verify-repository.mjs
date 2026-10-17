@@ -8,12 +8,19 @@ import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
+import {
+	bomExceptionPathKey,
+	normalizeGitPath,
+} from "./agent-environment/git-path-key.mjs";
+import { lineAt } from "./agent-environment/markdown-lines.mjs";
 import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs";
+import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import {
 	checkAgentContext,
 	formatAgentContextWarnings,
 	TERMINAL_STATUSES,
 } from "./check-agent-context.mjs";
+import { repositoryOptions } from "./verify-repository-options.mjs";
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
 const root = process.cwd();
@@ -63,21 +70,6 @@ const CLAUDE_MODEL_ALIASES = new Map([
 	["sonnet", "sonnet"],
 	["haiku 5.5", "claude-haiku-5-5"],
 ]);
-
-function normalizeGitPath(value) {
-	return value.replaceAll("\\", "/");
-}
-
-function bomExceptionPathKey(value) {
-	return normalizeGitPath(value)
-		.replace(/\/+/g, "/")
-		.replace(/^\.\//, "")
-		.toLowerCase();
-}
-
-function lineNumberAt(text, index) {
-	return text.slice(0, index).split(/\r?\n/).length;
-}
 
 function normalizeClaudeModel(value) {
 	const normalized = String(value).trim().toLowerCase().replace(/\s+/g, " ");
@@ -174,7 +166,7 @@ export function assertClaudeAgentTable({
 			name,
 			model: match[2].trim(),
 			effort: match[3].trim(),
-			line: lineNumberAt(instructions, match.index),
+			line: lineAt(instructions, match.index),
 		};
 		if (rows.has(name))
 			fail(
@@ -766,7 +758,7 @@ export async function verifyGardenerRecord(state, read = readBytes) {
 	);
 }
 
-async function main() {
+async function main(options = {}) {
 	execFileSync("git", ["diff", "HEAD", "--check", "--"], {
 		cwd: root,
 		stdio: "inherit",
@@ -938,7 +930,7 @@ async function main() {
 		);
 	}
 	for (const line of formatAgentContextWarnings(agentContext, {
-		verbose: process.argv.slice(2).includes("--verbose"),
+		verbose: options.verbose === true,
 		warningPrefix: "Agent context warning: ",
 	})) {
 		console.warn(line);
@@ -953,7 +945,8 @@ if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-	main().catch((error) => {
+	const parsed = beginToolCommand("check:repository", process.argv.slice(2));
+	main(repositoryOptions(parsed)).catch((error) => {
 		console.error(`FAILED_VALIDATION: ${error.message}`);
 		process.exitCode = 1;
 	});

@@ -5,12 +5,14 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { readGit } from "./git-context.mjs";
+import { lineAt, lines } from "./markdown-lines.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 import {
 	createPathReferenceResolver,
 	exists,
 	referenceTarget,
 } from "./path-reference.mjs";
+import { beginToolCommand, resolveToolArguments } from "./tool-contract.mjs";
 
 const ENVIRONMENT_PATH = "docs/agent-context/briefs/ENVIRONMENT.md";
 const START = "<!-- environment:start v1 -->";
@@ -19,15 +21,6 @@ const FORMAT =
 	/^<!-- brief-format: v1 role: (codex|builder|designer|verifier) -->\r?\n/;
 const CODEX_SCOPE_FINAL_SENTENCE =
 	"If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.";
-
-function lineAt(text, index) {
-	return text.slice(0, index).split("\n").length;
-}
-
-function lines(text) {
-	const parts = text.split(/\r?\n/);
-	return text.endsWith("\n") ? parts.length - 1 : parts.length;
-}
 
 function mask(text) {
 	return text.replace(/[^\r\n]/g, " ");
@@ -586,18 +579,19 @@ function environmentBlock(text) {
 }
 
 export function parseBriefArgs(inputArgs) {
-	const args = inputArgs[0] === "--" ? inputArgs.slice(1) : inputArgs;
-	const options = { fillEnvironment: false };
-	for (const argument of args) {
-		if (argument === "--help" || argument === "-h") return { help: true };
-		if (argument === "--fill-environment" && !options.fillEnvironment)
-			options.fillEnvironment = true;
-		else if (argument.startsWith("-") || options.briefPath)
-			throw new Error(`Unexpected argument: ${argument}`);
-		else options.briefPath = argument;
-	}
-	if (!options.briefPath) throw new Error("A brief path is required");
-	return options;
+	const parsed = Array.isArray(inputArgs)
+		? resolveToolArguments("brief:check", inputArgs, {
+				validate: false,
+			})
+		: inputArgs;
+	if (parsed.positionals.length !== 1)
+		throw new Error("A brief path is required");
+	if (parsed.counts.fillEnvironment > 1)
+		throw new Error("Duplicate argument: --fill-environment");
+	return {
+		briefPath: parsed.positionals[0],
+		fillEnvironment: parsed.options.fillEnvironment === true,
+	};
 }
 
 function headings(text) {
@@ -1116,22 +1110,19 @@ if (
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
-		const options = parseBriefArgs(process.argv.slice(2));
-		if (options.help)
-			console.log("Usage: pnpm brief:check [--] <brief> [--fill-environment]");
-		else {
-			const repositoryRoot = readGit(process.cwd(), [
-				"rev-parse",
-				"--show-toplevel",
-			]);
-			const result = await checkBrief({
-				...options,
-				briefPath: path.resolve(process.cwd(), options.briefPath),
-				repositoryRoot,
-			});
-			console.log(formatBriefResult(result));
-			process.exitCode = result.ok ? 0 : 1;
-		}
+		const parsed = beginToolCommand("brief:check", process.argv.slice(2));
+		const options = parseBriefArgs(parsed);
+		const repositoryRoot = readGit(process.cwd(), [
+			"rev-parse",
+			"--show-toplevel",
+		]);
+		const result = await checkBrief({
+			...options,
+			briefPath: path.resolve(process.cwd(), options.briefPath),
+			repositoryRoot,
+		});
+		console.log(formatBriefResult(result));
+		process.exitCode = result.ok ? 0 : 1;
 	} catch (error) {
 		console.error(
 			`brief:check:1: FAIL: ${error.message.replace(/[\r\n]+/g, " ")}`,

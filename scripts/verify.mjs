@@ -1,5 +1,10 @@
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
+import {
+	beginToolCommand,
+	ToolStartupError,
+	toolStartupLine,
+} from "./agent-environment/tool-contract.mjs";
 import { repositoryFingerprint } from "./repository-fingerprint.mjs";
 
 const phases = {
@@ -280,39 +285,34 @@ Optional Playwright isolation:
 `);
 }
 
-function parseArguments() {
-	const args = process.argv.slice(2).filter((argument) => argument !== "--");
-	const mode = args.shift();
-	if (!mode || mode === "--help" || mode === "-h") {
-		usage();
-		process.exit(mode ? 0 : 1);
-	}
+export function verificationOptions(parsed) {
+	const mode = parsed.fixedArgs[0];
 	if (!new Set(["fast", "phase", "full"]).has(mode)) {
 		throw new Error(`Unknown verification mode: ${mode}`);
 	}
-	let phase = process.env.FITWAY_PHASE;
-	while (args.length > 0) {
-		const argument = args.shift();
-		if (argument === "--phase") {
-			const argumentPhase = args.shift();
-			if (!argumentPhase) throw new Error("--phase requires a value");
-			if (phase && phase !== argumentPhase) {
-				throw new Error(
-					"FITWAY_PHASE and --phase must agree when both are set",
-				);
-			}
-			phase = argumentPhase;
-			continue;
-		}
-		throw new Error(`Unknown argument: ${argument}`);
+	const phase = parsed.options.phase ?? process.env.FITWAY_PHASE;
+	if (
+		parsed.options.phase &&
+		process.env.FITWAY_PHASE &&
+		parsed.options.phase !== process.env.FITWAY_PHASE
+	) {
+		throw new ToolStartupError(
+			"FITWAY_PHASE and --phase must agree when both are set",
+			"pass the same --phase as FITWAY_PHASE, or unset FITWAY_PHASE",
+		);
 	}
 	if (mode === "phase" && (!phase || !(phase in phases))) {
-		throw new Error(
+		throw new ToolStartupError(
 			`verify:phase requires one of: ${Object.keys(phases).join(", ")}`,
+			`pass --phase <${Object.keys(phases).join("|")}>`,
+			{ what: `unknown phase ${phase ?? "(none)"}` },
 		);
 	}
 	if (mode !== "phase" && phase) {
-		throw new Error("--phase is valid only with verify:phase");
+		throw new ToolStartupError(
+			"--phase is valid only with verify:phase",
+			"unset FITWAY_PHASE, or run pnpm verify:phase --phase <phase>",
+		);
 	}
 	return { mode, phase };
 }
@@ -541,8 +541,8 @@ export async function runVerification({
 	}
 }
 
-async function main() {
-	const { mode, phase } = parseArguments();
+async function main(parsed) {
+	const { mode, phase } = verificationOptions(parsed);
 	await runVerification({ mode, phase });
 }
 
@@ -550,7 +550,19 @@ if (
 	process.argv[1] !== undefined &&
 	import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
-	main().catch((error) => {
+	const parsed = beginToolCommand(
+		["verify:fast", "verify:phase", "verify:full"],
+		process.argv.slice(2),
+		{
+			unmatched: ({ help }) => {
+				usage();
+				process.exit(help ? 0 : 1);
+			},
+		},
+	);
+	main(parsed).catch((error) => {
+		const line = toolStartupLine(parsed.entry.name, error);
+		if (line) console.error(line);
 		console.error(`\nFAILED_VALIDATION: ${error.message}`);
 		process.exitCode = 1;
 	});

@@ -2,6 +2,10 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import {
+	beginToolCommand,
+	toolFailure,
+} from "./agent-environment/tool-contract.mjs";
+import {
 	functionEnd,
 	maskStrings,
 	normalize,
@@ -593,7 +597,7 @@ export async function inspectFolder(folder) {
 		findings: lintSources(sources, { checkFocusRing: true }),
 	};
 }
-export async function main(args = process.argv.slice(2), write = console.log) {
+export async function main(args, write = console.log) {
 	const folders = args.filter((arg) => arg !== "--");
 	if (folders.length !== 1)
 		throw new Error(
@@ -615,16 +619,26 @@ export async function main(args = process.argv.slice(2), write = console.log) {
 	);
 	return result.findings.length ? 1 : 0;
 }
+
+export function conceptCssArguments(parsed) {
+	return parsed.positionals;
+}
+
 if (
 	process.argv[1] &&
 	import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
 ) {
-	main()
+	const parsed = beginToolCommand("check:concept-css", process.argv.slice(2));
+	main(conceptCssArguments(parsed))
 		.then((code) => {
 			process.exitCode = code;
 		})
 		.catch((error) => {
-			console.error(`ERROR: ${error.message}`);
+			const detail = error.message.replace(/^ERROR:\s*/, "");
+			const fix = /ENOENT|ENOTDIR|EISDIR/i.test(detail)
+				? "pass an existing folder; run pnpm check:concept-css -- <folder>"
+				: "run pnpm check:concept-css -- <folder> after fixing the reported error";
+			console.error(toolFailure("check:concept-css", detail, fix));
 			process.exitCode = 2;
 		});
 }
