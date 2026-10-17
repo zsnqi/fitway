@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `0c43eb14`, 2026-10-17 04:32 +03:00
+- **As of:** `codex/owner-redesign-r04` at `b56aa416`, 2026-10-17 05:07 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,73 +37,35 @@
 
 ## Running now
 
-- **ratchet-fix-2's grade** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix-2-grade.md`, `0c43eb14`:
-  P1-P8 over N1-N4, the review edits and HR13-HR18, both brief reviews closed): GPT-6.1 Sol `xhigh` on ryshyjhad85,
-  run D:/fitway-temp/codex-round-d3480bdf-d645-4fd2-84b2-83f37f303edc, grading checkout
-  D:/fitway-temp/tooling-ratchet-fix-2-grade/wt (branch `grade-ratchet-fix-2` at `6ca46c2e`, its own install), log
-  D:/fitway-temp/tooling-ratchet-fix-2-grade/launch-2.log. CI runs on `6ca46c2e` (pushed).
-- **ratchet-fix-2 is done** (measured): DeepSeek V4.1 Flash `max`, run
-  D:/fitway-temp/codex-round-546aa7a9-1940-4763-ba10-9bf2f123c122, three commits `204ed1dc`, `42fd405a`, `4ed45355`
-  (it reported its one-commit rule as failed: its first commit put `check-concept-css.mjs` over the giant-file line,
-  and `42fd405a` deleted six comments to fit); its ladder passed after the last (`789.82s`). Duplication's conversion
-  731 to 1136 copies, from `b3946bc3`'s own sources. Its Sol diff review (D:/fitway-temp/code-review/ratchet-fix-2-1)
-  gave three blocking findings; with the coordinator's fourth (the deleted comments), `owner-direction-fixer` applied
-  them in `6ca46c2e`: copies carry their span (`endLine`), no fallback shape, the N1 cases share helpers, and the CSS
-  parsing layer moved verbatim to a module of its own (concept-css-parse, on `tooling-ratchet`; checked by the coordinator), the six comments
-  restored; `check-concept-css.mjs` 630 lines. Its ladder passed after the commit (`850.81s`, no mutation). An
-  exception now exempts a duplicate copy only from a line the copy spans.
-- **The ratchet's grade is done and recorded** (run D:/fitway-temp/codex-round-f73f808c-d927-474f-a8bb-facc8041863f;
-  `codex-rounds.md` §"agent-tooling-r01: the ratchet, ratchet-fix and the review fixer", `rounds.tsv`, F267-F269):
-  7/14 as graded, held-out 10/12; four real defects (a deleted or edited working baseline lets a rise through; a third
-  copy in one file is not counted; the gardener and the ratchet count lines one apart; the concept's one shared ring
-  counts as three, reproduced by the coordinator) and three rows of the grading brief's wording. Not merged.
-- **CI on `b3946bc3`** was running (pushed 03:00); CI on `3f80f091` passed (measured).
-- **The CLI contract is ready to launch** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract.md`, C1-C5
-  and L0-L4; its HEAD line still names `b3946bc3`): both reviews done and dispositioned (DeepSeek five readings closed,
-  Sol three closed and one left open by narrowing the goal to failures to start), worktree
-  D:/Projects/fitway-worktrees/tooling-cli-contract (branch `tooling-cli-contract` at `b3946bc3`, its own install).
-  Held-out rows CC1-CC11 in D:/fitway-grader/agent-tooling/cli-contract-heldout.md. The coordinator's measurement of
-  every command's `--help` and unknown-option answers at `b3946bc3`: D:/fitway-temp/tooling-cli-contract/baseline.txt.
-- **The ratchet-fix review edits are in `b3946bc3`** (`owner-direction-fixer`, frozen edits; the diff checked by the
-  coordinator): one extension list in `code-health-source.mjs` (`isSourceFile`), `script` 52 lines with
-  `scanComments` 49, `lintSources` 52 with `collectRuleFindings` 36; baseline 215 to 214 files and long functions 324
-  to 322. `scripts/check-concept-css.mjs` is 799 lines by `wc -l`, 800 as the ratchet counts.
-- **ratchet-fix is done** (measured): DeepSeek V4.1 Flash `max`, run
-  D:/fitway-temp/codex-round-3911ed9e-70c8-440e-960b-77c265e16d07, result `3f80f091` on `tooling-ratchet`
-  ("Fix code-health ratchet review findings", 10 files, +556/-409). Turn 1 was refused because its fast ladder ran
-  before its commit; turn 2 reran the ladder on the commit (`811.24s`, no mutation) and the report was accepted at
-  02:30. It reports K1-K6, H1-H6 and L0-L2 PASS; baseline 217 to 215 files, duplication 733 to 731.
-- How it got here: the ratchet delivered `7c28d15a` on `tooling-ratchet` (run
-  D:/fitway-temp/codex-round-c8aa5fb0-1f2a-4231-80f0-7c783796af3b): H1-H6 PASS; baseline CODE_HEALTH_BASELINE.json on
-  that branch (217 files; duplication 733 at an 8-line window, type escapes 60, suppressions 10, repeated
-  workarounds 8, long functions 324, giant files 34); `pnpm check:code-health` and `pnpm code-health:baseline`; H4
-  proven on codex-round.mjs's growth 2,208 to 2,323 and on fix-3's duplicated body. Its commit message is "Ratchet":
-  the round re-committed the same tree ten times under F263. Its Sol diff review
-  (D:/fitway-temp/code-review/ratchet-1/) gave nine blocking findings, all in ratchet-fix. CI passed on `7c28d15a` on
-  its rerun (the first failed on Windows `0xC0000142` process starts). `e115f646` merges F263's fix into
-  `tooling-ratchet` with the code map regenerated and the baseline lowered for codex-round.mjs (2,324 to 2,317 lines,
-  the tightening rule); `check:code-health` passed and CI passed on it (measured).
-- **F263 is fixed and on main** (measured): `a4593baf` strips terminal escape codes before reading Git's commit
-  header, and `9609525b` moves the reader into commit-header.mjs without a suppression (diff review
-  D:/fitway-temp/code-review/launcher-ansi-1/); the local fast ladder passed on `9609525b` (1,866 tests, no
-  mutation) and CI too; `agent-tooling-r01` fast-forwarded to it, the coordinator line merged it at `7da16cd9`, and
-  `pnpm main:advance` moved main from `fcc8365b` to `7da16cd9`.
+- **The CLI contract round** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract.md`, C1-C5 and
+  L0-L4, both brief reviews dispositioned): DeepSeek V4.1 Flash `max`, run
+  D:/fitway-temp/codex-round-58a64b69-6ef3-461d-9ac7-4460520447ce, worktree
+  D:/Projects/fitway-worktrees/tooling-cli-contract (branch `tooling-cli-contract` from `57dad1c0`, its own install),
+  log D:/fitway-temp/tooling-cli-contract/launch-2.log. Held-out rows CC1-CC11 in
+  D:/fitway-grader/agent-tooling/cli-contract-heldout.md. The coordinator re-measured every command's `--help` and
+  unknown-option answers at `57dad1c0`: the same forms as at `b3946bc3` (baseline-57dad1c0.txt beside baseline.txt).
+- **CI on the coordinator merge `b56aa416`** (agent-tooling-r01 into the coordinator line: `check:tooling-map`,
+  `check:code-health` and `check:repository` passed locally) and on `57dad1c0`; when the merge's CI passes,
+  `pnpm main:advance b56aa416`.
+- **The ratchet is integrated** (measured): `agent-tooling-r01` fast-forwarded from `9609525b` to `57dad1c0`, the
+  last of the ratchet series: the ratchet, ratchet-fix, ratchet-fix-2 and three fixers (`b3946bc3`, `6ca46c2e`,
+  `57dad1c0`). The grade follow-up `57dad1c0` was checked by the coordinator, not re-graded: a corrupt committed
+  baseline now stops both commands and leaves the working file byte-identical (reproduced in a fresh repository),
+  `survey.mjs` is 1228 lines with its baseline entry falling to match (the Git reader moved to `git-reader.mjs`), and
+  the excepted-copy case fails at its assertion on the old code by construction (an optional chain). Its ladder passed
+  (`833.20s`, no mutation). Records: `codex-rounds.md` §"agent-tooling-r01: ratchet-fix-2", `rounds.tsv`, F267-F271.
 
 ## Next steps
 
-1. **Read ratchet-fix-2's grade**, reproduce at least one row (decision 67), record it (`codex-rounds.md`,
-   `rounds.tsv`).
-2. **Merge** `tooling-ratchet` into `agent-tooling-r01`, then the coordinator line (`check:tooling-map`,
-   `check:repository`), then main through `pnpm main:advance` after CI.
-3. **Launch the CLI contract** from that integration commit (it waits for ratchet-fix-2, which changes files it
-   touches): move `tooling-cli-contract` to it, set the brief's HEAD
-   line, rewrite both dispositions' `Brief SHA-256`, and run `pnpm codex:round
-   docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract.md max` (output to a log); then its diff review,
-   fixer and grade (CC1-CC11).
-4. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
-   F265 a candidate), **map upkeep** (F252) and **the lighter pickup**. F264 (verify-fitway's caret in forced colours)
-   joins the next verify-fitway round. `scripts/check-concept-css.mjs` sits at the giant-file line: the next change
-   that grows it splits it.
+1. **main:** after CI passes on `b56aa416`, `pnpm main:advance b56aa416` (main is at `7da16cd9`).
+2. **The CLI contract:** read its report against its events, then its Sol diff review
+   (`bash D:/fitway-temp/code-review/make-folder.sh cli-contract D:/Projects/fitway-worktrees/tooling-cli-contract
+   57dad1c0 <result> <brief>`), a fixer for the blocking findings, a Sol grade with CC1-CC11 (a corrupt-object or
+   similar probe uses a `git clone --no-hardlinks` copy, F271), then the merge chain.
+3. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
+   F265 a candidate; F270, a committed baseline rise CI cannot see, may join it), **map upkeep** (F252) and **the
+   lighter pickup**. F264 (verify-fitway's caret in forced colours) joins the next verify-fitway round; F269 (test
+   suites counted as long functions) waits for a ratchet round.
 
 ## Waiting on the user
 
