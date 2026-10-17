@@ -1773,3 +1773,34 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Vendor benchmarks, 0910 to 1017** (vendor-reported; no independent 1017 numbers yet): Terminal-Bench 4.0 31.2 to
   42.3, ProgramBench 20.3 to 29.1, HLE without tools 36.8 to 42.6, Automation-Bench 54.8 to 60.5, DeepSWE 74.2 to
   77.0, NL2Repo 65.4 to 68.2, Agents' Last Exam 31.8 to 35.4; none comparable went down.
+
+## vf-runner on DeepSeek V4.1 Flash 1017: a replay of the DeepSeek arm (2026-10-17, the user's comparison)
+
+- **Set-up:** `briefs/codex-vf-runner-1017.md`, the DeepSeek arm's brief from `c699d3fb` with only its worktree,
+  branch and temp folder changed (ports 3188-3189 as before), result `cccd567e` on `owner-r04-vf-runner-1017`,
+  DeepSeek V4.1 Flash 1017, level `max`, launched from a records worktree (`replay-1017-records`) by a forked
+  coordinator session. The brief review's five readings were left open, as on 0910. Graded by GPT-6.1 Sol `xhigh` with
+  `briefs/codex-vf-runner-grade-1017.md`, the 0910 grading brief with only its worktree, HEAD and checkout paths
+  changed (its review's five readings left open). The 0910 release can no longer be called (upgraded in place), so
+  this is the 0910 record against one 1017 run: a hint, not a measurement.
+- **Run (measured from the run folder):** about 60 minutes to the first report, then one automatic resume of about 25
+  minutes; 56.4M input tokens (55.4M cached) and 119k output across both turns, against 0910's 80.8M and 144k; no
+  intervention. The resume came from the launcher's commit claim check (added after 10-15): the commit `0661029a`
+  existed but no successful `git commit` was in the events, so DeepSeek amended it to `cccd567e` (same tree) and ran
+  the fast ladder twice more (one transient simulator test failure, passing alone, then a full pass in 614 s). Its
+  report claimed every row PASS.
+- **Sol's grade** (run `codex-round-26002836-...`): G1, G2, G4, G5, G6, G7 and L1 PASS; G3 FAIL (disabling the final
+  post-capture static proof leaves all 79 CLI tests passing, a coverage miss; the runner keeps the guard). G4: 828
+  items, 738 EQUAL and 90 NOT-REACHABLE on both CLIs, 0 mismatches.
+- **The coordinator's plants** (`D:/fitway-temp/replay-1017-plants/results.json`, rebuilt from the 0910 record's
+  failure modes since the original seven were not kept; six invalid-option lines and one passthrough control, each
+  before "## Compare" and after "Evidence and advanced tools", on the base, 0910 and 1017): before "## Compare" the
+  base catches 6/6, 0910 4/6 (the "measure tool arguments" line and `pnpm verify:owner drive --no-such-flag` pass: the
+  guard narrowed), 1017 6/6; after the Evidence heading the base 0/6 (it did not scan there), 0910 4/6, 1017 5/6 (the
+  `pnpm verify:owner` line passes: every `pnpm` line is treated as an external command, though that script runs the
+  CLI). So G7 holds on 1017 and G6 does not, by the method that decided 0910's G6; Sol's G6 plant was a prose line.
+- **Rows, the same method as 0910:** G1 P, G2 P, G3 F, G4 P, G5 P, G6 F, G7 P = 5/7 (0910: 4/7); brief rows V1, V2,
+  L1 and L2 hold, V3 does not = 4/5 (0910: 3/5). Overclaims: one (V3), as on 0910. Brief-caused as on 0910: G3 and
+  the guide's unnamed allowlist.
+- **Reading:** on this one brief, 1017 kept the existing guard 0910 narrowed and closed one of its two exemptions,
+  with fewer tokens and no intervention; it still overclaims V3. One run, and the brief-caused rows did not move.
