@@ -1655,3 +1655,36 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Brief rows** 7/14 as graded (3 brief-caused); **held-out** HR 10/12 (HR7 and HR8 fail with G7 and G4).
   Overclaims: 1 (F267). The grade's clone needed `core.longpaths` (F268).
 - **Disposition:** not merged; ratchet-fix-2 takes the four defects.
+
+## agent-tooling-r01: ratchet-fix-2: `../../agent-tooling/briefs/codex-ratchet-fix-2.md`, results `204ed1dc`, `42fd405a` and `4ed45355` on `tooling-ratchet` (from `b3946bc3`), DeepSeek V4.1 Flash, level `max`; review fix `6ca46c2e`
+
+- **The round** (run `codex-round-546aa7a9-...`, two automatic resumes): N1-N4 reported PASS; three commits where the
+  brief asked one (reported as failing its one-commit rule): the first put `scripts/check-concept-css.mjs` over the
+  giant-file line, the second (`42fd405a`) deleted six explanatory comments to fit, the third regenerated the map; its
+  ladder passed after the last (`789.82s`). Duplication's conversion, from `b3946bc3`'s own sources: 731 to 1136
+  copies. Both brief reviews: eight readings closed, two left open (a baseline rise committed with its debt needs a
+  parent CI does not check out, F270; box-shadow and border rings are this concept's designed states).
+- **Diff review** (`D:/fitway-temp/code-review/ratchet-fix-2-1/`): three blocking findings (a second reading of the
+  duplicate spans, the N1 cases' repeated setup, a fallback shape no caller needs), plus the coordinator's: the deleted
+  comments. `owner-direction-fixer` applied all four with frozen edits in `6ca46c2e`: copies carry their span
+  (`endLine`), the N1 cases share helpers, and the CSS parsing layer moved verbatim into a module of its own, the six
+  comments restored (`check-concept-css.mjs` 795 to 630 lines; the coordinator checked the eight moved functions byte
+  for byte). An exception now exempts a duplicate copy only from a line the copy spans. The fixer stopped once, rightly,
+  on an expected value its edit changed; the coordinator allowed it (one place gaining `endLine`) but did not record it
+  in the dispositions until the grade found it (P7).
+- **The grade** (`../../agent-tooling/briefs/codex-ratchet-fix-2-grade.md`, P1-P8 over N1-N4, the review edits and
+  HR13-HR18; both brief reviews, nine readings closed), GPT-6.1 Sol `xhigh`, run `codex-round-d3480bdf-...`: P3, P4, P8
+  PASS; P1, P2, P5, P6, P7 FAIL; L1 PASS. The coordinator's reading:
+  - **Real defects (three, small):** P1, a corrupt committed-baseline object reads as "no committed baseline", so the
+    writer exits 0 and overwrites; P2, the survey's Git-reader edit grew the giant `survey.mjs` from 1232 to 1233 lines
+    and the conversion absorbed it (reproduced by the coordinator with `wc -l` at both commits); P5, the new
+    excepted-copy case throws a `TypeError` on the old code before its assertion.
+  - **The coordinator's gaps (two):** P6 found the K1 longhand case's count fall from 2 to 1, which N4's one-ring rule
+    causes, but the grading brief allowed only N2's and N3's changes; P7 found the fixer's one changed test file
+    missing from the dispositions (allowed in a message, recorded late).
+  - Everything else holds: every duplicate addition, including blank-line, indentation and trailing-whitespace copies,
+    fails the check alone; the conversion holds no added debt apart from P2's line; line counts match `wc -l` and the
+    gardener's report equals the ratchet on 102 files; the four concept commits behave as N4 requires.
+- **Brief rows** 3/8 as graded (2 the coordinator's); **held-out** HR13-HR18 6/6, HR7 and HR8 now pass. Overclaims: 0
+  (the report named its one-commit failure).
+- **Disposition:** a second fixer applies P1, P2 and P5 with frozen edits; then the merge chain.
