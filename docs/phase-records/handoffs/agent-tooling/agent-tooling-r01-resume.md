@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `d95e2ee2`, 2026-10-17 14:40 +03:00
+- **As of:** `codex/owner-redesign-r04` at `9260e954`, 2026-10-17 16:30 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-10), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -59,15 +59,15 @@
   `57dad1c0`'s owner parser): through the resolver and the owner options step, `doctor --quiet true --transports`,
   `measure --feature --states --languages --sizes --inputs --motions --transports` and `drive --timeline
   --timeline-times --tools --quiet` give the values the old parser gave.
-- **The re-grade is running:** brief
-  `docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-regrade.md` (`4774dace`, then `d95e2ee2`; Q1, Q4, Q5,
-  Q6, Q9 and Q10 at `47f18b0e`, Q4 and Q5 widened by the diff review's fixes); both brief reviews in
-  D:/fitway-temp/brief-review/codex-cli-contract-regrade-1 (DeepSeek) and `-1-sol` (Sol `xhigh`), dispositions there
-  (seven readings closed, three left open with reasons); launched at 14:35 as run
-  D:/fitway-temp/codex-round-56efe90d-e5b2-4caa-94dd-e1f468486afa (Sol `xhigh`), log
-  D:/fitway-temp/tooling-cli-contract-regrade/launch-2.log. Held-out rows CCR1-CCR6 in
-  D:/fitway-grader/agent-tooling/cli-contract-heldout.md; grading worktree D:/fitway-temp/tooling-cli-contract-regrade/wt
-  on branch `regrade-cli-contract`, installed, at `47f18b0e`.
+- **The re-grade is done and recorded** (run D:/fitway-temp/codex-round-56efe90d-e5b2-4caa-94dd-e1f468486afa, brief
+  `docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-regrade.md`; `codex-rounds.md`
+  §"agent-tooling-r01: the CLI contract and cli-contract-fix", F273): Q1 and L1 PASS; five real defects (handoff:new's
+  start-up exception and launch's missing-value usage, Q4; repair-recipes without `--out` refused, Q6, reproduced by
+  the coordinator from both sources; one condensed declaration, Q9; 13 compatibility cases throwing on old code, Q10)
+  and four readings the grading brief's wording. CI passed on `47f18b0e` (run 39027454092).
+- **The third builder is running** (`owner-direction-builder`, in the coordinator session; brief
+  D:/fitway-temp/tooling-cli-contract-regrade/builder-3-brief.md, scratch D:/fitway-temp/tooling-cli-contract/builder-3/)
+  on `tooling-cli-contract` from `47f18b0e`, one commit, then its local ladder.
 - **The grade is done and recorded** (run D:/fitway-temp/codex-round-2751f7b6-26f9-41ec-8f47-6f7fd2501184;
   `codex-rounds.md` §"agent-tooling-r01: the CLI contract and cli-contract-fix", `rounds.tsv`): 6/12 as graded, six
   real defects (Q6 reproduced by the coordinator through the resolver: `--feature` and `--quiet` refused), Q8 the
@@ -82,10 +82,12 @@
 
 ## Next steps
 
-1. **The CLI contract:** wait for CI run 39027454092 and the re-grade's report; reproduce one row; record the grade
-   in `codex-rounds.md` and `rounds.tsv`; a FAIL that is a real defect goes to a builder on `tooling-cli-contract`
-   with a Sol diff review; when it holds, merge `tooling-cli-contract` into `agent-tooling-r01`, the coordinator line
-   and main through `pnpm main:advance`.
+1. **The CLI contract:** read the third builder's report (if it never arrives, check its commit against
+   builder-3-brief.md yourself); push `tooling-cli-contract` and wait for CI; a Sol diff review
+   (`docs/agent-context/briefs/CODE_REVIEW.md`) with dispositions; reproduce each fixed row yourself (repair-recipes
+   without `--out` through the resolver, the handoff:new and launch lines, the restored declaration, the 13 cases on
+   `97f61712`) instead of a third grade; then merge `tooling-cli-contract` into `agent-tooling-r01`, the coordinator
+   line and main through `pnpm main:advance`.
 2. **Then, by DECISIONS item 10** (the user, 2026-10-17): a ratchet round whose giant-file measure counts code lines
    only (not blank or comment lines; F272), then a round that splits the giant files into modules
    (`scripts/agent-environment/codex-round.mjs`, `.agents/skills/gardener/survey.mjs`,
