@@ -11,11 +11,11 @@ Counts: 51 files, 655 callables, 523 without a covering test.
 ## `.agents/skills/gardener/code-health-duplication.mjs`
 
 - `countDuplicationCopies` [function] L3-L12; tests: none
-- `sourceLines` [function] L14-L26; tests: none
-- `seedSequences` [function] L28-L46; tests: none
-- `shortestPeriod` [function] L48-L58; tests: none
-- `findOccurrences` [function] L60-L75; tests: none
-- `scanDuplication` [function] L77-L121; tests: none
+- `sourceLines` [function] L14-L23; tests: none
+- `seedSequences` [function] L25-L43; tests: none
+- `shortestPeriod` [function] L45-L55; tests: none
+- `findOccurrences` [function] L57-L72; tests: none
+- `scanDuplication` [function] L74-L118; tests: none
 
 ## `.agents/skills/gardener/code-health-source.mjs`
 
@@ -394,7 +394,7 @@ Counts: 51 files, 655 callables, 523 without a covering test.
 
 ## `scripts/agent-environment/check-code-health.mjs`
 
-- `main` [function] L9-L41; tests: none
+- `main` [function] L9-L43; tests: none
 
 ## `scripts/agent-environment/code-health-baseline.mjs`
 
@@ -406,20 +406,20 @@ Counts: 51 files, 655 callables, 523 without a covering test.
 - `readCodeHealthFiles` [function] L68-L73; tests: none
 - `parseExceptions` [function] L75-L99; tests: none
 - `exceptionStatus` [function] L101-L136; tests: none
-- `duplicationCopyLines` [function] L138-L167; tests: none
-- `excepted` [function] L169-L177; tests: none
-- `addCount` [function] L179-L186; tests: none
-- `snapshotCodeHealth` [function] L188-L237; tests: `.agents/skills/gardener/code-health-repair.test.ts`
-- `measureValue` [function] L239-L241; tests: none
-- `baselineFromSnapshot` [function] L243-L257; tests: none
-- `parseCodeHealthBaseline` [function] L259-L264; tests: none
-- `readCodeHealthBaseline` [function] L266-L275; tests: none
-- `readCommittedCodeHealthBaseline` [function] L277-L289; tests: none
-- `compareCodeHealth` [function] L291-L314; tests: none
-- `writeCodeHealthBaseline` [function] L316-L339; tests: none
-- `checkCodeHealth` [function] L341-L362; tests: none
-- `formatCodeHealthChange` [function] L364-L367; tests: none
-- `runCodeHealthBaseline` [function] L369-L374; tests: none
+- `duplicationCopyLines` [function] L138-L164; tests: none
+- `excepted` [function] L166-L174; tests: none
+- `addCount` [function] L176-L183; tests: none
+- `snapshotCodeHealth` [function] L185-L234; tests: `.agents/skills/gardener/code-health-repair.test.ts`
+- `measureValue` [function] L236-L238; tests: none
+- `baselineFromSnapshot` [function] L240-L254; tests: none
+- `parseCodeHealthBaseline` [function] L256-L261; tests: none
+- `readCodeHealthBaseline` [function] L263-L272; tests: none
+- `readCommittedCodeHealthBaseline` [function] L274-L286; tests: none
+- `compareCodeHealth` [function] L288-L311; tests: none
+- `writeCodeHealthBaseline` [function] L313-L336; tests: none
+- `checkCodeHealth` [function] L338-L359; tests: none
+- `formatCodeHealthChange` [function] L361-L364; tests: none
+- `runCodeHealthBaseline` [function] L366-L371; tests: none
 
 ## `scripts/agent-environment/codex-round.mjs`
 
@@ -722,28 +722,28 @@ Counts: 51 files, 655 callables, 523 without a covering test.
 - `selectors` [function] L62-L76; tests: none
 - `normalize` [function] L77-L82; tests: none
 - `parseCss` [function] L83-L156; tests: none
-- `positiveFocus` [function] L158-L174; tests: none
-- `focusBase` [function] L175-L193; tests: none
-- `splitOutside` [function] L195-L218; tests: none
-- `functionEnd` [function] L219-L226; tests: none
-- `hoverOnly` [function] L227-L241; tests: none
-- `programmaticSubject` [function] L242-L262; tests: none
-- `ancestorFocusBases` [function] L263-L305; tests: none
-- `focusPaintBase` [function] L306-L318; tests: none
-- `removesOutline` [function] L319-L329; tests: none
-- `visible` [function] L330-L340; tests: none
-- `hasRing` [function] L341-L427; tests: none
-- `focusClass` [function] L428-L430; tests: none
-- `hasEaseIn` [function] L431-L439; tests: none
-- `createFocusRingAnalyzer` [function] L441-L487; tests: none
-- `collectFocusRingFindings` [function] L488-L538; tests: none
-- `movedFocusSelectors` [function] L539-L545; tests: none
-- `focusRingIsReplaced` [function] L546-L592; tests: none
-- `collectOutlineFindings` [function] L593-L647; tests: none
-- `collectRuleFindings` [function] L649-L684; tests: none
-- `lintSources` [function] L686-L737; tests: `scripts/check-concept-css.test.ts`
-- `inspectFolder` [function] L738-L763; tests: `scripts/check-concept-css.test.ts`
-- `main` [function] L764-L785; tests: none
+- `positiveFocus` [function] L158-L173; tests: none
+- `focusBase` [function] L174-L191; tests: none
+- `splitOutside` [function] L192-L215; tests: none
+- `functionEnd` [function] L216-L223; tests: none
+- `hoverOnly` [function] L224-L237; tests: none
+- `programmaticSubject` [function] L238-L256; tests: none
+- `ancestorFocusBases` [function] L257-L299; tests: none
+- `focusPaintBase` [function] L300-L312; tests: none
+- `removesOutline` [function] L313-L323; tests: none
+- `visible` [function] L324-L334; tests: none
+- `hasRing` [function] L335-L421; tests: none
+- `focusClass` [function] L422-L424; tests: none
+- `hasEaseIn` [function] L425-L433; tests: none
+- `createFocusRingAnalyzer` [function] L435-L481; tests: none
+- `collectFocusRingFindings` [function] L482-L535; tests: none
+- `movedFocusSelectors` [function] L536-L542; tests: none
+- `focusRingIsReplaced` [function] L543-L589; tests: none
+- `collectOutlineFindings` [function] L590-L644; tests: none
+- `collectRuleFindings` [function] L645-L680; tests: none
+- `lintSources` [function] L682-L733; tests: `scripts/check-concept-css.test.ts`
+- `inspectFolder` [function] L734-L759; tests: `scripts/check-concept-css.test.ts`
+- `main` [function] L760-L781; tests: none
 - Command run by: `scripts/check-concept-css.test.ts`
 
 ## `scripts/check-design-context.mjs`

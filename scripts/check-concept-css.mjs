@@ -156,7 +156,6 @@ function parseCss(source, file) {
 }
 const focusPseudo = /:(?:focus-visible|focus-within|focus)(?![\w-])/g;
 function positiveFocus(selector) {
-	// Remove negated selector lists before looking for the focus state.
 	let text = maskStrings(selector);
 	let start = text.indexOf(":not(");
 	while (start >= 0) {
@@ -173,7 +172,6 @@ function positiveFocus(selector) {
 	return [...text.matchAll(focusPseudo)];
 }
 function focusBase(selector) {
-	// A focus on an ancestor/child is a moved ring, not the same element.
 	const bare = maskStrings(selector);
 	const matches = positiveFocus(selector);
 	if (!matches.length) return null;
@@ -191,7 +189,6 @@ function focusBase(selector) {
 	}
 	return normalize(selector.replace(focusPseudo, ""));
 }
-// Split Boolean queries / selector compounds without splitting functions or attributes.
 function splitOutside(text, separator) {
 	const masked = maskStrings(text);
 	const parts = [];
@@ -226,7 +223,6 @@ function functionEnd(text, open) {
 }
 function hoverOnly(query) {
 	const text = query.replace(/^@media\s+/i, "").trim();
-	// A leading media-type `not` negates the whole query, including its hover test.
 	if (/^not\b/i.test(text)) return false;
 	for (const separator of [/^,/, /^\s+or\s+/i]) {
 		const alternatives = splitOutside(text, separator);
@@ -241,8 +237,6 @@ function hoverOnly(query) {
 }
 function programmaticSubject(selector) {
 	const subject = splitOutside(selector, /^(?:\s+|[>+~])/).at(-1) ?? "";
-	// Only an attribute on the subject is proof; ancestors and selector alternatives
-	// do not restrict this element to programmatic focus.
 	const masked = maskStrings(subject);
 	for (let i = 0; i < subject.length; i++) {
 		if (masked[i] === "(") i = functionEnd(masked, i);
@@ -491,46 +485,33 @@ function collectFocusRingFindings(rules, expand, finding) {
 		for (const selector of rule.selectors) {
 			if (!positiveFocus(selector.text).length && !focusClass(selector.text))
 				continue;
-			if (
-				!rule.declarations.some(({ property }) =>
-					property.startsWith("outline"),
-				)
-			)
-				continue;
 			const key = [
 				rule.file,
 				rule.media.join("\n"),
 				normalize(selector.text),
 			].join("\0");
-			const grouped = groups.get(key) ?? [];
-			grouped.push(rule);
-			groups.set(key, grouped);
+			const entries = groups.get(key) ?? [];
+			entries.push(
+				...rule.declarations
+					.filter(({ property }) => property.startsWith("outline"))
+					.map((declaration) => ({ rule, declaration })),
+			);
+			groups.set(key, entries);
 		}
 	const rings = new Map();
-	for (const grouped of groups.values()) {
-		const participating = [...new Set(grouped)];
-		const declarations = participating.flatMap((rule) =>
-			rule.declarations.filter(({ property }) =>
-				property.startsWith("outline"),
-			),
-		);
-		if (!declarations.length || !hasRing({ declarations }, expand)) continue;
-		const key = participating
-			.map(
-				(rule) =>
-					`${rule.file}\0${rule.declarations[0]?.offset ?? rule.line ?? 1}`,
-			)
+	for (const entries of groups.values()) {
+		const declarations = entries.map(({ declaration }) => declaration);
+		if (!hasRing({ declarations }, expand)) continue;
+		const key = [...new Set(entries.map(({ rule }) => rule))]
+			.map((rule) => `${rule.file}\0${rule.declarations[0]?.offset ?? 1}`)
 			.sort()
 			.join("\0");
 		if (rings.has(key)) continue;
-		const declaration =
-			declarations.find(({ property }) => property !== "outline-offset") ??
-			declarations[0];
-		const rule =
-			participating.find((candidate) =>
-				candidate.declarations.includes(declaration),
-			) ?? participating[0];
-		rings.set(key, { rule, declaration });
+		const ring =
+			entries.find(
+				({ declaration }) => declaration.property !== "outline-offset",
+			) ?? entries[0];
+		rings.set(key, ring);
 	}
 	const styleRings = [...rings.values()].filter(
 		(entry) => entry.rule.file.replaceAll("\\", "/") === "style.css",
@@ -662,7 +643,6 @@ function collectOutlineFindings(
 		}
 	}
 }
-
 function collectRuleFindings(rules, expand, finding) {
 	for (const rule of rules) {
 		if (!rule.media.some(hoverOnly))
