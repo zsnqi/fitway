@@ -48,7 +48,9 @@
   the format real runs record (a PowerShell `-Command` wrapper, terminal escape sequences in outputs, `item.started`
   and `item.completed` events). Copy real records from `D:/fitway-temp/codex-round-*` folders where a check needs one.
   Start no real Codex round; never run `codex:round` or `main:advance` with arguments they accept on a real brief.
-  Run single test files, not the whole ladder; the coordinator's CI run on the result decides the ladder.
+  G1's two `resume` cases, one of G2's kept refusals, G3's message without a block, G6's F265 sequence and G7 run
+  through `codex-round.mjs` itself with the fake Codex, judged by its exit code and the run folder's files. Run single
+  test files, not the whole ladder; the coordinator's CI run on the result decides the ladder.
 
 ## Goal
 
