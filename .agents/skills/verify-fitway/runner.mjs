@@ -106,6 +106,65 @@ const matches = (rule, query, language) =>
 	(!rule.language || rule.language === language) &&
 	Object.entries(rule.when || {}).every(([key, value]) => query[key] === value);
 
+const stateWhenKey = (when = {}) =>
+	JSON.stringify(
+		Object.entries(when).sort(([left], [right]) => left.localeCompare(right)),
+	);
+
+function arrivalExpressions(rule) {
+	const expression = rule.proof?.expression;
+	if (typeof expression !== "string" || !expression.trim())
+		throw new Error(
+			`Arrival rule ${JSON.stringify(rule.shows ?? null)} must prove the arrival with an expression.`,
+		);
+	return [expression];
+}
+
+function validateArrivalRules(afterRules, beforeRules) {
+	for (const rule of afterRules) {
+		if (rule.ends === undefined) continue;
+		if (!Array.isArray(rule.ends) || !rule.ends.length)
+			throw new Error(
+				`Arrival rule ${JSON.stringify(rule.shows ?? null)} ends must be a non-empty array.`,
+			);
+		for (const declaration of rule.ends) {
+			if (
+				!declaration ||
+				typeof declaration !== "object" ||
+				Array.isArray(declaration) ||
+				Object.keys(declaration).length !== 1 ||
+				!Object.hasOwn(declaration, "when") ||
+				!declaration.when ||
+				typeof declaration.when !== "object" ||
+				Array.isArray(declaration.when) ||
+				!Object.keys(declaration.when).length
+			)
+				throw new Error(
+					`Arrival rule ${JSON.stringify(rule.shows ?? null)} ends entries must name one exact non-wildcard when.`,
+				);
+			const key = stateWhenKey(declaration.when);
+			const matches = beforeRules.filter(
+				(candidate) => stateWhenKey(candidate.when || {}) === key,
+			);
+			if (matches.length !== 1)
+				throw new Error(
+					`Arrival rule ${JSON.stringify(rule.shows ?? null)} ends ${JSON.stringify(declaration.when)} must match exactly one before rule for this language; found ${matches.length}.`,
+				);
+		}
+	}
+}
+
+async function assertArrivalPending(page, rules, moment) {
+	for (const rule of rules)
+		for (const expression of arrivalExpressions(rule)) {
+			const arrived = Boolean(await page.evaluate(`Boolean(${expression})`));
+			if (arrived)
+				throw new Error(
+					`Arrival predicate became true before ${moment}: ${rule.shows ?? expression}`,
+				);
+		}
+}
+
 const pageReadingProofKeys = new Set([
 	"attribute",
 	"checked",
@@ -644,14 +703,39 @@ export async function drive(options) {
 											const afterRules = rules.filter(
 												(rule) => rule.afterActions,
 											);
+											validateArrivalRules(afterRules, beforeRules);
+											const arrivalRules = afterRules.filter(
+												(rule) => rule.ends !== undefined,
+											);
+											const endedBefore = new Set(
+												arrivalRules.flatMap((rule) =>
+													rule.ends.map((declaration) =>
+														stateWhenKey(declaration.when),
+													),
+												),
+											);
+											const retainedBeforeRules = beforeRules.filter(
+												(rule) =>
+													!endedBefore.has(stateWhenKey(rule.when || {})),
+											);
 											entry.stateProof = [];
 											for (const rule of beforeRules) {
 												await prove(current.page, rule.proof, language);
 												entry.stateProof.push(rule.shows);
 											}
+											await assertArrivalPending(
+												current.page,
+												arrivalRules,
+												"the loading capture",
+											);
 											await save("before");
 											for (const rule of beforeRules)
 												await prove(current.page, rule.proof, language);
+											await assertArrivalPending(
+												current.page,
+												arrivalRules,
+												"the loading capture",
+											);
 											const unavailable =
 												(feature.widths === "phone" && cssWidth > 720) ||
 												(feature.widths === "wide" && cssWidth <= 720) ||
@@ -887,11 +971,11 @@ export async function drive(options) {
 													);
 												await ui.twoFrames(current.page);
 												if (!feature.changesState)
-													for (const rule of beforeRules)
+													for (const rule of retainedBeforeRules)
 														await prove(current.page, rule.proof, language);
 												await save("after");
 												if (!feature.changesState)
-													for (const rule of beforeRules)
+													for (const rule of retainedBeforeRules)
 														await prove(current.page, rule.proof, language);
 												// A flow may change a state (retry/navigation). Its end proof owns that result;
 												// the requested state was proved before the first user action.

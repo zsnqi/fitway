@@ -1931,6 +1931,11 @@ async function runnerFixture(name, features, options = {}) {
 import {appendFile,writeFile} from "node:fs/promises";
 import {createContext,runInContext} from "node:vm";
 const motion=${JSON.stringify(options.scriptMotion || null)}, phase=${JSON.stringify(options.scriptPhase || 0)};
+const dynamicState=${JSON.stringify(Boolean(options.dynamicState))};
+const transitionOnCapture=${JSON.stringify(Boolean(options.transitionOnCapture))};
+const capturePhases=${JSON.stringify(options.capturePhases || [])};
+const transitionAfterProofs=${JSON.stringify(options.transitionAfterProofs ?? null)};
+let fixturePhase="loading", phaseReads=0, captureCount=0;
 const capture=async(via,options,picture)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from(picture)};
 export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
@@ -1944,11 +1949,24 @@ export async function newContext(browser, options) {
  const tick=()=>{now+=16;for(const id of [...frames.keys()]){const callback=frames.get(id);if(callback){frames.delete(id);callback.call(sandbox,now)}}};
 const page={setDefaultTimeout(){},addInitScript:async(fn)=>{await appendFile(${JSON.stringify(resolve(root, "init.jsonl"))},"observer\\n");if(motion)run(fn)},
  startMotion:()=>{if(motion){runInContext('function move(){position++;if('+JSON.stringify(motion==='forever')+'||position<20)requestAnimationFrame(move)};requestAnimationFrame(move)',sandbox);for(let i=0;i<phase;i++)tick()}},
- tick,picture:()=>motion?JSON.stringify({x:sandbox.position}):"fixture",
- waitForFunction:async(fn,arg,options)=>{if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
- screenshot:async(options)=>capture("native",options,page.picture()),
+ tick,picture:()=>dynamicState?fixturePhase:motion?JSON.stringify({x:sandbox.position}):"fixture",
+ waitForFunction:async(fn,arg,options)=>{
+  const source=fn.toString();
+  if(dynamicState&&source.includes("__fixturePhase")){
+   if(transitionAfterProofs!==null&&phaseReads===transitionAfterProofs)fixturePhase="ready";
+   phaseReads++;
+   const wantsLoading=source.includes("'loading'")||source.includes('"loading"');
+   if(wantsLoading&&fixturePhase!=="loading")throw new Error("Timeout 5000 ms: loading state changed before capture");
+   if(!wantsLoading&&fixturePhase!=="ready")throw new Error("Timeout 5000 ms: arrival state not observed");
+   return;
+  }
+  if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
+ transitionOnCapture:()=>{const next=capturePhases[captureCount++];if(transitionOnCapture)fixturePhase="ready";if(next)fixturePhase=next},
+  screenshot:async(options)=>{page.transitionOnCapture();return capture("native",options,page.picture())},
 context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
-  evaluate:async(fn)=>fn.toString().includes("coarse")
+  evaluate:async(fn)=>typeof fn==="string"&&fn.includes("__fixturePhase")
+   ? fixturePhase===(fn.includes("'ready'")?"ready":"loading")
+   : fn.toString().includes("coarse")
    ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
 : fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
@@ -1964,7 +1982,7 @@ evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body
 }
 export const withParams=(url)=>url;
 export const preparePage=async(page)=>{page.startMotion();return {ready:true}};
-export const screenshot=async(page,options)=>capture("adapter",options,page.picture());
+export const screenshot=async(page,options)=>{page.transitionOnCapture();return capture("adapter",options,page.picture())};
 export const twoFrames=async(page)=>{page.tick();page.tick()};
 export const injectProbe=async()=>{};
 export const renderSheet=async()=>{};
@@ -2815,6 +2833,98 @@ test("V1: afterActions state proofs run after the feature and must read the page
 	);
 });
 
+test("V1: a timed arrival captures its before state and observes the declared transition", async () => {
+	const features = [{ id: "page", actions: [], proof: { ready: true } }];
+	const switches = [
+		{ name: "state", values: ["loading"], samples: [] },
+		{ name: "arrive", values: ["500"], samples: [] },
+	];
+	const mapStates = [
+		{
+			when: { state: "loading" },
+			shows: "Loading",
+			proof: { expression: "window.__fixturePhase === 'loading'" },
+		},
+		{
+			when: { arrive: "500" },
+			afterActions: true,
+			ends: [{ when: { state: "loading" } }],
+			shows: "Arrived",
+			proof: { expression: "window.__fixturePhase === 'ready'" },
+		},
+	];
+	const options = {
+		dynamicState: true,
+		transitionAfterProofs: 2,
+		mapStates,
+		switches,
+		states: "state=loading&arrive=500",
+	};
+	const passing = await runnerFixture("time-changing-pass", features, options);
+	assert.equal(
+		passing.result.status,
+		0,
+		passing.result.stderr + passing.result.stdout,
+	);
+	const passingManifest = JSON.parse(
+		await readFile(resolve(passing.out, "manifest.json"), "utf8"),
+	);
+	assert.equal(passingManifest.items[0].files.length, 2);
+	assert.equal(
+		await readFile(
+			resolve(passing.out, passingManifest.items[0].files[0]),
+			"utf8",
+		),
+		"loading",
+	);
+	assert.equal(
+		await readFile(
+			resolve(passing.out, passingManifest.items[0].files[1]),
+			"utf8",
+		),
+		"ready",
+	);
+	const [passingSummary] = JSON.parse(
+		await readFile(resolve(passing.out, "summary.json"), "utf8"),
+	);
+	assert.deepEqual(passingSummary.proof, ["Loading", "Arrived"]);
+
+	const forced = await runnerFixture("time-changing-during-capture", features, {
+		...options,
+		transitionOnCapture: true,
+	});
+	assert.equal(forced.result.status, 1);
+	const [forcedSummary] = JSON.parse(
+		await readFile(resolve(forced.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		forcedSummary.problems.join(" "),
+		/loading state changed before capture/,
+	);
+
+	const staticState = await runnerFixture("static-post-capture", features, {
+		dynamicState: true,
+		capturePhases: ["ready"],
+		mapStates: [
+			{
+				when: { state: "loading" },
+				shows: "Static loading",
+				proof: { expression: "window.__fixturePhase === 'loading'" },
+			},
+		],
+		switches: [switches[0]],
+		states: "state=loading",
+	});
+	assert.equal(staticState.result.status, 1);
+	const [staticSummary] = JSON.parse(
+		await readFile(resolve(staticState.out, "summary.json"), "utf8"),
+	);
+	assert.match(
+		staticSummary.problems.join(" "),
+		/loading state changed before capture/,
+	);
+});
+
 test("V2: an address-only feature is captured under keyboard", async () => {
 	const { result } = await runnerFixture(
 		"address-only-keyboard",
@@ -3064,6 +3174,128 @@ test("V7: navigation settles before the action returns and a wrong destination f
 	assert.equal(focusReads, 2);
 });
 
+function usageCliOptions(helpText) {
+	const toolOnly = new Set(["--forced-colors"]);
+	const options = new Set();
+	for (const match of helpText.matchAll(/--[a-z][a-z0-9-]*/g))
+		if (!toolOnly.has(match[0])) options.add(match[0]);
+	options.add("--help");
+	return options;
+}
+
+function guideCodeFragments(skillText) {
+	const fragments = [];
+	for (const match of skillText.matchAll(/`([^`\n]+)`/g))
+		fragments.push({ text: match[1], start: match.index + 1 });
+	for (const fence of skillText.matchAll(/```[^\n]*\n([\s\S]*?)```/g))
+		fragments.push({
+			text: fence[1],
+			start: fence.index + fence[0].indexOf(fence[1]),
+		});
+	return fragments;
+}
+
+function splitShellCommands(text) {
+	const commands = [];
+	let start = 0;
+	let quote = null;
+	const push = (end) => {
+		const source = text.slice(start, end);
+		if (source.trim()) commands.push({ text: source, start });
+	};
+	for (let index = 0; index < text.length; index++) {
+		const character = text[index];
+		if (quote) {
+			if (character === quote && text[index - 1] !== "\\") quote = null;
+			continue;
+		}
+		if (character === "'" || character === '"') {
+			quote = character;
+			continue;
+		}
+		if (
+			character === "\n" ||
+			character === "\r" ||
+			character === ";" ||
+			character === "&" ||
+			character === "|"
+		) {
+			push(index);
+			start = index + 1;
+		}
+	}
+	push(text.length);
+	return commands;
+}
+
+function delegatedOptionRanges(skillText) {
+	const ranges = [];
+	const externalCommands = new Set(["pnpm"]);
+	const option = /^--[a-z][a-z0-9-]*/;
+	for (const fragment of guideCodeFragments(skillText))
+		for (const command of splitShellCommands(fragment.text)) {
+			const tokens = [...command.text.matchAll(/\S+/g)].map((match) => ({
+				text: match[0],
+				start: fragment.start + command.start + match.index,
+			}));
+			let commandIndex = -1;
+			for (let index = 0; index < tokens.length; index++) {
+				if (
+					tokens[index].text === "node" &&
+					tokens[index + 1]?.text === "$cli"
+				) {
+					commandIndex = index + 2;
+					break;
+				}
+				if (tokens[index].text === "$cli") {
+					commandIndex = index + 1;
+					break;
+				}
+				if (tokens[index].text === "measure") {
+					commandIndex = index;
+					break;
+				}
+			}
+			if (
+				externalCommands.has(tokens[0]?.text) ||
+				(commandIndex >= 0 && tokens[commandIndex]?.text === "measure")
+			) {
+				let separator = -1;
+				if (!externalCommands.has(tokens[0]?.text))
+					separator = tokens.findIndex(
+						(token, index) => index > commandIndex && token.text === "--",
+					);
+				for (
+					let index = externalCommands.has(tokens[0]?.text) ? 1 : separator + 1;
+					index < tokens.length;
+					index++
+				) {
+					if (separator < 0 && !externalCommands.has(tokens[0]?.text)) break;
+					if (!option.test(tokens[index].text)) continue;
+					ranges.push({
+						start: tokens[index].start,
+						end: tokens[index].start + tokens[index].text.length,
+					});
+				}
+			}
+		}
+	return ranges;
+}
+
+function assertGuideOptions(skillText, helpText) {
+	const cliOptions = usageCliOptions(helpText);
+	for (const option of cliOptions)
+		assert.ok(skillText.includes(option), `${option} is missing from SKILL.md`);
+	const exempt = delegatedOptionRanges(skillText);
+	for (const match of skillText.matchAll(/--[a-z][a-z0-9-]*/g))
+		if (
+			!exempt.some(
+				(range) => match.index >= range.start && match.index < range.end,
+			)
+		)
+			assert.ok(cliOptions.has(match[0]), `${match[0]} is not a CLI option`);
+}
+
 test("V5: SKILL names CLI options, ports and rendered artifacts without drift", async () => {
 	const skill = await readFile(
 		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
@@ -3075,6 +3307,28 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 	const beforeAdvanced = skill.split("## Evidence and advanced tools")[0];
 	for (const option of beforeAdvanced.match(/--[a-z][a-z0-9-]*/g) || [])
 		assert.ok(cliOptions.has(option), `${option} is not a CLI option`);
+	const plant = (text) => `${skill}\n${text}\n`;
+	assertGuideOptions(skill, help);
+	for (const text of [
+		"`--invented-prose`",
+		"```\n--invented-fence\n```",
+		"`node $cli measure --tool focus --out x -- --max-stops 40;node $cli drive --invented-after-semicolon`",
+		"`node $cli compare --concept x -- --invented-after-separator`",
+		"`measure --invented-before -- --tool-value`",
+		"`python --invented-unlisted-external`",
+		"After pnpm installs, the measure tool arguments take --invented-prose-argument.",
+	])
+		assert.throws(
+			() => assertGuideOptions(plant(text), help),
+			/--invented-/,
+			text,
+		);
+	for (const text of [
+		"`node $cli measure --tool focus --out x -- --max-stops 40 --forced-colors active`",
+		"`node $cli measure --tool focus --out x -- --pattern 'a|b;c' --max-stops 40`",
+		"```powershell\npnpm --dir <checkout> install --frozen-lockfile\n```",
+	])
+		assert.doesNotThrow(() => assertGuideOptions(plant(text), help), text);
 	for (const pair of skill.match(/\b31\d\d-31\d\d\b/g) || [])
 		if (pair !== "3178-3185")
 			assert.ok(

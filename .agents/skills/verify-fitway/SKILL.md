@@ -38,7 +38,11 @@ opener controls, including every `aria-haspopup` value except `false`. Specimens
 A page recipe can declare `dependencies: [{switch, value, requires}]` for a switch relationship the source scan
 cannot see; these merge with source-found dependencies, and a conflicting declaration is refused. A state rule can
 set `afterActions: true` when its effect appears only after the feature's actions; that proof must read the page
-with a selector or expression and is checked after those actions.
+with a selector or expression and is checked after those actions. An arrival can declare
+`ends: [{when: {key: "value"}}]`; each exact non-wildcard `when` must name one before-action rule for the item's
+language. Its direct page expression is proved false before and after the loading capture, then true after the
+transition. Only the named before rule stops applying after the capture; every other state proof keeps its
+post-capture check.
 A source edit alone is not drift. Uncovered openings/openers and vanished recipe selectors/markers fail
 with their names and source file/line; repair the recipe or source on the concept branch, then run:
 
@@ -269,7 +273,8 @@ Personally inspect exact named rendered frames
 at the required sizes and languages; logs/hashes do not establish visual quality or human acceptance.
 
 `measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>` delegates to
-ui-forensics. `measure --colors forced` passes `--forced-colors active`; tool arguments can supply it directly.
+ui-forensics. `measure --colors forced` passes the tool's forced-colour argument; direct tool arguments can supply it
+too, for example `measure --tool focus --out <folder> -- --forced-colors active`.
 Forced requests in tool arguments and frame/probe matrices also require 1.2.0 before delegation. Read that tool's help for advanced measurements. Extend this path when an adapter is missing instead
 of writing another server, launcher or capture loop. The concept is synthetic; preserve privacy and data semantics.
 
