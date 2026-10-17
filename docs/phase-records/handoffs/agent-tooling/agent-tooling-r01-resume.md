@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `d0d140f8`, 2026-10-17 10:23 +03:00
+- **As of:** `codex/owner-redesign-r04` at `ba8a7680`, 2026-10-17 13:40 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-10), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,53 +37,50 @@
 
 ## Running now
 
-- **The CLI contract's grade findings** (`owner-direction-builder`, a precise specification): exact product names in
-  the script classifier, every start-up failure in C4's form, the contract test probing an unknown option after a
-  positional and scanning for private argument loops, the options `measure` and `doctor` read at `57dad1c0` declared
-  again with an intentional-refusals record for every other base form now refused, the launcher's help explanations
-  carried into the registry, and two cases guarded to fail at their assertions; worktree
-  D:/Projects/fitway-worktrees/tooling-cli-contract on `97f61712`, scratch D:/fitway-temp/tooling-cli-contract/builder-2/.
+- **The CLI contract's grade builder** (`owner-direction-builder`, in the coordinator session): `1085b6fc` holds the
+  six grade findings (exact product names in the classifier, C4 lines across the start-up failures, probes after
+  positionals and a source scan of entry modules, measure/doctor/drive options declared again with 26 intentional
+  refusals, the launcher's 21 help explanation lines in a help-notes module, the two old-code cases at their
+  assertions). Its local ladder failed twice on per-test timeouts only (round16b R6 at 60 s; round15 G2, round16 R1
+  and new-handoff V2 at 20 s), each file passing alone; it is pushed and its CI was in progress at 13:30. Accepted by
+  the coordinator: `context:show` with no `--milestone` is now refused (it silently picked the first open milestone),
+  recorded among the intentional refusals.
+- **Its Sol diff review** (D:/fitway-temp/code-review/cli-contract-grade-builder-1, dispositions there) gave three
+  blocking findings: a `tool-contract:` comment exempting code from the source scan, the registry and verify-fitway's
+  cli.mjs both validating the same ranges, and a second required-option path for compare's `--baseline` (R20 V2 may
+  gain `--baseline` for compare only). The coordinator added five: check:agent-context's unknown milestone in the C4
+  form, `--timeline-times` and compare's `--session` in the C4 form, measure's spec-serve refusal before it creates a
+  folder, a subcommand's own usage after a missing value, and the gardener SKILL.md's order. The builder committed
+  them as `47f18b0e` (not pushed); its ladder was running at 13:31 and its report had not arrived.
+- **The coordinator's reproduction** (D:/fitway-temp/tooling-cli-contract-regrade/probe-ccr4.mjs, against
+  `57dad1c0`'s owner parser): through the resolver and the owner options step, `doctor --quiet true --transports`,
+  `measure --feature --states --languages --sizes --inputs --motions --transports` and `drive --timeline
+  --timeline-times --tools --quiet` give the values the old parser gave.
+- **The re-grade is prepared:** brief draft D:/fitway-temp/tooling-cli-contract-regrade/codex-cli-contract-regrade.md
+  (Q1, Q4, Q5, Q6, Q9 and Q10 of the grading brief, widened by the held-out rows; `@@HEAD@@` to fill, lines to
+  rewrap); held-out rows CCR1-CCR6 in D:/fitway-grader/agent-tooling/cli-contract-heldout.md, written before the
+  builder's result; grading worktree D:/fitway-temp/tooling-cli-contract-regrade/wt on branch `regrade-cli-contract`,
+  installed, at `1085b6fc`. The builder's brief is kept beside the draft (builder-2-brief.md).
 - **The grade is done and recorded** (run D:/fitway-temp/codex-round-2751f7b6-26f9-41ec-8f47-6f7fd2501184;
   `codex-rounds.md` §"agent-tooling-r01: the CLI contract and cli-contract-fix", `rounds.tsv`): 6/12 as graded, six
   real defects (Q6 reproduced by the coordinator through the resolver: `--feature` and `--quiet` refused), Q8 the
   grading brief's wording. CI passed on `97f61712` (measured).
-- **The review edits are in `97f61712`** (`owner-direction-builder`): a fixed compatibility table of 148 rows
-  (tool-compatibility.json, on `tooling-cli-contract`) checked through each command's own exported options step,
-  re-checked by the coordinator against the `57dad1c0` parsers (`ORACLE: 148 rows, 0 mismatches`); it caught a
-  regression of `dda8e020` (the survey's default temp root), which the builder restored; one `drift-tree` mapping,
-  one fixture copier, no unreachable check; its ladder passed after the commit (`930.76s`, no mutation). One old form
-  is now refused rather than read: `main:advance HEAD -- --dry-run`.
-- **cli-contract-fix is done** (measured): run D:/fitway-temp/codex-round-e40f5755-2e65-42e0-820e-2822e7541bb4, result
-  `dda8e020` ("fix agent CLI contract parsing", 27 files); one registry-driven resolver returning
-  `{command, options, positionals, passthrough, fixedArgs}`, 14 private parsers removed, verify-fitway importing the
-  contract unconditionally, the five giant files below their `57dad1c0` counts with no comment removed (checked by the
-  coordinator), `check:concept-css` one prefix. Its local ladder failed once on F261's K1 timeout and the file passed
-  alone; CI decides. The grading brief for the contract with its fix is drafted (Q1-Q12, in the coordinator's
-  scratchpad) and gets its HEAD after the builder.
-- **The CLI contract round is done** (measured): run D:/fitway-temp/codex-round-58a64b69-6ef3-461d-9ac7-4460520447ce,
-  result `cb1cfe65` ("unify agent command contract", 29 files, +2247/-489; first report refused because its ladder
-  preceded its commit, the second accepted; ladder after the commit `980.60s`). It reports C1-C5 and L0-L4 PASS and
-  22 registered commands. Its Sol diff review (D:/fitway-temp/code-review/cli-contract-1) gave seven blocking
-  findings (the shared parser returns no values so every command keeps its own; verify-fitway's silent import
-  fallback; fixed arguments declared twice; a cast; dead help code; a duplicated failure formatter; exports without
-  callers), and the coordinator added two: the round deleted 26 blank lines from five giant files to stay under the
-  ratchet's line (F272), and `check:concept-css` prints `FAIL: ERROR:`. CI on `cb1cfe65` was running at 07:20.
-- **main is at `b56aa416`** (measured): CI passed on the coordinator merge (agent-tooling-r01 into the coordinator
-  line; `check:tooling-map`, `check:code-health` and `check:repository` passed locally), and `pnpm main:advance
-  b56aa416` moved main from `7da16cd9`.
-- **The ratchet is integrated** (measured): `agent-tooling-r01` fast-forwarded from `9609525b` to `57dad1c0`, the
-  last of the ratchet series: the ratchet, ratchet-fix, ratchet-fix-2 and three fixers (`b3946bc3`, `6ca46c2e`,
-  `57dad1c0`). The grade follow-up `57dad1c0` was checked by the coordinator, not re-graded: a corrupt committed
-  baseline now stops both commands and leaves the working file byte-identical (reproduced in a fresh repository),
-  `survey.mjs` is 1228 lines with its baseline entry falling to match (the Git reader moved to `git-reader.mjs`), and
-  the excepted-copy case fails at its assertion on the old code by construction (an optional chain). Its ladder passed
-  (`833.20s`, no mutation). Records: `codex-rounds.md` §"agent-tooling-r01: ratchet-fix-2", `rounds.tsv`, F267-F271.
+- **Earlier in the series** (records: `codex-rounds.md` §"agent-tooling-r01: the CLI contract and cli-contract-fix",
+  `rounds.tsv`): the contract `cb1cfe65` (run codex-round-58a64b69-...), cli-contract-fix `dda8e020` (run
+  codex-round-e40f5755-...), the review builder `97f61712` (a fixed compatibility table of 148 rows, re-checked by the
+  coordinator against the `57dad1c0` parsers with 0 mismatches); CI passed on all three. One old form is refused on
+  purpose: `main:advance HEAD -- --dry-run`.
+- **main is at `b56aa416`** (measured), with the ratchet series integrated (`57dad1c0` the last of it; records
+  `codex-rounds.md` §"agent-tooling-r01: ratchet-fix-2", F267-F271).
 
 ## Next steps
 
-1. **The CLI contract:** check the builder's commit and ladder, then a short Sol re-grade of Q1, Q4, Q5, Q6, Q9 and
-   Q10 only (the grading brief's rows, with a `--no-hardlinks` scratch copy), reproduce one row, then merge
-   `tooling-cli-contract` into `agent-tooling-r01`, the coordinator line and main.
+1. **The CLI contract:** read the builder's report on `47f18b0e` (if it never arrives, check the commit against the
+   dispositions, the five giant files' `wc -l` and the tree yourself); push `tooling-cli-contract` (cancelling
+   `1085b6fc`'s CI is fine) and wait for CI; fast-forward the grading worktree, fill the re-grade brief's HEAD, rewrap
+   it, commit it as codex-cli-contract-regrade.md in this milestone's briefs folder, pass `brief:check`, then `pnpm codex:round` with
+   `--model gpt-6.1-sol` (DeepSeek's review), the Sol brief review, dispositions and the launch; reproduce one row;
+   then merge `tooling-cli-contract` into `agent-tooling-r01`, the coordinator line and main.
 2. **Then, by DECISIONS item 10** (the user, 2026-10-17): a ratchet round whose giant-file measure counts code lines
    only (not blank or comment lines; F272), then a round that splits the giant files into modules
    (`scripts/agent-environment/codex-round.mjs`, `.agents/skills/gardener/survey.mjs`,
