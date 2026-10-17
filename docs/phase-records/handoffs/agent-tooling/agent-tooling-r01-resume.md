@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `f15a4441`, 2026-10-17 03:14 +03:00
+- **As of:** `codex/owner-redesign-r04` at `0c43eb14`, 2026-10-17 04:32 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,11 +37,21 @@
 
 ## Running now
 
-- **ratchet-fix-2's two brief reviews** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix-2.md`,
-  N1-N4 from the grade's four real defects): DeepSeek in D:/fitway-temp/brief-review/codex-ratchet-fix-2-1 (log
-  D:/fitway-temp/tooling-ratchet/fix-2-launch-1.log) and Sol `xhigh` in `codex-ratchet-fix-2-1-sol`, both started
-  about 03:13. Held-out rows HR13-HR18 appended to D:/fitway-grader/agent-tooling/ratchet-heldout.md. After the
-  dispositions it launches on DeepSeek `max` in `tooling-ratchet` (at `b3946bc3`, clean).
+- **ratchet-fix-2's grade** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix-2-grade.md`, `0c43eb14`:
+  P1-P8 over N1-N4, the review edits and HR13-HR18, both brief reviews closed): GPT-6.1 Sol `xhigh` on ryshyjhad85,
+  run D:/fitway-temp/codex-round-d3480bdf-d645-4fd2-84b2-83f37f303edc, grading checkout
+  D:/fitway-temp/tooling-ratchet-fix-2-grade/wt (branch `grade-ratchet-fix-2` at `6ca46c2e`, its own install), log
+  D:/fitway-temp/tooling-ratchet-fix-2-grade/launch-2.log. CI runs on `6ca46c2e` (pushed).
+- **ratchet-fix-2 is done** (measured): DeepSeek V4.1 Flash `max`, run
+  D:/fitway-temp/codex-round-546aa7a9-1940-4763-ba10-9bf2f123c122, three commits `204ed1dc`, `42fd405a`, `4ed45355`
+  (it reported its one-commit rule as failed: its first commit put `check-concept-css.mjs` over the giant-file line,
+  and `42fd405a` deleted six comments to fit); its ladder passed after the last (`789.82s`). Duplication's conversion
+  731 to 1136 copies, from `b3946bc3`'s own sources. Its Sol diff review (D:/fitway-temp/code-review/ratchet-fix-2-1)
+  gave three blocking findings; with the coordinator's fourth (the deleted comments), `owner-direction-fixer` applied
+  them in `6ca46c2e`: copies carry their span (`endLine`), no fallback shape, the N1 cases share helpers, and the CSS
+  parsing layer moved verbatim to a module of its own (concept-css-parse, on `tooling-ratchet`; checked by the coordinator), the six comments
+  restored; `check-concept-css.mjs` 630 lines. Its ladder passed after the commit (`850.81s`, no mutation). An
+  exception now exempts a duplicate copy only from a line the copy spans.
 - **The ratchet's grade is done and recorded** (run D:/fitway-temp/codex-round-f73f808c-d927-474f-a8bb-facc8041863f;
   `codex-rounds.md` §"agent-tooling-r01: the ratchet, ratchet-fix and the review fixer", `rounds.tsv`, F267-F269):
   7/14 as graded, held-out 10/12; four real defects (a deleted or edited working baseline lets a rise through; a third
@@ -81,8 +91,8 @@
 
 ## Next steps
 
-1. **ratchet-fix-2:** disposition both reviews, launch, then its Sol diff review, fixer, and a grade of N1-N4 with
-   HR13-HR18 (and HR7, HR8 again); the coordinator reproduces at least one row.
+1. **Read ratchet-fix-2's grade**, reproduce at least one row (decision 67), record it (`codex-rounds.md`,
+   `rounds.tsv`).
 2. **Merge** `tooling-ratchet` into `agent-tooling-r01`, then the coordinator line (`check:tooling-map`,
    `check:repository`), then main through `pnpm main:advance` after CI.
 3. **Launch the CLI contract** from that integration commit (it waits for ratchet-fix-2, which changes files it
