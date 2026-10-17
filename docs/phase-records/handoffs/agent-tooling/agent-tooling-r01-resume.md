@@ -44,9 +44,9 @@
   log D:/fitway-temp/tooling-cli-contract/launch-2.log. Held-out rows CC1-CC11 in
   D:/fitway-grader/agent-tooling/cli-contract-heldout.md. The coordinator re-measured every command's `--help` and
   unknown-option answers at `57dad1c0`: the same forms as at `b3946bc3` (baseline-57dad1c0.txt beside baseline.txt).
-- **CI on the coordinator merge `b56aa416`** (agent-tooling-r01 into the coordinator line: `check:tooling-map`,
-  `check:code-health` and `check:repository` passed locally) and on `57dad1c0`; when the merge's CI passes,
-  `pnpm main:advance b56aa416`.
+- **main is at `b56aa416`** (measured): CI passed on the coordinator merge (agent-tooling-r01 into the coordinator
+  line; `check:tooling-map`, `check:code-health` and `check:repository` passed locally), and `pnpm main:advance
+  b56aa416` moved main from `7da16cd9`.
 - **The ratchet is integrated** (measured): `agent-tooling-r01` fast-forwarded from `9609525b` to `57dad1c0`, the
   last of the ratchet series: the ratchet, ratchet-fix, ratchet-fix-2 and three fixers (`b3946bc3`, `6ca46c2e`,
   `57dad1c0`). The grade follow-up `57dad1c0` was checked by the coordinator, not re-graded: a corrupt committed
@@ -57,12 +57,11 @@
 
 ## Next steps
 
-1. **main:** after CI passes on `b56aa416`, `pnpm main:advance b56aa416` (main is at `7da16cd9`).
-2. **The CLI contract:** read its report against its events, then its Sol diff review
+1. **The CLI contract:** read its report against its events, then its Sol diff review
    (`bash D:/fitway-temp/code-review/make-folder.sh cli-contract D:/Projects/fitway-worktrees/tooling-cli-contract
    57dad1c0 <result> <brief>`), a fixer for the blocking findings, a Sol grade with CC1-CC11 (a corrupt-object or
    similar probe uses a `git clone --no-hardlinks` copy, F271), then the merge chain.
-3. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
+2. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
    F265 a candidate; F270, a committed baseline rise CI cannot see, may join it), **map upkeep** (F252) and **the
    lighter pickup**. F264 (verify-fitway's caret in forced colours) joins the next verify-fitway round; F269 (test
    suites counted as long functions) waits for a ratchet round.

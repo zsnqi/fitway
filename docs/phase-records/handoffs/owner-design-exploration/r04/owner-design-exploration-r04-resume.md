@@ -52,11 +52,11 @@
 
 ## Next steps
 
-1. **main is at `7da16cd9`** (F263's launcher fix, measured 01:20); this milestone's later commits go to main with
-   agent-tooling-r01's next integration.
+1. **main is at `b56aa416`** (agent-tooling-r01's ratchet with this milestone's records, measured 05:10 on
+   2026-10-17); later commits go to main with agent-tooling-r01's next integration.
 2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Settings waits for
-   agent-tooling-r01's ratchet and CLI contract (decision 73). Left for later, with their reasons: the dialogs' parts
+   agent-tooling-r01's CLI contract (the ratchet is on main; decision 73). Left for later, with their reasons: the dialogs' parts
    splitting under a planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **F266:** Components' heat tooltip covers the selected cell after a click (measured; Reports places its tip below
    the cell); it goes with the next concept round that touches Components.
