@@ -61,38 +61,47 @@ The command contract has one parser and one declaration per command, and its gia
 
 ## Causes and required outcomes
 
-- **E1. One parser (review 1).** Outcome: `beginToolCommand` (or the shared contract's one entry) returns what it
-  parsed: each declared option's value or presence, the positionals, and anything after a passthrough `--`; every
-  registered command takes its arguments from that result and keeps only its own checks of their meaning (a value's
-  range, a folder's contents); no registered command still holds its own loop or table of option names (`parseArgs`
-  in `scripts/agent-environment/advance-main.mjs`, `scripts/agent-environment/codex-round.mjs`,
-  `scripts/show-agent-context.mjs` and `scripts/check-agent-context.mjs`, `parseHandoffArgs`, `parseBriefArgs`,
-  verify-fitway's `parse`, the survey's option loop, the worktree removal's positional reading, `start-load`'s own
-  parsing, and the like: name each one you removed). Every command given its existing valid arguments still does
-  what it does at this HEAD (the contract brief's L1). Tested.
+- **E1. One parser (review 1).** Outcome: one generic resolver in the shared contract, driven by the registry and with
+  no switch or branch on a command's name, turns every registered command's arguments into one result: each declared
+  option's value or presence (`--name value` and `--name=value` alike where the option takes a value), the
+  positionals, and anything after a passthrough `--`; every registered command takes its arguments from that result
+  and keeps only its own checks of their meaning (a value's range, a folder's contents); no registered command still
+  holds its own loop or table of option names (`parseArgs` in `scripts/agent-environment/advance-main.mjs`,
+  `scripts/agent-environment/codex-round.mjs`, `scripts/show-agent-context.mjs` and `scripts/check-agent-context.mjs`,
+  `parseHandoffArgs`, `parseBriefArgs`, verify-fitway's `parse`, the survey's option loop, the worktree removal's
+  positional reading, `start-load`'s own parsing, and the like: name each one you removed). A subcommand
+  (`verify:owner`'s) refuses, as C3 does, an option absent from its own declaration and the declared globals, even
+  when another subcommand declares it. Before you remove an old parser, write a compatibility table from it: one row
+  per existing argument form of each command (each option, in each form it accepts) with the values the command's
+  logic receives at this HEAD; a test checks every row against the result through the step that turns the resolver's
+  result into the command's options, called without running the command. Every command given its existing valid
+  arguments still does what it does at this HEAD (the contract brief's L1). Tested, the compatibility rows included;
+  the contract test adds generated cases for `--name=value`, a cross-subcommand option, an option-shaped free-text
+  value and `--help` after a passthrough `--`.
 - **E2. One declaration (reviews 2, 3, 4, 6).** Outcome: `.agents/skills/verify-fitway/cli.mjs` imports the shared
   contract unconditionally, with no fallback validator and no help text of its own, and any test that copies the CLI
   elsewhere copies what it imports; a command's fixed arguments are declared once in the registry and its invocation
   string derived from them; `scripts/agent-environment/tool-contract.test.ts` types the value metadata options and
   positionals share, with no cast; `fail` writes `toolFailure`'s line. Tested where behaviour shows it.
 - **E3. Nothing left over (reviews 5, 7).** Outcome: `start-load`'s unreachable `USAGE` and `values.help` branch are
-  gone; `invocationArguments` and `failTool` are used by a caller or removed; `git grep` shows no other export of the
-  new modules without a caller outside its own file.
+  gone; `invocationArguments` and `failTool` are removed or called from a registered command's own path (a test or an
+  unused helper is not a caller); `git grep` shows no other export of the new modules without such a caller. The
+  registry test classifies `package.json` scripts by the contract brief's product list, not by the shape of their
+  command, so a script written `node --flag scripts/...` or through a wrapper is still an agent command.
 - **E4. The giant files keep their shape (coordinator 8).** Outcome: the blank lines between functions that the round
   removed from `scripts/agent-environment/codex-round.mjs`, `scripts/agent-environment/check-brief.mjs`,
   `scripts/verify-repository.mjs`, `scripts/check-agent-context.mjs` and `.agents/skills/gardener/survey.mjs` are back
   (`git diff 57dad1c0 HEAD -- <file>` shows no removed blank line or comment outside code you replaced); each of those
   files ends at or below its `wc -l` at `57dad1c0` (2316, 1141, 960, 1167 and 1228), the room coming from E1's removed
   parsers or from code moved into modules of its own. Report each file's count.
-- **E5. One prefix per line (coordinator 9).** Outcome: `check:concept-css`'s start-up failures print
-  `check:concept-css: FAIL: <what> (<how to fix>)` with no `ERROR:` inside it, exit 2 kept. Tested.
-
-## Limits the result keeps
-
+- **E5. One prefix per line (coordinator 9).** Outcome: every start-up failure of `check:concept-css`, an unexpected
+  exception included, writes exactly one stderr line, `check:concept-css: FAIL: <what> (<how to fix>)`, with no
+  `ERROR:` and no stack trace anywhere in stderr, exit 2 kept. Tested.
 - **L0. New cases prove the repair.** Each case you add names the outcome it tests (E1-E5), fails at this HEAD at an
   assertion on that outcome's behaviour (not at a missing helper, import or fixture), and passes unchanged on your
   result; the cases you commit are the ones you showed failing, and the fast ladder runs them. Report each failing
-  output. E3's and E4's checks may be a `git grep` or `wc -l` you report instead of a case.
+  output. E3's and E4's checks may be a `git grep` or `wc -l` you report instead of a case; E1's compatibility
+  rows hold at this HEAD by construction and are exempt from failing there.
 - **L1. The earlier outcomes.** C1-C5 and every limit of `codex-cli-contract.md` still hold (report each again with
   the command that shows it, C5's three planted breaks included); every test at this HEAD keeps its assertions and
   still runs; the launcher's review, resume and claim checks behave as at this HEAD.
