@@ -53,9 +53,12 @@ Coverage applies only to that declaration's opener, so a live control with the s
 
 Discovery is not yet exhaustive: CSS-only openings and some dynamic or delegated opener relationships remain
 unresolved. A drift pass proves coverage of the discovered openings; it does not prove a complete feature census.
-`drift-tree` prints `DRIFT SKIP` when no recipe file is found and exits successfully, so the fast ladder can
-continue without claiming coverage. Supply the concept's recipe file beside it or use `drift --recipes`.
-`drift-tree` scans this checkout by default; `--root <repository>` points it at another checkout.
+`drift-tree` checks every `verification-recipes.json` in this checkout. A checkout with none (the coordinator line and
+main, while the concept's pages are built on another branch) checks the concept at the branch declared in
+`concept-source.json` (`{"concept", "ref"}`), read from Git into a scratch folder, and says which branch and commit it
+checked. It never passes having checked nothing: no recipe file and no declaration, a declared ref missing from the
+clone (fetch it), or a declared concept without recipes each fail. When the pages move to another branch, change
+`ref` there. `drift-tree` scans this checkout by default; `--root <repository>` points it at another checkout.
 
 ```powershell
 node $cli map --concept $concept --recipes $recipes --out "$run/map"

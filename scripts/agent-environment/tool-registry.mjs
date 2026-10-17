@@ -210,12 +210,13 @@ const ownerCommands = [
 	{
 		name: "drift-tree",
 		usage: "pnpm verify:owner drift-tree [--root <repository>]",
-		purpose: "Check committed verification maps across a tree.",
+		purpose:
+			"Check committed verification maps across a tree, or the declared concept branch's.",
 		options: [ownerOptions.root],
 		requiredOptions: [],
 		exitCodes: exits(
 			[0, "Tree checked."],
-			[1, "Drift found or command failed."],
+			[1, "Drift found, nothing to check, or command failed."],
 		),
 	},
 	{
@@ -685,7 +686,10 @@ export const TOOL_REGISTRY = Object.freeze([
 		usage: "pnpm check:verification-map [--root <repository>]",
 		options: [ownerOptions.root],
 		fixedArgs: ["drift-tree"],
-		exitCodes: exits([0, "Maps checked."], [1, "Drift found."]),
+		exitCodes: exits(
+			[0, "Maps checked."],
+			[1, "Drift found or nothing to check."],
+		),
 	}),
 	packageEntry(ownerEntry),
 	packageEntry({

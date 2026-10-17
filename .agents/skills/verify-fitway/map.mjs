@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { resolve } from "node:path";
 import {
 	lineAt as at,
 	discoverElements,
@@ -705,26 +705,4 @@ export function drift(map, concept, recipePath = map.recipePath) {
 	// Source edits, relocations and CSS changes are expected. Coverage is the contract,
 	// not a source hash cache; each consumer uses the freshly discovered map.
 	return problems;
-}
-
-export function checkCommittedMaps(root = repository) {
-	let count = 0;
-	const visit = (dir) => {
-		for (const entry of readdirSync(dir, { withFileTypes: true })) {
-			if (
-				[".git", "node_modules", ".next", "dist", ".local"].includes(entry.name)
-			)
-				continue;
-			const path = resolve(dir, entry.name);
-			if (entry.isDirectory() && !entry.isSymbolicLink()) visit(path);
-			else if (entry.name === "verification-recipes.json") {
-				const map = generateMap(dirname(path), path);
-				const problems = coverageProblems(map, dirname(path));
-				if (problems.length) throw new Error(problems.join("\n"));
-				count++;
-			}
-		}
-	};
-	visit(root);
-	return count;
 }

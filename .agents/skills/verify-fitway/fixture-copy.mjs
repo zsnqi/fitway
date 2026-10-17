@@ -15,6 +15,7 @@ const HELP_MODULES = [
 	"drive.mjs",
 	"probes.mjs",
 	"map.mjs",
+	"drift-tree.mjs",
 	"measure-arguments.mjs",
 	"discover.mjs",
 	"state-rules.mjs",

@@ -43,8 +43,8 @@ import {
 	verificationPort,
 } from "./core.mjs";
 import { requireDependency } from "./discover.mjs";
+import { checkVerificationMaps } from "./drift-tree.mjs";
 import {
-	checkCommittedMaps,
 	coverageProblems,
 	drift,
 	generateMap,
@@ -522,14 +522,8 @@ export async function main(input, services = {}) {
 		console.log(`READY ${server.origin} Cache-Control: no-store`);
 		return;
 	}
-	if (command === "drift-tree") {
-		const count = checkCommittedMaps(options.root || repository);
-		return console.log(
-			count
-				? `DRIFT PASS: ${count} recipe files found and checked.`
-				: "DRIFT SKIP: no recipe file was found; nothing checked. Provide verification-recipes.json beside the concept, or use drift --concept <folder> --recipes <absolute recipe file>.",
-		);
-	}
+	if (command === "drift-tree")
+		return console.log(checkVerificationMaps(options.root || repository));
 	if (command === "cleanup") return cleanup(options.session);
 	if (command === "measure") {
 		assertOutsideGit(options.out);
