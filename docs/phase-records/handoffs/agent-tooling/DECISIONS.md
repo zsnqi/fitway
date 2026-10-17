@@ -63,3 +63,10 @@ through these pointers, not copied here.
    --offline` (about 10 s) instead of linking another worktree's `node_modules`, so a removal has nothing to follow.
    Any junction left from before is unlinked with `cmd /c rmdir` first; `.agents/skills/gardener/remove-worktree.mjs`
    is the removal path for worktrees that still carry one.
+9. **The report fields get a round of their own, after the CLI contract** (coordinator, 2026-10-17). Readings left
+   open across the wave wait on three report-template changes: a claimed-commit field, a machine-readable brief role
+   and structured report rows. They change the template every brief shares and the launcher's claim check in
+   `scripts/agent-environment/codex-round.mjs`, a giant file (2,316 lines, measured) the ratchet now forbids from
+   growing; joined to the CLI contract's 21 commands they would make one round carry two contracts. The order of
+   item 7 becomes: the CLI contract (F251), then report-fields (with F265 as a candidate), then map upkeep, then the
+   lighter pickup.
