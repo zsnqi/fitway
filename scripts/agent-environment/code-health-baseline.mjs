@@ -243,18 +243,36 @@ export function readCodeHealthBaseline(root = process.cwd()) {
 	}
 }
 
+function readGit(root, args) {
+	return spawnSync("git", ["--no-optional-locks", ...args], {
+		cwd: root,
+		encoding: "utf8",
+		windowsHide: true,
+		maxBuffer: 32 * 1024 * 1024,
+	});
+}
+
+// Only a repository without a commit, or a HEAD without the baseline, has no
+// committed baseline; any other Git failure stops the command.
 export function readCommittedCodeHealthBaseline(root = process.cwd()) {
-	const result = spawnSync(
-		"git",
-		["--no-optional-locks", "show", `HEAD:${BASELINE_RELATIVE_PATH}`],
-		{
-			cwd: root,
-			encoding: "utf8",
-			windowsHide: true,
-			maxBuffer: 32 * 1024 * 1024,
-		},
-	);
-	return result.status === 0 ? parseCodeHealthBaseline(result.stdout) : null;
+	if (readGit(root, ["rev-parse", "--verify", "--quiet", "HEAD"]).status !== 0)
+		return null;
+	const listed = readGit(root, [
+		"ls-tree",
+		"--name-only",
+		"HEAD",
+		"--",
+		BASELINE_RELATIVE_PATH,
+	]);
+	if (listed.status !== 0)
+		throw new Error(`git ls-tree HEAD failed: ${listed.stderr.trim()}`);
+	if (!listed.stdout.trim()) return null;
+	const shown = readGit(root, ["show", `HEAD:${BASELINE_RELATIVE_PATH}`]);
+	if (shown.status !== 0)
+		throw new Error(
+			`cannot read the committed ${BASELINE_RELATIVE_PATH}: ${shown.stderr.trim()}`,
+		);
+	return parseCodeHealthBaseline(shown.stdout);
 }
 
 export function compareCodeHealth(baseline, snapshot) {

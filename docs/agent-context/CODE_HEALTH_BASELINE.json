@@ -56,7 +56,7 @@
 		".agents/skills/gardener/survey.mjs": {
 			"duplication": 1,
 			"longFunctions": 5,
-			"giantFiles": 1233
+			"giantFiles": 1228
 		},
 		".agents/skills/verify-fitway/baseline-cache.mjs": {
 			"duplication": 1

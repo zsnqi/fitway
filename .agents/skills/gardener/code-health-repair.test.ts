@@ -183,7 +183,7 @@ describe("round 24 repair controls", () => {
 			[{ file: "marked.ts", text: `${marked}\n${block.join("\n")}\n` }],
 			{ today: "2026-10-17" },
 		);
-		expect(result.counts["marked.ts"].duplication).toBe(1);
+		expect(result.counts["marked.ts"]?.duplication).toBe(1);
 	});
 
 	it("does not count the test fixtures' source text as code defects", () => {
