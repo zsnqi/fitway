@@ -67,17 +67,21 @@ and records each check, on cases its own run did not make.
   `delivers: commit` brief whose Scope says "make a single commit at the end", with a report holding matched rows and
   no commit line, is refused for the missing commit line. `resume` of a run whose `input.md` starts with a launch note
   line and then the `delivers: commit` line reads the field; `resume` of a run whose `input.md` has no field is refused
-  before the fake Codex starts, naming the field. Intent: whether a round commits is read from the field alone.
+  before the fake Codex starts, naming the field, and so is one whose brief's first line has no field while a later
+  line or a fenced example in it carries `delivers: commit`. Intent: whether a round commits is read from the field alone.
 - **G2. The commit field (R2).** Outcome: with the block's commit line naming C1 and the prose citing C2 as "HEAD after
   commit", the report is refused naming C1 and the HEAD; with the commit line naming C2's 7-hex prefix and the prose
   citing B's full SHA first, it is accepted; two commit lines both naming C2 are refused; a commit line naming a
   fabricated 12-hex SHA is refused as no commit object; a `STOPPED: blocked` message with no block is accepted.
-  Refusals kept from the base: HEAD reset to B (the launch HEAD), a dirty tree, no successful `git commit` in the
-  events, HEAD moved to a commit that does not descend from B, an empty commit, and the only successful fast ladder
-  before the commit with a PASS row for an outcome that names the ladder. Intent: the commit claim is the field, and
+  Refusals kept from the base, each made from an accepted control by breaking only that condition, and each refusal
+  line naming it: HEAD reset to B (the launch HEAD), a dirty tree, no successful `git commit` in the events, HEAD
+  moved to a commit that does not descend from B, an empty commit, and the only successful fast ladder before the
+  commit with a PASS row for an outcome that names the ladder. Say whether a `STOPPED:` line inside a fenced output
+  excerpt of an otherwise incomplete report is taken as a stop (the base read any such line). Intent: the commit claim is the field, and
   nothing else loosened.
 - **G3. Row form (R3).** Outcome: a row with `"status": "pass"`, a row with an ID the brief does not define, a missing
-  ID and a repeated ID are each refused with a line naming it; a FAIL row whose command never ran is not refused; a
+  ID, a repeated ID, two `report` blocks, an unclosed block, a line that is not JSON, a row with an extra key, and
+  a PASS row with an empty output are each refused with a line naming it; a FAIL row whose command never ran is not refused; a
   message with prose PASS lines for every ID and no block is not taken as a report, and the automatic resume says that
   a report needs the `report` block or a `STOPPED:` line. Intent: statuses come from the rows alone.
 - **G4. Command matching (R3).** Outcome: rows naming the unquoted inner commands of records 150 (double-quoted) and
@@ -111,7 +115,11 @@ and records each check, on cases its own run did not make.
   the new behaviour (list each changed body with which); `git diff cf5d7858 HEAD -- <file>` for
   `scripts/agent-environment/codex-round.mjs`, `codex-round.test.ts`, `check-brief.mjs` and `check-brief.test.ts`
   removes no blank line, comment or explanation outside code replaced or moved, and each ends at or below 2279, 4484,
-  1132 and 1423 lines. Intent: the cases see the defects and nothing was loosened to pass.
+  1132 and 1423 lines. Every fixture file at `cf5d7858` is byte for byte the same, and each change to a shared test
+  helper or test configuration is listed with what it changes. The Report section of
+  `docs/agent-context/briefs/codex.md` gives the `report` block's form, asks for a PASS row's command exactly as run
+  and one line of its output, run after the last edit inside the worktree, and still asks for the files changed and
+  anything not done. Intent: the cases see the defects and nothing was loosened to pass.
 - **G9. Report against events.** Outcome: the round's run folder
   (`D:/fitway-temp/codex-round-ba3f61b1-c452-4f4b-9d90-e6ce4c68be04/`) records the `git commit` whose output names
   `610b54a6` and every command its report cites for R1-R6, L0 and L1 with the output line the report quotes; list any
