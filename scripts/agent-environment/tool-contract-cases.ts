@@ -145,6 +145,11 @@ export const STARTUP_CASES: StartupCase[] = [
 		fix: "run pnpm verify:owner list --concept",
 	},
 	{
+		command: "verify:owner",
+		args: ["launch", "--concept", repository, "--idle-timeout-ms"],
+		fix: "run pnpm verify:owner launch --concept",
+	},
+	{
 		command: "check:agent-context",
 		args: ["--milestone", "nosuch-r99"],
 		fix: "pass --milestone one of:",

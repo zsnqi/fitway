@@ -26,7 +26,7 @@ import {
 	reviewSourcePlan,
 } from "./check-brief.mjs";
 import { commitHeaderSha } from "./commit-header.mjs";
-import { isGitCommitWords } from "./git-commit-words.mjs";
+import { commandStatusIsEvent, isGitCommitWords } from "./git-commit-words.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 import {
@@ -1129,17 +1129,9 @@ function lastCommandPart(command) {
 	return commandParts(command).at(-1) ?? null;
 }
 
-function commandStatusIsEvent(part) {
-	return (
-		part?.separator === null ||
-		part?.separator === "&&" ||
-		part?.separator === ";" ||
-		part?.separator === "\n"
-	);
-}
-
 function isGitCommitCommand(command, shell = "bash") {
-	return isGitCommitWords(shellTokens(command, shell) ?? []);
+	const words = shellTokens(command, shell) ?? [];
+	return isGitCommitWords(words);
 }
 
 function isCommitCommand(command) {

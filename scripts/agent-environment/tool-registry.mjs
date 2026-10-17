@@ -172,10 +172,10 @@ const ownerCommands = [
 	{
 		name: "repair-recipes",
 		usage:
-			"pnpm verify:owner repair-recipes --concept <folder> [--recipes <stale-file>] --out <evidence-folder>",
+			"pnpm verify:owner repair-recipes --concept <folder> [--recipes <stale-file>] [--out <evidence-folder>]",
 		purpose: "Write draft repairs for stale recipe selectors.",
 		options: [ownerOptions.concept, ownerOptions.recipes, ownerOptions.out],
-		requiredOptions: ["--concept", "--out"],
+		requiredOptions: ["--concept"],
 		exitCodes: exits(
 			[0, "Repairs written."],
 			[1, "Command refused or failed."],
@@ -234,7 +234,6 @@ const ownerCommands = [
 			}),
 			value("--idle-timeout-ms", "Idle timeout in milliseconds.", {
 				sample: "60000",
-				missingFix: "at most 30 minutes; run pnpm verify:owner --help",
 				integer: [1, 1800000],
 				valueNote: "at most 30 minutes",
 			}),

@@ -14,6 +14,7 @@ import {
 import {
 	beginToolCommand,
 	resolveToolArguments,
+	runToolStartup,
 	ToolStartupError,
 	toolStartupLine,
 } from "./tool-contract.mjs";
@@ -302,9 +303,11 @@ if (
 	process.argv[1] &&
 	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
+	const options = runToolStartup("handoff:new", () =>
+		parseHandoffArgs(beginToolCommand("handoff:new", process.argv.slice(2))),
+	);
 	try {
-		const parsed = beginToolCommand("handoff:new", process.argv.slice(2));
-		console.log((await createResumePoint(parseHandoffArgs(parsed))).output);
+		console.log((await createResumePoint(options)).output);
 	} catch (error) {
 		console.error(
 			toolStartupLine("handoff:new", error) ??

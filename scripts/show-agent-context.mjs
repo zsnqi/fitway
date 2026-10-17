@@ -7,6 +7,7 @@ import { behindUpstreamWarning } from "./agent-environment/git-context.mjs";
 import { hasResumePointMarker } from "./agent-environment/resume-point.mjs";
 import {
 	beginToolCommand,
+	runToolStartup,
 	ToolStartupError,
 	toolStartupLine,
 } from "./agent-environment/tool-contract.mjs";
@@ -292,9 +293,13 @@ const isMain =
 	process.argv[1] &&
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
+	const milestoneId = runToolStartup("context:show", () =>
+		contextShowMilestone(
+			beginToolCommand("context:show", process.argv.slice(2)),
+		),
+	);
 	try {
-		const parsed = beginToolCommand("context:show", process.argv.slice(2));
-		await main(contextShowMilestone(parsed));
+		await main(milestoneId);
 	} catch (error) {
 		console.error(
 			toolStartupLine("context:show", error) ??

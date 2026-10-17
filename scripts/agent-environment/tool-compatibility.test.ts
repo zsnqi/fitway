@@ -525,15 +525,23 @@ describe("E1 compatibility table from the 57dad1c0 parsers", () => {
 			expect(steps[name], `${name} argument step`).toBeTypeOf("function");
 	});
 
+	// A row expects acceptance: a refusal from the resolver or the step is the value asserted on,
+	// so the row fails at its assertion, naming the row and the refusal, never before it.
 	for (const [name, rows] of Object.entries(table.rows))
 		for (const row of rows)
 			it(rowLabel(name, row), () => {
 				withEnvironment(row.env, () => {
-					const parsed = resolveToolArguments(
-						name,
-						row.args.map(repositoryPath),
-					);
-					expect(steps[name](parsed)).toEqual(expected(row.expect));
+					let received: unknown;
+					try {
+						received = steps[name](
+							resolveToolArguments(name, row.args.map(repositoryPath)),
+						);
+					} catch (error) {
+						received = {
+							refused: error instanceof Error ? error.message : String(error),
+						};
+					}
+					expect(received, rowLabel(name, row)).toEqual(expected(row.expect));
 				});
 			});
 });

@@ -703,7 +703,7 @@
 		"scripts/agent-environment/codex-round.mjs": {
 			"duplication": 6,
 			"longFunctions": 3,
-			"giantFiles": 2287
+			"giantFiles": 2279
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
 			"duplication": 44,

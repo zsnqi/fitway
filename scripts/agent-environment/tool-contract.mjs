@@ -159,21 +159,18 @@ function validateOption(entry, option, token, next, state, command = null) {
 			);
 		return { option };
 	}
+	// A missing value names the usage, after the option's own note (a value like -1 reads as a
+	// missing value, and the note still says what the value may be).
+	const missingFix =
+		option.missingFix ??
+		[option.valueNote, `run ${usage}`].filter(Boolean).join("; ");
 	if (optionValue(token) !== undefined) {
 		if (optionValue(token) === "")
-			reject(
-				entry.name,
-				`${option.name} requires a value`,
-				option.missingFix ?? `run ${usage}`,
-			);
+			reject(entry.name, `${option.name} requires a value`, missingFix);
 		return { value: optionValue(token), option };
 	}
 	if (next === undefined || (!option.freeText && next.startsWith("-")))
-		reject(
-			entry.name,
-			`${option.name} requires a value`,
-			option.missingFix ?? `run ${usage}`,
-		);
+		reject(entry.name, `${option.name} requires a value`, missingFix);
 	state.skip = true;
 	return { value: next, option };
 }
@@ -460,6 +457,21 @@ export function toolStartupLine(name, error) {
 		error.startupWhat,
 		error.startupFix,
 	);
+}
+
+// A start-up step (the resolver and the command's own options step) that throws anything but a
+// refusal: C4's line naming the command's usage, as check:concept-css prints it, then the
+// command's failure exit. A refusal has already printed its line and exited inside start.
+export function runToolStartup(name, start) {
+	try {
+		return start();
+	} catch (error) {
+		const entry = toolEntry(name);
+		process.stderr.write(
+			`${toolFailure(entry.failureName ?? entry.name, error, `run ${entry.usage} after fixing the reported error`)}\n`,
+		);
+		process.exit(entry.failureExitCode ?? 1);
+	}
 }
 
 export function toolFailure(name, error, fix) {

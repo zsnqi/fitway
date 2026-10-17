@@ -20,3 +20,14 @@ export function isGitCommitWords(words) {
 		.slice(index + 1)
 		.some((word) => /^--(?:dry-run|help)$/i.test(word));
 }
+
+// Whether a command part's exit status is the event's: the part stands alone or follows &&, ;
+// or a new line. Moved from codex-round.mjs, whose claim checks read only such a part.
+export function commandStatusIsEvent(part) {
+	return (
+		part?.separator === null ||
+		part?.separator === "&&" ||
+		part?.separator === ";" ||
+		part?.separator === "\n"
+	);
+}

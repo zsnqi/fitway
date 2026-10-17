@@ -17,7 +17,7 @@ import { parse as parseYaml } from "yaml";
 import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import {
 	agentContextFailure,
-	agentContextOptions,
+	agentContextStartup,
 	formatAgentContextResult,
 	formatAgentContextWarnings,
 	unknownMilestone,
@@ -1118,10 +1118,10 @@ const isMain =
 	process.argv[1] &&
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
+	const options = agentContextStartup(() =>
+		beginToolCommand("check:agent-context", process.argv.slice(2)),
+	);
 	try {
-		const options = agentContextOptions(
-			beginToolCommand("check:agent-context", process.argv.slice(2)),
-		);
 		const result = await checkAgentContext(options);
 		console.log(formatAgentContextResult(result, options));
 		if (!result.ok) process.exitCode = 1;

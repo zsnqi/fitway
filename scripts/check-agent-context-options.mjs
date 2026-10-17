@@ -1,4 +1,5 @@
 import {
+	runToolStartup,
 	ToolStartupError,
 	toolStartupLine,
 } from "./agent-environment/tool-contract.mjs";
@@ -12,6 +13,14 @@ export function agentContextOptions(parsed) {
 		checkTracked: !parsed.options.noTracked,
 		verbose: parsed.options.verbose === true,
 	};
+}
+
+// Start-up: the resolver (begin) and the options step above; an exception from either that is
+// not a refusal prints C4's line naming the usage and exits 1.
+export function agentContextStartup(begin) {
+	return runToolStartup("check:agent-context", () =>
+		agentContextOptions(begin()),
+	);
 }
 
 // C4: a --milestone the ledger does not hold is a value the command cannot use.

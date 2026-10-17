@@ -652,6 +652,33 @@
 				}
 			},
 			{
+				"args": ["repair-recipes", "--concept", "<repo>"],
+				"expect": {
+					"command": "repair-recipes",
+					"options": {
+						"concept": "<repo>",
+						"extra": []
+					}
+				}
+			},
+			{
+				"args": [
+					"repair-recipes",
+					"--concept",
+					"<repo>",
+					"--recipes",
+					"package.json"
+				],
+				"expect": {
+					"command": "repair-recipes",
+					"options": {
+						"concept": "<repo>",
+						"recipes": "package.json",
+						"extra": []
+					}
+				}
+			},
+			{
 				"args": [
 					"repair-recipes",
 					"--concept",
