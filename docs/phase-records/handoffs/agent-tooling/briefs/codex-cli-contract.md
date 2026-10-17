@@ -44,9 +44,9 @@
   install.
 - **Some commands act when they run:** `main:advance` pushes, `codex:round` launches a round, `handoff:new`,
   `code-health:baseline` and `map:tooling` write tracked files, `remove-worktree.mjs` removes a worktree, and today
-  `check:repository --help` and `code-health:baseline --help` run as if no option were given (below). At this HEAD, run a command
-  with anything but arguments it already refuses only in a scratch clone in your temp folder with its remote removed
-  (`git remote remove origin`) and no worktrees of its own; never run `main:advance`, `codex:round` or
+  `check:repository --help` and `code-health:baseline --help` run as if no option were given (below). At this HEAD,
+  run a command with anything but arguments it already refuses only in a scratch clone in your temp folder with its
+  remote removed (`git remote remove origin`) and no worktrees of its own; never run `main:advance`, `codex:round` or
   `remove-worktree.mjs` with arguments they accept. Every case you commit runs a command only with arguments that make
   it refuse or print help before any work.
 - **Commit once, plainly.** Make one commit for this round with `git commit -m "<message>"`; never `git reset`,
@@ -65,7 +65,7 @@
 ## Goal
 
 Every command an agent runs answers the same way: it explains itself on `--help`, refuses what it does not know by
-name, and says what failed and how to fix it, and one listing names them all.
+name, and, when it cannot start, says what failed and how to fix it; one listing names them all.
 
 ## Causes and required outcomes
 
@@ -73,13 +73,17 @@ name, and says what failed and how to fix it, and one listing names them all.
   - **Cause (measured by the coordinator at this HEAD).** The commands are known only from `package.json` and the
     skills' prose, so an agent learns each one's usage by trial: 21 agent-facing entry points answer `--help` and an
     unknown option in more than seven different forms (C2, C3).
-  - **Outcome.** One registry file lists each agent-facing command: its `pnpm` name or node entry, a one-line purpose,
-    its usage line and its exit codes. It covers every `package.json` script that runs a file under `scripts/` or
+  - **Outcome.** One registry file holds one entry per agent-facing command: its `pnpm` name with its exact
+    `package.json` invocation string (fixed arguments such as `--check`, `fast` or `drift-tree` included), or its node
+    entry; a one-line purpose; its usage line; every option it accepts, with whether the option takes a value and
+    whether that value is free text; and its exit codes. Each command's `--help` text and its `pnpm tools` row come
+    from that one entry. It covers every `package.json` script that runs a file under `scripts/` or
     `.agents/skills/`, except the product's own (`dev*`, `build`, `check-types`, `db:*`, `edge:*`, `deploy*`, `env:*`,
     `demo:*`, `owner:review`, `test*`, `check`, `format`), plus `.agents/skills/gardener/survey.mjs` and
     `.agents/skills/gardener/remove-worktree.mjs`; the cleanup script the survey writes for the user to run is not an
     agent's command and stays out. `pnpm tools` prints the registry as a table, exit 0. A test fails when such a
-    `package.json` script, or a registered entry, is missing from the other side.
+    `package.json` script, or a registered entry, is missing from the other side, or when their invocation strings
+    differ.
   - **Intent.** An agent finds every tool and how to call it from one command.
 - **C2. `--help` explains and does nothing else.**
   - **Cause (measured).** `check:repository`, `check:design-context` and `code-health:baseline` ignore `--help` and run
@@ -87,9 +91,13 @@ name, and says what failed and how to fix it, and one listing names them all.
     as an option wanting a value; `main:advance` and `check:code-health` refuse it; `start-load` and `verify:owner`
     answer `--help` but refuse `-h`; `verify:fast`, `verify:phase` and `verify:full` refuse it after their mode as
     `FAILED_VALIDATION: Unknown argument: --help`.
-  - **Outcome.** Every registered command, given `--help` or `-h` alone or after its other arguments, prints its
-    usage, its options and its exit codes on stdout and exits 0, without running a check, starting a process, or
-    writing or deleting any file. `verify:owner`'s subcommands answer `<subcommand> --help` the same way.
+  - **Outcome.** Every registered command, given `--help` or `-h` in any option position (alone, before, between or
+    after its other arguments), prints its usage, its options and its exit codes on stdout and exits 0, without
+    validating its other arguments, running a check, starting a process, or writing or deleting any file, inside the
+    repository or outside it. Two places are not option positions and keep today's meaning: anything after a `--` that
+    passes arguments on to another tool (`verify:owner measure ... -- --help` reaches the measurement tool), and the
+    value of an option the registry marks as free text (`codex:round resume <folder> --message --help` sends the text
+    `--help`). `verify:owner`'s subcommands answer `<subcommand> --help` the same way.
   - **Intent.** Asking a tool how to use it is always safe.
 - **C3. Unknown options refused by name.**
   - **Cause (measured).** The refusals read `<command> FAILED: Unknown argument: <option>`,
@@ -99,21 +107,29 @@ name, and says what failed and how to fix it, and one listing names them all.
     run their checks instead and one reads the option as a path.
   - **Outcome.** Every registered command given an option it does not know refuses before any work, printing one line
     `<command>: FAIL: unknown option <the option> (run <command> --help)` on stderr, exit 1; an argument it takes as a
-    path or value is still taken as before.
+    path or value is still taken as before, except that an option-shaped token (one starting with `-`) in a value
+    position is refused as that option's missing value (C4) unless the registry marks the value as free text (today
+    `codex:round <brief> --run --new-reveiw` takes the typo as a folder).
   - **Intent.** A mistyped option never runs a different check or reads as a path.
 - **C4. Start-up failures that say how to fix them.**
   - **Outcome.** A registered command that cannot start (a required argument missing, a value it cannot use, a file or
     folder named on its command line that does not exist) prints one line `<command>: FAIL: <what> (<how to fix>)` on
-    stderr and exits 1, unless a test at this HEAD asserts another code for that failure, which then stays (name
-    each). A check's own findings keep their format; a line another tool or test already reads (`FAILED_VALIDATION:` in
+    stderr and exits 1, where `<how to fix>` names the concrete next step (the missing argument and its form, the path
+    that was not found) rather than only pointing at `--help`, unless a test at this HEAD asserts another code for
+    that failure, which then stays (name each). A check's own findings keep their format; a line another tool or test already reads (`FAILED_VALIDATION:` in
     `scripts/verify.mjs`, the launcher's review and claim lines) is kept after it, unchanged. List in your report every
     failure message you changed, with its before and after.
   - **Intent.** An agent reading a failure knows its next step without opening the script.
 - **C5. One contract test.**
-  - **Outcome.** One test runs every registered command with `--help`, `-h`, an unknown option and one representative
-    start-up failure each (one the command refuses before any work), and checks C2, C3 and C4's forms and exit codes
-    and that the tree is unchanged after each; it fails when a registered command breaks any of them (shown by a
-    planted break in a scratch copy, reported). It runs in the fast ladder.
+  - **Outcome.** One test, its cases generated from the registry, runs every registered command with `--help` and
+    `-h` first, after a positional argument and between options; an unknown option first and after a known one; each
+    declared option given so that it is not refused as unknown; an option-shaped token in each non-free-text value
+    position; and each C4 failure class the command has (each one it refuses before any work). It checks C2, C3 and
+    C4's forms and exit codes, and runs every help and refusal probe under a guard that records any child process the
+    command starts and any file it writes or deletes anywhere; a probe that starts a process or touches a file fails.
+    It fails when a registered command breaks any of them, shown in a scratch copy by three planted breaks, each
+    reported: a refusal line in the wrong form, a help path that starts a `git` process with no output, and a help
+    path that writes a file outside the repository. It runs in the fast ladder.
   - **Intent.** A new or changed tool cannot drift from the contract unseen.
 
 ## Limits the result keeps
