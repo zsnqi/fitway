@@ -1688,3 +1688,38 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Brief rows** 3/8 as graded (2 the coordinator's); **held-out** HR13-HR18 6/6, HR7 and HR8 now pass. Overclaims: 0
   (the report named its one-commit failure).
 - **Disposition:** a second fixer applies P1, P2 and P5 with frozen edits; then the merge chain.
+
+## agent-tooling-r01: the CLI contract and cli-contract-fix: `../../agent-tooling/briefs/codex-cli-contract.md` and `codex-cli-contract-fix.md`, results `cb1cfe65` and `dda8e020` on `tooling-cli-contract` (from `57dad1c0`), DeepSeek V4.1 Flash, level `max`; review builder `97f61712`
+
+- **The contract** (run `codex-round-58a64b69-...`, start load 43,635; about two hours): a registry, `pnpm tools`, one
+  `--help`/unknown-option/start-up failure form across 22 commands, and a generated contract test with three planted
+  breaks. Its first report was refused because its ladder ran before its commit (as ratchet-fix's was); the second
+  was accepted. Both brief reviews had closed eight readings (one by narrowing the goal to failures to start).
+  Its Sol diff review (`D:/fitway-temp/code-review/cli-contract-1/`) gave seven blocking findings, the heaviest that
+  the shared parser returned no values so every command kept its own; the coordinator added two: 26 blank lines
+  deleted from five giant files to stay under the ratchet's line (F272), and a doubled `FAIL: ERROR:` prefix.
+- **cli-contract-fix** (run `codex-round-e40f5755-...`, start load 43,101): one registry-driven resolver, 14 private
+  parsers removed, the giant files below their base counts with room from removed parsers and two new modules. Its
+  local ladder failed once on F261's K1 timeout; CI passed. Its diff review (`code-review/cli-contract-fix-1/`) gave
+  four blocking findings, chiefly that its compatibility table was built from the registry, not from the old parsers;
+  `owner-direction-builder` applied them in `97f61712`: 148 fixed rows checked through each command's own options
+  step (the coordinator re-checked them against the `57dad1c0` parsers: 0 mismatches), which caught one regression of
+  `dda8e020` (the survey's default temp root), restored there.
+- **The grade** (`../../agent-tooling/briefs/codex-cli-contract-grade.md`, Q1-Q12 over C1-C5, E1-E5 and the held-out
+  rows CC1-CC11 and CCF1-CCF6; both brief reviews, nine readings closed and one in part), GPT-6.1 Sol `xhigh`, run
+  `codex-round-2751f7b6-...`: Q2, Q3, Q7, Q11, Q12 PASS; Q1, Q4, Q5, Q6, Q8, Q9, Q10 FAIL. The coordinator's reading:
+  - **Real defects (six):** Q1, the classifier takes `build` and `check-types` as prefixes (`build:heldout` escapes);
+    Q4, start-up failures about a value's meaning (`handoff:new`'s milestone and time, `verify:owner`'s relative
+    paths, `verify:phase`'s unknown phase) keep their old forms; Q5, the contract test misses an unknown option after
+    a positional and a private option loop; Q6, options `measure` and `doctor` read at `57dad1c0` (`--feature`,
+    `--states`, `--languages`, `--quiet` and others) are now refused as unknown, and the forms refused on purpose are
+    recorded nowhere (reproduced by the coordinator through the resolver); Q9, 17 of the launcher's 22 help lines of
+    explanation were dropped rather than moved; Q10, two new cases throw before their assertions on the old code.
+  - **The grading brief's wording (one):** Q8 counted a test-helper module's callers as not callers.
+  - Holding: help is safe in 324 probes with no process or file touched; every unknown option is refused by name
+    before work; one declaration per command; nothing weakened in the tests; the reports rest on what ran.
+- **Brief rows** 6/12 as graded (1 the grading brief's); held-out rows inside them. Overclaims: the fix's report
+  marked E1 PASS on a compatibility table the brief had asked to be written from the old parsers (found by the diff
+  review, not the grade).
+- **Disposition:** a second `owner-direction-builder` applies the six; then a short Sol re-grade of those rows, then
+  the merge chain.
