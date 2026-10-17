@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `a178e198`, 2026-10-17 08:50 +03:00
+- **As of:** `codex/owner-redesign-r04` at `c9aa7514`, 2026-10-17 09:43 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,11 +37,17 @@
 
 ## Running now
 
-- **The cli-contract-fix review edits** (`owner-direction-builder`, frozen specification): a fixed compatibility
-  table written from the `57dad1c0` parsers and checked through each command's own argument step (the fix round's E1
-  had built it from the registry), one `drift-tree` mapping, one fixture copier, no unreachable check; worktree
-  D:/Projects/fitway-worktrees/tooling-cli-contract on `dda8e020`, scratch D:/fitway-temp/tooling-cli-contract/builder/.
-  Dispositions in D:/fitway-temp/code-review/cli-contract-fix-1/dispositions.md. CI runs on `dda8e020` (pushed 08:36).
+- **The CLI contract's grade** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-grade.md`,
+  Q1-Q12 over C1-C5, E1-E5, CC1-CC11 and CCF1-CCF6; both brief reviews, nine readings closed and one in part):
+  GPT-6.1 Sol `xhigh`, run D:/fitway-temp/codex-round-2751f7b6-26f9-41ec-8f47-6f7fd2501184, started 09:42, grading
+  checkout D:/fitway-temp/tooling-cli-contract-grade/wt (branch `grade-cli-contract` at `97f61712`, its own install).
+  CI runs on `97f61712` (pushed 09:34); CI passed on `dda8e020` and `cb1cfe65` (measured).
+- **The review edits are in `97f61712`** (`owner-direction-builder`): a fixed compatibility table of 148 rows
+  (`scripts/agent-environment/tool-compatibility.json`) checked through each command's own exported options step,
+  re-checked by the coordinator against the `57dad1c0` parsers (`ORACLE: 148 rows, 0 mismatches`); it caught a
+  regression of `dda8e020` (the survey's default temp root), which the builder restored; one `drift-tree` mapping,
+  one fixture copier, no unreachable check; its ladder passed after the commit (`930.76s`, no mutation). One old form
+  is now refused rather than read: `main:advance HEAD -- --dry-run`.
 - **cli-contract-fix is done** (measured): run D:/fitway-temp/codex-round-e40f5755-2e65-42e0-820e-2822e7541bb4, result
   `dda8e020` ("fix agent CLI contract parsing", 27 files); one registry-driven resolver returning
   `{command, options, positionals, passthrough, fixedArgs}`, 14 private parsers removed, verify-fitway importing the
@@ -70,11 +76,9 @@
 
 ## Next steps
 
-1. **The CLI contract:** read cli-contract-fix's report against its events, its Sol diff review
-   (`bash D:/fitway-temp/code-review/make-folder.sh cli-contract-fix D:/Projects/fitway-worktrees/tooling-cli-contract
-   cb1cfe65 <result> <brief>`), a fixer for the blocking findings, then one Sol grade of the contract with its fix
-   (C1-C5, E1-E5, CC1-CC11 and CCF1-CCF6; a probe that corrupts a Git object uses a `--no-hardlinks` clone, F271),
-   then the merge chain.
+1. **The CLI contract:** read its grade, reproduce at least one row (decision 67), record the contract, its fix and
+   the grade (`codex-rounds.md`, `rounds.tsv`), then merge `tooling-cli-contract` into `agent-tooling-r01`, the
+   coordinator line and main.
 2. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
    F265 a candidate; F270, a committed baseline rise CI cannot see, and F272, the giant-file measure counting blank lines, may join a ratchet round), **map upkeep** (F252) and **the
    lighter pickup**. F264 (verify-fitway's caret in forced colours) joins the next verify-fitway round; F269 (test
