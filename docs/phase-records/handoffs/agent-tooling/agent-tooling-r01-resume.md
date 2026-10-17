@@ -43,7 +43,7 @@
   checkout D:/fitway-temp/tooling-cli-contract-grade/wt (branch `grade-cli-contract` at `97f61712`, its own install).
   CI runs on `97f61712` (pushed 09:34); CI passed on `dda8e020` and `cb1cfe65` (measured).
 - **The review edits are in `97f61712`** (`owner-direction-builder`): a fixed compatibility table of 148 rows
-  (`scripts/agent-environment/tool-compatibility.json`) checked through each command's own exported options step,
+  (tool-compatibility.json, on `tooling-cli-contract`) checked through each command's own exported options step,
   re-checked by the coordinator against the `57dad1c0` parsers (`ORACLE: 148 rows, 0 mismatches`); it caught a
   regression of `dda8e020` (the survey's default temp root), which the builder restored; one `drift-tree` mapping,
   one fixture copier, no unreachable check; its ladder passed after the commit (`930.76s`, no mutation). One old form
