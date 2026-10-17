@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `c9aa7514`, 2026-10-17 09:43 +03:00
+- **As of:** `codex/owner-redesign-r04` at `310014a0`, 2026-10-17 10:25 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,11 +37,16 @@
 
 ## Running now
 
-- **The CLI contract's grade** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-grade.md`,
-  Q1-Q12 over C1-C5, E1-E5, CC1-CC11 and CCF1-CCF6; both brief reviews, nine readings closed and one in part):
-  GPT-6.1 Sol `xhigh`, run D:/fitway-temp/codex-round-2751f7b6-26f9-41ec-8f47-6f7fd2501184, started 09:42, grading
-  checkout D:/fitway-temp/tooling-cli-contract-grade/wt (branch `grade-cli-contract` at `97f61712`, its own install).
-  CI runs on `97f61712` (pushed 09:34); CI passed on `dda8e020` and `cb1cfe65` (measured).
+- **The CLI contract's grade findings** (`owner-direction-builder`, a precise specification): exact product names in
+  the script classifier, every start-up failure in C4's form, the contract test probing an unknown option after a
+  positional and scanning for private argument loops, the options `measure` and `doctor` read at `57dad1c0` declared
+  again with an intentional-refusals record for every other base form now refused, the launcher's help explanations
+  carried into the registry, and two cases guarded to fail at their assertions; worktree
+  D:/Projects/fitway-worktrees/tooling-cli-contract on `97f61712`, scratch D:/fitway-temp/tooling-cli-contract/builder-2/.
+- **The grade is done and recorded** (run D:/fitway-temp/codex-round-2751f7b6-26f9-41ec-8f47-6f7fd2501184;
+  `codex-rounds.md` §"agent-tooling-r01: the CLI contract and cli-contract-fix", `rounds.tsv`): 6/12 as graded, six
+  real defects (Q6 reproduced by the coordinator through the resolver: `--feature` and `--quiet` refused), Q8 the
+  grading brief's wording. CI passed on `97f61712` (measured).
 - **The review edits are in `97f61712`** (`owner-direction-builder`): a fixed compatibility table of 148 rows
   (tool-compatibility.json, on `tooling-cli-contract`) checked through each command's own exported options step,
   re-checked by the coordinator against the `57dad1c0` parsers (`ORACLE: 148 rows, 0 mismatches`); it caught a
@@ -76,9 +81,9 @@
 
 ## Next steps
 
-1. **The CLI contract:** read its grade, reproduce at least one row (decision 67), record the contract, its fix and
-   the grade (`codex-rounds.md`, `rounds.tsv`), then merge `tooling-cli-contract` into `agent-tooling-r01`, the
-   coordinator line and main.
+1. **The CLI contract:** check the builder's commit and ladder, then a short Sol re-grade of Q1, Q4, Q5, Q6, Q9 and
+   Q10 only (the grading brief's rows, with a `--no-hardlinks` scratch copy), reproduce one row, then merge
+   `tooling-cli-contract` into `agent-tooling-r01`, the coordinator line and main.
 2. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
    F265 a candidate; F270, a committed baseline rise CI cannot see, and F272, the giant-file measure counting blank lines, may join a ratchet round), **map upkeep** (F252) and **the
    lighter pickup**. F264 (verify-fitway's caret in forced colours) joins the next verify-fitway round; F269 (test
