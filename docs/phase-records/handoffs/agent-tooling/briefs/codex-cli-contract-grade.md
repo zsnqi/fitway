@@ -58,9 +58,9 @@ The coordinator knows, row by row, whether the delivered command contract holds 
   `package.json` invocation (compare with your own reading of `package.json`); in a scratch copy, adding a script
   named `check:heldout` that runs a new `check-heldout.mjs` under `scripts/` and, separately, one named
   `check:heldout2` that runs the same file through `node --trace-warnings` to `package.json` without a registry entry
-  each make the registry test fail, and so does a third, `check:heldout3`, run through a wrapper (`cmd /c node ...` or
-  an environment prefix); the test classifies scripts by the product list alone, not by their command's shape (quote
-  the classifying code). Intent: one command finds every tool.
+  each make the registry test fail, and so does a third, `check:heldout3`, run through a wrapper (the Windows command
+  shell running node, or an environment prefix); the test classifies scripts by the product list alone, not by their
+  command's shape (quote the classifying code). Intent: one command finds every tool.
 - **Q2. Help is safe (C2, CC1, CC3, CC7, CC8, CC9).** Outcome: for every registered command and every `verify:owner`
   subcommand, `--help` and `-h` alone, first, after a positional and between options print its help on stdout and exit
   0 with no process started and no file written (use the contract's own side-effect observer, or watch the tree, the
