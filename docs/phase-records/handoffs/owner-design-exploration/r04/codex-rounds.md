@@ -1761,6 +1761,8 @@ checks live outside the repository and never appear here or in a brief. One line
   --idle-timeout-ms` with no value, the restored declaration, and the 13 rows failing at their assertion (line 544) on
   `97f61712` in the builder's archive run (inspected, not re-run); known refusals keep their own fixes. The builder's
   side observations are F274-F276.
+- **Merged:** CI passed on `cf5d7858`; `agent-tooling-r01` fast-forwarded to it; the coordinator line merged it as
+  `b4a9f095` (CI passed) and `pnpm main:advance` moved main from `b56aa416` to `b4a9f095`.
 
 ## DeepSeek V4.1 Flash 1017 (2026-10-17, the user's records note)
 

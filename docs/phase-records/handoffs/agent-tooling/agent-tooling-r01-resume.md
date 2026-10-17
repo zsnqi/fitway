@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `ba52aacd`, 2026-10-17 17:40 +03:00
+- **As of:** `codex/owner-redesign-r04` at `b4a9f095`, 2026-10-17 18:22 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-10), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -67,7 +67,8 @@
   and four readings the grading brief's wording. CI passed on `47f18b0e` (run 39027454092).
 - **The third builder's commit `cf5d7858`** holds the five fixes (records: `codex-rounds.md`); its Sol diff review
   (D:/fitway-temp/code-review/cli-contract-regrade-builder-1) gave no findings; the coordinator reproduced each fixed
-  row; its side observations are F274-F276. Pushed; CI run 39040522121 was in progress at the As-of time.
+  row; its side observations are F274-F276. CI passed on it (run 39040522121); `agent-tooling-r01` fast-forwarded to it, the coordinator line merged it as
+  `b4a9f095` (CI passed, run 39042586711), and `pnpm main:advance` moved main from `b56aa416` to `b4a9f095`.
 - **The grade is done and recorded** (run D:/fitway-temp/codex-round-2751f7b6-26f9-41ec-8f47-6f7fd2501184;
   `codex-rounds.md` §"agent-tooling-r01: the CLI contract and cli-contract-fix", `rounds.tsv`): 6/12 as graded, six
   real defects (Q6 reproduced by the coordinator through the resolver: `--feature` and `--quiet` refused), Q8 the
@@ -82,9 +83,7 @@
 
 ## Next steps
 
-1. **The CLI contract:** when CI run 39040522121 on `cf5d7858` passes, merge `tooling-cli-contract` into
-   `agent-tooling-r01` (regenerate the map if it drifts), then the coordinator line, and move main with
-   `pnpm main:advance` after that merge's CI passes.
+1. **The CLI contract is closed and on main** (`b4a9f095`; nothing left to do for it); its leftovers are F273-F276.
 2. **Beside r04's Settings, by DECISIONS item 11** (r04 decision 76, the user, 2026-10-17): report-fields (DECISIONS
    item 9: the claimed-commit field, a machine brief role, structured report rows; F265 a candidate; F270 may join a
    ratchet round) and the verification-map part of map upkeep (F252: `check:verification-map` prints `DRIFT SKIP`
