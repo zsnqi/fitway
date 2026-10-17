@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `310014a0`, 2026-10-17 10:25 +03:00
+- **As of:** `codex/owner-redesign-r04` at `310014a0`, 2026-10-17 10:14 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
