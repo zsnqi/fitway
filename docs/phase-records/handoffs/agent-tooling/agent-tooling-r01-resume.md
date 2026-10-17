@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `b56aa416`, 2026-10-17 05:07 +03:00
+- **As of:** `codex/owner-redesign-r04` at `ccd5331c`, 2026-10-17 07:21 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,13 +37,20 @@
 
 ## Running now
 
-- **The CLI contract round** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract.md`, C1-C5 and
-  L0-L4, both brief reviews dispositioned): DeepSeek V4.1 Flash `max`, run
-  D:/fitway-temp/codex-round-58a64b69-6ef3-461d-9ac7-4460520447ce, worktree
-  D:/Projects/fitway-worktrees/tooling-cli-contract (branch `tooling-cli-contract` from `57dad1c0`, its own install),
-  log D:/fitway-temp/tooling-cli-contract/launch-2.log. Held-out rows CC1-CC11 in
-  D:/fitway-grader/agent-tooling/cli-contract-heldout.md. The coordinator re-measured every command's `--help` and
-  unknown-option answers at `57dad1c0`: the same forms as at `b3946bc3` (baseline-57dad1c0.txt beside baseline.txt).
+- **cli-contract-fix** (`docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-fix.md`, E1-E5: one
+  registry-driven resolver with a compatibility table, one declaration per command, nothing left over, the giant
+  files' deleted blank lines restored with room made by moving code, one failure prefix; both brief reviews closed,
+  seven readings): DeepSeek V4.1 Flash `max`, run D:/fitway-temp/codex-round-e40f5755-2e65-42e0-820e-2822e7541bb4,
+  started 07:20, worktree D:/Projects/fitway-worktrees/tooling-cli-contract (HEAD `cb1cfe65`). Held-out rows CCF1-CCF6
+  appended to D:/fitway-grader/agent-tooling/cli-contract-heldout.md.
+- **The CLI contract round is done** (measured): run D:/fitway-temp/codex-round-58a64b69-6ef3-461d-9ac7-4460520447ce,
+  result `cb1cfe65` ("unify agent command contract", 29 files, +2247/-489; first report refused because its ladder
+  preceded its commit, the second accepted; ladder after the commit `980.60s`). It reports C1-C5 and L0-L4 PASS and
+  22 registered commands. Its Sol diff review (D:/fitway-temp/code-review/cli-contract-1) gave seven blocking
+  findings (the shared parser returns no values so every command keeps its own; verify-fitway's silent import
+  fallback; fixed arguments declared twice; a cast; dead help code; a duplicated failure formatter; exports without
+  callers), and the coordinator added two: the round deleted 26 blank lines from five giant files to stay under the
+  ratchet's line (F272), and `check:concept-css` prints `FAIL: ERROR:`. CI on `cb1cfe65` was running at 07:20.
 - **main is at `b56aa416`** (measured): CI passed on the coordinator merge (agent-tooling-r01 into the coordinator
   line; `check:tooling-map`, `check:code-health` and `check:repository` passed locally), and `pnpm main:advance
   b56aa416` moved main from `7da16cd9`.
@@ -57,12 +64,13 @@
 
 ## Next steps
 
-1. **The CLI contract:** read its report against its events, then its Sol diff review
-   (`bash D:/fitway-temp/code-review/make-folder.sh cli-contract D:/Projects/fitway-worktrees/tooling-cli-contract
-   57dad1c0 <result> <brief>`), a fixer for the blocking findings, a Sol grade with CC1-CC11 (a corrupt-object or
-   similar probe uses a `git clone --no-hardlinks` copy, F271), then the merge chain.
+1. **The CLI contract:** read cli-contract-fix's report against its events, its Sol diff review
+   (`bash D:/fitway-temp/code-review/make-folder.sh cli-contract-fix D:/Projects/fitway-worktrees/tooling-cli-contract
+   cb1cfe65 <result> <brief>`), a fixer for the blocking findings, then one Sol grade of the contract with its fix
+   (C1-C5, E1-E5, CC1-CC11 and CCF1-CCF6; a probe that corrupts a Git object uses a `--no-hardlinks` clone, F271),
+   then the merge chain.
 2. **Then report-fields** (DECISIONS item 9: the claimed-commit field, a machine brief role, structured report rows;
-   F265 a candidate; F270, a committed baseline rise CI cannot see, may join it), **map upkeep** (F252) and **the
+   F265 a candidate; F270, a committed baseline rise CI cannot see, and F272, the giant-file measure counting blank lines, may join a ratchet round), **map upkeep** (F252) and **the
    lighter pickup**. F264 (verify-fitway's caret in forced colours) joins the next verify-fitway round; F269 (test
    suites counted as long functions) waits for a ratchet round.
 
