@@ -1884,8 +1884,12 @@ checks live outside the repository and never appear here or in a brief. One line
   (`D:/fitway-temp/tooling-report-fields-coordinator/`: `probe-failed-status.mjs` reads record 32;
   `probe-g1-ws.mjs` gives the field from the first line and after the launch note and none from a later or fenced
   line, matches `Tests 19 passed (19)` against the doubled-space line and refuses `19 passed (19)`). Its local ladder
-  failed on per-test timeouts under load only (F261, F281); CI passed on it (run 39069967909). A Sol diff review of
-  both builders' commits (`D:/fitway-temp/code-review/report-fields-builders-1/`) gave no findings. The giant files:
+  failed in 18 files under load (44 of 45 failures per-test timeouts, F261 and F281; one `verify.test.ts` case,
+  "ignores test injection and runs its own steps", failed its assertion), and each of the 18 files passed alone;
+  CI passed on it (run 39069967909). The builder noted that a `failed` record with exit code 0 would now count for
+  the commit and ladder checks; none of the 1,681 `failed` command records under `D:/fitway-temp/codex-round-*` has
+  exit code 0 (measured). A Sol diff review of both builders' commits
+  (`D:/fitway-temp/code-review/report-fields-builders-1/`) gave no findings. The giant files:
   `codex-round.mjs` 2104 (2279 at the base), its test 4366 (4484), `check-brief.mjs` 1128 (1132), its test 1410
   (1423).
 - **Rows:** 6/10 as graded (G8 and G9 the grading brief's wording, so 8/10 on the round's substance); the rows the
