@@ -16,6 +16,7 @@ export const MAPPED_PATHS = Object.freeze([
 	"scripts/verify-repository.mjs",
 	"scripts/check-design-context.mjs",
 	"scripts/check-concept-css.mjs",
+	"scripts/concept-css-parse.mjs",
 	"scripts/run-vitest.mjs",
 ]);
 

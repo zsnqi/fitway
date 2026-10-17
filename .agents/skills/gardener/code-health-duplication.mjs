@@ -3,7 +3,7 @@ const DUPLICATION_WINDOW_LINES = 8;
 export function countDuplicationCopies(hits, visit) {
 	let total = 0;
 	for (const hit of hits) {
-		for (const place of hit.places ?? [{ file: hit.file, line: hit.line }]) {
+		for (const place of hit.places) {
 			total++;
 			visit?.(hit, place);
 		}
@@ -63,7 +63,11 @@ function findOccurrences(sources, blockLines) {
 					(value, offset) => values[index + offset].value === value,
 				)
 			)
-				occurrences.push({ file, line: values[index].line });
+				occurrences.push({
+					file,
+					line: values[index].line,
+					endLine: values[index + blockLines.length - 1].line,
+				});
 		}
 	}
 	return occurrences.sort(

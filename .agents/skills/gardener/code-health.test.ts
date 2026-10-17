@@ -319,8 +319,8 @@ describe("gardener code-health fixtures", () => {
 		expect(report.repeatedWorkarounds.total).toBe(6);
 		expect(report.duplication.total).toBe(2);
 		expect(report.duplication.hits[0].places).toEqual([
-			{ file: "first.js", line: 1 },
-			{ file: "second.js", line: 1 },
+			{ file: "first.js", line: 1, endLine: 10 },
+			{ file: "second.js", line: 1, endLine: 10 },
 		]);
 		expect(report.boundaryBreaks.total).toBe(1);
 		expect(report.boundaryBreaks.hits[0]).toMatchObject({

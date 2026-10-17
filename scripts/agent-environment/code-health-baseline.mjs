@@ -135,34 +135,6 @@ function exceptionStatus(exceptions, today) {
 	return { invalid, expired, open };
 }
 
-function duplicationCopyLines(hit, place, text) {
-	if (!text || !Number.isInteger(hit.lineCount) || hit.lineCount < 1)
-		return [place.line];
-	const lines = [];
-	const source = text.split(/\r?\n/);
-	let index = place.line - 1;
-	while (index > 0 && source[index - 1].includes("code-health-exception:")) {
-		index--;
-		lines.push(index + 1);
-	}
-	let codeLines = 0;
-	for (; index < source.length && codeLines < hit.lineCount; index++) {
-		const line = source[index];
-		if (line.includes("code-health-exception:")) lines.push(index + 1);
-		else if (line.trim()) {
-			lines.push(index + 1);
-			codeLines++;
-		}
-	}
-	while (
-		index < source.length &&
-		source[index].includes("code-health-exception:")
-	) {
-		lines.push(++index);
-	}
-	return lines.length ? lines : [place.line];
-}
-
 function excepted(exceptions, file, measure, lines, today) {
 	return exceptions.some(
 		(exception) =>
@@ -191,12 +163,12 @@ export function snapshotCodeHealth(files, { today = date() } = {}) {
 
 	for (const measure of BASELINE_MEASURES) {
 		if (measure === DUPLICATION_MEASURE) {
-			const sources = new Map(
-				files.map(({ file, text }) => [normalizePath(file), text]),
-			);
-			countDuplicationCopies(report[measure].hits, (hit, place) => {
+			countDuplicationCopies(report[measure].hits, (_hit, place) => {
 				const file = normalizePath(place.file);
-				const lines = duplicationCopyLines(hit, place, sources.get(file));
+				const lines = Array.from(
+					{ length: place.endLine - place.line + 1 },
+					(_, offset) => place.line + offset,
+				);
 				if (!excepted(exceptions, file, measure, lines, today))
 					addCount(counts, hits, file, measure, [place.line]);
 			});

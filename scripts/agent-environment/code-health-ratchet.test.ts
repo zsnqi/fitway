@@ -71,6 +71,24 @@ function writeBaseline(root: string) {
 	return JSON.parse(readFileSync(path.join(root, baselinePath), "utf8"));
 }
 
+function committedFixtureWithEscape() {
+	const root = fixture();
+	write(root, "scripts/sample.ts", "export const clean = 1;\n");
+	writeBaseline(root);
+	git(root, "add", "--all");
+	git(root, "commit", "-qm", "baseline");
+	write(root, "scripts/sample.ts", "const value: any = 1;\n");
+	return root;
+}
+
+function inflateWorkingBaseline(root: string) {
+	const baseline = JSON.parse(
+		readFileSync(path.join(root, baselinePath), "utf8"),
+	);
+	baseline.files["scripts/sample.ts"] = { typeEscapes: 1 };
+	write(root, baselinePath, `${JSON.stringify(baseline, null, "\t")}\n`);
+}
+
 function day(offset: number) {
 	const date = new Date();
 	date.setUTCDate(date.getUTCDate() + offset);
@@ -283,20 +301,11 @@ describe("code-health ratchet commands", () => {
 		"deleted",
 		"inflated",
 	])("N1 ignores a %s working baseline when protecting HEAD", (state) => {
-		const root = fixture();
-		write(root, "scripts/sample.ts", "export const clean = 1;\n");
-		writeBaseline(root);
-		git(root, "add", "--all");
-		git(root, "commit", "-qm", "baseline");
-		write(root, "scripts/sample.ts", "const value: any = 1;\n");
+		const root = committedFixtureWithEscape();
 		if (state === "deleted") {
 			rmSync(path.join(root, baselinePath), { force: true });
 		} else {
-			const baseline = JSON.parse(
-				readFileSync(path.join(root, baselinePath), "utf8"),
-			);
-			baseline.files["scripts/sample.ts"] = { typeEscapes: 1 };
-			write(root, baselinePath, `${JSON.stringify(baseline, null, "\t")}\n`);
+			inflateWorkingBaseline(root);
 		}
 		const result = run(baselineScript, root);
 		expect(result.status, result.stderr).toBe(1);
@@ -306,17 +315,8 @@ describe("code-health ratchet commands", () => {
 	});
 
 	it("N1 check rejects an uncommitted baseline inflation", () => {
-		const root = fixture();
-		write(root, "scripts/sample.ts", "export const clean = 1;\n");
-		writeBaseline(root);
-		git(root, "add", "--all");
-		git(root, "commit", "-qm", "baseline");
-		write(root, "scripts/sample.ts", "const value: any = 1;\n");
-		const baseline = JSON.parse(
-			readFileSync(path.join(root, baselinePath), "utf8"),
-		);
-		baseline.files["scripts/sample.ts"] = { typeEscapes: 1 };
-		write(root, baselinePath, `${JSON.stringify(baseline, null, "\t")}\n`);
+		const root = committedFixtureWithEscape();
+		inflateWorkingBaseline(root);
 		const result = run(checkScript, root);
 		expect(result.status, result.stderr).toBe(1);
 		expect(result.stdout).toContain(
