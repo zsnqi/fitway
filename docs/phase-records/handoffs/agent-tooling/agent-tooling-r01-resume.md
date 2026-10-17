@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `9260e954`, 2026-10-17 16:30 +03:00
+- **As of:** `codex/owner-redesign-r04` at `9260e954`, 2026-10-17 14:35 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-10), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -54,7 +54,7 @@
   them as `47f18b0e`; its report never reached the coordinator (it ran in the earlier coordinator session). The
   coordinator checked the commit against the dispositions (the `tool-contract:` comment gone from the tree,
   `--baseline` among compare's required options with only R20 V2 changed, cli.mjs's own range checks removed; the five
-  giant files under their 57dad1c0 counts) and pushed it at 14:06; CI run 39027454092 was in progress at 14:40.
+  giant files under their 57dad1c0 counts) and pushed it at 14:06; CI run 39027454092 passed.
 - **The coordinator's reproduction** (D:/fitway-temp/tooling-cli-contract-regrade/probe-ccr4.mjs, against
   `57dad1c0`'s owner parser): through the resolver and the owner options step, `doctor --quiet true --transports`,
   `measure --feature --states --languages --sizes --inputs --motions --transports` and `drive --timeline
