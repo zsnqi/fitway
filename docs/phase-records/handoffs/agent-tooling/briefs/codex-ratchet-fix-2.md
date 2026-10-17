@@ -65,29 +65,41 @@ gardener does, and passes the concept that declares its ring once.
     (`typeEscapes baseline=0 current=1`), but after the working baseline file is deleted, or edited to hold the raised
     count, it exits 0 and writes `215 files`: it compares with the working file, while H1 names the committed one.
   - **Outcome.** The command compares a rise with the baseline committed at `HEAD` (`git show HEAD:<path>`), whatever
-    the working file holds or whether it exists; it writes a first baseline only when `HEAD` has none. Tested with the
-    working file deleted and with it inflated.
+    the working file holds or whether it exists; it writes a first baseline only when `HEAD` has none. `pnpm
+    check:code-health` also fails, naming each, when the working baseline holds a count above `HEAD`'s (an uncommitted
+    inflation). Tested with the working file deleted and with it inflated, for both commands. (A rise committed in the
+    baseline itself stays the diff review's to see: CI checks out one commit, with no parent to compare.)
   - **Intent.** A rise goes through an exception, never a rewrite.
 - **N2. Every copy counted (grade G2).**
   - **Cause (measured by the grade).** A third copy, in `.agents/skills/gardener/code-health.test.ts`, of an eight-line
     block that file already shares (places 534 and 547, then 534, 547 and 607) leaves its duplication count at 1 and
     the check passing: a file's count is the number of duplicated blocks it takes part in, not its copies of them.
   - **Outcome.** A file's duplication count is the number of copies of duplicated blocks it holds, so a further copy of
-    a block, in the same file or another, raises the count of the file that holds it; the gardener's report and the
-    ratchet count it through the same function. The committed baseline is rewritten once in this commit under the new
-    count, the one rewrite this measure's change allows: write it with a script in your temp folder that calls the
-    modules' own functions, and report the duplication total before and after, the three files whose counts rose most,
-    and that no other measure's count changed. Tested with a third copy in one file and a second in another.
+    a block, in the same file or another, raises the count of the file that holds it; blank lines inside a block do not
+    break it (a block is its non-blank normalized lines in order, its places still the source lines), so a copy that
+    differs only by inserted blank lines counts; an exception exempts only the copy it sits on, and the block's other
+    copies in that file still count. The gardener's report and the ratchet count through the same function. The
+    committed baseline is rewritten once in this commit, the one rewrite this measure's change allows: compute it by
+    running the new counting on this HEAD's own sources (a `git archive` of `b3946bc3` in your temp folder) with a
+    script that calls the modules' functions, so the conversion holds no debt your change adds; your delivered tree's
+    counts are then at most that converted baseline, any fall written with `pnpm code-health:baseline`. Report the
+    duplication total before and after the conversion, the three files whose counts rose most, and that no other
+    measure's count changed. Tested with a third copy in one file, a second in another, a copy with inserted blank
+    lines, and an excepted copy beside an unexcepted one.
   - **Intent.** Copying a block again is never free.
 - **N3. One line count (grade G4).**
   - **Cause (measured by the grade).** For the 17 giant files both scan, the gardener's report gives one line fewer than
     the ratchet (for example `codex-round.mjs` 2316 against 2317): the report's Git reader trims the text's end, and the
     ratchet counts the empty piece after a final newline.
-  - **Outcome.** The ratchet and the gardener's report read a file's text and count its lines through one path, a
-    file that ends in a newline counting as many lines as `wc -l` reports; for every file both scan, their per-file
+  - **Outcome.** The ratchet and the gardener's report read a file's text and count its lines through one path: a
+    file's line count is the number of line breaks it holds, plus one when its last line has no final line break, with
+    trailing blank lines counted (as `wc -l` counts a file that ends in a line break). The survey's `git` reader keeps
+    returning trimmed text to its other callers (commit hashes, branch names and the like), and only the file reads the
+    counting uses are lossless; the survey's own tests still pass through the real reader. For every file both scan,
+    their per-file
     counts of every measure are equal when they scan the same set of files (the two scopes' different roots stay). The
     giant-file counts that fall are written with `pnpm code-health:baseline`. Tested with a file with and without a
-    final newline, LF and CRLF.
+    final line break, with trailing blank lines, LF and CRLF.
   - **Intent.** One counting path, one answer.
 - **N4. One ring counted once (grade G7, F267).**
   - **Cause (measured by the grade and the coordinator).** At `9619f3ce` the eclipse concept's `style.css` declares
@@ -98,8 +110,10 @@ gardener does, and passes the concept that declares its ring once.
   - **Outcome.** A focus ring is counted once however many `outline` properties (the shorthand, its longhands,
     `outline-offset`) and selectors its rule, or the rules K1 combines for one selector, carry: the eclipse folder from
     `9619f3ce`, `4cc2db93` and `51d5a783` passes, and from `f87906ea` reports exactly ten focus-ring findings in
-    `components.css`, one per copy; K1's longhand cases and K2's cases still hold. Tested on fixtures in the
-    repository that model those commits' rules.
+    `components.css`, one per copy; a ring declared outside `style.css` is reported even when its selector equals the
+    shared ring's (rings in different files, or under different media conditions, are different rings); K1's longhand
+    cases and K2's cases still hold. Tested on fixtures in the repository that model those commits' rules, and one
+    with a `components.css` ring under the shared ring's selector.
   - **Intent.** One ring, declared once, passes.
 
 ## Limits the result keeps
