@@ -57,11 +57,18 @@ The coordinator knows, row by row, whether the delivered fix holds on checks its
   working baseline deleted, replaced by `{}`, or edited to hold the raised count, `pnpm code-health:baseline` exits
   non-zero naming `typeEscapes` and leaves the working file byte-identical to how you left it; `pnpm check:code-health`
   with the working baseline edited to a count above `HEAD`'s fails naming each raised count; in a scratch repository
-  whose `HEAD` holds no baseline, the command writes one and exits 0. Intent: a rise goes through an exception.
+  whose `HEAD` holds no baseline, the command writes one and exits 0; with the working baseline deleted, a planted rise
+  of each other measure (a suppression, a `TODO`, an 85-line function, a copied 12-line block, one line added to a giant
+  file) is refused naming that measure; with `git show HEAD:<baseline path>` failing for a reason other than the
+  path's absence at `HEAD` (for example run where no git repository is, or with the baseline's object made unreadable),
+  the command exits non-zero and leaves the working baseline unchanged (report what it prints). Intent: a rise goes
+  through an exception.
 - **P2. Every copy counted (N2, HR15).** Outcome: in scratch copies: a third copy, then a fourth, of a block a file
   already holds twice raises that file's duplication count each time; a second copy in another file raises that
-  file's; a copy differing only by inserted blank lines counts; an exception on one copy exempts that copy only (the
-  file's count with the exception equals its count with that copy removed). Recompute the conversion yourself: run the
+  file's; a copy differing only by inserted blank lines counts, and so does one differing only by indentation or
+  trailing whitespace; each of these additions, made alone on a clean copy, makes `pnpm check:code-health` exit 1
+  naming that file's duplication; an exception on one copy exempts that copy only (the file's count with the exception
+  equals its count with that copy removed). Recompute the conversion yourself: run the
   result's counting over a `git archive` of `b3946bc3` (all four roots) and compare per file and measure with the
   result's committed baseline; every difference is a fall the result's own changes earn (list each) or N3's giant-file
   fall of one; a count above the conversion is a FAIL; outside duplication and giant files no count differs from
@@ -77,7 +84,8 @@ The coordinator knows, row by row, whether the delivered fix holds on checks its
   folder taken from `9619f3ce`, `4cc2db93` and `51d5a783` passes (quote each PASS line), and from `f87906ea` reports
   exactly ten focus-ring findings in `components.css`, one per copy; in scratch concept copies taken from `51d5a783`:
   adding `outline-width: 3px` to `style.css`'s shared ring rule passes; a second rule in `style.css` drawing its own
-  ring under another focus selector fails; a `components.css` rule drawing a ring under the shared ring's exact
+  ring under another focus selector fails; the shared ring's selector given a second ring under a different `@media`
+  condition in `style.css` fails as a second ring; a `components.css` rule drawing a ring under the shared ring's exact
   selector is reported; a ring in longhands outside `style.css` is reported; a copy without `style.css` reports the
   missing ring. Intent: one ring, declared once, passes; every other ring is named.
 - **P5. The cases prove the repair (L0).** Outcome: run from the result's test files on `b3946bc3`'s production code
@@ -86,15 +94,19 @@ The coordinator knows, row by row, whether the delivered fix holds on checks its
   outcome, never at a missing module, export, helper, fixture or setup (list each case, its N row and what it
   asserts), and passes on the result. Intent: the cases see the defects.
 - **P6. Nothing weakened (L1).** Outcome: across `git diff b3946bc3 HEAD`, no test is removed, skipped, made
-  conditional or lost an assertion; every changed expected value is listed with before and after and judged as N2's
-  or N3's counting change or not; the earlier grade's PASS rows still hold on the result: rerun its G3 (a fall needs
-  the baseline rewritten), G5 (H4's two real cases), G6 (exceptions), G8 (template substitutions) and G9 (one source of
-  truth) probes and quote one proving line each. Intent: nothing was loosened to pass.
-- **P7. Reports against commands (L2).** Outcome: the round's run folder records a successful `git commit` whose result
-  header names its commit and a successful `node scripts/verify.mjs fast` after it with no later commit and no tracked
-  write between them; the fixer's commit after the round's lies outside the run, its parent the round's last commit, and touches
-  only the files `D:/fitway-temp/code-review/ratchet-fix-2-1/dispositions.md` names (quote `git diff --name-only`), and
-  restores the six comments `42fd405a` deleted (quote each); `pnpm check:code-health` passes on the result;
+  conditional or lost an assertion; every changed test body, matcher, input, fixture, helper and expected value is
+  listed with before and after; a change that weakens what a test exercises (a weaker matcher, a narrowed input or
+  fixture, an expected value changed for any reason other than N2's or N3's counting or a field the fix added, such as
+  each copy's `endLine`) is a FAIL; the earlier grade's PASS rows still hold on the result: rerun its G3 (a fall needs
+  the baseline rewritten), G5 (H4's two real cases), G6 (exceptions), G8 (template substitutions) and G9 (one source
+  of truth) probes and quote one proving line each. Intent: nothing was loosened to pass.
+- **P7. Reports against commands (L2).** Outcome: the round's run folder records a successful `git commit` whose
+  result header names its commit and a successful `node scripts/verify.mjs fast` after it with no later commit and no
+  tracked write between them; the fixer's ladder log `D:/fitway-temp/tooling-ratchet/fixer-2/ladder.log` ends with the
+  fast ladder passing without repository mutation on the result HEAD (quote it); the fixer's commit lies outside the
+  run, its parent the round's last commit, and touches only the files
+  `D:/fitway-temp/code-review/ratchet-fix-2-1/dispositions.md` names (quote `git diff --name-only`), and restores the
+  six comments `42fd405a` deleted (quote each); `pnpm check:code-health` passes on the result;
   `scripts/check-concept-css.mjs` is at most 800 lines by the result's count. Intent: the report rests on what ran.
 - **P8. Cost.** Outcome: three runs of `pnpm check:code-health` take at most 15 s each (each, median, range); the
   baseline is at most 100 KB. Intent: the step stays cheap.
