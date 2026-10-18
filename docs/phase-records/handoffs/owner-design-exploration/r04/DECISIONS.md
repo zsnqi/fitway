@@ -879,6 +879,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     panel (7/12) that shows the log with its reasons, the editor opening there on «تعديل», the label «قيد التعديل»; the
     phone, the 390 sheets and the dialogs as the user kept them from v2. The one-pass build (item 6, decision 49) starts
     in a new session after the account switch, at the user's word; nothing on the page changes before then.
+78. **Settings' conflict view names no one** (the user, 2026-10-18: «موافق على أ», on the coordinator's
+    recommendation). When another save came first, the view reads that someone else saved before you, with the saved
+    values beside the owner's typed ones, and no name. Why: Settings is owner-only, so the likely case is the same
+    owner on two devices; the choice does not depend on who saved; the settings read carries no actor, so a name would
+    add a Product/Spec amendment; who changed what belongs in Activity log. Revisit if several people come to edit
+    Settings regularly.
 
 ## How this milestone's rounds run
 
