@@ -481,7 +481,7 @@ test("P2 CLI workers 2/3/4 keep ordered items/verdicts and overlap captures; ord
 	}
 	await changeFile(
 		f,
-		"drive-execution.mjs",
+		"runner.mjs",
 		"for (const language of languages) {",
 		"if (options.workers > 1) manifest.items.reverse(); for (const language of languages) {",
 	);
@@ -623,7 +623,7 @@ test("P2 CLI initialization failure retains the serial prefix; missing truncatio
 	assert.deepEqual(verdicts(parallel), verdicts(serial));
 	await changeFile(
 		f,
-		"drive-support.mjs",
+		"worker-pool.mjs",
 		"onFailure(failed.index);",
 		"/* planted missing truncation */",
 	);

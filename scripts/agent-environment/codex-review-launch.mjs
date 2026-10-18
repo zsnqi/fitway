@@ -18,7 +18,7 @@ import {
 	sha256,
 	writeCatalog,
 } from "./codex-environment.mjs";
-import { startCodex } from "./codex-session.mjs";
+import { startCodex } from "./codex-process.mjs";
 import { pathKey } from "./path-identity.mjs";
 
 async function optionalFile(filename) {

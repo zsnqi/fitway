@@ -1,23 +1,103 @@
-// Route, authority, reference, and visual-frame validation.
+// Route, authority, reference, and visual-frame validation, with the helpers only they use.
 
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { parse as parseYaml } from "yaml";
 import {
 	asError,
 	inspectPath,
-	isHistoricalPath,
-	isIllegalStartupPath,
-	normalizeHeading,
 	normalizeRelativePath,
-	sha256,
 	trackedPath,
 } from "./agent-context-paths.mjs";
-import { TASK_CLASSES } from "./agent-context-rules.mjs";
 import {
-	getJsonPointer,
-	getObjectPath,
-	readText,
-} from "./agent-context-schema.mjs";
+	HISTORICAL_PREFIXES,
+	ILLEGAL_STARTUP_SEGMENTS,
+	TASK_CLASSES,
+} from "./agent-context-rules.mjs";
+import { readText } from "./agent-context-schema.mjs";
+
+function sha256(bytes) {
+	return createHash("sha256").update(bytes).digest("hex");
+}
+
+function normalizeHeading(value) {
+	return String(value)
+		.replace(/^\s*#{1,6}\s*/, "")
+		.replace(/\s+#+\s*$/, "")
+		.trim()
+		.replace(/\s+/g, " ");
+}
+
+function isHistoricalPath(relativePath) {
+	const normalized = relativePath.replaceAll("\\", "/");
+	return HISTORICAL_PREFIXES.some(
+		(prefix) => normalized === prefix || normalized.startsWith(prefix),
+	);
+}
+
+function isIllegalStartupPath(relativePath) {
+	const normalized = relativePath.replaceAll("\\", "/");
+	if (isHistoricalPath(normalized)) return true;
+	const segments = normalized.toLowerCase().split("/");
+	return segments.some((segment) => ILLEGAL_STARTUP_SEGMENTS.includes(segment));
+}
+
+function getObjectPath(value, keyPath) {
+	if (keyPath === "") return { found: true, value };
+	const parts = keyPath
+		.replace(/^\.?/, "")
+		.split(".")
+		.filter((part) => part.length > 0);
+	let current = value;
+	for (const part of parts) {
+		if (
+			current === null ||
+			typeof current !== "object" ||
+			!Object.hasOwn(current, part)
+		) {
+			return { found: false };
+		}
+		current = current[part];
+	}
+	return { found: true, value: current };
+}
+
+function decodeJsonPointer(pointer) {
+	if (pointer === "") return [];
+	if (!pointer.startsWith("/")) return null;
+	return pointer
+		.slice(1)
+		.split("/")
+		.map((part) => part.replaceAll("~1", "/").replaceAll("~0", "~"));
+}
+
+function getJsonPointer(value, pointer) {
+	const parts = decodeJsonPointer(pointer);
+	if (parts === null) return { found: false };
+	let current = value;
+	for (const part of parts) {
+		if (Array.isArray(current)) {
+			if (
+				part === "-" ||
+				!/^\d+$/.test(part) ||
+				Number(part) >= current.length
+			) {
+				return { found: false };
+			}
+			current = current[Number(part)];
+			continue;
+		}
+		if (
+			current === null ||
+			typeof current !== "object" ||
+			!Object.hasOwn(current, part)
+		) {
+			return { found: false };
+		}
+		current = current[part];
+	}
+	return { found: true, value: current };
+}
 
 async function validatePathReference({
 	root,

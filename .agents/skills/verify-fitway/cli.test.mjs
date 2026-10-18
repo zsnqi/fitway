@@ -1,3 +1,4 @@
+// code-health-exception: giantFiles; until=2026-11-15; reason=giant-split moved imported names; the giant test files split next
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, watch } from "node:fs";
@@ -22,6 +23,7 @@ const test = verificationTest(nodeTest);
 
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createContext, runInContext, runInNewContext } from "node:vm";
+import { itemSummary } from "./capture-records.mjs";
 import { child, doctorFix, help, playwright } from "./cli.mjs";
 import { measurementColors } from "./colors.mjs";
 import { compare, diffStem } from "./compare.mjs";
@@ -44,12 +46,7 @@ import {
 	proveFeature,
 	reachByKeyboard,
 } from "./drive.mjs";
-import {
-	inputAxis,
-	itemSummary,
-	resolveQuery,
-	stateCases,
-} from "./drive-support.mjs";
+import { inputAxis, resolveQuery, stateCases } from "./drive-plan.mjs";
 import {
 	coverageProblems,
 	discoverElements,
@@ -1993,7 +1990,7 @@ export const renderSheet=async()=>{};
 	const caller = resolve(root, "caller.mjs");
 	await writeFile(
 		caller,
-		`import {drive} from ${JSON.stringify(new URL("./drive-execution.mjs", import.meta.url).href)};
+		`import {drive} from ${JSON.stringify(new URL("./runner.mjs", import.meta.url).href)};
 import * as core from ${JSON.stringify(new URL("./core.mjs", import.meta.url).href)};
 try {await drive(${JSON.stringify({
 			concept: build,
@@ -2611,7 +2608,7 @@ test("R30 repair V3: every comparison mode hides carets and paints fresh tiles w
 });
 
 test("R30 V3: comparison waits for finite motion and fixes the phase of persistent motion", async () => {
-	const { settleComparison } = await import("./drive-support.mjs");
+	const { settleComparison } = await import("./comparison-capture.mjs");
 	const finite = {
 		playState: "running",
 		effect: { getComputedTiming: () => ({ endTime: 200 }) },
@@ -4055,7 +4052,7 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 	assert.doesNotMatch(skill, /language sheets remain after cleanup/);
 	assert.match(
 		await readFile(
-			fileURLToPath(new URL("./drive-execution.mjs", import.meta.url)),
+			fileURLToPath(new URL("./runner.mjs", import.meta.url)),
 			"utf8",
 		),
 		/comparisonCapture[\s\S]*break/,

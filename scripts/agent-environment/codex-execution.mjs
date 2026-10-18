@@ -17,6 +17,7 @@ import {
 	modelArgs,
 	sha256,
 } from "./codex-environment.mjs";
+import { startCodex } from "./codex-process.mjs";
 import { appendReportCheck, parseReport } from "./codex-report.mjs";
 import { optionalFile } from "./codex-review-launch.mjs";
 import {
@@ -25,7 +26,6 @@ import {
 	prepareResume,
 	recordRequiredChanges,
 	recordStartLoad,
-	startCodex,
 } from "./codex-session.mjs";
 import { resolveToolArguments, toolFailure } from "./tool-contract.mjs";
 

@@ -44,7 +44,6 @@ import {
 } from "./core.mjs";
 import { requireDependency } from "./discover.mjs";
 import { checkVerificationMaps } from "./drift-tree.mjs";
-import { drive } from "./drive-execution.mjs";
 import {
 	coverageProblems,
 	drift,
@@ -56,6 +55,7 @@ import {
 	refuseOutputArguments,
 	refuseServingSpecs,
 } from "./measure-arguments.mjs";
+import { drive } from "./runner.mjs";
 
 const self = fileURLToPath(import.meta.url);
 export const help = renderToolHelp("verify:owner");

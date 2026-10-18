@@ -1,14 +1,9 @@
-// Tracked-path inspection and path classification.
+// Repository-relative path normalization and tracked-path inspection.
 
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
 import { lstat, readdir, readlink, realpath, stat } from "node:fs/promises";
 import path from "node:path";
-import {
-	HISTORICAL_PREFIXES,
-	ILLEGAL_STARTUP_SEGMENTS,
-	PACKET_DIRECTORY,
-} from "./agent-context-rules.mjs";
+import { PACKET_DIRECTORY } from "./agent-context-rules.mjs";
 
 function asError(value) {
 	return value instanceof Error ? value.message : String(value);
@@ -29,34 +24,8 @@ function normalizeRelativePath(value) {
 	return normalized;
 }
 
-function sha256(bytes) {
-	return createHash("sha256").update(bytes).digest("hex");
-}
-
 function stablePacketPath(milestoneId) {
 	return `${PACKET_DIRECTORY}/${milestoneId}.yaml`;
-}
-
-function normalizeHeading(value) {
-	return String(value)
-		.replace(/^\s*#{1,6}\s*/, "")
-		.replace(/\s+#+\s*$/, "")
-		.trim()
-		.replace(/\s+/g, " ");
-}
-
-function isHistoricalPath(relativePath) {
-	const normalized = relativePath.replaceAll("\\", "/");
-	return HISTORICAL_PREFIXES.some(
-		(prefix) => normalized === prefix || normalized.startsWith(prefix),
-	);
-}
-
-function isIllegalStartupPath(relativePath) {
-	const normalized = relativePath.replaceAll("\\", "/");
-	if (isHistoricalPath(normalized)) return true;
-	const segments = normalized.toLowerCase().split("/");
-	return segments.some((segment) => ILLEGAL_STARTUP_SEGMENTS.includes(segment));
 }
 
 export async function inspectPath(root, relativePath) {
@@ -185,11 +154,7 @@ function trackedPath(root, relativePath) {
 export {
 	asError,
 	isGitRepository,
-	isHistoricalPath,
-	isIllegalStartupPath,
-	normalizeHeading,
 	normalizeRelativePath,
-	sha256,
 	stablePacketPath,
 	trackedPath,
 };

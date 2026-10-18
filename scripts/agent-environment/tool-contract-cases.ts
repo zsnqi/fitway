@@ -1,5 +1,6 @@
 import * as fs from "node:fs";
 import path from "node:path";
+import ts from "typescript";
 import { expect } from "vitest";
 import { toolEntry } from "./tool-contract.mjs";
 import {
@@ -260,33 +261,37 @@ function withoutComments(text: string) {
 		.replace(/^\s*\/\/.*$/gm, (line) => " ".repeat(line.length));
 }
 
+// Each entry and what it is made of: its relative imports, followed transitively, so a
+// module split out of an entry is scanned as the entry is. Modules that read other tokens
+// by design are not scanned: the contract itself, the parsers of a downstream tool's
+// arguments (colors.mjs, measure-arguments.mjs), the words of a Git command an agent ran,
+// and the commands a test runs (tooling-map-coverage.mjs).
+const TOKEN_READERS = new Set([
+	".agents/skills/verify-fitway/colors.mjs",
+	".agents/skills/verify-fitway/measure-arguments.mjs",
+	"scripts/agent-environment/git-commit-words.mjs",
+	"scripts/agent-environment/tool-contract.mjs",
+	"scripts/agent-environment/tooling-map-coverage.mjs",
+]);
+
 export function entryFiles() {
-	return [
-		...new Set(
-			TOOL_REGISTRY.map((entry) => entry.invocation.split(" ")[1] as string),
-		),
-		"scripts/agent-context-rules.mjs",
-		"scripts/agent-context-paths.mjs",
-		"scripts/agent-context-schema.mjs",
-		"scripts/agent-context-references.mjs",
-		"scripts/agent-context-packets.mjs",
-		"scripts/agent-environment/brief-checks.mjs",
-		"scripts/agent-environment/brief-markdown.mjs",
-		"scripts/agent-environment/brief-readings.mjs",
-		"scripts/agent-environment/brief-references.mjs",
-		"scripts/agent-environment/brief-review-sources.mjs",
-		"scripts/agent-environment/codex-commit-records.mjs",
-		"scripts/agent-environment/codex-environment.mjs",
-		"scripts/agent-environment/codex-execution.mjs",
-		"scripts/agent-environment/codex-review-launch.mjs",
-		"scripts/agent-environment/codex-session.mjs",
-		"scripts/project-state-invariants.mjs",
-		"scripts/repository-files.mjs",
-		".agents/skills/gardener/survey-checks.mjs",
-		".agents/skills/gardener/survey-cli.mjs",
-		".agents/skills/gardener/survey-evidence.mjs",
-		".agents/skills/gardener/survey-main.mjs",
-	].sort();
+	const found = new Set(
+		TOOL_REGISTRY.map((entry) => entry.invocation.split(" ")[1] as string),
+	);
+	const queue = [...found];
+	for (let file = queue.shift(); file; file = queue.shift()) {
+		const text = fs.readFileSync(path.join(repository, file), "utf8");
+		for (const { fileName } of ts.preProcessFile(text, true, true)
+			.importedFiles) {
+			if (!/^\.\.?\//.test(fileName) || !/\.(?:[cm]?js|ts)$/.test(fileName))
+				continue;
+			const target = path.posix.join(path.posix.dirname(file), fileName);
+			if (found.has(target)) continue;
+			found.add(target);
+			queue.push(target);
+		}
+	}
+	return [...found].filter((file) => !TOKEN_READERS.has(file)).sort();
 }
 
 export function argumentReadViolations(file: string, text: string) {

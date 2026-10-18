@@ -4,15 +4,15 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
-const root = process.cwd();
+export const root = process.cwd();
 
-function fail(message) {
+export function fail(message) {
 	throw new Error(message);
 }
 
-const UTF8_BOM = Buffer.from([0xef, 0xbb, 0xbf]);
-const CLAUDE_AGENT_DIRECTORY = ".claude/agents";
-const CLAUDE_INSTRUCTIONS_FILE = "CLAUDE.md";
+export const UTF8_BOM = Buffer.from([0xef, 0xbb, 0xbf]);
+export const CLAUDE_AGENT_DIRECTORY = ".claude/agents";
+export const CLAUDE_INSTRUCTIONS_FILE = "CLAUDE.md";
 
 export const TRACKED_BOM_EXCEPTIONS = Object.freeze([
 	{
@@ -52,12 +52,12 @@ const CLAUDE_MODEL_ALIASES = new Map([
 	["haiku 5.5", "claude-haiku-5-5"],
 ]);
 
-function normalizeClaudeModel(value) {
+export function normalizeClaudeModel(value) {
 	const normalized = String(value).trim().toLowerCase().replace(/\s+/g, " ");
 	return CLAUDE_MODEL_ALIASES.get(normalized) ?? normalized;
 }
 
-function resolveRepositoryPath(relativePath) {
+export function resolveRepositoryPath(relativePath) {
 	const absolute = path.resolve(root, relativePath);
 	const relative = path.relative(root, absolute);
 	if (relative.startsWith("..") || path.isAbsolute(relative)) {
@@ -66,7 +66,7 @@ function resolveRepositoryPath(relativePath) {
 	return absolute;
 }
 
-async function readBytes(relativePath) {
+export async function readBytes(relativePath) {
 	return readFile(resolveRepositoryPath(relativePath));
 }
 
@@ -74,7 +74,7 @@ function sha256(bytes) {
 	return createHash("sha256").update(bytes).digest("hex");
 }
 
-async function assertFileRecord(record, label) {
+export async function assertFileRecord(record, label) {
 	if (!record?.path || !Number.isInteger(record.bytes) || !record.sha256) {
 		fail(`${label} is missing path, bytes, or sha256`);
 	}
@@ -101,7 +101,7 @@ async function walkFiles(directory, prefix = "") {
 	return files;
 }
 
-async function assertTreeRecord(record, label) {
+export async function assertTreeRecord(record, label) {
 	if (
 		!record?.path ||
 		!Number.isInteger(record.fileCount) ||
@@ -129,16 +129,3 @@ async function assertTreeRecord(record, label) {
 		fail(`${label} tree SHA-256 changed: ${record.path}`);
 	}
 }
-
-export {
-	assertFileRecord,
-	assertTreeRecord,
-	CLAUDE_AGENT_DIRECTORY,
-	CLAUDE_INSTRUCTIONS_FILE,
-	fail,
-	normalizeClaudeModel,
-	readBytes,
-	resolveRepositoryPath,
-	root,
-	UTF8_BOM,
-};

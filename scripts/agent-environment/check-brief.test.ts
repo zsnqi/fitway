@@ -1,3 +1,4 @@
+// code-health-exception: giantFiles; until=2026-11-15; reason=giant-split moved imported names; the giant test files split next
 import { execFileSync, spawnSync } from "node:child_process";
 import {
 	mkdirSync,
