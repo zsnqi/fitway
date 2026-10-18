@@ -45,6 +45,10 @@
 You may change `<paths>`; commit once when done. Everything else is read-only. Add no dependencies. If an outcome cannot be met, do not
 work around it: finish and measure the others, then stop and report. (B3)
 
+Before writing a reader, parser, runner, fixture or option list, find the one the repository already has and reuse
+or extend it. Your diff is reviewed against `docs/agent-context/briefs/CODE_REVIEW.md` D1-D8; read that list before
+you start. (agent-tooling DECISIONS item 14)
+
 ## Report
 
 Send one fenced `report` block as your final message. Put one JSON object on each line:
@@ -95,5 +99,9 @@ The brief rules B1-B13 live here. Codex follows a brief to the letter, so most f
       decision. (user, 2026-10-14; adapted from pstack's `benchmark-checklist`)
 - [ ] A test suite that needs a clean tree is run after the commit. A brief whose round adds ladder tests says CI runs them on Windows without Playwright Chromium or ui-forensics, from a checkout of the pushed commit alone with no other branch (`.github/workflows/checks.yml`; F179), so a proof that needs a real browser is a script in the temp folder, run and reported (vf-speed and vf-hold, 2026-10-12: both first pushes failed CI for it).
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
+- [ ] An outcome that parses, reads, classifies or detects lists the forms its input takes, with their variants.
+      (agent-tooling DECISIONS item 14)
+- [ ] A new check says what it does when its input is missing (absent file, empty list, no match). (agent-tooling
+      DECISIONS item 14)
 - [ ] A format the brief writes out (a bullet, heading or ID pattern) is read as exact text: give the real form with its variants, never a shorthand (F178).
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.
