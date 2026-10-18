@@ -1,7 +1,13 @@
 import path from "node:path";
 import ts from "typescript";
 
-const SCRIPT_EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".ts", ".tsx"]);
+export const SCRIPT_EXTENSIONS = new Set([
+	".js",
+	".mjs",
+	".cjs",
+	".ts",
+	".tsx",
+]);
 const SOURCE_EXTENSIONS = new Set([...SCRIPT_EXTENSIONS, ".css", ".html"]);
 const DESCRIBE_CHAIN_MEMBERS = new Set([
 	"each",
@@ -13,9 +19,19 @@ const DESCRIBE_CHAIN_MEMBERS = new Set([
 	"skipIf",
 	"runIf",
 ]);
+const TEST_CHAIN_MEMBERS = new Set([...DESCRIBE_CHAIN_MEMBERS, "fails"]);
+const EXPECT_CHAIN_MEMBERS = new Set(["soft", "poll"]);
 
 export function isSourceFile(file) {
 	return SOURCE_EXTENSIONS.has(path.extname(file).toLowerCase());
+}
+
+export function isTestFile(file) {
+	const ext = path.extname(file).toLowerCase();
+	return (
+		SCRIPT_EXTENSIONS.has(ext) &&
+		/\.(?:test|spec)$/i.test(path.basename(file, ext))
+	);
 }
 
 function blank(text) {
@@ -71,37 +87,44 @@ function bindingResolver(source) {
 		.getTypeChecker();
 }
 
-function scanLongFunctions(source, text, offset, file, add) {
-	const ext = path.extname(file).toLowerCase();
-	const bindings = new Set();
+function importedBindings(source) {
+	const bindings = new Map();
 	let checker;
-	if (
-		SCRIPT_EXTENSIONS.has(ext) &&
-		/\.(?:test|spec)$/i.test(path.basename(file, ext))
-	) {
-		for (const statement of source.statements) {
-			if (
-				!ts.isImportDeclaration(statement) ||
-				statement.importClause?.isTypeOnly ||
-				!ts.isStringLiteral(statement.moduleSpecifier) ||
-				statement.moduleSpecifier.text !== "vitest"
-			)
-				continue;
-			const named = statement.importClause?.namedBindings;
-			if (!named || !ts.isNamedImports(named)) continue;
-			for (const element of named.elements) {
-				if (element.isTypeOnly) continue;
-				const imported = element.propertyName ?? element.name;
-				if (imported.text !== "describe") continue;
-				checker ??= bindingResolver(source);
-				bindings.add(checker.getSymbolAtLocation(element.name));
-			}
+	for (const statement of source.statements) {
+		if (
+			!ts.isImportDeclaration(statement) ||
+			statement.importClause?.isTypeOnly ||
+			!ts.isStringLiteral(statement.moduleSpecifier) ||
+			!["vitest", "node:test"].includes(statement.moduleSpecifier.text)
+		)
+			continue;
+		const named = statement.importClause?.namedBindings;
+		if (!named || !ts.isNamedImports(named)) continue;
+		for (const element of named.elements) {
+			if (element.isTypeOnly) continue;
+			checker ??= bindingResolver(source);
+			const symbol = checker.getSymbolAtLocation(element.name);
+			if (!symbol) continue;
+			bindings.set(symbol, {
+				module: statement.moduleSpecifier.text,
+				name: (element.propertyName ?? element.name).text,
+			});
 		}
 	}
+	return { bindings, checker };
+}
+
+function scanLongFunctions(source, text, offset, file, add) {
+	const testFile = isTestFile(file);
+	const imports = testFile ? importedBindings(source) : null;
 	const isDescribeCallee = (expression) => {
 		const node = unwrap(expression);
-		if (ts.isIdentifier(node))
-			return bindings.has(checker?.getSymbolAtLocation(node));
+		if (ts.isIdentifier(node)) {
+			const binding = imports?.bindings.get(
+				imports.checker?.getSymbolAtLocation(node),
+			);
+			return binding?.module === "vitest" && binding.name === "describe";
+		}
 		if (ts.isPropertyAccessExpression(node))
 			return (
 				DESCRIBE_CHAIN_MEMBERS.has(node.name.text) &&
@@ -127,12 +150,34 @@ function scanLongFunctions(source, text, offset, file, add) {
 			.slice(0, node.getStart(source))
 			.split(/\r?\n/).length;
 		const endLine = text.slice(0, node.body.end).split(/\r?\n/).length;
-		if (endLine - startLine + 1 > 80)
+		const lineCount = endLine - startLine + 1;
+		if (lineCount > 80) {
 			add(
 				"longFunctions",
 				offset + node.getStart(source),
-				`${endLine - startLine + 1} lines`,
+				`${lineCount} lines`,
 			);
+			if (!testFile)
+				add(
+					"longFunctionLines",
+					offset + node.getStart(source),
+					`${lineCount} lines`,
+					lineCount,
+				);
+		}
+	});
+}
+
+function scanEmptyBlocks(source, text, offset, add) {
+	visitCode(source, (node) => {
+		if (ts.isBlock(node) && ts.isConstructorDeclaration(node.parent)) return;
+		const emptyBlock = ts.isBlock(node)
+			? node.statements.length === 0
+			: ts.isCaseBlock(node) && node.clauses.length === 0;
+		if (!emptyBlock) return;
+		const contents = text.slice(node.getStart(source) + 1, node.end - 1);
+		if (contents.trim()) return;
+		add("emptyBlocks", offset + node.getStart(source), "empty block");
 	});
 }
 
@@ -150,6 +195,88 @@ function unwrap(node) {
 	while (ts.isParenthesizedExpression(expression))
 		expression = expression.expression;
 	return expression;
+}
+
+function callChain(expression) {
+	const members = [];
+	const conditions = new Map();
+	let node = unwrap(expression);
+	while (ts.isPropertyAccessExpression(node) || ts.isCallExpression(node)) {
+		if (ts.isPropertyAccessExpression(node)) {
+			members.unshift(node.name.text);
+			node = unwrap(node.expression);
+			continue;
+		}
+		const callee = unwrap(node.expression);
+		if (ts.isPropertyAccessExpression(callee)) {
+			members.unshift(callee.name.text);
+			conditions.set(callee.name.text, node.arguments);
+			node = unwrap(callee.expression);
+		} else {
+			node = callee;
+		}
+	}
+	return { conditions, members, root: node };
+}
+
+function chainedCall(node) {
+	const parent = node.parent;
+	return ts.isCallExpression(parent) && unwrap(parent.expression) === node;
+}
+
+function literalBoolean(node) {
+	const value = unwrap(node);
+	if (value.kind === ts.SyntaxKind.TrueKeyword) return true;
+	if (value.kind === ts.SyntaxKind.FalseKeyword) return false;
+	return null;
+}
+
+function importedAs(imports, node, module, name) {
+	if (!ts.isIdentifier(node)) return false;
+	const binding = imports?.bindings.get(
+		imports.checker?.getSymbolAtLocation(node),
+	);
+	return binding?.module === module && binding.name === name;
+}
+
+function scanTestCalls(source, offset, file, add) {
+	if (!isTestFile(file)) return;
+	const imports = importedBindings(source);
+	visitCode(source, (node) => {
+		if (!ts.isCallExpression(node)) return;
+		const chain = callChain(node.expression);
+		if (
+			!chainedCall(node) &&
+			(importedAs(imports, chain.root, "vitest", "it") ||
+				importedAs(imports, chain.root, "node:test", "it") ||
+				importedAs(imports, chain.root, "vitest", "test") ||
+				importedAs(imports, chain.root, "node:test", "test"))
+		) {
+			const skipped =
+				chain.members.some(
+					(member) => member === "skip" || member === "todo",
+				) ||
+				chain.conditions
+					.get("skipIf")
+					?.some((argument) => literalBoolean(argument) === true) ||
+				chain.conditions
+					.get("runIf")
+					?.some((argument) => literalBoolean(argument) === false);
+			if (
+				!skipped &&
+				chain.members.every((member) => TEST_CHAIN_MEMBERS.has(member))
+			)
+				add("testCases", offset + node.getStart(source), "test case");
+		}
+		if (importedAs(imports, chain.root, "vitest", "expect")) {
+			const direct = ts.isIdentifier(unwrap(node.expression));
+			const helper =
+				ts.isPropertyAccessExpression(unwrap(node.expression)) &&
+				EXPECT_CHAIN_MEMBERS.has(unwrap(node.expression).name.text);
+			if (direct || helper)
+				add("expectCalls", offset + node.getStart(source), "expect call");
+		}
+	});
 }
 
 function cast(node) {
@@ -217,6 +344,8 @@ function script(text, offset, isTypeScript, isTsx, file, add, addComment) {
 	);
 	scanComments(source, text, offset, isTypeScript, add, addComment);
 	scanLongFunctions(source, text, offset, file, add);
+	if (!isTestFile(file)) scanEmptyBlocks(source, text, offset, add);
+	scanTestCalls(source, offset, file, add);
 	visitCode(source, (node) => {
 		const start = offset + node.getStart(source);
 		if (isTypeScript && node.kind === ts.SyntaxKind.AnyKeyword)
@@ -358,15 +487,21 @@ export function scanSource({ file, text }) {
 		repeatedWorkarounds: [],
 		accessibilityOverrides: [],
 		longFunctions: [],
+		longFunctionLines: [],
+		emptyBlocks: [],
+		testCases: [],
+		expectCalls: [],
 	};
 	const comments = [];
-	const add = (measure, index, detail) => {
-		result[measure].push({
+	const add = (measure, index, detail, lineCount) => {
+		const item = {
 			file,
 			line: text.slice(0, index).split(/\r?\n/).length,
 			detail,
 			index,
-		});
+		};
+		if (lineCount !== undefined) item.lineCount = lineCount;
+		result[measure].push(item);
 	};
 	const addComment = (comment, offset) => {
 		comments.push({ text: comment, offset });

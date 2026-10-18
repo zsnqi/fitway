@@ -44,12 +44,28 @@
 		"indentStyle": "tab"
 	},
 	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"overrides": [
+		{
+			"includes": ["tests/browser/desktop-demo.browser.spec.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noSkippedTests": "off"
+					}
+				}
+			}
+		}
+	],
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"preset": "recommended",
 			"correctness": {
 				"useExhaustiveDependencies": "info"
+			},
+			"suspicious": {
+				"noSkippedTests": "error",
+				"noUnusedExpressions": "error"
 			},
 			"nursery": {
 				"useSortedClasses": {
@@ -70,7 +86,8 @@
 				"noUnusedTemplateLiteral": "error",
 				"useNumberNamespace": "error",
 				"noInferrableTypes": "error",
-				"noUselessElse": "error"
+				"noUselessElse": "error",
+				"noNonNullAssertion": "error"
 			}
 		}
 	},
