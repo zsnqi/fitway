@@ -78,6 +78,18 @@
     }
   };
   window.EclipseTables = Object.freeze({ sortHead, dayHead, dayNoneRow, fitSlots });
+  // The heat readout's place (PAT-9), shared with the component sheet (F266): centred over the cell and kept 2 px inside
+  // its box (the tip's positioned parent, scrolled or not); above the cell, or below it when there is no room above.
+  const placeHeatTip = (tip, cell, box) => {
+    const b = box.getBoundingClientRect(), c = cell.getBoundingClientRect();
+    const w = tip.offsetWidth, h = tip.offsetHeight, sx = box.scrollLeft;
+    let x = c.left - b.left + sx + c.width / 2 - w / 2;
+    x = Math.max(sx + 2, Math.min(sx + b.width - w - 2, x));
+    let y = c.top - b.top - h - 8;
+    if (y < 0) y = c.bottom - b.top + 8;
+    tip.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px)`;
+  };
+  window.EclipseHeat = Object.freeze({ placeTip: placeHeatTip });
   // On the sheet only the table primitives run; Reports data and controls stay on Reports.
   if (!document.body.classList.contains("rp")) return;
   const LANG = root.lang === "en" ? "en" : "ar";
@@ -905,15 +917,7 @@
     tipFor = td;
     heatTip.innerHTML = tipHTML(td);
     heatTip.hidden = false;
-    // Centred over the cell, kept inside the scroll box; above the cell, or below it when there is no room above.
-    const box = heatScroll.getBoundingClientRect(), cb = td.getBoundingClientRect();
-    const w = heatTip.offsetWidth, h = heatTip.offsetHeight;
-    const sx = heatScroll.scrollLeft;
-    let x = cb.left - box.left + sx + cb.width / 2 - w / 2;
-    x = Math.max(sx + 2, Math.min(sx + box.width - w - 2, x));
-    let y = cb.top - box.top - h - 8;
-    if (y < 0) y = cb.bottom - box.top + 8;
-    heatTip.style.transform = `translate(${f2(x)}px, ${f2(y)}px)`;
+    placeHeatTip(heatTip, td, heatScroll);
   }
   function hideTip() {
     tipFor = null;

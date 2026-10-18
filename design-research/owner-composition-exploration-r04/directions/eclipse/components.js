@@ -620,10 +620,8 @@
     if (focus) td.focus();
     tip.innerHTML = heatReadout(td);
     tip.hidden = false;
-    const wr = wrap.getBoundingClientRect(), cr = td.getBoundingClientRect(), tr = tip.getBoundingClientRect();
-    const x = Math.max(0, Math.min(wr.width - tr.width, cr.left - wr.left + cr.width / 2 - tr.width / 2));
-    const y = cr.top - wr.top - tr.height - 8;
-    tip.style.transform = `translate(${x.toFixed(1)}px, ${Math.max(0, y).toFixed(1)}px)`;
+    // Reports' own placement (F266): never over the selected cell, above it or below it when there is no room above.
+    window.EclipseHeat.placeTip(tip, td, wrap);
   }
   function wireHeat() {
     const table = $("#heat");
