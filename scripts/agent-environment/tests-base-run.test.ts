@@ -1,4 +1,4 @@
-import { readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
@@ -100,8 +100,8 @@ describe("tests:base-run selection", () => {
 import { value } from "../src/value";
 
 it("reads a property", () => {
-	const result = value() as unknown as { missing: { deep: number } };
-	expect(result.missing.deep).toBe(1);
+	const rows: Record<string, { deep: number }> = { present: { deep: value() } };
+	expect(rows.missing.deep).toBe(1);
 });
 `,
 			},
@@ -273,6 +273,53 @@ it("filtered test", () => expect(1).toBe(2));
 		);
 	});
 
+	it("matches table titles to the runner's expanded names, so only a changed row is judged", () => {
+		const table = (
+			tripled: number,
+		) => `import { describe, expect, it } from "vitest";
+import { double, triple } from "../src/math";
+
+describe("table", () => {
+	it.each([{ input: 1 }, { input: 2 }])("doubles $input", ({ input }) => {
+		expect(double(input)).toBe(input * 2);
+	});
+	it.each([[1, 2]])("doubles %s to %i", (input, expected) => {
+		expect(double(input)).toBe(expected);
+	});
+	it.each([[{ input: 1 }]])("reads %j", (row) => expect(double(row.input)).toBe(2));
+	it.each([5])("row %# holds $0", (input) => expect(double(input)).toBe(10));
+	it.each([[3, ${tripled}]])("triples %d", (input, expected) => {
+		expect(triple(input)).toBe(expected);
+	});
+});
+`;
+		const test = fixture({
+			baseFiles: {
+				"src/math.ts": `export const double = (value: number) => value * 2;
+export const triple = (value: number) => value * 3;
+`,
+				"tests/table.test.ts": table(9),
+			},
+			resultFiles: { "tests/table.test.ts": table(10) },
+		});
+		const result = runBase(test);
+		expect(result.status, result.stdout).toBe(0);
+		expect(judgedClasses(result.stdout)).toEqual(["assertion"]);
+		expect(result.stdout).toMatch(
+			/^assertion tests\/table\.test\.ts > table triples 3: AssertionError:/m,
+		);
+		for (const name of [
+			"table doubles 1",
+			"table doubles 2",
+			"table doubles 1 to 2",
+			'table reads {"input":1}',
+			"table row 0 holds 5",
+		])
+			expect(result.stdout).toContain(
+				`\nunchanged tests/table.test.ts > ${name}\n`,
+			);
+	});
+
 	it("judges one added duplicate title without blaming the existing duplicate", () => {
 		const test = fixture({
 			baseFiles: {
@@ -437,6 +484,42 @@ test("node value", () => assert.equal(value(), ${expected}));
 		);
 	});
 
+	it("keeps the whole describe chain of a nested node --test name", () => {
+		const nodeTest = (
+			expected: number,
+		) => `import assert from "node:assert/strict";
+import { describe, test } from "node:test";
+import { value } from "../../../src/value.mjs";
+describe("outer", () => {
+	describe("inner", () => {
+		test("kept", () => assert.equal(value(), 1));
+		test("changed", () => assert.equal(value(), ${expected}));
+	});
+	test("sibling", () => assert.equal(value(), 1));
+});
+`;
+		const test = fixture({
+			baseFiles: {
+				"src/value.mjs": "export const value = () => 1;\n",
+				".agents/skills/verify-fitway/nested.test.mjs": nodeTest(1),
+			},
+			resultFiles: {
+				".agents/skills/verify-fitway/nested.test.mjs": nodeTest(2),
+			},
+		});
+		const result = runBase(test);
+		const file = ".agents/skills/verify-fitway/nested.test.mjs";
+		expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
+		expect(judgedClasses(result.stdout)).toEqual(["assertion"]);
+		expect(result.stdout).toContain(
+			`\nassertion ${file} > outer > inner > changed: AssertionError`,
+		);
+		expect(result.stdout).toContain(
+			`\nunchanged ${file} > outer > inner > kept\n`,
+		);
+		expect(result.stdout).toContain(`\nunchanged ${file} > outer > sibling\n`);
+	});
+
 	it("re-runs a timeout once and reports the wrong reason when it repeats", () => {
 		const timeoutConfig = `import { defineConfig } from "vitest/config";
 export default defineConfig({ test: { testTimeout: 100 } });
@@ -462,6 +545,70 @@ it("returns the result", async () => {
 		expect(result.stdout).toMatch(
 			/^wrong-reason tests\/slow\.test\.ts > returns the result: .+\(timeout\)$/m,
 		);
+	});
+
+	it("applies a file-level timeout to judged tests a partial report did not run", () => {
+		const test = fixture({
+			baseFiles: {
+				"src/value.ts": "export const value = () => 1;\n",
+				"tests/hook.test.ts": valueTest(1),
+				"vitest.config.ts": `import { defineConfig } from "vitest/config";
+export default defineConfig({ test: { hookTimeout: 100 } });
+`,
+			},
+			resultFiles: {
+				"tests/hook.test.ts": `import { beforeAll, expect, it } from "vitest";
+import { value } from "../src/value";
+beforeAll(async () => {
+	await new Promise((resolve) => setTimeout(resolve, 400));
+});
+it("first", () => expect(value()).toBe(2));
+it("second", () => expect(value()).toBe(2));
+it.skip("skipped on purpose", () => expect(value()).toBe(2));
+`,
+			},
+		});
+		const result = runBase(test);
+		expect(result.status, result.stdout).toBe(1);
+		expect(judgedClasses(result.stdout)).toEqual([
+			"wrong-reason",
+			"wrong-reason",
+		]);
+		for (const name of ["first", "second"])
+			expect(result.stdout).toMatch(
+				new RegExp(
+					`^wrong-reason tests/hook\\.test\\.ts > ${name}: Hook timed out.+\\(timeout\\)$`,
+					"m",
+				),
+			);
+		expect(result.stdout).toMatch(
+			/^skipped tests\/hook\.test\.ts > skipped on purpose$/m,
+		);
+	});
+
+	it("applies a node --test file's failure outside its tests to every judged test", () => {
+		const test = fixture({
+			baseFiles: { "src/value.mjs": "export const value = () => 1;\n" },
+			resultFiles: {
+				".agents/skills/verify-fitway/exit.test.mjs": `import assert from "node:assert/strict";
+import test from "node:test";
+import { value } from "../../../src/value.mjs";
+test("first", () => assert.equal(value(), 2));
+test("exits", () => process.exit(3));
+`,
+			},
+		});
+		const result = runBase(test);
+		const file = ".agents/skills/verify-fitway/exit.test.mjs";
+		expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(1);
+		expect(judgedClasses(result.stdout)).toEqual([
+			"wrong-reason",
+			"wrong-reason",
+		]);
+		for (const name of ["first", "exits"])
+			expect(result.stdout).toContain(
+				`\nwrong-reason ${file} > ${name}: test file exited with code 3 outside its tests`,
+			);
 	});
 });
 
@@ -537,6 +684,25 @@ describe("tests:base-run refusals", () => {
 });
 
 describe("tests:base-run ordinary paths", () => {
+	it("creates its scratch folder on a fresh install that has no node_modules/.cache", () => {
+		const test = fixture({
+			baseFiles: {
+				"src/value.ts": "export const value = () => 1;\n",
+				"tests/value.test.ts": valueTest(1),
+			},
+			resultFiles: { "tests/value.test.ts": valueTest(2) },
+		});
+		const cache = path.join(test.root, "node_modules", ".cache");
+		expect(existsSync(path.join(test.root, "node_modules"))).toBe(true);
+		expect(existsSync(cache)).toBe(false);
+		const result = runBase(test);
+		expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
+		expect(result.stdout).toMatch(
+			/^assertion tests\/value\.test\.ts > returns the result: AssertionError:/m,
+		);
+		expect(readdirSync(cache)).toEqual([]);
+	});
+
 	it("prints both commits when the diff has no test changes", () => {
 		const test = fixture({
 			baseFiles: { "src/value.ts": "export const value = () => 1;\n" },

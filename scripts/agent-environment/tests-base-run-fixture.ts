@@ -8,14 +8,6 @@ export type BaseRunFixtureSpec = {
 	installMarker?: boolean;
 };
 
-export function fixtureFile(
-	files: Record<string, string | null>,
-	file: string,
-	text: string,
-) {
-	files[file] = text;
-}
-
 function write(root: string, file: string, text: string) {
 	const absolute = path.resolve(root, file);
 	mkdirSync(path.dirname(absolute), { recursive: true });
@@ -23,8 +15,9 @@ function write(root: string, file: string, text: string) {
 }
 
 function writeFixtureBase(root: string, spec: BaseRunFixtureSpec) {
+	// A fresh install has `node_modules` without `node_modules/.cache`; the command creates the cache it uses.
 	if (spec.installMarker !== false)
-		mkdirSync(path.join(root, "node_modules", ".cache"), { recursive: true });
+		mkdirSync(path.join(root, "node_modules"), { recursive: true });
 	write(root, ".gitignore", "node_modules/\n");
 	write(
 		root,
@@ -85,9 +78,9 @@ function applyResult(
 }
 
 export function createBaseRunFixture(spec: BaseRunFixtureSpec) {
-	const root = mkdtempSync(
-		path.join(process.cwd(), "node_modules", ".cache", "base-run-case-"),
-	);
+	const parent = path.join(process.cwd(), "node_modules", ".cache");
+	mkdirSync(parent, { recursive: true });
+	const root = mkdtempSync(path.join(parent, "base-run-case-"));
 	writeFixtureBase(root, spec);
 	const git = fixtureGit(root);
 	git("init", "--quiet");

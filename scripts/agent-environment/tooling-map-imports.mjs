@@ -57,7 +57,7 @@ export function memberOperation(node) {
 	return "read";
 }
 
-export function moduleCandidates(specifier, importer, root) {
+function moduleCandidates(specifier, importer, root) {
 	const normalized = specifier.replaceAll("\\", "/");
 	const importerDirectory = path.posix.dirname(normalizePath(importer));
 	const candidates = [];
@@ -215,8 +215,11 @@ export function resolveExportsByFile({
 		active.add(file);
 		const exports = new Map(direct.get(file) ?? []);
 		for (const reExport of reExports.get(file) ?? []) {
-			const targetFile = moduleCandidates(reExport.specifier, file, root).find(
-				(candidate) => sourceSet.has(candidate),
+			const targetFile = resolveModuleFile(
+				reExport.specifier,
+				file,
+				root,
+				sourceSet,
 			);
 			if (!targetFile) continue;
 			const targetExports = resolve(targetFile);
@@ -280,11 +283,12 @@ function dynamicModuleTarget(node, testPath, root, sourceSet, exportsByFile) {
 		!ts.isStringLiteral(expression.arguments[0])
 	)
 		return null;
-	const targetFile = moduleCandidates(
+	const targetFile = resolveModuleFile(
 		expression.arguments[0].text,
 		testPath,
 		root,
-	).find((candidate) => sourceSet.has(candidate));
+		sourceSet,
+	);
 	if (!targetFile) return null;
 	return {
 		file: targetFile,
@@ -372,9 +376,7 @@ function addStaticImportBindings(
 	namespaceImports,
 ) {
 	for (const [local, { specifier, imported }] of importBindings(sourceFile)) {
-		const targetFile = moduleCandidates(specifier, testPath, root).find(
-			(candidate) => sourceSet.has(candidate),
-		);
+		const targetFile = resolveModuleFile(specifier, testPath, root, sourceSet);
 		if (!targetFile) continue;
 		const targetExports = exportsByFile.get(targetFile) ?? new Map();
 		if (imported === "*") {

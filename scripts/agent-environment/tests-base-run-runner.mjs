@@ -78,14 +78,17 @@ function statusOf(value) {
 	return "failed";
 }
 
-export function parseVitestReport(report, root) {
+function parseVitestReport(report, root) {
 	const tests = [];
 	const fileFailures = new Map();
 	for (const suite of report.testResults ?? []) {
 		const file = relativeFile(root, suite.name);
+		// `message` holds the file's own errors (loading, a top-level hook); it can come with reported tests.
+		const fileError = String(suite.failureMessage ?? suite.message ?? "");
 		const failure =
-			suite.status === "failed" && !(suite.assertionResults ?? []).length
-				? failureText(suite.failureMessage ?? suite.message, processFailure({}))
+			suite.status === "failed" &&
+			(fileError || !(suite.assertionResults ?? []).length)
+				? failureText(fileError, processFailure({}))
 				: "";
 		if (failure) fileFailures.set(file, failure);
 		for (const assertion of suite.assertionResults ?? []) {
@@ -110,19 +113,64 @@ export function parseVitestReport(report, root) {
 	return { tests, fileFailures };
 }
 
-export function parseNodeReport(text, file) {
+// `node --test` prints `# Subtest: <name>` before a test's children and its `ok` line after them, both at the
+// test's indentation, so the open headings form a stack and a result's ancestors are the headings outside it.
+function nodeHeading(headings, indentation, name) {
+	while (headings.length && headings.at(-1).indentation >= indentation)
+		headings.pop();
+	headings.push({ indentation, name });
+}
+
+function closeNodeHeading(headings, indentation, resultName) {
+	while (headings.length && headings.at(-1).indentation > indentation)
+		headings.pop();
+	if (headings.at(-1)?.indentation !== indentation)
+		headings.push({ indentation, name: resultName });
+	const name = headings.pop().name;
+	return { name, ancestors: headings.map((item) => item.name) };
+}
+
+// The runner reports a file whose process failed outside any test as one result named after the file.
+function isNodeFileResult(indentation, name, file) {
+	return (
+		indentation === 0 &&
+		Boolean(file) &&
+		normalizePath(name.replaceAll("\\\\", "\\")) === normalizePath(file)
+	);
+}
+
+// The file's own error (a module that cannot load, a throw at the top level) is printed before its result as
+// `# ` diagnostic lines; without one, the exit code says how the process ended.
+function nodeFileFailure(diagnostics, detailText, failure) {
+	const thrown = diagnostics.findIndex((line) =>
+		/^(?:[A-Za-z]*Error\b|Error \[)/.test(line),
+	);
+	if (thrown >= 0) return diagnostics.slice(thrown).join("\n");
+	const exitCode = detailText.match(/\n?\s*exitCode: (\S+)/)?.[1];
+	return exitCode
+		? `test file exited with code ${exitCode} outside its tests: ${failure}`
+		: failure;
+}
+
+function parseNodeReport(text, file) {
 	const tests = [];
 	const fileFailures = new Map();
 	const lines = text.split(/\r?\n/);
-	const headings = new Map();
-	let pendingHeading = null;
+	const headings = [];
+	const diagnostics = [];
 	for (let index = 0; index < lines.length; index += 1) {
-		const heading = lines[index].match(/^# Subtest: (.*)$/);
-		if (heading) pendingHeading = heading[1];
+		const heading = lines[index].match(/^(\s*)# Subtest: (.*)$/);
+		if (heading) nodeHeading(headings, heading[1].length, heading[2]);
+		else if (lines[index].startsWith("# "))
+			diagnostics.push(lines[index].slice(2).replace(/\\([\\#])/g, "$1"));
 		const result = lines[index].match(/^(\s*)(not ok|ok) \d+ - (.*)$/);
 		if (!result) continue;
 		const indentation = result[1].length;
-		const name = result[3].trim();
+		const { name, ancestors } = closeNodeHeading(
+			headings,
+			indentation,
+			result[3].trim(),
+		);
 		const details = [];
 		let cursor = index + 1;
 		while (
@@ -135,10 +183,7 @@ export function parseNodeReport(text, file) {
 		}
 		const detailText = details.join("\n");
 		const kind = detailText.match(/\n?\s*type: '([^']+)'/)?.[1] ?? "test";
-		if (kind !== "test") {
-			headings.set(indentation, name);
-			continue;
-		}
+		if (kind !== "test") continue;
 		const errorBlock = detailText.match(
 			/\n?\s*error: \|-\r?\n([\s\S]*?)(?=\r?\n\s*(?:code|name|expected|actual|operator|stack|duration_ms|\.\.\.):)/,
 		)?.[1];
@@ -149,20 +194,19 @@ export function parseNodeReport(text, file) {
 				? `${errorName}: ${errorBlock.trim()}`
 				: [errorName, code, errorBlock?.trim()].filter(Boolean).join("\n");
 		const skipped = /\n?\s*(?:skip|todo):/.test(detailText);
-		const ancestors = [];
-		for (const [depth, value] of headings)
-			if (depth < indentation) ancestors.push(value);
+		if (failure && isNodeFileResult(indentation, name, file)) {
+			fileFailures.set(file, nodeFileFailure(diagnostics, detailText, failure));
+			continue;
+		}
 		tests.push({
 			file,
-			title: pendingHeading ?? name,
+			title: name,
 			ancestors,
-			fullName: [...ancestors, pendingHeading ?? name].join(" > "),
+			fullName: [...ancestors, name].join(" > "),
 			status: skipped ? "skipped" : failure ? "failed" : "passed",
 			failure,
 			line: null,
 		});
-		headings.set(indentation, pendingHeading ?? name);
-		pendingHeading = null;
 	}
 	return { tests, fileFailures };
 }

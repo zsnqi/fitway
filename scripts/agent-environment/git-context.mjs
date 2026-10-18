@@ -1,17 +1,12 @@
 import { execFileSync } from "node:child_process";
 
-export function runGit(repositoryRoot, args, options = {}) {
+export function readGit(repositoryRoot, args) {
 	return execFileSync("git", args, {
 		cwd: repositoryRoot,
 		encoding: "utf8",
 		stdio: ["ignore", "pipe", "pipe"],
 		windowsHide: true,
-		...options,
-	});
-}
-
-export function readGit(repositoryRoot, args) {
-	return runGit(repositoryRoot, args).trim();
+	}).trim();
 }
 
 // Reads fetched refs only. Detached HEADs and branches without upstreams are quiet.

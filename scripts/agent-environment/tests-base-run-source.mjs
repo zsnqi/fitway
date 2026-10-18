@@ -1,4 +1,3 @@
-import path from "node:path";
 import ts from "typescript";
 import {
 	createSourceFile,
@@ -51,11 +50,12 @@ function callKind(node) {
 	};
 }
 
-function titleMatcher(expression, sourceFile) {
+// A table title (`it.each`, `test.each`, `describe.each`) is expanded by the runner for each row.
+function titleMatcher(expression, sourceFile, each = false) {
 	if (!expression) return { kind: "dynamic", source: "" };
 	const value = unwrapParenthesized(expression);
 	if (ts.isStringLiteral(value) || ts.isNoSubstitutionTemplateLiteral(value))
-		return { kind: "exact", value: value.text };
+		return { kind: "exact", value: value.text, each };
 	if (ts.isTemplateExpression(value)) {
 		const parts = [value.head.text];
 		for (const span of value.templateSpans)
@@ -64,6 +64,7 @@ function titleMatcher(expression, sourceFile) {
 			kind: "pattern",
 			value: parts.join(""),
 			source: value.getText(sourceFile),
+			each,
 		};
 	}
 	return { kind: "dynamic", source: value.getText(sourceFile) };
@@ -120,7 +121,11 @@ function collectTests(file, source) {
 		if (ts.isCallExpression(node)) {
 			const kind = callKind(node);
 			if (kind?.root === "describe") {
-				const description = titleMatcher(node.arguments[0], sourceFile);
+				const description = titleMatcher(
+					node.arguments[0],
+					sourceFile,
+					kind.qualifiers.includes("each"),
+				);
 				const nextAncestors =
 					description.kind === "dynamic"
 						? ancestors
@@ -133,7 +138,11 @@ function collectTests(file, source) {
 				return;
 			}
 			if (kind?.root === "it" || kind?.root === "test") {
-				const title = titleMatcher(node.arguments[0], sourceFile);
+				const title = titleMatcher(
+					node.arguments[0],
+					sourceFile,
+					kind.qualifiers.includes("each"),
+				);
 				const sourceNode = kind.sourceNode;
 				const nodeStart = sourceNode.getStart(sourceFile);
 				const range = sourceRange(sourceFile, normalized, nodeStart, node.end);
@@ -210,21 +219,51 @@ function skeleton(sourceFile, source, testRanges) {
 	return result.replace(/\s+/g, " ").trim();
 }
 
+// Vitest's formatTitle (@vitest/runner): `%#` and `%$` are the row's index; `%s`, `%d`, `%i`, `%f`, `%j`,
+// `%o`, `%O` and `%c` a formatted value; `%%` a percent sign; `$name`, `$a.b` and `$0` a value of the row.
+const TABLE_PLACEHOLDER = /%[sdjifoOc#$%]|\$[$\w.]+/g;
+
+function literalRegex(text) {
+	return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function titlePartRegex(text, each) {
+	if (!each) return literalRegex(text);
+	let result = "";
+	let last = 0;
+	for (const match of text.matchAll(TABLE_PLACEHOLDER)) {
+		result += literalRegex(text.slice(last, match.index));
+		result += match[0] === "%%" ? "%{1,2}" : "[\\s\\S]*";
+		last = match.index + match[0].length;
+	}
+	return result + literalRegex(text.slice(last));
+}
+
 function matcherRegex(matcher) {
 	if (matcher.kind === "exact")
-		return new RegExp(
-			`^${matcher.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-		);
+		return new RegExp(`^${titlePartRegex(matcher.value, matcher.each)}$`);
 	if (matcher.kind === "pattern") {
-		const escaped = matcher.value
+		const parts = matcher.value
 			.split("\u0000")
-			.map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-		const expanded = escaped.map((part) =>
-			part.replace(/%[sdifjoO]/g, ".*").replace(/\$[A-Za-z_]\w*/g, ".*"),
-		);
-		return new RegExp(`^${expanded.join(".*")}$`);
+			.map((part) => titlePartRegex(part, matcher.each));
+		return new RegExp(`^${parts.join("[\\s\\S]*")}$`);
 	}
-	return /.*/;
+	return /[\s\S]*/;
+}
+
+function literalLength(matcher) {
+	if (matcher.kind === "dynamic") return 0;
+	const text = matcher.value.replaceAll("\u0000", "");
+	return (matcher.each ? text.replace(TABLE_PLACEHOLDER, "") : text).length;
+}
+
+// When several source calls match one runner name (`doubles $input` also matches `doubles 1 to 2`), the call
+// whose title fixes more literal text is the one the runner expanded.
+export function titleSpecificity(test) {
+	return [...test.ancestors, test.title].reduce(
+		(total, matcher) => total + literalLength(matcher),
+		0,
+	);
 }
 
 export function testSourceMatches(test, title, ancestors = []) {
@@ -258,20 +297,7 @@ export function parseTestSource(file, source) {
 	};
 }
 
-export function sourceLine(source, index) {
-	return source.slice(0, index).split("\n").length;
-}
-
 export function basePathFor(resultPath, renames) {
 	const normalized = normalizePath(resultPath);
 	return normalizePath(renames.get(normalized) ?? normalized);
-}
-
-export function relativeModulePath(specifier, importer) {
-	if (!specifier.startsWith(".")) return null;
-	return normalizePath(
-		path.posix.normalize(
-			path.posix.join(path.posix.dirname(importer), specifier),
-		),
-	);
 }

@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { readGit, runGit } from "./git-context.mjs";
+import { readGit } from "./git-context.mjs";
 import { normalizePath } from "./tooling-map-parser.mjs";
 
 export function resolveCommit(repository, ref) {
@@ -75,7 +75,7 @@ export function readTreeFile(treeRoot, file) {
 export function extractTree(repository, ref, root, destination) {
 	mkdirSync(root, { recursive: true });
 	const archive = path.join(root, `${path.basename(destination)}.tar`);
-	runGit(repository, ["archive", "--format=tar", `--output=${archive}`, ref]);
+	readGit(repository, ["archive", "--format=tar", `--output=${archive}`, ref]);
 	mkdirSync(destination, { recursive: true });
 	const result = spawnSync(
 		"tar",

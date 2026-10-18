@@ -12,12 +12,12 @@ import { repositoryFingerprint } from "../repository-fingerprint.mjs";
 import { samePath } from "./path-identity.mjs";
 import {
 	assignSourceTest,
+	baseSourceFor,
 	classifyFailure,
 	fallbackJudgedSourceTests,
 	firstFailureLine,
 	isTimeout,
 	judgedTest,
-	matchingBaseTests,
 } from "./tests-base-run-classify.mjs";
 import {
 	ancestorOf,
@@ -36,8 +36,6 @@ import {
 	testSupportFile,
 } from "./tests-base-run-graph.mjs";
 import {
-	parseNodeReport,
-	parseVitestReport,
 	processWasKilled,
 	readNodeReport,
 	readVitestReport,
@@ -74,12 +72,10 @@ function runnerArgs(kind) {
 		? {
 				run: runNodeTests,
 				read: readNodeReport,
-				parse: parseNodeReport,
 			}
 		: {
 				run: runVitest,
 				read: readVitestReport,
-				parse: parseVitestReport,
 			};
 }
 
@@ -178,7 +174,8 @@ async function ensureFileReport({
 	let fileResult = result;
 	let failure = reportFailure(fileReport, file);
 	let tests = fileReport.tests.filter((test) => test.file === file);
-	if (!tests.length && failure) {
+	// A file-level failure, with or without some tests reported, is confirmed by running the file alone once.
+	if (failure) {
 		counter.value += 1;
 		const rerun = invokeRunner({
 			kind,
@@ -188,10 +185,14 @@ async function ensureFileReport({
 		});
 		if (!processWasKilled(rerun.result)) fileReport = rerun.report;
 		fileResult = rerun.result;
+		tests = fileReport.tests.filter((test) => test.file === file);
 		failure =
 			reportFailure(fileReport, file) ||
-			(processWasKilled(fileResult) ? "Test process timed out" : failure);
-		tests = fileReport.tests.filter((test) => test.file === file);
+			(processWasKilled(fileResult)
+				? "Test process timed out"
+				: tests.length
+					? null
+					: failure);
 	}
 	return { fileReport, failure, tests };
 }
@@ -233,6 +234,7 @@ async function classifyReported({
 	kind,
 	file,
 	tests,
+	failure,
 	parsed,
 	baseParsed,
 	globalJudged,
@@ -258,20 +260,24 @@ async function classifyReported({
 		const source = assignSourceTest(parsed, test, used);
 		const occurrence = occurrences.get(test.fullName) ?? 0;
 		occurrences.set(test.fullName, occurrence + 1);
-		const baseMatches = matchingBaseTests(baseParsed, test);
-		const baseSource = source?.each ? baseMatches[0] : baseMatches[occurrence];
+		const baseSource = baseSourceFor(baseParsed, source, test, occurrence);
+		const judgement = { test, source, baseSource, globalJudged };
+		// A test the source does not skip, reported skipped beside a file-level failure, never ran.
+		if (
+			failure &&
+			test.status === "skipped" &&
+			source &&
+			!source.skipped &&
+			judgedTest({ ...judgement, test: { ...test, status: "failed" } })
+		) {
+			judged.push({ ...classifyFailure(failure, addedModules), test });
+			continue;
+		}
 		if (test.status === "skipped") {
 			skipped.push(test);
 			continue;
 		}
-		if (
-			!judgedTest({
-				test,
-				source,
-				baseSource,
-				globalJudged,
-			})
-		) {
+		if (!judgedTest(judgement)) {
 			unchanged.push(test);
 			continue;
 		}
@@ -281,6 +287,17 @@ async function classifyReported({
 		});
 		judged.push({ ...classified, test });
 	}
+	if (failure)
+		for (const source of fallbackJudgedSourceTests({
+			result: parsed,
+			base: baseParsed,
+			globalJudged,
+		}))
+			if (!used.has(source))
+				judged.push({
+					...classifyFailure(failure, addedModules),
+					test: source,
+				});
 	return { judged, unchanged, skipped, notRun: [] };
 }
 
@@ -297,7 +314,7 @@ async function fileOutcome(context) {
 				`not-run ${context.file}: no tests reported by the ${context.kind} runner`,
 			],
 		};
-	return classifyReported({ ...context, tests });
+	return classifyReported({ ...context, tests, failure });
 }
 
 async function cleanupScratch({ tempRoot, cache, before, cwd }) {

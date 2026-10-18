@@ -1,4 +1,7 @@
-import { testSourceMatches } from "./tests-base-run-source.mjs";
+import {
+	testSourceMatches,
+	titleSpecificity,
+} from "./tests-base-run-source.mjs";
 import { normalizePath } from "./tooling-map-parser.mjs";
 
 export function firstFailureLine(message) {
@@ -73,19 +76,28 @@ function sourceCandidates(parsed, test) {
 }
 
 export function assignSourceTest(parsed, test, used = new Set()) {
-	const candidates = sourceCandidates(parsed, test);
-	const unused = candidates.find((candidate) => !used.has(candidate));
+	const candidates = sourceCandidates(parsed, test).sort(
+		(left, right) => titleSpecificity(right) - titleSpecificity(left),
+	);
 	const selected =
-		unused ?? candidates.find((candidate) => candidate.each) ?? null;
+		candidates.find((candidate) => candidate.each || !used.has(candidate)) ??
+		null;
 	if (selected) used.add(selected);
 	return selected;
 }
 
-export function matchingBaseTests(parsed, test) {
-	if (!parsed) return [];
+// A table's rows share one call, so its base is the call with the same source title, not a runner name.
+export function baseSourceFor(parsed, source, test, occurrence) {
+	if (!parsed) return undefined;
+	if (source?.each)
+		return parsed.tests.find(
+			(candidate) =>
+				candidate.fullName === source.fullName &&
+				candidate.sameNameOccurrence === source.sameNameOccurrence,
+		);
 	return parsed.tests.filter((candidate) =>
 		testSourceMatches(candidate, test.title, test.ancestors),
-	);
+	)[occurrence];
 }
 
 export function judgedTest({ test, source, baseSource, globalJudged }) {
