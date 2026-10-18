@@ -97,3 +97,27 @@ through these pointers, not copied here.
     measure skips `describe` callbacks (with its `.each`, `.skip`, `.only` and similar forms); `it` and `test`
     callbacks, hooks, helpers and every other function stay measured. The ratchet round with the code-line count
     (item 10) carries it.
+13. **Prevent what reviews keep finding; reviews keep the judgment** (the user, 2026-10-18: «بخصوص بيئة الـAgents،
+    أعطيك حرية تقييم وتنفيذ أي تحسينات تشوف أنها مفيدة فعلًا لجودة النظام وكفاءة سير العمل»). The coordinator evaluates
+    and carries out agent-environment improvements without asking on each detail, aimed first at the problems Sol's
+    reviews and grades keep finding that a check, a template line or a code structure can stop before any review.
+    Sol's reviews are neither removed nor reduced to save cost; quality does not drop; a tool change earns its place by
+    a measured benefit and never displaces the pages and the demo (r04 decision 76). Decisions and results are recorded
+    as usual.
+    - **Measured first** (`D:/fitway-temp/review-recurrence/REPORT.md`, sonnet-researcher, 2026-10-18; two Biome
+      figures reproduced by the coordinator): 74 blocking findings in 19 Sol diff reviews (duplicates and second paths
+      34, only the named forms handled 11, dead code 9, growth 7); none of the 25 findings in rounds after the ratchet
+      was caught by it, the rest being semantic; 37 FAIL rows over 7 grades (21 real defects, 14 brief wording),
+      overclaims in 5 rounds, tests red for the wrong reason in 4, load timeouts in 4.
+    - **Built, in this order, each replayed on the report's 18 past base..result pairs for catches and false flags:**
+      base-run (a round's added or changed tests run against the base's code; a failure before any assertion is
+      refused as red for the wrong reason, a missing module the diff adds is listed apart); ratchet-2 (the summed length
+      of functions over 80 lines per non-test file cannot rise, empty blocks counted, Biome warnings fail the ladder,
+      and the zero-hit rules `noSkippedTests`, `noUnusedExpressions`, `noNonNullAssertion` set to error; the timeouts of
+      F261, F281 and F282 settled); the launcher runs the fast ladder itself after it accepts a commit claim and
+      records the result (F256's ladder half, F279); the brief template gains a reuse line, a pointer to
+      `CODE_REVIEW.md` D1-D8 for the implementer, a `Forms:` list for any outcome that parses, reads, classifies or
+      detects (presence checked by `brief:check`), and what a new check does when its input is missing.
+    - **Not built yet:** a near-clone measure (12 of 30 placed duplicates on history, its false-flag rate unjudged);
+      it may become a hint in the diff review's prompt once a hand-judged sample sets its threshold.
+    - **The benefit is tracked** as blocking findings per diff review by class, before and after, in `codex-rounds.md`.
