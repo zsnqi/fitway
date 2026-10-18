@@ -1,14 +1,17 @@
 import path from "node:path";
 import ts from "typescript";
 
-const SOURCE_EXTENSIONS = new Set([
-	".js",
-	".mjs",
-	".cjs",
-	".ts",
-	".tsx",
-	".css",
-	".html",
+const SCRIPT_EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".ts", ".tsx"]);
+const SOURCE_EXTENSIONS = new Set([...SCRIPT_EXTENSIONS, ".css", ".html"]);
+const DESCRIBE_CHAIN_MEMBERS = new Set([
+	"each",
+	"sequential",
+	"concurrent",
+	"skip",
+	"only",
+	"todo",
+	"skipIf",
+	"runIf",
 ]);
 
 export function isSourceFile(file) {
@@ -17,6 +20,16 @@ export function isSourceFile(file) {
 
 function blank(text) {
 	return text.replace(/[^\r\n]/g, " ");
+}
+
+function blankSpans(text, spans) {
+	let masked = "";
+	let cursor = 0;
+	for (const [start, end] of spans) {
+		masked += text.slice(cursor, start) + blank(text.slice(start, end));
+		cursor = end;
+	}
+	return masked + text.slice(cursor);
 }
 
 function literal(node) {
@@ -37,9 +50,79 @@ function visitCode(node, visit) {
 	ts.forEachChild(node, (child) => visitCode(child, visit));
 }
 
-function scanLongFunctions(source, text, offset, add) {
+function bindingResolver(source) {
+	const host = {
+		getSourceFile: (name) => (name === source.fileName ? source : undefined),
+		getDefaultLibFileName: () => "lib.d.ts",
+		writeFile: () => {},
+		getCurrentDirectory: () => "",
+		getCanonicalFileName: (name) => name,
+		useCaseSensitiveFileNames: () => true,
+		getNewLine: () => "\n",
+		fileExists: (name) => name === source.fileName,
+		readFile: () => undefined,
+	};
+	return ts
+		.createProgram(
+			[source.fileName],
+			{ noLib: true, noResolve: true, allowJs: true, types: [] },
+			host,
+		)
+		.getTypeChecker();
+}
+
+function scanLongFunctions(source, text, offset, file, add) {
+	const ext = path.extname(file).toLowerCase();
+	const bindings = new Set();
+	let checker;
+	if (
+		SCRIPT_EXTENSIONS.has(ext) &&
+		/\.(?:test|spec)$/i.test(path.basename(file, ext))
+	) {
+		for (const statement of source.statements) {
+			if (
+				!ts.isImportDeclaration(statement) ||
+				statement.importClause?.isTypeOnly ||
+				!ts.isStringLiteral(statement.moduleSpecifier) ||
+				statement.moduleSpecifier.text !== "vitest"
+			)
+				continue;
+			const named = statement.importClause?.namedBindings;
+			if (!named || !ts.isNamedImports(named)) continue;
+			for (const element of named.elements) {
+				if (element.isTypeOnly) continue;
+				const imported = element.propertyName ?? element.name;
+				if (imported.text !== "describe") continue;
+				checker ??= bindingResolver(source);
+				bindings.add(checker.getSymbolAtLocation(element.name));
+			}
+		}
+	}
+	const isDescribeCallee = (expression) => {
+		const node = unwrap(expression);
+		if (ts.isIdentifier(node))
+			return bindings.has(checker?.getSymbolAtLocation(node));
+		if (ts.isPropertyAccessExpression(node))
+			return (
+				DESCRIBE_CHAIN_MEMBERS.has(node.name.text) &&
+				isDescribeCallee(node.expression)
+			);
+		if (ts.isCallExpression(node)) return isDescribeCallee(node.expression);
+		return false;
+	};
+	const isDescribeCallback = (node) => {
+		let argument = node;
+		while (ts.isParenthesizedExpression(argument.parent))
+			argument = argument.parent;
+		const call = argument.parent;
+		if (!call || !ts.isCallExpression(call)) return false;
+		return (
+			call.arguments.at(-1) === argument && isDescribeCallee(call.expression)
+		);
+	};
 	visitCode(source, (node) => {
 		if (!ts.isFunctionLike(node) || !node.body) return;
+		if (isDescribeCallback(node)) return;
 		const startLine = text
 			.slice(0, node.getStart(source))
 			.split(/\r?\n/).length;
@@ -84,21 +167,18 @@ function scanComments(source, text, offset, isTypeScript, add, addComment) {
 			}
 			return;
 		}
-		if (literal(node)) {
+		if (literal(node) || ts.isJsxText(node)) {
 			spans.push([node.getStart(source), node.end]);
 			return;
 		}
 		ts.forEachChild(node, findLiterals);
 	};
 	findLiterals(source);
-	// Mask literal text before scanning trivia; template substitutions stay visible.
-	let masked = "";
-	let cursor = 0;
-	for (const [start, end] of spans.sort((a, b) => a[0] - b[0])) {
-		masked += text.slice(cursor, start) + blank(text.slice(start, end));
-		cursor = end;
-	}
-	masked += text.slice(cursor);
+	// Mask literal and JSX text before scanning trivia; template substitutions stay visible.
+	const masked = blankSpans(
+		text,
+		spans.sort((a, b) => a[0] - b[0]),
+	);
 	const scanner = ts.createScanner(
 		ts.ScriptTarget.Latest,
 		false,
@@ -123,7 +203,7 @@ function scanComments(source, text, offset, isTypeScript, add, addComment) {
 	}
 }
 
-function script(text, offset, isTypeScript, isTsx, add, addComment) {
+function script(text, offset, isTypeScript, isTsx, file, add, addComment) {
 	const source = ts.createSourceFile(
 		isTsx ? "source.tsx" : isTypeScript ? "source.ts" : "source.js",
 		text,
@@ -136,7 +216,7 @@ function script(text, offset, isTypeScript, isTsx, add, addComment) {
 				: ts.ScriptKind.JS,
 	);
 	scanComments(source, text, offset, isTypeScript, add, addComment);
-	scanLongFunctions(source, text, offset, add);
+	scanLongFunctions(source, text, offset, file, add);
 	visitCode(source, (node) => {
 		const start = offset + node.getStart(source);
 		if (isTypeScript && node.kind === ts.SyntaxKind.AnyKeyword)
@@ -237,7 +317,7 @@ function css(text, offset, add, addComment) {
 	}
 }
 
-function html(text, add, addComment) {
+function html(text, file, add, addComment) {
 	// Raw script/style bodies and comments are consumed as units, so markup
 	// inside their text cannot be mistaken for real style tags or attributes.
 	const units =
@@ -254,7 +334,7 @@ function html(text, add, addComment) {
 			const offset = match.index + openingTag.length;
 			if (match[1].toLowerCase() === "style")
 				css(match[2], offset, add, addComment);
-			else script(match[2], offset, false, false, add, addComment);
+			else script(match[2], offset, false, false, file, add, addComment);
 		}
 		const attributes =
 			/([^\s=<>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
@@ -301,13 +381,14 @@ export function scanSource({ file, text }) {
 	};
 	const ext = path.extname(file).toLowerCase();
 	if (ext === ".css") css(text, 0, add, addComment);
-	else if (ext === ".html") html(text, add, addComment);
-	else if (SOURCE_EXTENSIONS.has(ext))
+	else if (ext === ".html") html(text, file, add, addComment);
+	else if (SCRIPT_EXTENSIONS.has(ext))
 		script(
 			text,
 			0,
 			ext === ".ts" || ext === ".tsx",
 			ext === ".tsx",
+			file,
 			add,
 			addComment,
 		);
@@ -316,5 +397,13 @@ export function scanSource({ file, text }) {
 			.sort((a, b) => a.index - b.index)
 			.map(({ index, ...item }) => item);
 	}
-	return { ...result, comments };
+	const codeLines = blankSpans(
+		text,
+		comments
+			.map(({ text: comment, offset }) => [offset, offset + comment.length])
+			.sort((a, b) => a[0] - b[0]),
+	)
+		.split(/\r\n|\r|\n/)
+		.filter((line) => /[^\s]/.test(line)).length;
+	return { ...result, comments, codeLines };
 }

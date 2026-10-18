@@ -375,7 +375,7 @@ describe("code-health ratchet commands", () => {
 					files: {
 						"scripts/crlf.ts": { giantFiles: 801 },
 						"scripts/final.ts": { giantFiles: 801 },
-						"scripts/lf.ts": { giantFiles: 802 },
+						"scripts/lf.ts": { giantFiles: 801 },
 					},
 				},
 				null,
@@ -385,5 +385,48 @@ describe("code-health ratchet commands", () => {
 		const result = run(checkScript, root);
 		expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
 		expect(result.stdout).toContain("PASS: code health");
+	});
+
+	it("C4 ignores deleted comments and blanks but still rejects code growth", () => {
+		const root = fixture();
+		const code = Array.from(
+			{ length: 801 },
+			(_, index) => `const giant${index} = ${index};`,
+		);
+		const decorated = [
+			"// heading",
+			"",
+			"/* block",
+			"comment only",
+			"*/",
+			...code,
+		].join("\n");
+		write(root, "scripts/giant.ts", decorated);
+		writeBaseline(root);
+		git(root, "add", "--all");
+		git(root, "commit", "-qm", "code-line baseline");
+
+		write(root, "scripts/giant.ts", code.join("\n"));
+		const deletions = run(checkScript, root);
+		expect(deletions.status, `${deletions.stdout}\n${deletions.stderr}`).toBe(
+			0,
+		);
+		expect(deletions.stdout).toContain("PASS: code health");
+		const baseline = JSON.parse(
+			readFileSync(path.join(root, baselinePath), "utf8"),
+		);
+		expect(baseline.files["scripts/giant.ts"]).toEqual({ giantFiles: 801 });
+
+		write(root, "scripts/giant.ts", `${code.join("\n")}\nconst extra = true;`);
+		const growth = run(checkScript, root);
+		expect(growth.status, growth.stderr).toBe(1);
+		expect(growth.stdout).toContain(
+			"scripts/giant.ts: giantFiles baseline=801 current=802",
+		);
+
+		write(root, "scripts/giant.ts", code.join("\n"));
+		const restored = run(checkScript, root);
+		expect(restored.status, `${restored.stdout}\n${restored.stderr}`).toBe(0);
+		expect(restored.stdout).toContain("PASS: code health");
 	});
 });

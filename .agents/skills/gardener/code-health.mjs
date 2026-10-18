@@ -42,12 +42,6 @@ export const DUPLICATION_MEASURE = MEASURE_DEFINITIONS.find(
 ).name;
 const IMPORT_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts", ".tsx", ".css"];
 
-function countLines(text) {
-	if (!text) return 0;
-	const breaks = text.match(/\r\n|\r|\n/g)?.length ?? 0;
-	return breaks + (/(?:\r\n|\r|\n)$/.test(text) ? 0 : 1);
-}
-
 function hit(file, line, detail) {
 	return { file, line, detail };
 }
@@ -267,20 +261,13 @@ export function deriveSharedFiles(files, { specimenPages = [] } = {}) {
 		.sort();
 }
 
-function scanGiantFiles(files) {
-	return files
-		.filter((item) => isSourceFile(item.file))
-		.flatMap((item) => {
-			const count = countLines(item.text);
-			return count > 800
-				? [
-						{
-							...hit(item.file, 1, `${count} lines`),
-							lineCount: count,
-						},
-					]
-				: [];
-		});
+function scanGiantFiles(files, source) {
+	return files.flatMap((item, index) => {
+		const count = source[index].codeLines;
+		return isSourceFile(item.file) && count > 800
+			? [{ ...hit(item.file, 1, `${count} code lines`), lineCount: count }]
+			: [];
+	});
 }
 
 function idsReferenced(text) {
@@ -338,7 +325,7 @@ function scanBoundaryBreaks(files, sharedFiles) {
 export function scanScope(files, { sharedFiles = [] } = {}) {
 	const source = files.map((file) => scanSource(file));
 	const measures = {
-		giantFiles: scanGiantFiles(files),
+		giantFiles: scanGiantFiles(files, source),
 		typeEscapes: source.flatMap((item) => item.typeEscapes),
 		suppressions: source.flatMap((item) => item.suppressions),
 		repeatedWorkarounds: source.flatMap((item) => item.repeatedWorkarounds),
