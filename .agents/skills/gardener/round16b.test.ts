@@ -13,7 +13,7 @@ import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { cleanup } from "./cleanup.mjs";
 import { key, references } from "./facts.mjs";
-import * as survey from "./survey.mjs";
+import * as survey from "./survey-evidence.mjs";
 
 function fixture() {
 	const base = process.env.GARDENER_TEST_RUN ?? os.tmpdir();

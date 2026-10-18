@@ -1,3 +1,4 @@
+// code-health-exception: giantFiles; until=2026-11-15; reason=giant-split moved imported names; the giant test files split next
 import { execFileSync } from "node:child_process";
 import { createHash as nodeCreateHash } from "node:crypto";
 import {
@@ -18,11 +19,13 @@ import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 import {
 	AGENTS_INSTRUCTION_CAP_BYTES,
 	AGENTS_INSTRUCTION_WARN_BYTES,
-	checkAgentContext,
+	TASK_CLASSES,
+} from "./agent-context-rules.mjs";
+import { checkAgentContext } from "./check-agent-context.mjs";
+import {
 	formatAgentContextResult,
 	formatAgentContextWarnings,
-	TASK_CLASSES,
-} from "./check-agent-context.mjs";
+} from "./check-agent-context-options.mjs";
 import {
 	formatPacketAuthorities,
 	readRepositoryYaml,

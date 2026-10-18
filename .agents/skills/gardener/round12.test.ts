@@ -13,7 +13,9 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import * as facts from "./facts.mjs";
-import * as survey from "./survey.mjs";
+import { formatReport } from "./survey.mjs";
+import { cleanupScript, consoleSummary, surveyOutcome } from "./survey-cli.mjs";
+import { collectFolders, collectRecords } from "./survey-evidence.mjs";
 
 const rollingSource = ".agents/skills/gardener/REPORT.md";
 const ledger =
@@ -28,7 +30,7 @@ async function memoryRecords(text: string, overrides = {}) {
 		[rollingSource]: "# Gardener evidence\n",
 		...overrides,
 	};
-	return survey.collectRecords({
+	return collectRecords({
 		trackedFiles: Object.keys(files),
 		load: async (source: string, kind: string) => ({
 			source,
@@ -148,7 +150,7 @@ describe("gardener round 12", () => {
 				trunk: { ref: "origin/main", commit: "abc" },
 			},
 		};
-		const rendered = survey.formatReport(report);
+		const rendered = formatReport(report);
 		expect(rendered).toContain("## Worktrees awaiting review");
 		const section = rendered
 			.split("## Worktrees awaiting review")[1]
@@ -162,12 +164,9 @@ describe("gardener round 12", () => {
 			])
 				expect(section).toContain(value);
 		}
-		expect(survey.surveyOutcome(report)).toBe("clean");
+		expect(surveyOutcome(report)).toBe("clean");
 		expect(
-			survey.consoleSummary(
-				{ ...report, outcome: survey.surveyOutcome(report) },
-				"D:/out",
-			),
+			consoleSummary({ ...report, outcome: surveyOutcome(report) }, "D:/out"),
 		).toContain("2 worktrees await coordinator review");
 		for (const patch of [
 			{ complete: false },
@@ -189,7 +188,7 @@ describe("gardener round 12", () => {
 				},
 			},
 		])
-			expect(survey.surveyOutcome({ ...report, ...patch })).toBe("blocked");
+			expect(surveyOutcome({ ...report, ...patch })).toBe("blocked");
 		console.log(
 			"G2 PROOF: 2 worktrees await coordinator review; outcome clean; real blockers retained",
 		);
@@ -288,8 +287,8 @@ describe("gardener round 12", () => {
 				const old = new Date(Date.now() - 10 * 86400000);
 				utimesSync(folder, old, old);
 			}
-			const context = await survey.collectRecords({ checkout });
-			const folders = await survey.collectFolders(
+			const context = await collectRecords({ checkout });
+			const folders = await collectFolders(
 				context.records,
 				[],
 				path.join(run, "out"),
@@ -301,7 +300,7 @@ describe("gardener round 12", () => {
 				const script = path.join(run, `cleanup-${index}.mjs`);
 				writeFileSync(
 					script,
-					survey.cleanupScript(
+					cleanupScript(
 						{
 							root: checkout,
 							tempRoot,

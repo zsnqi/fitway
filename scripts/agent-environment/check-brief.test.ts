@@ -1,3 +1,4 @@
+// code-health-exception: giantFiles; until=2026-11-15; reason=giant-split moved imported names; the giant test files split next
 import { execFileSync, spawnSync } from "node:child_process";
 import {
 	mkdirSync,
@@ -12,16 +13,18 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { codexScopeProblem } from "./brief-markdown.mjs";
 import {
-	checkBrief,
-	codexScopeProblem,
-	formatBriefResult,
-	parseBriefArgs,
 	reviewSourcePlan,
 	setReviewSourcePlaceObserver,
+} from "./brief-review-sources.mjs";
+import {
+	checkBrief,
+	formatBriefResult,
+	parseBriefArgs,
 } from "./check-brief.mjs";
 import { captureReviewSourceAccess } from "./check-brief-review-access-fixture.mjs";
-import { copyReviewSources } from "./codex-round.mjs";
+import { copyReviewSources } from "./codex-review-launch.mjs";
 import { git, put } from "./fixtures";
 
 vi.mock("node:fs", async (importOriginal) => {

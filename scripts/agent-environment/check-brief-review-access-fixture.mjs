@@ -1,4 +1,4 @@
-import { setReviewSourcePlaceObserver } from "./check-brief.mjs";
+import { setReviewSourcePlaceObserver } from "./brief-review-sources.mjs";
 
 export async function captureReviewSourceAccess(action) {
 	const accessKey = Symbol.for("fitway.review-source-access-test");

@@ -14,7 +14,16 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup } from "./cleanup.mjs";
 import { classifyWorktrees, references } from "./facts.mjs";
-import * as survey from "./survey.mjs";
+import { formatReport } from "./survey.mjs";
+import { cleanupScript, consoleSummary } from "./survey-cli.mjs";
+import {
+	collectFolderRecords,
+	collectFolders,
+	collectRecords,
+	defaultTempRoot,
+	measureFolder,
+	root,
+} from "./survey-evidence.mjs";
 
 const race = vi.hoisted(() => ({
 	target: "",
@@ -161,7 +170,7 @@ describe("gardener round 27 truthful inventory", () => {
 				.filter((t) => t.mergedCleanWithheldForLinks)
 				.map((t) => path.basename(t.path)),
 		).toEqual(["external", "dangling", "unmeasured"]);
-		expect(survey.formatReport(report(worktrees))).toContain(
+		expect(formatReport(report(worktrees))).toContain(
 			"3 merged clean worktrees withheld for links",
 		);
 		console.log(
@@ -169,7 +178,7 @@ describe("gardener round 27 truthful inventory", () => {
 		);
 	});
 	it("G2: prose names every withheld worktree, every link/target/error and unknown inspections; console counts", () => {
-		const rendered = survey.formatReport(report());
+		const rendered = formatReport(report());
 		const section = rendered
 			.split("## Worktrees withheld for links\n")[1]
 			?.split("\n## ")[0];
@@ -186,12 +195,12 @@ describe("gardener round 27 truthful inventory", () => {
 			"private: EACCES",
 		])
 			expect(section).toContain(text);
-		expect(survey.formatReport(report([]))).toContain(
+		expect(formatReport(report([]))).toContain(
 			"## Worktrees withheld for links\n\nNone.",
 		);
-		expect(
-			survey.consoleSummary(report(), "D:/gardener-fixture/out"),
-		).toContain("3 worktrees withheld for links");
+		expect(consoleSummary(report(), "D:/gardener-fixture/out")).toContain(
+			"3 worktrees withheld for links",
+		);
 		console.log(
 			"G2 PASS: prose names all withheld paths, links, targets and errors; None and console count verified",
 		);
@@ -207,7 +216,7 @@ describe("gardener round 27 truthful inventory", () => {
 			race.target = vanished.replaceAll("\\", "/");
 			race.remove = true;
 			race.duringWalk = duringWalk;
-			const folders = await survey.collectFolders(
+			const folders = await collectFolders(
 				[],
 				[],
 				path.join(f.tempRoot, "out"),
@@ -224,15 +233,14 @@ describe("gardener round 27 truthful inventory", () => {
 				modifiedAt: null,
 				errors: [],
 			});
-			const section = survey
-				.formatReport(report([], folders))
+			const section = formatReport(report([], folders))
 				.split("## Temp folders gone during inventory\n")[1]
 				?.split("\n## ")[0];
 			expect(section).toContain(race.target);
-			expect(survey.consoleSummary(report([], folders), f.run)).toContain(
+			expect(consoleSummary(report([], folders), f.run)).toContain(
 				"collection=complete",
 			);
-			expect(survey.formatReport(report([], folders))).toContain(
+			expect(formatReport(report([], folders))).toContain(
 				"0 unreferenced temp folders",
 			);
 			console.log(
@@ -250,13 +258,9 @@ describe("gardener round 27 truthful inventory", () => {
 			race.target = folder.replaceAll("\\", "/");
 			race.code = "EACCES";
 			await expect(
-				survey.collectFolders(
-					[],
-					[],
-					path.join(f.tempRoot, "out"),
-					f.tempRoot,
-					{ trackedFiles: [] },
-				),
+				collectFolders([], [], path.join(f.tempRoot, "out"), f.tempRoot, {
+					trackedFiles: [],
+				}),
 			).rejects.toMatchObject({ code: "EACCES" });
 			console.log("G3 PASS: EACCES remains a collection blocker");
 		} finally {
@@ -272,7 +276,7 @@ describe("gardener round 27 truthful inventory", () => {
 			writeFileSync(child, "fixture\n");
 			race.target = child.replaceAll("\\", "/");
 			race.remove = true;
-			const [measured] = await survey.collectFolders(
+			const [measured] = await collectFolders(
 				[],
 				[],
 				path.join(f.tempRoot, "out"),
@@ -318,12 +322,12 @@ describe("gardener round 27 truthful inventory", () => {
 				"fixture",
 			]);
 			git(["update-ref", "refs/remotes/origin/main", "HEAD"]);
-			const context = await survey.collectRecords({ checkout });
+			const context = await collectRecords({ checkout });
 			const folder = path.join(f.tempRoot, "late-gone");
 			mkdirSync(folder);
 			const old = new Date(Date.now() - 9 * 86400000);
 			utimesSync(folder, old, old);
-			const measured = await survey.measureFolder(folder);
+			const measured = await measureFolder(folder);
 			const snapshot = {
 				root: checkout,
 				tempRoot: f.tempRoot,
@@ -331,7 +335,7 @@ describe("gardener round 27 truthful inventory", () => {
 				folders: [measured],
 			};
 			const script = path.join(f.run, "cleanup.mjs");
-			writeFileSync(script, survey.cleanupScript(snapshot, checkout));
+			writeFileSync(script, cleanupScript(snapshot, checkout));
 			rmdirSync(folder);
 			const output = execFileSync(process.execPath, [script], {
 				encoding: "utf8",
@@ -360,8 +364,8 @@ describe("gardener round 27 truthful inventory", () => {
 		}
 	}, 60000);
 	it("G4: tracked gardener fixtures cite neither real temp folders nor non-test records", async () => {
-		const records = await survey.collectFolderRecords([], {
-			checkout: survey.root,
+		const records = await collectFolderRecords([], {
+			checkout: root,
 		});
 		const tests = records.filter(
 			(r) =>
@@ -382,7 +386,7 @@ describe("gardener round 27 truthful inventory", () => {
 					.filter((n) => n !== "." && n !== ".."),
 			);
 			for (const name of names) {
-				const folder = `${survey.defaultTempRoot}/${name}`;
+				const folder = `${defaultTempRoot}/${name}`;
 				const citations = references(folder, outside);
 				if (existsSync(folder) || citations.length)
 					collisions.push({
@@ -393,12 +397,12 @@ describe("gardener round 27 truthful inventory", () => {
 					});
 			}
 		}
-		if (existsSync(survey.defaultTempRoot))
-			for (const entry of readdirSync(survey.defaultTempRoot, {
+		if (existsSync(defaultTempRoot))
+			for (const entry of readdirSync(defaultTempRoot, {
 				withFileTypes: true,
 			})) {
 				if (!entry.isDirectory() && !entry.isSymbolicLink()) continue;
-				const folder = `${survey.defaultTempRoot}/${entry.name}`;
+				const folder = `${defaultTempRoot}/${entry.name}`;
 				for (const citation of references(folder, tests))
 					collisions.push({
 						test: citation.source,

@@ -45,12 +45,20 @@
 			"duplication": 8,
 			"longFunctions": 1
 		},
-		".agents/skills/gardener/survey.mjs": {
+		".agents/skills/gardener/survey-checks.mjs": {
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/survey-evidence.mjs": {
 			"duplication": 1,
-			"longFunctions": 5,
-			"giantFiles": 1157
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/survey.mjs": {
+			"longFunctions": 2
 		},
 		".agents/skills/verify-fitway/baseline-cache.mjs": {
+			"duplication": 1
+		},
+		".agents/skills/verify-fitway/capture-records.mjs": {
 			"duplication": 1
 		},
 		".agents/skills/verify-fitway/cli.mjs": {
@@ -60,8 +68,7 @@
 		".agents/skills/verify-fitway/cli.test.mjs": {
 			"duplication": 61,
 			"suppressions": 1,
-			"longFunctions": 8,
-			"giantFiles": 4414
+			"longFunctions": 8
 		},
 		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
 			"duplication": 9,
@@ -76,14 +83,16 @@
 		},
 		".agents/skills/verify-fitway/compare.mjs": {
 			"duplication": 6,
-			"longFunctions": 1,
-			"giantFiles": 908
+			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/core.mjs": {
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/discover.mjs": {
 			"longFunctions": 3
+		},
+		".agents/skills/verify-fitway/drive-plan.mjs": {
+			"duplication": 2
 		},
 		".agents/skills/verify-fitway/drive.mjs": {
 			"duplication": 3,
@@ -96,9 +105,8 @@
 			"longFunctions": 4
 		},
 		".agents/skills/verify-fitway/runner.mjs": {
-			"duplication": 5,
-			"longFunctions": 2,
-			"giantFiles": 1104
+			"duplication": 2,
+			"longFunctions": 2
 		},
 		".agents/skills/verify-fitway/timeline-hold.test.mjs": {
 			"duplication": 2,
@@ -619,30 +627,60 @@
 		"packages/ui/src/styles/globals.css": {
 			"duplication": 8
 		},
+		"scripts/agent-context-packets.mjs": {
+			"duplication": 2,
+			"longFunctions": 2
+		},
+		"scripts/agent-context-paths.mjs": {
+			"longFunctions": 1
+		},
+		"scripts/agent-context-references.mjs": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"scripts/agent-context-rules.mjs": {
+			"duplication": 1
+		},
+		"scripts/agent-environment/brief-checks.mjs": {
+			"duplication": 3,
+			"longFunctions": 2
+		},
+		"scripts/agent-environment/brief-markdown.mjs": {
+			"duplication": 3
+		},
+		"scripts/agent-environment/brief-readings.mjs": {
+			"duplication": 4
+		},
+		"scripts/agent-environment/brief-references.mjs": {
+			"duplication": 4
+		},
 		"scripts/agent-environment/check-brief.mjs": {
-			"duplication": 10,
-			"longFunctions": 3,
-			"giantFiles": 1081
+			"longFunctions": 1
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
 			"duplication": 3,
 			"typeEscapes": 5,
-			"longFunctions": 1,
-			"giantFiles": 1342
+			"longFunctions": 1
 		},
 		"scripts/agent-environment/code-health-ratchet.test.ts": {
 			"duplication": 10
 		},
-		"scripts/agent-environment/codex-round.mjs": {
-			"duplication": 6,
-			"longFunctions": 3,
-			"giantFiles": 1992
+		"scripts/agent-environment/codex-execution.mjs": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/codex-review-launch.mjs": {
+			"duplication": 1,
+			"longFunctions": 1
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
 			"duplication": 42,
 			"typeEscapes": 10,
 			"longFunctions": 2,
-			"giantFiles": 4189
+			"giantFiles": 4186
+		},
+		"scripts/agent-environment/codex-session.mjs": {
+			"longFunctions": 1
 		},
 		"scripts/agent-environment/context-ending.test.ts": {
 			"duplication": 1
@@ -679,15 +717,12 @@
 			"duplication": 4
 		},
 		"scripts/check-agent-context.mjs": {
-			"duplication": 5,
-			"longFunctions": 5,
-			"giantFiles": 1096
+			"longFunctions": 1
 		},
 		"scripts/check-agent-context.test.ts": {
 			"duplication": 22,
 			"typeEscapes": 6,
-			"longFunctions": 1,
-			"giantFiles": 2038
+			"longFunctions": 1
 		},
 		"scripts/check-concept-css.mjs": {
 			"longFunctions": 1
@@ -716,6 +751,12 @@
 			"duplication": 1,
 			"longFunctions": 2
 		},
+		"scripts/project-state-invariants.mjs": {
+			"longFunctions": 3
+		},
+		"scripts/repository-files.mjs": {
+			"duplication": 1
+		},
 		"scripts/run-vitest.mjs": {
 			"duplication": 1
 		},
@@ -729,14 +770,12 @@
 			"longFunctions": 1
 		},
 		"scripts/verify-repository.mjs": {
-			"duplication": 2,
-			"longFunctions": 5,
-			"giantFiles": 906
+			"duplication": 1,
+			"longFunctions": 2
 		},
 		"scripts/verify-repository.schema.test.ts": {
 			"duplication": 19,
-			"longFunctions": 1,
-			"giantFiles": 1303
+			"longFunctions": 1
 		},
 		"scripts/verify.mjs": {
 			"duplication": 3
