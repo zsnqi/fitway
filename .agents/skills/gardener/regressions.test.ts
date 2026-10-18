@@ -22,16 +22,15 @@ import {
 	openBriefs,
 	references,
 } from "./facts.mjs";
+import { runChecks } from "./survey-checks.mjs";
+import { cleanupScript, parseOptions } from "./survey-cli.mjs";
 import {
-	cleanupScript,
 	collectFolders,
 	collectGit,
 	collectRecords,
 	filesystemPath,
 	measureFolder,
-	parseOptions,
-	runChecks,
-} from "./survey.mjs";
+} from "./survey-evidence.mjs";
 
 function fixture() {
 	const base = process.env.GARDENER_TEST_RUN ?? os.tmpdir();

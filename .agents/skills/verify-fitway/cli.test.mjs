@@ -1,3 +1,4 @@
+// code-health-exception: giantFiles; until=2026-11-15; reason=giant-split moved imported names; the giant test files split next
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, watch } from "node:fs";
@@ -22,6 +23,7 @@ const test = verificationTest(nodeTest);
 
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createContext, runInContext, runInNewContext } from "node:vm";
+import { itemSummary } from "./capture-records.mjs";
 import { child, doctorFix, help, playwright } from "./cli.mjs";
 import { measurementColors } from "./colors.mjs";
 import { compare, diffStem } from "./compare.mjs";
@@ -44,6 +46,7 @@ import {
 	proveFeature,
 	reachByKeyboard,
 } from "./drive.mjs";
+import { inputAxis, resolveQuery, stateCases } from "./drive-plan.mjs";
 import {
 	coverageProblems,
 	discoverElements,
@@ -55,7 +58,6 @@ import {
 	repairRecipes,
 } from "./map.mjs";
 import { sourceProbe } from "./probes.mjs";
-import { inputAxis, itemSummary, resolveQuery, stateCases } from "./runner.mjs";
 import {
 	captureTimeline,
 	observeTimeline,
@@ -2606,7 +2608,7 @@ test("R30 repair V3: every comparison mode hides carets and paints fresh tiles w
 });
 
 test("R30 V3: comparison waits for finite motion and fixes the phase of persistent motion", async () => {
-	const { settleComparison } = await import("./runner.mjs");
+	const { settleComparison } = await import("./comparison-capture.mjs");
 	const finite = {
 		playState: "running",
 		effect: { getComputedTiming: () => ({ endTime: 200 }) },

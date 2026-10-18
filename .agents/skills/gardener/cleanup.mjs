@@ -9,7 +9,7 @@ import {
 	measureFolder,
 	root,
 	safeDeletionPath,
-} from "./survey.mjs";
+} from "./survey-evidence.mjs";
 
 // This module is called only by the user-run script emitted outside the checkout.
 export async function cleanup(snapshot, { checkout = root } = {}) {

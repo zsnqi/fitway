@@ -623,7 +623,7 @@ test("P2 CLI initialization failure retains the serial prefix; missing truncatio
 	assert.deepEqual(verdicts(parallel), verdicts(serial));
 	await changeFile(
 		f,
-		"runner.mjs",
+		"worker-pool.mjs",
 		"onFailure(failed.index);",
 		"/* planted missing truncation */",
 	);

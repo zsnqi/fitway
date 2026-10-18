@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { stringify as stringifyYaml } from "yaml";
-import { inspectPath } from "./check-agent-context.mjs";
+import { inspectPath } from "./agent-context-paths.mjs";
 import { buildAgentContextPlan } from "./show-agent-context.mjs";
 
 type PacketScope = {

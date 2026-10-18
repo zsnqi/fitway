@@ -10,12 +10,9 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { config, parseFastSteps } from "./facts.mjs";
-import {
-	consoleSummary,
-	formatReport,
-	runChecks,
-	surveyOutcome,
-} from "./survey.mjs";
+import { formatReport } from "./survey.mjs";
+import { runChecks } from "./survey-checks.mjs";
+import { consoleSummary, surveyOutcome } from "./survey-cli.mjs";
 
 describe("gardener round 15 regressions", () => {
 	it("G1: reads every real fast-ladder step as a label and command arguments", () => {

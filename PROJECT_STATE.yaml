@@ -100,8 +100,9 @@ milestones:
     sharedLeases:
       - "package.json, its scripts section only (the tools registry and the test:verification timeout, F145 and F251), a coordinator lease through 2026-10-23; no dependency change"
       - "README.md, its documentation map only (the map check, DECISIONS 73), a coordinator lease through 2026-10-23"
-      - ".github/workflows/checks.yml, only where a new ladder step needs it, a coordinator lease through 2026-10-23"
+      - ".github/workflows/checks.yml, only where a new ladder step needs it or for the job time limit (raised to 45 min on 2026-10-18: the ladder took 27-28 min, codex-round.test.ts alone 1,415 s), a coordinator lease through 2026-10-23"
       - "vitest.config.ts, its test timeouts only (F261, F281, F282; DECISIONS item 13), a coordinator lease through 2026-10-23"
+      - "lefthook.yml, one pre-commit job for the giant-file check on staged files only (DECISIONS item 13, the user's ratchet-2 addition), a coordinator lease through 2026-10-23"
     validationRepairAttempts: 0
     handoff: docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md
     stopReason: null

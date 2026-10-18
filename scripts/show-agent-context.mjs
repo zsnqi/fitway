@@ -3,6 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
+import { inspectPath } from "./agent-context-paths.mjs";
 import { behindUpstreamWarning } from "./agent-environment/git-context.mjs";
 import { hasResumePointMarker } from "./agent-environment/resume-point.mjs";
 import {
@@ -11,7 +12,6 @@ import {
 	ToolStartupError,
 	toolStartupLine,
 } from "./agent-environment/tool-contract.mjs";
-import { inspectPath } from "./check-agent-context.mjs";
 
 const root = process.cwd();
 const OPEN_STATUSES = new Set([

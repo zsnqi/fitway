@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { inspectPath } from "../check-agent-context.mjs";
+import { inspectPath } from "../agent-context-paths.mjs";
 import { readGit } from "./git-context.mjs";
 import {
 	createPathReferenceResolver,
