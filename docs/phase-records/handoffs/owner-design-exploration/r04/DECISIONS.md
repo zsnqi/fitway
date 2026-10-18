@@ -885,6 +885,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     owner on two devices; the choice does not depend on who saved; the settings read carries no actor, so a name would
     add a Product/Spec amendment; who changed what belongs in Activity log. Revisit if several people come to edit
     Settings regularly.
+79. **Settings' round: three designer parts and one review** (the user, 2026-10-18: «بخصوص المراجعات اشوف انها كثيرة
+    وما نحتاج حتى rtl-ltr-reviewer», and «هل ممكن نقسم مهامه بحيث ما يكبر سياقة بشكل ضخم جدا»; agent-tooling DECISIONS
+    item 16 for how it is run).
+    - **The designer's work is split in three parts**, each a fresh `owner-direction-designer` at `xhigh` reading the
+      brief, the last commit and `D:/fitway-temp/owner-r04-settings/NOTES.md` (rounds item 10's split, applied to one
+      screen): (1) the page at rest, the sheet and the log panel, at 1440 and 390; (2) the editor in the panel and the
+      phone's sheets; (3) the dialogs, the states and the range cases. Effort `max` is for a whole screen in one pass,
+      so the parts run at the definition's level.
+    - **One review:** `owner-direction-verifier` (high) after the third part, measuring Arabic and English, RTL and LTR
+      edges among its renders; no `rtl-ltr-reviewer` for this round. Rounds item 11 holds: the review's errors are fixed
+      before the user sees the page.
 
 ## How this milestone's rounds run
 

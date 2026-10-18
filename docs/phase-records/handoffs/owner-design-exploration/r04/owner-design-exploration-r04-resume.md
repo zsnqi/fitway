@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `0df775e5`, 2026-10-18 23:17 +03:00
+- **As of:** `codex/owner-redesign-r04` at `4d770598`, 2026-10-18 23:35 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-77), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -39,11 +39,12 @@
 
 ## Running now
 
-- **Settings' round is proposed, not started** (2026-10-18 23:25): the user said «start the one-pass Settings build in
-  arrangement ب as soon as ratchet-2 closes»; ratchet-2 closed (agent-tooling-r01's resume point), and the round waits
-  as the card "Settings build in arrangement ب (one pass)" (task_01ab7196), a fresh session that runs the designer at
-  `max` on the Settings build brief (`b3d60fe1` on the build branch, passes `brief:check`), then
-  the verifier and `rtl-ltr-reviewer`, fixes per rounds item 11, and writes `D:/fitway-temp/owner-r04-settings/REPORT.md`.
+- **Nothing runs** (2026-10-18 23:40). **Next, on the user's word** («start the one-pass Settings build in arrangement ب
+  as soon as ratchet-2 closes»; ratchet-2 closed): the Settings round, run by the coordinator after the user's `/clear`
+  (agent-tooling DECISIONS item 16), on the Settings build brief (`3835b5a5` on the build branch, passes `brief:check`):
+  three `owner-direction-designer` agents at `xhigh`, one per part in order, each prompt naming its part and the
+  brief's absolute path; then `owner-direction-verifier` (high, port 3191) alone; fixes per rounds item 11; the
+  coordinator inspects the crops; then the user (decision 79). Output and NOTES.md in `D:/fitway-temp/owner-r04-settings/`.
   The brief follows `bandFor`: 24% of 120 reads "up to 28 people" (item 49's "29" is an example's shape).
 - Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
   click and removes on arrival (over http); no visitor data is stored.
@@ -58,7 +59,7 @@
    what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the user chose
    arrangement ب of the skeleton's third pass (decision 77, 2026-10-18; report and frames in
    D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md §"Third pass"; artifact
-   https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8). **Next:** the one-pass build of Settings in ب (decision 78 answered the last open question; the round above). Left for later, with their reasons: the dialogs' parts splitting under a
+   https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8). **Next:** the one-pass build of Settings in ب (decision 78 answered the last open question, decision 79 sets the round; the round above). Left for later, with their reasons: the dialogs' parts splitting under a
    planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **F266 is fixed** (`873e03fc` on the build branch, pushed: Components places its tip with Reports' shared placement; 204
    cases measured, no overlap). **F285** (Components' heat grid at 390 is broken) waits: the user, 2026-10-18, the sheet is

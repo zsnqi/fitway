@@ -157,3 +157,13 @@ through these pointers, not copied here.
       whole into a conversation. Every SHA, run folder and decision is written to a file (the round's REPORT.md, the
       resume point, a stop note) as soon as it exists, so a compaction or a stop loses nothing.
     - **No smaller auto-compact window** (`/autocompact 400k` is not adopted): fresh sessions per phase do the same job.
+16. **A cleared coordinator and subagents, not a side session per phase** (the user, 2026-10-18, on the Settings round:
+    «اقدر اسوي clear و بس و اخليك تبدأ ك منسق وبس و توزع الشغل لل sub agent», and «اعتقد البند 15 ما كان واضح او
+    مناسب»). This replaces item 15's first point; its second and third stand.
+    - **A fresh coordinator context per phase comes from `/clear`:** the user clears the session at a phase boundary,
+      and the coordinator resumes from the resume point and hands the phase's work to subagents. A subagent starts with
+      its own context and returns only its final report, so a phase run this way costs the coordinator what a side
+      session's report would. Why item 15 read wrong: it put each phase in a side session, which a subagent already
+      gives, and a round needs a coordinator to chain its designer, verifier and fixers, which a subagent cannot do
+      (no subagent launches another).
+    - **Side sessions only for genuinely parallel work** (two rounds on disjoint files at once).
