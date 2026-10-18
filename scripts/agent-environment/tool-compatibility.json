@@ -6,6 +6,7 @@
 		"intentionalRefusals lists each argument form a 57dad1c0 parser accepted that the commands now refuse on purpose, with an example and its C3/C4 reason; tool-compatibility.test.ts holds the base inventory of accepted forms, read from those parsers, and fails when one is in neither rows nor intentionalRefusals."
 	],
 	"commandsWithoutRows": {
+		"tests:base-run": "new after 57dad1c0; that checkout had no read-only base-test runner",
 		"tools": "new in cb1cfe65; 57dad1c0 had no pnpm tools"
 	},
 	"rows": {

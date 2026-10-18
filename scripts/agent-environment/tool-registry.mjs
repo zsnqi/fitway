@@ -1,4 +1,5 @@
 import {
+	BASE_RUN_NOTES,
 	CODEX_ROUND_NOTES,
 	CONCEPT_CSS_NOTES,
 	NODE_USAGE_NOTES,
@@ -624,6 +625,32 @@ export const TOOL_REGISTRY = Object.freeze([
 		],
 		extraHelp: NODE_USAGE_NOTES["start-load"],
 		exitCodes: exits([0, "Report printed."], [1, "Command refused or failed."]),
+	}),
+	packageEntry({
+		name: "tests:base-run",
+		invocation: nodeInvocation(
+			"scripts/agent-environment/tests-base-run-cli.mjs",
+		),
+		purpose:
+			"Run a result's changed tests against the base commit's production tree.",
+		usage: "pnpm tests:base-run --base <ref> [--result <ref>]",
+		options: [
+			value("--base", "Base commit whose code and tree are used.", {
+				sample: "HEAD^",
+			}),
+			value("--result", "Result commit whose tests are used (default HEAD).", {
+				sample: "HEAD",
+			}),
+		],
+		requiredOptions: ["--base"],
+		extraHelp: BASE_RUN_NOTES,
+		exitCodes: exits(
+			[0, "No judged test had the wrong reason or passed on the base."],
+			[
+				1,
+				"A judged test had the wrong reason or passed, or setup was refused.",
+			],
+		),
 	}),
 	packageEntry({
 		name: "map:tooling",

@@ -24,7 +24,7 @@ afterAll(() => fs.rmSync(runRoot, { recursive: true, force: true }));
 
 // C1's product scripts: exact names, and the families written with a star (dev*, db:*, ...).
 const PRODUCT_SCRIPT =
-	/^(?:dev.*|build|check-types|db:.*|edge:.*|deploy.*|env:.*|demo:.*|owner:review|test.*|check|format)$/;
+	/^(?:dev.*|build|check-types|db:.*|edge:.*|deploy.*|env:.*|demo:.*|owner:review|test(?:[.:].*)?|check|format)$/;
 
 function agentScript(name: string, script: string) {
 	return !PRODUCT_SCRIPT.test(name) && Boolean(script);

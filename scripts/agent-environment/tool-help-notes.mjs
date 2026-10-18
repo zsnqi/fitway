@@ -85,6 +85,12 @@ export const TOOLING_MAP_EXITS = Object.freeze([
 	[1, "invalid option, missing map, or drift"],
 ]);
 
+export const BASE_RUN_NOTES = Object.freeze([
+	"Uses the base commit's tree and production code with the result commit's changed tests.",
+	"Classes: assertion, missing-module, wrong-reason, and green-on-base.",
+	"Timeout failures are retried once with only that test selected.",
+]);
+
 export const NODE_USAGE_NOTES = Object.freeze({
 	"check:agent-context": [
 		"  node scripts/check-agent-context.mjs [--milestone <id>] [--no-tracked] [--verbose]",

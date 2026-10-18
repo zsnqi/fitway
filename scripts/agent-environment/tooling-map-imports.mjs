@@ -1,6 +1,7 @@
 import path from "node:path";
 import ts from "typescript";
 import {
+	createSourceFile,
 	normalizePath,
 	propertyNameText,
 	unwrapParenthesized,
@@ -56,7 +57,7 @@ export function memberOperation(node) {
 	return "read";
 }
 
-function moduleCandidates(specifier, importer, root) {
+export function moduleCandidates(specifier, importer, root) {
 	const normalized = specifier.replaceAll("\\", "/");
 	const importerDirectory = path.posix.dirname(normalizePath(importer));
 	const candidates = [];
@@ -80,6 +81,42 @@ function moduleCandidates(specifier, importer, root) {
 			result.push(path.posix.join(candidate, `index${extension}`));
 	}
 	return result;
+}
+
+export function readModuleSpecifiers(file, source) {
+	const normalizedFile = normalizePath(file);
+	const sourceFile = createSourceFile(normalizedFile, source);
+	const specifiers = [];
+	const add = (specifier) => {
+		if (!specifiers.includes(specifier)) specifiers.push(specifier);
+	};
+	for (const statement of sourceFile.statements) {
+		if (
+			(ts.isImportDeclaration(statement) ||
+				ts.isExportDeclaration(statement)) &&
+			statement.moduleSpecifier &&
+			ts.isStringLiteral(statement.moduleSpecifier)
+		)
+			add(statement.moduleSpecifier.text);
+	}
+	visit(sourceFile, (node) => {
+		if (
+			ts.isCallExpression(node) &&
+			node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+			node.arguments.length === 1 &&
+			ts.isStringLiteral(node.arguments[0])
+		)
+			add(node.arguments[0].text);
+	});
+	return specifiers;
+}
+
+export function resolveModuleFile(specifier, importer, root, sourceSet) {
+	return (
+		moduleCandidates(specifier, importer, root).find((candidate) =>
+			sourceSet.has(candidate),
+		) ?? null
+	);
 }
 
 function directExportsByFile(parsedByFile) {
@@ -151,15 +188,7 @@ function addReExports(statement, imports, entries) {
 function reExportsByFile(sourcesByFile) {
 	const byFile = new Map();
 	for (const [file, source] of sourcesByFile) {
-		const sourceFile = ts.createSourceFile(
-			file,
-			source,
-			ts.ScriptTarget.Latest,
-			true,
-			file.endsWith(".ts") || file.endsWith(".tsx")
-				? ts.ScriptKind.TS
-				: ts.ScriptKind.JS,
-		);
+		const sourceFile = createSourceFile(file, source);
 		const entries = [];
 		const imports = importBindings(sourceFile);
 		for (const statement of sourceFile.statements)

@@ -35,6 +35,19 @@ export function normalizePath(value) {
 	return value.replaceAll("\\", "/").replace(/^\.\//, "");
 }
 
+export function createSourceFile(file, source) {
+	const normalizedFile = normalizePath(file);
+	return ts.createSourceFile(
+		normalizedFile,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		normalizedFile.endsWith(".ts") || normalizedFile.endsWith(".tsx")
+			? ts.ScriptKind.TS
+			: ts.ScriptKind.JS,
+	);
+}
+
 export function uniqueSorted(values) {
 	return [...new Set(values)].sort((left, right) =>
 		left.localeCompare(right, "en"),
@@ -337,15 +350,7 @@ function addCommonJsExport(entries, sourceFile, file, statement) {
 
 export function parseCallables(file, source) {
 	const normalizedFile = normalizePath(file);
-	const sourceFile = ts.createSourceFile(
-		normalizedFile,
-		source,
-		ts.ScriptTarget.Latest,
-		true,
-		normalizedFile.endsWith(".ts") || normalizedFile.endsWith(".tsx")
-			? ts.ScriptKind.TS
-			: ts.ScriptKind.JS,
-	);
+	const sourceFile = createSourceFile(normalizedFile, source);
 	const entries = [];
 	for (const statement of sourceFile.statements) {
 		if (ts.isFunctionDeclaration(statement)) {

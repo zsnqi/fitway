@@ -45,6 +45,7 @@
 		"verify:owner": "node .agents/skills/verify-fitway/cli.mjs",
 		"format": "biome check --write .",
 		"test": "node scripts/run-vitest.mjs run",
+		"tests:base-run": "node scripts/agent-environment/tests-base-run-cli.mjs",
 		"test:integration": "node scripts/run-vitest.mjs run --config vitest.integration.config.ts",
 		"test:browser": "playwright test",
 		"test:simulator": "py -m unittest discover -s edge -p test_*.py",
