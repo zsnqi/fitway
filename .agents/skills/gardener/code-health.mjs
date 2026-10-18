@@ -42,12 +42,6 @@ export const DUPLICATION_MEASURE = MEASURE_DEFINITIONS.find(
 ).name;
 const IMPORT_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts", ".tsx", ".css"];
 
-function countLines(text) {
-	if (!text) return 0;
-	const breaks = text.match(/\r\n|\r|\n/g)?.length ?? 0;
-	return breaks + (/(?:\r\n|\r|\n)$/.test(text) ? 0 : 1);
-}
-
 function hit(file, line, detail) {
 	return { file, line, detail };
 }
@@ -267,15 +261,36 @@ export function deriveSharedFiles(files, { specimenPages = [] } = {}) {
 		.sort();
 }
 
-function scanGiantFiles(files) {
+function scanGiantFiles(files, source) {
+	const commentsByFile = new Map(
+		files.map((file, index) => [file, source[index].comments]),
+	);
+	const countCodeLines = (text, comments) => {
+		if (!text) return 0;
+		let masked = "";
+		let cursor = 0;
+		for (const comment of [...comments].sort(
+			(left, right) => left.offset - right.offset,
+		)) {
+			const start = Math.max(cursor, comment.offset);
+			const end = Math.min(text.length, comment.offset + comment.text.length);
+			if (end <= cursor) continue;
+			masked += text.slice(cursor, start);
+			masked += text.slice(start, end).replace(/[^\r\n]/g, " ");
+			cursor = end;
+		}
+		masked += text.slice(cursor);
+		return masked.split(/\r\n|\r|\n/).filter((line) => /[^\s]/.test(line))
+			.length;
+	};
 	return files
 		.filter((item) => isSourceFile(item.file))
 		.flatMap((item) => {
-			const count = countLines(item.text);
+			const count = countCodeLines(item.text, commentsByFile.get(item));
 			return count > 800
 				? [
 						{
-							...hit(item.file, 1, `${count} lines`),
+							...hit(item.file, 1, `${count} code lines`),
 							lineCount: count,
 						},
 					]
@@ -338,7 +353,7 @@ function scanBoundaryBreaks(files, sharedFiles) {
 export function scanScope(files, { sharedFiles = [] } = {}) {
 	const source = files.map((file) => scanSource(file));
 	const measures = {
-		giantFiles: scanGiantFiles(files),
+		giantFiles: scanGiantFiles(files, source),
 		typeEscapes: source.flatMap((item) => item.typeEscapes),
 		suppressions: source.flatMap((item) => item.suppressions),
 		repeatedWorkarounds: source.flatMap((item) => item.repeatedWorkarounds),
