@@ -1,10 +1,10 @@
 <!-- brief-format: v1 role: designer -->
-# Designer brief: Settings, the whole screen in three parts, arrangement ب (owner-design-exploration-r04)
+# Designer brief: Settings, the whole screen in three parts, arrangement ج (owner-design-exploration-r04)
 
 For three fresh `owner-direction-designer` agents at their default `xhigh`, one per part (DECISIONS item 79).
 Concept-only (ADR-009): superseded Owner Paper frames are reference only. The user chose the arrangement (DECISIONS
-item 77, ب); this round builds that one version of the screen as a finished page. A review follows, then the user
-sees it. No options round.
+item 80, ج, which corrects item 77's ب); this round builds that one version of the screen as a finished page. A
+review follows, then the user sees it. No options round.
 
 ## Parts
 
@@ -12,27 +12,32 @@ The coordinator's prompt names your part. Do only your part; read this whole bri
 A part after the first starts from the last commit and `D:/fitway-temp/owner-r04-settings/NOTES.md`, and changes an
 earlier part's work only where its own part needs it, saying what and why.
 
-1. **The page at rest:** the frame, the sheet with all five values, and the log panel with its reasons, at 1440 and
-   390 in Arabic; the files created and the shared structure settled for the parts after it; crops `1-`.
-2. **The editor:** «تعديل», the editor in the panel with «قيد التعديل», every field and its warning sentence, people
-   per level following capacity, and the phone's bottom sheets; crops `2-` and the editing steps of `5-`.
+1. **The page at rest:** the frame and ج's four cards (the crowd, the hours, the business day, and the settings log
+   with its reasons) at 1440 and 390 in Arabic; the shared structure settled for the parts after it; crops `1-`. The
+   files already exist: an earlier part 1 built the page in ب (`5253d95f`) before the user corrected the choice. Rework
+   that page into ج and keep what fits (the data, the log record and its from → to wording in `changes()`, the level
+   key, the phone); its NOTES.md is replaced by yours.
+2. **The editor:** «تعديل» opening its card's window over the page (the crowd, the hours, the business day), every
+   field and its warning sentence, people per level following capacity, and the phone's bottom sheets; crops `2-` and
+   the editing steps of `5-`.
 3. **The dialogs and states:** the confirmation, working, done, each refusal, the conflict view, leaving with unsaved
    changes, Loading and Error, English, and the range cases; crops `3-`, `4-` and the rest of `5-`; the spec fragment.
 
 Each part ends with a commit and NOTES.md current (what is decided, what is left), and its report covers its part.
 
-- **Worktree:** `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, branch `owner-followup-r04-build`, HEAD `873e03fc`
-- **Base:** the HEAD above plus this brief's own commit on top of it. Dependencies are installed.
+- **Worktree:** `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, branch `owner-followup-r04-build`, HEAD `5253d95f`
+- **Base:** the HEAD above (the ب page) plus this brief's ج revision on top of it. Dependencies are installed.
 - **Milestone:** `owner-design-exploration-r04`. Decisions: `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`
-  items 1-8, 11, 12, 16, 23, 35, 41, 49, 75, 76, 77, 78 and 79, and "How this milestone's rounds run" items 6, 7, 10
-  and 11 (the coordinator line's copy; the build branch's copy predates items 49 and 76-79);
+  items 1-8, 11, 12, 16, 23, 35, 41, 49, 75, 76, 77, 78, 79 and 80, and "How this milestone's rounds run" items 6, 7, 10
+  and 11 (the coordinator line's copy; the build branch's copy predates items 49 and 76-80);
   `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/agent-context/WORKING_AGREEMENTS.md` §"Rules and findings".
 - **Read first, only these:**
   - `design-research/owner-composition-exploration-r04/directions/DO-NOT.md` in full; it binds.
   - `D:/fitway-temp/owner-r04-settings-questions/REPORT.md`: the data contract, the refusals and the questions item 49
     answered. Its recommendations are a researcher's; item 49 holds what the user decided.
   - `D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md` (all three passes) and
-    `D:/fitway-temp/owner-r04-settings-skeleton/skeleton.html` with its PNGs: proposal ب is the arrangement to build;
+    `D:/fitway-temp/owner-r04-settings-skeleton/skeleton.html` with its PNGs: proposal ج (`skeleton-c-*.png`) is the
+    arrangement to build;
     the phone, the 390 sheets and the dialogs are the ones the user kept from the second pass
     (`D:/fitway-temp/owner-r04-settings-skeleton/v2/`).
   - `design-research/owner-composition-exploration-r04/directions/eclipse/DESIGN-SPEC.md` §1, §2, §3 and §4.4
@@ -74,9 +79,9 @@ Each part ends with a commit and NOTES.md current (what is decided, what is left
 
 Settings is the owner's page for the five values that shape the gym and the visitors' page: capacity, the three
 crowd-level limits, the weekly hours, the end of the business day and the reset buffer. Build it as one finished
-screen in Eclipse's language, in arrangement ب: all five values on one sheet (5/12) beside a panel (7/12) that shows
-the settings log with its reasons and becomes the editor on «تعديل», with the label «قيد التعديل» on the value being
-edited. The owner opens it, understands at a glance what each value does, changes one without wading through the rest,
+screen in Eclipse's language, in arrangement ج: v1's page filled out, four cards in two columns (the crowd and the
+business day; the hours and the settings log with its reasons), each value card's «تعديل» opening that card in a window
+over the page. The owner opens it, understands at a glance what each value does, changes one without wading through the rest,
 and trusts that nothing reaches the visitors' page by accident.
 
 The user's answers are DECISIONS items 49, 77 and 78: the optional reason (240 characters) and the log naming each
@@ -86,7 +91,7 @@ or under its limit, so 24% of 120 reads "up to 28 people"; item 49's "up to 29" 
 value that looks like a mistake accepted with a plain sentence under its field; 12-hour times with ص/م; «توقيت الرياض»
 beside the hours and no other technical value; leaving with unsaved changes asks first; the conflict view shows what is
 saved now beside the owner's typed changes, names no one, and nothing is merged silently. Everything the skeleton
-reports left open is yours: what the other «تعديل» buttons do while one value is edited, when «اليوم التالي» shows,
+reports left open is yours: how the window opens from its card and returns focus to it, when «اليوم التالي» shows,
 whether the confirmation keeps the people lines, the done sentence and its link, what «إغلاق» leaves in the editor, the
 log's count and its wording for hours, the warning sentences, and one line per day at 1024 in Readex Pro. Decide them
 and say why.
@@ -103,8 +108,7 @@ and say why.
   focus rings as the shared components draw them (item 75 and DESIGN-SPEC §1.9), DO-NOT in full. Every target 44 px.
   No sideways scroll at any width. A percentage in Arabic sits in an LTR isolate. Motion (item 4): complete at first
   paint, no intro, no digit roll; a dialog's or sheet's own open and close only.
-- The cards not being edited do not move when a value enters or leaves edit, at any width (the skeleton measured 0 px;
-  keep it). 1440 and 1024 do not look empty or unfinished, at rest or in edit; 390 does not feel cramped.
+- The page behind a window does not move when it opens or closes, at any width (the skeleton measured 0 px; keep it). 1440 and 1024 do not look empty or unfinished, at rest or in edit; 390 does not feel cramped.
 - Copy: Arabic first, then English, both written for the reader, not translated (`ux-araby` may be loaded for copy;
   it is not a design skill). Propose a wording you think a decision gets wrong in the report; don't build it.
 
@@ -130,7 +134,7 @@ DECISIONS item 25 lesson)
 
 ## Files
 
-Write only new files under `design-research/owner-composition-exploration-r04/directions/eclipse/`: `settings.html`,
+Write only these files under `design-research/owner-composition-exploration-r04/directions/eclipse/`: `settings.html`,
 `settings.css`, `settings.js`, `settings-capture.mjs`, and `SETTINGS-SPEC.md`, the spec fragment the coordinator
 merges as DESIGN-SPEC §4.5 (rows in DESIGN-SPEC's form, with new component rows marked for §3). New shared components
 live in `settings.css` for now; say which belong in the shared sheets. Do not edit `style.css`, the shared component
