@@ -38,8 +38,8 @@ function exception(measure: string, reason: string) {
 		.slice(0, 10)}; reason=${reason}`;
 }
 
-suite("R1 longFunctionLines ratchet", () => {
-	spec("R1 refuses a new 90-line production function", () => {
+suite("long-function growth", () => {
+	spec("refuses a new 90-line production function", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/clean.ts", "export const clean = true;\n");
 		fixture.writeBaseline();
@@ -58,7 +58,7 @@ suite("R1 longFunctionLines ratchet", () => {
 		);
 	});
 
-	spec("R1 refuses a one-line increase in a long function", () => {
+	spec("refuses a one-line increase in a long function", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/sample.ts", longFunction(90));
 		fixture.writeBaseline();
@@ -72,7 +72,7 @@ suite("R1 longFunctionLines ratchet", () => {
 		);
 	});
 
-	spec("R1 writes a fall when a 90-line function becomes 80 lines", () => {
+	spec("writes a fall when a 90-line function becomes 80 lines", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/sample.ts", longFunction(90));
 		fixture.writeBaseline();
@@ -85,7 +85,7 @@ suite("R1 longFunctionLines ratchet", () => {
 		).toBeUndefined();
 	});
 
-	spec("R1 keeps a length rise carrying its own exception line", () => {
+	spec("keeps a length rise carrying its own exception line", () => {
 		const fixture = createHealthFixture();
 		const line = exception("longFunctionLines", "measured threshold");
 		fixture.write("scripts/sample.ts", longFunction(90, line));
@@ -99,8 +99,8 @@ suite("R1 longFunctionLines ratchet", () => {
 	});
 });
 
-suite("R2 emptyBlocks ratchet", () => {
-	spec("R2 refuses a new empty block in check and baseline", () => {
+suite("empty blocks", () => {
+	spec("refuses a new empty block in check and baseline", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/sample.ts", "export const clean = true;\n");
 		fixture.writeBaseline();
@@ -119,7 +119,7 @@ suite("R2 emptyBlocks ratchet", () => {
 		);
 	});
 
-	spec("R2 keeps a new empty block with an exception on its line", () => {
+	spec("keeps a new empty block with an exception on its line", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/sample.ts", "export const clean = true;\n");
 		fixture.writeBaseline();
@@ -134,7 +134,7 @@ suite("R2 emptyBlocks ratchet", () => {
 		assert(checked.stdout).toContain("PASS: code health");
 	});
 
-	spec("R2 writes a fall when the empty block is removed", () => {
+	spec("writes a fall when the empty block is removed", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/sample.ts", "if (ready) {}\n");
 		fixture.writeBaseline();
@@ -146,8 +146,8 @@ suite("R2 emptyBlocks ratchet", () => {
 	});
 });
 
-suite("R4 directory test floors", () => {
-	spec("R4 aggregates direct files without folding descendants", () => {
+suite("directory test floors", () => {
+	spec("aggregates direct files without folding descendants", () => {
 		const result = snapshot(
 			[
 				{ file: "scripts/a.test.ts", text: testSource("a") },
@@ -166,7 +166,7 @@ suite("R4 directory test floors", () => {
 		});
 	});
 
-	spec("R4 keeps same-directory rename and file movement unchanged", () => {
+	spec("keeps same-directory rename and file movement unchanged", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/a.test.ts", testSource("one"));
 		fixture.writeBaseline();
@@ -183,7 +183,7 @@ suite("R4 directory test floors", () => {
 		assert(moved.stdout).toContain("PASS: code health");
 	});
 
-	spec("R4 refuses a skipped case and a deleted expectation", () => {
+	spec("refuses a skipped case and a deleted expectation", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/a.test.ts", testSource("one"));
 		fixture.writeBaseline();
@@ -210,7 +210,7 @@ suite("R4 directory test floors", () => {
 		);
 	});
 
-	spec("R4 writes a rise and gates a cross-directory fall", () => {
+	spec("writes a rise and gates a cross-directory fall", () => {
 		const fixture = createHealthFixture();
 		fixture.write("scripts/a.test.ts", testSource("one"));
 		fixture.writeBaseline();

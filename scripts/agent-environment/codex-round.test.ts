@@ -29,7 +29,6 @@ import {
 import { runLauncher, writeCodexStandin } from "./codex-standin-fixture.mjs";
 import { pathKey, samePath } from "./path-identity.mjs";
 
-vi.setConfig({ testTimeout: 60_000 });
 vi.mock("node:fs", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("node:fs")>();
 	return {

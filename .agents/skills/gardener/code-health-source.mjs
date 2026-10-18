@@ -344,7 +344,7 @@ function script(text, offset, isTypeScript, isTsx, file, add, addComment) {
 	);
 	scanComments(source, text, offset, isTypeScript, add, addComment);
 	scanLongFunctions(source, text, offset, file, add);
-	scanEmptyBlocks(source, text, offset, add);
+	if (!isTestFile(file)) scanEmptyBlocks(source, text, offset, add);
 	scanTestCalls(source, offset, file, add);
 	visitCode(source, (node) => {
 		const start = offset + node.getStart(source);

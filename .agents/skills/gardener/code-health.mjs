@@ -215,13 +215,7 @@ export function linkedReferences(text, extension) {
 		return htmlLinkedReferences(text);
 	}
 	if (extension === ".css") return cssLinkedReferences(text);
-	if (
-		extension === ".js" ||
-		extension === ".mjs" ||
-		extension === ".cjs" ||
-		extension === ".ts" ||
-		extension === ".tsx"
-	) {
+	if (SCRIPT_EXTENSIONS.has(extension)) {
 		return javascriptLinkedReferences(text, extension);
 	}
 	return [];
@@ -285,7 +279,7 @@ export function deriveSharedFiles(files, { specimenPages = [] } = {}) {
 		.sort();
 }
 
-function scanGiantFiles(files, source) {
+export function scanGiantFiles(files, source) {
 	return files.flatMap((item, index) => {
 		const count = source[index].codeLines;
 		return isSourceFile(item.file) && count > 800

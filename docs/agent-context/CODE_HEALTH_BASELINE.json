@@ -48,17 +48,14 @@
 			"longFunctions": 1
 		},
 		".agents/skills/gardener/round16b.test.ts": {
-			"duplication": 12,
-			"emptyBlocks": 2
+			"duplication": 12
 		},
 		".agents/skills/gardener/round16c.test.ts": {
 			"duplication": 10,
-			"longFunctions": 1,
-			"emptyBlocks": 2
+			"longFunctions": 1
 		},
 		".agents/skills/gardener/round27.test.ts": {
-			"duplication": 6,
-			"emptyBlocks": 2
+			"duplication": 6
 		},
 		".agents/skills/gardener/round8b.test.ts": {
 			"duplication": 8,
@@ -92,8 +89,7 @@
 		".agents/skills/verify-fitway/cli.test.mjs": {
 			"duplication": 61,
 			"suppressions": 1,
-			"longFunctions": 8,
-			"emptyBlocks": 11
+			"longFunctions": 8
 		},
 		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
 			"duplication": 9,
@@ -106,8 +102,7 @@
 		},
 		".agents/skills/verify-fitway/compare-speed.test.mjs": {
 			"duplication": 6,
-			"longFunctions": 1,
-			"emptyBlocks": 1
+			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare.mjs": {
 			"duplication": 6,
@@ -146,8 +141,7 @@
 		},
 		".agents/skills/verify-fitway/timeline-hold.test.mjs": {
 			"duplication": 2,
-			"longFunctions": 2,
-			"emptyBlocks": 2
+			"longFunctions": 2
 		},
 		".agents/skills/verify-fitway/timeline.mjs": {
 			"suppressions": 1,
@@ -244,8 +238,7 @@
 		"apps/server/src/phase11-health.integration.test.ts": {
 			"duplication": 14,
 			"typeEscapes": 2,
-			"longFunctions": 1,
-			"emptyBlocks": 1
+			"longFunctions": 1
 		},
 		"apps/server/src/phase11-settings.integration.test.ts": {
 			"duplication": 19,
@@ -345,7 +338,6 @@
 		"apps/web/src/components/owner/access/owner-access-view.test.tsx": {
 			"duplication": 28,
 			"longFunctions": 1,
-			"emptyBlocks": 5,
 			"giantFiles": 1223
 		},
 		"apps/web/src/components/owner/access/owner-access-view.tsx": {
@@ -528,8 +520,7 @@
 		},
 		"apps/web/src/hooks/use-owner-audit.test.tsx": {
 			"duplication": 5,
-			"repeatedWorkarounds": 1,
-			"emptyBlocks": 1
+			"repeatedWorkarounds": 1
 		},
 		"apps/web/src/hooks/use-owner-daily-analytics.test.tsx": {
 			"duplication": 5,
@@ -769,7 +760,7 @@
 			"duplication": 42,
 			"typeEscapes": 10,
 			"longFunctions": 2,
-			"giantFiles": 4186
+			"giantFiles": 4185
 		},
 		"scripts/agent-environment/codex-session.mjs": {
 			"longFunctions": 1,
@@ -898,14 +889,13 @@
 		},
 		"scripts/visual-authority.test.ts": {
 			"duplication": 9,
-			"emptyBlocks": 1,
 			"giantFiles": 1887
 		}
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 116,
-			"expectCalls": 375
+			"testCases": 117,
+			"expectCalls": 377
 		},
 		"apps/server/src": {
 			"testCases": 215,
@@ -1028,8 +1018,8 @@
 			"expectCalls": 509
 		},
 		"scripts/agent-environment": {
-			"testCases": 365,
-			"expectCalls": 1059
+			"testCases": 372,
+			"expectCalls": 1077
 		},
 		"scripts/demo": {
 			"testCases": 17,

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { outputLines } from "./codex-report.mjs";
 import {
 	afterEachReportFixture,
@@ -23,7 +23,6 @@ import {
 } from "./codex-report-fields-fixture.ts";
 
 // Each case starts the launcher up to four times; 22-40 s were measured under load (F281, F282).
-vi.setConfig({ testTimeout: 60_000 });
 afterEach(afterEachReportFixture);
 const cases = reportEventCases();
 describe("R3 structured report rows match run events", () => {
