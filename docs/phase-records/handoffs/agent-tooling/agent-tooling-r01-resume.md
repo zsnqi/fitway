@@ -37,6 +37,11 @@
 
 ## Running now
 
+- **Stopped at the user's word on 2026-10-18 about 13:50** (the machine shut down): both side sessions were asked to stop
+  their processes, push only finished commits and write a stop note at the top of their reports
+  (`D:/fitway-temp/tooling-ratchet-2/REPORT.md`, `D:/fitway-temp/tooling-base-run/REPORT.md`). On pickup, read those
+  notes first, check each round worktree with `git status` and its last commit, and resume each round from its note;
+  nothing below is running until then.
 - **The test split, then base-run** (side session "giant-split", measured
   2026-10-18 11:30): base-run (DECISIONS item 13, P-A: `pnpm tests:base-run` classifies a round's added or changed
   tests run against the base's code as assertion, missing-module, wrong-reason or green-on-base) is in its DeepSeek
