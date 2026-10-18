@@ -4,9 +4,14 @@ import {
 	countDuplicationCopies,
 	scanDuplication,
 } from "./code-health-duplication.mjs";
-import { isSourceFile, scanSource } from "./code-health-source.mjs";
+import {
+	isSourceFile,
+	isTestFile,
+	SCRIPT_EXTENSIONS,
+	scanSource,
+} from "./code-health-source.mjs";
 
-export { isSourceFile, scanSource };
+export { isSourceFile, isTestFile, SCRIPT_EXTENSIONS, scanSource };
 
 const MEASURE_DEFINITIONS = [
 	{ name: "giantFiles", baseline: true, lineCount: true },
@@ -14,6 +19,20 @@ const MEASURE_DEFINITIONS = [
 	{ name: "suppressions", baseline: true, baselineOrder: 2 },
 	{ name: "repeatedWorkarounds", baseline: true, baselineOrder: 3 },
 	{ name: "longFunctions", baseline: true, baselineOrder: 4 },
+	{ name: "longFunctionLines", baseline: true, baselineOrder: 5 },
+	{ name: "emptyBlocks", baseline: true, baselineOrder: 6 },
+	{
+		name: "testCases",
+		baseline: true,
+		baselineOrder: 7,
+		directory: true,
+	},
+	{
+		name: "expectCalls",
+		baseline: true,
+		baselineOrder: 8,
+		directory: true,
+	},
 	{ name: "accessibilityOverrides" },
 	{
 		name: "duplication",
@@ -34,13 +53,18 @@ export const BASELINE_MEASURES = Object.freeze(
 		.sort((left, right) => left.baselineOrder - right.baselineOrder)
 		.map(({ name }) => name),
 );
+export const DIRECTORY_MEASURES = Object.freeze(
+	MEASURE_DEFINITIONS.filter(({ directory }) => directory)
+		.sort((left, right) => left.baselineOrder - right.baselineOrder)
+		.map(({ name }) => name),
+);
 export const GIANT_FILE_MEASURE = MEASURE_DEFINITIONS.find(
 	({ lineCount }) => lineCount,
 ).name;
 export const DUPLICATION_MEASURE = MEASURE_DEFINITIONS.find(
 	({ duplication }) => duplication,
 ).name;
-const IMPORT_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts", ".tsx", ".css"];
+const IMPORT_EXTENSIONS = [...SCRIPT_EXTENSIONS, ".css"];
 
 function hit(file, line, detail) {
 	return { file, line, detail };
@@ -330,6 +354,10 @@ export function scanScope(files, { sharedFiles = [] } = {}) {
 		suppressions: source.flatMap((item) => item.suppressions),
 		repeatedWorkarounds: source.flatMap((item) => item.repeatedWorkarounds),
 		longFunctions: source.flatMap((item) => item.longFunctions),
+		longFunctionLines: source.flatMap((item) => item.longFunctionLines),
+		emptyBlocks: source.flatMap((item) => item.emptyBlocks),
+		testCases: source.flatMap((item) => item.testCases),
+		expectCalls: source.flatMap((item) => item.expectCalls),
 		accessibilityOverrides: source.flatMap(
 			(item) => item.accessibilityOverrides,
 		),
@@ -343,7 +371,12 @@ export function scanScope(files, { sharedFiles = [] } = {}) {
 				total:
 					name === DUPLICATION_MEASURE
 						? countDuplicationCopies(measures[name])
-						: measures[name].length,
+						: name === "longFunctionLines"
+							? measures[name].reduce(
+									(total, item) => total + item.lineCount,
+									0,
+								)
+							: measures[name].length,
 				hits: measures[name],
 			},
 		]),

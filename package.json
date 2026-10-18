@@ -24,7 +24,7 @@
 		"deploy": "vercel deploy",
 		"deploy:prod": "vercel deploy --prod",
 		"deploy:check": "vercel deploy --dry",
-		"check": "biome check .",
+		"check": "biome check --error-on-warnings .",
 		"check:repository": "node scripts/verify-repository.mjs",
 		"check:concept-css": "node scripts/check-concept-css.mjs",
 		"check:agent-context": "node scripts/check-agent-context.mjs",

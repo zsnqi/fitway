@@ -5,9 +5,11 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 import {
 	BASELINE_MEASURES,
+	DIRECTORY_MEASURES,
 	DUPLICATION_MEASURE,
 	GIANT_FILE_MEASURE,
 	isSourceFile,
+	isTestFile,
 	scanScope,
 	scanSource,
 } from "../../.agents/skills/gardener/code-health.mjs";
@@ -26,6 +28,9 @@ export const HEALTH_ROOTS = Object.freeze([
 	"packages",
 ]);
 const EXCEPTION_MARKER = /code-health-exception:/g;
+const FILE_BASELINE_MEASURES = BASELINE_MEASURES.filter(
+	(measure) => !DIRECTORY_MEASURES.includes(measure),
+);
 
 function date(value = new Date()) {
 	return value.toISOString().slice(0, 10);
@@ -53,6 +58,10 @@ function addDays(value, count) {
 
 function normalizePath(file) {
 	return file.replaceAll("\\", "/");
+}
+
+function parentDirectory(file) {
+	return path.posix.dirname(normalizePath(file));
 }
 
 export function listCodeHealthFiles(root = process.cwd()) {
@@ -155,14 +164,30 @@ function addCount(counts, hits, file, measure, lines, count = 1) {
 	hits.set(file, fileHits);
 }
 
+function sortedHits(records) {
+	return Object.fromEntries(
+		[...records].map(([file, measures]) => [
+			file,
+			Object.fromEntries(
+				Object.entries(measures).map(([measure, lines]) => [
+					measure,
+					[...new Set(lines)].sort((left, right) => left - right),
+				]),
+			),
+		]),
+	);
+}
+
 export function snapshotCodeHealth(files, { today = date() } = {}) {
 	const report = scanScope(files);
 	const exceptions = parseExceptions(files);
 	const status = exceptionStatus(exceptions, today);
 	const counts = new Map();
 	const hits = new Map();
+	const directoryCounts = new Map();
+	const directoryHits = new Map();
 
-	for (const measure of BASELINE_MEASURES) {
+	for (const measure of FILE_BASELINE_MEASURES) {
 		if (measure === DUPLICATION_MEASURE) {
 			countDuplicationCopies(report[measure].hits, (_hit, place) => {
 				const file = normalizePath(place.file);
@@ -176,8 +201,27 @@ export function snapshotCodeHealth(files, { today = date() } = {}) {
 		} else {
 			for (const hit of report[measure].hits) {
 				if (!excepted(exceptions, hit.file, measure, [hit.line], today))
-					addCount(counts, hits, hit.file, measure, [hit.line]);
+					addCount(
+						counts,
+						hits,
+						hit.file,
+						measure,
+						[hit.line],
+						hit.lineCount ?? 1,
+					);
 			}
+		}
+	}
+
+	for (const measure of DIRECTORY_MEASURES) {
+		for (const hit of report[measure].hits) {
+			addCount(
+				directoryCounts,
+				directoryHits,
+				parentDirectory(hit.file),
+				measure,
+				[hit.line],
+			);
 		}
 	}
 
@@ -188,17 +232,9 @@ export function snapshotCodeHealth(files, { today = date() } = {}) {
 
 	return {
 		counts: Object.fromEntries(counts),
-		hits: Object.fromEntries(
-			[...hits].map(([file, measures]) => [
-				file,
-				Object.fromEntries(
-					Object.entries(measures).map(([measure, lines]) => [
-						measure,
-						[...new Set(lines)].sort((left, right) => left - right),
-					]),
-				),
-			]),
-		),
+		directoryCounts: Object.fromEntries(directoryCounts),
+		hits: sortedHits(hits),
+		directoryHits: sortedHits(directoryHits),
 		exceptions,
 		invalidExceptions: status.invalid,
 		expiredExceptions: status.expired,
@@ -212,23 +248,50 @@ function measureValue(record, measure) {
 
 export function baselineFromSnapshot(snapshot) {
 	const files = {};
+	const directories = {};
 	const paths = Object.keys(snapshot.counts).sort((left, right) =>
 		left.localeCompare(right, "en"),
 	);
 	for (const file of paths) {
 		const values = {};
-		for (const measure of [...BASELINE_MEASURES, GIANT_FILE_MEASURE]) {
+		for (const measure of [...FILE_BASELINE_MEASURES, GIANT_FILE_MEASURE]) {
 			const value = measureValue(snapshot.counts[file], measure);
 			if (value > 0) values[measure] = value;
 		}
 		if (Object.keys(values).length) files[file] = values;
 	}
-	return { version: 1, files };
+	const directoryPaths = Object.keys(snapshot.directoryCounts ?? {}).sort(
+		(left, right) => left.localeCompare(right, "en"),
+	);
+	for (const directory of directoryPaths) {
+		const values = {};
+		for (const measure of DIRECTORY_MEASURES) {
+			const value = measureValue(snapshot.directoryCounts[directory], measure);
+			if (value > 0) values[measure] = value;
+		}
+		if (Object.keys(values).length) directories[directory] = values;
+	}
+	return {
+		version: 1,
+		measures: [
+			...FILE_BASELINE_MEASURES,
+			GIANT_FILE_MEASURE,
+			...DIRECTORY_MEASURES,
+		],
+		files,
+		directories,
+	};
 }
 
 function parseCodeHealthBaseline(text) {
 	const value = JSON.parse(text);
-	if (value?.version !== 1 || !value.files || typeof value.files !== "object")
+	if (
+		value?.version !== 1 ||
+		!value.files ||
+		typeof value.files !== "object" ||
+		(value.directories !== undefined &&
+			(typeof value.directories !== "object" || value.directories === null))
+	)
 		throw new Error("unsupported baseline shape");
 	return value;
 }
@@ -277,28 +340,87 @@ export function readCommittedCodeHealthBaseline(root = process.cwd()) {
 }
 
 export function compareCodeHealth(baseline, snapshot) {
-	const beforeFiles = baseline?.files ?? {};
-	const afterFiles = snapshot.counts;
-	const paths = [
-		...new Set([...Object.keys(beforeFiles), ...Object.keys(afterFiles)]),
-	].sort((left, right) => left.localeCompare(right, "en"));
-	const changes = [];
-	for (const file of paths) {
-		for (const measure of [...BASELINE_MEASURES, GIANT_FILE_MEASURE]) {
-			const before = measureValue(beforeFiles[file], measure);
-			const after = measureValue(afterFiles[file], measure);
-			if (before === after) continue;
-			changes.push({
-				file,
-				measure,
-				baseline: before,
-				current: after,
-				hits: snapshot.hits[file]?.[measure] ?? [],
-				direction: after > before ? "rise" : "fall",
-			});
-		}
-	}
-	return changes;
+	const compare = (before, after, measures, hits, scope) => {
+		const paths = [
+			...new Set([...Object.keys(before), ...Object.keys(after)]),
+		].sort((left, right) => left.localeCompare(right, "en"));
+		return paths.flatMap((location) =>
+			measures.flatMap((measure) => {
+				const baseline = measureValue(before[location], measure);
+				const current = measureValue(after[location], measure);
+				if (baseline === current) return [];
+				return [
+					{
+						[scope]: location,
+						scope,
+						measure,
+						baseline,
+						current,
+						hits: hits[location]?.[measure] ?? [],
+						direction: current > baseline ? "rise" : "fall",
+					},
+				];
+			}),
+		);
+	};
+	return [
+		...compare(
+			baseline?.files ?? {},
+			snapshot.counts,
+			[...FILE_BASELINE_MEASURES, GIANT_FILE_MEASURE],
+			snapshot.hits,
+			"file",
+		),
+		...compare(
+			baseline?.directories ?? {},
+			snapshot.directoryCounts ?? {},
+			DIRECTORY_MEASURES,
+			snapshot.directoryHits ?? {},
+			"directory",
+		),
+	];
+}
+
+function establishedMeasures(baseline) {
+	if (Array.isArray(baseline?.measures)) return new Set(baseline.measures);
+	return new Set(
+		[
+			...Object.values(baseline?.files ?? {}),
+			...Object.values(baseline?.directories ?? {}),
+		].flatMap((record) => Object.keys(record)),
+	);
+}
+
+function directoryExcepted(snapshot, change, today) {
+	return snapshot.openExceptions.some(
+		(exception) =>
+			exception.measure === change.measure &&
+			exception.until >= today &&
+			isTestFile(exception.file) &&
+			parentDirectory(exception.file) === change.directory,
+	);
+}
+
+function refusedChanges(previous, snapshot, today) {
+	const established = establishedMeasures(previous);
+	return compareCodeHealth(previous, snapshot).filter((change) => {
+		if (!established.has(change.measure)) return false;
+		if (change.scope === "directory")
+			return (
+				change.direction === "fall" &&
+				!directoryExcepted(snapshot, change, today)
+			);
+		return change.direction === "rise";
+	});
+}
+
+function baselineFailure(changes) {
+	return changes
+		.map(
+			(change) =>
+				`${change.file ?? change.directory}: ${change.measure} baseline=${change.baseline} current=${change.current}`,
+		)
+		.join("\n");
 }
 
 export function writeCodeHealthBaseline({
@@ -309,16 +431,8 @@ export function writeCodeHealthBaseline({
 	const baseline = baselineFromSnapshot(snapshot);
 	const previous = readCommittedCodeHealthBaseline(root);
 	const changes = previous ? compareCodeHealth(previous, snapshot) : [];
-	const rises = changes.filter((change) => change.direction === "rise");
-	if (rises.length)
-		throw new Error(
-			rises
-				.map(
-					(change) =>
-						`${change.file}: ${change.measure} baseline=${change.baseline} current=${change.current}`,
-				)
-				.join("\n"),
-		);
+	const refused = previous ? refusedChanges(previous, snapshot, today) : [];
+	if (refused.length) throw new Error(baselineFailure(refused));
 	const target = path.join(root, BASELINE_RELATIVE_PATH);
 	mkdirSync(path.dirname(target), { recursive: true });
 	const text = `${JSON.stringify(baseline, null, "\t")}\n`;
@@ -337,7 +451,9 @@ export function checkCodeHealth({ root = process.cwd(), today = date() } = {}) {
 	const inflation = committed
 		? compareCodeHealth(committed, {
 				counts: baseline.files,
+				directoryCounts: baseline.directories ?? {},
 				hits: {},
+				directoryHits: {},
 			}).filter((change) => change.direction === "rise")
 		: [];
 	return {
@@ -350,8 +466,9 @@ export function checkCodeHealth({ root = process.cwd(), today = date() } = {}) {
 }
 
 export function formatCodeHealthChange(change) {
-	const hits = change.hits.length ? `; hits: ${change.hits.join(", ")}` : "";
-	return `${change.file}: ${change.measure} baseline=${change.baseline} current=${change.current}${hits}; run ${BASELINE_COMMAND}`;
+	const location = change.file ?? change.directory;
+	const hits = change.hits?.length ? `; hits: ${change.hits.join(", ")}` : "";
+	return `${location}: ${change.measure} baseline=${change.baseline} current=${change.current}${hits}; run ${BASELINE_COMMAND}`;
 }
 
 export function runCodeHealthBaseline() {
