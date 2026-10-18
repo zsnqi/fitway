@@ -62,12 +62,19 @@ honest, on checks the round did not run itself.
   show it catches a planted one-byte change in a moved function and a deleted comment, in a copy. `node
   D:/fitway-temp/tooling-giant-split-grade/unbound.cjs` (with `CHECKER_TS` set to this worktree's
   `node_modules/typescript/lib/typescript.js`) on every `.mjs` file the diff adds or changes reports no name other
-  than those it reports on the six files at the base. Intent: every statement and comment arrived unchanged, and
+  than those it reports on the six files at the base; it reports unresolved imports and missing exports as well as
+  unbound names. With your own script: each comment that sits between two top-level statements at the base sits
+  directly above the same following statement at HEAD (list any that does not); and two top-level statements that are
+  neighbours both at the base and at HEAD keep the blank-line separation they had at the base (list any that lose it).
+  Intent: every statement and comment arrived unchanged, and
   every name still resolves.
 - **G2. Line counts (S1).** Outcome: every file in the checker's pool at or below 700 lines by `wc -l`, except
   `.agents/skills/verify-fitway/runner.mjs`, which holds `drive`, at or below 800, with no `biome-ignore` in any
   pool file. Intent: room under the line, reached without escapes.
-- **G3. Graph (S2, S4).** Outcome: the checker prints no `CYCLE`, `REEXPORT` or `NEW-IMPORTS-SPLIT-FILE` line;
+- **G3. Graph (S2, S4).** Outcome: the checker prints no `CYCLE` or `REEXPORT` line, and a `NEW-IMPORTS-SPLIT-FILE`
+  line only where the module imports a split file other than the one it was made from (name its origin); no import
+  cycle exists among all files the diff adds or changes and the files they import, followed transitively (check
+  with your own script, since the checker's graph holds only its pool);
   `formatReport` and `collectSurveyCodeHealth` are declared in `.agents/skills/gardener/survey.mjs` and
   `listTrackedFiles` in `scripts/verify-repository.mjs`; every importer outside the pool imports each name from the
   module that declares it (list any that does not). Intent: one path to each declaration.
@@ -98,11 +105,14 @@ honest, on checks the round did not run itself.
   diff is import lines and that exception); for each measure,
   the sum over the pool's entries in `docs/agent-context/CODE_HEALTH_BASELINE.json` is at or below the sum over the six
   at the base, no count rises in another file, and no pool file has a `giantFiles` entry; `pnpm check:tooling-map`
-  passes with 785 callables and at most 614 without a covering test. Intent: a move hides no debt and loses no test.
+  passes with 785 callables and at most 614 without a covering test, and no callable name listed with a covering test
+  in the base's `docs/agent-context/AGENT_TOOLING_CODE_MAP.md` is listed without one at HEAD (compare by name, since a
+  moved callable changes file). Intent: a move hides no debt and loses no test.
 - **G9. Scope (L2).** Outcome: `git diff --name-only 72b95888 HEAD` holds only files the round's Scope allows; it holds
   none of `.agents/skills/gardener/code-health.mjs`, `code-health-source.mjs`, `code-health-duplication.mjs`, their
   tests, `scripts/agent-environment/check-code-health.mjs`, `code-health-baseline.mjs` and
-  `code-health-ratchet.test.ts`, and `.agents/skills/verify-fitway/compare.mjs` changes on import lines only.
+  `code-health-ratchet.test.ts`, and `.agents/skills/verify-fitway/compare.mjs` changes on import lines only; every
+  added file is a `.mjs` module or a test (list any other added file).
   Intent: no collision with the parallel round.
 - **G10. Cohesion (S1, judgement).** Outcome: for each new module, its origin file, its file name, and whether every
   declaration in it serves the one responsibility its name and opening comment state (name any that does not, and any
