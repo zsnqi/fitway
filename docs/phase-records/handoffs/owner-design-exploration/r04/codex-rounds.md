@@ -2067,3 +2067,30 @@ checks live outside the repository and never appear here or in a brief. One line
   the module paths are settled, before the exceptions expire on 2026-11-15; `compareOwned`'s decomposition (F293). The user's word (2026-10-18, relayed by a forked side session): «بخصوص
   compare.mjs ماعندي مشكلة ب اعادة كتابة الدالة اذا كان في سبيل التحسين»: for that one function a rewrite that improves it
   may replace the byte-identical move, its behaviour unchanged and proved by the tests (the user's exception).
+
+## agent-tooling-r01: ratchet-2: `../../agent-tooling/briefs/codex-ratchet-2.md`, result `78730971` on `tooling-ratchet-2`, DeepSeek V4.1 Flash 1017, level `max`; review builder `c8abc04a` (after the merge `da828661`), fixer `50cecbc9`, grade fixes `504d6572`
+
+- **Scope (DECISIONS items 13 and 14):** `longFunctionLines` (the summed length of functions over 80 lines per non-test
+  file cannot rise), `emptyBlocks`, Biome warnings failing the ladder with three zero-hit rules at error, the test case
+  and expectation floors, F261/F281/F282's timeouts, F284; the builder added giant-file split guidance and the staged
+  giant-file pre-commit job (the user's addition, item 13).
+- **Run** (`codex-round-5c068aba-...`): report accepted, finished, no resume (the stop note in
+  `D:/fitway-temp/tooling-ratchet-2/REPORT.md`; the session that ran it stopped at a machine shutdown, so the run's
+  token figures and its own row tally were not copied here).
+- **Diff review** (`D:/fitway-temp/code-review/ratchet-2-builder-1/`, Sol `xhigh`, on `c8abc04a`): two blocking
+  findings, the pre-commit hook's `parallel: true` racing Biome's re-staging (F286) and a second Git runner (F287). The
+  fixer applied the second and left the first, reading the lease as one job only (F289).
+- **The grade** (`../../agent-tooling/briefs/codex-ratchet-2-grade.md`, G1-G14, GPT-6.1 Sol `xhigh`, run
+  `codex-round-5c124152-...` on `50cecbc9`; stopped by the shutdown, resumed from its thread, one automatic resume for
+  unmatched PASS rows): 11 PASS; G9 (test titles carrying `R1`/`R4`), G11 (no `piped: true`) and G13 (an added case
+  failing with a TypeError on the base instead of at its assertion) FAIL. All three reproduced by the coordinator and
+  real (F286, F288); fixed in `504d6572` by the coordinator (mechanical, frozen by the grade's rows), the three test
+  files 24/24 and the base run failing only at assertions (`D:/fitway-temp/tooling-ratchet-2/coordinator/g13-base.log`).
+- **Replay** (`D:/fitway-temp/tooling-ratchet-2/coordinator/replay-c8abc04a.log`): of the report's 18 reviewed pairs, 8
+  flagged, catching 5 of the 7 D5 findings; 38 of 84 unreviewed control commits flagged. Staged hook 885-908 ms,
+  `check:code-health` 1.29x the base (timing.txt).
+- **`longFunctionLines` stays as built** (the coordinator, under item 13): the pair flags without a D5 finding are all
+  functions already over 80 lines that grew, which item 10 asks briefs to stop; the controls had no review, so their
+  flags are not false flags; narrowing it now would cost a new review and grade before the demo. Reviewed again after
+  the demo against the flags the next rounds meet (how many forced a split no reviewer would have asked for).
+- **Rows:** 11/14 as graded at `50cecbc9`, the three FAILs repaired in `504d6572`. Side findings F286-F289; F284 fixed.
