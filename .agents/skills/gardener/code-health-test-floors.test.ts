@@ -9,8 +9,8 @@ function totals(text: string, file = "cases.test.ts") {
 	};
 }
 
-describe("R4 test case and expectation floors", () => {
-	it("R4 counts direct, aliased, chained and conditional test calls once", () => {
+describe("test case and expectation floors", () => {
+	it("counts direct, aliased, chained and conditional test calls once", () => {
 		const text = [
 			'import { it, test } from "vitest";',
 			'import { it as nodeIt } from "node:test";',
@@ -28,7 +28,7 @@ describe("R4 test case and expectation floors", () => {
 		expect(totals(text).cases).toBe(10);
 	});
 
-	it("R4 excludes skipped, todo and literal-false conditional cases", () => {
+	it("excludes skipped, todo and literal-false conditional cases", () => {
 		const text = [
 			'import { it, test } from "vitest";',
 			'it.skip("skip", () => {});',
@@ -39,7 +39,7 @@ describe("R4 test case and expectation floors", () => {
 		expect(totals(text).cases).toBe(0);
 	});
 
-	it("R4 ignores a local it that shadows the Vitest import", () => {
+	it("ignores a local it that shadows the Vitest import", () => {
 		const text = [
 			'import { it } from "vitest";',
 			"{",
@@ -50,7 +50,7 @@ describe("R4 test case and expectation floors", () => {
 		expect(totals(text).cases).toBe(0);
 	});
 
-	it("R4 counts expect, soft, poll and aliases without counting helpers", () => {
+	it("counts expect, soft, poll and aliases without counting helpers", () => {
 		const text = [
 			'import { expect } from "vitest";',
 			'import { expect as verify } from "vitest";',
@@ -64,7 +64,7 @@ describe("R4 test case and expectation floors", () => {
 		expect(totals(text).expects).toBe(4);
 	});
 
-	it("R4 ignores a local expect that shadows the Vitest import", () => {
+	it("ignores a local expect that shadows the Vitest import", () => {
 		const text = [
 			'import { expect } from "vitest";',
 			"{",
@@ -75,7 +75,7 @@ describe("R4 test case and expectation floors", () => {
 		expect(totals(text).expects).toBe(0);
 	});
 
-	it("R4 recognises .spec files the same way as describe callbacks", () => {
+	it("recognises .spec files the same way as describe callbacks", () => {
 		expect(
 			totals(
 				'import { it } from "vitest";\nit("spec", () => {});',

@@ -37,7 +37,9 @@ describe("emptyBlocks", () => {
 
 	it("does not count an empty block in a test file", () => {
 		const text = 'it("waits", () => {});';
-		expect(scanScope([{ file: "empty.ts", text }]).emptyBlocks.total).toBe(1);
+		expect(
+			scanScope([{ file: "empty.ts", text }]).emptyBlocks?.total ?? 0,
+		).toBe(1);
 		expect(scanScope([{ file: "empty.test.ts", text }]).emptyBlocks).toEqual({
 			total: 0,
 			hits: [],

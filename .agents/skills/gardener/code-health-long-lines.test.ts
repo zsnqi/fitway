@@ -19,14 +19,14 @@ function longLineTotal(file: string, text: string) {
 	return scanScope([{ file, text }]).longFunctionLines?.total ?? 0;
 }
 
-describe("R1 longFunctionLines", () => {
-	it("R1 counts a new 90-line production function as 90", () => {
+describe("longFunctionLines per file", () => {
+	it("counts a new 90-line production function as 90", () => {
 		expect(
 			longLineTotal("sample.ts", functionLines("sample", 90).join("\n")),
 		).toBe(90);
 	});
 
-	it("R1 sums a 120-line function and the 90-line function inside it", () => {
+	it("sums a 120-line function and the 90-line function inside it", () => {
 		expect(
 			longLineTotal(
 				"nested.ts",
@@ -35,13 +35,13 @@ describe("R1 longFunctionLines", () => {
 		).toBe(210);
 	});
 
-	it("R1 gives no value to an 80-line function", () => {
+	it("gives no value to an 80-line function", () => {
 		expect(
 			longLineTotal("short.ts", functionLines("short", 80).join("\n")),
 		).toBe(0);
 	});
 
-	it("R1 gives no value to a test file with a 300-line it callback", () => {
+	it("gives no value to a test file with a 300-line it callback", () => {
 		const text = [
 			'import { it } from "vitest";',
 			'it("long", () => {',

@@ -6,7 +6,7 @@ output:
 no_tty: true
 
 pre-commit:
-  parallel: true
+  piped: true
   jobs:
     - name: biome
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
