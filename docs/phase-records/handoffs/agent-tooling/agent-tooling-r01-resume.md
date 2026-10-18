@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `72b95888`, 2026-10-18 03:01 +03:00
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-10), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at `9f134a3d`, 2026-10-18 13:36 +03:00
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-13), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -37,64 +37,40 @@
 
 ## Running now
 
-- **The CLI contract's grade builder** (`owner-direction-builder`, in the coordinator session): `1085b6fc` holds the
-  six grade findings (exact product names in the classifier, C4 lines across the start-up failures, probes after
-  positionals and a source scan of entry modules, measure/doctor/drive options declared again with 26 intentional
-  refusals, the launcher's 21 help explanation lines in a help-notes module, the two old-code cases at their
-  assertions). Its local ladder failed twice on per-test timeouts only (round16b R6 at 60 s; round15 G2, round16 R1
-  and new-handoff V2 at 20 s), each file passing alone; it is pushed and its CI was in progress at 13:30. Accepted by
-  the coordinator: `context:show` with no `--milestone` is now refused (it silently picked the first open milestone),
-  recorded among the intentional refusals.
-- **Its Sol diff review** (D:/fitway-temp/code-review/cli-contract-grade-builder-1, dispositions there) gave three
-  blocking findings: a `tool-contract:` comment exempting code from the source scan, the registry and verify-fitway's
-  cli.mjs both validating the same ranges, and a second required-option path for compare's `--baseline` (R20 V2 may
-  gain `--baseline` for compare only). The coordinator added five: check:agent-context's unknown milestone in the C4
-  form, `--timeline-times` and compare's `--session` in the C4 form, measure's spec-serve refusal before it creates a
-  folder, a subcommand's own usage after a missing value, and the gardener SKILL.md's order. The builder committed
-  them as `47f18b0e`; its report never reached the coordinator (it ran in the earlier coordinator session). The
-  coordinator checked the commit against the dispositions (the `tool-contract:` comment gone from the tree,
-  `--baseline` among compare's required options with only R20 V2 changed, cli.mjs's own range checks removed; the five
-  giant files under their 57dad1c0 counts) and pushed it at 14:06; CI run 39027454092 passed.
-- **The coordinator's reproduction** (D:/fitway-temp/tooling-cli-contract-regrade/probe-ccr4.mjs, against
-  `57dad1c0`'s owner parser): through the resolver and the owner options step, `doctor --quiet true --transports`,
-  `measure --feature --states --languages --sizes --inputs --motions --transports` and `drive --timeline
-  --timeline-times --tools --quiet` give the values the old parser gave.
-- **The re-grade is done and recorded** (run D:/fitway-temp/codex-round-56efe90d-e5b2-4caa-94dd-e1f468486afa, brief
-  `docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-regrade.md`; `codex-rounds.md`
-  §"agent-tooling-r01: the CLI contract and cli-contract-fix", F273): Q1 and L1 PASS; five real defects (handoff:new's
-  start-up exception and launch's missing-value usage, Q4; repair-recipes without `--out` refused, Q6, reproduced by
-  the coordinator from both sources; one condensed declaration, Q9; 13 compatibility cases throwing on old code, Q10)
-  and four readings the grading brief's wording. CI passed on `47f18b0e` (run 39027454092).
-- **The third builder's commit `cf5d7858`** holds the five fixes (records: `codex-rounds.md`); its Sol diff review
-  (D:/fitway-temp/code-review/cli-contract-regrade-builder-1) gave no findings; the coordinator reproduced each fixed
-  row; its side observations are F274-F276. CI passed on it (run 39040522121); `agent-tooling-r01` fast-forwarded to it, the coordinator line merged it as
-  `b4a9f095` (CI passed, run 39042586711), and `pnpm main:advance` moved main from `b56aa416` to `b4a9f095`.
-- **The grade is done and recorded** (run D:/fitway-temp/codex-round-2751f7b6-26f9-41ec-8f47-6f7fd2501184;
-  `codex-rounds.md` §"agent-tooling-r01: the CLI contract and cli-contract-fix", `rounds.tsv`): 6/12 as graded, six
-  real defects (Q6 reproduced by the coordinator through the resolver: `--feature` and `--quiet` refused), Q8 the
-  grading brief's wording. CI passed on `97f61712` (measured).
-- **Earlier in the series** (records: `codex-rounds.md` §"agent-tooling-r01: the CLI contract and cli-contract-fix",
-  `rounds.tsv`): the contract `cb1cfe65` (run codex-round-58a64b69-...), cli-contract-fix `dda8e020` (run
-  codex-round-e40f5755-...), the review builder `97f61712` (a fixed compatibility table of 148 rows, re-checked by the
-  coordinator against the `57dad1c0` parsers with 0 mismatches); CI passed on all three. One old form is refused on
-  purpose: `main:advance HEAD -- --dry-run`.
-- **main is at `b56aa416`** (measured), with the ratchet series integrated (`57dad1c0` the last of it; records
-  `codex-rounds.md` §"agent-tooling-r01: ratchet-fix-2", F267-F271).
+- **The test split, then base-run** (side session "giant-split", measured
+  2026-10-18 11:30): base-run (DECISIONS item 13, P-A: `pnpm tests:base-run` classifies a round's added or changed
+  tests run against the base's code as assertion, missing-module, wrong-reason or green-on-base) is in its DeepSeek
+  round's replay step; the session then splits `scripts/agent-environment/codex-round.test.ts` (1,415 s of the 27-28 min
+  CI ladder, run 39107745366: its 262 cases run one after another in one file) and the other giant tooling test files so
+  Vitest runs them in parallel, measured by the CI ladder's wall time before and after; then base-run's review, fixes
+  and grade. Report files: `D:/fitway-temp/tooling-base-run/REPORT.md` and the test split's own.
+- **ratchet-2** (side session "ratchet-codelines"): stopped on a Claude
+  session limit until 13:10 on 2026-10-18 (inferred from its error); its causes: longFunctionLines (non-test files),
+  emptyBlocks, Biome warnings fail the ladder with `noSkippedTests`, `noUnusedExpressions` and `noNonNullAssertion` at
+  error, a per-test-file floor of cases and expects, the timeouts (F261, F281, F282; one setting replacing 580ba805's
+  per-file line), F284, split instructions in every giant-file failure and a lefthook pre-commit job on staged files
+  (the user's addition through a side session); each replayed on the 18 pairs of
+  `D:/fitway-temp/review-recurrence/REPORT.md`. Finding IDs F286-F289; base-run and the test split take F290 onward
+  after F294. Its report: `D:/fitway-temp/tooling-ratchet-2/REPORT.md`. Resume it with a message once its limit resets.
 
 ## Next steps
 
-1. **The CLI contract is closed and on main** (`b4a9f095`; nothing left to do for it); its leftovers are F273-F276.
-2. **Report-fields and the verification map are on main** (`72b95888`, CI run 39079351885, measured 2026-10-18;
-   the user's yes to merging both): report-fields through `a90da2e2` with its records `01cc39e6` (codex briefs now
-   start `role: codex delivers: commit|report` and report in a fenced `report` block; F278-F281), the verification
-   map through `eee192ce` with its records `90e7c61b` (F252 fixed: a checkout without recipes checks the concept at
-   the ref in `.agents/skills/verify-fitway/concept-source.json`, now `owner-followup-r04-build`; F277). Both
-   records are in `codex-rounds.md`. When the concept's pages move to another branch, change that `ref`.
-3. **Beside the pages and the demo, where capacity allows** (neither deferred nor gating): the ratchet's code-line
-   count (F272) and the split of the giant files (DECISIONS item 10; briefs keep the "move code, never delete text"
-   line until both are in), and the lighter pickup. F264 (verify-fitway's caret in forced colours) joins the next
-   verify-fitway round; F269 waits for a ratchet round; F273-F276 are the CLI contract's leftovers (start-up lines,
-   a duplicate option, inventory gaps) for a later contract round.
+1. **Integrated on 2026-10-18 (measured):** ratchet-codelines (`4476c766`, F269, F272; records `527456a4`), the
+   giant-file split (`2b295008` through the integration merge `bd6ed12d`: six source files into modules; `compare.mjs`
+   kept, F293; records `9f134a3d`, F290-F294); main at `10fe1783` (CI run 39110319014); the line at `9f134a3d` waits for
+   its CI run 39119869580, then `pnpm main:advance`.
+2. **DECISIONS item 13** (the user's freedom for measured preventions): after ratchet-2 and base-run, the launcher
+   runs the fast ladder itself after accepting a commit claim and calls base-run (F256's ladder half, F279), and the
+   brief template gains the reuse line, the D1-D8 pointer, a `Forms:` list with a `brief:check` presence rule, and
+   what a new check does when its input is missing. Track blocking findings per diff review by class in
+   `codex-rounds.md`; the baseline is the recurrence report's 74 findings over 19 reviews.
+3. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
+   `check-agent-context.test.ts`, `verify-repository.schema.test.ts`): an exception zeroes the measure (F290); the test
+   split retires four of them. `compareOwned` may be rewritten if it improves it (the user, recorded in `35519230`), its
+   behaviour proved unchanged by tests (F293).
+4. **Briefs keep "room is made by moving code out"** while any giant file remains (item 10).
+5. **Left for later:** the lighter pickup; F264 with the next verify-fitway round; F273-F276 (CLI contract leftovers);
+   a near-clone measure only after a hand-judged sample (item 13).
 
 ## Waiting on the user
 
@@ -102,6 +78,11 @@ Nothing.
 
 ## Known risks
 
+- **CI takes 27-28 min** on Windows (the job limit is 45 min since `10fe1783`; runs 39104738645 and 39108328967 failed
+  at the old 30 min and on F282), until the test split lands; a push cancels the branch's running CI run (the workflow's
+  concurrency group), so batch pushes while waiting on a run `main:advance` needs.
+- **Side sessions stop on Claude session limits** (both did on 2026-10-18); a session that stops is resumed with a
+  message after its reset, and its last commit and report are checked first.
 - The risks in r04's resume point apply here too: DeepSeek reports can claim steps that never ran (check the commit
   and ladder against the events), grading briefs name the round's brief by its absolute coordinator path, timed work
   needs a quiet machine (B13), and node_modules junctions are unlinked before `git worktree remove`.

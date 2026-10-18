@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `72b95888`, 2026-10-18 03:01 +03:00
+- **As of:** `codex/owner-redesign-r04` at `9f134a3d`, 2026-10-18 13:36 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-75), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -39,7 +39,7 @@
 
 ## Running now
 
-- **Nothing of this milestone runs** (measured 02:27; agent-tooling-r01's ratchet-fix runs, its resume point). The fix-2 grade reported at 00:51 (run
+- **Nothing of this milestone runs** (measured 2026-10-18 11:30; agent-tooling-r01's rounds run, its resume point). Earlier: The fix-2 grade reported at 00:51 (run
   D:/fitway-temp/codex-round-3e6c4f04-9467-4931-a8c2-46e6b433af71, report accepted): FAIL on G1, G2, G4, G5, G8, G9
   and G11. The coordinator's reading, with reproductions (`codex-rounds.md` §"shared-lows-fix-2"; scripts and logs in
   D:/fitway-temp/owner-r04-shared-lows-fix-2-grade/coordinator/): five rows from the grading brief's wording, the
@@ -52,9 +52,9 @@
 
 ## Next steps
 
-1. **main is at `72b95888`** (agent-tooling-r01's report-fields and verification map, both run beside Settings,
-   merged with the user's yes; CI run 39079351885; measured 2026-10-18); later commits go to main with the next
-   integration.
+1. **main is at `10fe1783`** (CI run 39110319014, measured 2026-10-18): agent-tooling-r01's ratchet code-line round and
+   this milestone's records; the giant-file split follows on the line at `9f134a3d` once its CI passes. Later commits go to
+   main with the next integration.
 2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Decision 76 (the demo first):
    what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the
@@ -64,8 +64,10 @@
    now https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8; the first account's link (8U93baiZjKSVNUaRnNPteT) can no
    longer be updated or its comments read from here. The user gathers notes and says «خلاص» before work starts. Left for later, with their reasons: the dialogs' parts splitting under a
    planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
-3. **F266:** Components' heat tooltip covers the selected cell after a click (measured; Reports places its tip below
-   the cell); it goes with the next concept round that touches Components.
+3. **F266 is fixed** (`873e03fc` on the build branch, pushed: Components places its tip with Reports' shared placement; 204
+   cases measured, no overlap). **F285** (Components' heat grid at 390 is broken) waits: the user, 2026-10-18, the sheet is
+   not in the demo; any designer brief whose page shows a heat or hour grid on the phone says the sheet's grid at 390 is
+   known broken and follows Reports' one-day pattern; fixed only if a remaining page needs that grid at phone width.
 4. **Grading briefs for focus work** state a control's tab order (the first Tab can leave the page), keep a pixel
    rule's allowances the round's brief gives, and list every outcome whose rings may differ (the five rows above).
 
