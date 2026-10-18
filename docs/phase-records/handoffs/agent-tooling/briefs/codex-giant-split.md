@@ -71,23 +71,35 @@ line; every command, test and check behaves as at this HEAD.
     `check-agent-context.mjs` 1132, `runner.mjs` 1130, `check-brief.mjs` 1128, `verify-repository.mjs` 953; the
     ratchet forbids each from growing (DECISIONS item 10), and the code lines alone (blank and comment lines not
     counted) are over 800 in each.
-  - **Outcome.** Each of the six files (must change) and every module made from them has at most 800 lines by
-    `wc -l` on your committed tree. The widest single declaration is `drive` in `runner.mjs` (`export async function
-    drive`, 728 lines from line 403): the module that holds it has at most 72 other lines.
-  - **Intent.** Each piece has room to change; the line is met by where code lives, never by deleting text (S3).
+  - **Outcome.** Each of the six files (must change) and every module made from them has at most 700 lines by
+    `wc -l` on your committed tree, leaving at least 100 lines of room under the line. One exception: the widest
+    single declaration is `drive` in `runner.mjs` (`export async function drive`, 728 lines from line 403); the module
+    that holds it holds `drive` and only what nothing but `drive` uses, and has at most 750 lines.
+  - **Outcome.** Each new module holds code from one of the six files only, holds one responsibility, and its file
+    name says what it holds (never a number or "part"); the report gives each module's responsibility in one line.
+    A declaration used by one module only lives in that module.
+  - **Intent.** Each piece has room to change and a reason to exist; the line is met by where code lives, never by
+    cutting at line counts or deleting text (S3).
 - **S2. Moved, never rewritten.**
   - **Outcome.** Every top-level statement of the six files at this HEAD, other than an `import` and an
     `export ... from`, appears in your result byte for byte, a leading `export ` or `export default ` aside, among the
     six files and the modules new since this HEAD, as many times as it appears among the six at this HEAD (`sha256`
     is declared identically in `codex-round.mjs`, `check-agent-context.mjs` and `verify-repository.mjs`; each copy
-    stays where it is). The only new top-level statements are `import` and `export` statements. Each new module sits
-    in the folder of the file its code came from.
+    stays where it is, and each statement keeps resolving its names to the same declarations as at this HEAD). The
+    only new top-level statements are `import` statements and `export` keywords or `export { ... }` lists of names the
+    module itself declares. Each new module sits in the folder of the file its code came from. The modules made from
+    one file and that file form no import cycle, and no new module imports from the file it was made from: what the
+    file and its modules share lives in a module.
   - **Intent.** A reviewer reads moves, not new code: behaviour comes from the same statements, and nothing is
     rewritten on the way.
 - **S3. Nothing explained is lost.**
-  - **Outcome.** Every comment line of the six files at this HEAD appears in your result among the same files, with
-    the code it describes when it sits directly above or inside a moved statement; a file's opening comment stays in
-    that file, and each new module may begin with one comment saying what it holds. `git diff 72b95888 HEAD` removes
+  - **Outcome.** Every comment line of the six files at this HEAD appears in your result among the same files, as
+    many times as at this HEAD. A comment inside a statement moves with it; a comment between two top-level
+    statements, with or without a blank line after it, moves with the statement that follows it, unless it is a
+    file's opening comment, which stays in that file. Each new module may begin with one comment saying what it holds.
+    Blank lines between top-level statements stay as the formatter keeps them at this HEAD: two statements separated
+    by a blank line at this HEAD that are still neighbours stay separated by one, and a moved statement is separated
+    from its new neighbours as the formatter separates them; no file gains blank lines that separate nothing. `git diff 72b95888 HEAD` removes
     no blank line, comment or explanation that is not added back in another of those files.
   - **Intent.** DECISIONS item 10: room is made by moving code out, never by deleting blank lines, comments or
     explanations.
@@ -95,7 +107,8 @@ line; every command, test and check behaves as at this HEAD.
   - **Outcome.** Every file that imports from one of the six at this HEAD imports each name from the module that now
     declares it, with these three exceptions, which stay declared in their file because the parallel round's files
     import them: `formatReport` and `collectSurveyCodeHealth` in `survey.mjs`, and `listTrackedFiles` in
-    `verify-repository.mjs`. No old file re-exports a moved name.
+    `verify-repository.mjs`. No file, old or new, re-exports a name it does not declare (no `export ... from` and no
+    `export { name }` of an imported name), so every import names the declaring module.
   - **Intent.** One path to each declaration, and no change to the other round's files.
 - **S5. Entry commands are unchanged.**
   - **Outcome.** `pnpm check:repository`, `pnpm check:agent-context`, `pnpm brief:check`, `pnpm codex:round`,
