@@ -121,3 +121,30 @@ through these pointers, not copied here.
     - **Not built yet:** a near-clone measure (12 of 30 placed duplicates on history, its false-flag rate unjudged);
       it may become a hint in the diff review's prompt once a hand-judged sample sets its threshold.
     - **The benefit is tracked** as blocking findings per diff review by class, before and after, in `codex-rounds.md`.
+14. **Before the demo: close ratchet-2 and the template lines; the rest waits** (the user, 2026-10-18, on the
+    coordinator's proposal in a side session, before switching Claude accounts: «موافق على اقتراحك بإغلاق Ratchet-2
+    وإضافة تحسينات قالب الـBrief» and «موافق على اقتراحك بتأجيل بقية أعمال البيئة إلى ما بعد الديمو»; neither resumes
+    until the new account's session picks them up from the saved state).
+    - **Closed before the pages continue:** ratchet-2 (local `50cecbc9` on `tooling-ratchet-2`, unpushed; left: the Sol
+      diff review its stop note names, the grade, the replay on the final commit, CI and records; its stop note at the
+      top of `D:/fitway-temp/tooling-ratchet-2/REPORT.md`). Its replay counts decide `longFunctionLines`: 8 of the 18
+      reviewed pairs flagged (5 of the 7 D5 findings), but 40 of 87 unreviewed control commits flagged too; a measure
+      that mostly flags work no review objected to is dropped or narrowed (item 13). And the brief template's lines only
+      (`docs/agent-context/briefs/codex.md`): reuse what exists before writing a reader, parser, runner, fixture or option
+      list; the implementer is pointed to `CODE_REVIEW.md` D1-D8; an outcome that parses, reads, classifies or detects
+      lists its forms; a new check says what it does when its input is missing. The `brief:check` rule for the forms
+      list waits.
+    - **After the demo:** base-run (its edits stay uncommitted on disk in `D:/Projects/fitway-worktrees/tooling-base-run`
+      over `c0e12373`, pushed; review them against its dispositions before any commit), the test-file split (CI's
+      27-28 min, `codex-round.test.ts` 1,415 s; the 45 min limit holds meanwhile), the launcher running the ladder
+      itself, the near-clone measure, `compareOwned` (F293), the lighter pickup, F264, F273-F276, F285 and the
+      before/after evaluation on DeepSeek.
+    - **Claude Desktop stays** (the user, same day, on the coordinator's reading of T3 Code: its multiple Claude
+      accounts are separate `CLAUDE_CONFIG_DIR` folders picked per thread, with no switch at a limit and no thread
+      moving between accounts; this environment's side sessions, messages between sessions, Browser pane and artifacts
+      live in the desktop app).
+    - **Usage** (agreed the same day): a side session starts fresh with a short brief instead of a fork carrying the
+      coordinator's context; at most two Opus sessions run at once; read-only research over local files can be a Codex
+      `delivers: report` round instead of a Claude researcher. A smaller auto-compact window (`/autocompact 400k`,
+      `autoCompactWindow`) is a measured trial for later, not a setting change now: the docs do not say whether the
+      desktop app honours it.

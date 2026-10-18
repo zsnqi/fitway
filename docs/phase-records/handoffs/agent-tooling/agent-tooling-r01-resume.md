@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `9f134a3d`, 2026-10-18 13:36 +03:00
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-13), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at `e1efb8f4`, 2026-10-18 21:41 +03:00
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-14), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -37,45 +37,31 @@
 
 ## Running now
 
-- **Stopped at the user's word on 2026-10-18 about 13:50** (the machine shut down): both side sessions were asked to stop
-  their processes, push only finished commits and write a stop note at the top of their reports
-  (`D:/fitway-temp/tooling-ratchet-2/REPORT.md`, `D:/fitway-temp/tooling-base-run/REPORT.md`). On pickup, read those
-  notes first, check each round worktree with `git status` and its last commit, and resume each round from its note;
-  nothing below is running until then.
-- **The test split, then base-run** (side session "giant-split", measured
-  2026-10-18 11:30): base-run (DECISIONS item 13, P-A: `pnpm tests:base-run` classifies a round's added or changed
-  tests run against the base's code as assertion, missing-module, wrong-reason or green-on-base) is in its DeepSeek
-  round's replay step; the session then splits `scripts/agent-environment/codex-round.test.ts` (1,415 s of the 27-28 min
-  CI ladder, run 39107745366: its 262 cases run one after another in one file) and the other giant tooling test files so
-  Vitest runs them in parallel, measured by the CI ladder's wall time before and after; then base-run's review, fixes
-  and grade. Report files: `D:/fitway-temp/tooling-base-run/REPORT.md` and the test split's own.
-- **ratchet-2** (side session "ratchet-codelines"): stopped on a Claude
-  session limit until 13:10 on 2026-10-18 (inferred from its error); its causes: longFunctionLines (non-test files),
-  emptyBlocks, Biome warnings fail the ladder with `noSkippedTests`, `noUnusedExpressions` and `noNonNullAssertion` at
-  error, a per-test-file floor of cases and expects, the timeouts (F261, F281, F282; one setting replacing 580ba805's
-  per-file line), F284, split instructions in every giant-file failure and a lefthook pre-commit job on staged files
-  (the user's addition through a side session); each replayed on the 18 pairs of
-  `D:/fitway-temp/review-recurrence/REPORT.md`. Finding IDs F286-F289; base-run and the test split take F290 onward
-  after F294. Its report: `D:/fitway-temp/tooling-ratchet-2/REPORT.md`. Resume it with a message once its limit resets.
+- **Nothing runs** (measured 2026-10-18 evening: both side sessions stopped at the user's word, nothing pushed).
+  DECISIONS item 14 sets what comes next.
+- **ratchet-2, to close first** (item 14): round worktree `D:/Projects/fitway-worktrees/tooling-ratchet-2`, branch
+  `tooling-ratchet-2` at local `50cecbc9` (unpushed; `c8abc04a` the builder, `50cecbc9` the small fixer). Its stop
+  note at the top of `D:/fitway-temp/tooling-ratchet-2/REPORT.md` lists what is left: the Sol diff review in
+  `D:/fitway-temp/code-review/ratchet-2-builder-1` (rerun on `50cecbc9`), the Sol grade against
+  `D:/fitway-grader/agent-tooling/ratchet-2-heldout.md`, `D:/fitway-temp/tooling-ratchet-2/coordinator/replay.mjs` on the final commit, push and CI, records
+  on `records-ratchet-2` (findings F286-F289), then the coordinator's merge. Replay so far
+  (`D:/fitway-temp/tooling-ratchet-2/coordinator/replay-78730971.log`): 8 of 18 reviewed pairs flagged, 40 of 87
+  controls flagged, which decides whether `longFunctionLines` stays (item 14). Measured cost: the staged giant-file
+  hook 885-908 ms, `check:code-health` 4.8 s in a loaded ladder.
+- **The brief template's lines** (item 14), a coordinator edit of `docs/agent-context/briefs/codex.md` after ratchet-2.
+- **base-run waits until after the demo** (item 14): edits uncommitted on disk in
+  `D:/Projects/fitway-worktrees/tooling-base-run` over `c0e12373` (pushed); its session stopped without a stop note, so
+  diff them against its review dispositions before any commit.
 
 ## Next steps
 
-1. **Integrated on 2026-10-18 (measured):** ratchet-codelines (`4476c766`, F269, F272; records `527456a4`), the
-   giant-file split (`2b295008` through the integration merge `bd6ed12d`: six source files into modules; `compare.mjs`
-   kept, F293; records `9f134a3d`, F290-F294); main at `10fe1783` (CI run 39110319014); the line at `9f134a3d` waits for
-   its CI run 39119869580, then `pnpm main:advance`.
-2. **DECISIONS item 13** (the user's freedom for measured preventions): after ratchet-2 and base-run, the launcher
-   runs the fast ladder itself after accepting a commit claim and calls base-run (F256's ladder half, F279), and the
-   brief template gains the reuse line, the D1-D8 pointer, a `Forms:` list with a `brief:check` presence rule, and
-   what a new check does when its input is missing. Track blocking findings per diff review by class in
-   `codex-rounds.md`; the baseline is the recurrence report's 74 findings over 19 reviews.
+1. **main is at `9f134a3d`** (CI run 39119869580): ratchet-codelines and the giant-file split integrated; the
+   coordinator line at the commit that last changed this text.
+2. Close ratchet-2 and add the template lines; then this milestone's work waits for the demo (item 14's list).
 3. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
-   `check-agent-context.test.ts`, `verify-repository.schema.test.ts`): an exception zeroes the measure (F290); the test
-   split retires four of them. `compareOwned` may be rewritten if it improves it (the user, recorded in `35519230`), its
-   behaviour proved unchanged by tests (F293).
+   `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date,
+   since the test split now waits for the demo.
 4. **Briefs keep "room is made by moving code out"** while any giant file remains (item 10).
-5. **Left for later:** the lighter pickup; F264 with the next verify-fitway round; F273-F276 (CLI contract leftovers);
-   a near-clone measure only after a hand-judged sample (item 13).
 
 ## Waiting on the user
 

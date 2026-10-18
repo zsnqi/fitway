@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `9f134a3d`, 2026-10-18 13:36 +03:00
+- **As of:** `codex/owner-redesign-r04` at `e1efb8f4`, 2026-10-18 21:41 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-75), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-77), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -57,12 +57,12 @@
    main with the next integration.
 2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Decision 76 (the demo first):
-   what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the
-   skeleton's third pass (three computer arrangements أ, ب, ج; brief `designer-settings-skeleton-3.md`, `2828ae9e` on
-   the build branch; report and frames in D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md) waits for the user's
-   notes and choice, then the one-pass build. The user moved to another Claude account on 2026-10-18: the skeleton is
-   now https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8; the first account's link (8U93baiZjKSVNUaRnNPteT) can no
-   longer be updated or its comments read from here. The user gathers notes and says «خلاص» before work starts. Left for later, with their reasons: the dialogs' parts splitting under a
+   what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the user chose
+   arrangement ب of the skeleton's third pass (decision 77, 2026-10-18; report and frames in
+   D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md §"Third pass"; artifact
+   https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8). **Next:** the one-pass build of Settings in ب, started in a new
+   session after the user's Claude account switch and at the user's word (decision 6's questions asked at once
+   first); nothing on the page changed since `2828ae9e`. Left for later, with their reasons: the dialogs' parts splitting under a
    planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **F266 is fixed** (`873e03fc` on the build branch, pushed: Components places its tip with Reports' shared placement; 204
    cases measured, no overlap). **F285** (Components' heat grid at 390 is broken) waits: the user, 2026-10-18, the sheet is

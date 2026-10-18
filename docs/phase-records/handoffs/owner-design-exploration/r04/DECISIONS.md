@@ -871,6 +871,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - This replaces item 73's "Settings starts after both" and agent-tooling-r01 DECISIONS item 10's order (the split
       before report-fields); agent-tooling-r01 DECISIONS item 11 points here.
 
+77. **Settings: arrangement ب** (the user, 2026-10-18, before switching Claude accounts: «قراري النهائي بخصوص الهيكل
+    الثالث هو الخيار ب», and «لا تبدأ التصميم أو البناء أو أي تعديل على الصفحة الآن»). Of the skeleton's third pass
+    (`designer-settings-skeleton-3.md`, `2828ae9e` on the build branch; report and frames in
+    `D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md` §"Third pass"; artifact
+    https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8), the user chose ب: all five values on one sheet (5/12) beside a
+    panel (7/12) that shows the log with its reasons, the editor opening there on «تعديل», the label «قيد التعديل»; the
+    phone, the 390 sheets and the dialogs as the user kept them from v2. The one-pass build (item 6, decision 49) starts
+    in a new session after the account switch, at the user's word; nothing on the page changes before then.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
