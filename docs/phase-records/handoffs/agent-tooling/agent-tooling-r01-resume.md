@@ -2,7 +2,7 @@
 # agent-tooling-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at `e1efb8f4`, 2026-10-18 21:41 +03:00
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-14), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-15), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
