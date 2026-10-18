@@ -1,0 +1,160 @@
+/* Eclipse Settings: the fifth Eclipse page. Loaded after style.css (the language and the frame) and shared.css (the
+ * buttons, fields, dialog and alert the Owner pages share); every rule here is scoped to the Settings body (.set) or
+ * to a class only this page uses. Concept only, synthetic data.
+ * C (arrangement ب, DECISIONS item 77): the header (the title and the frame's status), then, from 1024 px, the five
+ * values on one sheet (5/12) at the start beside the settings history (7/12), which becomes the editor on «تعديل»;
+ * 721-1023 px one column, the history under the sheet; on a phone (720 px and below) the sheet's three parts stand as
+ * three cards, and the way to the history is a control under the header, as the user kept from the second skeleton
+ * pass. Nothing is lit: the page wash only (LGT-6 allows none).
+ * The components first drawn here, for later screens (DESIGN-SPEC.md §3, marked in SETTINGS-SPEC.md): the value sheet
+ * (a card of parts, each a heading with its edit control and a definition list whose labels share one column), the
+ * level key (CHP-5's four bars as a level's mark beside its word), and the history record that names a change from →
+ * to with its reason. */
+
+html:has(> body.set) {
+  color-scheme: dark;
+  scrollbar-gutter: stable;
+  scrollbar-color: rgba(245, 243, 242, 0.2) #070707;
+}
+.set {
+  --err: #ff6b7d;        /* error text and borders: 6.9:1 on the panel */
+  --err-line: rgba(255, 107, 125, 0.5);
+  --field: rgba(255, 255, 255, 0.03);
+  --field-line: rgba(255, 255, 255, 0.34);
+  --ph: rgba(255, 255, 255, 0.06);
+  --row-line: rgba(255, 255, 255, 0.055);
+  --stale: #8f898b;      /* COL-17: "Closed" words, 5.63:1 on the card */
+  /* The sheet's label column, one width for its three parts, so every value starts on one edge: the widest label
+   * and 16 px to its value, measured in Readex Pro: «شديد الازدحام» with its bars 107 px; "Moderate" with its bars
+   * 87.8 px. The crowd's widest row then needs 298 px in Arabic and 270 in English, inside the sheet's 307 at 1024. */
+  --lab: 124px;
+}
+html[lang="en"] .set { --lab: 104px; }
+.set ::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+@media (min-width: 721px) { html:has(> body.set) { scroll-padding-block: 16px; } }
+.set [hidden] { display: none !important; }
+/* DAT-4: a date, a time or a range is one unbreakable span. */
+.set .nw { white-space: nowrap; }
+
+/* ------------------------------------------------------------------ page
+ * The header, then the sheet and the history; one 16 px gutter (SPC-5). From 1024 px the two stand side by side, the
+ * sheet 5/12 at the start and the history 7/12 at the end, from the same line, stretched to one height so the page ends
+ * on one edge. 721-1023 px: one column, the history under the sheet. On a phone the history leaves for its control. */
+.set .main { display: flex; flex-direction: column; gap: 16px; padding-block: 8px 24px; }
+.set-tools { display: none; }
+.set-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 16px; align-items: stretch; }
+@media (max-width: 1023px) { .set-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 720px) {
+  .set-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .set-panel { display: none; }
+}
+.set-history svg { width: 17px; height: 17px; }
+
+/* ------------------------------------------------------------------ the value sheet (new)
+ * One card (SRF-1) of three parts, never cards inside a card (SRF-6): the parts are ruled off by a 1 px --line hairline
+ * that runs the card's inner width. Each part: its name in heading type, a unit beside it where one belongs («توقيت
+ * الرياض», the hours' only technical value, item 49) in label type --ink-3 on the same line, and «تعديل» (BTN-2) at the
+ * head's inline end, centred on the title's line; then its values as a definition list. */
+.set-sheet { padding-inline: 24px; }
+.set-sec { padding-block: 22px; }
+.set-sec:first-child { padding-block-start: 24px; }
+.set-sec:last-child { padding-block-end: 24px; }
+.set-sec + .set-sec { border-block-start: 1px solid var(--line); }
+.set-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; }
+.set-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; min-width: 0; font-size: 19px; line-height: 28.5px; font-weight: 500; color: var(--ink); }
+.set-unit { font-size: 13.5px; line-height: 20px; font-weight: 400; color: var(--ink-3); white-space: nowrap; }
+.set-edit { flex: none; }
+.set-title:focus-visible { border-radius: 8px; }
+
+/* The values: a definition list per part, its rows on the list's own columns (subgrid), so a part's figures line up
+ * down the part; the label column is one width across the sheet (--lab). A row is 34 px: its 22 px line and 6 above
+ * and below; label and value share a baseline. Labels in label type --ink-2; values in body type at 500, chalk, with
+ * tabular figures requested (NUM-2); the words around a value («حتى», the people, a unit) in label type --ink-2. */
+.set-dl { display: grid; column-gap: 0; margin: 8px 0 0; }
+.set-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: baseline; padding-block: 6px; }
+.set-row > dt { grid-column: 1; min-width: 0; padding-inline-end: 16px; font-size: 13.5px; line-height: 22px; color: var(--ink-2); }
+.set-row > dd { display: grid; grid-template-columns: subgrid; grid-column: 2 / -1; align-items: baseline; min-width: 0; margin: 0; }
+.set .v-n { font-size: 15px; line-height: 22px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.set .v-q, .set .v-p { font-size: 13.5px; line-height: 22px; color: var(--ink-2); white-space: nowrap; }
+
+/* The crowd: capacity, then the four levels. Columns: the label, the qualifier («حتى», «فوق»), the limit, the people.
+ * Capacity's value starts where the qualifiers do. */
+.dl-crowd { grid-template-columns: var(--lab) max-content max-content minmax(0, 1fr); }
+.dl-crowd .v-cap { grid-column: 1 / -1; }
+.dl-crowd .v-q { padding-inline-end: 6px; }
+.dl-crowd .v-p { padding-inline-start: 16px; }
+/* Capacity stands apart from the ladder it measures: 8 px more below it. */
+.dl-crowd .is-cap { padding-block-end: 14px; }
+/* The level key (new, LVL-7): CHP-5's four bars (4, 6.5, 9 and 11 px, 3 px wide, 2 apart, radius 1) as the level's
+ * mark before its word, lit to the level's step in --red-hi, unlit white .16; the word carries the level (LVL-4), the
+ * bars repeat it as the visitors' page and Daily draw it. They sit on the word's baseline. */
+.lvl-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; margin-inline-end: 8px; vertical-align: -1px; }
+.lvl-bars i { width: 3px; border-radius: 1px; background: rgba(255, 255, 255, 0.16); }
+.lvl-bars i:nth-child(1) { height: 4px; }
+.lvl-bars i:nth-child(2) { height: 6.5px; }
+.lvl-bars i:nth-child(3) { height: 9px; }
+.lvl-bars i:nth-child(4) { height: 11px; }
+.lvl-bars i.on { background: var(--red-hi); }
+
+/* The hours: the week from Sunday. Columns: the day, the opening, the dash, the closing, a note («24 ساعة» when the
+ * opening equals the closing). Times start on their column's start edge, so their minutes line up (in Arabic the
+ * right, where the digits end; in English the left). A closed day says «مغلق» in COL-17's grey across the times. */
+.dl-hours { grid-template-columns: var(--lab) max-content max-content max-content minmax(0, 1fr); }
+.dl-hours .v-dash { padding-inline: 8px; font-size: 15px; line-height: 22px; color: var(--ink-3); }
+.dl-hours .v-note { padding-inline-start: 12px; font-size: 12px; line-height: 22px; color: var(--ink-3); white-space: nowrap; }
+.dl-hours .v-closed { grid-column: 1 / -1; font-size: 15px; line-height: 22px; color: var(--stale); }
+
+/* The business day: its end and the reset. */
+.dl-day { grid-template-columns: var(--lab) minmax(0, 1fr); }
+
+/* ------------------------------------------------------------------ the settings history (the panel)
+ * SRF-1's card, padding 24; its head level with the sheet's first: the title, and «عرض الكل» at its end (Access's
+ * form, OWN-C15: label type --ink-2 with a chevron, a 44 px target). Then the latest records, newest first, ruled off
+ * with TBL-2's row line. A record (new, LOG-1): what changed, a line per change: what in label type --ink-2, then the
+ * figures in chalk at 500, from, the arrow along the reading line (14 px --ink-3, mirrored in Arabic, ICO-5), to; the
+ * reason as typed, in the page's quotation marks, --ink-2, wrapping, at most 62ch; who and when in caption --ink-3 at
+ * the record's far end, on its first line's baseline (at 1024 px a long hours line wraps at its arrow instead, which keeps the
+ * panel shorter than moving who and when under every record). Under 400 px of panel they go under the record. */
+.set-panel { padding: 24px; container: setpanel / inline-size; }
+.log-head { display: flex; align-items: center; justify-content: space-between; gap: 0 16px; min-height: 44px; }
+/* «عرض الكل»: Access's link (access.css .acc-all, whose press style.css already carries); for shared.css at integration. */
+.set .acc-all { display: inline-flex; flex: none; align-items: center; gap: 4px; height: 44px; margin-inline: -12px; padding-inline: 12px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.set .acc-all svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .set .acc-all:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
+.set .acc-all:focus-visible { --focus-ring-offset: -2px; }
+.log-list { margin: 12px 0 0; padding: 0; list-style: none; }
+.log-rec { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; align-items: baseline; padding-block: 14px; border-block-start: 1px solid var(--row-line); }
+.log-rec:last-child { padding-block-end: 0; }
+.log-body { min-width: 0; }
+/* A record's changes on two columns: what (up to half the record's width, wrapping between words beyond it), then the
+ * figures, which start on one edge down the record and wrap only at the arrow. */
+.log-chgs { display: grid; grid-template-columns: fit-content(50%) minmax(0, 1fr); column-gap: 12px; row-gap: 2px; align-items: baseline; font-size: 13.5px; line-height: 22px; }
+.log-what { min-width: 0; color: var(--ink-2); overflow-wrap: anywhere; }
+.log-fig { display: inline-flex; flex-wrap: wrap; align-items: center; column-gap: 6px; color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+/* The arrow travels with the new value, so a figure that wraps starts its second line with «←». */
+.log-from { white-space: nowrap; }
+.log-to { display: inline-flex; align-items: center; column-gap: 6px; white-space: nowrap; }
+.log-arw { width: 14px; height: 14px; flex: none; fill: none; stroke: var(--ink-3); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.log-why { max-width: 62ch; margin: 4px 0 0; font-size: 13.5px; line-height: 22px; color: var(--ink-2); overflow-wrap: anywhere; }
+html[lang="ar"] .log-why q { quotes: "«" "»"; }
+html[lang="en"] .log-why q { quotes: "\201C" "\201D"; }
+.log-meta { margin: 0; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+.log-meta .sep { margin-inline: 6px; }
+.log-none { margin: 12px 0 0; padding-block-start: 16px; border-block-start: 1px solid var(--row-line); font-size: 13.5px; line-height: 20px; color: var(--ink-3); }
+@container setpanel (max-width: 399.98px) {
+  .log-rec { grid-template-columns: minmax(0, 1fr); }
+  .log-meta { margin-block-start: 4px; }
+}
+
+/* --------------------------------------------------------------- the phone (720 px and below)
+ * The sheet's three parts stand as three cards (the second skeleton pass, which the user kept), 16 apart, each padding
+ * 16, so text stands 16 from its edge as on every page. The history is reached by its control under the header. */
+@media (max-width: 720px) {
+  .set-sheet { display: flex; flex-direction: column; gap: 16px; padding: 0; border: 0; border-radius: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .set-sec { padding: 16px; border-radius: 24px; border: 1px solid var(--line); background: var(--card); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+  .set-sec + .set-sec { border-block-start: 1px solid var(--line); }
+}
+@media (max-width: 359px) {
+  .set[data-frame] .head-acts .hb-chev { display: none; }
+  .set[data-frame] .head-acts .hbadge { padding-inline: 8px; }
+}
