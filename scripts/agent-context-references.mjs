@@ -9,11 +9,7 @@ import {
 	normalizeRelativePath,
 	trackedPath,
 } from "./agent-context-paths.mjs";
-import {
-	HISTORICAL_PREFIXES,
-	ILLEGAL_STARTUP_SEGMENTS,
-	TASK_CLASSES,
-} from "./agent-context-rules.mjs";
+import { TASK_CLASSES } from "./agent-context-rules.mjs";
 import { readText } from "./agent-context-schema.mjs";
 
 function sha256(bytes) {
@@ -27,6 +23,13 @@ function normalizeHeading(value) {
 		.trim()
 		.replace(/\s+/g, " ");
 }
+
+const HISTORICAL_PREFIXES = [
+	"docs/archive/",
+	"docs/phase-records/",
+	"PROJECT_STATE_HISTORY.yaml",
+];
+const ILLEGAL_STARTUP_SEGMENTS = ["evidence", "logs", "screenshots"];
 
 function isHistoricalPath(relativePath) {
 	const normalized = relativePath.replaceAll("\\", "/");

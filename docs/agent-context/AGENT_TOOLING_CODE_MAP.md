@@ -209,12 +209,12 @@ Counts: 102 files, 785 callables, 614 without a covering test.
 
 ## `.agents/skills/verify-fitway/compare.mjs`
 
-- `digest` [arrow] L20-L20; tests: none
-- `identity` [arrow] L21-L31; tests: none
-- `diffStem` [arrow] L32-L48; tests: `.agents/skills/verify-fitway/cli.test.mjs`
-- `capture` [function] L49-L69; tests: none
-- `compare` [function] L71-L75; tests: `.agents/skills/verify-fitway/cli.test.mjs`, `.agents/skills/verify-fitway/timeline-hold.test.mjs`
-- `compareOwned` [function] L77-L922; tests: none
+- `digest` [arrow] L21-L21; tests: none
+- `identity` [arrow] L22-L32; tests: none
+- `diffStem` [arrow] L33-L49; tests: `.agents/skills/verify-fitway/cli.test.mjs`
+- `capture` [function] L50-L70; tests: none
+- `compare` [function] L72-L76; tests: `.agents/skills/verify-fitway/cli.test.mjs`, `.agents/skills/verify-fitway/timeline-hold.test.mjs`
+- `compareOwned` [function] L78-L923; tests: none
 
 ## `.agents/skills/verify-fitway/comparison-capture.mjs`
 
@@ -409,21 +409,21 @@ Counts: 102 files, 785 callables, 614 without a covering test.
 
 ## `scripts/agent-context-references.mjs`
 
-- `sha256` [function] L19-L21; tests: none
-- `normalizeHeading` [function] L23-L29; tests: none
-- `isHistoricalPath` [function] L31-L36; tests: none
-- `isIllegalStartupPath` [function] L38-L43; tests: none
-- `getObjectPath` [function] L45-L63; tests: none
-- `decodeJsonPointer` [function] L65-L72; tests: none
-- `getJsonPointer` [function] L74-L100; tests: none
-- `validatePathReference` [function] L102-L194; tests: none
-- `validateRouteRegistry` [function] L196-L267; tests: none
-- `routeForPacket` [function] L269-L271; tests: none
-- `authorityKey` [function] L273-L282; tests: none
-- `validateRequiredAuthoritySet` [function] L284-L326; tests: none
-- `conditionalRuleKey` [function] L328-L339; tests: none
-- `validateConditionalRuleSet` [function] L341-L372; tests: none
-- `validateVisualFrames` [function] L374-L403; tests: none
+- `sha256` [function] L15-L17; tests: none
+- `normalizeHeading` [function] L19-L25; tests: none
+- `isHistoricalPath` [function] L34-L39; tests: none
+- `isIllegalStartupPath` [function] L41-L46; tests: none
+- `getObjectPath` [function] L48-L66; tests: none
+- `decodeJsonPointer` [function] L68-L75; tests: none
+- `getJsonPointer` [function] L77-L103; tests: none
+- `validatePathReference` [function] L105-L197; tests: none
+- `validateRouteRegistry` [function] L199-L270; tests: none
+- `routeForPacket` [function] L272-L274; tests: none
+- `authorityKey` [function] L276-L285; tests: none
+- `validateRequiredAuthoritySet` [function] L287-L329; tests: none
+- `conditionalRuleKey` [function] L331-L342; tests: none
+- `validateConditionalRuleSet` [function] L344-L375; tests: none
+- `validateVisualFrames` [function] L377-L406; tests: none
 
 ## `scripts/agent-context-rules.mjs`
 

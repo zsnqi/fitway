@@ -38,18 +38,5 @@ const CONTEXT_FILES = [
 const HISTORY_FILE = "PROJECT_STATE_HISTORY.yaml";
 const PACKET_DIRECTORY = "docs/phase-records/task-packets";
 const UI_TASK_CLASSES = new Set(["ui-maintenance", "visual-authority-change"]);
-const HISTORICAL_PREFIXES = [
-	"docs/archive/",
-	"docs/phase-records/",
-	"PROJECT_STATE_HISTORY.yaml",
-];
-const ILLEGAL_STARTUP_SEGMENTS = ["evidence", "logs", "screenshots"];
 
-export {
-	CONTEXT_FILES,
-	HISTORICAL_PREFIXES,
-	HISTORY_FILE,
-	ILLEGAL_STARTUP_SEGMENTS,
-	PACKET_DIRECTORY,
-	UI_TASK_CLASSES,
-};
+export { CONTEXT_FILES, HISTORY_FILE, PACKET_DIRECTORY, UI_TASK_CLASSES };

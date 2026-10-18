@@ -1,3 +1,4 @@
+// code-health-exception: giantFiles; until=2026-11-15; reason=giant-split: drive and plannedCaptures now come from two modules; compareOwned's decomposition follows
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readFile, rm } from "node:fs/promises";
