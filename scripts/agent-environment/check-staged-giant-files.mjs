@@ -1,4 +1,3 @@
-import { spawnSync } from "node:child_process";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 import {
@@ -10,25 +9,14 @@ import {
 	formatCodeHealthChange,
 	HEALTH_ROOTS,
 	readCommittedCodeHealthBaseline,
+	readGit,
 	snapshotGiantFiles,
 } from "./code-health-ratchet.mjs";
-
-function git(root, args, input) {
-	const result = spawnSync("git", ["--no-optional-locks", ...args], {
-		cwd: root,
-		input,
-		windowsHide: true,
-		maxBuffer: 256 * 1024 * 1024,
-	});
-	if (result.status !== 0)
-		throw new Error(`git ${args[0]} failed: ${String(result.stderr).trim()}`);
-	return result.stdout;
-}
 
 // The index holds what the commit will hold, so each file is read from it,
 // never from the working tree.
 export function readStagedCodeHealthFiles(root = process.cwd()) {
-	const files = git(root, [
+	const listed = readGit(root, [
 		"diff",
 		"--cached",
 		"--name-only",
@@ -36,16 +24,18 @@ export function readStagedCodeHealthFiles(root = process.cwd()) {
 		"-z",
 		"--",
 		...HEALTH_ROOTS,
-	])
-		.toString("utf8")
-		.split("\0")
-		.filter(isSourceFile);
+	]);
+	if (listed.status !== 0)
+		throw new Error(`git diff failed: ${listed.stderr.trim()}`);
+	const files = listed.stdout.split("\0").filter(isSourceFile);
 	if (!files.length) return [];
-	const output = git(
-		root,
-		["cat-file", "--batch"],
-		files.map((file) => `:${file}\n`).join(""),
-	);
+	const batch = readGit(root, ["cat-file", "--batch"], {
+		input: Buffer.from(files.map((file) => `:${file}\n`).join("")),
+		encoding: "buffer",
+	});
+	if (batch.status !== 0)
+		throw new Error(`git cat-file failed: ${String(batch.stderr).trim()}`);
+	const output = batch.stdout;
 	let offset = 0;
 	return files.map((file) => {
 		const header = output.indexOf(10, offset);

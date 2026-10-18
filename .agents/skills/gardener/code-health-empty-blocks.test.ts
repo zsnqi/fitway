@@ -11,7 +11,7 @@ function emptyBlocks(text: string) {
 	);
 }
 
-describe("R2 emptyBlocks", () => {
+describe("emptyBlocks", () => {
 	it.each([
 		["empty function", "function empty() {}", 1, 1],
 		["empty arrow", "const empty = () => {};", 1, 1],
@@ -25,13 +25,13 @@ describe("R2 emptyBlocks", () => {
 		["empty static block", "class Example {\n\tstatic {}\n}", 1, 2],
 		["empty object literal", "const object = {};", 0, 0],
 		["comment-only block", "if (ready) {\n\t// intentional\n}", 0, 0],
-	])("R2 matches Biome for an %s", (_name, text, expected, line) => {
+	])("matches Biome for an %s", (_name, text, expected, line) => {
 		const result = emptyBlocks(text);
 		expect(result.total).toBe(expected);
 		expect(result.hits.map((hit) => hit.line)).toEqual(expected ? [line] : []);
 	});
 
-	it("R2 finds Biome's 9 empty blocks outside test files at this HEAD", () => {
+	it("finds Biome's 9 empty blocks outside test files at this HEAD", () => {
 		expect(scanScope(readCodeHealthFiles()).emptyBlocks?.total ?? 0).toBe(9);
 	});
 

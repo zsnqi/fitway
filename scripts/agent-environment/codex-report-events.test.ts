@@ -22,7 +22,6 @@ import {
 	row,
 } from "./codex-report-fields-fixture.ts";
 
-// Each case starts the launcher up to four times; 22-40 s were measured under load (F281, F282).
 afterEach(afterEachReportFixture);
 const cases = reportEventCases();
 describe("R3 structured report rows match run events", () => {

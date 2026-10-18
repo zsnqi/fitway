@@ -30,7 +30,7 @@ export function cleanupHealthFixtures() {
 }
 
 export function createHealthFixture() {
-	const root = fs.mkdtempSync(path.join(tmpdir(), "fitway-code-health-r01-"));
+	const root = fs.mkdtempSync(path.join(tmpdir(), "fitway-code-health-"));
 	roots.add(root);
 	runGit(root, ["init", "--quiet"]);
 	runGit(root, ["config", "user.email", "code-health@example.invalid"]);

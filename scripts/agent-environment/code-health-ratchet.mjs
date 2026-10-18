@@ -321,12 +321,14 @@ export function readCodeHealthBaseline(root = process.cwd()) {
 	}
 }
 
-function readGit(root, args) {
+// The staged read passes its batch on stdin and takes the bytes back.
+export function readGit(root, args, { input, encoding = "utf8" } = {}) {
 	return spawnSync("git", ["--no-optional-locks", ...args], {
 		cwd: root,
-		encoding: "utf8",
+		input,
+		encoding,
 		windowsHide: true,
-		maxBuffer: 32 * 1024 * 1024,
+		maxBuffer: 256 * 1024 * 1024,
 	});
 }
 
