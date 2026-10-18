@@ -14,7 +14,7 @@ import {
 	parseWorktreePorcelain,
 	references,
 } from "./facts.mjs";
-import { collectRecords } from "./survey.mjs";
+import { collectRecords } from "./survey-evidence.mjs";
 
 describe("gardener fixture classifications", () => {
 	it("builds extended Windows deletion paths and refuses root, nested, escaped and shell-injected targets", () => {

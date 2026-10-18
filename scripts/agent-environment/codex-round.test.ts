@@ -16,12 +16,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { setReviewSourcePlaceObserver } from "./check-brief.mjs";
-import {
-	copyReviewSources,
-	outcomeIdsFromBrief,
-	parseReadings,
-} from "./codex-round.mjs";
+import { outcomeIdsFromBrief, parseReadings } from "./brief-readings.mjs";
+import { setReviewSourcePlaceObserver } from "./brief-review-sources.mjs";
+import { copyReviewSources } from "./codex-review-launch.mjs";
 import { firstShortWindowsPath } from "./codex-round-path-fixture.mjs";
 import {
 	commandEvent,

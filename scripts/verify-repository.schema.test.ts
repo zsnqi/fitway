@@ -14,16 +14,18 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { afterEach, describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
-import { TERMINAL_STATUSES } from "./check-agent-context.mjs";
+import { TERMINAL_STATUSES } from "./agent-context-rules.mjs";
+import {
+	assertProjectRecordUnion,
+	assertProjectStateInvariants,
+	scopePatterns,
+} from "./project-state-invariants.mjs";
+import { TRACKED_BOM_EXCEPTIONS } from "./repository-files.mjs";
 import {
 	assertClaudeAgentTable,
 	assertGardenerReport,
 	assertNoUnexpectedBom,
-	assertProjectRecordUnion,
-	assertProjectStateInvariants,
 	listTrackedFiles,
-	scopePatterns,
-	TRACKED_BOM_EXCEPTIONS,
 	verifyGardenerRecord,
 } from "./verify-repository.mjs";
 

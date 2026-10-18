@@ -13,7 +13,11 @@ import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { cleanup } from "./cleanup.mjs";
 import { references } from "./facts.mjs";
-import * as survey from "./survey.mjs";
+import {
+	collectFolderRecords,
+	collectFolders,
+	collectRecords,
+} from "./survey-evidence.mjs";
 
 describe("gardener round 16c repair", () => {
 	it.each([
@@ -33,7 +37,7 @@ describe("gardener round 16c repair", () => {
 			const records = [
 				{ source: "closed.md", text: `# Evidence\nKeep \`${spelling}\`` },
 			];
-			const cached = await survey.collectFolderRecords(records, {
+			const cached = await collectFolderRecords(records, {
 				trackedFiles: [],
 				tempRoot,
 			});
@@ -74,7 +78,7 @@ describe("gardener round 16c repair", () => {
 			source: `template-${index}.md`,
 			text: `Work in \`${tempRoot}/${pattern}/out/report.md\`; also ${tempRoot}/${pattern}`,
 		}));
-		const cached = await survey.collectFolderRecords(records, {
+		const cached = await collectFolderRecords(records, {
 			trackedFiles: [],
 			tempRoot,
 		});
@@ -179,8 +183,8 @@ describe("gardener round 16c repair", () => {
 				for (const target of [path.join(folder, "sentinel.txt"), folder])
 					utimesSync(target, old, old);
 			}
-			const context = await survey.collectRecords({ checkout });
-			const folders = await survey.collectFolders(
+			const context = await collectRecords({ checkout });
+			const folders = await collectFolders(
 				context.records,
 				[],
 				path.join(tempRoot, "out"),

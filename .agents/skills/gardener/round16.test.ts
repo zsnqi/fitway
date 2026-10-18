@@ -14,7 +14,16 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { classifyWorktrees, parseFastSteps, references } from "./facts.mjs";
-import * as survey from "./survey.mjs";
+import { formatReport } from "./survey.mjs";
+import { cleanupScript, worktreeRemovalCommand } from "./survey-cli.mjs";
+import {
+	collectFolderRecords,
+	collectFolders,
+	collectGit,
+	collectRecords,
+	inspectWorktreeLinks,
+	measureFolder,
+} from "./survey-evidence.mjs";
 
 function fixture() {
 	const base = process.env.GARDENER_TEST_RUN ?? os.tmpdir();
@@ -112,7 +121,7 @@ describe("gardener round 16 safety", () => {
 				path.join(internal, "node_modules", "package"),
 				"junction",
 			);
-			const state = await survey.collectGit([], { current: f.checkout });
+			const state = await collectGit([], { current: f.checkout });
 			const byName = (name: string) =>
 				state.worktrees.find((tree) => path.basename(tree.path) === name);
 			expect(byName("external").candidate).toBe(false);
@@ -140,7 +149,7 @@ describe("gardener round 16 safety", () => {
 				]),
 			);
 			expect(byName("missing").links[0].error).toMatch(/ENOENT/);
-			const rendered = survey.formatReport({
+			const rendered = formatReport({
 				date: "2026-10-10",
 				checks: [],
 				git: state,
@@ -150,7 +159,7 @@ describe("gardener round 16 safety", () => {
 			const proposed = state.worktrees.filter((tree) => tree.candidate);
 			expect(proposed).toHaveLength(2);
 			for (const tree of proposed) {
-				const command = survey.worktreeRemovalCommand(tree.path, f.checkout);
+				const command = worktreeRemovalCommand(tree.path, f.checkout);
 				if (path.basename(tree.path) === "late-link") {
 					symlinkSync(
 						outside,
@@ -184,16 +193,13 @@ describe("gardener round 16 safety", () => {
 			f.commit();
 			const target = path.join(f.run, "tracked-internal");
 			f.git(["worktree", "add", "--detach", target, "HEAD"]);
-			const state = await survey.collectGit([], { current: f.checkout });
+			const state = await collectGit([], { current: f.checkout });
 			const tree = state.worktrees.find(
 				(item) => path.basename(item.path) === "tracked-internal",
 			);
 			expect(tree.candidate).toBe(true);
 			expect(tree.links).toHaveLength(1);
-			runProposal(
-				survey.worktreeRemovalCommand(tree.path, f.checkout),
-				f.checkout,
-			);
+			runProposal(worktreeRemovalCommand(tree.path, f.checkout), f.checkout);
 			expect(existsSync(target)).toBe(false);
 			expect(readFileSync(path.join(f.checkout, "inside.txt"), "utf8")).toBe(
 				"inside sentinel\n",
@@ -213,11 +219,11 @@ describe("gardener round 16 safety", () => {
 			writeFileSync(target, "outside\n");
 			symlinkSync(target, path.join(f.checkout, "file.link"), "file");
 			symlinkSync(f.run, path.join(f.checkout, "directory.link"), "dir");
-			const state = await survey.collectGit([], { current: f.checkout });
+			const state = await collectGit([], { current: f.checkout });
 			const tree = state.worktrees[0];
 			expect(tree.candidate).toBe(false);
 			expect(tree.links.filter((link) => link.outside)).toHaveLength(2);
-			const unreadable = await survey.inspectWorktreeLinks(f.checkout, {
+			const unreadable = await inspectWorktreeLinks(f.checkout, {
 				readLink: async () => {
 					throw Object.assign(new Error("fixture unreadable"), {
 						code: "EACCES",
@@ -275,8 +281,8 @@ describe("gardener round 16 safety", () => {
 				`## Folder removal proposals\n- \`${path.join(tempRoot, "proposed")}\`\n`,
 			);
 			f.commit();
-			const context = await survey.collectRecords({ checkout: f.checkout });
-			const folders = await survey.collectFolders(
+			const context = await collectRecords({ checkout: f.checkout });
+			const folders = await collectFolders(
 				context.records,
 				[],
 				path.join(tempRoot, "out"),
@@ -292,7 +298,7 @@ describe("gardener round 16 safety", () => {
 			expect(
 				references(
 					path.join(tempRoot, "ancestor", "child"),
-					await survey.collectFolderRecords(context.records, {
+					await collectFolderRecords(context.records, {
 						checkout: f.checkout,
 					}),
 					{ tempRoot },
@@ -345,7 +351,7 @@ describe("gardener round 16 safety", () => {
 				text: "## Folder removal proposals\n- `D:/chosen-temp/proposed`\n## Evidence\nD:/chosen-temp/kept.\n",
 			},
 		];
-		const cached = await survey.collectFolderRecords(records, {
+		const cached = await collectFolderRecords(records, {
 			trackedFiles: [],
 			tempRoot,
 		});
@@ -389,12 +395,12 @@ describe("gardener round 16 safety", () => {
 			ageTree(folder);
 			writeFileSync(path.join(f.checkout, "closed.md"), "# Closed\n");
 			f.commit();
-			const context = await survey.collectRecords({ checkout: f.checkout });
-			const measured = await survey.measureFolder(folder);
+			const context = await collectRecords({ checkout: f.checkout });
+			const measured = await measureFolder(folder);
 			const script = path.join(f.run, "cleanup.mjs");
 			writeFileSync(
 				script,
-				survey.cleanupScript(
+				cleanupScript(
 					{
 						root: f.checkout,
 						tempRoot,

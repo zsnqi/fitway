@@ -11,18 +11,19 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { classifyWorktrees, config, references } from "./facts.mjs";
+import { formatReport } from "./survey.mjs";
+import {
+	checkEnvironment,
+	runChecks,
+	surveyPnpmEnv,
+} from "./survey-checks.mjs";
+import { cleanupScript, finalFolderSelection } from "./survey-cli.mjs";
 import {
 	briefLifecycle,
-	checkEnvironment,
-	cleanupScript,
 	collectFolders,
 	collectGit,
 	collectRecords,
-	finalFolderSelection,
-	formatReport,
-	runChecks,
-	surveyPnpmEnv,
-} from "./survey.mjs";
+} from "./survey-evidence.mjs";
 
 describe("gardener round 8b", () => {
 	it("R2: proposal citations do not protect folders; evidence and other records do", () => {

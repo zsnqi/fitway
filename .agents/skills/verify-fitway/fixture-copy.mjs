@@ -10,6 +10,8 @@ const HELP_MODULES = [
 	"core.mjs",
 	"compare.mjs",
 	"runner.mjs",
+	"drive-execution.mjs",
+	"drive-support.mjs",
 	"timeline.mjs",
 	"timeline-times.mjs",
 	"drive.mjs",

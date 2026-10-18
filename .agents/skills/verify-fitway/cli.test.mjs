@@ -45,6 +45,12 @@ import {
 	reachByKeyboard,
 } from "./drive.mjs";
 import {
+	inputAxis,
+	itemSummary,
+	resolveQuery,
+	stateCases,
+} from "./drive-support.mjs";
+import {
 	coverageProblems,
 	discoverElements,
 	drift,
@@ -55,7 +61,6 @@ import {
 	repairRecipes,
 } from "./map.mjs";
 import { sourceProbe } from "./probes.mjs";
-import { inputAxis, itemSummary, resolveQuery, stateCases } from "./runner.mjs";
 import {
 	captureTimeline,
 	observeTimeline,
@@ -1988,7 +1993,7 @@ export const renderSheet=async()=>{};
 	const caller = resolve(root, "caller.mjs");
 	await writeFile(
 		caller,
-		`import {drive} from ${JSON.stringify(new URL("./runner.mjs", import.meta.url).href)};
+		`import {drive} from ${JSON.stringify(new URL("./drive-execution.mjs", import.meta.url).href)};
 import * as core from ${JSON.stringify(new URL("./core.mjs", import.meta.url).href)};
 try {await drive(${JSON.stringify({
 			concept: build,
@@ -2606,7 +2611,7 @@ test("R30 repair V3: every comparison mode hides carets and paints fresh tiles w
 });
 
 test("R30 V3: comparison waits for finite motion and fixes the phase of persistent motion", async () => {
-	const { settleComparison } = await import("./runner.mjs");
+	const { settleComparison } = await import("./drive-support.mjs");
 	const finite = {
 		playState: "running",
 		effect: { getComputedTiming: () => ({ endTime: 200 }) },
@@ -4050,7 +4055,7 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 	assert.doesNotMatch(skill, /language sheets remain after cleanup/);
 	assert.match(
 		await readFile(
-			fileURLToPath(new URL("./runner.mjs", import.meta.url)),
+			fileURLToPath(new URL("./drive-execution.mjs", import.meta.url)),
 			"utf8",
 		),
 		/comparisonCapture[\s\S]*break/,

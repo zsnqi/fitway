@@ -18,11 +18,13 @@ import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 import {
 	AGENTS_INSTRUCTION_CAP_BYTES,
 	AGENTS_INSTRUCTION_WARN_BYTES,
-	checkAgentContext,
+	TASK_CLASSES,
+} from "./agent-context-rules.mjs";
+import { checkAgentContext } from "./check-agent-context.mjs";
+import {
 	formatAgentContextResult,
 	formatAgentContextWarnings,
-	TASK_CLASSES,
-} from "./check-agent-context.mjs";
+} from "./check-agent-context-options.mjs";
 import {
 	formatPacketAuthorities,
 	readRepositoryYaml,

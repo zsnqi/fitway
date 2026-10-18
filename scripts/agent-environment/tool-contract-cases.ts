@@ -265,6 +265,27 @@ export function entryFiles() {
 		...new Set(
 			TOOL_REGISTRY.map((entry) => entry.invocation.split(" ")[1] as string),
 		),
+		"scripts/agent-context-rules.mjs",
+		"scripts/agent-context-paths.mjs",
+		"scripts/agent-context-schema.mjs",
+		"scripts/agent-context-references.mjs",
+		"scripts/agent-context-packets.mjs",
+		"scripts/agent-environment/brief-checks.mjs",
+		"scripts/agent-environment/brief-markdown.mjs",
+		"scripts/agent-environment/brief-readings.mjs",
+		"scripts/agent-environment/brief-references.mjs",
+		"scripts/agent-environment/brief-review-sources.mjs",
+		"scripts/agent-environment/codex-commit-records.mjs",
+		"scripts/agent-environment/codex-environment.mjs",
+		"scripts/agent-environment/codex-execution.mjs",
+		"scripts/agent-environment/codex-review-launch.mjs",
+		"scripts/agent-environment/codex-session.mjs",
+		"scripts/project-state-invariants.mjs",
+		"scripts/repository-files.mjs",
+		".agents/skills/gardener/survey-checks.mjs",
+		".agents/skills/gardener/survey-cli.mjs",
+		".agents/skills/gardener/survey-evidence.mjs",
+		".agents/skills/gardener/survey-main.mjs",
 	].sort();
 }
 

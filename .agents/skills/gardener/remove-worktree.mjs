@@ -10,7 +10,7 @@ import {
 	git,
 	inspectWorktreeLinks,
 	plainPath,
-} from "./survey.mjs";
+} from "./survey-evidence.mjs";
 
 // User-run proposal only. Recheck the target at execution, never trust an old survey.
 export async function removeWorktree(checkout, target) {
