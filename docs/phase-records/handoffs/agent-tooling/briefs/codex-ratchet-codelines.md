@@ -102,18 +102,25 @@ count from one source, and every other count stays as it was.
     call, in each form the tracked tests use or Vitest accepts: `describe(name, fn)`, `describe(name, options, fn)`,
     `describe.each(table)(name, fn)`, `describe.sequential`, `describe.concurrent`, `describe.skip`, `describe.only`,
     `describe.todo`, `describe.skipIf(condition)(name, fn)`, `describe.runIf(condition)(name, fn)` and their chains
-    (`describe.sequential.each(table)(name, fn)`), with an arrow function or a `function` expression. It still counts,
-    as at this HEAD: an `it` or `test` callback (and their `.each` and other forms), a hook callback (`beforeEach`,
-    `afterAll` and the others), a helper function declared inside a suite, a function passed to any other call, and a
-    function named `describe` defined and called in production code that is not a test file. A test file is one whose
-    name ends in `.test.<ext>` or `.spec.<ext>` for a scanned script extension.
+    (`describe.sequential.each(table)(name, fn)`), with an arrow function or a `function` expression written as that
+    argument. The call is a `describe` call only when its root identifier is the binding the same test file imports
+    from `"vitest"` (`import { describe } from "vitest"`, on one line or several, or under an alias such as
+    `import { describe as suite } from "vitest"`); every tracked test at this HEAD imports it so. It still counts, as at
+    this HEAD: an `it` or `test` callback (and their `.each` and other forms), a hook callback (`beforeEach`,
+    `afterAll` and the others), a helper function declared inside a suite, a function passed to any other call, a
+    callback passed to a `describe` the test file defines itself or imports from any other module, a callback passed to
+    a `.describe(...)` method of another object (as zod's), and a function named `describe` defined and called in
+    production code that is not a test file. A test file is one whose name ends in `.test.<ext>` or `.spec.<ext>` for a
+    scanned script extension.
   - **Intent.** The measure points at functions someone can factor; a suite that groups cases is not one.
 
 - **C3. The baseline moves by exactly these two changes.**
   - **Outcome.** `docs/agent-context/CODE_HEALTH_BASELINE.json` is regenerated with `pnpm code-health:baseline` in the
     commit, and against this HEAD's file it differs only in: each `giantFiles` value, now the code-line count; the
     `giantFiles` entry removed for each file whose code lines are 800 or fewer; and each `longFunctions` count lowered
-    by the number of that file's `describe` callbacks over 80 lines (a file left with no count loses its entry). Every
+    by the number of that file's `describe` callbacks over 80 lines (a file left with no count loses its entry); and
+    the long-function hits themselves (file and line, from the gardener's `scanScope` on the tracked files) at your
+    result are this HEAD's hits less exactly the `describe` callbacks C2 exempts, none added and no other removed. Every
     `duplication`, `typeEscapes`, `suppressions` and `repeatedWorkarounds` value stays as at this HEAD, and the files
     the measures scan stay those at this HEAD. Report the number of giant files before and after, and the total
     `longFunctions` count before and after.
@@ -136,9 +143,10 @@ count from one source, and every other count stays as it was.
   unchanged on your result; the cases you commit are the ones you showed failing, and the fast ladder runs them. Every
   form C1 and C2 list has a case. Report each failing output.
 - **L1. Today's behaviour elsewhere.** Every test at this HEAD still runs, none skipped, excluded or made conditional,
-  and keeps its assertions, with one exception you list one by one in your report: an assertion on a giant-file count
-  or detail, or on a long-function hit that is a `describe` callback, changes to the new value. Every fixture file at
-  this HEAD stays byte for byte. `pnpm check:code-health`, `pnpm code-health:baseline` and the gardener keep their
+  and keeps its assertions, with one exception you list one by one in your report: an assertion's expected value on a
+  giant-file count or detail, or on a long-function hit that is a `describe` callback, changes to the new value. Apart
+  from those expected values, every test body at this HEAD (its setup, inputs, fixtures it reads, mocks and
+  assertions) stays byte for byte; new cases go beside them. Every fixture file at this HEAD stays byte for byte. `pnpm check:code-health`, `pnpm code-health:baseline` and the gardener keep their
   arguments, outputs and exit codes except for the counts and details C1 and C2 change.
 - **L2. The other round's files.** `git diff 72b95888 HEAD --stat` lists none of the seven files named in the last
   Environment bullet, and no file over 800 lines (by either count) at this HEAD grows.
