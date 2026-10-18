@@ -1928,3 +1928,70 @@ checks live outside the repository and never appear here or in a brief. One line
 - **After the merge:** briefs written from the template start with the `delivers` line and ask for the `report`
   block; a run launched by the earlier launcher (no field in its `input.md`) cannot be resumed by this one and is
   finished with the launcher it started with.
+
+## agent-tooling-r01: ratchet-codelines: `../../agent-tooling/briefs/codex-ratchet-codelines.md`, results `61c0e47b` and `d54f4354` on `tooling-ratchet-codelines` (from `72b95888`), DeepSeek V4.1 Flash 1017, level `max`; review builders `e3f95470` and `26e279f8`
+
+- **Scope (DECISIONS items 10, 11 and 12; r04 decision 76; F272, F269):** the ratchet's giant-file measure counts code
+  lines (a line holding a non-whitespace character once the file's comments are removed), so deleting blank lines or
+  comments buys no room; the long-function measure no longer counts a callback of a `describe` imported from
+  `"vitest"` in a test file (item 12, the coordinator's call on F269). Run by a side session beside the giant-file split
+  (giant-split), with disjoint files except the two generated files (`AGENT_TOOLING_CODE_MAP.md`,
+  `CODE_HEALTH_BASELINE.json`), which the coordinator regenerates after the second merge. The brief kept "room is made
+  by moving code out" (item 10).
+- **Base (measured with `D:/fitway-temp/tooling-ratchet-codelines/coordinator/probe-base.mjs`):** 32 giant files by
+  physical lines, 26 by code lines (six fall to 714-798); 134 long-function hits, in 94 files, were `describe`
+  callbacks; `pnpm check:code-health` passed, `pnpm code-health:baseline` left the tree clean, the three code-health
+  test files 82/82; CI run 39079351885 on `72b95888`.
+- **Brief reviews** (`D:/fitway-temp/brief-review/codex-ratchet-codelines-1` and `-1-sol`): DeepSeek five readings,
+  Sol two, overlapping on one. Closed three: only the binding imported from `"vitest"` is exempt (both reviewers), test
+  bodies stay byte for byte apart from expected values (DeepSeek), and C3 compares the hits themselves, not only the
+  counts (DeepSeek). Left open: joining code lines or deleting a spanning comment to join them (both reviewers; the
+  ladder's Biome formatter splits joined statements again, measured on a joined file), and a named function passed to
+  `describe` (no tracked test does it; it stays counted).
+- **Run** (`codex-round-402d6c9a-...`, start load 44,242): 49 min, no automatic resume, no intervention; 31.9M input
+  tokens (31.6M cached) and 96k output. Two commits where the brief asked for one: the first post-commit ladder failed
+  `check:tooling-map` because the map was generated while the new test files were untracked (F283), and Codex said so
+  in its report. Its L0 proof ran the new tests on a `git archive` of the base with its own offline install in its temp
+  folder (51 failed at assertions). The post-commit ladder: 2212 passed, one 20 s timeout in
+  `codex-report-events.test.ts` (F281), reported as L3 FAIL with the file passing alone.
+- **Report against events (measured):** the launcher accepted the report on its first check (`report-checks.jsonl`:
+  seven PASS rows matched to records, L3 FAIL); the commit line names `d54f4354`; no overclaim found.
+- **Diff review** (`D:/fitway-temp/code-review/ratchet-codelines-1/`, Sol `xhigh`; the two generated files left out of
+  `diff.patch`): four blocking findings (a second span masker beside the scanner's own, a second script-extension
+  list, clamps for spans the scanner never produces, unused fixture parameters). The coordinator added one, measured
+  with `scanScope`: in `.tsx`, JSX text was not masked before the comment scan, so `<p>/* not a comment</p>` followed
+  by 850 code lines read as not giant and a JSX text line holding only `// not a comment` was dropped (803 of 804).
+  `owner-direction-builder` applied the five as `e3f95470` (one `blankSpans` helper, the scanner returns `codeLines`,
+  JSX text masked); the coordinator re-ran the probe (851 and 804 code lines); its Sol diff review
+  (`ratchet-codelines-builder-1`) gave no findings. CI on `d54f4354` passed (run 39086316668); on `e3f95470` it failed
+  on one F281 timeout (22 s, run 39088865805; F282).
+- **The grade** (`../../agent-tooling/briefs/codex-ratchet-codelines-grade.md` at `e3f95470`, G1-G13 from the
+  held-out rows written before the result plus the inputs file `D:/fitway-temp/tooling-ratchet-codelines-grade/inputs.md`;
+  GPT-6.1 Sol `xhigh`, run `codex-round-28ea2d69-...`, 12 min, report accepted first time). Brief reviews:
+  DeepSeek five readings and Sol five, all closed (the committed baseline equals a fresh run and the check passes,
+  every live measure compared, the ratchet's own file discovery compared with untracked sentinels, a case required for
+  every form, a shadowing local `describe`, a `style` attribute comment). G1-G7, G12 and G13 PASS; G8, G9, G10 and G11
+  FAIL. The coordinator's reading:
+  - **Real defects (two):** G8, a block-local `describe` (or alias) shadowing the Vitest import still had its callback
+    exempted (reproduced by the coordinator on a bare block: no hit); G11 in part, no committed case for code after a
+    multi-line block comment's close on the same line (the behaviour held, G3).
+  - **The grading brief's wording (three):** G9, the scanned file set grew by the two test files the round adds;
+    G10's third step and G11's other part, "removing one code line passes": the base ratchet fails on any count change,
+    a fall included, until the baseline is rewritten (`check-code-health.mjs` counts every change), so the
+    coordinator's C4 wording was wrong in both briefs. The coordinator also corrected input I8i mid-run (its wrapper
+    function was itself over 80 lines); the grader had read the earlier wording.
+- **Disposition:** a second `owner-direction-builder` committed `26e279f8`: the exemption asks TypeScript's checker
+  (one single-file program, built only for a test file importing `describe` from `"vitest"`) whether the callee's
+  symbol is the import's, plus the missing coverage case; three new cases failed on `e3f95470` at assertions, 59/59
+  pass; `pnpm check:code-health` median 3.13 s at the base and 3.41 s after (three alternating runs each, +9%); the
+  baseline is unchanged. The builder stopped on a Claude session limit after its commit and ladder (4 F281 timeouts);
+  the coordinator re-ran both files alone (29/29), reproduced G8 (hits at the callback for the shadowed forms, none for
+  the import, nested or not), and saved its report. Its Sol diff review (`ratchet-codelines-builder-2`) gave no
+  findings. The coordinator reproduced each fixed row instead of a second grade. CI passed on `26e279f8` (run
+  39099744024), the round's final commit.
+- **Rows:** 9/13 as graded (G9 and G10 and part of G11 the grading brief's wording, so 11/13 on the round's substance);
+  the held-out rows written before the result 20/21 (H17's third step the same wording); the coordinator's JSX probe,
+  beyond the rows, found the one defect the round's own tests missed. Side findings F282-F284.
+- **After the merge:** giant files are counted in code lines (26 at `26e279f8`), `describe` callbacks imported from
+  Vitest are not long functions (`longFunctions` total 322 to 188); briefs may drop "room is made by moving code out"
+  only once the giant-file split is in too (item 10).
