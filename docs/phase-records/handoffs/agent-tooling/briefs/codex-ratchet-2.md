@@ -123,7 +123,7 @@ hang still fails. Every count the ratchet held before stays as it was.
   - **Outcome.** Two floor measures over test files (named as the `describe` rule recognises them): `testCases`, the
     calls of `it` or `test` imported from `"vitest"` or `"node:test"` (each call once, with `.each(...)(...)`,
     `.only`, `.concurrent`, `.sequential`, `.fails`, `.skipIf(...)(...)` and `.runIf(...)(...)` counted as one case;
-    `.skip` and `.todo` not counted), and `expectCalls`, the calls of `expect` imported from `"vitest"` (with
+    `.skip`, `.todo`, `.skipIf(true)(...)` and `.runIf(false)(...)` with a literal condition not counted), and `expectCalls`, the calls of `expect` imported from `"vitest"` (with
     `expect.soft(...)` and `expect.poll(...)`; `expect.assertions` and `expect.hasAssertions` not counted). They are
     floors: for each directory, the totals over the test files directly in it are compared. `pnpm check:code-health`
     fails when a directory's total of either differs from the committed baseline, naming the directory, the measure
@@ -132,8 +132,9 @@ hang still fails. Every count the ratchet held before stays as it was.
     files of one directory, and a file renamed within its directory, change nothing; deleting a case, turning an `it`
     into `it.skip`, or deleting an `expect` is refused; a file moved to another directory is a fall in its old
     directory and needs that exception line. Each holds on its own case, with a binding imported under an alias and a
-    local `it` that shadows the import (not counted).
-  - **Intent.** Tests can be reorganised freely, but a test or an assertion is removed only by a written decision.
+    local `it` that shadows the import (not counted), and an `it.runIf(false)(...)` (not counted).
+  - **Intent.** Tests can be reorganised freely within a directory, and a test or an assertion leaves a directory only
+    by a written decision.
 
 - **R5. Tooling tests fail by timeout under load (F261, F281, F282).**
   - **Cause (measured).** `vitest.config.ts` sets `testTimeout: 20000`; durations recorded under load were 20,036 and
