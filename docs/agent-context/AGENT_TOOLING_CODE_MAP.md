@@ -49,7 +49,7 @@ Counts: 76 files, 784 callables, 613 without a covering test.
 - `scanGiantFiles` [function] L264-L299; tests: none
 - `idsReferenced` [function] L301-L313; tests: none
 - `scanBoundaryBreaks` [function] L315-L351; tests: none
-- `scanScope` [function] L353-L379; tests: `.agents/skills/gardener/code-health-repair.test.ts`, `.agents/skills/gardener/code-health.test.ts`
+- `scanScope` [function] L353-L379; tests: `.agents/skills/gardener/code-health-codelines.test.ts`, `.agents/skills/gardener/code-health-describe.test.ts`, `.agents/skills/gardener/code-health-repair.test.ts`, `.agents/skills/gardener/code-health.test.ts`
 - `unknownScope` [function] L381-L394; tests: none
 - `parsePreviousReport` [function] L396-L430; tests: none
 - `addTrends` [function] L432-L449; tests: none
