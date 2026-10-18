@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `b4a9f095`, 2026-10-17 18:22 +03:00
+- **As of:** `codex/owner-redesign-r04` at `72b95888`, 2026-10-18 03:01 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-10), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -84,10 +84,12 @@
 ## Next steps
 
 1. **The CLI contract is closed and on main** (`b4a9f095`; nothing left to do for it); its leftovers are F273-F276.
-2. **Beside r04's Settings, by DECISIONS item 11** (r04 decision 76, the user, 2026-10-17): report-fields (DECISIONS
-   item 9: the claimed-commit field, a machine brief role, structured report rows; F265 a candidate; F270 may join a
-   ratchet round) and the verification-map part of map upkeep (F252: `check:verification-map` prints `DRIFT SKIP`
-   and passes), on files disjoint from Settings.
+2. **Report-fields and the verification map are on main** (`72b95888`, CI run 39079351885, measured 2026-10-18;
+   the user's yes to merging both): report-fields through `a90da2e2` with its records `01cc39e6` (codex briefs now
+   start `role: codex delivers: commit|report` and report in a fenced `report` block; F278-F281), the verification
+   map through `eee192ce` with its records `90e7c61b` (F252 fixed: a checkout without recipes checks the concept at
+   the ref in `.agents/skills/verify-fitway/concept-source.json`, now `owner-followup-r04-build`; F277). Both
+   records are in `codex-rounds.md`. When the concept's pages move to another branch, change that `ref`.
 3. **Beside the pages and the demo, where capacity allows** (neither deferred nor gating): the ratchet's code-line
    count (F272) and the split of the giant files (DECISIONS item 10; briefs keep the "move code, never delete text"
    line until both are in), and the lighter pickup. F264 (verify-fitway's caret in forced colours) joins the next

@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `b4a9f095`, 2026-10-17 18:22 +03:00
+- **As of:** `codex/owner-redesign-r04` at `72b95888`, 2026-10-18 03:01 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-75), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -52,13 +52,17 @@
 
 ## Next steps
 
-1. **main is at `b4a9f095`** (agent-tooling-r01's CLI contract with this milestone's records, measured
-   2026-10-17); later commits go to main with the next integration.
+1. **main is at `72b95888`** (agent-tooling-r01's report-fields and verification map, both run beside Settings,
+   merged with the user's yes; CI run 39079351885; measured 2026-10-18); later commits go to main with the next
+   integration.
 2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Decision 76 (the demo first):
-   Settings starts now (the CLI contract is on main), with that milestone's report-fields round
-   and the verification-map part of map upkeep (F252) beside it; what is visible and would make the demo look bad is
-   fixed first, Arabic without compromise. Left for later, with their reasons: the dialogs' parts splitting under a
+   what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the
+   skeleton's third pass (three computer arrangements أ, ب, ج; brief `designer-settings-skeleton-3.md`, `2828ae9e` on
+   the build branch; report and frames in D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md) waits for the user's
+   notes and choice, then the one-pass build. The user moved to another Claude account on 2026-10-18: the skeleton is
+   now https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8; the first account's link (8U93baiZjKSVNUaRnNPteT) can no
+   longer be updated or its comments read from here. The user gathers notes and says «خلاص» before work starts. Left for later, with their reasons: the dialogs' parts splitting under a
    planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **F266:** Components' heat tooltip covers the selected cell after a click (measured; Reports places its tip below
    the cell); it goes with the next concept round that touches Components.
