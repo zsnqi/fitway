@@ -65,12 +65,12 @@ result's giant-file count (the `lineCount` of a `giantFiles` hit).
 - **G2. Markers inside literals (C1).** Outcome: inputs I2a-I2c give their expected results.
 - **G3. A block comment across lines (C1).** Outcome: input I3 gives its expected result.
 - **G4. JSX text (C1).** Outcome: inputs I4a-I4d give their expected results.
-- **G5. CSS and HTML (C1).** Outcome: inputs I5a and I5b give their expected results.
+- **G5. CSS and HTML (C1).** Outcome: inputs I5a-I5c give their expected results.
 - **G6. One count (C1).** Outcome: for `scripts/agent-environment/codex-round.test.ts` at the result, `scanScope` on
   that one file gives a `giantFiles` hit whose detail reads as its count in code lines and whose `lineCount` equals
   the value the committed `docs/agent-context/CODE_HEALTH_BASELINE.json` holds for it.
 - **G7. Suites exempt (C2).** Outcome: inputs I7a-I7g give no long-function hit.
-- **G8. Everything else still measured (C2).** Outcome: inputs I8a-I8h give exactly one long-function hit each, on the
+- **G8. Everything else still measured (C2).** Outcome: inputs I8a-I8j give exactly one long-function hit each, on the
   function the input names.
 - **G9. The baseline moved by exactly two changes (C3).** Outcome: against the base's
   `docs/agent-context/CODE_HEALTH_BASELINE.json` (`git show 72b95888:` that path), the result's file differs only in
@@ -79,20 +79,29 @@ result's giant-file count (the `lineCount` of a `giantFiles` hit).
   `scripts`, `.agents/skills`, `apps` and `packages` of the base copy and of this worktree, the scanned file set is
   equal and the result's long-function hits (file and line) are the base's less exactly the base hits that are
   callbacks of a `describe` imported from `"vitest"` in a test file, counted with your own syntax walk on the base
-  copy; report both totals and the number of giant files at each.
+  copy; every other measure `scanScope` reports (`duplication`, `typeEscapes`, `suppressions`, `repeatedWorkarounds`,
+  `accessibilityOverrides` and `boundaryBreaks`, the last with the concept scope's shared files as the gardener
+  derives them) gives the same hits on both trees; the files the ratchet's own discovery in `code-health-baseline.mjs`
+  returns are the same set at the base copy and the result, with one untracked sentinel file added under each of its
+  roots in both; on the result, `pnpm code-health:baseline` leaves `git status --short` empty (the committed baseline is
+  what the result's measures write) and `pnpm check:code-health` passes. Report both long-function totals and the
+  number of giant files at each.
 - **G10. The ratchet itself (C4).** Outcome: in a scratch repository holding the result's `scripts/`,
   `.agents/skills/` and `package.json` with its own install, one file of 850 code lines plus 60 blank lines and 40
   comment lines, and a baseline written and committed by the result's `code-health-baseline.mjs`: from the clean
   committed state, deleting every blank and comment line of that file makes
   `node scripts/agent-environment/check-code-health.mjs` pass with that file's count unchanged; adding one line `x();`
   instead makes it fail with output naming the file, 850 and 851; removing one code line instead makes it pass.
-- **G11. New cases prove the repair (L0).** Outcome: each test case the result adds (`git diff 72b95888 e3f95470` over
+- **G11. New cases prove the repair (L0).** Outcome: the result adds at least one committed test case for each input
+  form C1 and C2 of the round's brief list and one for C4 (map each form to its case); each test case the result adds (`git diff 72b95888 e3f95470` over
   the test files) fails at an assertion when the result's test files run against the base copy's production code
   (`.agents/skills/gardener/code-health.mjs`, `code-health-source.mjs`, `code-health-duplication.mjs`,
   `scripts/agent-environment/check-code-health.mjs` and `code-health-baseline.mjs` at `72b95888`), not at a missing
   import, helper or fixture, and passes on the result; report each case's failing line.
-- **G12. The base's tests (L1).** Outcome: every test case present at `72b95888` in the test files the result changes
-  is present at the result, not skipped, excluded or made conditional, and apart from expected values on a giant-file
+- **G12. The base's tests (L1).** Outcome: `git diff --stat 72b95888 e3f95470` changes no test file other than those
+  the result adds or the round's Scope names, and no test configuration or runner (`vitest.config.*`,
+  `scripts/run-vitest.mjs`, `scripts/verify.mjs`, `package.json`); every test case present at `72b95888` in the test
+  files the result changes is present at the result, not skipped, excluded or made conditional, and apart from expected values on a giant-file
   count or detail or on a `describe`-callback hit its body is byte for byte the base's (show the diff of each changed
   case); every fixture file at the base is byte-identical at the result.
 - **G13. The other round's files (L2).** Outcome: `git diff --stat 72b95888 e3f95470` names none of the seven files
