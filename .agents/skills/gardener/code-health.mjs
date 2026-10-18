@@ -262,40 +262,12 @@ export function deriveSharedFiles(files, { specimenPages = [] } = {}) {
 }
 
 function scanGiantFiles(files, source) {
-	const commentsByFile = new Map(
-		files.map((file, index) => [file, source[index].comments]),
-	);
-	const countCodeLines = (text, comments) => {
-		if (!text) return 0;
-		let masked = "";
-		let cursor = 0;
-		for (const comment of [...comments].sort(
-			(left, right) => left.offset - right.offset,
-		)) {
-			const start = Math.max(cursor, comment.offset);
-			const end = Math.min(text.length, comment.offset + comment.text.length);
-			if (end <= cursor) continue;
-			masked += text.slice(cursor, start);
-			masked += text.slice(start, end).replace(/[^\r\n]/g, " ");
-			cursor = end;
-		}
-		masked += text.slice(cursor);
-		return masked.split(/\r\n|\r|\n/).filter((line) => /[^\s]/.test(line))
-			.length;
-	};
-	return files
-		.filter((item) => isSourceFile(item.file))
-		.flatMap((item) => {
-			const count = countCodeLines(item.text, commentsByFile.get(item));
-			return count > 800
-				? [
-						{
-							...hit(item.file, 1, `${count} code lines`),
-							lineCount: count,
-						},
-					]
-				: [];
-		});
+	return files.flatMap((item, index) => {
+		const count = source[index].codeLines;
+		return isSourceFile(item.file) && count > 800
+			? [{ ...hit(item.file, 1, `${count} code lines`), lineCount: count }]
+			: [];
+	});
 }
 
 function idsReferenced(text) {

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { scanScope } from "./code-health.mjs";
 
-function javascriptLines(count: number, prefix = "code") {
+function javascriptLines(count: number) {
 	return Array.from(
 		{ length: count },
-		(_, index) => `const ${prefix}${index} = ${index};`,
+		(_, index) => `const code${index} = ${index};`,
 	);
 }
 
@@ -38,8 +38,8 @@ function expectCodeLines(file: string, text: string, count: number) {
 	expect(giantFiles.total).toBe(0);
 }
 
-function source(count: number, extra: string[] = [], prefix = "code") {
-	return [...javascriptLines(count, prefix), ...extra].join("\n");
+function source(count: number, extra: string[] = []) {
+	return [...javascriptLines(count), ...extra].join("\n");
 }
 
 const templateExpression = [
@@ -216,5 +216,45 @@ describe("C1 giant files count code lines", () => {
 					? 800
 					: 801;
 		expectCodeLines(file, text, expected);
+	});
+});
+
+describe("C1 JSX text never opens or holds a comment", () => {
+	it("C1 keeps a block-comment marker in JSX text from swallowing the file", () => {
+		expectCodeLines(
+			"unclosed.tsx",
+			[
+				"export const B = () => <p>/* not a comment</p>;",
+				...javascriptLines(850),
+			].join("\n"),
+			851,
+		);
+	});
+
+	it("C1 counts a JSX text line of only a line-comment marker as code", () => {
+		expectCodeLines(
+			"text-line.tsx",
+			source(799, [
+				"export const C = () => (",
+				"\t<p>",
+				"\t\t// not a comment",
+				"\t</p>",
+				");",
+			]),
+			804,
+		);
+	});
+
+	it("C1 still reads a JSX comment after JSX text as a workaround marker", () => {
+		const text = [
+			"export const D = () => (",
+			"\t<p>",
+			"\t\tDon't {/* TODO: name the gym */}",
+			"\t</p>",
+			");",
+		].join("\n");
+		expect(
+			scanScope([{ file: "marker.tsx", text }]).repeatedWorkarounds.hits,
+		).toEqual([{ file: "marker.tsx", line: 3, detail: "TODO marker" }]);
 	});
 });

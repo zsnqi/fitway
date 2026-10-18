@@ -1,16 +1,8 @@
 import path from "node:path";
 import ts from "typescript";
 
-const SOURCE_EXTENSIONS = new Set([
-	".js",
-	".mjs",
-	".cjs",
-	".ts",
-	".tsx",
-	".css",
-	".html",
-]);
 const SCRIPT_EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".ts", ".tsx"]);
+const SOURCE_EXTENSIONS = new Set([...SCRIPT_EXTENSIONS, ".css", ".html"]);
 const DESCRIBE_CHAIN_MEMBERS = new Set([
 	"each",
 	"sequential",
@@ -28,6 +20,16 @@ export function isSourceFile(file) {
 
 function blank(text) {
 	return text.replace(/[^\r\n]/g, " ");
+}
+
+function blankSpans(text, spans) {
+	let masked = "";
+	let cursor = 0;
+	for (const [start, end] of spans) {
+		masked += text.slice(cursor, start) + blank(text.slice(start, end));
+		cursor = end;
+	}
+	return masked + text.slice(cursor);
 }
 
 function literal(node) {
@@ -140,21 +142,18 @@ function scanComments(source, text, offset, isTypeScript, add, addComment) {
 			}
 			return;
 		}
-		if (literal(node)) {
+		if (literal(node) || ts.isJsxText(node)) {
 			spans.push([node.getStart(source), node.end]);
 			return;
 		}
 		ts.forEachChild(node, findLiterals);
 	};
 	findLiterals(source);
-	// Mask literal text before scanning trivia; template substitutions stay visible.
-	let masked = "";
-	let cursor = 0;
-	for (const [start, end] of spans.sort((a, b) => a[0] - b[0])) {
-		masked += text.slice(cursor, start) + blank(text.slice(start, end));
-		cursor = end;
-	}
-	masked += text.slice(cursor);
+	// Mask literal and JSX text before scanning trivia; template substitutions stay visible.
+	const masked = blankSpans(
+		text,
+		spans.sort((a, b) => a[0] - b[0]),
+	);
 	const scanner = ts.createScanner(
 		ts.ScriptTarget.Latest,
 		false,
@@ -358,7 +357,7 @@ export function scanSource({ file, text }) {
 	const ext = path.extname(file).toLowerCase();
 	if (ext === ".css") css(text, 0, add, addComment);
 	else if (ext === ".html") html(text, file, add, addComment);
-	else if (SOURCE_EXTENSIONS.has(ext))
+	else if (SCRIPT_EXTENSIONS.has(ext))
 		script(
 			text,
 			0,
@@ -373,5 +372,13 @@ export function scanSource({ file, text }) {
 			.sort((a, b) => a.index - b.index)
 			.map(({ index, ...item }) => item);
 	}
-	return { ...result, comments };
+	const codeLines = blankSpans(
+		text,
+		comments
+			.map(({ text: comment, offset }) => [offset, offset + comment.length])
+			.sort((a, b) => a[0] - b[0]),
+	)
+		.split(/\r\n|\r|\n/)
+		.filter((line) => /[^\s]/.test(line)).length;
+	return { ...result, comments, codeLines };
 }
