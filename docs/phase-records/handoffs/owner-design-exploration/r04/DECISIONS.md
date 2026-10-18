@@ -895,6 +895,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **One review:** `owner-direction-verifier` (high) after the third part, measuring Arabic and English, RTL and LTR
       edges among its renders; no `rtl-ltr-reviewer` for this round. Rounds item 11 holds: the review's errors are fixed
       before the user sees the page.
+80. **Settings: arrangement ج, not ب** (the user, 2026-10-19, during the round: «المعذرة اسمع انا كان اقصد هيكل ج
+    نسيت»). This corrects item 77's choice. ج is the skeleton's third-pass proposal: v1's page filled out, four cards
+    in two columns (crowd and the business day; the hours and the settings log), and «تعديل» opens that card in a
+    window over the page (`D:/fitway-temp/owner-r04-settings-skeleton/skeleton-c-*.png`). The phone, the 390 sheets and
+    the dialogs stay as the user kept them from v2, as in item 77. Part 1 was already committed in ب (`5253d95f` on
+    the build branch); part 2 was stopped before it changed anything. The round restarts from part 1 in ج on the
+    brief's ج revision, reusing what part 1 built that fits (the data, the log record and its from → to wording, the
+    level key, the phone). Item 79's three parts and one review stand. After the round the user asked for the PC to be
+    shut down.
 
 ## How this milestone's rounds run
 
