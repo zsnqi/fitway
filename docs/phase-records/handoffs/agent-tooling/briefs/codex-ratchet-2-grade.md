@@ -75,7 +75,9 @@ round's outcomes and follow-ups hold on the result.
   `biome check --error-on-warnings .`; `biome.json` sets `noSkippedTests`, `noUnusedExpressions` and
   `noNonNullAssertion` to `error` and adds no nursery rule; `pnpm check` exits 0 on the result; each of an unused
   import, an unused variable, an `it.skip`, a bare `a === b;` and a `value!.x`, planted alone in a scratch copy, makes
-  it exit non-zero naming the rule. Report what `biome.json` overrides, if anything, and for which file.
+  it exit non-zero naming the rule. `biome.json` has no override, ignore or exclusion that weakens these rules or the warnings except one: `noSkippedTests`
+  off for `tests/browser/desktop-demo.browser.spec.ts` (Playwright's runtime `test.skip(condition, reason)`, outside the
+  round's paths; accepted by the coordinator as F287); report every override you find.
 - **G6. Counting forms (R4).** Outcome: inputs I6a-I6i give their expected case and expect counts.
 - **G7. Directory floors (R4).** Outcome: in a scratch repository with a committed baseline and two test files
   `a.test.ts` and `b.test.ts` in a directory named `dir`, each run from the clean committed state: moving one case
@@ -87,7 +89,9 @@ round's outcomes and follow-ups hold on the result.
 - **G8. One test timeout (R5).** Outcome: `vitest.config.ts` differs from the base `f5927a26` only in `testTimeout`,
   whose value is 60,000 to 90,000 ms; no `vi.setConfig` line with a test timeout remains in
   `scripts/agent-environment/codex-round.test.ts` or `codex-report-events.test.ts`; a scratch test that never settles
-  fails with Vitest's timeout message within 90 s and a test that waits 45 s passes, both run with the result's config.
+  fails with Vitest's timeout message within 90 s and a test that waits 45 s passes, both run with the result's config; and no test or test-support file
+  tracked at the result adds a per-file or per-test timeout (`vi.setConfig`, a `testTimeout` option, or a numeric
+  timeout argument) that `da828661` lacks.
 - **G9. One extension list and names by behaviour (R6, review).** Outcome: `IMPORT_EXTENSIONS` and `linkedReferences`
   use the scanner's script extensions (members as at the base); no test file name or `describe`/`it` title the round
   adds or changes names a round or an outcome ID (`r01`, `R1`, `R2`, `R4`), and no temp-folder prefix does.
@@ -105,22 +109,27 @@ round's outcomes and follow-ups hold on the result.
   `scripts/agent-environment/codex-round.test.ts` give a median under 1 s (report each time).
 - **G12. The counts held before (L2).** Outcome: against `da828661`'s committed baseline, the result's baseline keeps
   every `giantFiles`, `duplication`, `typeEscapes`, `suppressions`, `repeatedWorkarounds`, `longFunctions` and
-  `longFunctionLines` value except where the commits after `da828661` changed that file's code (list each such change
-  with its cause); `pnpm code-health:baseline` on the result leaves `git status --short` empty and
+  `longFunctionLines` value, with no value rising in any file except a file created after `da828661` (list each such
+  file and value) and falls listed with their cause; `git diff da828661 50cecbc9` adds no `code-health-exception:`
+  marker; `pnpm code-health:baseline` on the result leaves `git status --short` empty and
   `pnpm check:code-health` passes. Report the totals of every measure.
 - **G13. New cases prove the repair (L0).** Outcome: each test case added in `f5927a26..50cecbc9` to the code-health
   test files fails at an assertion when run against the base's production code (`.agents/skills/gardener/code-health*.mjs`,
   `scripts/agent-environment/check-code-health.mjs` and `code-health-baseline.mjs` at `f5927a26`, with the result's
   test files and any test-support file they import copied in), not at a missing import, helper or fixture, and passes
   on the result. A case for a module the base lacks (the staged check, the ratchet module) is listed apart with how it
-  fails. Report each case's failing line.
+  fails. Map each added case to the outcome (R1-R6, or a builder or fixer item) and the expected result it asserts;
+  report each case's failing line.
 - **G14. Scope and the base's tests (L1).** Outcome: `git diff --stat f5927a26 50cecbc9` (setting aside the files
   `da828661`'s merge brought) changes none of `scripts/agent-environment/codex-round.mjs`,
   `scripts/agent-environment/check-brief.mjs`, `scripts/check-agent-context.mjs`, `scripts/verify-repository.mjs`,
   `.agents/skills/gardener/survey.mjs`, `.agents/skills/verify-fitway/runner.mjs`, `.agents/skills/verify-fitway/compare.mjs`,
   or any file under `apps/` or `packages/`; `package.json` changes only the `check` script; every test case present at
   `da828661` is present at the result with its body unchanged except the listed allowances (the emptyBlocks total
-  37 to 9, the two removed `vi.setConfig` lines, renamed titles, the temp-folder prefix); fixture files byte-equal.
+  37 to 9, the two removed `vi.setConfig` lines, renamed titles, the temp-folder prefix); fixture files byte-equal;
+  and the test IDs Vitest collects (`pnpm exec vitest list` with `--json`, or its JSON reporter) for every test file
+  the commits after `da828661` change are, at the result, those at `da828661` plus the added cases, with renamed titles
+  mapped one to one.
 
 ## Scope
 
