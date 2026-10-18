@@ -145,25 +145,4 @@ through these pointers, not copied here.
       live in the desktop app).
     - **Usage** (agreed the same day): a side session starts fresh with a short brief instead of a fork carrying the
       coordinator's context; at most two Opus sessions run at once; read-only research over local files can be a Codex
-      `delivers: report` round instead of a Claude researcher. A smaller auto-compact window (`/autocompact 400k`,
-      `autoCompactWindow`) is a measured trial for later, not a setting change now: the docs do not say whether the
-      desktop app honours it.
-15. **How sessions run from here** (the user, 2026-10-18, on the coordinator's proposals in a
-    side session, before switching Claude accounts). This replaces item 14's auto-compact trial.
-    - **A new session for each phase** (a round or a page), started from the resume point; the coordinator keeps
-      coordinating and delegating as before and keeps its own context small, and starts a fresh session at a natural
-      boundary instead of carrying one context for a day.
-    - **Large reading goes to a subagent or to Codex**, and logs are written to files and read in parts, not printed
-      whole into a conversation. Every SHA, run folder and decision is written to a file (the round's REPORT.md, the
-      resume point, a stop note) as soon as it exists, so a compaction or a stop loses nothing.
-    - **No smaller auto-compact window** (`/autocompact 400k` is not adopted): fresh sessions per phase do the same job.
-16. **A cleared coordinator and subagents, not a side session per phase** (the user, 2026-10-18, on the Settings round:
-    «اقدر اسوي clear و بس و اخليك تبدأ ك منسق وبس و توزع الشغل لل sub agent», and «اعتقد البند 15 ما كان واضح او
-    مناسب»). This replaces item 15's first point; its second and third stand.
-    - **A fresh coordinator context per phase comes from `/clear`:** the user clears the session at a phase boundary,
-      and the coordinator resumes from the resume point and hands the phase's work to subagents. A subagent starts with
-      its own context and returns only its final report, so a phase run this way costs the coordinator what a side
-      session's report would. Why item 15 read wrong: it put each phase in a side session, which a subagent already
-      gives, and a round needs a coordinator to chain its designer, verifier and fixers, which a subagent cannot do
-      (no subagent launches another).
-    - **Side sessions only for genuinely parallel work** (two rounds on disjoint files at once).
+      `delivers: report` round instead of a Claude researcher.

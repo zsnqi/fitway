@@ -40,8 +40,7 @@
 ## Running now
 
 - **Nothing runs** (2026-10-18 23:40). **Next, on the user's word** («start the one-pass Settings build in arrangement ب
-  as soon as ratchet-2 closes»; ratchet-2 closed): the Settings round, run by the coordinator after the user's `/clear`
-  (agent-tooling DECISIONS item 16), on the Settings build brief (`3835b5a5` on the build branch, passes `brief:check`):
+  as soon as ratchet-2 closes»; ratchet-2 closed): the Settings round, run by the coordinator in a new session, on the Settings build brief (`3835b5a5` on the build branch, passes `brief:check`):
   three `owner-direction-designer` agents at `xhigh`, one per part in order, each prompt naming its part and the
   brief's absolute path; then `owner-direction-verifier` (high, port 3191) alone; fixes per rounds item 11; the
   coordinator inspects the crops; then the user (decision 79). Output and NOTES.md in `D:/fitway-temp/owner-r04-settings/`.

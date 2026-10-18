@@ -886,8 +886,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     add a Product/Spec amendment; who changed what belongs in Activity log. Revisit if several people come to edit
     Settings regularly.
 79. **Settings' round: three designer parts and one review** (the user, 2026-10-18: «بخصوص المراجعات اشوف انها كثيرة
-    وما نحتاج حتى rtl-ltr-reviewer», and «هل ممكن نقسم مهامه بحيث ما يكبر سياقة بشكل ضخم جدا»; agent-tooling DECISIONS
-    item 16 for how it is run).
+    وما نحتاج حتى rtl-ltr-reviewer», and «هل ممكن نقسم مهامه بحيث ما يكبر سياقة بشكل ضخم جدا»).
     - **The designer's work is split in three parts**, each a fresh `owner-direction-designer` at `xhigh` reading the
       brief, the last commit and `D:/fitway-temp/owner-r04-settings/NOTES.md` (rounds item 10's split, applied to one
       screen): (1) the page at rest, the sheet and the log panel, at 1440 and 390; (2) the editor in the panel and the
