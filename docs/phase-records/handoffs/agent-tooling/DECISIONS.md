@@ -90,3 +90,10 @@ through these pointers, not copied here.
     ratchet's code-line count, the giant-file split and the lighter pickup run beside the pages and the demo where
     capacity allows, neither deferred nor gating. This replaces item 10's order (the split before report-fields);
     item 10's two rounds and its brief line stand.
+12. **A test suite's `describe` callback is not a long function** (coordinator, 2026-10-18, on F269; the rules leave
+    it open). The ratchet's long-function measure counted every Vitest `describe` callback over 80 lines (134 hits in
+    94 files at `72b95888`, measured), so adding a case to any long suite touched an over-80-line function and the
+    measure asked for nothing an agent could act on: a suite groups cases, it is not a function anyone factors. The
+    measure skips `describe` callbacks (with its `.each`, `.skip`, `.only` and similar forms); `it` and `test`
+    callbacks, hooks, helpers and every other function stay measured. The ratchet round with the code-line count
+    (item 10) carries it.
