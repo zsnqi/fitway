@@ -1,16 +1,31 @@
 <!-- brief-format: v1 role: designer -->
-# Designer brief: Settings, the whole screen in one pass, arrangement ب (owner-design-exploration-r04)
+# Designer brief: Settings, the whole screen in three parts, arrangement ب (owner-design-exploration-r04)
 
-For a fresh `owner-direction-designer` at effort `max` (a whole Owner screen in one pass; r04 "How this milestone's
-rounds run" item 6). Concept-only (ADR-009): superseded Owner Paper frames are reference only. The user chose the
-arrangement (DECISIONS item 77, ب); this round builds that one version of the screen as a finished page. A review
-follows, then the user sees it. No options round.
+For three fresh `owner-direction-designer` agents at their default `xhigh`, one per part (DECISIONS item 79).
+Concept-only (ADR-009): superseded Owner Paper frames are reference only. The user chose the arrangement (DECISIONS
+item 77, ب); this round builds that one version of the screen as a finished page. A review follows, then the user
+sees it. No options round.
+
+## Parts
+
+The coordinator's prompt names your part. Do only your part; read this whole brief, since the parts share one page.
+A part after the first starts from the last commit and `D:/fitway-temp/owner-r04-settings/NOTES.md`, and changes an
+earlier part's work only where its own part needs it, saying what and why.
+
+1. **The page at rest:** the frame, the sheet with all five values, and the log panel with its reasons, at 1440 and
+   390 in Arabic; the files created and the shared structure settled for the parts after it; crops `1-`.
+2. **The editor:** «تعديل», the editor in the panel with «قيد التعديل», every field and its warning sentence, people
+   per level following capacity, and the phone's bottom sheets; crops `2-` and the editing steps of `5-`.
+3. **The dialogs and states:** the confirmation, working, done, each refusal, the conflict view, leaving with unsaved
+   changes, Loading and Error, English, and the range cases; crops `3-`, `4-` and the rest of `5-`; the spec fragment.
+
+Each part ends with a commit and NOTES.md current (what is decided, what is left), and its report covers its part.
 
 - **Worktree:** `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, branch `owner-followup-r04-build`, HEAD `873e03fc`
 - **Base:** the HEAD above plus this brief's own commit on top of it. Dependencies are installed.
 - **Milestone:** `owner-design-exploration-r04`. Decisions: `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`
-  items 1-8, 11, 12, 16, 23, 35, 41, 49, 75, 76, 77 and 78, and "How this milestone's rounds run" items 6, 7, 10
-  and 11 (the coordinator line's copy; the build branch's copy predates items 49 and 76-78);
+  items 1-8, 11, 12, 16, 23, 35, 41, 49, 75, 76, 77, 78 and 79, and "How this milestone's rounds run" items 6, 7, 10
+  and 11 (the coordinator line's copy; the build branch's copy predates items 49 and 76-79);
   `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/agent-context/WORKING_AGREEMENTS.md` §"Rules and findings".
 - **Read first, only these:**
   - `design-research/owner-composition-exploration-r04/directions/DO-NOT.md` in full; it binds.
