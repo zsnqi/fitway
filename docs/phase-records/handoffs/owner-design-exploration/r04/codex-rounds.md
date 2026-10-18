@@ -2003,7 +2003,7 @@ checks live outside the repository and never appear here or in a brief. One line
   `verify-repository.mjs`) split into modules by moving their top-level statements unchanged, every resulting file at
   most 700 lines (the module holding `drive`, 728 lines alone, at most 750), no re-exports or cycles, every entry's
   `--help` byte for byte, every check that reads a split file by name still reading the code. `compare.mjs` stayed out:
-  its `compareOwned` is one 846-line function (an 800-line `try` block), so splitting it is a rewrite (F289). Giant test
+  its `compareOwned` is one 846-line function (an 800-line `try` block), so splitting it is a rewrite (F293). Giant test
   files are left for a later round. Run by a side session beside the ratchet-codelines round (disjoint files except the
   two generated files).
 - **Brief reviews** (`D:/fitway-temp/brief-review/codex-giant-split-1` and `-1-sol`): DeepSeek five readings, Sol four,
@@ -2031,7 +2031,7 @@ checks live outside the repository and never appear here or in a brief. One line
 - **Diff review** (`D:/fitway-temp/code-review/giant-split-1/`, Sol `xhigh`, with a `moved.patch` marking moved lines
   and the checker's output): five blocking findings: `main` moved to `survey-main.mjs` without `formatReport` (an
   unbound name, a ReferenceError at the end of a real survey run that no test reaches, reproduced by the coordinator
-  with TypeScript's checker: F290), the cycle, the nine suppressions, a `drive-support.mjs` mixing four
+  with TypeScript's checker: F294), the cycle, the nine suppressions, a `drive-support.mjs` mixing four
   responsibilities, reference helpers scattered over the paths and schema modules. The coordinator added: `runner.mjs`
   left as a one-line comment file; a hand-kept list of 21 modules added to the source scan; the baseline and the
   duplication rise (29 to 31); and decided that the `drive` module may reach 800, `compare.mjs` may change import
@@ -2040,10 +2040,10 @@ checks live outside the repository and never appear here or in a brief. One line
   committed `59a1c0b6`: `main` back in `survey.mjs`; `startCodex` in a leaf `codex-process.mjs`; `drive` back in
   `runner.mjs` (772 lines, no suppressions); `drive-plan`, `state-proofs`, `capture-records`, `worker-pool` and
   `comparison-capture` for the drive helpers; the reference helpers in `agent-context-references.mjs`; the source scan
-  following each entry file's relative imports, with five option-reading modules excluded by name (F288); duplication
+  following each entry file's relative imports, with five option-reading modules excluded by name (F292); duplication
   back to 29 (a copied export list removed). Its local ladder: seven per-test timeouts, each file passing alone (F261,
   F281). CI run 39101714368 ran every test green (114 files, 2161 passed and 1 skipped, node 127) and was cancelled at
-  its 30-minute job limit in a cleanup step after the ladder (29 min 06 s; F287); its rerun passed.
+  its 30-minute job limit in a cleanup step after the ladder (29 min 06 s; F291); its rerun passed.
 - **The grade** (`../../agent-tooling/briefs/codex-giant-split-grade.md` at `59a1c0b6`, G1-G10 from the rows the
   coordinator wrote before the result; GPT-6.1 Sol `xhigh`, run `codex-round-e94ede6b-...`, 42 min, three automatic
   resumes for unmatched PASS rows, accepted on the fourth check). Brief reviews: DeepSeek five readings (four closed,
@@ -2053,7 +2053,7 @@ checks live outside the repository and never appear here or in a brief. One line
   four giant test files instead of a raised baseline, and `HISTORICAL_PREFIXES` and `ILLEGAL_STARTUP_SEGMENTS` moved to
   their one user. The coordinator then asked for recorded ceilings in place of the five exceptions (an exception zeroes
   the file's measure, so the file has no ceiling until it expires); the ratchet's inflation guard refused them, as it
-  must, and the change was dropped: a rise can only pass as an exception (F286). Re-checked by the coordinator on
+  must, and the change was dropped: a rise can only pass as an exception (F290). Re-checked by the coordinator on
   `747de7c6`: the move checker clean, only `UIProbe` unbound (as at the base), `pnpm check:code-health` PASS with five
   open exceptions (until 2026-11-15), the code map 102 files, 785 callables, 614 without a covering test.
 - **Line counts** (base, then result): `codex-round.mjs` 2104 to 12, `survey.mjs` 1203 to 387, `runner.mjs` 1130 to
@@ -2061,7 +2061,9 @@ checks live outside the repository and never appear here or in a brief. One line
   modules, the largest `brief-readings.mjs` 561. Sums over the six and their modules: duplication 29 to 29,
   suppressions 0 to 0, longFunctions 23 to 23, giantFiles 7650 to 0.
 - **Rows:** 9/10 as graded at `59a1c0b6` (G8 the builder's raised baseline, repaired in `747de7c6`); the round's own
-  report 6 PASS and 4 FAIL, honest. Overclaims: none. Side findings F286-F290.
+  report 6 PASS and 4 FAIL, honest. Overclaims: none. Side findings F290-F294.
 - **Left open:** the giant test files (`cli.test.mjs`, `codex-round.test.ts`, `check-agent-context.test.ts`,
   `check-brief.test.ts`, `verify-repository.schema.test.ts`, and the others over the line) for a split round now that
-  the module paths are settled, before the exceptions expire on 2026-11-15; `compareOwned`'s decomposition (F289).
+  the module paths are settled, before the exceptions expire on 2026-11-15; `compareOwned`'s decomposition (F293). The user's word (2026-10-18, relayed by a forked side session): «بخصوص
+  compare.mjs ماعندي مشكلة ب اعادة كتابة الدالة اذا كان في سبيل التحسين»: for that one function a rewrite that improves it
+  may replace the byte-identical move, its behaviour unchanged and proved by the tests (the user's exception).
