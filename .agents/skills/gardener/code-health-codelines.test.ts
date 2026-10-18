@@ -93,6 +93,11 @@ describe("C1 giant files count code lines", () => {
 			source(799, blockComment),
 		],
 		[
+			"C1 keeps code after a block comment's close",
+			"block-close.ts",
+			source(800, ["/*", "comment only", "*/ after();"]),
+		],
+		[
 			"C1 keeps comment markers in JSX text",
 			"text.tsx",
 			source(800, [

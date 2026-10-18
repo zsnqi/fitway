@@ -50,9 +50,31 @@ function visitCode(node, visit) {
 	ts.forEachChild(node, (child) => visitCode(child, visit));
 }
 
+function bindingResolver(source) {
+	const host = {
+		getSourceFile: (name) => (name === source.fileName ? source : undefined),
+		getDefaultLibFileName: () => "lib.d.ts",
+		writeFile: () => {},
+		getCurrentDirectory: () => "",
+		getCanonicalFileName: (name) => name,
+		useCaseSensitiveFileNames: () => true,
+		getNewLine: () => "\n",
+		fileExists: (name) => name === source.fileName,
+		readFile: () => undefined,
+	};
+	return ts
+		.createProgram(
+			[source.fileName],
+			{ noLib: true, noResolve: true, allowJs: true, types: [] },
+			host,
+		)
+		.getTypeChecker();
+}
+
 function scanLongFunctions(source, text, offset, file, add) {
 	const ext = path.extname(file).toLowerCase();
 	const bindings = new Set();
+	let checker;
 	if (
 		SCRIPT_EXTENSIONS.has(ext) &&
 		/\.(?:test|spec)$/i.test(path.basename(file, ext))
@@ -70,13 +92,16 @@ function scanLongFunctions(source, text, offset, file, add) {
 			for (const element of named.elements) {
 				if (element.isTypeOnly) continue;
 				const imported = element.propertyName ?? element.name;
-				if (imported.text === "describe") bindings.add(element.name.text);
+				if (imported.text !== "describe") continue;
+				checker ??= bindingResolver(source);
+				bindings.add(checker.getSymbolAtLocation(element.name));
 			}
 		}
 	}
 	const isDescribeCallee = (expression) => {
 		const node = unwrap(expression);
-		if (ts.isIdentifier(node)) return bindings.has(node.text);
+		if (ts.isIdentifier(node))
+			return bindings.has(checker?.getSymbolAtLocation(node));
 		if (ts.isPropertyAccessExpression(node))
 			return (
 				DESCRIBE_CHAIN_MEMBERS.has(node.name.text) &&

@@ -214,6 +214,53 @@ describe("C2 Vitest describe callbacks are not long functions", () => {
 		expect(longFunctionTotal(text)).toBe(1);
 	});
 
+	it("C2 still counts a block-local describe that shadows the import", () => {
+		const text = fixture(
+			standardImport,
+			"{",
+			"  const describe = (_name: string, callback: () => void) => callback();",
+			`  describe("local", ${arrow});`,
+			"}",
+		);
+		expect(longFunctionTotal(text)).toBe(1);
+	});
+
+	it("C2 still counts a block-local name that shadows the import alias", () => {
+		const text = fixture(
+			aliasImport,
+			"{",
+			"  const suite = (_name: string, callback: () => void) => callback();",
+			`  suite("local", ${arrow});`,
+			"}",
+		);
+		expect(longFunctionTotal(text)).toBe(1);
+	});
+
+	it("C2 still counts a callback passed to a parameter named describe", () => {
+		const text = fixture(
+			standardImport,
+			"function run(describe: (name: string, callback: () => void) => void) {",
+			`  describe("parameter", ${arrow});`,
+			"}",
+		);
+		const lines = scanScope([
+			{ file: "suite.test.ts", text },
+		]).longFunctions.hits.map((hit: { line: number }) => hit.line);
+		expect(lines).toEqual([2, 3]);
+	});
+
+	it("C2 exempts the import used inside a nested block", () => {
+		const text = fixture(
+			standardImport,
+			"{",
+			"  {",
+			`    describe("nested", ${arrow});`,
+			"  }",
+			"}",
+		);
+		expect(longFunctionTotal(text)).toBe(0);
+	});
+
 	it("C2 still counts a production function named describe", () => {
 		const production = fixture(
 			"function describe(callback: () => void) { callback(); }",
