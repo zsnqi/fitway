@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `e1efb8f4`, 2026-10-18 21:41 +03:00
+- **As of:** `codex/owner-redesign-r04` at `0df775e5`, 2026-10-18 23:17 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-15), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,27 +37,21 @@
 
 ## Running now
 
-- **Nothing runs** (measured 2026-10-18 evening: both side sessions stopped at the user's word, nothing pushed).
-  DECISIONS item 14 sets what comes next.
-- **ratchet-2, to close first** (item 14): round worktree `D:/Projects/fitway-worktrees/tooling-ratchet-2`, branch
-  `tooling-ratchet-2` at local `50cecbc9` (unpushed; `c8abc04a` the builder, `50cecbc9` the small fixer). Its stop
-  note at the top of `D:/fitway-temp/tooling-ratchet-2/REPORT.md` lists what is left: the Sol diff review in
-  `D:/fitway-temp/code-review/ratchet-2-builder-1` (rerun on `50cecbc9`), the Sol grade against
-  `D:/fitway-grader/agent-tooling/ratchet-2-heldout.md`, `D:/fitway-temp/tooling-ratchet-2/coordinator/replay.mjs` on the final commit, push and CI, records
-  on `records-ratchet-2` (findings F286-F289), then the coordinator's merge. Replay so far
-  (`D:/fitway-temp/tooling-ratchet-2/coordinator/replay-78730971.log`): 8 of 18 reviewed pairs flagged, 40 of 87
-  controls flagged, which decides whether `longFunctionLines` stays (item 14). Measured cost: the staged giant-file
-  hook 885-908 ms, `check:code-health` 4.8 s in a loaded ladder.
-- **The brief template's lines** (item 14), a coordinator edit of `docs/agent-context/briefs/codex.md` after ratchet-2.
+- **Nothing runs** (measured 2026-10-18 23:20). Item 14's before-the-demo work is done: ratchet-2 is merged into the
+  coordinator line (`504d6572`, CI 39160024759; grade 11/14 with the three FAILs repaired by the coordinator;
+  `longFunctionLines` kept, to be reviewed after the demo; `codex-rounds.md` §"ratchet-2"; F286-F289), and the brief
+  template's lines are in `docs/agent-context/briefs/codex.md` (`b9e46dd1`).
 - **base-run waits until after the demo** (item 14): edits uncommitted on disk in
   `D:/Projects/fitway-worktrees/tooling-base-run` over `c0e12373` (pushed); its session stopped without a stop note, so
   diff them against its review dispositions before any commit.
+- The ratchet-2 worktrees (`tooling-ratchet-2`, `records-ratchet-2`, the grading checkout
+  `D:/fitway-temp/tooling-ratchet-2-grade/wt`) are no longer needed; unlink any node_modules junction before removing them.
 
 ## Next steps
 
-1. **main is at `9f134a3d`** (CI run 39119869580): ratchet-codelines and the giant-file split integrated; the
-   coordinator line at the commit that last changed this text.
-2. Close ratchet-2 and add the template lines; then this milestone's work waits for the demo (item 14's list).
+1. **main is at `9f134a3d`** (CI run 39119869580); the coordinator line carries ratchet-2 and its records, for
+   `pnpm main:advance` once a pushed coordinator commit's CI passes.
+2. This milestone's work waits for the demo (item 14's list).
 3. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
    `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date,
    since the test split now waits for the demo.

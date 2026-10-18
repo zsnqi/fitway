@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `e1efb8f4`, 2026-10-18 21:41 +03:00
+- **As of:** `codex/owner-redesign-r04` at `0df775e5`, 2026-10-18 23:17 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-77), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -39,30 +39,26 @@
 
 ## Running now
 
-- **Nothing of this milestone runs** (measured 2026-10-18 11:30; agent-tooling-r01's rounds run, its resume point). Earlier: The fix-2 grade reported at 00:51 (run
-  D:/fitway-temp/codex-round-3e6c4f04-9467-4931-a8c2-46e6b433af71, report accepted): FAIL on G1, G2, G4, G5, G8, G9
-  and G11. The coordinator's reading, with reproductions (`codex-rounds.md` §"shared-lows-fix-2"; scripts and logs in
-  D:/fitway-temp/owner-r04-shared-lows-fix-2-grade/coordinator/): five rows from the grading brief's wording, the
-  caret in forced colours (F264, a tool defect, agent-tooling-r01's), and a report resting on less than it claims
-  (F265); the concept holds, and SL13 passes at phone size. Its grading checkout
-  D:/fitway-temp/owner-r04-shared-lows-grade/wt (branch `grade-shared-lows-fix-2`, its own install) is no longer
-  needed.
+- **Settings' round is proposed, not started** (2026-10-18 23:25): the user said «start the one-pass Settings build in
+  arrangement ب as soon as ratchet-2 closes»; ratchet-2 closed (agent-tooling-r01's resume point), and the round waits
+  as the card "Settings build in arrangement ب (one pass)" (task_01ab7196), a fresh session that runs the designer at
+  `max` on the Settings build brief (`b3d60fe1` on the build branch, passes `brief:check`), then
+  the verifier and `rtl-ltr-reviewer`, fixes per rounds item 11, and writes `D:/fitway-temp/owner-r04-settings/REPORT.md`.
+  The brief follows `bandFor`: 24% of 120 reads "up to 28 people" (item 49's "29" is an example's shape).
 - Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
   click and removes on arrival (over http); no visitor data is stored.
 
 ## Next steps
 
-1. **main is at `10fe1783`** (CI run 39110319014, measured 2026-10-18): agent-tooling-r01's ratchet code-line round and
-   this milestone's records; the giant-file split follows on the line at `9f134a3d` once its CI passes. Later commits go to
-   main with the next integration.
+1. **main is at `9f134a3d`** (CI run 39119869580, measured 2026-10-18 by `git log origin/main`): ratchet-codelines and
+   the giant-file split. The coordinator line adds ratchet-2, its records and decisions 78; it goes to main with
+   `pnpm main:advance` once its pushed commit's CI passes.
 2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Decision 76 (the demo first):
    what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the user chose
    arrangement ب of the skeleton's third pass (decision 77, 2026-10-18; report and frames in
    D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md §"Third pass"; artifact
-   https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8). **Next:** the one-pass build of Settings in ب, started in a new
-   session after the user's Claude account switch and at the user's word (decision 6's questions asked at once
-   first); nothing on the page changed since `2828ae9e`. Left for later, with their reasons: the dialogs' parts splitting under a
+   https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8). **Next:** the one-pass build of Settings in ب (decision 78 answered the last open question; the round above). Left for later, with their reasons: the dialogs' parts splitting under a
    planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **F266 is fixed** (`873e03fc` on the build branch, pushed: Components places its tip with Reports' shared placement; 204
    cases measured, no overlap). **F285** (Components' heat grid at 390 is broken) waits: the user, 2026-10-18, the sheet is
