@@ -148,7 +148,7 @@ through these pointers, not copied here.
       `delivers: report` round instead of a Claude researcher. A smaller auto-compact window (`/autocompact 400k`,
       `autoCompactWindow`) is a measured trial for later, not a setting change now: the docs do not say whether the
       desktop app honours it.
-15. **How sessions run from here; usage is not rationed** (the user, 2026-10-18, on the coordinator's proposals in a
+15. **How sessions run from here** (the user, 2026-10-18, on the coordinator's proposals in a
     side session, before switching Claude accounts). This replaces item 14's auto-compact trial.
     - **A new session for each phase** (a round or a page), started from the resume point; the coordinator keeps
       coordinating and delegating as before and keeps its own context small, and starts a fresh session at a natural
@@ -157,6 +157,3 @@ through these pointers, not copied here.
       whole into a conversation. Every SHA, run folder and decision is written to a file (the round's REPORT.md, the
       resume point, a stop note) as soon as it exists, so a compaction or a stop loses nothing.
     - **No smaller auto-compact window** (`/autocompact 400k` is not adopted): fresh sessions per phase do the same job.
-    - **Usage is expected to be high and is not something to fear or cut at the cost of quality** («مابي نحاول نقلل
-      الاستهلاك بشكل كبير او يخاف عشان الاستهلاك كبير»): quality and the demo come first; the practices above are for a
-      clean context, not for saving. No agent hurries to finish before a compaction or a limit: the state lives in files.
