@@ -1,8 +1,8 @@
 /* Eclipse Settings: FITWAY Owner Settings concept (the fifth Eclipse page). Synthetic data only; not production.
  * It answers "what shapes the gym and the visitors' page, and how do I change one value safely": the five values the
  * owner edits (capacity, the three crowd-level limits, the weekly hours, the end of the business day and the reset
- * buffer) on one sheet, beside the settings history with its reasons (arrangement ب, DECISIONS item 77). On «تعديل»
- * the panel becomes that part's editor and the part reads «قيد التعديل» (part 2 of this round); a save asks first,
+ * buffer) on three cards, beside a fourth, the latest settings changes with their reasons (arrangement ج, DECISIONS
+ * item 80). A card's «تعديل» opens that card in a window over the page (part 2 of this round); a save asks first,
  * listing each change from → to (part 3). Complete at first paint: no intro, no rolling digits (item 4). Nothing is
  * lit (LGT-6 allows none): a setting is not a reading.
  * The data follows the owner Settings contract (packages/api/src/settings/contracts.ts): one versioned snapshot, the
@@ -58,10 +58,10 @@
       sec: { crowd: "الزحام", hours: "ساعات العمل", day: "يوم العمل" },
       hoursUnit: "توقيت الرياض",
       edit: "تعديل",
-      // The visible word, then the part it edits (WCAG 2.5.3).
+      // The visible word, then the card it edits (WCAG 2.5.3).
       editName: (s) => `تعديل ${s}`,
-      editing: "قيد التعديل",
       capacity: "السعة",
+      levelsTitle: "المستويات",
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       upTo: "حتى",
       above: "فوق",
@@ -77,7 +77,7 @@
       reset: "تصفير العدد",
       minutes: (n) => (n === 0 ? "" : arCount(n, "دقيقة واحدة", "دقيقتان", "دقائق", "دقيقة", "دقيقة")),
       resetAfter: (n) => (n === 0 ? "عند الإغلاق" : `${COPY.ar.minutes(n)} بعد الإغلاق`),
-      // The settings history (from 1024 px, the panel beside the sheet; 721-1023 px under it).
+      // The settings history card (from 721 px; on a phone the control under the header takes its place).
       logTitle: "سجل الإعدادات",
       logAll: "عرض الكل",
       logAllName: "عرض كل سجلات الإعدادات في سجل النشاط",
@@ -112,14 +112,15 @@
       hoursUnit: "Riyadh time",
       edit: "Edit",
       editName: (s) => `Edit ${s.toLowerCase()}`,
-      editing: "Editing",
       capacity: "Capacity",
+      levelsTitle: "Levels",
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
       upTo: "up to",
       above: "above",
       people: (n) => (n === 1 ? `${ltr("1")} person` : `${ltr(fmtInt(n))} people`),
-      // "69+ people": "69 people or more" does not fit the sheet beside "above 57%" at 1024 px (measured 316 of 307 px).
-      orMore: (n) => `${ltr(`${fmtInt(n)}+`)} people`,
+      // Arrangement ب's narrow sheet needed "69+ people"; a card of ج holds the words beside "above 57%" (at 1024 px and
+      // on a 390 px phone), and a narrow card puts the people under the percentage.
+      orMore: (n) => `${ltr(fmtInt(n))} people or more`,
       noCount: "No count reaches it",
       emptyOnly: "Only when empty",
       days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -225,7 +226,7 @@
   const OPERATIONAL = { timezone: "Asia/Riyadh", pushIntervalSeconds: 20, freshForSeconds: 90, operationalStaleAfterSeconds: 180, publicPollSeconds: 60 };
 
   /* ------------------------------------------------------- what changed, from → to (the history's words)
-   * One version against the one before it. The order follows the sheet: capacity, the three limits, the hours, the end
+   * One version against the one before it. The order follows the cards: capacity, the three limits, the hours, the end
    * of the business day, the reset. Days whose hours changed the same way share one line: all seven «كل الأيام», six
    * «كل الأيام عدا الجمعة», a run of three or more «الأحد إلى الأربعاء», otherwise named with «و». One end changed names
    * that end («إغلاق الخميس»); both ends, a closed day opened or an open day closed, the day's hours («ساعات الجمعة»).
@@ -318,13 +319,16 @@
   });
   $("#history-link").setAttribute("aria-label", L.historyName);
 
-  /* ---------------------------------------------------------------- the sheet
-   * Three parts, each a heading with its «تعديل» at the head's end, then its values as one definition list whose labels
-   * share one column across the sheet, so every value starts on one edge. The crowd: capacity, then the four levels,
-   * each its level's four bars (CHP-5, the key the visitors' page and Daily use), «حتى 20%» and the people it holds.
-   * The hours: the week from Sunday, each day's opening and closing in their own columns (a closing time before the
-   * opening is the night after, as every opening-hours list writes it), or «مغلق». The business day: its end and the
-   * reset. Nothing is lit; nothing on the sheet is a reading. */
+  /* ---------------------------------------------------------------- the value cards
+   * Three cards, each a heading with its «تعديل» at the head's end, then its values on one module of rows (--row, 48 px
+   * from 721 px), every block ruled from the one above with the row line, so the crowd's levels and the hours' last
+   * four days share their rules across the gutter and the two cards end on one line. A value that stands alone is a
+   * figure (VAL-3): its label, then the value in title type over two rows; a list is rows (VAL-2): a label column, then
+   * the figures. The crowd: capacity as a figure, then «المستويات» and the four levels, each its level's four bars (CHP-5,
+   * the key the visitors' page and Daily use), «حتى 20%» and the people it holds. The hours: the week from Sunday, each
+   * day's opening and closing as one range phrase (a closing time before the opening is the night after, as every
+   * opening-hours list writes it), or «مغلق». The business day: its end and the reset, two figures. Nothing is lit;
+   * nothing here is a reading. */
   const LEVEL_BARS = (lv) => `<span class="lvl-bars" aria-hidden="true">${[0, 1, 2, 3].map((i) => `<i${i <= lv ? ' class="on"' : ""}></i>`).join("")}</span>`;
   const editBtn = (sec) => `<button class="rbtn set-edit" type="button" data-edit="${sec}" aria-label="${esc(L.editName(L.sec[sec]))}">${L.edit}</button>`;
   const head = (sec, extra = "") => `<div class="set-head">
@@ -332,6 +336,22 @@
       ${editBtn(sec)}
     </div>`;
   const row = (dt, dd, cls = "") => `<div class="set-row${cls ? ` ${cls}` : ""}"><dt>${dt}</dt><dd>${dd}</dd></div>`;
+  // A figure's value: its figure in title type and the words that finish it smaller on the same baseline (CRD-2's value
+  // and unit), joined by a real space so it reads as one phrase. Where Arabic writes the count in words (one and two:
+  // «شخص واحد», «دقيقتان»), or the value is words alone («عند الإغلاق»), the words take the figure's size.
+  const figVal = (big, small = "") => `<span class="fig-n">${big}</span>${small ? ` <span class="fig-u">${small}</span>` : ""}`;
+  const fig = (dt, dd, cls = "") => `<div class="set-fig${cls ? ` ${cls}` : ""}"><dt>${dt}</dt><dd>${dd}</dd></div>`;
+  const FIG = {
+    people: (n) => (RTL
+      ? (n === 1 ? figVal("شخص واحد") : n === 2 ? figVal("شخصان") : figVal(ltr(fmtInt(n)), COPY.ar.people(n).replace(/^<bdi[^>]*>[^<]*<\/bdi> /, "")))
+      : figVal(ltr(fmtInt(n)), n === 1 ? "person" : "people")),
+    time: (mins) => { const [t, ap] = fmtClock(mins).split(" "); return figVal(ltr(t), ap); },
+    reset: (n) => {
+      if (n === 0) return figVal(L.resetAfter(0));
+      if (RTL) return n === 1 ? figVal("دقيقة واحدة", "بعد الإغلاق") : n === 2 ? figVal("دقيقتان", "بعد الإغلاق") : figVal(ltr(fmtInt(n)), `${COPY.ar.minutes(n).replace(/^<bdi[^>]*>[^<]*<\/bdi> /, "")} بعد الإغلاق`);
+      return figVal(ltr(fmtInt(n)), n === 1 ? "minute after closing" : "minutes after closing");
+    },
+  };
   function crowdHTML(s) {
     const cap = s.capacity, t = s.thresholds;
     const lims = [t.quietMaxPercent, t.moderateMaxPercent, t.busyMaxPercent];
@@ -347,10 +367,9 @@
       `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${ltr(`${lims[Math.min(i, 2)]}%`)}</span>${SR_SEP}<span class="v-p">${nw(ppl(i))}</span>`,
       "is-level");
     return `${head("crowd")}
-    <dl class="set-dl dl-crowd">
-      ${row(L.capacity, `<span class="v-n v-cap">${nw(L.people(cap))}</span>`, "is-cap")}
-      ${[0, 1, 2, 3].map(lvRow).join("")}
-    </dl>`;
+    <dl class="set-figs">${fig(L.capacity, FIG.people(cap), "is-cap")}</dl>
+    <h3 class="set-sub" id="levels-title">${L.levelsTitle}</h3>
+    <dl class="set-dl dl-levels" aria-labelledby="levels-title">${[0, 1, 2, 3].map(lvRow).join("")}</dl>`;
   }
   function hoursHTML(s) {
     const unit = `<span class="set-unit">${SR_SEP}${L.hoursUnit}</span>`;
@@ -358,27 +377,29 @@
       const h = s.weeklySchedule[d];
       if (!h) return row(L.days[i], `<span class="v-closed">${L.closed}</span>`, "is-closed");
       const allDay = h.open === h.close;
+      // One phrase per day (DAT-4), never split into columns: «ص» and «م» differ by 13 px in Readex Pro (settings.css).
       return row(L.days[i],
-        `<span class="v-n v-t">${bdi(clockOf(h.open))}</span><span class="v-dash" aria-hidden="true">${DASH}</span><span class="sr-only">${RTL ? " إلى " : " to "}</span>` +
-        `<span class="v-n v-t">${bdi(clockOf(h.close))}</span>${allDay ? `${SR_SEP}<span class="v-note">${L.allDay(24)}</span>` : ""}`);
+        `<span class="v-hr"><span class="v-n v-t">${bdi(clockOf(h.open))}</span><span class="v-dash" aria-hidden="true">${DASH}</span><span class="sr-only">${RTL ? " إلى " : " to "}</span>` +
+        `<span class="v-n v-t">${bdi(clockOf(h.close))}</span></span>${allDay ? `${SR_SEP}<span class="v-note">${L.allDay(24)}</span>` : ""}`);
     };
     return `${head("hours", unit)}
     <dl class="set-dl dl-hours">${DAYS.map(dayRow).join("")}</dl>`;
   }
   function dayHTML(s) {
     return `${head("day")}
-    <dl class="set-dl dl-day">
-      ${row(L.dayEnd, `<span class="v-n">${timeText(hm(s.businessDayBoundary))}</span>`)}
-      ${row(L.reset, `<span class="v-n">${nw(L.resetAfter(s.resetBufferMinutes))}</span>`)}
+    <dl class="set-figs">
+      ${fig(L.dayEnd, FIG.time(hm(s.businessDayBoundary)))}
+      ${fig(L.reset, FIG.reset(s.resetBufferMinutes))}
     </dl>`;
   }
 
-  /* ---------------------------------------------------------------- the settings history (the panel)
-   * The latest eight records, newest first (eight, as Access's records card, end the panel level with the sheet at
-   * 1440), each: what changed, from → to, a line per change (chalk figures, the arrow along the reading line); the reason
-   * as typed, in quotation marks, only where one was given; who and when at the record's far end. «عرض الكل» opens the
-   * settings records in Activity log (OWN-A9). */
-  const LOG_N = 8;
+  /* ---------------------------------------------------------------- the settings history (the fourth card)
+   * The latest three records, newest first, each: what changed, from → to, a line per change (chalk figures, the arrow
+   * along the reading line); the reason as typed, in quotation marks, only where one was given; who and when at the
+   * record's far end. Three, because three end the card about level with its row at 1440 × 900 with the page inside
+   * the window, and they answer "what changed lately, and why" without turning the card into the log; «عرض الكل»
+   * opens every settings record in Activity log (OWN-A9). */
+  const LOG_N = 3;
   const DAY0 = Date.UTC(2026, 8, 23) / 864e5;                  // the concept's today: Wednesday 23 September 2026
   const dayOf = (iso) => Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5;
   function whenHTML(v) {
@@ -400,28 +421,23 @@
     return `<li class="log-rec"><div class="log-body"><div class="log-chgs">${lines}</div>${why}</div>` +
       `<p class="log-meta">${SR_SEP}${bdi(esc(OWNER_NAMES[v.by]))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(v)}</p></li>`;
   }
-  function panelHTML() {
+  function logHTML() {
     const recs = versions.slice(1).map((v, i) => [v, versions[i]]).reverse().slice(0, LOG_N);
     const list = recs.length ? `<ol class="log-list">${recs.map(([v, p]) => recordHTML(v, p)).join("")}</ol>` : `<p class="log-none">${L.logEmpty}</p>`;
-    return `<div class="log-head">
+    return `<div class="set-head">
         <h2 class="set-title" id="log-title" tabindex="-1"><span class="set-name">${L.logTitle}</span></h2>
         <a class="acc-all set-all" id="log-all" href="${LOG_HREF}" aria-label="${esc(L.logAllName)}"><span>${L.logAll}</span><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg></a>
       </div>${list}`;
   }
 
-  /* ---------------------------------------------------------------- render */
-  const secEl = { crowd: $("#sec-crowd"), hours: $("#sec-hours"), day: $("#sec-day") };
-  const panelEl = $("#panel");
-  function renderSheet() {
-    const s = current().editable;
-    secEl.crowd.innerHTML = crowdHTML(s);
-    secEl.hours.innerHTML = hoursHTML(s);
-    secEl.day.innerHTML = dayHTML(s);
-  }
-  function renderPanel() { panelEl.innerHTML = panelHTML(); }
+  /* ---------------------------------------------------------------- render
+   * Each card is drawn whole from the current version: renderCard("crowd" | "hours" | "day" | "log"). A save (part 3)
+   * pushes a new version and calls renderAll(), so the cards and the history's top record follow it. */
+  const cardEl = { crowd: $("#card-crowd"), hours: $("#card-hours"), day: $("#card-day"), log: $("#card-log") };
+  const CARD_HTML = { crowd: () => crowdHTML(current().editable), hours: () => hoursHTML(current().editable), day: () => dayHTML(current().editable), log: logHTML };
+  function renderCard(k) { cardEl[k].innerHTML = CARD_HTML[k](); }
   function renderAll() {
-    renderSheet();
-    renderPanel();
+    for (const k of Object.keys(cardEl)) renderCard(k);
     frame.refreshStatus();
     root.dataset.phase = phase;
   }

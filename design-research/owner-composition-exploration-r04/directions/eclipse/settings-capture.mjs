@@ -1,18 +1,19 @@
-// Eclipse Settings capture (DECISIONS items 49, 77-79). Serves this folder on 127.0.0.1 (port 3190 unless --port=N;
+// Eclipse Settings capture (DECISIONS items 49, 78-80). Serves this folder on 127.0.0.1 (port 3190 unless --port=N;
 // other rounds hold 3173-3189), renders the Settings frames with the worktree's Playwright chromium (a fresh context
 // per frame, reduced motion; 720 px and below a touch phone with overlay scrollbars), checks each one, and writes them
 // numbered the same way in both languages. It never writes into this repository: the output folder is required and
 // must be outside it.
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/settings-capture.mjs <outDir> [--port=3190] [--only=1,2,3,4,5] [--lang=ar|en] [--match=<part of a frame's name>]
 // Writes <outDir>/crops/<n>-<nn>-<what>-<size>-<lang>.png and <outDir>/settings-log.json:
-//   1-  the page at rest: 1440 x 900 and 390 x 844 (the first screen and the whole page), 1024 x 768 and 768 x 1024
-//       (the first screen); each part of the sheet and the history at 1440, cropped with a strip of its neighbours;
-//       each of the phone's three cards at 390
+//   1-  the page at rest (arrangement ج): 1440 x 900 and 390 x 844 (the first screen and the whole page), 1024 x 768
+//       (the whole page) and 768 x 1024 (the first screen); each card at 1440, cropped with a strip of its neighbours;
+//       each of the phone's three cards and its header at 390
 //   2-  (part 2) each value in edit; 3- (part 3) each state; 4- (part 3) the range cases; 5- the phone's flows
 // It exits 1 if a check fails: a console message or page error, a font file fetched twice in one load, a request off
 // the page's origin, a layout shift after the first paint, a sideways page scroll, an element outside the viewport's
-// width, a box whose content spills, an interactive target under 44 px, the sheet and the history not starting on one
-// line or not ending on one edge from 1024 px, or a level's people that differ from bandFor's counting
+// width, a box whose content spills, an interactive target under 44 px; from 1024 px, the two cards of a row not
+// starting and ending on one line, or the crowd's level rules not meeting the hours' last four rules across the
+// gutter; a card whose values start on more than one edge; or a level's people that differ from bandFor's counting
 // (packages/api/src/occupancy/bands.ts) for any capacity and limits the check draws.
 import { createServer } from "node:http";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -62,11 +63,11 @@ const PROBLEMS = () => {
     const r = el.getBoundingClientRect();
     if (r.width && (r.right > vw + 0.5 || r.left < -0.5)) out.push(`outside the viewport: ${el.id ? "#" + el.id : el.className?.baseVal ?? el.className ?? el.tagName} ${Math.round(r.left)}..${Math.round(r.right)}`);
   }
-  for (const el of document.querySelectorAll(".head, .set-tools, .set-grid, .set-sheet, .set-sec, .set-head, .set-title, .set-dl, .set-row, .set-row > dt, .set-row > dd, .set-panel, .log-head, .log-list, .log-rec, .log-body, .log-chgs, .log-why, .log-meta, .dlg-panel, .dlg-head, .dlg-foot, .alert")) {
+  for (const el of document.querySelectorAll(".head, .set-tools, .set-grid, .set-card, .set-head, .set-title, .set-figs, .set-fig, .set-fig > dd, .set-sub, .set-dl, .set-row, .set-row > dt, .set-row > dd, .log-list, .log-rec, .log-body, .log-chgs, .log-why, .log-meta, .dlg-panel, .dlg-head, .dlg-foot, .alert")) {
     if (el.closest("[hidden], dialog:not([open])")) continue;
     if (getComputedStyle(el).display === "none" || !el.getClientRects().length) continue;
     // «عرض الكل» reaches 12 px past its words into the card's padding (Access's link), by design.
-    const allow = el.matches(".log-head") ? 12 : 0;
+    const allow = el.matches(".set-log .set-head") ? 12 : 0;
     if (el.scrollWidth > el.clientWidth + allow + 1) out.push(`spills: ${el.className || el.tagName} by ${el.scrollWidth - el.clientWidth}px`);
   }
   const scope = document.querySelector("dialog[open]") || document;
@@ -139,7 +140,7 @@ for (const lang of LANGS) {
 
   /* ---------------------------------------------------------------- 1- the page at rest */
   if (want(1)) {
-    const sizes = [["01", "rest", 1440, 900, false], ["02", "rest-whole", 1440, 900, true], ["03", "rest", 390, 844, false], ["04", "rest-whole", 390, 844, true], ["05", "rest", 1024, 768, false], ["06", "rest", 768, 1024, false]];
+    const sizes = [["01", "rest", 1440, 900, false], ["02", "rest-whole", 1440, 900, true], ["03", "rest", 390, 844, false], ["04", "rest-whole", 390, 844, true], ["05", "rest-whole", 1024, 768, true], ["06", "rest", 768, 1024, false]];
     for (const [nn, what, w, h, full] of sizes) {
       const name = frameName(`1-${nn}`, what, w, lang);
       if (!wanted(name)) continue;
@@ -152,34 +153,46 @@ for (const lang of LANGS) {
         await o.page.waitForTimeout(80);
       }
       await o.page.screenshot({ path: path(name) });
-      // From 1024 px the sheet and the history start on one line and end on one edge.
+      // From 1024 px the two cards of a row start and end on one line, and the crowd's level rules meet the hours' last
+      // four rules across the gutter (one module, --row, in every card).
       if (w >= 1024) {
-        const [s, p] = [await box(o.page, "#sheet"), await box(o.page, "#panel")];
-        if (Math.abs(s.y - p.y) > 0.5) o.checks.push(`sheet and history start ${s.y} / ${p.y}`);
-        if (Math.abs(s.y + s.h - (p.y + p.h)) > 0.5) o.checks.push(`sheet and history end ${s.y + s.h} / ${p.y + p.h}`);
-        o.notes.sheet = s; o.notes.panel = p;
+        const c = {};
+        for (const k of ["crowd", "hours", "day", "log"]) c[k] = await box(o.page, `#card-${k}`);
+        for (const [a, b] of [["crowd", "hours"], ["day", "log"]]) {
+          if (Math.abs(c[a].y - c[b].y) > 0.5) o.checks.push(`${a} and ${b} start ${c[a].y} / ${c[b].y}`);
+          if (Math.abs(c[a].y + c[a].h - (c[b].y + c[b].h)) > 0.5) o.checks.push(`${a} and ${b} end ${c[a].y + c[a].h} / ${c[b].y + c[b].h}`);
+        }
+        const rules = await o.page.evaluate(() => ({
+          levels: [...document.querySelectorAll("#card-crowd .dl-levels .set-row")].map((r) => r.getBoundingClientRect().top),
+          hours: [...document.querySelectorAll("#card-hours .dl-hours .set-row")].map((r) => r.getBoundingClientRect().top).slice(-4),
+          // Each card's first rule, under its head: one line across the row.
+          firsts: ["#card-crowd .set-fig", "#card-hours .set-row", "#card-day .set-fig", "#card-log .log-rec"].map((s) => document.querySelector(s).getBoundingClientRect().top),
+        }));
+        rules.levels.forEach((y, i) => { if (Math.abs(y - rules.hours[i]) > 0.5) o.checks.push(`level rule ${i} at ${y}, hours rule at ${rules.hours[i]}`); });
+        if (Math.abs(rules.firsts[0] - rules.firsts[1]) > 0.5 || Math.abs(rules.firsts[2] - rules.firsts[3]) > 0.5) o.checks.push(`first rules ${rules.firsts.join(" / ")}`);
+        o.notes.cards = c; o.notes.rules = rules;
       }
       o.notes.pageHeight = await o.page.evaluate(() => document.documentElement.scrollHeight);
-      // Every value starts on one edge across the sheet's three parts (the label column, --lab).
-      o.notes.valueStarts = await o.page.evaluate((rtl) => [...new Set([...document.querySelectorAll(".set-row > dd")].map((d) => Math.round(rtl ? d.getBoundingClientRect().right : d.getBoundingClientRect().left)))], lang === "ar");
-      if (o.notes.valueStarts.length > 1) o.checks.push(`values start on ${o.notes.valueStarts.length} edges: ${o.notes.valueStarts.join(", ")}`);
+      // In each card a list's values start on one edge (its label column, --lab).
+      o.notes.valueStarts = await o.page.evaluate((rtl) => Object.fromEntries([...document.querySelectorAll(".set-card")].map((c) => [c.id, [...new Set([...c.querySelectorAll(".set-row > dd")].map((d) => Math.round(rtl ? d.getBoundingClientRect().right : d.getBoundingClientRect().left)))]])), lang === "ar");
+      for (const [id, edges] of Object.entries(o.notes.valueStarts)) if (edges.length > 1) o.checks.push(`${id} values start on ${edges.length} edges: ${edges.join(", ")}`);
       await finish(name, o);
       await o.context.close();
     }
-    // Each part at 1440 with a strip of its neighbours, and each of the phone's cards.
-    const parts = [["07", "crowd", "#sec-crowd"], ["08", "hours", "#sec-hours"], ["09", "business-day", "#sec-day"], ["10", "history", "#panel"]];
+    // Each card at 1440 with a strip of its neighbours, and each of the phone's cards.
+    const parts = [["07", "crowd", "#card-crowd"], ["08", "hours", "#card-hours"], ["09", "business-day", "#card-day"], ["10", "history", "#card-log"]];
     {
       const o = await open(q(), { width: 1440, height: 900 });
       for (const [nn, what, sel] of parts) {
         const name = frameName(`1-${nn}`, what, 1440, lang);
         if (wanted(name)) await crop(o.page, sel, path(name), 24);
       }
-      await finish(frameName("1-07", "parts", 1440, lang), o);
+      await finish(frameName("1-07", "cards", 1440, lang), o);
       await o.context.close();
     }
     {
       const o = await open(q(), { width: 390, height: 844 });
-      for (const [nn, what, sel] of [["11", "crowd", "#sec-crowd"], ["12", "hours", "#sec-hours"], ["13", "business-day", "#sec-day"], ["14", "head-and-history-link", ".head"]]) {
+      for (const [nn, what, sel] of [["11", "crowd", "#card-crowd"], ["12", "hours", "#card-hours"], ["13", "business-day", "#card-day"], ["14", "head-and-history-link", ".head"]]) {
         const name = frameName(`1-${nn}`, what, 390, lang);
         if (!wanted(name)) continue;
         if (sel === ".head") await o.page.screenshot({ path: path(name), clip: { x: 0, y: 0, width: 390, height: 140 } });

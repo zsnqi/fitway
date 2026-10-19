@@ -159,16 +159,16 @@
         </a>
       </div>
 
-      <!-- Arrangement ب (DECISIONS item 77): the five values on one sheet (5/12) at the start, beside a panel (7/12) that
-           shows the settings history with its reasons (and becomes the editor on «تعديل»). Below 1024 px one column;
-           on a phone the sheet's three parts stand as three cards. settings.js draws both. -->
+      <!-- Arrangement ج (DECISIONS item 80): four cards in two columns from 1024 px, in reading order a row at a time:
+           the crowd and the hours, then the business day and the settings history (the start column holds the crowd
+           over the business day, the end column the hours over the history). Each value card's «تعديل» opens that card
+           in a window over the page (part 2). Below 1024 px one column; on a phone the history card gives way to the
+           control above. settings.js draws each card whole. -->
       <div class="set-grid" id="grid">
-        <div class="card set-sheet" id="sheet">
-          <section class="set-sec" id="sec-crowd" data-sec="crowd" aria-labelledby="crowd-title"></section>
-          <section class="set-sec" id="sec-hours" data-sec="hours" aria-labelledby="hours-title"></section>
-          <section class="set-sec" id="sec-day" data-sec="day" aria-labelledby="day-title"></section>
-        </div>
-        <section class="card set-panel" id="panel" aria-labelledby="log-title"></section>
+        <section class="card set-card" id="card-crowd" data-sec="crowd" aria-labelledby="crowd-title"></section>
+        <section class="card set-card" id="card-hours" data-sec="hours" aria-labelledby="hours-title"></section>
+        <section class="card set-card" id="card-day" data-sec="day" aria-labelledby="day-title"></section>
+        <section class="card set-card set-log" id="card-log" aria-labelledby="log-title"></section>
       </div>
 
       <p class="sr-only" id="say" aria-live="polite" aria-atomic="true"></p>
@@ -201,7 +201,7 @@
     </nav>
   </div>
 
-  <!-- The dialogs (DLG-1…6; a bottom sheet at 720 px and below) come with the editor and the save (parts 2 and 3 of
-       this round): the confirmation, leaving with unsaved changes, and the phone's sheets. -->
+  <!-- The windows (DLG-1…6; a bottom sheet at 720 px and below) come with the editor and the save (parts 2 and 3 of
+       this round): each value card's editor, the confirmation, leaving with unsaved changes. -->
 </body>
 </html>
