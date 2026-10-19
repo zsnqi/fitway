@@ -919,6 +919,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     (item 51); before that, one shared concept check across the pages, built by agent-tooling-r01 (the verification
     tools are its paths). Timing, the coordinator's recommendation asked by the user: after Settings' round and before
     the next page's build, as a Codex round (no taste in it, item 9), so every remaining page is built against it.
+83. **Settings: a folded history record opens in a window** (the user, 2026-10-19: «انا اشوف الثالث كويس», of three
+    ways the coordinator laid out). The review found the history's content setting the second row's height (F4, F5);
+    the fix gives the row a height of its own and folds a record that does not fit. A folded record's full change and
+    reason open in a small window over the page (a bottom sheet on the phone), as ج's edit windows do, not inline
+    (which would stretch the row again) and not in Activity log (whose settings records do not show from → to yet,
+    AMD-S2). «عرض الكل» still opens Activity log's settings records.
 
 ## How this milestone's rounds run
 
