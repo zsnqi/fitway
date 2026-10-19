@@ -16,12 +16,14 @@
 //       change with the people that follow, every crowd value, the hours, the business day, a reason at 240), working,
 //       done (the whole page; the hours at 1024 in its tight form), each refusal (400, 401, 403), the failure (500),
 //       the conflict view in its three forms (apply, nothing left to apply, no longer fits), the question before
-//       closing with something typed, Loading, Error and its retry
+//       closing with something typed, Loading, Error and its retry; a folded history record's window (DECISIONS item
+//       83) with the widest record ج writes, the week's seven days and 240 characters, at 1440 and 390, and the record
+//       of every kind of change at 1440
 //   4-  the range cases, each cropped to its element with a strip of its neighbours: capacity 1 (1440, 390) and the
 //       contract's largest (1440, 390, 1024), the limits at their tightest and widest, every day closed, one day
 //       closed, opening equal to closing, the business day's end and the reset at their bounds, a history with no
-//       record, one, and a record of every kind of change with a reason of 240 characters (its row), the
-//       confirmation's people at capacity 1 and at the tightest limits
+//       record, one, a record of every kind of change with a reason of 240 characters (its row), and the week's record
+//       folded at 1440 and 1024, the confirmation's people at capacity 1 and at the tightest limits
 //   5-  the phone's flows step by step: 5-01…10 the editing steps (part 2), then «إلغاء» with something typed asking
 //       first, the confirmation, the reason, working, done, the hours' done under its head, back to the editor, the
 //       conflict view and applying from it, each refusal, the failure
@@ -35,7 +37,10 @@
 // a day of the week not on one line from 721 px, a window that closes on a scrim tap with something typed. After «حفظ»
 // (3- and 5-): «حفظ» not leading to the confirmation, focus not on the reason (from 721 px) or the title (a phone), a
 // value card that grows from 721 px when its done line arrives, focus not on the done line, a refusal that leaves the
-// action, a conflict view that names someone, a window that closes with something typed without asking first.
+// action, a conflict view that names someone, a window that closes with something typed without asking first. The
+// history (1- and 4-): a record cut short with «…» that is not folded (no control to open it whole). A record's window
+// (3-): the page behind moving as it opens or closes, focus not in it or not back on the record's control after
+// Escape, the widest record's window scrolling at 1440 x 900 or 390 x 844.
 import { createServer } from "node:http";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, extname, join, normalize, resolve, sep } from "node:path";
@@ -84,12 +89,20 @@ const PROBLEMS = () => {
     const r = el.getBoundingClientRect();
     if (r.width && (r.right > vw + 0.5 || r.left < -0.5)) out.push(`outside the viewport: ${el.id ? "#" + el.id : el.className?.baseVal ?? el.className ?? el.tagName} ${Math.round(r.left)}..${Math.round(r.right)}`);
   }
-  for (const el of document.querySelectorAll(".head, .set-tools, .set-grid, .set-card, .set-head, .set-title, .set-figs, .set-fig, .set-fig > dd, .set-sub, .set-dl, .set-row, .set-row > dt, .set-row > dd, .log-list, .log-rec, .log-body, .log-chgs, .log-why, .log-meta, .dlg-panel, .dlg-head, .dlg-body, .dlg-foot, .alert, .ed-fig, .ed-line, .ed-list, .ed-row, .ed-warn, .field-err")) {
+  for (const el of document.querySelectorAll(".head, .set-tools, .set-grid, .set-card, .set-head, .set-title, .set-figs, .set-fig, .set-fig > dd, .set-sub, .set-dl, .set-row, .set-row > dt, .set-row > dd, .log-box, .log-list, .log-rec, .log-fig, .log-meta, .dlg-panel, .dlg-head, .dlg-body, .dlg-foot, .alert, .ed-fig, .ed-line, .ed-list, .ed-row, .ed-warn, .field-err")) {
     if (el.closest("[hidden], dialog:not([open])")) continue;
     if (getComputedStyle(el).display === "none" || !el.getClientRects().length) continue;
-    // «عرض الكل» reaches 12 px past its words into the card's padding (Access's link), by design.
-    const allow = el.matches(".set-log .set-head") ? 12 : 0;
+    // «عرض الكل» and a folded record's control reach 12 px past their words into the card's padding (Access's link and
+    // row), by design.
+    const allow = el.matches(".set-log .set-head, .log-rec") ? 12 : 0;
     if (el.scrollWidth > el.clientWidth + allow + 1) out.push(`spills: ${el.className || el.tagName} by ${el.scrollWidth - el.clientWidth}px`);
+  }
+  // A history record cut short with «…» (its name or its reason) is folded: its control opens it whole (DECISIONS item 83).
+  for (const li of document.querySelectorAll(".log-rec:not(.is-ph)")) {
+    if (!li.getClientRects().length) continue;
+    const cut = [...li.querySelectorAll(".log-what, .log-why")].some((e) => e.getClientRects().length && e.scrollWidth > e.clientWidth + 0.5);
+    const open = li.querySelector(".log-open");
+    if (cut && (!open || open.hidden)) out.push(`a record cut short is not folded: v${li.dataset.v}`);
   }
   const scope = document.querySelector("dialog[open]") || document;
   for (const el of scope.querySelectorAll("button, a[href], select, input:not([type=hidden]), textarea")) {
@@ -504,6 +517,36 @@ for (const lang of LANGS) {
         await o.context.close();
       }
     }
+    // A folded history record's window (DECISIONS item 83): from 1440 by its control, with the page behind and focus
+    // checked; on a phone, where the history waits for its own round (item 81), by `?record=latest`. The widest record ج
+    // writes (the week's seven days, 240 characters) does not scroll at 1440 x 900 or 390 x 844.
+    for (const [nn, what, extra, w, h, widest] of [["20", "record-window-week", "log=week", 1440, 900, true], ["21", "record-window-week", "log=week&record=latest", 390, 844, true], ["22", "record-window-every-change", "log=every", 1440, 900, false]]) {
+      const rname = frameName(`3-${nn}`, what, w, lang);
+      if (!wanted(rname)) continue;
+      const o = await open(q(extra), { width: w, height: h });
+      if (w > 720) {
+        const ctl = o.page.locator(".log-rec .log-open:not([hidden])").first();
+        await ctl.scrollIntoViewIfNeeded();
+        const before = await cardBoxes(o.page);
+        await ctl.click();
+        await o.page.waitForTimeout(80);
+        if (moved(before, await cardBoxes(o.page))) o.checks.push("the page behind moved as the record's window opened");
+        if (!(await o.page.evaluate(() => document.querySelector("#dlg-rec").contains(document.activeElement)))) o.checks.push("focus is not in the record's window");
+        await shotPanel(o, rname);
+        o.notes.panel = await o.page.evaluate(() => { const b = document.querySelector("#dlg-rec .dlg-body"); return { scroll: b.scrollHeight, client: b.clientHeight, width: document.querySelector("#dlg-rec .dlg-panel").getBoundingClientRect().width }; });
+        await o.page.keyboard.press("Escape");
+        await o.page.waitForTimeout(80);
+        if (moved(before, await cardBoxes(o.page))) o.checks.push("the page behind moved as the record's window closed");
+        if (!(await o.page.evaluate(() => !document.querySelector("#dlg-rec").open && document.activeElement?.matches(".log-open")))) o.checks.push("Escape did not close the record's window back to its control");
+      } else {
+        await o.page.waitForTimeout(80);
+        o.notes.panel = await o.page.evaluate(() => { const b = document.querySelector("#dlg-rec .dlg-body"); return { scroll: b.scrollHeight, client: b.clientHeight }; });
+        await o.page.screenshot({ path: path(rname) });
+      }
+      if (widest && o.notes.panel.scroll > o.notes.panel.client + 1) o.checks.push(`the week's record scrolls in its window (${o.notes.panel.scroll} of ${o.notes.panel.client})`);
+      await finish(rname, o);
+      await o.context.close();
+    }
     // Done at 1024 for the hours: the head's tight form (the name over «توقيت الرياض», the line over its link).
     const name = frameName("3-19", "done-hours", 1024, lang);
     if (wanted(name)) {
@@ -536,6 +579,8 @@ for (const lang of LANGS) {
       ["14", "history-one", "log=one", "#card-log", 1440],
       ["15", "history-every-change-reason-240", "log=every", ".set-grid", 1440],
       ["18", "capacity-largest", "case=capmax", "#card-crowd", 1024],
+      ["19", "history-week-folded", "log=week", "#card-log", 1440],
+      ["20", "history-week-folded", "log=week", "#card-log", 1024],
     ];
     for (const [nn, what, extra, sel, w] of cases) {
       const name = frameName(`4-${nn}`, what, w, lang);

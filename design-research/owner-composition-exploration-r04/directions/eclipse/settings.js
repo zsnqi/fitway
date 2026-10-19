@@ -94,6 +94,8 @@
       logAll: "عرض الكل",
       logAllName: "عرض كل سجلات الإعدادات في سجل النشاط",
       logEmpty: "لا تغييرات بعد",
+      // Under the oldest record when the history holds fewer than the card's three: the log starts there.
+      logStart: "لا تغييرات أقدم",
       // After a record's first change, the others it made (Activity log lists them): «وتغيير آخر», «وتغييران آخران»,
       // «و3 تغييرات أخرى», «و11 تغييرًا آخر».
       moreChanges: (n) => `و${arCount(n, "تغيير آخر", "تغييران آخران", "تغييرات أخرى", "تغييرًا آخر", "تغيير آخر")}`,
@@ -262,6 +264,7 @@
       logAll: "View all",
       logAllName: "View all settings records in the Activity log",
       logEmpty: "No changes yet",
+      logStart: "No earlier changes",
       // "and 9 more changes" wrapped the first record's line in the 1024 px card.
       moreChanges: (n) => `and ${n} more`,
       recOpen: "Show the whole change",
@@ -462,6 +465,7 @@
    *   ?log=none   no change yet: one version, holding today's values (the history says «لا تغييرات بعد»)
    *   ?log=one    one change: the version before today's, then today's
    *   ?log=every  a ninth change today at 7:30 PM, by فهد, touching every kind of value, with a reason of 240 characters
+   *   ?log=week   a ninth change today at 7:30 PM, by فهد: all seven days' hours, each its own line, 240 characters
    *   ?case=<k>   a ninth change today at 7:30 PM, by فهد, no reason: cap1 (capacity 1), capmax (2,147,483,647), tight
    *               (limits 0 / 1 / 2), wide (98 / 99 / 100), closed (every day), friday (Friday closed), allday (Wednesday
    *               opening equal to its closing), low (the business day ending at midnight, the reset at closing), high
@@ -487,6 +491,16 @@
       s.businessDayBoundary = "05:00";
       s.resetBufferMinutes = 15;
     }, R(REASON_240.ar, REASON_240.en));
+  }
+  // ?log=week  the widest record ج can write (one window holds one card): the hours window saving all seven days, each
+  // with both ends changed and none like another, so the record names every day on its own line, with a reason of 240
+  // characters. Today at 7:30 PM, by فهد.
+  if (LOG_Q === "week") {
+    pushToday((s) => {
+      const NEW = { sun: H("10:00", "00:00"), mon: H("10:30", "00:30"), tue: H("11:00", "00:00"), wed: H("11:30", "00:30"), thu: H("10:00", "03:00"), fri: H("12:00", "02:30"), sat: H("11:00", "00:30") };
+      for (const d of DAYS) s.weeklySchedule[d] = NEW[d];
+    }, R("ساعات رمضان: نفتح كل يوم قبل الظهر ونغلق بعد منتصف الليل لأن الإقبال يكثر بعد التراويح، والخميس حتى الثالثة فجرًا، والجمعة من الظهر. نرجع إلى الساعات المعتادة بعد العيد مباشرة، وأي تغيير قبل ذلك نعلنه للأعضاء قبل يومين على الأقل في المجموعة",
+      "Ramadan hours: we open before noon every day and close after midnight, since most members come after tarawih; Thursday until 3 AM, Friday from noon. Back to the usual hours right after Eid; any change before then is announced two days ahead"));
   }
   const CASES = {
     cap1: (s) => { s.capacity = 1; },
@@ -688,13 +702,15 @@
   }
 
   /* ---------------------------------------------------------------- the settings history (the fourth card)
-   * The latest three records, newest first, each two lines: its first change, from → to (chalk figures, the arrow
-   * along the reading line), and how many more it made («و9 تغييرات أخرى»); then the reason as typed, in quotation
-   * marks, on one line, only where one was given, and who and when at the line's far end. The list is one height (three
-   * records: the card ends level with its row at 1440 × 900 with the page inside the window) whatever the records hold,
-   * and shows those that fit whole (fitLog). So the row never follows the history: loading, the arrival and a save keep
-   * one geometry (DECISIONS item 82). Every change and the whole reason are in Activity log, where «عرض الكل» opens
-   * every settings record (OWN-A9). */
+   * The latest three records, newest first, each two lines at every width: its first change, from → to (chalk figures,
+   * the arrow along the reading line), and how many more it made («و9 تغييرات أخرى»); then the reason as typed, in
+   * quotation marks, on one line, only where one was given, and who and when at that line's far end. The list's place is
+   * one height, three such records (the card ends level with its row at 1440 × 900 with the page inside the window),
+   * whatever the records hold, so the row never follows the history: loading, the arrival and a save keep one geometry
+   * (DECISIONS item 82). A record that does not fit its two lines is folded (fitLog) and opens whole in a window over the
+   * page (DECISIONS item 83); «عرض الكل» opens every settings record in Activity log (OWN-A9). With fewer records than
+   * three, «لا تغييرات أقدم» stands in the middle of the place left under the oldest, as «لا تغييرات بعد» stands in the
+   * whole place when there is none, so the card reads finished at every length of history. */
   const LOG_N = 3;
   const DAY0 = Date.UTC(2026, 8, 23) / 864e5;                  // the concept's today: Wednesday 23 September 2026
   const dayOf = (iso) => Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5;
@@ -709,20 +725,19 @@
   const CHEVRON = `<svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg>`;
   function recordHTML(v, prev) {
     // Its first change on the first line (the records share their columns, so every record's figures start on one
-    // edge), with how many more it made; said as shown.
+    // edge), then how many more it made; said in full to assistive technology, and describing the control that opens it.
     const all = changes(prev.editable, v.editable), c = all[0], more = all.length - 1;
     const moreHTML = more ? `<span class="log-more">${L.moreChanges(more)}</span>` : "";
     const said = more ? `${c.said}${RTL ? "، " : ", "}${L.moreChanges(more).replace(/<[^>]+>/g, "")}` : c.said;
     const reason = v.reason ? (v.reason.raw ?? v.reason[LANG]) : null;
     const why = reason ? `<p class="log-why"><q><bdi dir="auto">${esc(reason)}</bdi></q></p>` : "";
-    // A folded record (more changes than its line shows, or a reason cut short: fitLog decides) opens whole in a window
-    // over the page (the user's decision of 2026-10-19), from a control over the record; others have nothing more.
-    return `<li class="log-rec${more ? " is-folded" : ""}" data-v="${v.version}"${more ? " data-more" : ""}>` +
-      `<span class="log-what" aria-hidden="true">${c.what}</span>` +
-      `<span class="log-fig" aria-hidden="true"><span class="log-from">${c.from}</span><span class="log-to">${ARROW}<span>${c.to}</span></span>${moreHTML}</span>` +
-      `<span class="sr-only">${esc(said)}</span>` +
+    // Folded short (fitLog), the count follows the name as one phrase: «ساعات الأحد و6 تغييرات أخرى».
+    return `<li class="log-rec" data-v="${v.version}"${more ? " data-more" : ""}>` +
+      `<span class="log-what" aria-hidden="true">${c.what}${more ? `<span class="log-wm"> ${L.moreChanges(more)}</span>` : ""}</span>` +
+      `<span class="log-fig" aria-hidden="true"><span class="log-ft"><span class="log-from">${c.from}</span><span class="log-to">${ARROW}<span>${c.to}</span></span></span>${moreHTML}</span>` +
+      `<span class="sr-only" id="rec-said-${v.version}">${esc(said)}</span>` +
       `<p class="log-meta">${SR_SEP}${bdi(esc(OWNER_NAMES[v.by]))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(v)}</p>${why}` +
-      `<button class="log-open" type="button" data-rec="${v.version}" aria-label="${esc(L.recOpen)}"${more ? "" : " hidden"}>${CHEVRON}</button></li>`;
+      `<button class="log-open" type="button" data-rec="${v.version}" aria-label="${esc(L.recOpen)}" aria-describedby="rec-said-${v.version}" hidden>${CHEVRON}</button></li>`;
   }
   const logHead = () => `<div class="set-head">
         <h2 class="set-title" id="log-title" tabindex="-1"><span class="set-name">${L.logTitle}</span></h2>
@@ -730,39 +745,37 @@
       </div>`;
   function logHTML() {
     if (phase === "loading") return logPH();
-    const recs = versions.slice(1).map((v, i) => [v, versions[i]]).reverse().slice(0, LOG_N);
-    const list = recs.length ? `<ol class="log-list">${recs.map(([v, p]) => recordHTML(v, p)).join("")}</ol>` : `<p class="log-none">${L.logEmpty}</p>`;
-    return `${logHead()}${list}`;
+    const recs = versions.slice(1).map((v, i) => [v, versions[i]]).reverse();
+    if (!recs.length) return `${logHead()}<div class="log-box"><p class="log-none">${L.logEmpty}</p></div>`;
+    const end = recs.length < LOG_N ? `<p class="log-end">${L.logStart}</p>` : "";
+    return `${logHead()}<div class="log-box"><ol class="log-list">${recs.slice(0, LOG_N).map(([v, p]) => recordHTML(v, p)).join("")}</ol>${end}</div>`;
   }
-  // The records that fit the list whole, newest first: three, unless a long figure wraps (the hours of several days in
-  // a narrow card); the rest wait hidden, for a wider card. The newest always shows. Their lines are fixed heights, so
-  // this holds from the first paint; it runs again when the cards change width and when the fonts arrive.
+  /* A record folds where its two lines cannot hold it at this width: more changes than its first line names, a reason
+   * cut short, a long name of what changed cut short at half the list, or a first change too wide for its line (the
+   * hours of a day both ends changed, in the 1024 px card), whose figures then leave the line to its name and its
+   * count: «ساعات الأربعاء» or «السعة و9 تغييرات أخرى». Only a folded record takes the control that opens it whole,
+   * with its chevron at the first line's end. Measured, not guessed: on every paint of the card, when the cards change
+   * width and when the fonts arrive. A fold never changes a record's height. */
   function fitLog() {
     const list = $(".log-list", cardEl.log);
     if (!list || !list.getClientRects().length) return;
-    const recs = $$(":scope > .log-rec", list), bottom = list.getBoundingClientRect().top + list.clientHeight + 0.5;
-    recs.forEach((li) => { li.hidden = false; });
-    let full = false;
-    recs.forEach((li, i) => {
-      const r = li.getBoundingClientRect(), end = r.bottom - parseFloat(getComputedStyle(li).paddingBottom);
-      if (i > 0 && (full || end > bottom)) { full = true; li.hidden = true; }
-    });
-    // A record is folded where it made more changes than its line shows or its reason is cut short at this width; only
-    // a folded record takes the control that opens it whole.
-    recs.forEach((li) => {
-      if (li.hidden) return;
-      const why = $(".log-why", li), cut = Boolean(why && why.scrollWidth > why.clientWidth + 0.5);
-      const folded = li.hasAttribute("data-more") || cut;
-      li.classList.toggle("is-folded", folded);
-      $(".log-open", li).hidden = !folded;
-    });
+    const cut = (el) => Boolean(el && el.scrollWidth > el.clientWidth + 0.5);
+    for (const li of $$(":scope > .log-rec:not(.is-ph)", list)) {
+      li.classList.remove("is-short");
+      li.classList.toggle("is-folded", li.hasAttribute("data-more") || cut($(".log-why", li)) || cut($(".log-what", li)));
+      if (cut($(".log-fig", li))) li.classList.add("is-short", "is-folded");
+      $(".log-open", li).hidden = !li.classList.contains("is-folded");
+    }
   }
 
-  /* ---- a folded record, whole (the user's decision of 2026-10-19): its window over the page, as a card's «تعديل»
-   * opens its own (DLG-1…6, a bottom sheet at 720 px and below; the page behind does not move). Its name says how many
-   * changes it holds, who and when under it, then every change on CHG-1's ruled rows, from → to, and the reason as
-   * typed, whole, on the last row; «إغلاق» at the foot, where its text starts (item 35). Escape, ×, «إغلاق» and a tap
-   * beside it close it (nothing in it can be lost), and focus returns to the record that opened it. Read only. */
+  /* ---- a folded record, whole (DECISIONS item 83): its window over the page, as a card's «تعديل» opens its own
+   * (DLG-1…6, a bottom sheet at 720 px and below; the page behind does not move). Its name says how many changes it
+   * holds, who and when under it, then every change on CHG-1's ruled rows, from → to, and the reason as typed, whole, on
+   * the last row; «إغلاق» at the foot, where its text starts (item 35). It grows to its content from DLG-2's 468 px, so
+   * the widest record ج writes (the week's seven days, each both ends) keeps a line per change, and its body scrolls,
+   * the head and the foot fixed, only where the screen is too short for it (200% zoom, 320 px, a phone held sideways).
+   * Escape, ×, «إغلاق» and a tap beside it close it (nothing in it can be lost), and focus returns to the record that
+   * opened it. Read only. */
   const DREC = $("#dlg-rec");
   function recordWindow(n) {
     const i = versions.findIndex((v) => v.version === n);
@@ -772,7 +785,7 @@
     const whyRow = reason ? `<li class="cf-row is-why"><span class="cf-what">${L.reasonRow}</span><span class="cf-fig"><q class="cf-q"><bdi dir="auto">${esc(reason)}</bdi></q></span></li>` : "";
     return `<div class="dlg-scrim" data-close="scrim"></div>
       <section class="dlg-panel rec-panel">
-        <header class="dlg-head"><h2 id="rec-title" tabindex="-1">${L.recTitle(all.length)}</h2>${closeX}</header>
+        <header class="dlg-head"><h2 id="rec-title" tabindex="-1"><span>${L.recTitle(all.length)}</span></h2>${closeX}</header>
         <div class="dlg-body">
           <p class="dlg-desc rec-who" id="rec-desc">${SR_SEP}${bdi(esc(OWNER_NAMES[v.by]))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(v)}</p>
           <div class="cf-grid"><ul class="cf-list" aria-labelledby="rec-title">${changeItems(all)}${whyRow}</ul></div>
@@ -788,7 +801,21 @@
     DREC.setAttribute("aria-labelledby", "rec-title");
     DREC.setAttribute("aria-describedby", "rec-desc");
     openDialog(DREC, opener, $("#rec-title", DREC));
+    fitRecord();
   }
+  // A change whose figures cannot stand beside its name, even broken before the arrow (a range or «15 minutes after
+  // closing» in a narrow sheet), goes under it, across the window, instead of past its edge; the others keep the
+  // column, so their figures still start on one edge. Measured on opening and whenever the window changes width.
+  function fitRecord() {
+    if (!DREC.open) return;
+    for (const row of $$(".cf-row:not(.is-why)", DREC)) {
+      row.classList.remove("is-stack");
+      const f = $(".cf-fig", row);
+      if (f.scrollWidth > f.clientWidth + 0.5) row.classList.add("is-stack");
+    }
+  }
+  let recW = 0;
+  new ResizeObserver(([e]) => { const w = Math.round(e.contentRect.width); if (w !== recW) { recW = w; fitRecord(); } }).observe(DREC);
   // Back to the record that opened it; if the history is gone (the window outlived a move under 721 px), to the way to
   // the history under the header.
   const closeRecord = () => {
@@ -892,8 +919,8 @@
   // record keeps its arrived box.
   function logPH() {
     const W = [[76, 128, 168, 88], [60, 120, 132, 72], [68, 112, 188, 72]];
-    return `${logHead()}<ol class="log-list">${W.map(([w, f, r, m]) => `<li class="log-rec is-ph"><span class="log-what">${ph(w)}</span><span class="log-fig">${ph(f)}</span>` +
-      `<p class="log-meta">${ph(m, "ph-c")}</p><p class="log-why">${ph(r)}</p></li>`).join("")}</ol>`;
+    return `${logHead()}<div class="log-box"><ol class="log-list">${W.map(([w, f, r, m]) => `<li class="log-rec is-ph"><span class="log-what">${ph(w)}</span><span class="log-fig">${ph(f)}</span>` +
+      `<p class="log-meta">${ph(m, "ph-c")}</p><p class="log-why">${ph(r)}</p></li>`).join("")}</ol></div>`;
   }
 
   /* ---- Error (STA-13; the first load failed): the header's Error, and one message for the page in place of the cards
@@ -1613,13 +1640,14 @@
   // Where the done line lands (Access's MOT-17): a line it adds where the head cannot hold it, or takes away from the
   // card that held the last one, makes the blocks below slide instead of jumping (motion.js flip); the record the
   // change wrote arrives at the top of the history in the same movement (flip's list, DECISIONS item 38), the oldest of
-  // the three leaving under the card's edge.
+  // the three leaving under the card's edge; «لا تغييرات أقدم» slides down under it in the same movement.
   const blocks = () => [
     ...Object.entries(cardEl).map(([k, el]) => [`card:${k}`, el]),
     ...["crowd", "hours", "day"].flatMap((k) => $$(".set-figs > .set-fig, .set-sub, .set-dl > .set-row", cardEl[k]).map((el, i) => [`${k}:${i}`, el])),
+    ...$$(".log-end", cardEl.log).map((el) => ["log:end", el]),
   ];
   const logList = { box: cardEl.log, rows: () => $$(".log-list > .log-rec:not(.is-ph)", cardEl.log).map((li) => [li.dataset.v, li]),
-    words: ".log-body, .log-meta", empty: ".log-none" };
+    words: ".log-what, .log-fig, .log-meta, .log-why", empty: ".log-none" };
   function commit(sec) {
     const reason = flow.reason.trim(), many = changes(flow.base, flow.next).length > 1, id = nextRecordId++, next = flow.next;
     closeDialog(D[sec], { quiet: true });
