@@ -904,6 +904,21 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     brief's ج revision, reusing what part 1 built that fits (the data, the log record and its from → to wording, the
     level key, the phone). Item 79's three parts and one review stand. After the round the user asked for the PC to be
     shut down.
+81. **Settings after its round: the same hours for every day, and the history on the phone** (the user, 2026-10-19:
+    «اي نعم», «اي موافق», on the two questions the round's designers raised). (1) The hours window gets a way to apply
+    one day's hours to the other days, so a change such as Ramadan's is not fourteen fields. (2) The phone's Settings
+    shows the settings history with its from → to and reasons on the page, as the computer does, instead of only the
+    v2 link to Activity log. Both arrived during the round, so they wait for a small round after it (rounds item 7).
+82. **Loading regression checks: containers, near-zero, three sizes** (the user, 2026-10-19, agreeing with the
+    coordinator on the user's proposal to measure the loaded page with Playwright and keep the loading skeleton to it).
+    The concept already measures each page's arrival once per round (STA-10, STA-14: 0.00 px, layout shifts 0); what is
+    missing is a repeatable check. It compares the boxes of the cards, slots, titles and the header between loading
+    and the arrived page, not the placeholder bars inside them (a bar is shorter than its text by design); it fails
+    above 0.5 px (subpixel rounding) or on any layout shift; it runs at 1440, 768 and 390, AR and EN, with the longest
+    text case. The six-size matrix stays in the design rounds. In production it belongs in `tests/browser` at the move
+    (item 51); before that, one shared concept check across the pages, built by agent-tooling-r01 (the verification
+    tools are its paths). Timing, the coordinator's recommendation asked by the user: after Settings' round and before
+    the next page's build, as a Codex round (no taste in it, item 9), so every remaining page is built against it.
 
 ## How this milestone's rounds run
 
