@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `4d770598`, 2026-10-18 23:35 +03:00
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-19 13:40 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-77), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-83), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -39,26 +39,42 @@
 
 ## Running now
 
-- **Nothing runs** (2026-10-18 23:40). **Next, on the user's word** («start the one-pass Settings build in arrangement ب
-  as soon as ratchet-2 closes»; ratchet-2 closed): the Settings round, run by the coordinator in a new session, on the Settings build brief (`3835b5a5` on the build branch, passes `brief:check`):
-  three `owner-direction-designer` agents at `xhigh`, one per part in order, each prompt naming its part and the
-  brief's absolute path; then `owner-direction-verifier` (high, port 3191) alone; fixes per rounds item 11; the
-  coordinator inspects the crops; then the user (decision 79). Output and NOTES.md in `D:/fitway-temp/owner-r04-settings/`.
-  The brief follows `bandFor`: 24% of 120 reads "up to 28 people" (item 49's "29" is an example's shape).
+- **Nothing runs: the user paused the Settings round** (2026-10-19 13:35, «وقف ال background tasks مؤقتا واحفظ الحالة
+  الحالية بس»). Measured at the pause: no server on 3190/3191, no capture process, worktree clean.
+- **The Settings round, where it stands** (arrangement ج, decisions 79, 80, 82, 83; brief
+  `directions/briefs/designer-settings.md`, its ج revision `7d0ccde2`; output and NOTES.md in
+  `D:/fitway-temp/owner-r04-settings/`; `superseded-b/` there is the ب part, history only):
+  - Parts 1-3 done: `f100c5fd` (page at rest), `efbce6f9` (the edit windows and sheets), `e271e612` + `c7e9438f`
+    (dialogs and states; «تطبيق الآن» confirms; closing with typed values asks first). Coordinator inspected 1-01,
+    1-04, 2-02, 2-07 (AR).
+  - Review done: `owner-direction-verifier` high, brief `verifier-settings.md` (`23c28fef`), 13/16 PASS; failures
+    F1-F5 and the pass-but-wrong list in `D:/fitway-temp/owner-r04-settings-verify/REPORT.md`.
+  - Fixes: two fixers were cut off (an API limit, then the user's pause); their work is checkpoint `22c46f31` on the
+    build branch, **not re-verified**. NOTES.md's last section says item 82 measured 0.00 px / shifts 0 at five sizes
+    AR/EN with default, `log=every` and `log=week`, and the folded record's window (decision 83) built; the final
+    capture had not finished.
+  - **Next:** a fresh `owner-direction-designer` reads the brief, `22c46f31`, NOTES.md and the review, runs the capture,
+    finishes anything open from the fix list (the coordinator's prompt to the second fixer is the list: F1-F5, the
+    window, Friday's edge, the history's figure column, «20 %», square rings; leave «مباشر», the conflict history's
+    name, the key's bars), commits; then a short verifier pass on F1-F5 and the window; the coordinator inspects the
+    crops; then the user sees it (link, live preview, numbered crops).
+  - After the user sees it: decision 81's small round (one day's hours to every day; the phone history), then
+    decision 82's loading regression check (agent-tooling-r01, a Codex round) before the next page.
+  - Agent-tooling finding to record there: the verify-fitway CLI accepts only ports 3176-3177 and has no Settings
+    recipes, so the verifier used its own controlled scripts.
 - Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
   click and removes on arrival (over http); no visitor data is stored.
 
 ## Next steps
 
-1. **main is at `9f134a3d`** (CI run 39119869580, measured 2026-10-18 by `git log origin/main`): ratchet-codelines and
-   the giant-file split. The coordinator line adds ratchet-2, its records and decisions 78; it goes to main with
-   `pnpm main:advance` once its pushed commit's CI passes.
+1. **main is at `e3fd9854`** (advanced 2026-10-19 by `pnpm main:advance`, CI run 39166306570). The coordinator line
+   adds decisions 80-83 and this resume point; it goes to main once its pushed commit's CI passes.
 2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
    crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Decision 76 (the demo first):
    what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the user chose
-   arrangement ب of the skeleton's third pass (decision 77, 2026-10-18; report and frames in
+   arrangement ج of the skeleton's third pass (decision 80 corrects 77's ب, 2026-10-19; report and frames in
    D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md §"Third pass"; artifact
-   https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8). **Next:** the one-pass build of Settings in ب (decision 78 answered the last open question, decision 79 sets the round; the round above). Left for later, with their reasons: the dialogs' parts splitting under a
+   https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8). **Next:** finish the Settings round above (paused at its fixes). Left for later, with their reasons: the dialogs' parts splitting under a
    planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
 3. **F266 is fixed** (`873e03fc` on the build branch, pushed: Components places its tip with Reports' shared placement; 204
    cases measured, no overlap). **F285** (Components' heat grid at 390 is broken) waits: the user, 2026-10-18, the sheet is
