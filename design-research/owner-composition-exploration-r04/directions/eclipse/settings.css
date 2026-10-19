@@ -335,6 +335,93 @@ html[data-focus-input="keyboard"] .tf-ap:has(.tf-sel:focus) { outline: 2px solid
   .ed-levels .ed-ppl { grid-column: 2 / -1; padding-inline-start: 0; padding-block-start: 4px; }
 }
 
+/* ------------------------------------------------------------------ the steps after «حفظ» (part 3)
+ * One panel takes the editor's place in its window, in turn: the confirmation, the conflict view, the question before
+ * closing with something typed (Access's two-step dialog). It keeps the editor's width (468 px; the week's 520), so its
+ * edges settle only up and down (MOT-15). Its body: the sentence (DLG-7), then the changes on one grid, so every value
+ * starts on one edge, even across the conflict view's two lists; then the reason (FLD-9) and the alert (EMP-2). */
+.st-panel[data-sec="hours"] { width: min(520px, 100%); }
+/* A title that wraps (English at 320 px) keeps the close button level with its first line, as Access's. */
+.st-panel .dlg-head { align-items: flex-start; }
+.st-panel .dlg-x { margin-block-start: -8px; }
+.st-panel .dlg-head h2 { min-width: 0; overflow-wrap: anywhere; }
+.st-panel .dlg-desc { margin: 0; overflow-wrap: anywhere; }
+
+/* The change list (new, CHG-1): LOG-1's words on the module's ruled rows (44 px, TBL-2's line above each): what in label
+ * type --ink-2 (up to half the width, wrapping between words beyond it), then from, the arrow (14 px --ink-3, along the
+ * reading line) and to, in body type with tabular figures; the new value carries the weight, chalk at 500, the old one
+ * --ink-2 at 400. A figure that wraps breaks only before the arrow, which travels with the new value. The people that
+ * follow (the crowd) stand under each level's own change, quieter: the figures in label type --ink-2. */
+.cf-grid { display: grid; grid-template-columns: fit-content(50%) minmax(0, 1fr); column-gap: 16px; margin-block-start: 12px; }
+.cf-grid > * { grid-column: 1 / -1; }
+.cf-list { display: grid; grid-template-columns: subgrid; margin: 0; padding: 0; list-style: none; }
+.cf-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: baseline; box-sizing: border-box; min-height: 44px; padding-block: 11px; border-block-start: 1px solid var(--row-line); }
+.cf-what { min-width: 0; font-size: 13.5px; line-height: 22px; color: var(--ink-2); overflow-wrap: anywhere; }
+.cf-fig { display: inline-flex; flex-wrap: wrap; align-items: center; column-gap: 8px; min-width: 0; font-size: 15px; line-height: 22px; font-variant-numeric: tabular-nums; }
+.cf-from { color: var(--ink-2); white-space: nowrap; }
+.cf-to { display: inline-flex; align-items: center; column-gap: 8px; color: var(--ink); font-weight: 500; white-space: nowrap; }
+/* A level's row: its key and word, then its limit's change and, under it, its people's, quieter. */
+.cf-row.is-lv .cf-what { white-space: nowrap; }
+.cf-figs { display: flex; flex-direction: column; align-items: flex-start; row-gap: 2px; min-width: 0; }
+.cf-fig.is-ppl { font-size: 13.5px; line-height: 20px; }
+.cf-fig.is-ppl .cf-to { color: var(--ink-2); font-weight: 400; }
+/* The conflict view's two lists' names: label type --ink-2 on their own unruled line, as a card's «المستويات». */
+.cf-sub { margin: 0; padding-block: 12px 8px; font-size: 13.5px; line-height: 20px; font-weight: 400; color: var(--ink-2); }
+.cf-grid > .cf-sub:first-child { padding-block-start: 4px; }
+/* The reason as typed, in the conflict view's «تغييرك»: the page's quotation marks, in its own direction, wrapping. */
+.cf-row.is-why .cf-fig { display: block; font-size: 13.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+html[lang="ar"] .cf-q { quotes: "«" "»"; }
+html[lang="en"] .cf-q { quotes: "\201C" "\201D"; }
+/* The reason (FLD-9, Access's): three lines growing with its words, 240 characters, then what is left from 200. */
+.set .cf-reason { margin-block-start: 16px; }
+.set .cf-reason-in { display: block; height: auto; min-height: 96px; max-height: 248px; padding-block: 11px; resize: none; field-sizing: content; line-height: 24px; font-variant-numeric: normal; text-align: start; overflow-wrap: anywhere; }
+.cf-left { margin: 8px 0 0; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.set .st-alert span { min-width: 0; overflow-wrap: anywhere; }
+/* The destructive commit (BTN-10, Access's): «إغلاق دون حفظ». */
+.set .rbtn-danger { border-color: var(--err-line); background: rgba(255, 107, 125, 0.08); color: var(--err); font-weight: 500; }
+@media (hover: hover) { .set .rbtn-danger:hover { border-color: rgba(255, 107, 125, 0.75); background: rgba(255, 107, 125, 0.14); } }
+/* Working and waiting (STA-15, BTN-4, BTN-9; Access's): the action keeps focus in BTN-4's primary form, the others wait. */
+.set .rbtn[aria-disabled="true"] { cursor: default; }
+.set .rbtn-primary[aria-disabled="true"] { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
+@media (hover: hover) { .set .rbtn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); } }
+.set .rbtn:not(.rbtn-primary):not(.rbtn-danger)[aria-disabled="true"] { border-color: var(--line); background: transparent; color: var(--ink-3); }
+@media (hover: hover) { .set .rbtn:not(.rbtn-primary):not(.rbtn-danger)[aria-disabled="true"]:hover { border-color: var(--line); background: transparent; color: var(--ink-3); } }
+.set .icon-btn[aria-disabled="true"] { background: none; color: var(--ink-3); cursor: default; }
+@media (hover: hover) { .set .icon-btn[aria-disabled="true"]:hover { background: none; color: var(--ink-3); cursor: default; } }
+
+/* The done sentence (EMP-6, Access's DON-1): under the changed card's head, start-aligned; a 16 px check, the sentence in
+ * label type --ink-2, the way to its record a chalk text link with a .42 underline and a 44 px target. */
+.set .done { width: fit-content; max-width: 100%; margin: 0; padding-block: 12px; text-align: start; padding-inline-start: 24px; text-indent: -24px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); border-radius: 12px; overflow-wrap: anywhere; }
+.set .done-ico { display: inline-block; width: 16px; height: 16px; margin-inline-end: 8px; vertical-align: -3px; fill: none; stroke: var(--ink-2); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.set .done-a { display: inline-block; margin-inline-start: 12px; padding-block: 12px; margin-block: -12px; line-height: 20px; text-indent: 0; border-radius: 6px; color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(245, 243, 242, 0.42); text-underline-offset: 4px; white-space: nowrap; }
+@media (hover: hover) { .set .done-a:hover { text-decoration-color: var(--ink); } }
+.set .done-a:focus-visible { --focus-ring-offset: 0; }
+.set .done:focus-visible { --focus-ring-offset: 2px; }
+/* In the changed card's head: on the title's line, after it (as the hours' unit stands), the edit control at the end,
+ * where the card has room (560 px inside: 1440 and 768), so the card keeps its height and its rules still meet the
+ * neighbour's; under the title's line where it has not (1024, a phone), the card growing by the line. */
+.set-head:has(> .done) { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "title done edit"; column-gap: 16px; }
+.set-head > .set-title { grid-area: title; }
+.set-head > .done { grid-area: done; justify-self: start; }
+.set-head > .set-edit { grid-area: edit; }
+@container setcard (max-width: 559.98px) {
+  .set-head:has(> .done) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title edit" "done done"; row-gap: 4px; }
+}
+
+/* ------------------------------------------------------------------ the page's states (part 3)
+ * Loading (STA-10, PH-1…3): each awaited value one flat bar in its own slot (style.css .ph-bar, --ph), as tall as its
+ * digits' ink: 22 px for a figure (title type), 11 px for a value in body type, 9 px for a caption; no motion. The
+ * first load failed: one message in place of the cards (EMP-5's sentence and retry), as Access's and Activity log's. */
+.set .ph-fig { height: 22px; }
+.set .ph-v { height: 11px; border-radius: 4px; }
+.set .ph-c { height: 9px; border-radius: 4px; }
+.set-row > dd > .ph-span { grid-column: 1 / -1; line-height: 22px; }
+.log-rec.is-ph .log-ph { margin: 0; line-height: 22px; }
+.log-rec.is-ph .log-ph + .log-ph { margin-block-start: 4px; line-height: 18px; }
+.set-msg { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; }
+.set-say { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 52ch; margin: 0; font-size: 15px; line-height: 22.5px; color: var(--ink); }
+.set-say .ico-err { width: 22px; height: 22px; color: var(--err); }
+
 /* --------------------------------------------------------------- the phone (720 px and below)
  * The three value cards, 16 apart, each padding 16, so text stands 16 from its edge as on every page; the module is
  * 40 px. The history is reached by its control under the header. */

@@ -14,8 +14,10 @@
  * The synthetic history is Activity log's eight settings records (activity.js, versions 2 to 9: the same dates, owners
  * and reasons), each given the change its reason describes; the current snapshot agrees with Daily (Wednesday 6:00 AM
  * to 1:00 AM, levels at 24, 48 and 68 people) and with Activity log's resets five minutes after each closing.
- * Query: lang=ar|en; ops=delayed|closed|offline (the frame's status, for review); motion=off. Later parts add the
- * editor's, the dialogs' and the states' switches.
+ * Query: lang=ar|en; ops=delayed|closed|offline (the frame's status, for review); motion=off; edit=crowd|hours|day (a
+ * card's window on load); state=loading|error with arrive=<ms>|never (the first load); refuse=bad_request|unauthorized|
+ * forbidden|settings_version_conflict, fail=1, hold=1 (the answer to the first application); log=none|one|every and
+ * case=cap1|capmax|tight|wide|closed|friday|allday|low|high (the whole range, "the gym's settings" below).
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules
  * and no fetch), so the page works from file:// too. */
 (() => {
@@ -65,6 +67,7 @@
       historyName: "سجل الإعدادات في سجل النشاط",
       sec: { crowd: "الزحام", hours: "ساعات العمل", day: "يوم العمل" },
       hoursUnit: "توقيت الرياض",
+      noOpening: "لا ساعات عمل",
       edit: "تعديل",
       // The visible word, then the card it edits (WCAG 2.5.3).
       editName: (s) => `تعديل ${s}`,
@@ -74,10 +77,10 @@
       upTo: "حتى",
       above: "فوق",
       people: (n) => (n === 0 ? `${ltr("0")} أشخاص` : arCount(n, "شخص واحد", "شخصان", "أشخاص", "شخصًا", "شخص")),
-      // A level no whole count reaches (its limit holds no more people than the level under it): part 3's range case.
-      // (Named noReach: the frame's copy, merged over the page's, has its own noCount, «لا عدّ حاليًا».)
-      noReach: "لا يبلغه أي عدد",
-      emptyOnly: "الصالة خالية فقط",
+      // A level no whole count reaches (its limit holds no more people than the level under it, a capacity too small to
+      // tell them apart): it never shows, said in the people's place. (Named noReach: the frame's copy, merged over the
+      // page's, has its own noCount, «لا عدّ حاليًا».)
+      noReach: "لا يظهر بهذه السعة",
       days: ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
       closed: "مغلق",
       allDay: (n) => `${ltr(n)} ساعة`,
@@ -119,7 +122,6 @@
       close: "إغلاق",
       cancel: "إلغاء",
       save: "حفظ",
-      saved: "حُفظت التغييرات",
       noChange: "لم يتغيّر شيء، فلم يُحفظ شيء",
       // After a number typed in a field, the counted noun follows the digits by their last two («3 أشخاص», «24 شخصًا»,
       // «100 شخص»); a field always shows digits, so one and two take the singular («1 شخص»).
@@ -165,6 +167,63 @@
         reset: (days) => `بهذا التأخير يُصفَّر العدد بعد أن تفتح الصالة ${days}، فيبدأ من الصفر والناس فيها.`,
         resetHours: (days) => `بهذه الساعات يُصفَّر العدد بعد أن تفتح الصالة ${days}، فيبدأ من الصفر والناس فيها.`,
       },
+      /* ---- the dialogs and states (part 3). The editor's «حفظ» only gathers and checks; nothing is sent until the
+       * confirmation's «تطبيق الآن», the step that makes the values live (effective at once, no later date: item 49). */
+      back: "رجوع",
+      applyNow: "تطبيق الآن",
+      applying: "جارٍ التطبيق…",
+      applyMine: "تطبيق تغييري",
+      cf: {
+        title: (sec, many) => `تطبيق ${many ? "تغييرات" : "تغيير"} ${COPY.ar.sec[sec]}؟`,
+        // What the step does, in one sentence (DLG-7): the visitors' page for the crowd and the hours; the business day
+        // reaches no visitor, so its sentence says when it applies and that past days keep their reports (SPEC).
+        desc: {
+          crowd: () => "يتغيّر المستوى الذي يراه الزوار فور التطبيق.",
+          hours: () => "يرى الزوار الساعات الجديدة فور التطبيق.",
+          day: (many) => (many ? "تسري التغييرات فور التطبيق، وتبقى تقارير الأيام السابقة كما هي." : "يسري التغيير فور التطبيق، وتبقى تقارير الأيام السابقة كما هي."),
+        },
+        listName: "التغييرات",
+      },
+      // The people a level holds, before → after, in the confirmation: «حتى 24 ← 28 شخصًا», Packed «69 ← 81 شخصًا فأكثر».
+      pplUpTo: (n) => `حتى ${n}`,
+      pplMore: (html) => `${html} فأكثر`,
+      never: "لا يظهر",
+      fromTo: (a, b) => `من ${a} إلى ${b}`,
+      reasonLabel: "السبب (اختياري)",
+      reasonRow: "السبب",
+      left: (n) => (n === 0 ? "لم يبق أي حرف" : n === 1 ? "بقي حرف واحد" : n === 2 ? "بقي حرفان" : n <= 10 ? `بقيت ${n} أحرف` : `بقي ${n} حرفًا`),
+      done: (many) => (many ? "طُبّقت التغييرات." : "طُبّق التغيير."),
+      doneLink: "عرض في سجل النشاط",
+      // Each answer the contract can give besides success and the version conflict: what happened, that nothing changed,
+      // what to do (EMP-2, DLG-10).
+      refuse: {
+        bad_request: "لم تُقبل هذه القيم، فلم يتغيّر شيء. ارجع إلى التعديل وراجعها.",
+        unauthorized: "سُجّل خروجك، فلم يتغيّر شيء. سجّل الدخول مجددًا للمتابعة.",
+        forbidden: "لا يستطيع هذا الحساب تغيير الإعدادات، فلم يتغيّر شيء.",
+      },
+      failed: "تعذّر تطبيق التغيير، ولم يتغيّر شيء.",
+      // Another save came first (409): it names no one (DECISIONS item 78), says when, and keeps what was typed.
+      cx: {
+        title: "حُفظت تغييرات أخرى قبل تغييرك",
+        apply: (t) => `حُفظت الساعة ${t}، فلم يُطبَّق تغييرك.`,
+        same: (t) => `حُفظت الساعة ${t}، وفيها ما كتبتَه، فلا شيء لتطبيقه.`,
+        clash: (t) => `حُفظت الساعة ${t}، ولم يعد تغييرك يتّفق معها. ارجع إلى التعديل لتراجعه.`,
+        saved: "المحفوظ الآن",
+        yours: "تغييرك",
+      },
+      // Closing a window with something typed (Escape, ×, «إلغاء»): the user's kept second-pass question, for a window.
+      ds: {
+        title: "إغلاق دون حفظ؟",
+        desc: (name) => `لم تُحفظ تغييرات ${name}، وتضيع إن أغلقت.`,
+        keep: "متابعة التعديل",
+        discard: "إغلاق دون حفظ",
+      },
+      errorFull: "تعذّر تحميل الإعدادات",
+      errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
+      retry: "إعادة المحاولة",
+      retrying: "جارٍ المحاولة…",
+      loadingSay: "جارٍ تحميل الإعدادات",
+      arrivedSay: "حُمّلت الإعدادات",
     },
     en: {
       docTitle: "Settings · FITWAY (concept)",
@@ -173,6 +232,7 @@
       historyName: "Settings history in the Activity log",
       sec: { crowd: "Crowd", hours: "Opening hours", day: "Business day" },
       hoursUnit: "Riyadh time",
+      noOpening: "No opening hours",
       edit: "Edit",
       editName: (s) => `Edit ${s.toLowerCase()}`,
       capacity: "Capacity",
@@ -181,8 +241,7 @@
       upTo: "up to",
       above: "above",
       people: (n) => (n === 1 ? `${ltr("1")} person` : `${ltr(fmtInt(n))} people`),
-      noReach: "No count reaches it",
-      emptyOnly: "Only when empty",
+      noReach: "Never shown at this capacity",
       days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       closed: "Closed",
       allDay: (n) => `${n} hours`,
@@ -219,7 +278,6 @@
       close: "Close",
       cancel: "Cancel",
       save: "Save",
-      saved: "Changes saved",
       noChange: "Nothing changed, so nothing was saved",
       capUnit: (n) => (n === 1 ? "person" : "people"),
       resetUnit: (n) => (n === 1 ? "minute after closing" : "minutes after closing"),
@@ -261,6 +319,54 @@
         reset: (days) => `With this delay, the count resets after the gym has opened ${days}, so it starts from zero with people inside.`,
         resetHours: (days) => `With these hours, the count resets after the gym has opened ${days}, so it starts from zero with people inside.`,
       },
+      back: "Back",
+      applyNow: "Apply now",
+      applying: "Applying…",
+      applyMine: "Apply my change",
+      cf: {
+        title: (sec, many) => `Apply ${many ? "these" : "this"} ${COPY.en.sec[sec].toLowerCase()} change${many ? "s" : ""}?`,
+        desc: {
+          crowd: () => "The level visitors see changes as soon as you apply.",
+          hours: () => "Visitors see the new hours as soon as you apply.",
+          day: (many) => `${many ? "They take" : "It takes"} effect as soon as you apply. Reports for past days stay as they are.`,
+        },
+        listName: "Changes",
+      },
+      pplUpTo: (n) => `up to ${n}`,
+      pplMore: (html) => `${html} or more`,
+      never: "never shown",
+      fromTo: (a, b) => `from ${a} to ${b}`,
+      reasonLabel: "Reason (optional)",
+      reasonRow: "Reason",
+      left: (n) => (n === 0 ? "No characters left" : n === 1 ? "1 character left" : `${n} characters left`),
+      done: (many) => (many ? "Changes applied." : "Change applied."),
+      doneLink: "View in Activity log",
+      refuse: {
+        bad_request: "These values weren't accepted, so nothing changed. Go back and check them.",
+        unauthorized: "You've been signed out, so nothing changed. Sign in again to continue.",
+        forbidden: "This account can't change settings, so nothing changed.",
+      },
+      failed: "Couldn't apply the change. Nothing changed.",
+      cx: {
+        title: "Other changes were saved before yours",
+        apply: (t) => `They were saved at ${t}, so yours wasn't applied.`,
+        same: (t) => `They were saved at ${t} and already hold what you entered, so there's nothing to apply.`,
+        clash: (t) => `They were saved at ${t}, and your change no longer fits with them. Go back to check it.`,
+        saved: "Saved now",
+        yours: "Your change",
+      },
+      ds: {
+        title: "Close without saving?",
+        desc: (name) => `Your ${name.toLowerCase()} changes aren't saved. They'll be lost if you close.`,
+        keep: "Keep editing",
+        discard: "Close without saving",
+      },
+      errorFull: "Couldn't load settings",
+      errorHint: "Check the connection, then try again.",
+      retry: "Try again",
+      retrying: "Trying again…",
+      loadingSay: "Loading settings",
+      arrivedSay: "Settings loaded",
     },
   };
   COPY.ar.daysShort = COPY.ar.days;
@@ -293,12 +399,12 @@
     return n;
   };
   // The people level i holds at a capacity, as the phrase after its limit (the card and its window alike): «أو 24
-  // شخصًا», the top level «أو 69 شخصًا فأكثر». A level holding only the empty gym, or no count at all, says so instead
-  // (part 3 judges those words among the range cases).
+  // شخصًا», the top level «أو 69 شخصًا فأكثر». A Quiet holding only the empty gym keeps the pattern, «أو 0 أشخاص»
+  // (part 3: the earlier «الصالة خالية فقط» stood after «حتى 20%» with nothing to join them); a level no count reaches
+  // says «لا يظهر بهذه السعة» in the people's place.
   function peoplePhrase(cap, lims, i) {
     const last = lims.map((p) => lastCount(cap, p));
     if (i === 3) return L.orMorePeople(last[2] + 1);
-    if (i === 0 && last[0] === 0) return L.emptyOnly;
     if (i > 0 && last[i] === last[i - 1]) return L.noReach;
     return L.orPeople(L.people(last[i]));
   }
@@ -338,6 +444,54 @@
     const next = clone(versions[versions.length - 1].editable);
     apply(next);
     versions.push({ version: versions.length + 1, date, mins: hm(time), by, reason, editable: next });
+  }
+  /* Review switches for the whole range (rounds item 7), each a truthful history: what the cards show is always the
+   * latest version, and the history's records are the versions before it.
+   *   ?log=none   no change yet: one version, holding today's values (the history says «لا تغييرات بعد»)
+   *   ?log=one    one change: the version before today's, then today's
+   *   ?log=every  a ninth change today at 7:30 PM, by فهد, touching every kind of value, with a reason of 240 characters
+   *   ?case=<k>   a ninth change today at 7:30 PM, by فهد, no reason: cap1 (capacity 1), capmax (2,147,483,647), tight
+   *               (limits 0 / 1 / 2), wide (98 / 99 / 100), closed (every day), friday (Friday closed), allday (Wednesday
+   *               opening equal to its closing), low (the business day ending at midnight, the reset at closing), high
+   *               (ending 11:59 PM, the reset 2,147,483,647 minutes after closing) */
+  const LOG_Q = params.get("log"), CASE_Q = params.get("case");
+  const REASON_240 = {
+    ar: "وسّعنا الصالة وافتتحنا منطقة الأوزان الحرة، فرفعنا السعة إلى 140 شخصًا وعدّلنا حدود المستويات لتناسبها، وقدّمنا الإغلاق إلى منتصف الليل في أول الأسبوع، وأغلقنا الجمعة للصيانة الدورية حتى نهاية الشهر، ونقلنا التصفير إلى ربع ساعة بعد الإغلاق.",
+    en: "We expanded the gym and opened the free-weights area, so capacity goes to 140 and the levels follow it; we close at midnight early in the week, Friday is closed for maintenance until month end, and the count resets 15 minutes after closing.",
+  };
+  const pushToday = (apply, reason = null) => {
+    const next = clone(versions[versions.length - 1].editable);
+    apply(next);
+    versions.push({ version: versions.length + 1, date: "2026-09-23", mins: hm("19:30"), by: "o1", reason, editable: next });
+  };
+  if (LOG_Q === "every") {
+    pushToday((s) => {
+      s.capacity = 140;
+      s.thresholds = { quietMaxPercent: 25, moderateMaxPercent: 50, busyMaxPercent: 75 };
+      for (const d of ["sun", "mon", "tue"]) s.weeklySchedule[d].close = "00:00";
+      s.weeklySchedule.wed = H("07:00", "23:00");
+      s.weeklySchedule.thu.open = "07:00";
+      s.weeklySchedule.fri = null;
+      s.businessDayBoundary = "05:00";
+      s.resetBufferMinutes = 15;
+    }, R(REASON_240.ar, REASON_240.en));
+  }
+  const CASES = {
+    cap1: (s) => { s.capacity = 1; },
+    capmax: (s) => { s.capacity = 2147483647; },
+    tight: (s) => { s.thresholds = { quietMaxPercent: 0, moderateMaxPercent: 1, busyMaxPercent: 2 }; },
+    wide: (s) => { s.thresholds = { quietMaxPercent: 98, moderateMaxPercent: 99, busyMaxPercent: 100 }; },
+    closed: (s) => { for (const d of DAYS) s.weeklySchedule[d] = null; },
+    friday: (s) => { s.weeklySchedule.fri = null; },
+    allday: (s) => { s.weeklySchedule.wed = H("06:00", "06:00"); },
+    low: (s) => { s.businessDayBoundary = "00:00"; s.resetBufferMinutes = 0; },
+    high: (s) => { s.businessDayBoundary = "23:59"; s.resetBufferMinutes = 2147483647; },
+  };
+  if (CASE_Q in CASES) pushToday(CASES[CASE_Q]);
+  if (LOG_Q === "none") versions.splice(0, versions.length, { version: 1, date: null, mins: null, by: null, reason: null, editable: clone(versions[versions.length - 1].editable) });
+  if (LOG_Q === "one") {
+    const [a, b] = versions.slice(-2);
+    versions.splice(0, versions.length, { ...a, version: 1, date: null, mins: null, by: null, reason: null }, { ...b, version: 2 });
   }
   // The snapshot the page loaded (settings.read): the latest version and its five read-only values, never shown but
   // as «توقيت الرياض» beside the hours (item 49).
@@ -413,12 +567,23 @@
   const TODAY_KEY = "wed";
   const SVG_ERR = EclipseFrame.icons.error;
   const todayHours = () => current().editable.weeklySchedule[TODAY_KEY];
+  // The next opening for the closed status (STA-11): today's, else the next open day's («يفتح الخميس 6:00 ص»); with
+  // every day closed there is none, and the line says so rather than invent one.
+  function nextOpening() {
+    const week = current().editable.weeklySchedule, i0 = DAYS.indexOf(TODAY_KEY);
+    for (let k = 0; k < 7; k++) {
+      const i = (i0 + k) % 7, h = week[DAYS[i]];
+      if (h) return k === 0 ? L.opens(timeText(hm(h.open))) : L.opens(nw(`${L.daysShort[i]} ${bdi(clockOf(h.open))}`));
+    }
+    // The frame's status always writes «· » before its line (shared-frame.js), so with no opening at all the line says so.
+    return L.noOpening;
+  }
   const OPS_STATES = {
     live: (m = NOW_MIN) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
     delayed: (m = NOW_MIN - 13) => ({ cls: "is-delayed", mark: EclipseFrame.icons.clock, word: L.delayed, line: `${L.lastReading} ${timeText(m)}` }),
-    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: L.closed, line: L.opens(timeText(hm(todayHours()?.open ?? "06:00"))) }),
+    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: L.closed, line: nextOpening() }),
     offline: () => ({ cls: "is-off", mark: EclipseFrame.icons.offline, word: L.offline, line: L.noCount }),
-    error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine }),
+    error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
   };
   const OPS = ["delayed", "closed", "offline"].includes(params.get("ops")) ? params.get("ops") : "live";
   const keep = new URLSearchParams({ lang: LANG });
@@ -449,10 +614,13 @@
    * opening-hours list writes it), or «مغلق». The business day: its end and the reset, two figures. Nothing is lit;
    * nothing here is a reading. */
   const LEVEL_BARS = (lv) => `<span class="lvl-bars" aria-hidden="true">${[0, 1, 2, 3].map((i) => `<i${i <= lv ? ' class="on"' : ""}></i>`).join("")}</span>`;
-  const editBtn = (sec) => `<button class="rbtn set-edit" type="button" data-edit="${sec}" aria-label="${esc(L.editName(L.sec[sec]))}">${L.edit}</button>`;
+  // While the first payload loads, «تعديل» waits (BTN-4): there is nothing to edit yet.
+  const editBtn = (sec) => `<button class="rbtn set-edit" type="button" data-edit="${sec}" aria-label="${esc(L.editName(L.sec[sec]))}"${phase === "loading" ? " disabled" : ""}>${L.edit}</button>`;
+  // After a change is applied, the done sentence stands in its card's head (EMP-6), where the owner made it: on the
+  // title's line where the card has room, under it where it has not (settings.css "the done sentence").
   const head = (sec, extra = "") => `<div class="set-head">
       <h2 class="set-title" id="${sec}-title" tabindex="-1"><span class="set-name">${L.sec[sec]}</span>${extra}</h2>
-      ${editBtn(sec)}
+      ${noticeHTML(sec)}${editBtn(sec)}
     </div>`;
   const row = (dt, dd, cls = "") => `<div class="set-row${cls ? ` ${cls}` : ""}"><dt>${dt}</dt><dd>${dd}</dd></div>`;
   // A figure's value: its figure in title type and the words that finish it smaller on the same baseline (CRD-2's value
@@ -535,6 +703,7 @@
       `<p class="log-meta">${SR_SEP}${bdi(esc(OWNER_NAMES[v.by]))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(v)}</p></li>`;
   }
   function logHTML() {
+    if (phase === "loading") return logPH();
     const recs = versions.slice(1).map((v, i) => [v, versions[i]]).reverse().slice(0, LOG_N);
     const list = recs.length ? `<ol class="log-list">${recs.map(([v, p]) => recordHTML(v, p)).join("")}</ol>` : `<p class="log-none">${L.logEmpty}</p>`;
     return `<div class="set-head">
@@ -547,12 +716,92 @@
    * Each card is drawn whole from the current version: renderCard("crowd" | "hours" | "day" | "log"). A save (part 3)
    * pushes a new version and calls renderAll(), so the cards and the history's top record follow it. */
   const cardEl = { crowd: $("#card-crowd"), hours: $("#card-hours"), day: $("#card-day"), log: $("#card-log") };
-  const CARD_HTML = { crowd: () => crowdHTML(current().editable), hours: () => hoursHTML(current().editable), day: () => dayHTML(current().editable), log: logHTML };
+  const gridEl = $("#grid");
+  const CARD_HTML = {
+    crowd: () => (phase === "loading" ? crowdPH() : crowdHTML(current().editable)),
+    hours: () => (phase === "loading" ? hoursPH() : hoursHTML(current().editable)),
+    day: () => (phase === "loading" ? dayPH() : dayHTML(current().editable)),
+    log: logHTML,
+  };
   function renderCard(k) { cardEl[k].innerHTML = CARD_HTML[k](); }
   function renderAll() {
-    for (const k of Object.keys(cardEl)) renderCard(k);
+    if (phase === "error" || phase === "retrying") paintError();
+    else {
+      $("#page-msg")?.remove();
+      gridEl.hidden = false;
+      for (const k of Object.keys(cardEl)) renderCard(k);
+      for (const el of Object.values(cardEl)) el.toggleAttribute("aria-busy", phase === "loading");
+    }
     frame.refreshStatus();
     root.dataset.phase = phase;
+  }
+
+  /* ---- the done sentence (EMP-6): after a change is applied, one paragraph in the head of the card it changed, in
+   * Access's form: a check, «طُبّق التغيير.» or «طُبّقت التغييرات.», and the way to its record in Activity log (the exact
+   * record, AMD-C2's arrival). It stays until another change replaces it or the page loads again: a window that opens
+   * or closes never takes it away, so the page behind a window never moves (the brief's hard limit). It arrives at once,
+   * with the cards' new values and the history's new record: the page itself has no motion (item 4). */
+  let notice = null;                               // { at: "crowd" | "hours" | "day", many, id }
+  // A record a save writes takes the session's next id, as Access's do (57 on; Activity log's sample ends at 56).
+  let nextRecordId = 57;
+  const recHref = (id) => `activity.html?kind=settings&record=${id}&${keep}`;
+  const CHECK = '<svg class="done-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 12.5 10 17l8.5-9.5"/></svg>';
+  function noticeHTML(sec) {
+    if (!notice || notice.at !== sec || phase !== "ready") return "";
+    return `<p class="done set-done" id="notice" tabindex="-1">${CHECK}<span class="done-t">${L.done(notice.many)}</span> <a class="done-a" href="${recHref(notice.id)}">${L.doneLink}</a></p>`;
+  }
+
+  /* ---- Loading (STA-10, PH-1…3). Real from the first paint: the title, every card's name and «توقيت الرياض», the
+   * labels («السعة», «المستويات», the levels with their keys, the days, «نهاية يوم العمل», «تصفير العدد»), the history's
+   * name and «عرض الكل», the phone's way to the history, the frame. Awaited: every value, in its own slot, as one flat bar
+   * as tall as its digits' ink (22 px for a figure in title type, 11 px for a value in body type, as Access's names), a
+   * typical value's width; three history records of bars. «تعديل» waits (BTN-4). Nothing moves; 0-300 ms the bars are
+   * unseen (data-load="wait"), then at least 400 ms; the arrival writes the values into the same slots. */
+  const ph = (w, cls = "ph-v") => `<i class="ph-bar ${cls}" style="--w:${w}px" aria-hidden="true"></i>`;
+  const phRow = (dt, w, cls = "") => row(dt, `<span class="ph-span">${ph(w)}</span>`, cls);
+  function crowdPH() {
+    return `${head("crowd")}
+    <dl class="set-figs">${fig(L.capacity, ph(108, "ph-fig"), "is-cap")}</dl>
+    <h3 class="set-sub" id="levels-title">${L.levelsTitle}</h3>
+    <dl class="set-dl dl-levels" aria-labelledby="levels-title">${[0, 1, 2, 3].map((i) => phRow(`${LEVEL_BARS(i)}<span>${L.levels[i]}</span>`, i === 3 ? 172 : 148, "is-level")).join("")}</dl>`;
+  }
+  function hoursPH() {
+    return `${head("hours", `<span class="set-unit">${SR_SEP}${L.hoursUnit}</span>`)}
+    <dl class="set-dl dl-hours">${DAYS.map((d, i) => phRow(L.days[i], 124)).join("")}</dl>`;
+  }
+  function dayPH() {
+    return `${head("day")}
+    <dl class="set-figs">${fig(L.dayEnd, ph(84, "ph-fig"))}${fig(L.reset, ph(176, "ph-fig"))}</dl>`;
+  }
+  function logPH() {
+    const W = [[236, 168, 72], [212, 132, 64], [224, 188, 64]];
+    return `<div class="set-head">
+        <h2 class="set-title" id="log-title" tabindex="-1"><span class="set-name">${L.logTitle}</span></h2>
+        <a class="acc-all set-all" id="log-all" href="${LOG_HREF}" aria-label="${esc(L.logAllName)}"><span>${L.logAll}</span><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg></a>
+      </div><ol class="log-list">${W.map(([a, b, c]) => `<li class="log-rec is-ph"><div class="log-body"><p class="log-ph">${ph(a)}</p><p class="log-ph">${ph(b, "ph-c")}</p></div><p class="log-meta">${ph(c, "ph-c")}</p></li>`).join("")}</ol>`;
+  }
+
+  /* ---- Error (STA-13; the first load failed): the header's Error, and one message for the page in place of the cards
+   * (Reports' option C, as Access and Activity log): the mark, «تعذّر تحميل الإعدادات», and the one retry, focused; it
+   * runs as an action (BTN-9) and arrives with focus on the first card's name. The phone's way to the history stays (a
+   * link to another page). */
+  let retryBtn = null, focusAlert = phase === "error";
+  const stack = (a, b, showB = false) => `<span class="rb-stack"><span class="rb-l"${showB ? ' aria-hidden="true"' : ""}>${a}</span><span class="rb-l"${showB ? "" : ' aria-hidden="true"'}>${b}</span></span>`;
+  function paintError() {
+    gridEl.hidden = true;
+    let msg = $("#page-msg");
+    if (!msg) {
+      msg = Object.assign(document.createElement("section"), { className: "card set-msg", id: "page-msg" });
+      gridEl.after(msg);
+    }
+    const trying = phase === "retrying";
+    msg.innerHTML = `<p class="set-say" aria-hidden="true">${SVG_ERR}<span>${L.errorFull}</span></p><span class="sr-only" id="err-say" role="alert"></span>` +
+      `<button class="rbtn rbtn-primary" id="retry" type="button"${trying ? ' aria-disabled="true" aria-busy="true"' : ""}>${stack(L.retry, L.retrying, trying)}</button>`;
+    retryBtn = $("#retry", msg);
+    retryBtn.addEventListener("click", retry);
+    const sayEl = $("#err-say", msg);
+    if (!trying) setTimeout(() => { if (sayEl.isConnected) sayEl.textContent = L.errorFull; }, 50);
+    if (focusAlert) { retryBtn.focus(); focusAlert = false; }
   }
 
   /* ================================================================ the editor (part 2 of this round)
@@ -955,13 +1204,22 @@
     M.reflow(dlgOf(sec), () => gone.forEach((id) => setMsg(id, "err", "")));
   }
 
-  /* ---- the window: open, close, submit. */
+  /* ---- the window: open, close, submit. One <dialog> per card holds the editor and, after it, one step panel that
+   * takes the editor's place in turn, as Access's code dialog does (DLG-11 then DLG-9): the scrim never leaves, the
+   * panel keeps the editor's width, and its edges settle around the new step (MOT-15). The steps: the confirmation, the
+   * conflict view, the question before closing with something typed. The editor stays in the window, hidden, with what
+   * was typed, so «رجوع» brings it back as it was left. */
   const D = { crowd: $("#dlg-crowd"), hours: $("#dlg-hours"), day: $("#dlg-day") };
   const mqPhone = matchMedia("(max-width: 720px)");
-  const panelOf = (dlg) => $(":scope > .dlg-panel", dlg);
+  const panelOf = (dlg) => $$(":scope > .dlg-panel", dlg).find((p) => !p.hidden) || null;
   const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
     .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length);
   let editing = null;                                 // the section whose window is open
+  /* The open window's flow: its step ("edit", "confirm", "conflict", "discard"), the snapshot a confirmation was
+   * computed from (base) and would save (next), the reason as typed (kept across the steps until the window closes),
+   * where «رجوع» and «متابعة التعديل» return focus (from), and whether an application is on its way (busy). */
+  let flow = null;
+  const ME = "o1";                                    // the signed-in owner (فهد)
   function openDialog(dlg, opener, first) {
     if (openDlg) closeDialog(openDlg.dlg, { instant: true, quiet: true });
     if (frame.state.railOpen) frame.setRail(false);
@@ -978,6 +1236,8 @@
     const { opener } = openDlg;
     openDlg = null;
     editing = null;
+    flow = null;
+    dlg.dataset.busy = "false";
     dlg.classList.remove("is-open");
     if (dlg.open) dlg.close();
     if (quiet) return;
@@ -993,19 +1253,24 @@
     if (sec === "hours") { const d = DAYS.find((x) => $(`#ed-${x}-sw`).getAttribute("aria-checked") === "true"); return d ? $(`#ed-${d}-open`) : $("#ed-sun-sw"); }
     return $("#ed-end");
   }
+  // A field's own description (a level's people) is kept apart from its messages.
+  const keepDescribed = (el) => $$("[aria-describedby]", el).forEach((i) => { i.dataset.describedby = i.getAttribute("aria-describedby"); });
   function openEditor(sec, opener) {
     const dlg = D[sec];
     dlg.dataset.sec = sec;
-    dlg.innerHTML = `<div class="dlg-scrim" data-close="scrim"></div>${EDITOR_HTML[sec](current().editable)}`;
+    dlg.innerHTML = `<div class="dlg-scrim" data-close="scrim"></div>${EDITOR_HTML[sec](current().editable)}` +
+      `<form class="dlg-panel st-panel" id="st-${sec}" data-sec="${sec}" novalidate hidden></form>`;
     dlg.setAttribute("aria-labelledby", `ed-${sec}-title`);
-    // A field's own description (a level's people) is kept apart from its messages.
-    $$("[aria-describedby]", dlg).forEach((i) => { i.dataset.describedby = i.getAttribute("aria-describedby"); });
+    dlg.removeAttribute("aria-describedby");
+    dlg.removeAttribute("role");
+    keepDescribed(dlg);
     editing = sec;
+    flow = { sec, step: "edit", base: null, next: null, reason: "", from: null, busy: false, mode: null };
     live(sec);
     openDialog(dlg, opener, firstFocus(sec));
     if (!RTL && sec === "crowd") live(sec);           // the signs measured once the window is laid out
   }
-  // Anything typed, switched or chosen since the window opened.
+  // Anything typed, switched or chosen since the window opened (or, after a conflict, unlike what is saved now).
   const isDirty = (sec) => $$("[data-init]", $(`#ed-${sec}`)).some((el) => (el.matches("[role=switch]") ? el.getAttribute("aria-checked") : el.value) !== el.dataset.init);
   function submitEdit(sec) {
     $$(".tf-in", $(`#ed-${sec}`)).forEach(tidyClock);
@@ -1038,34 +1303,366 @@
       say(wantWarn[id].replace(/<[^>]+>/g, ""));
       return;
     }
-    confirmSave(sec, next);
-  }
-  /* PART 3 puts the confirmation here (each change from → to, the optional reason, then working, done, the refusals
-   * and the conflict view; DECISIONS items 49 and 78). Until then a valid edit is saved at once as the next version,
-   * which the cards and the history's top record follow (renderAll), and focus returns to the card's «تعديل». */
-  function confirmSave(sec, next) {
-    versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN, by: "o1", reason: null, editable: next });
-    closeDialog(D[sec], { quiet: true });
-    renderAll();
-    $(`[data-edit="${sec}"]`).focus();
-    say(L.saved);
+    showConfirm(sec, base, next);
   }
 
+  /* ================================================================ the steps after «حفظ» (part 3 of this round)
+   * The confirmation (DECISIONS item 49): the card's name in a question, what the step does in one sentence, each change
+   * from → to in the history's own words (the record the log will keep), the people that follow for the crowd, the
+   * optional reason (240 characters, AMD-S1), then «رجوع» and «تطبيق تغييري / تطبيق الآن». Its button does not repeat the
+   * editor's «حفظ» (the coordinator's ruling): «تطبيق الآن» names what this step does that the first did not, the values
+   * become live, for the visitors' page where they reach it, at once (no later date, item 49); a second «حفظ» would read
+   * as the first one having failed. Working, done, each refusal and the conflict view follow it in the same panel. */
+  const stEl = (sec) => $(`#st-${sec}`);
+  const edEl = (sec) => $(`#ed-${sec}`);
+  const closeX = `<button class="icon-btn dlg-x" type="button" data-close aria-label="${L.close}">${ICON.close}</button>`;
+  const stHead = (sec, title, x = true) => `<header class="dlg-head"><h2 id="st-${sec}-title" tabindex="-1">${title}</h2>${x ? closeX : ""}</header>`;
+  // A change as the history will name it: what, then from, the arrow along the reading line, and to (LOG-1's words);
+  // here the new value carries the weight (from in --ink-2, to in chalk). Said in full to assistive technology.
+  const changeItems = (list) => list.map((c) => `<li class="cf-row"><span class="cf-what" aria-hidden="true">${c.what}</span>` +
+    `<span class="cf-fig" aria-hidden="true"><span class="cf-from">${c.from}</span><span class="cf-to">${ARROW}${c.to}</span></span>` +
+    `<span class="sr-only">${esc(c.said)}</span></li>`).join("");
+  const limsOf = (s) => [s.thresholds.quietMaxPercent, s.thresholds.moderateMaxPercent, s.thresholds.busyMaxPercent];
+  const risingOk = (s) => { const l = limsOf(s); return l[0] < l[1] && l[1] < l[2]; };
+  const plain = (h) => String(h).replace(/<[^>]+>/g, "");
+  /* The crowd's confirmation: capacity's change, then a row per level that changes in any way, marked with its key and
+   * word as on the card: its limit from → to (the log's words, chalk), and under it the people it holds from → to,
+   * quieter (label type --ink-2), so a change of capacity or of a limit shows where each level now starts for the
+   * visitors, in the people the owner thinks in, without the level's name twice. Packed follows Busy, so its row has only
+   * its people. A level no count reaches says «لا يظهر». */
+  function levelItems(a, b) {
+    const pa = limsOf(a), pb = limsOf(b);
+    const la = pa.map((p) => lastCount(a.capacity, p)), lb = pb.map((p) => lastCount(b.capacity, p));
+    const at = (last, i) => (i > 0 && last[i] === last[i - 1] ? null : last[i]);
+    const fig = (from, to, cls = "") => `<span class="cf-fig${cls}"><span class="cf-from">${nw(from)}</span><span class="cf-to">${ARROW}${nw(to)}</span></span>`;
+    let out = "";
+    for (let i = 0; i < 4; i++) {
+      const lines = [], said = [];
+      if (i < 3 && pa[i] !== pb[i]) {
+        lines.push(fig(ltr(`${pa[i]}%`), ltr(`${pb[i]}%`)));
+        said.push(L.fromTo(`${pa[i]}%`, `${pb[i]}%`));
+      }
+      let from = null, to, fromSaid, toSaid;
+      if (i < 3) {
+        const x = at(la, i), y = at(lb, i);
+        if (x !== y) {
+          from = x === null ? L.never : L.pplUpTo(ltr(fmtInt(x)));
+          to = y === null ? L.never : L.people(y);
+          fromSaid = x === null ? L.never : fmtInt(x);
+        }
+      } else if (la[2] !== lb[2]) {
+        from = ltr(fmtInt(la[2] + 1));
+        to = L.pplMore(L.people(lb[2] + 1));
+        fromSaid = fmtInt(la[2] + 1);
+      }
+      if (from !== null) {
+        toSaid = plain(to);
+        lines.push(fig(from, to, " is-ppl"));
+        said.push(L.fromTo(fromSaid, toSaid));
+      }
+      if (!lines.length) continue;
+      out += `<li class="cf-row is-lv"><span class="cf-what" aria-hidden="true">${LEVEL_BARS(i)}<span>${L.levels[i]}</span></span>` +
+        `<span class="cf-figs" aria-hidden="true">${lines.join("")}</span><span class="sr-only">${esc(`${L.levels[i]}: ${said.join(RTL ? "، " : ", ")}`)}</span></li>`;
+    }
+    return out;
+  }
+  // The reason (FLD-9): a text area, three lines growing with its words, 240 characters (what the log stores); from 200
+  // typed it says what is left, said to assistive technology at 40, 20, 10 and none.
+  function reasonField(sec) {
+    const id = `st-${sec}-reason`;
+    return `<div class="field cf-reason"><label class="field-label" for="${id}">${L.reasonLabel}</label>` +
+      `<textarea class="field-input cf-reason-in" id="${id}" name="${id}" rows="3" maxlength="240" dir="auto" spellcheck="true"></textarea>` +
+      `<p class="cf-left" id="${id}-left" hidden></p></div>`;
+  }
+  function showLeft(t, announce = true) {
+    const left = 240 - t.value.length, el = $(`#${t.id}-left`);
+    el.hidden = left > 40;
+    el.textContent = left <= 40 ? L.left(left) : "";
+    if (left <= 40) t.setAttribute("aria-describedby", el.id); else t.removeAttribute("aria-describedby");
+    if (announce && [40, 20, 10, 0].includes(left) && t.dataset.said !== String(left)) { t.dataset.said = String(left); say(L.left(left)); }
+  }
+  const alertBox = (sec) => `<div class="alert st-alert" id="st-${sec}-alert" role="alert" hidden></div>`;
+  const keepReason = (sec) => { const r = $(".cf-reason-in", stEl(sec)); if (r && flow) flow.reason = r.value; };
+  // A step takes the editor's place (or the step before it); the panel settles around it.
+  function showStep(sec, html) {
+    const dlg = D[sec], ed = edEl(sec), st = stEl(sec);
+    keepReason(sec);
+    M.reflow(dlg, () => {
+      ed.hidden = true;
+      st.hidden = false;
+      st.innerHTML = html;
+      dlg.setAttribute("aria-labelledby", `st-${sec}-title`);
+      const desc = $(`#st-${sec}-desc`, st);
+      if (desc) dlg.setAttribute("aria-describedby", desc.id); else dlg.removeAttribute("aria-describedby");
+      if (flow.step === "discard") dlg.setAttribute("role", "alertdialog"); else dlg.removeAttribute("role");
+    });
+  }
+  // Back to the editor, as it was left; focus where the owner left it (the «حفظ» that led on, or the field they were in).
+  function showEditor(sec, to) {
+    const dlg = D[sec], ed = edEl(sec), st = stEl(sec);
+    keepReason(sec);
+    flow.step = "edit";
+    M.reflow(dlg, () => {
+      st.hidden = true;
+      st.innerHTML = "";
+      ed.hidden = false;
+      dlg.setAttribute("aria-labelledby", `ed-${sec}-title`);
+      dlg.removeAttribute("aria-describedby");
+      dlg.removeAttribute("role");
+    });
+    (to && to.isConnected && ed.contains(to) ? to : $(".ed-save", ed)).focus();
+  }
+  function showConfirm(sec, base, next) {
+    const list = changes(base, next), many = list.length > 1;
+    const items = sec === "crowd" ? changeItems(list.filter((c) => c.what === L.chg.capacity)) + levelItems(base, next) : changeItems(list);
+    Object.assign(flow, { base, next, step: "confirm", from: document.activeElement });
+    showStep(sec, `${stHead(sec, L.cf.title(sec, many))}
+      <div class="dlg-body">
+        <p class="dlg-desc" id="st-${sec}-desc">${L.cf.desc[sec](many)}</p>
+        <div class="cf-grid"><ul class="cf-list" aria-label="${esc(L.cf.listName)}">${items}</ul></div>
+        ${reasonField(sec)}
+        ${alertBox(sec)}
+      </div>
+      <footer class="dlg-foot"><button class="rbtn st-back" type="button" data-back>${L.back}</button>` +
+      `<button class="rbtn rbtn-primary st-do" type="submit">${stack(L.applyNow, L.applying)}</button></footer>`);
+    const r = $(`#st-${sec}-reason`);
+    r.value = flow.reason;
+    showLeft(r, false);
+    // From 721 px the reason (DLG-8): the owner may say why at once, and «تطبيق الآن» is never one Enter away. On a
+    // phone the title, as in the editor: a focused field would raise the keyboard over the list of changes.
+    (mqPhone.matches ? $(`#st-${sec}-title`) : r).focus();
+  }
+
+  /* ---- working, then the answer. Synthetic answers from the contract: success by default; ?refuse=<code> makes the
+   * first application return that code, once (bad_request: 400; unauthorized: 401; forbidden: 403;
+   * settings_version_conflict: 409); ?fail=1 makes the first one fail (500), once; ?hold=1 keeps it working. Working
+   * (STA-15): «تطبيق الآن» rolls to «جارٍ التطبيق…» (MOT-14) and keeps its width and focus, `aria-busy`; «رجوع», the
+   * close button, the reason, Escape and the scrim wait: values already sent cannot be called back. It shows for the
+   * answer's 700 ms, never under 400 ms (STA-9). */
+  const REFUSE = params.get("refuse"), FAIL = params.get("fail") === "1", HOLD = params.get("hold") === "1";
+  const REFUSALS = ["bad_request", "unauthorized", "forbidden", "settings_version_conflict"];
+  let refuseUsed = false, failUsed = false, held = HOLD, pending = null;
+  const LATENCY = 700;
+  function answer() {
+    if (REFUSALS.includes(REFUSE) && !refuseUsed) { refuseUsed = true; return { refuse: REFUSE }; }
+    if (FAIL && !failUsed) { failUsed = true; return { fail: true }; }
+    return { ok: true };
+  }
+  const run = (fn) => {
+    pending = fn;
+    if (held) return;
+    setTimeout(() => { if (pending === fn && !held) { pending = null; fn(); } }, LATENCY);
+  };
+  const releaseAnswer = () => { const f = pending; pending = null; if (f) f(); };
+  // A button's two labels share one cell (its width is the wider's); only the current one is seen and read.
+  const setLabels = (btn, second) => {
+    const [a, b] = btn.querySelectorAll(".rb-l");
+    if (!a || !b) return;
+    if (second) { a.setAttribute("aria-hidden", "true"); b.removeAttribute("aria-hidden"); }
+    else { a.removeAttribute("aria-hidden"); b.setAttribute("aria-hidden", "true"); }
+  };
+  const setOff = (el, on) => { if (on) el.setAttribute("aria-disabled", "true"); else el.removeAttribute("aria-disabled"); };
+  function setBusy(sec, on) {
+    const st = stEl(sec), doBtn = $(".st-do", st);
+    flow.busy = on;
+    D[sec].dataset.busy = String(on);
+    if (doBtn) {
+      setLabels(doBtn, on);
+      setOff(doBtn, on);
+      if (on) doBtn.setAttribute("aria-busy", "true"); else doBtn.removeAttribute("aria-busy");
+    }
+    $$(".st-back, .dlg-x", st).forEach((x) => setOff(x, on));
+    $$(".cf-reason-in", st).forEach((i) => { i.readOnly = on; });
+  }
+  // The alert (EMP-2) under the list: what happened, that nothing changed, what to do. A refusal no retry can mend sets
+  // the action aside and «رجوع» takes focus (DLG-10); a failure keeps the action, which is the retry.
+  function setAlert(sec, text, moot) {
+    const st = stEl(sec), a = $(`#st-${sec}-alert`, st);
+    a.innerHTML = `${ICON.alert}<span>${text}</span>`;
+    a.hidden = false;
+    if (moot) $(".st-do", st).hidden = true;
+  }
+  function clearAlert(sec) {
+    const st = stEl(sec), a = $(`#st-${sec}-alert`, st);
+    if (a) { a.hidden = true; a.innerHTML = ""; }
+  }
+  function applyStep(sec) {
+    if (!flow || flow.busy || (flow.step !== "confirm" && !(flow.step === "conflict" && flow.mode === "apply"))) return;
+    keepReason(sec);
+    M.reflow(D[sec], () => { clearAlert(sec); setBusy(sec, true); });
+    run(() => {
+      if (!flow || flow.sec !== sec) return;
+      const r = answer();
+      if (r.refuse === "settings_version_conflict") { showConflict(sec); return; }
+      if (r.refuse) {
+        M.reflow(D[sec], () => { setBusy(sec, false); setAlert(sec, L.refuse[r.refuse], true); });
+        $(".st-back", stEl(sec)).focus();
+        return;
+      }
+      if (r.fail) { M.reflow(D[sec], () => { setBusy(sec, false); setAlert(sec, L.failed, false); }); return; }
+      commit(sec);
+    });
+  }
+  /* Done: the window closes (its picture leaves as it was, working, MOT-9); the cards behind already show the new
+   * values and the history its new record, with the reason as typed; the done sentence stands under the changed card's
+   * head and takes focus (its ring when a key led there), and is announced. */
+  function commit(sec) {
+    const reason = flow.reason.trim(), many = changes(flow.base, flow.next).length > 1, id = nextRecordId++;
+    versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN, by: ME, reason: reason ? { raw: reason } : null, editable: flow.next, id });
+    notice = { at: sec, many, id };
+    closeDialog(D[sec], { quiet: true });
+    renderAll();
+    $("#notice")?.focus();
+    say(L.done(many));
+  }
+
+  /* ---- the conflict view (409, settings_version_conflict; DECISIONS items 49 and 78). Another save came first: the
+   * page reads the settings again, so the cards behind show what is saved now (and the history its record); the view
+   * takes the confirmation's place and says so without naming anyone, when it was saved, then two lists: «المحفوظ الآن»,
+   * what that save changed (from what this window started from), and «تغييرك», what applying would change now (from
+   * what is saved now to what was typed), with the reason. What was typed is kept: the values the owner changed stay,
+   * those they did not follow what is saved now, so nothing they did not touch is put back, and nothing is applied
+   * without being listed. «تطبيق تغييري» applies it against the new version; «رجوع» returns to the editor, which
+   * holds the same. When what was typed is already saved, there is nothing to apply and «إغلاق» closes; when it no
+   * longer fits (a limit now at or under the one below it), «رجوع» leads to the editor's own refusal. */
+  // The save that came first (synthetic): capacity 120 → 150 and Friday from 4:00 PM, a minute ago, by the signed-in
+  // owner, the likely case (the same owner on another device, item 78), with no reason.
+  const OTHER = (s) => { s.capacity = 150; if (s.weeklySchedule.fri) s.weeklySchedule.fri = { ...s.weeklySchedule.fri, open: "16:00" }; };
+  // Which of the window's values the owner changed (against what each field opened with).
+  function touched(sec) {
+    const ed = edEl(sec);
+    const num = (id) => { const el = $(`#${id}`, ed); return parseWhole(el.value) !== parseWhole(el.dataset.init); };
+    const time = (id) => {
+      const el = $(`#${id}`, ed), sel = $(`#${id}-ap`, ed), p = parseClock(el.dataset.init);
+      return readClock(el).mins !== (p ? to24(p.h, p.m, p.ap || sel.dataset.init) : null) || sel.value !== sel.dataset.init;
+    };
+    if (sec === "crowd") return { cap: num("ed-cap"), lims: [0, 1, 2].map((i) => num(`ed-lv${i}`)) };
+    if (sec === "day") return { end: time("ed-end"), reset: num("ed-reset") };
+    return Object.fromEntries(DAYS.map((d) => {
+      const sw = $(`#ed-${d}-sw`, ed), on = sw.getAttribute("aria-checked") === "true";
+      return [d, String(on) !== sw.dataset.init || (on && (time(`ed-${d}-open`) || time(`ed-${d}-close`)))];
+    }));
+  }
+  // What applying would save now: what is saved now, with the values the owner changed.
+  function overlay(sec, latest) {
+    const t = touched(sec), { value: v } = READ[sec](), mine = clone(latest);
+    if (sec === "crowd") {
+      if (t.cap) mine.capacity = v.capacity;
+      ["quietMaxPercent", "moderateMaxPercent", "busyMaxPercent"].forEach((k, i) => { if (t.lims[i]) mine.thresholds[k] = v.lims[i]; });
+    } else if (sec === "day") {
+      if (t.end) mine.businessDayBoundary = hhmm(v.boundary);
+      if (t.reset) mine.resetBufferMinutes = v.reset;
+    } else DAYS.forEach((d) => { if (t[d]) mine.weeklySchedule[d] = v.week[d]; });
+    return mine;
+  }
+  // The editor drawn again with those values, each field's starting value now what is saved now, so it is "changed"
+  // only where it differs from what is saved.
+  function rebuildEditor(sec, values, init) {
+    const old = edEl(sec), tmp = document.createElement("div"), ref = document.createElement("div");
+    tmp.innerHTML = EDITOR_HTML[sec](values);
+    ref.innerHTML = EDITOR_HTML[sec](init);
+    const fresh = tmp.firstElementChild;
+    $$("[data-init]", ref).forEach((r) => { const f = fresh.querySelector(`#${CSS.escape(r.id)}`); if (f) f.dataset.init = r.dataset.init; });
+    fresh.hidden = old.hidden;
+    old.replaceWith(fresh);
+    keepDescribed(fresh);
+    live(sec);
+  }
+  function showConflict(sec) {
+    keepReason(sec);
+    const oldBase = flow.base, latest = clone(current().editable);
+    OTHER(latest);
+    versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN - 1, by: ME, reason: null, editable: latest, id: nextRecordId++ });
+    renderAll();
+    const mine = overlay(sec, latest);
+    rebuildEditor(sec, mine, latest);
+    const saved = changes(oldBase, latest), yours = changes(latest, mine);
+    const mode = !risingOk(mine) ? "clash" : yours.length ? "apply" : "same";
+    const t = timeText(NOW_MIN - 1), why = flow.reason.trim();
+    Object.assign(flow, { base: latest, next: mine, mode, step: "conflict", busy: false });
+    D[sec].dataset.busy = "false";
+    const whyRow = why ? `<li class="cf-row is-why"><span class="cf-what">${L.reasonRow}</span><span class="cf-fig"><q class="cf-q"><bdi dir="auto">${esc(why)}</bdi></q></span></li>` : "";
+    showStep(sec, `${stHead(sec, L.cx.title)}
+      <div class="dlg-body">
+        <p class="dlg-desc" id="st-${sec}-desc">${L.cx[mode](t)}</p>
+        <div class="cf-grid">
+          <h3 class="cf-sub" id="st-${sec}-saved">${L.cx.saved}</h3>
+          <ul class="cf-list" aria-labelledby="st-${sec}-saved">${changeItems(saved)}</ul>
+          ${mode === "same" ? "" : `<h3 class="cf-sub" id="st-${sec}-yours">${L.cx.yours}</h3><ul class="cf-list" aria-labelledby="st-${sec}-yours">${changeItems(yours)}${whyRow}</ul>`}
+        </div>
+        ${alertBox(sec)}
+      </div>
+      <footer class="dlg-foot">${mode === "same" ? `<button class="rbtn st-back" type="button" data-close="now">${L.close}</button>`
+        : `<button class="rbtn st-back" type="button" data-back>${L.back}</button>${mode === "apply" ? `<button class="rbtn rbtn-primary st-do" type="submit">${stack(L.applyMine, L.applying)}</button>` : ""}`}</footer>`);
+    // Focus on the way on that changes nothing (DLG-10's form), and the view said once.
+    $(".st-back", stEl(sec)).focus();
+    say(`${L.cx.title}. ${plain(L.cx[mode](t))}`);
+  }
+
+  /* ---- closing with something typed asks first (DECISIONS item 49, and the coordinator's ruling: Escape, the close
+   * button and «إلغاء» alike; the scrim already keeps the window). The user's kept second-pass question, for a window:
+   * «إغلاق دون حفظ؟», what is lost, «متابعة التعديل» (focused: never one Enter from losing anything), then «إغلاق دون
+   * حفظ» (BTN-10, the destructive commit). With nothing typed, the window closes at once. Leaving the page itself (a
+   * reload, the back button, closing the tab; the page behind the window is inert, so no link is in reach) gets the
+   * browser's own question while a window holds typed values or is applying them. */
+  function requestClose(sec, from) {
+    if (!flow || flow.busy) return;
+    if (isDirty(sec)) askDiscard(sec, from);
+    else closeDialog(D[sec]);
+  }
+  function askDiscard(sec, from) {
+    if (from && edEl(sec).contains(from)) flow.from = from;
+    flow.step = "discard";
+    showStep(sec, `${stHead(sec, L.ds.title, false)}<div class="dlg-body"><p class="dlg-desc" id="st-${sec}-desc">${L.ds.desc(L.sec[sec])}</p></div>` +
+      `<footer class="dlg-foot"><button class="rbtn st-back" type="button" data-back>${L.ds.keep}</button>` +
+      `<button class="rbtn rbtn-danger st-discard" type="button" data-discard>${L.ds.discard}</button></footer>`);
+    $(".st-back", stEl(sec)).focus();
+  }
+  // Escape steps back one layer: from a step to the editor; from the editor, a close (which asks first if needed).
+  function onEscape(sec) {
+    if (!flow || flow.busy) return;
+    if (flow.step === "conflict" && flow.mode === "same") closeDialog(D[sec]);
+    else if (flow.step !== "edit") showEditor(sec, flow.from);
+    else requestClose(sec, document.activeElement);
+  }
+  // Escape is the window's, in every step: it is taken before the browser's own dialog handling, which closes a
+  // dialog after a refused cancel and would lose what was typed.
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !openDlg || !flow) return;
+    e.preventDefault();
+    e.stopPropagation();
+    onEscape(flow.sec);
+  }, true);
+  window.addEventListener("beforeunload", (e) => {
+    if (flow && (flow.busy || isDirty(flow.sec))) { e.preventDefault(); e.returnValue = ""; }
+  });
+
   // «تعديل» on a card (each card is drawn whole, so the listener is the grid's).
-  $("#grid").addEventListener("click", (e) => {
+  gridEl.addEventListener("click", (e) => {
     const b = e.target.closest("[data-edit]");
     if (b && phase === "ready") openEditor(b.dataset.edit, b);
   });
   for (const [sec, dlg] of Object.entries(D)) {
-    // Escape, the close button and Cancel close the window and keep nothing typed; a tap on the scrim closes it only
-    // when nothing was typed, so a stray tap beside a sheet never throws the owner's changes away.
-    dlg.addEventListener("cancel", (e) => { e.preventDefault(); closeDialog(dlg); });
+    // A close request the keyboard listener above did not see (a system back gesture) goes the same way.
+    dlg.addEventListener("cancel", (e) => { e.preventDefault(); onEscape(sec); });
+    // Should the browser close the window anyway, it opens again at once, with what was typed.
+    dlg.addEventListener("close", () => { if (openDlg && openDlg.dlg === dlg) { dlg.showModal(); dlg.classList.add("is-open"); } });
     dlg.addEventListener("click", (e) => {
-      const c = e.target.closest("[data-close]");
-      if (!c) return;
+      const c = e.target.closest("[data-close]"), b = e.target.closest("[data-back]"), x = e.target.closest("[data-discard]");
+      const hit = c || b || x;
+      if (!hit) return;
       e.preventDefault();
-      if (c.dataset.close === "scrim" && isDirty(sec)) return;
-      closeDialog(dlg);
+      // While working, «رجوع», the close button and the scrim wait.
+      if (!flow || flow.busy || hit.getAttribute("aria-disabled") === "true") return;
+      if (x) { closeDialog(dlg); return; }
+      if (b) { showEditor(sec, flow.from); return; }
+      if (c.dataset.close === "scrim") {
+        // A tap beside the window closes it only while nothing is typed, so a stray tap never throws changes away.
+        if (flow.step === "edit" && !isDirty(sec)) closeDialog(dlg);
+        return;
+      }
+      if (c.dataset.close === "now") { closeDialog(dlg); return; }
+      requestClose(sec, c);
     });
     dlg.addEventListener("keydown", (e) => {
       if (e.key !== "Tab") return;
@@ -1075,9 +1672,15 @@
       if (e.shiftKey && (document.activeElement === first || !dlg.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && (document.activeElement === last || !dlg.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
     });
-    dlg.addEventListener("submit", (e) => { e.preventDefault(); submitEdit(sec); });
+    dlg.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (e.target.matches(".ed-panel")) submitEdit(sec);
+      else applyStep(sec);
+    });
     dlg.addEventListener("input", (e) => {
       const t = e.target;
+      if (t.matches(".cf-reason-in")) { showLeft(t); return; }
+      if (!t.closest(".ed-panel")) return;
       // Arabic-Indic digits become Western as they are typed, the caret kept.
       if (t.matches("input")) {
         const w = toWestern(t.value);
@@ -1090,6 +1693,7 @@
     });
     dlg.addEventListener("change", (e) => {
       const t = e.target;
+      if (!t.closest(".ed-panel")) return;
       if (t.matches(".tf-in")) tidyClock(t);
       if (t.matches("#ed-cap, #ed-reset")) tidyCount(t);
       if (t.matches(".tf-sel")) setAp(t, t.value);
@@ -1108,10 +1712,69 @@
     });
   }
   // A window stays open across 720 px (BRK-10 closes the frame's own layers): it turns between a sheet and a dialog
-  // with what is typed kept.
+  // with what is typed kept, in every step.
+
+  /* ---------------------------------------------------------------- the page's states
+   *   loading  0-300 ms the slots wait empty (data-load="wait"); from 300 ms the bars, at least 400 ms; one
+   *            announcement at 1 s; the 10 s ceiling turns it into Error. ?arrive=<ms> brings the payload that many ms
+   *            after the page opened; ?arrive=never lets the ceiling run; without it the bars are held, for review.
+   *   error    the first payload could not be loaded: the header's Error and one message in place of the cards, the
+   *            retry focused; it runs as an action (BTN-9), then arrives, focus on the first card's name. */
+  const LOAD = { delay: 300, min: 400, say: 1000, ceiling: 10000, retry: 1200 };
+  const ARRIVE = (() => { const a = params.get("arrive"); if (a === "never") return "never"; const n = Number(a); return a != null && a !== "" && Number.isFinite(n) && n >= 0 ? n : null; })();
+  const load = { shownAt: null, timers: [] };
+  const later = (ms, fn) => load.timers.push(setTimeout(fn, Math.max(0, ms)));
+  const clearTimers = () => { load.timers.splice(0).forEach(clearTimeout); };
+  function startLoading(arriveAfter) {
+    clearTimers();
+    phase = "loading";
+    root.dataset.load = "wait";
+    load.shownAt = null;
+    renderAll();
+    later(LOAD.delay, () => { if (phase === "loading") { root.dataset.load = "shown"; load.shownAt = performance.now(); } });
+    later(LOAD.say, () => { if (phase === "loading") say(L.loadingSay); });
+    if (typeof arriveAfter === "number" && arriveAfter < LOAD.ceiling) later(arriveAfter, arrive);
+    if (arriveAfter === "never" || typeof arriveAfter === "number") later(LOAD.ceiling, fail);
+  }
+  function arrive() {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    const now = performance.now();
+    if (phase === "loading" && load.shownAt != null && now - load.shownAt < LOAD.min) { later(load.shownAt + LOAD.min - now, arrive); return false; }
+    clearTimers();
+    const hadFocus = Boolean(retryBtn && document.activeElement === retryBtn);
+    phase = "ready";
+    delete root.dataset.load;
+    renderAll();
+    // After a retry, focus goes where the page begins, with its ring when a key moved it and none after a pointer.
+    if (hadFocus) $("#crowd-title").focus({ preventScroll: true });
+    say(L.arrivedSay);
+    return true;
+  }
+  function fail() {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    clearTimers();
+    phase = "error";
+    delete root.dataset.load;
+    focusAlert = true;
+    renderAll();
+    return true;
+  }
+  function retry() {
+    if (phase !== "error") return false;
+    phase = "retrying";
+    setLabels(retryBtn, true);
+    retryBtn.setAttribute("aria-disabled", "true");
+    retryBtn.setAttribute("aria-busy", "true");
+    frame.refreshStatus();
+    root.dataset.phase = phase;
+    later(LOAD.retry, arrive);
+    later(LOAD.ceiling, fail);
+    return true;
+  }
 
   /* ---------------------------------------------------------------- start */
   renderAll();
+  if (phase === "loading") startLoading(ARRIVE);
   // Hooks for the capture script. They expose state, never anything a visitor could be identified by (there is none).
   window.__settings = {
     ready: true,
@@ -1125,6 +1788,14 @@
     get editing() { return editing; },
     dirty: () => (editing ? isDirty(editing) : false),
     edit: (sec) => openEditor(sec, $(`[data-edit="${sec}"]`)),
+    // The steps (part 3): the open window's step and whether it is applying; the done sentence's card; the states.
+    get step() { return flow ? flow.step : null; },
+    get busy() { return Boolean(flow?.busy); },
+    get notice() { return notice ? notice.at : null; },
+    get records() { return versions.slice(1).map((v) => v.version).reverse(); },
+    arrive, fail, retry,
+    set hold(v) { held = Boolean(v); },
+    answer: () => releaseAnswer(),
   };
   // ?edit=crowd|hours|day opens that card's window on load (for review), as its «تعديل» would.
   const EDIT_Q = params.get("edit");
