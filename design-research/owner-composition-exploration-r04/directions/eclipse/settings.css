@@ -181,6 +181,160 @@ html[lang="en"] .log-why q { quotes: "\201C" "\201D"; }
   .log-meta { margin-block-start: 4px; }
 }
 
+/* ------------------------------------------------------------------ the editor (part 2): a card's window
+ * shared.css's dialog (DLG-1…6): the panel (SRF-4) centred over the page, a bottom sheet at 720 px and below. The window
+ * is the card it opened from: its name (and «توقيت الرياض» beside the hours, in label type --ink-3 on its baseline, as
+ * on the card), 12 px, then its blocks, each ruled from the one above with the card's row line. A figure keeps its label
+ * over its field (FLD-1); a list keeps its rows (57 px: a 44 px field, 6 above and below, its 1 px rule), the field in the value's
+ * column. The crowd and the business day are DLG-2's 468 px; the week is 520, so each day keeps one line from 721 px
+ * (the day, its switch, two 12-hour fields and the note beside the closing): measured in Readex Pro. */
+.ed-hours { width: min(520px, 100%); }
+.set .dlg-head h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; min-width: 0; }
+.set .dlg-head h2:focus-visible { border-radius: 8px; }
+html[data-focus-input="keyboard"] .set .dlg-head h2:focus { border-radius: 8px; }
+.ed-panel .dlg-body { padding-block-start: 12px; container: edbody / inline-size; }
+.set .ico { width: 15px; height: 15px; }
+
+/* A figure in edit: its label in label type --ink-2, 8 px, then its field and the words after it on the field's line. */
+.ed-fig { padding-block: 14px 16px; border-block-start: 1px solid var(--row-line); }
+.ed-lab { display: block; margin-block-end: 8px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.ed-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+/* A count's field holds the contract's largest with its thousands marked, «2,147,483,647» (111 px of digits). */
+.ed-num { flex: none; width: 144px; padding-inline: 14px; }
+.ed-unit { font-size: 15px; line-height: 22px; color: var(--ink-2); white-space: nowrap; }
+.set .field-input.is-invalid { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); --focus-ring-color: var(--err); }
+
+/* The levels: the card's columns (the label column --lab, «حتى», the limit, the people), each row 57 px and ruled. A
+ * limit is a percent field 84 px wide whose sign stays inside after its digits, so the field reads "20%" as the page
+ * writes a percent, in both languages; the top level's «57%» stands where a field's digits stand. */
+.ed-list { display: grid; margin: 0; }
+.ed-levels { grid-template-columns: var(--lab) max-content max-content minmax(0, 1fr); }
+.ed-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: center; box-sizing: border-box; min-height: 57px; padding-block: 6px; border-block-start: 1px solid var(--row-line); }
+.ed-rl { min-width: 0; padding-inline-end: 16px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.ed-q { padding-inline-end: 8px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.ed-pct { position: relative; display: block; width: 84px; direction: ltr; }
+.ed-pct .field-input { width: 100%; padding-inline: 12px 30px; text-align: right; }
+.ed-pct-s { position: absolute; inset-block: 0; right: 16px; display: flex; align-items: center; font-size: 16px; line-height: 24px; color: var(--ink-2); pointer-events: none; }
+.ed-pct.is-ro { height: 44px; }
+.ed-pct.is-ro.is-empty .ed-pct-s { visibility: hidden; }
+.ed-pct-v { position: absolute; inset-block: 0; right: 30px; display: flex; align-items: center; font-size: 16px; line-height: 24px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+/* English starts its digits at the field's left edge, as its other numbers (DECISIONS item 16), the sign just after
+ * them (settings.js sets --pct-x to the digits' width as they are typed); in Arabic the percent, an LTR isolate, keeps
+ * the field's right edge, its sign on the right of its digits. */
+html[lang="en"] .ed-pct .field-input { padding-inline: 16px 12px; text-align: left; }
+html[lang="en"] .ed-pct-s { right: auto; left: calc(16px + var(--pct-x, 0px) + 1px); }
+html[lang="en"] .ed-pct.is-ro { display: flex; align-items: center; padding-inline-start: 16px; box-sizing: border-box; }
+html[lang="en"] .ed-pct.is-ro > span { position: static; }
+.ed-pct-m { position: absolute; visibility: hidden; white-space: pre; font-size: 16px; font-variant-numeric: tabular-nums; pointer-events: none; }
+.ed-ppl { min-width: 0; padding-inline-start: 16px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.ed-row > .field-err { grid-column: 2 / -1; margin-block: 2px 4px; }
+
+/* The week: the day, its switch, the opening, the closing, the note; «يفتح» and «يغلق» head the field columns once, in
+ * caption type --ink-3, unruled. A closed day: «مغلق» in COL-17's grey where its fields stood (they stay, hidden). */
+.ed-week { grid-template-columns: max-content 44px max-content max-content minmax(0, 1fr); column-gap: 8px; }
+.ed-heads { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; padding-block: 2px 6px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.ed-heads.is-idle { visibility: hidden; }
+.ed-heads .eh-o { grid-column: 3; }
+.ed-heads .eh-c { grid-column: 4; }
+.ed-day .ed-rl { padding-inline-end: 8px; }
+.ed-dn .dn-short { display: none; }
+.ed-day > .tf[data-tf$="-open"] { grid-column: 3; grid-row: 1; }
+.ed-day > .tf[data-tf$="-close"] { grid-column: 4; grid-row: 1; }
+.ed-closed { display: none; grid-column: 3 / 5; grid-row: 1; font-size: 15px; line-height: 22px; color: var(--stale); }
+.ed-day.is-off > .tf { visibility: hidden; }
+.ed-day.is-off > .ed-closed { display: block; }
+.ed-note { grid-column: 5; grid-row: 1; padding-inline-start: 4px; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+.ed-day > .field-err { grid-column: 3 / -1; margin-block: 2px 4px; }
+.ed-warns { padding-block-start: 12px; border-block-start: 1px solid var(--row-line); }
+.ed-warns > .ed-warn:first-child { margin-block-start: 0; }
+
+/* The switch in a list (new, SWI-5): SWI-2's track and thumb alone, in a 44 px target with no box of its own, named by
+ * what "on" means («مفتوح يوم الأحد»); the thumb slides (MOT-4); the press lights its 44 px square (STA-16, a dark key). */
+.set .switch { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: var(--ink-2); }
+@media (hover: hover) { .set .switch:hover { background: rgba(255, 255, 255, 0.05); } }
+.set .switch-track { position: relative; width: 32px; height: 18px; border-radius: 9px; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px var(--line-3); }
+.set .switch-thumb { position: absolute; top: 3px; inset-inline-start: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--ink-2); transition: translate 200ms cubic-bezier(0.25, 1, 0.5, 1); }
+.set .switch[aria-checked="true"] .switch-track { background: var(--ink); box-shadow: none; }
+.set .switch[aria-checked="true"] .switch-thumb { background: var(--card-solid); translate: 14px 0; }
+html[dir="rtl"] .set .switch[aria-checked="true"] .switch-thumb { translate: -14px 0; }
+html[data-motion="off"] .set .switch-thumb { transition: none; }
+
+/* The time field (new, FLD-11): one FLD-1 frame of two parts, the time typed (left to right, 16 px, tabular; in Arabic
+ * its digits keep the right edge) and ص / م after it, a native list lying unseen over its face (TYP-6's form: 16 px, so
+ * a phone never zooms) with a small chevron, a 1 px line between them. Each part is a full 44 px target (it reaches over
+ * the frame's 1 px edge) and takes FOC-2's inset ring, two controls edge to edge. Hover and focus raise the frame's edge
+ * (FLD-3); a refusal turns it --err (FLD-4). */
+.tf { display: inline-flex; flex: none; box-sizing: border-box; height: 44px; border: 1px solid var(--field-line); border-radius: 12px; background: var(--field); }
+@media (hover: hover) { .tf:hover { border-color: rgba(255, 255, 255, 0.52); } }
+.tf:focus-within { border-color: rgba(255, 255, 255, 0.52); }
+.tf.is-invalid { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); --focus-ring-color: var(--err); }
+.tf-in { width: 68px; min-width: 0; height: 44px; margin-block: -1px; box-sizing: border-box; padding-inline: 12px; border: 0; border-radius: 11px 0 0 11px; background: none; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; font-variant-numeric: tabular-nums; caret-color: var(--red-hi); --focus-ring-offset: -4px; }
+/* The typed part is left to right (dir), so its corners are set by the page's direction: rounded on the frame's start. */
+html[dir="rtl"] .tf-in { text-align: right; border-radius: 0 11px 11px 0; }
+.tf-ap { position: relative; display: grid; place-items: center start; min-width: 45px; margin-block: -1px; box-sizing: border-box; padding-inline: 8px; border-inline-start: 1px solid rgba(255, 255, 255, 0.14); border-start-end-radius: 11px; border-end-end-radius: 11px; --focus-ring-offset: -4px; }
+.tf-sel { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; border: 0; opacity: 0; font: inherit; font-size: 16px; cursor: pointer; appearance: none; }
+html[data-focus-input="keyboard"] .tf-ap:has(.tf-sel:focus) { outline: 2px solid var(--focus-ring-color, var(--ink)); outline-offset: -4px; }
+.tf-face { display: inline-flex; align-items: center; gap: 2px; font-size: 16px; line-height: 24px; color: var(--ink-2); pointer-events: none; }
+.tf-chev { width: 14px; height: 14px; fill: none; stroke: var(--ink-3); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .tf-ap:hover .tf-face { color: var(--ink); } }
+/* Held, the list's part takes a dark key's light (STA-16, MOT-20): it shows the press the unseen list receives. */
+.tf-ap { box-shadow: inset 0 0 0 100vmax var(--press-light, transparent); transition: --press-light var(--press-fade); }
+.tf-ap:has(.tf-sel:active) { --press-light: var(--press-lift); transition-duration: 0s; }
+/* In a figure (the end of the business day) the field is as wide as the number field under it, so their ends meet. */
+.ed-fig .tf { width: 144px; }
+.ed-fig .tf-in { flex: 1 1 auto; width: auto; }
+@media (forced-colors: active) {
+  .tf-sel { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; }
+  .tf-ap { border-inline-start-color: CanvasText; }
+}
+
+/* A sentence about a value that looks like a mistake (new, FLD-12): under its field, 8 px, caption type --ink-2 after a
+ * 15 px information mark in --ink-3; the field keeps its edge, since the value is accepted (DECISIONS item 49). */
+.ed-warn { display: flex; align-items: flex-start; gap: 8px; margin: 8px 0 0; font-size: 12px; line-height: 18px; color: var(--ink-2); }
+.ed-warn .ico { margin-block-start: 1.5px; color: var(--ink-3); }
+.ed-warn span, .ed-panel .field-err span { min-width: 0; overflow-wrap: anywhere; }
+.ed-row > .ed-warn { grid-column: 2 / -1; }
+
+/* A sheet (the window at 720 px and below, under 430 px inside): the note goes under the closing, its line kept in
+ * every row so a note that comes or goes moves nothing; English takes the short day names (DAT-2). Under 340 px inside
+ * (320 px) a day takes two lines: the day with its switch at the row's end, then its two fields. */
+@container edbody (max-width: 429.98px) {
+  .ed-day { row-gap: 2px; }
+  .ed-note { grid-column: 4; grid-row: 2; padding-inline-start: 0; min-height: 18px; }
+  .ed-day > .field-err { grid-row: 3; }
+  html[lang="en"] .ed-dn .dn-full { display: none; }
+  html[lang="en"] .ed-dn .dn-short { display: inline; }
+  /* Readex Pro's «ص» is 23 px at 16 px, so a time field is 120 px wide from 721 px; a sheet's row takes 112. */
+  .ed-week { column-gap: 6px; }
+  .ed-day .ed-rl { padding-inline-end: 0; }
+  .tf-in { width: 62px; }
+  .tf-ap { padding-inline: 6px; }
+  .tf-chev { width: 12px; height: 12px; }
+}
+@container edbody (max-width: 339.98px) {
+  .ed-week { grid-template-columns: max-content max-content minmax(0, 1fr); }
+  .ed-heads { display: none; }
+  .ed-day > .ed-rl { grid-column: 1; grid-row: 1; }
+  .ed-day > .ed-sw { grid-column: 2; grid-row: 1; justify-self: end; }
+  .ed-day > .tf[data-tf$="-open"] { grid-column: 1; grid-row: 2; }
+  .ed-day > .tf[data-tf$="-close"] { grid-column: 2; grid-row: 2; }
+  .ed-closed { grid-column: 1 / -1; grid-row: 2; }
+  .ed-note { grid-column: 2; grid-row: 3; }
+  .ed-day > .field-err { grid-column: 1 / -1; grid-row: 4; }
+}
+/* The levels in a sheet: the limit 76 px, the people 12 after it; where a row cannot hold its people beside the field
+ * (under 352 px inside: a 375 px phone; the widest, «أو 69 شخصًا فأكثر», ends on the sheet's edge at 390) they go under
+ * the field, starting where «حتى» starts, in every level alike, as on the card under 300 px. A count too long for its
+ * line (capacity in the millions) breaks between the words, never inside the number and its noun. */
+@container edbody (max-width: 429.98px) {
+  .ed-pct { width: 76px; }
+  .ed-ppl { padding-inline-start: 12px; }
+}
+@container edbody (max-width: 351.98px) {
+  .ed-levels .ed-row { padding-block: 8px; }
+  .ed-levels .ed-ppl { grid-column: 2 / -1; padding-inline-start: 0; padding-block-start: 4px; }
+}
+
 /* --------------------------------------------------------------- the phone (720 px and below)
  * The three value cards, 16 apart, each padding 16, so text stands 16 from its edge as on every page; the module is
  * 40 px. The history is reached by its control under the header. */

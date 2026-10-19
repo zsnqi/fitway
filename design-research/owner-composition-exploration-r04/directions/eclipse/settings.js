@@ -49,6 +49,14 @@
     if (t >= 3 && t <= 10) return `${ltr(fmtInt(n))} ${few}`;
     return `${ltr(fmtInt(n))} ${many}`;
   };
+  // The counted noun alone, for a unit after digits the owner types (a field shows digits, never words): 3-10 the
+  // plural, 11-99 and their hundreds the accusative singular, otherwise (0, 1, 2, a round hundred) the singular.
+  const arUnit = (n, sing, few, acc) => {
+    const t = n % 100;
+    if (n >= 3 && t >= 3 && t <= 10) return few;
+    if (t >= 11) return acc;
+    return sing;
+  };
   const COPY = {
     ar: {
       docTitle: "الإعدادات · FITWAY (مفهوم)",
@@ -66,9 +74,9 @@
       upTo: "حتى",
       above: "فوق",
       people: (n) => (n === 0 ? `${ltr("0")} أشخاص` : arCount(n, "شخص واحد", "شخصان", "أشخاص", "شخصًا", "شخص")),
-      orMore: (n) => `${COPY.ar.people(n)} فأكثر`,
       // A level no whole count reaches (its limit holds no more people than the level under it): part 3's range case.
-      noCount: "لا يبلغه أي عدد",
+      // (Named noReach: the frame's copy, merged over the page's, has its own noCount, «لا عدّ حاليًا».)
+      noReach: "لا يبلغه أي عدد",
       emptyOnly: "الصالة خالية فقط",
       days: ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
       closed: "مغلق",
@@ -102,6 +110,61 @@
         said: (what, a, b) => `${what}: من ${a} إلى ${b}`,
       },
       quote: (s) => `«${s}»`,
+      // The people a level holds, after its limit: one «حتى» governs both values, «حتى 20% أو 24 شخصًا», so the people
+      // read as an upper bound without «حتى» twice in the row (the coordinator's ruling of 2026-10-19: a bare «24 شخصًا»
+      // reads as exactly 24). The top level keeps «69 شخصًا فأكثر».
+      orPeople: (html) => `أو ${nw(html)}`,
+      orMorePeople: (n) => `أو ${nw(COPY.ar.people(n))} فأكثر`,
+      /* ---- the editor (part 2): each value card's window */
+      close: "إغلاق",
+      cancel: "إلغاء",
+      save: "حفظ",
+      saved: "حُفظت التغييرات",
+      noChange: "لم يتغيّر شيء، فلم يُحفظ شيء",
+      // After a number typed in a field, the counted noun follows the digits by their last two («3 أشخاص», «24 شخصًا»,
+      // «100 شخص»); a field always shows digits, so one and two take the singular («1 شخص»).
+      capUnit: (n) => arUnit(n, "شخص", "أشخاص", "شخصًا"),
+      resetUnit: (n) => `${arUnit(n, "دقيقة", "دقائق", "دقيقة")} بعد الإغلاق`,
+      limitName: (lv) => `${lv}، الحد الأعلى بالمئة`,
+      am: "ص",
+      pm: "م",
+      opensHead: "يفتح",
+      closesHead: "يغلق",
+      openName: (d) => `وقت فتح ${d}`,
+      closeName: (d) => `وقت إغلاق ${d}`,
+      apName: (name) => `${name}، ص أو م`,
+      swName: (d) => `مفتوح يوم ${d}`,
+      nextDay: "اليوم التالي",
+      // The days in a sentence: «يوم الخميس», «يومي الجمعة والسبت», «أيام الأحد إلى الأربعاء», «كل الأيام».
+      daysAt: (n, text) => (n >= 6 ? text : `${n === 1 ? "يوم" : n === 2 ? "يومي" : "أيام"} ${text}`),
+      // A field's refusal on the page (FLD-4): what to type, never what went wrong.
+      err: {
+        capEmpty: "اكتب السعة",
+        capWhole: "اكتب عددًا صحيحًا من الأشخاص، مثل 120",
+        capMin: "اجعل السعة شخصًا واحدًا على الأقل",
+        capMax: `أكبر سعة ممكنة ${ltr("2,147,483,647")} شخصًا`,
+        limEmpty: (lv) => `اكتب حد ${lv}`,
+        limRange: `اكتب عددًا صحيحًا من ${ltr("0")} إلى ${ltr("100")}`,
+        limRise: (lv, pct) => `اجعله أعلى من حد ${lv}، ${ltr(`${pct}%`)}`,
+        openEmpty: "اكتب وقت الفتح",
+        closeEmpty: "اكتب وقت الإغلاق",
+        timeEmpty: "اكتب الوقت",
+        timeBad: `اكتب الوقت هكذا: ${ltr("6:30")}`,
+        resetEmpty: "اكتب عدد الدقائق",
+        resetWhole: "اكتب عددًا صحيحًا من الدقائق، مثل 30",
+        resetMax: `أكبر عدد ممكن ${ltr("2,147,483,647")} دقيقة`,
+      },
+      // A value that looks like a mistake is accepted, with one plain sentence under its field (DECISIONS item 49): what
+      // the value means, then what follows from it.
+      warn: {
+        capLow: (cur) => `هذا أقل من نصف السعة الحالية، ${cur}، فستبدو الصالة للزوار أكثر ازدحامًا من الآن بالعدد نفسه.`,
+        capHigh: (cur) => `هذا أكثر من ضعف السعة الحالية، ${cur}، فستبدو الصالة للزوار أهدأ من الآن بالعدد نفسه.`,
+        allClosed: "كل الأيام مغلقة، فسيرى الزوار الصالة مغلقة دائمًا.",
+        boundary: (days) => `يقع هذا الوقت ضمن ساعات العمل ${days}، فتُحسب الساعات بعده في اليوم التالي.`,
+        boundaryHours: (t, days) => `ينتهي يوم العمل الساعة ${t}، وهي ضمن ساعات العمل ${days}، فتُحسب الساعات بعدها في اليوم التالي.`,
+        reset: (days) => `بهذا التأخير يُصفَّر العدد بعد أن تفتح الصالة ${days}، فيبدأ من الصفر والناس فيها.`,
+        resetHours: (days) => `بهذه الساعات يُصفَّر العدد بعد أن تفتح الصالة ${days}، فيبدأ من الصفر والناس فيها.`,
+      },
     },
     en: {
       docTitle: "Settings · FITWAY (concept)",
@@ -118,10 +181,7 @@
       upTo: "up to",
       above: "above",
       people: (n) => (n === 1 ? `${ltr("1")} person` : `${ltr(fmtInt(n))} people`),
-      // Arrangement ب's narrow sheet needed "69+ people"; a card of ج holds the words beside "above 57%" (at 1024 px and
-      // on a 390 px phone), and a narrow card puts the people under the percentage.
-      orMore: (n) => `${ltr(fmtInt(n))} people or more`,
-      noCount: "No count reaches it",
+      noReach: "No count reaches it",
       emptyOnly: "Only when empty",
       days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       closed: "Closed",
@@ -153,8 +213,57 @@
         said: (what, a, b) => `${what}: from ${a} to ${b}`,
       },
       quote: (s) => `“${s}”`,
+      orPeople: (html) => `or ${nw(html)}`,
+      // "or 69+ people": "or at least 69 people" spilled the 390 px card by 4 px beside "above 57%".
+      orMorePeople: (n) => `or ${nw(`${ltr(fmtInt(n))}+ people`)}`,
+      close: "Close",
+      cancel: "Cancel",
+      save: "Save",
+      saved: "Changes saved",
+      noChange: "Nothing changed, so nothing was saved",
+      capUnit: (n) => (n === 1 ? "person" : "people"),
+      resetUnit: (n) => (n === 1 ? "minute after closing" : "minutes after closing"),
+      limitName: (lv) => `${lv}, upper limit in percent`,
+      am: "AM",
+      pm: "PM",
+      opensHead: "Opens",
+      closesHead: "Closes",
+      openName: (d) => `${d} opening time`,
+      closeName: (d) => `${d} closing time`,
+      apName: (name) => `${name}, AM or PM`,
+      swName: (d) => `Open on ${d}`,
+      nextDay: "next day",
+      daysAt: (n, text) => (n >= 6 ? text : `on ${text}`),
+      // Under 430 px of sheet the week's rows take the short day names (DAT-2); their full names stay the fields' names.
+      daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      err: {
+        capEmpty: "Enter the capacity",
+        capWhole: "Enter a whole number of people, like 120",
+        capMin: "Capacity must be at least 1 person",
+        capMax: "The largest capacity is 2,147,483,647 people",
+        limEmpty: (lv) => `Enter the limit for ${lv}`,
+        limRange: "Enter a whole number from 0 to 100",
+        limRise: (lv, pct) => `Make it higher than ${lv}'s ${pct}%`,
+        openEmpty: "Enter the opening time",
+        closeEmpty: "Enter the closing time",
+        timeEmpty: "Enter a time",
+        timeBad: "Enter a time like 6:30",
+        resetEmpty: "Enter the minutes",
+        resetWhole: "Enter a whole number of minutes, like 30",
+        resetMax: "The largest is 2,147,483,647 minutes",
+      },
+      warn: {
+        capLow: (cur) => `That's less than half the current ${cur}, so the same crowd will look busier to visitors than it does now.`,
+        capHigh: (cur) => `That's more than double the current ${cur}, so the same crowd will look quieter to visitors than it does now.`,
+        allClosed: "Every day is closed, so visitors will always see the gym as closed.",
+        boundary: (days) => `This falls within the opening hours ${days}, so the hours after it count toward the next day.`,
+        boundaryHours: (t, days) => `The business day ends at ${t}, within the opening hours ${days}, so the hours after it count toward the next day.`,
+        reset: (days) => `With this delay, the count resets after the gym has opened ${days}, so it starts from zero with people inside.`,
+        resetHours: (days) => `With these hours, the count resets after the gym has opened ${days}, so it starts from zero with people inside.`,
+      },
     },
   };
+  COPY.ar.daysShort = COPY.ar.days;
   const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
   const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
 
@@ -183,6 +292,16 @@
     while (n > 0 && (n / cap) * 100 > pct) n--;
     return n;
   };
+  // The people level i holds at a capacity, as the phrase after its limit (the card and its window alike): «أو 24
+  // شخصًا», the top level «أو 69 شخصًا فأكثر». A level holding only the empty gym, or no count at all, says so instead
+  // (part 3 judges those words among the range cases).
+  function peoplePhrase(cap, lims, i) {
+    const last = lims.map((p) => lastCount(cap, p));
+    if (i === 3) return L.orMorePeople(last[2] + 1);
+    if (i === 0 && last[0] === 0) return L.emptyOnly;
+    if (i > 0 && last[i] === last[i - 1]) return L.noReach;
+    return L.orPeople(L.people(last[i]));
+  }
 
   /* ------------------------------------------------------------ the gym's settings (synthetic, from the contract)
    * Version 1 is the snapshot the gym started with (it has no record: the log begins with the first owner change);
@@ -355,13 +474,7 @@
   function crowdHTML(s) {
     const cap = s.capacity, t = s.thresholds;
     const lims = [t.quietMaxPercent, t.moderateMaxPercent, t.busyMaxPercent];
-    const last = lims.map((p) => lastCount(cap, p));
-    const ppl = (i) => {
-      if (i === 3) return L.orMore(last[2] + 1);
-      if (i === 0 && last[0] === 0) return L.emptyOnly;
-      if (i > 0 && last[i] === last[i - 1]) return L.noCount;
-      return L.people(last[i]);
-    };
+    const ppl = (i) => peoplePhrase(cap, lims, i);
     const lvRow = (i) => row(
       `${LEVEL_BARS(i)}<span>${L.levels[i]}</span>`,
       `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${ltr(`${lims[Math.min(i, 2)]}%`)}</span>${SR_SEP}<span class="v-p">${nw(ppl(i))}</span>`,
@@ -442,6 +555,561 @@
     root.dataset.phase = phase;
   }
 
+  /* ================================================================ the editor (part 2 of this round)
+   * Each value card's «تعديل» opens that card in a window over the page (DLG-1…6; a bottom sheet at 720 px and below,
+   * DLG-5), and only that card: the card's own name, then its values in the card's order, each value now a field where
+   * it stood. A figure (capacity, the end of the business day, the reset) keeps its label above it, the field in the
+   * value's place with the words that finished the value after it («شخصًا», «دقائق بعد الإغلاق»); a list (the levels,
+   * the week) keeps its rows, the field in the value's column. So the window reads as the card it came from, and the
+   * owner changes one card's values without the rest of the page in the way. Cancel, then «حفظ», at the start (DECISIONS
+   * item 35). The page behind is inert and does not move (`scrollbar-gutter: stable`).
+   * As the owner types: a level's people follow capacity and its limit at once (bandFor's counting); a closing time at
+   * or before its opening says «اليوم التالي» beside it (equal: «24 ساعة»); the unit after a number follows it. A value
+   * the contract refuses is said under its field on «حفظ» (FLD-4), focus on the first, and the message leaves as soon as
+   * the field is right. A value that looks like a mistake is accepted, with one plain sentence under its field (item
+   * 49): it comes when the owner leaves the field, never while a number is half typed, and leaves at once when the value
+   * stops warranting it; a «حفظ» that brings one the owner has not seen stops there once, so it is read. A valid «حفظ»
+   * goes to the confirmation (part 3: confirmSave). */
+  const MAX_INT = 2147483647;
+  const ICON = {
+    close: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7l10 10M17 7 7 17"/></svg>',
+    alert: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>',
+    // A sentence about a value that looks like a mistake: an information mark, never the error's.
+    note: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/></svg>',
+    chev: '<svg class="tf-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 10.5l4 4 4-4"/></svg>',
+  };
+  // Arabic-Indic and Persian digits become Western as they are typed (NUM-1), so they are never refused.
+  const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
+  // A whole number as typed (thousands commas and spaces allowed): null when empty, NaN when it is not one.
+  const parseWhole = (raw) => { const s = toWestern(raw).replace(/[\s,٬%]/g, ""); return !s ? null : /^\d+$/.test(s) ? Number(s) : NaN; };
+  /* A time as typed on the 12-hour clock: "6", "630", "0630", "6:30", "6.30", with or without «ص» / «م» (AM / PM) after
+   * it. A 24-hour time ("18:30", "0:15") is read as one and sets its ص / م. Returns { h, m, ap } (h 1-12; ap "am", "pm", or null to keep the field's own), null when
+   * empty, false when it is not a time. */
+  function parseClock(raw) {
+    let s = toWestern(raw).replace(/[\s.]+$/, "").replace(/\s/g, "").toLowerCase();
+    if (!s) return null;
+    // «م» or «ص», PM or AM typed after the time sets the list beside it.
+    let typed = null;
+    const suf = /(ص|م|a\.?m\.?|p\.?m\.?)$/.exec(s);
+    if (suf) { typed = /^(م|p)/.test(suf[1]) ? "pm" : "am"; s = s.slice(0, -suf[1].length); }
+    let h, m;
+    const sep = /^(\d{1,2})[:.,،٫](\d{2})$/.exec(s);
+    if (sep) { h = +sep[1]; m = +sep[2]; }
+    else if (/^\d{1,2}$/.test(s)) { h = +s; m = 0; }
+    else if (/^\d{3,4}$/.test(s)) { h = +s.slice(0, -2); m = +s.slice(-2); }
+    else return false;
+    if (h > 23 || m > 59 || (typed && (h === 0 || h > 12))) return false;
+    if (h === 0) return { h: 12, m, ap: "am" };
+    if (h > 12) return { h: h - 12, m, ap: "pm" };
+    return { h, m, ap: typed };
+  }
+  const to24 = (h, m, ap) => ((h % 12) + (ap === "pm" ? 12 : 0)) * 60 + m;
+  const hhmm = (mins) => `${String(Math.floor(mins / 60) % 24).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
+  const clock12 = (mins) => { const h = Math.floor(mins / 60) % 24; return { text: `${((h + 11) % 12) + 1}:${String(mins % 60).padStart(2, "0")}`, ap: h >= 12 ? "pm" : "am" }; };
+
+  /* ---- the fields. Every field remembers what it opened with (data-init), so the window knows whether anything was
+   * typed. A number is FLD-1's field, left to right (in Arabic its digits keep the right edge, FLD-1), 16 px text. A
+   * percent keeps its sign inside the field, after the digits, as the page writes a percent. A time is one field of
+   * two parts: the time typed, then ص / م, a native list (TYP-6's form: it lies unseen over its face), so a phone gives
+   * its own picker and a keyboard changes it with the arrows; each part draws the inset ring (FOC-2), two controls
+   * edge to edge. */
+  const fieldErr = (id) => `<p class="field-err" id="${id}-err" hidden></p>`;
+  const fieldWarn = (id) => `<p class="ed-warn" id="${id}-warn" hidden></p>`;
+  const numField = (id, value, label, extra = "") => `<input class="field-input ed-num" id="${id}" name="${id}" type="text" dir="ltr" inputmode="numeric" autocomplete="off" spellcheck="false" value="${value}" data-init="${value}"${label ? ` aria-label="${esc(label)}"` : ""}${extra}>`;
+  // A count the owner left: its thousands marked, as the page writes it («2,147,483,647»); a limit stays bare.
+  function tidyCount(input) {
+    const n = parseWhole(input.value);
+    if (Number.isFinite(n) && n !== null) input.value = fmtInt(n);
+  }
+  function timeField(id, mins, name) {
+    const c = clock12(mins);
+    return `<span class="tf" data-tf="${id}">` +
+      `<input class="tf-in" id="${id}" name="${id}" type="text" dir="ltr" inputmode="numeric" autocomplete="off" spellcheck="false" value="${c.text}" data-init="${c.text}" aria-label="${esc(name)}">` +
+      `<span class="tf-ap"><select class="tf-sel" id="${id}-ap" name="${id}-ap" data-init="${c.ap}" aria-label="${esc(L.apName(name))}">` +
+      `<option value="am"${c.ap === "am" ? " selected" : ""}>${L.am}</option><option value="pm"${c.ap === "pm" ? " selected" : ""}>${L.pm}</option></select>` +
+      `<span class="tf-face" aria-hidden="true"><span class="tf-w">${c.ap === "am" ? L.am : L.pm}</span>${ICON.chev}</span></span></span>`;
+  }
+  // A time field's value: { mins }, { empty: true } or { bad: true }.
+  function readClock(input) {
+    const sel = $(`#${input.id}-ap`), p = parseClock(input.value);
+    if (p === null) return { empty: true };
+    if (p === false) return { bad: true };
+    return { mins: to24(p.h, p.m, p.ap || sel.value) };
+  }
+  // On leaving a time field: its words tidied («630» → «6:30»), and a 24-hour time setting its ص / م.
+  function tidyClock(input) {
+    const p = parseClock(input.value);
+    if (!p) return;
+    input.value = `${p.h}:${String(p.m).padStart(2, "0")}`;
+    if (p.ap) setAp($(`#${input.id}-ap`), p.ap);
+  }
+  function setAp(sel, ap) {
+    sel.value = ap;
+    $(".tf-w", sel.parentNode).textContent = ap === "am" ? L.am : L.pm;
+  }
+  const head2 = (sec, extra = "") => `<header class="dlg-head"><h2 id="ed-${sec}-title" tabindex="-1"><span class="ed-name">${L.sec[sec]}</span>${extra}</h2>` +
+    `<button class="icon-btn dlg-x" type="button" data-close aria-label="${L.close}">${ICON.close}</button></header>`;
+  const foot = `<footer class="dlg-foot"><button class="rbtn ed-cancel" type="button" data-close>${L.cancel}</button>` +
+    `<button class="rbtn rbtn-primary ed-save" type="submit">${L.save}</button></footer>`;
+
+  /* ---- the crowd's window: capacity (a figure: its label over its field, «شخصًا» after it), then «المستويات» and the
+   * four levels, each a row on the card's columns: the key and the word, «حتى», the limit (a percent field), and the
+   * people it holds as typed. The top level follows Busy: «فوق 57%» drawn where a field's digits stand, not a field. */
+  function crowdEditor(s) {
+    const t = s.thresholds, lims = [t.quietMaxPercent, t.moderateMaxPercent, t.busyMaxPercent];
+    const lvRow = (i) => (i < 3
+      ? `<div class="ed-row" data-lv="${i}">` +
+        `<span class="ed-rl">${LEVEL_BARS(i)}<span>${L.levels[i]}</span></span>` +
+        `<span class="ed-q" aria-hidden="true">${L.upTo}</span>` +
+        `<span class="ed-pct">${numField(`ed-lv${i}`, lims[i], L.limitName(L.levels[i]), ` maxlength="4" aria-describedby="ed-lv${i}-ppl"`)}<span class="ed-pct-s" aria-hidden="true">%</span><span class="ed-pct-m" aria-hidden="true"></span></span>` +
+        `<span class="ed-ppl" id="ed-lv${i}-ppl"></span>${fieldErr(`ed-lv${i}`)}</div>`
+      : `<div class="ed-row is-top" data-lv="3">` +
+        `<span class="ed-rl">${LEVEL_BARS(3)}<span>${L.levels[3]}</span></span>` +
+        `<span class="ed-q">${L.above}</span>` +
+        `<span class="ed-pct is-ro"><span class="ed-pct-v" id="ed-lv3-pct">${lims[2]}</span><span class="ed-pct-s">%</span></span>` +
+        `<span class="ed-ppl" id="ed-lv3-ppl"></span></div>`);
+    return `<form class="dlg-panel ed-panel ed-crowd" id="ed-crowd" novalidate>${head2("crowd")}
+      <div class="dlg-body">
+        <div class="ed-fig">
+          <label class="ed-lab" for="ed-cap">${L.capacity}</label>
+          <div class="ed-line">${numField("ed-cap", fmtInt(s.capacity), "", ' maxlength="13"')}<span class="ed-unit" id="ed-cap-unit"></span></div>
+          ${fieldErr("ed-cap")}${fieldWarn("ed-cap")}
+        </div>
+        <h3 class="set-sub ed-sub" id="ed-levels-title">${L.levelsTitle}</h3>
+        <div class="ed-list ed-levels" role="group" aria-labelledby="ed-levels-title">${[0, 1, 2, 3].map(lvRow).join("")}</div>
+      </div>${foot}</form>`;
+  }
+
+  /* ---- the hours' window: «توقيت الرياض» beside its name, as on the card; the week from Sunday, a row per day: the
+   * day, its switch (open or closed), the opening and the closing (12-hour, ص / م), and the note beside the closing
+   * («اليوم التالي», «24 ساعة»). «يفتح» and «يغلق» head the two field columns once. A closed day says «مغلق» where its
+   * fields stood and keeps them, so switching it back brings its hours back; a day closed when the window opened takes
+   * the week's most common hours when switched on. */
+  function commonHours(week) {
+    const tally = new Map();
+    for (const d of DAYS) if (week[d]) { const k = `${week[d].open}|${week[d].close}`; tally.set(k, (tally.get(k) || 0) + 1); }
+    const best = [...tally.entries()].sort((a, b) => b[1] - a[1])[0];
+    return best ? { open: hm(best[0].split("|")[0]), close: hm(best[0].split("|")[1]) } : { open: 6 * 60, close: 0 };
+  }
+  function hoursEditor(s) {
+    const week = s.weeklySchedule, dflt = commonHours(week);
+    const dayRow = (d, i) => {
+      const h = week[d], on = Boolean(h);
+      return `<div class="ed-row ed-day${on ? "" : " is-off"}" id="ed-${d}" data-day="${d}">` +
+        `<span class="ed-rl ed-dn" id="ed-${d}-name"><span class="dn-full">${L.days[i]}</span><span class="dn-short" aria-hidden="true">${L.daysShort[i]}</span></span>` +
+        `<button class="switch ed-sw" type="button" role="switch" id="ed-${d}-sw" aria-checked="${on}" data-init="${on}" aria-label="${esc(L.swName(L.days[i]))}"><span class="switch-track"><span class="switch-thumb"></span></span></button>` +
+        timeField(`ed-${d}-open`, h ? hm(h.open) : dflt.open, L.openName(L.days[i])) +
+        timeField(`ed-${d}-close`, h ? hm(h.close) : dflt.close, L.closeName(L.days[i])) +
+        `<span class="ed-closed">${L.closed}</span>` +
+        `<span class="ed-note" id="ed-${d}-note"></span>${fieldErr(`ed-${d}`)}</div>`;
+    };
+    const unit = `<span class="set-unit">${SR_SEP}${L.hoursUnit}</span>`;
+    return `<form class="dlg-panel ed-panel ed-hours" id="ed-hours" novalidate>${head2("hours", unit)}
+      <div class="dlg-body">
+        <div class="ed-list ed-week" role="group" aria-labelledby="ed-hours-title">
+          <div class="ed-heads" aria-hidden="true"><span class="eh-o">${L.opensHead}</span><span class="eh-c">${L.closesHead}</span></div>
+          ${DAYS.map(dayRow).join("")}
+        </div>
+        <div class="ed-warns" id="ed-week-warns" hidden>${fieldWarn("ed-week")}${fieldWarn("ed-week2")}${fieldWarn("ed-week3")}</div>
+      </div>${foot}</form>`;
+  }
+
+  /* ---- the business day's window: its two figures, each a label over its field: the end of the business day (a
+   * time), the reset (minutes, «دقائق بعد الإغلاق» after them, following the number). */
+  function dayEditor(s) {
+    return `<form class="dlg-panel ed-panel ed-dayp" id="ed-day" novalidate>${head2("day")}
+      <div class="dlg-body">
+        <div class="ed-fig">
+          <label class="ed-lab" for="ed-end">${L.dayEnd}</label>
+          <div class="ed-line">${timeField("ed-end", hm(s.businessDayBoundary), L.dayEnd)}</div>
+          ${fieldErr("ed-end")}${fieldWarn("ed-end")}
+        </div>
+        <div class="ed-fig">
+          <label class="ed-lab" for="ed-reset">${L.reset}</label>
+          <div class="ed-line">${numField("ed-reset", fmtInt(s.resetBufferMinutes), "", ' maxlength="13"')}<span class="ed-unit" id="ed-reset-unit"></span></div>
+          ${fieldErr("ed-reset")}${fieldWarn("ed-reset")}
+        </div>
+      </div>${foot}</form>`;
+  }
+  const EDITOR_HTML = { crowd: crowdEditor, hours: hoursEditor, day: dayEditor };
+
+  /* ---- reading a window: { value, errors } where value holds what parsed (for the people, the notes and the
+   * sentences while typing) and errors maps a field's id to its message. */
+  function readCrowd() {
+    const errors = new Map(), cap = parseWhole($("#ed-cap").value);
+    let capacity = null;
+    if (cap === null) errors.set("ed-cap", L.err.capEmpty);
+    else if (Number.isNaN(cap)) errors.set("ed-cap", L.err.capWhole);
+    else if (cap < 1) errors.set("ed-cap", L.err.capMin);
+    else if (cap > MAX_INT) errors.set("ed-cap", L.err.capMax);
+    else capacity = cap;
+    const lims = [0, 1, 2].map((i) => {
+      const v = parseWhole($(`#ed-lv${i}`).value);
+      if (v === null) { errors.set(`ed-lv${i}`, L.err.limEmpty(L.levels[i])); return null; }
+      if (Number.isNaN(v) || v > 100) { errors.set(`ed-lv${i}`, L.err.limRange); return null; }
+      return v;
+    });
+    // Strictly rising: the message stands on the level that must be higher.
+    for (let i = 1; i < 3; i++) {
+      const prev = lims[i - 1] ?? (i === 2 ? lims[0] : null);
+      const prevLv = lims[i - 1] !== null ? i - 1 : 0;
+      if (lims[i] !== null && prev !== null && lims[i] <= prev && !errors.has(`ed-lv${i}`)) errors.set(`ed-lv${i}`, L.err.limRise(L.levels[prevLv], prev));
+    }
+    return { errors, value: { capacity, lims } };
+  }
+  function readHours() {
+    const errors = new Map(), week = {};
+    DAYS.forEach((d) => {
+      const on = $(`#ed-${d}-sw`).getAttribute("aria-checked") === "true";
+      if (!on) { week[d] = null; return; }
+      const o = readClock($(`#ed-${d}-open`)), c = readClock($(`#ed-${d}-close`));
+      const msg = o.empty ? L.err.openEmpty : o.bad ? L.err.timeBad : c.empty ? L.err.closeEmpty : c.bad ? L.err.timeBad : "";
+      if (msg) { errors.set(`ed-${d}`, msg); ROW_AT.set(`ed-${d}`, o.empty || o.bad ? "open" : "close"); week[d] = undefined; return; }
+      week[d] = { open: hhmm(o.mins), close: hhmm(c.mins) };
+    });
+    return { errors, value: { week } };
+  }
+  function readDay() {
+    const errors = new Map(), e = readClock($("#ed-end")), r = parseWhole($("#ed-reset").value);
+    let boundary = null, reset = null;
+    if (e.empty) errors.set("ed-end", L.err.timeEmpty);
+    else if (e.bad) errors.set("ed-end", L.err.timeBad);
+    else boundary = e.mins;
+    if (r === null) errors.set("ed-reset", L.err.resetEmpty);
+    else if (Number.isNaN(r)) errors.set("ed-reset", L.err.resetWhole);
+    else if (r > MAX_INT) errors.set("ed-reset", L.err.resetMax);
+    else reset = r;
+    return { errors, value: { boundary, reset } };
+  }
+  const READ = { crowd: readCrowd, hours: readHours, day: readDay };
+  // The snapshot a valid window would save: the saved one with this card's values replaced.
+  function applyEdit(sec, v, base) {
+    const next = clone(base);
+    if (sec === "crowd") {
+      next.capacity = v.capacity;
+      next.thresholds = { quietMaxPercent: v.lims[0], moderateMaxPercent: v.lims[1], busyMaxPercent: v.lims[2] };
+    } else if (sec === "hours") next.weeklySchedule = v.week;
+    else { next.businessDayBoundary = hhmm(v.boundary); next.resetBufferMinutes = v.reset; }
+    return next;
+  }
+
+  /* ---- the sentences about values that look like a mistake (item 49), computed from what is typed and, for what this
+   * window does not hold, from what is saved. */
+  const daysAt = (idx) => L.daysAt(idx.length, daysName(idx).text);
+  // The days whose opening hours hold a business day ending at b (strictly inside: at an opening or a closing is fine).
+  function boundaryDays(week, b) {
+    const out = [];
+    DAYS.forEach((d, i) => {
+      const h = week[d];
+      if (!h) return;
+      const o = hm(h.open);
+      let c = hm(h.close);
+      if (c <= o) c += 1440;
+      if ((b > o && b < c) || (b + 1440 > o && b + 1440 < c)) out.push(i);
+    });
+    return out;
+  }
+  // The days on which the gym has opened before the reset that follows the closing before them (close + buffer).
+  function resetDays(week, buffer) {
+    const out = new Set();
+    DAYS.forEach((d, i) => {
+      const h = week[d];
+      if (!h) return;
+      const o = hm(h.open);
+      let c = hm(h.close);
+      if (c <= o) c += 1440;
+      for (let k = 1; k <= 7; k++) {
+        const n = week[DAYS[(i + k) % 7]];
+        if (!n) continue;
+        if (c + buffer > k * 1440 + hm(n.open)) out.add((i + k) % 7);
+        break;
+      }
+    });
+    return [...out].sort((a, b) => a - b);
+  }
+  function warnings(sec, v) {
+    const saved = current().editable, out = {};
+    if (sec === "crowd" && v.capacity !== null) {
+      if (v.capacity * 2 < saved.capacity) out["ed-cap"] = L.warn.capLow(L.people(saved.capacity));
+      else if (v.capacity > saved.capacity * 2) out["ed-cap"] = L.warn.capHigh(L.people(saved.capacity));
+    }
+    if (sec === "hours") {
+      // A day whose times are still being typed counts as neither open nor closed: the sentences speak of the others.
+      const lines = [], week = Object.fromEntries(DAYS.map((d) => [d, v.week[d] || null]));
+      if (DAYS.every((d) => v.week[d] === null)) lines.push(L.warn.allClosed);
+      else {
+        const b = boundaryDays(week, hm(saved.businessDayBoundary));
+        if (b.length) lines.push(L.warn.boundaryHours(timeText(hm(saved.businessDayBoundary)), daysAt(b)));
+        const r = resetDays(week, saved.resetBufferMinutes);
+        if (r.length) lines.push(L.warn.resetHours(daysAt(r)));
+      }
+      lines.forEach((l, k) => { out[["ed-week", "ed-week2", "ed-week3"][k]] = l; });
+    }
+    if (sec === "day") {
+      if (v.boundary !== null) { const b = boundaryDays(saved.weeklySchedule, v.boundary); if (b.length) out["ed-end"] = L.warn.boundary(daysAt(b)); }
+      if (v.reset !== null) { const r = resetDays(saved.weeklySchedule, v.reset); if (r.length) out["ed-reset"] = L.warn.reset(daysAt(r)); }
+    }
+    return out;
+  }
+  const WARN_IDS = { crowd: ["ed-cap"], hours: ["ed-week", "ed-week2", "ed-week3"], day: ["ed-end", "ed-reset"] };
+
+  /* ---- live: what follows the typing at once (the people, the notes, the units). */
+  function live(sec) {
+    const { value: v } = READ[sec](), s0 = current().editable;
+    if (sec === "crowd") {
+      const cap = v.capacity;
+      $("#ed-cap-unit").textContent = L.capUnit(cap ?? s0.capacity);
+      const lims = v.lims;
+      const lastOk = lims[2] !== null;
+      // English: each limit's sign follows its digits (their width measured in the field's own face).
+      if (!RTL) $$(".ed-pct:not(.is-ro)").forEach((box) => { const m = $(".ed-pct-m", box); m.textContent = $("input", box).value; box.style.setProperty("--pct-x", `${m.getBoundingClientRect().width}px`); });
+      $("#ed-lv3-pct").textContent = lastOk ? String(lims[2]) : "";
+      $("#ed-lv3-pct").parentNode.classList.toggle("is-empty", !lastOk);
+      // A level's people only while its limit and those under it are valid and strictly rising: a refused limit shows
+      // no count that would contradict the level under it.
+      const rising = (i) => lims.slice(0, Math.min(i + 1, 3)).every((x, k, a) => x !== null && (k === 0 || x > a[k - 1]));
+      [0, 1, 2, 3].forEach((i) => {
+        $(`#ed-lv${i}-ppl`).innerHTML = cap !== null && rising(i) ? peoplePhrase(cap, lims, i) : "";
+      });
+    } else if (sec === "hours") {
+      // With every day closed the two field columns stand empty, so their heads step aside (their line kept).
+      $(".ed-heads").classList.toggle("is-idle", DAYS.every((d) => $(`#ed-${d}-sw`).getAttribute("aria-checked") !== "true"));
+      DAYS.forEach((d) => {
+        const row = $(`.ed-day[data-day="${d}"]`), on = $(`#ed-${d}-sw`).getAttribute("aria-checked") === "true";
+        row.classList.toggle("is-off", !on);
+        const o = readClock($(`#ed-${d}-open`)), c = readClock($(`#ed-${d}-close`));
+        const note = !on || o.mins === undefined || c.mins === undefined ? "" : c.mins === o.mins ? L.allDay(24) : c.mins < o.mins ? L.nextDay : "";
+        $(`#ed-${d}-note`).innerHTML = note;
+      });
+    } else {
+      $("#ed-reset-unit").textContent = L.resetUnit(v.reset ?? s0.resetBufferMinutes);
+    }
+  }
+
+  /* ---- messages under fields: an error (FLD-4, --err with its mark, the field's edge in --err) or a sentence about a
+   * value that looks like a mistake (--ink-2 with an information mark, the field unchanged). A field is described by
+   * what stands under it. A change to the window's height settles its edges (MOT-15). */
+  const msgEl = (id, kind) => $(`#${id}-${kind}`);
+  // Which part of a day's row a message is about («open» or «close»), from the last reading of the week.
+  const ROW_AT = new Map();
+  // The controls a message belongs to: a number field; a time field's two parts; in a day's row, the part it names.
+  function partsOf(id) {
+    const el = $(`#${id}`);
+    if (!el) return { frames: [], inputs: [] };
+    if (el.matches(".tf-in")) return { frames: [el.closest(".tf")], inputs: [el, $(`#${id}-ap`)] };
+    if (el.matches("input")) return { frames: [el], inputs: [el] };
+    const at = ROW_AT.get(id) || "open", tf = $(`[data-tf="${id}-${at}"]`, el);
+    return { frames: tf ? [tf] : [], inputs: tf ? $$(".tf-in, .tf-sel", tf) : [] };
+  }
+  // A control is described by what stands under it (its own description, a level's people, first).
+  function describe(id) {
+    const ids = ["err", "warn"].map((k) => msgEl(id, k)).filter((e) => e && !e.hidden).map((e) => e.id);
+    const row = $(`#${id}`);
+    const all = row && !row.matches("input") ? $$(".tf-in, .tf-sel", row) : partsOf(id).inputs;
+    for (const input of all) {
+      const list = [...(input.dataset.describedby || "").split(" ").filter(Boolean), ...ids];
+      if (list.length) input.setAttribute("aria-describedby", list.join(" ")); else input.removeAttribute("aria-describedby");
+    }
+  }
+  function setMsg(id, kind, html) {
+    const el = msgEl(id, kind);
+    if (!el) return;
+    el.hidden = !html;
+    el.dataset.text = html || "";
+    el.innerHTML = html ? `${kind === "err" ? ICON.alert : ICON.note}<span>${html}</span>` : "";
+    if (kind === "err") {
+      const row = $(`#${id}`);
+      if (row && !row.matches("input")) $$(".tf", row).forEach((f) => f.classList.remove("is-invalid"));
+      if (row && !row.matches("input")) $$(".tf-in, .tf-sel", row).forEach((i) => i.removeAttribute("aria-invalid"));
+      const { frames, inputs } = partsOf(id);
+      frames.forEach((f) => f.classList.toggle("is-invalid", Boolean(html)));
+      inputs.forEach((i) => { if (html) i.setAttribute("aria-invalid", "true"); else i.removeAttribute("aria-invalid"); });
+    }
+    describe(id);
+  }
+  const shownText = (id, kind) => { const el = msgEl(id, kind); return el && !el.hidden ? el.dataset.text : ""; };
+  const dlgOf = (sec) => D[sec];
+  // The sentences: on leaving a field (add = true) any that now apply come; while typing only those that stop applying go.
+  function refreshWarnings(sec, { add = false } = {}) {
+    const { value } = READ[sec]();
+    const want = warnings(sec, value);
+    const ids = WARN_IDS[sec];
+    const next = ids.map((id) => {
+      const w = want[id] || "";
+      return [id, add ? w : (w && shownText(id, "warn") ? w : "")];
+    });
+    const diff = next.filter(([id, html]) => shownText(id, "warn") !== html);
+    if (!diff.length) return;
+    M.reflow(dlgOf(sec), () => {
+      diff.forEach(([id, html]) => setMsg(id, "warn", html));
+      const box = $("#ed-week-warns");
+      if (sec === "hours" && box) box.hidden = ids.every((id) => msgEl(id, "warn").hidden);
+    });
+  }
+  // Errors leave as soon as their field is right; they come only on «حفظ».
+  function clearFixedErrors(sec) {
+    const { errors } = READ[sec]();
+    const shown = $$(".field-err:not([hidden])", $(`#ed-${sec}`)).map((e) => e.id.replace(/-err$/, ""));
+    const gone = shown.filter((id) => !errors.has(id));
+    if (!gone.length) return;
+    M.reflow(dlgOf(sec), () => gone.forEach((id) => setMsg(id, "err", "")));
+  }
+
+  /* ---- the window: open, close, submit. */
+  const D = { crowd: $("#dlg-crowd"), hours: $("#dlg-hours"), day: $("#dlg-day") };
+  const mqPhone = matchMedia("(max-width: 720px)");
+  const panelOf = (dlg) => $(":scope > .dlg-panel", dlg);
+  const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
+    .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length);
+  let editing = null;                                 // the section whose window is open
+  function openDialog(dlg, opener, first) {
+    if (openDlg) closeDialog(openDlg.dlg, { instant: true, quiet: true });
+    if (frame.state.railOpen) frame.setRail(false);
+    if (frame.state.openLayer) frame.hideLayer(frame.state.openLayer, false);
+    openDlg = { dlg, opener };
+    dlg.showModal();
+    dlg.classList.add("is-open");
+    (first || focusables(panelOf(dlg))[0]).focus();
+    M.dialogOpen(dlg);
+  }
+  function closeDialog(dlg, { instant = false, back = null, quiet = false } = {}) {
+    if (!openDlg || openDlg.dlg !== dlg) return;
+    M.dialogClose(dlg, { instant });
+    const { opener } = openDlg;
+    openDlg = null;
+    editing = null;
+    dlg.classList.remove("is-open");
+    if (dlg.open) dlg.close();
+    if (quiet) return;
+    const to = back || (opener && opener.isConnected ? opener : $(`[data-edit="${dlg.dataset.sec}"]`));
+    (to || $("#main")).focus();
+  }
+  /* Where focus starts: from 721 px the window's first field (DLG-3), so the owner types at once. On a phone the
+   * window's title instead: a field focused on opening would raise the keyboard over half the sheet before the owner
+   * has seen the values; the first tap on a field raises it. */
+  function firstFocus(sec) {
+    if (mqPhone.matches) return $(`#ed-${sec}-title`);
+    if (sec === "crowd") return $("#ed-cap");
+    if (sec === "hours") { const d = DAYS.find((x) => $(`#ed-${x}-sw`).getAttribute("aria-checked") === "true"); return d ? $(`#ed-${d}-open`) : $("#ed-sun-sw"); }
+    return $("#ed-end");
+  }
+  function openEditor(sec, opener) {
+    const dlg = D[sec];
+    dlg.dataset.sec = sec;
+    dlg.innerHTML = `<div class="dlg-scrim" data-close="scrim"></div>${EDITOR_HTML[sec](current().editable)}`;
+    dlg.setAttribute("aria-labelledby", `ed-${sec}-title`);
+    // A field's own description (a level's people) is kept apart from its messages.
+    $$("[aria-describedby]", dlg).forEach((i) => { i.dataset.describedby = i.getAttribute("aria-describedby"); });
+    editing = sec;
+    live(sec);
+    openDialog(dlg, opener, firstFocus(sec));
+    if (!RTL && sec === "crowd") live(sec);           // the signs measured once the window is laid out
+  }
+  // Anything typed, switched or chosen since the window opened.
+  const isDirty = (sec) => $$("[data-init]", $(`#ed-${sec}`)).some((el) => (el.matches("[role=switch]") ? el.getAttribute("aria-checked") : el.value) !== el.dataset.init);
+  function submitEdit(sec) {
+    $$(".tf-in", $(`#ed-${sec}`)).forEach(tidyClock);
+    $$("#ed-cap, #ed-reset", $(`#ed-${sec}`)).forEach(tidyCount);
+    live(sec);
+    const { errors, value } = READ[sec]();
+    const wantWarn = errors.size ? {} : warnings(sec, value);
+    // A sentence the owner has not seen yet (it would have come on leaving the field) stops this press, so it is read
+    // before anything goes on; the next «حفظ» goes on with the value accepted (DECISIONS item 49).
+    const unseen = Object.keys(wantWarn).filter((id) => shownText(id, "warn") !== wantWarn[id]);
+    const shownErr = $$(".field-err", $(`#ed-${sec}`)).map((e) => e.id.replace(/-err$/, ""));
+    M.reflow(D[sec], () => {
+      shownErr.forEach((id) => setMsg(id, "err", errors.get(id) || ""));
+      if (!errors.size) {
+        WARN_IDS[sec].forEach((id) => setMsg(id, "warn", wantWarn[id] || ""));
+        const box = $("#ed-week-warns");
+        if (sec === "hours" && box) box.hidden = WARN_IDS.hours.every((id) => msgEl(id, "warn").hidden);
+      }
+    });
+    if (errors.size) {
+      const first = [...errors.keys()][0], el = $(`#${first}`);
+      (el.matches("input") ? el : $(`#${first}-${ROW_AT.get(first) || "open"}`)).focus();
+      return;
+    }
+    const base = current().editable, next = applyEdit(sec, value, base);
+    if (!changes(base, next).length) { closeDialog(D[sec]); say(L.noChange); return; }
+    if (unseen.length) {
+      const id = unseen[0], el = $(`#${id}`);
+      if (el?.matches("input")) el.focus();
+      say(wantWarn[id].replace(/<[^>]+>/g, ""));
+      return;
+    }
+    confirmSave(sec, next);
+  }
+  /* PART 3 puts the confirmation here (each change from → to, the optional reason, then working, done, the refusals
+   * and the conflict view; DECISIONS items 49 and 78). Until then a valid edit is saved at once as the next version,
+   * which the cards and the history's top record follow (renderAll), and focus returns to the card's «تعديل». */
+  function confirmSave(sec, next) {
+    versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN, by: "o1", reason: null, editable: next });
+    closeDialog(D[sec], { quiet: true });
+    renderAll();
+    $(`[data-edit="${sec}"]`).focus();
+    say(L.saved);
+  }
+
+  // «تعديل» on a card (each card is drawn whole, so the listener is the grid's).
+  $("#grid").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-edit]");
+    if (b && phase === "ready") openEditor(b.dataset.edit, b);
+  });
+  for (const [sec, dlg] of Object.entries(D)) {
+    // Escape, the close button and Cancel close the window and keep nothing typed; a tap on the scrim closes it only
+    // when nothing was typed, so a stray tap beside a sheet never throws the owner's changes away.
+    dlg.addEventListener("cancel", (e) => { e.preventDefault(); closeDialog(dlg); });
+    dlg.addEventListener("click", (e) => {
+      const c = e.target.closest("[data-close]");
+      if (!c) return;
+      e.preventDefault();
+      if (c.dataset.close === "scrim" && isDirty(sec)) return;
+      closeDialog(dlg);
+    });
+    dlg.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      const list = focusables(panelOf(dlg));
+      if (!list.length) return;
+      const first = list[0], last = list[list.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !dlg.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !dlg.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    });
+    dlg.addEventListener("submit", (e) => { e.preventDefault(); submitEdit(sec); });
+    dlg.addEventListener("input", (e) => {
+      const t = e.target;
+      // Arabic-Indic digits become Western as they are typed, the caret kept.
+      if (t.matches("input")) {
+        const w = toWestern(t.value);
+        if (w !== t.value) { const at = t.selectionStart; t.value = w; t.setSelectionRange(at, at); }
+      }
+      if (t.matches(".tf-sel")) setAp(t, t.value);
+      live(sec);
+      clearFixedErrors(sec);
+      refreshWarnings(sec);
+    });
+    dlg.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t.matches(".tf-in")) tidyClock(t);
+      if (t.matches("#ed-cap, #ed-reset")) tidyCount(t);
+      if (t.matches(".tf-sel")) setAp(t, t.value);
+      live(sec);
+      clearFixedErrors(sec);
+      refreshWarnings(sec, { add: true });
+    });
+    // A day's switch: open or closed, at once; the sentences about the week follow it (a switch is a decision made).
+    dlg.addEventListener("click", (e) => {
+      const sw = e.target.closest(".ed-sw");
+      if (!sw) return;
+      sw.setAttribute("aria-checked", String(sw.getAttribute("aria-checked") !== "true"));
+      live(sec);
+      clearFixedErrors(sec);
+      refreshWarnings(sec, { add: true });
+    });
+  }
+  // A window stays open across 720 px (BRK-10 closes the frame's own layers): it turns between a sheet and a dialog
+  // with what is typed kept.
+
   /* ---------------------------------------------------------------- start */
   renderAll();
   // Hooks for the capture script. They expose state, never anything a visitor could be identified by (there is none).
@@ -453,5 +1121,12 @@
     get operational() { return { ...OPERATIONAL }; },
     people: (cap, pct) => lastCount(cap, pct),
     changes: (a, b) => changes(versions[a - 1].editable, versions[b - 1].editable).map((c) => c.said),
+    // The editor: which window is open, and whether anything in it was typed.
+    get editing() { return editing; },
+    dirty: () => (editing ? isDirty(editing) : false),
+    edit: (sec) => openEditor(sec, $(`[data-edit="${sec}"]`)),
   };
+  // ?edit=crowd|hours|day opens that card's window on load (for review), as its «تعديل» would.
+  const EDIT_Q = params.get("edit");
+  if (EDIT_Q in D && phase === "ready") openEditor(EDIT_Q, $(`[data-edit="${EDIT_Q}"]`));
 })();

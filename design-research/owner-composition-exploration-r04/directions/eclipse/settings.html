@@ -201,7 +201,11 @@
     </nav>
   </div>
 
-  <!-- The windows (DLG-1…6; a bottom sheet at 720 px and below) come with the editor and the save (parts 2 and 3 of
-       this round): each value card's editor, the confirmation, leaving with unsaved changes. -->
+  <!-- The windows (DLG-1…6; a bottom sheet at 720 px and below). Each value card's «تعديل» opens its own: the crowd, the
+       opening hours, the business day (settings.js "the editor" draws each from the saved values when it opens). Part 3
+       adds the confirmation and leaving with unsaved changes. -->
+  <dialog class="dlg" id="dlg-crowd"></dialog>
+  <dialog class="dlg" id="dlg-hours"></dialog>
+  <dialog class="dlg" id="dlg-day"></dialog>
 </body>
 </html>

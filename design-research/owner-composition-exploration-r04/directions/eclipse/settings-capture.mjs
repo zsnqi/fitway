@@ -8,13 +8,20 @@
 //   1-  the page at rest (arrangement ج): 1440 x 900 and 390 x 844 (the first screen and the whole page), 1024 x 768
 //       (the whole page) and 768 x 1024 (the first screen); each card at 1440, cropped with a strip of its neighbours;
 //       each of the phone's three cards and its header at 390
-//   2-  (part 2) each value in edit; 3- (part 3) each state; 4- (part 3) the range cases; 5- the phone's flows
+//   2-  each value in edit: each card's window at 1440 x 900, 1024 x 768 and 390 x 844 (the phone's sheet), then each
+//       window's cases cropped to the window: the people following capacity, every sentence about a value that looks
+//       like a mistake, the refusals on «حفظ», a day closed, «24 ساعة», every day closed, the keyboard's rings, capacity
+//       at the contract's largest
+//   3- (part 3) each state; 4- (part 3) the range cases; 5- the phone's flows step by step (5-01…10 the editing steps;
+//       part 3 adds the rest)
 // It exits 1 if a check fails: a console message or page error, a font file fetched twice in one load, a request off
 // the page's origin, a layout shift after the first paint, a sideways page scroll, an element outside the viewport's
 // width, a box whose content spills, an interactive target under 44 px; from 1024 px, the two cards of a row not
 // starting and ending on one line, or the crowd's level rules not meeting the hours' last four rules across the
 // gutter; a card whose values start on more than one edge; or a level's people that differ from bandFor's counting
-// (packages/api/src/occupancy/bands.ts) for any capacity and limits the check draws.
+// (packages/api/src/occupancy/bands.ts) for any capacity and limits the check draws. In edit (2- and 5-): the page
+// behind moving when a window opens or closes, focus not starting in the window or not returning to the card's «تعديل»,
+// a day of the week not on one line from 721 px, a window that closes on a scrim tap with something typed.
 import { createServer } from "node:http";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, extname, join, normalize, resolve, sep } from "node:path";
@@ -63,7 +70,7 @@ const PROBLEMS = () => {
     const r = el.getBoundingClientRect();
     if (r.width && (r.right > vw + 0.5 || r.left < -0.5)) out.push(`outside the viewport: ${el.id ? "#" + el.id : el.className?.baseVal ?? el.className ?? el.tagName} ${Math.round(r.left)}..${Math.round(r.right)}`);
   }
-  for (const el of document.querySelectorAll(".head, .set-tools, .set-grid, .set-card, .set-head, .set-title, .set-figs, .set-fig, .set-fig > dd, .set-sub, .set-dl, .set-row, .set-row > dt, .set-row > dd, .log-list, .log-rec, .log-body, .log-chgs, .log-why, .log-meta, .dlg-panel, .dlg-head, .dlg-foot, .alert")) {
+  for (const el of document.querySelectorAll(".head, .set-tools, .set-grid, .set-card, .set-head, .set-title, .set-figs, .set-fig, .set-fig > dd, .set-sub, .set-dl, .set-row, .set-row > dt, .set-row > dd, .log-list, .log-rec, .log-body, .log-chgs, .log-why, .log-meta, .dlg-panel, .dlg-head, .dlg-body, .dlg-foot, .alert, .ed-fig, .ed-line, .ed-list, .ed-row, .ed-warn, .field-err")) {
     if (el.closest("[hidden], dialog:not([open])")) continue;
     if (getComputedStyle(el).display === "none" || !el.getClientRects().length) continue;
     // «عرض الكل» reaches 12 px past its words into the card's padding (Access's link), by design.
@@ -219,6 +226,143 @@ for (const lang of LANGS) {
       }
       o.notes.peopleCases = tried;
       await finish("1-people-against-bandFor", o);
+      await o.context.close();
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ the editor (2- and 5-) */
+const CARDS = ["crowd", "hours", "day", "log"];
+const cardBoxes = (page) => page.evaluate((ks) => ks.map((k) => { const e = document.querySelector(`#card-${k}`); if (!e) return null; const r = e.getBoundingClientRect(); return [r.left, r.top, r.width, r.height].map((v) => +v.toFixed(2)); }), CARDS);
+const moved = (a, b) => a.some((x, i) => x && b[i] && x.some((v, j) => Math.abs(v - b[i][j]) > 0.01));
+// Opens a card's window by its «تعديل» (a tap on a phone), checking that nothing behind it moved and focus is inside.
+async function editOpen(o, sec, phone) {
+  // The card's «تعديل» brought into view first (a tap scrolls to it), so only the window's own effect is measured.
+  await o.page.locator(`[data-edit="${sec}"]`).scrollIntoViewIfNeeded();
+  const before = await cardBoxes(o.page);
+  if (phone) await o.page.tap(`[data-edit="${sec}"]`); else await o.page.click(`[data-edit="${sec}"]`);
+  await o.page.waitForFunction(() => document.querySelector("dialog[open] .dlg-panel"));
+  await o.page.waitForTimeout(60);
+  const after = await cardBoxes(o.page);
+  if (moved(before, after)) o.checks.push(`${sec}: the page behind moved when its window opened`);
+  const inside = await o.page.evaluate(() => !!document.activeElement?.closest("dialog[open]"));
+  if (!inside) o.checks.push(`${sec}: focus did not start in the window`);
+  o.notes.before = before;
+  return before;
+}
+async function editClose(o, sec) {
+  await o.page.keyboard.press("Escape");
+  await o.page.waitForTimeout(80);
+  const after = await cardBoxes(o.page);
+  const out = [];
+  if (moved(o.notes.before, after)) out.push(`${sec}: the page behind moved when its window closed`);
+  const back = await o.page.evaluate((s) => document.activeElement === document.querySelector(`[data-edit="${s}"]`), sec);
+  if (!back) out.push(`${sec}: focus did not return to its «تعديل»`);
+  return out;
+}
+// The window, cropped with a strip of the page around it.
+const PANEL = "dialog[open] .dlg-panel";
+async function shotPanel(o, name, pad = 24) {
+  const b = await o.page.evaluate((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; }, PANEL);
+  const vw = await o.page.evaluate(() => [innerWidth, innerHeight]);
+  const x = Math.max(0, b.x - pad), y = Math.max(0, b.y - pad);
+  await o.page.screenshot({ path: path(name), clip: { x, y, width: Math.min(vw[0] - x, b.w + pad * 2), height: Math.min(vw[1] - y, b.h + pad * 2) } });
+}
+const fill = (o, sel, value) => o.page.fill(sel, value);
+const leave = (o) => o.page.evaluate(() => document.activeElement?.blur());
+// Each day of the week on one line (from 721 px): every row as tall as the window's module, 57 px.
+async function weekOneLine(o) {
+  const hs = await o.page.evaluate(() => [...document.querySelectorAll(".ed-day")].map((r) => +r.getBoundingClientRect().height.toFixed(2)));
+  if (hs.some((h) => Math.abs(h - 57) > 0.5)) o.checks.push(`a day of the week is not on one line: ${hs.join(", ")}`);
+  o.notes.weekRows = hs;
+}
+
+for (const lang of LANGS) {
+  const q = (extra = "") => `lang=${lang}${extra ? `&${extra}` : ""}`;
+  if (want(2)) {
+    // Each window at rest, opened by its «تعديل», at 1440, 1024 and 390, then closed with Escape.
+    const sizes = [["1440", 1440, 900, 0], ["1024", 1024, 768, 3], ["390", 390, 844, 6]];
+    for (const [size, w, h, base] of sizes) {
+      for (const [k, sec] of ["crowd", "hours", "day"].entries()) {
+        const name = frameName(`2-${String(base + k + 1).padStart(2, "0")}`, `${sec === "day" ? "business-day" : sec}-window`, size, lang);
+        if (!wanted(name)) continue;
+        const o = await open(q(), { width: w, height: h });
+        await editOpen(o, sec, w <= 720);
+        if (sec === "hours" && w > 720) await weekOneLine(o);
+        await o.page.screenshot({ path: path(name) });
+        await finish(name, o);
+        const closing = await editClose(o, sec);
+        if (closing.length) log.failures.push(`${name} (closed): ${closing.join("; ")}`);
+        await o.context.close();
+      }
+    }
+    // The cases, each cropped to its window at 1440.
+    const cases = [
+      ["10", "crowd-people-follow-capacity", "crowd", async (o) => { await fill(o, "#ed-cap", "140"); }],
+      ["11", "crowd-capacity-sentence-low", "crowd", async (o) => { await fill(o, "#ed-cap", "5"); await leave(o); }],
+      ["12", "crowd-capacity-sentence-high", "crowd", async (o) => { await fill(o, "#ed-cap", "300"); await leave(o); }],
+      ["13", "crowd-refusals", "crowd", async (o) => { await fill(o, "#ed-cap", ""); await fill(o, "#ed-lv1", "15"); await fill(o, "#ed-lv2", "120"); await o.page.click(".ed-save"); }],
+      ["14", "crowd-capacity-largest", "crowd", async (o) => { await fill(o, "#ed-cap", "2147483647"); await leave(o); }],
+      ["15", "hours-closed-24h-sentences", "hours", async (o) => { await o.page.click("#ed-fri-sw"); await fill(o, "#ed-thu-close", "11"); await o.page.selectOption("#ed-thu-close-ap", "pm"); await fill(o, "#ed-sat-close", "8"); await leave(o); }],
+      ["16", "hours-every-day-closed", "hours", async (o) => { for (const d of ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]) await o.page.click(`#ed-${d}-sw`); }],
+      ["17", "hours-refusals", "hours", async (o) => { await fill(o, "#ed-mon-open", ""); await fill(o, "#ed-tue-close", "25:00"); await o.page.click(".ed-save"); }],
+      ["18", "business-day-sentences", "day", async (o) => { await fill(o, "#ed-end", "130"); await leave(o); await fill(o, "#ed-reset", "400"); await leave(o); }],
+      ["19", "business-day-refusals", "day", async (o) => { await fill(o, "#ed-end", "4:7"); await fill(o, "#ed-reset", "5.5"); await o.page.click(".ed-save"); }],
+      ["20", "hours-keyboard-rings", "hours", async (o) => { await o.page.keyboard.press("Tab"); }],
+      ["21", "crowd-keyboard-ring", "crowd", async (o) => { await o.page.keyboard.press("Shift+Tab"); await o.page.keyboard.press("Shift+Tab"); }],
+    ];
+    for (const [nn, what, sec, act] of cases) {
+      const name = frameName(`2-${nn}`, what, 1440, lang);
+      if (!wanted(name)) continue;
+      const o = await open(q(), { width: 1440, height: 900 });
+      // The keyboard's rings: the window opened from its «تعديل» with Enter, so focus moves by key.
+      if (what.includes("keyboard")) { await o.page.focus(`[data-edit="${sec}"]`); await o.page.keyboard.press("Enter"); await o.page.waitForTimeout(80); }
+      else await editOpen(o, sec, false);
+      await act(o);
+      await o.page.waitForTimeout(60);
+      await shotPanel(o, name);
+      // A scrim tap with something typed keeps the window, and what is typed.
+      if (nn === "10") {
+        await o.page.mouse.click(40, 860);
+        await o.page.waitForTimeout(60);
+        const kept = await o.page.evaluate(() => !!document.querySelector("dialog[open]") && document.querySelector("#ed-cap").value === "140");
+        if (!kept) o.checks.push("a scrim tap closed a window with something typed");
+      }
+      await finish(name, o);
+      await o.context.close();
+    }
+  }
+
+  /* 5- the phone's flows, step by step: the editing steps (part 3 adds the confirmation, working, done, the refusals,
+   * the conflict view and leaving). Each step is the whole 390 x 844 screen. */
+  if (want(5)) {
+    const steps = [
+      ["01", "crowd-tap-edit", "crowd", null],
+      ["02", "crowd-capacity-typed", "crowd", async (o) => { await fill(o, "#ed-cap", "140"); }],
+      ["03", "crowd-capacity-sentence", "crowd", async (o) => { await fill(o, "#ed-cap", "50"); await leave(o); }],
+      ["04", "crowd-save-refused", "crowd", async (o) => { await fill(o, "#ed-lv1", "15"); await o.page.tap(".ed-save"); }],
+      ["05", "crowd-cancel-back", "crowd", async (o) => { await fill(o, "#ed-cap", "140"); await o.page.tap(".ed-cancel"); }],
+      ["06", "hours-tap-edit", "hours", null],
+      ["07", "hours-friday-closed", "hours", async (o) => { await o.page.tap("#ed-fri-sw"); }],
+      ["08", "hours-24h-and-sentences", "hours", async (o) => { await fill(o, "#ed-sat-close", "8"); await leave(o); await o.page.evaluate(() => { const b = document.querySelector("dialog[open] .dlg-body"); b.scrollTop = b.scrollHeight; }); }],
+      ["09", "business-day-tap-edit", "day", null],
+      ["10", "business-day-sentences", "day", async (o) => { await fill(o, "#ed-end", "130"); await leave(o); await fill(o, "#ed-reset", "400"); await leave(o); }],
+    ];
+    for (const [nn, what, sec, act] of steps) {
+      const name = frameName(`5-${nn}`, what, 390, lang);
+      if (!wanted(name)) continue;
+      const o = await open(q(), { width: 390, height: 844 });
+      await editOpen(o, sec, true);
+      if (act) await act(o);
+      await o.page.waitForTimeout(60);
+      if (nn === "05") {
+        const back = await o.page.evaluate(() => !document.querySelector("dialog[open]") && document.activeElement === document.querySelector('[data-edit="crowd"]'));
+        if (!back) o.checks.push("Cancel did not close the sheet and return focus to «تعديل»");
+        const kept = await o.page.evaluate(() => window.__settings.editable.capacity);
+        if (kept !== 120) o.checks.push(`Cancel kept a typed value: capacity ${kept}`);
+      }
+      await o.page.screenshot({ path: path(name) });
+      await finish(name, o);
       await o.context.close();
     }
   }
