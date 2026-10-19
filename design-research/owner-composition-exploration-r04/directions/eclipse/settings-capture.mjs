@@ -12,8 +12,19 @@
 //       window's cases cropped to the window: the people following capacity, every sentence about a value that looks
 //       like a mistake, the refusals on «حفظ», a day closed, «24 ساعة», every day closed, the keyboard's rings, capacity
 //       at the contract's largest
-//   3- (part 3) each state; 4- (part 3) the range cases; 5- the phone's flows step by step (5-01…10 the editing steps;
-//       part 3 adds the rest)
+//   3-  each state, at 1440 x 900 (cropped to the window) and 390 x 844 (the whole screen): the confirmation (one
+//       change with the people that follow, every crowd value, the hours, the business day, a reason at 240), working,
+//       done (the whole page; the hours at 1024 in its tight form), each refusal (400, 401, 403), the failure (500),
+//       the conflict view in its three forms (apply, nothing left to apply, no longer fits), the question before
+//       closing with something typed, Loading, Error and its retry
+//   4-  the range cases, each cropped to its element with a strip of its neighbours: capacity 1 (1440, 390) and the
+//       contract's largest (1440, 390, 1024), the limits at their tightest and widest, every day closed, one day
+//       closed, opening equal to closing, the business day's end and the reset at their bounds, a history with no
+//       record, one, and a record of every kind of change with a reason of 240 characters (its row), the
+//       confirmation's people at capacity 1 and at the tightest limits
+//   5-  the phone's flows step by step: 5-01…10 the editing steps (part 2), then «إلغاء» with something typed asking
+//       first, the confirmation, the reason, working, done, the hours' done under its head, back to the editor, the
+//       conflict view and applying from it, each refusal, the failure
 // It exits 1 if a check fails: a console message or page error, a font file fetched twice in one load, a request off
 // the page's origin, a layout shift after the first paint, a sideways page scroll, an element outside the viewport's
 // width, a box whose content spills, an interactive target under 44 px; from 1024 px, the two cards of a row not
@@ -21,7 +32,10 @@
 // gutter; a card whose values start on more than one edge; or a level's people that differ from bandFor's counting
 // (packages/api/src/occupancy/bands.ts) for any capacity and limits the check draws. In edit (2- and 5-): the page
 // behind moving when a window opens or closes, focus not starting in the window or not returning to the card's «تعديل»,
-// a day of the week not on one line from 721 px, a window that closes on a scrim tap with something typed.
+// a day of the week not on one line from 721 px, a window that closes on a scrim tap with something typed. After «حفظ»
+// (3- and 5-): «حفظ» not leading to the confirmation, focus not on the reason (from 721 px) or the title (a phone), a
+// value card that grows from 721 px when its done line arrives, focus not on the done line, a refusal that leaves the
+// action, a conflict view that names someone, a window that closes with something typed without asking first.
 import { createServer } from "node:http";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, extname, join, normalize, resolve, sep } from "node:path";
@@ -263,7 +277,8 @@ async function editClose(o, sec) {
 // The window, cropped with a strip of the page around it.
 const PANEL = "dialog[open] .dlg-panel";
 async function shotPanel(o, name, pad = 24) {
-  const b = await o.page.evaluate((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; }, PANEL);
+  // The window's panel in view: the editor's, or the step that took its place (the editor waits hidden behind it).
+  const b = await o.page.evaluate((s) => { const r = [...document.querySelectorAll(s)].find((p) => !p.hidden).getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; }, PANEL);
   const vw = await o.page.evaluate(() => [innerWidth, innerHeight]);
   const x = Math.max(0, b.x - pad), y = Math.max(0, b.y - pad);
   await o.page.screenshot({ path: path(name), clip: { x, y, width: Math.min(vw[0] - x, b.w + pad * 2), height: Math.min(vw[1] - y, b.h + pad * 2) } });
@@ -333,15 +348,15 @@ for (const lang of LANGS) {
     }
   }
 
-  /* 5- the phone's flows, step by step: the editing steps (part 3 adds the confirmation, working, done, the refusals,
-   * the conflict view and leaving). Each step is the whole 390 x 844 screen. */
+  /* 5- the phone's flows, step by step: the editing steps (01-10, part 2's; 05 now asks first, the coordinator's ruling
+   * given to part 3). Each step is the whole 390 x 844 screen. */
   if (want(5)) {
     const steps = [
       ["01", "crowd-tap-edit", "crowd", null],
       ["02", "crowd-capacity-typed", "crowd", async (o) => { await fill(o, "#ed-cap", "140"); }],
       ["03", "crowd-capacity-sentence", "crowd", async (o) => { await fill(o, "#ed-cap", "50"); await leave(o); }],
       ["04", "crowd-save-refused", "crowd", async (o) => { await fill(o, "#ed-lv1", "15"); await o.page.tap(".ed-save"); }],
-      ["05", "crowd-cancel-back", "crowd", async (o) => { await fill(o, "#ed-cap", "140"); await o.page.tap(".ed-cancel"); }],
+      ["05", "crowd-cancel-asks-first", "crowd", async (o) => { await fill(o, "#ed-cap", "140"); await o.page.tap(".ed-cancel"); }],
       ["06", "hours-tap-edit", "hours", null],
       ["07", "hours-friday-closed", "hours", async (o) => { await o.page.tap("#ed-fri-sw"); }],
       ["08", "hours-24h-and-sentences", "hours", async (o) => { await fill(o, "#ed-sat-close", "8"); await leave(o); await o.page.evaluate(() => { const b = document.querySelector("dialog[open] .dlg-body"); b.scrollTop = b.scrollHeight; }); }],
@@ -355,12 +370,234 @@ for (const lang of LANGS) {
       await editOpen(o, sec, true);
       if (act) await act(o);
       await o.page.waitForTimeout(60);
+      // «إلغاء» with something typed asks first (the coordinator's ruling): the sheet stays, with the question, focus on
+      // «متابعة التعديل»; nothing is saved.
       if (nn === "05") {
-        const back = await o.page.evaluate(() => !document.querySelector("dialog[open]") && document.activeElement === document.querySelector('[data-edit="crowd"]'));
-        if (!back) o.checks.push("Cancel did not close the sheet and return focus to «تعديل»");
+        const asked = await o.page.evaluate(() => window.__settings.step === "discard" && !!document.querySelector("dialog[open]") && document.activeElement?.matches(".st-back"));
+        if (!asked) o.checks.push("Cancel with something typed did not ask first");
         const kept = await o.page.evaluate(() => window.__settings.editable.capacity);
         if (kept !== 120) o.checks.push(`Cancel kept a typed value: capacity ${kept}`);
       }
+      await o.page.screenshot({ path: path(name) });
+      await finish(name, o);
+      await o.context.close();
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ the dialogs, the states and the range (3-, 4-, 5-)
+ * part 3. A step after «حفظ» is reached the way the owner reaches it: the card's «تعديل», the values, «حفظ». */
+const saveFrom = async (o, sec, act, phone) => {
+  await editOpen(o, sec, phone);
+  await act(o);
+  await leave(o);
+  if (phone) await o.page.tap(`#ed-${sec} .ed-save`); else await o.page.click(`#ed-${sec} .ed-save`);
+  await o.page.waitForTimeout(80);
+};
+const press = (o, sel, phone) => (phone ? o.page.tap(sel) : o.page.click(sel));
+const applyNow = async (o, sec, phone, wait = 900) => { await press(o, `#st-${sec} .st-do`, phone); await o.page.waitForTimeout(wait); };
+const step = (o) => o.page.evaluate(() => window.__settings.step);
+// «حفظ» leads to the confirmation, focused on the reason from 721 px and on its title on a phone; it lists the changes
+// the record will name and, for the crowd, the people each level holds.
+async function checkConfirm(o, sec, phone) {
+  const r = await o.page.evaluate((s) => {
+    const st = document.querySelector(`#st-${s}`);
+    return { step: window.__settings.step, rows: st.querySelectorAll(".cf-list:not(.cf-ppl) > .cf-row").length,
+      ppl: [...st.querySelectorAll(".cf-ppl > .cf-row .sr-only")].map((e) => e.textContent), focus: document.activeElement?.id || document.activeElement?.tagName };
+  }, sec);
+  if (r.step !== "confirm") o.checks.push(`${sec}: «حفظ» did not lead to the confirmation (${r.step})`);
+  const want = phone ? `st-${sec}-title` : `st-${sec}-reason`;
+  if (r.focus !== want) o.checks.push(`${sec}: the confirmation focused ${r.focus}, not ${want}`);
+  o.notes.confirm = r;
+  return r;
+}
+const CROWD_ONE = async (o) => { await fill(o, "#ed-cap", "140"); };
+const CROWD_ALL = async (o) => { await fill(o, "#ed-cap", "140"); await fill(o, "#ed-lv0", "25"); await fill(o, "#ed-lv1", "50"); await fill(o, "#ed-lv2", "75"); };
+const HOURS_SOME = async (o) => {
+  for (const d of ["sun", "mon", "tue"]) { await fill(o, `#ed-${d}-close`, "12"); await o.page.selectOption(`#ed-${d}-close-ap`, "am"); }
+  await fill(o, "#ed-wed-open", "7");
+  await o.page.click("#ed-fri-sw");
+};
+const DAY_BOTH = async (o) => { await fill(o, "#ed-end", "5"); await fill(o, "#ed-reset", "15"); };
+const WHY = { ar: "توسعة صالة الأوزان", en: "The weights room is bigger" };
+const R240 = { ar: "وسّعنا الصالة وافتتحنا منطقة الأوزان الحرة، فرفعنا السعة إلى 140 شخصًا وعدّلنا حدود المستويات لتناسبها، وقدّمنا الإغلاق إلى منتصف الليل في أول الأسبوع، وأغلقنا الجمعة للصيانة الدورية حتى نهاية الشهر، ونقلنا التصفير إلى ربع ساعة بعد الإغلاق.",
+  en: "We expanded the gym and opened the free-weights area, so capacity goes to 140 and the levels follow it; we close at midnight early in the week, Friday is closed for maintenance until month end, and the count resets 15 minutes after closing." };
+// The done line: the window gone, focus on the line, and from 721 px no value card grown by it (its head keeps 44 px).
+async function checkDone(o, sec, w) {
+  const r = await o.page.evaluate(() => { const n = document.querySelector("#notice"); const h = n?.parentElement; return n ? { mode: h.dataset.done, head: +h.getBoundingClientRect().height.toFixed(2), focus: document.activeElement === n, open: !!document.querySelector("dialog[open]") } : null; });
+  if (!r) { o.checks.push(`${sec}: no done line after applying`); return; }
+  if (r.open) o.checks.push(`${sec}: the window stayed open after applying`);
+  if (!r.focus) o.checks.push(`${sec}: focus is not on the done line`);
+  if (w > 720 && r.head > 44.5) o.checks.push(`${sec}: its card grew by its done line at ${w} px (${r.mode}, head ${r.head})`);
+  o.notes.done = r;
+}
+
+for (const lang of LANGS) {
+  const q = (extra = "") => `lang=${lang}${extra ? `&${extra}` : ""}`;
+  const why = (o) => fill(o, "#st-crowd-reason", WHY[lang]);
+  if (want(3)) {
+    // Each state at 1440 (cropped to its window, or the page) and at 390 (the whole screen).
+    const states = [
+      ["01", "confirm-crowd-one-change", "", async (o, ph) => { await saveFrom(o, "crowd", CROWD_ONE, ph); await checkConfirm(o, "crowd", ph); }],
+      ["02", "confirm-crowd-every-value", "", async (o, ph) => {
+        await saveFrom(o, "crowd", CROWD_ALL, ph);
+        const r = await checkConfirm(o, "crowd", ph);
+        if (r.rows !== 4) o.checks.push(`crowd: ${r.rows} changes listed, not 4`);
+        if (r.ppl.length !== 3) o.checks.push(`crowd: ${r.ppl.length} people lines, not 3`);
+      }],
+      ["03", "confirm-hours", "", async (o, ph) => { await saveFrom(o, "hours", HOURS_SOME, ph); await checkConfirm(o, "hours", ph); }],
+      ["04", "confirm-business-day", "", async (o, ph) => { await saveFrom(o, "day", DAY_BOTH, ph); await checkConfirm(o, "day", ph); }],
+      ["05", "confirm-reason-240", "", async (o, ph) => {
+        await saveFrom(o, "crowd", CROWD_ONE, ph);
+        await fill(o, "#st-crowd-reason", R240[lang]);
+        const left = await o.page.evaluate(() => ({ n: document.querySelector("#st-crowd-reason").value.length, shown: !document.querySelector("#st-crowd-reason-left").hidden }));
+        if (left.n > 240 || !left.shown) o.checks.push(`reason: ${left.n} characters, counter ${left.shown ? "shown" : "hidden"}`);
+        o.notes.reason = left;
+      }],
+      ["06", "working", "hold=1", async (o, ph) => {
+        await saveFrom(o, "crowd", CROWD_ONE, ph);
+        await press(o, "#st-crowd .st-do", ph);
+        await o.page.waitForTimeout(120);
+        const r = await o.page.evaluate(() => ({ busy: window.__settings.busy, focus: !!document.activeElement?.matches(".st-do"), off: document.querySelector("#st-crowd .st-back").getAttribute("aria-disabled") }));
+        if (!r.busy || !r.focus || r.off !== "true") o.checks.push(`working: ${JSON.stringify(r)}`);
+        // Escape waits while it works.
+        await o.page.keyboard.press("Escape");
+        await o.page.waitForTimeout(60);
+        if ((await step(o)) !== "confirm") o.checks.push("working: Escape left the confirmation");
+      }],
+      ["07", "done", "", async (o, ph, w) => { await saveFrom(o, "crowd", CROWD_ONE, ph); await why(o); await applyNow(o, "crowd", ph); await checkDone(o, "crowd", w); }, "page"],
+      ["08", "refused-400", "refuse=bad_request", async (o, ph) => { await saveFrom(o, "crowd", CROWD_ONE, ph); await applyNow(o, "crowd", ph); }],
+      ["09", "refused-401", "refuse=unauthorized", async (o, ph) => { await saveFrom(o, "crowd", CROWD_ONE, ph); await applyNow(o, "crowd", ph); }],
+      ["10", "refused-403", "refuse=forbidden", async (o, ph) => { await saveFrom(o, "crowd", CROWD_ONE, ph); await applyNow(o, "crowd", ph); }],
+      ["11", "failed-500", "fail=1", async (o, ph) => { await saveFrom(o, "crowd", CROWD_ONE, ph); await applyNow(o, "crowd", ph); }],
+      ["12", "conflict", "refuse=settings_version_conflict", async (o, ph) => { await saveFrom(o, "crowd", CROWD_ONE, ph); await why(o); await applyNow(o, "crowd", ph); }],
+      ["13", "conflict-nothing-to-apply", "refuse=settings_version_conflict", async (o, ph) => { await saveFrom(o, "crowd", async (x) => { await fill(x, "#ed-cap", "150"); }, ph); await applyNow(o, "crowd", ph); }],
+      ["14", "conflict-no-longer-fits", "refuse=settings_version_conflict&other=limits", async (o, ph) => { await saveFrom(o, "crowd", async (x) => { await fill(x, "#ed-lv1", "50"); }, ph); await applyNow(o, "crowd", ph); }],
+      ["15", "close-asks-first", "", async (o, ph) => {
+        await editOpen(o, "crowd", ph); await fill(o, "#ed-cap", "140"); await leave(o);
+        await o.page.keyboard.press("Escape"); await o.page.waitForTimeout(80);
+        if ((await step(o)) !== "discard") o.checks.push("Escape with something typed did not ask first");
+      }],
+      ["16", "loading", "state=loading", null, "page"],
+      ["17", "error", "state=error", null, "page"],
+      ["18", "error-retrying", "state=error", async (o) => { await o.page.click("#retry"); await o.page.waitForTimeout(100); }, "page"],
+    ];
+    for (const [w, h] of [[1440, 900], [390, 844]]) {
+      const ph = w <= 720;
+      for (const [nn, what, extra, act, kind] of states) {
+        const name = frameName(`3-${nn}`, what, w, lang);
+        if (!wanted(name)) continue;
+        const o = await open(q(extra), { width: w, height: h });
+        if (act) await act(o, ph, w);
+        await o.page.waitForTimeout(80);
+        // The conflict view names no one (DECISIONS item 78).
+        if (what.startsWith("conflict")) {
+          const named = await o.page.evaluate(() => /فهد|نورة|سارة|Fahad|Noura|Sara/.test(document.querySelector("dialog[open]")?.textContent || ""));
+          if (named) o.checks.push("the conflict view names someone");
+          const st = await step(o);
+          if (st !== "conflict") o.checks.push(`not the conflict view: ${st}`);
+        }
+        if (what.startsWith("refused") && (await o.page.evaluate(() => !document.querySelector("dialog[open] .st-do")?.hidden))) o.checks.push("a refusal left the action");
+        if (kind === "page" || ph) await o.page.screenshot({ path: path(name) });
+        else await shotPanel(o, name);
+        await finish(name, o);
+        await o.context.close();
+      }
+    }
+    // Done at 1024 for the hours: the head's tight form (the name over «توقيت الرياض», the line over its link).
+    const name = frameName("3-19", "done-hours", 1024, lang);
+    if (wanted(name)) {
+      const o = await open(q(), { width: 1024, height: 768 });
+      await saveFrom(o, "hours", async (x) => { await x.page.click("#ed-fri-sw"); }, false);
+      await applyNow(o, "hours", false);
+      await checkDone(o, "hours", 1024);
+      await o.page.screenshot({ path: path(name) });
+      await finish(name, o);
+      await o.context.close();
+    }
+  }
+
+  if (want(4)) {
+    // The range, each element with a strip of its neighbours.
+    const cases = [
+      ["01", "capacity-1", "case=cap1", "#card-crowd", 1440],
+      ["02", "capacity-largest", "case=capmax", "#card-crowd", 1440],
+      ["03", "limits-tightest", "case=tight", "#card-crowd", 1440],
+      ["04", "limits-widest", "case=wide", "#card-crowd", 1440],
+      ["05", "capacity-largest", "case=capmax", "#card-crowd", 390],
+      ["06", "capacity-1", "case=cap1", "#card-crowd", 390],
+      ["07", "every-day-closed", "case=closed", "#card-hours", 1440],
+      ["08", "friday-closed", "case=friday", "#card-hours", 1440],
+      ["09", "opening-equals-closing", "case=allday", "#card-hours", 1440],
+      ["10", "business-day-lowest", "case=low", "#card-day", 1440],
+      ["11", "business-day-highest", "case=high", "#card-day", 1440],
+      ["12", "business-day-highest", "case=high", "#card-day", 390],
+      ["13", "history-none", "log=none", "#card-log", 1440],
+      ["14", "history-one", "log=one", "#card-log", 1440],
+      ["15", "history-every-change-reason-240", "log=every", ".set-grid", 1440],
+      ["18", "capacity-largest", "case=capmax", "#card-crowd", 1024],
+    ];
+    for (const [nn, what, extra, sel, w] of cases) {
+      const name = frameName(`4-${nn}`, what, w, lang);
+      if (!wanted(name)) continue;
+      const o = await open(q(extra), { width: w, height: w <= 720 ? 844 : 900 });
+      await crop(o.page, sel, path(name), w <= 720 ? 16 : 24);
+      o.notes.cards = await cardBoxes(o.page);
+      await finish(name, o);
+      await o.context.close();
+    }
+    // The confirmation's people at the range's ends: capacity 120 → 1 (two levels no count reaches), and the limits at
+    // their tightest.
+    const confirms = [
+      ["16", "confirm-capacity-1", async (o) => { await fill(o, "#ed-cap", "1"); }],
+      ["17", "confirm-limits-tightest", async (o) => { await fill(o, "#ed-lv0", "0"); await fill(o, "#ed-lv1", "1"); await fill(o, "#ed-lv2", "2"); }],
+    ];
+    for (const [nn, what, act] of confirms) {
+      const name = frameName(`4-${nn}`, what, 1440, lang);
+      if (!wanted(name)) continue;
+      const o = await open(q(), { width: 1440, height: 900 });
+      await saveFrom(o, "crowd", act, false);
+      await checkConfirm(o, "crowd", false);
+      await shotPanel(o, name);
+      await finish(name, o);
+      await o.context.close();
+    }
+  }
+
+  if (want(5)) {
+    // The rest of the phone's flows, after the editing steps: each the whole 390 x 844 screen, reached by touch.
+    const flows = [
+      ["11", "crowd-close-without-saving", "", async (o) => {
+        await editOpen(o, "crowd", true); await fill(o, "#ed-cap", "140"); await leave(o);
+        await o.page.tap(".ed-cancel"); await o.page.waitForTimeout(80);
+        await o.page.tap(".st-discard"); await o.page.waitForTimeout(80);
+        const r = await o.page.evaluate(() => ({ open: !!document.querySelector("dialog[open]"), focus: document.activeElement === document.querySelector('[data-edit="crowd"]'), cap: window.__settings.editable.capacity }));
+        if (r.open || !r.focus || r.cap !== 120) o.checks.push(`close without saving: ${JSON.stringify(r)}`);
+      }],
+      ["12", "crowd-confirm", "", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await checkConfirm(o, "crowd", true); }],
+      ["13", "crowd-reason-typed", "", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await o.page.tap("#st-crowd-reason"); await o.page.keyboard.type(WHY[lang]); }],
+      ["14", "crowd-working", "hold=1", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await o.page.tap("#st-crowd .st-do"); await o.page.waitForTimeout(120); }],
+      ["15", "crowd-done", "", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await applyNow(o, "crowd", true); await checkDone(o, "crowd", 390); }],
+      ["16", "hours-confirm", "", async (o) => { await saveFrom(o, "hours", async (x) => { await x.page.tap("#ed-fri-sw"); }, true); await checkConfirm(o, "hours", true); }],
+      ["17", "hours-done", "", async (o) => { await saveFrom(o, "hours", async (x) => { await x.page.tap("#ed-fri-sw"); }, true); await applyNow(o, "hours", true); await checkDone(o, "hours", 390); }],
+      ["18", "crowd-back-to-editor", "", async (o) => {
+        await saveFrom(o, "crowd", CROWD_ONE, true); await o.page.tap("#st-crowd .st-back"); await o.page.waitForTimeout(80);
+        const r = await o.page.evaluate(() => ({ step: window.__settings.step, cap: document.querySelector("#ed-cap").value }));
+        if (r.step !== "edit" || r.cap !== "140") o.checks.push(`back to the editor: ${JSON.stringify(r)}`);
+      }],
+      ["19", "crowd-conflict", "refuse=settings_version_conflict", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await applyNow(o, "crowd", true); }],
+      ["20", "crowd-conflict-applied", "refuse=settings_version_conflict", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await applyNow(o, "crowd", true); await applyNow(o, "crowd", true); await checkDone(o, "crowd", 390); }],
+      ["21", "crowd-refused-400", "refuse=bad_request", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await applyNow(o, "crowd", true); }],
+      ["22", "crowd-refused-401", "refuse=unauthorized", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await applyNow(o, "crowd", true); }],
+      ["23", "crowd-refused-403", "refuse=forbidden", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await applyNow(o, "crowd", true); }],
+      ["24", "crowd-failed-500", "fail=1", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await applyNow(o, "crowd", true); }],
+    ];
+    for (const [nn, what, extra, act] of flows) {
+      const name = frameName(`5-${nn}`, what, 390, lang);
+      if (!wanted(name)) continue;
+      const o = await open(q(extra), { width: 390, height: 844 });
+      await act(o);
+      await o.page.waitForTimeout(80);
       await o.page.screenshot({ path: path(name) });
       await finish(name, o);
       await o.context.close();

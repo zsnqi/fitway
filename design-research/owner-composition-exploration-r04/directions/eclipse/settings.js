@@ -16,7 +16,8 @@
  * to 1:00 AM, levels at 24, 48 and 68 people) and with Activity log's resets five minutes after each closing.
  * Query: lang=ar|en; ops=delayed|closed|offline (the frame's status, for review); motion=off; edit=crowd|hours|day (a
  * card's window on load); state=loading|error with arrive=<ms>|never (the first load); refuse=bad_request|unauthorized|
- * forbidden|settings_version_conflict, fail=1, hold=1 (the answer to the first application); log=none|one|every and
+ * forbidden|settings_version_conflict, fail=1, hold=1 (the answer to the first application), other=limits (the save
+ * that came first also moves Busy); log=none|one|every and
  * case=cap1|capmax|tight|wide|closed|friday|allday|low|high (the whole range, "the gym's settings" below).
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules
  * and no fetch), so the page works from file:// too. */
@@ -178,17 +179,18 @@
         // What the step does, in one sentence (DLG-7): the visitors' page for the crowd and the hours; the business day
         // reaches no visitor, so its sentence says when it applies and that past days keep their reports (SPEC).
         desc: {
-          crowd: () => "يتغيّر المستوى الذي يراه الزوار فور التطبيق.",
+          crowd: () => "يرى الزوار المستوى وفق هذه القيم فور التطبيق.",
           hours: () => "يرى الزوار الساعات الجديدة فور التطبيق.",
           day: (many) => (many ? "تسري التغييرات فور التطبيق، وتبقى تقارير الأيام السابقة كما هي." : "يسري التغيير فور التطبيق، وتبقى تقارير الأيام السابقة كما هي."),
         },
         listName: "التغييرات",
+        pplName: "الأشخاص في كل مستوى",
       },
-      // The people a level holds, before → after, in the confirmation: «حتى 24 ← 28 شخصًا», Packed «69 ← 81 شخصًا فأكثر».
+      // The people a level holds, before → after, in the confirmation: «حتى 24 ← 28 شخصًا»; said in full as «هادئ: حتى
+      // 28 شخصًا بدلًا من 24».
       pplUpTo: (n) => `حتى ${n}`,
-      pplMore: (html) => `${html} فأكثر`,
       never: "لا يظهر",
-      fromTo: (a, b) => `من ${a} إلى ${b}`,
+      pplSaid: (lv, a, b) => `${lv}: ${b === null ? "لا يظهر" : `حتى ${b}`}، بدلًا من ${a === null ? "لا يظهر" : a}`,
       reasonLabel: "السبب (اختياري)",
       reasonRow: "السبب",
       left: (n) => (n === 0 ? "لم يبق أي حرف" : n === 1 ? "بقي حرف واحد" : n === 2 ? "بقي حرفان" : n <= 10 ? `بقيت ${n} أحرف` : `بقي ${n} حرفًا`),
@@ -206,7 +208,7 @@
       cx: {
         title: "حُفظت تغييرات أخرى قبل تغييرك",
         apply: (t) => `حُفظت الساعة ${t}، فلم يُطبَّق تغييرك.`,
-        same: (t) => `حُفظت الساعة ${t}، وفيها ما كتبتَه، فلا شيء لتطبيقه.`,
+        same: (t) => `حُفظت الساعة ${t}، وفيها ما كتبته، فلا شيء لتطبيقه.`,
         clash: (t) => `حُفظت الساعة ${t}، ولم يعد تغييرك يتّفق معها. ارجع إلى التعديل لتراجعه.`,
         saved: "المحفوظ الآن",
         yours: "تغييرك",
@@ -326,16 +328,16 @@
       cf: {
         title: (sec, many) => `Apply ${many ? "these" : "this"} ${COPY.en.sec[sec].toLowerCase()} change${many ? "s" : ""}?`,
         desc: {
-          crowd: () => "The level visitors see changes as soon as you apply.",
+          crowd: () => "The level visitors see follows these values as soon as you apply.",
           hours: () => "Visitors see the new hours as soon as you apply.",
           day: (many) => `${many ? "They take" : "It takes"} effect as soon as you apply. Reports for past days stay as they are.`,
         },
         listName: "Changes",
+        pplName: "People at each level",
       },
       pplUpTo: (n) => `up to ${n}`,
-      pplMore: (html) => `${html} or more`,
       never: "never shown",
-      fromTo: (a, b) => `from ${a} to ${b}`,
+      pplSaid: (lv, a, b) => `${lv}: ${b === null ? "never shown" : `up to ${b}`}, was ${a === null ? "never shown" : a}`,
       reasonLabel: "Reason (optional)",
       reasonRow: "Reason",
       left: (n) => (n === 0 ? "No characters left" : n === 1 ? "1 character left" : `${n} characters left`),
@@ -695,11 +697,11 @@
     // The changes share two columns, so a record's figures start on one edge whatever its labels' lengths.
     const lines = changes(prev.editable, v.editable).map((c) =>
       `<span class="log-what" aria-hidden="true">${c.what}</span>` +
-      `<span class="log-fig" aria-hidden="true"><span class="log-from">${c.from}</span><span class="log-to">${ARROW}${c.to}</span></span>` +
+      `<span class="log-fig" aria-hidden="true"><span class="log-from">${c.from}</span><span class="log-to">${ARROW}<span>${c.to}</span></span></span>` +
       `<span class="sr-only">${esc(c.said)}</span>`).join("");
     const reason = v.reason ? (v.reason.raw ?? v.reason[LANG]) : null;
     const why = reason ? `<p class="log-why"><q><bdi dir="auto">${esc(reason)}</bdi></q></p>` : "";
-    return `<li class="log-rec"><div class="log-body"><div class="log-chgs">${lines}</div>${why}</div>` +
+    return `<li class="log-rec" data-v="${v.version}"><div class="log-body"><div class="log-chgs">${lines}</div>${why}</div>` +
       `<p class="log-meta">${SR_SEP}${bdi(esc(OWNER_NAMES[v.by]))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(v)}</p></li>`;
   }
   function logHTML() {
@@ -731,6 +733,7 @@
       gridEl.hidden = false;
       for (const k of Object.keys(cardEl)) renderCard(k);
       for (const el of Object.values(cardEl)) el.toggleAttribute("aria-busy", phase === "loading");
+      fitNotice();
     }
     frame.refreshStatus();
     root.dataset.phase = phase;
@@ -745,11 +748,35 @@
   // A record a save writes takes the session's next id, as Access's do (57 on; Activity log's sample ends at 56).
   let nextRecordId = 57;
   const recHref = (id) => `activity.html?kind=settings&record=${id}&${keep}`;
-  const CHECK = '<svg class="done-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 12.5 10 17l8.5-9.5"/></svg>';
+  const CHECK = '<svg class="done-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="m-check" d="M5.5 12.5 10 17l8.5-9.5"/></svg>';
+  // Its words sit in one block that rises into the line, the check drawing as it comes (Access's done line, MOT-17).
   function noticeHTML(sec) {
     if (!notice || notice.at !== sec || phase !== "ready") return "";
-    return `<p class="done set-done" id="notice" tabindex="-1">${CHECK}<span class="done-t">${L.done(notice.many)}</span> <a class="done-a" href="${recHref(notice.id)}">${L.doneLink}</a></p>`;
+    return `<p class="done set-done" id="notice" tabindex="-1"><span class="m-rise">${CHECK}<span class="done-t">${L.done(notice.many)}</span> <a class="done-a" href="${recHref(notice.id)}">${L.doneLink}</a></span></p>`;
   }
+  /* The sentence never grows its card where the head can hold it, so the page behind the closing window keeps still
+   * (the brief's hard limit) and a row's two cards keep their rules on one line: on the title's line between the title
+   * and «تعديل» ("line"); where one line has no room, the sentence over its link in the same 44 px ("stack"); for the
+   * hours, whose name carries «توقيت الرياض», the unit under the name as well, the name and the unit filling the head's
+   * 44 px (28 + 16) ("tight": the hours at 1024); only where none fits (a phone: the hours and the business day at
+   * 390, every card at 320), under the title's line, the card growing by it and the cards below sliding (MOT-17), as
+   * Access's done line does ("under"). Measured, not guessed, in each language and at each width, and again when the
+   * cards change width. */
+  function fitNotice() {
+    const p = $("#notice");
+    if (!p) return;
+    const head = p.parentElement, unit = head.querySelector(".set-unit");
+    for (const mode of ["line", "stack", "tight", "under"]) {
+      if (mode === "tight" && !unit) continue;
+      head.dataset.done = mode;
+      if (mode === "under" || (p.scrollWidth <= p.clientWidth + 0.5 && head.offsetHeight <= 44.5)) break;
+    }
+  }
+  let gridW = 0;
+  new ResizeObserver(([e]) => {
+    const w = Math.round(e.contentRect.width);
+    if (w !== gridW) { gridW = w; fitNotice(); }
+  }).observe(gridEl);
 
   /* ---- Loading (STA-10, PH-1…3). Real from the first paint: the title, every card's name and «توقيت الرياض», the
    * labels («السعة», «المستويات», the levels with their keys, the days, «نهاية يوم العمل», «تصفير العدد»), the history's
@@ -1320,49 +1347,29 @@
   // A change as the history will name it: what, then from, the arrow along the reading line, and to (LOG-1's words);
   // here the new value carries the weight (from in --ink-2, to in chalk). Said in full to assistive technology.
   const changeItems = (list) => list.map((c) => `<li class="cf-row"><span class="cf-what" aria-hidden="true">${c.what}</span>` +
-    `<span class="cf-fig" aria-hidden="true"><span class="cf-from">${c.from}</span><span class="cf-to">${ARROW}${c.to}</span></span>` +
+    `<span class="cf-fig" aria-hidden="true"><span class="cf-from">${c.from}</span><span class="cf-to">${ARROW}<span>${c.to}</span></span></span>` +
     `<span class="sr-only">${esc(c.said)}</span></li>`).join("");
   const limsOf = (s) => [s.thresholds.quietMaxPercent, s.thresholds.moderateMaxPercent, s.thresholds.busyMaxPercent];
   const risingOk = (s) => { const l = limsOf(s); return l[0] < l[1] && l[1] < l[2]; };
   const plain = (h) => String(h).replace(/<[^>]+>/g, "");
-  /* The crowd's confirmation: capacity's change, then a row per level that changes in any way, marked with its key and
-   * word as on the card: its limit from → to (the log's words, chalk), and under it the people it holds from → to,
-   * quieter (label type --ink-2), so a change of capacity or of a limit shows where each level now starts for the
-   * visitors, in the people the owner thinks in, without the level's name twice. Packed follows Busy, so its row has only
-   * its people. A level no count reaches says «لا يظهر». */
-  function levelItems(a, b) {
-    const pa = limsOf(a), pb = limsOf(b);
-    const la = pa.map((p) => lastCount(a.capacity, p)), lb = pb.map((p) => lastCount(b.capacity, p));
+  /* The crowd's confirmation keeps the people (the open point, decided): the ruled list is exactly what the record will
+   * say (capacity, a limit: the history's words), and after it, quieter and unruled, the people each level holds before
+   * → after, as the user kept them from the skeleton's second pass, so a change of capacity or of a limit shows what the
+   * visitors will see at each count, in the people the owner thinks in, without being counted as a change. Only levels
+   * whose people change; Packed starts where Busy ends, so its line would only repeat Busy's; no level key (the one red
+   * mark in the window would pull the eye from the change to its consequence). A level no count reaches says «لا يظهر». */
+  function peopleItems(a, b) {
+    const la = limsOf(a).map((p) => lastCount(a.capacity, p)), lb = limsOf(b).map((p) => lastCount(b.capacity, p));
     const at = (last, i) => (i > 0 && last[i] === last[i - 1] ? null : last[i]);
-    const fig = (from, to, cls = "") => `<span class="cf-fig${cls}"><span class="cf-from">${nw(from)}</span><span class="cf-to">${ARROW}${nw(to)}</span></span>`;
     let out = "";
-    for (let i = 0; i < 4; i++) {
-      const lines = [], said = [];
-      if (i < 3 && pa[i] !== pb[i]) {
-        lines.push(fig(ltr(`${pa[i]}%`), ltr(`${pb[i]}%`)));
-        said.push(L.fromTo(`${pa[i]}%`, `${pb[i]}%`));
-      }
-      let from = null, to, fromSaid, toSaid;
-      if (i < 3) {
-        const x = at(la, i), y = at(lb, i);
-        if (x !== y) {
-          from = x === null ? L.never : L.pplUpTo(ltr(fmtInt(x)));
-          to = y === null ? L.never : L.people(y);
-          fromSaid = x === null ? L.never : fmtInt(x);
-        }
-      } else if (la[2] !== lb[2]) {
-        from = ltr(fmtInt(la[2] + 1));
-        to = L.pplMore(L.people(lb[2] + 1));
-        fromSaid = fmtInt(la[2] + 1);
-      }
-      if (from !== null) {
-        toSaid = plain(to);
-        lines.push(fig(from, to, " is-ppl"));
-        said.push(L.fromTo(fromSaid, toSaid));
-      }
-      if (!lines.length) continue;
-      out += `<li class="cf-row is-lv"><span class="cf-what" aria-hidden="true">${LEVEL_BARS(i)}<span>${L.levels[i]}</span></span>` +
-        `<span class="cf-figs" aria-hidden="true">${lines.join("")}</span><span class="sr-only">${esc(`${L.levels[i]}: ${said.join(RTL ? "، " : ", ")}`)}</span></li>`;
+    for (let i = 0; i < 3; i++) {
+      const x = at(la, i), y = at(lb, i);
+      if (x === y) continue;
+      const from = x === null ? L.never : L.pplUpTo(ltr(fmtInt(x)));
+      const to = y === null ? L.never : L.people(y);
+      out += `<li class="cf-row is-ppl"><span class="cf-what" aria-hidden="true">${L.levels[i]}</span>` +
+        `<span class="cf-fig" aria-hidden="true"><span class="cf-from">${nw(from)}</span><span class="cf-to">${ARROW}${nw(to)}</span></span>` +
+        `<span class="sr-only">${esc(L.pplSaid(L.levels[i], x === null ? null : fmtInt(x), y === null ? null : plain(to)))}</span></li>`;
     }
     return out;
   }
@@ -1414,12 +1421,13 @@
   }
   function showConfirm(sec, base, next) {
     const list = changes(base, next), many = list.length > 1;
-    const items = sec === "crowd" ? changeItems(list.filter((c) => c.what === L.chg.capacity)) + levelItems(base, next) : changeItems(list);
+    const ppl = sec === "crowd" ? peopleItems(base, next) : "";
     Object.assign(flow, { base, next, step: "confirm", from: document.activeElement });
     showStep(sec, `${stHead(sec, L.cf.title(sec, many))}
       <div class="dlg-body">
         <p class="dlg-desc" id="st-${sec}-desc">${L.cf.desc[sec](many)}</p>
-        <div class="cf-grid"><ul class="cf-list" aria-label="${esc(L.cf.listName)}">${items}</ul></div>
+        <div class="cf-grid"><ul class="cf-list" aria-label="${esc(L.cf.listName)}">${changeItems(list)}</ul>` +
+        `${ppl ? `<ul class="cf-list cf-ppl" aria-label="${esc(L.cf.pplName)}">${ppl}</ul>` : ""}</div>
         ${reasonField(sec)}
         ${alertBox(sec)}
       </div>
@@ -1475,12 +1483,20 @@
     $$(".cf-reason-in", st).forEach((i) => { i.readOnly = on; });
   }
   // The alert (EMP-2) under the list: what happened, that nothing changed, what to do. A refusal no retry can mend sets
-  // the action aside and «رجوع» takes focus (DLG-10); a failure keeps the action, which is the retry.
-  function setAlert(sec, text, moot) {
+  // the action aside and the way out takes focus (DLG-10): «رجوع» to the editor where its values can be mended (400),
+  // «إغلاق» where nothing typed here can mend it (401 signed out, 403 not an owner), which closes at once; a failure
+  // keeps the action, which is the retry.
+  function setAlert(sec, text, moot, out = false) {
     const st = stEl(sec), a = $(`#st-${sec}-alert`, st);
     a.innerHTML = `${ICON.alert}<span>${text}</span>`;
     a.hidden = false;
     if (moot) $(".st-do", st).hidden = true;
+    if (out) {
+      const b = $(".st-back", st);
+      b.removeAttribute("data-back");
+      b.dataset.close = "now";
+      b.textContent = L.close;
+    }
   }
   function clearAlert(sec) {
     const st = stEl(sec), a = $(`#st-${sec}-alert`, st);
@@ -1495,7 +1511,7 @@
       const r = answer();
       if (r.refuse === "settings_version_conflict") { showConflict(sec); return; }
       if (r.refuse) {
-        M.reflow(D[sec], () => { setBusy(sec, false); setAlert(sec, L.refuse[r.refuse], true); });
+        M.reflow(D[sec], () => { setBusy(sec, false); setAlert(sec, L.refuse[r.refuse], true, r.refuse !== "bad_request"); });
         $(".st-back", stEl(sec)).focus();
         return;
       }
@@ -1506,13 +1522,26 @@
   /* Done: the window closes (its picture leaves as it was, working, MOT-9); the cards behind already show the new
    * values and the history its new record, with the reason as typed; the done sentence stands under the changed card's
    * head and takes focus (its ring when a key led there), and is announced. */
+  // Where the done line lands (Access's MOT-17): a line it adds where the head cannot hold it, or takes away from the
+  // card that held the last one, makes the blocks below slide instead of jumping (motion.js flip); the record the
+  // change wrote arrives at the top of the history in the same movement (flip's list, DECISIONS item 38), the oldest of
+  // the three leaving under the card's edge.
+  const blocks = () => [
+    ...Object.entries(cardEl).map(([k, el]) => [`card:${k}`, el]),
+    ...["crowd", "hours", "day"].flatMap((k) => $$(".set-figs > .set-fig, .set-sub, .set-dl > .set-row", cardEl[k]).map((el, i) => [`${k}:${i}`, el])),
+  ];
+  const logList = { box: cardEl.log, rows: () => $$(".log-list > .log-rec:not(.is-ph)", cardEl.log).map((li) => [li.dataset.v, li]),
+    words: ".log-body, .log-meta", empty: ".log-none" };
   function commit(sec) {
-    const reason = flow.reason.trim(), many = changes(flow.base, flow.next).length > 1, id = nextRecordId++;
-    versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN, by: ME, reason: reason ? { raw: reason } : null, editable: flow.next, id });
-    notice = { at: sec, many, id };
+    const reason = flow.reason.trim(), many = changes(flow.base, flow.next).length > 1, id = nextRecordId++, next = flow.next;
     closeDialog(D[sec], { quiet: true });
-    renderAll();
-    $("#notice")?.focus();
+    M.flip(blocks, () => {
+      versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN, by: ME, reason: reason ? { raw: reason } : null, editable: next, id });
+      notice = { at: sec, many, id };
+      renderAll();
+    }, { list: logList });
+    const n = $("#notice");
+    if (n) { n.focus(); M.done(n, { line: true, delay: M.T.lineAfterClose }); }
     say(L.done(many));
   }
 
@@ -1526,8 +1555,14 @@
    * holds the same. When what was typed is already saved, there is nothing to apply and «إغلاق» closes; when it no
    * longer fits (a limit now at or under the one below it), «رجوع» leads to the editor's own refusal. */
   // The save that came first (synthetic): capacity 120 → 150 and Friday from 4:00 PM, a minute ago, by the signed-in
-  // owner, the likely case (the same owner on another device, item 78), with no reason.
-  const OTHER = (s) => { s.capacity = 150; if (s.weeklySchedule.fri) s.weeklySchedule.fri = { ...s.weeklySchedule.fri, open: "16:00" }; };
+  // owner, the likely case (the same owner on another device, item 78), with no reason. ?other=limits adds Busy at 45%,
+  // so a Moderate typed at 45% or more no longer fits under it (the view's third form, "clash").
+  const OTHER_LIMITS = params.get("other") === "limits";
+  const OTHER = (s) => {
+    s.capacity = 150;
+    if (s.weeklySchedule.fri) s.weeklySchedule.fri = { ...s.weeklySchedule.fri, open: "16:00" };
+    if (OTHER_LIMITS) s.thresholds = { ...s.thresholds, busyMaxPercent: 45 };
+  };
   // Which of the window's values the owner changed (against what each field opened with).
   function touched(sec) {
     const ed = edEl(sec);

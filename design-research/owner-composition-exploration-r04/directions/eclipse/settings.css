@@ -103,6 +103,9 @@ html[lang="en"] .set { --lab: 104px; }
 .dl-levels { grid-template-columns: var(--lab) max-content max-content minmax(0, 1fr); }
 .dl-levels .v-q { padding-inline-end: 6px; }
 .dl-levels .v-p { padding-inline-start: 16px; }
+/* The range's ends (a capacity in the millions, «لا يظهر بهذه السعة» at capacity 1 on a phone) wrap within the people's
+ * column, between words, rather than spill the card; at every value the gym can have they keep one line. */
+.dl-levels .v-p, .dl-levels .v-p .nw { min-width: 0; white-space: normal; }
 /* The level key (new, LVL-7): CHP-5's four bars (4, 6.5, 9 and 11 px, 3 px wide, 2 apart, radius 1) as the level's
  * mark before its word, lit to the level's step in --red-hi, unlit white .16; the word carries the level (LVL-4), the
  * bars repeat it as the visitors' page and Daily draw it. They sit on the word's baseline. */
@@ -350,8 +353,7 @@ html[data-focus-input="keyboard"] .tf-ap:has(.tf-sel:focus) { outline: 2px solid
 /* The change list (new, CHG-1): LOG-1's words on the module's ruled rows (44 px, TBL-2's line above each): what in label
  * type --ink-2 (up to half the width, wrapping between words beyond it), then from, the arrow (14 px --ink-3, along the
  * reading line) and to, in body type with tabular figures; the new value carries the weight, chalk at 500, the old one
- * --ink-2 at 400. A figure that wraps breaks only before the arrow, which travels with the new value. The people that
- * follow (the crowd) stand under each level's own change, quieter: the figures in label type --ink-2. */
+ * --ink-2 at 400. A figure that wraps breaks only before the arrow, which travels with the new value. */
 .cf-grid { display: grid; grid-template-columns: fit-content(50%) minmax(0, 1fr); column-gap: 16px; margin-block-start: 12px; }
 .cf-grid > * { grid-column: 1 / -1; }
 .cf-list { display: grid; grid-template-columns: subgrid; margin: 0; padding: 0; list-style: none; }
@@ -360,11 +362,15 @@ html[data-focus-input="keyboard"] .tf-ap:has(.tf-sel:focus) { outline: 2px solid
 .cf-fig { display: inline-flex; flex-wrap: wrap; align-items: center; column-gap: 8px; min-width: 0; font-size: 15px; line-height: 22px; font-variant-numeric: tabular-nums; }
 .cf-from { color: var(--ink-2); white-space: nowrap; }
 .cf-to { display: inline-flex; align-items: center; column-gap: 8px; color: var(--ink); font-weight: 500; white-space: nowrap; }
-/* A level's row: its key and word, then its limit's change and, under it, its people's, quieter. */
-.cf-row.is-lv .cf-what { white-space: nowrap; }
-.cf-figs { display: flex; flex-direction: column; align-items: flex-start; row-gap: 2px; min-width: 0; }
-.cf-fig.is-ppl { font-size: 13.5px; line-height: 20px; }
-.cf-fig.is-ppl .cf-to { color: var(--ink-2); font-weight: 400; }
+/* The people that follow (the crowd's window only): after the changes, unruled and a step quieter, so they read as what
+ * the change does to each level rather than as more changes: 32 px lines in label type, the level --ink-2, the count
+ * before --ink-3 (7.89:1), the count after --ink-2 at 500 (11.12:1); a change's new value stays chalk at 500. */
+.cf-ppl { margin-block-start: 4px; }
+.cf-row.is-ppl { min-height: 32px; padding-block: 6px; border-block-start: 0; }
+.cf-row.is-ppl .cf-fig { font-size: 13.5px; line-height: 20px; }
+.cf-row.is-ppl .cf-what { line-height: 20px; }
+.cf-row.is-ppl .cf-from { color: var(--ink-3); }
+.cf-row.is-ppl .cf-to { color: var(--ink-2); }
 /* The conflict view's two lists' names: label type --ink-2 on their own unruled line, as a card's «المستويات». */
 .cf-sub { margin: 0; padding-block: 12px 8px; font-size: 13.5px; line-height: 20px; font-weight: 400; color: var(--ink-2); }
 .cf-grid > .cf-sub:first-child { padding-block-start: 4px; }
@@ -389,24 +395,30 @@ html[lang="en"] .cf-q { quotes: "\201C" "\201D"; }
 .set .icon-btn[aria-disabled="true"] { background: none; color: var(--ink-3); cursor: default; }
 @media (hover: hover) { .set .icon-btn[aria-disabled="true"]:hover { background: none; color: var(--ink-3); cursor: default; } }
 
-/* The done sentence (EMP-6, Access's DON-1): under the changed card's head, start-aligned; a 16 px check, the sentence in
- * label type --ink-2, the way to its record a chalk text link with a .42 underline and a 44 px target. */
-.set .done { width: fit-content; max-width: 100%; margin: 0; padding-block: 12px; text-align: start; padding-inline-start: 24px; text-indent: -24px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); border-radius: 12px; overflow-wrap: anywhere; }
+/* The done sentence (EMP-6, Access's DON-1): in the changed card's head, start-aligned; a 16 px check, the sentence in
+ * label type --ink-2, the way to its record a chalk text link with a .42 underline and a 44 px target. 2 px after its
+ * last word, so its keyboard ring (2 px out) keeps FOC-3's 4 px from the link's end. */
+.set .done { width: fit-content; max-width: 100%; margin: 0; padding-block: 12px; text-align: start; padding-inline: 24px 2px; text-indent: -24px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); border-radius: 12px; overflow-wrap: anywhere; }
 .set .done-ico { display: inline-block; width: 16px; height: 16px; margin-inline-end: 8px; vertical-align: -3px; fill: none; stroke: var(--ink-2); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .set .done-a { display: inline-block; margin-inline-start: 12px; padding-block: 12px; margin-block: -12px; line-height: 20px; text-indent: 0; border-radius: 6px; color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(245, 243, 242, 0.42); text-underline-offset: 4px; white-space: nowrap; }
 @media (hover: hover) { .set .done-a:hover { text-decoration-color: var(--ink); } }
 .set .done-a:focus-visible { --focus-ring-offset: 0; }
 .set .done:focus-visible { --focus-ring-offset: 2px; }
-/* In the changed card's head: on the title's line, after it (as the hours' unit stands), the edit control at the end,
- * where the card has room (560 px inside: 1440 and 768), so the card keeps its height and its rules still meet the
- * neighbour's; under the title's line where it has not (1024, a phone), the card growing by the line. */
-.set-head:has(> .done) { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "title done edit"; column-gap: 16px; }
+/* In the changed card's head, so the card keeps its height and its rules still meet the neighbour's (settings.js
+ * fitNotice measures which form fits): on the title's line after it, as the hours' unit stands, the edit control at the
+ * end ("line"); where one line has no room, the sentence over its link in the head's 44 px, 2 apart and 2 above the
+ * foot, the link starting where the sentence starts, its 44 px target reaching down past the head ("stack"); for the hours also its unit under its name, 28 + 16 px ("tight"); only where none fits, under the
+ * title's line ("under"). 12 px between the three, so the stacked forms fit the hours at 1024 in both languages. */
+.set-head[data-done] { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "title done edit"; column-gap: 12px; }
 .set-head > .set-title { grid-area: title; }
-.set-head > .done { grid-area: done; justify-self: start; }
+.set-head > .done { grid-area: done; justify-self: start; white-space: nowrap; }
 .set-head > .set-edit { grid-area: edit; }
-@container setcard (max-width: 559.98px) {
-  .set-head:has(> .done) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title edit" "done done"; row-gap: 4px; }
-}
+.set-head:is([data-done="stack"], [data-done="tight"]) > .done { padding-block: 0 2px; border-radius: 8px; }
+.set-head:is([data-done="stack"], [data-done="tight"]) .done-a { display: block; width: fit-content; margin: 2px 0 -24px; padding-block: 0 24px; text-underline-offset: 3px; }
+.set-head[data-done="tight"] > .set-title { flex-direction: column; align-items: flex-start; gap: 0; line-height: 28px; }
+.set-head[data-done="tight"] .set-unit { line-height: 16px; }
+.set-head[data-done="under"] { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title edit" "done done"; row-gap: 4px; }
+.set-head[data-done="under"] > .done { white-space: normal; }
 
 /* ------------------------------------------------------------------ the page's states (part 3)
  * Loading (STA-10, PH-1…3): each awaited value one flat bar in its own slot (style.css .ph-bar, --ph), as tall as its
