@@ -94,6 +94,12 @@
       logAll: "عرض الكل",
       logAllName: "عرض كل سجلات الإعدادات في سجل النشاط",
       logEmpty: "لا تغييرات بعد",
+      // After a record's first change, the others it made (Activity log lists them): «وتغيير آخر», «وتغييران آخران»,
+      // «و3 تغييرات أخرى», «و11 تغييرًا آخر».
+      moreChanges: (n) => `و${arCount(n, "تغيير آخر", "تغييران آخران", "تغييرات أخرى", "تغييرًا آخر", "تغيير آخر")}`,
+      // A folded record's control (named; its mark is the chevron) and its window's name: how many changes it holds.
+      recOpen: "عرض التغيير كاملًا",
+      recTitle: (n) => arCount(n, "تغيير واحد", "تغييران", "تغييرات", "تغييرًا", "تغيير"),
       today: "اليوم",
       yesterday: "أمس",
       months: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
@@ -256,6 +262,10 @@
       logAll: "View all",
       logAllName: "View all settings records in the Activity log",
       logEmpty: "No changes yet",
+      // "and 9 more changes" wrapped the first record's line in the 1024 px card.
+      moreChanges: (n) => `and ${n} more`,
+      recOpen: "Show the whole change",
+      recTitle: (n) => (n === 1 ? "1 change" : `${n} changes`),
       today: "Today",
       yesterday: "Yesterday",
       months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -660,9 +670,10 @@
       const h = s.weeklySchedule[d];
       if (!h) return row(L.days[i], `<span class="v-closed">${L.closed}</span>`, "is-closed");
       const allDay = h.open === h.close;
-      // One phrase per day (DAT-4), never split into columns: «ص» and «م» differ by 13 px in Readex Pro (settings.css).
+      // The opening and its dash share a column, the closing has its own, so openings and closings each keep one edge
+      // and the dash takes the middle of what an opening ending in «م» leaves (settings.css "the hours").
       return row(L.days[i],
-        `<span class="v-hr"><span class="v-n v-t">${bdi(clockOf(h.open))}</span><span class="v-dash" aria-hidden="true">${DASH}</span><span class="sr-only">${RTL ? " إلى " : " to "}</span>` +
+        `<span class="v-hr"><span class="v-od"><span class="v-n v-t">${bdi(clockOf(h.open))}</span><span class="v-dash" aria-hidden="true">${DASH}</span><span class="sr-only">${RTL ? " إلى " : " to "}</span></span>` +
         `<span class="v-n v-t">${bdi(clockOf(h.close))}</span></span>${allDay ? `${SR_SEP}<span class="v-note">${L.allDay(24)}</span>` : ""}`);
     };
     return `${head("hours", unit)}
@@ -677,11 +688,13 @@
   }
 
   /* ---------------------------------------------------------------- the settings history (the fourth card)
-   * The latest three records, newest first, each: what changed, from → to, a line per change (chalk figures, the arrow
-   * along the reading line); the reason as typed, in quotation marks, only where one was given; who and when at the
-   * record's far end. Three, because three end the card about level with its row at 1440 × 900 with the page inside
-   * the window, and they answer "what changed lately, and why" without turning the card into the log; «عرض الكل»
-   * opens every settings record in Activity log (OWN-A9). */
+   * The latest three records, newest first, each two lines: its first change, from → to (chalk figures, the arrow
+   * along the reading line), and how many more it made («و9 تغييرات أخرى»); then the reason as typed, in quotation
+   * marks, on one line, only where one was given, and who and when at the line's far end. The list is one height (three
+   * records: the card ends level with its row at 1440 × 900 with the page inside the window) whatever the records hold,
+   * and shows those that fit whole (fitLog). So the row never follows the history: loading, the arrival and a save keep
+   * one geometry (DECISIONS item 82). Every change and the whole reason are in Activity log, where «عرض الكل» opens
+   * every settings record (OWN-A9). */
   const LOG_N = 3;
   const DAY0 = Date.UTC(2026, 8, 23) / 864e5;                  // the concept's today: Wednesday 23 September 2026
   const dayOf = (iso) => Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5;
@@ -693,26 +706,95 @@
     return nw(`${bdi(day)} ${L.months[m]}${y !== 2026 ? ` ${bdi(y)}` : ""}`);
   }
   const ARROW = `<svg class="log-arw mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13.5M13.5 7l5 5-5 5"/></svg>`;
+  const CHEVRON = `<svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg>`;
   function recordHTML(v, prev) {
-    // The changes share two columns, so a record's figures start on one edge whatever its labels' lengths.
-    const lines = changes(prev.editable, v.editable).map((c) =>
-      `<span class="log-what" aria-hidden="true">${c.what}</span>` +
-      `<span class="log-fig" aria-hidden="true"><span class="log-from">${c.from}</span><span class="log-to">${ARROW}<span>${c.to}</span></span></span>` +
-      `<span class="sr-only">${esc(c.said)}</span>`).join("");
+    // Its first change on the first line (the records share their columns, so every record's figures start on one
+    // edge), with how many more it made; said as shown.
+    const all = changes(prev.editable, v.editable), c = all[0], more = all.length - 1;
+    const moreHTML = more ? `<span class="log-more">${L.moreChanges(more)}</span>` : "";
+    const said = more ? `${c.said}${RTL ? "، " : ", "}${L.moreChanges(more).replace(/<[^>]+>/g, "")}` : c.said;
     const reason = v.reason ? (v.reason.raw ?? v.reason[LANG]) : null;
     const why = reason ? `<p class="log-why"><q><bdi dir="auto">${esc(reason)}</bdi></q></p>` : "";
-    return `<li class="log-rec" data-v="${v.version}"><div class="log-body"><div class="log-chgs">${lines}</div>${why}</div>` +
-      `<p class="log-meta">${SR_SEP}${bdi(esc(OWNER_NAMES[v.by]))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(v)}</p></li>`;
+    // A folded record (more changes than its line shows, or a reason cut short: fitLog decides) opens whole in a window
+    // over the page (the user's decision of 2026-10-19), from a control over the record; others have nothing more.
+    return `<li class="log-rec${more ? " is-folded" : ""}" data-v="${v.version}"${more ? " data-more" : ""}>` +
+      `<span class="log-what" aria-hidden="true">${c.what}</span>` +
+      `<span class="log-fig" aria-hidden="true"><span class="log-from">${c.from}</span><span class="log-to">${ARROW}<span>${c.to}</span></span>${moreHTML}</span>` +
+      `<span class="sr-only">${esc(said)}</span>` +
+      `<p class="log-meta">${SR_SEP}${bdi(esc(OWNER_NAMES[v.by]))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(v)}</p>${why}` +
+      `<button class="log-open" type="button" data-rec="${v.version}" aria-label="${esc(L.recOpen)}"${more ? "" : " hidden"}>${CHEVRON}</button></li>`;
   }
+  const logHead = () => `<div class="set-head">
+        <h2 class="set-title" id="log-title" tabindex="-1"><span class="set-name">${L.logTitle}</span></h2>
+        <a class="acc-all set-all" id="log-all" href="${LOG_HREF}" aria-label="${esc(L.logAllName)}"><span>${L.logAll}</span>${CHEVRON}</a>
+      </div>`;
   function logHTML() {
     if (phase === "loading") return logPH();
     const recs = versions.slice(1).map((v, i) => [v, versions[i]]).reverse().slice(0, LOG_N);
     const list = recs.length ? `<ol class="log-list">${recs.map(([v, p]) => recordHTML(v, p)).join("")}</ol>` : `<p class="log-none">${L.logEmpty}</p>`;
-    return `<div class="set-head">
-        <h2 class="set-title" id="log-title" tabindex="-1"><span class="set-name">${L.logTitle}</span></h2>
-        <a class="acc-all set-all" id="log-all" href="${LOG_HREF}" aria-label="${esc(L.logAllName)}"><span>${L.logAll}</span><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg></a>
-      </div>${list}`;
+    return `${logHead()}${list}`;
   }
+  // The records that fit the list whole, newest first: three, unless a long figure wraps (the hours of several days in
+  // a narrow card); the rest wait hidden, for a wider card. The newest always shows. Their lines are fixed heights, so
+  // this holds from the first paint; it runs again when the cards change width and when the fonts arrive.
+  function fitLog() {
+    const list = $(".log-list", cardEl.log);
+    if (!list || !list.getClientRects().length) return;
+    const recs = $$(":scope > .log-rec", list), bottom = list.getBoundingClientRect().top + list.clientHeight + 0.5;
+    recs.forEach((li) => { li.hidden = false; });
+    let full = false;
+    recs.forEach((li, i) => {
+      const r = li.getBoundingClientRect(), end = r.bottom - parseFloat(getComputedStyle(li).paddingBottom);
+      if (i > 0 && (full || end > bottom)) { full = true; li.hidden = true; }
+    });
+    // A record is folded where it made more changes than its line shows or its reason is cut short at this width; only
+    // a folded record takes the control that opens it whole.
+    recs.forEach((li) => {
+      if (li.hidden) return;
+      const why = $(".log-why", li), cut = Boolean(why && why.scrollWidth > why.clientWidth + 0.5);
+      const folded = li.hasAttribute("data-more") || cut;
+      li.classList.toggle("is-folded", folded);
+      $(".log-open", li).hidden = !folded;
+    });
+  }
+
+  /* ---- a folded record, whole (the user's decision of 2026-10-19): its window over the page, as a card's «تعديل»
+   * opens its own (DLG-1…6, a bottom sheet at 720 px and below; the page behind does not move). Its name says how many
+   * changes it holds, who and when under it, then every change on CHG-1's ruled rows, from → to, and the reason as
+   * typed, whole, on the last row; «إغلاق» at the foot, where its text starts (item 35). Escape, ×, «إغلاق» and a tap
+   * beside it close it (nothing in it can be lost), and focus returns to the record that opened it. Read only. */
+  const DREC = $("#dlg-rec");
+  function recordWindow(n) {
+    const i = versions.findIndex((v) => v.version === n);
+    if (i < 1) return null;
+    const v = versions[i], all = changes(versions[i - 1].editable, v.editable);
+    const reason = v.reason ? (v.reason.raw ?? v.reason[LANG]) : null;
+    const whyRow = reason ? `<li class="cf-row is-why"><span class="cf-what">${L.reasonRow}</span><span class="cf-fig"><q class="cf-q"><bdi dir="auto">${esc(reason)}</bdi></q></span></li>` : "";
+    return `<div class="dlg-scrim" data-close="scrim"></div>
+      <section class="dlg-panel rec-panel">
+        <header class="dlg-head"><h2 id="rec-title" tabindex="-1">${L.recTitle(all.length)}</h2>${closeX}</header>
+        <div class="dlg-body">
+          <p class="dlg-desc rec-who" id="rec-desc">${SR_SEP}${bdi(esc(OWNER_NAMES[v.by]))}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${whenHTML(v)}</p>
+          <div class="cf-grid"><ul class="cf-list" aria-labelledby="rec-title">${changeItems(all)}${whyRow}</ul></div>
+        </div>
+        <footer class="dlg-foot"><button class="rbtn" type="button" data-close>${L.close}</button></footer>
+      </section>`;
+  }
+  function openRecord(n, opener) {
+    const html = recordWindow(n);
+    if (!html) return;
+    DREC.innerHTML = html;
+    DREC.dataset.sec = "";
+    DREC.setAttribute("aria-labelledby", "rec-title");
+    DREC.setAttribute("aria-describedby", "rec-desc");
+    openDialog(DREC, opener, $("#rec-title", DREC));
+  }
+  // Back to the record that opened it; if the history is gone (the window outlived a move under 721 px), to the way to
+  // the history under the header.
+  const closeRecord = () => {
+    const op = openDlg && openDlg.opener;
+    closeDialog(DREC, { back: op && op.isConnected && op.getClientRects().length ? op : $("#history-link") });
+  };
 
   /* ---------------------------------------------------------------- render
    * Each card is drawn whole from the current version: renderCard("crowd" | "hours" | "day" | "log"). A save (part 3)
@@ -733,6 +815,7 @@
       gridEl.hidden = false;
       for (const k of Object.keys(cardEl)) renderCard(k);
       for (const el of Object.values(cardEl)) el.toggleAttribute("aria-busy", phase === "loading");
+      fitLog();
       fitNotice();
     }
     frame.refreshStatus();
@@ -775,8 +858,9 @@
   let gridW = 0;
   new ResizeObserver(([e]) => {
     const w = Math.round(e.contentRect.width);
-    if (w !== gridW) { gridW = w; fitNotice(); }
+    if (w !== gridW) { gridW = w; fitLog(); fitNotice(); }
   }).observe(gridEl);
+  document.fonts.ready.then(() => fitLog());
 
   /* ---- Loading (STA-10, PH-1…3). Real from the first paint: the title, every card's name and «توقيت الرياض», the
    * labels («السعة», «المستويات», the levels with their keys, the days, «نهاية يوم العمل», «تصفير العدد»), the history's
@@ -786,11 +870,15 @@
    * unseen (data-load="wait"), then at least 400 ms; the arrival writes the values into the same slots. */
   const ph = (w, cls = "ph-v") => `<i class="ph-bar ${cls}" style="--w:${w}px" aria-hidden="true"></i>`;
   const phRow = (dt, w, cls = "") => row(dt, `<span class="ph-span">${ph(w)}</span>`, cls);
+  // A level waits in its arrived parts: «حتى» / «فوق» (words, known before the values), then a bar for its limit and one
+  // for its people, so a narrow card puts the people's bar under the limit's as it will put the people.
   function crowdPH() {
+    const lvRow = (i) => row(`${LEVEL_BARS(i)}<span>${L.levels[i]}</span>`,
+      `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${ph(32)}</span><span class="v-p">${ph(i === 3 ? 104 : 72)}</span>`, "is-level");
     return `${head("crowd")}
     <dl class="set-figs">${fig(L.capacity, ph(108, "ph-fig"), "is-cap")}</dl>
     <h3 class="set-sub" id="levels-title">${L.levelsTitle}</h3>
-    <dl class="set-dl dl-levels" aria-labelledby="levels-title">${[0, 1, 2, 3].map((i) => phRow(`${LEVEL_BARS(i)}<span>${L.levels[i]}</span>`, i === 3 ? 172 : 148, "is-level")).join("")}</dl>`;
+    <dl class="set-dl dl-levels" aria-labelledby="levels-title">${[0, 1, 2, 3].map(lvRow).join("")}</dl>`;
   }
   function hoursPH() {
     return `${head("hours", `<span class="set-unit">${SR_SEP}${L.hoursUnit}</span>`)}
@@ -800,12 +888,12 @@
     return `${head("day")}
     <dl class="set-figs">${fig(L.dayEnd, ph(84, "ph-fig"))}${fig(L.reset, ph(176, "ph-fig"))}</dl>`;
   }
+  // Three records in the arrived records' parts and lines (what, the figures, who and when; the reason), so each
+  // record keeps its arrived box.
   function logPH() {
-    const W = [[236, 168, 72], [212, 132, 64], [224, 188, 64]];
-    return `<div class="set-head">
-        <h2 class="set-title" id="log-title" tabindex="-1"><span class="set-name">${L.logTitle}</span></h2>
-        <a class="acc-all set-all" id="log-all" href="${LOG_HREF}" aria-label="${esc(L.logAllName)}"><span>${L.logAll}</span><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg></a>
-      </div><ol class="log-list">${W.map(([a, b, c]) => `<li class="log-rec is-ph"><div class="log-body"><p class="log-ph">${ph(a)}</p><p class="log-ph">${ph(b, "ph-c")}</p></div><p class="log-meta">${ph(c, "ph-c")}</p></li>`).join("")}</ol>`;
+    const W = [[76, 128, 168, 88], [60, 120, 132, 72], [68, 112, 188, 72]];
+    return `${logHead()}<ol class="log-list">${W.map(([w, f, r, m]) => `<li class="log-rec is-ph"><span class="log-what">${ph(w)}</span><span class="log-fig">${ph(f)}</span>` +
+      `<p class="log-meta">${ph(m, "ph-c")}</p><p class="log-why">${ph(r)}</p></li>`).join("")}</ol>`;
   }
 
   /* ---- Error (STA-13; the first load failed): the header's Error, and one message for the page in place of the cards
@@ -1672,10 +1760,23 @@
     if (flow && (flow.busy || isDirty(flow.sec))) { e.preventDefault(); e.returnValue = ""; }
   });
 
-  // «تعديل» on a card (each card is drawn whole, so the listener is the grid's).
+  // «تعديل» on a card, and a folded record's control (each card is drawn whole, so the listener is the grid's).
   gridEl.addEventListener("click", (e) => {
     const b = e.target.closest("[data-edit]");
     if (b && phase === "ready") openEditor(b.dataset.edit, b);
+    const r = e.target.closest(".log-open");
+    if (r && phase === "ready") openRecord(Number(r.dataset.rec), r);
+  });
+  // The record's window: read only, so every way out closes it at once.
+  DREC.addEventListener("cancel", (e) => { e.preventDefault(); closeRecord(); });
+  DREC.addEventListener("click", (e) => { if (e.target.closest("[data-close]")) { e.preventDefault(); closeRecord(); } });
+  DREC.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const list = focusables(panelOf(DREC));
+    if (!list.length) return;
+    const first = list[0], last = list[list.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !DREC.contains(document.activeElement) || document.activeElement.id === "rec-title")) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !DREC.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
   });
   for (const [sec, dlg] of Object.entries(D)) {
     // A close request the keyboard listener above did not see (a system back gesture) goes the same way.
@@ -1835,4 +1936,8 @@
   // ?edit=crowd|hours|day opens that card's window on load (for review), as its «تعديل» would.
   const EDIT_Q = params.get("edit");
   if (EDIT_Q in D && phase === "ready") openEditor(EDIT_Q, $(`[data-edit="${EDIT_Q}"]`));
+  // ?record=<version> opens that record's window on load (for review; on a phone, where the history card waits for its
+  // own round, DECISIONS item 81, this is the only way to it). «latest» is the newest.
+  const REC_Q = params.get("record");
+  if (REC_Q && phase === "ready" && !openDlg) openRecord(REC_Q === "latest" ? current().version : Number(REC_Q), $(`.log-open[data-rec="${REC_Q === "latest" ? current().version : REC_Q}"]`));
 })();
