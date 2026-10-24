@@ -4250,6 +4250,249 @@
           "en"
         ]
       }
+    },
+    "settings.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "settings.html",
+            "line": 113
+          },
+          "covers": [
+            "#ops-pop"
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "settings.html",
+            "line": 135
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "settings.html",
+            "line": 48
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "edit-crowd",
+          "marker": "data-edit",
+          "actions": [
+            "activate:[data-edit=\"crowd\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-crowd[open]",
+            "visible": true
+          },
+          "what": "edit-crowd",
+          "reach": "activate:[data-edit=\"crowd\"]",
+          "source": {
+            "file": "settings.js",
+            "line": 644
+          },
+          "covers": [
+            "#dlg-crowd"
+          ]
+        },
+        {
+          "id": "edit-hours",
+          "marker": "data-edit",
+          "actions": [
+            "activate:[data-edit=\"hours\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-hours[open]",
+            "visible": true
+          },
+          "what": "edit-hours",
+          "reach": "activate:[data-edit=\"hours\"]",
+          "source": {
+            "file": "settings.js",
+            "line": 644
+          },
+          "covers": [
+            "#dlg-hours"
+          ]
+        },
+        {
+          "id": "edit-day",
+          "marker": "data-edit",
+          "actions": [
+            "activate:[data-edit=\"day\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-day[open]",
+            "visible": true
+          },
+          "what": "edit-day",
+          "reach": "activate:[data-edit=\"day\"]",
+          "source": {
+            "file": "settings.js",
+            "line": 644
+          },
+          "covers": [
+            "#dlg-day"
+          ]
+        },
+        {
+          "id": "week-warning",
+          "marker": "ed-week-warns",
+          "actions": [
+            "activate:[data-edit=\"hours\"]",
+            "type:[name=\"ed-sun-close\"]=5:00",
+            "press:Tab"
+          ],
+          "proof": {
+            "selector": "#ed-week-warns",
+            "visible": true
+          },
+          "what": "week-warning",
+          "reach": "activate:[data-edit=\"hours\"] → type:[name=\"ed-sun-close\"]=5:00 → press:Tab",
+          "source": {
+            "file": "settings.js",
+            "line": 1106
+          },
+          "covers": [
+            "#dlg-hours",
+            "#ed-week-warns"
+          ]
+        },
+        {
+          "id": "record",
+          "marker": "log-open",
+          "actions": [
+            "activate:.log-open[data-rec=\"10\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-rec[open]",
+            "visible": true
+          },
+          "query": {
+            "log": "every"
+          },
+          "widths": "wide",
+          "what": "record",
+          "reach": "activate:.log-open[data-rec=\"10\"]",
+          "source": {
+            "file": "settings.js",
+            "line": 740
+          },
+          "covers": [
+            "#dlg-rec"
+          ]
+        },
+        {
+          "id": "record-phone",
+          "marker": "dlg-rec",
+          "actions": [],
+          "proof": {
+            "selector": "#dlg-rec[open]",
+            "visible": true
+          },
+          "query": {
+            "record": "latest"
+          },
+          "widths": "phone",
+          "what": "record-phone",
+          "reach": "settings.html?record=latest",
+          "source": {
+            "file": "settings.js",
+            "line": 1986
+          },
+          "covers": [
+            "#dlg-rec"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "log": "every"
+          },
+          "shows": "The settings history holds the ninth change today, with its record of many changes",
+          "proof": {
+            "expression": "window.__settings?.version === 10 && !!document.querySelector('.log-rec[data-v=\"10\"]')"
+          }
+        },
+        {
+          "when": {
+            "record": "latest"
+          },
+          "shows": "The newest settings record is open in its window",
+          "proof": {
+            "selector": "#dlg-rec[open]",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Settings document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Settings document language is en",
+          "proof": {
+            "language": "en"
+          }
+        }
+      ]
     }
   }
 }
