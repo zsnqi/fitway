@@ -38,7 +38,9 @@
 // (3- and 5-): «حفظ» not leading to the confirmation, focus not on the reason (from 721 px) or the title (a phone), a
 // value card that grows from 721 px when its done line arrives, focus not on the done line, a refusal that leaves the
 // action, a conflict view that names someone, a window that closes with something typed without asking first. The
-// history (1- and 4-): a record cut short with «…» that is not folded (no control to open it whole). A record's window
+// history (1- and 4-): a record cut short with «…» that is not folded (no control to open it whole), a folded record's
+// control that leaves its card; the records' words are measured for spills with that control set aside (its 12 px
+// reach into the card's padding is by design), and text cut with «…» is judged by the box that cuts it. A record's window
 // (3-): the page behind moving as it opens or closes, focus not in it or not back on the record's control after
 // Escape, the widest record's window scrolling at 1440 x 900 or 390 x 844.
 import { createServer } from "node:http";
@@ -82,21 +84,37 @@ const INIT = `(() => { window.__cls = 0;
 const PROBLEMS = () => {
   const de = document.documentElement, vw = de.clientWidth, out = [];
   if (de.scrollWidth > vw) out.push(`page scrolls sideways by ${de.scrollWidth - vw}px`);
+  // Text cut short on purpose with «…» (a history record's name or reason on its one line) is clipped by its own box:
+  // what lies past that box is never painted, so only the box is judged here, and the fold check below makes sure the
+  // whole text has a way to it. Any other clipping (a dialog, the page) still counts.
+  const cutBy = (el) => { for (let a = el; a && a !== document.body; a = a.parentElement) { const s = getComputedStyle(a); if (s.textOverflow === "ellipsis" && s.overflowX !== "visible") return a; } return null; };
   for (const el of document.querySelectorAll("body *")) {
     if (el.closest("[hidden], .sr-only, dialog:not([open]), .rail, .hb-res")) continue;
     const cs = getComputedStyle(el);
     if (cs.display === "none" || cs.visibility === "hidden") continue;
     const r = el.getBoundingClientRect();
-    if (r.width && (r.right > vw + 0.5 || r.left < -0.5)) out.push(`outside the viewport: ${el.id ? "#" + el.id : el.className?.baseVal ?? el.className ?? el.tagName} ${Math.round(r.left)}..${Math.round(r.right)}`);
+    if (!r.width || (r.right <= vw + 0.5 && r.left >= -0.5)) continue;
+    const clip = cutBy(el.parentElement), cr = clip && clip.getBoundingClientRect();
+    if (clip && cr.right <= vw + 0.5 && cr.left >= -0.5) continue;
+    out.push(`outside the viewport: ${el.id ? "#" + el.id : el.className?.baseVal ?? el.className ?? el.tagName} ${Math.round(r.left)}..${Math.round(r.right)}`);
   }
+  // A folded record's control reaches 12 px past the record's words into the card's padding, by design (Access's row):
+  // it is set aside while the boxes are measured, so the records' own words are judged with no allowance, and it must
+  // stay inside its card.
+  for (const b of document.querySelectorAll(".log-open:not([hidden])")) {
+    const r = b.getBoundingClientRect(), c = b.closest(".set-card")?.getBoundingClientRect();
+    if (r.width && c && (r.left < c.left - 0.5 || r.right > c.right + 0.5)) out.push(`a record's control leaves its card: ${Math.round(r.left)}..${Math.round(r.right)} in ${Math.round(c.left)}..${Math.round(c.right)}`);
+  }
+  const aside = [...document.querySelectorAll(".log-open")].map((b) => [b, b.style.display]);
+  aside.forEach(([b]) => { b.style.display = "none"; });
   for (const el of document.querySelectorAll(".head, .set-tools, .set-grid, .set-card, .set-head, .set-title, .set-figs, .set-fig, .set-fig > dd, .set-sub, .set-dl, .set-row, .set-row > dt, .set-row > dd, .log-box, .log-list, .log-rec, .log-fig, .log-meta, .dlg-panel, .dlg-head, .dlg-body, .dlg-foot, .alert, .ed-fig, .ed-line, .ed-list, .ed-row, .ed-warn, .field-err")) {
     if (el.closest("[hidden], dialog:not([open])")) continue;
     if (getComputedStyle(el).display === "none" || !el.getClientRects().length) continue;
-    // «عرض الكل» and a folded record's control reach 12 px past their words into the card's padding (Access's link and
-    // row), by design.
-    const allow = el.matches(".set-log .set-head, .log-rec") ? 12 : 0;
+    // «عرض الكل» reaches 12 px past its words into the card's padding (Access's link), by design.
+    const allow = el.matches(".set-log .set-head") ? 12 : 0;
     if (el.scrollWidth > el.clientWidth + allow + 1) out.push(`spills: ${el.className || el.tagName} by ${el.scrollWidth - el.clientWidth}px`);
   }
+  aside.forEach(([b, d]) => { b.style.display = d; });
   // A history record cut short with «…» (its name or its reason) is folded: its control opens it whole (DECISIONS item 83).
   for (const li of document.querySelectorAll(".log-rec:not(.is-ph)")) {
     if (!li.getClientRects().length) continue;
