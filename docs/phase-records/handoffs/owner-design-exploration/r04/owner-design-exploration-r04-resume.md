@@ -91,8 +91,8 @@
 - Drive C: the user put the open items of D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md off until later
   (2026-10-24; C 34.8 GB free, measured in `D:/fitway-temp/cc-temp-survey/REPORT.md`).
 - fitway-temp: the user ran the prune (2026-10-24, `D:/fitway-temp/cleanup-20261024/`, 352.88 GB freed, 0 failures; D
-  398 GB free, measured). The 17 grading worktrees there wait for the user's rerun of its `remove-worktrees.ps1`
-  (the first run was refused by the open-brief check, fixed in this resume point).
+  398 GB free, measured). The 17 grading worktrees there stay: the gardener's citation and merge rules
+  refuse them, and agent-tooling DECISIONS item 15 carries the change.
 - Optional: Windows Update's active hours (F159).
 
 ## Known risks
