@@ -225,6 +225,10 @@ html[lang="en"] .log-why q { quotes: "\201C" "\201D"; }
 @media (min-width: 721px) {
   .set .rec-panel { width: max-content; min-width: min(468px, 100%); max-width: min(600px, 100%); }
 }
+/* Where the window is too short for the record, its body scrolls and the browser makes it a Tab stop: the page's own ring
+ * (the --focus-ring-* tokens, as the time fields), drawn inside the body at -2 px so no edge of the panel cuts it, on the
+ * panel's inner radius (24 px less its 1 px edge). */
+.set .rec-panel .dlg-body:focus-visible { --focus-ring-offset: -2px; border-radius: 23px; }
 .rec-panel .cf-row.is-why .cf-fig { contain: inline-size; }
 /* A change too wide for the figures' column (settings.js fitRecord: English ranges in a 320 px sheet) puts its figures
  * under its name, across the window, 2 px below, still broken only before the arrow. */

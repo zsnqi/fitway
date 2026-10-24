@@ -39,7 +39,7 @@
 // value card that grows from 721 px when its done line arrives, focus not on the done line, a refusal that leaves the
 // action, a conflict view that names someone, a window that closes with something typed without asking first. The
 // history (1- and 4-): a record cut short with «…» that is not folded (no control to open it whole), a folded record's
-// control that leaves its card; the records' words are measured for spills with that control set aside (its 12 px
+// control that leaves its card on any side; a window's title cut with «…» or by a box that clips it; the records' words are measured for spills with that control set aside (its 12 px
 // reach into the card's padding is by design), and text cut with «…» is judged by the box that cuts it. A record's window
 // (3-): the page behind moving as it opens or closes, focus not in it or not back on the record's control after
 // Escape, the widest record's window scrolling at 1440 x 900 or 390 x 844.
@@ -103,7 +103,22 @@ const PROBLEMS = () => {
   // stay inside its card.
   for (const b of document.querySelectorAll(".log-open:not([hidden])")) {
     const r = b.getBoundingClientRect(), c = b.closest(".set-card")?.getBoundingClientRect();
-    if (r.width && c && (r.left < c.left - 0.5 || r.right > c.right + 0.5)) out.push(`a record's control leaves its card: ${Math.round(r.left)}..${Math.round(r.right)} in ${Math.round(c.left)}..${Math.round(c.right)}`);
+    if (r.width && c && (r.left < c.left - 0.5 || r.right > c.right + 0.5 || r.top < c.top - 0.5 || r.bottom > c.bottom + 0.5)) out.push(`a record's control leaves its card: ${Math.round(r.left)}..${Math.round(r.right)} x ${Math.round(r.top)}..${Math.round(r.bottom)} in ${Math.round(c.left)}..${Math.round(c.right)} x ${Math.round(c.top)}..${Math.round(c.bottom)}`);
+  }
+  // A window's title is never cut: not with «…», and not by a box that clips it (the head, the panel, the window).
+  for (const h of document.querySelectorAll("dialog[open] .dlg-head h2")) {
+    if (h.closest("[hidden]")) continue;
+    for (const el of [h, ...h.querySelectorAll("*")]) {
+      if (!el.getClientRects().length) continue;
+      const cs = getComputedStyle(el), r = el.getBoundingClientRect();
+      if (cs.textOverflow === "ellipsis" && cs.overflowX !== "visible" && el.scrollWidth > el.clientWidth + 0.5) out.push(`a window's title is cut with «…»: ${el.className || el.tagName} by ${el.scrollWidth - el.clientWidth}px`);
+      for (let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+        const as = getComputedStyle(a);
+        if (as.overflowX === "visible" && as.overflowY === "visible") continue;
+        const ar = a.getBoundingClientRect();
+        if (r.left < ar.left - 0.5 || r.right > ar.right + 0.5 || r.top < ar.top - 0.5 || r.bottom > ar.bottom + 0.5) { out.push(`a window's title is clipped by ${a.className || a.tagName}: ${el.className || el.tagName}`); break; }
+      }
+    }
   }
   const aside = [...document.querySelectorAll(".log-open")].map((b) => [b, b.style.display]);
   aside.forEach(([b]) => { b.style.display = "none"; });

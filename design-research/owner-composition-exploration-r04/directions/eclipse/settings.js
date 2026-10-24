@@ -901,7 +901,7 @@
   // for its people, so a narrow card puts the people's bar under the limit's as it will put the people.
   function crowdPH() {
     const lvRow = (i) => row(`${LEVEL_BARS(i)}<span>${L.levels[i]}</span>`,
-      `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${ph(32)}</span><span class="v-p">${ph(i === 3 ? 104 : 72)}</span>`, "is-level");
+      `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${ph(32.17)}</span><span class="v-p">${ph(i === 3 ? 104 : 72)}</span>`, "is-level");
     return `${head("crowd")}
     <dl class="set-figs">${fig(L.capacity, ph(108, "ph-fig"), "is-cap")}</dl>
     <h3 class="set-sub" id="levels-title">${L.levelsTitle}</h3>
@@ -918,7 +918,9 @@
   // Three records in the arrived records' parts and lines (what, the figures, who and when; the reason), so each
   // record keeps its arrived box.
   function logPH() {
-    const W = [[76, 128, 168, 88], [60, 120, 132, 72], [68, 112, 188, 72]];
+    // The first record's "what" bar is as wide as the widest arrived name of the default history (Thursday closing /
+    // Saturday opening: 114.67 px; «إغلاق الخميس»: 83.16 px), so the shared column starts the figures where they will start.
+    const W = [[LANG === "en" ? 114.67 : 83.16, 128, 168, 88], [60, 120, 132, 72], [68, 112, 188, 72]];
     return `${logHead()}<div class="log-box"><ol class="log-list">${W.map(([w, f, r, m]) => `<li class="log-rec is-ph"><span class="log-what">${ph(w)}</span><span class="log-fig">${ph(f)}</span>` +
       `<p class="log-meta">${ph(m, "ph-c")}</p><p class="log-why">${ph(r)}</p></li>`).join("")}</ol></div>`;
   }
@@ -1244,6 +1246,20 @@
   }
   const WARN_IDS = { crowd: ["ed-cap"], hours: ["ed-week", "ed-week2", "ed-week3"], day: ["ed-end", "ed-reset"] };
 
+  /* English: each limit's sign follows its digits, their width measured in the field's own face. A window opened before
+   * the fonts arrived (?edit=crowd on a fresh load) measured the fallback face, so every open field is measured again
+   * when the fonts are ready and whenever more of them finish loading. */
+  function measurePct() {
+    if (RTL) return;
+    $$(".ed-pct:not(.is-ro)").forEach((box) => {
+      if (!box.getClientRects().length) return;
+      const m = $(".ed-pct-m", box);
+      m.textContent = $("input", box).value;
+      box.style.setProperty("--pct-x", `${m.getBoundingClientRect().width}px`);
+    });
+  }
+  document.fonts.ready.then(measurePct);
+  document.fonts.addEventListener("loadingdone", measurePct);
   /* ---- live: what follows the typing at once (the people, the notes, the units). */
   function live(sec) {
     const { value: v } = READ[sec](), s0 = current().editable;
@@ -1253,7 +1269,7 @@
       const lims = v.lims;
       const lastOk = lims[2] !== null;
       // English: each limit's sign follows its digits (their width measured in the field's own face).
-      if (!RTL) $$(".ed-pct:not(.is-ro)").forEach((box) => { const m = $(".ed-pct-m", box); m.textContent = $("input", box).value; box.style.setProperty("--pct-x", `${m.getBoundingClientRect().width}px`); });
+      measurePct();
       $("#ed-lv3-pct").textContent = lastOk ? String(lims[2]) : "";
       $("#ed-lv3-pct").parentNode.classList.toggle("is-empty", !lastOk);
       // A level's people only while its limit and those under it are valid and strictly rising: a refused limit shows
