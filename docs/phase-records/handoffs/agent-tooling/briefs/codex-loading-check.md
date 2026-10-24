@@ -66,7 +66,9 @@ instead of each verifier writing its own scripts.
 - **L1. No shared loading check exists** (decision 82; SKILL.md has no loading command). Outcome: one verify-fitway
   command, given a page and a query, records the boxes of the page's header, each card, each card's title and each
   slot (the element a value is written into on arrival; never the placeholder bar inside it) while the skeleton is
-  shown and again after arrival, and prints one line per page × size × language × case: PASS or FAIL, the largest
+  shown and again after arrival, prints first the commit the concept's ref resolved to (and refuses to run if it
+  cannot resolve it), and prints one line per page × size × language × case, each with the exact URL query it loaded
+  and the page, language and case read back from the browser (a repeated or mismatched key fails): PASS or FAIL, the largest
   movement in px (x, y, width or height) with the element it belongs to, the number of boxes compared, the page's
   `<html lang>` and the layout-shift sum. FAIL when any compared box moves more than 0.5 px, any layout shift is
   recorded, a box present in one record has no match in the other (missing, added or replaced), or `<html lang>` is
@@ -74,17 +76,20 @@ instead of each verifier writing its own scripts.
   768 × 1024 and 390 × 844, Arabic and English, each with its default data and with the widest-text case its query
   comment names (Access `case=long`, Activity log `case=wide`, Settings `case=wide` and `log=every`; Daily and
   Reports name none: report that), which is at least 54 lines (9 page × case pairs × 3 sizes × 2 languages); the
-  matrix never runs fewer. The arrival's record is taken only after the fonts are ready and the compared boxes are
-  unchanged over two consecutive frames (fitting after fonts arrive is part of the arrival), and the layout-shift sum
-  covers the whole time from the skeleton's record to the arrival's record. Mouse only; touch is out of scope. Intent: one command reproduces decision 82's check on every
+  matrix never runs fewer. The page runs with reduced motion. The arrival's record is taken only after the fonts are
+  ready and the page's own fitting has settled (the compared boxes unchanged over two consecutive frames), and then
+  the boxes are watched for at least 1 s more, in which any compared box moving more than 0.5 px fails; the
+  layout-shift sum covers the whole time from the skeleton's record to the end of that second. Mouse only; touch is out of scope. Intent: one command reproduces decision 82's check on every
   page; a page or case it cannot reach is reported as such, never silently skipped. It needs a browser, which CI does
   not have, so page rounds and their verifiers run it by hand; its comparison logic's unit tests are what the ladder
   runs (L2).
 - **L2. The check must catch what decision 82 forbids and nothing it allows.** Outcome: against a copy of the concept
   in your temp folder with planted defects, each of these FAILs on the page it is planted in: a slot that moves 1 px
-  on arrival, a card that grows 40 px on arrival, a layout shift on arrival, a slot removed or replaced by another
-  element on arrival, a box that moves after the fonts arrive; and a placeholder bar made 20 px wider,
-  then 20 px narrower, inside an unchanged slot PASSes. Report each plant, its page and the line printed. The
+  on arrival, a card that grows 40 px on arrival, a layout shift on arrival, a slot removed on arrival, a box that
+  moves after the fonts arrive, a box that moves 600 ms after the arrival's record; and a placeholder bar made 20 px
+  wider,
+  then 20 px narrower, inside an unchanged slot PASSes, as does a slot whose element is re-rendered into the same
+  box (decision 82 compares boxes, and the pages re-render some slots on arrival). Report each plant, its page and the line printed. The
   comparison logic also has unit tests that run in the ladder without a browser. Intent: a check that passes
   everything, or fails on bars that are shorter than their text by design, is worse than none.
 - **L3. The loading record must be the skeleton.** Each page has phases: an empty wait, the skeleton, the arrival;
