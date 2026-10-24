@@ -77,8 +77,16 @@
     (`settings-capture.mjs` ~110-122, the walk starts at the parent); H2 the N1 widths are tuned to the default data
     and Readex Pro (the coordinator's frozen target; containers hold with other data, slots move 3-10 px). Whether
     the trial passes and the role moves is the user's word (decision 85).
-  - **Next:** the user's word on the trial; H1 and the wrong «25%» wording as a small frozen list; then the user sees
-    the page (link, live preview, numbered crops).
+  - **The second fixer trial, done (measured):** Sonnet 5.5 at `high` (the user, 2026-10-24: Anthropic's docs put
+    longer agentic work at `high`; the first trial's `medium` was the coordinator's choice) fixed H1 and the wording as
+    `e56be0da` (pushed; 127K tokens, 30 tools, about 17 min after a PC freeze cut its first part). The Opus grader
+    (`D:/fitway-temp/owner-r04-settings-verify-4/`): every claim reproduces in substance; two wording slips ("same
+    messages" when P8 gained a line; its "seven earlier plants" swapped one); it also corrected the coordinator's own
+    wrong «25%» figure in the brief. Low and left: the title check misses `contain: paint` and `clip-path` cuts, and
+    its `.sr-only` skip goes by class name (`settings-capture.mjs` ~114-122). The coordinator's brief error, not
+    effort, caused the first trial's «25%» claim.
+  - **Next:** the user's word on whether the fixer role moves to Sonnet (decision 85; `CLAUDE.md`'s table only on
+    their word); then the user sees the page (link, live preview, numbered crops).
   - After the user sees it: decision 81's small round (one day's hours to every day; the phone history), which is
     decision 85's builder trial (Sonnet 5.5 `high` builds, an Opus verifier grades; report the trial's result to the
     user), and decision 82's loading regression check (agent-tooling-r01, a Codex round) beside it, gating nothing.
