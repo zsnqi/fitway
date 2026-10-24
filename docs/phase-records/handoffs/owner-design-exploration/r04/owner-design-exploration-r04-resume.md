@@ -62,9 +62,16 @@
     build branch, **not re-verified**. NOTES.md's last section says item 82 measured 0.00 px / shifts 0 at five sizes
     AR/EN with default, `log=every` and `log=week`, and the folded record's window (decision 83) built; the final
     capture had not finished.
-  - **Next:** the verifier's pass (running, above); any failures it finds are a frozen list for
-    `owner-direction-fixer` on Sonnet 5.5 (decision 85's fixer trial); the coordinator inspects the crops; then the
-    user sees it (link, live preview, numbered crops).
+  - **Verified** (Opus verifier, `D:/fitway-temp/owner-r04-settings-verify-2/`; its report was its final message, no
+    REPORT.md): F1-F5, DLG-14, the four read-wrong items and decision 82's containers pass; four new low findings, the
+    coordinator saw N1-N3's frames: N1 the history's and levels' placeholders move the figures' column on arrival (EN
+    38.7 px, AR 7.2 px), N2 the English «%» overlaps before fonts load via `?edit=crowd`, N3 the scrolling record
+    window's body shows a square default ring past the panel, N4 the capture check misses a control below its card and
+    a cut dialog title.
+  - **Running: decision 85's fixer trial** on N1-N4 as a frozen list (`owner-direction-fixer`, Sonnet 5.5 at the
+    definition's `medium`, port 3190, scratch `D:/fitway-temp/owner-r04-settings-fix-n/`). Then an Opus verifier
+    grades it, the trial's tokens are recorded against the Opus runs of this round (designer 337K, verifier 220K), and
+    the user sees the page (link, live preview, numbered crops).
   - After the user sees it: decision 81's small round (one day's hours to every day; the phone history), which is
     decision 85's builder trial (Sonnet 5.5 `high` builds, an Opus verifier grades; report the trial's result to the
     user), and decision 82's loading regression check (agent-tooling-r01, a Codex round) beside it, gating nothing.
