@@ -68,10 +68,17 @@
     38.7 px, AR 7.2 px), N2 the English «%» overlaps before fonts load via `?edit=crowd`, N3 the scrolling record
     window's body shows a square default ring past the panel, N4 the capture check misses a control below its card and
     a cut dialog title.
-  - **Running: decision 85's fixer trial** on N1-N4 as a frozen list (`owner-direction-fixer`, Sonnet 5.5 at the
-    definition's `medium`, port 3190, scratch `D:/fitway-temp/owner-r04-settings-fix-n/`). Then an Opus verifier
-    grades it, the trial's tokens are recorded against the Opus runs of this round (designer 337K, verifier 220K), and
-    the user sees the page (link, live preview, numbered crops).
+  - **Decision 85's fixer trial, done (measured):** `owner-direction-fixer` on Sonnet 5.5 at the definition's `medium`
+    fixed N1-N4 as `7dba9d91` (pushed; 119K tokens, 49 tools, 21 min; this round's Opus designer 337K, Opus verifiers
+    220K and the grader's own run). The Opus grader (`D:/fitway-temp/owner-r04-settings-verify-3/`, report as its final
+    message): all four outcomes PASS; two claims did not reproduce (it called 32.17 px «25%», which is the default
+    data's «20%»/«40%»/«57%», in NOTES.md and SETTINGS-SPEC.md; and «no record window scrolls at 390 × 844», false in
+    EN with `log=every`). New: H1 (medium) the capture's title check misses a title clipped by its own box without «…»
+    (`settings-capture.mjs` ~110-122, the walk starts at the parent); H2 the N1 widths are tuned to the default data
+    and Readex Pro (the coordinator's frozen target; containers hold with other data, slots move 3-10 px). Whether
+    the trial passes and the role moves is the user's word (decision 85).
+  - **Next:** the user's word on the trial; H1 and the wrong «25%» wording as a small frozen list; then the user sees
+    the page (link, live preview, numbered crops).
   - After the user sees it: decision 81's small round (one day's hours to every day; the phone history), which is
     decision 85's builder trial (Sonnet 5.5 `high` builds, an Opus verifier grades; report the trial's result to the
     user), and decision 82's loading regression check (agent-tooling-r01, a Codex round) beside it, gating nothing.
