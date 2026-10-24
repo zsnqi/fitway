@@ -39,59 +39,20 @@
 
 ## Running now
 
-- **The Settings round resumed on the user's «كمل»** (2026-10-24). An Opus `owner-direction-designer` finished the fix
-  list: `0d9ba836` (pushed) changes only `settings-capture.mjs`'s spill and cut-text check and SETTINGS-SPEC.md; the
-  page needed no change; capture OK 227 frames; NOTES.md §"The finishing pass" (its claims, not yet verified). Now an
-  Opus `owner-direction-verifier` re-checks F1-F5, decisions 82-83, the four read-wrong items and the capture check's
-  change, on port 3191, into `D:/fitway-temp/owner-r04-settings-verify-2/`.
-- **Decision 85 was missed here** (the user caught it, 2026-10-24): this frozen list should have been the fixer's
-  Sonnet trial, and the coordinator launched an Opus designer instead. It finished before the user answered, and
-  needed no page change, so the list would not have tested a fixer. **The fixer trial carries to the next frozen fix
-  list** (likely what this verification or the user's look turns up): `owner-direction-fixer` on Sonnet 5.5, an Opus
-  verifier grades, tokens recorded.
-- **The Settings round, where it stands** (arrangement ج, decisions 79, 80, 82, 83; the brief designer-settings on the
-  build branch `owner-followup-r04-build`, in `design-research/owner-composition-exploration-r04/directions/briefs/`,
-  its ج revision `7d0ccde2`;
-  output and NOTES.md in `D:/fitway-temp/owner-r04-settings/`; its `superseded-b` folder is the ب part, history only):
-  - Parts 1-3 done: `f100c5fd` (page at rest), `efbce6f9` (the edit windows and sheets), `e271e612` + `c7e9438f`
-    (dialogs and states; «تطبيق الآن» confirms; closing with typed values asks first). Coordinator inspected 1-01,
-    1-04, 2-02, 2-07 (AR).
-  - Review done: `owner-direction-verifier` high, brief `verifier-settings.md` (`23c28fef`), 13/16 PASS; failures
-    F1-F5 and the pass-but-wrong list in `D:/fitway-temp/owner-r04-settings-verify/REPORT.md`.
-  - Fixes: two fixers were cut off (an API limit, then the user's pause); their work is checkpoint `22c46f31` on the
-    build branch, **not re-verified**. NOTES.md's last section says item 82 measured 0.00 px / shifts 0 at five sizes
-    AR/EN with default, `log=every` and `log=week`, and the folded record's window (decision 83) built; the final
-    capture had not finished.
-  - **Verified** (Opus verifier, `D:/fitway-temp/owner-r04-settings-verify-2/`; its report was its final message, no
-    REPORT.md): F1-F5, DLG-14, the four read-wrong items and decision 82's containers pass; four new low findings, the
-    coordinator saw N1-N3's frames: N1 the history's and levels' placeholders move the figures' column on arrival (EN
-    38.7 px, AR 7.2 px), N2 the English «%» overlaps before fonts load via `?edit=crowd`, N3 the scrolling record
-    window's body shows a square default ring past the panel, N4 the capture check misses a control below its card and
-    a cut dialog title.
-  - **Decision 85's fixer trial, done (measured):** `owner-direction-fixer` on Sonnet 5.5 at the definition's `medium`
-    fixed N1-N4 as `7dba9d91` (pushed; 119K tokens, 49 tools, 21 min; this round's Opus designer 337K, Opus verifiers
-    220K and the grader's own run). The Opus grader (`D:/fitway-temp/owner-r04-settings-verify-3/`, report as its final
-    message): all four outcomes PASS; two claims did not reproduce (it called 32.17 px «25%», which is the default
-    data's «20%»/«40%»/«57%», in NOTES.md and SETTINGS-SPEC.md; and «no record window scrolls at 390 × 844», false in
-    EN with `log=every`). New: H1 (medium) the capture's title check misses a title clipped by its own box without «…»
-    (`settings-capture.mjs` ~110-122, the walk starts at the parent); H2 the N1 widths are tuned to the default data
-    and Readex Pro (the coordinator's frozen target; containers hold with other data, slots move 3-10 px). Whether
-    the trial passes and the role moves is the user's word (decision 85).
-  - **The second fixer trial, done (measured):** Sonnet 5.5 at `high` (the user, 2026-10-24: Anthropic's docs put
-    longer agentic work at `high`; the first trial's `medium` was the coordinator's choice) fixed H1 and the wording as
-    `e56be0da` (pushed; 127K tokens, 30 tools, about 17 min after a PC freeze cut its first part). The Opus grader
-    (`D:/fitway-temp/owner-r04-settings-verify-4/`): every claim reproduces in substance; two wording slips ("same
-    messages" when P8 gained a line; its "seven earlier plants" swapped one); it also corrected the coordinator's own
-    wrong «25%» figure in the brief. Low and left: the title check misses `contain: paint` and `clip-path` cuts, and
-    its `.sr-only` skip goes by class name (`settings-capture.mjs` ~114-122). The coordinator's brief error, not
-    effort, caused the first trial's «25%» claim.
-  - **Next:** the user's word on whether the fixer role moves to Sonnet (decision 85; `CLAUDE.md`'s table only on
-    their word); then the user sees the page (link, live preview, numbered crops).
-  - After the user sees it: decision 81's small round (one day's hours to every day; the phone history), which is
-    decision 85's builder trial (Sonnet 5.5 `high` builds, an Opus verifier grades; report the trial's result to the
-    user), and decision 82's loading regression check (agent-tooling-r01, a Codex round) beside it, gating nothing.
-  - Agent-tooling finding to record there: the verify-fitway CLI accepts only ports 3176-3177 and has no Settings
-    recipes, so the verifier used its own controlled scripts.
+- **Settings** (arrangement ج, decisions 79-83; the brief designer-settings in the directions' briefs
+  folder on `owner-followup-r04-build`; notes and output in `D:/fitway-temp/owner-r04-settings/`): built in parts 1-3
+  (`f100c5fd`, `efbce6f9`, `e271e612`, `c7e9438f`); first review 13/16 (`D:/fitway-temp/owner-r04-settings-verify/`);
+  the fixes finished by an Opus designer at `0d9ba836` (page unchanged; capture OK 227 frames); re-verified
+  (`D:/fitway-temp/owner-r04-settings-verify-2/`: F1-F5, DLG-14, decision 82's containers pass; four low findings N1-N4). Measured, 2026-10-24.
+- **Decision 85's fixer trials** (Sonnet 5.5, Opus graders): N1-N4 at `medium` as `7dba9d91` (119K tokens; outcomes
+  pass, two claims did not reproduce, one from the coordinator's own brief; `D:/fitway-temp/owner-r04-settings-verify-3/`), then H1 and the wording
+  at `high` as `e56be0da` (127K; claims reproduce, two wording slips; `D:/fitway-temp/owner-r04-settings-verify-4/`). Low and left: the capture's
+  title check misses `contain: paint` and `clip-path` cuts, and skips `.sr-only` by class name. The coordinator
+  first launched an Opus designer where decision 85 named the fixer trial (the user caught it).
+- **Next:** the user's word on moving the fixer role to Sonnet `high` (`CLAUDE.md`'s table only on their word); then
+  the user sees Settings (link, live preview, numbered crops); then decision 81's round as the builder trial.
+- **The loading check** (decision 82) ran as agent-tooling's loading-check round, beside Settings; its record is in
+  that milestone's resume point.
 - Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
   click and removes on arrival (over http); no visitor data is stored.
 
