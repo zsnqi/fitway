@@ -1430,6 +1430,7 @@
     dlg.removeAttribute("role");
     keepDescribed(dlg);
     editing = sec;
+    pressSeen = null;
     flow = { sec, step: "edit", base: null, next: null, reason: "", from: null, busy: false, mode: null };
     live(sec);
     openDialog(dlg, opener, firstFocus(sec));
@@ -1437,6 +1438,11 @@
   }
   // Anything typed, switched or chosen since the window opened (or, after a conflict, unlike what is saved now).
   const isDirty = (sec) => $$("[data-init]", $(`#ed-${sec}`)).some((el) => (el.matches("[role=switch]") ? el.getAttribute("aria-checked") : el.value) !== el.dataset.init);
+  /* The sentences on screen when a press of «حفظ» began (null when none is on its way): taken as the pointer goes down on
+   * «حفظ» (before the press blurs the field) or as Enter goes down (before it commits the field); any other key or
+   * pointer clears it, and submitEdit reads it once. */
+  let pressSeen = null;
+  const seenNow = (sec) => Object.fromEntries(WARN_IDS[sec].map((id) => [id, shownText(id, "warn")]));
   function submitEdit(sec) {
     $$(".tf-in", $(`#ed-${sec}`)).forEach(tidyClock);
     $$("#ed-cap, #ed-reset", $(`#ed-${sec}`)).forEach(tidyCount);
@@ -1444,8 +1450,12 @@
     const { errors, value } = READ[sec]();
     const wantWarn = errors.size ? {} : warnings(sec, value);
     // A sentence the owner has not seen yet (it would have come on leaving the field) stops this press, so it is read
-    // before anything goes on; the next «حفظ» goes on with the value accepted (DECISIONS item 49).
-    const unseen = Object.keys(wantWarn).filter((id) => shownText(id, "warn") !== wantWarn[id]);
+    // before anything goes on; the next «حفظ» goes on with the value accepted (DECISIONS item 49). "Seen" is what stood
+    // on screen when the press began (pressSeen: the pointer going down on «حفظ», or Enter going down), not what stands
+    // now: the press itself blurs the field, or Enter commits it, and either brings the sentence in the same moment.
+    const seen = pressSeen;
+    pressSeen = null;
+    const unseen = Object.keys(wantWarn).filter((id) => (seen ? seen[id] || "" : shownText(id, "warn")) !== wantWarn[id]);
     const shownErr = $$(".field-err", $(`#ed-${sec}`)).map((e) => e.id.replace(/-err$/, ""));
     M.reflow(D[sec], () => {
       shownErr.forEach((id) => setMsg(id, "err", errors.get(id) || ""));
@@ -1859,6 +1869,8 @@
       if (e.shiftKey && (document.activeElement === first || !dlg.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && (document.activeElement === last || !dlg.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
     });
+    dlg.addEventListener("pointerdown", (e) => { pressSeen = flow && flow.step === "edit" && e.target.closest(".ed-save") ? seenNow(sec) : null; }, true);
+    dlg.addEventListener("keydown", (e) => { pressSeen = flow && flow.step === "edit" && e.key === "Enter" && e.target.closest(".ed-panel") ? seenNow(sec) : null; }, true);
     dlg.addEventListener("submit", (e) => {
       e.preventDefault();
       if (e.target.matches(".ed-panel")) submitEdit(sec);
