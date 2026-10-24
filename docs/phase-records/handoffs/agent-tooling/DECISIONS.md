@@ -155,4 +155,7 @@ through these pointers, not copied here.
       checkouts and real `node_modules` go; junctions are unlinked, never followed);
     - captures save the named frames and the failing ones, not every size on every run;
     - the weekly gardener reports the folder's size and its oldest unpruned rounds;
-    - a round does not launch when D has too little free space.
+    - a round does not launch when D has too little free space;
+    - a finished grading checkout whose commits are all on the remote can be removed even when a record cites its
+      round folder: on 2026-10-24 the gardener's `remove-worktree.mjs` would refuse all 17 under `D:/fitway-temp`
+      (15 cited by tracked records, the rest not merged into main), so they stay until this lands.
