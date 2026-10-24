@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-19 13:40 +03:00
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-24 19:00 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-83), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-85), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -41,9 +41,10 @@
 
 - **Nothing runs: the user paused the Settings round** (2026-10-19 13:35, «وقف ال background tasks مؤقتا واحفظ الحالة
   الحالية بس»). Measured at the pause: no server on 3190/3191, no capture process, worktree clean.
-- **The Settings round, where it stands** (arrangement ج, decisions 79, 80, 82, 83; brief
-  `directions/briefs/designer-settings.md`, its ج revision `7d0ccde2`; output and NOTES.md in
-  `D:/fitway-temp/owner-r04-settings/`; `superseded-b/` there is the ب part, history only):
+- **The Settings round, where it stands** (arrangement ج, decisions 79, 80, 82, 83; the brief designer-settings on the
+  build branch `owner-followup-r04-build`, in `design-research/owner-composition-exploration-r04/directions/briefs/`,
+  its ج revision `7d0ccde2`;
+  output and NOTES.md in `D:/fitway-temp/owner-r04-settings/`; its `superseded-b` folder is the ب part, history only):
   - Parts 1-3 done: `f100c5fd` (page at rest), `efbce6f9` (the edit windows and sheets), `e271e612` + `c7e9438f`
     (dialogs and states; «تطبيق الآن» confirms; closing with typed values asks first). Coordinator inspected 1-01,
     1-04, 2-02, 2-07 (AR).
@@ -53,13 +54,14 @@
     build branch, **not re-verified**. NOTES.md's last section says item 82 measured 0.00 px / shifts 0 at five sizes
     AR/EN with default, `log=every` and `log=week`, and the folded record's window (decision 83) built; the final
     capture had not finished.
-  - **Next:** a fresh `owner-direction-designer` reads the brief, `22c46f31`, NOTES.md and the review, runs the capture,
+  - **Next:** a fresh `owner-direction-designer` reads the brief, `22c46f31`, the round notes and the review, runs the capture,
     finishes anything open from the fix list (the coordinator's prompt to the second fixer is the list: F1-F5, the
     window, Friday's edge, the history's figure column, «20 %», square rings; leave «مباشر», the conflict history's
     name, the key's bars), commits; then a short verifier pass on F1-F5 and the window; the coordinator inspects the
     crops; then the user sees it (link, live preview, numbered crops).
-  - After the user sees it: decision 81's small round (one day's hours to every day; the phone history), then
-    decision 82's loading regression check (agent-tooling-r01, a Codex round) before the next page.
+  - After the user sees it: decision 81's small round (one day's hours to every day; the phone history), which is
+    decision 85's builder trial (Sonnet 5.5 `high` builds, an Opus verifier grades; report the trial's result to the
+    user), and decision 82's loading regression check (agent-tooling-r01, a Codex round) beside it, gating nothing.
   - Agent-tooling finding to record there: the verify-fitway CLI accepts only ports 3176-3177 and has no Settings
     recipes, so the verifier used its own controlled scripts.
 - Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
@@ -69,8 +71,9 @@
 
 1. **main is at `e3fd9854`** (advanced 2026-10-19 by `pnpm main:advance`, CI run 39166306570). The coordinator line
    adds decisions 80-83 and this resume point; it goes to main once its pushed commit's CI passes.
-2. **The pages** (decisions 49 and 51): Settings (skeleton, then one pass), Operations and Monitoring, the public
-   crowd page, the front-desk screen, sign-in; then the demo materials (private plan). Decision 76 (the demo first):
+2. **The pages** (decision 84 replaces 51's order, 2026-10-24): Settings, then the public crowd page, then the demo's
+   polish and materials (private plan); Operations and Monitoring, sign-in and the front-desk screen after the gym owner
+   accepts. Decision 76 (the demo first):
    what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the user chose
    arrangement ج of the skeleton's third pass (decision 80 corrects 77's ب, 2026-10-19; report and frames in
    D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md §"Third pass"; artifact
@@ -85,14 +88,18 @@
 
 ## Waiting on the user
 
-- Drive C: 15 items wait for the user's decision in D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md (12.04 GB free
-  after the safe cleanup, measured).
+- Drive C: the user put the open items of D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md off until later
+  (2026-10-24; C 34.8 GB free, measured in `D:/fitway-temp/cc-temp-survey/REPORT.md`).
+- fitway-temp: the user ran the prune (2026-10-24, `D:/fitway-temp/cleanup-20261024/`, 352.88 GB freed, 0 failures; D
+  398 GB free, measured). The 17 grading worktrees there wait for the user's rerun of its `remove-worktrees.ps1`
+  (the first run was refused by the open-brief check, fixed in this resume point).
 - Optional: Windows Update's active hours (F159).
 
 ## Known risks
 
 - **GPT-6.1 Sol accounts:** the user's rule (2026-10-15): stay on the current account until it reaches its limit,
-  then switch; `hhmam1435` is current since 00:14 on 2026-10-17 (`smhsdxsz5h` limited until 02:26). `bash D:/fitway-temp/resume-auto.sh <run> <message> limit-first` switches saved accounts, but with
+  then switch; two accounts are saved, `smhsdxsz5h` (current, 2026-10-24) and `hhmam1435`; `ryshyjhad85` left the
+  rotation at the user's word (2026-10-24; its file is in `D:/dev-cache/codex-removed-accounts`). `bash D:/fitway-temp/resume-auto.sh <run> <message> limit-first` switches saved accounts, but with
   `limit-first` it sends its own generic message (`D:/fitway-temp/resume-after-limit.md`), not the one passed.
 - **DeepSeek reports can claim steps that never ran** (F242): check a round's commit and ladder against its events
   before grading, until the launcher does.
