@@ -70,8 +70,12 @@ instead of each verifier writing its own scripts.
   compared box moves more than 0.5 px or any layout shift is recorded. It runs Daily (`index.html`), Access, Activity
   log and Settings at 1440 × 900, 768 × 1024 and 390 × 844, Arabic and English, each with its default data and with
   the widest-text case its query comment names (Access `case=long`, Activity log `case=wide`, Settings `case=wide`
-  and `log=every`; Daily names none: report that). Intent: one command reproduces decision 82's check on every page;
-  a page or case it cannot reach is reported as such, never silently skipped.
+  and `log=every`; Daily names none: report that), which is at least 48 lines (8 page × case pairs × 3 sizes × 2
+  languages); the matrix never runs fewer. The layout-shift sum covers the whole time from the skeleton's record to
+  the arrival's record. Mouse only; touch is out of scope. Intent: one command reproduces decision 82's check on every
+  page; a page or case it cannot reach is reported as such, never silently skipped. It needs a browser, which CI does
+  not have, so page rounds and their verifiers run it by hand; its comparison logic's unit tests are what the ladder
+  runs (L2).
 - **L2. The check must catch what decision 82 forbids and nothing it allows.** Outcome: against a copy of the concept
   in your temp folder with planted defects, each of these FAILs on the page it is planted in: a slot that moves 1 px
   on arrival, a card that grows 40 px on arrival, a layout shift on arrival; and a placeholder bar made 20 px wider,
