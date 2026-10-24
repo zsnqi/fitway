@@ -566,7 +566,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 51. **Every page in the concept before any move to production** (the user, 2026-10-13, «اي بس بعد ما نخلص الصفحات
     كاملة», «اشوف يمدينا نخلصها كامله»). After the tool fixes (item 47), the concept gets every page it still lacks:
     Settings (item 49), Operations and Monitoring, the public crowd page, the front-desk screen and sign-in, in that order
-    unless the user reorders. The move to the production application waits for a later decision of the user's. When it
+    unless the user reorders. **Item 84 (2026-10-24) reorders it for the demo:** Settings and the crowd page before it,
+    the other three after the gym owner accepts. The move to the production application waits for a later decision of the user's. When it
     comes, the user has accepted in principle («موافق معليك», on the production-readiness digest of 2026-10-13) the
     concept's Product/Spec amendments (`DESIGN-SPEC.md` §4.4.1, AMD-C1 to C8; the usual-day baseline; Settings' reason
     and its log entry naming the change) and Readex Pro in place of Cairo; each is still written as an explicit
@@ -925,6 +926,21 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     reason open in a small window over the page (a bottom sheet on the phone), as ج's edit windows do, not inline
     (which would stretch the row again) and not in Activity log (whose settings records do not show from → to yet,
     AMD-S2). «عرض الكل» still opens Activity log's settings records.
+84. **The demo carries only what wins it** (the user, 2026-10-24, in comments on the coordinator's status page
+    https://claude.ai/artifact/H7pEVACJeemZ7Lm3m8tTUQ: «موافق الصراحة», «عادي غيره»). This replaces item 51's "every
+    page before the demo". Before the demo: Settings finished, then the public crowd page, then the demo's polish
+    (convincing synthetic data, no link to a page that is not built, Arabic without a fault) and materials (device
+    mock-ups, a short PDF, and the short clip of the working production app). After the gym owner accepts: Operations
+    and Monitoring, sign-in, the front-desk screen (it reuses the crowd page's live number and freshness plus device
+    health, `SPEC.md` staff stories 10-16), and the full motion-graphics video. Decision 81's round and decision 82's
+    check, the tooling rounds and the invisible issues run beside the demo work, gating nothing.
+85. **Sonnet 5.5 trials for the builder and the fixer** (the user, 2026-10-24, «موافق», on the coordinator's
+    recommendation from a benchmark digest, `D:/fitway-temp/model-compare-20261024/REPORT.md`). The designer, the
+    verifier and the RTL/LTR reviewer stay on Opus: taste and Arabic frames have no Sonnet evidence, and the design
+    leads, though small, are Opus's. Decision 81's round is the builder trial: Sonnet 5.5 at `high` builds, an Opus
+    verifier grades, and the round records its findings and tokens against an Opus build's usual count; the fixer
+    trials the same way on its next frozen list. A role moves to Sonnet only after its trial passes, and `CLAUDE.md`'s
+    table changes only on the user's word.
 
 ## How this milestone's rounds run
 
