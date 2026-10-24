@@ -18,7 +18,8 @@
     `D:/fitway-temp/tooling-loading-check/concept-ref/access.js` lines 21-24,
     `D:/fitway-temp/tooling-loading-check/concept-ref/activity.js` lines 14-18,
     `D:/fitway-temp/tooling-loading-check/concept-ref/settings.js` lines 17-21 and 893-897 (the slots the arrival writes
-    into), and `D:/fitway-temp/tooling-loading-check/concept-ref/reports.js` lines 1-3.
+    into), and `D:/fitway-temp/tooling-loading-check/concept-ref/reports.js` lines 1-3, 102-112 (the first-load phases)
+    and 1213-1235 (its loading skeleton and `arrive`).
 
 <!-- environment:start v1 -->
 ## Environment
@@ -66,30 +67,37 @@ instead of each verifier writing its own scripts.
   command, given a page and a query, records the boxes of the page's header, each card, each card's title and each
   slot (the element a value is written into on arrival; never the placeholder bar inside it) while the skeleton is
   shown and again after arrival, and prints one line per page × size × language × case: PASS or FAIL, the largest
-  movement in px (x, y, width or height) with the element it belongs to, and the layout-shift sum. FAIL when any
-  compared box moves more than 0.5 px or any layout shift is recorded. It runs Daily (`index.html`), Access, Activity
-  log and Settings at 1440 × 900, 768 × 1024 and 390 × 844, Arabic and English, each with its default data and with
-  the widest-text case its query comment names (Access `case=long`, Activity log `case=wide`, Settings `case=wide`
-  and `log=every`; Daily names none: report that), which is at least 48 lines (8 page × case pairs × 3 sizes × 2
-  languages); the matrix never runs fewer. The layout-shift sum covers the whole time from the skeleton's record to
-  the arrival's record. Mouse only; touch is out of scope. Intent: one command reproduces decision 82's check on every
+  movement in px (x, y, width or height) with the element it belongs to, the number of boxes compared, the page's
+  `<html lang>` and the layout-shift sum. FAIL when any compared box moves more than 0.5 px, any layout shift is
+  recorded, a box present in one record has no match in the other (missing, added or replaced), or `<html lang>` is
+  not the requested language. It runs Daily (`index.html`), Reports, Access, Activity log and Settings at 1440 × 900,
+  768 × 1024 and 390 × 844, Arabic and English, each with its default data and with the widest-text case its query
+  comment names (Access `case=long`, Activity log `case=wide`, Settings `case=wide` and `log=every`; Daily and
+  Reports name none: report that), which is at least 54 lines (9 page × case pairs × 3 sizes × 2 languages); the
+  matrix never runs fewer. The arrival's record is taken only after the fonts are ready and the compared boxes are
+  unchanged over two consecutive frames (fitting after fonts arrive is part of the arrival), and the layout-shift sum
+  covers the whole time from the skeleton's record to the arrival's record. Mouse only; touch is out of scope. Intent: one command reproduces decision 82's check on every
   page; a page or case it cannot reach is reported as such, never silently skipped. It needs a browser, which CI does
   not have, so page rounds and their verifiers run it by hand; its comparison logic's unit tests are what the ladder
   runs (L2).
 - **L2. The check must catch what decision 82 forbids and nothing it allows.** Outcome: against a copy of the concept
   in your temp folder with planted defects, each of these FAILs on the page it is planted in: a slot that moves 1 px
-  on arrival, a card that grows 40 px on arrival, a layout shift on arrival; and a placeholder bar made 20 px wider,
+  on arrival, a card that grows 40 px on arrival, a layout shift on arrival, a slot removed or replaced by another
+  element on arrival, a box that moves after the fonts arrive; and a placeholder bar made 20 px wider,
   then 20 px narrower, inside an unchanged slot PASSes. Report each plant, its page and the line printed. The
   comparison logic also has unit tests that run in the ladder without a browser. Intent: a check that passes
   everything, or fails on bars that are shorter than their text by design, is worse than none.
 - **L3. The loading record must be the skeleton.** Each page has phases: an empty wait, the skeleton, the arrival;
   Daily's `arrive=never` turns into Error after 10 s (`daily.js` lines 3-4). Outcome: each line also states the phase
-  the loading record was taken in, read from the page (for example the root's `data-load` value and `aria-busy`),
-  and that phase is the shown skeleton on every line. Intent: comparing two arrived pages, or the empty wait, would
-  pass trivially.
-- **L4. Reports and the Components sheet.** Outcome: the report says whether `reports.js` has a first-load loading
-  state reachable by query (lines 1-3) and includes Reports in L1 if it has; `components.html` is a specimen sheet
-  and is out of scope. Intent: no page that has a first load is left out by assumption.
+  the loading record was taken in, read from the page: the shown skeleton is the root's `data-load="shown"` with at
+  least one placeholder bar visible at a nonzero size; `aria-busy` alone does not tell it from the empty wait. A
+  record taken in the wait, in Error or after arrival is a FAIL naming that phase, and L2's plants include one forced
+  into the wait and one into the arrived page, both refused. Every line on today's concept is taken in the shown
+  skeleton. Intent: comparing two arrived pages, or the empty wait, would pass trivially.
+- **L4. Reports and the Components sheet.** Reports has a first load (`reports.js` lines 102-112, 1213-1235) whose
+  state `reports.html` sets before first paint. Outcome: the report names the query that opens Reports' loading and
+  its `arrive`, and Reports is in L1's matrix; `components.html` is a specimen sheet and is out of scope. Intent: no
+  page that has a first load is left out by assumption.
 - **L5. Findings on today's concept.** Outcome: the full L1 matrix is run once against the concept at
   `concept-source.json`'s ref, and every FAIL is listed as a finding (page, case, size, language, element, px); a
   finding is not a FAIL of this round, and the concept is not changed. Also report the matrix's total run time.
