@@ -39,11 +39,16 @@
 
 ## Running now
 
-- **The Settings round resumed on the user's «كمل»** (2026-10-24): a fresh `owner-direction-designer` (default effort)
-  works from `22c46f31` on port 3190, re-checking every fix against frames, running the capture, and committing. If
-  this session ends before it reports, check the build branch for a commit after `22c46f31` and NOTES.md's last
-  section before relaunching. (The user had paused the round on 2026-10-19 13:35; measured at the pickup: worktree
-  clean at `22c46f31`, nothing on 3190/3191.)
+- **The Settings round resumed on the user's «كمل»** (2026-10-24). An Opus `owner-direction-designer` finished the fix
+  list: `0d9ba836` (pushed) changes only `settings-capture.mjs`'s spill and cut-text check and SETTINGS-SPEC.md; the
+  page needed no change; capture OK 227 frames; NOTES.md §"The finishing pass" (its claims, not yet verified). Now an
+  Opus `owner-direction-verifier` re-checks F1-F5, decisions 82-83, the four read-wrong items and the capture check's
+  change, on port 3191, into `D:/fitway-temp/owner-r04-settings-verify-2/`.
+- **Decision 85 was missed here** (the user caught it, 2026-10-24): this frozen list should have been the fixer's
+  Sonnet trial, and the coordinator launched an Opus designer instead. It finished before the user answered, and
+  needed no page change, so the list would not have tested a fixer. **The fixer trial carries to the next frozen fix
+  list** (likely what this verification or the user's look turns up): `owner-direction-fixer` on Sonnet 5.5, an Opus
+  verifier grades, tokens recorded. A pickup checks every launch against decisions 81 and 85 before choosing a role.
 - **The Settings round, where it stands** (arrangement ج, decisions 79, 80, 82, 83; the brief designer-settings on the
   build branch `owner-followup-r04-build`, in `design-research/owner-composition-exploration-r04/directions/briefs/`,
   its ج revision `7d0ccde2`;
