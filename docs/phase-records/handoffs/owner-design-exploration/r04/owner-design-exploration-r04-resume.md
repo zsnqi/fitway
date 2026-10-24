@@ -48,7 +48,7 @@
   Sonnet trial, and the coordinator launched an Opus designer instead. It finished before the user answered, and
   needed no page change, so the list would not have tested a fixer. **The fixer trial carries to the next frozen fix
   list** (likely what this verification or the user's look turns up): `owner-direction-fixer` on Sonnet 5.5, an Opus
-  verifier grades, tokens recorded. A pickup checks every launch against decisions 81 and 85 before choosing a role.
+  verifier grades, tokens recorded.
 - **The Settings round, where it stands** (arrangement ج, decisions 79, 80, 82, 83; the brief designer-settings on the
   build branch `owner-followup-r04-build`, in `design-research/owner-composition-exploration-r04/directions/briefs/`,
   its ج revision `7d0ccde2`;
@@ -62,11 +62,9 @@
     build branch, **not re-verified**. NOTES.md's last section says item 82 measured 0.00 px / shifts 0 at five sizes
     AR/EN with default, `log=every` and `log=week`, and the folded record's window (decision 83) built; the final
     capture had not finished.
-  - **Next:** a fresh `owner-direction-designer` reads the brief, `22c46f31`, the round notes and the review, runs the capture,
-    finishes anything open from the fix list (the coordinator's prompt to the second fixer is the list: F1-F5, the
-    window, Friday's edge, the history's figure column, «20 %», square rings; leave «مباشر», the conflict history's
-    name, the key's bars), commits; then a short verifier pass on F1-F5 and the window; the coordinator inspects the
-    crops; then the user sees it (link, live preview, numbered crops).
+  - **Next:** the verifier's pass (running, above); any failures it finds are a frozen list for
+    `owner-direction-fixer` on Sonnet 5.5 (decision 85's fixer trial); the coordinator inspects the crops; then the
+    user sees it (link, live preview, numbered crops).
   - After the user sees it: decision 81's small round (one day's hours to every day; the phone history), which is
     decision 85's builder trial (Sonnet 5.5 `high` builds, an Opus verifier grades; report the trial's result to the
     user), and decision 82's loading regression check (agent-tooling-r01, a Codex round) beside it, gating nothing.
