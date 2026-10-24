@@ -44,7 +44,15 @@
   `01a16f8e-2522-7c60-b548-a9aa67d98e0d`. Reviews: DeepSeek `D:/fitway-temp/brief-review/codex-loading-check-3` (5
   closed) and Sol `...-3-sol` (3 closed, reading 3 left open: decision 82 compares boxes, not nodes). The port part
   the user approved was dropped: F183 was the tests' ports and is fixed; the verifiers' 3191 came from the
-  coordinator's briefs, not the allocation. Next: check its commit and ladder against the events, then grade.
+  coordinator's briefs, not the allocation. **Delivered `9fc29e91`, graded** (Opus verifier,
+  `D:/fitway-temp/tooling-loading-check-grade/`, measured): 54 lines, 28 PASS / 26 FAIL in 156 s reproduce; the grader's
+  own plants all behave; the four out-of-scope files tighten or are needed (the registry), none loosens. Defects:
+  shifts under 0.0001 pass (`loading-browser.mjs:337`), Daily's Error is not named Error (:132-140), only the largest
+  movement is kept, Activity's slot groups exempt added boxes, case and language are echoed not read back. Real page
+  findings: Settings 390 AR «فأكثر» wraps (13 px), Reports' table columns at 768 and a 390 row, Access `case=long`
+  rows, Activity's first day heading (36 → 46 px); Activity's 1730 px and Reports' 1440 title are artifacts.
+  Not merged. CI on the coordinator line also fails `check:verification-map`: 11 Settings dialogs, menus and openers
+  have no recipe (since Settings' dialogs landed on the build branch); the user decides when recipes are added.
 - Before it: nothing ran (measured 2026-10-18 23:20). Item 14's before-the-demo work is done: ratchet-2 is merged into the
   coordinator line (`504d6572`, CI 39160024759; grade 11/14 with the three FAILs repaired by the coordinator;
   `longFunctionLines` kept, to be reviewed after the demo; `codex-rounds.md` §"ratchet-2"; F286-F289), and the brief
