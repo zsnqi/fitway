@@ -146,3 +146,13 @@ through these pointers, not copied here.
     - **Usage** (agreed the same day): a side session starts fresh with a short brief instead of a fork carrying the
       coordinator's context; at most two Opus sessions run at once; read-only research over local files can be a Codex
       `delivers: report` round instead of a Claude researcher.
+15. **Round output does not pile up in `D:/fitway-temp`** (the user, 2026-10-24: «تمام»). A survey found the folder
+    at 471.6 GB (about 4.85 million files, 293 GB of PNG; grading 170.5 GB, design captures 158 GB, verifier captures
+    94.2 GB) with D at 73 GB free (`D:/fitway-temp/cc-temp-survey/REPORT.md`). A one-off prune
+    (`D:/fitway-temp/cleanup-20261024/`) keeps each finished round's records and the images they name; it is run by the user.
+    The tooling then keeps it from recurring, beside the demo and gating nothing:
+    - once a round is graded and recorded, its folder is pruned the same way (records and named frames stay; captures,
+      checkouts and real `node_modules` go; junctions are unlinked, never followed);
+    - captures save the named frames and the failing ones, not every size on every run;
+    - the weekly gardener reports the folder's size and its oldest unpruned rounds;
+    - a round does not launch when D has too little free space.
