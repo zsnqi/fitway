@@ -37,7 +37,15 @@
 
 ## Running now
 
-- **Nothing runs** (measured 2026-10-18 23:20). Item 14's before-the-demo work is done: ratchet-2 is merged into the
+- **loading-check runs** (the user, 2026-10-24: r04 decision 82's check now, beside Settings, gating nothing):
+  brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-loading-check.md` (`0f19c6d6`), DeepSeek `max`, worktree
+  `D:/Projects/fitway-worktrees/tooling-loading-check` (branch `tooling-loading-check` from the coordinator line at
+  `f721ccd4`, its own install), run folder `D:/fitway-temp/codex-round-loading-check`, thread
+  `01a16f8e-2522-7c60-b548-a9aa67d98e0d`. Reviews: DeepSeek `D:/fitway-temp/brief-review/codex-loading-check-3` (5
+  closed) and Sol `...-3-sol` (3 closed, reading 3 left open: decision 82 compares boxes, not nodes). The port part
+  the user approved was dropped: F183 was the tests' ports and is fixed; the verifiers' 3191 came from the
+  coordinator's briefs, not the allocation. Next: check its commit and ladder against the events, then grade.
+- Before it: nothing ran (measured 2026-10-18 23:20). Item 14's before-the-demo work is done: ratchet-2 is merged into the
   coordinator line (`504d6572`, CI 39160024759; grade 11/14 with the three FAILs repaired by the coordinator;
   `longFunctionLines` kept, to be reviewed after the demo; `codex-rounds.md` §"ratchet-2"; F286-F289), and the brief
   template's lines are in `docs/agent-context/briefs/codex.md` (`b9e46dd1`).
