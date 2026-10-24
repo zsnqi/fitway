@@ -941,6 +941,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     verifier grades, and the round records its findings and tokens against an Opus build's usual count; the fixer
     trials the same way on its next frozen list. A role moves to Sonnet only after its trial passes, and `CLAUDE.md`'s
     table changes only on the user's word.
+86. **The fixer moves to Sonnet 5.5 at `high`** (the user, 2026-10-25, «خلاص موافق ننقل», after decision 85's two
+    fixer trials on Settings: `medium` at `7dba9d91`, outcomes passed with two claims that did not reproduce, one from
+    the coordinator's own brief; `high` at `e56be0da`, claims reproduced with two wording slips; both graded by Opus,
+    `D:/fitway-temp/owner-r04-settings-verify-3/` and `-verify-4/`). `owner-direction-fixer` and `CLAUDE.md`'s table
+    say Sonnet `high`; the builder's move waits for its own trial (decision 81's round). An Opus verifier keeps
+    grading fixer work.
 
 ## How this milestone's rounds run
 

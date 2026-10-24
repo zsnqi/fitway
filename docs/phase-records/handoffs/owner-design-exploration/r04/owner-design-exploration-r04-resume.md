@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-24 19:00 +03:00
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-85), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-86), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -49,8 +49,9 @@
   at `high` as `e56be0da` (127K; claims reproduce, two wording slips; `D:/fitway-temp/owner-r04-settings-verify-4/`). Low and left: the capture's
   title check misses `contain: paint` and `clip-path` cuts, and skips `.sr-only` by class name. The coordinator
   first launched an Opus designer where decision 85 named the fixer trial (the user caught it).
-- **Next:** the user's word on moving the fixer role to Sonnet `high` (`CLAUDE.md`'s table only on their word); then
-  the user sees Settings (link, live preview, numbered crops); then decision 81's round as the builder trial.
+- **The fixer is Sonnet `high`** (decision 86, 2026-10-25). **Next:** the user sees Settings (link, live preview,
+  numbered crops; not seen yet); the loading check's real page findings (agent-tooling's resume point) as the
+  fixer's next frozen list; then decision 81's round as the builder trial.
 - **The loading check** (decision 82) ran as agent-tooling's loading-check round, beside Settings; its record is in
   that milestone's resume point.
 - Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
