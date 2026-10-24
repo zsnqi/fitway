@@ -104,8 +104,8 @@ html[lang="en"] .set { --lab: 104px; }
 .dl-levels .v-q { padding-inline-end: 6px; }
 .dl-levels .v-p { padding-inline-start: 16px; }
 /* A level's parts closer on a phone (4 after «حتى», 10 before the people), so a gym of up to 999 keeps each level on one
- * line on a 390 px phone («أو 106 أشخاص فأكثر», 141 px, with 4 to spare) and today's on a 375 px one: a level that
- * wrapped there grew its row as the values arrived, which no placeholder can know. */
+ * line on a 390 px phone («أو 106 أشخاص فأكثر», 141 px, with 4 to spare) and today's on a 375 px one. A level that
+ * wraps anyway (a wider gym, another limit) wraps in the skeleton too: its slots hold the arrived text hidden. */
 @media (max-width: 720px) {
   .dl-levels .v-q { padding-inline-end: 4px; }
   .dl-levels .v-p { padding-inline-start: 10px; }
@@ -511,6 +511,11 @@ html[lang="en"] .cf-q { quotes: "\201C" "\201D"; }
  * will, and the history's records wait in theirs (logPH), so every slot keeps its arrived box. */
 .set .ph-bar { max-width: 100%; }
 .set-row > dd > .ph-span { grid-column: 1 / -1; line-height: 22px; }
+/* A crowd level's two value slots hold their arrived text hidden (settings.js crowdPH), so they size and wrap as the
+ * arrived ones do; the bar stands over the ghost's first line, 5 px down as an inline bar on the 22 px line sits. */
+.set .ph-in { display: block; position: relative; }
+.set .ph-in > .ph-bar { position: absolute; margin-block-start: 5px; }
+.set .ph-ghost { visibility: hidden; }
 .set-msg { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; }
 .set-say { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 52ch; margin: 0; font-size: 15px; line-height: 22.5px; color: var(--ink); }
 .set-say .ico-err { width: 22px; height: 22px; color: var(--err); }
