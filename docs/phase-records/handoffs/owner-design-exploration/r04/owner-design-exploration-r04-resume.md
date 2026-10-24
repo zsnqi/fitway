@@ -39,8 +39,11 @@
 
 ## Running now
 
-- **Nothing runs: the user paused the Settings round** (2026-10-19 13:35, «وقف ال background tasks مؤقتا واحفظ الحالة
-  الحالية بس»). Measured at the pause: no server on 3190/3191, no capture process, worktree clean.
+- **The Settings round resumed on the user's «كمل»** (2026-10-24): a fresh `owner-direction-designer` (default effort)
+  works from `22c46f31` on port 3190, re-checking every fix against frames, running the capture, and committing. If
+  this session ends before it reports, check the build branch for a commit after `22c46f31` and NOTES.md's last
+  section before relaunching. (The user had paused the round on 2026-10-19 13:35; measured at the pickup: worktree
+  clean at `22c46f31`, nothing on 3190/3191.)
 - **The Settings round, where it stands** (arrangement ج, decisions 79, 80, 82, 83; the brief designer-settings on the
   build branch `owner-followup-r04-build`, in `design-research/owner-composition-exploration-r04/directions/briefs/`,
   its ج revision `7d0ccde2`;
