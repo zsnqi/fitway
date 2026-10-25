@@ -1455,10 +1455,10 @@
     if (!body) return;
     const shown = $$(".ed-warn", body).filter((w) => !w.hidden), last = shown[shown.length - 1] || s;
     const b = body.getBoundingClientRect(), first = s.getBoundingClientRect();
-    const end = last.getBoundingClientRect().bottom, bottom = Math.min(end, first.top + b.height - 6);
-    if (bottom + 6 > b.bottom) body.scrollTop += bottom + 6 - b.bottom;
+    const room = 6, end = last.getBoundingClientRect().bottom, bottom = Math.min(end, first.top + b.height - 2 * room); // room: the ring's 4 px and 2 more
+    if (bottom + room > b.bottom) body.scrollTop += bottom + room - b.bottom;
     const top = s.getBoundingClientRect().top;
-    if (top < b.top) body.scrollTop -= b.top - top;
+    if (top - room < b.top) body.scrollTop -= b.top - (top - room);
   }
   function submitEdit(sec) {
     $$(".tf-in", $(`#ed-${sec}`)).forEach(tidyClock);

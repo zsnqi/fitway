@@ -367,6 +367,14 @@ html[data-focus-input="keyboard"] .tf-ap:has(.tf-sel:focus)::after { visibility:
 .ed-warn .ico { margin-block-start: 1.5px; color: var(--ink-3); }
 .ed-warn span, .ed-panel .field-err span { min-width: 0; overflow-wrap: anywhere; }
 .ed-row > .ed-warn { grid-column: 2 / -1; }
+/* A sentence takes the keyboard focus when a press of «حفظ» stops at it (it has no field to take it): the page's one ring
+ * (FOC-1) in the shape the other text targets give it, radius 8 (the window's title, above), and 2 px from the box, so
+ * the 8 px between two sentences keeps 4 px clear of it (FOC-3). The last one gets 6 px under it in that state only, since
+ * a scroll area clips a ring that goes past its end; with the pointer or a finger there is no ring and no room. */
+.ed-warn { --focus-ring-offset: 2px; }
+.ed-warn:focus-visible,
+html[data-focus-input="keyboard"] .ed-warn:focus { border-radius: 8px; }
+html[data-focus-input="keyboard"] .ed-warns:focus-within { padding-block-end: 6px; }
 
 /* A sheet (the window at 720 px and below, under 430 px inside): the note goes under the closing, its line kept in
  * every row so a note that comes or goes moves nothing; English takes the short day names (DAT-2). Under 340 px inside
