@@ -54,7 +54,7 @@
   `e885543e`); `0fcb9363` the crowd skeleton holds the arrived text hidden, so a phone wrap no longer moves the card
   (13 px at 390 AR `case=wide`); `6f1a132a` a warning that appears during the «حفظ» press stops it (decision 49);
   `733f764f` an hours stop focuses the first sentence and scrolls it whole into view (was below the fold at 375/320).
-  Checks: `D:/fitway-temp/owner-r04-settings-verify-5/` (all pass but M1, now fixed) and `-verify-6/` for M1.
+  Checks: `D:/fitway-temp/owner-r04-settings-verify-5/` (all pass but M1, now fixed) and `D:/fitway-temp/owner-r04-settings-verify-6/` for M1.
 - **For the user** (Settings not seen yet): (1) the crowd skeleton now reads the settings it is waiting for (the
   verifier's M2: a real first load has no payload; the 0 px holds only because the concept knows the values; the
   earlier placeholder widths did the same with default data); keep it, or accept the wrap's 13 px; (2) at 1440 the
