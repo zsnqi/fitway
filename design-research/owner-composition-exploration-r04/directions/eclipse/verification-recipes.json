@@ -4392,7 +4392,7 @@
           "reach": "activate:[data-edit=\"hours\"] → type:[name=\"ed-sun-close\"]=5:00 → press:Tab",
           "source": {
             "file": "settings.js",
-            "line": 1106
+            "line": 1113
           },
           "covers": [
             "#dlg-hours",
@@ -4439,7 +4439,7 @@
           "reach": "settings.html?record=latest",
           "source": {
             "file": "settings.js",
-            "line": 1986
+            "line": 2022
           },
           "covers": [
             "#dlg-rec"

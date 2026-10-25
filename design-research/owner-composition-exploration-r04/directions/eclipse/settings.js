@@ -1443,6 +1443,23 @@
    * pointer clears it, and submitEdit reads it once. */
   let pressSeen = null;
   const seenNow = (sec) => Object.fromEntries(WARN_IDS[sec].map((id) => [id, shownText(id, "warn")]));
+  /* A sentence no field is about (the hours' three speak of days, not of one field) takes the focus itself, made focusable
+   * for that (tabindex -1, so Tab does not stop on it); then the window's body scrolls so the whole of it stands above the
+   * footer, and the sentences that follow it with it when they fit (on a short phone the sentence is under the fold). */
+  function focusSentence(id) {
+    const s = msgEl(id, "warn");
+    if (!s) return;
+    s.tabIndex = -1;
+    s.focus({ preventScroll: true });
+    const body = s.closest(".dlg-body");
+    if (!body) return;
+    const shown = $$(".ed-warn", body).filter((w) => !w.hidden), last = shown[shown.length - 1] || s;
+    const b = body.getBoundingClientRect(), first = s.getBoundingClientRect();
+    const end = last.getBoundingClientRect().bottom, bottom = Math.min(end, first.top + b.height - 6);
+    if (bottom + 6 > b.bottom) body.scrollTop += bottom + 6 - b.bottom;
+    const top = s.getBoundingClientRect().top;
+    if (top < b.top) body.scrollTop -= b.top - top;
+  }
   function submitEdit(sec) {
     $$(".tf-in", $(`#ed-${sec}`)).forEach(tidyClock);
     $$("#ed-cap, #ed-reset", $(`#ed-${sec}`)).forEach(tidyCount);
@@ -1475,6 +1492,7 @@
     if (unseen.length) {
       const id = unseen[0], el = $(`#${id}`);
       if (el?.matches("input")) el.focus();
+      else focusSentence(id);
       say(wantWarn[id].replace(/<[^>]+>/g, ""));
       return;
     }
