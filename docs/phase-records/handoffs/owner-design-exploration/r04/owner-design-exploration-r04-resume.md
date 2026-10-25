@@ -49,9 +49,18 @@
   at `high` as `e56be0da` (127K; claims reproduce, two wording slips; `D:/fitway-temp/owner-r04-settings-verify-4/`). Low and left: the capture's
   title check misses `contain: paint` and `clip-path` cuts, and skips `.sr-only` by class name. The coordinator
   first launched an Opus designer where decision 85 named the fixer trial (the user caught it).
-- **The fixer is Sonnet `high`** (decision 86, 2026-10-25). **Next:** the user sees Settings (link, live preview,
-  numbered crops; not seen yet); the loading check's real page findings (agent-tooling's resume point) as the
-  fixer's next frozen list; then decision 81's round as the builder trial.
+- **The fixer is Sonnet `high`** (decision 86, 2026-10-25). The night of 2026-10-24/25, Sonnet fixers, Opus checks
+  (measured): `3ae21080` Settings' verify-fitway recipes (CI's `check:verification-map` green; main advanced to
+  `e885543e`); `0fcb9363` the crowd skeleton holds the arrived text hidden, so a phone wrap no longer moves the card
+  (13 px at 390 AR `case=wide`); `6f1a132a` a warning that appears during the «حفظ» press stops it (decision 49);
+  `733f764f` an hours stop focuses the first sentence and scrolls it whole into view (was below the fold at 375/320).
+  Checks: `D:/fitway-temp/owner-r04-settings-verify-5/` (all pass but M1, now fixed) and `-verify-6/` for M1.
+- **For the user** (Settings not seen yet): (1) the crowd skeleton now reads the settings it is waiting for (the
+  verifier's M2: a real first load has no payload; the 0 px holds only because the concept knows the values; the
+  earlier placeholder widths did the same with default data); keep it, or accept the wrap's 13 px; (2) at 1440 the
+  hours editor's first «حفظ» is lost when the sentence pushes the button 24 px under the pointer (a layout choice).
+- **Next:** the user sees Settings (link, live preview, numbered crops); the loading check's other page findings
+  (agent-tooling's resume point) as a fixer list; then decision 81's round as the builder trial.
 - **The loading check** (decision 82) ran as agent-tooling's loading-check round, beside Settings; its record is in
   that milestone's resume point.
 - Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
