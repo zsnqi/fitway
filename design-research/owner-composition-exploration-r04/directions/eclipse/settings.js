@@ -1440,8 +1440,17 @@
   const isDirty = (sec) => $$("[data-init]", $(`#ed-${sec}`)).some((el) => (el.matches("[role=switch]") ? el.getAttribute("aria-checked") : el.value) !== el.dataset.init);
   /* The sentences on screen when a press of «حفظ» began (null when none is on its way): taken as the pointer goes down on
    * «حفظ» (before the press blurs the field) or as Enter goes down (before it commits the field); any other key or
-   * pointer clears it, and submitEdit reads it once. */
+   * pointer clears it, and submitEdit reads it once. A mouse or pen press whose click never comes (the sentence the press
+   * brings moves «حفظ» from under the pointer: the hours' first sentence on a wide window, 24 to 46 px) is carried on
+   * here instead: the pointer going down on «حفظ» keeps the rectangle it had (pressBox), and if the pointer comes up
+   * inside that rectangle and no submit followed it on the next task, that is one press, so submitEdit runs as the
+   * click would have run it, with the pressSeen taken as the pointer went down. A click that does land (the pointer
+   * still over the moved button) has already run it, so nothing runs twice; a pointer that comes up outside the
+   * rectangle is a slide off to cancel, like any button, and does nothing. Touch and keys are not carried: a touch
+   * stays with its target, and a key press is not a pointer. */
   let pressSeen = null;
+  let pressBox = null;                 // { id, box }: the pointer that went down on «حفظ», and where «حفظ» stood
+  let submits = 0;                     // the window's submits so far, so that a press can tell a click came
   const seenNow = (sec) => Object.fromEntries(WARN_IDS[sec].map((id) => [id, shownText(id, "warn")]));
   /* A sentence no field is about (the hours' three speak of days, not of one field) takes the focus itself, made focusable
    * for that (tabindex -1, so Tab does not stop on it); then the window's body scrolls so the whole of it stands above the
@@ -1887,10 +1896,24 @@
       if (e.shiftKey && (document.activeElement === first || !dlg.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && (document.activeElement === last || !dlg.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
     });
-    dlg.addEventListener("pointerdown", (e) => { pressSeen = flow && flow.step === "edit" && e.target.closest(".ed-save") ? seenNow(sec) : null; }, true);
+    dlg.addEventListener("pointerdown", (e) => {
+      const save = flow && flow.step === "edit" && e.target.closest(".ed-save");
+      pressSeen = save ? seenNow(sec) : null;
+      pressBox = save && e.isPrimary && e.button === 0 && e.pointerType !== "touch" ? { id: e.pointerId, box: save.getBoundingClientRect() } : null;
+    }, true);
+    dlg.addEventListener("pointercancel", () => { pressBox = null; }, true);
+    dlg.addEventListener("pointerup", (e) => {
+      const p = pressBox;
+      pressBox = null;
+      const b = p && p.box;
+      if (!b || e.pointerId !== p.id || e.clientX < b.left || e.clientX >= b.right || e.clientY < b.top || e.clientY >= b.bottom) return;
+      const was = submits;
+      setTimeout(() => { if (submits === was && flow && flow.sec === sec && flow.step === "edit" && !flow.busy && openDlg && openDlg.dlg === dlg) submitEdit(sec); });
+    }, true);
     dlg.addEventListener("keydown", (e) => { pressSeen = flow && flow.step === "edit" && e.key === "Enter" && e.target.closest(".ed-panel") ? seenNow(sec) : null; }, true);
     dlg.addEventListener("submit", (e) => {
       e.preventDefault();
+      submits++;
       if (e.target.matches(".ed-panel")) submitEdit(sec);
       else applyStep(sec);
     });
