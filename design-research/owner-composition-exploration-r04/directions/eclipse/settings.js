@@ -898,17 +898,13 @@
   const ph = (w, cls = "ph-v") => `<i class="ph-bar ${cls}" style="--w:${w}px" aria-hidden="true"></i>`;
   const phRow = (dt, w, cls = "") => row(dt, `<span class="ph-span">${ph(w)}</span>`, cls);
   // A level waits in its arrived parts: «حتى» / «فوق» (words, known before the values), then a bar for its limit and one
-  // for its people, so a narrow card puts the people's bar under the limit's as it will put the people. Each of the two
-  // slots also holds the arrived text itself, hidden (.ph-ghost: no ink, out of the accessibility tree), so the slot
-  // takes the arrived column width and the arrived line count (a phrase that wraps on a phone, a limit of 100% a wider
-  // column than 40%) and the row keeps its arrived box whatever the values are; the bar is drawn over the ghost's first
-  // line (.ph-in).
+  // for its people, so a narrow card puts the people's bar under the limit's as it will put the people. It reads no
+  // setting: a first load has none, so the skeleton is the same for every gym (a concept that held the arrived text
+  // hidden would match only because it knows its data). Where a level's people can wrap, the Packed row's people slot
+  // keeps two lines in loading and arrived alike (settings.css, the Packed row), so the arrival moves nothing.
   function crowdPH() {
-    const s = current().editable, t = s.thresholds, cap = s.capacity;
-    const lims = [t.quietMaxPercent, t.moderateMaxPercent, t.busyMaxPercent];
-    const slot = (w, text) => `<span class="ph-in">${ph(w)}<span class="ph-ghost" aria-hidden="true">${text}</span></span>`;
     const lvRow = (i) => row(`${LEVEL_BARS(i)}<span>${L.levels[i]}</span>`,
-      `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${slot(32.17, ltr(`${lims[Math.min(i, 2)]}%`))}</span><span class="v-p">${slot(i === 3 ? 104 : 72, nw(peoplePhrase(cap, lims, i)))}</span>`, "is-level");
+      `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${ph(32.17)}</span><span class="v-p">${ph(i === 3 ? 104 : 72)}</span>`, "is-level");
     return `${head("crowd")}
     <dl class="set-figs">${fig(L.capacity, ph(108, "ph-fig"), "is-cap")}</dl>
     <h3 class="set-sub" id="levels-title">${L.levelsTitle}</h3>
