@@ -103,34 +103,41 @@ html[lang="en"] .set { --lab: 104px; }
 .dl-levels { grid-template-columns: var(--lab) max-content max-content minmax(0, 1fr); }
 .dl-levels .v-q { padding-inline-end: 6px; }
 .dl-levels .v-p { padding-inline-start: 16px; }
-/* A level's parts closer on a phone (4 after «حتى», 10 before the people), so a gym of up to 999 keeps each level on one
- * line on a 390 px phone («أو 106 أشخاص فأكثر», 141 px, with 4 to spare) and today's on a 375 px one: a level that
- * wrapped there grew its row as the values arrived, which no placeholder can know. */
+/* A level's parts closer on a phone (4 after «حتى», 10 before the people), so a gym of up to 999 keeps one line from
+ * 415 px in Arabic and 387 px in English; below that the Packed row keeps its second line (below). A level that wrapped
+ * as the values arrived would grow its row, which no placeholder can know. */
 @media (max-width: 720px) {
   .dl-levels .v-q { padding-inline-end: 4px; }
   .dl-levels .v-p { padding-inline-start: 10px; }
 }
 /* The range's ends (a capacity in the millions, «لا يظهر بهذه السعة» at capacity 1 on a phone) wrap within the people's
  * column, between words, rather than spill the card; a gym of up to 999 keeps one line from 415 px in Arabic and 387 px
- * in English at its widest (the Packed row below keeps two lines up to there). */
+ * in English at its widest (the Packed row below keeps its second line up to there). */
 .dl-levels .v-p, .dl-levels .v-p .nw { min-width: 0; white-space: normal; }
 /* The Packed row's people hold two lines wherever they can wrap (DECISIONS item 87). The skeleton is drawn before any
  * value is known (a first load has none; a skeleton that read the values would match only in a concept that knows them),
  * so it cannot tell whether the Packed row's phrase wraps: the row reserves the worst case in loading and arrived alike,
  * and the arrival moves nothing for a gym of 1 to 999 with any limits from 0 to 100%. The worst phrase is a capacity of
  * 999 with Busy at 100% (a count of 1,000 beside the widest limits' column): «أو 1,000 شخص فأكثر», 130 px, wraps in a
- * card up to 333 px inside in Arabic (a 414 px phone), and "or 1,000+ people", 109 px, up to 305 px in English (a 386 px
- * phone); under 300 px inside, where the people stand under the percentage, it wraps in Arabic up to 253 px (a 334 px
- * phone) and in English not at 320. Each query adds about 25 px to what was measured, so a font that falls back still
- * holds its line; from 721 px the cards are 379 px inside or more and never reach it. A gym whose phrase fits leaves the
- * second line empty: 13 px under the row from 300 px inside (53 px for 40) and 22 px under it below (83 for 61). The
- * other levels are not reserved: a level no count reaches wraps «لا يظهر بهذه السعة» / "Never shown at this capacity"
- * within the range (SETTINGS-SPEC OWN-S22 reports it), and a capacity of 1,000 or more is out of it. */
+ * card up to 333 px inside in Arabic (a 414 px phone), and "or 1,000+ people", 109 px, in English only in a card of 304
+ * to 305 px inside. Under 300 px inside, where the people stand under the percentage, it wraps in Arabic up to 253 px
+ * (a 334 px phone) and in English never (not even in a 219 px card), so English reserves nothing there. Each query adds
+ * about 25 px to what was measured, so a font that falls back still holds its line; from 721 px the cards are 379 px
+ * inside or more and never reach it. A gym whose phrase fits leaves the second line empty: 22 px under the row (the row
+ * is 62 for 40 from 300 px inside, 83 for 61 below it). The row keeps the other levels' rhythm: its first line as far
+ * below its rule, and the space under its last line, as theirs (8.5 px of padding each side from 300 px inside; the
+ * narrow card's 8 below it). The other levels are not reserved: a level no count reaches wraps «لا يظهر بهذه السعة» /
+ * "Never shown at this capacity" within the range (SETTINGS-SPEC OWN-S22 reports it), and a capacity of 1,000 or more
+ * is out of it. */
 @container setcard (max-width: 359.98px) {
   html:not([lang="en"]) .dl-levels .set-row:last-child > dd > .v-p { min-block-size: 2lh; }
 }
-@container setcard (max-width: 329.98px) {
+@container setcard (min-width: 300px) and (max-width: 329.98px) {
   html[lang="en"] .dl-levels .set-row:last-child > dd > .v-p { min-block-size: 2lh; }
+  html[lang="en"] .dl-levels .set-row:last-child { padding-block: calc((var(--row) - 1px - 22px) / 2); }
+}
+@container setcard (min-width: 300px) and (max-width: 359.98px) {
+  html:not([lang="en"]) .dl-levels .set-row:last-child { padding-block: calc((var(--row) - 1px - 22px) / 2); }
 }
 /* The level key (new, LVL-7): CHP-5's four bars (4, 6.5, 9 and 11 px, 3 px wide, 2 apart, radius 1) as the level's
  * mark before its word, lit to the level's step in --red-hi, unlit white .16; the word carries the level (LVL-4), the

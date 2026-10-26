@@ -1436,17 +1436,22 @@
   const isDirty = (sec) => $$("[data-init]", $(`#ed-${sec}`)).some((el) => (el.matches("[role=switch]") ? el.getAttribute("aria-checked") : el.value) !== el.dataset.init);
   /* The sentences on screen when a press of «حفظ» began (null when none is on its way): taken as the pointer goes down on
    * «حفظ» (before the press blurs the field) or as Enter goes down (before it commits the field); any other key or
-   * pointer clears it, and submitEdit reads it once. A mouse or pen press whose click never comes (the sentence the press
-   * brings moves «حفظ» from under the pointer: the hours' first sentence on a wide window, 24 to 46 px) is carried on
-   * here instead: the pointer going down on «حفظ» keeps the rectangle it had (pressBox), and if the pointer comes up
+   * pointer clears it, and submitEdit reads it once. A mouse, pen or touch press whose click never comes (the sentence the
+   * press brings moves «حفظ» from under the pointer: the hours' first sentence on a wide window, 24 to 46 px) is carried
+   * on here instead: the pointer going down on «حفظ» keeps the rectangle it had (pressBox), and if the pointer comes up
    * inside that rectangle and no submit followed it on the next task, that is one press, so submitEdit runs as the
    * click would have run it, with the pressSeen taken as the pointer went down. A click that does land (the pointer
    * still over the moved button) has already run it, so nothing runs twice; a pointer that comes up outside the
-   * rectangle is a slide off to cancel, like any button, and does nothing. Touch and keys are not carried: a touch
-   * stays with its target, and a key press is not a pointer. */
+   * rectangle is a slide off to cancel, like any button, and does nothing; a touch the browser takes for a scroll
+   * (pointercancel) does nothing either. A key press is not a pointer, so it is not carried. A touch's click is
+   * dispatched after its pointerup as a task of its own and finds whatever stands under the finger by then, which after
+   * a carried press is the confirmation's «تطبيق الآن» or the editor's next field, so the mouse events a touch brings
+   * after it (mousedown, which would move the focus, mouseup, and the click) are dropped once a press has been carried
+   * (pressCarried, until the click or until the next pointer or key goes down). */
   let pressSeen = null;
   let pressBox = null;                 // { id, box }: the pointer that went down on «حفظ», and where «حفظ» stood
   let submits = 0;                     // the window's submits so far, so that a press can tell a click came
+  let pressCarried = false;            // a press that submitEdit ran for without its click: that click, if it comes, is dropped
   const seenNow = (sec) => Object.fromEntries(WARN_IDS[sec].map((id) => [id, shownText(id, "warn")]));
   /* A sentence no field is about (the hours' three speak of days, not of one field) takes the focus itself, made focusable
    * for that (tabindex -1, so Tab does not stop on it); then the window's body scrolls so the whole of it stands above the
@@ -1894,8 +1899,9 @@
     });
     dlg.addEventListener("pointerdown", (e) => {
       const save = flow && flow.step === "edit" && e.target.closest(".ed-save");
+      pressCarried = false;
       pressSeen = save ? seenNow(sec) : null;
-      pressBox = save && e.isPrimary && e.button === 0 && e.pointerType !== "touch" ? { id: e.pointerId, box: save.getBoundingClientRect() } : null;
+      pressBox = save && e.isPrimary && e.button === 0 ? { id: e.pointerId, box: save.getBoundingClientRect() } : null;
     }, true);
     dlg.addEventListener("pointercancel", () => { pressBox = null; }, true);
     dlg.addEventListener("pointerup", (e) => {
@@ -1904,9 +1910,29 @@
       const b = p && p.box;
       if (!b || e.pointerId !== p.id || e.clientX < b.left || e.clientX >= b.right || e.clientY < b.top || e.clientY >= b.bottom) return;
       const was = submits;
-      setTimeout(() => { if (submits === was && flow && flow.sec === sec && flow.step === "edit" && !flow.busy && openDlg && openDlg.dlg === dlg) submitEdit(sec); });
+      setTimeout(() => {
+        if (submits !== was || !flow || flow.sec !== sec || flow.step !== "edit" || flow.busy || !openDlg || openDlg.dlg !== dlg) return;
+        pressCarried = true;
+        submitEdit(sec);
+      });
     }, true);
-    dlg.addEventListener("keydown", (e) => { pressSeen = flow && flow.step === "edit" && e.key === "Enter" && e.target.closest(".ed-panel") ? seenNow(sec) : null; }, true);
+    for (const type of ["mousedown", "mouseup", "click"]) dlg.addEventListener(type, (e) => {
+      if (!pressCarried) return;
+      if (type === "click") pressCarried = false;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }, true);
+    dlg.addEventListener("keydown", (e) => { pressCarried = false; pressSeen = flow && flow.step === "edit" && e.key === "Enter" && e.target.closest(".ed-panel") ? seenNow(sec) : null; }, true);
+    /* Enter on the sentence that took the focus after a stop (the hours', focusSentence) goes on as «حفظ» would: a sentence is
+     * no field to commit, so the key does nothing by itself, and the crowd's and the business day's fields go on from their
+     * own Enter. The sentence is seen by now, so this leads to the confirmation. */
+    dlg.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || e.defaultPrevented || !flow || flow.step !== "edit" || !e.target.matches(".ed-warn")) return;
+      const form = e.target.closest(".ed-panel"), save = form && $(".ed-save", form);
+      if (!save) return;
+      e.preventDefault();
+      form.requestSubmit(save);
+    });
     dlg.addEventListener("submit", (e) => {
       e.preventDefault();
       submits++;
