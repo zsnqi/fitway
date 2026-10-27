@@ -1,10 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-27 evening (the Settings round resumed at the user's word,
-  «كمّل جولة Settings»; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-27 evening (the session ended at the user's word, «بنكمل ب جلسة
+  جديدة ف احفظ»; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-90), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-91), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -41,29 +41,26 @@
 ## Running now
 
 Nothing runs (measured: both resumed agents finished, ports 3186-3193 free). Build branch
-`owner-followup-r04-build` at `a04d23fe` locally, pushed at `3c645b85`; CI green on `d9ae9e35` (3c645b85's run not yet seen). main still
+`owner-followup-r04-build` pushed at `a04d23fe`; CI green on `d9ae9e35` (a04d23fe's run not yet seen). main still
 `e885543e`. The user's review page: https://claude.ai/artifact/M62Qez2bLVCSuHapxQrxTu (v9), its images are published with it.
 
 - **Done and verified on the build branch** (measured): `749fa608` decision 81 (Sonnet builder trial, decision 85),
   `d9ae9e35` verify-9's fixes, both checked by verify-10 (`D:/fitway-temp/owner-r04-d81-verify/REPORT.md`: §5 23/23,
   frames match, one Medium and four Low); `3c645b85` verify-10's F1-F5 (`D:/fitway-temp/owner-r04-settings-fix-v10/
   REPORT.md`), **not yet independently checked**. Earlier: `bcd1b463`, `b971a75d`, `9cff1f8d`, `4dc8f98e`.
-- **Fixer round v11 done** (2026-10-27, resumed): `a04d23fe` on `3c645b85`, not pushed, G1-G3 of DECISIONS 89
-  (`D:/fitway-temp/owner-r04-settings-fix-v11/REPORT.md`, written by the coordinator from the fixer's message).
-  Coordinator looked (measured, frames): two open points for the user. G2's fixed slot wraps the Arabic
-  average/entries line at 320-328 px (+18 px a row on arrival, against decision 82); in Arabic at 390 the peak figure
-  and time sit 19 px in from the list's end edge (base flush).
+- **Fixer round v11 done** (2026-10-27, resumed): `a04d23fe` on `3c645b85`, G1-G3 of DECISIONS 89
+  (`D:/fitway-temp/owner-r04-settings-fix-v11/REPORT.md`, written by the coordinator from the fixer's message;
+  `verify:fast` passed). Its two open points are answered by DECISIONS 91 (1) and (2), not yet built.
 - **Designer round, Reports' day table, done** (resumed by a fresh designer): `D:/fitway-temp/owner-r04-reports-cols-design/SPEC.md`,
   proposed TBL-14 (floors plus shares from 721 px, `table-layout: fixed`), 0.00 px moves at 38 widths, both languages;
-  the user's frames compare-ar-1000, compare-en-1000 and alt-c-compare-ar-1000 in its frames folder. One choice for
-  the user: a one-digit peak's time sits nearer the next column in mixed periods up to about 825 px AR / 834 EN
-  (§8). Coordinator looked at the 1000 px frames (AR, EN).
-- **Then:** the user's answers on the two v11 points and the table's frames; their fix; an Opus verifier on
-  `3c645b85` through the fix (against `d9ae9e35`); the builder for the table spec; push; CI; the records;
-  `pnpm main:advance`.
-- **Waiting on the user:** P1-P7 on the review page (the public page's rules sorted from the old look,
-  `D:/fitway-temp/owner-r04-public-rules-sort/REPORT.md`; P1 already answered: several level-mark forms are drawn and
-  the user picks). Friday's dash: A kept, three renders in `D:/fitway-temp/owner-r04-friday-dash/out/`.
+  the user's frames compare-ar-1000, compare-en-1000 and alt-c-compare-ar-1000 in its frames folder. The user
+  accepted it with its mixed-digit spacing (DECISIONS 91 (3)). Coordinator looked at the 1000 px frames (AR, EN).
+- **Next, in order:** a fixer for DECISIONS 91 (1) and (2) on `a04d23fe` (Reports' phone list, ports 3186, 3187,
+  3190, 3192); the builder for the table spec (91 (3); its §4 says it was written against `d9ae9e35`: keep the
+  fixer's phone-list text, stop if a find no longer matches); then one Opus verifier on `3c645b85` through both
+  (against `d9ae9e35`); push; CI; the records; `pnpm main:advance`.
+- **The public page:** P1-P7 answered (DECISIONS 90); the ADR, the three files' amendments and its milestone are
+  not started; the user sees all three before any design. Friday's dash: A kept (DECISIONS 89).
 - **Decision 85's builder trial:** Sonnet 5.5 at high built 749fa608 (second run 392,787 tokens; first unreported);
   Opus found 1 Medium and 3 Low in its code (verify-10 findings 1, 2, 4; finding 3 was the fixer's recipe) and none in
   §5. Not yet written up as a grade.

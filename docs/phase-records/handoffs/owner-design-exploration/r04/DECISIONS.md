@@ -1026,6 +1026,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     `D:/fitway-temp/owner-r04-public-rules-sort/REPORT.md` and this item, and opens the public page's own milestone;
     the user sees all three before any design. Not started: the user stopped all work the same day.
 
+91. **Settings v11's two points and the day table's choice** (the user, 2026-10-27, «موافق» on the coordinator's three
+    recommendations after seeing the frames): (1) Reports' phone list below 330 px in Arabic: the average/entries line
+    is two fixed lines in the skeleton and the arrived list alike, so the wider peak slot (G2 of item 89) moves nothing
+    on arrival (it wrapped at 320-328 px, +18 px a row, `a04d23fe`); (2) the peak figure and time in Arabic sit flush to
+    the list's end edge again (`text-align: end`; at 390 they had moved 19 px in); (3) the day table's spec
+    (`D:/fitway-temp/owner-r04-reports-cols-design/SPEC.md`, proposed TBL-14, floors plus shares from 721 px) is accepted,
+    including that in a period mixing a three-digit and a one-digit peak the short row's time sits nearer the next
+    column up to about 825 px in Arabic and 834 in English, rather than taking 5-14 px from Notes.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
