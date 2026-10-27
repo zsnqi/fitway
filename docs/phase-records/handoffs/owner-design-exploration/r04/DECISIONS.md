@@ -1021,6 +1021,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     يفضل بعد عرض الديمو صح؟», and the coordinator's answer). The frame (P5, «نعم»): no Owner rail, bar or header; the
     brand, the language switch, the gym's name as fixed text, and «إعادة المحاولة» in the error state only. The
     hidden state switch lives in the concept and the demo page only and never ships (P6, «موافق»; SPEC.md:48-49).
+    Authority (P7, «اي»): the coordinator writes an ADR that makes Paper reference-only for the public page (as ADR-009
+    did for Owner), the amendments to FITWAY_PRODUCT.md, DESIGN_GUIDE.md and SPEC.md from
+    `D:/fitway-temp/owner-r04-public-rules-sort/REPORT.md` and this item, and opens the public page's own milestone;
+    the user sees all three before any design. Not started: the user stopped all work the same day.
 
 ## How this milestone's rounds run
 
