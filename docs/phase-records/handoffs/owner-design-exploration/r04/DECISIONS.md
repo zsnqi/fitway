@@ -1019,7 +1019,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     video holds from the start; the weight and speed budget measured on a slow phone waits until after the demo
     (decision 52), with one check that the page runs smoothly on the phone the demo is shown on (the user, «تمام ولكن
     يفضل بعد عرض الديمو صح؟», and the coordinator's answer). The frame (P5, «نعم»): no Owner rail, bar or header; the
-    brand, the language switch, the gym's name as fixed text, and «إعادة المحاولة» in the error state only.
+    brand, the language switch, the gym's name as fixed text, and «إعادة المحاولة» in the error state only. The
+    hidden state switch lives in the concept and the demo page only and never ships (P6, «موافق»; SPEC.md:48-49).
 
 ## How this milestone's rounds run
 
