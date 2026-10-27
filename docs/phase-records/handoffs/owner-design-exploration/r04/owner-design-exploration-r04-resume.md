@@ -1,10 +1,11 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-27 evening (the session ended at the user's word, «بنكمل ب جلسة
-  جديدة ف احفظ»; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 01:10 +03:00 (the user
+  goes to sleep and starts the rest in a new session: «اشوف ب جلسة جديدة نبدأ فيها افضل من الحالية»; §"Running now" is
+  where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-91), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-94; 93 and 94 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -17,10 +18,6 @@
   across pages too; graded, `codex-rounds.md` §"shared-lows-fix-2"), then the user's heat-cell selection (decision
   75: a flush inner edge for every input, the other cells dimmed, the keyboard ring outside the cell). Worktree
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`. Previews: eclipse-build (3174), LAN (3180).
-- **Wave 1 is done and recorded** in `codex-rounds.md` and `rounds.tsv`: no-comments (report-only; 50 `MUST KILL`
-  findings F184-F233), diagnosis (report-only, 3/6; nothing reproduced under load it did not record), reports-css
-  (merged into the build branch), the vf-runner trial (below).
-- **launcher-fixes-4 is merged** into the coordinator line (`285eacb6`; F156 and F182 fixed; held-out 5/6, F235).
 - **vf-runner is merged** into the coordinator line (`f6ef81cf`): the trial's DeepSeek arm `3ac1770a`, then
   vf-runner-fix (`1ff1f9cf`: 4/6 brief rows, three overclaims including a commit SHA that never existed, F242) and
   vf-runner-fix-2 (`a8791d1a`: 6/6, 9/9 held-out, no overclaim). F168, F175, F176, F183 and F238-F240 are fixed.
@@ -33,40 +30,46 @@
   The same coordinator session runs both.
 - **Both reviewers on every brief from 2026-10-16** (decision 66's rule met: 13 Sol readings closed that DeepSeek did
   not raise over nine briefs, measured; `codex-rounds.md` §"Evaluation: both reviewers, decision 66's rule applied").
-- **Pickup check (decision 67, measured, 2026-10-16):** main at `3cde7a07` and nothing running both held; the
-  reviewer tally here (three briefs) was stale.
-- **Decision 67 in force:** pickups check the resume point's claims against their sources; every claim says measured,
-  inferred or guess; Opus (`owner-direction-verifier`, high) grades chosen rounds beside Sol.
+- **Decision 67 in force:** pickups check this file's claims against their sources; claims say measured, inferred or guess.
 
 ## Running now
 
-Nothing runs (measured: both resumed agents finished, ports 3186-3193 free). Build branch
-`owner-followup-r04-build` pushed at `a04d23fe`; CI green on `d9ae9e35` (a04d23fe's run not yet seen). main still
-`e885543e`. The user's review page: https://claude.ai/artifact/M62Qez2bLVCSuHapxQrxTu (v9), its images are published with it.
+Nothing runs (measured 2026-10-28 01:10: no agent running; ports 3176-3197 free). Build branch
+`owner-followup-r04-build` at `950e19d2`, pushed with this commit's push (CI on it not yet seen; `verify:fast`
+passed locally on each commit). main still `e885543e`. Status page for the user:
+https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
-- **Done and verified on the build branch** (measured): `749fa608` decision 81 (Sonnet builder trial, decision 85),
-  `d9ae9e35` verify-9's fixes, both checked by verify-10 (`D:/fitway-temp/owner-r04-d81-verify/REPORT.md`: §5 23/23,
-  frames match, one Medium and four Low); `3c645b85` verify-10's F1-F5 (`D:/fitway-temp/owner-r04-settings-fix-v10/
-  REPORT.md`), **not yet independently checked**. Earlier: `bcd1b463`, `b971a75d`, `9cff1f8d`, `4dc8f98e`.
-- **Fixer round v11 done** (2026-10-27, resumed): `a04d23fe` on `3c645b85`, G1-G3 of DECISIONS 89
-  (`D:/fitway-temp/owner-r04-settings-fix-v11/REPORT.md`, written by the coordinator from the fixer's message;
-  `verify:fast` passed). Its two open points are answered by DECISIONS 91 (1) and (2), not yet built.
-- **Designer round, Reports' day table, done** (resumed by a fresh designer): `D:/fitway-temp/owner-r04-reports-cols-design/SPEC.md`,
-  proposed TBL-14 (floors plus shares from 721 px, `table-layout: fixed`), 0.00 px moves at 38 widths, both languages;
-  the user's frames compare-ar-1000, compare-en-1000 and alt-c-compare-ar-1000 in its frames folder. The user
-  accepted it with its mixed-digit spacing (DECISIONS 91 (3)). Coordinator looked at the 1000 px frames (AR, EN).
-- **Next, in order:** a fixer for DECISIONS 91 (1) and (2) on `a04d23fe` (Reports' phone list, ports 3186, 3187,
-  3190, 3192); the builder for the table spec (91 (3); its §4 says it was written against `d9ae9e35`: keep the
-  fixer's phone-list text, stop if a find no longer matches); then one Opus verifier on `3c645b85` through both
-  (against `d9ae9e35`); push; CI; the records; `pnpm main:advance`.
+- **Built this night on the build branch** (measured, each checked by the coordinator against its frames):
+  `c774fd77` DECISIONS 91 (1) (two fixed lines below 330 px in Arabic) and 91 (2) (superseded by 92 (1));
+  `bb26be02` DECISIONS 92 (option B: figure and time on the slot's right edge in Arabic; a note stays in the day's column
+  and breaks only between its words and range; `noteColumnCheck` in reports-capture); `3076869a` DECISIONS 94 (English
+  peak and time on the column's left edge); `950e19d2` TBL-14 (91 (3)). Reports: `D:/fitway-temp/owner-r04-reports-phone-fix-v1{2,3,4}/`.
+- **The builder eval, task 1** (DECISIONS 92 (3)): `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (A = Sonnet, B = Opus,
+  both `high`; code byte-identical because the spec carried a reference implementation; blind Opus grade 6/6 each, Low
+  only). The builder stays Opus; the next paired task has no reference code. Arm map: `D:/fitway-temp/owner-r04-tbl14-arms/ARMS.md`.
+  The worktrees `owner-r04-tbl14-a` and `-b` stay (pnpm-installed node_modules: see Known risks before removing).
+- **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
+  coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
+  scope, narrowed); finding 6 and the row count under the name agreed (DECISIONS 93, "The export dialog's file box"),
+  **not built**.
+- **Not yet independently checked:** `3c645b85` through `950e19d2`.
+- **Next, in order** (the user starts them in a new session; none was authorised to run overnight):
+  1. A fixer for the export dialog's file box (DECISIONS 93: the Arabic file name from the right edge; the row count
+     under the name on the start edge, both languages; previews `exp-fix.png`, `rows-*-B.png` in the review page).
+  2. On the user's word: narrow the "Belonging" bullet in `.claude/agents/owner-direction-verifier.md` and
+     `rtl-ltr-reviewer.md` to DECISIONS 93's narrowed scope (one item or row with columns side by side). Both bullets
+     were added this night and are committed with this resume point in their broad wording.
+  3. One Opus verifier on `3c645b85` through the latest commit, against `d9ae9e35` (verifier brief needs decision 93's
+     narrowed scope written in).
+  4. Push, CI, the records, `pnpm main:advance`.
+  5. After the round: the general `verify-fitway` belonging probe (DECISIONS 93), plus `compare` capturing only the
+     first screen (the grader's L5; its L8, a 720-721 px zoom edge, untested); agent-tooling-r01's path (decision 73).
 - **The public page:** P1-P7 answered (DECISIONS 90); the ADR, the three files' amendments and its milestone are
   not started; the user sees all three before any design. Friday's dash: A kept (DECISIONS 89).
 - **Decision 85's builder trial:** Sonnet 5.5 at high built 749fa608 (second run 392,787 tokens; first unreported);
   Opus found 1 Medium and 3 Low in its code (verify-10 findings 1, 2, 4; finding 3 was the fixer's recipe) and none in
-  §5. Not yet written up as a grade.
-- **Dates:** the night's reports dated 2026-10-28 carry the wrong date; the night was 2026-10-26/27 (DECISIONS 88).
-- **Compaction:** this session's two compactions were Claude Code's idle compaction (2.1.299: 200K+ tokens idle about
-  54 minutes; 95 and 101 minutes idle here, measured from the transcript), not the 1M window.
+  §5. Written up beside the paired task in `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (two Sonnet builds so far,
+  one paired; not enough to move the builder).
 
 ## Next steps
 
@@ -113,6 +116,9 @@ Nothing runs (measured: both resumed agents finished, ports 3186-3193 free). Bui
   remove` (on 2026-10-15 a remove without it emptied this worktree's `node_modules`, restored by `pnpm install
   --frozen-lockfile --offline`). All twelve grading checkouts under `D:/fitway-temp/` were removed on 2026-10-15
   after unlinking (measured: `git worktree list` shows none there); their evidence folders stay.
+  `D:/Projects/fitway-worktrees/owner-r04-tbl14-a` and `-b` (2026-10-27) got their `node_modules` from `pnpm install
+  --frozen-lockfile --offline`, which on Windows links into the shared store: check for junctions inside them before any
+  `git worktree remove`.
 - «مساءً», «ظهرًا», «ليلًا» on the busiest-time card are a deliberate exception to DESIGN_GUIDE.md §9 (DECISIONS 33, 34).
 - Ports: 3174 the user's preview; 3176-3177, 3186-3187 and 3188-3189 the verification pairs; 3178-3179 reviewers and
   the probe kit; 3180 the LAN preview.

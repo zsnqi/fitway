@@ -1034,6 +1034,45 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     (`D:/fitway-temp/owner-r04-reports-cols-design/SPEC.md`, proposed TBL-14, floors plus shares from 721 px) is accepted,
     including that in a period mixing a three-digit and a one-digit peak the short row's time sits nearer the next
     column up to about 825 px in Arabic and 834 in English, rather than taking 5-14 px from Notes.
+92. **Reports' phone list after `c774fd77`, and the builder's eval** (the user, 2026-10-27, on rendered options at 320 px
+    in Arabic, `D:/fitway-temp/owner-r04-reports-phone-fix-v12/align-320.png` and `note-fix.png`): (1) item 91 (2) is
+    superseded: `text-align: end` left the figure up to 19.6 px off the time's edge ("none of the options is good except
+    B"); the figure and the time share the slot's physical right edge again, as at `a04d23fe` (option B); item 91 (1)
+    stays. (2) A camera-gap note never runs under the peak column: it stays in the day's column in both languages
+    («اي الحين مناسب» on the preview), breaking only between the words and the range when it does not fit, the range
+    never split; the noted day grows on arrival by that line (item 89's accepted kind). The note crosses under the
+    peak column at 320 px in `a04d23fe` and `c774fd77` (seen in their frames); whether `3c645b85`'s narrower slot
+    (about 67 px) already had it is not measured. No check covered it: OWN-R12 measured the note's line count and the
+    overlap checks look for intersecting boxes; and the coordinator, shown it, defended the spec instead of reading
+    the frame. (3) The builder's eval: TBL-14 is built twice in
+    parallel, Sonnet 5.5 and Opus 5.5, both at `high` (never `medium`: the user, and item 86's two unreproduced claims
+    at `medium`), graded blind by one Opus verifier; the builder's definition stays Opus until the user sees the
+    results ("ما رح ننقل لين نشوف النتائج").
+93. **No problem of item 92 (2)'s kind in the design** (the user, 2026-10-27, «بشكل عام ب التصميم ما نبي مشاكل مثل دي
+    تصير»): every text reads as belonging to its own column or group at every width, in both languages; a full-width
+    line never runs under another column's content. Passing a spec row or an overlap check does not settle it: the frame
+    is read as a reader reads it. When the user points at a frame, the coordinator reads it that way first and does
+    not defend the spec. The verifier and the RTL/LTR reviewer carry it as a check (their definitions, 2026-10-27);
+    after this round a general `verify-fitway` probe is built for it, every page, both languages, tried first on a
+    planted defect from Reports' 320 px list (the user, «إيه، ابنِ الـ probe العام في verify-fitway بعد ما تخلص
+    هالجولة»; the tool path is agent-tooling-r01's, decision 73).
+    **Scope, narrowed 2026-10-28** (the user on the reading review's six findings, «مو نفس المشكلة اصلا»): the rule is
+    about one item or row that has columns side by side, where a line of that same item runs under another of its
+    columns (Thursday's note under its own peak). A row or item of its own (a merged "no readings" row in a table or a
+    list, Daily's gap row) and a record's body under its own head line (Activity, Settings history) are not this
+    problem. The wording above ("a full-width line never runs under another column's content") was the coordinator's,
+    too broad, and sent the reviewer after them (`D:/fitway-temp/owner-r04-reading-review/`, findings 1-5).
+    **The export dialog's file box** (the user, 2026-10-28, «موافق» on option ب of the review page,
+    https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK, section «وين يجي عدد الصفوف؟»): where the row count
+    («40,320 صفًا» / "40,320 rows") takes a line of its own, it sits under the file name on the start edge (right in
+    Arabic, left in English), not at the box's end edge; and in Arabic the Latin file name, still isolated left to right,
+    starts on the right edge beside the icon (finding 6; option ب's Arabic preview shows both). Not built yet: work starts
+    on the user's word in chat.
+94. **English phone list: the peak and its time start on the column's left edge** (the user, 2026-10-27, «left: الرقم
+    وPeak يبدؤون من نفس الحافة اليسار، مرآة العربي», on `D:/fitway-temp/owner-r04-reports-phone-fix-v13/en-align.png`):
+    the mirror of item 92's option B, and decision 16's English numeric edge. OWN-R12's "the peak on the physical right
+    edge in both languages" predated decision 16 and is replaced: Arabic shares the column's right (start) edge, English
+    its left (start) edge.
 
 ## How this milestone's rounds run
 

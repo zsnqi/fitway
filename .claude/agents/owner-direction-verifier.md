@@ -36,3 +36,7 @@ names the brief, the checklist, the baseline, and your output folder. Read them 
   never a reason to let it pass. Name the rule that produced it.
 - Look at every element the round changed as a whole on the page: its order, alignment, sizes and spacing.
   A requested change can be done and still read badly; report that too. (the user, 2026-10-03)
+- Read each frame as its reader reads it before you check it against a spec row or a measurement. Every text belongs
+  to its own column or group at every width, in both languages; a line that spans the item must not run beneath
+  another column's content. A row's count passing and no boxes intersecting do not settle it. (r04 DECISIONS 93: a
+  camera-gap note ran under the peak column at 320 px and passed every check)
