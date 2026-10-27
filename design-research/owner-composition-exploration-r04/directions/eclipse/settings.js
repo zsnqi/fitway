@@ -1740,15 +1740,25 @@
     // From 721 px the list field (DLG-3: the first field); on a phone the title, as every window on this page.
     (mqPhone.matches ? $(`#st-${sec}-title`) : $("#cp-src")).focus();
   }
-  // A day keeps its tick across a change of source; the day that stops being the source takes its own (ticked if open).
+  // A day keeps its tick across a change of source. The day that becomes the source keeps in copyChecks the tick it had just
+  // before (it is not in the list meanwhile), so it returns with that tick; the first source, never in the list, has none
+  // and joins ticked if open, unticked if closed.
   function keepTicks() { $$(".cp-chk", stEl("hours")).forEach((c) => { flow.copyChecks[c.value] = c.checked; }); }
-  function changeSource(src) {
+  // The refusal «اختر يومًا واحدًا على الأقل» leaves with its reference from the first box when a day is ticked (a tick, or
+  // a change of source while one is), as it came.
+  function clearCopyNone(sec) {
+    const err = $("#cp-err", stEl(sec)), first = $(".cp-chk", stEl(sec));
+    if (err.hidden || !$$(".cp-chk", stEl(sec)).some((c) => c.checked)) return;
+    M.reflow(D[sec], () => { err.hidden = true; err.innerHTML = ""; });
+    first.setAttribute("aria-describedby", `cp-${first.value}-said`);
+  }
+  function changeSource(sec, src) {
     keepTicks();
-    delete flow.copyChecks[src];
     flow.copySrc = src;
     $(".cp-w", stEl("hours")).textContent = L.days[DAYS.indexOf(src)];
     $("#cp-src-v").innerHTML = copySrcHTML(flow.copyWeek[src]);
     $("#cp-list").innerHTML = copyRowsHTML();
+    clearCopyNone(sec);
   }
   // «نسخ الساعات»: with no day ticked it says so under the list; else each ticked day takes the source's opening and closing
   // with their ص / م (a closed one is switched open) and the window returns to the editor, each day's note and the sentences
@@ -2155,15 +2165,11 @@
     dlg.addEventListener("change", (e) => {
       const t = e.target;
       // The copy step (OWN-S28): a change of source redraws the face, the source's hours and the six rows; a tick is kept
-      // and takes the refusal away. Each changes at once (MOT-18).
-      if (t.matches("#cp-src") && flow && flow.step === "copy") { changeSource(t.value); return; }
+      // and takes the refusal away, and so does a change of source that leaves a day ticked. Each changes at once (MOT-18).
+      if (t.matches("#cp-src") && flow && flow.step === "copy") { changeSource(sec, t.value); return; }
       if (t.matches(".cp-chk") && flow && flow.step === "copy") {
         keepTicks();
-        const err = $("#cp-err", stEl(sec)), first = $(".cp-chk", stEl(sec));
-        if (t.checked && !err.hidden) {
-          M.reflow(D[sec], () => { err.hidden = true; err.innerHTML = ""; });
-          first.setAttribute("aria-describedby", `cp-${first.value}-said`);
-        }
+        clearCopyNone(sec);
         return;
       }
       if (!t.closest(".ed-panel")) return;
@@ -2293,8 +2299,8 @@
   // ?edit=crowd|hours|day opens that card's window on load (for review), as its «تعديل» would.
   const EDIT_Q = params.get("edit");
   if (EDIT_Q in D && phase === "ready") openEditor(EDIT_Q, $(`[data-edit="${EDIT_Q}"]`));
-  // ?record=<version> opens that record's window on load (for review; on a phone, where the history card waits for its
-  // own round, DECISIONS item 81, this is the only way to it). «latest» is the newest.
+  // ?record=<version> opens that record's window on load (for review; the phone reaches the history through its card, and
+  // for now the header link, DECISIONS item 81). «latest» is the newest.
   const REC_Q = params.get("record");
   if (REC_Q && phase === "ready" && !openDlg) openRecord(REC_Q === "latest" ? current().version : Number(REC_Q), $(`.log-open[data-rec="${REC_Q === "latest" ? current().version : REC_Q}"]`));
 })();

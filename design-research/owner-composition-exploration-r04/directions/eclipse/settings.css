@@ -528,6 +528,7 @@ html[data-focus-input="keyboard"] .cp-row:has(.cp-chk:focus) .cp-box { outline: 
   .cp-sel { border-color: CanvasText; }
   .cp-sel-in, .cp-chk { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; }
   .cp-box { forced-color-adjust: none; border-color: CanvasText; background: Canvas; box-shadow: none; }
+  .cp-row:hover .cp-box { border-color: CanvasText; }
   .cp-chk:checked ~ .cp-box { background: CanvasText; border-color: CanvasText; }
   .cp-box svg { stroke: Canvas; }
 }

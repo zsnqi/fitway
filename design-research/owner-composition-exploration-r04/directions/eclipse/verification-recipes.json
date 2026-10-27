@@ -4470,6 +4470,24 @@
           },
           "covers": [
             "#cp-err"
+          ],
+          "keyboardActions": [
+            "activate:[data-edit=\"hours\"]",
+            "activate:#ed-copy",
+            "wait:600",
+            "focus:.cp-row[data-day=\"mon\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"tue\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"wed\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"thu\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"fri\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"sat\"] .cp-chk",
+            "press:Space",
+            "activate:.st-do"
           ]
         }
       ],
