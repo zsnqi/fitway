@@ -2,7 +2,7 @@
 # owner-design-exploration-r04: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-27 14:45 +03:00 (all work
-  stopped at the user's word, «وقف الشغل الحالي … و احفظ وين وصل»; §"Stopped 2026-10-27" is where to pick up)
+  stopped at the user's word, «وقف الشغل الحالي … و احفظ وين وصل»; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-90), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -38,12 +38,11 @@
 - **Decision 67 in force:** pickups check the resume point's claims against their sources; every claim says measured,
   inferred or guess; Opus (`owner-direction-verifier`, high) grades chosen rounds beside Sol.
 
-## Stopped 2026-10-27
+## Running now
 
 Nothing runs (measured: both agents stopped, their servers on 3186-3191 killed by PID). Build branch
 `owner-followup-r04-build` pushed at `3c645b85`; CI green on `d9ae9e35` (3c645b85's run not yet seen). main still
-`e885543e`. The user's review page: https://claude.ai/artifact/M62Qez2bLVCSuHapxQrxTu (v9), images in the session's
-scratchpad `morning/` folder.
+`e885543e`. The user's review page: https://claude.ai/artifact/M62Qez2bLVCSuHapxQrxTu (v9), its images are published with it.
 
 - **Done and verified on the build branch** (measured): `749fa608` decision 81 (Sonnet builder trial, decision 85),
   `d9ae9e35` verify-9's fixes, both checked by verify-10 (`D:/fitway-temp/owner-r04-d81-verify/REPORT.md`: §5 23/23,
@@ -53,12 +52,12 @@ scratchpad `morning/` folder.
   G2 Reports' phone peak figure one fixed width; G3 the accepted moves written into OWN-S22, OWN-R5 and Access's
   loading row). Its uncommitted edits are left in the build worktree (7 files) and saved as
   `D:/fitway-temp/owner-r04-settings-fix-v11/uncommitted-at-stop.patch`; it had begun G2's widest-text measurement
-  (`g2-attempt.patch` there). Its brief is the coordinator's v11 message, restated in DECISIONS 89 and this list.
+  (g2-attempt.patch there). Its brief is the coordinator's v11 message, restated in DECISIONS 89 and this list.
   Resume with a fresh fixer: check the patch against G1-G3, finish, one commit on `3c645b85`.
 - **Designer round, Reports' day table (decision 89, Q5), stopped near the end:** `D:/fitway-temp/owner-r04-reports-cols-design/`
-  (`BRIEF.md`; `SPEC.md` written in full, 195 lines; reference code in `work/`, diffs in `data/`, 58 frames). It was
+  (its BRIEF.md; its SPEC.md written in full, 195 lines; reference code in its work folder, diffs in its data folder, 58 frames). It was
   running the final after-matrix and the stress row. Its recommendation: one rule from 721 px (floors plus shares,
-  `table-layout: fixed`). Resume: a fresh designer (decision 10) re-runs the after-matrix from `tools/` and finishes §5-§8.
+  `table-layout: fixed`). Resume: a fresh designer (decision 10) re-runs the after-matrix from its tools folder and finishes §5-§8.
 - **Then:** an Opus verifier on `3c645b85` plus v11 (against `d9ae9e35`); the builder for the table spec after the user
   sees its frames; push; CI; the records; `pnpm main:advance`.
 - **Waiting on the user:** P1-P7 on the review page (the public page's rules sorted from the old look,
@@ -70,37 +69,6 @@ scratchpad `morning/` folder.
 - **Dates:** the night's reports dated 2026-10-28 carry the wrong date; the night was 2026-10-26/27 (DECISIONS 88).
 - **Compaction:** this session's two compactions were Claude Code's idle compaction (2.1.299: 200K+ tokens idle about
   54 minutes; 95 and 101 minutes idle here, measured from the transcript), not the 1M window.
-
-## Running now (as of 2026-10-24, superseded by the section above)
-
-- **Settings** (arrangement ج, decisions 79-83; the brief designer-settings in the directions' briefs
-  folder on `owner-followup-r04-build`; notes and output in `D:/fitway-temp/owner-r04-settings/`): built in parts 1-3
-  (`f100c5fd`, `efbce6f9`, `e271e612`, `c7e9438f`); first review 13/16 (`D:/fitway-temp/owner-r04-settings-verify/`);
-  the fixes finished by an Opus designer at `0d9ba836` (page unchanged; capture OK 227 frames); re-verified
-  (`D:/fitway-temp/owner-r04-settings-verify-2/`: F1-F5, DLG-14, decision 82's containers pass; four low findings N1-N4). Measured, 2026-10-24.
-- **Decision 85's fixer trials** (Sonnet 5.5, Opus graders): N1-N4 at `medium` as `7dba9d91` (119K tokens; outcomes
-  pass, two claims did not reproduce, one from the coordinator's own brief; `D:/fitway-temp/owner-r04-settings-verify-3/`), then H1 and the wording
-  at `high` as `e56be0da` (127K; claims reproduce, two wording slips; `D:/fitway-temp/owner-r04-settings-verify-4/`). Low and left: the capture's
-  title check misses `contain: paint` and `clip-path` cuts, and skips `.sr-only` by class name. The coordinator
-  first launched an Opus designer where decision 85 named the fixer trial (the user caught it).
-- **The fixer is Sonnet `high`** (decision 86, 2026-10-25). The night of 2026-10-24/25, Sonnet fixers, Opus checks
-  (measured): `3ae21080` Settings' verify-fitway recipes (CI's `check:verification-map` green; main advanced to
-  `e885543e`); `0fcb9363` the crowd skeleton holds the arrived text hidden, so a phone wrap no longer moves the card
-  (13 px at 390 AR `case=wide`); `6f1a132a` a warning that appears during the «حفظ» press stops it (decision 49);
-  `733f764f` an hours stop focuses the first sentence and scrolls it whole into view (was below the fold at 375/320);
-  `0e36cf0a` that sentence's keyboard ring is the title's (radius 8, offset 2, whole, 4 px clear; a 6 px pad shows
-  under the sentences while it holds keyboard focus). Build branch HEAD `0e36cf0a`, drift passes.
-  Checks: `D:/fitway-temp/owner-r04-settings-verify-5/` (all pass but M1, now fixed) and `D:/fitway-temp/owner-r04-settings-verify-6/` for M1.
-- **For the user** (Settings not seen yet): (1) the crowd skeleton now reads the settings it is waiting for (the
-  verifier's M2: a real first load has no payload; the 0 px holds only because the concept knows the values; the
-  earlier placeholder widths did the same with default data); keep it, or accept the wrap's 13 px; (2) at 1440 the
-  hours editor's first «حفظ» is lost when the sentence pushes the button 24 px under the pointer (a layout choice).
-- **Next:** the user sees Settings (link, live preview, numbered crops); the loading check's other page findings
-  (agent-tooling's resume point) as a fixer list; then decision 81's round as the builder trial.
-- **The loading check** (decision 82) ran as agent-tooling's loading-check round, beside Settings; its record is in
-  that milestone's resume point.
-- Fix-2 carries the last input across pages as a `focus-input` URL parameter that `motion.js` writes on a link's
-  click and removes on arrival (over http); no visitor data is stored.
 
 ## Next steps
 
