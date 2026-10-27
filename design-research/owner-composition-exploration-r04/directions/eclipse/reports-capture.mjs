@@ -1,7 +1,8 @@
 // Eclipse Reports capture (run owner_reports_r04_s10). Serves this folder on 127.0.0.1 (port 3176 unless --port=N; never
 // 3173, which is capture.mjs's, or 3174), renders the Reports frames with Playwright chromium (a fresh context per frame,
 // reduced motion), checks them, and composes the review sheets. It never writes into this repository: outDir is required.
-//   node design-research/owner-composition-exploration-r04/directions/eclipse/reports-capture.mjs <outDir> [--port=3176]
+//   node design-research/owner-composition-exploration-r04/directions/eclipse/reports-capture.mjs <outDir> [--port=3176] [--notes-only]
+// --notes-only runs only the phone list's note check (no note under the peak column, decision 92) and exits 0 or 1.
 // Writes <outDir>/frames/*.png, <outDir>/sheets/*.png and <outDir>/reports-log.json, and exits 1 if a check fails:
 // a console message or page error, a font file fetched twice in one load, a request off the page's origin, a horizontal
 // page scroll, a layout shift after the first paint (input-driven shifts excluded), a clipped or spilling element, a
@@ -117,6 +118,52 @@ const STATES = [
   ["empty", "from=2026-07-01&to=2026-07-31", "A period before the readings began: empty states"],
   ["numbers", "", "Numbers switched on"],
 ];
+/* ---- the phone list's notes stay out of the peak column (decision 92). At 320, 329, 330, 360, 390 and 720 px, both languages, in the
+ * default period (the fixture's camera gap, Thursday 17 Sep, in the newest seven days) and with the waiting note (state=pending): no
+ * line of a note's text intersects the horizontal span of its item's peak column (the union of .dl-pk and .dl-pt), and a note's range
+ * (.rgn) stays on one line. The smallest gap is printed and kept in the log; a missing note fails, so the check cannot pass on nothing. */
+const NOTE_WIDTHS = [320, 329, 330, 360, 390, 720];
+async function noteColumnCheck() {
+  log.noteGap = {};
+  let smallest = null;
+  for (const lang of LANGS) for (const [kind, q] of [["gap", ""], ["waiting", "&state=pending"]]) for (const w of NOTE_WIDTHS) {
+    const name = `notes-${kind}-${w}-${lang}`;
+    const o = await open(`lang=${lang}${q}`, { width: w, height: 844, phone: true });
+    const m = await o.page.evaluate(() => {
+      const R = (e) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right }; };
+      const lines = (e) => { const r = document.createRange(); r.selectNodeContents(e); return [...r.getClientRects()].filter((x) => x.width > 0.5); };
+      let notes = 0, gap = Infinity, where = "", split = 0;
+      for (const li of document.querySelectorAll("#day-list > li")) {
+        const note = li.querySelector(".dl-note"), pk = li.querySelector(".dl-pk"), pt = li.querySelector(".dl-pt");
+        if (!note || !pk || !pt) continue;
+        notes++;
+        const a = R(pk), b = R(pt), L = Math.min(a.l, b.l), Rr = Math.max(a.r, b.r);
+        for (const e of note.querySelectorAll(".w, .rg")) for (const r of lines(e)) {
+          const g = Math.max(L - r.right, r.left - Rr); // horizontal clearance: negative = the text sits under the peak column
+          if (g < gap) { gap = g; where = li.querySelector(".dl-day").textContent.trim(); }
+        }
+        for (const g of note.querySelectorAll(".rgn")) { const ls = lines(g); if (Math.max(...ls.map((r) => r.top)) >= Math.min(...ls.map((r) => r.bottom)) - 0.5) split++; } // a rect that starts below another's bottom is on a later line
+      }
+      return { notes, gap: notes ? +gap.toFixed(2) : null, where, split };
+    });
+    log.noteGap[`${kind}-${w}-${lang}`] = m;
+    const bad = [];
+    if (!m.notes) bad.push("no note found");
+    else if (m.gap < 0) bad.push(`note text runs ${(-m.gap).toFixed(2)} px under the peak column (${m.where})`);
+    if (m.split) bad.push(`${m.split} range split over lines`);
+    if (bad.length) log.failures.push(`${name}: ${bad.join(" | ")}`);
+    if (m.notes && (smallest === null || m.gap < smallest)) smallest = m.gap;
+    console.log(`note column ${kind} ${lang} ${w}px: ${m.notes} note(s), smallest clearance to the peak column ${m.gap} px${m.gap < 0 ? " (INTERSECTS)" : ""}, range splits ${m.split}`);
+    await o.context.close();
+  }
+  console.log(`note column: smallest clearance over every width, both languages, gap and waiting notes: ${smallest} px`);
+}
+if (process.argv.includes("--notes-only")) {
+  try { await noteColumnCheck(); } finally { await browser.close(); server.close(); }
+  for (const f of log.failures) console.log("  " + f);
+  console.log(`notes-only: failures ${log.failures.length}`);
+  process.exit(log.failures.length ? 1 : 0);
+}
 try {
   /* ---- the whole page in each state (1440x900), first screen and full page */
   for (const lang of LANGS) {
@@ -236,6 +283,7 @@ try {
       await P("export-done", "&dialog=export", async (p) => { await p.click("#export-go"); await p.waitForFunction(() => window.__reports.export.state === "done"); });
     }
   }
+  await noteColumnCheck();
   /* ---- the Daily page: its rail now links to Reports (nothing else changed) */
   for (const lang of LANGS) {
     const o = await open(`index.html?lang=${lang}`);

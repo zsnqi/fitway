@@ -353,8 +353,8 @@
    * preposition, and a time or a date never breaks inside (DAT-4). One size and one colour for the whole sentence, the
    * ends included: the style its words have where it stands (decision 9, user 2026-10-02). A single day is not a span:
    * it keeps its date in its place (decisions 10 and 11, renderDays and renderList). */
-  const spanNote = (words, a, b) => `<span class="gapnote"><span class="w">${words}</span> ` +
-    `<span class="nw"><span class="w">${L.spanFrom}</span> <span class="rg">${a}</span></span> <span class="nw"><span class="w">${L.spanTo}</span> <span class="rg">${b}</span></span></span>`;
+  const spanNote = (words, a, b) => `<span class="gapnote"><span class="w">${words}</span> <span class="rgn">` +
+    `<span class="nw"><span class="w">${L.spanFrom}</span> <span class="rg">${a}</span></span> <span class="nw"><span class="w">${L.spanTo}</span> <span class="rg">${b}</span></span></span></span>`;
 
   /* ------------------------------------------------------------------- dates
    * Dates are business days, handled as whole-day numbers (UTC day counts), never as the viewer's local time. */
@@ -1300,7 +1300,8 @@
   // rounded up to 0.5 px: 84.5 and 86.5; reports.css), so the arrived box and its pending bar, which takes the box's whole width,
   // are the same 0.00 px whatever the digits (Readex Pro's digits differ in width by up to 1.1 px at the fixture's times).
   // Below 330 px in Arabic the average and the entries are two fixed lines in both lists (reports.css, decision 91), so the pending
-  // list and the arrived list have the same items there; in Arabic the time is flush on the list's end edge (text-align: end).
+  // list and the arrived list have the same items there. The phone list's note (.dl-note) stays in the day's column: its range
+  // (.rgn, the from-chunk and the to-chunk) never splits, so a note that does not fit breaks only between its words and the range (decision 92).
   const rangeNow = () => (mqPhone.matches ? "list" : innerWidth <= 899 ? "narrow" : innerWidth >= 1024 ? "wide" : "tablet");
   let skelRange = null;                // the range the pending table was last drawn for
   function pendDays() {

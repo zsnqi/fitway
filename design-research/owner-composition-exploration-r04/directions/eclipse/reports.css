@@ -488,14 +488,12 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 .dl-sort select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; appearance: none; -webkit-appearance: none; outline: none; /* focus-ring: html[data-focus-input="keyboard"] :is(.ac-sel, .dl-sort):has(select:focus) */ opacity: 0; cursor: pointer; }
 .dl-sort select option { background: #121112; color: var(--ink); }
 .day-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
-.dli { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "day pk" "more pt" "note note"; align-items: baseline; column-gap: 16px; row-gap: 2px; padding: 12px 8px; border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
+.dli { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "day pk" "more pt" "note ."; align-items: baseline; column-gap: 16px; row-gap: 2px; padding: 12px 8px; border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
 .dli:last-child { border-block-end: 0; }
 .dli.is-top { border-radius: 10px; background: rgba(229, 25, 53, 0.08); }
 .dl-day { grid-area: day; min-width: 0; font-size: 13.5px; line-height: 24px; color: var(--ink); }
-/* English: the peak and its time share the list's physical right edge (0.00 px, TBL-1). Arabic (decision 91): the column is the list's
- * left edge and the time is flush on it (text-align: end on .dl-pt, 0.00 px); the peak figure stays on the slot's right edge, 86.5 px from
- * it, so the figure's right edge is 0.3 to 19.6 px right of the time's (18.6 to 19.6 px at the fixture's six peaks, 0.3 at the widest time).
- * The highest day has its tint only. */
+/* The peak and its time share the physical right edge in both languages (TBL-1; the slot's right edge, .dl-pt's text-align: right, 0.00 px
+ * between the figure's right edge and the time's, decision 92); the highest day has its tint only. */
 .dl-pk { grid-area: pk; display: inline-flex; flex-direction: row-reverse; align-items: center; gap: 8px; direction: ltr; justify-self: stretch; justify-content: flex-start; }
 .dl-pv { font-size: 19px; line-height: 24px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
 /* The average and the entries: each label names its number, so a gap separates them, never a dot that a narrow screen
@@ -508,9 +506,14 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 @media (max-width: 329.98px) { [dir="rtl"] .dli:not(.is-none-day) .dl-more { flex-direction: column; align-items: flex-start; } [dir="rtl"] .rp .dl-more > .ph-bar { margin-block: 4px 5px; } }
 /* One width for the peak's time in each language, the widest «Peak 10:44 AM» / «الذروة 10:44 ص» can be (84.14 and 86.23 px over every
  * time, rounded up to 0.5 px), so the box never follows the digits and the pending bar (the box's whole width) is the arrived box. */
-.dl-pt { grid-area: pt; width: 84.5px; font-size: 12px; line-height: 18px; color: var(--ink-3); text-align: end; }
+.dl-pt { grid-area: pt; width: 84.5px; font-size: 12px; line-height: 18px; color: var(--ink-3); text-align: right; }
 [dir="rtl"] .dl-pt { width: 86.5px; }
+/* The note stays in the day's column (the grid's first, "note ."), so it never runs under the peak column (decision 92). The range, «من 10:00 ص
+ * إلى 2:00 م» / "from 10:00 AM to 2:00 PM" (.rgn: its from-chunk and its to-chunk), never splits; a note that does not fit breaks only
+ * between its words («لا قراءات» / "No readings", «بانتظار القراءات» / "Waiting for readings") and the range. The day table's note and the
+ * gap card keep their own wrapping: .rgn has no rule outside the phone list. */
 .dl-note { grid-area: note; margin-block-start: 6px; }
+.dl-note .rgn { white-space: nowrap; }
 .dl-note .rg { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .dl-note .w { font-size: 12px; color: var(--ink-3); }
 .dli.is-none { display: block; padding-block: 14px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
