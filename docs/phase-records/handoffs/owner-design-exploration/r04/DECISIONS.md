@@ -1012,6 +1012,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     if they cost time now): the concept carries the markup that costs nothing (the accessible name, decorative parts
     hidden, the one announcement of a new reading), as the Owner pages already do; testing with a real screen reader
     waits until the page moves to production, where SPEC.md's acceptance still requires it. A deferral, not a removal.
+    The count's label is the Owner pages' «داخل الصالة الآن · تقريبًا» / "Inside now · approx." (GLO-2), one wording
+    everywhere; SPEC.md's `العدد التقريبي` is amended (the user, «موافق», on P2). The public page's motion beyond the
+    digit roll (an intro, the level mark's own motion) is decided during its design, by looking at the animation (the
+    user, on P3, «اشوف نقرر وقت تصميمها و نشوف الانميشين»).
 
 ## How this milestone's rounds run
 
