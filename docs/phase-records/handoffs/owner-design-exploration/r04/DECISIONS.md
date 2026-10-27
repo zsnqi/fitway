@@ -990,8 +990,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       than the skeleton's bar): one fixed width, as wide as the longest possible peak time in each language, for the
       loading bar and the arrived figure alike, so the arrival moves 0 px whatever the time.
     - **Friday's dash** («تمام» on the coordinator's recommendation): the closings keep one start edge and the gap
-      around the dash takes the difference «م» and «ص» make (14.9 against 8.2 px); the user also sees the three ways side
-      by side (`D:/fitway-temp/owner-r04-friday-dash/`).
+      around the dash takes the difference «م» and «ص» make (14.9 against 8.2 px). The user saw the three ways side by
+      side (`D:/fitway-temp/owner-r04-friday-dash/out/`) and kept A, as built («a ممتاز»); nothing changes.
 90. **The public crowd page, the first answers** (the user, 2026-10-27, comments on the same page): the theme is dark
     («الثيم اصلا داكن»); Packed is «شديد الازدحام» there too; no verdict line; no typical-day chart for now; the demo's
     states on one page with a hidden switch; the last update absolute while live and absolute with its age when stale
