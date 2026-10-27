@@ -5,8 +5,9 @@
  * two equal columns, read a row at a time: the crowd and the opening hours, then the business day and the settings
  * history; the start column holds the crowd over the business day, the end column the hours over the history. Each
  * value card's «تعديل» opens that card in a window over the page (part 2). 721-1023 px one column in the same order;
- * on a phone (720 px and below) the three value cards stand alone and the way to the history is a control under the
- * header, as the user kept from the second skeleton pass. Nothing is lit: the page wash only (LGT-6 allows none).
+ * on a phone (720 px and below) the four cards stand in that column's order, the history last in its phone form of three
+ * lines a record (DECISIONS item 81); the control under the header, kept from the second skeleton pass, stays for now.
+ * Nothing is lit: the page wash only (LGT-6 allows none).
  * The components first drawn here, for later screens (DESIGN-SPEC.md §3, marked in SETTINGS-SPEC.md): the value card
  * (a heading with its edit control, then its values on one module of ruled rows, VAL-1), the value list (VAL-2), the
  * figure (a value that stands alone, VAL-3), the level key (CHP-5's four bars as a level's mark beside its word, LVL-7),
@@ -42,15 +43,16 @@ html[lang="en"] .set { --lab: 104px; }
 
 /* ------------------------------------------------------------------ page
  * The header, then the four cards; one 16 px gutter (SPC-5). From 1024 px two equal columns, the rows stretched to
- * their taller card, so each row's two cards start and end on one line. 721-1023 px one column. On a phone the history
- * card leaves for its control under the header. */
+ * their taller card, so each row's two cards start and end on one line. 721-1023 px and on a phone one column. */
 .set .main { display: flex; flex-direction: column; gap: 16px; padding-block: 8px 24px; }
 .set-tools { display: none; }
 .set-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
 @media (max-width: 1023px) { .set-grid { grid-template-columns: minmax(0, 1fr); } }
+/* The phone's control under the header (the second skeleton pass's «سجل الإعدادات», its own lines): kept for now, as the
+ * history card now stands on a phone too (DECISIONS item 81); the user decides whether it goes. Removing it takes this
+ * block, `.set-history svg`, the `.set-tools` rule above and the `#tools` block of settings.html. */
 @media (max-width: 720px) {
   .set-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
-  .set-grid > .set-log { display: none; }
 }
 .set-history svg { width: 17px; height: 17px; }
 
@@ -198,8 +200,8 @@ html[lang="en"] .set { --lab: 104px; }
  * padding), 207 px, so the card is 313 px from 721 px in every state and with every history, and the row it shares with
  * the business day never follows the records: loading, the arrival and a save keep one geometry (DECISIONS item 82),
  * and the business day keeps its figures on their rules (VAL-1).
- * A record (new, LOG-1) is two lines at every width, so every record fills one slot and the placeholders wait in the
- * same slots: first its first change, what in label type --ink-2 (one line, up to half the list, cut with «…» beyond),
+ * A record (new, LOG-1) is two lines from 721 px (three on a phone, below), so every record fills one slot and the
+ * placeholders wait in the same slots: first its first change, what in label type --ink-2 (one line, up to half the list, cut with «…» beyond),
  * then the figures in chalk at 500 (from, the arrow along the reading line, 14 px --ink-3, mirrored in Arabic, ICO-5,
  * to) and after them, --ink-3, how many more changes it made («و9 تغييرات أخرى»); then the reason as typed, in the
  * page's quotation marks, --ink-2, on one line cut with «…» (at most 62ch), and who and when in caption --ink-3 at the
@@ -379,6 +381,12 @@ html[dir="rtl"] .tf-in { text-align: right; }
 html[data-focus-input="keyboard"] .tf-ap:has(.tf-sel:focus)::after { visibility: visible; }
 .tf-face { display: inline-flex; align-items: center; gap: 2px; font-size: 16px; line-height: 24px; color: var(--ink-2); pointer-events: none; }
 .tf-chev { width: 14px; height: 14px; fill: none; stroke: var(--ink-3); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* One width whatever it shows (FLD-11, decision 81): both words share one cell, the shown one seen and the other
+ * `visibility: hidden` (MOT-14's form for a changing label), so the list's part is as wide as its wider word and a change
+ * of ص / م, typed or copied, never moves the week's columns. */
+.tf-w { display: inline-grid; }
+.tf-w > span { grid-area: 1 / 1; }
+.tf-w > span:not(.is-on) { visibility: hidden; }
 @media (hover: hover) { .tf-ap:hover .tf-face { color: var(--ink); } }
 /* Held, the list's part takes a dark key's light (STA-16, MOT-20): it shows the press the unseen list receives. */
 .tf-ap { box-shadow: inset 0 0 0 100vmax var(--press-light, transparent); transition: --press-light var(--press-fade); }
@@ -459,6 +467,70 @@ html[data-focus-input="keyboard"] .ed-warns:focus-within { padding-block-end: 6p
 .st-panel .dlg-x { margin-block-start: -8px; }
 .st-panel .dlg-head h2 { min-width: 0; overflow-wrap: anywhere; }
 .st-panel .dlg-desc { margin: 0; overflow-wrap: anywhere; }
+
+/* ------------------------------------------------------------------ copying one day's hours (decision 81, OWN-S28)
+ * The tool (BTN-12, LNK-1's form as a button): under the week, ruled from Saturday's row with the card's row line, 12 px
+ * below the rule, 44 px tall, its words starting on the day names' edge (the button reaches 12 px past them), label type
+ * --ink-2 with the copy mark before them, hover chalk on 5% white, held a dark key (data-press="dark", MOT-20). Its keyboard
+ * ring stands 2 px inside its box (LNK-1's), so the end of a scrolling body never clips it. Waiting (every day closed):
+ * --ink-3, no hover, a press doing nothing. A boxed secondary stood over «إلغاء» and «حفظ» and read as a third foot button. */
+.ed-copy { padding-block: 12px 0; border-block-start: 1px solid var(--row-line); }
+.ed-copy-b { display: inline-flex; align-items: center; gap: 8px; height: 44px; margin-inline: -12px; padding-inline: 12px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; --focus-ring-offset: -2px; }
+.ed-copy-b svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .ed-copy-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
+.ed-copy-b[aria-disabled="true"] { color: var(--ink-3); cursor: default; }
+@media (hover: hover) { .ed-copy-b[aria-disabled="true"]:hover { color: var(--ink-3); background: none; } }
+/* The step: «من» as a figure's label over the list field (FLD-14, 120 px) and, 16 px after it, the chosen day's hours as the
+ * card writes them (body type at 500, chalk, the dash --ink-3 with 8 px each side, one unbreakable span); then «إلى» (the
+ * module's row, unruled) and the six other days, a ruled 48 px row each (CHK-1) on columns of the box (20), the day's name
+ * (116, with the box's 20 the list field's 120 and its 16, so every day's opening starts on the source's hours' edge) and
+ * the hours the day holds now (the card's range at 400, --ink-2; a closed day «مغلق» in COL-17's grey across both). */
+.cp-src .ed-line { flex-wrap: nowrap; gap: 16px; }
+.cp-rng { display: inline-flex; align-items: baseline; min-width: 0; }
+.cp-rng .v-dash, .cp-row .v-dash { padding-inline: 8px; font-size: 15px; line-height: 22px; text-align: center; color: var(--ink-3); }
+/* The list field (new, FLD-14): FLD-1's frame, its face the choice in body type 14 px from the start, FLD-11's chevron 12 px
+ * from the end; the native list lies unseen over the whole frame and its 1 px edge, a full 44 px target (TYP-6's form: 16 px, a phone never zooms). Hover and
+ * focus raise the edge (FLD-3); the keyboard ring FOC-1 on the frame while its list has keyboard focus. */
+.cp-sel { position: relative; display: block; flex: none; box-sizing: border-box; width: 120px; height: 44px; border: 1px solid var(--field-line); border-radius: 12px; background: var(--field); }
+@media (hover: hover) { .cp-sel:hover { border-color: rgba(255, 255, 255, 0.52); } }
+.cp-sel:focus-within { border-color: rgba(255, 255, 255, 0.52); }
+.cp-sel-in { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); margin: 0; border: 0; opacity: 0; font: inherit; font-size: 16px; cursor: pointer; appearance: none; }
+.cp-face { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding-inline: 14px 12px; font-size: 16px; line-height: 24px; color: var(--ink); pointer-events: none; }
+.cp-w { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-focus-input="keyboard"] .cp-sel:has(select:focus) { outline: 2px solid var(--focus-ring-color, var(--ink)); outline-offset: 3px; }
+.cp-list { display: grid; grid-template-columns: 20px 116px max-content max-content minmax(0, 1fr); margin: 0; }
+.cp-row { position: relative; display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: center; box-sizing: border-box; height: 48px; border-block-start: 1px solid var(--row-line); cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.cp-dn { grid-column: 2; min-width: 0; box-sizing: border-box; padding-inline: 12px 16px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cp-row .v-od { grid-column: 3; display: flex; align-items: baseline; white-space: nowrap; }
+.cp-row .cp-c { grid-column: 4; }
+.cp-row .v-n { font-weight: 400; color: var(--ink-2); }
+.cp-closed { grid-column: 3 / -1; font-size: 15px; line-height: 22px; color: var(--stale); }
+.cp-row .v-dash { flex: 1 0 auto; }
+.cp-h { display: contents; }
+.cp-err { margin-block-start: 8px; }
+/* The checkbox in a list (new, CHK-1): the row is the control, a native checkbox lying unseen over it (TYP-6's form), so the
+ * target is the row; its face a 20 px square at the row's start, radius 6, a 1.5 px COL-19 edge on the 3% fill (.52 while
+ * the row is hovered); ticked, chalk with a dark check. FOC-1's ring on the face while the box has keyboard focus. Held
+ * anywhere on the row, the face seats as a small square (MOT-20), back in 240 ms, its light out in 120 ms; a tick changes
+ * at once (MOT-18). */
+.cp-chk { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; appearance: none; }
+.cp-box { grid-column: 1; display: grid; place-items: center; box-sizing: border-box; width: 20px; height: 20px; border: 1.5px solid var(--field-line); border-radius: 6px; background: var(--field); box-shadow: inset 0 0 0 100vmax var(--press-light, transparent); transition: scale var(--press-back), --press-light var(--press-fade); }
+.cp-box svg { width: 14px; height: 14px; fill: none; stroke: #0d0c0d; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; visibility: hidden; }
+@media (hover: hover) { .cp-row:hover .cp-box { border-color: rgba(255, 255, 255, 0.52); } }
+.cp-chk:checked ~ .cp-box { border-color: var(--ink); background: var(--ink); }
+.cp-chk:checked ~ .cp-box svg { visibility: visible; }
+.cp-row:active .cp-box { scale: var(--press-scale-sm); --press-light: var(--press-lift); transition-duration: 0s; }
+html[data-motion="off"] .cp-row:active .cp-box { scale: none; }
+@media (prefers-reduced-motion: reduce) { .cp-row:active .cp-box { scale: none; } }
+html[data-focus-input="keyboard"] .cp-row:has(.cp-chk:focus) .cp-box { outline: 2px solid var(--ink); outline-offset: 3px; }
+/* Forced colours: the list stays unseen and its frame keeps its edge; the face in system colours, hollow or filled. */
+@media (forced-colors: active) {
+  .cp-sel { border-color: CanvasText; }
+  .cp-sel-in, .cp-chk { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; }
+  .cp-box { forced-color-adjust: none; border-color: CanvasText; background: Canvas; box-shadow: none; }
+  .cp-chk:checked ~ .cp-box { background: CanvasText; border-color: CanvasText; }
+  .cp-box svg { stroke: Canvas; }
+}
 
 /* A sheet's two buttons share its foot in halves (DLG-5) while each label fits its half; where one does not (English's
  * «Close without saving» beside «Keep editing» at 320 px), each takes the whole width, the first above, so neither is
@@ -556,11 +628,21 @@ html[lang="en"] .cf-q { quotes: "\201C" "\201D"; }
 .set-say .ico-err { width: 22px; height: 22px; color: var(--err); }
 
 /* --------------------------------------------------------------- the phone (720 px and below)
- * The three value cards, 16 apart, each padding 16, so text stands 16 from its edge as on every page; the module is
- * 40 px. The history is reached by its control under the header. */
+ * The four cards, 16 apart, each padding 16, so text stands 16 from its edge as on every page; the module is 40 px.
+ * The history card stands last (DECISIONS item 81), a record in three lines (OWN-S29): its first change; the reason as
+ * typed across the whole line, cut with «…» only past it (in the two-line form at 390 px a reason had about 210 px beside
+ * who and when, and two of the three default reasons were cut and folded); who and when at the line's start in caption
+ * type. A record is 99 px (the rule, 12, 22, 4, 22, 4, 22, 12), so the place is three records less the last one's foot,
+ * 285 px, whatever the history holds, and the card is 375 px. With no reason, who and when take the second line and the
+ * third stays empty, so a record's height never follows what it holds (DECISIONS item 82). */
 @media (max-width: 720px) {
   .set { --row: 40px; }
   .set-card { padding: 16px; }
+  .log-box { height: calc(3 * 99px - 12px); }
+  .log-rec { grid-template-rows: 22px 22px 22px; }
+  .log-why { grid-column: 1 / -1; grid-row: 2; max-width: none; }
+  .log-meta { grid-column: 1 / -1; grid-row: 3; justify-self: start; padding-inline-start: 0; line-height: 22px; }
+  .log-rec:not(:has(.log-why)) .log-meta { grid-row: 2; }
 }
 @media (max-width: 359px) {
   .set[data-frame] .head-acts .hb-chev { display: none; }

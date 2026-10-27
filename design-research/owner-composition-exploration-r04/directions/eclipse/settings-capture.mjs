@@ -27,6 +27,12 @@
 //   5-  the phone's flows step by step: 5-01…10 the editing steps (part 2), then «إلغاء» with something typed asking
 //       first, the confirmation, the reason, working, done, the hours' done under its head, back to the editor, the
 //       conflict view and applying from it, each refusal, the failure
+//   6-  decision 81 (DECISIONS item 81): the hours' copy (6-01..03 at 1440 and 6-04..06 at 390: the step, after the copy, the
+//       confirmation that follows; 6-07 no tick, 6-08 a refused week, 6-09 every day closed, 6-10 Friday closed, 6-11 the tool's
+//       keyboard ring, 6-12 a box's ring, 6-13 the source changed) and the acceptance checks of OWN-S28 and OWN-S29 (6-20..34, no
+//       frames): the tool's geometry, the step's rows and edges, the ways out, the Ramadan flow through the confirmation and the
+//       record, forced colours, the phone's history (cards, records, loading against arrived at 390, 320 and 1440, the fold, the
+//       sheet, a record with no reason, the page from 721 px). Added to 1- (1-15..18 the phone's history card) and 3- (3-23..25).
 // It exits 1 if a check fails: a console message or page error, a font file fetched twice in one load, a request off
 // the page's origin, a layout shift after the first paint, a sideways page scroll, an element outside the viewport's
 // width, a box whose content spills, an interactive target under 44 px; from 1024 px, the two cards of a row not
@@ -271,6 +277,15 @@ for (const lang of LANGS) {
         else await crop(o.page, sel, path(name), 16);
       }
       await finish(frameName("1-11", "cards", 390, lang), o);
+      await o.context.close();
+    }
+    // The phone's history card (DECISIONS item 81, OWN-S29): arrived, loading, the week's record folded short, a record with no reason.
+    for (const [nn, what, extra] of [["15", "history", ""], ["16", "history-loading", "state=loading"], ["17", "history-week-folded", "log=week"], ["18", "history-no-reason", "case=low"]]) {
+      const name = frameName(`1-${nn}`, what, 390, lang);
+      if (!wanted(name)) continue;
+      const o = await open(q(extra), { width: 390, height: 844 });
+      await crop(o.page, "#card-log", path(name), 16);
+      await finish(name, o);
       await o.context.close();
     }
     // The people per level against bandFor, for capacities from 1 to the contract's largest and limits at their tightest
@@ -587,6 +602,47 @@ for (const lang of LANGS) {
       await finish(rname, o);
       await o.context.close();
     }
+    // The phone's history (DECISIONS item 81): a folded record's sheet opened from the card (3-23); after a copy and a save on a
+    // phone, the new record at the top of the history with its reason (3-24, the whole page) and its sheet, the same four lines
+    // as the confirmation (3-25).
+    {
+      const n23 = frameName("3-23", "record-sheet-from-card", 390, lang);
+      if (wanted(n23)) {
+        const o = await open(q("log=week"), { width: 390, height: 844 });
+        await o.page.locator("#card-log .log-rec .log-open").first().scrollIntoViewIfNeeded();
+        await o.page.tap("#card-log .log-rec .log-open"); await o.page.waitForTimeout(120);
+        await o.page.screenshot({ path: path(n23) });
+        await finish(n23, o);
+        await o.context.close();
+      }
+      const n24 = frameName("3-24", "done-history-after-copy", 390, lang), n25 = frameName("3-25", "new-record-sheet", 390, lang);
+      if (wanted(n24) || wanted(n25)) {
+        const o = await open(q(), { width: 390, height: 844 });
+        await editOpen(o, "hours", true);
+        await fill(o, "#ed-sun-open", "8"); await o.page.selectOption("#ed-sun-open-ap", "pm"); await fill(o, "#ed-sun-close", "2"); await o.page.selectOption("#ed-sun-close-ap", "am");
+        await o.page.tap("#ed-copy"); await o.page.waitForTimeout(STEP_HOLD);
+        await o.page.tap('.cp-row[data-day="fri"]');
+        await press(o, "#st-hours .st-do", true); await o.page.waitForTimeout(80);
+        await fill(o, "#ed-fri-open", "9"); await o.page.selectOption("#ed-fri-open-ap", "pm"); await fill(o, "#ed-fri-close", "2"); await o.page.selectOption("#ed-fri-close-ap", "am");
+        await leave(o);
+        await o.page.tap("#ed-hours .ed-save"); await o.page.waitForTimeout(100);
+        await fill(o, "#st-hours-reason", lang === "ar" ? "ساعات رمضان" : "Ramadan hours");
+        await applyNow(o, "hours", true);
+        const top = await o.page.evaluate(() => { const li = document.querySelector("#card-log .log-rec"); return { v: li.dataset.v, short: li.classList.contains("is-short"), why: li.querySelector(".log-why")?.textContent || "", ver: window.__settings.version }; });
+        if (!top.short || top.v !== String(top.ver) || !top.why.includes(lang === "ar" ? "ساعات رمضان" : "Ramadan hours")) o.checks.push(`the new record on a phone: ${JSON.stringify(top)}`);
+        const ph = await o.page.evaluate(() => document.documentElement.scrollHeight);
+        await o.page.setViewportSize({ width: 390, height: Math.max(844, ph) }); await o.page.waitForTimeout(100);
+        await o.page.screenshot({ path: path(n24) });
+        await o.page.setViewportSize({ width: 390, height: 844 }); await o.page.waitForTimeout(100);
+        await o.page.locator("#card-log .log-rec .log-open").first().scrollIntoViewIfNeeded();
+        await o.page.tap("#card-log .log-rec .log-open"); await o.page.waitForTimeout(150);
+        const said = await o.page.evaluate(() => [...document.querySelectorAll("#dlg-rec .cf-row:not(.is-why) .sr-only")].length);
+        if (said !== 4) o.checks.push(`the new record's sheet lists ${said} changes, not 4`);
+        await o.page.screenshot({ path: path(n25) });
+        await finish(n24, o);
+        await o.context.close();
+      }
+    }
     // Done at 1024 for the hours: the head's tight form (the name over «توقيت الرياض», the line over its link).
     const name = frameName("3-19", "done-hours", 1024, lang);
     if (wanted(name)) {
@@ -685,6 +741,417 @@ for (const lang of LANGS) {
       await o.page.waitForTimeout(80);
       await o.page.screenshot({ path: path(name) });
       await finish(name, o);
+      await o.context.close();
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ 6- decision 81: copying one day's hours, and the history on a phone
+ * 6-01..03 the copy at 1440 (the step, after the copy, the confirmation that follows), 6-04..06 the same at 390, 6-07 no
+ * tick, 6-08 a refused week, 6-09 every day closed, 6-10 Friday closed, 6-11 the tool's keyboard ring, 6-12 a box's ring;
+ * 6-13 the source changed; 6-20..39 the acceptance checks of OWN-S28 / OWN-S29 (checks only, no frame). */
+const SUN = async (o) => { await fill(o, "#ed-sun-open", "8"); await o.page.selectOption("#ed-sun-open-ap", "pm"); await fill(o, "#ed-sun-close", "2"); await o.page.selectOption("#ed-sun-close-ap", "am"); };
+const FRI = async (o) => { await fill(o, "#ed-fri-open", "9"); await o.page.selectOption("#ed-fri-open-ap", "pm"); await fill(o, "#ed-fri-close", "2"); await o.page.selectOption("#ed-fri-close-ap", "am"); };
+const tapOrClick = (o, sel, ph) => (ph ? o.page.tap(sel) : o.page.click(sel));
+const norm = (s) => (s || "").replace(/\s+/g, " ").trim();
+const T6 = {
+  ar: { tool: "نسخ الساعات إلى أيام أخرى", title: "نسخ الساعات", none: "اختر يومًا واحدًا على الأقل", said: "نُسخت ساعات الأحد إلى 5 أيام.", bad: "اكتب الوقت هكذا: 6:30", confirm: "تطبيق تغييرات ساعات العمل؟",
+    rec: "ساعات الأحد إلى الأربعاء و3 تغييرات أخرى", whats: ["ساعات الأحد إلى الأربعاء", "فتح الخميس", "ساعات الجمعة", "ساعات السبت"], why: "ساعات رمضان", closed: "مغلق", sun: "الأحد" },
+  en: { tool: "Copy hours to other days", title: "Copy hours", none: "Choose at least one day", said: "Sunday's hours copied to 5 days.", bad: "Enter a time like 6:30", confirm: "Apply these opening hours changes?",
+    rec: "Hours, Sunday to Wednesday and 3 more", whats: ["Hours, Sunday to Wednesday", "Thursday opening", "Friday hours", "Saturday hours"], why: "Ramadan hours", closed: "Closed", sun: "Sunday" },
+};
+const hoursOpen = async (o, ph) => { await editOpen(o, "hours", ph); };
+const stepNow = (o) => o.page.evaluate(() => ({ step: window.__settings.step, focus: document.activeElement?.id || document.activeElement?.className || document.activeElement?.tagName }));
+const week = (o) => o.page.evaluate(() => ["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map((d) => ({ d, on: document.querySelector(`#ed-${d}-sw`).getAttribute("aria-checked"), o: document.querySelector(`#ed-${d}-open`).value + " " + document.querySelector(`#ed-${d}-open-ap`).value, c: document.querySelector(`#ed-${d}-close`).value + " " + document.querySelector(`#ed-${d}-close-ap`).value })));
+const colGeom = (o) => o.page.evaluate(() => [...document.querySelectorAll("#ed-hours .tf, #ed-hours .ed-note, #ed-hours .ed-closed")].map((e) => { const r = e.getBoundingClientRect(); return [e.className.split(" ")[0] + (e.dataset.tf || e.id || ""), +r.left.toFixed(2), +r.width.toFixed(2)]; }));
+const noAnim = (o) => o.page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length);
+const hold = (o) => o.page.waitForTimeout(STEP_HOLD);
+const rtlOf = (lang) => lang === "ar";
+
+for (const lang of LANGS) {
+  const q = (extra = "") => `lang=${lang}${extra ? `&${extra}` : ""}`;
+  const t = T6[lang], rtl = rtlOf(lang);
+  if (want(6)) {
+    // ---- the frames, at 1440 and 390: the step (Sunday 8 PM - 2 AM to every day but Friday), after the copy, the confirmation
+    for (const [w, h, base] of [[1440, 900, 1], [390, 844, 4]]) {
+      const ph = w <= 720, size = String(w);
+      const n1 = frameName(`6-${String(base).padStart(2, "0")}`, "copy-step", size, lang), n2 = frameName(`6-${String(base + 1).padStart(2, "0")}`, "after-copy", size, lang), n3 = frameName(`6-${String(base + 2).padStart(2, "0")}`, "confirm-after-copy", size, lang);
+      if (!wanted(n1) && !wanted(n2) && !wanted(n3)) continue;
+      const o = await open(q(), { width: w, height: h });
+      const before = await (async () => { await hoursOpen(o, ph); await SUN(o); return cardBoxes(o.page); })();
+      const colsBefore = await colGeom(o);
+      await tapOrClick(o, "#ed-copy", ph); await o.page.waitForTimeout(80);
+      await hold(o);
+      if ((await stepNow(o)).step !== "copy") o.checks.push("the tool did not open the copy step");
+      await tapOrClick(o, '.cp-row[data-day="fri"]', ph); await o.page.waitForTimeout(40);
+      const ticks = await o.page.evaluate(() => [...document.querySelectorAll(".cp-chk")].map((c) => c.value + ":" + c.checked).join(","));
+      if (ticks !== "mon:true,tue:true,wed:true,thu:true,fri:false,sat:true") o.checks.push(`ticks ${ticks}`);
+      if (ph) await o.page.screenshot({ path: path(n1) }); else await shotPanel(o, n1);
+      await press(o, "#st-hours .st-do", ph); await o.page.waitForTimeout(80);
+      const st = await stepNow(o);
+      if (st.step !== "edit" || st.focus !== "ed-copy") o.checks.push(`after the copy: ${JSON.stringify(st)}`);
+      const wk = await week(o);
+      for (const d of wk) {
+        const want = d.d === "fri" ? "2 pm|1 am" : "8 pm|2 am";
+        const got = `${d.o.split(" ")[0] === "2:00" ? "2" : d.o.split(" ")[0].replace(":00", "")} ${d.o.split(" ")[1]}|${d.c.split(" ")[0].replace(":00", "")} ${d.c.split(" ")[1]}`;
+        if (got !== want) o.checks.push(`${d.d} after the copy: ${d.o} / ${d.c}`);
+      }
+      const cols = await colGeom(o);
+      const moveX = Math.max(...cols.map((c, i) => Math.max(Math.abs(c[1] - colsBefore[i][1]), Math.abs(c[2] - colsBefore[i][2]))));
+      if (moveX > 0.01) o.checks.push(`the columns moved ${moveX}px after the copy`);
+      const afterBoxes = await cardBoxes(o.page);
+      if (moved(before, afterBoxes)) o.checks.push("the page behind moved during the copy");
+      o.notes.colsMoved = moveX;
+      o.notes.said = await o.page.evaluate(() => document.querySelector("#say").textContent);
+      if (o.notes.said !== t.said) o.checks.push(`said «${o.notes.said}»`);
+      if (ph) await o.page.screenshot({ path: path(n2) }); else await shotPanel(o, n2);
+      await FRI(o);
+      await leave(o);
+      await tapOrClick(o, "#ed-hours .ed-save", ph); await o.page.waitForTimeout(100);
+      await checkConfirm(o, "hours", ph);
+      if (ph) await o.page.screenshot({ path: path(n3) }); else await shotPanel(o, n3);
+      await finish(n1, o);
+      await o.context.close();
+    }
+    // ---- 6-07 no tick, 6-08 a refused week, 6-09 every day closed, 6-10 Friday closed, 6-11 / 6-12 the keyboard's rings, 6-13 the source changed
+    const singles = [
+      ["07", "copy-none", "", async (o) => {
+        await hoursOpen(o, false); await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+        for (const d of ["mon", "tue", "wed", "thu", "fri", "sat"]) await o.page.click(`.cp-row[data-day="${d}"]`);
+        await hold(o); await o.page.click("#st-hours .st-do"); await o.page.waitForTimeout(80);
+        const r = await o.page.evaluate(() => ({ err: document.querySelector("#cp-err").hidden ? "" : document.querySelector("#cp-err").textContent, focus: document.activeElement.id, d: document.activeElement.getAttribute("aria-describedby"), step: window.__settings.step }));
+        o.notes.none = r;
+        if (r.err !== t.none || r.focus !== "cp-mon" || !String(r.d).startsWith("cp-err") || r.step !== "copy") o.checks.push(`no tick: ${JSON.stringify(r)}`);
+      }],
+      ["08", "copy-invalid-week", "", async (o) => {
+        await hoursOpen(o, false); await fill(o, "#ed-sun-open", "25"); await o.page.click("#ed-copy"); await o.page.waitForTimeout(80);
+        const r = await o.page.evaluate(() => ({ err: document.querySelector("#ed-sun-err").hidden ? "" : document.querySelector("#ed-sun-err").textContent.trim(), focus: document.activeElement.id, step: window.__settings.step }));
+        o.notes.invalid = r;
+        if (r.err !== t.bad || r.focus !== "ed-sun-open" || r.step !== "edit") o.checks.push(`refused week: ${JSON.stringify(r)}`);
+      }],
+      ["09", "copy-every-day-closed", "case=closed", async (o) => {
+        await hoursOpen(o, false);
+        const before = await stepNow(o);
+        const dis = await o.page.evaluate(() => document.querySelector("#ed-copy").getAttribute("aria-disabled"));
+        await o.page.click("#ed-copy", { force: true }); await o.page.waitForTimeout(80);
+        o.notes.closed = { dis, before, after: await stepNow(o) };
+        if (dis !== "true" || (await stepNow(o)).step !== "edit") o.checks.push(`every day closed: ${JSON.stringify(o.notes.closed)}`);
+      }],
+      ["10", "copy-friday-closed", "case=friday", async (o) => {
+        await hoursOpen(o, false); await o.page.click("#ed-copy"); await o.page.waitForTimeout(80);
+        const r = await o.page.evaluate(() => ({ opts: [...document.querySelectorAll("#cp-src option")].map((x) => x.value).join(","), fri: { on: document.querySelector("#cp-fri").checked, closed: document.querySelector('.cp-row[data-day="fri"] .cp-closed')?.textContent } }));
+        o.notes.fridayClosed = r;
+        if (r.opts !== "sun,mon,tue,wed,thu,sat" || r.fri.on || r.fri.closed !== t.closed) o.checks.push(`Friday closed: ${JSON.stringify(r)}`);
+      }],
+      ["11", "tool-keyboard-ring", "", async (o) => {
+        await hoursOpen(o, false);
+        await o.page.focus("#ed-sat-close-ap"); await o.page.keyboard.press("Tab"); await o.page.waitForTimeout(60);
+        const r = await o.page.evaluate(() => { const b = document.querySelector("#ed-copy"), c = getComputedStyle(b), body = document.querySelector("#ed-hours .dlg-body").getBoundingClientRect(), bb = b.getBoundingClientRect(); return { focus: document.activeElement === b, ring: c.outlineStyle + " " + c.outlineWidth, offset: c.outlineOffset, inside: bb.top >= body.top && bb.bottom <= body.bottom && bb.left >= body.left && bb.right <= body.right, h: bb.height }; });
+        o.notes.ring = r;
+        if (!r.focus || r.offset !== "-2px" || r.ring !== "solid 2px" || !r.inside || Math.abs(r.h - 44) > 0.01) o.checks.push(`the tool's ring: ${JSON.stringify(r)}`);
+      }],
+      ["12", "box-keyboard-ring", "", async (o) => {
+        await hoursOpen(o, false);
+        await o.page.focus("#ed-copy"); await o.page.keyboard.press("Enter"); await o.page.waitForTimeout(80);
+        await o.page.keyboard.press("Tab"); await o.page.keyboard.press("Tab"); await o.page.keyboard.press("Space"); await o.page.waitForTimeout(40);
+        const r = await o.page.evaluate(() => ({ focus: document.activeElement.id, tue: document.querySelector("#cp-tue")?.checked, ring: getComputedStyle(document.querySelector('.cp-row[data-day="tue"] .cp-box')).outlineWidth }));
+        o.notes.boxRing = r;
+        if (r.focus !== "cp-tue" || r.tue !== false || r.ring !== "2px") o.checks.push(`a box's ring: ${JSON.stringify(r)}`);
+      }],
+      ["13", "copy-source-monday", "", async (o) => {
+        await hoursOpen(o, false); await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+        await o.page.click('.cp-row[data-day="fri"]');
+        await o.page.selectOption("#cp-src", "mon"); await o.page.waitForTimeout(40);
+        const r = await o.page.evaluate(() => [...document.querySelectorAll(".cp-chk")].map((c) => c.value + ":" + c.checked).join(","));
+        if (r !== "sun:true,tue:true,wed:true,thu:true,fri:false,sat:true") o.checks.push(`source Monday: ${r}`);
+      }],
+    ];
+    for (const [nn, what, extra, act] of singles) {
+      const name = frameName(`6-${nn}`, what, 1440, lang);
+      if (!wanted(name)) continue;
+      const o = await open(q(extra), { width: 1440, height: 900 });
+      await act(o);
+      await shotPanel(o, name);
+      await finish(name, o);
+      await o.context.close();
+    }
+  }
+
+  /* ---- 6-20.. the acceptance checks of OWN-S28 (no frames) */
+  if (want(6) && wanted("6-20")) {
+    // 1, 2: the tool's geometry at 1440 and 390 and the window's height, 1024 unscrolled
+    for (const [w, h, ph] of [[1440, 900, false], [390, 844, true], [1024, 768, false]]) {
+      const o = await open(q(), { width: w, height: h });
+      await hoursOpen(o, ph);
+      const g = await o.page.evaluate((rtl) => {
+        const r = (s) => document.querySelector(s).getBoundingClientRect(), edge = (b) => (rtl ? b.right : b.left);
+        const body = document.querySelector("#ed-hours .dlg-body");
+        return { block: r(".ed-copy").height, btn: r("#ed-copy").height, words: edge(document.querySelector("#ed-copy > svg").getBoundingClientRect()), day: edge(r("#ed-sun-name")), gap: r(".ed-copy").top - r("#ed-sat").bottom, body: body.getBoundingClientRect().height, scroll: body.scrollHeight - body.clientHeight, panel: r("#ed-hours").height, tf: [...document.querySelectorAll("#ed-hours .tf")].map((e) => +e.getBoundingClientRect().width.toFixed(2)) };
+      }, rtl);
+      o.notes.tool = g;
+      if (Math.abs(g.block - 57) > 0.01 || Math.abs(g.btn - 44) > 0.01 || Math.abs(g.words - g.day) > 0.5 || Math.abs(g.gap) > 0.01) o.checks.push(`the tool: ${JSON.stringify(g)}`);
+      if (g.scroll > 1) o.checks.push(`the hours window scrolls ${g.scroll}px at ${w}`);
+      if (lang === "ar" && w === 1440 && Math.abs(g.body - 494) > 0.5) o.checks.push(`body ${g.body}, not 494`);
+      if (lang === "ar" && w === 390 && (Math.abs(g.body - 634) > 0.5 || Math.abs(g.panel - 775) > 0.5)) o.checks.push(`sheet ${g.panel} / body ${g.body}, not 775 / 634`);
+      const widths = new Set(g.tf);
+      if (widths.size !== 1) o.checks.push(`time fields differ: ${[...widths].join(", ")}`);
+      const want = (w > 720 ? (rtl ? 125.92 : 128.03) : (rtl ? 113.92 : 116.03));
+      if (Math.abs(g.tf[0] - want) > 0.05) o.checks.push(`time field ${g.tf[0]}, not ${want}`);
+      await finish(frameName("6-20", `tool-geometry-${w}`, "", lang), o);
+      await o.context.close();
+    }
+    // 3, 4, 6, 13, 15, 17: opens in the same dialog, focus, rows and edges, ways out, motion
+    for (const [w, h, ph] of [[1440, 900, false], [390, 844, true]]) {
+      const o = await open(q(), { width: w, height: h });
+      await hoursOpen(o, ph);
+      const boxes0 = await cardBoxes(o.page);
+      const dlg0 = await o.page.evaluate(() => { window.__d = document.querySelector("dialog[open]"); window.__sc = document.querySelector("dialog[open] .dlg-scrim"); return window.__d.id; });
+      await tapOrClick(o, "#ed-copy", ph);
+      const anim = await noAnim(o);
+      await o.page.waitForTimeout(60);
+      const r = await o.page.evaluate(() => ({ same: document.querySelector("dialog[open]") === window.__d && document.querySelector("dialog[open] .dlg-scrim") === window.__sc, edHidden: document.querySelector("#ed-hours").hidden && document.querySelector("#ed-hours").isConnected, step: window.__settings.step, w: document.querySelector("#st-hours").getBoundingClientRect().width, h: document.querySelector("#st-hours").getBoundingClientRect().height, focus: document.activeElement.id, scroll: document.querySelector("#st-hours .dlg-body").scrollHeight - document.querySelector("#st-hours .dlg-body").clientHeight }));
+      o.notes.open = { ...r, anim };
+      if (!r.same || !r.edHidden || r.step !== "copy" || (!ph && Math.abs(r.w - 520) > 0.5)) o.checks.push(`the step: ${JSON.stringify(r)}`);
+      if (r.focus !== (ph ? "st-hours-title" : "cp-src")) o.checks.push(`step focus ${r.focus}`);
+      if (anim) o.checks.push(`${anim} animations running as the step opened (reduced motion)`);
+      if (!ph && Math.abs(r.h - 593) > 0.5) o.checks.push(`step ${r.h} tall, not 593`);
+      if (ph && lang === "ar" && Math.abs(r.h - 568) > 0.5) o.checks.push(`sheet ${r.h} tall, not 568`);
+      if (r.scroll > 1) o.checks.push(`the step scrolls ${r.scroll}px`);
+      const e = await o.page.evaluate((rtl) => {
+        const edge = (b) => (rtl ? b.right : b.left), rows = [...document.querySelectorAll(".cp-row")];
+        const src = edge(document.querySelector(".cp-rng").getBoundingClientRect());
+        const opens = rows.map((x) => x.querySelector(".v-od")).filter(Boolean).map((x) => edge(x.getBoundingClientRect()));
+        const closes = rows.map((x) => x.querySelector(".cp-c")).filter(Boolean).map((x) => edge(x.getBoundingClientRect()));
+        return { rows: rows.length, hs: rows.map((x) => +x.getBoundingClientRect().height.toFixed(2)), src, openSpread: Math.max(...opens.map((v) => Math.abs(v - src))), closeSpread: Math.max(...closes) - Math.min(...closes), closeEdge: closes[0] };
+      }, rtl);
+      o.notes.edges = e;
+      if (e.rows !== 6 || e.hs.some((x) => Math.abs(x - 48) > 0.01) || e.openSpread > 0.01 || e.closeSpread > 0.01) o.checks.push(`rows/edges: ${JSON.stringify(e)}`);
+      if (w === 1440 && e.src !== (rtl ? 811.5 : 613.5)) o.checks.push(`source edge ${e.src}, not ${rtl ? 811.5 : 613.5}`);
+      // 13: Escape and «رجوع» return, Tab stays inside, a scrim tap does nothing, Enter on a box copies
+      await o.page.keyboard.press("Escape"); await o.page.waitForTimeout(60);
+      let s = await stepNow(o);
+      if (s.step !== "edit" || s.focus !== "ed-copy") o.checks.push(`Escape: ${JSON.stringify(s)}`);
+      if ((await noAnim(o)) !== 0) o.checks.push("animations running as the step returned");
+      await tapOrClick(o, "#ed-copy", ph); await o.page.waitForTimeout(60);
+      await hold(o); await tapOrClick(o, "#st-hours .st-back", ph); await o.page.waitForTimeout(60);
+      s = await stepNow(o);
+      if (s.step !== "edit" || s.focus !== "ed-copy" || (await o.page.evaluate(() => window.__settings.dirty()))) o.checks.push(`رجوع: ${JSON.stringify(s)}`);
+      await tapOrClick(o, "#ed-copy", ph); await o.page.waitForTimeout(60);
+      if (!ph) {
+        await o.page.mouse.click(40, 860); await o.page.waitForTimeout(60);
+        if ((await stepNow(o)).step !== "copy") o.checks.push("a scrim tap left the step");
+        const inside = [];
+        for (let i = 0; i < 12; i++) { await o.page.keyboard.press("Tab"); inside.push(await o.page.evaluate(() => !!document.activeElement.closest("#st-hours"))); }
+        for (let i = 0; i < 14; i++) { await o.page.keyboard.press("Shift+Tab"); inside.push(await o.page.evaluate(() => !!document.activeElement.closest("#st-hours"))); }
+        if (inside.includes(false)) o.checks.push("Tab left the step");
+      }
+      // Enter on a box copies
+      await o.page.focus("#cp-mon"); await o.page.keyboard.press("Enter"); await o.page.waitForTimeout(80);
+      s = await stepNow(o);
+      if (s.step !== "edit") o.checks.push(`Enter on a box: ${JSON.stringify(s)}`);
+      if (!ph) {
+        // Enter on the list field copies too
+        await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o); await o.page.focus("#cp-src"); await o.page.keyboard.press("Enter"); await o.page.waitForTimeout(80);
+        if ((await stepNow(o)).step !== "edit") o.checks.push("Enter on the list field did not copy");
+      }
+      if (moved(boxes0, await cardBoxes(o.page))) o.checks.push("the page behind moved");
+      await finish(frameName("6-21", `step-behaviour-${w}`, "", lang), o);
+      await o.context.close();
+    }
+    // 13: the close button (nothing typed closes; typed asks, «متابعة التعديل» returns to the tool)
+    {
+      const o = await open(q(), { width: 1440, height: 900 });
+      await hoursOpen(o, false); await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+      await hold(o); await o.page.click("#st-hours .dlg-x"); await o.page.waitForTimeout(80);
+      if (await o.page.evaluate(() => !!document.querySelector("dialog[open]"))) o.checks.push("the close button did not close an untouched window from the step");
+      await hoursOpen(o, false); await fill(o, "#ed-mon-open", "7"); await leave(o);
+      await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+      await hold(o); await o.page.click("#st-hours .dlg-x"); await o.page.waitForTimeout(80);
+      let s = await stepNow(o);
+      if (s.step !== "discard") o.checks.push(`the close button with something typed: ${s.step}`);
+      await hold(o); await o.page.click("#st-hours .st-back"); await o.page.waitForTimeout(80);
+      s = await stepNow(o);
+      if (s.step !== "edit" || s.focus !== "ed-copy") o.checks.push(`متابعة التعديل: ${JSON.stringify(s)}`);
+      await finish(frameName("6-22", "step-close", "", lang), o);
+      await o.context.close();
+    }
+    // 5: the first choice, 11 (also in 6-08), 10, 7, 8, 9: the source, no tick, source change, the copy and the columns
+    {
+      const o = await open(q(), { width: 1440, height: 900 });
+      await hoursOpen(o, false);
+      await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+      const a = await o.page.evaluate(() => ({ opts: [...document.querySelectorAll("#cp-src option")].map((x) => x.value).join(","), sel: document.querySelector("#cp-src").value }));
+      if (a.opts !== "sun,mon,tue,wed,thu,fri,sat" || a.sel !== "sun") o.checks.push(`untouched: ${JSON.stringify(a)}`);
+      await o.page.keyboard.press("Escape"); await o.page.waitForTimeout(60);
+      await fill(o, "#ed-fri-open", "5"); await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+      const b = await o.page.evaluate(() => document.querySelector("#cp-src").value);
+      if (b !== "fri") o.checks.push(`typed in Friday: ${b}`);
+      await finish(frameName("6-23", "first-choice", "", lang), o);
+      await o.context.close();
+    }
+    {
+      const o = await open(q(), { width: 1440, height: 900 });
+      await hoursOpen(o, false); await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+      // 10: one tick after none leaves the refusal
+      for (const d of ["mon", "tue", "wed", "thu", "fri", "sat"]) await o.page.click(`.cp-row[data-day="${d}"]`);
+      await hold(o); await o.page.click("#st-hours .st-do"); await o.page.waitForTimeout(60);
+      await o.page.click('.cp-row[data-day="sat"]'); await o.page.waitForTimeout(60);
+      const r = await o.page.evaluate(() => ({ hidden: document.querySelector("#cp-err").hidden, d: document.querySelector("#cp-mon").getAttribute("aria-describedby") }));
+      if (!r.hidden || String(r.d).includes("cp-err")) o.checks.push(`a tick after no tick: ${JSON.stringify(r)}`);
+      await finish(frameName("6-24", "tick-clears-refusal", "", lang), o);
+      await o.context.close();
+    }
+    {
+      // 8, 9, 14: the Ramadan flow: copy, Friday typed, «حفظ», the confirmation's four lines, the record
+      const o = await open(q(), { width: 1440, height: 900 });
+      await hoursOpen(o, false);
+      const v0 = await o.page.evaluate(() => window.__settings.version);
+      await SUN(o); await leave(o);
+      const cols0 = await colGeom(o);
+      await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+      await o.page.click('.cp-row[data-day="fri"]');
+      await hold(o); await o.page.click("#st-hours .st-do"); await o.page.waitForTimeout(100);
+      const wk = await week(o), s = await stepNow(o);
+      const exp = wk.every((d) => (d.d === "fri" ? d.o === "2:00 pm" && d.c === "1:00 am" : d.o === "8:00 pm" && d.c === "2:00 am"));
+      if (!exp || s.focus !== "ed-copy") o.checks.push(`the copy: ${JSON.stringify(wk)} ${JSON.stringify(s)}`);
+      const w1 = await o.page.evaluate(() => [...document.querySelectorAll("#ed-hours .tf")].map((e) => +e.getBoundingClientRect().width.toFixed(2)));
+      if (new Set(w1).size !== 1) o.checks.push(`widths after: ${[...new Set(w1)].join(",")}`);
+      const cols1 = await colGeom(o);
+      o.notes.colsDiff = Math.max(...cols1.map((c, i) => Math.abs(c[1] - cols0[i][1])));
+      await FRI(o); await leave(o);
+      await o.page.click("#ed-hours .ed-save"); await o.page.waitForTimeout(100);
+      const cf = await o.page.evaluate(() => ({ title: document.querySelector("#st-hours-title").textContent.trim(), step: window.__settings.step, whats: [...document.querySelectorAll("#st-hours .cf-list:not(.cf-ppl) > .cf-row")].map((li) => li.querySelector(".cf-what").textContent.trim()), said: [...document.querySelectorAll("#st-hours .cf-list:not(.cf-ppl) > .cf-row .sr-only")].map((x) => x.textContent.trim()), ver: window.__settings.version }));
+      o.notes.confirm4 = cf;
+      if (cf.title !== t.confirm || cf.step !== "confirm" || cf.whats.join("|") !== t.whats.join("|") || cf.ver !== v0) o.checks.push(`the confirmation: ${JSON.stringify(cf)}`);
+      await fill(o, "#st-hours-reason", t.why);
+      await applyNow(o, "hours", false);
+      const rec = await o.page.evaluate(() => { const li = document.querySelector("#card-log .log-rec"); return { what: li.querySelector(".log-what").textContent.replace(/\s+/g, " ").trim(), short: li.classList.contains("is-short"), folded: li.classList.contains("is-folded"), ver: window.__settings.version, v: li.dataset.v }; });
+      o.notes.record = rec;
+      if (rec.what !== t.rec || !rec.folded || rec.ver !== v0 + 1) o.checks.push(`the record: ${JSON.stringify(rec)}`);
+      await o.page.click("#card-log .log-rec:first-child .log-open"); await o.page.waitForTimeout(100);
+      const said2 = await o.page.evaluate(() => [...document.querySelectorAll("#dlg-rec .cf-row:not(.is-why) .sr-only")].map((x) => x.textContent.trim()));
+      if (said2.join("|") !== cf.said.join("|")) o.checks.push(`the record's window lists ${JSON.stringify(said2)} not ${JSON.stringify(cf.said)}`);
+      await finish(frameName("6-25", "ramadan-flow", "", lang), o);
+      await o.context.close();
+    }
+    // 13 (the hold): a double press of the tool at 390 and 320 leaves Saturday's box ticked (the second tap lands on its row,
+    // within the step's 500 ms), and a tap after the hold toggles it; at 320 × 568 the step and the editor scroll
+    for (const [w, h] of [[390, 844], [320, 568]]) {
+      const o = await open(q(), { width: w, height: h });
+      await hoursOpen(o, true);
+      await o.page.evaluate(() => { const b = document.querySelector("#ed-hours .dlg-body"); b.scrollTop = b.scrollHeight; });
+      const ed = await o.page.evaluate(() => { const b = document.querySelector("#ed-hours .dlg-body"); return b.scrollHeight - b.clientHeight; });
+      const r = await o.page.evaluate(() => { const b = document.querySelector("#ed-copy").getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
+      await o.page.touchscreen.tap(r.x, r.y); await o.page.waitForTimeout(90); await o.page.touchscreen.tap(r.x, r.y); await o.page.waitForTimeout(150);
+      const a = await o.page.evaluate(() => ({ step: window.__settings.step, ticks: [...document.querySelectorAll(".cp-chk")].map((c) => c.checked).join(",") }));
+      const stepScroll = await o.page.evaluate(() => { const b = document.querySelector("#st-hours .dlg-body"); return b.scrollHeight - b.clientHeight; });
+      o.notes.doublePress = { ...a, editorScroll: ed, stepScroll };
+      if (a.step !== "copy" || a.ticks !== "true,true,true,true,true,true") o.checks.push(`a double press of the tool: ${JSON.stringify(a)}`);
+      await hold(o);
+      await o.page.evaluate(() => { const b = document.querySelector("#st-hours .dlg-body"); b.scrollTop = 0; });
+      await o.page.tap('.cp-row[data-day="mon"]'); await o.page.waitForTimeout(60);
+      if (await o.page.evaluate(() => document.querySelector("#cp-mon").checked)) o.checks.push("a tap after the hold did not toggle its box");
+      await finish(frameName("6-27", `double-press-${w}`, "", lang), o);
+      await o.context.close();
+    }
+    // 11 (as 6-08), 12 (as 6-09): done in the frames. 16: forced colours
+    {
+      const o = await open(q(), { width: 1440, height: 900 });
+      await o.page.emulateMedia({ forcedColors: "active" });
+      await hoursOpen(o, false); await o.page.click("#ed-copy"); await o.page.waitForTimeout(60); await hold(o);
+      await o.page.click('.cp-row[data-day="fri"]'); await o.page.waitForTimeout(40);
+      const r = await o.page.evaluate(() => {
+        const probe = (c) => { const p = document.createElement("i"); p.style.color = c; document.body.appendChild(p); const v = getComputedStyle(p).color; p.remove(); return v; };
+        const on = getComputedStyle(document.querySelector('.cp-row[data-day="mon"] .cp-box')), off = getComputedStyle(document.querySelector('.cp-row[data-day="fri"] .cp-box'));
+        return { onBg: on.backgroundColor, offBg: off.backgroundColor, canvas: probe("Canvas"), text: probe("CanvasText"), frame: getComputedStyle(document.querySelector(".cp-sel")).borderTopColor, selOpacity: getComputedStyle(document.querySelector("#cp-src")).opacity };
+      });
+      o.notes.forced = r;
+      if (r.onBg !== r.text || r.offBg !== r.canvas || r.frame !== r.text || r.selOpacity !== "0") o.checks.push(`forced colours: ${JSON.stringify(r)}`);
+      await finish(frameName("6-26", "forced-colours", "", lang), o);
+      await o.context.close();
+    }
+  }
+
+  /* ---- 6-30.. the phone's history (OWN-S29) */
+  if (want(6) && wanted("6-30")) {
+    // 18: the page at 390 x 844, the cards' boxes and records; the link stays (the coordinator's departure), so every top
+    // is the spec's plus the link's block.
+    {
+      const o = await open(q(), { width: 390, height: 844 });
+      const g = await o.page.evaluate(() => {
+        const b = (s) => { const r = document.querySelector(s).getBoundingClientRect(); return [+(r.top + scrollY).toFixed(2), +r.height.toFixed(2)]; };
+        return { link: !!document.querySelector("#history-link"), cards: ["crowd", "hours", "day", "log"].map((k) => b(`#card-${k}`)), recs: [...document.querySelectorAll("#card-log .log-rec")].map((li) => { const r = li.getBoundingClientRect(); return [+(r.top + scrollY).toFixed(2), +r.height.toFixed(2)]; }), page: document.documentElement.scrollHeight, folded: document.querySelectorAll("#card-log .log-rec.is-folded").length };
+      });
+      o.notes.phone = g;
+      const dy = g.cards[0][0] - 84;
+      const wantC = [[84, 395], [495, 370], [881, 256], [1153, 375]];
+      g.cards.forEach((c, i) => { if (Math.abs(c[0] - dy - wantC[i][0]) > 0.5 || Math.abs(c[1] - wantC[i][1]) > 0.5) o.checks.push(`card ${i}: ${c} (link offset ${dy}), want ${wantC[i]}`); });
+      g.recs.forEach((r, i) => { if (Math.abs(r[1] - 99) > 0.01 || Math.abs(r[0] - dy - [1226, 1325, 1424][i]) > 0.5) o.checks.push(`record ${i}: ${r}`); });
+      if (Math.abs(g.page - dy - 1654) > 1) o.checks.push(`page ${g.page}, want ${1654 + dy}`);
+      if (g.folded) o.checks.push(`${g.folded} records fold at 390 by default`);
+      await finish(frameName("6-30", "phone-geometry", 390, lang), o);
+      await o.context.close();
+    }
+    // 19: loading and arrived give the same boxes, at 390, 320 and 1440, for each history
+    for (const [w, h] of [[390, 844], [320, 568], [1440, 900]]) {
+      for (const hist of ["", "log=week", "log=none", "log=one"]) {
+        const o = await open(q(`state=loading${hist ? `&${hist}` : ""}`), { width: w, height: h });
+        const grab = () => o.page.evaluate(() => {
+          const b = (e) => { const r = e.getBoundingClientRect(); return [+(r.left + scrollX).toFixed(2), +(r.top + scrollY).toFixed(2), +r.width.toFixed(2), +r.height.toFixed(2)]; };
+          const out = {};
+          ["crowd", "hours", "day", "log"].forEach((k) => { out["card-" + k] = b(document.querySelector(`#card-${k}`)); });
+          out.title = b(document.querySelector("#log-title")); out.all = b(document.querySelector("#log-all")); out.box = b(document.querySelector("#card-log .log-box"));
+          [...document.querySelectorAll("#card-log .log-rec")].forEach((li, i) => { out["rec" + i] = b(li); });
+          out.page = [document.documentElement.scrollHeight];
+          return out;
+        });
+        await o.page.waitForTimeout(700);
+        const a = await grab();
+        await o.page.evaluate(() => window.__settings.arrive()); await o.page.waitForTimeout(200);
+        const z = await grab();
+        const n = Math.min(...[a, z].map((x) => Object.keys(x).filter((k) => k.startsWith("rec")).length));
+        let worst = 0;
+        for (const k of Object.keys(a)) { if (k.startsWith("rec") && !z[k]) continue; if (!z[k]) continue; worst = Math.max(worst, ...a[k].map((v, i) => Math.abs(v - z[k][i]))); }
+        const cls = await o.page.evaluate(() => +window.__cls.toFixed(5));
+        o.notes.arrival = { worst, cls, recs: n, log: z["card-log"] };
+        if (worst > 0.5) o.checks.push(`loading → arrived moved ${worst}px (${w}, ${hist || "default"})`);
+        if (cls > 0) o.checks.push(`layout shift ${cls} on arrival (${w}, ${hist || "default"})`);
+        if (w === 320 && lang === "ar" && !hist) o.notes.at320 = { card: z["card-log"], recs: [a.rec0?.[1], a.rec1?.[1], a.rec2?.[1]] };
+        await finish(frameName("6-31", `arrival-${hist || "default"}`, w, lang), o);
+        await o.context.close();
+      }
+    }
+    // 20: default folds nothing at 390; log=week folds the first short; a tap opens the sheet, focus on its title, unscrolled; Escape returns
+    {
+      const o = await open(q("log=week"), { width: 390, height: 844 });
+      const f = await o.page.evaluate(() => { const li = document.querySelector("#card-log .log-rec"); return { short: li.classList.contains("is-short"), chev: !li.querySelector(".log-open").hidden }; });
+      if (!f.short || !f.chev) o.checks.push(`log=week: ${JSON.stringify(f)}`);
+      await o.page.locator("#card-log .log-rec .log-open").first().scrollIntoViewIfNeeded();
+      await o.page.tap("#card-log .log-rec .log-open"); await o.page.waitForTimeout(120);
+      const r = await o.page.evaluate(() => { const d = document.querySelector("#dlg-rec"), p = d.querySelector(".dlg-panel").getBoundingClientRect(), b = d.querySelector(".dlg-body"); return { open: d.open, focus: document.activeElement.id, body: b.clientHeight, scroll: b.scrollHeight - b.clientHeight, sheet: Math.abs(p.bottom - innerHeight) < 1 && Math.abs(p.width - innerWidth) < 1 }; });
+      o.notes.sheet = r;
+      if (!r.open || r.focus !== "rec-title" || r.scroll > 1 || !r.sheet || (lang === "ar" && Math.abs(r.body - 662) > 1)) o.checks.push(`the record sheet: ${JSON.stringify(r)}`);
+      await o.page.keyboard.press("Escape"); await o.page.waitForTimeout(100);
+      if (!(await o.page.evaluate(() => !document.querySelector("#dlg-rec").open && document.activeElement?.matches(".log-open")))) o.checks.push("Escape did not return focus to the record's control");
+      await finish(frameName("6-32", "record-sheet-from-card", 390, lang), o);
+      await o.context.close();
+    }
+    // 21: a record without a reason (case=low) puts who and when 39 px below its top, the third line empty, 99 px each
+    {
+      const o = await open(q("case=low"), { width: 390, height: 844 });
+      const r = await o.page.evaluate(() => { const li = document.querySelector("#card-log .log-rec"), m = li.querySelector(".log-meta").getBoundingClientRect(), t = li.getBoundingClientRect(); return { y: +(m.top - t.top).toFixed(2), hs: [...document.querySelectorAll("#card-log .log-rec")].map((x) => +x.getBoundingClientRect().height.toFixed(2)), why: !!li.querySelector(".log-why") }; });
+      o.notes.noReason = r;
+      if (r.why || Math.abs(r.y - 39) > 0.5 || r.hs.some((x) => Math.abs(x - 99) > 0.01)) o.checks.push(`no reason: ${JSON.stringify(r)}`);
+      await finish(frameName("6-33", "no-reason", 390, lang), o);
+      await o.context.close();
+    }
+    // 22: from 721 px nothing moved
+    for (const [w, h, page] of [[1440, 900, 900], [1024, 768, 891], [768, 1024, 1663]]) {
+      const o = await open(q(), { width: w, height: h });
+      const r = await o.page.evaluate(() => ({ page: document.documentElement.scrollHeight, log: document.querySelector("#card-log").getBoundingClientRect().height, recs: [...document.querySelectorAll("#card-log .log-rec")].map((x) => +x.getBoundingClientRect().height.toFixed(2)), rows: ["#card-crowd", "#card-day"].map((s) => +document.querySelector(s).getBoundingClientRect().height.toFixed(2)) }));
+      o.notes.wide = r;
+      if (r.page !== page || Math.abs(r.log - 313) > 0.01 || r.recs.some((x) => Math.abs(x - 73) > 0.01)) o.checks.push(`${w}: ${JSON.stringify(r)}`);
+      await finish(frameName("6-34", "wide-unchanged", w, lang), o);
       await o.context.close();
     }
   }

@@ -151,7 +151,7 @@
       </header>
 
       <!-- The page's controls (HDR-7) on a phone (720 px and below): one, the way to every settings change in Activity
-           log, as Access's (the second skeleton pass, which the user kept). From 721 px the history card takes its place. -->
+           log, as Access's (the second skeleton pass). Kept for now: the history card stands on a phone too (DECISIONS item 81). -->
       <div class="set-tools" id="tools">
         <a class="rbtn set-history" id="history-link" href="activity.html?kind=settings">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg>
@@ -162,8 +162,8 @@
       <!-- Arrangement ج (DECISIONS item 80): four cards in two columns from 1024 px, in reading order a row at a time:
            the crowd and the hours, then the business day and the settings history (the start column holds the crowd
            over the business day, the end column the hours over the history). Each value card's «تعديل» opens that card
-           in a window over the page (part 2). Below 1024 px one column; on a phone the history card gives way to the
-           control above. settings.js draws each card whole. -->
+           in a window over the page (part 2). Below 1024 px one column, the history last also on a phone (item 81).
+           settings.js draws each card whole. -->
       <div class="set-grid" id="grid">
         <section class="card set-card" id="card-crowd" data-sec="crowd" aria-labelledby="crowd-title"></section>
         <section class="card set-card" id="card-hours" data-sec="hours" aria-labelledby="hours-title"></section>

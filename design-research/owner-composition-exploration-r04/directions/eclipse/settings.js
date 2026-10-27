@@ -179,6 +179,16 @@
       /* ---- the dialogs and states (part 3). The editor's «حفظ» only gathers and checks; nothing is sent until the
        * confirmation's «تطبيق الآن», the step that makes the values live (effective at once, no later date: item 49). */
       back: "رجوع",
+      // The hours' window copies one day's hours to other days (DECISIONS item 81 (1), OWN-S28): «نسخ» (not «تطبيق»,
+      // which on this page means "goes live"), the step's names, and the sentence said once after a copy.
+      copyOpen: "نسخ الساعات إلى أيام أخرى",
+      copyTitle: "نسخ الساعات",
+      copyFrom: "من",
+      copyTo: "إلى",
+      copyDo: "نسخ الساعات",
+      copyNone: "اختر يومًا واحدًا على الأقل",
+      copied: (day, n) => `نُسخت ساعات ${day} إلى ${n === 1 ? "يوم واحد" : n === 2 ? "يومين" : `${n} أيام`}.`,
+      rangeSaid: (a, b) => `${a} إلى ${b}`,
       applyNow: "تطبيق الآن",
       applying: "جارٍ التطبيق…",
       applyMine: "تطبيق تغييري",
@@ -335,6 +345,14 @@
         resetHours: (days) => `With these hours, the count resets after the gym has opened ${days}, so it starts from zero with people inside.`,
       },
       back: "Back",
+      copyOpen: "Copy hours to other days",
+      copyTitle: "Copy hours",
+      copyFrom: "From",
+      copyTo: "To",
+      copyDo: "Copy hours",
+      copyNone: "Choose at least one day",
+      copied: (day, n) => `${day}'s hours copied to ${n} ${n === 1 ? "day" : "days"}.`,
+      rangeSaid: (a, b) => `${a} to ${b}`,
       applyNow: "Apply now",
       applying: "Applying…",
       applyMine: "Apply my change",
@@ -816,11 +834,11 @@
   }
   let recW = 0;
   new ResizeObserver(([e]) => { const w = Math.round(e.contentRect.width); if (w !== recW) { recW = w; fitRecord(); } }).observe(DREC);
-  // Back to the record that opened it; if the history is gone (the window outlived a move under 721 px), to the way to
-  // the history under the header.
+  // Back to the record that opened it; if that control is gone (the window outlived a change of width after which the
+  // record no longer folds), to the history's name.
   const closeRecord = () => {
     const op = openDlg && openDlg.opener;
-    closeDialog(DREC, { back: op && op.isConnected && op.getClientRects().length ? op : $("#history-link") });
+    closeDialog(DREC, { back: op && op.isConnected && op.getClientRects().length ? op : $("#log-title") });
   };
 
   /* ---------------------------------------------------------------- render
@@ -973,6 +991,10 @@
     // A sentence about a value that looks like a mistake: an information mark, never the error's.
     note: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/></svg>',
     chev: '<svg class="tf-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 10.5l4 4 4-4"/></svg>',
+    // The copy mark (BTN-12), never mirrored: it shows no direction (ICO-5).
+    copy: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8.6" y="8.6" width="10.9" height="10.9" rx="2.6"/><path d="M15.4 8.6V6.6a2.1 2.1 0 0 0-2.1-2.1H6.6a2.1 2.1 0 0 0-2.1 2.1v6.7a2.1 2.1 0 0 0 2.1 2.1h2"/></svg>',
+    // A box's tick in the copy step (CHK-1): the done check's path.
+    tick: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 12.5 10 17l8.5-9.5"/></svg>',
   };
   // Arabic-Indic and Persian digits become Western as they are typed (NUM-1), so they are never refused.
   const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
@@ -1023,7 +1045,9 @@
       `<input class="tf-in" id="${id}" name="${id}" type="text" dir="ltr" inputmode="numeric" autocomplete="off" spellcheck="false" value="${c.text}" data-init="${c.text}" aria-label="${esc(name)}">` +
       `<span class="tf-ap"><select class="tf-sel" id="${id}-ap" name="${id}-ap" data-init="${c.ap}" aria-label="${esc(L.apName(name))}">` +
       `<option value="am"${c.ap === "am" ? " selected" : ""}>${L.am}</option><option value="pm"${c.ap === "pm" ? " selected" : ""}>${L.pm}</option></select>` +
-      `<span class="tf-face" aria-hidden="true"><span class="tf-w">${c.ap === "am" ? L.am : L.pm}</span>${ICON.chev}</span></span></span>`;
+      // Both words share one cell, the shown one visible, so the list's part is as wide as its wider word whichever shows
+      // and a change of ص / م, typed or copied, never moves the week's columns (FLD-11, MOT-14's form).
+      `<span class="tf-face" aria-hidden="true"><span class="tf-w"><span data-ap="am"${c.ap === "am" ? ' class="is-on"' : ""}>${L.am}</span><span data-ap="pm"${c.ap === "pm" ? ' class="is-on"' : ""}>${L.pm}</span></span>${ICON.chev}</span></span></span>`;
   }
   // A time field's value: { mins }, { empty: true } or { bad: true }.
   function readClock(input) {
@@ -1041,7 +1065,7 @@
   }
   function setAp(sel, ap) {
     sel.value = ap;
-    $(".tf-w", sel.parentNode).textContent = ap === "am" ? L.am : L.pm;
+    $$(".tf-w > span", sel.parentNode).forEach((w) => w.classList.toggle("is-on", w.dataset.ap === ap));
   }
   const head2 = (sec, extra = "") => `<header class="dlg-head"><h2 id="ed-${sec}-title" tabindex="-1"><span class="ed-name">${L.sec[sec]}</span>${extra}</h2>` +
     `<button class="icon-btn dlg-x" type="button" data-close aria-label="${L.close}">${ICON.close}</button></header>`;
@@ -1106,6 +1130,7 @@
           <div class="ed-heads" aria-hidden="true"><span class="eh-o">${L.opensHead}</span><span class="eh-c">${L.closesHead}</span></div>
           ${DAYS.map(dayRow).join("")}
         </div>
+        <div class="ed-copy"><button class="ed-copy-b" type="button" id="ed-copy" data-copy data-press="dark">${ICON.copy}<span>${L.copyOpen}</span></button></div>
         <div class="ed-warns" id="ed-week-warns" hidden>${fieldWarn("ed-week")}${fieldWarn("ed-week2")}${fieldWarn("ed-week3")}</div>
       </div>${foot}</form>`;
   }
@@ -1283,7 +1308,11 @@
       });
     } else if (sec === "hours") {
       // With every day closed the two field columns stand empty, so their heads step aside (their line kept).
-      $(".ed-heads").classList.toggle("is-idle", DAYS.every((d) => $(`#ed-${d}-sw`).getAttribute("aria-checked") !== "true"));
+      const none = DAYS.every((d) => $(`#ed-${d}-sw`).getAttribute("aria-checked") !== "true");
+      $(".ed-heads").classList.toggle("is-idle", none);
+      // The copy tool waits while no day is open (every row says «مغلق», so the reason is in view): BTN-12's waiting form.
+      const cp = $("#ed-copy");
+      if (cp) { if (none) cp.setAttribute("aria-disabled", "true"); else cp.removeAttribute("aria-disabled"); }
       DAYS.forEach((d) => {
         const row = $(`.ed-day[data-day="${d}"]`), on = $(`#ed-${d}-sw`).getAttribute("aria-checked") === "true";
         row.classList.toggle("is-off", !on);
@@ -1378,7 +1407,9 @@
   let editing = null;                                 // the section whose window is open
   /* The open window's flow: its step ("edit", "confirm", "conflict", "discard"), the snapshot a confirmation was
    * computed from (base) and would save (next), the reason as typed (kept across the steps until the window closes),
-   * where «رجوع» and «متابعة التعديل» return focus (from), and whether an application is on its way (busy). */
+   * where «رجوع» and «متابعة التعديل» return focus (from), and whether an application is on its way (busy). The hours'
+   * window adds the day the owner last touched in it (lastDay) and, in the copy step (step "copy"), its source day, the
+   * week as the editor held it when the step opened, and each day's tick (OWN-S28). */
   let flow = null;
   const ME = "o1";                                    // the signed-in owner (فهد)
   function openDialog(dlg, opener, first) {
@@ -1427,7 +1458,7 @@
     keepDescribed(dlg);
     editing = sec;
     pressSeen = null;
-    flow = { sec, step: "edit", base: null, next: null, reason: "", from: null, busy: false, mode: null };
+    flow = { sec, step: "edit", base: null, next: null, reason: "", from: null, busy: false, mode: null, lastDay: null, copySrc: null, copyWeek: null, copyChecks: {} };
     live(sec);
     openDialog(dlg, opener, firstFocus(sec));
     if (!RTL && sec === "crowd") live(sec);           // the signs measured once the window is laid out
@@ -1596,11 +1627,14 @@
     });
   }
   // Back to the editor, as it was left; focus where the owner left it (the «حفظ» that led on, or the field they were in).
-  function showEditor(sec, to) {
+  // `during` (the copy's new sentences about the week) runs first inside the reflow's callback, so the editor comes back
+  // with them and the panel settles once.
+  function showEditor(sec, to, during) {
     const dlg = D[sec], ed = edEl(sec), st = stEl(sec);
     keepReason(sec);
     flow.step = "edit";
     M.reflow(dlg, () => {
+      if (during) during();
       st.hidden = true;
       st.innerHTML = "";
       ed.hidden = false;
@@ -1630,6 +1664,114 @@
     // From 721 px the reason (DLG-8): the owner may say why at once, and «تطبيق الآن» is never one Enter away. On a
     // phone the title, as in the editor: a focused field would raise the keyboard over the list of changes.
     (mqPhone.matches ? $(`#st-${sec}-title`) : r).focus();
+  }
+
+  /* ================================================================ copying one day's hours to others (DECISIONS item 81 (1))
+   * Under the week in the hours' window, one tool, «نسخ الساعات إلى أيام أخرى» (BTN-12), opens a step of the same window
+   * (DLG-13): from which day, to which days. The word is «نسخ», not «تطبيق»: on this page «تطبيق» means "goes live",
+   * and a copy only fills the window's fields; «حفظ» and the confirmation still follow, and list the copied days as any
+   * typed change (`changes()` groups them). The press first tidies every typed time and checks the week as «حفظ» does,
+   * so a source is never a half-typed time; only open days can be a source. The step's days are checkboxes, the open
+   * days ticked, each with the hours it holds now (Friday's different hours are in view and one tap leaves it out); a
+   * closed day is unticked, and ticking it opens it. The change shows in the fields themselves, said once, politely. */
+  const rangeHTML = (h) => `<span class="v-od"><span class="v-n">${bdi(clockOf(h.open))}</span><span class="v-dash" aria-hidden="true">${DASH}</span></span>` +
+    `<span class="v-n cp-c">${bdi(clockOf(h.close))}</span>`;
+  const rangeSaid = (h) => (h ? L.rangeSaid(clockOf(h.open), clockOf(h.close)) : L.closed);
+  // The source's hours, as the card writes them (OWN-S5's range, one unbreakable span), and said in words for the list.
+  const copySrcHTML = (h) => `<span class="cp-rng nw" aria-hidden="true"><span class="v-n">${bdi(clockOf(h.open))}</span><span class="v-dash">${DASH}</span><span class="v-n">${bdi(clockOf(h.close))}</span></span>` +
+    `<span class="sr-only" id="cp-src-said">${esc(rangeSaid(h))}</span>`;
+  // The six other days in the week's order, each a ruled row that is its own checkbox (CHK-1).
+  function copyRowsHTML() {
+    return DAYS.filter((d) => d !== flow.copySrc).map((d) => {
+      const i = DAYS.indexOf(d), h = flow.copyWeek[d], on = flow.copyChecks[d] ?? Boolean(h);
+      return `<label class="cp-row" data-day="${d}">` +
+        `<input class="cp-chk" type="checkbox" id="cp-${d}" value="${d}" aria-labelledby="cp-${d}-n" aria-describedby="cp-${d}-said"${on ? " checked" : ""}>` +
+        `<span class="cp-box" aria-hidden="true">${ICON.tick}</span>` +
+        `<span class="cp-dn" id="cp-${d}-n">${L.days[i]}</span>` +
+        (h ? `<span class="cp-h" aria-hidden="true">${rangeHTML(h)}</span>` : `<span class="cp-closed" aria-hidden="true">${L.closed}</span>`) +
+        `<span class="sr-only" id="cp-${d}-said">${esc(rangeSaid(h))}</span></label>`;
+    }).join("");
+  }
+  // The tool's press: the step, unless the week cannot be copied from yet (a refusal under its day, the first refused part
+  // focused, no step) or no day is open (the tool waits).
+  function openCopy(sec) {
+    if (sec !== "hours" || !flow || flow.sec !== "hours" || flow.step !== "edit" || flow.busy) return;
+    const tool = $("#ed-copy");
+    if (!tool || tool.getAttribute("aria-disabled") === "true") return;
+    const ed = edEl(sec);
+    $$(".tf-in", ed).forEach(tidyClock);
+    live(sec);
+    const { errors, value } = readHours();
+    const shownErr = $$(".field-err", ed).map((e) => e.id.replace(/-err$/, ""));
+    M.reflow(D[sec], () => shownErr.forEach((id) => setMsg(id, "err", errors.get(id) || "")));
+    if (errors.size) {
+      const first = [...errors.keys()][0];
+      $(`#${first}-${ROW_AT.get(first) || "open"}`).focus();
+      return;
+    }
+    const open = DAYS.filter((d) => value.week[d]);
+    if (!open.length) return;
+    // The first choice: the day the owner last typed in, chose ص / م for or switched, if it is open; else the first open day.
+    const src = flow.lastDay && value.week[flow.lastDay] ? flow.lastDay : open[0];
+    Object.assign(flow, { step: "copy", from: tool, copySrc: src, copyWeek: value.week, copyChecks: {} });
+    const opts = open.map((d) => `<option value="${d}"${d === src ? " selected" : ""}>${L.days[DAYS.indexOf(d)]}</option>`).join("");
+    showStep(sec, `${stHead(sec, L.copyTitle)}
+      <div class="dlg-body">
+        <div class="ed-fig cp-src">
+          <label class="ed-lab" for="cp-src">${L.copyFrom}</label>
+          <div class="ed-line"><span class="cp-sel"><select class="cp-sel-in" id="cp-src" name="cp-src" aria-describedby="cp-src-said">${opts}</select>` +
+            `<span class="cp-face" aria-hidden="true"><span class="cp-w">${L.days[DAYS.indexOf(src)]}</span>${ICON.chev}</span></span>` +
+            `<span id="cp-src-v">${copySrcHTML(value.week[src])}</span></div>
+        </div>
+        <h3 class="set-sub" id="cp-to-title">${L.copyTo}</h3>
+        <div class="cp-list" id="cp-list" role="group" aria-labelledby="cp-to-title">${copyRowsHTML()}</div>
+        <p class="field-err cp-err" id="cp-err" hidden></p>
+      </div>
+      <footer class="dlg-foot"><button class="rbtn st-back" type="button" data-back>${L.back}</button>` +
+      `<button class="rbtn rbtn-primary st-do" type="submit">${L.copyDo}</button></footer>`);
+    // From 721 px the list field (DLG-3: the first field); on a phone the title, as every window on this page.
+    (mqPhone.matches ? $(`#st-${sec}-title`) : $("#cp-src")).focus();
+  }
+  // A day keeps its tick across a change of source; the day that stops being the source takes its own (ticked if open).
+  function keepTicks() { $$(".cp-chk", stEl("hours")).forEach((c) => { flow.copyChecks[c.value] = c.checked; }); }
+  function changeSource(src) {
+    keepTicks();
+    delete flow.copyChecks[src];
+    flow.copySrc = src;
+    $(".cp-w", stEl("hours")).textContent = L.days[DAYS.indexOf(src)];
+    $("#cp-src-v").innerHTML = copySrcHTML(flow.copyWeek[src]);
+    $("#cp-list").innerHTML = copyRowsHTML();
+  }
+  // «نسخ الساعات»: with no day ticked it says so under the list; else each ticked day takes the source's opening and closing
+  // with their ص / م (a closed one is switched open) and the window returns to the editor, each day's note and the sentences
+  // about the week following the new hours. Nothing is sent: the hours wait for «حفظ».
+  function doCopy(sec) {
+    if (!flow || flow.busy || flow.step !== "copy") return;
+    const st = stEl(sec), boxes = $$(".cp-chk", st), ticked = boxes.filter((c) => c.checked).map((c) => c.value);
+    keepTicks();
+    if (!ticked.length) {
+      const err = $("#cp-err", st);
+      M.reflow(D[sec], () => { err.hidden = false; err.innerHTML = `${ICON.alert}<span>${L.copyNone}</span>`; });
+      boxes[0].setAttribute("aria-describedby", `cp-err cp-${boxes[0].value}-said`);
+      boxes[0].focus();
+      return;
+    }
+    const h = flow.copyWeek[flow.copySrc], o = clock12(hm(h.open)), c = clock12(hm(h.close));
+    for (const d of ticked) {
+      $(`#ed-${d}-sw`).setAttribute("aria-checked", "true");
+      $(`#ed-${d}-open`).value = o.text;
+      setAp($(`#ed-${d}-open-ap`), o.ap);
+      $(`#ed-${d}-close`).value = c.text;
+      setAp($(`#ed-${d}-close-ap`), c.ap);
+    }
+    live(sec);
+    showEditor(sec, flow.from, () => {
+      ticked.forEach((d) => setMsg(`ed-${d}`, "err", ""));
+      const want = warnings(sec, readHours().value);
+      WARN_IDS[sec].forEach((id) => setMsg(id, "warn", want[id] || ""));
+      $("#ed-week-warns").hidden = WARN_IDS[sec].every((id) => msgEl(id, "warn").hidden);
+    });
+    say(L.copied(L.days[DAYS.indexOf(flow.copySrc)], ticked.length));
   }
 
   /* ---- working, then the answer. Synthetic answers from the contract: success by default; ?refuse=<code> makes the
@@ -1889,7 +2031,9 @@
     dlg.addEventListener("close", () => { if (openDlg && openDlg.dlg === dlg) { dlg.showModal(); dlg.classList.add("is-open"); } });
     dlg.addEventListener("click", (e) => {
       if (e.detail < 1 || !flow || flow.step === "edit" || e.timeStamp - stepAt >= STEP_HOLD_MS) return;
-      const held = e.target.closest("button");
+      // In the copy step the hold also covers its days and its list field: at 390 px the second tap of a double press on the
+      // tool lands on Saturday's box, which would untick it (OWN-S28; the tool's own tap is no click of the step).
+      const held = e.target.closest(flow.step === "copy" ? "button, .cp-row, .cp-sel" : "button");
       if (!held || !stEl(sec).contains(held)) return;
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -1963,6 +2107,7 @@
       e.preventDefault();
       submits++;
       if (e.target.matches(".ed-panel")) submitEdit(sec);
+      else if (flow && flow.step === "copy") doCopy(sec);
       else applyStep(sec);
     });
     dlg.addEventListener("input", (e) => {
@@ -1981,6 +2126,18 @@
     });
     dlg.addEventListener("change", (e) => {
       const t = e.target;
+      // The copy step (OWN-S28): a change of source redraws the face, the source's hours and the six rows; a tick is kept
+      // and takes the refusal away. Each changes at once (MOT-18).
+      if (t.matches("#cp-src") && flow && flow.step === "copy") { changeSource(t.value); return; }
+      if (t.matches(".cp-chk") && flow && flow.step === "copy") {
+        keepTicks();
+        const err = $("#cp-err", stEl(sec)), first = $(".cp-chk", stEl(sec));
+        if (t.checked && !err.hidden) {
+          M.reflow(D[sec], () => { err.hidden = true; err.innerHTML = ""; });
+          first.setAttribute("aria-describedby", `cp-${first.value}-said`);
+        }
+        return;
+      }
       if (!t.closest(".ed-panel")) return;
       if (t.matches(".tf-in")) tidyClock(t);
       if (t.matches("#ed-cap, #ed-reset")) tidyCount(t);
@@ -1988,6 +2145,24 @@
       live(sec);
       clearFixedErrors(sec);
       refreshWarnings(sec, { add: true });
+    });
+    // The day the owner last touched in the hours' window, for the copy's first choice: any input, change or click in a
+    // day's row, seen before the row's own handlers (OWN-S28).
+    for (const type of ["input", "change", "click"]) dlg.addEventListener(type, (e) => {
+      const row = flow && flow.step === "edit" && e.target.closest(".ed-day");
+      if (row) flow.lastDay = row.dataset.day;
+    }, true);
+    // The copy tool (BTN-12): the step, or nothing while it waits (every day closed).
+    dlg.addEventListener("click", (e) => {
+      if (!e.target.closest("[data-copy]")) return;
+      e.preventDefault();
+      openCopy(sec);
+    });
+    // Enter anywhere in the step is «نسخ الساعات» (the form's own submit): a list field does not submit by itself.
+    dlg.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || e.defaultPrevented || !flow || flow.step !== "copy" || !e.target.matches("#cp-src")) return;
+      e.preventDefault();
+      stEl(sec).requestSubmit($(".st-do", stEl(sec)));
     });
     // A day's switch: open or closed, at once; the sentences about the week follow it (a switch is a decision made).
     dlg.addEventListener("click", (e) => {
@@ -2076,6 +2251,8 @@
     get editing() { return editing; },
     dirty: () => (editing ? isDirty(editing) : false),
     edit: (sec) => openEditor(sec, $(`[data-edit="${sec}"]`)),
+    // The hours' copy step, as «نسخ الساعات إلى أيام أخرى» opens it, while that window shows its editor (OWN-S28).
+    copy: () => openCopy("hours"),
     // The steps (part 3): the open window's step and whether it is applying; the done sentence's card; the states.
     get step() { return flow ? flow.step : null; },
     get busy() { return Boolean(flow?.busy); },
