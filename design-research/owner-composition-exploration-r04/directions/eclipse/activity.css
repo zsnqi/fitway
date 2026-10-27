@@ -265,6 +265,8 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
  * wider than its slot (the review's F4: the reason's bar ran past the card at 320 in English). */
 .ac .ph-lab { height: 10px; max-width: 100%; border-radius: 4px; vertical-align: middle; }
 .rec.is-ph .rec-ico { display: none; }
+/* The first day heading keeps its arrived 20 px line (the 10 px bar in the flex heading made it 10 short): 5 px above and below. */
+.day.is-ph .day-h > .ph-bar { margin-block: 5px; }
 
 /* --------------------------------------------------------------- the phone (720 px and below)
  * Up to 560 px the kinds span the width in equal segments (SEG-4) and who, the dates and the magnifier share the next

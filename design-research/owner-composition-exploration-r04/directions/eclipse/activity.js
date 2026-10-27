@@ -599,6 +599,7 @@
       : `<div class="ac-empty">${ICON.info}<p tabindex="-1">${L.noRecords}</p></div>`;
   }
   // The skeleton (STA-10, PH-1…3): a day's heading and six records, each awaited value a flat bar in its own slot.
+  // The heading's bar sits in the heading's 20 px line (activity.css, .day.is-ph .day-h), so the heading keeps its arrived height.
   const ph = (w) => `<i class="ph-bar ph-lab" style="--w:${w}px" aria-hidden="true"></i>`;
   function skeletonHTML() {
     const W = RTL ? [[34, 64, 116, 54, 190], [34, 40, 132, 0, 150], [34, 64, 96, 54, 220], [34, 40, 140, 0, 120], [34, 82, 108, 54, 0], [34, 40, 124, 0, 170]]

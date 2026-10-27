@@ -1280,6 +1280,11 @@
   }
   // Day by day in waiting: the period's days are the request, so each keeps its date; its figures wait in
   // placeholders, its notes column empty. On a phone, the newest 7 as the list draws them. Sorting waits.
+  // Nothing moves on arrival (DECISIONS item 82). The table takes the arrived columns' widths: each header carries the sort
+  // icon (unseen until a sort is set, as in the arrived table), Notes asks for the spare room (width:100%) from 721 to
+  // 899 px, where the arrived table's frozen columns leave it, and Peak's bars are the arrived figure (17 px) and time
+  // (44 px, 33 in Arabic). From 900 to 1023 px the arrived widths follow the notes' text, so the skeleton is left as it
+  // was there. The phone list's peak bar is the arrived «Peak 6:43 PM», midway between the seven rows' widths (75.1 px, 67.4 in Arabic; digits differ by up to 1.1 px).
   function pendDays() {
     $("#days").hidden = false;
     tableExport.classList.add("is-disabled");
@@ -1287,7 +1292,7 @@
     const days = [...model.days].sort((x, y) => y.dn - x.dn);
     if (mqPhone.matches) {
       const n = days.length;
-      const items = days.slice(0, LIST_N).map((d) => `<li class="dli"><span class="dl-day">${dayText(d.dn)}</span><span class="dl-pk"><span class="dl-pv">${ph(24, "ph-pv")}</span></span><span class="dl-more">${ph(56)}${ph(72)}</span><span class="dl-pt">${ph(64)}</span></li>`).join("");
+      const items = days.slice(0, LIST_N).map((d) => `<li class="dli"><span class="dl-day">${dayText(d.dn)}</span><span class="dl-pk"><span class="dl-pv">${ph(24, "ph-pv")}</span></span><span class="dl-more">${ph(56)}${ph(72)}</span><span class="dl-pt">${ph(RTL ? 67.4 : 75.1)}</span></li>`).join("");
       dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort is-disabled"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort" disabled><option>${L.sorts["day-desc"]}</option></select><span class="sel-face" aria-hidden="true"><span class="is-on">${L.sorts["day-desc"]}</span></span></label></div>
         <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(periodWords(model.a, model.b)))}">${items}</ol>` +
         (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" disabled>${L.showAll}</button>` : "");
@@ -1295,10 +1300,11 @@
       return;
     }
     const cols = [["day", "c-day"], ["peak", "c-peak n"], ["avg", "c-avg n"], ["entries", "c-entries n"], ["notes", "c-notes"]];
-    const head = cols.map(([k, cls]) => `<th scope="col" role="columnheader" class="${cls}"><span class="sort is-still"><span>${L.cols[k]}</span></span></th>`).join("");
+    const arrivedWidths = innerWidth <= 899 || innerWidth >= 1024;
+    const head = cols.map(([k, cls]) => `<th scope="col" role="columnheader" class="${cls}"${innerWidth <= 899 && k === "notes" ? ' style="width:100%"' : ""}><span class="sort is-still"><span>${L.cols[k]}</span>${arrivedWidths ? SORT_ICO : ""}</span></th>`).join("");
     const edge = (d) => d.wd === 0 && d.dn !== model.a;
     const rows = days.map((d) => `<tr role="row"${edge(d) ? ` class="wk-edge"` : ""}><th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>` +
-      `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${ph(20, "ph-lab")}</span><span class="pt">${ph(44)}</span></span></td>` +
+      `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${arrivedWidths ? ph(17, "ph-lab") : ph(20, "ph-lab")}</span><span class="pt">${arrivedWidths ? ph(RTL ? 33 : 44) : ph(44)}</span></span></td>` +
       `<td role="cell" class="c-avg n">${ph(18, "ph-lab")}</td><td role="cell" class="c-entries n">${ph(36, "ph-lab")}</td><td role="cell" class="c-notes"></td></tr>`).join("");
     daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(periodWords(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${rows}</tbody>`;
   }
