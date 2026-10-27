@@ -4330,7 +4330,7 @@
           "reach": "activate:[data-edit=\"crowd\"]",
           "source": {
             "file": "settings.js",
-            "line": 644
+            "line": 662
           },
           "covers": [
             "#dlg-crowd"
@@ -4350,7 +4350,7 @@
           "reach": "activate:[data-edit=\"hours\"]",
           "source": {
             "file": "settings.js",
-            "line": 644
+            "line": 662
           },
           "covers": [
             "#dlg-hours"
@@ -4370,7 +4370,7 @@
           "reach": "activate:[data-edit=\"day\"]",
           "source": {
             "file": "settings.js",
-            "line": 644
+            "line": 662
           },
           "covers": [
             "#dlg-day"
@@ -4392,7 +4392,7 @@
           "reach": "activate:[data-edit=\"hours\"] → type:[name=\"ed-sun-close\"]=5:00 → press:Tab",
           "source": {
             "file": "settings.js",
-            "line": 1113
+            "line": 1134
           },
           "covers": [
             "#dlg-hours",
@@ -4412,37 +4412,64 @@
           "query": {
             "log": "every"
           },
-          "widths": "wide",
           "what": "record",
           "reach": "activate:.log-open[data-rec=\"10\"]",
           "source": {
             "file": "settings.js",
-            "line": 740
+            "line": 758
           },
           "covers": [
             "#dlg-rec"
           ]
         },
         {
-          "id": "record-phone",
-          "marker": "dlg-rec",
-          "actions": [],
+          "id": "copy-hours",
+          "marker": "ed-copy",
+          "actions": [
+            "activate:[data-edit=\"hours\"]",
+            "activate:#ed-copy"
+          ],
           "proof": {
-            "selector": "#dlg-rec[open]",
+            "selector": "#cp-list",
             "visible": true
           },
-          "query": {
-            "record": "latest"
-          },
-          "widths": "phone",
-          "what": "record-phone",
-          "reach": "settings.html?record=latest",
+          "what": "copy-hours",
+          "reach": "activate:[data-edit=\"hours\"] → activate:#ed-copy",
           "source": {
             "file": "settings.js",
-            "line": 2022
+            "line": 1133
           },
           "covers": [
-            "#dlg-rec"
+            "#dlg-hours"
+          ]
+        },
+        {
+          "id": "copy-none",
+          "marker": "cp-err",
+          "actions": [
+            "activate:[data-edit=\"hours\"]",
+            "activate:#ed-copy",
+            "wait:600",
+            "activate:.cp-row[data-day=\"mon\"]",
+            "activate:.cp-row[data-day=\"tue\"]",
+            "activate:.cp-row[data-day=\"wed\"]",
+            "activate:.cp-row[data-day=\"thu\"]",
+            "activate:.cp-row[data-day=\"fri\"]",
+            "activate:.cp-row[data-day=\"sat\"]",
+            "activate:.st-do"
+          ],
+          "proof": {
+            "selector": "#cp-err",
+            "visible": true
+          },
+          "what": "copy-none",
+          "reach": "activate:[data-edit=\"hours\"] → activate:#ed-copy → wait:600 → activate:.cp-row[data-day=\"mon\"] → activate:.cp-row[data-day=\"tue\"] → activate:.cp-row[data-day=\"wed\"] → activate:.cp-row[data-day=\"thu\"] → activate:.cp-row[data-day=\"fri\"] → activate:.cp-row[data-day=\"sat\"] → activate:.st-do",
+          "source": {
+            "file": "settings.js",
+            "line": 1736
+          },
+          "covers": [
+            "#cp-err"
           ]
         }
       ],

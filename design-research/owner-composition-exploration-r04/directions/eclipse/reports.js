@@ -1082,7 +1082,15 @@
     fitSlots(daysTable);
     tableFile();
   }
-  addEventListener("resize", () => fitSlots(daysTable));
+  // A width that crosses one of the skeleton's ranges (pendDays: the phone's list, 721-899, 900-1023, 1024 and up) while the
+  // page is loading redraws the pending table as a fresh load at the new width does (decision 82): drawn, then fitted once
+  // the new columns are in, as the fonts' arrival fits a fresh load's. Without it the old width's skeleton stays and the
+  // fit below measures it at the new width (a rotation from 1024 px to 768 px kept the wide columns; from 1440 px, four
+  // columns at 0 px).
+  addEventListener("resize", () => {
+    if (phase === "loading" && skelRange && skelRange !== rangeNow()) pendDays();
+    else fitSlots(daysTable);
+  });
   /* ---- the day list (720 px and below; the user's pick of 2026-10-01, option B).
    * A day per item: its date and its peak on the first line, its average and entries under the date and the peak's time
    * under the peak, on the peak's edge (TBL-1, TBL-11); a camera gap folds under them, one sentence with the words first
@@ -1283,9 +1291,14 @@
   // Nothing moves on arrival (DECISIONS item 82). The table takes the arrived columns' widths: each header carries the sort
   // icon (unseen until a sort is set, as in the arrived table), Notes asks for the spare room (width:100%) from 721 to
   // 899 px, where the arrived table's frozen columns leave it, and Peak's bars are the arrived figure (17 px) and time
-  // (44 px, 33 in Arabic). From 900 to 1023 px the arrived widths follow the notes' text, so the skeleton is left as it
-  // was there. The phone list's peak bar is the arrived «Peak 6:43 PM», midway between the seven rows' widths (75.1 px, 67.4 in Arabic; digits differ by up to 1.1 px).
+  // (44 px, 33 in Arabic). The columns keep their arrived widths (measured, 0.00 px) from 721 to about 826 px in English and
+  // 843 px in Arabic and from 1024 px; from about 827 / 844 px to 899 px the arrived widths follow the notes' text and the
+  // columns move on arrival (1 to 4 px just above those widths, 38 px in Arabic and 44 px in English at 899 px). From 900
+  // to 1023 px the skeleton is left as it was there (127 to 149 px of move in Arabic, 175 to 205 px in English). The phone list's peak bar is the arrived «Peak 6:43 PM», midway between the seven rows' widths (75.1 px, 67.4 in Arabic; digits differ by up to 1.1 px).
+  const rangeNow = () => (mqPhone.matches ? "list" : innerWidth <= 899 ? "narrow" : innerWidth >= 1024 ? "wide" : "tablet");
+  let skelRange = null;                // the range the pending table was last drawn for
   function pendDays() {
+    skelRange = rangeNow();
     $("#days").hidden = false;
     tableExport.classList.add("is-disabled");
     tableExport.setAttribute("aria-disabled", "true");
@@ -1307,6 +1320,10 @@
       `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${arrivedWidths ? ph(17, "ph-lab") : ph(20, "ph-lab")}</span><span class="pt">${arrivedWidths ? ph(RTL ? 33 : 44) : ph(44)}</span></span></td>` +
       `<td role="cell" class="c-avg n">${ph(18, "ph-lab")}</td><td role="cell" class="c-entries n">${ph(36, "ph-lab")}</td><td role="cell" class="c-notes"></td></tr>`).join("");
     daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(periodWords(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${rows}</tbody>`;
+    // Fitted at once, so a table drawn again at another width (a rotation, or the media queries redrawing it) never keeps the
+    // previous fit's fixed layout over columns it no longer has: with Notes at width:100% they collapse to 0 px. A fresh
+    // load's first fit comes with the fonts, which fits again.
+    fitSlots(daysTable);
   }
   // The alert (EMP-2's sentence form, EMP-5's role). The sentence is drawn with the state's first paint, in its place,
   // so nothing moves after it; its announcement is a separate unseen alert region, written a moment after the region

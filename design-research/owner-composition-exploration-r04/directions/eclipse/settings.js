@@ -1605,17 +1605,24 @@
   }
   const alertBox = (sec) => `<div class="alert st-alert" id="st-${sec}-alert" role="alert" hidden></div>`;
   const keepReason = (sec) => { const r = $(".cf-reason-in", stEl(sec)); if (r && flow) flow.reason = r.value; };
-  /* A step takes the editor's place (or the step before it); the panel settles around it. Its buttons stand where the
-   * editor's «حفظ» or «إلغاء» stood («تطبيق الآن» exactly where «حفظ» was, at 390 px), so the second press of a double
-   * press would land on them: for 500 ms after a step appears, a pointer's click on any of its buttons (a detail of 1 or
-   * more) does nothing, whatever the button. A key, and a click with a detail of 0 (assistive technology, voice), are
-   * not held (the click listener in the window's wiring below). */
+  /* A step takes the editor's place (or the step before it); the panel settles around it. Its buttons, or its days, can stand
+   * where the control that opened it stood («تطبيق الآن» exactly where «حفظ» was, at 390 px; the question before closing's
+   * «متابعة التعديل» or «تجاهل» where «إلغاء» was; the copy step's Saturday box under the tool), so the second press of a
+   * double press would land on them. The hold (stepHold): for 500 ms after the pointer click that opened a step (its
+   * time, and the box its control had as the click arrived), a pointer press that goes down inside that box does nothing:
+   * its pointerdown and mousedown are prevented, so the focus stays where the step put it, and its click is dropped (the
+   * dialog's listeners below). A press anywhere else acts at once. A step opened by a key or by a click with a detail of 0
+   * (assistive technology, voice, an element's click()) is not held, and keys are never held. */
   const STEP_HOLD_MS = 500;
-  let stepAt = -Infinity;              // when the current step appeared
+  let stepHold = null;                 // { until, box }: the opening click's time + 500 ms, and where its control stood
+  let lastClick = null;                // { at, box }: the latest pointer click (a detail of 1 or more) and its control's box
+  let heldPress = null;                // { id, up }: a press the hold took at its pointerdown, and its pointerup's time
   function showStep(sec, html) {
     const dlg = D[sec], ed = edEl(sec), st = stEl(sec);
     keepReason(sec);
-    stepAt = performance.now();
+    // The step the latest pointer click opened, if it came within the hold (one that arrives later, the conflict view after
+    // an answer, keeps what is left of it); a key, or a click with a detail of 0, clears lastClick, so those hold nothing.
+    stepHold = lastClick && performance.now() - lastClick.at < STEP_HOLD_MS ? { until: lastClick.at + STEP_HOLD_MS, box: lastClick.box } : null;
     M.reflow(dlg, () => {
       ed.hidden = true;
       st.hidden = false;
@@ -1633,6 +1640,7 @@
     const dlg = D[sec], ed = edEl(sec), st = stEl(sec);
     keepReason(sec);
     flow.step = "edit";
+    stepHold = null;
     M.reflow(dlg, () => {
       if (during) during();
       st.hidden = true;
@@ -2029,15 +2037,34 @@
     dlg.addEventListener("cancel", (e) => { e.preventDefault(); onEscape(sec); });
     // Should the browser close the window anyway, it opens again at once, with what was typed.
     dlg.addEventListener("close", () => { if (openDlg && openDlg.dlg === dlg) { dlg.showModal(); dlg.classList.add("is-open"); } });
+    /* The step hold (STEP_HOLD_MS above), captured first, so the box is the one the control had as the click came. A
+     * pointer press that goes down inside the opening control's box within the hold is held: its pointerdown and mousedown
+     * are prevented (a touch's mousedown comes after its pointerup, so it is prevented too) and its click is dropped,
+     * however long the press lasted; a click that comes more than CARRY_MS after its pointerup is not dropped. */
     dlg.addEventListener("click", (e) => {
-      if (e.detail < 1 || !flow || flow.step === "edit" || e.timeStamp - stepAt >= STEP_HOLD_MS) return;
-      // In the copy step the hold also covers its days and its list field: at 390 px the second tap of a double press on the
-      // tool lands on Saturday's box, which would untick it (OWN-S28; the tool's own tap is no click of the step).
-      const held = e.target.closest(flow.step === "copy" ? "button, .cp-row, .cp-sel" : "button");
-      if (!held || !stEl(sec).contains(held)) return;
+      const h = heldPress;
+      if (h && e.detail >= 1) {
+        heldPress = null;
+        if (h.up && e.timeStamp - h.up <= CARRY_MS) { e.preventDefault(); e.stopImmediatePropagation(); return; }
+      }
+      lastClick = e.detail >= 1 ? { at: e.timeStamp, box: (e.target.closest("button") || e.target).getBoundingClientRect() } : null;
+    }, true);
+    dlg.addEventListener("pointerdown", (e) => {
+      heldPress = null;
+      const h = stepHold, b = h && h.box;
+      if (!b || !flow || flow.step === "edit" || e.timeStamp >= h.until || e.button !== 0) return;
+      if (e.clientX < b.left || e.clientX >= b.right || e.clientY < b.top || e.clientY >= b.bottom) return;
+      heldPress = { id: e.pointerId, up: 0 };
+      e.preventDefault();
+    }, true);
+    dlg.addEventListener("pointerup", (e) => { if (heldPress && heldPress.id === e.pointerId) heldPress.up = e.timeStamp; }, true);
+    dlg.addEventListener("pointercancel", () => { heldPress = null; }, true);
+    dlg.addEventListener("mousedown", (e) => {
+      if (!heldPress) return;
       e.preventDefault();
       e.stopImmediatePropagation();
     }, true);
+    dlg.addEventListener("keydown", () => { lastClick = null; heldPress = null; }, true);
     dlg.addEventListener("click", (e) => {
       const c = e.target.closest("[data-close]"), b = e.target.closest("[data-back]"), x = e.target.closest("[data-discard]");
       const hit = c || b || x;
@@ -2077,6 +2104,7 @@
       if (!b || e.pointerId !== p.id || e.clientX < b.left || e.clientX >= b.right || e.clientY < b.top || e.clientY >= b.bottom) return;
       const was = submits;
       pressUpAt = e.timeStamp;
+      lastClick = { at: e.timeStamp, box: b };
       pressClicked = false;
       setTimeout(() => {
         if (submits !== was || !flow || flow.sec !== sec || flow.step !== "edit" || flow.busy || !openDlg || openDlg.dlg !== dlg) return;
