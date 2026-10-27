@@ -3796,7 +3796,7 @@
           "reach": "select:#dl-sort=peak-desc",
           "source": {
             "file": "reports.js",
-            "line": 1376
+            "line": 1380
           },
           "covers": []
         },
@@ -3816,7 +3816,7 @@
           "reach": "activate:#dl-all",
           "source": {
             "file": "reports.js",
-            "line": 1378
+            "line": 1382
           },
           "covers": [
             "#day-list",
@@ -4330,7 +4330,7 @@
           "reach": "activate:[data-edit=\"crowd\"]",
           "source": {
             "file": "settings.js",
-            "line": 662
+            "line": 656
           },
           "covers": [
             "#dlg-crowd"
@@ -4350,7 +4350,7 @@
           "reach": "activate:[data-edit=\"hours\"]",
           "source": {
             "file": "settings.js",
-            "line": 662
+            "line": 656
           },
           "covers": [
             "#dlg-hours"
@@ -4370,7 +4370,7 @@
           "reach": "activate:[data-edit=\"day\"]",
           "source": {
             "file": "settings.js",
-            "line": 662
+            "line": 656
           },
           "covers": [
             "#dlg-day"
@@ -4392,7 +4392,7 @@
           "reach": "activate:[data-edit=\"hours\"] → type:[name=\"ed-sun-close\"]=5:00 → press:Tab",
           "source": {
             "file": "settings.js",
-            "line": 1134
+            "line": 1128
           },
           "covers": [
             "#dlg-hours",
@@ -4416,7 +4416,7 @@
           "reach": "activate:.log-open[data-rec=\"10\"]",
           "source": {
             "file": "settings.js",
-            "line": 758
+            "line": 752
           },
           "covers": [
             "#dlg-rec"
@@ -4437,7 +4437,7 @@
           "reach": "activate:[data-edit=\"hours\"] → activate:#ed-copy",
           "source": {
             "file": "settings.js",
-            "line": 1133
+            "line": 1127
           },
           "covers": [
             "#dlg-hours"
@@ -4466,7 +4466,7 @@
           "reach": "activate:[data-edit=\"hours\"] → activate:#ed-copy → wait:600 → activate:.cp-row[data-day=\"mon\"] → activate:.cp-row[data-day=\"tue\"] → activate:.cp-row[data-day=\"wed\"] → activate:.cp-row[data-day=\"thu\"] → activate:.cp-row[data-day=\"fri\"] → activate:.cp-row[data-day=\"sat\"] → activate:.st-do",
           "source": {
             "file": "settings.js",
-            "line": 1736
+            "line": 1730
           },
           "covers": [
             "#cp-err"

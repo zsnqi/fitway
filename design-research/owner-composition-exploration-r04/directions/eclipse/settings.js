@@ -64,8 +64,6 @@
     ar: {
       docTitle: "الإعدادات · FITWAY (مفهوم)",
       title: "الإعدادات",
-      history: "سجل الإعدادات",
-      historyName: "سجل الإعدادات في سجل النشاط",
       sec: { crowd: "الزحام", hours: "ساعات العمل", day: "يوم العمل" },
       hoursUnit: "توقيت الرياض",
       noOpening: "لا ساعات عمل",
@@ -248,8 +246,6 @@
     en: {
       docTitle: "Settings · FITWAY (concept)",
       title: "Settings",
-      history: "Settings history",
-      historyName: "Settings history in the Activity log",
       sec: { crowd: "Crowd", hours: "Opening hours", day: "Business day" },
       hoursUnit: "Riyadh time",
       noOpening: "No opening hours",
@@ -637,7 +633,6 @@
   const frame = EclipseFrame.init({
     L, RTL, motionOn, Motion: M, URL_OFF,
     links: { daily: `index.html?${keep}`, reports: `reports.html?${keep}`, activity: `activity.html?${keep}`, access: `access.html?${keep}` },
-    extraLinks: { "#history-link": LOG_HREF },
     isDialogOpen: () => !!openDlg,
     status: {
       phase: () => phase, key: (p) => (p === "error" || p === "retrying" ? "error" : OPS),
@@ -645,7 +640,6 @@
       hours: () => { const t = todayHours(); return t ? `${L.hours} ${rangeText(t)}` : L.closed; },
     },
   });
-  $("#history-link").setAttribute("aria-label", L.historyName);
 
   /* ---------------------------------------------------------------- the value cards
    * Three cards, each a heading with its «تعديل» at the head's end, then its values on one module of rows (--row, 48 px
@@ -2299,8 +2293,8 @@
   // ?edit=crowd|hours|day opens that card's window on load (for review), as its «تعديل» would.
   const EDIT_Q = params.get("edit");
   if (EDIT_Q in D && phase === "ready") openEditor(EDIT_Q, $(`[data-edit="${EDIT_Q}"]`));
-  // ?record=<version> opens that record's window on load (for review; the phone reaches the history through its card, and
-  // for now the header link, DECISIONS item 81). «latest» is the newest.
+  // ?record=<version> opens that record's window on load (for review; the phone reaches the history through its card, whose
+  // «عرض الكل» goes to Activity log, DECISIONS items 81 and 89). «latest» is the newest.
   const REC_Q = params.get("record");
   if (REC_Q && phase === "ready" && !openDlg) openRecord(REC_Q === "latest" ? current().version : Number(REC_Q), $(`.log-open[data-rec="${REC_Q === "latest" ? current().version : REC_Q}"]`));
 })();

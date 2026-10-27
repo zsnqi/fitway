@@ -45,16 +45,8 @@ html[lang="en"] .set { --lab: 104px; }
  * The header, then the four cards; one 16 px gutter (SPC-5). From 1024 px two equal columns, the rows stretched to
  * their taller card, so each row's two cards start and end on one line. 721-1023 px and on a phone one column. */
 .set .main { display: flex; flex-direction: column; gap: 16px; padding-block: 8px 24px; }
-.set-tools { display: none; }
 .set-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
 @media (max-width: 1023px) { .set-grid { grid-template-columns: minmax(0, 1fr); } }
-/* The phone's control under the header (the second skeleton pass's «سجل الإعدادات», its own lines): kept for now, as the
- * history card now stands on a phone too (DECISIONS item 81); the user decides whether it goes. Removing it takes this
- * block, `.set-history svg`, the `.set-tools` rule above and the `#tools` block of settings.html. */
-@media (max-width: 720px) {
-  .set-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
-}
-.set-history svg { width: 17px; height: 17px; }
 
 /* ------------------------------------------------------------------ the value card (new, VAL-1)
  * SRF-1's card, padding 24 (16 on a phone), never a card inside a card (SRF-6). Its head: the name in heading type, a

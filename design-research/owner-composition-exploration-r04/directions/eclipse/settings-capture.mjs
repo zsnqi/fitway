@@ -133,7 +133,7 @@ const PROBLEMS = () => {
   }
   const aside = [...document.querySelectorAll(".log-open")].map((b) => [b, b.style.display]);
   aside.forEach(([b]) => { b.style.display = "none"; });
-  for (const el of document.querySelectorAll(".head, .set-tools, .set-grid, .set-card, .set-head, .set-title, .set-figs, .set-fig, .set-fig > dd, .set-sub, .set-dl, .set-row, .set-row > dt, .set-row > dd, .log-box, .log-list, .log-rec, .log-fig, .log-meta, .dlg-panel, .dlg-head, .dlg-body, .dlg-foot, .alert, .ed-fig, .ed-line, .ed-list, .ed-row, .ed-warn, .field-err")) {
+  for (const el of document.querySelectorAll(".head, .set-grid, .set-card, .set-head, .set-title, .set-figs, .set-fig, .set-fig > dd, .set-sub, .set-dl, .set-row, .set-row > dt, .set-row > dd, .log-box, .log-list, .log-rec, .log-fig, .log-meta, .dlg-panel, .dlg-head, .dlg-body, .dlg-foot, .alert, .ed-fig, .ed-line, .ed-list, .ed-row, .ed-warn, .field-err")) {
     if (el.closest("[hidden], dialog:not([open])")) continue;
     if (getComputedStyle(el).display === "none" || !el.getClientRects().length) continue;
     // «عرض الكل» reaches 12 px past its words into the card's padding (Access's link), by design.
@@ -270,7 +270,7 @@ for (const lang of LANGS) {
     }
     {
       const o = await open(q(), { width: 390, height: 844 });
-      for (const [nn, what, sel] of [["11", "crowd", "#card-crowd"], ["12", "hours", "#card-hours"], ["13", "business-day", "#card-day"], ["14", "head-and-history-link", ".head"]]) {
+      for (const [nn, what, sel] of [["11", "crowd", "#card-crowd"], ["12", "hours", "#card-hours"], ["13", "business-day", "#card-day"], ["14", "head", ".head"]]) {
         const name = frameName(`1-${nn}`, what, 390, lang);
         if (!wanted(name)) continue;
         if (sel === ".head") await o.page.screenshot({ path: path(name), clip: { x: 0, y: 0, width: 390, height: 140 } });
@@ -1074,8 +1074,7 @@ for (const lang of LANGS) {
 
   /* ---- 6-30.. the phone's history (OWN-S29) */
   if (want(6) && wanted("6-30")) {
-    // 18: the page at 390 x 844, the cards' boxes and records; the link stays (the coordinator's departure), so every top
-    // is the spec's plus the link's block.
+    // 18: the page at 390 x 844, the cards' boxes and records; no link under the header (decision 89), so every top is the spec's.
     {
       const o = await open(q(), { width: 390, height: 844 });
       const g = await o.page.evaluate(() => {
@@ -1083,11 +1082,11 @@ for (const lang of LANGS) {
         return { link: !!document.querySelector("#history-link"), cards: ["crowd", "hours", "day", "log"].map((k) => b(`#card-${k}`)), recs: [...document.querySelectorAll("#card-log .log-rec")].map((li) => { const r = li.getBoundingClientRect(); return [+(r.top + scrollY).toFixed(2), +r.height.toFixed(2)]; }), page: document.documentElement.scrollHeight, folded: document.querySelectorAll("#card-log .log-rec.is-folded").length };
       });
       o.notes.phone = g;
-      const dy = g.cards[0][0] - 84;
+      if (g.link) o.checks.push("#history-link is still on the phone's page");
       const wantC = [[84, 395], [495, 370], [881, 256], [1153, 375]];
-      g.cards.forEach((c, i) => { if (Math.abs(c[0] - dy - wantC[i][0]) > 0.5 || Math.abs(c[1] - wantC[i][1]) > 0.5) o.checks.push(`card ${i}: ${c} (link offset ${dy}), want ${wantC[i]}`); });
-      g.recs.forEach((r, i) => { if (Math.abs(r[1] - 99) > 0.01 || Math.abs(r[0] - dy - [1226, 1325, 1424][i]) > 0.5) o.checks.push(`record ${i}: ${r}`); });
-      if (Math.abs(g.page - dy - 1654) > 1) o.checks.push(`page ${g.page}, want ${1654 + dy}`);
+      g.cards.forEach((c, i) => { if (Math.abs(c[0] - wantC[i][0]) > 0.5 || Math.abs(c[1] - wantC[i][1]) > 0.5) o.checks.push(`card ${i}: ${c} want ${wantC[i]}`); });
+      g.recs.forEach((r, i) => { if (Math.abs(r[1] - 99) > 0.01 || Math.abs(r[0] - [1226, 1325, 1424][i]) > 0.5) o.checks.push(`record ${i}: ${r}`); });
+      if (Math.abs(g.page - 1654) > 1) o.checks.push(`page ${g.page}, want 1654`);
       if (g.folded) o.checks.push(`${g.folded} records fold at 390 by default`);
       await finish(frameName("6-30", "phone-geometry", 390, lang), o);
       await o.context.close();
@@ -1116,7 +1115,13 @@ for (const lang of LANGS) {
         o.notes.arrival = { worst, cls, recs: n, log: z["card-log"] };
         if (worst > 0.5) o.checks.push(`loading → arrived moved ${worst}px (${w}, ${hist || "default"})`);
         if (cls > 0) o.checks.push(`layout shift ${cls} on arrival (${w}, ${hist || "default"})`);
-        if (w === 320 && lang === "ar" && !hist) o.notes.at320 = { card: z["card-log"], recs: [a.rec0?.[1], a.rec1?.[1], a.rec2?.[1]] };
+        if (w === 320 && lang === "ar" && !hist) {
+          o.notes.at320 = { card: z["card-log"], recs: [z.rec0?.[1], z.rec1?.[1], z.rec2?.[1]], tops: [z["card-log"][1], z.rec0?.[1], z.rec1?.[1], z.rec2?.[1]] };
+          // 320 AR (OWN-S29): the card at 1243.5 and 375 tall, the records at 1316.5, 1415.5 and 1514.5
+          const want320 = [1243.5, 1316.5, 1415.5, 1514.5];
+          [z["card-log"][1], z.rec0[1], z.rec1[1], z.rec2[1]].forEach((t, i) => { if (Math.abs(t - want320[i]) > 0.5) o.checks.push(`320 AR: top ${i} is ${t}, want ${want320[i]}`); });
+          if (Math.abs(z["card-log"][3] - 375) > 0.5) o.checks.push(`320 AR: the card is ${z["card-log"][3]} tall, want 375`);
+        }
         await finish(frameName("6-31", `arrival-${hist || "default"}`, w, lang), o);
         await o.context.close();
       }

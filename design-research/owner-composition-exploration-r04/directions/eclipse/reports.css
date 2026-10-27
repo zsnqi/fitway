@@ -499,7 +499,10 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
  * could leave dangling at a line's end. */
 .dl-more { grid-area: more; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 14px; min-width: 0; font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .dl-more bdi { color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.dl-pt { grid-area: pt; font-size: 12px; line-height: 18px; color: var(--ink-3); text-align: right; }
+/* One width for the peak's time in each language, the widest «Peak 10:44 AM» / «الذروة 10:44 ص» can be (84.14 and 86.23 px over every
+ * time, rounded up to 0.5 px), so the box never follows the digits and the pending bar (the box's whole width) is the arrived box. */
+.dl-pt { grid-area: pt; width: 84.5px; font-size: 12px; line-height: 18px; color: var(--ink-3); text-align: right; }
+[dir="rtl"] .dl-pt { width: 86.5px; }
 .dl-note { grid-area: note; margin-block-start: 6px; }
 .dl-note .rg { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .dl-note .w { font-size: 12px; color: var(--ink-3); }
@@ -517,6 +520,7 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
  * an aside, a list's small lines, the table's peak time), a label's 10 px (the pattern's subtitle, the table's
  * figures), the list's peak 14 px. */
 .rp .stat-meta > .ph-bar, .rp .stat-aside > .ph-bar, .rp .dl-more > .ph-bar, .rp .dl-pt > .ph-bar, .rp .pk .pt > .ph-bar { height: 9px; border-radius: 4px; }
+.rp .dl-pt > .ph-bar { width: 100%; }
 .rp .ph-lab { height: 10px; border-radius: 4px; }
 .rp .ph-pv { height: 14px; border-radius: 5px; }
 .rp .ph-sep { visibility: hidden; }

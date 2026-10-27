@@ -1294,7 +1294,11 @@
   // (44 px, 33 in Arabic). The columns keep their arrived widths (measured, 0.00 px) from 721 to about 826 px in English and
   // 843 px in Arabic and from 1024 px; from about 827 / 844 px to 899 px the arrived widths follow the notes' text and the
   // columns move on arrival (1 to 4 px just above those widths, 38 px in Arabic and 44 px in English at 899 px). From 900
-  // to 1023 px the skeleton is left as it was there (127 to 149 px of move in Arabic, 175 to 205 px in English). The phone list's peak bar is the arrived «Peak 6:43 PM», midway between the seven rows' widths (75.1 px, 67.4 in Arabic; digits differ by up to 1.1 px).
+  // to 1023 px the skeleton is left as it was there (127 to 149 px of move in Arabic, 175 to 205 px in English). The phone list's peak
+  // slot (`.dl-pt`) has one fixed width in each language, the widest the arrived «Peak 10:44 AM» / «الذروة 10:44 ص» can be for any
+  // time (every time 1:00-12:59 with AM/PM or ص/م measured through L.peakAt(timeText(m)): 84.14 px in English, 86.23 in Arabic,
+  // rounded up to 0.5 px: 84.5 and 86.5; reports.css), so the arrived box and its pending bar, which takes the box's whole width,
+  // are the same 0.00 px whatever the digits (Readex Pro's digits differ in width by up to 1.1 px at the fixture's times).
   const rangeNow = () => (mqPhone.matches ? "list" : innerWidth <= 899 ? "narrow" : innerWidth >= 1024 ? "wide" : "tablet");
   let skelRange = null;                // the range the pending table was last drawn for
   function pendDays() {
@@ -1305,7 +1309,7 @@
     const days = [...model.days].sort((x, y) => y.dn - x.dn);
     if (mqPhone.matches) {
       const n = days.length;
-      const items = days.slice(0, LIST_N).map((d) => `<li class="dli"><span class="dl-day">${dayText(d.dn)}</span><span class="dl-pk"><span class="dl-pv">${ph(24, "ph-pv")}</span></span><span class="dl-more">${ph(56)}${ph(72)}</span><span class="dl-pt">${ph(RTL ? 67.4 : 75.1)}</span></li>`).join("");
+      const items = days.slice(0, LIST_N).map((d) => `<li class="dli"><span class="dl-day">${dayText(d.dn)}</span><span class="dl-pk"><span class="dl-pv">${ph(24, "ph-pv")}</span></span><span class="dl-more">${ph(56)}${ph(72)}</span><span class="dl-pt"><i class="ph-bar" style="--w:100%" aria-hidden="true"></i></span></li>`).join("");
       dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort is-disabled"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort" disabled><option>${L.sorts["day-desc"]}</option></select><span class="sel-face" aria-hidden="true"><span class="is-on">${L.sorts["day-desc"]}</span></span></label></div>
         <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(periodWords(model.a, model.b)))}">${items}</ol>` +
         (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" disabled>${L.showAll}</button>` : "");
