@@ -1015,7 +1015,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     The count's label is the Owner pages' «داخل الصالة الآن · تقريبًا» / "Inside now · approx." (GLO-2), one wording
     everywhere; SPEC.md's `العدد التقريبي` is amended (the user, «موافق», on P2). The public page's motion beyond the
     digit roll (an intro, the level mark's own motion) is decided during its design, by looking at the animation (the
-    user, on P3, «اشوف نقرر وقت تصميمها و نشوف الانميشين»).
+    user, on P3, «اشوف نقرر وقت تصميمها و نشوف الانميشين»). Lightness (P4): the ban on canvas, WebGL, rAF loops and
+    video holds from the start; the weight and speed budget measured on a slow phone waits until after the demo
+    (decision 52), with one check that the page runs smoothly on the phone the demo is shown on (the user, «تمام ولكن
+    يفضل بعد عرض الديمو صح؟», and the coordinator's answer).
 
 ## How this milestone's rounds run
 
