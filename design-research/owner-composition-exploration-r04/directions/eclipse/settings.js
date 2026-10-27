@@ -1443,15 +1443,23 @@
    * click would have run it, with the pressSeen taken as the pointer went down. A click that does land (the pointer
    * still over the moved button) has already run it, so nothing runs twice; a pointer that comes up outside the
    * rectangle is a slide off to cancel, like any button, and does nothing; a touch the browser takes for a scroll
-   * (pointercancel) does nothing either. A key press is not a pointer, so it is not carried. A touch's click is
-   * dispatched after its pointerup as a task of its own and finds whatever stands under the finger by then, which after
-   * a carried press is the confirmation's «تطبيق الآن» or the editor's next field, so the mouse events a touch brings
-   * after it (mousedown, which would move the focus, mouseup, and the click) are dropped once a press has been carried
-   * (pressCarried, until the click or until the next pointer or key goes down). */
+   * (pointercancel) does nothing either. A key press is not a pointer, so it is not carried. A touch's mouse events
+   * (mousedown, which would move the focus, mouseup, and the click) follow its pointerup, and where they stand in
+   * relation to the timer above depends on the browser: in Chromium, on a phone and a desktop with a touch screen alike,
+   * all three have come before it (measured), and the click has found the moved content or the button; in a browser
+   * that delivers them later (not measured) they would come after it, and find whatever stands under the finger by
+   * then, which after a carried press is the confirmation's «تطبيق الآن» or the editor's next field. So a press carried before its click has come drops those
+   * mouse events (pressCarried), and only those that are a pointer's, with a detail of 1 or more: a click with a detail
+   * of 0 (an element's click(), or assistive technology or voice activating «حفظ», the close button or «إلغاء») is
+   * never dropped. It is armed only if no click of that press has reached the window since its pointerup (pressClicked),
+   * and it ends at the first click dropped, the next pointerdown, the next key, or 800 ms after the pointerup. */
   let pressSeen = null;
   let pressBox = null;                 // { id, box }: the pointer that went down on «حفظ», and where «حفظ» stood
   let submits = 0;                     // the window's submits so far, so that a press can tell a click came
-  let pressCarried = false;            // a press that submitEdit ran for without its click: that click, if it comes, is dropped
+  let pressCarried = false;            // a press that submitEdit ran for before its click came: that click, if it comes, is dropped
+  let pressUpAt = 0;                   // the carried press's pointerup (event time)
+  let pressClicked = false;            // a click with a detail of 1 or more has reached the window since that pointerup
+  const CARRY_MS = 800;                // how long after the pointerup a carried press drops its mouse events
   const seenNow = (sec) => Object.fromEntries(WARN_IDS[sec].map((id) => [id, shownText(id, "warn")]));
   /* A sentence no field is about (the hours' three speak of days, not of one field) takes the focus itself, made focusable
    * for that (tabindex -1, so Tab does not stop on it); then the window's body scrolls so the whole of it stands above the
@@ -1566,10 +1574,17 @@
   }
   const alertBox = (sec) => `<div class="alert st-alert" id="st-${sec}-alert" role="alert" hidden></div>`;
   const keepReason = (sec) => { const r = $(".cf-reason-in", stEl(sec)); if (r && flow) flow.reason = r.value; };
-  // A step takes the editor's place (or the step before it); the panel settles around it.
+  /* A step takes the editor's place (or the step before it); the panel settles around it. Its buttons stand where the
+   * editor's «حفظ» or «إلغاء» stood («تطبيق الآن» exactly where «حفظ» was, at 390 px), so the second press of a double
+   * press would land on them: for 500 ms after a step appears, a pointer's click on any of its buttons (a detail of 1 or
+   * more) does nothing, whatever the button. A key, and a click with a detail of 0 (assistive technology, voice), are
+   * not held (the click listener in the window's wiring below). */
+  const STEP_HOLD_MS = 500;
+  let stepAt = -Infinity;              // when the current step appeared
   function showStep(sec, html) {
     const dlg = D[sec], ed = edEl(sec), st = stEl(sec);
     keepReason(sec);
+    stepAt = performance.now();
     M.reflow(dlg, () => {
       ed.hidden = true;
       st.hidden = false;
@@ -1873,6 +1888,13 @@
     // Should the browser close the window anyway, it opens again at once, with what was typed.
     dlg.addEventListener("close", () => { if (openDlg && openDlg.dlg === dlg) { dlg.showModal(); dlg.classList.add("is-open"); } });
     dlg.addEventListener("click", (e) => {
+      if (e.detail < 1 || !flow || flow.step === "edit" || e.timeStamp - stepAt >= STEP_HOLD_MS) return;
+      const held = e.target.closest("button");
+      if (!held || !stEl(sec).contains(held)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }, true);
+    dlg.addEventListener("click", (e) => {
       const c = e.target.closest("[data-close]"), b = e.target.closest("[data-back]"), x = e.target.closest("[data-discard]");
       const hit = c || b || x;
       if (!hit) return;
@@ -1910,14 +1932,18 @@
       const b = p && p.box;
       if (!b || e.pointerId !== p.id || e.clientX < b.left || e.clientX >= b.right || e.clientY < b.top || e.clientY >= b.bottom) return;
       const was = submits;
+      pressUpAt = e.timeStamp;
+      pressClicked = false;
       setTimeout(() => {
         if (submits !== was || !flow || flow.sec !== sec || flow.step !== "edit" || flow.busy || !openDlg || openDlg.dlg !== dlg) return;
-        pressCarried = true;
+        pressCarried = !pressClicked;
         submitEdit(sec);
       });
     }, true);
     for (const type of ["mousedown", "mouseup", "click"]) dlg.addEventListener(type, (e) => {
-      if (!pressCarried) return;
+      if (type === "click" && e.detail >= 1) pressClicked = true;
+      if (!pressCarried || e.detail < 1) return;
+      if (e.timeStamp - pressUpAt > CARRY_MS) { pressCarried = false; return; }
       if (type === "click") pressCarried = false;
       e.preventDefault();
       e.stopImmediatePropagation();

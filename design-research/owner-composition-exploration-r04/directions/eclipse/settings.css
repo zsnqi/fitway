@@ -104,24 +104,30 @@ html[lang="en"] .set { --lab: 104px; }
 .dl-levels .v-q { padding-inline-end: 6px; }
 .dl-levels .v-p { padding-inline-start: 16px; }
 /* A level's parts closer on a phone (4 after «حتى», 10 before the people), so a gym of up to 999 keeps one line from
- * 415 px in Arabic and 387 px in English; below that the Packed row keeps its second line (below). A level that wrapped
- * as the values arrived would grow its row, which no placeholder can know. */
+ * 400 px in Arabic and 372 px in English on a phone (overlay scrollbars), from 415 and 387 px with a classic scrollbar
+ * (a card 334 and 306 px inside); narrower, the Packed row keeps its second line where its phrase can wrap (below: in
+ * English only in a card 300 to 305 px inside). A level that wrapped as the values arrived would grow its row, which no
+ * placeholder can know. */
 @media (max-width: 720px) {
   .dl-levels .v-q { padding-inline-end: 4px; }
   .dl-levels .v-p { padding-inline-start: 10px; }
 }
 /* The range's ends (a capacity in the millions, «لا يظهر بهذه السعة» at capacity 1 on a phone) wrap within the people's
- * column, between words, rather than spill the card; a gym of up to 999 keeps one line from 415 px in Arabic and 387 px
- * in English at its widest (the Packed row below keeps its second line up to there). */
+ * column, between words, rather than spill the card; a gym of up to 999 keeps one line from 400 px in Arabic and 372 px
+ * in English on a phone (overlay scrollbars), from 415 and 387 px with a classic scrollbar, at its widest (the Packed
+ * row below keeps its second line where its phrase can wrap: in Arabic up to there, in English only in a card 300 to
+ * 305 px inside). */
 .dl-levels .v-p, .dl-levels .v-p .nw { min-width: 0; white-space: normal; }
 /* The Packed row's people hold two lines wherever they can wrap (DECISIONS item 87). The skeleton is drawn before any
  * value is known (a first load has none; a skeleton that read the values would match only in a concept that knows them),
  * so it cannot tell whether the Packed row's phrase wraps: the row reserves the worst case in loading and arrived alike,
  * and the arrival moves nothing for a gym of 1 to 999 with any limits from 0 to 100%. The worst phrase is a capacity of
  * 999 with Busy at 100% (a count of 1,000 beside the widest limits' column): «أو 1,000 شخص فأكثر», 130 px, wraps in a
- * card up to 333 px inside in Arabic (a 414 px phone), and "or 1,000+ people", 109 px, in English only in a card of 304
- * to 305 px inside. Under 300 px inside, where the people stand under the percentage, it wraps in Arabic up to 253 px
- * (a 334 px phone) and in English never (not even in a 219 px card), so English reserves nothing there. Each query adds
+ * card up to 333 px inside in Arabic (a 399 px phone with overlay scrollbars, a 414 px window with a classic
+ * scrollbar; a 414 px phone is 348 px inside and keeps one line), and "or 1,000+ people", 109 px, in English only in a
+ * card of 300 to 305 px inside (a 366 to 371 px phone, a 381 to 386 px window with a classic scrollbar). Under 300 px
+ * inside, where the people stand under the percentage, it wraps in Arabic up to 253 px (a 319 px phone, a 334 px window
+ * with a classic scrollbar) and in English never (not even in a 219 px card), so English reserves nothing there. Each query adds
  * about 25 px to what was measured, so a font that falls back still holds its line; from 721 px the cards are 379 px
  * inside or more and never reach it. A gym whose phrase fits leaves the second line empty: 22 px under the row (the row
  * is 62 for 40 from 300 px inside, 83 for 61 below it). The row keeps the other levels' rhythm: its first line as far
