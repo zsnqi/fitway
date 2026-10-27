@@ -1299,6 +1299,8 @@
   // time (every time 1:00-12:59 with AM/PM or ص/م measured through L.peakAt(timeText(m)): 84.14 px in English, 86.23 in Arabic,
   // rounded up to 0.5 px: 84.5 and 86.5; reports.css), so the arrived box and its pending bar, which takes the box's whole width,
   // are the same 0.00 px whatever the digits (Readex Pro's digits differ in width by up to 1.1 px at the fixture's times).
+  // Below 330 px in Arabic the average and the entries are two fixed lines in both lists (reports.css, decision 91), so the pending
+  // list and the arrived list have the same items there; in Arabic the time is flush on the list's end edge (text-align: end).
   const rangeNow = () => (mqPhone.matches ? "list" : innerWidth <= 899 ? "narrow" : innerWidth >= 1024 ? "wide" : "tablet");
   let skelRange = null;                // the range the pending table was last drawn for
   function pendDays() {
