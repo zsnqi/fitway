@@ -492,9 +492,12 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 .dli:last-child { border-block-end: 0; }
 .dli.is-top { border-radius: 10px; background: rgba(229, 25, 53, 0.08); }
 .dl-day { grid-area: day; min-width: 0; font-size: 13.5px; line-height: 24px; color: var(--ink); }
-/* The peak and its time share the physical right edge in both languages (TBL-1; the slot's right edge, .dl-pt's text-align: right, 0.00 px
- * between the figure's right edge and the time's, decision 92); the highest day has its tint only. */
+/* The peak and its time start on one edge of the peak column, the start edge in each language (TBL-1, decision 16; decisions 92 and 94):
+ * Arabic the column's right edge (the slot's right edge, .dl-pt's text-align: right), English its left edge ([dir="ltr"] .dl-pk packs
+ * its figure to the left, .dl-pt's text-align: left), 0.00 px between the figure's edge and the time's in each; the pending figure bar
+ * is the arrived figure's start. The highest day has its tint only. */
 .dl-pk { grid-area: pk; display: inline-flex; flex-direction: row-reverse; align-items: center; gap: 8px; direction: ltr; justify-self: stretch; justify-content: flex-start; }
+[dir="ltr"] .dl-pk { justify-content: flex-end; }
 .dl-pv { font-size: 19px; line-height: 24px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
 /* The average and the entries: each label names its number, so a gap separates them, never a dot that a narrow screen
  * could leave dangling at a line's end. */
@@ -506,8 +509,8 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 @media (max-width: 329.98px) { [dir="rtl"] .dli:not(.is-none-day) .dl-more { flex-direction: column; align-items: flex-start; } [dir="rtl"] .rp .dl-more > .ph-bar { margin-block: 4px 5px; } }
 /* One width for the peak's time in each language, the widest «Peak 10:44 AM» / «الذروة 10:44 ص» can be (84.14 and 86.23 px over every
  * time, rounded up to 0.5 px), so the box never follows the digits and the pending bar (the box's whole width) is the arrived box. */
-.dl-pt { grid-area: pt; width: 84.5px; font-size: 12px; line-height: 18px; color: var(--ink-3); text-align: right; }
-[dir="rtl"] .dl-pt { width: 86.5px; }
+.dl-pt { grid-area: pt; width: 84.5px; font-size: 12px; line-height: 18px; color: var(--ink-3); text-align: left; }
+[dir="rtl"] .dl-pt { width: 86.5px; text-align: right; }
 /* The note stays in the day's column (the grid's first, "note ."), so it never runs under the peak column (decision 92). The range, «من 10:00 ص
  * إلى 2:00 م» / "from 10:00 AM to 2:00 PM" (.rgn: its from-chunk and its to-chunk), never splits; a note that does not fit breaks only
  * between its words («لا قراءات» / "No readings", «بانتظار القراءات» / "Waiting for readings") and the range. The day table's note and the
