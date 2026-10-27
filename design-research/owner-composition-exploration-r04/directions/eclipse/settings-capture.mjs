@@ -445,7 +445,9 @@ const saveFrom = async (o, sec, act, phone) => {
   if (phone) await o.page.tap(`#ed-${sec} .ed-save`); else await o.page.click(`#ed-${sec} .ed-save`);
   await o.page.waitForTimeout(80);
 };
-const press = (o, sel, phone) => (phone ? o.page.tap(sel) : o.page.click(sel));
+// A step holds a pointer's clicks for 500 ms after it appears (OWN-S16), so a press on a step's button waits it out.
+const STEP_HOLD = 540;
+const press = async (o, sel, phone) => { if (sel.includes(".st-")) await o.page.waitForTimeout(STEP_HOLD); return phone ? o.page.tap(sel) : o.page.click(sel); };
 const applyNow = async (o, sec, phone, wait = 900) => { await press(o, `#st-${sec} .st-do`, phone); await o.page.waitForTimeout(wait); };
 const step = (o) => o.page.evaluate(() => window.__settings.step);
 // «حفظ» leads to the confirmation, focused on the reason from 721 px and on its title on a phone; it lists the changes
@@ -653,18 +655,18 @@ for (const lang of LANGS) {
       ["11", "crowd-close-without-saving", "", async (o) => {
         await editOpen(o, "crowd", true); await fill(o, "#ed-cap", "140"); await leave(o);
         await o.page.tap(".ed-cancel"); await o.page.waitForTimeout(80);
-        await o.page.tap(".st-discard"); await o.page.waitForTimeout(80);
+        await o.page.waitForTimeout(STEP_HOLD); await o.page.tap(".st-discard"); await o.page.waitForTimeout(80);
         const r = await o.page.evaluate(() => ({ open: !!document.querySelector("dialog[open]"), focus: document.activeElement === document.querySelector('[data-edit="crowd"]'), cap: window.__settings.editable.capacity }));
         if (r.open || !r.focus || r.cap !== 120) o.checks.push(`close without saving: ${JSON.stringify(r)}`);
       }],
       ["12", "crowd-confirm", "", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await checkConfirm(o, "crowd", true); }],
       ["13", "crowd-reason-typed", "", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await o.page.tap("#st-crowd-reason"); await o.page.keyboard.type(WHY[lang]); }],
-      ["14", "crowd-working", "hold=1", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await o.page.tap("#st-crowd .st-do"); await o.page.waitForTimeout(120); }],
+      ["14", "crowd-working", "hold=1", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await o.page.waitForTimeout(STEP_HOLD); await o.page.tap("#st-crowd .st-do"); await o.page.waitForTimeout(120); }],
       ["15", "crowd-done", "", async (o) => { await saveFrom(o, "crowd", CROWD_ONE, true); await applyNow(o, "crowd", true); await checkDone(o, "crowd", 390); }],
       ["16", "hours-confirm", "", async (o) => { await saveFrom(o, "hours", async (x) => { await x.page.tap("#ed-fri-sw"); }, true); await checkConfirm(o, "hours", true); }],
       ["17", "hours-done", "", async (o) => { await saveFrom(o, "hours", async (x) => { await x.page.tap("#ed-fri-sw"); }, true); await applyNow(o, "hours", true); await checkDone(o, "hours", 390); }],
       ["18", "crowd-back-to-editor", "", async (o) => {
-        await saveFrom(o, "crowd", CROWD_ONE, true); await o.page.tap("#st-crowd .st-back"); await o.page.waitForTimeout(80);
+        await saveFrom(o, "crowd", CROWD_ONE, true); await o.page.waitForTimeout(STEP_HOLD); await o.page.tap("#st-crowd .st-back"); await o.page.waitForTimeout(80);
         const r = await o.page.evaluate(() => ({ step: window.__settings.step, cap: document.querySelector("#ed-cap").value }));
         if (r.step !== "edit" || r.cap !== "140") o.checks.push(`back to the editor: ${JSON.stringify(r)}`);
       }],
