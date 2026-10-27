@@ -873,7 +873,7 @@ This capture covers Reports only.
 ## Decisions 21–24 and fix-1
 
 - Empty-period sentences name a shared month and year once, and a one-day period uses “No readings on …” / «لا قراءات في …». The component sheet carries the same form.
-- At 721–1023 px the day table transfers at least 16 px from Notes to Peak while preserving the other columns’ natural widths. Peak times stay closer to their own figures; Notes can wrap onto more lines.
+- From 721 px the day table's columns come from its own width, never from its content (TBL-14, decision 89): Day, Peak, Average and Entries take the larger of a floor (a date of the widest weekday and month, a peak of 100 at 10:00, the sortable header) and 16, 18, 12 and 13 % of the table; Notes takes the rest. Peak times stay closer to their own figures; Notes can wrap onto more lines.
 - Both pages reserve the verified widest status time, 10:44 AM / «10:44 ص», using a fixed exemplar of the pinned Readex Pro face. No minute scan delays first paint; recheck the exemplar after a font or time-format change.
 - The sheet uses the approved table alignment and reading wording, isolates date-range endpoints as Reports does, follows Daily’s chart-header rows, and gives its full-text English status specimens 8 px badge padding when a classic scrollbar leaves their stage under 250 px wide.
 - Screen-reader sentences spell ranges out with “from … to …” / «من … إلى …». Standalone values keep the en dash.

@@ -203,10 +203,7 @@ html:has(> body.rp) {
  * they start on its left edge (decision 16, below). */
 .table .n { text-align: right; font-variant-numeric: tabular-nums; }
 .table .n bdi { color: var(--ink); }
-.days-table .c-day { width: 16%; }
-.days-table .c-peak { width: 18%; }
-.days-table .c-avg { width: 12%; }
-.days-table .c-entries { width: 13%; }
+/* TBL-14: from 721 px the day table's columns come from its own width (reports.js, fitCols), never from its content. */
 /* A week starts: a firmer line between Saturday and Sunday (TBL-2). */
 .days-table tbody > tr.wk-edge > * { border-block-end-color: rgba(255, 255, 255, 0.14); }
 .days-table .c-notes { font-size: 12px; line-height: 18px; color: var(--ink-3); }
@@ -315,19 +312,18 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
   .pattern-sub { grid-area: sub; }
   .heat-key { grid-area: key; margin-block-start: 16px; }
   #numbers { grid-area: switch; }
-  .days-table .c-day, .days-table .c-peak, .days-table .c-avg, .days-table .c-entries { width: auto; }
   .table th, .table td { padding-inline: 12px; }
 }
 @media (min-width: 721px) and (max-width: 1023px) {
   /* The peak's figure carries a day and a time beside its name, so its column is the widest: at 768 they keep one line
    * under its name in both languages (Arabic needs 167 px), and the three values stay level (two-line heads). */
   .rp-period { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr); }
-  /* Day by day keeps the table (phase B's form) on the tablet. Its narrowest content is 534 px in Arabic with cells padded
-   * 12 (a camera gap's range, which never breaks, sets the notes column), so where the card's content is narrower (721 px
-   * to about 735 px), cells pad 8 and the table keeps inside its card. */
+  /* Day by day keeps the table (phase B's form) on the tablet. Its narrowest form with cells padded 12 is 550 px in
+   * Arabic (TBL-14's floors, 454 px, and a notes column that holds a camera gap's widest piece, «إلى 10:44 ص», which never
+   * breaks), so where the card's content is narrower (721 to 750 px), cells pad 8 and every text keeps inside its cell. */
   .days { container: days / inline-size; }
 }
-@container days (max-width: 539.98px) { .table th, .table td { padding-inline: 8px; } }
+@container days (max-width: 549.98px) { .table th, .table td { padding-inline: 8px; } }
 @media (max-width: 720px) {
   /* The subtitle's parts each on a line of their own (the dates; then the length of a custom period, or the days with
    * readings), so the second part never pushes the page sideways (320 px). */
@@ -357,7 +353,6 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
   .days-table tbody > tr.is-top + .note-row > * { background: rgba(229, 25, 53, 0.08); }
   .sort-ico { display: none; }
   th.is-sorted .sort-ico { display: block; }
-  .days-table .c-day, .days-table .c-peak, .days-table .c-avg, .days-table .c-entries { width: auto; }
   .dd .wd, .dd .dt { display: block; }
   .dd .dt { font-size: 12px; line-height: 18px; white-space: nowrap; }
   .pk { flex-direction: column; align-items: flex-end; gap: 0; }

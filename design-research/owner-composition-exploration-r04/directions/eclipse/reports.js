@@ -37,9 +37,6 @@
   // (tabular-nums changes nothing in this font), so the slot is measured, and again once the fonts are in.
   const fitSlots = (table) => {
     if (!table) return;
-    // Restore natural columns before measuring them; only the tablet's day table transfers room from Notes (decision 22).
-    table.querySelector("colgroup[data-peak-room]")?.remove();
-    table.style.tableLayout = "";
     const rtl = table.closest('[dir="rtl"]') != null;
     const cols = new Map();
     for (const tr of table.rows) {
@@ -51,31 +48,42 @@
       }
     }
     for (const figs of cols.values()) for (const f of figs) f.style.minWidth = "";
-    const tablet = table.classList.contains("days-table") && innerWidth >= 721 && innerWidth <= 1023;
-    const heads = tablet && table.tHead ? [...table.tHead.rows[0].cells] : [];
-    const widths = heads.map((c) => c.getBoundingClientRect().width);
-    let extra = 16;
     for (const figs of cols.values()) {
       const measured = figs.map((f) => f.firstElementChild.getBoundingClientRect().width);
       const width = Math.max(...measured), spread = width - Math.min(...measured);
       const slot = !rtl || spread > 0.01;
       for (const f of figs) f.style.minWidth = slot ? `${width}px` : "";
-      extra = Math.max(extra, spread);
     }
-    if (tablet && cols.size && heads.length === 5) {
-      // Freeze every natural column at its measured width, then give Peak at least 16 px from Notes alone. Keeping the
-      // other three widths prevents the auto table algorithm from paying for that room by shrinking them on resize.
-      const group = document.createElement("colgroup");
-      group.dataset.peakRoom = "";
-      // Whole pixels for every column but Notes, which takes the rest, so the total is unchanged: fractional column edges
-      // left a 1 px seam between the Arabic headers (decision 25).
-      const want = widths.map((w, i) => w + (i === 1 ? extra : i === 4 ? -extra : 0));
-      const whole = want.map((w, i) => (i === want.length - 1 ? 0 : Math.round(w)));
-      whole[whole.length - 1] = want.reduce((s, w) => s + w, 0) - whole.reduce((s, w) => s + w, 0);
-      group.innerHTML = whole.map((w) => `<col style="width:${w}px">`).join("");
-      table.prepend(group);
-      table.style.tableLayout = "fixed";
-    }
+    fitCols(table, rtl);
+  };
+  // TBL-14 (r04 decision 89): from 721 px the day table's columns come from the table's own width, never from its content,
+  // so the skeleton and the arrived table share them and nothing a payload holds can move a column. Day, Peak, Average
+  // and Entries each take the larger of their floor and their share of the table (16, 18, 12, 13 %); Notes takes the
+  // rest. A floor is what the column must hold, measured in Readex Pro as the cells draw it, plus the cell's two paddings
+  // (8, 12 or 16), cut to a whole pixel: Day a date of the widest weekday and month («الخميس 20 أغسطس» / "Wed 20 May";
+  // the widest of all, «الخميس 24 أغسطس», is 0.18 px wider); Peak a peak of 100 at 10:00 («100» «10:00 ص» / "100 10:00 AM";
+  // a wider three-digit peak at the widest time, «444» at «10:44 ص», runs at most 2.7 px further into the cell's padding,
+  // never past the cell); Average and Entries their sortable header (label, 8 px, the 14 px arrow), wider than any value
+  // they hold (999; 99,999). Whole pixels: a fractional column edge left a 1 px seam between the Arabic headers
+  // (decision 25). Re-measure the floors if the type, a label or a format changes.
+  const COL_FLOOR = { ar: [126.27, 83.17, 59.03, 90.13], en: [79.31, 84.75, 69.33, 62.08] };
+  const COL_SHARE = [0.16, 0.18, 0.12, 0.13];
+  const fitCols = (table, rtl) => {
+    const head = table.tHead && table.tHead.rows[0];
+    const on = table.classList.contains("days-table") && innerWidth >= 721 && head && head.cells.length === 5;
+    // The width the table fills: its parent's content box (Reports' .table-wrap has no padding; the sheet's stage does).
+    const ps = on ? getComputedStyle(table.parentElement) : null;
+    const W = on ? table.parentElement.clientWidth - parseFloat(ps.paddingLeft) - parseFloat(ps.paddingRight) : 0;
+    const pad = on ? parseFloat(getComputedStyle(head.cells[0]).paddingInlineStart) || 0 : 0;
+    table.querySelector("colgroup[data-cols]")?.remove();
+    table.style.tableLayout = "";
+    if (!on) return;
+    const w = COL_FLOOR[rtl ? "ar" : "en"].map((b, i) => Math.max(Math.floor(b + 2 * pad), Math.round(COL_SHARE[i] * W)));
+    const group = document.createElement("colgroup");
+    group.dataset.cols = "";
+    group.innerHTML = w.map((x) => `<col style="width:${x}px">`).join("") + `<col style="width:${W - w.reduce((s, x) => s + x, 0)}px">`;
+    table.prepend(group);
+    table.style.tableLayout = "fixed";
   };
   window.EclipseTables = Object.freeze({ sortHead, dayHead, dayNoneRow, fitSlots });
   // The heat readout's place (PAT-9), shared with the component sheet (F266): centred over the cell and kept 2 px inside
@@ -1082,11 +1090,9 @@
     fitSlots(daysTable);
     tableFile();
   }
-  // A width that crosses one of the skeleton's ranges (pendDays: the phone's list, 721-899, 900-1023, 1024 and up) while the
-  // page is loading redraws the pending table as a fresh load at the new width does (decision 82): drawn, then fitted once
-  // the new columns are in, as the fonts' arrival fits a fresh load's. Without it the old width's skeleton stays and the
-  // fit below measures it at the new width (a rotation from 1024 px to 768 px kept the wide columns; from 1440 px, four
-  // columns at 0 px).
+  // A width that crosses between the phone's list and the table (720/721 px) while the page is loading redraws the pending
+  // form as a fresh load at the new width does (decision 82). Any other change of width only fits the columns again from
+  // the table's new width (TBL-14), loading or arrived alike.
   addEventListener("resize", () => {
     if (phase === "loading" && skelRange && skelRange !== rangeNow()) pendDays();
     else fitSlots(daysTable);
@@ -1288,13 +1294,10 @@
   }
   // Day by day in waiting: the period's days are the request, so each keeps its date; its figures wait in
   // placeholders, its notes column empty. On a phone, the newest 7 as the list draws them. Sorting waits.
-  // Nothing moves on arrival (DECISIONS item 82). The table takes the arrived columns' widths: each header carries the sort
-  // icon (unseen until a sort is set, as in the arrived table), Notes asks for the spare room (width:100%) from 721 to
-  // 899 px, where the arrived table's frozen columns leave it, and Peak's bars are the arrived figure (17 px) and time
-  // (44 px, 33 in Arabic). The columns keep their arrived widths (measured, 0.00 px) from 721 to about 826 px in English and
-  // 843 px in Arabic and from 1024 px; from about 827 / 844 px to 899 px the arrived widths follow the notes' text and the
-  // columns move on arrival (1 to 4 px just above those widths, 38 px in Arabic and 44 px in English at 899 px). From 900
-  // to 1023 px the skeleton is left as it was there (127 to 149 px of move in Arabic, 175 to 205 px in English). The phone list's peak
+  // Nothing moves on arrival (DECISIONS item 82). From 721 px the columns come from the table's own width (fitCols,
+  // TBL-14), the same in waiting and arrived, so the skeleton has one form at every width: each header carries the sort
+  // icon (unseen until a sort is set, as in the arrived table), and Peak's bars are the arrived figure (17 px) and time
+  // (44 px, 33 in Arabic); measured 0.00 px at every width from 721 to 1440, AR and EN, full and short history. The phone list's peak
   // slot (`.dl-pt`) has one fixed width in each language, the widest the arrived «Peak 10:44 AM» / «الذروة 10:44 ص» can be for any
   // time (every time 1:00-12:59 with AM/PM or ص/م measured through L.peakAt(timeText(m)): 84.14 px in English, 86.23 in Arabic,
   // rounded up to 0.5 px: 84.5 and 86.5; reports.css), so the arrived box and its pending bar, which takes the box's whole width,
@@ -1302,7 +1305,7 @@
   // Below 330 px in Arabic the average and the entries are two fixed lines in both lists (reports.css, decision 91), so the pending
   // list and the arrived list have the same items there. The phone list's note (.dl-note) stays in the day's column: its range
   // (.rgn, the from-chunk and the to-chunk) never splits, so a note that does not fit breaks only between its words and the range (decision 92).
-  const rangeNow = () => (mqPhone.matches ? "list" : innerWidth <= 899 ? "narrow" : innerWidth >= 1024 ? "wide" : "tablet");
+  const rangeNow = () => (mqPhone.matches ? "list" : "table");
   let skelRange = null;                // the range the pending table was last drawn for
   function pendDays() {
     skelRange = rangeNow();
@@ -1320,16 +1323,13 @@
       return;
     }
     const cols = [["day", "c-day"], ["peak", "c-peak n"], ["avg", "c-avg n"], ["entries", "c-entries n"], ["notes", "c-notes"]];
-    const arrivedWidths = innerWidth <= 899 || innerWidth >= 1024;
-    const head = cols.map(([k, cls]) => `<th scope="col" role="columnheader" class="${cls}"${innerWidth <= 899 && k === "notes" ? ' style="width:100%"' : ""}><span class="sort is-still"><span>${L.cols[k]}</span>${arrivedWidths ? SORT_ICO : ""}</span></th>`).join("");
+    const head = cols.map(([k, cls]) => `<th scope="col" role="columnheader" class="${cls}"><span class="sort is-still"><span>${L.cols[k]}</span>${SORT_ICO}</span></th>`).join("");
     const edge = (d) => d.wd === 0 && d.dn !== model.a;
     const rows = days.map((d) => `<tr role="row"${edge(d) ? ` class="wk-edge"` : ""}><th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>` +
-      `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${arrivedWidths ? ph(17, "ph-lab") : ph(20, "ph-lab")}</span><span class="pt">${arrivedWidths ? ph(RTL ? 33 : 44) : ph(44)}</span></span></td>` +
+      `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${ph(17, "ph-lab")}</span><span class="pt">${ph(RTL ? 33 : 44)}</span></span></td>` +
       `<td role="cell" class="c-avg n">${ph(18, "ph-lab")}</td><td role="cell" class="c-entries n">${ph(36, "ph-lab")}</td><td role="cell" class="c-notes"></td></tr>`).join("");
     daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(periodWords(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${rows}</tbody>`;
-    // Fitted at once, so a table drawn again at another width (a rotation, or the media queries redrawing it) never keeps the
-    // previous fit's fixed layout over columns it no longer has: with Notes at width:100% they collapse to 0 px. A fresh
-    // load's first fit comes with the fonts, which fits again.
+    // Fitted at once, so the first paint has the columns (TBL-14); the fonts' arrival fits again, to the same widths.
     fitSlots(daysTable);
   }
   // The alert (EMP-2's sentence form, EMP-5's role). The sentence is drawn with the state's first paint, in its place,
