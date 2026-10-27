@@ -947,6 +947,32 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     `D:/fitway-temp/owner-r04-settings-verify-3/` and `-verify-4/`). `owner-direction-fixer` and `CLAUDE.md`'s table
     say Sonnet `high`; the builder's move waits for its own trial (decision 81's round). An Opus verifier keeps
     grading fixer work.
+87. **Settings: the lost «حفظ» press and the crowd skeleton's wrap** (the user, 2026-10-26, on the coordinator's
+    recommendations after the frames in `D:/fitway-temp/owner-r04-settings-press-1440/`, measured at `0e36cf0a`):
+    - **The press** («تمام»): the layout stays (a sentence above the buttons is read before saving). At 1440 the
+      sentence a press of «حفظ» brings moves the button 22-46.5 px down before the mouse comes up, so the click is lost
+      in the hours editor every time (the crowd cap lands with no margin) and item 49's stop (focus, announcement) is
+      skipped; OWN-S14 had written the loss down as accepted. A press that goes down on «حفظ» and comes up where the
+      button was, the button having moved from under the pointer, now counts as a press of «حفظ».
+    - **The skeleton** («خلاص موافق مالم يكن فيه حل افضل»): instead of reading the values it waits for (which only a
+      concept can) or accepting the 13 px move, the crowd list's last row reserves two lines on phone widths from the
+      first frame, whatever the data, so the arrival moves nothing in the concept or in production; the cost is about
+      13 px under that row when its text fits one line. A web research digest looks for a better answer first
+      (`D:/fitway-temp/owner-r04-skeleton-wrap-research/REPORT.md`); a wording that keeps the row to one line needs the
+      user's word.
+    - **After the review** (the user, 2026-10-27, choosing the coordinator's recommendations on verify-7,
+      `D:/fitway-temp/owner-r04-settings-verify-7/REPORT.md`): the level rows a count never reaches («لا يظهر بهذه
+      السعة» at capacity 1 or 10) are not reserved; their arrival move is accepted and written in OWN-S22. In the hours
+      editor, Enter while the stop's sentence holds focus goes on as «حفظ» would, as Enter in a crowd or business-day
+      field already does after their stop.
+88. **The night of 2026-10-27/28** (the user, before sleeping, choosing all three offered): besides finishing Settings
+    (the verify-7 fixes, a fresh Opus check, pushing, the records, Settings' review for the morning), the loading check's
+    page findings (Reports, Access, Activity log) are fixed where a skeleton slot simply mismatches its arrived box, and
+    written up for the user where a fix would change what is seen; decision 81's round runs after Settings (an Opus
+    designer settles the form, Sonnet `high` builds as decision 85's builder trial, Opus checks); and the public crowd
+    page is prepared: research (DeepSeek first if a DeepSeek round can search the web, else the Sonnet researcher) and
+    its questions with the coordinator's recommendations, no design before the user's answers. «keep your context window
+    lean».
 
 ## How this milestone's rounds run
 
