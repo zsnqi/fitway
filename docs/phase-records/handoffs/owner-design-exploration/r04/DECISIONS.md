@@ -972,7 +972,46 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     designer settles the form, Sonnet `high` builds as decision 85's builder trial, Opus checks); and the public crowd
     page is prepared: research (DeepSeek first if a DeepSeek round can search the web, else the Sonnet researcher) and
     its questions with the coordinator's recommendations, no design before the user's answers. «keep your context window
-    lean».
+    lean». (That night was 2026-10-26/27; the reports of it dated 2026-10-28 carry the wrong date.)
+89. **Settings and the loading findings, the user's answers** (the user, 2026-10-27, «موافق» in comments on each
+    recommendation of the morning review page, https://claude.ai/artifact/M62Qez2bLVCSuHapxQrxTu, then in chat
+    «موافق عليها اصلا»):
+    - **The phone's «سجل الإعدادات»** under the header leaves, as decision 81's spec has it (OWN-S22, S23, S29 and its
+      check 18's numbers); the history card's «عرض الكل» is the phone's way to the settings records.
+    - **The phone's history** keeps three lines a record (as built).
+    - **The crowd list's reserved line** on a phone stays (decision 87), 33.5 px under a one-line Packed row.
+    - **Reports' gap-note rows:** a day with a camera-gap note grows on arrival (+7 px at 768, +28.5 px at 390); accepted
+      and written in OWN-R5.
+    - **Reports' table at 827-1023 px:** a small designer round gives the columns widths that do not depend on the data,
+      for loading and arrived alike; the arrived table may change a little.
+    - **Access at the contract's maximum lengths** (`case=long`): decision 82 does not cover them; the wrap's move is
+      accepted and written in Access's spec.
+    - **Reports' phone peak figure** («موافق», 2026-10-27, after verify-10 measured a 10-12 o'clock peak 6-18 px wider
+      than the skeleton's bar): one fixed width, as wide as the longest possible peak time in each language, for the
+      loading bar and the arrived figure alike, so the arrival moves 0 px whatever the time.
+    - **Friday's dash** («تمام» on the coordinator's recommendation): the closings keep one start edge and the gap
+      around the dash takes the difference «م» and «ص» make (14.9 against 8.2 px); the user also sees the three ways side
+      by side (`D:/fitway-temp/owner-r04-friday-dash/`).
+90. **The public crowd page, the first answers** (the user, 2026-10-27, comments on the same page): the theme is dark
+    («الثيم اصلا داكن»); Packed is «شديد الازدحام» there too; no verdict line; no typical-day chart for now; the demo's
+    states on one page with a hidden switch; the last update absolute while live and absolute with its age when stale
+    («تمام»); the Spec's 90-180 s gap reads as stale, as production does, unless the coordinator proposes better (a
+    Spec amendment either way). The user also said the old public page's design is bad and the page will be redesigned,
+    so the lines of FITWAY_PRODUCT.md and DESIGN_GUIDE.md that describe the old design (the 28-bar signal, no motion)
+    may be asking for things the user no longer wants; which of them bind the redesign is settled with the user before
+    any design, and changes to either file are amendments the user approves. The redesign is not a new style: it is
+    the public page in Eclipse's style, built from the same sheet as the Owner pages (`DESIGN-SPEC.md` §1, shared
+    foundations; its §6 "Public" is filled by the round). The coordinator sorts the public-page lines of the three files
+    into real rules and the old look, with a recommendation each, for the user to decide («اي و مع اقتراحاتك»). Digits
+    roll only when a new live reading arrives, never on opening, never while stale or closed, and not under reduced
+    motion («اتفق معك اي»), as decision 4 has them on the Owner overview. The level mark that replaces the 28 bars is
+    not settled by the coordinator's recommendation: the design round draws several forms and the user picks by eye,
+    Eclipse's four-bar badge with its word being one of them (the user, 2026-10-27, comment on P1); the old signal's
+    accessibility rules (one accessible name, decorative bars hidden, no numeric ARIA, filling in reading direction)
+    hold for whichever is picked. Screen readers (the user, same day: skip them for the demo and leave them for later
+    if they cost time now): the concept carries the markup that costs nothing (the accessible name, decorative parts
+    hidden, the one announcement of a new reading), as the Owner pages already do; testing with a real screen reader
+    waits until the page moves to production, where SPEC.md's acceptance still requires it. A deferral, not a removal.
 
 ## How this milestone's rounds run
 

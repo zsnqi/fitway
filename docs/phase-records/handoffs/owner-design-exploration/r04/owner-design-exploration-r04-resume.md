@@ -1,9 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-24 19:00 +03:00
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-27 14:45 +03:00 (all work
+  stopped at the user's word, «وقف الشغل الحالي … و احفظ وين وصل»; §"Stopped 2026-10-27" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-86), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-90), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -37,7 +38,40 @@
 - **Decision 67 in force:** pickups check the resume point's claims against their sources; every claim says measured,
   inferred or guess; Opus (`owner-direction-verifier`, high) grades chosen rounds beside Sol.
 
-## Running now
+## Stopped 2026-10-27
+
+Nothing runs (measured: both agents stopped, their servers on 3186-3191 killed by PID). Build branch
+`owner-followup-r04-build` pushed at `3c645b85`; CI green on `d9ae9e35` (3c645b85's run not yet seen). main still
+`e885543e`. The user's review page: https://claude.ai/artifact/M62Qez2bLVCSuHapxQrxTu (v9), images in the session's
+scratchpad `morning/` folder.
+
+- **Done and verified on the build branch** (measured): `749fa608` decision 81 (Sonnet builder trial, decision 85),
+  `d9ae9e35` verify-9's fixes, both checked by verify-10 (`D:/fitway-temp/owner-r04-d81-verify/REPORT.md`: §5 23/23,
+  frames match, one Medium and four Low); `3c645b85` verify-10's F1-F5 (`D:/fitway-temp/owner-r04-settings-fix-v10/
+  REPORT.md`), **not yet independently checked**. Earlier: `bcd1b463`, `b971a75d`, `9cff1f8d`, `4dc8f98e`.
+- **Fixer round v11, stopped mid-way** (DECISIONS 89: G1 the phone's «سجل الإعدادات» leaves per decision 81's spec;
+  G2 Reports' phone peak figure one fixed width; G3 the accepted moves written into OWN-S22, OWN-R5 and Access's
+  loading row). Its uncommitted edits are left in the build worktree (7 files) and saved as
+  `D:/fitway-temp/owner-r04-settings-fix-v11/uncommitted-at-stop.patch`; it had begun G2's widest-text measurement
+  (`g2-attempt.patch` there). Its brief is the coordinator's v11 message, restated in DECISIONS 89 and this list.
+  Resume with a fresh fixer: check the patch against G1-G3, finish, one commit on `3c645b85`.
+- **Designer round, Reports' day table (decision 89, Q5), stopped near the end:** `D:/fitway-temp/owner-r04-reports-cols-design/`
+  (`BRIEF.md`; `SPEC.md` written in full, 195 lines; reference code in `work/`, diffs in `data/`, 58 frames). It was
+  running the final after-matrix and the stress row. Its recommendation: one rule from 721 px (floors plus shares,
+  `table-layout: fixed`). Resume: a fresh designer (decision 10) re-runs the after-matrix from `tools/` and finishes §5-§8.
+- **Then:** an Opus verifier on `3c645b85` plus v11 (against `d9ae9e35`); the builder for the table spec after the user
+  sees its frames; push; CI; the records; `pnpm main:advance`.
+- **Waiting on the user:** P1-P7 on the review page (the public page's rules sorted from the old look,
+  `D:/fitway-temp/owner-r04-public-rules-sort/REPORT.md`; P1 already answered: several level-mark forms are drawn and
+  the user picks). Friday's dash: A kept, three renders in `D:/fitway-temp/owner-r04-friday-dash/out/`.
+- **Decision 85's builder trial:** Sonnet 5.5 at high built 749fa608 (second run 392,787 tokens; first unreported);
+  Opus found 1 Medium and 3 Low in its code (verify-10 findings 1, 2, 4; finding 3 was the fixer's recipe) and none in
+  §5. Not yet written up as a grade.
+- **Dates:** the night's reports dated 2026-10-28 carry the wrong date; the night was 2026-10-26/27 (DECISIONS 88).
+- **Compaction:** this session's two compactions were Claude Code's idle compaction (2.1.299: 200K+ tokens idle about
+  54 minutes; 95 and 101 minutes idle here, measured from the transcript), not the 1M window.
+
+## Running now (as of 2026-10-24, superseded by the section above)
 
 - **Settings** (arrangement ج, decisions 79-83; the brief designer-settings in the directions' briefs
   folder on `owner-followup-r04-build`; notes and output in `D:/fitway-temp/owner-r04-settings/`): built in parts 1-3
