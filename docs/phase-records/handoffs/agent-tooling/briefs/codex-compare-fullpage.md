@@ -41,8 +41,9 @@
 
 ## Goal
 
-`compare`'s settled result judges the whole page a reader can scroll to, exactly as the reader sees it, instead of only
-the first screen; and the phone/wide boundary under zoom is pinned by tests.
+`compare`'s settled result judges the whole document, exactly as the reader sees it at each scroll position, instead
+of only the first screen; and the phone/wide boundary under zoom is pinned by tests. (A scroll container inside the
+document, such as a dialog's own scroll, is a separate cause and stays out of this round, K4.)
 
 ## Causes and required outcomes
 
@@ -60,8 +61,11 @@ this worktree (the repository's objects are shared). Run compare as SKILL.md §"
   sizes. With no difference, the same items give `COMPARE EQUAL` on two consecutive runs. Check, on `settings.html`,
   `--feature page`, phone, Arabic and English: a candidate copy with (a) a change only below the first screen, (b) a
   change only in the document's last 24 px, (c) the document 1 px taller, each `COMPARE DIFFERENT` with the region or
-  sizes named; the unplanted copy against the extracted concept `COMPARE EQUAL` twice. Intent: content below the first
-  screen can no longer change unseen; a plant inside the first screen alone would not prove it.
+  sizes named; the unplanted copy against the extracted concept `COMPARE EQUAL` twice. Settings is only two screens
+  tall, so also: on a page at least four viewports tall at phone size (both sides' copies may lengthen the same page
+  with the same added content), a plant in each non-overlapping 844 px band, one band per run, each `COMPARE
+  DIFFERENT` with its region inside that band. Intent: content anywhere below the first screen can no longer change
+  unseen; a plant inside the first screen, or only in the first and last screens, would not prove it.
 - **C2.** The capture must not change the page it judges. Outcome: during a settled capture the page sees no change of
   its viewport (`innerWidth`, `innerHeight`, `visualViewport` width and height), no `resize` event and no change in
   which media queries match; every element's border box is the same before and after the capture to 0.00 px; after
@@ -69,7 +73,10 @@ this worktree (the repository's objects are shared). Run compare as SKILL.md §"
   elements appear in the picture as the reader sees them at the scroll position each part was taken from, and
   SKILL.md §"Compare" says how they appear. Check: a probe script in the run folder records those values around one
   capture of `settings.html` at phone and desktop and of `index.html` (Daily) at phone, Arabic and English, and lists
-  every value that changed (none). Intent: compare judges what a reader sees, not a page re-laid out for the screenshot
+  every value that changed (none). And an independent pixel check: on a page with a fixed or a sticky element at phone
+  size (Daily's, or the same element added to both copies in the run folder), each part of the settled picture equals,
+  pixel for pixel, a plain viewport screenshot taken with the page scrolled to that part's position, so a fixed or
+  sticky element that is missing, frozen at the top or misplaced fails. Intent: compare judges what a reader sees, not a page re-laid out for the screenshot
   (a capture beyond the viewport can resize it and re-lay out `vh` units and fixed elements); its approach is yours.
 - **C3.** Outcome: for a document no taller and no wider than its viewport, the settled picture has the same dimensions
   and the same pixels as the baseline tool's capture: `settings.html` at desktop (its document is exactly 900 px tall)
@@ -78,16 +85,20 @@ this worktree (the repository's objects are shared). Run compare as SKILL.md §"
 - **C4.** Baseline captures are cached and reused by bundle (SKILL.md §"Compare", "Baseline captures are kept in
   `D:/fitway-verify-captures`"). Outcome: no bundle captured by the viewport-only capture is reused after the change: the
   first run after it prints `BASELINE CAPTURES` with 0 reused for items the cache held from before it, and a second
-  identical run reuses every one of them. Intent: a first-screen baseline is never compared with a whole-page
-  candidate. Run it with the cache on and say which part of the bundle's identity the change moved.
+  identical run reuses every one of them; after the first run the stored baseline images of those items have the
+  document's size (390 x 1654 for Settings at phone), not the viewport's. Intent: a first-screen baseline is never
+  compared with a whole-page candidate, whatever the counters say. Run it with the cache on and say which part of the bundle's identity the change moved.
 - **C5.** `featureUnreachable` and `contextOptions` (`.agents/skills/verify-fitway/drive-plan.mjs:20-25` and `:43-55`)
   decide phone and wide features and the mobile flag from the CSS width (the width divided by the zoom); the coordinator's record calls
   the 720-721 px boundary under zoom untested (r04 resume point, "the grader's … L8, a 720-721 px zoom edge, untested";
   the grader's own text was not found). Outcome: ladder tests, calling these functions directly, pin at zoom 1 and zoom
   2 the CSS widths 720 and 721 (and one fractional width between them at zoom 2): a `widths: "phone"` feature is
   reachable at 720 and not at 721, a `widths: "wide"` one at 721 and not at 720, and `mobile` is true only for touch at
-  720 CSS px or less. If today's code disagrees with these, fixing it is in scope; say so in the report. Intent: the
-  page's own `max-width: 720px` boundary and the tool's plan agree under zoom.
+  720 CSS px or less. CI runs the ladder without a browser, so also a script in the run folder, run and reported, that
+  plans and opens a real page through the tool's own planner and context options at zoom 1 and 2 for viewports giving
+  720 and 721 CSS px, and records both the plan's phone/wide decision and whether the page matched `(max-width:
+  720px)`; they agree in every case. If today's code disagrees, fixing it is in scope; say so in the report. Intent:
+  the page's own `max-width: 720px` boundary and the tool's plan agree under zoom, in the call path compare uses.
 
 Limits the result keeps:
 
