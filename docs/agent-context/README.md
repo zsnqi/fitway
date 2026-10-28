@@ -75,3 +75,9 @@ Only DONE satisfies a dependency; dependents must name the completed successor.
 every byte except its As of line. Only the file and ledger handoff pointer change; git history
 is the resume chain. Timestamped handoffs remain valid, and Previous resume point is optional
 and never followed by a check.
+
+## Which check enforces each rule
+
+`docs/agent-context/RULE_ENFORCERS.md` names, for each rule in `AGENTS.md`, `WORKING_AGREEMENTS.md` and
+`docs/WORKFLOW.md`, the check that rejects a violation, or `written only`. Look there before searching the code for a
+check.

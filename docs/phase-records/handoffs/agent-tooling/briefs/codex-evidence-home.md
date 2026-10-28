@@ -9,7 +9,8 @@
   - `scripts/agent-environment/codex-session.mjs:90-140`: what the launcher writes into a run folder.
   - `scripts/agent-environment/code-health-ratchet.mjs:12-40` and `.agents/skills/gardener/code-health.mjs:270-300`:
     the ratchet's roots and the giant-file measure.
-  - `docs/agent-context/README.md` §"Which check enforces each rule": the table H4 keeps true.
+  - `docs/agent-context/RULE_ENFORCERS.md`: the table H4 keeps true (`docs/agent-context/README.md` §"Which check
+    enforces each rule" points to it).
   - `scripts/agent-environment/tool-registry.mjs`: how a `pnpm` command is registered.
   - `docs/agent-context/briefs/CODE_REVIEW.md`: D1-D8, which the diff is reviewed against.
 
@@ -81,10 +82,10 @@ does not exist.
   40,000-byte one (not counted), a 40,001-byte one under `docs/archive/` (not counted), growth of a baselined giant
   document (fails) and a concept JavaScript file over the
   giant-file line (counted). Intent: a document a reader must open whole stays one read.
-- **H4.** Agents have searched code for a check that does not exist. `docs/agent-context/README.md` §"Which check
-  enforces each rule" now says, for each rule, which check enforces it or that it is written only. Outcome: `pnpm
-  check:agent-context` fails, naming the row, when that table names a `pnpm` command that `package.json` does not
-  define, or a file that does not exist; a row whose enforcer is "written only" passes. Check: tests planting a
+- **H4.** Agents have searched code for a check that does not exist. `docs/agent-context/RULE_ENFORCERS.md` now says,
+  for each rule, which check enforces it or that it is written only. Outcome: `pnpm check:agent-context` fails, naming
+  the row, when that table names a `pnpm` command that `package.json` does not define, or a file that does not exist
+  (the cells name files without line numbers); a row whose enforcer is "written only" passes. Check: tests planting a
   renamed command and a missing file. Intent: the table cannot point at an enforcer that is gone.
 - **K1.** `pnpm verify:fast` passes after the commit; existing commands keep their output.
 - **K2.** CI has no `D:/fitway-temp`: tests inject their temp root.
