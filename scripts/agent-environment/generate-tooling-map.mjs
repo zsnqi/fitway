@@ -25,7 +25,7 @@ async function main(check) {
 			return;
 		}
 		console.log(
-			`${CHECK_COMMAND} passed: ${result.generated.files.length} files, ${result.generated.callables.length} callables, ${result.generated.uncovered.length} without a covering test.`,
+			`${CHECK_COMMAND} passed: ${result.generated.files.length} files, ${result.generated.withoutLeadingComment} without a leading comment.`,
 		);
 		return;
 	}

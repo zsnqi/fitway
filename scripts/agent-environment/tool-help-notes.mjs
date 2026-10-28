@@ -76,7 +76,7 @@ export const OWNER_NOTES = Object.freeze([
 ]);
 
 export const TOOLING_MAP_NOTES = Object.freeze([
-	"Writes docs/agent-context/AGENT_TOOLING_CODE_MAP.md from tracked JavaScript and TypeScript in the mapped tool paths.",
+	"Writes docs/agent-context/AGENT_TOOLING_CODE_MAP.md with one entry per mapped file: its path, leading-comment summary and sorted exports.",
 	"Use --check to regenerate in memory and fail when the committed map differs.",
 ]);
 
