@@ -20,6 +20,21 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const root = document.documentElement;
 
+  // First paint waits for the faces (verify 11, finding 5). The scripts hold the first paint until they have run, but the faces
+  // arrive some milliseconds after it in about half the loads; the header's status slot (the widest status, measured in the face
+  // showing) then widened by 3 px in Arabic (235 to 238) when Readex Pro swapped in, and in about one load in six the whole page
+  // swapped (heat key, segments, text). The page is laid out and in its place meanwhile and only unseen (reports.css, opacity),
+  // and shown once the faces are loaded; when they are loaded already nothing is held, and a face that never arrives holds it
+  // for 1.5 s at most.
+  (() => {
+    const f = document.fonts, sample = "العربية FITWAY 0123456789", faces = ["400", "500"].map((w) => `${w} 16px "Readex Pro"`);
+    if (!f || !f.load || !f.check || faces.every((x) => f.check(x, sample))) return;
+    root.classList.add("rp-faces");
+    const show = () => root.classList.remove("rp-faces");
+    Promise.all(faces.map((x) => f.load(x, sample))).then(show, show);
+    setTimeout(show, 1500);
+  })();
+
   // The day table's parts shared with the component sheet (K5): a sortable column's header, a day's row header and the
   // single-day exception, so the sheet's specimen is built by the page's own components.
   const SORT_ICO = `<svg class="sort-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5.5v13M7.5 14l4.5 4.5 4.5-4.5"/></svg>`;

@@ -1739,10 +1739,12 @@
   // and joins ticked if open, unticked if closed.
   function keepTicks() { $$(".cp-chk", stEl("hours")).forEach((c) => { flow.copyChecks[c.value] = c.checked; }); }
   // The refusal «اختر يومًا واحدًا على الأقل» leaves with its reference from the first box when a day is ticked (a tick, or
-  // a change of source while one is), as it came.
+  // a change of source while one is), as it came. While no day is ticked and the refusal stays, the first box keeps the
+  // reference, including after a change of source redrew the list (its first box is a new element).
   function clearCopyNone(sec) {
     const err = $("#cp-err", stEl(sec)), first = $(".cp-chk", stEl(sec));
-    if (err.hidden || !$$(".cp-chk", stEl(sec)).some((c) => c.checked)) return;
+    if (err.hidden) return;
+    if (!$$(".cp-chk", stEl(sec)).some((c) => c.checked)) { first.setAttribute("aria-describedby", `cp-err cp-${first.value}-said`); return; }
     M.reflow(D[sec], () => { err.hidden = true; err.innerHTML = ""; });
     first.setAttribute("aria-describedby", `cp-${first.value}-said`);
   }

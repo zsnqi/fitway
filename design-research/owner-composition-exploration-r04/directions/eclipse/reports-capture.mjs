@@ -118,20 +118,25 @@ const STATES = [
   ["empty", "from=2026-07-01&to=2026-07-31", "A period before the readings began: empty states"],
   ["numbers", "", "Numbers switched on"],
 ];
-/* ---- the phone list's notes stay out of the peak column (decision 92). At 320, 329, 330, 360, 390 and 720 px, both languages, in the
- * default period (the fixture's camera gap, Thursday 17 Sep, in the newest seven days) and with the waiting note (state=pending): no
+/* ---- the phone list's notes stay out of the peak column (decision 92). At 320, 329, 330, 347 (Arabic's narrowest clearance), 360, 390
+ * and 720 px, both languages, in the default period (the fixture's camera gaps, Monday 31 Aug and Thursday 17 Sep) and with the waiting
+ * note (state=pending), with the list shown whole ("Show all days": every day the list can show, 28, not only the newest seven): no
  * line of a note's text intersects the horizontal span of its item's peak column (the union of .dl-pk and .dl-pt), and a note's range
- * (.rgn) stays on one line. The smallest gap is printed and kept in the log; a missing note fails, so the check cannot pass on nothing. */
-const NOTE_WIDTHS = [320, 329, 330, 360, 390, 720];
+ * (.rgn) stays on one line. The smallest gap is printed and kept in the log; a missing note, or a list that is not shown whole, fails,
+ * so the check cannot pass on nothing or on the newest seven alone. */
+const NOTE_WIDTHS = [320, 329, 330, 347, 360, 390, 720];
 async function noteColumnCheck() {
   log.noteGap = {};
   let smallest = null;
   for (const lang of LANGS) for (const [kind, q] of [["gap", ""], ["waiting", "&state=pending"]]) for (const w of NOTE_WIDTHS) {
     const name = `notes-${kind}-${w}-${lang}`;
     const o = await open(`lang=${lang}${q}`, { width: w, height: 844, phone: true });
+    await o.page.evaluate(() => window.__reports.showAllDays());
+    await o.page.waitForTimeout(150);
     const m = await o.page.evaluate(() => {
       const R = (e) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right }; };
       const lines = (e) => { const r = document.createRange(); r.selectNodeContents(e); return [...r.getClientRects()].filter((x) => x.width > 0.5); };
+      const days = document.querySelectorAll("#day-list > li").length;
       let notes = 0, gap = Infinity, where = "", split = 0;
       for (const li of document.querySelectorAll("#day-list > li")) {
         const note = li.querySelector(".dl-note"), pk = li.querySelector(".dl-pk"), pt = li.querySelector(".dl-pt");
@@ -144,16 +149,17 @@ async function noteColumnCheck() {
         }
         for (const g of note.querySelectorAll(".rgn")) { const ls = lines(g); if (Math.max(...ls.map((r) => r.top)) >= Math.min(...ls.map((r) => r.bottom)) - 0.5) split++; } // a rect that starts below another's bottom is on a later line
       }
-      return { notes, gap: notes ? +gap.toFixed(2) : null, where, split };
+      return { days, notes, gap: notes ? +gap.toFixed(2) : null, where, split };
     });
     log.noteGap[`${kind}-${w}-${lang}`] = m;
     const bad = [];
+    if (m.days <= 7) bad.push(`only ${m.days} days listed (the list is not shown whole)`);
     if (!m.notes) bad.push("no note found");
     else if (m.gap < 0) bad.push(`note text runs ${(-m.gap).toFixed(2)} px under the peak column (${m.where})`);
     if (m.split) bad.push(`${m.split} range split over lines`);
     if (bad.length) log.failures.push(`${name}: ${bad.join(" | ")}`);
     if (m.notes && (smallest === null || m.gap < smallest)) smallest = m.gap;
-    console.log(`note column ${kind} ${lang} ${w}px: ${m.notes} note(s), smallest clearance to the peak column ${m.gap} px${m.gap < 0 ? " (INTERSECTS)" : ""}, range splits ${m.split}`);
+    console.log(`note column ${kind} ${lang} ${w}px: ${m.notes} note(s) in ${m.days} days, smallest clearance to the peak column ${m.gap} px${m.gap < 0 ? " (INTERSECTS)" : ""}, range splits ${m.split}`);
     await o.context.close();
   }
   console.log(`note column: smallest clearance over every width, both languages, gap and waiting notes: ${smallest} px`);

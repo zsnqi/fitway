@@ -6,6 +6,9 @@ html:has(> body.rp) {
   scrollbar-gutter: stable;
   scrollbar-color: rgba(245, 243, 242, 0.2) #070707;
 }
+/* First paint waits for the page's faces (the first lines of reports.js): the page is laid out and in its place, only unseen, so
+ * it is painted once, in Readex Pro, and no text swaps from the fallback face to it after the first paint (a layout shift). */
+html.rp-faces > body.rp { opacity: 0; }
 .rp {
   --err: #ff6b7d;        /* error text and borders: 6.9:1 on the cards */
   --err-line: rgba(255, 107, 125, 0.5);
@@ -509,10 +512,14 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
  * could leave dangling at a line's end. */
 .dl-more { grid-area: more; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 14px; min-width: 0; font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .dl-more bdi { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+/* The pending list's bars are 9 px on an 18 px line, 4 px above the bar and 5 below (at every width, verify 11 finding 6), so the
+ * pending .dl-more is the arrived one's height, 18 px a line, and its baseline is the line's own: the bars stand where they stood
+ * (the 9 px box had stood 4 px below .dl-pt to share its baseline). */
+.rp .dl-more > .ph-bar { margin-block: 4px 5px; }
 /* Below 330 px in Arabic the average and the entries are two fixed lines, the average first, in the pending list and the arrived
- * list alike (the pending list's two bars one per line, each an 18 px line: 4 px above and 5 below the bar's 9), so arrival moves no
- * item, no .dl-more and no .dl-pt there (0.00 px, 320-329 px, decision 91). A single day without readings keeps its one sentence. */
-@media (max-width: 329.98px) { [dir="rtl"] .dli:not(.is-none-day) .dl-more { flex-direction: column; align-items: flex-start; } [dir="rtl"] .rp .dl-more > .ph-bar { margin-block: 4px 5px; } }
+ * list alike (the pending list's two bars one per line, each an 18 px line), so arrival moves no item, no .dl-more and no .dl-pt
+ * there (0.00 px, 320-329 px, decision 91). A single day without readings keeps its one sentence. */
+@media (max-width: 329.98px) { [dir="rtl"] .dli:not(.is-none-day) .dl-more { flex-direction: column; align-items: flex-start; } }
 /* One width for the peak's time in each language, the widest «Peak 10:44 AM» / «الذروة 10:44 ص» can be (84.14 and 86.23 px over every
  * time, rounded up to 0.5 px), so the box never follows the digits and the pending bar (the box's whole width) is the arrived box. */
 .dl-pt { grid-area: pt; width: 84.5px; font-size: 12px; line-height: 18px; color: var(--ink-3); text-align: left; }

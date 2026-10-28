@@ -776,7 +776,7 @@
   }
 
   /* Dialog specimens use Reports' actual panel, picker, file line and action classes. */
-  const fileLine = () => `<p class="file-line">${ico("file")}<span class="file-name" dir="ltr">fitway-minutes-<wbr><span class="nw">2026-08-26</span>-to-<wbr><span class="nw">2026-09-22.csv</span></span><span class="file-rows">${L.rows}</span></p>`;
+  const fileLine = () => `<p class="file-line">${ico("file", "ico")}<span class="file-name" dir="ltr">fitway-minutes-<wbr><span class="nw">2026-08-26</span>-to-<wbr><span class="nw">2026-09-22.csv</span></span><span class="file-rows">${L.rows}</span></p>`;
   const panelHead = (title, id) => `<header class="dlg-head"><h2${id ? ` id="${id}"` : ""}>${title}</h2><button data-press="square" class="icon-btn" type="button" data-close aria-label="${L.close}">${ico("close")}</button></header>`;
   const panelFoot = (primary, focus = "primary", busy = false, done = false) => `<footer class="dlg-foot"><button data-press="dark" class="rbtn${focus === "cancel" ? " is-focus" : ""}" type="button" data-close>${done ? L.done : L.cancel}</button><button data-press="chalk" class="rbtn rbtn-primary${focus === "primary" ? " is-focus" : ""}" type="${busy || done ? "button" : "submit"}"${busy ? ' disabled aria-busy="true"' : ""}>${primary}</button></footer>`;
   function dialogs() {
