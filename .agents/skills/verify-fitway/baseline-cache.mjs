@@ -337,7 +337,12 @@ export class BaselineCache {
 				);
 			await writeFile(resolve(pending, "entry.json"), JSON.stringify(entry));
 			await rename(pending, folder);
-			this.evictionEntries.push({ ...entry, folder });
+			this.evictionEntries.push({
+				created: entry.created,
+				folder,
+				key,
+				size: entry.size,
+			});
 		} finally {
 			await removeCacheFolder(this.root, pending);
 		}
@@ -377,7 +382,12 @@ export class BaselineCache {
 									),
 								)
 							).reduce((a, b) => a + b, 0);
-				entries.push({ ...metadata, folder, size });
+				entries.push({
+					created: metadata.created,
+					folder,
+					key: metadata.key,
+					size,
+				});
 			}
 			this.evictionEntries = entries;
 		}

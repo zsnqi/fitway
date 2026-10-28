@@ -1968,6 +1968,7 @@ context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.eva
   evaluate:async(fn)=>fn.toString().includes("coarse")
    ? {language,direction:language==="ar"?"rtl":"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
+: fn.toString().includes("document.scrollingElement") ? {scrollX:0,scrollY:0,viewportWidth:1440,viewportHeight:900,documentHeight:900}
 : fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
 locator:(selector)=>({first(){return this},count:async()=>1,
 evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body":'- button "Open details"',
@@ -2662,6 +2663,34 @@ test("R30 V3: comparison waits for finite motion and fixes the phase of persiste
 		/never settled/,
 	);
 	assert.equal(captured, false);
+});
+
+test("a comparison that fits the viewport remains one unchanged screenshot", async () => {
+	const { captureComparison } = await import("./comparison-capture.mjs");
+	const expected = Buffer.from("viewport");
+	const screenshots = [];
+	const page = {
+		waitForFunction: async () => {},
+		evaluate: async (fn) => {
+			if (fn.toString().includes("document.scrollingElement"))
+				return {
+					scrollX: 0,
+					scrollY: 0,
+					viewportWidth: 1440,
+					viewportHeight: 900,
+					documentHeight: 900,
+				};
+		},
+		screenshot: async (options) => {
+			screenshots.push(options);
+			return expected;
+		},
+	};
+
+	assert.equal(await captureComparison(page), expected);
+	assert.deepEqual(screenshots, [
+		{ fullPage: false, animations: "allow", caret: "hide" },
+	]);
 });
 
 test("R30 repair 2 R5: finite requestAnimationFrame motion compares equal; endless script motion is a capture problem", async () => {
