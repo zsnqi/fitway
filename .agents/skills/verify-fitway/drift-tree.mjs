@@ -72,10 +72,10 @@ export function extractDeclaredConcept(root) {
 	const scratch = realpathSync.native(
 		mkdtempSync(resolve(tmpdir(), "verify-fitway-drift-")),
 	);
+	// A private index keeps this checkout's index and files untouched.
 	const index = { GIT_INDEX_FILE: resolve(scratch, "index") };
 	const tree = resolve(scratch, "concept");
 	try {
-		// A private index keeps this checkout's index and files untouched.
 		mkdirSync(tree);
 		for (const args of [
 			["read-tree", `${commit}:${concept}`],

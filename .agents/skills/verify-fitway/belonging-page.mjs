@@ -123,36 +123,48 @@ export function outlineBelongingTokens({
 	const item = document.querySelector(selector);
 	if (!item) throw new Error(`Belonging item disappeared: ${selector}`);
 	const itemRect = item.getBoundingClientRect();
-	const rectsFor = (ids) =>
-		ids.flatMap((id) => {
+	const unionFor = (ids) => {
+		const rects = ids.flatMap((id) => {
 			const range = state.tokenRanges.get(id);
 			return range ? [...range.getClientRects()] : [];
 		});
+		if (!rects.length) return null;
+		return {
+			left: Math.min(...rects.map((rect) => rect.left)),
+			top: Math.min(...rects.map((rect) => rect.top)),
+			right: Math.max(...rects.map((rect) => rect.right)),
+			bottom: Math.max(...rects.map((rect) => rect.bottom)),
+		};
+	};
 	const box = (rect, color, dashed = false) => {
 		const element = document.createElement("div");
-		element.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px;box-sizing:border-box;border:2px ${dashed ? "dashed" : "solid"} ${color};pointer-events:none`;
+		element.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.right - rect.left}px;height:${rect.bottom - rect.top}px;box-sizing:border-box;border:2px ${dashed ? "dashed" : "solid"} ${color};pointer-events:none`;
 		layer.append(element);
 	};
-	for (const rect of rectsFor(pieceTokenIds)) box(rect, "#ff3355");
-	const columnRects = rectsFor(columnTokenIds);
-	if (columnRects.length) {
-		const left = Math.min(...columnRects.map((rect) => rect.left));
-		const top = Math.min(...columnRects.map((rect) => rect.top));
-		const right = Math.max(...columnRects.map((rect) => rect.right));
-		const bottom = Math.max(...columnRects.map((rect) => rect.bottom));
+	const piece = unionFor(pieceTokenIds);
+	// The piece's 2 px border runs just outside its line box, 2 px clear of its first and last glyphs.
+	if (piece)
 		box(
 			{
-				left: Math.max(itemRect.left, left - 2),
-				top: Math.max(itemRect.top, top - 2),
-				right,
-				bottom,
-				width: right - Math.max(itemRect.left, left - 2),
-				height: bottom - Math.max(itemRect.top, top - 2),
+				left: piece.left - 4,
+				top: piece.top - 2,
+				right: piece.right + 4,
+				bottom: piece.bottom + 2,
+			},
+			"#ff3355",
+		);
+	const column = unionFor(columnTokenIds);
+	if (column)
+		box(
+			{
+				left: Math.max(itemRect.left, column.left - 2),
+				top: Math.max(itemRect.top, column.top - 2),
+				right: column.right,
+				bottom: column.bottom,
 			},
 			"#00c8ff",
 			true,
 		);
-	}
 	document.body.append(layer);
 	window.__verifyBelongingOverlay = layer;
 }

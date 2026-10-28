@@ -162,7 +162,9 @@ forced filenames add `-forced`, so mixed runs cannot overwrite frames.
 
 `belonging-check` serves the declared concept ref unless `--concept` names an extracted build. It checks
 `li`, `tr`, `[role=row]` and `[role=listitem]` geometry across pages, languages, widths and mapped states.
-Without `--states`, it adds the Daily `details`, Reports `expand-days`, and the brief's query cases.
+Without `--states`, it runs each page as it loads, plus Daily after `details`, Reports after `expand-days` (phone
+widths), Reports `state=short` with and without `expand-days`, Access `case=long`, Activity log `case=wide`, and
+Settings `case=wide` and `log=every`.
 
 ```powershell
 node $cli belonging-check --page reports.html --languages ar,en --widths 320,390,768,1440 --out "$run/belonging"

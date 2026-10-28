@@ -5,7 +5,6 @@ import {
 	closeSync,
 	existsSync,
 	openSync,
-	readdirSync,
 	readFileSync,
 	statSync,
 } from "node:fs";
@@ -31,6 +30,7 @@ import {
 	canonical,
 	checkVerificationLease,
 	defaultLanAddresses,
+	freshEmptyOutput,
 	freshOutput,
 	jsonOutput,
 	lanOrigins,
@@ -532,12 +532,7 @@ export async function main(input, services = {}) {
 		return console.log(checkVerificationMaps(options.root || repository));
 	if (command === "cleanup") return cleanup(options.session);
 	if (command === "measure") {
-		assertOutsideGit(options.out);
-		if (existsSync(options.out) && readdirSync(options.out).length)
-			throw new ToolStartupError(
-				"measure requires a fresh empty output folder; this prevents descendant links or old evidence from redirecting writes.",
-				"pass --out a new or empty folder outside Git",
-			);
+		freshEmptyOutput(options.out, "measure");
 		const tools = forensicsPath(options);
 		const tool = options.tool;
 		refuseOutputArguments(options.extra);

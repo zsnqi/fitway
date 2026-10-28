@@ -1,12 +1,11 @@
-import { existsSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
-import { belongingWidths } from "./belonging-plan.mjs";
+import { belongingStates, belongingWidths } from "./belonging-plan.mjs";
 import { runBelongingFrames } from "./belonging-runner.mjs";
 import {
-	assertOutsideGit,
 	canonical,
+	freshEmptyOutput,
 	freshOutput,
 	jsonOutput,
 	preview,
@@ -14,6 +13,7 @@ import {
 	verificationPort,
 } from "./core.mjs";
 import { extractDeclaredConcept } from "./drift-tree.mjs";
+import { axis } from "./drive-plan.mjs";
 import { repository } from "./map.mjs";
 import { loadProbes } from "./probes.mjs";
 
@@ -27,7 +27,6 @@ function conceptSource(options) {
 		recipes = options.recipes
 			? canonical(resolve(options.recipes))
 			: resolve(concept, "verification-recipes.json");
-		console.log(`CONCEPT: folder=${concept}`);
 	} else {
 		extracted = extractDeclaredConcept(repository);
 		concept = extracted.concept;
@@ -35,46 +34,36 @@ function conceptSource(options) {
 			? canonical(resolve(options.recipes))
 			: extracted.recipes;
 		commit = extracted.commit;
-		console.log(`CONCEPT: commit=${commit} folder=${concept}`);
 	}
 	return { extracted, concept, commit, recipes };
 }
 
-function selectedLanguages(value) {
-	const languages = String(value || "ar,en")
-		.split(",")
-		.filter(Boolean);
-	for (const language of languages)
-		if (!["ar", "en"].includes(language))
-			throw new ToolStartupError(
-				`Unsupported language: ${language}`,
-				"pass --languages ar,en",
-			);
-	return languages;
-}
+const startupValue = (fix, parse) => {
+	try {
+		return parse();
+	} catch (error) {
+		if (error instanceof ToolStartupError) throw error;
+		throw new ToolStartupError(error.message, fix);
+	}
+};
 
-function selectedPages(map, value) {
+// Every page the recipes name, or the one --page names, with its states.
+function belongingPlan(map, options) {
 	const pages =
-		value && value !== "all"
-			? map.pages.filter((page) => page.page === value)
+		options.page && options.page !== "all"
+			? map.pages.filter((page) => page.page === options.page)
 			: map.pages;
 	if (!pages.length)
 		throw new ToolStartupError(
-			`Page not named by the recipes: ${value}`,
+			`Page not named by the recipes: ${options.page}`,
 			"run verify:owner list --page all",
 		);
-	return pages;
+	return startupValue("pass --states default, all or a mapped query", () =>
+		pages.map((page) => ({ page, states: belongingStates(page, options) })),
+	);
 }
 
-async function startRuntime(options, source, out) {
-	const setup = await options.doctor({
-		...options,
-		concept: source.concept,
-		recipes: source.recipes,
-		quiet: true,
-		transports: "http",
-	});
-	const pages = selectedPages(setup.map, options.page);
+async function startRuntime(options, setup, source, out) {
 	const ui = await import(
 		pathToFileURL(resolve(setup.tools, "scripts/web/lib.mjs")).href
 	);
@@ -93,8 +82,6 @@ async function startRuntime(options, source, out) {
 		throw error;
 	}
 	return {
-		setup,
-		pages,
 		server,
 		browser,
 		runtime: {
@@ -149,26 +136,33 @@ function resultSummary(source, widths, languages, frames, startedAt) {
 
 export async function belongingCheck(options, services) {
 	const startedAt = Date.now();
-	const out = assertOutsideGit(options.out || freshOutput());
-	if (existsSync(out) && readdirSync(out).length)
-		throw new ToolStartupError(
-			`Belonging check requires a fresh empty output folder: ${out}`,
-			"pass --out a new or empty folder outside Git",
-		);
+	const out = freshEmptyOutput(options.out || freshOutput(), "belonging-check");
+	const languages = startupValue("pass --languages ar,en, ar or en", () =>
+		axis(options.languages, "ar,en", ["ar", "en"]),
+	);
+	const widths = belongingWidths(options.widths);
 	const source = conceptSource(options);
 	try {
-		const running = await startRuntime(
-			{ ...options, doctor: services.doctor },
-			source,
-			out,
+		const setup = await services.doctor({
+			...options,
+			concept: source.concept,
+			recipes: source.recipes,
+			quiet: true,
+			transports: "http",
+		});
+		const plan = belongingPlan(setup.map, options);
+		console.log(
+			source.commit
+				? `CONCEPT: commit=${source.commit} folder=${source.concept}`
+				: `CONCEPT: folder=${source.concept}`,
 		);
+		const running = await startRuntime(options, setup, source, out);
 		let frames;
 		try {
 			frames = await runBelongingFrames({
-				pages: running.pages,
-				languages: selectedLanguages(options.languages),
-				widths: belongingWidths(options.widths),
-				options,
+				plan,
+				languages,
+				widths,
 				runtime: running.runtime,
 			});
 		} finally {
@@ -177,13 +171,7 @@ export async function belongingCheck(options, services) {
 				running.server.close(),
 			]);
 		}
-		const summary = resultSummary(
-			source,
-			belongingWidths(options.widths),
-			selectedLanguages(options.languages),
-			frames,
-			startedAt,
-		);
+		const summary = resultSummary(source, widths, languages, frames, startedAt);
 		await jsonOutput(out, "belonging-check.json", summary);
 		console.log(
 			`BELONGING SUMMARY: frames=${summary.totals.frames} pass=${summary.totals.pass} fail=${summary.totals.fail} no-items=${summary.totals.noItems} findings=${summary.totals.findings} resize-only=${summary.totals.resizeOnly} runtime=${(summary.totals.runtimeMs / 1000).toFixed(1)}s`,

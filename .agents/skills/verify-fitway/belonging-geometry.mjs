@@ -22,7 +22,8 @@ const overlap = (left, right) =>
 		Math.min(left.right, right.right) - Math.max(left.left, right.left),
 	);
 
-const ANTI_ALIAS_PX = 1.001;
+// A neighbour whose antialiased edge touches the far piece by up to 1 px is not stacked under it.
+const COLUMN_EDGE_PX = 1;
 const cleanText = (value) => String(value).replace(/\s+/g, " ").trim();
 
 function lineGroups(fragments) {
@@ -131,7 +132,7 @@ function itemColumns(pieces, direction) {
 					piece.line >= far.line &&
 					piece.rect.top >= far.rect.top - 0.5 &&
 					farSide(piece) &&
-					overlap(piece.rect, far.rect) > ANTI_ALIAS_PX,
+					overlap(piece.rect, far.rect) > COLUMN_EDGE_PX,
 			);
 			const stackedLines = new Set(columnPieces.map((piece) => piece.line));
 			if (stackedLines.size < 2) continue;
@@ -165,7 +166,7 @@ export function analyzeBelongingItem(item) {
 					? piece.rect.right >= column.near.rect.left - 0.5
 					: piece.rect.left <= column.near.rect.right + 0.5;
 			const reach = overlap(piece.rect, column.rect);
-			if (!startsNear || reach <= ANTI_ALIAS_PX) continue;
+			if (!startsNear || reach <= 1) continue;
 			findings.push({
 				text: piece.text,
 				columnText: column.text,

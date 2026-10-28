@@ -7,13 +7,16 @@ import {
 } from "./belonging-page.mjs";
 import {
 	belongingSegments,
-	belongingStates,
 	heightForBelongingWidth,
-	queryName,
 } from "./belonging-plan.mjs";
 import { safe } from "./capture-records.mjs";
 import { outputFile } from "./core.mjs";
-import { performAction, proveFeature } from "./drive.mjs";
+import { proveFeature, runFeatureActions } from "./drive.mjs";
+import {
+	contextOptions,
+	featureUnreachable,
+	stateName,
+} from "./drive-plan.mjs";
 
 const ITEM_SELECTOR = "li, tr, [role='row'], [role='listitem']";
 
@@ -30,18 +33,16 @@ async function openPage({
 	stem,
 }) {
 	const input = width <= 720 ? "touch" : "mouse";
-	const current = await ui.newContext(browser, {
-		viewport: {
+	const current = await ui.newContext(
+		browser,
+		contextOptions({
 			width,
 			height: heightForBelongingWidth(width),
-		},
-		touch: input === "touch",
-		mobile: input === "touch",
-		reducedMotion: "reduce",
-		colorScheme: "dark",
-		locale: language === "ar" ? "ar-SA" : "en-US",
-		timezoneId: "Asia/Riyadh",
-	});
+			input,
+			motion: "reduce",
+			language,
+		}),
+	);
 	current.page.setDefaultTimeout(5000);
 	const query = { ...state.query, lang: language, motion: "off" };
 	const url = ui.withParams(`${origin}/${page.page}`, query);
@@ -52,25 +53,16 @@ async function openPage({
 		});
 		await current.page.evaluate(installBelongingPageHelpers);
 		if (page.page === "index.html") await probes.introSettled(current.page);
-		if (state.actions.length) {
-			const entry = { actions: [], problems: [] };
-			for (const action of state.actions) {
-				const resolved = action.replace(
-					/^activate:/,
-					input === "touch" ? "tap:" : "click:",
-				);
-				await performAction(
-					ui,
-					current.page,
-					resolved,
-					input,
-					out,
-					stem,
-					entry,
-				);
-				entry.actions.push(resolved);
-			}
-			await proveFeature(current.page, state.proof, language, input);
+		if (state.recipe) {
+			await runFeatureActions({
+				ui,
+				page: current.page,
+				recipe: state.recipe,
+				input,
+				out,
+				stem,
+			});
+			await proveFeature(current.page, state.recipe.proof, language, input);
 		}
 		return { current, input, query, url };
 	} catch (error) {
@@ -104,8 +96,11 @@ const findingKey = (finding) =>
 		Math.round(finding.reach * 10),
 	].join("|");
 
-async function cropFinding({ ui, page, finding, stem, out }) {
-	const name = `${stem}-${safe(finding.item)}-${safe(finding.text).slice(0, 36)}.png`;
+// One file per finding: its frame (page, state, language, width) and its place in that frame.
+export const findingCropName = ({ page, state, language, width }, index) =>
+	`belonging-${safe(page.page)}-${safe(state.label)}-${language}-${width}-finding-${index + 1}.png`;
+
+async function cropFinding({ ui, page, finding, name, out }) {
 	await page.locator(finding.item).scrollIntoViewIfNeeded();
 	await ui.twoFrames(page);
 	await page.evaluate(outlineBelongingTokens, {
@@ -115,8 +110,18 @@ async function cropFinding({ ui, page, finding, stem, out }) {
 	});
 	try {
 		const path = await outputFile(out, name);
-		await page.locator(finding.item).screenshot({
+		// A margin round the item keeps the piece's outline whole where the piece meets the item's edge.
+		const box = await page.locator(finding.item).boundingBox();
+		const left = Math.max(0, box.x - 4);
+		const top = Math.max(0, box.y - 4);
+		await page.screenshot({
 			path,
+			clip: {
+				x: left,
+				y: top,
+				width: box.x + box.width + 4 - left,
+				height: box.y + box.height + 4 - top,
+			},
 			animations: "allow",
 			caret: "hide",
 		});
@@ -148,7 +153,7 @@ function frameLine(frame) {
 function startFailureFrame({ page, state, language, width, error }) {
 	return {
 		page: page.page,
-		query: queryName(state.query),
+		query: stateName(state.query),
 		state: state.label,
 		feature: state.feature,
 		language,
@@ -186,7 +191,7 @@ async function confirmResize(args) {
 }
 
 async function frameAtWidth(args) {
-	const { opened, page, state, language, width, anchor, ui, out, stem } = args;
+	const { opened, page, state, language, width, anchor, ui, out } = args;
 	if (width !== anchor) {
 		await opened.current.page.setViewportSize({
 			width,
@@ -205,17 +210,17 @@ async function frameAtWidth(args) {
 		findings = confirmed.findings;
 		resizeOnly = confirmed.resizeOnly;
 	}
-	for (const finding of findings)
+	for (const [index, finding] of findings.entries())
 		finding.crop = await cropFinding({
 			ui,
 			page: opened.current.page,
 			finding,
-			stem,
+			name: findingCropName({ page, state, language, width }, index),
 			out,
 		});
 	const frame = {
 		page: page.page,
-		query: queryName(opened.query),
+		query: stateName(opened.query),
 		state: state.label,
 		feature: state.feature,
 		language,
@@ -279,36 +284,33 @@ async function runSegment(args) {
 	return frames;
 }
 
-export async function runBelongingFrames({
-	pages,
-	languages,
-	widths,
-	options,
-	runtime,
-}) {
+// A feature state runs only at the widths where drive's recipe rule reaches its feature.
+const reachedWidths = (widths, state, language) =>
+	state.recipe
+		? widths.filter(
+				(width) =>
+					!featureUnreachable(state.recipe, width, state.query, language),
+			)
+		: widths;
+
+export async function runBelongingFrames({ plan, languages, widths, runtime }) {
 	const frames = [];
-	for (const page of pages)
-		for (const state of belongingStates(page, options))
-			for (const language of languages) {
-				const applicable = widths.filter(
-					(width) => state.maxWidth === undefined || width <= state.maxWidth,
-				);
-				for (const [segmentIndex, segment] of belongingSegments(
-					applicable,
-				).entries())
+	for (const { page, states } of plan)
+		for (const state of states)
+			for (const language of languages)
+				for (const segment of belongingSegments(
+					reachedWidths(widths, state, language),
+				))
 					frames.push(
 						...(await runSegment({
 							...runtime,
 							page,
 							state,
 							language,
-							widths,
 							segment,
 							anchor: segment[0],
-							segmentIndex,
-							stem: `belonging-${safe(page.page)}-${safe(state.label)}-${language}-${segment[0]}-${segmentIndex}`,
+							stem: `belonging-${safe(page.page)}-${safe(state.label)}-${language}-${segment[0]}`,
 						})),
 					);
-			}
 	return frames;
 }

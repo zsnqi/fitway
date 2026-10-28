@@ -10,6 +10,8 @@ import {
 	belongingSegments,
 	heightForBelongingWidth,
 } from "./belonging-plan.mjs";
+import { findingCropName } from "./belonging-runner.mjs";
+import { contextOptions, featureUnreachable } from "./drive-plan.mjs";
 import { verificationTest } from "./skip-gate.mjs";
 
 const test = verificationTest(nodeTest);
@@ -138,6 +140,58 @@ test("the default width matrix includes the exact one-pixel and fresh-load bands
 
 test("custom widths start a fresh load when the input mode changes", () => {
 	assert.deepEqual(belongingSegments([390, 800]), [[390], [800]]);
+});
+
+test("each finding's crop has its own file across frames and within one", () => {
+	const frame = (width) => ({
+		page: { page: "reports.html" },
+		state: { label: "default + expand-days" },
+		language: "ar",
+		width,
+	});
+	const names = [
+		findingCropName(frame(320), 0),
+		findingCropName(frame(320), 1),
+		findingCropName(frame(321), 0),
+	];
+	assert.equal(new Set(names).size, 3);
+	assert.match(names[2], /-321-finding-1\.png$/);
+});
+
+test("a feature is reached only at the widths its recipe allows", () => {
+	const expand = { id: "expand-days", maxWidth: 720 };
+	assert.equal(featureUnreachable(expand, 720, {}, "en"), null);
+	assert.match(
+		featureUnreachable(expand, 721, {}, "en").reason,
+		/unavailable at 721 CSS pixels/,
+	);
+	const ruled = {
+		id: "more",
+		unreachable: [{ when: { state: "short" }, reason: "No more days" }],
+	};
+	assert.equal(featureUnreachable(ruled, 390, {}, "ar"), null);
+	assert.equal(
+		featureUnreachable(ruled, 390, { state: "short" }, "ar").reason,
+		"No more days",
+	);
+});
+
+test("touch input emulates a phone only at 720 CSS px and below", () => {
+	const options = (width, zoom) =>
+		contextOptions({
+			width,
+			height: 900,
+			zoom,
+			input: "touch",
+			motion: "reduce",
+			language: "ar",
+		});
+	assert.equal(options(720).mobile, true);
+	assert.equal(options(721).mobile, false);
+	assert.equal(options(1440, 2).mobile, true);
+	assert.equal(options(390).locale, "ar-SA");
+	assert.equal(options(390).reducedMotion, "reduce");
+	assert.equal(options(390).forcedColors, "none");
 });
 
 test("belonging-check is registered with its selection options", () => {

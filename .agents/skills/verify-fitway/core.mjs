@@ -1,6 +1,12 @@
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, lstatSync, readlinkSync, realpathSync } from "node:fs";
+import {
+	existsSync,
+	lstatSync,
+	readdirSync,
+	readlinkSync,
+	realpathSync,
+} from "node:fs";
 import {
 	mkdir,
 	readdir,
@@ -72,6 +78,16 @@ export function assertOutsideGit(target) {
 			if (dir === dirname(dir)) break;
 		}
 	}
+	return resolved;
+}
+
+export function freshEmptyOutput(target, command) {
+	const resolved = assertOutsideGit(target);
+	if (existsSync(resolved) && readdirSync(resolved).length)
+		throw new ToolStartupError(
+			`${command} requires a fresh empty output folder; this prevents descendant links or old evidence from redirecting writes.`,
+			"pass --out a new or empty folder outside Git",
+		);
 	return resolved;
 }
 

@@ -1,4 +1,5 @@
-import { resolveQuery, stateCases } from "./drive-plan.mjs";
+import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
+import { resolveQuery, stateCases, stateName } from "./drive-plan.mjs";
 
 export const ALL_BELONGING_WIDTHS = [
 	...Array.from({ length: 401 }, (_, index) => 320 + index),
@@ -20,12 +21,9 @@ const defaultStates = {
 };
 
 const defaultActions = {
-	"index.html": [{ id: "details" }],
-	"reports.html": [{ id: "expand-days", maxWidth: 720 }],
+	"index.html": ["details"],
+	"reports.html": ["expand-days"],
 };
-
-export const queryName = (query) =>
-	new URLSearchParams(Object.entries(query).sort()).toString() || "default";
 
 export function belongingWidths(value) {
 	if (!value || value === "all") return ALL_BELONGING_WIDTHS;
@@ -38,7 +36,10 @@ export function belongingWidths(value) {
 	].sort((left, right) => left - right);
 	for (const width of widths)
 		if (!Number.isInteger(width) || width < 320 || width > 1440)
-			throw new Error(`--widths accepts integers from 320 to 1440: ${value}`);
+			throw new ToolStartupError(
+				`--widths accepts integers from 320 to 1440: ${value}`,
+				"pass --widths all or a comma-separated list of integers from 320 to 1440",
+			);
 	return widths;
 }
 
@@ -71,48 +72,36 @@ export function heightForBelongingWidth(width) {
 	return 900;
 }
 
+// A state is a query and, for a feature state, the recipe feature reached after the page loads.
 export function belongingStates(page, options = {}) {
-	if (options.states) {
-		const states = String(options.states)
-			.split(",")
-			.map((state) => state.replace(/^history=/, "state="))
-			.join(",");
-		return stateCases(page, { states, query: "" }).map((state) => ({
+	if (options.states)
+		return stateCases(page, options).map((state) => ({
 			label: state.name,
 			query: state.query,
-			actions: [],
 			feature: "page",
-			proof: null,
+			recipe: null,
 		}));
-	}
 
-	const baseQueries = defaultStates[page.page] ?? [{}];
-	const actions = (defaultActions[page.page] ?? []).map((action) => {
-		const feature = page.features.find(
-			(candidate) => candidate.id === action.id,
-		);
-		if (!feature)
-			throw new Error(`${page.page}: missing recipe feature ${action.id}`);
-		return { feature, maxWidth: action.maxWidth };
+	const features = (defaultActions[page.page] ?? []).map((id) => {
+		const feature = page.features.find((candidate) => candidate.id === id);
+		if (!feature) throw new Error(`${page.page}: missing recipe feature ${id}`);
+		return feature;
 	});
 	const states = [];
-	for (const base of baseQueries) {
-		const resolved = resolveQuery(page, base);
+	for (const base of defaultStates[page.page] ?? [{}]) {
+		const { query } = resolveQuery(page, base);
 		states.push({
-			label: queryName(resolved.query),
-			query: resolved.query,
-			actions: [],
+			label: stateName(query),
+			query,
 			feature: "page",
-			proof: null,
+			recipe: null,
 		});
-		for (const { feature, maxWidth } of actions)
+		for (const feature of features)
 			states.push({
-				label: `${queryName(resolved.query)} + ${feature.id}`,
-				query: resolved.query,
-				actions: feature.actions,
+				label: `${stateName(query)} + ${feature.id}`,
+				query,
 				feature: feature.id,
-				maxWidth,
-				proof: feature.proof,
+				recipe: feature,
 			});
 	}
 	return states;
