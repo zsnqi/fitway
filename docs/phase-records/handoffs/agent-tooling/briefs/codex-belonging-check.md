@@ -13,7 +13,8 @@
   - `.agents/skills/verify-fitway/runner.mjs` lines 176-194: how drive opens an item's context (touch and mobile
     emulation at 720 px and below, reduced motion, dark scheme, locale);
   - `.agents/skills/verify-fitway/concept-source.json`: the concept is read from that ref, not from this worktree's
-    own copy of the concept, which is older;
+    own copy of the concept, which is older; `.agents/skills/verify-fitway/drift-tree.mjs` lines 53-101 already
+    resolve that ref and write its concept tree into a scratch folder;
   - the recipes at that ref (`fedbdb6d`), exported read only to
     `D:/fitway-temp/tooling-belonging/concept-ref/design-research/owner-composition-exploration-r04/directions/eclipse/verification-recipes.json`:
     the `details` feature of the Daily page (opens its minutes table) and the `expand-days` feature of the Reports
@@ -106,17 +107,23 @@ kind of defect decision 92 (2) fixed by hand is found by a repeatable check, not
   Intent: a check that passes the defect, or flags the head lines and own rows the user ruled are not this problem,
   is worse than none.
 - **K3. Every page, both languages, every width, and the frames that hold items.** Outcome: by default the command
-  runs Daily (`index.html`), Reports, Access, Activity log and Settings; Arabic and English; at every 10 px from 320
-  to 720 and at 721, 768, 900, 1024, 1280 and 1440 px (height 844 up to 720 px, 1024 at 768, 900 above); each page as
-  it loads with its default data, plus Daily after `details`, Reports after `expand-days`, Reports with
-  `history=short` (with and without `expand-days`), Access `case=long`, Activity log `case=wide` and Settings
-  `case=wide` and `log=every`. At 720 px and below a frame runs as drive's touch input does (touch and mobile
-  emulation, runner.mjs lines 186-187), so the layout width is the stated width with no scroll bar; above 720 px as
-  mouse. A feature is reached by its recipe's actions, as drive reaches it. Options select a page, a language, widths
-  and a concept folder (`--concept` for an extracted build, as K2's first case needs); with no option the whole matrix
-  runs. Intent: the defect showed at one width in one language; a check that samples three sizes would have missed it.
-- **K4. Its output is readable and never silently empty.** Outcome: the command prints first the commit the concept's
-  ref resolved to (or the `--concept` folder given), then one line per frame: PASS or FAIL, page, query, language,
+  runs every page the recipes name (Daily `index.html`, Reports, Access, Activity log, Settings and the Components
+  sheet); Arabic and English; each page as it loads with its default data, plus Daily after `details`, Reports after
+  `expand-days`, Reports with `history=short` (with and without `expand-days`), Access `case=long`, Activity log
+  `case=wide` and Settings `case=wide` and `log=every`. Widths: every 1 px from 320 to 720 and every 10 px from 730
+  to 1440, plus 721 (height 844 up to 720 px, 1024 at 768, 900 above). A frame at 720 px and below runs as drive's
+  touch input does (touch and mobile emulation, runner.mjs lines 186-187), so the layout width is the stated width
+  with no scroll bar; above 720 px as mouse. One loaded page may be resized through the widths of its band, provided
+  a fresh load at 320, 390, 720, 721, 768, 1024 and 1440 is also checked and every finding seen after a resize is
+  confirmed by a fresh load at that width (a finding a fresh load does not reproduce is reported as resize-only). A
+  feature is reached by its recipe's actions, as drive reaches it. Options select a page, a language, widths, a state
+  in drive's `--states` syntax (`all` included) and a concept folder (`--concept` for an extracted build, as K2's
+  first case needs); with no option the whole matrix above runs. Intent: the defect showed at one width in one
+  language; a check that samples a few sizes would have missed it.
+- **K4. Its output is readable and never silently empty.** Outcome: without `--concept`, every frame is served from
+  the concept tree of the commit the ref resolved to, written outside every git tree, never from this worktree's copy;
+  the command prints first that commit and the folder it serves (or the `--concept` folder given), then one line per
+  frame: PASS or FAIL, page, query, language,
   width, the number of items, the number of items with a column, and the number of findings; then each finding on its
   own line; then a total with the run time. A frame with no item prints `NO ITEMS` (neither a pass nor a failure),
   and the total counts them. It writes a JSON record of every frame and a PNG crop of each finding's item, with the
@@ -126,15 +133,19 @@ kind of defect decision 92 (2) fixed by hand is found by a repeatable check, not
   is inside a git tree. Intent: a reader opens the crop and sees the line under the column without rerunning anything.
 - **K5. Findings on today's concept.** Outcome: the full K3 matrix is run once against the concept at
   `concept-source.json`'s ref; every finding is listed (page, query, language, width, item, text, px) with its crop
-  path; a finding is not a FAIL of this round, and the concept is not changed. Report the matrix's frame count and
-  total run time. Intent: the coordinator learns the pages' real state from the tool, not from this brief.
+  path; a finding is not a FAIL of this round, and the concept is not changed. Also run `--states all` once at 320,
+  390, 768 and 1440 px and list its findings the same way. Report each run's frame count and total run time. Intent:
+  the coordinator learns the pages' real state from the tool, not from this brief.
 - **K6. The rest of verify-fitway is unchanged.** Outcome: the command follows the CLI's existing contract (usage,
   `--help`, startup errors) and appears in `pnpm tools`; SKILL.md gains one short section with one example command;
   the geometry of K1 is a function with unit tests on synthetic line rects (both reading directions, a split bidi
   value, a one-line head line, a two-line column, a piece 1 px in and 1.5 px in) that run in the ladder without a
   browser; `pnpm map:tooling` is rerun after `git add`; the code-health ratchet and the fast ladder pass after the
-  commit; existing commands, their tests and the port allocation are unchanged. New code goes in its own modules,
-  `cli.mjs` gains only the wiring (item 10). Intent: one more command, no second path and no growth of a giant file.
+  commit; existing commands, their tests and the port allocation are unchanged. Frames run through verify-fitway's
+  existing preview, browser, context, recipe-action and readiness code (the code drive uses), and the ref is resolved
+  and extracted by drift-tree's existing code: no second browser launch, context factory, action runner, readiness
+  wait or git extraction. New code goes in its own modules, `cli.mjs` gains only the wiring (item 10). Intent: one
+  more command, no second path and no growth of a giant file.
 
 ## Scope
 
