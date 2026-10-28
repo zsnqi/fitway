@@ -1,7 +1,9 @@
-// Drive planning: query switches, state cases, axes and the planned captures.
+// Drive planning: query switches, state cases, axes, where a feature is reachable, the
+// context a capture opens with, and the planned captures.
 import { colorsAxis } from "./colors.mjs";
+import { matchesStateRule } from "./state-rules.mjs";
 
-const axis = (value, fallback, allowed) => {
+export const axis = (value, fallback, allowed) => {
 	const items = (value || fallback).split(",");
 	for (const item of items)
 		if (!allowed.includes(item))
@@ -10,6 +12,51 @@ const axis = (value, fallback, allowed) => {
 };
 export const inputAxis = (value) =>
 	axis(value, "mouse,touch", ["mouse", "touch", "keyboard"]);
+
+export const stateName = (query) =>
+	new URLSearchParams(Object.entries(query).sort()).toString() || "default";
+
+// Null where the recipe reaches the feature; otherwise the state rule that rules it out, if any,
+// and the reason.
+export function featureUnreachable(feature, cssWidth, query, language) {
+	const unavailable =
+		(feature.widths === "phone" && cssWidth > 720) ||
+		(feature.widths === "wide" && cssWidth <= 720) ||
+		(feature.minWidth && cssWidth < feature.minWidth) ||
+		(feature.maxWidth && cssWidth > feature.maxWidth);
+	const absent = (feature.unreachable || []).find((rule) =>
+		matchesStateRule(rule, query, language),
+	);
+	if (!unavailable && !absent) return null;
+	return {
+		rule: absent,
+		reason:
+			absent?.reason ||
+			`Feature path unavailable at ${cssWidth} CSS pixels by its recipe`,
+	};
+}
+
+export function contextOptions({
+	width,
+	height,
+	zoom,
+	input,
+	motion,
+	color,
+	language,
+}) {
+	return {
+		viewport: { width, height },
+		zoom: zoom || 1,
+		touch: input === "touch",
+		mobile: input === "touch" && width / (zoom || 1) <= 720,
+		reducedMotion: motion === "reduce" ? "reduce" : "no-preference",
+		colorScheme: "dark",
+		forcedColors: color === "forced" ? "active" : "none",
+		locale: language === "ar" ? "ar-SA" : "en-US",
+		timezoneId: "Asia/Riyadh",
+	};
+}
 
 export function resolveQuery(page, query) {
 	const result = { ...query };
@@ -69,9 +116,7 @@ export function stateCases(page, options) {
 		const resolved = resolveQuery(page, { ...item.query, ...extras });
 		return {
 			...resolved,
-			name:
-				new URLSearchParams(Object.entries(resolved.query).sort()).toString() ||
-				"default",
+			name: stateName(resolved.query),
 		};
 	});
 }
@@ -150,10 +195,7 @@ export function plannedCaptures(map, options) {
 								});
 								items.push({
 									feature: `${selected.page}/${feature.id}`,
-									state:
-										new URLSearchParams(
-											Object.entries(effective.query).sort(),
-										).toString() || "default",
+									state: stateName(effective.query),
 									language,
 									size,
 									input,

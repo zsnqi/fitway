@@ -97,6 +97,9 @@ const ownerOptions = {
 	sizes: value("--sizes", "Comma-separated viewport sizes.", {
 		sample: "desktop,phone",
 	}),
+	widths: value("--widths", "Comma-separated viewport widths.", {
+		sample: "320,390,768,1440",
+	}),
 	inputs: value("--inputs", "Comma-separated input modes.", {
 		sample: "mouse,keyboard",
 	}),
@@ -316,6 +319,27 @@ const ownerCommands = [
 		exitCodes: exits(
 			[0, "Compare passed."],
 			[1, "Differences or command failure."],
+		),
+	},
+	{
+		name: "belonging-check",
+		usage:
+			"pnpm verify:owner belonging-check [--concept <folder>] [--recipes <file>] [--page <page>|all] [--languages ar,en] [--widths 320,390,...] [--states default|all|<query>] [--port 3176] [--out <evidence-folder>]",
+		purpose: "Find item lines that run under another stacked column.",
+		options: [
+			ownerOptions.concept,
+			ownerOptions.recipes,
+			ownerOptions.out,
+			ownerOptions.page,
+			ownerOptions.languages,
+			ownerOptions.widths,
+			ownerOptions.states,
+			ownerOptions.port,
+		],
+		requiredOptions: [],
+		exitCodes: exits(
+			[0, "No belonging findings."],
+			[1, "Findings, load failures, or command failure."],
 		),
 	},
 	{

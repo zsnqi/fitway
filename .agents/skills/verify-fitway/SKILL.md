@@ -158,6 +158,18 @@ Every forced item records the computed body background and Canvas palette colour
 Each manifest item and FRAME line names normal or forced. Normal keeps its existing filenames;
 forced filenames add `-forced`, so mixed runs cannot overwrite frames.
 
+## Belonging check
+
+`belonging-check` serves the declared concept ref unless `--concept` names an extracted build. It checks
+`li`, `tr`, `[role=row]` and `[role=listitem]` geometry across pages, languages, widths and mapped states.
+Without `--states`, it runs each page as it loads, plus Daily after `details`, Reports after `expand-days` (phone
+widths), Reports `state=short` with and without `expand-days`, Access `case=long`, Activity log `case=wide`, and
+Settings `case=wide` and `log=every`.
+
+```powershell
+node $cli belonging-check --page reports.html --languages ar,en --widths 320,390,768,1440 --out "$run/belonging"
+```
+
 ## Compare
 
 Choose one ordered pair with `--port` and `--baseline-port`: **3176-3177, 3186-3187 or 3188-3189**.

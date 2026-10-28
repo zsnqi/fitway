@@ -5,7 +5,6 @@ import {
 	closeSync,
 	existsSync,
 	openSync,
-	readdirSync,
 	readFileSync,
 	statSync,
 } from "node:fs";
@@ -31,6 +30,7 @@ import {
 	canonical,
 	checkVerificationLease,
 	defaultLanAddresses,
+	freshEmptyOutput,
 	freshOutput,
 	jsonOutput,
 	lanOrigins,
@@ -489,6 +489,13 @@ export function ownerCommandOptions(parsed) {
 	};
 }
 
+async function prepareMeasureOptions(options) {
+	const requested = measurementColors(options);
+	if (requested.forced) await requireForcedColors(forensicsPath(options));
+	options.extra = requested.args;
+	options.colors = requested.colors;
+}
+
 export async function main(input, services = {}) {
 	const parsed = Array.isArray(input)
 		? resolveToolArguments("verify:owner", input)
@@ -500,12 +507,11 @@ export async function main(input, services = {}) {
 		colorsAxis(options.colors).includes("forced")
 	)
 		await requireForcedColors(forensicsPath(options));
-	if (command === "measure") {
-		const requested = measurementColors(options);
-		if (requested.forced) await requireForcedColors(forensicsPath(options));
-		options.extra = requested.args;
-		options.colors = requested.colors;
-	}
+	if (command === "measure") await prepareMeasureOptions(options);
+	if (command === "belonging-check")
+		return (await import("./belonging-check.mjs")).belongingCheck(options, {
+			doctor,
+		});
 	if (command === "_serve") {
 		const server = await preview({
 			concept: options.concept,
@@ -526,12 +532,7 @@ export async function main(input, services = {}) {
 		return console.log(checkVerificationMaps(options.root || repository));
 	if (command === "cleanup") return cleanup(options.session);
 	if (command === "measure") {
-		assertOutsideGit(options.out);
-		if (existsSync(options.out) && readdirSync(options.out).length)
-			throw new ToolStartupError(
-				"measure requires a fresh empty output folder; this prevents descendant links or old evidence from redirecting writes.",
-				"pass --out a new or empty folder outside Git",
-			);
+		freshEmptyOutput(options.out, "measure");
 		const tools = forensicsPath(options);
 		const tool = options.tool;
 		refuseOutputArguments(options.extra);

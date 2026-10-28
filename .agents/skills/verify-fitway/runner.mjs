@@ -22,25 +22,51 @@ import {
 	focusDescription,
 	focusedElement,
 	KeyboardReachError,
-	performAction,
 	prove,
 	proveFeature,
 	reachByKeyboard,
+	runFeatureActions,
 } from "./drive.mjs";
-import { drivePlan, resolveQuery } from "./drive-plan.mjs";
+import {
+	contextOptions,
+	drivePlan,
+	featureUnreachable,
+	resolveQuery,
+	stateName,
+} from "./drive-plan.mjs";
 import { loadProbes } from "./probes.mjs";
 import { proveStateRule, requestedProofs } from "./state-proofs.mjs";
-import {
-	endedWhenKeys,
-	matchesStateRule,
-	stateWhenKey,
-} from "./state-rules.mjs";
+import { endedWhenKeys, stateWhenKey } from "./state-rules.mjs";
 import {
 	captureTimeline,
 	observeTimeline,
 	timelineTimes,
 } from "./timeline.mjs";
 import { runWorkers } from "./worker-pool.mjs";
+
+// Before a timed action: reach the last action's target as its input does, settle, then arm.
+async function armTimelineAction(page, action, input, entry, last) {
+	if (last) {
+		const [kind, argument] = action.split(/:(.*)/s);
+		if (input === "mouse" && ["click", "download", "hold"].includes(kind))
+			await page.locator(argument).first().hover();
+		if (
+			input === "keyboard" &&
+			["activate", "click", "tap", "download", "type", "select"].includes(kind)
+		) {
+			const selector = ["type", "select"].includes(kind)
+				? argument.slice(0, argument.lastIndexOf("="))
+				: argument;
+			await reachByKeyboard(page, selector, entry, action);
+		}
+	}
+	await settleComparison(page);
+	if (last)
+		await page.evaluate(
+			({ action, input }) => window.__verifyFitwayTimeline.arm(action, input),
+			{ action, input },
+		);
+}
 
 export async function drive(options) {
 	const { concept, map, tools, loaded, out } = options;
@@ -147,10 +173,7 @@ export async function drive(options) {
 										});
 										const entry = {
 											feature: `${selected.page}/${feature.id}`,
-											state:
-												new URLSearchParams(
-													Object.entries(effective.query).sort(),
-												).toString() || "default",
+											state: stateName(effective.query),
 											language,
 											size,
 											input,
@@ -177,21 +200,16 @@ export async function drive(options) {
 										const stem = `${String(manifest.items.length + 1).padStart(3, "0")}-${safe(feature.id)}-${safe(entry.state)}-${language}-${size}-${input}-${motion}-${transport}${color === "forced" ? "-forced" : ""}`;
 										manifest.items.push(entry);
 										serialLengths[jobIndex] = manifest.items.length;
-										const current = await ui.newContext(browser, {
-											viewport: {
-												width: dimensions.width,
-												height: dimensions.height,
-											},
-											zoom: dimensions.zoom || 1,
-											touch: input === "touch",
-											mobile: input === "touch" && cssWidth <= 720,
-											reducedMotion:
-												motion === "reduce" ? "reduce" : "no-preference",
-											colorScheme: "dark",
-											forcedColors: color === "forced" ? "active" : "none",
-											locale: language === "ar" ? "ar-SA" : "en-US",
-											timezoneId: "Asia/Riyadh",
-										});
+										const current = await ui.newContext(
+											browser,
+											contextOptions({
+												...dimensions,
+												input,
+												motion,
+												color,
+												language,
+											}),
+										);
 										if (options.compareRuntime && transport === "http")
 											await options.compareRuntime.route(
 												current.context,
@@ -332,20 +350,22 @@ export async function drive(options) {
 													language,
 													"before-frame:post",
 												);
-											const unavailable =
-												(feature.widths === "phone" && cssWidth > 720) ||
-												(feature.widths === "wide" && cssWidth <= 720) ||
-												(feature.minWidth && cssWidth < feature.minWidth) ||
-												(feature.maxWidth && cssWidth > feature.maxWidth);
-											const absent = (feature.unreachable || []).find((rule) =>
-												matchesStateRule(rule, effective.query, language),
+											const unreachable = featureUnreachable(
+												feature,
+												cssWidth,
+												effective.query,
+												language,
 											);
-											if (unavailable || absent) {
-												if (absent)
-													await prove(current.page, absent.proof, language);
+											if (unreachable) {
+												if (unreachable.rule)
+													await prove(
+														current.page,
+														unreachable.rule.proof,
+														language,
+													);
 												entry.status = "not-reachable";
 												entry.problems.push(
-													`State/feature cannot be reached: ${absent?.reason || `Feature path unavailable at ${cssWidth} CSS pixels by its recipe`}`,
+													`State/feature cannot be reached: ${unreachable.reason}`,
 												);
 												await save("after");
 											} else {
@@ -389,117 +409,66 @@ export async function drive(options) {
 														moved: feature.proof.moved,
 													},
 												);
-												const actions =
-													(input === "keyboard"
-														? actionRecipe.keyboardActions ||
-															actionRecipe.actions
-														: actionRecipe.actions) || [];
 												if (options.timeline) entry.recipe = actionRecipe;
-												for (const [actionIndex, action] of actions.entries()) {
-													const resolvedAction = action.replace(
-														/^activate:/,
-														input === "keyboard"
-															? "activate:"
-															: input === "touch"
-																? "tap:"
-																: "click:",
-													);
-													if (options.timeline) {
-														if (actionIndex === actions.length - 1) {
-															const [kind, argument] =
-																resolvedAction.split(/:(.*)/s);
-															if (
-																input === "mouse" &&
-																["click", "download", "hold"].includes(kind)
-															)
-																await current.page
-																	.locator(argument)
-																	.first()
-																	.hover();
-															if (
-																input === "keyboard" &&
-																[
-																	"activate",
-																	"click",
-																	"tap",
-																	"download",
-																	"type",
-																	"select",
-																].includes(kind)
-															) {
-																const selector = ["type", "select"].includes(
-																	kind,
-																)
-																	? argument.slice(0, argument.lastIndexOf("="))
-																	: argument;
-																await reachByKeyboard(
-																	current.page,
-																	selector,
-																	entry,
-																	resolvedAction,
-																);
-															}
-														}
-														await settleComparison(current.page);
-														if (actionIndex === actions.length - 1)
-															await current.page.evaluate(
-																({ action, input }) =>
-																	window.__verifyFitwayTimeline.arm(
-																		action,
-																		input,
-																	),
-																{ action: resolvedAction, input },
+												const actions = await runFeatureActions({
+													ui,
+													page: current.page,
+													recipe: actionRecipe,
+													input,
+													out,
+													stem,
+													entry,
+													around: async ({
+														action: resolvedAction,
+														last,
+														perform,
+													}) => {
+														if (options.timeline)
+															await armTimelineAction(
+																current.page,
+																resolvedAction,
+																input,
+																entry,
+																last,
 															);
-													}
-													await performAction(
-														ui,
-														current.page,
-														resolvedAction,
-														input,
-														out,
-														stem,
-														entry,
-													);
-													entry.actions.push(resolvedAction);
-													if (
-														options.timeline &&
-														actionIndex === actions.length - 1
-													)
-														entry.timeline = await captureTimeline(
-															current.page,
-															{
-																out,
-																stem,
-																times:
-																	options.timelineTimesByItem?.[
-																		JSON.stringify([
-																			entry.feature,
-																			entry.state,
-																			language,
-																			size,
-																			input,
-																			motion,
-																			transport,
-																			color,
-																		])
-																	] || requestedTimes,
-															},
-														);
-													if (resolvedAction.startsWith("hold:")) {
-														const held = await ui.heldPressInfo(current.page);
-														if (!held)
-															throw new Error("held press was not retained");
-														await save("held");
-														entry.heldPress = {
-															...held,
-															capturedAt: Date.now(),
-															captureDelayMs: Math.max(
-																0,
-																performance.now() - held.pressedAt,
-															),
-														};
-													}
-												}
+														await perform();
+														if (options.timeline && last)
+															entry.timeline = await captureTimeline(
+																current.page,
+																{
+																	out,
+																	stem,
+																	times:
+																		options.timelineTimesByItem?.[
+																			JSON.stringify([
+																				entry.feature,
+																				entry.state,
+																				language,
+																				size,
+																				input,
+																				motion,
+																				transport,
+																				color,
+																			])
+																		] || requestedTimes,
+																},
+															);
+														if (resolvedAction.startsWith("hold:")) {
+															const held = await ui.heldPressInfo(current.page);
+															if (!held)
+																throw new Error("held press was not retained");
+															await save("held");
+															entry.heldPress = {
+																...held,
+																capturedAt: Date.now(),
+																captureDelayMs: Math.max(
+																	0,
+																	performance.now() - held.pressedAt,
+																),
+															};
+														}
+													},
+												});
 												if (options.timeline && !actions.length)
 													entry.timeline = {
 														times: [],

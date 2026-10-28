@@ -478,4 +478,44 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 		return runNavigationAction(page, action, () => ui.runAction(page, action));
 }
 
+// Performs a feature recipe's actions as one input reaches them: its keyboard sequence for the
+// keyboard, `activate:` as a tap or a click otherwise. `around`, when given, wraps each step.
+export async function runFeatureActions({
+	ui,
+	page,
+	recipe,
+	input,
+	out,
+	stem,
+	entry,
+	around,
+}) {
+	const actions =
+		(input === "keyboard"
+			? recipe.keyboardActions || recipe.actions
+			: recipe.actions) || [];
+	for (const [index, action] of actions.entries()) {
+		const resolved = action.replace(
+			/^activate:/,
+			input === "keyboard"
+				? "activate:"
+				: input === "touch"
+					? "tap:"
+					: "click:",
+		);
+		const perform = async () => {
+			await performAction(ui, page, resolved, input, out, stem, entry);
+			entry?.actions.push(resolved);
+		};
+		if (around)
+			await around({
+				action: resolved,
+				last: index === actions.length - 1,
+				perform,
+			});
+		else await perform();
+	}
+	return actions;
+}
+
 export { performAction, prove };
