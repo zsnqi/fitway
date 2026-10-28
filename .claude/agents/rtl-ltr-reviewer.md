@@ -37,9 +37,10 @@ mirror, or a faithful copy, of the other language passes only when it also reads
 
 - **Start edge.** Within a group, the heading, the values and the exception rows (no readings, waiting, empty) begin
   on one shared edge, the one that language reads from, unless a decision names another edge.
-- **Belonging.** At every width, say which column or group each text belongs to; a line that spans the item (a note,
-  an exception, a caption) must not run beneath another column's content, even when its line count and every box
-  check pass (r04 DECISIONS 93).
+- **Belonging.** In one item or row that has columns side by side, at every width, say which column each text belongs
+  to; a line of that item (a note, an exception, a caption) must not run beneath another of its columns, even when its
+  line count and every box check pass (r04 DECISIONS 93). Not this problem: a row or item of its own (a merged "no
+  readings" row, Daily's gap row) and a record's body under its own head line (Activity, Settings history).
 - **Order inside a value.** A compound value (a figure and its time, a range and its duration) reads in that
   language's order: English "55 6:25 PM", Arabic «55 6:25 م» read from the right.
 - **Numerals and ranges.** Ranges render in the intended order with their dash isolated (Arabic ranges have been seen
