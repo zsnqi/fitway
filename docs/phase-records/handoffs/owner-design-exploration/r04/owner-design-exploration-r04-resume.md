@@ -4,7 +4,7 @@
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 17:00 +03:00 (Settings
   accepted, decision 97; decision 96 says what runs next; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-99; 99 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-100; 100 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -33,7 +33,7 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 17:00; the PC's LAN address is 192.168.8.186). main `b97009fd` (CI 40693612445);
+Nothing runs (measured 2026-10-28 17:00; the PC's LAN address is 192.168.8.186). main `8c41282f` (CI 40706472283);
 this line adds decision 97 (Settings accepted), for `pnpm main:advance` once its CI passes. Build branch
 `owner-followup-r04-build` at `fedbdb6d`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.

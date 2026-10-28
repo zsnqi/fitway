@@ -1129,6 +1129,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     px first in Arabic and English, and the user picks by eye. The loading state's placeholders (STA-10, PH-1…3) are
     still designed and built. Replaces item 98's last sentence.
 
+100. **When Sol stalls, the rounds go on without it** (the user, 2026-10-28: «اذا علق sol مره ثانية اسحب عليه لين
+     تتحل المشكلة»). If GPT-6.1 Sol answers "at capacity" or does not answer, a brief or a diff goes on with its other
+     reviewer (DeepSeek, or Opus for a diff, as belonging-check did), the record says Sol was skipped, and nothing waits
+     for it; Sol comes back into the two-reviewer rule once a short probe at `xhigh` answers. Measured on 2026-10-28
+     at 17:31 +03:00: Sol answered at default effort and at `xhigh`, after the morning's capacity answers.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
