@@ -1,0 +1,53 @@
+# Eclipse launch film: decisions
+
+A concept film that presents the Eclipse Owner design. It is not product code, not visual authority, and it changes
+no Owner, Public or canonical state. Every decision below is the user's (2026-10-28), unless marked as the
+coordinator's default.
+
+## The film
+1. Audience: the FITWAY gym owner, as a pitch for the Eclipse Owner design.
+2. Format: 1920x1080 at 60 fps, 16:9, about 32 s.
+3. Language: English. There is no voiceover and no subtitles.
+4. Style: hybrid. Most of the film is the interface as the hero: real Eclipse screens, close-ups, the camera moving
+   inside the UI, and short copy fragments. A device moment (laptop and phone, three.js) comes near the end.
+5. Screens: Daily and Reports carry the story. Access, Activity log and Settings appear as a fast montage.
+6. One moment shows the interface switching from English to Arabic.
+7. Ending: the white FITWAY mark (`brand/fitway-logo.png`) and the name FITWAY. The mark is constructed with drafting
+   lines, after reference B.
+8. The data shown is Eclipse's own synthetic data. There is no "illustrative data" label, because this is a trial film.
+9. Copy stays truthful to the product. The count is always approximate. There are no invented claims, no people, no
+   cameras and no faces.
+
+## Story (coordinator draft, approved with "go")
+- 0–4 s: black frame; short copy fragments.
+- 4–12 s: Daily. The "Inside now" count rolls and the crowd curve draws.
+- 12–19 s: Reports. The heatmap fills and the busiest hour is named.
+- 19–23 s: a fast montage of Access, Activity and Settings, with the EN to AR switch.
+- 23–27 s: the full Daily screen on a laptop and a phone (three.js). This is the music's biggest lift.
+- 27–32 s: the mark is built with drafting lines and locks up with FITWAY; hold, then end.
+
+## Sound
+10. The music is designed in code by Claude (cinetic score, earshot kit). There is no licensed track.
+11. Before the full score, 2–3 sketches of about 10 s each, in different characters, go to the user to choose by ear.
+    The user disliked "minimal electronic". Target a warm cinematic pulse, minor key, 125–130 BPM.
+12. Effects come from the earshot bank. Movement is silent; landings, taps and keys are heard; there are no whooshes
+    (from Emil's rules). Master at -14 LUFS, true peak at most -1.5 dBTP.
+
+## Tools and process
+13. cinetic directs (Leonxlnx/cinetic, used from its clone, not installed into the repo). HyperFrames (HTML and GSAP)
+    is the engine. earshot provides the sound. three.js is used only for the device moment. Impeccable and
+    taste-skill judge the frames. The user waived the repository's single-design-skill rule for this film.
+14. Design work runs on Opus 5.5 at xhigh effort.
+15. Review stations: (1) storyboard stills plus music sketches, (2) motion without sound, (3) the full film.
+16. Every note the user gives becomes a rule in `RULES.md` and stays in force.
+
+## References
+- A: Polar launch film (Emil Widlund), 85 s.
+- B: Polar logo sting, 33 s.
+- C: Ramp Inspect, 30 s.
+- The analysis is in the coordinator's scratchpad (`refs/`). The rules it supports are folded into `RULES.md`.
+- Emil Widlund's thread and Florence's "Opus 5.5 Motion Lab" article.
+
+## Source pin
+`scripts/fetch-eclipse.sh` extracts Eclipse at `fedbdb6d` (`origin/owner-followup-r04-build`) into `vendor/eclipse/`,
+which git ignores.
