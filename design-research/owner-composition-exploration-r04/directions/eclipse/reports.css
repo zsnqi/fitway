@@ -256,10 +256,14 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 #dlg-export .dlg-body { overscroll-behavior: contain; }
 .export-picker { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
 .export-picker.dp { padding-block-start: 8px; }
+/* DLG-4 (decision 95, the user's pick on renders): the file box is a two-column grid in both languages: the icon in a
+ * column of its own on the left, everything else in the column beside it. The name comes first, the row count on a line of
+ * its own directly under it, both starting at the column's left edge at every width. The icon is centred on the name's
+ * first line (an 18 px line, a 16 px icon, 1 px down). */
 .file-line {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: start;
   gap: 4px 8px;
   margin-block-start: 16px;
   padding: 12px 16px;
@@ -271,15 +275,16 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
   color: var(--ink-3);
 }
 .file-line:empty { display: none; }
-.file-line .ico { width: 16px; height: 16px; color: var(--ink-2); }
-/* DLG-4 (decision 93): the name is Latin and isolated left to right (dir="ltr"), but each of its lines starts on the
- * box's start edge: in Arabic they are aligned right. Its direction is its own, so the alignment and the auto margin are
- * written physically. The free space after the name goes to the name's far margin, not to the count's start margin: a
- * count that shares the name's line stays at the line's end, and a count on a line of its own sits on the start edge,
- * directly under the name. */
-.file-name { color: var(--ink); overflow-wrap: anywhere; margin-right: auto; }
-[dir="rtl"] .file-name { margin-right: 0; margin-left: auto; text-align: right; }
-.file-rows { white-space: nowrap; }
+.file-line .ico { grid-row: 1; width: 16px; height: 16px; margin-block-start: 1px; color: var(--ink-2); }
+/* DLG-4 (decision 95): the name is Latin and isolated left to right (dir="ltr"); its lines start on the left edge of its
+ * column. In Arabic the box is laid out like the English (option 3, the user's pick, amended by the user: the count's line
+ * too): the box is set left to right, so the icon sits on the left and the count's line reads left to right as
+ * "40,320 rows" does, the figure (its own bdi) first on the left edge under the name's first letter, then «صفًا» to its
+ * right. The grid is placed physically; the box's direction is its own. */
+.file-name { grid-column: 2; margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+.file-rows { grid-column: 2; justify-self: start; white-space: nowrap; }
+[dir="rtl"] .file-line { direction: ltr; }
+[dir="rtl"] .file-name { text-align: left; }
 .progress { margin-block-start: 16px; }
 .progress-text { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
 .progress-bar { display: block; height: 4px; margin-block-start: 8px; overflow: hidden; border-radius: 2px; background: rgba(255, 255, 255, 0.08); }
