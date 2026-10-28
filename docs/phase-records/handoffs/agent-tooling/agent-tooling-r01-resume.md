@@ -99,5 +99,5 @@ Nothing.
 
 - Coordinator: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected
   HEAD the commit that last changed this text.
-- Codex evaluations: `docs/phase-records/handoffs/agent-tooling/ROUNDS.md` (the index; a new round is its own file in
-  `docs/phase-records/handoffs/agent-tooling/rounds/`).
+- Codex evaluations: `docs/phase-records/handoffs/agent-tooling/ROUNDS.md` (the index; a new round is its own file in a
+  `rounds` folder beside it).
