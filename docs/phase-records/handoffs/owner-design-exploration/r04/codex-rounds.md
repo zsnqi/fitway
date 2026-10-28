@@ -2094,3 +2094,48 @@ checks live outside the repository and never appear here or in a brief. One line
   flags are not false flags; narrowing it now would cost a new review and grade before the demo. Reviewed again after
   the demo against the flags the next rounds meet (how many forced a split no reviewer would have asked for).
 - **Rows:** 11/14 as graded at `50cecbc9`, the three FAILs repaired in `504d6572`. Side findings F286-F289; F284 fixed.
+
+## agent-tooling-r01: belonging-check: `../../agent-tooling/briefs/codex-belonging-check.md`, result `cd4fb770` on `tooling-belonging` (from `2e4f01e9`), DeepSeek V4.1 Flash, level `max`; review builder `ca8fb902`; merged `dbf9b683`
+
+- **Scope (r04 decisions 92 (2) and 93, narrowed 2026-10-28; agent-tooling items 6 and 10):** one verify-fitway
+  command, `belonging-check`, that finds an item's line running under another stacked column of its own, on every
+  recipe page, both languages, every 1 px from 320 to 720 and every 10 px to 1440 (with 721, 768 and 1024), the default
+  data plus Daily `details`, Reports `expand-days` and `state=short`, Access `case=long`, Activity log and Settings
+  `case=wide`, Settings `log=every`; served from the concept ref's commit tree. The user's word for it: "Yes, start it"
+  (2026-10-28).
+- **Brief review** (`D:/fitway-temp/brief-review/codex-belonging-check-1`): DeepSeek five readings, four closed, reading
+  3 (held-out cases) left to the grade. No second reviewer: GPT-6.1 Sol (three attempts) and GPT-6.1 Terra (one) at
+  `xhigh` returned "Selected model is at capacity"; the user, 2026-10-28: «واصل الشغل على ديب سيك دام موديلات open ai
+  حاليا متعطلة».
+- **Run** (`D:/fitway-temp/codex-round-belonging-check`, start load 182,053): 2 h 26 min, five automatic resumes (three
+  for no report, two for refused claims, F299); 149.6M input tokens (147.2M cached) and 234k output. It committed
+  `cd4fb770` once and ran the fast ladder after it (873 s, in the events). Its report: K1-K6 PASS, honest against the
+  events; one scope step outside its list, `drift-tree.mjs` exporting its extraction, which K6 required (the brief's
+  Scope omitted it).
+- **The coordinator reproduced K2 on `cd4fb770`** (`D:/fitway-temp/tooling-belonging/coord-k2/`): c774fd77's Thursday
+  note found in Arabic (18.78 px) and English (53.84 px) at 320; the five excluded cases PASS at the ref; both plants
+  found; the full matrix 13,028 frames PASS in 1,030 s and `--states all` 1,104 frames PASS in 210 s, as reported. It
+  also found every finding of a frame sharing one crop file (F295).
+- **Diff review** (`D:/fitway-temp/code-review/belonging-check-1/`): Sol at capacity (run.log), so Opus
+  (`owner-direction-verifier`, the rubric's alternative): eleven findings, all blocking in the dispositions, chiefly
+  second copies of drive's context options, action loop, availability rule, output refusal, axis and state naming, and
+  parsing after launch; with the coordinator's crop findings C1 and C2.
+- **The builder** (`owner-direction-builder`, brief `D:/fitway-temp/tooling-belonging/fix-1/BRIEF.md`) committed
+  `ca8fb902`: `contextOptions`, `featureUnreachable`, `axis` and `stateName` in `drive-plan.mjs`, `runFeatureActions` in
+  `drive.mjs`, `freshEmptyOutput` in `core.mjs`, each called by drive and belonging-check; `runner.mjs` 772 to 741
+  lines; crops one per finding, the piece in one box. Pages and states are refused after the extraction (the recipes
+  are only in that tree) but before the server, the browser and the `CONCEPT:` line. `pnpm test:verification` 140/140,
+  the fast ladder after its commit 1,008 s. Checked by the coordinator: drive's moved code reads the same
+  (`cssWidth` is `width / zoom`, timeline and held-press order kept).
+- **The coordinator's held-out check on `ca8fb902`** (`D:/fitway-temp/tooling-belonging/coord-held/`, cases no brief
+  named): the note across both columns but `visibility: hidden` or `opacity: 0` PASS; the two-line Activity time found
+  in English at 390; the Reports plant found at every resized width from 320 to 330 (Arabic) and 380 (English), each
+  confirmed by a fresh load, 9 findings and 9 crops; Settings with no item rendered prints `NO ITEMS` and exits 0; a
+  missing Daily opener refused by the doctor before any frame (exit 1, the selector named). On `ca8fb902` the full
+  matrix again 13,028 frames PASS in 1,031 s (`D:/fitway-temp/tooling-belonging/coord-fix1/`); `--states all` 1,103 of
+  1,104, its one FAIL Settings `focus-input=pointer` English 768 at the 15 s readiness wait while the held-out runs
+  shared the machine (B13), PASS 4 of 4 alone.
+- **Rows:** K1-K6 met at `ca8fb902`; the report's K4 PASS missed F295 (its proof counted one crop's outline pixels).
+  No grade round: the held-out check above stands in for it while OpenAI's models are at capacity. Side findings
+  F295-F299 (F296-F299 open, non-blocking).
+- **Real page findings:** none on today's concept (`fedbdb6d`): every page and width passes the narrowed rule.

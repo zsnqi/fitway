@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 09:00 +03:00 (the round
-  of decisions 89-95 built, verified by verify-11 and fixed; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 15:10 +03:00 (decision 93's
+  belonging check built and merged; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-95; 95 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -33,11 +33,14 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 09:00: no agent running). Build branch `owner-followup-r04-build` at `fedbdb6d`,
-pushed (CI on `950e19d2` passed, run 40592463172; on `fedbdb6d` see GitHub). main still `e885543e` until this commit's
-CI passes and `pnpm main:advance` moves it. Status page for the user:
+Nothing runs (measured 2026-10-28 15:10). main `2e4f01e9` (CI 40637615699); this line adds the belonging-check merge
+`dbf9b683` and its records, for `pnpm main:advance` once its CI passes. Build branch `owner-followup-r04-build` at
+`fedbdb6d`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
+- **The belonging check is built** (DECISIONS 93, `codex-rounds.md` §"belonging-check", measured):
+  `pnpm verify:owner belonging-check`, merged `dbf9b683`; today's concept passes all 13,028 frames. Sol and Terra were
+  at capacity, so DeepSeek alone reviewed the brief and Opus the diff (the user, 2026-10-28: continue on DeepSeek).
 - **Built 2026-10-28 morning** (measured): `b56b6e71` then `d04890a4` the export dialog's file box (DECISIONS 95: the
   user's pick on real renders, English option 2, Arabic laid out like the English with the figure before «صفًا»;
   `D:/fitway-temp/owner-r04-export-filebox-fix/`); `fedbdb6d` verify-11's findings 1-6. The "Belonging" bullets are
@@ -56,20 +59,18 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   and breaks only between its words and range; `noteColumnCheck` in reports-capture); `3076869a` DECISIONS 94 (English
   peak and time on the column's left edge); `950e19d2` TBL-14 (91 (3)). Reports: `D:/fitway-temp/owner-r04-reports-phone-fix-v1{2,3,4}/`.
 - **The builder eval, task 1** (DECISIONS 92 (3)): `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (Sonnet and Opus at
-  `high`, byte-identical code from a reference implementation, 6/6 each). The builder stays Opus; the next paired task
+  `high`, byte-identical code from a reference implementation, 6/6 each; decision 85's Sonnet trial there too). The builder stays Opus; the next paired task
   has no reference code. Worktrees `owner-r04-tbl14-a`/`-b` stay (see Known risks before removing).
 - **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
   coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
 - **Next, in order:**
   1. `pnpm main:advance` to this commit once its CI passes (if not already done; check `git log -1 origin/main`).
-  2. The general `verify-fitway` belonging probe (DECISIONS 93), plus `compare` capturing only the first screen (the
-     grader's L5; its L8, a 720-721 px zoom edge, untested); agent-tooling-r01's path (decision 73).
+  2. `compare` capturing only the first screen (the grader's L5; its L8, a 720-721 px zoom edge, untested), on
+     agent-tooling-r01's path (decision 73).
   3. The public page's ADR, amendments and milestone (below), then the pages of decision 84.
 - **The public page:** P1-P7 answered (DECISIONS 90); the ADR, the three files' amendments and its milestone are
   not started; the user sees all three before any design. Friday's dash: A kept (DECISIONS 89).
-- **Decision 85's builder trial:** Sonnet 5.5 at high built 749fa608; verify-10 found 1 Medium and 3 Low in its code.
-  Written up in `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (not enough to move the builder).
 
 ## Next steps
 

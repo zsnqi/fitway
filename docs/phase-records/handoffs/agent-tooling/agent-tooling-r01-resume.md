@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at `0df775e5`, 2026-10-18 23:17 +03:00
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 15:10 +03:00
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-14), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -37,6 +37,14 @@
 
 ## Running now
 
+- **belonging-check is merged** into the coordinator line (`dbf9b683`, measured 2026-10-28; r04 decision 93, the
+  user's "Yes, start it"): DeepSeek `max` delivered `cd4fb770`, Opus reviewed the diff (Sol and Terra at capacity; the
+  user: continue on DeepSeek), `owner-direction-builder` applied the twelve blocking findings in `ca8fb902` (drive's
+  context options, action loop, availability rule, axis and state naming now shared; one crop per finding). The
+  coordinator's K2 and held-out checks pass and today's concept passes all 13,028 frames
+  (`docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md` §"belonging-check"; F295 fixed, F296-F299
+  open). No grade round: the held-out check stands in for it. The worktree `tooling-belonging` has its own install (no
+  junctions) and can go.
 - **loading-check runs** (the user, 2026-10-24: r04 decision 82's check now, beside Settings, gating nothing):
   brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-loading-check.md` (`0f19c6d6`), DeepSeek `max`, worktree
   `D:/Projects/fitway-worktrees/tooling-loading-check` (branch `tooling-loading-check` from the coordinator line at
