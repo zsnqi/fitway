@@ -141,7 +141,22 @@ function headings(text) {
 	return result;
 }
 
+function briefTitle(text) {
+	const environment = text.match(
+		/^<!-- environment:start v1 -->\r?\n[\s\S]*?^<!-- environment:end -->\r?$/m,
+	);
+	const outsideEnvironment = environment
+		? text.slice(0, environment.index) +
+			mask(environment[0]) +
+			text.slice(environment.index + environment[0].length)
+		: text;
+	const visible = withoutFencedCode(withoutComments(outsideEnvironment));
+	const title = visible.match(/^ {0,3}#\s+(.+?)\s*#*\s*$/m)?.[1]?.trim();
+	return title?.replace(/^Codex brief:\s*/i, "") ?? null;
+}
+
 export {
+	briefTitle,
 	codeSpans,
 	END,
 	ENVIRONMENT_PATH,

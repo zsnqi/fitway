@@ -140,4 +140,14 @@ describe("pre-commit giant-file check on staged content", () => {
 			`scripts/second.ts: giantFiles baseline=0 current=801; hits: 1; run pnpm code-health:baseline\n${splitGuidance}\n`,
 		);
 	});
+
+	it("uses a staged baseline with the full index during baseline regeneration", () => {
+		const fixture = createHealthFixture();
+		fixture.write("scripts/giant.ts", giant(801));
+		fixture.writeBaseline();
+		fixture.git("add", "--all");
+
+		const staged = runStaged(fixture.root);
+		expect(staged.status, `${staged.stdout}\n${staged.stderr}`).toBe(0);
+	});
 });

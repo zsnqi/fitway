@@ -42,6 +42,38 @@ function source(count: number, extra: string[] = []) {
 	return [...javascriptLines(count), ...extra].join("\n");
 }
 
+describe("giant documents", () => {
+	it("counts Markdown over 40,000 bytes and not exactly 40,000", () => {
+		const report = scanScope([
+			{ file: "README.md", text: "a".repeat(40_001) },
+			{ file: "exact.md", text: "b".repeat(40_000) },
+		]);
+		expect(report.giantDocuments).toMatchObject({
+			total: 1,
+			hits: [
+				{
+					file: "README.md",
+					line: 1,
+					detail: "40001 bytes",
+					byteCount: 40_001,
+				},
+			],
+		});
+	});
+
+	it("counts phase-record Markdown and excludes frozen or upstream copies", () => {
+		const report = scanScope([
+			{ file: "docs/phase-records/large.md", text: "a".repeat(40_001) },
+			{ file: "docs/archive/large.md", text: "b".repeat(40_001) },
+			{ file: ".claude/skills/large.md", text: "c".repeat(40_001) },
+		]);
+		expect(report.giantDocuments.total).toBe(1);
+		expect(report.giantDocuments.hits[0].file).toBe(
+			"docs/phase-records/large.md",
+		);
+	});
+});
+
 const templateExpression = [
 	"const message = `head //",
 	["$", "{value}"].join(""),

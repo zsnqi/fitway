@@ -6,8 +6,12 @@ import {
 	BASELINE_MEASURES,
 	DIRECTORY_MEASURES,
 	DUPLICATION_MEASURE,
+	GIANT_DOCUMENT_MEASURE,
 	GIANT_FILE_MEASURE,
+	isMarkdownDocument,
+	isSourceFile,
 	isTestFile,
+	scanGiantDocuments,
 	scanGiantFiles,
 	scanScope,
 	scanSource,
@@ -26,7 +30,8 @@ export const HEALTH_ROOTS = Object.freeze([
 ]);
 const EXCEPTION_MARKER = /code-health-exception:/g;
 const FILE_BASELINE_MEASURES = BASELINE_MEASURES.filter(
-	(measure) => !DIRECTORY_MEASURES.includes(measure),
+	(measure) =>
+		!DIRECTORY_MEASURES.includes(measure) && measure !== GIANT_DOCUMENT_MEASURE,
 );
 const GIANT_FILE_SPLIT = [
 	"  To split it: move code out by responsibility into a new module named for what it holds, and update its imports.",
@@ -34,6 +39,58 @@ const GIANT_FILE_SPLIT = [
 	"  Never join lines, because the formatter splits them again.",
 	`  Then run ${BASELINE_COMMAND}.`,
 ].join("\n");
+const GIANT_DOCUMENT_SPLIT = [
+	"  To split it: split by section into files a reader opens one at a time.",
+	"  Never delete blank lines, comments or explanations.",
+	`  Then run ${BASELINE_COMMAND}.`,
+].join("\n");
+const CONCEPT_SOURCE_PATH = ".agents/skills/verify-fitway/concept-source.json";
+
+function pathWithin(file, directory) {
+	const normalizedFile = normalizePath(file);
+	const normalizedDirectory = normalizePath(directory).replace(/\/$/, "");
+	return (
+		normalizedFile === normalizedDirectory ||
+		normalizedFile.startsWith(`${normalizedDirectory}/`)
+	);
+}
+
+export function conceptHealthFolder(root = process.cwd()) {
+	const source = path.resolve(root, CONCEPT_SOURCE_PATH);
+	let text;
+	try {
+		text = readFileSync(source, "utf8");
+	} catch (error) {
+		if (error.code === "ENOENT") return null;
+		throw error;
+	}
+	let config;
+	try {
+		config = JSON.parse(text);
+	} catch (error) {
+		throw new Error(`cannot parse ${CONCEPT_SOURCE_PATH}: ${error.message}`);
+	}
+	if (
+		typeof config?.concept !== "string" ||
+		!config.concept.trim() ||
+		path.isAbsolute(config.concept) ||
+		normalizePath(config.concept).split("/").includes("..")
+	)
+		throw new Error(
+			`${CONCEPT_SOURCE_PATH} must name one repository-relative concept folder`,
+		);
+	return normalizePath(config.concept).replace(/^\.\//, "").replace(/\/$/, "");
+}
+
+export function selectCodeHealthPath(root, file) {
+	const normalizedFile = normalizePath(file);
+	if (isMarkdownDocument(normalizedFile)) return true;
+	if (!isSourceFile(normalizedFile)) return false;
+	if (HEALTH_ROOTS.some((directory) => pathWithin(normalizedFile, directory)))
+		return true;
+	const concept = conceptHealthFolder(root);
+	return concept !== null && pathWithin(normalizedFile, concept);
+}
 
 export function date(value = new Date()) {
 	return value.toISOString().slice(0, 10);
@@ -163,41 +220,73 @@ function sortedHits(records) {
 	);
 }
 
-function addGiantFileCounts(giantHits, exceptions, today, counts, hits) {
+function addGiantCounts(
+	giantHits,
+	measure,
+	valueKey,
+	exceptions,
+	today,
+	counts,
+	hits,
+) {
 	for (const hit of giantHits) {
-		if (!excepted(exceptions, hit.file, GIANT_FILE_MEASURE, [1], today))
-			addCount(counts, hits, hit.file, GIANT_FILE_MEASURE, [1], hit.lineCount);
+		if (!excepted(exceptions, hit.file, measure, [1], today))
+			addCount(counts, hits, hit.file, measure, [1], hit[valueKey]);
 	}
 }
 
-// The giant-file part of snapshotCodeHealth, from one scan of each file.
-export function snapshotGiantFiles(files, { today = date() } = {}) {
-	const sources = files.map((file) => scanSource(file));
-	const exceptions = parseExceptions(files, sources);
-	const counts = new Map();
-	const hits = new Map();
-	addGiantFileCounts(
-		scanGiantFiles(files, sources),
+function addDocumentCounts(files, exceptions, today, counts, hits) {
+	addGiantCounts(
+		scanGiantDocuments(files),
+		GIANT_DOCUMENT_MEASURE,
+		"byteCount",
 		exceptions,
 		today,
 		counts,
 		hits,
 	);
+}
+
+function snapshotGiantContent(files, measures, { today = date() } = {}) {
+	const sourceFiles = files.filter((file) => isSourceFile(file.file));
+	const sources = sourceFiles.map((file) => scanSource(file));
+	const exceptions = parseExceptions(
+		files,
+		files.map((file) =>
+			isSourceFile(file.file) ? scanSource(file) : { comments: [] },
+		),
+	);
+	const counts = new Map();
+	const hits = new Map();
+	if (measures.includes(GIANT_FILE_MEASURE))
+		addGiantCounts(
+			scanGiantFiles(sourceFiles, sources),
+			GIANT_FILE_MEASURE,
+			"lineCount",
+			exceptions,
+			today,
+			counts,
+			hits,
+		);
+	if (measures.includes(GIANT_DOCUMENT_MEASURE))
+		addDocumentCounts(files, exceptions, today, counts, hits);
 	return { counts: Object.fromEntries(counts), hits: sortedHits(hits) };
 }
 
-export function snapshotCodeHealth(files, { today = date() } = {}) {
-	const report = scanScope(files);
-	const exceptions = parseExceptions(
-		files,
-		files.map((file) => scanSource(file)),
-	);
-	const status = exceptionStatus(exceptions, today);
-	const counts = new Map();
-	const hits = new Map();
-	const directoryCounts = new Map();
-	const directoryHits = new Map();
+// The giant-file part of snapshotCodeHealth, from one scan of each file.
+export function snapshotGiantFiles(files, { today = date() } = {}) {
+	return snapshotGiantContent(files, [GIANT_FILE_MEASURE], { today });
+}
 
+export function snapshotGiantSizes(files, { today = date() } = {}) {
+	return snapshotGiantContent(
+		files,
+		[GIANT_FILE_MEASURE, GIANT_DOCUMENT_MEASURE],
+		{ today },
+	);
+}
+
+function addReportCounts(report, exceptions, today, counts, hits) {
 	for (const measure of FILE_BASELINE_MEASURES) {
 		if (measure === DUPLICATION_MEASURE) {
 			countDuplicationCopies(report[measure].hits, (_hit, place) => {
@@ -223,7 +312,9 @@ export function snapshotCodeHealth(files, { today = date() } = {}) {
 			}
 		}
 	}
+}
 
+function addDirectoryReportCounts(report, directoryCounts, directoryHits) {
 	for (const measure of DIRECTORY_MEASURES) {
 		for (const hit of report[measure].hits) {
 			addCount(
@@ -235,20 +326,55 @@ export function snapshotCodeHealth(files, { today = date() } = {}) {
 			);
 		}
 	}
+}
 
-	addGiantFileCounts(
-		report[GIANT_FILE_MEASURE].hits,
+function addAllGiantCounts(files, exceptions, today, counts, hits) {
+	const sourceFiles = files.filter((file) => isSourceFile(file.file));
+	addGiantCounts(
+		scanGiantFiles(
+			sourceFiles,
+			sourceFiles.map((file) => scanSource(file)),
+		),
+		GIANT_FILE_MEASURE,
+		"lineCount",
 		exceptions,
 		today,
 		counts,
 		hits,
 	);
+	addDocumentCounts(files, exceptions, today, counts, hits);
+}
+
+export function snapshotCodeHealth(files, { today = date() } = {}) {
+	const regularFiles = files.filter((file) => !file.giantOnly);
+	const report = scanScope(regularFiles);
+	const exceptions = parseExceptions(
+		files,
+		files.map((file) =>
+			isSourceFile(file.file) ? scanSource(file) : { comments: [] },
+		),
+	);
+	const status = exceptionStatus(exceptions, today);
+	const counts = new Map();
+	const hits = new Map();
+	const directoryCounts = new Map();
+	const directoryHits = new Map();
+	addReportCounts(report, exceptions, today, counts, hits);
+	addDirectoryReportCounts(report, directoryCounts, directoryHits);
+	addAllGiantCounts(files, exceptions, today, counts, hits);
 
 	return {
 		counts: Object.fromEntries(counts),
 		directoryCounts: Object.fromEntries(directoryCounts),
 		hits: sortedHits(hits),
 		directoryHits: sortedHits(directoryHits),
+		giantRoots: [
+			...new Set(
+				files
+					.filter((file) => file.giantOnly && file.giantRoot)
+					.map((file) => normalizePath(file.giantRoot)),
+			),
+		].sort(),
 		exceptions,
 		invalidExceptions: status.invalid,
 		expiredExceptions: status.expired,
@@ -268,7 +394,11 @@ export function baselineFromSnapshot(snapshot) {
 	);
 	for (const file of paths) {
 		const values = {};
-		for (const measure of [...FILE_BASELINE_MEASURES, GIANT_FILE_MEASURE]) {
+		for (const measure of [
+			...FILE_BASELINE_MEASURES,
+			GIANT_FILE_MEASURE,
+			GIANT_DOCUMENT_MEASURE,
+		]) {
 			const value = measureValue(snapshot.counts[file], measure);
 			if (value > 0) values[measure] = value;
 		}
@@ -290,10 +420,12 @@ export function baselineFromSnapshot(snapshot) {
 		measures: [
 			...FILE_BASELINE_MEASURES,
 			GIANT_FILE_MEASURE,
+			GIANT_DOCUMENT_MEASURE,
 			...DIRECTORY_MEASURES,
 		],
 		files,
 		directories,
+		...(snapshot.giantRoots?.length ? { giantRoots: snapshot.giantRoots } : {}),
 	};
 }
 
@@ -355,6 +487,31 @@ export function readCommittedCodeHealthBaseline(root = process.cwd()) {
 	return parseCodeHealthBaseline(shown.stdout);
 }
 
+export function readIndexedCodeHealthBaseline(root = process.cwd()) {
+	const changed = readGit(root, [
+		"diff",
+		"--cached",
+		"--name-only",
+		"--",
+		BASELINE_RELATIVE_PATH,
+	]);
+	if (changed.status !== 0)
+		throw new Error(
+			`git diff for the baseline failed: ${changed.stderr.trim()}`,
+		);
+	if (!changed.stdout.trim())
+		return { baseline: readCommittedCodeHealthBaseline(root), indexed: false };
+	const shown = readGit(root, ["show", `:${BASELINE_RELATIVE_PATH}`]);
+	if (shown.status !== 0)
+		throw new Error(
+			`cannot read the indexed ${BASELINE_RELATIVE_PATH}: ${shown.stderr.trim()}`,
+		);
+	return {
+		baseline: parseCodeHealthBaseline(shown.stdout),
+		indexed: true,
+	};
+}
+
 export function compareCodeHealth(baseline, snapshot) {
 	const compare = (before, after, measures, hits, scope) => {
 		const paths = [
@@ -383,7 +540,7 @@ export function compareCodeHealth(baseline, snapshot) {
 		...compare(
 			baseline?.files ?? {},
 			snapshot.counts,
-			[...FILE_BASELINE_MEASURES, GIANT_FILE_MEASURE],
+			[...FILE_BASELINE_MEASURES, GIANT_FILE_MEASURE, GIANT_DOCUMENT_MEASURE],
 			snapshot.hits,
 			"file",
 		),
@@ -419,6 +576,10 @@ function directoryExcepted(snapshot, change, today) {
 
 export function refusedChanges(previous, snapshot, today) {
 	const established = establishedMeasures(previous);
+	const previousRoots = new Set(previous?.giantRoots ?? []);
+	const introducedRoots = (snapshot.giantRoots ?? []).filter(
+		(root) => !previousRoots.has(root),
+	);
 	return compareCodeHealth(previous, snapshot).filter((change) => {
 		if (!established.has(change.measure)) return false;
 		if (change.scope === "directory")
@@ -426,14 +587,21 @@ export function refusedChanges(previous, snapshot, today) {
 				change.direction === "fall" &&
 				!directoryExcepted(snapshot, change, today)
 			);
-		return change.direction === "rise";
+		if (change.direction === "fall") return false;
+		return !(
+			change.file &&
+			introducedRoots.some((root) => pathWithin(change.file, root))
+		);
 	});
 }
 
 function withSplitGuidance(change, line) {
-	return change.measure === GIANT_FILE_MEASURE && change.direction === "rise"
-		? `${line}\n${GIANT_FILE_SPLIT}`
-		: line;
+	if (change.direction !== "rise") return line;
+	if (change.measure === GIANT_FILE_MEASURE)
+		return `${line}\n${GIANT_FILE_SPLIT}`;
+	if (change.measure === GIANT_DOCUMENT_MEASURE)
+		return `${line}\n${GIANT_DOCUMENT_SPLIT}`;
+	return line;
 }
 
 export function baselineFailure(changes) {

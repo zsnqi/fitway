@@ -2,7 +2,6 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
-import { isSourceFile } from "../../.agents/skills/gardener/code-health.mjs";
 import { listTrackedFiles } from "../verify-repository.mjs";
 import {
 	BASELINE_COMMAND,
@@ -10,12 +9,14 @@ import {
 	baselineFailure,
 	baselineFromSnapshot,
 	compareCodeHealth,
+	conceptHealthFolder,
 	date,
 	HEALTH_ROOTS,
 	normalizePath,
 	readCodeHealthBaseline,
 	readCommittedCodeHealthBaseline,
 	refusedChanges,
+	selectCodeHealthPath,
 	snapshotCodeHealth,
 } from "./code-health-ratchet.mjs";
 import { beginToolCommand } from "./tool-contract.mjs";
@@ -34,20 +35,28 @@ export {
 } from "./code-health-ratchet.mjs";
 
 export function listCodeHealthFiles(root = process.cwd()) {
+	const concept = conceptHealthFolder(root);
+	const patterns = [...HEALTH_ROOTS, "*.md", ...(concept ? [concept] : [])];
 	const files = new Set([
-		...listTrackedFiles(root, HEALTH_ROOTS),
-		...listTrackedFiles(root, HEALTH_ROOTS, { untracked: true }),
+		...listTrackedFiles(root, patterns),
+		...listTrackedFiles(root, patterns, { untracked: true }),
 	]);
 	return [...files]
-		.filter(isSourceFile)
+		.filter((file) => selectCodeHealthPath(root, file))
 		.map(normalizePath)
 		.sort((left, right) => left.localeCompare(right, "en"));
 }
 
 export function readCodeHealthFiles(root = process.cwd()) {
+	const concept = conceptHealthFolder(root);
 	return listCodeHealthFiles(root).map((file) => ({
 		file,
 		text: readFileSync(path.join(root, file), "utf8"),
+		giantOnly:
+			concept !== null &&
+			(normalizePath(file) === concept ||
+				normalizePath(file).startsWith(`${concept}/`)),
+		giantRoot: concept ?? undefined,
 	}));
 }
 

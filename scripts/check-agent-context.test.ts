@@ -21,6 +21,7 @@ import {
 	AGENTS_INSTRUCTION_WARN_BYTES,
 	TASK_CLASSES,
 } from "./agent-context-rules.mjs";
+import { checkRuleEnforcers } from "./agent-environment/rule-enforcers.mjs";
 import { checkAgentContext } from "./check-agent-context.mjs";
 import {
 	formatAgentContextResult,
@@ -172,6 +173,7 @@ function materializeCommitFrontier(root: string, commit: string): void {
 		"PROJECT_STATE_HISTORY.yaml",
 	])
 		writeCommittedPath(root, commit, relativePath);
+	writeCommittedPath(root, commit, "docs/agent-context/ROUTES.yaml");
 
 	const packetDirectory = "docs/phase-records/task-packets";
 	rmSync(path.resolve(root, packetDirectory), {
@@ -698,6 +700,10 @@ afterEach(() => {
 });
 
 describe("check-agent-context", () => {
+	it("keeps every pnpm command and file in the rule-enforcer table", () => {
+		expect(checkRuleEnforcers({ root: REAL_ROOT })).toEqual([]);
+	});
+
 	it.each([
 		"unknown-task",
 		"analysis-review",

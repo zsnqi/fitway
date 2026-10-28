@@ -19,6 +19,7 @@ import {
 	TASK_CLASSES,
 } from "./agent-context-rules.mjs";
 import { makeAjv, readText, schemaErrors } from "./agent-context-schema.mjs";
+import { checkRuleEnforcers } from "./agent-environment/rule-enforcers.mjs";
 import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import {
 	agentContextFailure,
@@ -33,7 +34,7 @@ export async function checkAgentContext({
 	checkTracked = true,
 } = {}) {
 	const repositoryRoot = path.resolve(root);
-	const errors = [];
+	const errors = checkRuleEnforcers({ root: repositoryRoot });
 	const warnings = [];
 	if (checkTracked && !isGitRepository(repositoryRoot)) {
 		warnings.push("Git tracking checks are unavailable outside a Git worktree");

@@ -104,3 +104,61 @@ export const NODE_USAGE_NOTES = Object.freeze({
 export const CONCEPT_CSS_NOTES = Object.freeze([
 	"Moved ring declaration: outline: none; /* focus-ring: .button:focus-visible .tile */",
 ]);
+
+export function evidenceFolderToolEntries({ packageEntry, value, exits }) {
+	return [
+		packageEntry({
+			name: "evidence:keep",
+			invocation: "node scripts/agent-environment/evidence-keep.mjs",
+			purpose:
+				"Copy decision evidence into a tracked evidence folder and stage it.",
+			usage: "pnpm evidence:keep <path>... --to <milestone>/<topic>",
+			options: [
+				value(
+					"--to",
+					"Evidence destination below docs/phase-records/evidence.",
+					{ sample: "agent-tooling-r01/evidence-home" },
+				),
+			],
+			requiredOptions: ["--to"],
+			positionals: [],
+			deferPositionalFailures: true,
+			exitCodes: exits(
+				[0, "Evidence copied and staged."],
+				[1, "Evidence refused or copy failed."],
+			),
+		}),
+		packageEntry({
+			name: "run-folder:new",
+			invocation: "node scripts/agent-environment/run-folder.mjs",
+			purpose:
+				"Create a named temporary run folder with a provenance manifest.",
+			usage:
+				"pnpm run-folder:new <name> --brief <file> --for <who> [--report <path>]",
+			options: [
+				value("--brief", "Tracked brief to copy and hash.", {
+					sample: "docs/agent-context/briefs/codex.md",
+					pathKind: "file",
+				}),
+				value("--for", "Person or agent that owns the run folder.", {
+					sample: "coordinator",
+				}),
+				value("--report", "Report path, relative to the run folder.", {
+					sample: "REPORT.md",
+				}),
+			],
+			requiredOptions: ["--brief", "--for"],
+			positionals: [
+				{
+					name: "name",
+					required: true,
+					sample: "codex-round-evidence-home",
+				},
+			],
+			exitCodes: exits(
+				[0, "Run folder created."],
+				[1, "Run folder refused or failed."],
+			),
+		}),
+	];
+}

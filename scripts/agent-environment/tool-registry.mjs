@@ -1,6 +1,7 @@
 import {
 	CODEX_ROUND_NOTES,
 	CONCEPT_CSS_NOTES,
+	evidenceFolderToolEntries,
 	NODE_USAGE_NOTES,
 	OWNER_NOTES,
 	TOOLING_MAP_EXITS,
@@ -558,6 +559,7 @@ export const TOOL_REGISTRY = Object.freeze([
 			[1, "Brief failed or command refused."],
 		),
 	}),
+	...evidenceFolderToolEntries({ packageEntry, value, exits }),
 	packageEntry({
 		name: "main:advance",
 		invocation: nodeInvocation("scripts/agent-environment/advance-main.mjs"),

@@ -15,6 +15,12 @@ export { isSourceFile, isTestFile, SCRIPT_EXTENSIONS, scanSource };
 
 const MEASURE_DEFINITIONS = [
 	{ name: "giantFiles", baseline: true, lineCount: true },
+	{
+		name: "giantDocuments",
+		baseline: true,
+		baselineOrder: 9,
+		documentBytes: true,
+	},
 	{ name: "typeEscapes", baseline: true, baselineOrder: 1 },
 	{ name: "suppressions", baseline: true, baselineOrder: 2 },
 	{ name: "repeatedWorkarounds", baseline: true, baselineOrder: 3 },
@@ -61,9 +67,13 @@ export const DIRECTORY_MEASURES = Object.freeze(
 export const GIANT_FILE_MEASURE = MEASURE_DEFINITIONS.find(
 	({ lineCount }) => lineCount,
 ).name;
+export const GIANT_DOCUMENT_MEASURE = MEASURE_DEFINITIONS.find(
+	({ documentBytes }) => documentBytes,
+).name;
 export const DUPLICATION_MEASURE = MEASURE_DEFINITIONS.find(
 	({ duplication }) => duplication,
 ).name;
+const GIANT_DOCUMENT_BYTES = 40_000;
 const IMPORT_EXTENSIONS = [...SCRIPT_EXTENSIONS, ".css"];
 
 function hit(file, line, detail) {
@@ -72,6 +82,10 @@ function hit(file, line, detail) {
 
 function slashPath(file) {
 	return file.replaceAll("\\", "/");
+}
+
+export function isMarkdownDocument(file) {
+	return path.extname(file).toLowerCase() === ".md";
 }
 
 function assetReference(value) {
@@ -288,6 +302,22 @@ export function scanGiantFiles(files, source) {
 	});
 }
 
+export function scanGiantDocuments(files) {
+	return files.flatMap((item) => {
+		const file = slashPath(item.file);
+		if (
+			!isMarkdownDocument(file) ||
+			file.startsWith("docs/archive/") ||
+			file.startsWith(".claude/skills/")
+		)
+			return [];
+		const bytes = Buffer.byteLength(item.text, "utf8");
+		return bytes > GIANT_DOCUMENT_BYTES
+			? [{ ...hit(file, 1, `${bytes} bytes`), byteCount: bytes }]
+			: [];
+	});
+}
+
 function idsReferenced(text) {
 	const result = [];
 	const patterns = [
@@ -341,9 +371,11 @@ function scanBoundaryBreaks(files, sharedFiles) {
 }
 
 export function scanScope(files, { sharedFiles = [] } = {}) {
-	const source = files.map((file) => scanSource(file));
+	const sourceFiles = files.filter((file) => isSourceFile(file.file));
+	const source = sourceFiles.map((file) => scanSource(file));
 	const measures = {
-		giantFiles: scanGiantFiles(files, source),
+		giantFiles: scanGiantFiles(sourceFiles, source),
+		giantDocuments: scanGiantDocuments(files),
 		typeEscapes: source.flatMap((item) => item.typeEscapes),
 		suppressions: source.flatMap((item) => item.suppressions),
 		repeatedWorkarounds: source.flatMap((item) => item.repeatedWorkarounds),
@@ -355,8 +387,8 @@ export function scanScope(files, { sharedFiles = [] } = {}) {
 		accessibilityOverrides: source.flatMap(
 			(item) => item.accessibilityOverrides,
 		),
-		duplication: scanDuplication(files),
-		boundaryBreaks: scanBoundaryBreaks(files, sharedFiles),
+		duplication: scanDuplication(sourceFiles),
+		boundaryBreaks: scanBoundaryBreaks(sourceFiles, sharedFiles),
 	};
 	return Object.fromEntries(
 		MEASURES.map((name) => [
@@ -451,6 +483,56 @@ function gitText(git, args, options) {
 	return git(args, undefined, options);
 }
 
+function readCodeHealthScope({
+	name,
+	source,
+	listFiles,
+	git,
+	concept,
+	previous,
+}) {
+	try {
+		const listed = listFiles();
+		if (name === "concept" && listed.length === 0)
+			throw new Error(
+				"configured concept folder has no readable tracked files",
+			);
+		const files = listed
+			.filter((file) => isSourceFile(file) || isMarkdownDocument(file))
+			.map((file) => ({
+				file,
+				text: gitText(git, ["show", `${source}:${file}`], {
+					trimEnd: false,
+				}),
+			}));
+		const sharedFiles =
+			name === "concept"
+				? deriveSharedFiles(files, {
+						specimenPages: concept.specimenPages ?? [],
+					})
+				: [];
+		return addTrends(
+			{
+				name,
+				status: "ok",
+				source,
+				baselineKey:
+					name === "concept"
+						? `concept-page-loads-v1:${sharedFiles.join("|")}`
+						: "tooling-files-v1",
+				...(name === "concept" ? { sharedFiles } : {}),
+				measures: scanScope(files, { sharedFiles }),
+			},
+			previous?.scopes?.find((item) => item.name === name),
+		);
+	} catch (error) {
+		return addTrends(
+			unknownScope(name, error.message, source),
+			previous?.scopes?.find((item) => item.name === name),
+		);
+	}
+}
+
 export async function collectCodeHealth({
 	config,
 	git,
@@ -466,65 +548,41 @@ export async function collectCodeHealth({
 	const previous = parsePreviousReport(previousReportText);
 	const concept = settings.concept;
 	const toolingRoots = settings.toolingRoots ?? ["scripts", ".agents/skills"];
-	const readScope = (name, source, listFiles) => {
-		try {
-			const listed = listFiles();
-			if (name === "concept" && listed.length === 0)
-				throw new Error(
-					"configured concept folder has no readable tracked files",
-				);
-			const files = listed.filter(isSourceFile).map((file) => ({
-				file,
-				text: gitText(git, ["show", `${source}:${file}`], {
-					trimEnd: false,
-				}),
-			}));
-			const sharedFiles =
-				name === "concept"
-					? deriveSharedFiles(files, {
-							specimenPages: concept.specimenPages ?? [],
-						})
-					: [];
-			return addTrends(
-				{
-					name,
-					status: "ok",
-					source,
-					baselineKey:
-						name === "concept"
-							? `concept-page-loads-v1:${sharedFiles.join("|")}`
-							: "tooling-files-v1",
-					...(name === "concept" ? { sharedFiles } : {}),
-					measures: scanScope(files, {
-						sharedFiles,
-					}),
-				},
-				previous?.scopes?.find((item) => item.name === name),
-			);
-		} catch (error) {
-			return addTrends(
-				unknownScope(name, error.message, source),
-				previous?.scopes?.find((item) => item.name === name),
-			);
-		}
-	};
-	const conceptScope = readScope("concept", concept.branch, () =>
-		gitText(git, [
-			"ls-tree",
-			"-r",
-			"--name-only",
-			concept.branch,
-			"--",
-			concept.folder,
-		])
-			.split(/\r?\n/)
-			.filter(Boolean),
-	);
-	const toolingFiles = () =>
-		toolingRoots.flatMap((root) =>
-			gitText(git, ["ls-files", "-z", "--", root]).split("\0").filter(Boolean),
-		);
-	const toolingScope = readScope("tooling", "HEAD", toolingFiles);
+	const common = { git, concept, previous };
+	const conceptScope = readCodeHealthScope({
+		...common,
+		name: "concept",
+		source: concept.branch,
+		listFiles: () =>
+			gitText(git, [
+				"ls-tree",
+				"-r",
+				"--name-only",
+				concept.branch,
+				"--",
+				concept.folder,
+			])
+				.split(/\r?\n/)
+				.filter(Boolean),
+	});
+	const toolingFiles = () => [
+		...new Set([
+			...toolingRoots.flatMap((root) =>
+				gitText(git, ["ls-files", "-z", "--", root])
+					.split("\0")
+					.filter(Boolean),
+			),
+			...gitText(git, ["ls-files", "-z", "--", "*.md"])
+				.split("\0")
+				.filter(Boolean),
+		]),
+	];
+	const toolingScope = readCodeHealthScope({
+		...common,
+		name: "tooling",
+		source: "HEAD",
+		listFiles: toolingFiles,
+	});
 	return {
 		comparedWith:
 			previousReportSource ?? (previous ? "previous report" : "no previous"),
