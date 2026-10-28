@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: the code map becomes a per-file index (agent-tooling-r01, round code-map-index)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-code-map-index`, branch `tooling-code-map-index`, HEAD `<set at launch>`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-code-map-index`, branch `tooling-code-map-index`, HEAD `f79adba4`
 - **Milestone:** `agent-tooling-r01`. Decisions: `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 14, 16
   and 17.
 - **Read first, only these:**

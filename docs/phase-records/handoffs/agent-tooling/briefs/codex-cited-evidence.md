@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: cited evidence is never deleted, and loss is caught (agent-tooling-r01, round cited-evidence)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-cited-evidence`, branch `tooling-cited-evidence`, HEAD `<set at launch>`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-cited-evidence`, branch `tooling-cited-evidence`, HEAD `f79adba4`
 - **Milestone:** `agent-tooling-r01`. Decisions: `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 14, 15,
   16 and 17.
 - **Read first, only these:**

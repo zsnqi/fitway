@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: verify-fitway runs an agent's own check (agent-tooling-r01, round run-and-ref)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-run-and-ref`, branch `tooling-run-and-ref`, HEAD `<set at launch>`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-run-and-ref`, branch `tooling-run-and-ref`, HEAD `f79adba4`
 - **Milestone:** `agent-tooling-r01`. Decisions: `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 14, 16
   and 17.
 - **Read first, only these:**
