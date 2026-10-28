@@ -159,3 +159,24 @@ through these pointers, not copied here.
     - a finished grading checkout whose commits are all on the remote can be removed even when a record cites its
       round folder: on 2026-10-24 the gardener's `remove-worktree.mjs` would refuse all 17 under `D:/fitway-temp`
       (15 cited by tracked records, the rest not merged into main), so they stay until this lands.
+16. **A brief names how an outcome is already proved** (the user, 2026-10-28, from a forked session of the r04
+    coordinator: "The light steps now", r04 DECISIONS item 101). The compare-fullpage round spent four attempts and
+    about an hour building its own copy of the repository (`D:/fitway-temp/codex-round-compare-fullpage/events.jsonl`
+    events 439-446) to prove C4, which the bundle key already guaranteed: the key hashes the tool's own files
+    (`baseline-cache.mjs`, `this.environment`, about line 171) and the "CLI-file" row of `invalidationCases`
+    (`.agents/skills/verify-fitway/compare-speed.test.mjs:371`) proves it with a planted defect. The round had read
+    that test at events 50-52; the brief's "run it with the cache on" set the heavy path, not the executor.
+    - **The brief, from the next one:** before writing an outcome, the coordinator checks whether the code's
+      structure or an existing test already guarantees it. If it does, the outcome is that test still passing,
+      named by file and line, with no new proof. If a proof is needed, the brief names the test or table it extends
+      and the result expected (checklist B14 in `docs/agent-context/briefs/codex.md`).
+    - **verify-fitway's SKILL.md** gains a short section on proving a change to the tool. It states the target,
+      such as adding a row to `invalidationCases` or a copy through `fixture-copy.mjs`, rather than a prohibition.
+      It is written once compare-fullpage's commit, which also edits SKILL.md, has merged.
+    - **Not built yet:** a Proof field that `brief:check` requires on every outcome. This is the first clear case (no
+      other `codex-round-*` folder holds hand-built scripts), and agent-environment DECISIONS item 20 adds no process
+      tooling without evidence; it is built if the same mistake recurs.
+    - Sources, from the forked session's research: pstack's guide ranks a fix by strength (structure, then a check
+      whose error names the fix, then a test, then a written rule) and counts a class once it has happened twice;
+      Matt Pocock's writing-for-agents says a pointer's wording decides whether an agent reaches it, and a
+      prohibition plants the idea it forbids.

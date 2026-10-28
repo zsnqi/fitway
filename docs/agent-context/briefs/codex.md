@@ -66,7 +66,7 @@ anything you could not do.
 
 ## Coordinator checklist (delete before launch)
 
-The brief rules B1-B13 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
+The brief rules B1-B14 live here. Codex follows a brief to the letter, so most failed rounds trace to the brief
 (`docs/phase-records/handoffs/agent-environment/codex-rounds.md`).
 
 - [ ] B1. Every supported way to open and run the artifact is named (HTTP, `file://`, sizes, reduced motion), with the ones the checks cover.
@@ -97,6 +97,9 @@ The brief rules B1-B13 live here. Codex follows a brief to the letter, so most f
 - [ ] B13. A timed outcome runs each side three times, alternating, on a quiet machine, and reports every run with the median and
       range, what limits the time, the errors counted, and proof the work ran; more runs only where they could change the
       decision. (user, 2026-10-14; adapted from pstack's `benchmark-checklist`)
+- [ ] B14. Before writing an outcome, check whether the code's structure or an existing test already guarantees it.
+      If one does, the outcome is that test still passing, named by file and line; if a proof is needed, name the
+      test or table it extends and the result expected. (agent-tooling DECISIONS item 16)
 - [ ] A test suite that needs a clean tree is run after the commit. A brief whose round adds ladder tests says CI runs them on Windows without Playwright Chromium or ui-forensics, from a checkout of the pushed commit alone with no other branch (`.github/workflows/checks.yml`; F179), so a proof that needs a real browser is a script in the temp folder, run and reported (vf-speed and vf-hold, 2026-10-12: both first pushes failed CI for it).
 - [ ] Mark with ` (must change)` each path an outcome requires to change.
 - [ ] An outcome that parses, reads, classifies or detects lists the forms its input takes, with their variants.

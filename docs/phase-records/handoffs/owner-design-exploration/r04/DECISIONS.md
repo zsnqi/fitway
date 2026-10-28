@@ -1134,6 +1134,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
      reviewer (DeepSeek, or Opus for a diff, as belonging-check did), the record says Sol was skipped, and nothing waits
      for it; Sol comes back into the two-reviewer rule once a short probe at `xhigh` answers. Measured on 2026-10-28
      at 17:31 +03:00: Sol answered at default effort and at `xhigh`, after the morning's capacity answers.
+101. **A brief names how an outcome is already proved** (the user, 2026-10-28, from a forked session: "The light
+     steps now"). Recorded in full as `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` item 16; it holds
+     for this milestone's briefs from the next one, designer-public-directions-1 included where it asks for a proof.
 
 ## How this milestone's rounds run
 
