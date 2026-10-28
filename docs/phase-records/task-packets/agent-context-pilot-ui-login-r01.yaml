@@ -30,7 +30,7 @@ authorities:
       selector: { kind: markdown-heading, value: "Operational states" }
       reason: Preserve state truth and false-live rules.
     - role: spec
-      path: docs/spec/04-acceptance-criteria.md
+      path: SPEC.md
       selector: { kind: markdown-heading, value: "Acceptance Criteria" }
       reason: Preserve behavior and accessibility acceptance.
     - role: design

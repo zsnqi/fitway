@@ -25,7 +25,7 @@ authorities:
       selector: { kind: markdown-heading, value: "Surface boundaries" }
       reason: Preserve the user and surface boundary.
     - role: spec
-      path: docs/spec/05-architecture-and-schema.md
+      path: SPEC.md
       selector: { kind: markdown-heading, value: "Architecture & Schema" }
       reason: Use the canonical backend and schema semantics.
     - role: contract
@@ -52,7 +52,7 @@ authorities:
       actionIfTriggered: READ
     - trigger: the change alters a reviewed migration or DTO
       role: spec
-      path: docs/spec/06-interfaces-and-contracts.md
+      path: SPEC.md
       selector: { kind: markdown-heading, value: "Interfaces & Contracts" }
       actionIfTriggered: READ
 continuity:
