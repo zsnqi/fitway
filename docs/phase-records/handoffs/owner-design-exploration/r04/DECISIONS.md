@@ -1079,7 +1079,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     longer under the icon at 320), the row count always on its own line directly under the name's first letter (no
     longer sharing the name's line at 449-720). English: icon, name and count from the left (option 2). Arabic: the box
     is laid out like the English, icon on the left, the name and «40,320 صفًا» starting on the left edge (option 3); the
-    count keeps its own right-to-left reading inside its line. The user's reason: the file name is all Latin, so an
+    count's line is left to right too, the figure first on the left and «صفًا» to its right, as in "40,320 rows" (the
+    user, the same day: «المفروض يكون الرقم اول شي نفس الانجليزي ثم يجي مكتوب صفا»; the render had it the other way). The user's reason: the file name is all Latin, so an
     Arabic reader's eye goes to the left to read it from its start; on two lines aligned right each line's start is
     ragged and has to be found. This supersedes item 93's Arabic part ("starts on the right edge beside the icon",
     finding 6) for this box only; it is not a rule for other Latin text in Arabic screens.
