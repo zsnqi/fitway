@@ -14,7 +14,7 @@ conservative 24,000-byte warning threshold is reported but is not itself a failu
 `TASK_PACKET_TEMPLATE.yaml` is a template, not authority. A packet is coordinator-authored derived
 context; it never resolves a conflict with a cited source.
 `pnpm tools` lists every agent command and its exact invocation from `scripts/agent-environment/tool-registry.mjs`.
-The generated agent tooling map is `docs/agent-context/AGENT_TOOLING_CODE_MAP.md`; regenerate it with `pnpm map:tooling`.
+The generated agent tooling map is `docs/agent-context/AGENT_TOOLING_CODE_MAP.md`, listing each mapped file's path, leading-comment summary and sorted exports; regenerate it with `pnpm map:tooling`.
 The code-health baseline is `docs/agent-context/CODE_HEALTH_BASELINE.json`; tighten it with `pnpm code-health:baseline` and enforce it with `pnpm check:code-health`.
 The packet path remains stable for the lifetime of its milestone and becomes immutable evidence
 after closure. A route's optional `packetRequiredConditionals` list explicitly names conditional
@@ -75,3 +75,9 @@ Only DONE satisfies a dependency; dependents must name the completed successor.
 every byte except its As of line. Only the file and ledger handoff pointer change; git history
 is the resume chain. Timestamped handoffs remain valid, and Previous resume point is optional
 and never followed by a check.
+
+## Which check enforces each rule
+
+`docs/agent-context/RULE_ENFORCERS.md` names, for each rule in `AGENTS.md`, `WORKING_AGREEMENTS.md` and
+`docs/WORKFLOW.md`, the check that rejects a violation, or `written only`. Look there before searching the code for a
+check.

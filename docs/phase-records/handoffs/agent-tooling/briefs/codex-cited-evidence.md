@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: cited evidence is never deleted, and loss is caught (agent-tooling-r01, round cited-evidence)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-cited-evidence`, branch `tooling-cited-evidence`, HEAD `<set at launch>`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-cited-evidence`, branch `tooling-cited-evidence`, HEAD `f79adba4`
 - **Milestone:** `agent-tooling-r01`. Decisions: `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 14, 15,
   16 and 17.
 - **Read first, only these:**
@@ -52,35 +52,45 @@ path is gone anyway is named, with its record and line, as soon as it is looked 
   cited folders went whole and 28 cited files inside kept folders went (`.log`, `.cjs`, JSON over 64 KB, images no
   record named); the gardener prune promised by DECISIONS item 15 was never built (the report's §1 and §3).
   Outcome: the gardener gains that prune. For each top-level temp folder it proposes (it never runs it itself, as
-  the cleanup does) to delete only files that no tracked text file cites, by the file's own path or by a folder
-  path above it when that folder is uncited; in a cited folder it keeps every file that is not a capture (image,
-  video, trace, archive), whatever its extension or size, and every capture a tracked record cites or a kept text
-  file in the folder names by file name. Links and registered worktrees are handled as the cleanup handles them.
+  the cleanup does) to delete only files that no tracked record cites, by the file's own path or by a folder path
+  above it when that folder is uncited; in a cited folder it keeps every file that is not a capture (image, video,
+  trace, archive), whatever its extension or size, and every capture a tracked record cites or a kept text file in
+  the folder names by file name. A tracked record is any tracked `.md`, `.yaml`, `.yml`, `.tsv` or `.txt` file (the
+  survey's matcher reads only the first three today; `findings.tsv` and `rounds.tsv` are records), and a citation
+  may name a file at any depth. Links are inspected and never followed, and registered worktrees withheld, through
+  the same functions the cleanup and `remove-worktree.mjs` use (`inspectWorktreeLinks` among them), not new ones.
   The proposal names each folder, the bytes it frees and what it keeps. Check: a fixture temp root with the
   report's real loss shapes (a cited folder holding a `.log`, a `.cjs`, a 100 KB JSON and a PNG named only by a
-  record outside the folder) keeps all four; an uncited capture beside them is proposed. Intent: space is freed
-  only from what nothing cites.
-- **E2.** Twelve cited paths went with `remove-worktrees.ps1` and fifteen with other grading-worktree removals (the
-  report's §1). Outcome: `remove-worktree.mjs` refuses a worktree that holds an untracked or ignored file a tracked
-  record cites, naming the file and the citing record and line; tracked files do not count, since their branch
-  keeps them. Check: extend the removal tests in `.agents/skills/gardener/round16b.test.ts` (or the file there that
-  tests `removeWorktree`) with a cited untracked file (refused) and an uncited one (removed). Intent: removing a
-  checkout cannot take evidence with it.
+  record outside the folder) keeps all four; an uncited capture beside them is proposed; an uncited folder holding a
+  `.log` that a `.tsv` record cites by its nested path keeps that file; a link inside a folder is not followed; a
+  registered worktree under the root is not proposed. Intent: space is freed only from what nothing cites.
+- **E2.** Twelve cited paths went with `remove-worktrees.ps1` (a one-off script outside the repository) and fifteen
+  with other grading-worktree removals (the report's §1). `remove-worktree.mjs` already refuses a tree with a staged,
+  changed or untracked file (`.agents/skills/gardener/remove-worktree.mjs:55-66`), but `--exclude-standard` skips
+  ignored files, where output folders sit. Outcome: it also refuses a worktree holding an ignored file a tracked
+  record cites, by the file's path or a folder above it (the worktree's own path included), naming the file and the
+  citing record and line; an uncited ignored file does not block. `CLEANUP.md` names `remove-worktree.mjs` as the
+  one way to remove a worktree that may hold evidence. Check: extend the removal tests in
+  `.agents/skills/gardener/round16b.test.ts` (or the file there that tests `removeWorktree`) with a cited ignored
+  file (refused), a worktree cited by its own path holding an ignored file (refused) and an uncited ignored file
+  (removed). Intent: removing a checkout cannot take evidence with it.
 - **E3.** No check notices a citation whose path is gone; 22 cited folders and 62 cited files were found gone only
   by hand (the report's §1). Outcome: (a) the survey's report gains a section listing every cited `D:/fitway-temp`
-  path that does not exist, each with its record and line, skipping a citation followed on its line by `(gone:`
-  and a reason; (b) `pnpm check:repository` runs the same check on the lines that differ from `origin/main` in
-  tracked records when `D:/fitway-temp` exists, fails naming each line and the fix (correct the path, or mark it
-  `(gone: <why>)`), and prints that it was not checked when the folder is absent, as in CI. Check: a fixture record
-  citing a missing folder fails (b) naming its line; the same citation marked gone passes; a real survey run lists
-  the report's gone folders. Intent: a lost or mistyped citation surfaces the day it is written, and old losses are
+  path, folder or file at any depth, that does not exist, each with its record and line, skipping a citation
+  followed on its line by `(gone:` and a reason; (b) `pnpm check:repository` runs the same check on every tracked
+  record when `D:/fitway-temp` exists: it fails naming each gone citation on a line that differs from `origin/main`,
+  with the fix (correct the path, or mark it `(gone: <why>)`), and prints the count of gone citations on unchanged
+  lines and the first five, without failing, until they are marked; it prints that it was not checked when the folder
+  is absent, as in CI. Check: a fixture record citing a missing folder on a changed line fails (b) naming its line;
+  the same citation marked gone passes; a missing nested file cited by a `.txt` record on an unchanged line is
+  counted, not failed; a real survey run lists the report's gone folders and files. Intent: a lost or mistyped citation surfaces the day it is written, and old losses are
   listed until each is marked.
 - **E4.** Scripts agents write in run folders are counted nowhere, so whether verify-fitway's new `run` command
   (round run-and-ref) removes the need for them cannot be seen (DECISIONS item 17). Outcome: the survey's report
   gains a section counting, for each top-level temp folder created since the previous report, the script files
   (`.mjs`, `.js`, `.cjs`, `.py`, `.ps1`, `.sh`) it holds outside `node_modules` and extracted Git trees, and the total;
-  report only. Check: a fixture with two new folders, one holding three scripts and an extracted tree with more,
-  reports 3 and 0. Intent: the measure that tells whether the fix worked.
+  report only. Check: a fixture with two new folders, one holding three scripts in nested subfolders and an
+  extracted tree and a `node_modules` with more, reports 3 and 0. Intent: the measure that tells whether the fix worked.
 - **K1.** The cleanup's existing citation rule, refusals and tests stay as they are, and the survey's existing
   sections keep their content. `pnpm verify:fast` passes after the commit.
 - **K2.** CI has no `D:/fitway-temp`: every test builds its own fixture temp root inside the run folder or the

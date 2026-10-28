@@ -201,3 +201,18 @@ through these pointers, not copied here.
     - **The tooling code map does not serve navigation:** `AGENT_TOOLING_CODE_MAP.md` was read by no agent, and
       searches missed for want of a "where things live" pointer.
     The public page's designer launches after these are done and checked.
+18. **Finding 3 reaches the coordinator's own records** (coordinator, 2026-10-28, under item 17). Seventeen tracked
+    Markdown files pass 40,000 bytes, among them r04's `DECISIONS.md` (127 KB, read whole 16 times in 6 sessions) and
+    its `codex-rounds.md` (210 KB). Evidence-home's `giantDocuments` would fail the next append to either, so:
+    - r04's `DECISIONS.md` is an index, one line per decision, with the full text in `r04/decisions/` parts under
+      40,000 bytes each (`92a4e9a7`; the text moved byte for byte, checked with a planted change);
+    - the two `codex-rounds.md` files are frozen, since 210 citations name their lines; `ROUNDS.md` in this folder
+      indexes them by line range, and each round from now on is its own file in `rounds/`;
+    - `giantDocuments` leaves out `docs/archive/` (frozen) and `.claude/skills/` (unchanged upstream copies).
+    - `SPEC.md` (54 KB, read 18 times in 4 sessions) is split by section into `docs/spec/` parts behind an index
+      that keeps its name, its preamble, its authority and every `##`/`###` heading, each naming the part that holds
+      its text, with not one word changed (the user, 2026-10-28: «موافق دامه بيحسن البيئة و تقليل الحمل على ال
+      agent لقراءة ال context»). Routes and packets keep selecting `SPEC.md` headings: the check replays old
+      frontiers against today's routes (`scripts/check-agent-context.test.ts` K1), so routes naming the parts failed
+      CI on `bf190f67`. Its 54 line citations are in August phase records, already stale since its later amendments.
+      Whether agents open one part instead of the whole is measured again with the rest.

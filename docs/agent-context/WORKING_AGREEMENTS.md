@@ -94,7 +94,8 @@ latest wording; never copy an entry into a resume point.
 - After a round, the coordinator checks the diff, `git status` in every worktree involved, and the
   remote branch.
 - Each Codex round is judged as an evaluation: brief rows, held-out rows, and the failure cause,
-  recorded in `docs/phase-records/handoffs/agent-environment/codex-rounds.md`. At grading the
+  recorded in its own file, `docs/phase-records/handoffs/agent-tooling/rounds/<round>.md`, with its line in
+  `docs/phase-records/handoffs/agent-tooling/ROUNDS.md` (the two `codex-rounds.md` files are frozen). At grading the
   coordinator also adds the round's line to `rounds.tsv` beside it and a line per side finding to
   `findings.tsv`, whose status changes when a later round or commit fixes it; a value no source states
   stays empty (DECISIONS item 21). Held-out suites live

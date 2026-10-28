@@ -132,4 +132,4 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   trial-metrics.md in its own temp folder.
 - Held-out rows: `D:/fitway-grader/owner-r04/`.
 - Logging review: `D:/fitway-temp/owner-r04-logging-review/REPORT.md`.
-- Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
+- Codex evaluations: `docs/phase-records/handoffs/agent-tooling/ROUNDS.md` (the index; the two `codex-rounds.md` are frozen).
