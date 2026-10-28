@@ -83,7 +83,7 @@
 		".agents/skills/verify-fitway/cli.mjs": {
 			"duplication": 1,
 			"longFunctions": 2,
-			"longFunctionLines": 308,
+			"longFunctionLines": 307,
 			"emptyBlocks": 2
 		},
 		".agents/skills/verify-fitway/cli.test.mjs": {

@@ -50,7 +50,7 @@ function git(root, args, env = {}) {
 	});
 }
 
-function checkDeclaredConcept(root) {
+export function extractDeclaredConcept(root) {
 	const declaration = resolve(root, CONCEPT_SOURCE);
 	if (!existsSync(declaration))
 		throw failure(
@@ -72,10 +72,10 @@ function checkDeclaredConcept(root) {
 	const scratch = realpathSync.native(
 		mkdtempSync(resolve(tmpdir(), "verify-fitway-drift-")),
 	);
+	const index = { GIT_INDEX_FILE: resolve(scratch, "index") };
+	const tree = resolve(scratch, "concept");
 	try {
 		// A private index keeps this checkout's index and files untouched.
-		const index = { GIT_INDEX_FILE: resolve(scratch, "index") };
-		const tree = resolve(scratch, "concept");
 		mkdirSync(tree);
 		for (const args of [
 			["read-tree", `${commit}:${concept}`],
@@ -93,11 +93,28 @@ function checkDeclaredConcept(root) {
 				`${concept} at ${ref} (${commit.slice(0, 8)}) has no verification-recipes.json; nothing was checked.`,
 				`commit the recipes beside the concept on that branch, or point ${CONCEPT_SOURCE} at the branch that holds them`,
 			);
-		checkRecipes(tree, recipes);
-	} finally {
+		return {
+			concept: tree,
+			declaredConcept: concept,
+			recipes,
+			commit,
+			ref,
+			cleanup: () => rmSync(scratch, { recursive: true, force: true }),
+		};
+	} catch (error) {
 		rmSync(scratch, { recursive: true, force: true });
+		throw error;
 	}
-	return `DRIFT PASS: no recipe file in this checkout; checked ${concept} at ${ref} (${commit.slice(0, 8)}).`;
+}
+
+function checkDeclaredConcept(root) {
+	const extracted = extractDeclaredConcept(root);
+	try {
+		checkRecipes(extracted.concept, extracted.recipes);
+	} finally {
+		extracted.cleanup();
+	}
+	return `DRIFT PASS: no recipe file in this checkout; checked ${extracted.declaredConcept} at ${extracted.ref} (${extracted.commit.slice(0, 8)}).`;
 }
 
 export function checkVerificationMaps(root = repository) {
