@@ -205,7 +205,9 @@ connections, preserving response bytes/status while avoiding port exhaustion.
 Extract the requested baseline revision once outside all git trees, then give its concept folder to `compare`.
 The baseline can use the same recipe file with `--baseline-recipes`, or its own adjacent recipe file. Both sides
 run the same items and axes. Differences are captured again in fresh contexts before the final exact pixel result;
-no tolerance is added. Each differing item has a region, diff JSON and images in `comparison.json`.
+no tolerance is added. Each differing item of the same size on both sides has a region, diff JSON and images in
+`comparison.json`; sides of different sizes differ without a region, and the item's `sizes` and its `COMPARE` line
+name both sizes.
 `--baseline-map <file>` can pin the baseline side to a previously generated verification map.
 Only compare's motion-settlement wait has a **five-second total bound per capture** for finite Web Animations/CSS
 transitions to finish naturally and for queued `requestAnimationFrame` callbacks to drain, under both motion modes.
@@ -219,7 +221,12 @@ Compare hides native text carets with Playwright's `caret: "hide"` under every m
 selection and field values. It disables Chromium's partial raster cache so settled fractional edges are painted
 consistently after movement. The page is captured as served, with the comparison observers described here;
 capture adds no styles, DOM elements or attributes. Ordinary drive keeps its screenshot options.
-Without a timeline request, compare checks these settled pictures.
+Without a timeline request, compare checks these settled pictures across the document's whole vertical scrollable
+area at the item's viewport width. A document taller than the viewport is captured at successive viewport-sized
+scroll positions and combined, preserving the reader's view of fixed and sticky elements in each part; differing
+regions are in document coordinates. A document no taller than the viewport keeps one viewport picture. Content
+inside another scroll container, such as a dialog's own scroll, and the viewport-only timeline samples are not
+part of this whole-document result.
 
 Use `--timeline` when a refactor must preserve openings, closings, changes of state, held presses and releases
 throughout their movement. Earlier recipe actions settle before the last action. Pointer positioning and keyboard

@@ -512,14 +512,10 @@ test("X5: deterministic callback defects are DIFFERENT; varying callback frames 
 			await readFile(resolve(out, "comparison.json"), "utf8"),
 		);
 		const samples = report.items[0].timeline.samples;
-		if (["confirmation-fails", "cross-size"].includes(mode)) {
+		if (mode === "confirmation-fails") {
 			assert.equal(report.items[0].result, "problem");
 			assert.ok(
-				report.items[0].problems.includes(
-					mode === "cross-size"
-						? "diff_map exited 2"
-						: "confirmation fixture failed",
-				),
+				report.items[0].problems.includes("confirmation fixture failed"),
 			);
 			assert.ok(
 				report.items[0].timeline.captureSources.build.some(({ sources }) =>
@@ -537,7 +533,7 @@ test("X5: deterministic callback defects are DIFFERENT; varying callback frames 
 			samples.map((s) => s.result),
 			[
 				"equal",
-				mode === "deterministic"
+				["deterministic", "cross-size"].includes(mode)
 					? "different"
 					: mode === "equal"
 						? "equal"
@@ -550,6 +546,28 @@ test("X5: deterministic callback defects are DIFFERENT; varying callback frames 
 				(f) => f.source.file === "callback.js" && f.source.line === 1,
 			),
 		);
+		if (mode === "cross-size") {
+			const [baseline, build] = await Promise.all(
+				[samples[1].files.baseline, samples[1].files.build].map((file) =>
+					readFile(file),
+				),
+			);
+			assert.notEqual(baseline.length, build.length);
+			assert.deepEqual(samples[1].sizes, {
+				baseline: [baseline.length, 1],
+				build: [build.length, 1],
+			});
+			assert.ok(
+				lines.some(
+					(line) =>
+						line.startsWith("TIMELINE DIFFERENT:") &&
+						line.includes(
+							`; sizes baseline ${baseline.length}x1, build ${build.length}x1`,
+						),
+				),
+				lines.join("\n"),
+			);
+		}
 		for (const side of ["build", "baseline"]) {
 			const stability = samples[1].stability[side];
 			assert.equal(
@@ -1968,6 +1986,7 @@ context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.eva
   evaluate:async(fn)=>fn.toString().includes("coarse")
    ? {language,direction:language==="ar"?"rtl":"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
+: fn.toString().includes("document.scrollingElement") ? {scrollX:0,scrollY:0,viewportWidth:1440,viewportHeight:900,documentHeight:900}
 : fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
 locator:(selector)=>({first(){return this},count:async()=>1,
 evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body":'- button "Open details"',

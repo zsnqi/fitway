@@ -18,6 +18,15 @@ import { plannedCaptures } from "./drive-plan.mjs";
 import { drive } from "./runner.mjs";
 import { timelineTimes } from "./timeline.mjs";
 
+// A cross-side diff runs as (baseline, build); diff_map names their sizes A and B.
+const crossSizes = (measurement) =>
+	measurement.sameSize === false
+		? { baseline: measurement.sizeA, build: measurement.sizeB }
+		: undefined;
+const sizesText = (sizes) =>
+	sizes
+		? `; sizes baseline ${sizes.baseline.join("x")}, build ${sizes.build.join("x")}`
+		: "";
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const identity = (item) =>
 	JSON.stringify([
@@ -178,11 +187,11 @@ async function compareOwned(
 			items: [],
 			...(options["affected-pages"] ? { partial: true, pages } : {}),
 		};
-		const diff = async (a, b, prefix, sameSide = false) => {
+		const diff = async (a, b, prefix) => {
 			if (digest(await readFile(a)) === digest(await readFile(b)))
 				return { identical: true, bbox: null, changedPixels: 0 };
 			const json = await outputFile(out, `${prefix}.json`);
-			if (sameSide) await rm(json, { force: true });
+			await rm(json, { force: true });
 			try {
 				await child(
 					process.platform === "win32" ? "py" : "python3",
@@ -200,28 +209,26 @@ async function compareOwned(
 					true,
 				);
 			} catch (error) {
-				if (sameSide) {
-					const measurement = await readFile(json, "utf8")
-						.then(JSON.parse)
-						.catch(() => null);
-					const validSize = (size) =>
-						Array.isArray(size) &&
-						size.length === 2 &&
-						size.every((value) => Number.isSafeInteger(value) && value > 0);
-					if (
-						measurement?.tool === "diff_map" &&
-						measurement.a === a &&
-						measurement.b === b &&
-						measurement.sameSize === false &&
-						measurement.ok === false &&
-						validSize(measurement.sizeA) &&
-						validSize(measurement.sizeB) &&
-						measurement.sizeA.some(
-							(value, index) => value !== measurement.sizeB[index],
-						)
+				const measurement = await readFile(json, "utf8")
+					.then(JSON.parse)
+					.catch(() => null);
+				const validSize = (size) =>
+					Array.isArray(size) &&
+					size.length === 2 &&
+					size.every((value) => Number.isSafeInteger(value) && value > 0);
+				if (
+					measurement?.tool === "diff_map" &&
+					measurement.a === a &&
+					measurement.b === b &&
+					measurement.sameSize === false &&
+					measurement.ok === false &&
+					validSize(measurement.sizeA) &&
+					validSize(measurement.sizeB) &&
+					measurement.sizeA.some(
+						(value, index) => value !== measurement.sizeB[index],
 					)
-						return { ...measurement, identical: false };
-				}
+				)
+					return { ...measurement, identical: false };
 				throw error;
 			}
 			return JSON.parse(await readFile(json, "utf8"));
@@ -504,7 +511,6 @@ async function compareOwned(
 										sample.stability.first,
 										sample.stability.repeat,
 										`${diffStem(item, index)}-time-${String(sample.time).replace(".", "_")}ms-stability-${side}`,
-										true,
 									);
 									Object.assign(sample.stability, measurement);
 									sample.result = measurement.identical ? "held" : "not-held";
@@ -624,6 +630,7 @@ async function compareOwned(
 							entry.region = measured.bbox;
 							entry.changedPixels = measured.changedPixels;
 							entry.diffImages = measured.images;
+							entry.sizes = crossSizes(measured);
 							if (options.timeline) {
 								entry.recipe = { build: item.recipe, baseline: other.recipe };
 								const measurements = new Map();
@@ -716,7 +723,6 @@ async function compareOwned(
 												sample.stability.first,
 												file,
 												`${diffStem(item, index)}-time-${String(sample.time).replace(".", "_")}ms-confirm-${side}-${round}`,
-												true,
 											);
 											sample.stability.confirmations ||= [];
 											sample.stability.confirmations.push({
@@ -786,11 +792,12 @@ async function compareOwned(
 											region: measurement.bbox,
 											changedPixels: measurement.changedPixels,
 											diffImages: measurement.images,
+											sizes: crossSizes(measurement),
 											diffPrefix: resolve(out, prefix),
 										});
 									}
 									console.log(
-										`TIMELINE ${moment.result.toUpperCase()}: ${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport} ${item.colors}; time ${moment.time} ms${moment.region ? `; region ${JSON.stringify(moment.region)}; diff ${moment.diffPrefix}` : ""}${moment.sources.length ? `; ${moment.sources.map((f) => `${f.source.file}:${f.source.line}: ${f.reason}`).join("; ")}` : ""}`,
+										`TIMELINE ${moment.result.toUpperCase()}: ${item.feature} ${item.state} ${item.language} ${item.size} ${item.input} ${item.motion} ${item.transport} ${item.colors}; time ${moment.time} ms${moment.region ? `; region ${JSON.stringify(moment.region)}; diff ${moment.diffPrefix}` : ""}${sizesText(moment.sizes)}${moment.sources.length ? `; ${moment.sources.map((f) => `${f.source.file}:${f.source.line}: ${f.reason}`).join("; ")}` : ""}`,
 									);
 								}
 								console.log(
@@ -828,7 +835,7 @@ async function compareOwned(
 						);
 					}
 					console.log(
-						`COMPARE ${entry.result.toUpperCase()}: ${entry.feature} ${entry.state} ${entry.language} ${entry.size} ${entry.input} ${entry.motion} ${entry.transport} ${entry.colors}${entry.region ? `; region ${JSON.stringify(entry.region)}; diff ${entry.diffPrefix}` : ""}${entry.repeated ? "; repeated in fresh contexts" : ""}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
+						`COMPARE ${entry.result.toUpperCase()}: ${entry.feature} ${entry.state} ${entry.language} ${entry.size} ${entry.input} ${entry.motion} ${entry.transport} ${entry.colors}${entry.region ? `; region ${JSON.stringify(entry.region)}; diff ${entry.diffPrefix}` : ""}${sizesText(entry.sizes)}${entry.repeated ? "; repeated in fresh contexts" : ""}${entry.problems.length ? `; ${entry.problems.map(shortFinding).join("; ")}` : ""}`,
 					);
 					await jsonOutput(out, "comparison.json", result);
 				}

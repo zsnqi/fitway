@@ -137,7 +137,8 @@ const log=async(value)=>appendFile(${JSON.stringify(work)},JSON.stringify(value)
 export const launchChromium=async()=>{await log({kind:"browser"});return {close:async()=>{}}};
 export const newContext=async()=>{let url;const page={setDefaultTimeout(){},addInitScript:async()=>{},
  waitForFunction:async()=>{},screenshot:async()=>{await log({kind:"capture",url});return Buffer.from("frame")},
- evaluate:async(fn)=>fn.toString().includes("coarse")?{language:"en",direction:"ltr",coarse:false,touchPoints:0}:({}),
+ evaluate:async(fn)=>fn.toString().includes("coarse")?{language:"en",direction:"ltr",coarse:false,touchPoints:0}
+  :fn.toString().includes("document.scrollingElement")?{scrollX:0,scrollY:0,viewportWidth:1440,viewportHeight:900,documentHeight:900}:({}),
  locator:()=>({first(){return this},count:async()=>1,waitFor:async()=>{},ariaSnapshot:async()=>"main"}),setURL:value=>{url=value}};
  return {page,context:{route:async()=>{},close:async()=>{}},errors:[],emulation:{}}};
 export const withParams=(url)=>url;
