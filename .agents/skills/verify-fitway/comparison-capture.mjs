@@ -79,6 +79,26 @@ async function comparisonGeometry(page) {
 	});
 }
 
+// The viewport-sized parts that cover a document. The last part scrolls only as
+// far as the document allows, so its rows start at sourceTop in its screenshot.
+export function comparisonParts({ viewportHeight, documentHeight }) {
+	const parts = [];
+	for (
+		let documentTop = 0;
+		documentTop < documentHeight;
+		documentTop += viewportHeight
+	) {
+		const scrollTop = Math.min(documentTop, documentHeight - viewportHeight);
+		parts.push({
+			documentTop,
+			scrollTop,
+			sourceTop: documentTop - scrollTop,
+			height: Math.min(viewportHeight, documentHeight - documentTop),
+		});
+	}
+	return parts;
+}
+
 async function screenshotViewport(page) {
 	return page.screenshot({
 		fullPage: false,
@@ -117,45 +137,30 @@ async function captureDocumentFrames(page, geometry) {
 	const interaction = await comparisonInteraction(page);
 	const frames = [];
 	try {
-		const maxScroll = geometry.documentHeight - geometry.viewportHeight;
-		for (
-			let documentTop = 0;
-			documentTop < geometry.documentHeight;
-			documentTop += geometry.viewportHeight
-		) {
-			const target = Math.min(documentTop, maxScroll);
-			const actual = await page.evaluate(
-				({ left, top }) => {
-					const root = document.scrollingElement || document.documentElement;
-					root.scrollLeft = left;
-					root.scrollTop = top;
-					return { scrollX: root.scrollLeft, scrollY: root.scrollTop };
-				},
-				{ left: geometry.scrollX, top: target },
-			);
+		for (const part of comparisonParts(geometry)) {
 			await page.evaluate(
-				() => new Promise((resolve) => requestAnimationFrame(resolve)),
+				({ left, top }) => window.scrollTo({ left, top, behavior: "instant" }),
+				{ left: geometry.scrollX, top: part.scrollTop },
 			);
 			await page.evaluate(
 				() => new Promise((resolve) => requestAnimationFrame(resolve)),
 			);
 			await settleComparison(page);
-			const sourceTop = Math.max(0, Math.round(documentTop - actual.scrollY));
-			const height = Math.min(
-				Math.round(geometry.viewportHeight - sourceTop),
-				Math.round(geometry.documentHeight - documentTop),
-			);
-			if (height <= 0)
-				throw new ComparisonCaptureError(
-					`Comparison capture produced no frame for document y ${documentTop}`,
-				);
+			const measured = await comparisonGeometry(page);
+			const expected = {
+				scrollY: part.scrollTop,
+				viewportWidth: geometry.viewportWidth,
+				viewportHeight: geometry.viewportHeight,
+				documentHeight: geometry.documentHeight,
+			};
+			measured.scrollY = Math.round(measured.scrollY);
+			for (const [name, value] of Object.entries(expected))
+				if (measured[name] !== value)
+					throw new ComparisonCaptureError(
+						`Comparison capture of document y ${part.documentTop} expected ${name} ${value}, measured ${measured[name]}`,
+					);
 			const image = await screenshotViewport(page);
-			frames.push({
-				image: image.toString("base64"),
-				documentTop,
-				sourceTop,
-				height,
-			});
+			frames.push({ ...part, image: image.toString("base64") });
 		}
 	} finally {
 		await interaction.evaluate((state) => {
@@ -239,8 +244,6 @@ async function stitchDocumentFrames(page, frames, geometry) {
 export async function captureComparison(page) {
 	await settleComparison(page);
 	try {
-		if (typeof page.evaluateHandle !== "function")
-			return await screenshotViewport(page);
 		const geometry = await comparisonGeometry(page);
 		if (
 			!Number.isFinite(geometry.viewportWidth) ||

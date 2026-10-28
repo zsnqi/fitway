@@ -107,7 +107,7 @@
 		".agents/skills/verify-fitway/compare.mjs": {
 			"duplication": 6,
 			"longFunctions": 1,
-			"longFunctionLines": 846
+			"longFunctionLines": 844
 		},
 		".agents/skills/verify-fitway/core.mjs": {
 			"longFunctions": 1,
