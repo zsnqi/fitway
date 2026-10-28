@@ -52,7 +52,7 @@ authorities:
       selector: { kind: markdown-heading, value: "Approved visual baseline" }
       reason: Retain FITWAY identity and locked semantics while the Owner composition is redesigned.
     - role: spec
-      path: SPEC.md
+      path: docs/spec/01-authority.md
       selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }
       reason: Preserve product, accessibility, and data constraints in every concept.
     - role: design

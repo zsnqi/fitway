@@ -50,7 +50,7 @@ authorities:
       selector: { kind: markdown-heading, value: "Approved visual baseline" }
       reason: Preserve FITWAY identity, the production dark-only baseline, and locked product semantics while future Owner questions are explored.
     - role: spec
-      path: SPEC.md
+      path: docs/spec/01-authority.md
       selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }
       reason: Preserve security, privacy, accessibility, bilingual behavior, and data contracts in any later concept.
     - role: design
