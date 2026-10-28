@@ -55,10 +55,9 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   `bb26be02` DECISIONS 92 (option B: figure and time on the slot's right edge in Arabic; a note stays in the day's column
   and breaks only between its words and range; `noteColumnCheck` in reports-capture); `3076869a` DECISIONS 94 (English
   peak and time on the column's left edge); `950e19d2` TBL-14 (91 (3)). Reports: `D:/fitway-temp/owner-r04-reports-phone-fix-v1{2,3,4}/`.
-- **The builder eval, task 1** (DECISIONS 92 (3)): `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (A = Sonnet, B = Opus,
-  both `high`; code byte-identical because the spec carried a reference implementation; blind Opus grade 6/6 each, Low
-  only). The builder stays Opus; the next paired task has no reference code. Arm map: `D:/fitway-temp/owner-r04-tbl14-arms/ARMS.md`.
-  The worktrees `owner-r04-tbl14-a` and `-b` stay (pnpm-installed node_modules: see Known risks before removing).
+- **The builder eval, task 1** (DECISIONS 92 (3)): `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (Sonnet and Opus at
+  `high`, byte-identical code from a reference implementation, 6/6 each). The builder stays Opus; the next paired task
+  has no reference code. Worktrees `owner-r04-tbl14-a`/`-b` stay (see Known risks before removing).
 - **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
   coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
@@ -69,15 +68,12 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   3. The public page's ADR, amendments and milestone (below), then the pages of decision 84.
 - **The public page:** P1-P7 answered (DECISIONS 90); the ADR, the three files' amendments and its milestone are
   not started; the user sees all three before any design. Friday's dash: A kept (DECISIONS 89).
-- **Decision 85's builder trial:** Sonnet 5.5 at high built 749fa608 (second run 392,787 tokens; first unreported);
-  Opus found 1 Medium and 3 Low in its code (verify-10 findings 1, 2, 4; finding 3 was the fixer's recipe) and none in
-  §5. Written up beside the paired task in `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (two Sonnet builds so far,
-  one paired; not enough to move the builder).
+- **Decision 85's builder trial:** Sonnet 5.5 at high built 749fa608; verify-10 found 1 Medium and 3 Low in its code.
+  Written up in `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (not enough to move the builder).
 
 ## Next steps
 
-1. **main is at `e3fd9854`** (advanced 2026-10-19 by `pnpm main:advance`, CI run 39166306570). The coordinator line
-   adds decisions 80-83 and this resume point; it goes to main once its pushed commit's CI passes.
+1. **main** moves only by `pnpm main:advance` to a pushed coordinator commit whose CI passed (§"Running now").
 2. **The pages** (decision 84 replaces 51's order, 2026-10-24): Settings, then the public crowd page, then the demo's
    polish and materials (private plan); Operations and Monitoring, sign-in and the front-desk screen after the gym owner
    accepts. Decision 76 (the demo first):
