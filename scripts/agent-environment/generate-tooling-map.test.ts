@@ -77,6 +77,15 @@ function expectDriftFailure(
 	expect(result.errors.join("\n")).toContain(file);
 }
 
+function expectEntryOnlyDrift(
+	result: Awaited<ReturnType<typeof checkToolingMap>>,
+	file: string,
+) {
+	expectDriftFailure(result, file);
+	expect(result.errors.join("\n")).not.toContain("file list differs");
+	expect(result.errors.join("\n")).not.toContain("missing []");
+}
+
 describe("agent tooling code map", () => {
 	const commentForms = [
 		{
@@ -239,7 +248,7 @@ describe("agent tooling map drift check", () => {
 			"// Renames the fixture.\nexport const anchor = 1;\n",
 		);
 		git(root, "add", ".");
-		expectDriftFailure(await checkToolingMap({ root }), sourcePath);
+		expectEntryOnlyDrift(await checkToolingMap({ root }), sourcePath);
 	});
 
 	it("fails when an export is added", async () => {
@@ -251,7 +260,7 @@ describe("agent tooling map drift check", () => {
 			"// Holds the fixture.\nexport const anchor = 1;\nexport const planted = 2;\n",
 		);
 		git(root, "add", ".");
-		expectDriftFailure(await checkToolingMap({ root }), sourcePath);
+		expectEntryOnlyDrift(await checkToolingMap({ root }), sourcePath);
 	});
 
 	it("fails when an export is removed", async () => {
@@ -288,7 +297,9 @@ describe("agent tooling map drift check", () => {
 		const added = "scripts/agent-environment/tooling-added.mjs";
 		write(root, added, "// Adds a mapped file.\nexport const added = 1;\n");
 		git(root, "add", ".");
-		expectDriftFailure(await checkToolingMap({ root }), added);
+		const result = await checkToolingMap({ root });
+		expectDriftFailure(result, added);
+		expect(result.errors.join("\n")).toContain("file list differs");
 	});
 
 	it("fails and names a mapped file that is removed", async () => {
@@ -297,7 +308,9 @@ describe("agent tooling map drift check", () => {
 		git(root, "add", ".");
 		rmSync(path.join(root, sourcePath));
 		git(root, "add", "-A");
-		expectDriftFailure(await checkToolingMap({ root }), sourcePath);
+		const result = await checkToolingMap({ root });
+		expectDriftFailure(result, sourcePath);
+		expect(result.errors.join("\n")).toContain("file list differs");
 	});
 
 	it("fails and names an untracked mapped file", async () => {

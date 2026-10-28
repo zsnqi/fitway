@@ -28,7 +28,12 @@ function formatEntry(file) {
 	return `- \`${path.posix.basename(file.path)}\`: ${file.leadingComment} Exports: ${exports}.`;
 }
 
-function formatToolingMap(files) {
+function countWithoutLeadingComment(files) {
+	return files.filter((file) => file.leadingComment === "(no leading comment)")
+		.length;
+}
+
+function formatToolingMap(files, withoutLeadingComment) {
 	const filesByFolder = new Map();
 	for (const file of files) {
 		const folder = folderOf(file);
@@ -36,9 +41,6 @@ function formatToolingMap(files) {
 		entries.push(file);
 		filesByFolder.set(folder, entries);
 	}
-	const withoutLeadingComment = files.filter(
-		(file) => file.leadingComment === "(no leading comment)",
-	).length;
 	const lines = [
 		HEADER,
 		"",
@@ -70,13 +72,12 @@ export async function buildToolingMap({ root = process.cwd() } = {}) {
 		files,
 		sourcesByFile,
 	});
+	const withoutLeadingComment = countWithoutLeadingComment(describedFiles);
 	return {
 		root: repositoryRoot,
-		text: formatToolingMap(describedFiles),
+		text: formatToolingMap(describedFiles, withoutLeadingComment),
 		files: describedFiles,
-		withoutLeadingComment: describedFiles.filter(
-			(file) => file.leadingComment === "(no leading comment)",
-		).length,
+		withoutLeadingComment,
 	};
 }
 
@@ -112,13 +113,6 @@ function parseToolingMap(text) {
 	return files;
 }
 
-function setsEqual(left, right) {
-	return (
-		left.length === right.length &&
-		left.every((value, index) => value === right[index])
-	);
-}
-
 function listDifference(left, right) {
 	const rightSet = new Set(right);
 	return left.filter((value) => !rightSet.has(value));
@@ -127,9 +121,9 @@ function listDifference(left, right) {
 function fileListDifference(expectedFiles, parsedFiles) {
 	const expectedPaths = expectedFiles.map((file) => file.path);
 	const parsedPaths = parsedFiles.map((file) => file.path);
-	if (setsEqual(expectedPaths, parsedPaths)) return null;
 	const missing = listDifference(expectedPaths, parsedPaths);
 	const extra = listDifference(parsedPaths, expectedPaths);
+	if (missing.length === 0 && extra.length === 0) return null;
 	return `file list differs: missing [${missing.join(", ")}]; extra [${extra.join(", ")}]`;
 }
 
