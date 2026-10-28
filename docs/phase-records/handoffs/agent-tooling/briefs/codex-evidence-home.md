@@ -9,8 +9,8 @@
   - `scripts/agent-environment/codex-session.mjs:90-140`: what the launcher writes into a run folder.
   - `scripts/agent-environment/code-health-ratchet.mjs:12-40` and `.agents/skills/gardener/code-health.mjs:270-300`:
     the ratchet's roots and the giant-file measure.
-  - `docs/agent-context/RULE_ENFORCERS.md`: the table H4 keeps true (`docs/agent-context/README.md` §"Which check
-    enforces each rule" points to it).
+  - `docs/agent-context/RULE_ENFORCERS.md`: the table H4 keeps true; `docs/agent-context/README.md` points to it
+    from §"Which check enforces each rule".
   - `scripts/agent-environment/tool-registry.mjs`: how a `pnpm` command is registered.
   - `docs/agent-context/briefs/CODE_REVIEW.md`: D1-D8, which the diff is reviewed against.
 
@@ -54,7 +54,7 @@ does not exist.
   13 verdict or grade records lost their data (the gone-evidence report's §2). Outcome: `pnpm evidence:keep <path>...
   --to <milestone>/<topic>` copies each named file, or each file under a named folder, into
   `docs/phase-records/evidence/<milestone>/<topic>/` keeping its path relative to the named folder; refuses, naming
-  it, a file over 1 MB, an image or video (frames a user decision rests on belong in the concept's `evidence/`
+  it, a file over 1 MB, an image or video (frames a user decision rests on belong in the concept's own evidence
   folder), and a target that already holds a different file; writes or extends `SOURCES.md` there with each
   original path and its SHA-256; and prints the repository path to cite. Check: tests for a copied folder, each
   refusal and a rerun that changes nothing. Intent: one command makes evidence durable, and refuses what would make
