@@ -50,22 +50,37 @@ lines.
   and 1,200 lines (`docs/agent-context/AGENT_TOOLING_CODE_MAP.md`). In the last ten coordinator sessions and their
   subagents no agent read it, and agents searched the wrong files for where a size, a capture or a check lives
   (agent-tooling DECISIONS item 17). Outcome: the map has one entry per mapped file, grouped by folder: the file's
-  path, the first sentence of its leading comment when it has one, and its exported names sorted; no line numbers
-  and no per-callable test lists. Today's 110 files fit in under 20 KB. Intent: an agent reads the whole map in one
-  call and finds the file to open.
+  path, the first sentence of its leading comment, and its exported names sorted; no line numbers and no
+  per-callable test lists. Today's 110 files fit in under 20 KB.
+  - Which files: `MAPPED_PATHS` and `listMappedSourceFiles` (`scripts/agent-environment/tooling-map-parser.mjs`) stay
+    as they are, and the map has exactly one entry for each file `listMappedSourceFiles` returns (a test).
+  - The leading comment is the first comment before any statement (after a shebang): consecutive `//` lines joined,
+    or a `/* */` or JSDoc block with its leading `*` marks removed. Its first sentence ends at the first `.`, `!` or
+    `?` followed by a space or the comment's end, with whitespace collapsed. A file without one shows
+    `(no leading comment)`, and the generator prints how many files show it; adding those comments is a later step,
+    since the files belong to the other rounds running now.
+  - Exported names are the names TypeScript's checker reports for the module (`getExportsOfModule`), covering
+    declarations, `export const`, `export { a as b }`, `export * from`, `export default` (shown as `default`) and
+    type exports; for a CommonJS file, the keys assigned to `module.exports` or `exports`. A name re-exported from
+    another file shows that file: `name (from <path>)`.
+  - Check: generated-map fixtures for each comment form (line, block, JSDoc, none) and each export form above,
+    including an alias and a star re-export. Intent: an agent reads the whole map in one call and finds the file to
+    open.
 - **N2.** Line ranges change on every edit, so `pnpm check:tooling-map` fails a round whose edits only moved code
   (the compare-fullpage round's ladder failed on "Agent tooling map drift" after its commit). Outcome: the check
   passes after an edit that moves lines without changing a file's exports or its leading comment's first sentence;
   it fails, naming the file and `pnpm map:tooling`, after an export is added, removed or renamed, after that
-  sentence changes, and after a mapped file is added or removed. Proof: the tests in `describe("M2: fast-ladder
+  sentence changes, and after a mapped file is added or removed; each planted test asserts the changed file's path
+  in the failure. Proof: the tests in `describe("M2: fast-ladder
   drift check"` in `scripts/agent-environment/generate-tooling-map.test.ts` change to this rule (the test "fails
   when a callable moves or a test call is removed" becomes a move that passes), each with its real failure planted.
   Intent: the map changes only when what it tells a reader changes.
 - **N3.** The per-callable coverage and its call tracing exist only to fill the lists N1 removes. Outcome: code that
   only served them is removed, not left unreached, with its tests and its entry in
   `scripts/agent-environment/tool-contract-cases.ts`'s `TOKEN_READERS`; `scripts/agent-environment/tool-help-notes.mjs`
-  and `docs/agent-context/README.md` describe the new map in one sentence each. Intent: the map's code shrinks with
-  what it produces.
+  and `docs/agent-context/README.md` describe the new map in one sentence each. The report lists every module,
+  function and test removed, and every function left in the map's modules that the new map no longer calls, with
+  the caller that keeps it. Intent: the map's code shrinks with what it produces.
 - **K1.** `pnpm verify:fast` passes in the worktree after the commit.
 - **K2.** The command names `pnpm map:tooling` and `pnpm check:tooling-map` and the ladder step that runs the check
   stay as they are (the tool registry and the ladder call them).

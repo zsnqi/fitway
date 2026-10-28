@@ -56,43 +56,56 @@ folder needs its own server, Playwright resolver, extraction or folder comparer.
   `node_modules`; 28 servers use ports the CLI refuses; six serve two trees side by side; none imports the existing
   helpers (the report's §4 and §3). Outcome: `run --script <file> --concept <folder> [--baseline <folder>] --out
   <folder> [-- <script arguments>]` runs a script file from any folder, with no `package.json` or `node_modules`
-  above it. The CLI serves the concept, and the baseline when given, on a pair it claims as compare does; launches
+  above it. The CLI serves the concept, and the baseline when given, on a pair it claims through
+  `reserveVerificationPorts` (`core.mjs`, whose tests already cover a taken port), as compare does; launches
   the browser drive uses; and calls the script's default export with one object holding at least `playwright`,
   `browser`, `url(side, page, query)`, `newPage(axes)` (axes named as drive names them: size, language, input,
   motion, colours; the context exactly as drive builds it), `rewrite` (V3), `out` (the fresh output folder) and
   `args`. What the export returns is written as `result.json` in `out`; a throw exits 1 with a `FAIL` line naming
   it; previews and browser close either way. Check, through `run` itself: a script in the run folder with no
-  package above it opens Settings at phone in Arabic on both sides and returns each document's height (exit 0); a
-  script that throws exits 1 with its message; `newPage`'s context options equal `contextOptions` for the same axes
+  package above it, given `--ref` and `--baseline-ref` of V2's two commits and `-- --label x`, opens Settings at phone
+  and at desktop in Arabic on both sides and returns each side's document height and the setting label V2's check
+  names, plus `args` (exit 0; the two sides' labels differ and `args` holds `--label x`); a script that throws exits
+  1 with its message; `newPage`'s context options equal `contextOptions` for the same axes
   (a unit test). Intent: nothing an agent's check needs is left for the agent to rebuild.
 - **V2.** 33 of 42 run folders hold hand-extracted old trees; the commands were typed by hand (the report's §4).
   Outcome: `drive`, `compare`, `belonging-check` and `run` take `--ref <commit>` in place of `--concept`, and
   `compare` and `run` take `--baseline-ref <commit>` in place of `--baseline`. The CLI extracts the declared concept
   folder (`concept-source.json`'s `concept`) at that commit once into a folder per commit outside every Git tree,
   reuses it on later calls, and prints the folder and the full commit. An unknown commit fails before any browser
-  starts, naming it. The extraction is `extractDeclaredConcept`'s, shared, not a second one. Check: `compare --ref
-  fedbdb6d --baseline-ref fedbdb6d` on Settings, `--feature page`, phone, Arabic and English, gives `COMPARE EQUAL`
-  twice, the second call printing that it reused the extraction; `--ref 0000000` fails naming it. Intent: an old
-  version is one option away.
+  starts, naming it. The extraction is `extractDeclaredConcept`'s, shared, not a second one. Check: find, with `git
+  log` on the concept folder of `concept-source.json`'s ref, an earlier commit whose Settings page shows a different
+  label from `fedbdb6d`'s, and name both commits and the label in the report; `compare --ref fedbdb6d --baseline-ref
+  <earlier>` on Settings, `--feature page`, phone, Arabic and English, gives `COMPARE DIFFERENT` and prints both full
+  commits and both extraction folders; the same command again prints that it reused both extractions;
+  `compare --ref fedbdb6d --baseline-ref fedbdb6d` gives `COMPARE EQUAL`; `--ref 0000000` fails naming it. Intent: an
+  old version is one option away.
 - **V3.** 41 files in 15 folders rewrite a page's script in flight with `page.route` to count handler calls, inject
   data or plant a defect; no tool offers it. Outcome: `rewrite(page, file, from, to)` serves that concept file to
   that page with the exact text `from` replaced by `to`, and throws, naming the file and the number found, when
-  `from` occurs other than exactly once. Check: unit tests for one occurrence, none and two; in V1's script, a
-  rewrite that changes a visible label changes the text the page shows. Intent: the planted defect and the spy are
+  `from` occurs other than exactly once. Only that file, on that page, changes: the concept's files on disk and
+  every other response keep their bytes. Check: unit tests for one occurrence, none and two, and for two scripts
+  holding the same `from` where only the named one changes; in V1's script, a rewrite that changes a visible label
+  changes the text the page shows, and the concept file's SHA-256 is the same before and after. Intent: the planted defect and the spy are
   one call, and a stale `from` cannot pass silently.
 - **V4.** One two-folder PNG comparer was copied ten times byte for byte; twenty folders compare folders of
   pictures by hand (the report's class C). Outcome: `diff-folders --a <folder> --b <folder> --out <folder>` compares
   every PNG by its path relative to each folder and prints one line each: `EQUAL`, `DIFFERENT` with the region and
   the changed pixels, `SIZE` with both sizes, `ONLY-A` or `ONLY-B`, then a summary; it exits 0 only when every line
   is `EQUAL`. It measures with compare's exact diff, moved out of `compare` so both call it; no tolerance. Check:
-  folders holding an equal pair, a one-pixel change, a size change and a file on one side only give those four
-  lines; the unit test fakes the diff the way the X5 test in `cli.test.mjs` fakes diff_map. Intent: comparing two
+  folders holding, in nested subfolders, an equal pair, a one-pixel change, a size change and a file on one side
+  only give those four lines with their relative paths; the unit test fakes the diff the way the X5 test in
+  `cli.test.mjs` fakes diff_map; and a script in the run folder runs `diff-folders` with the real diff on two of
+  V2's compare output folders and reports a line with its region and changed pixels. Intent: comparing two
   capture runs is one command.
 - **V5.** Seventy tool calls dug through transcripts to learn who made a run folder and from what (agent-tooling
   DECISIONS item 17). Outcome: every command that writes an `--out` folder writes `manifest.json` there before its
   work: the command and its arguments, the checkout's commit and branch, the concept folder or ref, the start time;
-  on finishing it adds the exit status and the end time. Check: unit tests on a drive, a compare and a run output
-  folder. Intent: a folder says where it came from.
+  on finishing, whether it passed or failed, it adds the exit status and the end time. It is written where the CLI
+  claims the folder (`freshEmptyOutput` in `core.mjs`), so a command cannot skip it; a command that writes `--out`
+  without that call is made to call it. Check: unit tests on a drive, a compare and a run output folder, and on a run
+  whose script throws after it starts (the manifest names the command and arguments, and records exit 1 and the end
+  time). Intent: a folder says where it came from.
 - **V6.** `SKILL.md` §"Evidence and advanced tools" asks agents to extend the path "instead of writing another
   server, launcher or capture loop" (since `8e520995`), and 36 of 40 such scripts are newer. Outcome: that section
   states the target instead: a check no command makes is a script for `run`, with one short example; `--ref` and
@@ -101,7 +114,9 @@ folder needs its own server, Playwright resolver, extraction or folder comparer.
   bundle identity, the extraction, the port pairs, output folders, the test fixtures `fixture-copy.mjs` and
   `invalidationCases` in `compare-speed.test.mjs`) with the file and the export that holds it. A new section `##
   Proving a change to this tool` names, for each kind of change, the existing test or table it extends. A test reads
-  the "Where things live" table and fails when a named file or export does not exist (planted: a renamed export).
+  the "Where things live" table and fails when a subject listed above has no row, or a named file or export does not
+  exist (planted: a renamed export, and a removed row). Whether each row points at the right code is checked at the
+  diff review.
   Intent: the pointer is read where the agent is about to build, and cannot go stale.
 - **K1.** Existing commands keep their options and output; the only addition to their output folders is
   `manifest.json`. `pnpm test:verification` and `pnpm verify:fast` pass after the commit.
