@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 18:30 +03:00 (opened)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:00 +03:00 (the first round waits for the retro's fixes)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-2), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -19,14 +19,20 @@
 
 ## Running now
 
-Nothing.
+Nothing (measured 2026-10-28 22:00). The first round waits for the retro's four fixes (r04 DECISIONS item 102;
+agent-tooling DECISIONS item 17), including finding 3's split of `DESIGN-SPEC.md` and `SETTINGS-SPEC.md` on this
+milestone's branch (`docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md` §"Next steps" 3).
 
 ## Next steps
 
 1. **The first design round** (r04 item 99: no skeleton): two or three whole directions in Eclipse's style, each with
-   its own composition and level-mark form, at 390 px first, Arabic and English; a fresh `owner-direction-designer`
-   from a coordinator brief that names item 90, the amended lines and `DESIGN-SPEC.md` §1, in a worktree of its own
-   off `owner-followup-r04-build` (`public-redesign-r01`); the frames to the user, who picks by eye.
+   its own composition and level-mark form, at 390 px first, Arabic and English. Brief written:
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-directions-1.md` (`36879371`; it names
+   `settings-capture.mjs`'s shape and `overflowProbe` for the 320 px and zoom check, item 16 of agent-tooling;
+   revisit those pointers once verify-fitway's `run` lands). Worktree `D:/Projects/fitway-worktrees/public-redesign-r01`,
+   branch `public-redesign-r01` off `fedbdb6d`, no install yet. At launch: merge main into the branch, run its own
+   `pnpm install --frozen-lockfile --offline`, set the brief's HEAD, run `pnpm brief:check`, commit, and start a fresh
+   `owner-direction-designer`. The frames go to the user, who picks by eye.
 2. After the pick: the chosen direction across every state and width, `PUBLIC-SPEC.md` and §6, the verifier, the
    user's acceptance; the smoothness check on the demo phone (item 90 P4).
 

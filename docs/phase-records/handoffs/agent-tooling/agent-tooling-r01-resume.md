@@ -1,85 +1,94 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 15:10 +03:00
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-14), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:00 +03:00 (the
+  compare fix graded, not merged; the retro's four rounds drafted, not launched)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-17; 17 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
 - Opened by the coordinator on 2026-10-16 under r04's decision 73 (DECISIONS item 1, `c286c4c9`). The tool paths r04
   held moved here (F253); the packet is `docs/phase-records/task-packets/agent-tooling-r01.yaml`.
 - The coordinator of owner-design-exploration-r04 coordinates this milestone too, from the r04 worktree, where the
-  ledger lives; this milestone's branch `agent-tooling-r01` is the integration branch for its rounds and merges into
-  the coordinator line, then main through `pnpm main:advance`.
-- From 2026-10-16 every brief has two reviews, DeepSeek (the launcher) and GPT-6.1 Sol `xhigh` in `<review folder>-sol`
-  (r04 decision 66's rule applied, `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`
-  §"Evaluation: both reviewers, decision 66's rule applied"), and every result a Sol diff review
-  (`docs/agent-context/briefs/CODE_REVIEW.md`) whose blocking findings a mechanical fixer applies before the grade.
-- **The first wave is integrated and on main.** `agent-tooling-r01` holds the code map (`e080324d`) and
-  launcher-fixes-6 (`18c670fc`), merged at `cd1001ed` with the map regenerated (48 files, 618 callables, 488 without a
-  covering test; CI passed); the coordinator line merged it at `fcc8365b`, and `pnpm main:advance` moved main from
-  `3cde7a07` to `fcc8365b`. The coordinator's launcher now carries the fixes of F255, F257 and F258 (marked fixed in
-  `findings.tsv`): a new milestone's first resume point,
-  graders exempt from the claim check (grading briefs no longer need the no-SHA workaround), commands read as a shell
-  reads them (quotes, escapes and comments in one scanning loop), and a commit found on any line. F256 (the events carry
-  no working directory) stays open.
-- **Grades of the wave** (records in the run folders): code-map's last Sol grade
-  D:/fitway-temp/codex-round-56a3b941-033d-43b0-946c-6878da89f738 (14 PASS; G10 and G15 the grading brief's wording, the
-  coordinator reproduced the committed N cases failing at their assertions); launcher's last Sol grade
-  D:/fitway-temp/codex-round-2a25aa90-95dc-4236-9cb0-f00491e17389 (14 PASS; G9 the grading brief's wording on a table
-  merge; the coordinator reproduced G13, quote state only in `shellScan`). Readings left open across the wave wait for
-  the CLI contract's report fields (a claimed commit, a brief role, structured rows).
-- **Data for the ratchet (measured 2026-10-16).** The day's 9 Sol diff reviews (D:/fitway-temp/code-review/) gave 30
-  blocking findings: D1 duplicated code 14, D7 a second path 4, D3 dead code 4, D2 speculative generality 3, D5 growth
-  out of proportion 3, D4 and D6 one each; 18 of 30 (60%) are duplication or a second path, which a check can catch
-  before any review. Examples: the focus ring copied ten times in `components.css`, two shell tokenizers, two
-  import-binding readers.
+  ledger lives. Rounds merge into the coordinator line as `merge(agent-tooling): <round>` (as `dbf9b683` did), then
+  main through `pnpm main:advance`.
+- Every brief has two reviews, DeepSeek (the launcher) and GPT-6.1 Sol `xhigh` in `<review folder>-sol` (r04
+  decision 66), and every result a Sol diff review (`docs/agent-context/briefs/CODE_REVIEW.md`; Opus when Sol stalls,
+  r04 decision 100) whose blocking findings an `owner-direction-builder` applies from a frozen brief before the grade.
+- **Item 16 in force:** before writing an outcome, check whether the code's structure or an existing test already
+  guarantees it, and name the test (checklist B14 in `docs/agent-context/briefs/codex.md`).
+- **Item 17 in force:** the retro's four findings are fixed at the root, each finding's fixes as layers built
+  together, before the public page's designer starts (r04 decision 102).
 
 ## Running now
 
-- **belonging-check is merged** into the coordinator line (`dbf9b683`, measured 2026-10-28; r04 decision 93, the
-  user's "Yes, start it"): DeepSeek `max` delivered `cd4fb770`, Opus reviewed the diff (Sol and Terra at capacity; the
-  user: continue on DeepSeek), `owner-direction-builder` applied the twelve blocking findings in `ca8fb902` (drive's
-  context options, action loop, availability rule, axis and state naming now shared; one crop per finding). The
-  coordinator's K2 and held-out checks pass and today's concept passes all 13,028 frames
-  (`docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md` §"belonging-check"; F295 fixed, F296-F299
-  open). No grade round: the held-out check stands in for it. The worktree `tooling-belonging` has its own install (no
-  junctions) and can go.
-- **loading-check runs** (the user, 2026-10-24: r04 decision 82's check now, beside Settings, gating nothing):
-  brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-loading-check.md` (`0f19c6d6`), DeepSeek `max`, worktree
-  `D:/Projects/fitway-worktrees/tooling-loading-check` (branch `tooling-loading-check` from the coordinator line at
-  `f721ccd4`, its own install), run folder `D:/fitway-temp/codex-round-loading-check`, thread
-  `01a16f8e-2522-7c60-b548-a9aa67d98e0d`. Reviews: DeepSeek `D:/fitway-temp/brief-review/codex-loading-check-3` (5
-  closed) and Sol `...-3-sol` (3 closed, reading 3 left open: decision 82 compares boxes, not nodes). The port part
-  the user approved was dropped: F183 was the tests' ports and is fixed; the verifiers' 3191 came from the
-  coordinator's briefs, not the allocation. **Delivered `9fc29e91`, graded** (Opus verifier,
-  `D:/fitway-temp/tooling-loading-check-grade/`, measured): 54 lines, 28 PASS / 26 FAIL in 156 s reproduce; the grader's
-  own plants all behave; the four out-of-scope files tighten or are needed (the registry), none loosens. Defects:
-  shifts under 0.0001 pass (`loading-browser.mjs:337`), Daily's Error is not named Error (:132-140), only the largest
-  movement is kept, Activity's slot groups exempt added boxes, case and language are echoed not read back. Real page
-  findings: Settings 390 AR «فأكثر» wraps (13 px), Reports' table columns at 768 and a 390 row, Access `case=long`
-  rows, Activity's first day heading (36 → 46 px); Activity's 1730 px and Reports' 1440 title are artifacts.
-  Not merged. CI on the coordinator line also fails `check:verification-map`: 11 Settings dialogs, menus and openers
-  have no recipe (since Settings' dialogs landed on the build branch); the user decides when recipes are added.
-- Before it: nothing ran (measured 2026-10-18 23:20). Item 14's before-the-demo work is done: ratchet-2 is merged into the
-  coordinator line (`504d6572`, CI 39160024759; grade 11/14 with the three FAILs repaired by the coordinator;
-  `longFunctionLines` kept, to be reviewed after the demo; `codex-rounds.md` §"ratchet-2"; F286-F289), and the brief
-  template's lines are in `docs/agent-context/briefs/codex.md` (`b9e46dd1`).
-- **base-run waits until after the demo** (item 14): edits uncommitted on disk in
-  `D:/Projects/fitway-worktrees/tooling-base-run` over `c0e12373` (pushed); its session stopped without a stop note, so
-  diff them against its review dispositions before any commit.
-- The ratchet-2 worktrees (`tooling-ratchet-2`, `records-ratchet-2`, the grading checkout
-  `D:/fitway-temp/tooling-ratchet-2-grade/wt`) are no longer needed; unlink any node_modules junction before removing them.
+Nothing runs (measured 2026-10-28 22:00). main `8c41282f`; the coordinator line is ahead (decisions 16-17 and the
+briefs below), for `pnpm main:advance` once its CI passes.
+
+- **compare-fullpage, graded, not merged.** Brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-compare-fullpage.md` (SHA `3d29a3f1…`); DeepSeek
+  `max` delivered `1a81021d` on `tooling-compare-fullpage` (worktree `D:/Projects/fitway-worktrees/tooling-compare-fullpage`,
+  its own install; run folder `D:/fitway-temp/codex-round-compare-fullpage`). Its report was honest against the
+  events, and the fast ladder ran after the commit. It left C1's size verdict open, correctly: the brief kept
+  `compare.mjs` read-only (the brief's defect). Its C4 spent about an hour on a hand-built repository copy, which
+  the bundle key already guaranteed (item 16). Sol's diff review (`D:/fitway-temp/code-review/compare-fullpage-1/`):
+  four blocking findings, plus the coordinator's C1-C3. `owner-direction-builder` applied all seven in `5e6f7268`
+  (brief and logs `D:/fitway-temp/tooling-compare-fullpage/fix-1/`; `test:verification` 145/145, the fast ladder after
+  the commit). Its four departures were accepted: sizes on timeline lines, a geometry answer in two fakes, a
+  baseline fall recorded, and the C1 copy's output folder.
+  - **The coordinator's grade** (`D:/fitway-temp/tooling-compare-fullpage/coord-grade/`, measured):
+    - G1: every page at six sizes in both languages, 72/72 EQUAL, and every picture's size equals its document's
+      (zoom measured through ui-forensics' `newContext`, as compare opens it).
+    - G2: plants in the fifth band and in the clamped last part were found at their place, at phone and zoom; the
+      control was EQUAL.
+    - G3: a bundle taken on 3176-3177 was reused on 3188-3189, 4 reused and 0 captured, at the document's size.
+  - Still to do:
+    - `SKILL.md` §"Compare" says "Each differing item has a region"; a size difference carries `sizes`.
+    - The round's record in `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
+- **The retro's four rounds, drafted** (`2b68c6cf`; HEADs set at launch, no review yet). Evidence:
+  `D:/fitway-temp/retro-20261028/` (`D:/fitway-temp/retro-20261028/report.txt`, `D:/fitway-temp/retro-20261028/scripts-classified/REPORT.md`, `D:/fitway-temp/retro-20261028/gone-evidence/REPORT.md`).
+  - `docs/phase-records/handoffs/agent-tooling/briefs/codex-run-and-ref.md`, finding 1 and part of 4: `run --script`, `--ref`/`--baseline-ref`, `rewrite`,
+    `diff-folders`, `manifest.json` in output folders, and `SKILL.md`'s "Where things live" and "Proving a change to
+    this tool" with a test.
+  - `docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-index.md`, finding 4: the map becomes one line per file and stops drifting on line moves.
+  - `docs/phase-records/handoffs/agent-tooling/briefs/codex-cited-evidence.md`, finding 2:
+    - a prune that keeps every cited file;
+    - removing a worktree refuses when it holds a cited untracked file;
+    - gone citations are listed by the survey and by `check:repository` on changed lines;
+    - the survey counts the scripts in each new run folder.
+  - `docs/phase-records/handoffs/agent-tooling/briefs/codex-evidence-home.md`, findings 2-4: `evidence:keep`, the `run.json` fields and `run-folder:new`, the
+    `giantDocuments` measure with the concept joining `giantFiles`, and a check of the rule-to-enforcer table.
+  - The rule-to-enforcer table is not written. A sonnet-researcher drafting it from the repository stopped at the
+    session limit (`D:/fitway-temp/retro-20261028/rule-enforcers/`, if anything was saved). The table goes into
+    `docs/agent-context/README.md` §"Which check enforces each rule", checked by the coordinator, before evidence-home
+    launches.
+- **Earlier rounds:** belonging-check is merged (`dbf9b683`). loading-check is delivered and graded (`9fc29e91`,
+  `D:/fitway-temp/tooling-loading-check-grade/`), not merged: its defects are listed there, and CI's
+  `check:verification-map` waits on Settings' recipes, the user's call. base-run waits until after the demo, with edits
+  uncommitted in `tooling-base-run` over `c0e12373`.
 
 ## Next steps
 
-1. **main is at `9f134a3d`** (CI run 39119869580); the coordinator line carries ratchet-2 and its records, for
-   `pnpm main:advance` once a pushed coordinator commit's CI passes.
-2. This milestone's work waits for the demo (item 14's list).
-3. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
-   `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date,
-   since the test split now waits for the demo.
-4. **Briefs keep "room is made by moving code out"** while any giant file remains (item 10).
+1. **Merge compare-fullpage** (`5e6f7268`) into the coordinator line and fix the SKILL.md sentence. Write its record
+   (brief review, run, diff review, builder, grade G1-G3, item 16's lesson), push, then `pnpm main:advance` once CI passes.
+2. **Launch the four rounds** from the merged line. For each: create a worktree (`tooling-run-and-ref`,
+   `tooling-code-map-index`, `tooling-cited-evidence`, `tooling-evidence-home`, each with its own install), set its
+   HEAD, run `pnpm brief:check`, then the launcher's DeepSeek review and a Sol review, record the dispositions, and
+   launch. All four run side by side: their files are disjoint apart from the regenerated map and baseline, and
+   `package.json` in evidence-home. Then each: the commit and ladder checked against its events, a Sol diff review,
+   a builder, the coordinator's grade with planted defects, and the merge.
+3. **Finding 3's specs** (on `public-redesign-r01`, after main is merged into it):
+   - split `DESIGN-SPEC.md` (283 KB; 189 of its 191 lines over 400 characters are table rows; §3 82 KB, §4 73 KB) and
+     `SETTINGS-SPEC.md` (78 KB, one 42-row table) by section into files a reader opens one at a time;
+   - `DESIGN-SPEC.md` becomes the index and keeps its `##` headings, which briefs cite;
+   - the concept's spec scripts in its tools folder (lint-spec, build-index, check-index; on the build branch) read
+     the parts, and the content is shown preserved;
+   - `pnpm code-health:baseline` on that branch once evidence-home's H3 is in;
+   - the concept's page scripts are not split now (record why: accepted pages; the ratchet stops their growth).
+4. **Repair the gone citations** with `(gone: <why>)` once cited-evidence's check lists them.
+5. **Measure again:** rerun `D:/fitway-temp/retro-20261028/measure.mjs` and `D:/fitway-temp/retro-20261028/patterns.mjs`, and the survey's script
+   count after the next rounds. Then the public page's designer (its own resume point).
+6. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
+   `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date.
 
 ## Waiting on the user
 
@@ -87,30 +96,25 @@ Nothing.
 
 ## Known risks
 
-- **CI takes 27-28 min** on Windows (the job limit is 45 min since `10fe1783`; runs 39104738645 and 39108328967 failed
-  at the old 30 min and on F282), until the test split lands; a push cancels the branch's running CI run (the workflow's
-  concurrency group), so batch pushes while waiting on a run `main:advance` needs.
-- **Side sessions stop on Claude session limits** (both did on 2026-10-18); a session that stops is resumed with a
-  message after its reset, and its last commit and report are checked first.
+- **CI takes 27-28 min** on Windows; a push cancels the branch's running CI run, so batch pushes while waiting on a
+  run `main:advance` needs.
+- **Session limits stop subagents and side sessions**; resume one with a message after its reset, and check its last
+  commit and report first.
 - The risks in r04's resume point apply here too: DeepSeek reports can claim steps that never ran (check the commit
   and ladder against the events), grading briefs name the round's brief by its absolute coordinator path, timed work
   needs a quiet machine (B13), and node_modules junctions are unlinked before `git worktree remove`.
 - A busy machine fails the local fast ladder on `scripts/check-agent-context.test.ts` K1, at its 20 s timeout (F261);
   CI on the same commit decides.
-- Sol reviews run with `codex exec ... - < prompt.md` from Bash: PowerShell 5.1 pipes the prompt as ASCII. Three Sol
-  accounts take turns: on 2026-10-16/17 hhmam1435, ryshyjhad85 and smhsdxsz5h each reached a limit; hhmam1435 is
-  limited until 05:17 on 2026-10-17, ryshyjhad85 current since 02:57; `node D:/fitway-temp/codex-accounts.mjs list` shows
-  them, and `D:/fitway-temp/resume-auto.sh <run> D:/fitway-temp/resume-after-limit.md limit-first` switches and resumes.
-- Never commit in a worktree where a fixer may still be running: a commit during its ladder trips the mutation guard
-  (2026-10-17, F263's second commit).
-- A fresh `git clone` of this repository on drive D needs `-c core.longpaths=true`: without it the checkout stops on
-  `visual-direction-gate/` evidence paths ("Filename too long", measured 2026-10-17); grading briefs that ask for a
-  clone should say so.
+- Sol reviews run with `codex exec ... - < prompt.md` from Bash: PowerShell 5.1 pipes the prompt as ASCII; `node
+  D:/fitway-temp/codex-accounts.mjs list` shows the accounts.
+- Never commit in a worktree where a fixer may still be running: a commit during its ladder trips the mutation guard.
+- A fresh `git clone` on drive D needs `-c core.longpaths=true` (`visual-direction-gate/` paths).
 - Never pipe `pnpm codex:round` through `head`: a closed pipe can stop the launcher; write its output to a log file.
+- Real-browser grade scripts open contexts through ui-forensics' `newContext` with drive's `contextOptions`; plain
+  Playwright ignores the `zoom` option (G1's first oracle did).
 
 ## Pointers
 
-- Worktree: D:/Projects/fitway-worktrees/agent-tooling-r01, branch agent-tooling-r01, expected HEAD the commit that
-  last changed this text on the coordinator line.
-- Coordinator: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04.
+- Coordinator: D:/Projects/fitway-worktrees/owner-design-exploration-r04, branch codex/owner-redesign-r04, expected
+  HEAD the commit that last changed this text.
 - Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.

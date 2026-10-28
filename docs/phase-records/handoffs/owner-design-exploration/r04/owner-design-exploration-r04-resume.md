@@ -1,10 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 17:00 +03:00 (Settings
-  accepted, decision 97; decision 96 says what runs next; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:00 +03:00 (the retro's
+  four fixes come first, decision 102; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-101; 101 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-102; 102 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -33,8 +33,8 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 17:00; the PC's LAN address is 192.168.8.186). main `8c41282f` (CI 40706472283);
-this line adds decision 97 (Settings accepted), for `pnpm main:advance` once its CI passes. Build branch
+Nothing runs (measured 2026-10-28 22:00; the PC's LAN address is 192.168.8.186). main `8c41282f` (CI 40706472283);
+this line adds decisions 97-102, for `pnpm main:advance` once its CI passes. Build branch
 `owner-followup-r04-build` at `fedbdb6d`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
@@ -66,12 +66,12 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
 - **Next, in order:**
   1. `pnpm main:advance` to this commit once its CI passes (if not already done; check `git log -1 origin/main`).
-  2. **The `compare` fix (decision 96 (1)):** brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-compare-fullpage.md`,
-     worktree `D:/Projects/fitway-worktrees/tooling-compare-fullpage` (its own install); DeepSeek's review
-     (`D:/fitway-temp/brief-review/codex-compare-fullpage-1/`, five readings) waits for its dispositions, then launch.
+  2. **The tooling first** (decisions 96 (1), 101, 102): the `compare` fix is graded and waits to merge, and the
+     retro's four rounds are drafted; both are in `docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md`
+     §"Running now" and §"Next steps".
 - **The public page:** its paper accepted and applied (decisions 98, 99; ADR-010); it runs as its own milestone,
   public-redesign-r01 (`docs/phase-records/handoffs/public-redesign/public-redesign-r01-resume.md`), its first round
-  without a skeleton. Friday's dash: A kept (DECISIONS 89).
+  without a skeleton, after the retro's four fixes (decision 102). Friday's dash: A kept (DECISIONS 89).
 
 ## Next steps
 
