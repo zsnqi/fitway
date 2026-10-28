@@ -201,3 +201,13 @@ through these pointers, not copied here.
     - **The tooling code map does not serve navigation:** `AGENT_TOOLING_CODE_MAP.md` was read by no agent, and
       searches missed for want of a "where things live" pointer.
     The public page's designer launches after these are done and checked.
+18. **Finding 3 reaches the coordinator's own records** (coordinator, 2026-10-28, under item 17). Seventeen tracked
+    Markdown files pass 40,000 bytes, among them r04's `DECISIONS.md` (127 KB, read whole 16 times in 6 sessions) and
+    its `codex-rounds.md` (210 KB). Evidence-home's `giantDocuments` would fail the next append to either, so:
+    - r04's `DECISIONS.md` is an index, one line per decision, with the full text in `r04/decisions/` parts under
+      40,000 bytes each (`92a4e9a7`; the text moved byte for byte, checked with a planted change);
+    - the two `codex-rounds.md` files are frozen, since 210 citations name their lines; `ROUNDS.md` in this folder
+      indexes them by line range, and each round from now on is its own file in `rounds/`;
+    - `giantDocuments` leaves out `docs/archive/` (frozen) and `.claude/skills/` (unchanged upstream copies).
+    `SPEC.md` (54 KB, read 18 times in 4 sessions) is baselined, not split: splitting a top-level authority is the
+    user's call, and it is asked before its next amendment.
