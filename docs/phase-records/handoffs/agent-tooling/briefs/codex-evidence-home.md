@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: evidence has a home, folders say who made them, documents stay readable (agent-tooling-r01, round evidence-home)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-evidence-home`, branch `tooling-evidence-home`, HEAD `<set at launch>`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-evidence-home`, branch `tooling-evidence-home`, HEAD `7930c80b`
 - **Milestone:** `agent-tooling-r01`. Decisions: `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 6, 14,
   16 and 17.
 - **Read first, only these:**
@@ -9,8 +9,8 @@
   - `scripts/agent-environment/codex-session.mjs:90-140`: what the launcher writes into a run folder.
   - `scripts/agent-environment/code-health-ratchet.mjs:12-40` and `.agents/skills/gardener/code-health.mjs:270-300`:
     the ratchet's roots and the giant-file measure.
-  - `docs/agent-context/RULE_ENFORCERS.md`: the table H4 keeps true (`docs/agent-context/README.md` §"Which check
-    enforces each rule" points to it).
+  - `docs/agent-context/RULE_ENFORCERS.md`: the table H4 keeps true; `docs/agent-context/README.md` points to it
+    from §"Which check enforces each rule".
   - `scripts/agent-environment/tool-registry.mjs`: how a `pnpm` command is registered.
   - `docs/agent-context/briefs/CODE_REVIEW.md`: D1-D8, which the diff is reviewed against.
 
@@ -54,39 +54,48 @@ does not exist.
   13 verdict or grade records lost their data (the gone-evidence report's §2). Outcome: `pnpm evidence:keep <path>...
   --to <milestone>/<topic>` copies each named file, or each file under a named folder, into
   `docs/phase-records/evidence/<milestone>/<topic>/` keeping its path relative to the named folder; refuses, naming
-  it, a file over 1 MB, an image or video (frames a user decision rests on belong in the concept's `evidence/`
-  folder), and a target that already holds a different file; writes or extends `SOURCES.md` there with each
-  original path and its SHA-256; and prints the repository path to cite. Check: tests for a copied folder, each
-  refusal and a rerun that changes nothing. Intent: one command makes evidence durable, and refuses what would make
-  the repository heavy.
+  it, a file over 1 MB, an image or video (frames a user decision rests on belong in the concept's own evidence
+  folder), a target that already holds a different file, a call that would copy more than 200 files or 5 MB, a
+  destination Git ignores, and a call that would bring the whole evidence folder past 50 MB; all refusals come
+  before anything is copied. It writes or extends `SOURCES.md` there with each original path and its SHA-256, stages
+  the copied files and `SOURCES.md` with `git add` (the commit stays the caller's), and prints the repository path
+  to cite. Check: tests for a copied folder (staged), each refusal and a rerun that changes nothing. Intent: one
+  command makes evidence durable, and refuses what would make the repository heavy.
 - **H2.** `run.json` records the worktree, HEAD, model and level but not the brief, the round or the report
   (`scripts/agent-environment/codex-session.mjs:100-106`); the coordinator's own folders for subagents record
   nothing; 19.7% of top-level temp folders say anything about their origin (the report's §4). Outcome: (a) `run.json`
   also records the brief's repository path and SHA-256, the round's name from the brief's title, and the path of the
-  report file the launcher writes; (b) `pnpm run-folder:new <name> --brief <file> [--for <who>]` creates
+  report file the launcher writes; (b) `pnpm run-folder:new <name> --brief <file> --for <who>` creates
   `D:/fitway-temp/<name>/`, refusing one that exists, copies the brief in as `BRIEF.md`, and writes `manifest.json`
-  with the brief's path and SHA-256, the checkout's commit and branch, the creation time and `for`. Check: extend the
+  with the brief's path and SHA-256, the checkout's commit and branch, the creation time, `for` (required) and
+  `report`, the path where the report is to be saved (`REPORT.md` in the folder unless `--report` names another).
+  Using it for every coordinator folder is the coordinator's rule, recorded in `WORKING_AGREEMENTS.md` after the
+  merge and measured by the next survey, not this round's. Check: extend the
   launcher's tests that read `run.json` with the new fields; tests for `run-folder:new`, including the refusal (with
   the temp root injected). Intent: a folder says where it came from without a search through transcripts.
 - **H3.** The Owner concept's `DESIGN-SPEC.md` is 283 KB and `SETTINGS-SPEC.md` 78 KB, and agents read them whole
   several times a session; its page scripts reach 188 KB; the ratchet covers neither, since the concept was to join
   "when the build branch takes this line's tooling" (DECISIONS item 6). The coordinator's own records grow the same
   way: r04's `DECISIONS.md` is 127 KB and was read 16 times in 6 sessions. Outcome: the code-health measures gain
-  `giantDocuments`, a tracked Markdown file over 40,000 bytes outside `docs/archive/` (frozen, read only through a
-  pointer) and `.claude/skills/` (unchanged upstream copies, `.claude/skills/SOURCES.md`), baselined and ratcheted
-  like `giantFiles`; and the
+  `giantDocuments`, a tracked Markdown file over 40,000 bytes anywhere in the repository (not only the ratchet's
+  roots) outside `docs/archive/` (frozen, read only through a pointer) and `.claude/skills/` (unchanged upstream
+  copies, `.claude/skills/SOURCES.md`), baselined and ratcheted like `giantFiles`; and the
   concept folder named in `.agents/skills/verify-fitway/concept-source.json` joins the ratchet's roots for
   `giantFiles` and `giantDocuments` only (its other measures wait for the move to production, agent-environment
   DECISIONS item 20). The giant-file split message names the document case: split by section into files a reader
   opens one at a time. Check: tests in the code-health test files for a 40,001-byte Markdown file (counted), a
-  40,000-byte one (not counted), a 40,001-byte one under `docs/archive/` (not counted), growth of a baselined giant
+  40,000-byte one (not counted), a 40,001-byte one under `docs/phase-records/` (counted) and one under
+  `docs/archive/` (not counted), growth of a baselined giant
   document (fails) and a concept JavaScript file over the
-  giant-file line (counted). Intent: a document a reader must open whole stays one read.
+  giant-file line (counted). The concept's specs are split by the coordinator on the concept's own branch; this
+  round adds the measure that keeps every document split once it is. Intent: a document a reader must open whole
+  stays one read.
 - **H4.** Agents have searched code for a check that does not exist. `docs/agent-context/RULE_ENFORCERS.md` now says,
   for each rule, which check enforces it or that it is written only. Outcome: `pnpm check:agent-context` fails, naming
-  the row, when that table names a `pnpm` command that `package.json` does not define, or a file that does not exist
-  (the cells name files without line numbers); a row whose enforcer is "written only" passes. Check: tests planting a
-  renamed command and a missing file. Intent: the table cannot point at an enforcer that is gone.
+  the row, when that table names a `pnpm` command that `package.json` does not define, a command whose script runs
+  a repository file (`node <file>`, `tsx <file>`, `vitest run <file>`) that does not exist, or a file that does not
+  exist (the cells name files without line numbers); a row whose enforcer is "written only" passes. Check: tests
+  planting a renamed command, a defined command whose file is missing, and a missing file. Intent: the table cannot point at an enforcer that is gone.
 - **K1.** `pnpm verify:fast` passes after the commit; existing commands keep their output.
 - **K2.** CI has no `D:/fitway-temp`: tests inject their temp root.
 - **K3.** No ratchet, test floor or check limit is loosened beyond H3's addition; the baseline is regenerated with

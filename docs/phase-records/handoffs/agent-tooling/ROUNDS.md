@@ -135,3 +135,5 @@ in `docs/phase-records/handoffs/agent-tooling/rounds/<round>.md`, listed here.
 - agent-environment-r03 round 30: `r03/briefs/round-30.md`, result `2b9ac5fe` (level xhigh, two repairs) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:1033-1059`
 
 ## Rounds since the freeze
+
+- agent-tooling-r01 code-map-index: `briefs/codex-code-map-index.md`, result `ffe2d51f` (level max, one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`

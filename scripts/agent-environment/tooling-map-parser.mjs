@@ -38,11 +38,11 @@ const SOURCE_EXTENSIONS = new Set([
 	".tsx",
 ]);
 
-export function normalizePath(value) {
+function normalizePath(value) {
 	return value.replaceAll("\\", "/").replace(/^\.\//, "");
 }
 
-export function uniqueSorted(values) {
+function uniqueSorted(values) {
 	return [...new Set(values)].sort((left, right) =>
 		left.localeCompare(right, "en"),
 	);
@@ -52,7 +52,7 @@ function pathExtension(file) {
 	return path.posix.extname(file).toLowerCase();
 }
 
-export function isTestFile(file) {
+function isTestFile(file) {
 	return /\.(?:test|spec)\.[cm]?[jt]sx?$/.test(normalizePath(file));
 }
 
@@ -68,10 +68,6 @@ export function listMappedSourceFiles(root = process.cwd()) {
 	return uniqueSorted(tracked.filter(isMappedSourceFile));
 }
 
-export function listTestFiles(root = process.cwd()) {
-	return uniqueSorted(listTrackedFiles(root).filter(isTestFile));
-}
-
 export function listUntrackedMappedSourceFiles(root = process.cwd()) {
 	return uniqueSorted(
 		listTrackedFiles(root, MAPPED_PATHS, { untracked: true }).filter(
@@ -80,305 +76,191 @@ export function listUntrackedMappedSourceFiles(root = process.cwd()) {
 	);
 }
 
-function hasModifier(node, kind) {
-	return (
-		ts.canHaveModifiers(node) &&
-		(ts.getModifiers(node) ?? []).some((modifier) => modifier.kind === kind)
-	);
+function leadingCommentText(sourceFile, source) {
+	const firstStatement = sourceFile.statements[0];
+	const limit = firstStatement?.getStart(sourceFile) ?? source.length;
+	let prefix = source.slice(0, limit).replace(/^\uFEFF/, "");
+	prefix = prefix.replace(/^#![^\r\n]*(?:\r?\n|$)/, "");
+
+	let rest = prefix.replace(/^\s+/, "");
+	if (!rest) return "(no leading comment)";
+
+	let comment;
+	if (rest.startsWith("//")) {
+		const lines = [];
+		const lineComment = /^[ \t]*\/\/[^\r\n]*(?:\r?\n|$)/;
+		for (let match = lineComment.exec(rest); match; ) {
+			lines.push(match[0].replace(/^[ \t]*\/\/ ?/, "").trimEnd());
+			rest = rest.slice(match[0].length);
+			match = lineComment.exec(rest);
+		}
+		comment = lines.join(" ");
+	} else if (rest.startsWith("/*")) {
+		const end = rest.indexOf("*/");
+		if (end === -1) return "(no leading comment)";
+		comment = rest
+			.slice(2, end)
+			.split(/\r?\n/)
+			.map((line) => line.replace(/^\s*\*+\s?/, "").trimEnd())
+			.join(" ");
+	} else {
+		return "(no leading comment)";
+	}
+
+	const collapsed = comment.replace(/\s+/g, " ").trim();
+	if (!collapsed) return "(no leading comment)";
+	return collapsed.match(/^.*?[.!?](?=\s|$)/)?.[0].trim() ?? collapsed;
 }
 
-function isExported(node) {
-	return hasModifier(node, ts.SyntaxKind.ExportKeyword);
-}
-
-function isDefaultExported(node) {
-	return hasModifier(node, ts.SyntaxKind.DefaultKeyword);
-}
-
-export function propertyNameText(name, sourceFile) {
+function propertyName(name) {
 	if (!name) return null;
-	if (ts.isIdentifier(name) || ts.isPrivateIdentifier(name)) return name.text;
-	if (ts.isStringLiteral(name) || ts.isNumericLiteral(name)) return name.text;
-	if (ts.isComputedPropertyName(name)) {
-		return `[${name.expression.getText(sourceFile)}]`;
+	if (
+		ts.isIdentifier(name) ||
+		ts.isStringLiteral(name) ||
+		ts.isNumericLiteral(name)
+	)
+		return name.text;
+	return null;
+}
+
+function objectExportNames(node) {
+	if (ts.isParenthesizedExpression(node))
+		return objectExportNames(node.expression);
+	if (
+		ts.isBinaryExpression(node) &&
+		node.operatorToken.kind === ts.SyntaxKind.EqualsToken
+	)
+		return objectExportNames(node.right);
+	if (!ts.isObjectLiteralExpression(node)) return [];
+
+	const names = [];
+	for (const property of node.properties) {
+		if (
+			!ts.isPropertyAssignment(property) &&
+			!ts.isShorthandPropertyAssignment(property) &&
+			!ts.isMethodDeclaration(property) &&
+			!ts.isGetAccessorDeclaration(property) &&
+			!ts.isSetAccessorDeclaration(property)
+		)
+			continue;
+		const name = propertyName(property.name);
+		if (name) names.push(name);
 	}
-	return name.getText(sourceFile);
+	return names;
 }
 
-function declarationLineRange(node, sourceFile) {
-	const start =
-		sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line +
-		1;
-	const endPosition = Math.max(node.getStart(sourceFile), node.end - 1);
-	const end = sourceFile.getLineAndCharacterOfPosition(endPosition).line + 1;
-	return { lineStart: start, lineEnd: end };
-}
-
-export function unwrapParenthesized(node) {
-	let expression = node;
-	while (expression && ts.isParenthesizedExpression(expression))
-		expression = expression.expression;
-	return expression;
-}
-
-function isCallableExpression(node) {
-	const expression = unwrapParenthesized(node);
+function isModuleExports(node) {
+	if (ts.isElementAccessExpression(node)) {
+		return (
+			ts.isIdentifier(node.expression) &&
+			node.expression.text === "module" &&
+			ts.isStringLiteral(node.argumentExpression) &&
+			node.argumentExpression.text === "exports"
+		);
+	}
 	return (
-		expression !== undefined &&
-		(ts.isArrowFunction(expression) ||
-			ts.isFunctionExpression(expression) ||
-			ts.isClassExpression(expression))
+		ts.isPropertyAccessExpression(node) &&
+		ts.isIdentifier(node.expression) &&
+		node.expression.text === "module" &&
+		node.name.text === "exports"
 	);
 }
 
-function addEntry(entries, sourceFile, file, rangeNode, input) {
-	if (!input.name) return null;
-	const entry = {
-		path: file,
-		name: input.name,
-		declarationName: input.declarationName ?? input.name,
-		kind: input.kind,
-		...declarationLineRange(rangeNode, sourceFile),
-		exportNames: input.exportNames ?? [],
-		ownerName: input.ownerName ?? null,
-		memberName: input.memberName ?? null,
-		memberStatic: Boolean(input.memberStatic),
-	};
-	entries.push(entry);
-	return entry;
-}
-
-function hasStaticModifier(node) {
-	return (
-		node.modifiers?.some(
-			(modifier) => modifier.kind === ts.SyntaxKind.StaticKeyword,
-		) ?? false
-	);
-}
-
-function memberKind(member, staticMember) {
-	if (ts.isConstructorDeclaration(member)) return "constructor";
-	if (ts.isGetAccessorDeclaration(member))
-		return staticMember ? "static-getter" : "getter";
-	if (ts.isSetAccessorDeclaration(member))
-		return staticMember ? "static-setter" : "setter";
-	if (ts.isMethodDeclaration(member))
-		return staticMember ? "static-method" : "method";
-	return staticMember ? "static-property" : "property";
-}
-
-function addClassEntry(
-	entries,
-	sourceFile,
-	file,
-	declaration,
-	{
-		name,
-		defaultExport = false,
-		exportNames = [],
-		rangeNode = declaration,
-	} = {},
-) {
-	const ownerName = name ?? "default";
-	const owner = addEntry(entries, sourceFile, file, rangeNode, {
-		name: ownerName,
-		declarationName: name ?? null,
-		kind: defaultExport ? "default-class" : "class",
-		exportNames: defaultExport ? ["default"] : exportNames,
-	});
-	if (!owner) return null;
-	for (const member of declaration.members) {
-		if (
-			!ts.isMethodDeclaration(member) &&
-			!ts.isConstructorDeclaration(member) &&
-			!ts.isGetAccessorDeclaration(member) &&
-			!ts.isSetAccessorDeclaration(member) &&
-			!ts.isPropertyDeclaration(member)
-		)
-			continue;
-		const memberName = ts.isConstructorDeclaration(member)
-			? "constructor"
-			: propertyNameText(member.name, sourceFile);
-		if (!memberName) continue;
-		if (
-			ts.isPropertyDeclaration(member) &&
-			(!member.initializer || !isCallableExpression(member.initializer))
-		)
-			continue;
-		const staticMember = hasStaticModifier(member);
-		addEntry(entries, sourceFile, file, member, {
-			name: `${ownerName}.${memberName}`,
-			declarationName: memberName,
-			kind: memberKind(member, staticMember),
-			ownerName,
-			memberName,
-			memberStatic: staticMember,
-		});
+function assignedExportName(node) {
+	if (ts.isPropertyAccessExpression(node)) {
+		if (ts.isIdentifier(node.expression) && node.expression.text === "exports")
+			return node.name.text;
+		if (isModuleExports(node.expression)) return node.name.text;
 	}
-	return owner;
+	if (
+		ts.isElementAccessExpression(node) &&
+		ts.isStringLiteral(node.argumentExpression) &&
+		ts.isIdentifier(node.expression) &&
+		node.expression.text === "exports"
+	)
+		return node.argumentExpression.text;
+	return null;
 }
 
-function addExportAliases(entries, sourceFile) {
-	const entriesByLocalName = new Map();
-	for (const entry of entries) {
-		if (entry.ownerName === null && entry.declarationName) {
-			const current = entriesByLocalName.get(entry.declarationName) ?? [];
-			current.push(entry);
-			entriesByLocalName.set(entry.declarationName, current);
-		}
-	}
-	for (const statement of sourceFile.statements) {
+function commonJsExportNames(sourceFile) {
+	const names = [];
+	const visit = (node) => {
 		if (
-			ts.isExportDeclaration(statement) &&
-			!statement.moduleSpecifier &&
-			statement.exportClause &&
-			ts.isNamedExports(statement.exportClause)
+			ts.isBinaryExpression(node) &&
+			node.operatorToken.kind === ts.SyntaxKind.EqualsToken
 		) {
-			for (const specifier of statement.exportClause.elements) {
-				const local = (specifier.propertyName ?? specifier.name).text;
-				const exported = specifier.name.text;
-				for (const entry of entriesByLocalName.get(local) ?? [])
-					entry.exportNames.push(exported);
-			}
+			if (isModuleExports(node.left))
+				names.push(...objectExportNames(node.right));
+			const name = assignedExportName(node.left);
+			if (name) names.push(name);
 		}
-		if (ts.isExportAssignment(statement) && !statement.isExportEquals) {
-			if (ts.isIdentifier(statement.expression)) {
-				for (const entry of entriesByLocalName.get(statement.expression.text) ??
-					[])
-					entry.exportNames.push("default");
-			}
-		}
-	}
-	for (const entry of entries)
-		entry.exportNames = uniqueSorted(entry.exportNames);
+		ts.forEachChild(node, visit);
+	};
+	visit(sourceFile);
+	return names;
 }
 
-function addFunctionDeclaration(entries, sourceFile, file, statement) {
-	const name = statement.name?.text;
-	if (!name && !isDefaultExported(statement)) return;
-	addEntry(entries, sourceFile, file, statement, {
-		name: name ?? "default",
-		declarationName: name ?? null,
-		kind: isDefaultExported(statement) ? "default-function" : "function",
-		exportNames: isDefaultExported(statement)
-			? ["default"]
-			: isExported(statement)
-				? [name]
-				: [],
+function checkerExportNames(checker, sourceFile, root) {
+	const moduleSymbol = checker.getSymbolAtLocation(sourceFile);
+	if (!moduleSymbol) return [];
+
+	return checker.getExportsOfModule(moduleSymbol).map((symbol) => {
+		let target = symbol;
+		if ((symbol.flags & ts.SymbolFlags.Alias) !== 0) {
+			try {
+				target = checker.getAliasedSymbol(symbol);
+			} catch {
+				target = symbol;
+			}
+		}
+		const declaration = target.declarations?.[0];
+		if (!declaration) return symbol.getName();
+		const origin = normalizePath(
+			path.relative(root, declaration.getSourceFile().fileName),
+		);
+		return origin === normalizePath(path.relative(root, sourceFile.fileName))
+			? symbol.getName()
+			: `${symbol.getName()} (from ${origin})`;
 	});
 }
 
-function addVariableStatement(entries, sourceFile, file, statement) {
-	for (const declaration of statement.declarationList.declarations) {
-		if (!ts.isIdentifier(declaration.name)) continue;
-		if (!isCallableExpression(declaration.initializer)) continue;
-		const expression = unwrapParenthesized(declaration.initializer);
-		const name = declaration.name.text;
-		if (ts.isClassExpression(expression)) {
-			addClassEntry(entries, sourceFile, file, expression, {
-				name,
-				exportNames: isExported(statement) ? [name] : [],
-				rangeNode: declaration,
-			});
-			continue;
-		}
-		addEntry(entries, sourceFile, file, declaration, {
-			name,
-			kind: ts.isArrowFunction(expression) ? "arrow" : "function-expression",
-			exportNames: isExported(statement) ? [name] : [],
-		});
-	}
-}
-
-function addDefaultCallable(entries, sourceFile, file, node, rangeNode) {
-	const expression = unwrapParenthesized(node);
-	if (ts.isClassExpression(expression)) {
-		addClassEntry(entries, sourceFile, file, expression, {
-			name: expression.name?.text ?? null,
-			defaultExport: true,
-			rangeNode,
-		});
-		return;
-	}
-	addEntry(entries, sourceFile, file, rangeNode, {
-		name: "default",
-		declarationName: null,
-		kind: ts.isArrowFunction(expression)
-			? "default-arrow"
-			: "default-function-expression",
-		exportNames: ["default"],
+export function describeMappedFiles({ root, files, sourcesByFile }) {
+	const program = ts.createProgram({
+		rootNames: files.map((file) => path.join(root, file)),
+		options: {
+			allowJs: true,
+			checkJs: false,
+			module: ts.ModuleKind.NodeNext,
+			moduleResolution: ts.ModuleResolutionKind.NodeNext,
+			noEmit: true,
+			skipLibCheck: true,
+			target: ts.ScriptTarget.Latest,
+		},
 	});
-}
-
-function addExportAssignment(entries, sourceFile, file, statement) {
-	if (statement.isExportEquals) return;
-	if (!isCallableExpression(statement.expression)) return;
-	addDefaultCallable(
-		entries,
-		sourceFile,
-		file,
-		statement.expression,
-		statement,
+	const checker = program.getTypeChecker();
+	const sourceFiles = new Map(
+		program
+			.getSourceFiles()
+			.map((sourceFile) => [
+				normalizePath(path.relative(root, sourceFile.fileName)),
+				sourceFile,
+			]),
 	);
-}
 
-function addCommonJsExport(entries, sourceFile, file, statement) {
-	const assignment = statement.expression;
-	if (
-		!ts.isBinaryExpression(assignment) ||
-		assignment.operatorToken.kind !== ts.SyntaxKind.EqualsToken ||
-		!ts.isPropertyAccessExpression(assignment.left)
-	)
-		return;
-	const left = assignment.left;
-	const leftName = propertyNameText(left.name, sourceFile);
-	if (
-		leftName !== "exports" ||
-		!ts.isIdentifier(left.expression) ||
-		left.expression.text !== "module" ||
-		!isCallableExpression(assignment.right)
-	)
-		return;
-	addDefaultCallable(entries, sourceFile, file, assignment.right, assignment);
-}
-
-export function parseCallables(file, source) {
-	const normalizedFile = normalizePath(file);
-	const sourceFile = ts.createSourceFile(
-		normalizedFile,
-		source,
-		ts.ScriptTarget.Latest,
-		true,
-		normalizedFile.endsWith(".ts") || normalizedFile.endsWith(".tsx")
-			? ts.ScriptKind.TS
-			: ts.ScriptKind.JS,
-	);
-	const entries = [];
-	for (const statement of sourceFile.statements) {
-		if (ts.isFunctionDeclaration(statement)) {
-			addFunctionDeclaration(entries, sourceFile, normalizedFile, statement);
-		} else if (ts.isClassDeclaration(statement)) {
-			const name = statement.name?.text;
-			if (!name && !isDefaultExported(statement)) continue;
-			addClassEntry(entries, sourceFile, normalizedFile, statement, {
-				name: name ?? null,
-				defaultExport: isDefaultExported(statement),
-				exportNames: isExported(statement) && name ? [name] : [],
-			});
-		} else if (ts.isVariableStatement(statement)) {
-			addVariableStatement(entries, sourceFile, normalizedFile, statement);
-		} else if (ts.isExportAssignment(statement)) {
-			addExportAssignment(entries, sourceFile, normalizedFile, statement);
-		} else if (ts.isExpressionStatement(statement)) {
-			addCommonJsExport(entries, sourceFile, normalizedFile, statement);
-		}
-	}
-	addExportAliases(entries, sourceFile);
-	return entries.sort(
-		(left, right) =>
-			left.lineStart - right.lineStart ||
-			left.lineEnd - right.lineEnd ||
-			left.kind.localeCompare(right.kind, "en") ||
-			left.name.localeCompare(right.name, "en"),
-	);
+	return files.map((file) => {
+		const sourceFile = sourceFiles.get(file);
+		const names = sourceFile
+			? [
+					...checkerExportNames(checker, sourceFile, root),
+					...commonJsExportNames(sourceFile),
+				]
+			: [];
+		return {
+			path: file,
+			leadingComment: sourceFile
+				? leadingCommentText(sourceFile, sourcesByFile.get(file) ?? "")
+				: "(no leading comment)",
+			exports: uniqueSorted(names),
+		};
+	});
 }

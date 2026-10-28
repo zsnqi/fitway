@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:00 +03:00 (the
-  compare fix merged; the retro's four rounds drafted, not launched)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-17; 17 last), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:36 +03:00 (three
+  of the retro's rounds running; evidence-home under review)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-18; 18 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -22,54 +22,37 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 22:00). main `8c41282f`; the coordinator line is ahead (decisions 16-17 and the
-briefs below), for `pnpm main:advance` once its CI passes.
+Measured 2026-10-28 22:36. main `8c41282f`; the coordinator line is ahead and unpushed past `f79adba4`, whose CI run
+(`40752311394`) `pnpm main:advance` waits on; push the rest after it.
 
-- **compare-fullpage merged** (`a5e6b5b6`, its builder's `5e6f7268`; record in r04's `codex-rounds.md`), with
-  `SKILL.md` saying a size difference carries `sizes`, not a region. main waits on its CI for `pnpm main:advance`.
-- **The retro's four rounds, drafted** (`2b68c6cf`; HEADs set at launch, no review yet). Evidence:
-  `D:/fitway-temp/retro-20261028/` (`D:/fitway-temp/retro-20261028/report.txt`, `D:/fitway-temp/retro-20261028/scripts-classified/REPORT.md`, `D:/fitway-temp/retro-20261028/gone-evidence/REPORT.md`).
-  - `docs/phase-records/handoffs/agent-tooling/briefs/codex-run-and-ref.md`, finding 1 and part of 4: `run --script`, `--ref`/`--baseline-ref`, `rewrite`,
-    `diff-folders`, `manifest.json` in output folders, and `SKILL.md`'s "Where things live" and "Proving a change to
-    this tool" with a test.
-  - `docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-index.md`, finding 4: the map becomes one line per file and stops drifting on line moves.
-  - `docs/phase-records/handoffs/agent-tooling/briefs/codex-cited-evidence.md`, finding 2:
-    - a prune that keeps every cited file;
-    - removing a worktree refuses when it holds a cited untracked file;
-    - gone citations are listed by the survey and by `check:repository` on changed lines;
-    - the survey counts the scripts in each new run folder.
-  - `docs/phase-records/handoffs/agent-tooling/briefs/codex-evidence-home.md`, findings 2-4: `evidence:keep`, the `run.json` fields and `run-folder:new`, the
-    `giantDocuments` measure with the concept joining `giantFiles`, and a check of the rule-to-enforcer table.
-  - The rule-to-enforcer table is not written. A sonnet-researcher drafting it from the repository stopped at the
-    session limit (`D:/fitway-temp/retro-20261028/rule-enforcers/`, if anything was saved). The table goes into
-    `docs/agent-context/README.md` §"Which check enforces each rule", checked by the coordinator, before evidence-home
-    launches.
-- **Earlier rounds:** belonging-check is merged (`dbf9b683`). loading-check is delivered and graded (`9fc29e91`,
-  `D:/fitway-temp/tooling-loading-check-grade/`), not merged: its defects are listed there, and CI's
-  `check:verification-map` waits on Settings' recipes, the user's call. base-run waits until after the demo, with edits
-  uncommitted in `tooling-base-run` over `c0e12373`.
+- **Three of the retro's rounds run on DeepSeek `max`** from `f79adba4`, each brief reviewed by DeepSeek and Sol
+  `xhigh` with dispositions in `D:/fitway-temp/brief-review/codex-<round>-1` and `-1-sol` (`22d42ef6`):
+  - run-and-ref (`D:/Projects/fitway-worktrees/tooling-run-and-ref`, run `D:/fitway-temp/codex-round-run-and-ref`);
+  - cited-evidence (`D:/Projects/fitway-worktrees/tooling-cited-evidence`, run `D:/fitway-temp/codex-round-cited-evidence`);
+  - code-map-index (`D:/Projects/fitway-worktrees/tooling-code-map-index`, run `D:/fitway-temp/codex-round-code-map-index`).
+  For each when it ends: the commit and ladder against its events, a Sol diff review, a builder, the coordinator's
+  grade with planted defects, the merge, and its record as a file in a `rounds` folder beside `ROUNDS.md`.
+- **evidence-home's brief is under review** (worktree `D:/Projects/fitway-worktrees/tooling-evidence-home` from
+  `7930c80b`): DeepSeek's reading is in, Sol's runs in `D:/fitway-temp/brief-review/codex-evidence-home-1-sol`. Then
+  dispositions and the launch.
+- **Done this session** (item 18): compare-fullpage merged and recorded; r04's `DECISIONS.md` split into an index and
+  parts (`92a4e9a7`); the round records frozen behind `docs/phase-records/handoffs/agent-tooling/ROUNDS.md`; `SPEC.md` split by
+  section into `docs/spec/` (`82138b9a`, the user's word); `docs/agent-context/RULE_ENFORCERS.md` (112 rules, 64 written only).
 
 ## Next steps
 
-1. **`pnpm main:advance`** to the coordinator line once its CI passes.
-2. **Launch the four rounds** from the merged line. For each: create a worktree (`tooling-run-and-ref`,
-   `tooling-code-map-index`, `tooling-cited-evidence`, `tooling-evidence-home`, each with its own install), set its
-   HEAD, run `pnpm brief:check`, then the launcher's DeepSeek review and a Sol review, record the dispositions, and
-   launch. All four run side by side: their files are disjoint apart from the regenerated map and baseline, and
-   `package.json` in evidence-home. Then each: the commit and ladder checked against its events, a Sol diff review,
-   a builder, the coordinator's grade with planted defects, and the merge.
-3. **Finding 3's specs** (on `public-redesign-r01`, after main is merged into it):
-   - split `DESIGN-SPEC.md` (283 KB; 189 of its 191 lines over 400 characters are table rows; §3 82 KB, §4 73 KB) and
-     `SETTINGS-SPEC.md` (78 KB, one 42-row table) by section into files a reader opens one at a time;
-   - `DESIGN-SPEC.md` becomes the index and keeps its `##` headings, which briefs cite;
-   - the concept's spec scripts in its tools folder (lint-spec, build-index, check-index; on the build branch) read
-     the parts, and the content is shown preserved;
-   - `pnpm code-health:baseline` on that branch once evidence-home's H3 is in;
-   - the concept's page scripts are not split now (record why: accepted pages; the ratchet stops their growth).
-4. **Repair the gone citations** with `(gone: <why>)` once cited-evidence's check lists them.
-5. **Measure again:** rerun `D:/fitway-temp/retro-20261028/measure.mjs` and `D:/fitway-temp/retro-20261028/patterns.mjs`, and the survey's script
-   count after the next rounds. Then the public page's designer (its own resume point).
-6. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
+1. `pnpm main:advance` to `f79adba4` once its CI passes; then push the line and advance again after its CI.
+2. evidence-home: dispositions, launch; then each round's review, builder, grade and merge.
+3. **Finding 3's concept specs** (on `public-redesign-r01`, after main is merged into it): split `DESIGN-SPEC.md`
+   (283 KB) and `SETTINGS-SPEC.md` (78 KB) by section behind `DESIGN-SPEC.md` as the index, keeping its `##`
+   headings; the concept's spec scripts (lint-spec, build-index, check-index, on the build branch) read the parts;
+   the content shown preserved; `pnpm code-health:baseline` there once H3 is in. The concept's page scripts are not
+   split now (accepted pages; the ratchet stops their growth).
+4. After the four merge: a one-sentence leading comment for each mapped file the new map shows without one.
+5. **Repair the gone citations** with `(gone: <why>)` once cited-evidence's check lists them.
+6. **Measure again:** rerun `D:/fitway-temp/retro-20261028/measure.mjs` and `D:/fitway-temp/retro-20261028/patterns.mjs`
+   and the survey's script count; then the public page's designer (its own resume point).
+7. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
    `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date.
 
 ## Waiting on the user

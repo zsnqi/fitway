@@ -1,3 +1,5 @@
+// code-health-exception: testCases; until=2026-11-30; reason=per-file map removes the obsolete callable coverage suite
+// code-health-exception: expectCalls; until=2026-11-30; reason=per-file map removes the obsolete callable coverage suite
 import { execFileSync, spawnSync } from "node:child_process";
 import {
 	mkdirSync,
@@ -14,9 +16,9 @@ import { parseFastSteps } from "../../.agents/skills/gardener/facts.mjs";
 import {
 	buildToolingMap,
 	checkToolingMap,
-	validateToolingMap,
 	writeToolingMap,
 } from "./tooling-map-document.mjs";
+import { listMappedSourceFiles } from "./tooling-map-parser.mjs";
 
 const generator = fileURLToPath(
 	new URL("./generate-tooling-map.mjs", import.meta.url),
@@ -25,6 +27,7 @@ const verification = fileURLToPath(
 	new URL("../../scripts/verify.mjs", import.meta.url),
 );
 const repository = fileURLToPath(new URL("../../", import.meta.url));
+const sourcePath = "scripts/agent-environment/tooling-source.mjs";
 const roots: string[] = [];
 
 afterEach(() => {
@@ -48,28 +51,16 @@ function write(root: string, file: string, text: string) {
 }
 
 function fixture({
-	source = "export function covered() {}\nexport function uncovered() {}\n",
-	test = 'import { covered } from "./tooling-source.mjs";\ncovered();\n',
-	commandSource,
-	commandTest,
+	source = "// Holds the fixture.\nexport const anchor = 1;\n",
+	files = {},
 }: {
 	source?: string;
-	test?: string;
-	commandSource?: string;
-	commandTest?: string;
+	files?: Record<string, string>;
 } = {}) {
 	const root = mkdtempSync(path.join(tmpdir(), "fitway-tooling-map-test-"));
 	roots.push(root);
-	write(root, "scripts/agent-environment/tooling-source.mjs", source);
-	write(root, "scripts/agent-environment/tooling-source.test.mjs", test);
-	if (commandSource !== undefined)
-		write(root, "scripts/agent-environment/tooling-command.mjs", commandSource);
-	if (commandTest !== undefined)
-		write(
-			root,
-			"scripts/agent-environment/tooling-command.test.mjs",
-			commandTest,
-		);
+	write(root, sourcePath, source);
+	for (const [file, text] of Object.entries(files)) write(root, file, text);
 	git(root, "init", "--quiet");
 	git(root, "config", "user.name", "Map fixture");
 	git(root, "config", "user.email", "map@example.invalid");
@@ -78,531 +69,155 @@ function fixture({
 	return root;
 }
 
-function callable(
-	built: Awaited<ReturnType<typeof buildToolingMap>>,
-	name: string,
-	kind: string,
-) {
-	return built.callables.find(
-		(entry) => entry.name === name && entry.kind === kind,
-	);
-}
-
-function sourceLineRange(source: string, start: number, end: number) {
-	return source
-		.split("\n")
-		.slice(start - 1, end)
-		.join("\n");
-}
-
 function expectDriftFailure(
 	result: Awaited<ReturnType<typeof checkToolingMap>>,
-	fragment: string,
+	file: string,
 ) {
 	expect(result.ok).toBe(false);
-	expect(result.errors.join("\n")).toContain(fragment);
+	expect(result.errors.join("\n")).toContain(file);
 }
 
-// One N3 form per row: the mapped module's suffix, the test-file lines that run (or only mention) it, and whether
-// the map must list the test as running it.
-const commandForms: [name: string, lines: string[], runs: boolean][] = [
-	[
-		"literal",
-		[
-			'const literal = "scripts/agent-environment/tooling-command-literal.mjs";',
-			"spawnSync(process.execPath, [literal]);",
-		],
-		true,
-	],
-	[
-		"node",
-		[
-			'spawnSync("node", ["scripts/agent-environment/tooling-command-node.mjs"]);',
-		],
-		true,
-	],
-	[
-		"joined",
-		[
-			"function runJoined(root) {",
-			'  spawnSync(process.execPath, [path.join(root, "scripts", "agent-environment", "tooling-command-joined.mjs")]);',
-			"}",
-			"runJoined(process.cwd());",
-		],
-		true,
-	],
-	[
-		"resolved",
-		[
-			"function runResolved(root) {",
-			'  spawnSync(process.execPath, [path.resolve(root, "scripts", "agent-environment", "tooling-command-resolved.mjs")]);',
-			"}",
-			"runResolved(process.cwd());",
-		],
-		true,
-	],
-	[
-		"url",
-		[
-			'spawnSync(process.execPath, [fileURLToPath(new URL("./tooling-command-url.mjs", import.meta.url))]);',
-		],
-		true,
-	],
-	[
-		"cwd",
-		[
-			'spawnSync(process.execPath, [path.join(process.cwd(), "scripts", "agent-environment", "tooling-command-cwd.mjs")]);',
-		],
-		true,
-	],
-	["pnpm", ['spawnSync("pnpm", ["fixture:tooling-command"]);'], true],
-	[
-		"other-program",
-		[
-			'spawnSync("git", ["add", path.join(process.cwd(), "scripts/agent-environment/tooling-command-other-program.mjs")]);',
-		],
-		false,
-	],
-	[
-		"entry",
-		[
-			'spawnSync(process.execPath, ["scripts/agent-environment/tooling-command-entry.mjs", path.join(process.cwd(), "scripts/agent-environment/tooling-command-after-entry.mjs")]);',
-		],
-		true,
-	],
-	["after-entry", [], false],
-	[
-		"check",
-		[
-			'spawnSync(process.execPath, ["--check", path.join(process.cwd(), "scripts/agent-environment/tooling-command-check.mjs")]);',
-		],
-		false,
-	],
-];
+function expectEntryOnlyDrift(
+	result: Awaited<ReturnType<typeof checkToolingMap>>,
+	file: string,
+) {
+	expectDriftFailure(result, file);
+	expect(result.errors.join("\n")).not.toContain("file list differs");
+	expect(result.errors.join("\n")).not.toContain("missing []");
+}
 
-describe("M1: generated agent-tooling code map", () => {
-	it("finds every callable form with a declaration-enclosing line range", async () => {
-		const source = [
-			"export function declared() {}",
-			"export const arrowExport = () => {};",
-			"export let functionExport = function namedFunction() {};",
-			"export const wrappedFunction = (function wrapped() {});",
-			"export const ParenthesizedClass = (class { method() {} });",
-			"export default function defaultExport() {}",
-			"export class Example {",
-			"  method() {}",
-			"  get value() { return 1; }",
-			"  set value(next) { void next; }",
-			"  static staticMethod() {}",
-			"  static staticArrow = () => {};",
-			"}",
-			"",
-		].join("\n");
-		const builtFile = {
-			path: "scripts/agent-environment/tooling-source.mjs",
-			source,
-		};
-		const entries =
-			(await import("./tooling-map-parser.mjs")).parseCallables?.(
-				builtFile.path,
-				source,
-			) ?? [];
-		const expected = [
-			["declared", "function"],
-			["arrowExport", "arrow"],
-			["functionExport", "function-expression"],
-			["wrappedFunction", "function-expression"],
-			["ParenthesizedClass", "class"],
-			["ParenthesizedClass.method", "method"],
-			["defaultExport", "default-function"],
-			["Example", "class"],
-			["Example.method", "method"],
-			["Example.value", "getter"],
-			["Example.value", "setter"],
-			["Example.staticMethod", "static-method"],
-			["Example.staticArrow", "static-property"],
-		] as const;
-		for (const [name, kind] of expected) {
-			const entry = entries.find(
-				(candidate) => candidate.name === name && candidate.kind === kind,
-			);
-			expect(entry, `${name} ${kind}`).toBeDefined();
-			expect(
-				sourceLineRange(source, entry?.lineStart ?? 0, entry?.lineEnd ?? 0),
-			).toContain(String(name).split(".").at(-1));
-		}
-	});
+describe("agent tooling code map", () => {
+	const commentForms = [
+		{
+			form: "line comments",
+			source:
+				"// Holds the fixture. Later detail.\n// Another line.\nexport const anchor = 1;\n",
+			expected: "Holds the fixture.",
+		},
+		{
+			form: "block comments",
+			source:
+				"/* Holds the fixture! Later detail. */\nexport const anchor = 1;\n",
+			expected: "Holds the fixture!",
+		},
+		{
+			form: "JSDoc comments",
+			source:
+				"#!/usr/bin/env node\n/**\n * Holds the fixture?\n * Later detail.\n */\nexport const anchor = 1;\n",
+			expected: "Holds the fixture?",
+		},
+		{
+			form: "no comment",
+			source: "export const anchor = 1;\n",
+			expected: "(no leading comment)",
+		},
+	];
 
-	it("K2: maps parenthesized default function and class expressions", async () => {
-		const { parseCallables } = await import("./tooling-map-parser.mjs");
-		const functionEntries =
-			parseCallables?.(
-				"scripts/agent-environment/tooling-source.mjs",
-				"export default (function wrappedDefault() {});\n",
-			) ?? [];
-		const classEntries =
-			parseCallables?.(
-				"scripts/agent-environment/tooling-source.mjs",
-				"export default (class WrappedDefault {});\n",
-			) ?? [];
-		expect(functionEntries.map((entry) => [entry.name, entry.kind])).toEqual([
-			["default", "default-function-expression"],
-		]);
-		expect(classEntries.map((entry) => [entry.name, entry.kind])).toEqual([
-			["WrappedDefault", "default-class"],
-		]);
-	});
-
-	it("compares the mapped file list with git ls-files and records uncovered callables", async () => {
-		const root = fixture();
-		const built = await buildToolingMap({ root });
-		expect(built.files.map((file) => file.path)).toEqual([
-			"scripts/agent-environment/tooling-source.mjs",
-		]);
-		expect(callable(built, "covered", "function")?.tests).toEqual([
-			"scripts/agent-environment/tooling-source.test.mjs",
-		]);
-		expect(callable(built, "uncovered", "function")?.tests).toEqual([]);
-		expect(built.uncovered.map((entry) => entry.name)).toEqual(["uncovered"]);
-	});
-
-	it("lists a command-run module once at module level without claiming its functions", async () => {
-		const root = fixture({
-			commandSource: "export function commandOnly() {}\n",
-			commandTest: [
-				'import { spawnSync } from "node:child_process";',
-				'import { fileURLToPath } from "node:url";',
-				'const script = fileURLToPath(new URL("./tooling-command.mjs", import.meta.url));',
-				"spawnSync(process.execPath, [script]);",
-				"",
-			].join("\n"),
+	for (const sample of commentForms) {
+		it(`uses the first sentence of ${sample.form}`, async () => {
+			const root = fixture({ source: sample.source });
+			const built = await buildToolingMap({ root });
+			expect(built.files[0]?.leadingComment).toBe(sample.expected);
 		});
-		const built = await buildToolingMap({ root });
-		const commandFile = built.files.find(
-			(file) => file.path === "scripts/agent-environment/tooling-command.mjs",
-		);
-		expect(commandFile?.commandTests).toEqual([
-			"scripts/agent-environment/tooling-command.test.mjs",
-		]);
-		expect(callable(built, "commandOnly", "function")?.tests).toEqual([]);
-	});
+	}
 
-	it("K2: resolves process.cwd() in command arguments", async () => {
-		const root = fixture({
-			commandSource: "export function commandOnly() {}\n",
-			commandTest: [
-				'import { spawnSync } from "node:child_process";',
-				'import path from "node:path";',
-				'const script = path.join(process.cwd(), "scripts/agent-environment/tooling-command.mjs");',
-				"spawnSync(process.execPath, [script]);",
-				"",
-			].join("\n"),
+	it("prints how many files have no leading comment", () => {
+		const root = fixture({ source: "export const anchor = 1;\n" });
+		const result = spawnSync(process.execPath, [generator], {
+			cwd: root,
+			encoding: "utf8",
+			windowsHide: true,
 		});
-		const built = await buildToolingMap({ root });
-		const commandFile = built.files.find(
-			(file) => file.path === "scripts/agent-environment/tooling-command.mjs",
-		);
-		expect(commandFile?.commandTests).toEqual([
-			"scripts/agent-environment/tooling-command.test.mjs",
-		]);
+		expect(result.status, result.stderr).toBe(0);
+		expect(result.stdout).toContain("1 files, 1 without a leading comment.");
 	});
 
-	it("N1: maps constructors and counts only new expressions as coverage", async () => {
+	it("lists declarations, bindings, aliases, types and default exports", async () => {
 		const root = fixture({
 			source: [
-				"export class Inventory {",
-				"  constructor(size) { this.size = size; }",
-				"  initialize() { return this.size; }",
-				"}",
-				"export class Implicit {}",
-				"",
-			].join("\n"),
-			test: [
-				'import { Inventory } from "./tooling-source.mjs";',
-				"const inventory = new Inventory(3);",
-				"inventory.initialize();",
+				"/** Exports every declared form. */",
+				"export function declared() {}",
+				"export const value = 1;",
+				"const local = 2;",
+				"export { local as alias };",
+				"export type shape = { value: number };",
+				"export default declared;",
 				"",
 			].join("\n"),
 		});
 		const built = await buildToolingMap({ root });
-		const constructorEntry = callable(
-			built,
-			"Inventory.constructor",
-			"constructor",
-		);
-		expect(constructorEntry?.lineStart).toBe(2);
-		expect(constructorEntry?.lineEnd).toBe(2);
-		expect(constructorEntry?.tests).toEqual([
-			"scripts/agent-environment/tooling-source.test.mjs",
+		expect(built.files[0]?.exports).toEqual([
+			"alias",
+			"declared",
+			"default",
+			"shape",
+			"value",
 		]);
-		expect(
-			callable(built, "Implicit.constructor", "constructor"),
-		).toBeUndefined();
 	});
 
-	it("N1: refuses super() and Reflect.construct as constructor coverage", async () => {
+	it("shows the source path for aliased and starred re-exports", async () => {
+		const root = fixture({
+			source: "/** Defines the source export. */\nexport function named() {}\n",
+			files: {
+				"scripts/agent-environment/tooling-extra.mjs":
+					"/** Defines extra exports. */\nexport const extra = 1;\nexport type extraType = string;\nexport default 1;\n",
+				"scripts/agent-environment/tooling-forward.mjs": [
+					"/** Forwards exports. */",
+					'export { named as renamed } from "./tooling-source.mjs";',
+					'export * from "./tooling-extra.mjs";',
+					"",
+				].join("\n"),
+			},
+		});
+		const built = await buildToolingMap({ root });
+		const forward = built.files.find(
+			(file) => file.path === "scripts/agent-environment/tooling-forward.mjs",
+		);
+		expect(forward?.exports).toEqual([
+			"extra (from scripts/agent-environment/tooling-extra.mjs)",
+			"extraType (from scripts/agent-environment/tooling-extra.mjs)",
+			"renamed (from scripts/agent-environment/tooling-source.mjs)",
+		]);
+	});
+
+	it("lists keys assigned to module.exports and exports", async () => {
 		const root = fixture({
 			source: [
-				"export class Vault {",
-				"  constructor(code) { this.code = code; }",
-				"}",
-				"",
-			].join("\n"),
-			test: [
-				'import { Vault } from "./tooling-source.mjs";',
-				"class Derived extends Vault {",
-				"  constructor() { super(7); }",
-				"}",
-				"new Derived();",
-				"Reflect.construct(Vault, [7]);",
+				"/** Exposes CommonJS keys. */",
+				"const alpha = 1;",
+				"module.exports = { alpha, beta: 2 };",
+				"exports.gamma = 3;",
+				'exports["delta"] = 4;',
 				"",
 			].join("\n"),
 		});
 		const built = await buildToolingMap({ root });
-		expect(callable(built, "Vault.constructor", "constructor")?.tests).toEqual(
-			[],
-		);
+		expect(built.files[0]?.exports).toEqual([
+			"alpha",
+			"beta",
+			"delta",
+			"gamma",
+		]);
 	});
 
-	it("K2: separates getter reads from setter writes", async () => {
+	it("has one entry for each mapped file under its folder", async () => {
 		const root = fixture({
-			source: [
-				"export class Counter {",
-				"  get value() { return 1; }",
-				"  set value(next) { void next; }",
-				"}",
-				"",
-			].join("\n"),
-			test: [
-				'import { Counter } from "./tooling-source.mjs";',
-				"const counter = new Counter();",
-				"void counter.value;",
-				"",
-			].join("\n"),
-		});
-		write(
-			root,
-			"scripts/agent-environment/tooling-write.test.mjs",
-			[
-				'import { Counter } from "./tooling-source.mjs";',
-				"const counter = new Counter();",
-				"counter.value = 2;",
-				"counter.value += 1;",
-				"counter.value++;",
-				"",
-			].join("\n"),
-		);
-		git(root, "add", ".");
-		const built = await buildToolingMap({ root });
-		expect(callable(built, "Counter.value", "getter")?.tests).toEqual([
-			"scripts/agent-environment/tooling-source.test.mjs",
-		]);
-		expect(callable(built, "Counter.value", "setter")?.tests).toEqual([
-			"scripts/agent-environment/tooling-write.test.mjs",
-		]);
-	});
-
-	it("K2: resolves dynamic imports, bindings, and re-exports to their defining callable", async () => {
-		const root = fixture({
-			source: [
-				"export function named() {}",
-				"export function destructured() {}",
-				"export default function defaultExport() {}",
-				"export function directMember() {}",
-				"export function namespaceExport() {}",
-				"",
-			].join("\n"),
-			test: [
-				'const namespaceModule = await import("./tooling-reexport.mjs");',
-				"namespaceModule.named();",
-				'const { destructured } = await import("./tooling-source.mjs");',
-				"destructured();",
-				'const { default: defaultBinding } = await import("./tooling-source.mjs");',
-				"defaultBinding();",
-				'const directMember = (await import("./tooling-source.mjs")).directMember;',
-				"directMember();",
-				'const namespaceExport = (await import("./tooling-source.mjs")).namespaceExport;',
-				"namespaceExport();",
-				"",
-			].join("\n"),
-		});
-		write(
-			root,
-			"scripts/agent-environment/tooling-reexport.mjs",
-			'export { named } from "./tooling-source.mjs";\n',
-		);
-		git(root, "add", ".");
-		const built = await buildToolingMap({ root });
-		const testPath = "scripts/agent-environment/tooling-source.test.mjs";
-		for (const name of [
-			"named",
-			"destructured",
-			"defaultExport",
-			"directMember",
-			"namespaceExport",
-		]) {
-			expect(
-				callable(
-					built,
-					name,
-					name === "defaultExport" ? "default-function" : "function",
-				)?.tests,
-			).toEqual([testPath]);
-		}
-	});
-
-	it("N2: follows local export lists and aliases to the defining callable", async () => {
-		const root = fixture({
-			source: [
-				"export function originalName() {}",
-				"export function aliasSource() {}",
-				"",
-			].join("\n"),
-			test: [
-				'import { forwardedName, aliasName } from "./tooling-local-reexport.mjs";',
-				"forwardedName();",
-				"aliasName();",
-				"",
-			].join("\n"),
-		});
-		write(
-			root,
-			"scripts/agent-environment/tooling-local-reexport.mjs",
-			[
-				'import { originalName as importedName, aliasSource } from "./tooling-source.mjs";',
-				"export { importedName as forwardedName, aliasSource as aliasName };",
-				"",
-			].join("\n"),
-		);
-		git(root, "add", ".");
-		const built = await buildToolingMap({ root });
-		const testPath = "scripts/agent-environment/tooling-source.test.mjs";
-		expect(callable(built, "originalName", "function")?.tests).toEqual([
-			testPath,
-		]);
-		expect(callable(built, "aliasSource", "function")?.tests).toEqual([
-			testPath,
-		]);
-	});
-
-	it("N3: follows node entrypoints and pnpm node scripts only", async () => {
-		const root = fixture();
-		for (const [name] of commandForms) {
-			write(
-				root,
-				`scripts/agent-environment/tooling-command-${name}.mjs`,
-				"export function commandOnly() {}\n",
-			);
-		}
-		write(
-			root,
-			"scripts/agent-environment/tooling-command.test.mjs",
-			[
-				'import { spawnSync } from "node:child_process";',
-				'import path from "node:path";',
-				'import { fileURLToPath } from "node:url";',
-				...commandForms.flatMap(([, lines]) => lines),
-				"",
-			].join("\n"),
-		);
-		write(
-			root,
-			"package.json",
-			`${JSON.stringify(
-				{
-					scripts: {
-						"fixture:tooling-command":
-							"node scripts/agent-environment/tooling-command-pnpm.mjs",
-					},
-				},
-				null,
-				2,
-			)}\n`,
-		);
-		git(root, "add", ".");
-		const built = await buildToolingMap({ root });
-		const commandTests = new Map(
-			built.files.map((file) => [file.path, file.commandTests]),
-		);
-		const testPath = "scripts/agent-environment/tooling-command.test.mjs";
-		for (const [name, , runs] of commandForms) {
-			expect(
-				commandTests.get(
-					`scripts/agent-environment/tooling-command-${name}.mjs`,
-				),
-			).toEqual(runs ? [testPath] : []);
-		}
-	});
-
-	it("K2: lists command-run verify-fitway entry modules at module level", async () => {
-		const built = await buildToolingMap({ root: repository });
-		const commandTests = new Map(
-			built.files.map((file) => [file.path, file.commandTests]),
-		);
-		expect(commandTests.get(".agents/skills/verify-fitway/cli.mjs")).toEqual([
-			".agents/skills/verify-fitway/cli.test.mjs",
-		]);
-		expect(
-			commandTests.get(".agents/skills/verify-fitway/port-observer.cjs"),
-		).toEqual([".agents/skills/verify-fitway/cli.test.mjs"]);
-	});
-
-	it("validates file membership, line ranges, existing test files and call evidence", async () => {
-		const root = fixture();
-		const built = await buildToolingMap({ root });
-		const valid = await validateToolingMap({ root, text: built.text });
-		expect(valid.ok, valid.errors.join("\n")).toBe(true);
-
-		const extra = built.text.replace(
-			"## `scripts/agent-environment/tooling-source.mjs`",
-			"## `scripts/agent-environment/extra.mjs`\n## `scripts/agent-environment/tooling-source.mjs`",
-		);
-		expect((await validateToolingMap({ root, text: extra })).ok).toBe(false);
-
-		const badRange = built.text.replace(/L\d+-L\d+/, "L999-L999");
-		expect((await validateToolingMap({ root, text: badRange })).ok).toBe(false);
-
-		const missingTest = built.text.replace(
-			"scripts/agent-environment/tooling-source.test.mjs",
-			"scripts/agent-environment/missing.test.mjs",
-		);
-		expect((await validateToolingMap({ root, text: missingTest })).ok).toBe(
-			false,
-		);
-	});
-
-	it("K3: validates module-level command test coverage as a set", async () => {
-		const root = fixture({
-			commandSource: "export function commandOnly() {}\n",
-			commandTest: [
-				'import { spawnSync } from "node:child_process";',
-				'import { fileURLToPath } from "node:url";',
-				'const script = fileURLToPath(new URL("./tooling-command.mjs", import.meta.url));',
-				"spawnSync(process.execPath, [script]);",
-				"",
-			].join("\n"),
+			files: {
+				"scripts/verify.mjs":
+					"// Verifies repository facts.\nexport const verify = 1;\n",
+			},
 		});
 		const built = await buildToolingMap({ root });
-		const withoutCommands = built.text.replace(/^- Command run by:.*\n/m, "");
-		const missing = await validateToolingMap({ root, text: withoutCommands });
-		expect(missing.ok).toBe(false);
-		expect(missing.errors.join("\n")).toContain(
-			"command test coverage differs for scripts/agent-environment/tooling-command.mjs",
+		expect(built.files.map((file) => file.path)).toEqual(
+			listMappedSourceFiles(root),
 		);
-	});
-
-	it("K3: check mode names an untracked source file in a mapped folder", async () => {
-		const root = fixture();
-		await writeToolingMap({ root });
-		const added = "scripts/agent-environment/tooling-added.mjs";
-		write(root, added, "export function added() {}\n");
-		const checked = await checkToolingMap({ root });
-		expect(checked.ok).toBe(false);
-		expect(checked.errors.join("\n")).toContain(added);
+		expect(built.text).toContain("## `scripts/agent-environment`");
+		expect(built.text).toContain("## `scripts`");
+		expect(built.text.match(/^- `/gm)).toHaveLength(2);
 	});
 });
 
-describe("M2: fast-ladder drift check", () => {
+describe("agent tooling map drift check", () => {
 	it("passes unchanged", async () => {
 		const root = fixture();
 		await writeToolingMap({ root });
@@ -610,206 +225,119 @@ describe("M2: fast-ladder drift check", () => {
 		expect(checked.ok, checked.errors.join("\n")).toBe(true);
 	});
 
-	it("fails when a mapped source file is added or removed", async () => {
-		const root = fixture();
-		await writeToolingMap({ root });
-		git(root, "add", ".");
-		git(root, "commit", "-m", "fixture");
-		write(
-			root,
-			"scripts/agent-environment/added.mjs",
-			"export const added = 1;\n",
-		);
-		git(root, "add", ".");
-		expectDriftFailure(await checkToolingMap({ root }), "file list differs");
-
-		await writeToolingMap({ root });
-		rmSync(path.join(root, "scripts/agent-environment/tooling-source.mjs"));
-		git(root, "add", "-A");
-		expectDriftFailure(await checkToolingMap({ root }), "file list differs");
-	});
-
-	const forms = [
-		{
-			form: "function declaration",
-			empty: "export function anchor() {}\n",
-			present: "export function anchor() {}\nexport function planted() {}\n",
-		},
-		{
-			form: "const arrow binding",
-			empty: "export const anchor = () => {};\n",
-			present:
-				"export const anchor = () => {};\nexport const planted = () => {};\n",
-		},
-		{
-			form: "let function-expression binding",
-			empty: "export let anchor = function () {};\n",
-			present:
-				"export let anchor = function () {};\nexport let planted = function () {};\n",
-		},
-		{
-			form: "default export",
-			empty: "export function anchor() {}\n",
-			present:
-				"export function anchor() {}\nexport default function planted() {}\n",
-		},
-		{
-			form: "class",
-			empty: "export function anchor() {}\n",
-			present: "export function anchor() {}\nexport class Planted {}\n",
-		},
-		{
-			form: "method",
-			empty: "export class Holder {}\n",
-			present: "export class Holder {\n  planted() {}\n}\n",
-		},
-		{
-			form: "getter",
-			empty: "export class Holder {}\n",
-			present: "export class Holder {\n  get planted() { return 1; }\n}\n",
-		},
-		{
-			form: "setter",
-			empty: "export class Holder {}\n",
-			present: "export class Holder {\n  set planted(next) { void next; }\n}\n",
-		},
-		{
-			form: "static member",
-			empty: "export class Holder {}\n",
-			present: "export class Holder {\n  static planted() {}\n}\n",
-		},
-	];
-
-	for (const sample of forms) {
-		it(`fails when a ${sample.form} is added`, async () => {
-			const root = fixture({ source: sample.empty });
-			await writeToolingMap({ root });
-			write(
-				root,
-				"scripts/agent-environment/tooling-source.mjs",
-				sample.present,
-			);
-			git(root, "add", ".");
-			expectDriftFailure(
-				await checkToolingMap({ root }),
-				"generated map differs",
-			);
-		});
-
-		it(`fails when a ${sample.form} is removed`, async () => {
-			const root = fixture({ source: sample.present });
-			await writeToolingMap({ root });
-			write(root, "scripts/agent-environment/tooling-source.mjs", sample.empty);
-			git(root, "add", ".");
-			expectDriftFailure(
-				await checkToolingMap({ root }),
-				"generated map differs",
-			);
-		});
-	}
-
-	it("fails when a callable moves or a test call is removed", async () => {
-		const source = "export function moved() {}\n";
+	it("passes when an edit only moves lines", async () => {
+		const source = "// Holds the fixture.\nexport const anchor = 1;\n";
 		const root = fixture({ source });
 		await writeToolingMap({ root });
 		write(
 			root,
-			"scripts/agent-environment/tooling-source.mjs",
-			`// move\n// move\n${source}`,
+			sourcePath,
+			"// Holds the fixture.\n\n// Lines below the leading comment move.\n\nexport const anchor = 1;\n",
 		);
 		git(root, "add", ".");
-		expectDriftFailure(
-			await checkToolingMap({ root }),
-			"generated map differs",
-		);
-
-		const coverageRoot = fixture();
-		await writeToolingMap({ root: coverageRoot });
-		write(
-			coverageRoot,
-			"scripts/agent-environment/tooling-source.test.mjs",
-			'import { covered } from "./tooling-source.mjs";\n',
-		);
-		git(coverageRoot, "add", ".");
-		expectDriftFailure(
-			await checkToolingMap({ root: coverageRoot }),
-			"generated map differs",
-		);
+		const checked = await checkToolingMap({ root });
+		expect(checked.ok, checked.errors.join("\n")).toBe(true);
 	});
 
-	it("N4: check mode names changed callables and command-test relations", async () => {
-		const root = fixture({
-			commandSource: "export function commandOnly() {}\n",
-			commandTest:
-				'import { spawnSync } from "node:child_process";\nspawnSync(process.execPath, ["scripts/agent-environment/tooling-command.mjs"]);\n',
-		});
-		const built = await buildToolingMap({ root });
-		const mapPath = "docs/agent-context/AGENT_TOOLING_CODE_MAP.md";
-		const writeMap = (text: string) => write(root, mapPath, text);
-
-		writeMap(built.text.replace(/^- Command run by:.*\n/m, ""));
-		const droppedCommand = await checkToolingMap({ root });
-		expect(droppedCommand.errors.join("\n")).toContain(
-			"missing command test relation for scripts/agent-environment/tooling-command.mjs: scripts/agent-environment/tooling-command.test.mjs",
-		);
-
-		const addedMap = built.text.replace(
-			"- Command run by: `scripts/agent-environment/tooling-command.test.mjs`",
-			"- Command run by: `scripts/agent-environment/tooling-command.test.mjs`, `scripts/agent-environment/tooling-source.test.mjs`",
-		);
-		expect(addedMap).toContain(
-			"scripts/agent-environment/tooling-source.test.mjs",
-		);
-		writeMap(addedMap);
-		const addedCommand = await checkToolingMap({ root });
-		expectDriftFailure(
-			addedCommand,
-			"extra command test relation for scripts/agent-environment/tooling-command.mjs: scripts/agent-environment/tooling-source.test.mjs",
-		);
-
-		writeMap(built.text.replace(/^- `covered`.*\n/m, ""));
-		const missingCallable = await checkToolingMap({ root });
-		expect(missingCallable.errors.join("\n")).toContain(
-			"missing callable scripts/agent-environment/tooling-source.mjs covered [function]",
-		);
-
-		writeMap(built.text);
+	it("fails when the leading sentence changes", async () => {
+		const root = fixture();
+		await writeToolingMap({ root });
 		write(
 			root,
-			"scripts/agent-environment/tooling-source.mjs",
-			"// moved\n// moved\nexport function covered() {}\nexport function uncovered() {}\n",
+			sourcePath,
+			"// Renames the fixture.\nexport const anchor = 1;\n",
 		);
 		git(root, "add", ".");
-		const movedCallable = await checkToolingMap({ root });
-		expect(movedCallable.errors.join("\n")).toContain(
-			"callable range differs for scripts/agent-environment/tooling-source.mjs covered [function]",
+		expectEntryOnlyDrift(await checkToolingMap({ root }), sourcePath);
+	});
+
+	it("fails when an export is added", async () => {
+		const root = fixture();
+		await writeToolingMap({ root });
+		write(
+			root,
+			sourcePath,
+			"// Holds the fixture.\nexport const anchor = 1;\nexport const planted = 2;\n",
 		);
+		git(root, "add", ".");
+		expectEntryOnlyDrift(await checkToolingMap({ root }), sourcePath);
+	});
+
+	it("fails when an export is removed", async () => {
+		const root = fixture({
+			source:
+				"// Holds the fixture.\nexport const anchor = 1;\nexport const planted = 2;\n",
+		});
+		await writeToolingMap({ root });
+		write(
+			root,
+			sourcePath,
+			"// Holds the fixture.\nexport const anchor = 1;\n",
+		);
+		git(root, "add", ".");
+		expectDriftFailure(await checkToolingMap({ root }), sourcePath);
+	});
+
+	it("fails when an export is renamed", async () => {
+		const root = fixture();
+		await writeToolingMap({ root });
+		write(
+			root,
+			sourcePath,
+			"// Holds the fixture.\nexport const renamed = 1;\n",
+		);
+		git(root, "add", ".");
+		expectDriftFailure(await checkToolingMap({ root }), sourcePath);
+	});
+
+	it("fails and names a mapped file that is added", async () => {
+		const root = fixture();
+		await writeToolingMap({ root });
+		git(root, "add", ".");
+		const added = "scripts/agent-environment/tooling-added.mjs";
+		write(root, added, "// Adds a mapped file.\nexport const added = 1;\n");
+		git(root, "add", ".");
+		const result = await checkToolingMap({ root });
+		expectDriftFailure(result, added);
+		expect(result.errors.join("\n")).toContain("file list differs");
+	});
+
+	it("fails and names a mapped file that is removed", async () => {
+		const root = fixture();
+		await writeToolingMap({ root });
+		git(root, "add", ".");
+		rmSync(path.join(root, sourcePath));
+		git(root, "add", "-A");
+		const result = await checkToolingMap({ root });
+		expectDriftFailure(result, sourcePath);
+		expect(result.errors.join("\n")).toContain("file list differs");
+	});
+
+	it("fails and names an untracked mapped file", async () => {
+		const root = fixture();
+		await writeToolingMap({ root });
+		const added = "scripts/agent-environment/tooling-added.mjs";
+		write(root, added, "// Adds a mapped file.\nexport const added = 1;\n");
+		expectDriftFailure(await checkToolingMap({ root }), added);
 	});
 
 	it("returns byte-identical output for LF and CRLF checkouts", async () => {
 		const root = fixture();
 		const lf = await buildToolingMap({ root });
-		const source = readFileSync(
-			path.join(root, "scripts/agent-environment/tooling-source.mjs"),
-			"utf8",
-		);
-		write(
-			root,
-			"scripts/agent-environment/tooling-source.mjs",
-			source.replaceAll("\n", "\r\n"),
-		);
+		const source = readFileSync(path.join(root, sourcePath), "utf8");
+		write(root, sourcePath, source.replaceAll("\n", "\r\n"));
 		const crlf = await buildToolingMap({ root });
 		expect(lf.text).toContain("# Agent tooling code map");
 		expect(crlf.text).toBe(lf.text);
 	});
 
-	it("prints the required failure and regeneration command", async () => {
+	it("prints the changed file and regeneration command", async () => {
 		const root = fixture();
 		await writeToolingMap({ root });
 		write(
 			root,
-			"scripts/agent-environment/tooling-source.mjs",
-			"export function changed() {}\n",
+			sourcePath,
+			"// Holds the fixture.\nexport const changed = 1;\n",
 		);
 		git(root, "add", ".");
 		const result = spawnSync(process.execPath, [generator, "--check"], {
@@ -817,26 +345,24 @@ describe("M2: fast-ladder drift check", () => {
 			encoding: "utf8",
 			windowsHide: true,
 		});
+		const output = `${result.stdout}${result.stderr}`;
 		expect(result.status).toBe(1);
-		expect(`${result.stdout}${result.stderr}`).toContain(
-			"pnpm check:tooling-map: FAIL:",
-		);
-		expect(`${result.stdout}${result.stderr}`).toContain(
-			"(run pnpm map:tooling)",
-		);
+		expect(output).toContain("pnpm check:tooling-map: FAIL:");
+		expect(output).toContain(sourcePath);
+		expect(output).toContain("(run pnpm map:tooling)");
 	});
 });
 
-describe("L1: ladder integration", () => {
-	it("K1: the ladder fails when the map drifts", async () => {
+describe("agent tooling map ladder integration", () => {
+	it("fails the verification step when the map drifts", async () => {
 		const root = fixture();
 		await writeToolingMap({ root });
 		git(root, "add", ".");
 		git(root, "commit", "-m", "fixture");
 		write(
 			root,
-			"scripts/agent-environment/tooling-source.mjs",
-			"export function changed() {}\n",
+			sourcePath,
+			"// Holds the fixture.\nexport const changed = 1;\n",
 		);
 		git(root, "add", ".");
 		write(
@@ -866,7 +392,7 @@ describe("L1: ladder integration", () => {
 		);
 	});
 
-	it("registers the generator and exposes the existing eight steps plus map drift", () => {
+	it("keeps the commands and ladder step names stable", () => {
 		const packageJson = JSON.parse(
 			readFileSync(path.join(repository, "package.json"), "utf8"),
 		);

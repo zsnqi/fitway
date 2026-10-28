@@ -574,9 +574,6 @@
 		"design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md": {
 			"giantDocuments": 59105
 		},
-		"docs/agent-context/AGENT_TOOLING_CODE_MAP.md": {
-			"giantDocuments": 67813
-		},
 		"docs/phase-records/handoffs/agent-environment/codex-rounds.md": {
 			"giantDocuments": 89768
 		},
@@ -807,8 +804,7 @@
 			"duplication": 1
 		},
 		"scripts/agent-environment/generate-tooling-map.test.ts": {
-			"duplication": 7,
-			"giantFiles": 852
+			"duplication": 3
 		},
 		"scripts/agent-environment/new-handoff.mjs": {
 			"longFunctions": 1,
@@ -835,12 +831,6 @@
 		},
 		"scripts/agent-environment/start-load.test.ts": {
 			"duplication": 1
-		},
-		"scripts/agent-environment/tooling-map-coverage.mjs": {
-			"duplication": 2
-		},
-		"scripts/agent-environment/tooling-map-imports.mjs": {
-			"duplication": 4
 		},
 		"scripts/check-agent-context.mjs": {
 			"longFunctions": 1,
@@ -1055,8 +1045,8 @@
 			"expectCalls": 520
 		},
 		"scripts/agent-environment": {
-			"testCases": 386,
-			"expectCalls": 1118
+			"testCases": 380,
+			"expectCalls": 1098
 		},
 		"scripts/demo": {
 			"testCases": 17,
