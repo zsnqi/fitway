@@ -82,6 +82,10 @@ sideways scroll and clipped text, and say what broke.
 
 Write options only under `design-research/owner-composition-exploration-r04/directions/eclipse/` in those three files
 and a `public-capture.mjs` that renders the frames into `D:/fitway-temp/<run>/`; commit when done.
+`public-capture.mjs` takes the shape of `settings-capture.mjs` in the same folder (its own server on one port,
+a fresh context per frame, a required output folder outside the repository). The 320 px and 200% zoom check is
+`page.evaluate(overflowProbe)` from `tools/probes/lib.mjs`, with `PROBE_OUT` set to the run folder. It reports the
+sideways scroll as `hScroll` and every clipped or spilled text; none is expected. (agent-tooling DECISIONS item 16)
 
 ## Report
 
