@@ -1,7 +1,7 @@
 <!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: evidence has a home, folders say who made them, documents stay readable (agent-tooling-r01, round evidence-home)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-evidence-home`, branch `tooling-evidence-home`, HEAD `<set at launch>`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-evidence-home`, branch `tooling-evidence-home`, HEAD `7930c80b`
 - **Milestone:** `agent-tooling-r01`. Decisions: `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 6, 14,
   16 and 17.
 - **Read first, only these:**
