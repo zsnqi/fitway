@@ -187,8 +187,10 @@ through these pointers, not copied here.
     and their subagents (scripts and report:
     `D:/fitway-temp/retro-20261028/`, copied from the forked session's scratchpad).
     For these four it widens agent-environment DECISIONS item 20 ("no further investment in process tooling"); item
-    16 still holds. Each finding gets the fix the coordinator judges best after review, then a measurement again, and a
-    planted defect wherever a check is added:
+    16 still holds. Each finding's proposed fixes are layers built together, not options to pick one from (the user,
+    through the same fork); the coordinator settles each layer's shape after review, records why when it finds a layer
+    wrong or redundant, and decides the one real either/or, keeping or reshaping the code map. Each fix is then measured
+    again, with a planted defect wherever a check is added:
     - **Agents hand-build verification tools** instead of using verify-fitway: 561 scripts in 42 of the 263
       `owner-r04-*` run folders; 640 tool calls on run-folder scripts against 125 runs of verify-fitway's CLI; SKILL.md
       has asked for its path to be extended since `8e520995`, and 36 of 40 such scripts are newer.
