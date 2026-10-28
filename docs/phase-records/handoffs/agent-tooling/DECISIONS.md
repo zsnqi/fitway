@@ -209,5 +209,8 @@ through these pointers, not copied here.
     - the two `codex-rounds.md` files are frozen, since 210 citations name their lines; `ROUNDS.md` in this folder
       indexes them by line range, and each round from now on is its own file in `rounds/`;
     - `giantDocuments` leaves out `docs/archive/` (frozen) and `.claude/skills/` (unchanged upstream copies).
-    `SPEC.md` (54 KB, read 18 times in 4 sessions) is baselined, not split: splitting a top-level authority is the
-    user's call, and it is asked before its next amendment.
+    - `SPEC.md` (54 KB, read 18 times in 4 sessions) is split by section into `docs/spec/` parts behind an index
+      that keeps its name, its preamble and its authority, with not one word changed; routes name the part (the
+      user, 2026-10-28: «موافق دامه بيحسن البيئة و تقليل الحمل على ال agent لقراءة ال context»). Its 54 line
+      citations are in August phase records, already stale since its later amendments. Whether agents open one part
+      instead of the whole is measured again with the rest.
