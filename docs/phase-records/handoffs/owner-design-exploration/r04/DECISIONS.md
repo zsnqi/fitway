@@ -1085,6 +1085,14 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     ragged and has to be found. This supersedes item 93's Arabic part ("starts on the right edge beside the icon",
     finding 6) for this box only; it is not a rule for other Latin text in Arabic screens.
 
+96. **The next two pieces run side by side, from a new session** (the user, 2026-10-28, on the coordinator's
+    recommendation: «ممتاز سجل الشي دا لان ببدأ معك ب جلسة جديدة», «تمام موافق», «لا مو ب الجلسة الحالية»): (1) the
+    `compare` fix (it captures only the first screen, the grader's L5) as a Codex round in its own worktree on
+    agent-tooling-r01's path, before the next pages use it for their checks (item 52's order); its brief is reviewed by
+    DeepSeek alone while GPT-6.1 Sol is at capacity («تمام»); (2) meanwhile the public crowd page's paper: its ADR, the
+    three files' amendments and its milestone, written for the user to read and accept («تمام موافق»). The public
+    page's design still waits for Settings to be finished (item 84).
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the

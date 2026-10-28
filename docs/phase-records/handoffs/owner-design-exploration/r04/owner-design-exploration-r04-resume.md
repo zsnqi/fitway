@@ -1,10 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 15:10 +03:00 (decision 93's
-  belonging check built and merged; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 16:00 +03:00 (decision 93's
+  belonging check on main; decision 96 says what runs next; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-95; 95 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-96; 96 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -33,8 +33,8 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 15:10). main `2e4f01e9` (CI 40637615699); this line adds the belonging-check merge
-`dbf9b683` and its records, for `pnpm main:advance` once its CI passes. Build branch `owner-followup-r04-build` at
+Nothing runs (measured 2026-10-28 16:00). main `d2f97cab` (CI 40685508547) holds the belonging check; this line adds
+decision 96, for `pnpm main:advance` once its CI passes. Build branch `owner-followup-r04-build` at
 `fedbdb6d`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
@@ -66,23 +66,21 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
 - **Next, in order:**
   1. `pnpm main:advance` to this commit once its CI passes (if not already done; check `git log -1 origin/main`).
-  2. `compare` capturing only the first screen (the grader's L5; its L8, a 720-721 px zoom edge, untested), on
-     agent-tooling-r01's path (decision 73).
-  3. The public page's ADR, amendments and milestone (below), then the pages of decision 84.
+  2. **Side by side, from a new session (decision 96):** the `compare` fix (it captures only the first screen, the
+     grader's L5; its L8, a 720-721 px zoom edge, untested) as a Codex round on agent-tooling-r01's path, its brief
+     reviewed by DeepSeek alone while Sol is at capacity; and the public page's ADR, amendments and milestone (below)
+     for the user to read. Its design waits for Settings (decision 84).
 - **The public page:** P1-P7 answered (DECISIONS 90); the ADR, the three files' amendments and its milestone are
   not started; the user sees all three before any design. Friday's dash: A kept (DECISIONS 89).
 
 ## Next steps
 
 1. **main** moves only by `pnpm main:advance` to a pushed coordinator commit whose CI passed (§"Running now").
-2. **The pages** (decision 84 replaces 51's order, 2026-10-24): Settings, then the public crowd page, then the demo's
-   polish and materials (private plan); Operations and Monitoring, sign-in and the front-desk screen after the gym owner
-   accepts. Decision 76 (the demo first):
-   what is visible and would make the demo look bad is fixed first, Arabic without compromise. **Settings:** the user chose
-   arrangement ج of the skeleton's third pass (decision 80 corrects 77's ب, 2026-10-19; report and frames in
-   D:/fitway-temp/owner-r04-settings-skeleton/REPORT.md §"Third pass"; artifact
-   https://claude.ai/artifact/6AwDy1L1hZKE5jDRAg1hn8). **Next:** finish the Settings round above (paused at its fixes). Left for later, with their reasons: the dialogs' parts splitting under a
-   planted stall (report-only, under load only) and the key's glyph softening (F148, decision 69).
+2. **The pages** (decision 84): Settings, then the public crowd page, then the demo's polish and materials (private
+   plan); Operations and Monitoring, sign-in and the front-desk screen after the gym owner accepts. **Settings** is built
+   and verified (decision 81's round, verify-9 to verify-11: no High or Medium left,
+   `D:/fitway-temp/owner-r04-verify-11/REPORT.md`); left: the user's look at it as a whole, and after the demo the
+   dialogs' parts splitting under a planted stall and the key's glyph softening (F148, decision 69).
 3. **F266 is fixed** (`873e03fc` on the build branch, pushed: Components places its tip with Reports' shared placement; 204
    cases measured, no overlap). **F285** (Components' heat grid at 390 is broken) waits: the user, 2026-10-18, the sheet is
    not in the demo; any designer brief whose page shows a heat or hour grid on the phone says the sheet's grid at 390 is
