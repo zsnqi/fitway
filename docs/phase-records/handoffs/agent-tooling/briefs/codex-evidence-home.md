@@ -69,13 +69,17 @@ does not exist.
   the temp root injected). Intent: a folder says where it came from without a search through transcripts.
 - **H3.** The Owner concept's `DESIGN-SPEC.md` is 283 KB and `SETTINGS-SPEC.md` 78 KB, and agents read them whole
   several times a session; its page scripts reach 188 KB; the ratchet covers neither, since the concept was to join
-  "when the build branch takes this line's tooling" (DECISIONS item 6). Outcome: the code-health measures gain
-  `giantDocuments`, a tracked Markdown file over 40,000 bytes, baselined and ratcheted like `giantFiles`; and the
+  "when the build branch takes this line's tooling" (DECISIONS item 6). The coordinator's own records grow the same
+  way: r04's `DECISIONS.md` is 127 KB and was read 16 times in 6 sessions. Outcome: the code-health measures gain
+  `giantDocuments`, a tracked Markdown file over 40,000 bytes outside `docs/archive/` (frozen, read only through a
+  pointer) and `.claude/skills/` (unchanged upstream copies, `.claude/skills/SOURCES.md`), baselined and ratcheted
+  like `giantFiles`; and the
   concept folder named in `.agents/skills/verify-fitway/concept-source.json` joins the ratchet's roots for
   `giantFiles` and `giantDocuments` only (its other measures wait for the move to production, agent-environment
   DECISIONS item 20). The giant-file split message names the document case: split by section into files a reader
   opens one at a time. Check: tests in the code-health test files for a 40,001-byte Markdown file (counted), a
-  40,000-byte one (not counted), growth of a baselined giant document (fails) and a concept JavaScript file over the
+  40,000-byte one (not counted), a 40,001-byte one under `docs/archive/` (not counted), growth of a baselined giant
+  document (fails) and a concept JavaScript file over the
   giant-file line (counted). Intent: a document a reader must open whole stays one read.
 - **H4.** Agents have searched code for a check that does not exist. `docs/agent-context/README.md` §"Which check
   enforces each rule" now says, for each rule, which check enforces it or that it is written only. Outcome: `pnpm
