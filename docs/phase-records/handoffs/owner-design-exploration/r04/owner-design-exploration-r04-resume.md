@@ -1,10 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 16:00 +03:00 (decision 93's
-  belonging check on main; decision 96 says what runs next; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 17:00 +03:00 (Settings
+  accepted, decision 97; decision 96 says what runs next; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-96; 96 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-97; 97 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -33,9 +33,10 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 16:00). main `d2f97cab` (CI 40685508547) holds the belonging check; this line adds
-decision 96, for `pnpm main:advance` once its CI passes. Build branch `owner-followup-r04-build` at
-`fedbdb6d`, pushed. Status page for the user:
+Nothing runs but the previews (measured 2026-10-28 17:00: eclipse-build on 3174 and the LAN preview on 3180, the PC
+at 192.168.8.186). main `b97009fd` (CI 40693612445) holds decision 96; this line adds decision 97, for `pnpm
+main:advance` once its CI passes. Build branch `owner-followup-r04-build` at `fedbdb6d`, pushed.
+**Settings is accepted** (decision 97): the user looked at the live page at `fedbdb6d` and tried it. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
 - **The belonging check is built** (DECISIONS 93, `codex-rounds.md` §"belonging-check", measured):
@@ -69,7 +70,7 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   2. **Side by side, from a new session (decision 96):** the `compare` fix (it captures only the first screen, the
      grader's L5; its L8, a 720-721 px zoom edge, untested) as a Codex round on agent-tooling-r01's path, its brief
      reviewed by DeepSeek alone while Sol is at capacity; and the public page's ADR, amendments and milestone (below)
-     for the user to read. Its design waits for Settings (decision 84).
+     for the user to read. Settings is accepted (decision 97), so its design follows once the user accepts the paper.
 - **The public page:** P1-P7 answered (DECISIONS 90); the ADR, the three files' amendments and its milestone are
   not started; the user sees all three before any design. Friday's dash: A kept (DECISIONS 89).
 
@@ -79,8 +80,8 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
 2. **The pages** (decision 84): Settings, then the public crowd page, then the demo's polish and materials (private
    plan); Operations and Monitoring, sign-in and the front-desk screen after the gym owner accepts. **Settings** is built
    and verified (decision 81's round, verify-9 to verify-11: no High or Medium left,
-   `D:/fitway-temp/owner-r04-verify-11/REPORT.md`); left: the user's look at it as a whole, and after the demo the
-   dialogs' parts splitting under a planted stall and the key's glyph softening (F148, decision 69).
+   `D:/fitway-temp/owner-r04-verify-11/REPORT.md`), and accepted by the user at `fedbdb6d` (decision 97); left for after
+   the demo: the dialogs' parts splitting under a planted stall and the key's glyph softening (F148, decision 69).
 3. **F266 is fixed** (`873e03fc` on the build branch, pushed: Components places its tip with Reports' shared placement; 204
    cases measured, no overlap). **F285** (Components' heat grid at 390 is broken) waits: the user, 2026-10-18, the sheet is
    not in the demo; any designer brief whose page shows a heat or hour grid on the phone says the sheet's grid at 390 is

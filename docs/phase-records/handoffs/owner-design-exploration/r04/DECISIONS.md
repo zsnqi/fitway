@@ -1093,6 +1093,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     three files' amendments and its milestone, written for the user to read and accept («تمام موافق»). The public
     page's design still waits for Settings to be finished (item 84).
 
+97. **Settings is accepted** (the user, 2026-10-28: «شفت صفحة الاعدادات و كويسة اي اقبلها الحين», «اختبرتها ع
+    السريع و ممتازة»), after looking at the live page and trying it, in both languages on the computer and the phone,
+    served from the build branch at `fedbdb6d` (eclipse-build on 3174, the LAN preview on 3180). The frame set was not
+    rendered for it, at the user's word («يمديك تشغل الموقع وبس»). This is the concept's acceptance at that commit: item
+    84's "Settings finished" is met, so the public crowd page's design may follow its paper (item 96 (2)); a later
+    change to Settings is looked at again. Visual authority, production, the canonicals and the promotion gates are
+    unchanged (ADR-009). Left for after the demo, as before: the dialogs' parts splitting under a planted stall, the
+    key's glyph softening (F148, item 69), and the font-swap hold in the shared frame (verify-11's finding 5).
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
