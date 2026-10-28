@@ -33,10 +33,9 @@
 
 ## Running now
 
-Nothing runs but the previews (measured 2026-10-28 17:00: eclipse-build on 3174 and the LAN preview on 3180, the PC
-at 192.168.8.186). main `b97009fd` (CI 40693612445) holds decision 96; this line adds decision 97, for `pnpm
-main:advance` once its CI passes. Build branch `owner-followup-r04-build` at `fedbdb6d`, pushed.
-**Settings is accepted** (decision 97): the user looked at the live page at `fedbdb6d` and tried it. Status page for the user:
+Nothing runs (measured 2026-10-28 17:00; the PC's LAN address is 192.168.8.186). main `b97009fd` (CI 40693612445);
+this line adds decision 97 (Settings accepted), for `pnpm main:advance` once its CI passes. Build branch
+`owner-followup-r04-build` at `fedbdb6d`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
 - **The belonging check is built** (DECISIONS 93, `codex-rounds.md` §"belonging-check", measured):
