@@ -264,14 +264,12 @@ function withoutComments(text: string) {
 // Each entry and what it is made of: its relative imports, followed transitively, so a
 // module split out of an entry is scanned as the entry is. Modules that read other tokens
 // by design are not scanned: the contract itself, the parsers of a downstream tool's
-// arguments (colors.mjs, measure-arguments.mjs), the words of a Git command an agent ran,
-// and the commands a test runs (tooling-map-coverage.mjs).
+// arguments (colors.mjs, measure-arguments.mjs), and the words of a Git command an agent ran.
 const TOKEN_READERS = new Set([
 	".agents/skills/verify-fitway/colors.mjs",
 	".agents/skills/verify-fitway/measure-arguments.mjs",
 	"scripts/agent-environment/git-commit-words.mjs",
 	"scripts/agent-environment/tool-contract.mjs",
-	"scripts/agent-environment/tooling-map-coverage.mjs",
 ]);
 
 export function entryFiles() {

@@ -769,8 +769,7 @@
 			"duplication": 1
 		},
 		"scripts/agent-environment/generate-tooling-map.test.ts": {
-			"duplication": 7,
-			"giantFiles": 852
+			"duplication": 3
 		},
 		"scripts/agent-environment/new-handoff.mjs": {
 			"longFunctions": 1,
@@ -797,12 +796,6 @@
 		},
 		"scripts/agent-environment/start-load.test.ts": {
 			"duplication": 1
-		},
-		"scripts/agent-environment/tooling-map-coverage.mjs": {
-			"duplication": 2
-		},
-		"scripts/agent-environment/tooling-map-imports.mjs": {
-			"duplication": 4
 		},
 		"scripts/check-agent-context.mjs": {
 			"longFunctions": 1,
@@ -1020,8 +1013,8 @@
 			"expectCalls": 509
 		},
 		"scripts/agent-environment": {
-			"testCases": 372,
-			"expectCalls": 1077
+			"testCases": 366,
+			"expectCalls": 1057
 		},
 		"scripts/demo": {
 			"testCases": 17,
