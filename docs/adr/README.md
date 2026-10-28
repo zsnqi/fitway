@@ -15,3 +15,4 @@ why and must not silently override them.
 | [ADR-007](ADR-007-paper-visual-source-of-truth.md) | Paper as visual source of truth, G3 ADAPTIVE GLASS, and the visual/behavioral split |
 | [ADR-008](ADR-008-staff-monitoring-only.md) | `/staff` is monitoring-only; staff command mutations retired, internal command infrastructure preserved |
 | [ADR-009](ADR-009-owner-composition-authority-supersession.md) | Owner composition authority superseded for redesign; prior Owner Paper/canonical composition is reference only |
+| [ADR-010](ADR-010-public-composition-authority-supersession.md) | Public composition authority superseded for redesign in the Eclipse family; prior Public Paper/canonical composition is reference only |

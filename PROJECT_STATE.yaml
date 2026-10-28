@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-18T09:50:00+03:00
+updatedAt: 2026-10-28T18:30:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
   report: .agents/skills/gardener/REPORT.md
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-tooling-r01 (the agent tooling, opened 2026-10-16) are IN_PROGRESS, access-reason-cap-r01 is DONE (restarted by the coordinator on 2026-10-14, integrated at bfc23713), agent-environment-r01 and r03 are DONE and agent-environment-r02 is SUPERSEDED by r03, all archived.
+  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-tooling-r01 (the agent tooling, opened 2026-10-16) and public-redesign-r01 (the public page in the Eclipse family, opened 2026-10-28) are IN_PROGRESS, access-reason-cap-r01 is DONE (restarted by the coordinator on 2026-10-14, integrated at bfc23713), agent-environment-r01 and r03 are DONE and agent-environment-r02 is SUPERSEDED by r03, all archived.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -36,7 +36,7 @@ milestones:
     worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04
     baseCommit: e5d5027ab67966c38612dd973f2f4bcb85f3441b
     ownedPaths:
-      - design-research/owner-composition-exploration-r04/directions/**
+      - design-research/owner-composition-exploration-r04/directions/** except Eclipse's public.html, public.css, public.js, PUBLIC-SPEC.md and public-capture.mjs (public-redesign-r01's from 2026-10-28, DECISIONS 98; DESIGN-SPEC.md §6 leased to it)
       - docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
       - docs/phase-records/handoffs/owner-design-exploration/r04/**
       - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
@@ -112,5 +112,43 @@ milestones:
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+  public-redesign-r01:
+    status: IN_PROGRESS
+    objective: >-
+      Redesign the public crowd page, concept-only, in the Eclipse concept's style from its shared foundations, as the
+      user decided (owner-design-exploration-r04 DECISIONS items 90, 98 and 99): present it for the user's acceptance
+      by eye, and leave production, canonical, Paper, the manifest and the shipped public page unchanged.
+    taskPacket: docs/phase-records/task-packets/public-redesign-r01.yaml
+    dependencies: []
+    ownerSession: claude-code-desktop:local_0abbf6f6-fc93-4b0c-9dd1-8042cda3c233
+    branch: public-redesign-r01 (its rounds), integrated into owner-followup-r04-build
+    worktree: D:/Projects/fitway-worktrees/public-redesign-r01 (created at the first round)
+    baseCommit: fedbdb6d
+    ownedPaths:
+      - docs/phase-records/handoffs/public-redesign/**
+      - docs/phase-records/task-packets/public-redesign-r01.yaml
+      - docs/adr/ADR-010-public-composition-authority-supersession.md, the amended lines of FITWAY_PRODUCT.md, DESIGN_GUIDE.md and SPEC.md, and the `public` row and legend of docs/design/VISUAL_AUTHORITY_STATUS.md (applied at opening, owner-design-exploration-r04 DECISIONS item 98)
+    forbiddenPaths:
+      - apps/** and packages/** production code, copy, behavior and data semantics
+      - tests/browser/** including canonicals and screenshots
+      - visual-direction-gate/**, approval manifests and pinned hashes (the manifest's `public` entry waits for a follow-on manifest workstream)
+      - every other file of design-research/owner-composition-exploration-r04/** (owner-design-exploration-r04's), except DESIGN-SPEC.md §6 under the lease below
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - the agent tooling (agent-tooling-r01's), CLAUDE.md, .claude/agents/** and .claude/skills/**
+      - pnpm-lock.yaml, dependencies and migrations
+    sharedLeases:
+      - "design-research/owner-composition-exploration-r04/directions/eclipse/public.html, public.css, public.js, PUBLIC-SPEC.md and public-capture.mjs, written by this milestone only, a coordinator lease from owner-design-exploration-r04 (DECISIONS item 98)"
+      - "design-research/owner-composition-exploration-r04/directions/eclipse/DESIGN-SPEC.md, §6 Public only, a coordinator lease from owner-design-exploration-r04 (DECISIONS item 98)"
+    validationRepairAttempts: 0
+    handoff: docs/phase-records/handoffs/public-redesign/public-redesign-r01-resume.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
       independentReview: PENDING
     integratedCommit: null

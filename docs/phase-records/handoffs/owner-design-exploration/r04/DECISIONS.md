@@ -1102,6 +1102,33 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     unchanged (ADR-009). Left for after the demo, as before: the dialogs' parts splitting under a planted stall, the
     key's glyph softening (F148, item 69), and the font-swap hold in the shared frame (verify-11's finding 5).
 
+98. **The public page's paper is accepted, with every recommendation** (the user, 2026-10-28: «موافق عليها», on
+    https://claude.ai/artifact/WzWKFXoT7QnJdG43kkyqgg; the drafts at `2cec34c4`,
+    `docs/phase-records/handoffs/owner-design-exploration/r04/public-page-paper/`). ADR-010 is accepted as drafted; the
+    amendments P-1…P-6, G-1…G-9 and S-1…S-11 are applied as drafted; the nine questions take the coordinator's
+    recommendation: Eclipse's static lights and no watermark; the level outranks the count; the level mark follows
+    reading direction where it has one; the stale age is measured against the server's time in the payload, never the
+    device clock; no green, yellow or orange categorical meter among the level mark's candidates; the weight and speed
+    budget after the demo, with one smoothness check on the demo phone; the visitor sees the stale state within 5
+    minutes; S-11's screen-reader test before production; and the page is built in Eclipse's folder beside the Owner
+    pages, under its own milestone `public-redesign-r01`, with `DESIGN-SPEC.md` §6 written under a coordinator lease
+    from this milestone. Its design starts from a skeleton shown to the user (rounds item 8; item 99 replaces this).
+    **As applied** (`owner-direction-fixer`, then the coordinator's diff review), six places differ from the draft's
+    words to keep its stated pattern (the shipped page keeps its rules until the redesign is promoted) and ADR-010's
+    decisions: G-5 keeps the shipped page's watermark sentence; DESIGN_GUIDE §15 item 7 names Login and Staff only
+    under Paper (the draft's "and Public until … promoted" contradicted ADR-010 decisions 2-3); the Delayed row's
+    visibility cell says "level mark" too; P-4 scopes "the background and live data do not animate" to the shipped
+    page; S-1 keeps "light/dark treatment" for Owner, which the draft's S:25 dropped; and the register records that
+    the manifest's `public` entry keeps `ACCEPTED_PAPER_AUTHORITY` until a follow-on manifest workstream, as Owner's
+    did under ADR-009.
+
+99. **The public page starts without a skeleton** (the user, 2026-10-28: «خلاص موافق انه نتخطى ال skeleton», on the
+    coordinator's answer that a grey skeleton would fix the composition before the look and motion are seen, on a
+    page whose order the Spec already fixes). Rounds item 8 does not apply to the public page: its first design round
+    draws two or three whole directions in Eclipse's style, each with its own composition and level-mark form, at 390
+    px first in Arabic and English, and the user picks by eye. The loading state's placeholders (STA-10, PH-1…3) are
+    still designed and built. Replaces item 98's last sentence.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the

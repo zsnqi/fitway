@@ -17,7 +17,7 @@ The primary truth is the labeled crowd band—Quiet, Moderate, Busy, or Packed�
 
 ## Surface boundaries
 
-The public surface is anonymous, mobile-first, read-only, lightweight, and limited to current occupancy truth. It must not expose controls, operational diagnostics, member identity, images, video, or tracking identifiers.
+The public surface is anonymous, mobile-first, read-only, lightweight, and limited to current occupancy truth. It must not expose operational controls, operational diagnostics, member identity, images, video, or tracking identifiers. Its only controls are the language switch and, in the error state only, one retry action.
 
 Staff and owner surfaces are authenticated operational tools. Staff can read the live count and health but cannot operate the count and cannot access owner settings, analytics, or account management. Owners receive those additional governance and reporting capabilities. Server-side authorization—not navigation visibility—is authoritative. Shared staff access is PIN-based through the signed HttpOnly session model, not email/password. Historical scaffold email/password forms and the design archive's fake login values are not product authority.
 
@@ -28,7 +28,7 @@ The public page should answer, in order:
 1. Is the gym open, and is the information live?
 2. What is the labeled crowd band?
 3. What is the approximate count?
-4. What does the continuous crowd signal show?
+4. What does the level mark show?
 5. When was the value updated?
 6. If closed, when does the gym open next? If stale or unavailable, what can the visitor safely conclude?
 
@@ -37,8 +37,8 @@ Crowd status and freshness must always use text and iconography in addition to c
 ## Operational states
 
 - **Loading:** a lightweight skeleton and accessible loading announcement while the first payload resolves.
-- **Fresh:** open gym, usable recent value, labeled live update, band, approximate count, continuous 28-bar crowd signal, and last-updated time.
-- **Stale:** open gym, visibly delayed update, explicitly labeled last-known count and timestamp; the band and crowd signal remain only as visibly qualified last-known context.
+- **Fresh:** open gym, usable recent value, labeled live update, band, approximate count, level mark, and last-updated time.
+- **Stale:** open gym, visibly delayed update, explicitly labeled last-known count and timestamp; the band and level mark remain only as visibly qualified last-known context, and the last update shows as an absolute time with its age.
 - **Closed:** closed label and next opening when known; no count, crowd band, or implied live freshness.
 - **Unavailable:** honest inability to provide usable occupancy; no count, crowd band, or fabricated last-updated time.
 - **Error:** honest request failure, no retained reading, and one focused retry action.
@@ -55,19 +55,19 @@ All user-facing numerals are Western digits `0–9` in both languages. Public Ar
 
 ## Visual and inclusive constraints
 
-The shipped v1 product is dark-only; there is no production light theme or theme toggle. Cairo is self-hosted for Arabic and Latin subsets at the actual weights 400, 500, 600, and 700; production must not depend on synthetic 800/900 faces. These appearance rules do not prescribe concept-only Owner exploration under the named human decision: such artifacts may try light or dark treatments and typography other than Cairo without changing the shipped product or creating a theme option.
+The shipped v1 product is dark-only; there is no production light theme or theme toggle. Cairo is self-hosted for Arabic and Latin subsets at the actual weights 400, 500, 600, and 700; production must not depend on synthetic 800/900 faces. These appearance rules do not prescribe concept-only Owner exploration under the named human decision, nor the Public redesign under ADR-010 (until promoted, the shipped page keeps Cairo): such Owner artifacts may try light or dark treatments and typography other than Cairo without changing the shipped product or creating a theme option. The Public redesign sets its type in Readex Pro, self-hosted, at real weights only (Eclipse TYP-1: 400 and 500), as the Owner concept does, and stays dark-only.
 
 Fitway must remain keyboard-operable, screen-reader legible, color-independent, and WCAG-conscious. Interactive touch targets, visible focus, concise live-region updates, text alternatives for data, and contrast requirements follow [DESIGN_GUIDE.md](DESIGN_GUIDE.md). `prefers-reduced-motion` must remove non-essential motion and replace animated loading or number changes with static/instant behavior. No essential meaning may depend on motion.
 
 ## Approved visual baseline
 
-The approved production visual baseline was established. This records production authority and does not close concept-only Owner exploration authorized by ADR-009 and a named human decision; exploratory concepts do not change shipped product or production authority. The one-time Baseline Reconciliation Gate promotes the current approved FITWAY theme, provenance, canonical screenshots, and supersession rules indexed by [`visual-direction-gate/approved/APPROVAL_MANIFEST.yaml`](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml). Its live completion state is recorded in [PROJECT_STATE.yaml](PROJECT_STATE.yaml). The durable implementation rules live in [DESIGN_GUIDE.md](DESIGN_GUIDE.md).
+The approved production visual baseline was established. This records production authority and does not close concept-only Owner exploration authorized by ADR-009 and a named human decision, nor the Public redesign authorized by ADR-010 and a named human decision (owner-design-exploration-r04 DECISIONS item 90); exploratory concepts do not change shipped product or production authority. The one-time Baseline Reconciliation Gate promotes the current approved FITWAY theme, provenance, canonical screenshots, and supersession rules indexed by [`visual-direction-gate/approved/APPROVAL_MANIFEST.yaml`](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml). Its live completion state is recorded in [PROJECT_STATE.yaml](PROJECT_STATE.yaml). The durable implementation rules live in [DESIGN_GUIDE.md](DESIGN_GUIDE.md).
 
 The theme retains the strongest lineage from G1B and the approved Claude Design family—global header discipline, panoramic public board, asymmetric metrics, near-black/graphite surfaces, FITWAY red, and purpose-built operational/data routes—but those artifacts are now historical provenance. Their percentage copy, fake identities, email/password mockups, fixture labels, demo notices, unavailable font weights, and preview-only annotations are explicitly superseded.
 
-The production baseline uses a continuous cumulative 28-bar public crowd signal, makes crowd level dominant over the approximate count, uses a static blurred oxblood/FITWAY-red atmosphere behind the interface, and supports the canonical 320–1440 responsive matrix. The page background and live data do not animate. English LTR is composed naturally rather than mechanically mirrored from Arabic.
+The production baseline uses a continuous cumulative 28-bar public crowd signal, makes crowd level dominant over the approximate count, uses a static blurred oxblood/FITWAY-red atmosphere behind the interface, and supports the canonical 320–1440 responsive matrix. On the shipped page the background and live data do not animate. English LTR is composed naturally rather than mechanically mirrored from Arabic. The Public redesign keeps crowd level dominant over the approximate count and the 320–1440 matrix; replaces the 28 bars with a level mark chosen by eye in its design round and the oxblood atmosphere with Eclipse's static lights; and lets digits roll only when a new live reading arrives, never on opening, never while stale or closed, never under reduced motion. The lights do not animate.
 
-Further visual improvement to shipped routes happens in the focused polish loop at the end of the relevant implementation phase. It may improve composition, spacing, typography, mobile behavior, interaction, charts, tables, and accessibility while retaining FITWAY's identity and locked semantics. Concept-only Owner exploration may continue for as many attempts as the user requests; it is not limited by the production polish loop. A material product or production visual-direction change must be surfaced explicitly.
+Further visual improvement to shipped routes happens in the focused polish loop at the end of the relevant implementation phase. It may improve composition, spacing, typography, mobile behavior, interaction, charts, tables, and accessibility while retaining FITWAY's identity and locked semantics. Concept-only Owner exploration, and the Public redesign authorized by ADR-010 and a named human decision (owner-design-exploration-r04 DECISIONS item 90), may continue for as many attempts as the user requests; neither is limited by the production polish loop. A material product or production visual-direction change must be surfaced explicitly.
 
 ## Canonical detail
 

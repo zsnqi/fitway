@@ -4,7 +4,7 @@
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 17:00 +03:00 (Settings
   accepted, decision 97; decision 96 says what runs next; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-97; 97 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-99; 99 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -66,12 +66,12 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
 - **Next, in order:**
   1. `pnpm main:advance` to this commit once its CI passes (if not already done; check `git log -1 origin/main`).
-  2. **Side by side, from a new session (decision 96):** the `compare` fix (it captures only the first screen, the
-     grader's L5; its L8, a 720-721 px zoom edge, untested) as a Codex round on agent-tooling-r01's path, its brief
-     reviewed by DeepSeek alone while Sol is at capacity; and the public page's ADR, amendments and milestone (below)
-     for the user to read. Settings is accepted (decision 97), so its design follows once the user accepts the paper.
-- **The public page:** P1-P7 answered (DECISIONS 90); the ADR, the three files' amendments and its milestone are
-  not started; the user sees all three before any design. Friday's dash: A kept (DECISIONS 89).
+  2. **The `compare` fix (decision 96 (1)):** brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-compare-fullpage.md`,
+     worktree `D:/Projects/fitway-worktrees/tooling-compare-fullpage` (its own install); DeepSeek's review
+     (`D:/fitway-temp/brief-review/codex-compare-fullpage-1/`, five readings) waits for its dispositions, then launch.
+- **The public page:** its paper accepted and applied (decisions 98, 99; ADR-010); it runs as its own milestone,
+  public-redesign-r01 (`docs/phase-records/handoffs/public-redesign/public-redesign-r01-resume.md`), its first round
+  without a skeleton. Friday's dash: A kept (DECISIONS 89).
 
 ## Next steps
 

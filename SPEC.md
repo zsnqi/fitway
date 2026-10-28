@@ -21,8 +21,9 @@
 > the two-path cache-first architecture, edge-authoritative counting, Hono + Drizzle +
 > Supabase Postgres, signed server-side sessions and authorization, Arabic-first RTL,
 > **dark-only for the shipped v1 product**, and **Western digits 0–9 exclusively**.
-> The named human decision for concept-only Owner exploration may vary appearance, including
-> light/dark treatment and typography other than Cairo; it does not change the shipped contract.
+> The named human decision for concept-only Owner exploration and the Public redesign under
+> ADR-010 may vary appearance, including light/dark treatment and typography other than Cairo
+> (the Public redesign: Readex Pro, dark-only); it does not change the shipped contract.
 >
 > This spec deliberately does **not** split work into phases and does not cover
 > deployment/provisioning execution (Supabase project creation, Vercel spend caps, domain).
@@ -32,31 +33,34 @@
 
 ## Implementation authority and fidelity contract
 
-Production baseline reconciliation and implementation phases are complete. This contract governs the shipped product and maintenance. It does not close concept-only Owner exploration authorized by ADR-009 and a named human decision; concepts change neither this contract nor production until separately approved. The following contract governed
+Production baseline reconciliation and implementation phases are complete. This contract governs the shipped product and maintenance. It does not close concept-only Owner exploration authorized by ADR-009 and a named human decision, and the Public redesign under ADR-010 (typography: Readex Pro, dark-only); concepts change neither this contract nor production until separately approved. The following contract governed
 the implementation phases and remains the conformance boundary for maintenance or later changes:
 
 - Hard product, security, privacy, content, accessibility, and data-semantic decisions remain
   binding. A material proposal to change one must be surfaced explicitly before implementation;
   it must never be changed silently through UI or technical convenience.
 - The approved FITWAY theme and manifest are the production visual baseline. Concept-only Owner
-  exploration may vary visual direction under its active human-authorized packet without changing
+  exploration, and the Public redesign under ADR-010 (typography: Readex Pro, dark-only), may
+  vary visual direction under their active human-authorized packets without changing
   production. G1B and the final Claude
   Design product family remain historical lineage only where the manifest says they apply.
   Implementation may improve composition, hierarchy, spacing,
   typography, responsive/mobile behavior, motion, interaction, charts, tables, accessibility,
   and real-browser quality while retaining FITWAY's identity and locked semantics.
-- Design-only annotations, preview labels, demo notices, fake owner/email values, arbitrary
+- Design-only annotations, preview labels, demo notices, a demo state switch (hidden or not),
+  fake owner/email values, arbitrary
   identities, fixture data, and other mockup-only content must not ship.
 - Staff authentication is PIN-based using the signed HttpOnly session model, not
   email/password. The removed scaffold login and the archive's fake email form are historical
   implementation inputs, not product authority.
-- Preserve the capacity-free public schema-version-2 contract and the approved Arabic Public
-  Live composition with its continuous cumulative 28-bar crowd signal.
+- Preserve the capacity-free public schema-version-2 contract. The shipped page keeps the
+  approved Arabic Public Live composition with its 28-bar signal until the Public redesign is
+  promoted; the redesign's composition is set by its approved concept.
   English LTR must be naturally composed rather than mechanically mirrored from Arabic.
 - Correct wrapping, RTL/Bidi isolation, Western-digit number and gym-time formatting,
   overflow, responsive tables, mobile operational density, keyboard behavior, reduced motion,
   and loading/stale/unavailable/error semantics before a surface can be accepted.
-- The current Design Guide and approval manifest govern shipped production layout. Owner concept-only exploration follows its active human-authorized envelope. The historical Claude
+- The current Design Guide and approval manifest govern shipped production layout. Owner concept-only exploration, and the Public redesign under ADR-010 (typography: Readex Pro, dark-only), follow their active human-authorized envelopes. The historical Claude
   Analytics PNG preserves occupancy-curve behavior lineage only; `DESIGN_GUIDE.md` §12 defines
   normative chart interaction, accessibility, RTL, formatting, and reduced-motion rules.
 
@@ -110,7 +114,8 @@ count (RESEARCH.md §9 governing rule).
 
 1. As a visitor, I want to see the crowd status band and an explicitly labeled approximate
    count on my phone within seconds of opening the page, so that I can decide
-   whether to go now. Approved Arabic public copy uses `العدد التقريبي` as that label.
+   whether to go now. Approved Arabic public copy uses «داخل الصالة الآن · تقريبًا» as that label
+   (English: "Inside now · approx."), the same wording as the Owner pages (Eclipse GLO-2).
 2. As a visitor, I want a last-updated time next to the number, so that I can judge how
    fresh the information is.
 3. As a visitor, I want the page to say "Closed now — opens 6:00 AM" when the gym is
@@ -234,8 +239,9 @@ measurable pilot targets):
       unavailable/offline, closed, and request error — per DESIGN_GUIDE §6, with no state ever
       presenting stale data as live.
 - [ ] Public schema version 2 and Public Live expose no capacity, denominator, percentage,
-      health, identity, or history. The crowd-first continuous 28-bar signal derives only from
-      `band`, mirrors by direction, and has a concise localized accessible name.
+      health, identity, or history. The crowd-first level mark (the 28-bar signal on the shipped
+      page) derives only from `band`, follows reading direction where it has one, and has one
+      concise localized accessible name with decorative parts hidden and no numeric ARIA.
 - [ ] Public page is Arabic RTL by default with a persistent English/LTR toggle; all copy
       comes from a message catalog; Western digits and `-u-nu-latn` formatting everywhere
       (both languages), per DESIGN_GUIDE §§4, 9, and 14.
@@ -290,7 +296,7 @@ measurable pilot targets):
 - [ ] **Public freshness.** While healthy, the payload a visitor receives reflects a push
       **≤ 90 s old for ≥ 95% of open-hour time** (verified by sampling the public endpoint
       against push timestamps). When the edge goes silent, a polling visitor sees the
-      stale state within **≤ 5 minutes** of the last successful push (3-min stale
+      stale state within **≤ 5 minutes** of the last successful push (90 s stale
       threshold + one cache window + one poll interval).
 - [ ] **Command propagation.** With the edge online, an issued correction/reset is
       reflected in a freshly fetched public payload within **≤ 90 s in ≥ 90% of ≥ 5
@@ -354,8 +360,9 @@ just data, not a special case.
   remains for compatibility without authorizing a manual fallback.
 - **Settings versions** — append-only: capacity, band thresholds (% boundaries for
   Quiet/Moderate/Busy/Packed), weekly hours, business-day boundary, reset buffer minutes,
-  timezone, freshness windows (push interval, fresh ≤ 90 s, stale ≥ 180 s, public poll
-  ~60 s), created-by, effective-from. Current settings = latest row; historical rows keep
+  timezone, freshness windows (push interval; public fresh window 90 s, older is stale;
+  operational stale threshold 180 s for staff health and alerts; public poll ~60 s), created-by,
+  effective-from. Current settings = latest row; historical rows keep
   old analytics honest (RESEARCH.md §8).
 - **Edge devices** — id, name, hashed device token, enabled flag, last-seen, last
   processed sequence number. One device in v1; the table exists so tokens are rotatable
@@ -486,7 +493,7 @@ refresh**; band and count (floored at 0); last-updated timestamp; source (`edge`
 field that is always null in v1 **[Resolved here — trend deferred; slot reserved]**.
 Capacity, denominator, percentage, health, device identity, and history are not exposed by
 the current schema-version-2 contract.
-The continuous cumulative 28-bar crowd signal is rendered from `band`, not from a hidden
+The level mark (28-bar signal on the shipped page) is rendered from `band`, not from a hidden
 capacity ratio. This endpoint reads only the current-state row and settings — never history — and is the only
 thing visitors touch. Version 2 is an intentional pre-Phase-4 privacy correction; web,
 server, fixtures, and tests upgrade atomically and version 1 is not served in parallel.
@@ -543,7 +550,9 @@ thresholds) lives in the settings table, not env.
 
 **Routes (web). [Resolved here]**
 
-- `/` — public occupancy page (no auth chrome, no header/nav from the scaffold demo).
+- `/` — public occupancy page (no auth chrome and no header/nav from the scaffold demo; no
+  Owner rail, bar or header; the page carries the brand, the language switch, the gym's name as
+  fixed text, and in the error state only «إعادة المحاولة»).
 - `/login` — PIN-based staff sign-in; owner access uses its separately provisioned real
   account path. No sign-up route; the scaffolded email/password staff form is not the target.
 - `/staff` — operational view; requires `staff` or `owner`.
@@ -554,9 +563,12 @@ thresholds) lives in the settings table, not env.
 ### Behavior & Interactions
 
 **Freshness state machine (defaults; all config-driven).** Edge pushes every ~20 s.
-Payload age ≤ 90 s → `fresh`. No accepted push for ≥ 180 s → `stale`: public page dims the
-number, labels it last-known with its time, and shows the stale treatment (DESIGN_GUIDE
-§6). No usable data at all (or device disabled) → `unavailable` (DESIGN_GUIDE §6).
+Payload age ≤ 90 s → `fresh`; older than 90 s → `stale` (the public page; the 180 s
+operational threshold of the settings' freshness windows drives staff health and alerts only): the public
+page dims the number, labels it last-known with its absolute time and that time's age, the age
+measured against the server's time carried in the payload, never the device clock, and shows the
+stale treatment (DESIGN_GUIDE §6). While `fresh` it shows the last update as an absolute time.
+No usable data at all (or device disabled) → `unavailable` (DESIGN_GUIDE §6).
 Closed per schedule → `closed` overrides everything: no count is shown, next-open time is
 shown when known (DESIGN_GUIDE §6). The freshness decision is computed at origin refresh and baked into
 the cached payload, so it costs nothing per visitor; the worst-case detection lag is one
@@ -601,7 +613,7 @@ Historical reset evaluation resolves settings at these real instants and never s
 settings.
 
 **Alert policy. [Resolved here — defaults]** Alert conditions: (a) no accepted push for
-≥ the stale threshold during open hours or within the 30-minute pre-open window; (b) a
+≥ the operational stale threshold during open hours or within the 30-minute pre-open window; (b) a
 push whose health snapshot reports camera/feed/process failure; (c) at most one re-alert
 per condition every 30 min while unresolved; (d) failures arising during closed hours are
 suppressed but alert at pre-open if still unresolved; (e) a recovery notice when the
@@ -644,7 +656,9 @@ DESIGN_GUIDE §§3–13, including reduced motion and accessibility.
 
 This implementation rule does not constrain concept-only Owner visual exploration under the named
 human decision. Those artifacts may use a different light/dark treatment and non-Cairo type, but
-they cannot change production styling, data semantics, accessibility, or the approval gates.
+they cannot change production styling, data semantics, accessibility, or the approval gates. Nor
+does this implementation rule constrain the Public redesign. When promoted it replaces the 28-bar signal with the level
+mark of DESIGN_GUIDE §5 and Cairo with Readex Pro, self-hosted at real weights.
 
 **Scaffold cleanup (first implementation act, recorded here so nothing demo-shaped
 survives).** Remove: the ASCII demo home page, sign-up form/route, theme
@@ -719,7 +733,10 @@ result is recorded in `docs/phase-records/repository-closeout.md`.
   screenshots at the required mobile/desktop sizes in Arabic RTL and English LTR; keyboard and
   focus order; reduced motion; wrapping/overflow; responsive tables; and chart hover,
   keyboard-focus, and mobile-tap selection. Loading, stale, closed, unavailable, and error
-  states are verified independently.
+  states are verified independently. Before the Public redesign is promoted to production, the
+  Public page is tested with a real screen reader in Arabic and English (names, the one
+  announcement of a new reading, the state announcements). The concept ships the markup that
+  costs nothing and defers this test.
 - **Edge simulator** doubles as the integration fixture and the manual dev harness,
   including failure injection for the alerting and recovery acceptance tests.
 - The pilot targets' acceptance protocols (spot checks, injected failures, reboot tests)
@@ -775,7 +792,7 @@ localization uses typed in-repository Arabic/English message catalogs.
 
 - **Honesty is a requirement, not a tone.** Every surface that shows a number must identify
   it as approximate, carry its freshness, and carry its state. Approved Arabic public copy
-  uses the explicit `العدد التقريبي` label instead of `حوالي` or a person unit; a
+  uses the explicit «داخل الصالة الآن · تقريبًا» label instead of `حوالي` or a person unit; a
   confidently wrong page is a spec violation, not a style issue (RESEARCH.md §4).
 - **The governing cost rule** — compute scales with time/cache windows, never visitor
   count (RESEARCH.md §9) — is an acceptance criterion here, not advice: any
