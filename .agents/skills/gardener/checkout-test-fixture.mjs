@@ -1,10 +1,13 @@
+// Test fixture: a disposable Git checkout and temp root under GARDENER_TEST_RUN or the system temp.
 import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { expect } from "vitest";
 
-export function evidenceFixture(prefix) {
+// `prefix` names the run folder; `commit` stages everything, commits (an empty commit too), and
+// points `origin/main` at the result; `dispose` checks it removes only that run folder.
+export function checkoutFixture(prefix) {
 	const base = path.resolve(process.env.GARDENER_TEST_RUN ?? os.tmpdir());
 	mkdirSync(base, { recursive: true });
 	const run = mkdtempSync(path.join(base, prefix));
@@ -13,8 +16,12 @@ export function evidenceFixture(prefix) {
 	mkdirSync(checkout);
 	mkdirSync(tempRoot);
 	writeFileSync(path.join(checkout, "PROJECT_STATE.yaml"), "milestones: {}\n");
-	const gitOptions = { cwd: checkout, encoding: "utf8", windowsHide: true };
-	const git = (args) => execFileSync("git", args, gitOptions);
+	const git = (args) =>
+		execFileSync("git", args, {
+			cwd: checkout,
+			encoding: "utf8",
+			windowsHide: true,
+		});
 	git(["init", "--initial-branch=main"]);
 	git(["config", "core.autocrlf", "false"]);
 	const commit = () => {
@@ -25,6 +32,7 @@ export function evidenceFixture(prefix) {
 			"-c",
 			"user.email=gardener@example.test",
 			"commit",
+			"--allow-empty",
 			"--message",
 			"fixture",
 		]);
@@ -36,7 +44,7 @@ export function evidenceFixture(prefix) {
 		commit,
 		dispose: () => {
 			expect(path.dirname(run)).toBe(base);
-			expect(path.basename(run)).toMatch(new RegExp(`^${prefix}`));
+			expect(path.basename(run).startsWith(prefix)).toBe(true);
 			rmSync(run, { recursive: true, force: true });
 		},
 		git,

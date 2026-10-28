@@ -1,53 +1,22 @@
-import { execFileSync } from "node:child_process";
 import {
 	existsSync,
 	mkdirSync,
-	mkdtempSync,
 	readFileSync,
-	rmSync,
 	utimesSync,
 	writeFileSync,
 } from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
+import { checkoutFixture } from "./checkout-test-fixture.mjs";
 import { cleanup } from "./cleanup.mjs";
 import { key, references } from "./facts.mjs";
 import { removeWorktree } from "./remove-worktree.mjs";
 import * as survey from "./survey-evidence.mjs";
 
 function fixture() {
-	const base = process.env.GARDENER_TEST_RUN ?? os.tmpdir();
-	mkdirSync(base, { recursive: true });
-	const run = mkdtempSync(path.join(base, "gardener-round16b-"));
-	const checkout = path.join(run, "checkout");
-	const tempRoot = path.join(run, "temp");
-	mkdirSync(checkout);
-	mkdirSync(tempRoot);
-	const git = (args: string[]) =>
-		execFileSync("git", args, {
-			cwd: checkout,
-			encoding: "utf8",
-			windowsHide: true,
-		});
-	git(["init", "--initial-branch=main"]);
-	git(["config", "core.autocrlf", "false"]);
-	writeFileSync(path.join(checkout, "PROJECT_STATE.yaml"), "milestones: {}\n");
-	const commit = () => {
-		git(["add", "."]);
-		git([
-			"-c",
-			"user.name=Gardener fixture",
-			"-c",
-			"user.email=gardener@example.test",
-			"commit",
-			"-m",
-			"fixture",
-		]);
-		git(["update-ref", "refs/remotes/origin/main", "HEAD"]);
-	};
+	const f = checkoutFixture("gardener-round16b-");
 	const folder = (name: string) => {
-		const directory = path.join(tempRoot, name);
+		const directory = path.join(f.tempRoot, name);
 		mkdirSync(directory);
 		writeFileSync(path.join(directory, "sentinel.txt"), "evidence\n");
 		const old = new Date(Date.now() - 9 * 86400000);
@@ -55,19 +24,7 @@ function fixture() {
 			utimesSync(target, old, old);
 		return directory;
 	};
-	return {
-		run,
-		checkout,
-		tempRoot,
-		git,
-		commit,
-		folder,
-		dispose: () => {
-			expect(path.dirname(run)).toBe(path.resolve(base));
-			expect(path.basename(run)).toMatch(/^gardener-round16b-/);
-			rmSync(run, { recursive: true, force: true });
-		},
-	};
+	return { ...f, folder };
 }
 
 function ignoredWorktree(f, name: string, file: string) {

@@ -82,16 +82,27 @@ function withheldFolder(folder, reason, links = []) {
 	};
 }
 
-async function walkFiles(directory, excluded, visit) {
+// Visits every regular file below a directory without following links. `skipNames`
+// drops entries by name and `skipGitTrees` drops any directory that holds `.git`.
+async function walkFiles(
+	directory,
+	excluded,
+	visit,
+	{ skipGitTrees = false, skipNames = [] } = {},
+) {
 	if (excluded.some((exclude) => inside(exclude, directory))) return;
-	for (const entry of await readdir(filesystemPath(directory), {
+	const entries = await readdir(filesystemPath(directory), {
 		withFileTypes: true,
-	})) {
+	});
+	if (skipGitTrees && entries.some((entry) => entry.name === ".git")) return;
+	for (const entry of entries) {
+		if (skipNames.includes(entry.name)) continue;
 		const child = path.join(directory, entry.name);
 		if (excluded.some((exclude) => inside(exclude, child))) continue;
 		const info = await lstat(filesystemPath(child));
 		if (info.isSymbolicLink()) continue;
-		if (info.isDirectory()) await walkFiles(child, excluded, visit);
+		if (info.isDirectory())
+			await walkFiles(child, excluded, visit, { skipGitTrees, skipNames });
 		else if (info.isFile())
 			await visit({
 				path: child.replaceAll("\\", "/"),
@@ -141,7 +152,9 @@ function keepNonCapture(file, folder, index, citedFolders, totals) {
 
 async function scanFolder(folder, index, excluded) {
 	const citedFolders = await citedDirectories(folder, index);
-	const names = new Map();
+	// Capture names any kept text file in this top-level folder mentions, wherever it sits.
+	const names = new Set();
+	const unreadable = [];
 	const captures = [];
 	const totals = {
 		kept: {
@@ -165,26 +178,22 @@ async function scanFolder(folder, index, excluded) {
 		if (keepNonCapture(file, folder, index, citedFolders, totals)) {
 			try {
 				const text = await readFile(filesystemPath(file.path), "utf8");
-				const directory = path.dirname(file.path);
-				const found = names.get(key(directory)) ?? new Set();
 				for (const match of text.matchAll(CAPTURE_NAME))
-					found.add(path.basename(match[0].trim()).toLowerCase());
-				names.set(key(directory), found);
-			} catch {
-				// An unreadable kept file names no additional captures.
+					names.add(path.basename(match[0].trim()).toLowerCase());
+			} catch (error) {
+				unreadable.push(`${file.path} (${error.code ?? error.message})`);
 			}
 			return;
 		}
 		bytes += file.size;
 		deleteFiles.push(file.path);
 	});
+	// A kept file that cannot be read may name a capture, so no capture here is safe to propose.
+	if (unreadable.length)
+		return { withheld: `unreadable kept file: ${unreadable.join("; ")}` };
 	for (const file of captures) {
-		const directory = path.dirname(file.path);
 		const cited = index.has(key(file.path));
-		if (
-			cited ||
-			names.get(key(directory))?.has(path.basename(file.path).toLowerCase())
-		) {
+		if (cited || names.has(path.basename(file.path).toLowerCase())) {
 			totals.kept.files += 1;
 			totals.kept.bytes += file.size;
 			totals.kept[cited ? "citedFile" : "captureNamedByText"] += 1;
@@ -232,6 +241,12 @@ async function planFolder(
 
 	const index = citationIndex(records, { tempRoot });
 	const scanned = await scanFolder(folder, index, excluded);
+	if (scanned.withheld)
+		return withheldFolder(
+			folder,
+			scanned.withheld,
+			withoutLinks(inspected.links, excluded),
+		);
 	return {
 		...scanned,
 		path: folder,
@@ -293,26 +308,6 @@ function reportDate(text) {
 	}
 }
 
-async function countScripts(directory, excluded, totals) {
-	const entries = await readdir(filesystemPath(directory), {
-		withFileTypes: true,
-	});
-	if (entries.some((entry) => entry.name === ".git")) return;
-	for (const entry of entries) {
-		if (entry.name === "node_modules" || entry.name === ".git") continue;
-		const child = path.join(directory, entry.name);
-		if (excluded.paths.some((item) => inside(item, child))) continue;
-		const info = await lstat(filesystemPath(child));
-		if (info.isSymbolicLink()) continue;
-		if (info.isDirectory()) await countScripts(child, excluded, totals);
-		else if (
-			info.isFile() &&
-			SCRIPT_EXTENSIONS.has(path.extname(child).toLowerCase())
-		)
-			totals.scripts += 1;
-	}
-}
-
 export async function countNewTempScripts({
 	excluded = [],
 	previousReportText,
@@ -331,12 +326,16 @@ export async function countNewTempScripts({
 		if (info.birthtimeMs < sinceTime) continue;
 		const excludedPaths = excluded.map((item) => path.resolve(item));
 		if (excludedPaths.some((item) => inside(item, folder))) continue;
-		const totals = { scripts: 0 };
-		await countScripts(folder, { paths: excludedPaths }, totals);
-		folders.push({
-			path: folder.replaceAll("\\", "/"),
-			scripts: totals.scripts,
-		});
+		let scripts = 0;
+		await walkFiles(
+			folder,
+			excludedPaths,
+			(file) => {
+				if (SCRIPT_EXTENSIONS.has(file.extension)) scripts += 1;
+			},
+			{ skipGitTrees: true, skipNames: ["node_modules"] },
+		);
+		folders.push({ path: folder.replaceAll("\\", "/"), scripts });
 	}
 	return {
 		folders,

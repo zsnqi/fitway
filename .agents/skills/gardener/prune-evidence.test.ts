@@ -1,8 +1,16 @@
-import { existsSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import {
+	chmodSync,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	symlinkSync,
+	writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { checkoutFixture } from "./checkout-test-fixture.mjs";
 import { collectTrackedCitationRecords } from "./cited-evidence.mjs";
-import { evidenceFixture } from "./evidence-test-fixture.mjs";
 import { countNewTempScripts, planEvidencePrune } from "./prune-evidence.mjs";
 import { formatReport } from "./survey.mjs";
 import { collectGit } from "./survey-evidence.mjs";
@@ -86,9 +94,30 @@ function expectLossShapes(plans, shapes) {
 	expect(existsSync(shapes.outsideSentinel)).toBe(true);
 }
 
+function denyRead(file: string) {
+	if (process.platform === "win32")
+		execFileSync("icacls", [file, "/deny", "*S-1-1-0:(RD)"], {
+			windowsHide: true,
+		});
+	else chmodSync(file, 0);
+	expect(() => readFileSync(file)).toThrow();
+}
+
+async function planOne(f, name: string) {
+	const records = await collectTrackedCitationRecords({ checkout: f.checkout });
+	const [plan] = await planEvidencePrune({
+		folderPaths: [path.join(f.tempRoot, name)],
+		records,
+		tempRoot: f.tempRoot,
+	});
+	return plan;
+}
+
+const slashed = (file: string) => file.replaceAll("\\", "/");
+
 describe("evidence-safe temp pruning", () => {
 	it("keeps every cited loss shape, names uncited captures, and withholds links and registered worktrees", async () => {
-		const f = evidenceFixture("gardener-prune-evidence-");
+		const f = checkoutFixture("gardener-prune-evidence-");
 		try {
 			const shapes = createLossShapes(f);
 			const records = await collectTrackedCitationRecords({
@@ -110,7 +139,7 @@ describe("evidence-safe temp pruning", () => {
 	}, 60000);
 
 	it("counts scripts only in new folders outside node_modules and extracted Git trees", async () => {
-		const f = evidenceFixture("gardener-prune-evidence-");
+		const f = checkoutFixture("gardener-prune-evidence-");
 		try {
 			const first = path.join(f.tempRoot, "new-a");
 			const second = path.join(f.tempRoot, "new-b");
@@ -159,6 +188,58 @@ describe("evidence-safe temp pruning", () => {
 			expect(rendered).toContain("Total: 3 script files.");
 			console.log(
 				"E4 PASS: new-a=3 scripts across nested folders; new-b=0; node_modules and extracted Git tree excluded; total=3",
+			);
+		} finally {
+			f.dispose();
+		}
+	});
+	it("withholds a folder whose kept text file cannot be read, naming the file", async () => {
+		const f = checkoutFixture("gardener-prune-evidence-");
+		try {
+			const held = path.join(f.tempRoot, "held");
+			mkdirSync(held);
+			const log = path.join(held, "run.log");
+			writeFileSync(log, "Frame: `frame.png`\n");
+			writeFileSync(path.join(held, "frame.png"), "capture\n");
+			writeFileSync(
+				path.join(f.checkout, "record.md"),
+				`Evidence: \`${held}\`\n`,
+			);
+			f.commit();
+			denyRead(log);
+			const plan = await planOne(f, "held");
+			expect(plan.withheld).toContain(slashed(log));
+			expect(plan.deleteFiles).toEqual([]);
+			console.log(`FINDING 1 PASS: ${plan.withheld}`);
+		} finally {
+			f.dispose();
+		}
+	});
+
+	it("keeps a capture a kept text file elsewhere in the top-level folder names", async () => {
+		const f = checkoutFixture("gardener-prune-evidence-");
+		try {
+			const fwd = path.join(f.tempRoot, "fwd");
+			mkdirSync(path.join(fwd, "sub"), { recursive: true });
+			writeFileSync(path.join(fwd, "notes.md"), "Reviewed frame: `deep.png`\n");
+			const deep = path.join(fwd, "sub", "deep.png");
+			const loose = path.join(fwd, "sub", "loose.png");
+			writeFileSync(deep, "named capture\n");
+			writeFileSync(loose, "unnamed capture\n");
+			writeFileSync(
+				path.join(f.checkout, "record.md"),
+				`Evidence: \`${fwd}\`\n`,
+			);
+			f.commit();
+			const plan = await planOne(f, "fwd");
+			expect(plan.withheld).toBeNull();
+			expect(plan.deleteFiles).toEqual([slashed(loose)]);
+			expect(plan.kept).toMatchObject({
+				captureNamedByText: 1,
+				nonCaptureInCitedFolder: 1,
+			});
+			console.log(
+				"C1 PASS: fwd/sub/deep.png named by fwd/notes.md kept; fwd/sub/loose.png proposed",
 			);
 		} finally {
 			f.dispose();

@@ -36,7 +36,7 @@
 			"longFunctions": 1
 		},
 		".agents/skills/gardener/round12.test.ts": {
-			"duplication": 7,
+			"duplication": 6,
 			"longFunctions": 2
 		},
 		".agents/skills/gardener/round15.test.ts": {
@@ -44,14 +44,11 @@
 			"longFunctions": 1
 		},
 		".agents/skills/gardener/round16.test.ts": {
-			"duplication": 8,
+			"duplication": 6,
 			"longFunctions": 1
 		},
-		".agents/skills/gardener/round16b.test.ts": {
-			"duplication": 12
-		},
 		".agents/skills/gardener/round16c.test.ts": {
-			"duplication": 10,
+			"duplication": 8,
 			"longFunctions": 1
 		},
 		".agents/skills/gardener/round27.test.ts": {
@@ -72,7 +69,7 @@
 		},
 		".agents/skills/gardener/survey.mjs": {
 			"longFunctions": 2,
-			"longFunctionLines": 311
+			"longFunctionLines": 275
 		},
 		".agents/skills/verify-fitway/baseline-cache.mjs": {
 			"duplication": 1
@@ -887,8 +884,8 @@
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 123,
-			"expectCalls": 402
+			"testCases": 128,
+			"expectCalls": 411
 		},
 		"apps/server/src": {
 			"testCases": 215,

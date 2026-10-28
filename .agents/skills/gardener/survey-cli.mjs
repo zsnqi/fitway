@@ -65,12 +65,23 @@ export function finalFolderSelection(folders, rollingReport) {
 	}));
 }
 
+// A user-run proposal script: it imports `name` from the gardener module `file` and calls it
+// with the snapshot.
+function proposalScript(file, name, snapshot, checkout) {
+	return `// USER-RUN PROPOSAL ONLY. Review the listed folders before running. The survey never executes this file.\nimport { ${name} } from ${JSON.stringify(pathToFileURL(path.join(root, ".agents/skills/gardener", file)).href)};\nawait ${name}(${JSON.stringify(snapshot, null, 2)}, { checkout: ${JSON.stringify(checkout)} });\n`;
+}
+
 export function cleanupScript(snapshot, checkout = root) {
-	return `// USER-RUN PROPOSAL ONLY. Review the listed folders before running. The survey never executes this file.\nimport { cleanup } from ${JSON.stringify(pathToFileURL(path.join(root, ".agents/skills/gardener/cleanup.mjs")).href)};\nawait cleanup(${JSON.stringify(snapshot, null, 2)}, { checkout: ${JSON.stringify(checkout)} });\n`;
+	return proposalScript("cleanup.mjs", "cleanup", snapshot, checkout);
 }
 
 export function pruneScript(snapshot, checkout = root) {
-	return `// USER-RUN PROPOSAL ONLY. Review the listed folders before running. The survey never executes this file.\nimport { pruneEvidence } from ${JSON.stringify(pathToFileURL(path.join(root, ".agents/skills/gardener/prune-evidence.mjs")).href)};\nawait pruneEvidence(${JSON.stringify(snapshot, null, 2)}, { checkout: ${JSON.stringify(checkout)} });\n`;
+	return proposalScript(
+		"prune-evidence.mjs",
+		"pruneEvidence",
+		snapshot,
+		checkout,
+	);
 }
 
 function powershellQuote(value) {
@@ -170,12 +181,7 @@ export async function writeSurveyOutputs({ cleanupData, out, report, text }) {
 		pruneScript({
 			root: cleanupData.root,
 			tempRoot: cleanupData.tempRoot,
-			folders:
-				report.complete && report.prune
-					? report.prune
-							.filter((item) => !item.withheld && item.candidates)
-							.map((item) => item.path)
-					: [],
+			folders: report.proposals.prune.paths,
 		}),
 		"utf8",
 	);

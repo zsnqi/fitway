@@ -2,11 +2,11 @@ import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { assertTrackedTempCitations } from "../../../scripts/verify-repository.mjs";
-import { evidenceFixture } from "./evidence-test-fixture.mjs";
+import { checkoutFixture } from "./checkout-test-fixture.mjs";
 
 describe("tracked temp citation audit", () => {
 	it("fails a changed missing citation, accepts a marked loss, and names the record line", async () => {
-		const f = evidenceFixture("gardener-cited-evidence-");
+		const f = checkoutFixture("gardener-cited-evidence-");
 		try {
 			writeFileSync(path.join(f.checkout, "record.txt"), "No evidence yet.\n");
 			f.commit();
@@ -42,7 +42,7 @@ describe("tracked temp citation audit", () => {
 	});
 
 	it("counts an unchanged missing nested file from a .txt record without failing", async () => {
-		const f = evidenceFixture("gardener-cited-evidence-");
+		const f = checkoutFixture("gardener-cited-evidence-");
 		try {
 			const missing = path.join(
 				f.tempRoot,

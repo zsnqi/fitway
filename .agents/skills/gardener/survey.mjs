@@ -58,6 +58,56 @@ export function collectSurveyCodeHealth({
 	});
 }
 
+function goneCitationLines(goneCitations) {
+	const lines = ["## Cited temp paths gone", ""];
+	if (!goneCitations?.checked)
+		return [
+			...lines,
+			`Not checked: ${JSON.stringify(goneCitations?.tempRoot ?? "D:/fitway-temp")} is absent.`,
+			"",
+		];
+	if (!goneCitations.dead.length) return [...lines, "None.", ""];
+	for (const citation of goneCitations.dead)
+		lines.push(
+			`- ${JSON.stringify(citation.path)} (${citation.source}:${citation.line}${citation.changed ? "; changed" : "; unchanged"})`,
+		);
+	return [...lines, ""];
+}
+
+function pruneProposalLines(prune) {
+	const lines = ["## Evidence prune proposals", ""];
+	const withheld = (prune ?? []).filter((item) => item.withheld);
+	const proposed = (prune ?? []).filter(
+		(item) => !item.withheld && item.candidates,
+	);
+	for (const item of withheld)
+		lines.push(`- Withheld ${JSON.stringify(item.path)}: ${item.withheld}`);
+	for (const item of proposed) {
+		const kept = item.kept;
+		lines.push(
+			`- ${JSON.stringify(item.path)}: frees ${item.bytes} bytes from ${item.candidates} files; keeps ${kept.files} files (${kept.citedFile} cited, ${kept.nonCaptureInCitedFolder} non-captures in cited folders, ${kept.captureNamedByText} named captures; ${kept.bytes} bytes); links not followed: ${item.links.length}.`,
+		);
+	}
+	if (!withheld.length && !proposed.length) lines.push("None.");
+	return [...lines, ""];
+}
+
+function scriptFileLines(scriptFiles) {
+	const lines = ["## Script files in new temp folders", ""];
+	if (!scriptFiles?.since)
+		return [
+			...lines,
+			"Previous report date unavailable; no invented comparison.",
+			"",
+		];
+	lines.push(`Since ${scriptFiles.since}:`);
+	for (const folder of scriptFiles.folders)
+		lines.push(
+			`- ${JSON.stringify(folder.path)}: ${folder.scripts} script files`,
+		);
+	return [...lines, `Total: ${scriptFiles.total} script files.`, ""];
+}
+
 export function formatReport(report) {
 	const lines = [
 		"# Gardener survey",
@@ -104,48 +154,12 @@ export function formatReport(report) {
 	if (!gone.length) lines.push("None.", "");
 	for (const item of gone)
 		lines.push(`- Gone before measurement: ${JSON.stringify(item.path)}`);
-	lines.push("", "## Cited temp paths gone", "");
-	if (!report.goneCitations?.checked) {
-		lines.push(
-			`Not checked: ${JSON.stringify(report.goneCitations?.tempRoot ?? "D:/fitway-temp")} is absent.`,
-			"",
-		);
-	} else if (!report.goneCitations.dead.length) {
-		lines.push("None.", "");
-	} else {
-		for (const citation of report.goneCitations.dead)
-			lines.push(
-				`- ${JSON.stringify(citation.path)} (${citation.source}:${citation.line}${citation.changed ? "; changed" : "; unchanged"})`,
-			);
-		lines.push("");
-	}
-	lines.push("## Evidence prune proposals", "");
-	const prune = report.prune ?? [];
-	const proposedPrunes = prune.filter(
-		(item) => !item.withheld && item.candidates,
+	lines.push(
+		"",
+		...goneCitationLines(report.goneCitations),
+		...pruneProposalLines(report.prune),
+		...scriptFileLines(report.scriptFiles),
 	);
-	for (const item of prune.filter((item) => item.withheld))
-		lines.push(`- Withheld ${JSON.stringify(item.path)}: ${item.withheld}`);
-	for (const item of proposedPrunes) {
-		const kept = item.kept;
-		lines.push(
-			`- ${JSON.stringify(item.path)}: frees ${item.bytes} bytes from ${item.candidates} files; keeps ${kept.files} files (${kept.citedFile} cited, ${kept.nonCaptureInCitedFolder} non-captures in cited folders, ${kept.captureNamedByText} named captures; ${kept.bytes} bytes); links not followed: ${item.links.length}.`,
-		);
-	}
-	if (!prune.some((item) => item.withheld) && !proposedPrunes.length)
-		lines.push("None.");
-	lines.push("", "## Script files in new temp folders", "");
-	const scriptFiles = report.scriptFiles;
-	if (!scriptFiles?.since) {
-		lines.push("Previous report date unavailable; no invented comparison.", "");
-	} else {
-		lines.push(`Since ${scriptFiles.since}:`);
-		for (const folder of scriptFiles.folders)
-			lines.push(
-				`- ${JSON.stringify(folder.path)}: ${folder.scripts} script files`,
-			);
-		lines.push(`Total: ${scriptFiles.total} script files.`, "");
-	}
 	lines.push(
 		"## Records",
 		"",

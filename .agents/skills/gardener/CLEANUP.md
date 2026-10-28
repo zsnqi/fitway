@@ -61,8 +61,10 @@ folders.
 The survey also emits `prune.mjs`, separately from `cleanup.mjs`, and never
 runs either. Prune proposals cover each top-level temp folder that yields
 deletable files. They keep a cited file, every non-capture in a cited folder,
-and a capture named by a kept text file in the same folder. An uncited capture
-is deletable. The tracked-record rule is the same citation matcher used by the
+and a capture whose file name a kept text file anywhere in the same top-level
+folder mentions. An uncited capture is deletable. A kept text file that cannot
+be read withholds its top-level folder's proposal, naming the file. The
+tracked-record rule is the same citation matcher used by the
 cleanup and the gone-citation audit, over tracked `.md`, `.yaml`, `.yml`,
 `.tsv` and `.txt` files. The proposal reports each folder's freed bytes and the
 files and reasons it keeps. The generated script rechecks citations, registered
