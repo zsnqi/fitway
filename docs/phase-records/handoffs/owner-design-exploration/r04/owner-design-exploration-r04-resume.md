@@ -1,11 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 01:10 +03:00 (the user
-  goes to sleep and starts the rest in a new session: «اشوف ب جلسة جديدة نبدأ فيها افضل من الحالية»; §"Running now" is
-  where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 09:00 +03:00 (the round
+  of decisions 89-95 built, verified by verify-11 and fixed; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-94; 93 and 94 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-95; 95 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B13 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -34,12 +33,24 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 01:10: no agent running; ports 3176-3197 free). Build branch
-`owner-followup-r04-build` at `950e19d2`, pushed with this commit's push (CI on it not yet seen; `verify:fast`
-passed locally on each commit). main still `e885543e`. Status page for the user:
+Nothing runs (measured 2026-10-28 09:00: no agent running). Build branch `owner-followup-r04-build` at `fedbdb6d`,
+pushed (CI on `950e19d2` passed, run 40592463172; on `fedbdb6d` see GitHub). main still `e885543e` until this commit's
+CI passes and `pnpm main:advance` moves it. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
-- **Built this night on the build branch** (measured, each checked by the coordinator against its frames):
+- **Built 2026-10-28 morning** (measured): `b56b6e71` then `d04890a4` the export dialog's file box (DECISIONS 95: the
+  user's pick on real renders, English option 2, Arabic laid out like the English with the figure before «صفًا»;
+  `D:/fitway-temp/owner-r04-export-filebox-fix/`); `fedbdb6d` verify-11's findings 1-6. The "Belonging" bullets are
+  narrowed (`8c4976cf`, the user's word).
+- **Verify 11** (Opus, `D:/fitway-temp/owner-r04-verify-11/REPORT.md`): `d04890a4` against `d9ae9e35`, every item
+  PASS but C5 (spec text), no High or Medium; findings 1-6 fixed in `fedbdb6d` (`D:/fitway-temp/owner-r04-verify11-fix/`),
+  finding 7 is decision 95 itself. The coordinator reproduced finding 5's fix: Arabic Reports shifted on 11 of 15 loads
+  at `d04890a4`, 0 of 15 at `fedbdb6d`. `fedbdb6d` is checked by the coordinator only, not by a second verifier.
+- **Left from finding 5:** Reports' first paint now waits for Readex Pro (opacity, 1.5 s cap); Activity, Access and
+  Settings keep the same font-swap pattern (the verifier saw Activity's in the base too). Not visible enough for the
+  demo (decision 52's order); the same hold belongs in the shared frame after the demo.
+
+- **Built the night before on the build branch** (measured, each checked by the coordinator against its frames):
   `c774fd77` DECISIONS 91 (1) (two fixed lines below 330 px in Arabic) and 91 (2) (superseded by 92 (1));
   `bb26be02` DECISIONS 92 (option B: figure and time on the slot's right edge in Arabic; a note stays in the day's column
   and breaks only between its words and range; `noteColumnCheck` in reports-capture); `3076869a` DECISIONS 94 (English
@@ -50,20 +61,12 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   The worktrees `owner-r04-tbl14-a` and `-b` stay (pnpm-installed node_modules: see Known risks before removing).
 - **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
   coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
-  scope, narrowed); finding 6 and the row count under the name agreed (DECISIONS 93, "The export dialog's file box"),
-  **not built**.
-- **Not yet independently checked:** `3c645b85` through `950e19d2`.
-- **Next, in order** (the user starts them in a new session; none was authorised to run overnight):
-  1. A fixer for the export dialog's file box (DECISIONS 93: the Arabic file name from the right edge; the row count
-     under the name on the start edge, both languages; previews `exp-fix.png`, `rows-*-B.png` in the review page).
-  2. On the user's word: narrow the "Belonging" bullet in `.claude/agents/owner-direction-verifier.md` and
-     `rtl-ltr-reviewer.md` to DECISIONS 93's narrowed scope (one item or row with columns side by side). Both bullets
-     were added this night and are committed with this resume point in their broad wording.
-  3. One Opus verifier on `3c645b85` through the latest commit, against `d9ae9e35` (verifier brief needs decision 93's
-     narrowed scope written in).
-  4. Push, CI, the records, `pnpm main:advance`.
-  5. After the round: the general `verify-fitway` belonging probe (DECISIONS 93), plus `compare` capturing only the
-     first screen (the grader's L5; its L8, a 720-721 px zoom edge, untested); agent-tooling-r01's path (decision 73).
+  scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
+- **Next, in order:**
+  1. `pnpm main:advance` to this commit once its CI passes (if not already done; check `git log -1 origin/main`).
+  2. The general `verify-fitway` belonging probe (DECISIONS 93), plus `compare` capturing only the first screen (the
+     grader's L5; its L8, a 720-721 px zoom edge, untested); agent-tooling-r01's path (decision 73).
+  3. The public page's ADR, amendments and milestone (below), then the pages of decision 84.
 - **The public page:** P1-P7 answered (DECISIONS 90); the ADR, the three files' amendments and its milestone are
   not started; the user sees all three before any design. Friday's dash: A kept (DECISIONS 89).
 - **Decision 85's builder trial:** Sonnet 5.5 at high built 749fa608 (second run 392,787 tokens; first unreported);
