@@ -81,6 +81,8 @@ omits the pass lines, as it did before the shared command contract.
 
 `--port` accepts only ports in **3176-3177, 3186-3187 and 3188-3189**. 3174 and 3178-3185 belong to other previews. A listener on any address is busy;
 never stop its owner. A run without `--session` starts and closes its own preview. Explicit launch is optional:
+`drive` takes `--ref <commit>` in place of `--concept`; it extracts the declared concept once outside every Git tree,
+prints the extraction folder and full commit, and reuses that folder on later calls.
 
 Every preview stops after **30 minutes without a request** and frees its port; requests renew that timeout.
 An expired session needs a fresh launch before doctor or drive can use it. Cleanup accepts the launch folder
@@ -160,7 +162,8 @@ forced filenames add `-forced`, so mixed runs cannot overwrite frames.
 
 ## Belonging check
 
-`belonging-check` serves the declared concept ref unless `--concept` names an extracted build. It checks
+`belonging-check` serves the declared concept ref unless `--concept` names an extracted build; `--ref <commit>`
+selects another committed concept. It checks
 `li`, `tr`, `[role=row]` and `[role=listitem]` geometry across pages, languages, widths and mapped states.
 Without `--states`, it runs each page as it loads, plus Daily after `details`, Reports after `expand-days` (phone
 widths), Reports `state=short` with and without `expand-days`, Access `case=long`, Activity log `case=wide`, and
@@ -202,7 +205,9 @@ Compare shares its command-owned browser and previews, retaining fresh item
 contexts. Local HTTP requests go to the preview through bounded keep-alive
 connections, preserving response bytes/status while avoiding port exhaustion.
 
-Extract the requested baseline revision once outside all git trees, then give its concept folder to `compare`.
+Use `--ref <commit>` for the build and `--baseline-ref <commit>` for an older build. The CLI extracts the declared
+concept folder at each commit once outside every Git tree, prints both extraction folders and full commits, and reuses
+them on later calls. `--concept` and `--baseline` still accept already extracted folders.
 The baseline can use the same recipe file with `--baseline-recipes`, or its own adjacent recipe file. Both sides
 run the same items and axes. Differences are captured again in fresh contexts before the final exact pixel result;
 no tolerance is added. Each differing item of the same size on both sides has a region, diff JSON and images in
@@ -281,14 +286,43 @@ $baseline = '<absolute extracted concept folder>'
 node $cli compare --concept $concept --baseline $baseline --recipes $recipes --baseline-recipes $recipes --page index.html --feature page --states 'state=live,state=delayed,state=nohistory,state=loading,state=closed,state=unavailable,state=error' --languages ar,en --sizes desktop,tablet,phone --inputs mouse --motions reduce --transports http --port 3176 --baseline-port 3177 --out "$run/daily-compare"
 ```
 
+```powershell
+node $cli compare --ref fedbdb6d --baseline-ref bb26be02 --page settings.html --feature page --languages ar,en --sizes phone --inputs touch --motions reduce --transports http --out "$run/settings-history"
+```
+
 `COMPARE EQUAL` and `COMPARE DIFFERENT` name each item; capture/probe problems and designed absence are separate
 results. A difference or problem makes the command fail. Inspect its frames and diff images, including the repeats.
+
+## Run one check
+
+When no command makes the check, write the check as a script for `run`; the command owns the preview pair, browser,
+contexts and evidence folder. The default export receives `playwright`, `browser`, `url`, `newPage`, `rewrite`,
+`concept`, `baseline`, `out` and `args`. `newPage({size, language, input, motion, colours})` uses drive's context settings. Arguments after
+`--` arrive unchanged in `args`. `rewrite(page, file, from, to)` changes only the named file on that page and refuses
+unless `from` occurs exactly once in the concept file.
+
+```javascript
+export default async ({ url, newPage }) => {
+  const { page } = await newPage({ size: "phone", language: "ar", input: "touch", motion: "reduce", colours: "normal" });
+  await page.goto(url("build", "settings.html"));
+  return { height: await page.evaluate(() => document.documentElement.scrollHeight) };
+};
+```
+
+```powershell
+node $cli run --script D:/fitway-temp/check.mjs --ref fedbdb6d --out D:/fitway-temp/check-output
+```
+
+`diff-folders --a <folder> --b <folder> --out <folder>` compares PNGs by relative path and prints `EQUAL`,
+`DIFFERENT`, `SIZE`, `ONLY-A` or `ONLY-B` for each, then a summary. It uses compare's exact diff and exits 0 only when
+every PNG is `EQUAL`.
 
 ## Evidence and advanced tools
 
 Output must be an absolute folder outside every git tree, including links and junction aliases. File names carry
 feature/state/language/size/input/motion/transport. Read `summary.json` or the item's `*-summary.json` first; full
 JSON retains actions, readiness, geometry, overflow, ARIA, errors and each keyboard focus step.
+Every command with `--out` writes `manifest.json` before work and adds its exit status and end time when it finishes.
 Each summary retains `proof` for the reached state and `featureProof` for the successfully reached feature result.
 Compare prints one line per item and a summary; full diff measurements remain in `comparison.json` and the named diff JSON files.
 Drive retains before/after/error frames and its language sheets. Compare retains item frames and its records but
@@ -300,8 +334,9 @@ at the required sizes and languages; logs/hashes do not establish visual quality
 `measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>` delegates to
 ui-forensics. `measure --colors forced` passes the tool's forced-colour argument; direct tool arguments can
 supply it too.
-Forced requests in tool arguments and frame/probe matrices also require 1.2.0 before delegation. Read that tool's help for advanced measurements. Extend this path when an adapter is missing instead
-of writing another server, launcher or capture loop. The concept is synthetic; preserve privacy and data semantics.
+Forced requests in tool arguments and frame/probe matrices also require 1.2.0 before delegation. Read that tool's help
+for advanced measurements. A check no command makes is a script for `run`; the concept is synthetic, so preserve
+privacy and data semantics.
 
 Verifier rules (one canonical statement):
 
@@ -309,3 +344,34 @@ Verifier rules (one canonical statement):
 - G2: Detect a removed pre-intro frame by holding fonts until first paint +50 ms and +100 ms.
 - G3: Run load checks under no-store and under no cache header.
 - G4: Run every movement check until at least 500 ms after `endedAt`.
+
+## Where things live
+
+| Subject | File | Export |
+| --- | --- | --- |
+| sizes | `map.mjs` | `generateMap` |
+| drive context and feature reach | `drive-plan.mjs` | `contextOptions`, `featureUnreachable` |
+| settled capture | `comparison-capture.mjs` | `captureComparison`, `settleComparison` |
+| compare verdict | `compare.mjs` | `compare` |
+| bundle identity | `baseline-cache.mjs` | `BaselineCache`, `cacheRoot` |
+| extraction | `drift-tree.mjs` | `extractDeclaredConcept`, `CONCEPT_EXTRACTION_ROOT` |
+| port pairs | `core.mjs` | `verificationPairs`, `comparisonPorts`, `reserveVerificationPorts` |
+| output folders | `core.mjs` | `freshEmptyOutput`, `finishOutputManifest` |
+| custom run | `run.mjs` | `runScript`, `newPageContextOptions`, `rewritePage` |
+| exact image diff | `image-diff.mjs` | `diffImages` |
+| folder diff | `diff-folders.mjs` | `diffFolders` |
+| fixture copy | `fixture-copy.mjs` | `copyAllFixture`, `copyHelpFixture` |
+| invalidation cases | `compare-speed.test.mjs` | `invalidationCases` |
+
+## Proving a change to this tool
+
+| Change | Extend |
+| --- | --- |
+| size, context, or feature reach | `drive-plan-boundary.test.mjs` and `run-page-context.test.mjs` |
+| custom page action or scoped rewrite | `rewrite-page.test.mjs` and a `run` check in the run folder |
+| exact pair image diff | `diff-folders.test.mjs`, using the fake child shape from `cli.test.mjs` |
+| compare capture, verdict, or cache | `comparison-capture.test.mjs`, `compare-parallel.test.mjs`, or `invalidationCases` |
+| preview, port pair, or lease | the existing port and lifecycle cases in `cli.test.mjs` |
+| commit extraction | `concept-extraction-cache.test.mjs` |
+| output folder or provenance | `output-manifest.test.mjs` |
+| this location map | `skill-navigation.test.mjs` |

@@ -7,8 +7,11 @@ const repository = resolve(skill, "../../..");
 const HELP_MODULES = [
 	"cli.mjs",
 	"colors.mjs",
+	"command-output.mjs",
+	"concept-source.mjs",
 	"core.mjs",
 	"compare.mjs",
+	"image-diff.mjs",
 	"runner.mjs",
 	"capture-records.mjs",
 	"comparison-capture.mjs",

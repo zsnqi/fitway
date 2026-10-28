@@ -3,10 +3,9 @@ import { pathToFileURL } from "node:url";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { belongingStates, belongingWidths } from "./belonging-plan.mjs";
 import { runBelongingFrames } from "./belonging-runner.mjs";
+import { resolveConceptSide } from "./concept-source.mjs";
 import {
 	canonical,
-	freshEmptyOutput,
-	freshOutput,
 	jsonOutput,
 	preview,
 	ReportedFailure,
@@ -18,24 +17,26 @@ import { repository } from "./map.mjs";
 import { loadProbes } from "./probes.mjs";
 
 function conceptSource(options) {
-	let extracted;
-	let concept;
-	let commit;
-	let recipes;
-	if (options.concept) {
-		concept = canonical(options.concept);
-		recipes = options.recipes
+	const selected = resolveConceptSide(options, "build", { required: false });
+	if (selected)
+		return {
+			extracted: selected,
+			concept: selected.concept,
+			commit: selected.commit,
+			recipes: selected.recipes,
+		};
+	const extracted = extractDeclaredConcept(repository, { cache: true });
+	console.log(
+		`CONCEPT ${extracted.reused ? "EXTRACT REUSED" : "EXTRACTED"}: ${extracted.concept}; commit ${extracted.commit}`,
+	);
+	return {
+		extracted,
+		concept: extracted.concept,
+		commit: extracted.commit,
+		recipes: options.recipes
 			? canonical(resolve(options.recipes))
-			: resolve(concept, "verification-recipes.json");
-	} else {
-		extracted = extractDeclaredConcept(repository);
-		concept = extracted.concept;
-		recipes = options.recipes
-			? canonical(resolve(options.recipes))
-			: extracted.recipes;
-		commit = extracted.commit;
-	}
-	return { extracted, concept, commit, recipes };
+			: extracted.recipes,
+	};
 }
 
 const startupValue = (fix, parse) => {
@@ -136,7 +137,7 @@ function resultSummary(source, widths, languages, frames, startedAt) {
 
 export async function belongingCheck(options, services) {
 	const startedAt = Date.now();
-	const out = freshEmptyOutput(options.out || freshOutput(), "belonging-check");
+	const out = options.out;
 	const languages = startupValue("pass --languages ar,en, ar or en", () =>
 		axis(options.languages, "ar,en", ["ar", "en"]),
 	);

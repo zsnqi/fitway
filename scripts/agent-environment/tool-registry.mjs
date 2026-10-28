@@ -3,6 +3,7 @@ import {
 	CONCEPT_CSS_NOTES,
 	NODE_USAGE_NOTES,
 	OWNER_NOTES,
+	ownerTailCommands,
 	TOOLING_MAP_EXITS,
 	TOOLING_MAP_NOTES,
 } from "./tool-help-notes.mjs";
@@ -66,10 +67,6 @@ const executableEntry = (entry, kind) => {
 const packageEntry = (entry) => executableEntry(entry, "package");
 const nodeEntry = (entry) => executableEntry(entry, "node");
 
-const MEASURE_TOOLS = "focus motion a11y probe perf capture sheet diff".split(
-	" ",
-);
-
 const exits = (...codes) => codes.map(([code, meaning]) => ({ code, meaning }));
 
 const ownerOptions = {
@@ -77,6 +74,15 @@ const ownerOptions = {
 		sample: "visual-exploration/public-live/aurora-preview",
 		pathKind: "directory",
 		absolute: true,
+	}),
+	ref: value("--ref", "Concept commit.", { sample: "fedbdb6d" }),
+	baseline: value("--baseline", "Baseline folder.", {
+		sample: "visual-exploration/baseline",
+		pathKind: "directory",
+		absolute: true,
+	}),
+	baselineRef: value("--baseline-ref", "Baseline concept commit.", {
+		sample: "bb26be02",
 	}),
 	recipes: value("--recipes", "Verification recipe file.", {
 		sample: "verification-recipes.json",
@@ -134,6 +140,7 @@ const ownerOptions = {
 };
 
 const driveOptions = [
+	ownerOptions.ref,
 	ownerOptions.recipes,
 	ownerOptions.map,
 	ownerOptions.session,
@@ -270,7 +277,7 @@ const ownerCommands = [
 	{
 		name: "drive",
 		usage:
-			"pnpm verify:owner drive --concept <folder> [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>] [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...] [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone] [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176] [--colors normal,forced] [--cache no-store|none] [--probes daily] [--tools diff] [--timeline] [--timeline-times 1,100,200,...] [--quiet <any>]",
+			"pnpm verify:owner drive (--concept <folder>|--ref <commit>) [--recipes <file>] [--map <file>] [--session <launch-folder>] [--out <evidence-folder>] [--forensics <folder>] [--page index.html|all] [--feature page|all|id,id,...] [--states default|all|switch=value,...] [--query key=value&key=value] [--languages ar,en] [--sizes desktop,tablet,phone] [--inputs mouse,touch,keyboard] [--motions reduce,full] [--transports http,file] [--port 3176] [--colors normal,forced] [--cache no-store|none] [--probes daily] [--tools diff] [--timeline] [--timeline-times 1,100,200,...] [--quiet <any>]",
 		purpose: "Drive responsive and interaction evidence.",
 		options: [
 			ownerOptions.concept,
@@ -280,21 +287,19 @@ const ownerCommands = [
 			ownerOptions.timelineTimes,
 			ownerOptions.quiet,
 		],
-		requiredOptions: ["--concept"],
+		requiredOptions: [],
+		requiredOptionGroups: [["--concept", "--ref"]],
 		exitCodes: exits([0, "Drive passed."], [1, "Findings or command failure."]),
 	},
 	{
 		name: "compare",
 		usage:
-			"pnpm verify:owner compare --concept <build-folder> --baseline <baseline-folder> [--recipes <file>] [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177] [all drive page/feature/state/axis options] [--out <evidence-folder>] [--forensics <folder>] [--timeline] [--timeline-times 1,100,200,...] [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]",
+			"pnpm verify:owner compare (--concept <folder>|--ref <commit>) (--baseline <folder>|--baseline-ref <commit>) [--recipes <file>] [--baseline-recipes <file>] [--baseline-map <file>] [--baseline-port 3177] [all drive page/feature/state/axis options] [--out <evidence-folder>] [--forensics <folder>] [--timeline] [--timeline-times 1,100,200,...] [--affected-pages] [--baseline-cache off] [--workers 1|2|3|4]",
 		purpose: "Compare a build against a baseline.",
 		options: [
 			ownerOptions.concept,
-			value("--baseline", "Baseline folder.", {
-				sample: "visual-exploration/baseline",
-				pathKind: "directory",
-				absolute: true,
-			}),
+			ownerOptions.baseline,
+			ownerOptions.baselineRef,
 			ownerOptions.recipes,
 			value("--baseline-recipes", "Baseline recipe file.", {
 				sample: "baseline-recipes.json",
@@ -315,7 +320,11 @@ const ownerCommands = [
 				integer: [1, 4],
 			}),
 		],
-		requiredOptions: ["--concept", "--baseline"],
+		requiredOptions: [],
+		requiredOptionGroups: [
+			["--concept", "--ref"],
+			["--baseline", "--baseline-ref"],
+		],
 		exitCodes: exits(
 			[0, "Compare passed."],
 			[1, "Differences or command failure."],
@@ -324,10 +333,11 @@ const ownerCommands = [
 	{
 		name: "belonging-check",
 		usage:
-			"pnpm verify:owner belonging-check [--concept <folder>] [--recipes <file>] [--page <page>|all] [--languages ar,en] [--widths 320,390,...] [--states default|all|<query>] [--port 3176] [--out <evidence-folder>]",
+			"pnpm verify:owner belonging-check [--concept <folder>|--ref <commit>] [--recipes <file>] [--page <page>|all] [--languages ar,en] [--widths 320,390,...] [--states default|all|<query>] [--port 3176] [--out <evidence-folder>]",
 		purpose: "Find item lines that run under another stacked column.",
 		options: [
 			ownerOptions.concept,
+			ownerOptions.ref,
 			ownerOptions.recipes,
 			ownerOptions.out,
 			ownerOptions.page,
@@ -343,63 +353,59 @@ const ownerCommands = [
 		),
 	},
 	{
-		name: "measure",
+		name: "run",
 		usage:
-			"pnpm verify:owner measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] [--colors normal|forced] [--feature <name>] [--states <state>] [--languages <list>] [--sizes <list>] [--inputs <list>] [--motions <list>] [--transports <list>] -- <tool arguments>",
-		purpose: "Run one specialized measurement tool.",
+			"pnpm verify:owner run --script <file> (--concept <folder>|--ref <commit>) [--baseline <folder>|--baseline-ref <commit>] --out <folder> [--port 3176] [--baseline-port 3177] -- <script arguments>",
+		purpose: "Run one agent-authored verification script.",
 		options: [
-			value("--tool", "Measurement tool.", {
-				sample: "focus",
-				choices: MEASURE_TOOLS,
+			value("--script", "Script file.", {
+				sample: "check.mjs",
+				pathKind: "file",
+			}),
+			ownerOptions.concept,
+			ownerOptions.ref,
+			ownerOptions.recipes,
+			ownerOptions.baseline,
+			ownerOptions.baselineRef,
+			value("--baseline-recipes", "Baseline recipe file.", {
+				sample: "baseline-recipes.json",
+				pathKind: "file",
+			}),
+			ownerOptions.port,
+			value("--baseline-port", "Baseline preview port.", {
+				sample: "3177",
 			}),
 			ownerOptions.out,
 			ownerOptions.forensics,
-			ownerOptions.colors,
-			ownerOptions.feature,
-			ownerOptions.states,
-			ownerOptions.languages,
-			ownerOptions.sizes,
-			ownerOptions.inputs,
-			ownerOptions.motions,
-			ownerOptions.transports,
+			ownerOptions.cache,
 		],
-		requiredOptions: ["--tool", "--out"],
+		requiredOptions: ["--script", "--out"],
+		requiredOptionGroups: [["--concept", "--ref"]],
 		passthrough: true,
-		exitCodes: exits(
-			[0, "Measurement passed."],
-			[1, "Findings or command failure."],
-		),
+		exitCodes: exits([0, "Script passed."], [1, "Script failed."]),
 	},
 	{
-		name: "cleanup",
-		usage: "pnpm verify:owner cleanup --session <launch-folder|session.json>",
-		purpose: "Stop an owned preview session.",
-		options: [ownerOptions.session],
-		requiredOptions: ["--session"],
-		exitCodes: exits(
-			[0, "Session stopped."],
-			[1, "Command refused or failed."],
-		),
-	},
-	{
-		name: "_serve",
-		usage: "pnpm verify:owner _serve --concept <folder> [options]",
-		purpose: "Internal preview server.",
+		name: "diff-folders",
+		usage:
+			"pnpm verify:owner diff-folders --a <folder> --b <folder> --out <folder>",
+		purpose: "Compare every PNG under two folders.",
 		options: [
-			{ ...ownerOptions.concept, absolute: false },
-			ownerOptions.port,
-			flag("--lan", "Listen on LAN."),
-			value("--token", "Session token."),
-			value("--idle-timeout-ms", "Idle timeout in milliseconds.", {
-				sample: "60000",
-				integer: [1, 1800000],
-				valueNote: "at most 30 minutes",
+			value("--a", "First PNG folder.", {
+				sample: "captures/before",
+				pathKind: "directory",
+				absolute: true,
 			}),
+			value("--b", "Second PNG folder.", {
+				sample: "captures/after",
+				pathKind: "directory",
+				absolute: true,
+			}),
+			ownerOptions.out,
 		],
-		requiredOptions: ["--concept"],
-		internal: true,
-		exitCodes: exits([0, "Server stopped."], [1, "Command refused or failed."]),
+		requiredOptions: ["--a", "--b", "--out"],
+		exitCodes: exits([0, "Every PNG is equal."], [1, "A PNG differs."]),
 	},
+	...ownerTailCommands({ ownerOptions, flag, value, exits }),
 ];
 
 const ownerEntry = {

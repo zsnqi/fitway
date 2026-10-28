@@ -68,6 +68,17 @@ async function armTimelineAction(page, action, input, entry, last) {
 		);
 }
 
+function captureManifest(options, concept, probes, page) {
+	return {
+		schema: 2,
+		...options.commandManifest,
+		concept,
+		feature: `${page}/${options.feature || "page"}`,
+		probeSources: probes.sources,
+		items: [],
+	};
+}
+
 export async function drive(options) {
 	const { concept, map, tools, loaded, out } = options;
 	const requestedTimes = timelineTimes(options["timeline-times"]);
@@ -94,13 +105,7 @@ export async function drive(options) {
 	let browser;
 	let origin;
 	let cancelled = false;
-	const manifest = {
-		schema: 2,
-		concept,
-		feature: `${selected.page}/${options.feature || "page"}`,
-		probeSources: probes.sources,
-		items: [],
-	};
+	const manifest = captureManifest(options, concept, probes, selected.page);
 	let manifestWrites = Promise.resolve();
 	const writeManifest = () => {
 		// Compare reads the manifest only after every capture settles; its

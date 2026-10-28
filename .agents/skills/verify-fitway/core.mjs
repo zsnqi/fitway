@@ -3,9 +3,11 @@ import { randomBytes } from "node:crypto";
 import {
 	existsSync,
 	lstatSync,
+	mkdirSync,
 	readdirSync,
 	readlinkSync,
 	realpathSync,
+	writeFileSync,
 } from "node:fs";
 import {
 	mkdir,
@@ -81,14 +83,73 @@ export function assertOutsideGit(target) {
 	return resolved;
 }
 
-export function freshEmptyOutput(target, command) {
+const outputManifests = new Map();
+
+export function freshEmptyOutput(target, command, metadata = {}) {
 	const resolved = assertOutsideGit(target);
 	if (existsSync(resolved) && readdirSync(resolved).length)
 		throw new ToolStartupError(
 			`${command} requires a fresh empty output folder; this prevents descendant links or old evidence from redirecting writes.`,
-			"pass --out a new or empty folder outside Git",
+			"pass a fresh --out folder: a new or empty folder outside Git",
 		);
+	const manifest = {
+		command,
+		arguments: metadata.arguments || [],
+		checkout:
+			typeof metadata.checkout === "function"
+				? metadata.checkout()
+				: metadata.checkout || {
+						commit: null,
+						branch: null,
+					},
+		...(metadata.concept ? { concept: metadata.concept } : {}),
+		...(metadata.ref ? { ref: metadata.ref } : {}),
+		...(metadata.baseline ? { baseline: metadata.baseline } : {}),
+		...(metadata["baseline-ref"]
+			? { "baseline-ref": metadata["baseline-ref"] }
+			: {}),
+		startedAt: metadata.startedAt || new Date().toISOString(),
+	};
+	metadata.checkout = manifest.checkout;
+	mkdirSync(resolved, { recursive: true });
+	try {
+		writeFileSync(
+			resolve(resolved, "manifest.json"),
+			`${JSON.stringify(manifest, null, 2)}\n`,
+			{ encoding: "utf8", flag: "wx" },
+		);
+	} catch (error) {
+		if (error.code !== "EEXIST") throw error;
+		throw new ToolStartupError(
+			`${command} requires a fresh empty output folder; another process claimed it.`,
+			"pass a fresh --out folder: a new or empty folder outside Git",
+		);
+	}
+	outputManifests.set(resolved, manifest);
 	return resolved;
+}
+
+export async function finishOutputManifest(target, exitStatus) {
+	const resolved = canonical(target);
+	const initial = outputManifests.get(resolved);
+	if (!initial) throw new Error(`No output manifest was claimed for ${target}`);
+	const current = await readFile(resolve(resolved, "manifest.json"), "utf8")
+		.then(JSON.parse)
+		.catch(() => ({}));
+	const manifest = {
+		...current,
+		...initial,
+		status: exitStatus === 0 ? "passed" : "failed",
+		exitStatus,
+		endedAt: new Date().toISOString(),
+	};
+	await writeFile(
+		resolve(resolved, "manifest.json"),
+		`${JSON.stringify(manifest, null, 2)}\n`,
+		"utf8",
+	);
+	outputManifests.delete(resolved);
+	return manifest;
 }
 
 export function freshOutput() {
@@ -360,7 +421,7 @@ export function verificationPort(port) {
 	return Number(port);
 }
 
-export function comparisonPorts(options) {
+export function comparisonPorts(options, command = "compare") {
 	const ports = [
 		verificationPort(options.port ?? 3176),
 		verificationPort(options["baseline-port"] ?? 3177),
@@ -371,7 +432,7 @@ export function comparisonPorts(options) {
 		)
 	)
 		throw new Error(
-			`compare requires one ordered verification pair: ${verificationPairNames()}; received ${ports.join("-")}.`,
+			`${command} requires one ordered verification pair: ${verificationPairNames()}; received ${ports.join("-")}.`,
 		);
 	return ports;
 }

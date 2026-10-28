@@ -24,13 +24,15 @@ import {
 	measurementColors,
 	requireForcedColors,
 } from "./colors.mjs";
+import { withOutputCommand } from "./command-output.mjs";
 import { compare } from "./compare.mjs";
+import { resolveConceptSide } from "./concept-source.mjs";
 import {
 	assertOutsideGit,
 	canonical,
 	checkVerificationLease,
+	comparisonPorts,
 	defaultLanAddresses,
-	freshEmptyOutput,
 	freshOutput,
 	jsonOutput,
 	lanOrigins,
@@ -55,7 +57,7 @@ import {
 	refuseOutputArguments,
 	refuseServingSpecs,
 } from "./measure-arguments.mjs";
-import { drive } from "./runner.mjs";
+import { timelineTimes } from "./timeline.mjs";
 
 const self = fileURLToPath(import.meta.url);
 export const help = renderToolHelp("verify:owner");
@@ -496,18 +498,97 @@ async function prepareMeasureOptions(options) {
 	options.colors = requested.colors;
 }
 
+function preflight(command, options) {
+	if (command === "launch") verificationPort(options.port || 3176);
+	if (command === "compare") {
+		comparisonPorts(options);
+		timelineTimes(options["timeline-times"]);
+		if (options.session)
+			throw new ToolStartupError(
+				"compare owns its previews; omit --session.",
+				"drop --session; compare launches and stops its own previews",
+			);
+	}
+	if (command === "measure") {
+		refuseOutputArguments(options.extra);
+		refuseServingSpecs(options.extra);
+		requireHeldForensics(options);
+	}
+}
+
+function requireHeldForensics(options) {
+	const heldRequested = options.extra.some((arg) =>
+		/(?:^|[=:])(?:hold|release)(?::|$)/.test(arg),
+	);
+	if (!heldRequested) return;
+	const source = readFileSync(
+		resolve(forensicsPath(options), "scripts/web/_common.mjs"),
+		"utf8",
+	);
+	const version =
+		source.match(/TOOL_VERSION\s*=\s*["']([^"']+)/)?.[1] || "unknown";
+	const [major, minor, patch] = String(version).split(".").map(Number);
+	if (
+		!(major > 1 || (major === 1 && (minor > 3 || (minor === 3 && patch >= 1))))
+	)
+		throw new Error(
+			`Held presses require ui-forensics >=1.3.1; found ${version}`,
+		);
+}
+
+const outputCommands = new Set([
+	"belonging-check",
+	"compare",
+	"diff-folders",
+	"drive",
+	"launch",
+	"map",
+	"measure",
+	"repair-recipes",
+	"run",
+]);
+
 export async function main(input, services = {}) {
 	const parsed = Array.isArray(input)
 		? resolveToolArguments("verify:owner", input)
 		: input;
 	const { command, options } = ownerCommandOptions(parsed);
 	if (parsed.help || command === "help") return console.log(help);
+	const rawArguments =
+		services.rawArguments ||
+		parsed.rawArguments ||
+		(Array.isArray(input)
+			? input.slice()
+			: [
+					command,
+					...parsed.positionals,
+					...(parsed.passthrough.length ? ["--", ...parsed.passthrough] : []),
+				]);
 	if (
 		["drive", "compare"].includes(command) &&
 		colorsAxis(options.colors).includes("forced")
 	)
 		await requireForcedColors(forensicsPath(options));
 	if (command === "measure") await prepareMeasureOptions(options);
+	preflight(command, options);
+	if (!outputCommands.has(command)) return dispatch(command, options, services);
+	const out = options.out || freshOutput();
+	return withOutputCommand(
+		out,
+		{
+			command,
+			arguments: rawArguments,
+			concept: options.concept,
+			ref: options.ref,
+			baseline: options.baseline,
+			"baseline-ref": options["baseline-ref"],
+		},
+		(_folder, commandManifest) =>
+			dispatch(command, { ...options, out, commandManifest }, services),
+	);
+}
+
+async function dispatch(command, options, services) {
 	if (command === "belonging-check")
 		return (await import("./belonging-check.mjs")).belongingCheck(options, {
 			doctor,
@@ -532,33 +613,8 @@ export async function main(input, services = {}) {
 		return console.log(checkVerificationMaps(options.root || repository));
 	if (command === "cleanup") return cleanup(options.session);
 	if (command === "measure") {
-		freshEmptyOutput(options.out, "measure");
 		const tools = forensicsPath(options);
 		const tool = options.tool;
-		refuseOutputArguments(options.extra);
-		const heldRequested = options.extra.some((arg) =>
-			/(?:^|[=:])(?:hold|release)(?::|$)/.test(arg),
-		);
-		if (heldRequested) {
-			const source = readFileSync(
-				resolve(tools, "scripts/web/_common.mjs"),
-				"utf8",
-			);
-			const version =
-				source.match(/TOOL_VERSION\s*=\s*["']([^"']+)/)?.[1] || "unknown";
-			const [major, minor, patch] = String(version).split(".").map(Number);
-			if (
-				!(
-					major > 1 ||
-					(major === 1 && (minor > 3 || (minor === 3 && patch >= 1)))
-				)
-			)
-				throw new Error(
-					`Held presses require ui-forensics >=1.3.1; found ${version}`,
-				);
-		}
-		// Refused before the evidence folder exists (C4: nothing written before a refusal).
-		refuseServingSpecs(options.extra);
 		await outputFile(options.out, "tool-output");
 		if (tool === "diff") {
 			await child(process.platform === "win32" ? "py" : "python3", [
@@ -594,12 +650,17 @@ export async function main(input, services = {}) {
 		});
 		return console.log(`MEASURE PASS: ${tool}; evidence ${options.out}`);
 	}
-	if (!options.concept)
+	if (
+		["repair-recipes", "map", "drift", "list", "launch", "doctor"].includes(
+			command,
+		) &&
+		!options.concept
+	)
 		throw new Error(
 			"--concept requires the absolute Eclipse folder (the build is read-only).",
 		);
 	if (command === "repair-recipes") {
-		const out = options.out || freshOutput();
+		const out = options.out;
 		assertOutsideGit(out);
 		const concept = canonical(options.concept);
 		const repaired = repairRecipes(concept, options.recipes);
@@ -614,7 +675,7 @@ export async function main(input, services = {}) {
 		return;
 	}
 	if (command === "map") {
-		const out = options.out || freshOutput();
+		const out = options.out;
 		assertOutsideGit(out);
 		const map = generateMap(canonical(options.concept), options.recipes);
 		await jsonOutput(out, "verification-map.json", map);
@@ -651,49 +712,40 @@ export async function main(input, services = {}) {
 		}
 		return;
 	}
-	if (command === "compare")
-		return compare(
-			{ ...options, out: options.out || freshOutput() },
-			{ doctor, child, ...services.compare },
-		);
+	if (command === "run")
+		return (await import("./run.mjs")).runScript(options, {
+			doctor,
+		});
+	if (command === "diff-folders")
+		return (await import("./diff-folders.mjs")).diffFolders(options, {
+			tools: forensicsPath(options),
+			child,
+		});
+	if (command === "compare") {
+		const build = resolveConceptSide(options, "build");
+		const baseline = resolveConceptSide(options, "baseline");
+		try {
+			return await compare(
+				{
+					...options,
+					concept: build.concept,
+					recipes: build.recipes,
+					baseline: baseline.concept,
+					"baseline-recipes": baseline.recipes,
+				},
+				{ doctor, child, ...services.compare },
+			);
+		} finally {
+			build.cleanup();
+			baseline.cleanup();
+		}
+	}
 	if (command === "launch") return launch(options);
 	if (command === "doctor") return doctor(options);
-	if (command === "drive") {
-		const out = options.out || freshOutput();
-		assertOutsideGit(out);
-		const setup = await doctor(options);
-		if (options.page === "all") {
-			const combined = { schema: 1, concept: setup.concept, items: [] };
-			let failed = false;
-			for (const page of setup.map.pages) {
-				const pageOut = resolve(out, page.page.replace(".html", ""));
-				try {
-					await drive({ ...options, ...setup, page: page.page, out: pageOut });
-				} catch (error) {
-					failed = true;
-					if (!(error instanceof ReportedFailure))
-						console.error(`PAGE FAIL: ${page.page}: ${error.message}`);
-				}
-				if (existsSync(resolve(pageOut, "manifest.json"))) {
-					const result = JSON.parse(
-						await readFile(resolve(pageOut, "manifest.json"), "utf8"),
-					);
-					combined.items.push(
-						...result.items.map((item) => ({ ...item, folder: pageOut })),
-					);
-				}
-			}
-			await jsonOutput(out, "manifest.json", combined);
-			if (failed)
-				throw new Error(
-					`Page sweep had findings; evidence ${out}/manifest.json`,
-				);
-			return console.log(
-				`DRIVE PASS: ${combined.items.length} items across all pages; evidence ${out}/manifest.json`,
-			);
-		}
-		return drive({ ...options, ...setup, out });
-	}
+	if (command === "drive")
+		return (await import("./drive-command.mjs")).driveCommand(options, {
+			doctor,
+		});
 	throw new Error(`Unknown command: ${command}; run help.`);
 }
 

@@ -1,20 +1,19 @@
 // code-health-exception: giantFiles; until=2026-11-15; reason=giant-split: drive and plannedCaptures now come from two modules; compareOwned's decomposition follows
-import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { readFile, rm } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 import {
 	assertOutsideGit,
 	comparisonPorts,
 	jsonOutput,
-	outputFile,
 	portAvailable,
 	ReportedFailure,
 	reserveVerificationPorts,
 	shortFinding,
 } from "./core.mjs";
 import { plannedCaptures } from "./drive-plan.mjs";
+import { diffImages } from "./image-diff.mjs";
 import { drive } from "./runner.mjs";
 import { timelineTimes } from "./timeline.mjs";
 
@@ -27,7 +26,6 @@ const sizesText = (sizes) =>
 	sizes
 		? `; sizes baseline ${sizes.baseline.join("x")}, build ${sizes.build.join("x")}`
 		: "";
-const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const identity = (item) =>
 	JSON.stringify([
 		item.feature,
@@ -187,52 +185,13 @@ async function compareOwned(
 			items: [],
 			...(options["affected-pages"] ? { partial: true, pages } : {}),
 		};
-		const diff = async (a, b, prefix) => {
-			if (digest(await readFile(a)) === digest(await readFile(b)))
-				return { identical: true, bbox: null, changedPixels: 0 };
-			const json = await outputFile(out, `${prefix}.json`);
-			await rm(json, { force: true });
-			try {
-				await child(
-					process.platform === "win32" ? "py" : "python3",
-					[
-						resolve(build.tools, "scripts/img/diff_map.py"),
-						a,
-						b,
-						"--out",
-						await outputFile(out, prefix),
-						"--json",
-						json,
-					],
-					undefined,
-					undefined,
-					true,
-				);
-			} catch (error) {
-				const measurement = await readFile(json, "utf8")
-					.then(JSON.parse)
-					.catch(() => null);
-				const validSize = (size) =>
-					Array.isArray(size) &&
-					size.length === 2 &&
-					size.every((value) => Number.isSafeInteger(value) && value > 0);
-				if (
-					measurement?.tool === "diff_map" &&
-					measurement.a === a &&
-					measurement.b === b &&
-					measurement.sameSize === false &&
-					measurement.ok === false &&
-					validSize(measurement.sizeA) &&
-					validSize(measurement.sizeB) &&
-					measurement.sizeA.some(
-						(value, index) => value !== measurement.sizeB[index],
-					)
-				)
-					return { ...measurement, identical: false };
-				throw error;
-			}
-			return JSON.parse(await readFile(json, "utf8"));
-		};
+		const diff = (a, b, prefix) =>
+			diffImages(a, b, {
+				out,
+				prefix,
+				tools: build.tools,
+				child,
+			});
 		try {
 			for (const page of pages) {
 				const tag = page.replace(".html", "");

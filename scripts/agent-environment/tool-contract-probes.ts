@@ -35,6 +35,7 @@ export type ToolCommand = {
 	internal?: boolean;
 	options: ToolOption[];
 	requiredOptions: string[];
+	requiredOptionGroups?: string[][];
 	positionals?: ToolPosition[];
 };
 export type ToolEntry = {
@@ -46,6 +47,7 @@ export type ToolEntry = {
 	commands?: ToolCommand[];
 	positionals?: ToolPosition[];
 	requiredOptions?: string[];
+	requiredOptionGroups?: string[][];
 	failureName?: string;
 	failureExitCode?: number;
 	deferPositionalFailures?: boolean;
@@ -97,6 +99,16 @@ export function requiredArguments(
 				: (overrides[name] ?? contractValue(option));
 		if (option?.takesValue && value !== undefined) args.push(name, value);
 		else if (!option?.takesValue) args.push(name);
+	}
+	for (const group of command?.requiredOptionGroups ??
+		entry.requiredOptionGroups ??
+		[]) {
+		if (args.some((argument) => group.includes(argument))) continue;
+		const name = group[0];
+		const option = options.find((candidate) => candidate.name === name);
+		if (!option) continue;
+		if (option.takesValue) args.push(name, contractValue(option));
+		else args.push(name);
 	}
 	const positions = command?.positionals ?? entry.positionals ?? [];
 	for (let index = 0; index < positions.length; index += 1) {
