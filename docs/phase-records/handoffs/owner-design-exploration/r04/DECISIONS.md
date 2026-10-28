@@ -1073,6 +1073,16 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     the mirror of item 92's option B, and decision 16's English numeric edge. OWN-R12's "the peak on the physical right
     edge in both languages" predated decision 16 and is replaced: Arabic shares the column's right (start) edge, English
     its left (start) edge.
+95. **The export dialog's file box, as built after `b56b6e71`** (the user, 2026-10-28, on real renders of three options,
+    `D:/fitway-temp/owner-r04-export-filebox-fix/sheet-ar.png` and `sheet-en.png`: «ب العربي اختار 3 مرتب اكثر و ب
+    الانجليزي اختار 2»): the icon in a column of its own and the name beside it from the first line at every width (no
+    longer under the icon at 320), the row count always on its own line directly under the name's first letter (no
+    longer sharing the name's line at 449-720). English: icon, name and count from the left (option 2). Arabic: the box
+    is laid out like the English, icon on the left, the name and «40,320 صفًا» starting on the left edge (option 3); the
+    count keeps its own right-to-left reading inside its line. The user's reason: the file name is all Latin, so an
+    Arabic reader's eye goes to the left to read it from its start; on two lines aligned right each line's start is
+    ragged and has to be found. This supersedes item 93's Arabic part ("starts on the right edge beside the icon",
+    finding 6) for this box only; it is not a rule for other Latin text in Arabic screens.
 
 ## How this milestone's rounds run
 
