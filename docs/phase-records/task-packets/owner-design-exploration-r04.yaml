@@ -31,7 +31,7 @@ authorities:
       selector: { kind: markdown-heading, value: "2. Product Anchor & Business Context" }
       reason: "Product context only: identify the pilot gym and Owner use cases; this research is not visual authority."
     - role: spec
-      path: docs/spec/01-authority.md
+      path: SPEC.md
       selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }
       reason: Preserve security, privacy, accessibility, bilingual behavior, and data contracts.
     - role: design
