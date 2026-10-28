@@ -35,7 +35,10 @@ error. Links whose resolved targets are all inside the worktree, including
 pnpm's layout, remain eligible. Worktree proposals run `remove-worktree.mjs`,
 which rechecks links and eligibility, unlinks verified internal links without
 following their targets, and then invokes Git; never substitute bare
-`git worktree remove`.
+`git worktree remove`. It is the one removal path for a worktree that may hold
+evidence: ignored files cited by a tracked record, or by a record citing a
+folder above them including the worktree path, refuse removal with the file and
+citing line. An uncited ignored file remains removable.
 
 Old unmerged, unreferenced worktrees include branch, last commit date, and
 status for coordinator review and are never removal candidates. The invoking
@@ -54,6 +57,16 @@ and line. Files newly tracked or edited since the survey are included in the
 execution-time citation collection. Folder age or size alone never authorizes
 deletion. Real deletion regression tests run only on disposable test-created
 folders.
+
+The survey also emits `prune.mjs`, separately from `cleanup.mjs`, and never
+runs either. Prune proposals cover each top-level temp folder that yields
+deletable files. They keep a cited file, every non-capture in a cited folder,
+and a capture named by a kept text file in the same folder. An uncited capture
+is deletable. The tracked-record rule is the same citation matcher used by the
+cleanup and the gone-citation audit, over tracked `.md`, `.yaml`, `.yml`,
+`.tsv` and `.txt` files. The proposal reports each folder's freed bytes and the
+files and reasons it keeps. The generated script rechecks citations, registered
+worktrees and links before unlinking individual files; it never follows a link.
 
 The final survey is run with a fresh `-Out` and
 `-FinalReport <absolute-checkout>/.agents/skills/gardener/REPORT.md`. It

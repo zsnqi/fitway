@@ -72,7 +72,7 @@
 		},
 		".agents/skills/gardener/survey.mjs": {
 			"longFunctions": 2,
-			"longFunctionLines": 313
+			"longFunctionLines": 311
 		},
 		".agents/skills/verify-fitway/baseline-cache.mjs": {
 			"duplication": 1
@@ -869,7 +869,7 @@
 		"scripts/verify-repository.mjs": {
 			"duplication": 1,
 			"longFunctions": 2,
-			"longFunctionLines": 265
+			"longFunctionLines": 263
 		},
 		"scripts/verify-repository.schema.test.ts": {
 			"duplication": 19,
@@ -894,8 +894,8 @@
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 117,
-			"expectCalls": 377
+			"testCases": 123,
+			"expectCalls": 402
 		},
 		"apps/server/src": {
 			"testCases": 215,

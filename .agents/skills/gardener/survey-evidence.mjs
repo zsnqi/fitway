@@ -185,19 +185,24 @@ export async function collectFolderRecords(
 		// Injected source lists belong to fixtures; real checkouts always use Git.
 		binaryFiles = trackedFiles ? new Set() : binaryCitationSources(checkout),
 		load = (source) => record(source, "tracked", checkout),
+		recordExtensions,
 		tempRoot,
 	} = {},
 ) {
-	const all = new Map(
-		records
-			.filter((item) => !binaryFiles.has(item.source))
-			.map((item) => [item.source, item]),
-	);
 	const tracked =
 		trackedFiles ??
 		git(["ls-files", "-z"], checkout).split("\0").filter(Boolean);
+	const isRecord = (source) =>
+		!recordExtensions ||
+		recordExtensions.has(path.extname(source).toLowerCase());
+	const all = new Map(
+		records
+			.filter((item) => isRecord(item.source) && !binaryFiles.has(item.source))
+			.map((item) => [item.source, item]),
+	);
 	for (const source of tracked) {
-		if (all.has(source) || binaryFiles.has(source)) continue;
+		if (!isRecord(source) || all.has(source) || binaryFiles.has(source))
+			continue;
 		try {
 			all.set(source, await load(source));
 		} catch (error) {
@@ -430,6 +435,7 @@ export async function measureFolder(absolute) {
 		path: absolute.replaceAll("\\", "/"),
 		bytes: 0,
 		files: 0,
+		createdAt: details.birthtime.toISOString(),
 		modifiedAt: details.mtime.toISOString(),
 		link: details.isSymbolicLink(),
 		gitRoots: [],

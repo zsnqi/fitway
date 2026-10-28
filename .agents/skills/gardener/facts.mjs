@@ -108,8 +108,102 @@ export function referenceText(record) {
 	);
 }
 
+const PATH_CITATION =
+	/[`"']((?:[a-z]:\/|\/)[^`"'\r\n]+)[`"']|<((?:[a-z]:\/|\/)(?:<[^<>\r\n]*>|[^<>\r\n])+)>|(?:[a-z]:\/|\/)(?:<[^<>\r\n]*>|[^\s`"'<>),;])+/g;
+
+function citationTargets(line, tempRoot) {
+	return [...line.matchAll(PATH_CITATION)].flatMap((match) => {
+		const quoted = match[1] ?? match[2];
+		let raw = quoted ?? match[0];
+		// Paired Markdown bold markers are formatting, not wildcards.
+		if (
+			!quoted &&
+			line.slice(Math.max(0, match.index - 2), match.index) === "**" &&
+			raw.endsWith("**")
+		)
+			raw = raw.slice(0, -2);
+		// Ambiguous sentence punctuation must also protect a folder whose real
+		// name ends in a dot; quoted spelling stays exact.
+		const targets = quoted
+			? [raw]
+			: [...new Set([raw, raw.replace(/[.:]+$/, "")])];
+		return targets.flatMap((value) => {
+			let target = value
+				.replace(/:\d+(?:-\d+)?$/, "")
+				.replace(/^\/([a-z])\//, "$1:/");
+			const placeholder = target.search(/[<*?{]/);
+			if (placeholder !== -1) {
+				// A pattern names only the complete segments before its first
+				// patterned segment, never a partial folder name.
+				target = target.slice(0, target.lastIndexOf("/", placeholder));
+				if (!inside(tempRoot, target)) return [];
+			}
+			return [
+				{
+					target,
+					index: match.index,
+					end: match.index + match[0].length,
+				},
+			];
+		});
+	});
+}
+
+export function pathCitations(record, { tempRoot = "D:/fitway-temp" } = {}) {
+	return referenceText(record)
+		.replaceAll("\\", "/")
+		.split(/\r?\n/)
+		.flatMap((line, index) => {
+			const text = line
+				.toLowerCase()
+				.replace(/(^|[^a-z0-9_./:-])(fitway-temp\/)/g, "$1d:/$2");
+			return citationTargets(text, tempRoot).flatMap((citation) => {
+				if (
+					key(citation.target) === key(tempRoot) ||
+					!inside(tempRoot, citation.target) ||
+					/\(gone:\s*[^)]+\)/i.test(text.slice(citation.end))
+				)
+					return [];
+				return [
+					{
+						source: record.source,
+						line: index + 1,
+						path: citation.target,
+						text: line.trim(),
+					},
+				];
+			});
+		});
+}
+
+export function citationIndex(records, { tempRoot = "D:/fitway-temp" } = {}) {
+	const index = new Map();
+	for (const citation of records.flatMap((record) =>
+		pathCitations(record, { tempRoot }),
+	)) {
+		const target = key(citation.path);
+		const entries = index.get(target) ?? [];
+		entries.push(citation);
+		index.set(target, entries);
+	}
+	return index;
+}
+
+export function citationsAtOrAbove(value, index) {
+	let target = key(value);
+	const citations = [];
+	while (target) {
+		citations.push(...(index.get(target) ?? []));
+		const slash = target.lastIndexOf("/");
+		if (slash < 0) break;
+		target = target.slice(0, slash);
+	}
+	return citations;
+}
+
 export function references(value, records, { branch = false, tempRoot } = {}) {
 	const normalized = key(value);
+	const root = tempRoot ?? "D:/fitway-temp";
 	const aliases = branch
 		? [
 				normalized,
@@ -120,7 +214,7 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 		const cached =
 			!branch &&
 			record.referenceScope &&
-			key(record.referenceScope) === key(tempRoot ?? "D:/fitway-temp") &&
+			key(record.referenceScope) === key(root) &&
 			inside(record.referenceScope, value);
 		const lines = cached
 			? record.referenceLines
@@ -140,41 +234,14 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 			// A pointer to an ancestor or to evidence below a folder protects it.
 			const cited =
 				!branch &&
-				[
-					...text.matchAll(
-						/[`"']((?:[a-z]:\/|\/)[^`"'\r\n]+)[`"']|<((?:[a-z]:\/|\/)(?:<[^<>\r\n]*>|[^<>\r\n])+)>|(?:[a-z]:\/|\/)(?:<[^<>\r\n]*>|[^\s`"'<>),;])+/g,
-					),
-				].some((match) => {
-					const quoted = match[1] ?? match[2];
-					let raw = quoted ?? match[0];
-					// Paired Markdown bold markers are formatting, not wildcards.
-					if (
-						!quoted &&
-						text.slice(Math.max(0, match.index - 2), match.index) === "**" &&
-						raw.endsWith("**")
-					)
-						raw = raw.slice(0, -2);
-					// Ambiguous sentence punctuation must also protect a folder
-					// whose real name ends in a dot; quoted spelling stays exact.
-					const targets = quoted ? [raw] : [raw, raw.replace(/[.:]+$/, "")];
-					return targets.some((value) => {
-						let target = value
-							.replace(/:\d+(?:-\d+)?$/, "")
-							.replace(/^\/([a-z])\//, "$1:/");
-						const placeholder = target.search(/[<*?{]/);
-						if (placeholder !== -1) {
-							// A pattern names only the complete segments before its
-							// first patterned segment, never a partial folder name.
-							target = target.slice(0, target.lastIndexOf("/", placeholder));
-							if (!inside(tempRoot ?? "D:/fitway-temp", target)) return false;
-						}
-						return (
-							text[match.index + match[0].length] !== "<" &&
-							!inside(target, tempRoot ?? "D:/fitway-temp") &&
-							key(target) !== key("D:/fitway-temp") &&
-							(inside(target, normalized) || inside(normalized, target))
-						);
-					});
+				citationTargets(text, root).some((citation) => {
+					const { target } = citation;
+					return (
+						text[citation.end] !== "<" &&
+						!inside(target, root) &&
+						key(target) !== key(root) &&
+						(inside(target, normalized) || inside(normalized, target))
+					);
 				});
 			return named || cited
 				? [{ source: record.source, line: lineNumber, text: line.trim() }]

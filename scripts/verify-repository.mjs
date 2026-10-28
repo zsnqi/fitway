@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
+import { auditTempCitations } from "../.agents/skills/gardener/cited-evidence.mjs";
 import {
 	bomExceptionPathKey,
 	normalizeGitPath,
@@ -212,11 +213,56 @@ export async function verifyGardenerRecord(state, read = readBytes) {
 	);
 }
 
-async function main(options = {}) {
+export async function assertTrackedTempCitations({
+	checkout = root,
+	tempRoot = "D:/fitway-temp",
+	trackedFiles,
+} = {}) {
+	const audit = await auditTempCitations({
+		checkout,
+		tempRoot,
+		trackedFiles,
+	});
+	if (!audit.checked) {
+		console.log(
+			`Evidenced temp citations not checked: ${tempRoot} does not exist.`,
+		);
+		return audit;
+	}
+	if (audit.unchanged.length) {
+		const examples = audit.unchanged
+			.slice(0, 5)
+			.map((citation) => `${citation.source}:${citation.line} ${citation.path}`)
+			.join("; ");
+		console.warn(
+			`Evidenced temp citations already gone on unchanged lines: ${audit.unchanged.length}. First five: ${examples}. Mark each citation with (gone: <why>) after recovering or accepting the loss.`,
+		);
+	}
+	if (audit.changed.length) {
+		const details = audit.changed
+			.map(
+				(citation) => `${citation.source}:${citation.line}: ${citation.path}`,
+			)
+			.join("\n");
+		throw new Error(
+			`Evidenced temp citations are gone on changed lines:\n${details}\nFix: correct each path, or mark it (gone: <why>).`,
+		);
+	}
+	console.log(
+		`Evidenced temp citations passed: ${audit.dead.length} already gone on unchanged lines, 0 gone on changed lines.`,
+	);
+	return audit;
+}
+
+function assertNoDiffErrors() {
 	execFileSync("git", ["diff", "HEAD", "--check", "--"], {
 		cwd: root,
 		stdio: "inherit",
 	});
+}
+
+async function main(options = {}) {
+	assertNoDiffErrors();
 
 	const required = [
 		"AGENTS.md",
@@ -273,6 +319,7 @@ async function main(options = {}) {
 		);
 	}
 	const trackedFiles = listTrackedFiles(root);
+	await assertTrackedTempCitations();
 	const bomCheck = assertNoUnexpectedBom({
 		repositoryRoot: root,
 		trackedFiles,

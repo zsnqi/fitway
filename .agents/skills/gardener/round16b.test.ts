@@ -13,6 +13,7 @@ import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { cleanup } from "./cleanup.mjs";
 import { key, references } from "./facts.mjs";
+import { removeWorktree } from "./remove-worktree.mjs";
 import * as survey from "./survey-evidence.mjs";
 
 function fixture() {
@@ -67,6 +68,17 @@ function fixture() {
 			rmSync(run, { recursive: true, force: true });
 		},
 	};
+}
+
+function ignoredWorktree(f, name: string, file: string) {
+	writeFileSync(path.join(f.checkout, ".gitignore"), "node_modules/\n");
+	f.commit();
+	const target = path.join(f.tempRoot, name);
+	f.git(["worktree", "add", "--detach", target, "HEAD"]);
+	mkdirSync(path.join(target, "node_modules"), { recursive: true });
+	const ignored = path.join(target, "node_modules", file);
+	writeFileSync(ignored, "evidence\n");
+	return { ignored, target };
 }
 
 describe("gardener round 16b repair", () => {
@@ -276,4 +288,62 @@ describe("gardener round 16b repair", () => {
 			f.dispose();
 		}
 	});
+
+	it("R7: removal refuses a tracked citation to an ignored file", async () => {
+		const f = fixture();
+		try {
+			const { ignored, target } = ignoredWorktree(
+				f,
+				"ignored-evidence",
+				"cited.log",
+			);
+			writeFileSync(
+				path.join(f.checkout, "citation.txt"),
+				`Evidence: \`${ignored}\`\n`,
+			);
+			f.git(["add", "citation.txt"]);
+			await expect(removeWorktree(f.checkout, target)).rejects.toThrow(
+				/cited\.log.*citation\.txt:1/,
+			);
+			expect(existsSync(target)).toBe(true);
+			console.log(
+				"E2 PASS: cited ignored file refused removal and named citation.txt:1",
+			);
+		} finally {
+			f.dispose();
+		}
+	}, 60000);
+
+	it("R7: removal refuses a cited worktree path and removes an uncited ignored file", async () => {
+		const f = fixture();
+		try {
+			const { target: cited } = ignoredWorktree(
+				f,
+				"cited-worktree",
+				"output.log",
+			);
+			writeFileSync(
+				path.join(f.checkout, "citation.txt"),
+				`Worktree evidence: \`${cited}\`\n`,
+			);
+			f.git(["add", "citation.txt"]);
+			await expect(removeWorktree(f.checkout, cited)).rejects.toThrow(
+				/output\.log.*citation\.txt:1/,
+			);
+			expect(existsSync(cited)).toBe(true);
+
+			const { target: uncited } = ignoredWorktree(
+				f,
+				"uncited-worktree",
+				"output.log",
+			);
+			await removeWorktree(f.checkout, uncited);
+			expect(existsSync(uncited)).toBe(false);
+			console.log(
+				"E2 PASS: cited worktree path refused; uncited ignored file removed with its clean worktree",
+			);
+		} finally {
+			f.dispose();
+		}
+	}, 60000);
 });
