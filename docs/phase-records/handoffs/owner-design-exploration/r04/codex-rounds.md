@@ -2139,3 +2139,36 @@ checks live outside the repository and never appear here or in a brief. One line
   No grade round: the held-out check above stands in for it while OpenAI's models are at capacity. Side findings
   F295-F299 (F296-F299 open, non-blocking).
 - **Real page findings:** none on today's concept (`fedbdb6d`): every page and width passes the narrowed rule.
+
+## agent-tooling-r01: compare-fullpage: `../../agent-tooling/briefs/codex-compare-fullpage.md`, result `1a81021d` on `tooling-compare-fullpage` (from `9db242bb`), DeepSeek V4.1 Flash, level `max`; review builder `5e6f7268`; merged `a5e6b5b6`
+
+- **Scope (r04 decision 96 (1)):** verify-fitway's `compare` checked the first viewport only, so a change below it
+  read EQUAL. It now covers the whole document: each part is planned, scrolled to, settled and measured again, and two
+  sides of different sizes are DIFFERENT, naming both sizes. Scroll containers inside the document stay outside (K4).
+- **Brief review** (`D:/fitway-temp/brief-review/codex-compare-fullpage-1`, brief SHA `3d29a3f1…`): DeepSeek five
+  readings, four closed in the brief, reading 5 (inner scroll containers) left as a separate cause. Sol `xhigh` was back
+  at 17:31, after the launch; its five readings (`D:/fitway-temp/brief-review/codex-compare-fullpage-1-sol`) were left
+  to the grade without stopping the round.
+- **Run** (`D:/fitway-temp/codex-round-compare-fullpage`, start load 181,211): 2 h 44 min, one turn with no resume;
+  144.4M input tokens (143.9M cached) and 156k output. Its report was honest against the events, and the fast ladder ran
+  after its one commit. C1 FAIL, correctly: two sides of different sizes stopped as a PROBLEM, which the round could not
+  repair because the brief kept `compare.mjs` read-only (the brief's defect). It wrote 13 scripts in its run folder, and
+  about an hour of C4 went on hand-built copies of the repository to prove a reuse the bundle key already guaranteed:
+  the lesson behind agent-tooling DECISIONS item 16 (checklist B14).
+- **Diff review** (`D:/fitway-temp/code-review/compare-fullpage-1/`): Sol `xhigh` answered, four blocking findings (the
+  scroll position read before the settle; the geometry measured once; a guard that gave some pages a viewport-only
+  capture; a test branch that guard left unreached), and the coordinator's C1-C3 (the size verdict; an unrolled nested
+  frame wait the ratchet would not count; no test reaching a document taller than its viewport).
+- **The builder** (`owner-direction-builder`, brief `D:/fitway-temp/tooling-compare-fullpage/fix-1/BRIEF.md`) committed
+  `5e6f7268`: `comparisonParts` plans the parts as a pure, tested function; each part scrolls instantly, waits one frame
+  and the settle, and is measured again, refusing a changed size; a size mismatch is DIFFERENT with `sizes` on its
+  `COMPARE` and timeline lines. `pnpm test:verification` 145/145, the fast ladder after its commit. Its four departures
+  were accepted: sizes on timeline lines, a geometry answer in two fakes, a baseline fall recorded, and the C1 copy's
+  output folder.
+- **The coordinator's grade on `5e6f7268`** (`D:/fitway-temp/tooling-compare-fullpage/coord-grade/`, cases no brief
+  named): G1, every page at six sizes in both languages, 72/72 EQUAL, every picture the size of its document (zoom
+  opened through ui-forensics' `newContext`, as compare does; plain Playwright ignores `zoom`, the first oracle's
+  error); G2, plants in the fifth band and in the clamped last part found at their place at phone and zoom, the control
+  EQUAL; G3, a bundle taken on 3176-3177 reused on 3188-3189, 4 reused and 0 captured.
+- **Rows:** C1-C5 and K1-K5 met at `5e6f7268`. The merge also says in `SKILL.md` §"Compare" that a size difference
+  carries `sizes` and no region.

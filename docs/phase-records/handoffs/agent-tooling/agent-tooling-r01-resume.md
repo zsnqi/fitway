@@ -2,7 +2,7 @@
 # agent-tooling-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:00 +03:00 (the
-  compare fix graded, not merged; the retro's four rounds drafted, not launched)
+  compare fix merged; the retro's four rounds drafted, not launched)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-17; 17 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -25,25 +25,8 @@
 Nothing runs (measured 2026-10-28 22:00). main `8c41282f`; the coordinator line is ahead (decisions 16-17 and the
 briefs below), for `pnpm main:advance` once its CI passes.
 
-- **compare-fullpage, graded, not merged.** Brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-compare-fullpage.md` (SHA `3d29a3f1…`); DeepSeek
-  `max` delivered `1a81021d` on `tooling-compare-fullpage` (worktree `D:/Projects/fitway-worktrees/tooling-compare-fullpage`,
-  its own install; run folder `D:/fitway-temp/codex-round-compare-fullpage`). Its report was honest against the
-  events, and the fast ladder ran after the commit. It left C1's size verdict open, correctly: the brief kept
-  `compare.mjs` read-only (the brief's defect). Its C4 spent about an hour on a hand-built repository copy, which
-  the bundle key already guaranteed (item 16). Sol's diff review (`D:/fitway-temp/code-review/compare-fullpage-1/`):
-  four blocking findings, plus the coordinator's C1-C3. `owner-direction-builder` applied all seven in `5e6f7268`
-  (brief and logs `D:/fitway-temp/tooling-compare-fullpage/fix-1/`; `test:verification` 145/145, the fast ladder after
-  the commit). Its four departures were accepted: sizes on timeline lines, a geometry answer in two fakes, a
-  baseline fall recorded, and the C1 copy's output folder.
-  - **The coordinator's grade** (`D:/fitway-temp/tooling-compare-fullpage/coord-grade/`, measured):
-    - G1: every page at six sizes in both languages, 72/72 EQUAL, and every picture's size equals its document's
-      (zoom measured through ui-forensics' `newContext`, as compare opens it).
-    - G2: plants in the fifth band and in the clamped last part were found at their place, at phone and zoom; the
-      control was EQUAL.
-    - G3: a bundle taken on 3176-3177 was reused on 3188-3189, 4 reused and 0 captured, at the document's size.
-  - Still to do:
-    - `SKILL.md` §"Compare" says "Each differing item has a region"; a size difference carries `sizes`.
-    - The round's record in `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
+- **compare-fullpage merged** (`a5e6b5b6`, its builder's `5e6f7268`; record in r04's `codex-rounds.md`), with
+  `SKILL.md` saying a size difference carries `sizes`, not a region. main waits on its CI for `pnpm main:advance`.
 - **The retro's four rounds, drafted** (`2b68c6cf`; HEADs set at launch, no review yet). Evidence:
   `D:/fitway-temp/retro-20261028/` (`D:/fitway-temp/retro-20261028/report.txt`, `D:/fitway-temp/retro-20261028/scripts-classified/REPORT.md`, `D:/fitway-temp/retro-20261028/gone-evidence/REPORT.md`).
   - `docs/phase-records/handoffs/agent-tooling/briefs/codex-run-and-ref.md`, finding 1 and part of 4: `run --script`, `--ref`/`--baseline-ref`, `rewrite`,
@@ -68,8 +51,7 @@ briefs below), for `pnpm main:advance` once its CI passes.
 
 ## Next steps
 
-1. **Merge compare-fullpage** (`5e6f7268`) into the coordinator line and fix the SKILL.md sentence. Write its record
-   (brief review, run, diff review, builder, grade G1-G3, item 16's lesson), push, then `pnpm main:advance` once CI passes.
+1. **`pnpm main:advance`** to the coordinator line once its CI passes.
 2. **Launch the four rounds** from the merged line. For each: create a worktree (`tooling-run-and-ref`,
    `tooling-code-map-index`, `tooling-cited-evidence`, `tooling-evidence-home`, each with its own install), set its
    HEAD, run `pnpm brief:check`, then the launcher's DeepSeek review and a Sol review, record the dispositions, and
