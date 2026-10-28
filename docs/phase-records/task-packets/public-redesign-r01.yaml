@@ -27,7 +27,7 @@ authorities:
       selector: { kind: markdown-heading, value: "Approved visual baseline" }
       reason: The production baseline and the Public redesign's place beside it.
     - role: spec
-      path: SPEC.md
+      path: docs/spec/01-authority.md
       selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }
       reason: Preserve security, privacy, accessibility, bilingual behavior, the capacity-free contract and the demo switch rule.
     - role: design
