@@ -1137,6 +1137,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 101. **A brief names how an outcome is already proved** (the user, 2026-10-28, from a forked session: "The light
      steps now"). Recorded in full as `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` item 16; it holds
      for this milestone's briefs from the next one, designer-public-directions-1 included where it asks for a proof.
+102. **The retro's four findings are fixed first** (the user, 2026-10-28, from a forked session). The public page's
+     designer waits until they are fixed and checked; recorded in full as
+     `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` item 17.
 
 ## How this milestone's rounds run
 

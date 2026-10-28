@@ -180,3 +180,22 @@ through these pointers, not copied here.
       whose error names the fix, then a test, then a written rule) and counts a class once it has happened twice;
       Matt Pocock's writing-for-agents says a pointer's wording decides whether an agent reaches it, and a
       prohibition plants the idea it forbids.
+17. **The retro's four navigation findings are fixed at the root before the public page starts** (the user,
+    2026-10-28, from a forked session: «أبي الجلسة الرئيسية تعالج جميع المشكلات من جذورها، مو تختار حلًا واحدًا أو
+    تكتفي بالتوصيات. خليها تراجع الحلول وتنفذ الأنسب لكل مشكلة، ثم تتحقق من نجاح الإصلاحات. و عادي ما نبدأ ب الصفحة
+    العامة الان»; r04 DECISIONS item 102). The retro measured the last ten coordinator lineages (2026-10-26 to 10-28)
+    and their subagents (scripts and report:
+    `D:/fitway-temp/retro-20261028/`, copied from the forked session's scratchpad).
+    For these four it widens agent-environment DECISIONS item 20 ("no further investment in process tooling"); item
+    16 still holds. Each finding gets the fix the coordinator judges best after review, then a measurement again, and a
+    planted defect wherever a check is added:
+    - **Agents hand-build verification tools** instead of using verify-fitway: 561 scripts in 42 of the 263
+      `owner-r04-*` run folders; 640 tool calls on run-folder scripts against 125 runs of verify-fitway's CLI; SKILL.md
+      has asked for its path to be extended since `8e520995`, and 36 of 40 such scripts are newer.
+    - **Records cite evidence that is gone:** 29 of the 290 `D:/fitway-temp` folders tracked records cite no longer
+      exist; 70 calls dug through transcripts to find who made a run folder or what it reported.
+    - **Very large files are read whole, repeatedly:** Eclipse `SETTINGS-SPEC.md` (78 KB), `DESIGN-SPEC.md` (283 KB),
+      `settings.js` (154 KB, read 15 times in 3 sessions); 37 tool results over 25K characters.
+    - **The tooling code map does not serve navigation:** `AGENT_TOOLING_CODE_MAP.md` was read by no agent, and
+      searches missed for want of a "where things live" pointer.
+    The public page's designer launches after these are done and checked.
