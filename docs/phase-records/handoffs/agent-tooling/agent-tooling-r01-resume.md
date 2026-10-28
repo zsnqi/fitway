@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:45 +03:00 (three
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:36 +03:00 (three
   of the retro's rounds running; evidence-home under review)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-18; 18 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -22,7 +22,7 @@
 
 ## Running now
 
-Measured 2026-10-28 22:45. main `8c41282f`; the coordinator line is ahead and unpushed past `f79adba4`, whose CI run
+Measured 2026-10-28 22:36. main `8c41282f`; the coordinator line is ahead and unpushed past `f79adba4`, whose CI run
 (`40752311394`) `pnpm main:advance` waits on; push the rest after it.
 
 - **Three of the retro's rounds run on DeepSeek `max`** from `f79adba4`, each brief reviewed by DeepSeek and Sol
