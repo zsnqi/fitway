@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 03:07 +03:00 (three
-  rounds' fixes with builders; the concept's specs being split)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 08:59 +03:00 (the four
+  rounds on main; leading-comments' brief under review)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-18; 18 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -22,48 +22,51 @@
 
 ## Running now
 
-Measured 2026-10-29 03:07. main `8398bd72` (code-map-index merged and recorded in
-`docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`).
+Measured 2026-10-29 08:59. main `ac337544`: the retro's four rounds (code-map-index, evidence-home, run-and-ref,
+cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`.
 
-- **Three rounds ended and are with `owner-direction-builder`s**, each from a frozen brief that first merges main
-  `8398bd72` into its branch. Each round's review folder `D:/fitway-temp/code-review/<round>-1/` holds Sol's
-  findings (`last.md`), `dispositions.md` and the coordinator's `GRADE.md`; the brief is
-  `D:/fitway-temp/tooling-<round>/fix-1/BRIEF.md`:
-  - cited-evidence: result `564625f5`; merge `b5d46db4` and fix `9bc4911c` in, items 8 (the prune walked the real
-    temp root for over 28 minutes) and 9 (the capture-name pattern took phrases) running;
-  - evidence-home: result `52fb52af`; fix running;
-  - run-and-ref: result `1c218aa6`; fix running. Its change to the read-only `tool-contract.mjs` stays (disposition 1)
-    and its record names the departure.
-  For each when it reports: check its commits and tests, then the merge, its record file beside `code-map-index.md`, push, CI and
-  `pnpm main:advance`. run-and-ref and evidence-home both change `tool-registry.mjs` and `tool-help-notes.mjs`:
-  merge one, then resolve the other against it.
-- **The concept's specs are being split** by an `owner-direction-fixer` on branch `concept-spec-split` (worktree
-  `D:/Projects/fitway-worktrees/concept-spec-split`, from `fedbdb6d`; brief `D:/fitway-temp/concept-spec-split/BRIEF.md`).
-  When it is verified, fast-forward `owner-followup-r04-build` and `public-redesign-r01` to it and push the build branch.
-- **Done** (item 18): compare-fullpage and code-map-index merged and recorded; r04's `DECISIONS.md` split into an
-  index and parts (`92a4e9a7`); the round records frozen behind `docs/phase-records/handoffs/agent-tooling/ROUNDS.md`;
-  `SPEC.md` split by section into `docs/spec/` (`82138b9a`, the user's word); `docs/agent-context/RULE_ENFORCERS.md`
-  (112 rules, 64 written only).
+- **leading-comments** (worktree `D:/Projects/fitway-worktrees/tooling-leading-comments` from `ac337544`): the brief
+  `docs/phase-records/handoffs/agent-tooling/briefs/codex-leading-comments.md` has DeepSeek's four readings closed
+  (dispositions in `D:/fitway-temp/brief-review/codex-leading-comments-1`). Sol's review stopped on the ChatGPT Codex
+  account's limit (resets 10:49); rerun it in `D:/fitway-temp/brief-review/codex-leading-comments-1-sol`, write its
+  dispositions with the brief's SHA, then launch it (its run folder is named `codex-round-leading-comments`).
+- **The concept's specs are split** (`2aa2fc4d`, on `owner-followup-r04-build`, pushed and green, and on
+  `public-redesign-r01`): both originals rebuild byte for byte from the concept's new `spec` folder.
+- **Done** (item 18): the four rounds; r04's `DECISIONS.md` split into an index and parts (`92a4e9a7`); the round records
+  frozen behind `docs/phase-records/handoffs/agent-tooling/ROUNDS.md`; `SPEC.md` split by section into `docs/spec/`
+  (`82138b9a`, the user's word); `docs/agent-context/RULE_ENFORCERS.md`; coordinator folders made with
+  `pnpm run-folder:new` (`WORKING_AGREEMENTS.md`).
 
 ## Next steps
 
-1. Each builder's report: verify, merge, record, push, CI, `pnpm main:advance` (as in "Running now").
-2. The four merged: add the coordinator's rule to `WORKING_AGREEMENTS.md` that coordinator folders are made with
-   `pnpm run-folder:new` (evidence-home's H2).
-3. **Finding 3's concept specs:** after the split is verified and on the build branch, merge main into
-   `public-redesign-r01` once H3 is in main and run `pnpm code-health:baseline` there. The concept's `HISTORY.md`
-   (134 KB), `README.md` (89 KB) and `INDEX.md` (76 KB) stay over the line, baselined; the page scripts are not split
-   now (accepted pages; the ratchet stops their growth).
-4. After the four merge: a one-sentence leading comment for each mapped file the new map shows without one.
-5. **Repair the gone citations** with `(gone: <why>)` once cited-evidence's check lists them.
-6. **Measure again:** rerun `D:/fitway-temp/retro-20261028/measure.mjs` and `D:/fitway-temp/retro-20261028/patterns.mjs`
-   and the survey's script count; then the public page's designer (its own resume point).
-7. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
+1. leading-comments: Sol's review, dispositions, launch; then the review, fix, grade, merge and record.
+2. **Measure again:** rerun `D:/fitway-temp/retro-20261028/measure.mjs` and `D:/fitway-temp/retro-20261028/patterns.mjs`
+   and the survey's script count.
+3. The public page's designer (its own resume point), once main's tooling is on `public-redesign-r01` (see "Waiting on
+   the user").
+4. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
    `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date.
+5. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
+   citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more).
 
 ## Waiting on the user
 
-Nothing.
+- **Merging main into `public-redesign-r01` fails three checks** (the trial merge is kept on branch
+  `public-redesign-r01-main-merge-try`, `d2f86a8d`; `public-redesign-r01` stays at `2aa2fc4d`):
+  - `pnpm code-health:baseline` refuses the concept's giant files and documents (the build branch's `daily.js` 2,300
+    lines, `HISTORY.md` 134 KB and others): main's copy of the concept folder is older, so they are new entries, and the
+    baseline admits none. Choices: a dated exception in each file, a one-time admission when a folder joins the roots,
+    or splitting them first.
+  - `pnpm check:repository`: 33 gone temp citations in the concept's own briefs count as changed lines, since every
+    branch-only line differs from `origin/main`. Choices: mark them `(gone: <why>)`, or compare against the branch's
+    own base.
+  - `pnpm check:agent-context`: the packet's reference frame
+    `design-research/owner-composition-exploration-r04/directions/eclipse/evidence/daily-ar-1440x900.png` pins main's older
+    copy (`bc12ff9f`); the branch holds the build's newer frame (`563e1c83`). Which frame the designer matches is the
+    user's call.
+- **The 125 gone citations on main:** most are in frozen round logs and in briefs whose SHA-256 records cite, which a
+  mark would change. Proposed: mark only the living documents (the gardener's examples, `DECISIONS.md`,
+  `findings.tsv`) and leave the rest counted, not failing.
 
 ## Known risks
 
