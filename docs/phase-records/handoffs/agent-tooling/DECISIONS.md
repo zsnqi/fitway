@@ -232,3 +232,12 @@ through these pointers, not copied here.
       `design-research/owner-composition-exploration-r04/directions/eclipse/evidence/daily-ar-1440x900.png`
       (`bc12ff9f`); on `public-redesign-r01` it pins the build's frame (`563e1c83`), the state the r04 rounds accepted.
     The first two are one Codex round; the third is the packet's line on that branch.
+20. **Lost temp evidence is listed once, not marked in each record** (the user, 2026-10-29: «نعم، ملف واحد: كل مسار
+    ضايع مع سجله وسببه، والفحص يقبلها»). 125 cited `D:/fitway-temp` paths are gone, most cited from frozen round logs
+    and from briefs whose SHA-256 other records cite. One tracked list names each lost path with the record and line
+    that cite it and why it went, and `pnpm check:repository` accepts a gone citation that the list names; no cited
+    record changes, and a new loss still fails on the day its line is written. The causes come from the retro's
+    gone-evidence report (`D:/fitway-temp/retro-20261028/gone-evidence/REPORT.md` §2): the 2026-10-24 prune that
+    kept files by extension and size without reading citations, the one-off `remove-worktrees.ps1`, other grading
+    worktree removals, paths absent before the prune, causes not found, and documentation examples that never
+    existed. Built in item 19's Codex round.

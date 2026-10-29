@@ -2,8 +2,8 @@
 # agent-tooling-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 09:55 +03:00 (the four
-  rounds on main; DECISIONS item 19 decided; leading-comments' brief waits on Sol)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-19; 19 last), `docs/agent-context/WORKING_AGREEMENTS.md`
+  rounds on main; DECISIONS items 19-20 decided; leading-comments' brief waits on Sol)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-20; 20 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -42,9 +42,10 @@ cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/ag
 ## Next steps
 
 1. leading-comments: Sol's review, dispositions, launch; then the review, fix, grade, merge and record.
-2. **DECISIONS item 19, one Codex round:** a one-time admission in `pnpm code-health:baseline` for a folder's current
-   giant files, recorded with its date and reason; and gone citations compared against the branch's upstream when it
-   has one. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the merge of main
+2. **DECISIONS items 19-20, one Codex round:** a one-time admission in `pnpm code-health:baseline` for a folder's
+   current giant files, recorded with its date and reason; gone citations compared against the branch's upstream when
+   it has one; and the tracked list of lost temp paths (each with its citing record, line and cause from the retro's
+   report §2), which the gone-citation check accepts. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the merge of main
    (the trial is `d2f86a8d`), admit the concept's giant files, pin the build's reference frame (`563e1c83`) in the
    packet on that branch, and run the four checks there.
 3. The public page's designer (its own resume point) once step 2 is in.
@@ -57,10 +58,7 @@ cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/ag
 
 ## Waiting on the user
 
-- **The 125 gone citations on main.** Most are in frozen round logs and in briefs whose SHA-256 other records cite, so
-  marking each would change them, and marking only the living documents leaves a count nobody reads. Proposed
-  instead: one tracked list of the lost paths, each with its record and why it went, which the check accepts, so no
-  frozen record changes and a new loss still fails the day it is written. Waiting for the user's answer.
+Nothing.
 
 ## Known risks
 
