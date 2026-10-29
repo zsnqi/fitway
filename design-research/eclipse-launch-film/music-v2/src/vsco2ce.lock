@@ -1,0 +1,66 @@
+# VSCO-2 Community Edition (Versilian Studios: Sam Gossner, Simon Dalzell), CC0 1.0 Universal (LICENSE at this commit).
+# repo   https://github.com/sgossner/VSCO-2-CE
+# commit 440300901dfe9275fd84e0b7763af1f8443ae62e  (master, 2020-08-04, "Updated Readme")
+# Each line: <git blob sha1>  <path at that commit>. fetch-samples.sh downloads exactly these files and checks each
+# against its blob hash (git hash-object). These are the 57 files Drive v2 plays (a render against only them is
+# bit-identical to one against the fuller set they were chosen from), plus LICENSE and the two readmes.
+084b3f131592beecd311b309e6c5f42190653f4f  Keys/Upright Piano/Player_dyn1_rr1_020.wav
+a4238a2d033e560225a1b3d9d3fa1eef9c21ac50  Keys/Upright Piano/Player_dyn1_rr1_022.wav
+6350b1cf0a614fe0920ad212e807d4575fcf71bd  Keys/Upright Piano/Player_dyn1_rr1_024.wav
+9a6cd6b879752f747e136ee001e7f1b78b40dc9c  Keys/Upright Piano/Player_dyn1_rr1_026.wav
+c371f48ff5e5a675a0d91d0e7060e79322adfc2e  Keys/Upright Piano/Player_dyn1_rr1_028.wav
+a038b982ae1dacdb01c7e7168ae32675d32caa6d  Keys/Upright Piano/Player_dyn2_rr1_002.wav
+2f341c6fca30ac8a6ae977cf97e93538f6c1e75b  Keys/Upright Piano/Player_dyn2_rr1_014.wav
+a2fc6927cb562424c17b213e4cb47353d65e9cc5  Keys/Upright Piano/Player_dyn2_rr1_016.wav
+c8da939be405e5f6dd7b13b99aedfef76d5c56aa  Keys/Upright Piano/Player_dyn2_rr1_018.wav
+e6027651b23024f343a8eb7823f32b49742a35fe  Keys/Upright Piano/Player_dyn2_rr1_020.wav
+521353ee671854c74478c330df9195d17261193c  Keys/Upright Piano/Player_dyn2_rr1_022.wav
+77f7bc50e751c377f8e3db7c88c14861395d1288  Keys/Upright Piano/Player_dyn2_rr1_024.wav
+946de9950a88c228d6f764e6789efb7d0147cffa  Keys/Upright Piano/Player_dyn2_rr1_026.wav
+83838d0d84e6d96598b75f443ed221ec3cb3bbb0  Keys/Upright Piano/Player_dyn3_rr1_008.wav
+8a860137884587939f37e8ee874081b0f535b155  Keys/Upright Piano/Player_dyn3_rr1_014.wav
+670154e3538863b2d9891fd5483160fbdfc89164  LICENSE
+2c50b244be4321074ce64fffcf87f8f570634f6e  Percussion/BDrumNewhit_v4_rr1_Sum.wav
+14c3376b3c396c8447415cb3b32aeca053322948  Percussion/BDrumNewhit_v4_rr2_Sum.wav
+6a3b5a0fdc56be45b6188c026b2221c31ba8ecb4  Percussion/BDrumNewhit_v5_rr1_Sum.wav
+cb6a7fc6201c4466ab5ea2a0bc62359a04d2ca37  Percussion/BDrumNewhit_v5_rr2_Sum.wav
+93ebf3571cef69c65ba1acba1d746e5bfa6c7db8  Percussion/BDrumNewhit_v7_rr1_Sum.wav
+5e7829bdbca881d0124b5cae4b55733dc190cd8b  Percussion/Snare2-HitSN_v1_rr1_Sum.wav
+2cb682331309d6434e4eb0042ae8cdfc9f06a7f2  Percussion/Snare2-HitSN_v1_rr2_Sum.wav
+42b9e96ed8cc11399b12fffa7977c8e41e9c586a  Percussion/Snare2-HitSN_v3_rr1_Sum.wav
+df0031afe7073164604fe48982ddeb0b9dd88704  Percussion/Snare2-HitSN_v3_rr2_Sum.wav
+102f740d546c8f147847ea4243b7c75b6eaa3119  Percussion/Snare2-HitSN_v5_rr1_Sum.wav
+2d1c3921045d4c2d6148a9a16e764e2bfdfc6cd7  Percussion/Snare2-HitSN_v7_rr1_Sum.wav
+87d4aee035e4ac29ebca2787048594c059509962  Percussion/Snare2-HitSN_v7_rr2_Sum.wav
+c39c5e8c2acff7e954a5446603c310e238efc70d  Percussion/Snare2-HitSN_v9_rr1_Sum.wav
+fbddb1e497d238e85b5c5646ed2c435767ae4385  Percussion/Tamb1-Hit_v1_rr1_Sum.wav
+a9077c258202b6ae4065a33b93478814079065ef  Percussion/Tamb1-Hit_v1_rr2_Sum.wav
+de276008d59c05d274d56457931781263380f8f2  Percussion/Tamb1-Hit_v2_rr1_Sum.wav
+e446f1fa39898b778aae62f99e8ed51a031f6834  Percussion/Tamb1-Hit_v2_rr2_Sum.wav
+86d8e078c8820d49fd15124fe037cbd667ae8fa2  Percussion/Timpani/Timpani1_Hit_v3_rr1_Sum.wav
+1996b4911a0c0a0d6f8ef7e5efd823fbcc7612ff  Percussion/Timpani/Timpani3_Hit_v3_rr1_Sum.wav
+64362229eaee3d93aae6cb86446b6b5f4f0a1170  README.md
+72e2bfeac69f91a77497254c4991a3c5fbb87bfb  Readme.txt
+d5424a07cdfa0213020f9d9b042baf25adca8e93  Strings/Cello Section/spic/spic_D2_v1_RR1.wav
+2257d013d9bef0761c28418069e69a95b7601486  Strings/Cello Section/spic/spic_D2_v1_RR2.wav
+feaa6ecee38e4b5dd478aaf88c2cb1264cc45c4c  Strings/Cello Section/spic/spic_D2_v2_RR1.wav
+7566f8e267570edcdcf2e1b8069b4e30baaef610  Strings/Cello Section/spic/spic_D2_v2_RR2.wav
+3f0d96a12f2113b45e8d0233f6b46cb8a6990098  Strings/Cello Section/spic/spic_E1_v1_RR1.wav
+f03bd7f7287388076a058a48db359dc527c94497  Strings/Cello Section/spic/spic_E1_v1_RR2.wav
+9d40bd22e27a51218e404019a2b5920529cb2015  Strings/Cello Section/spic/spic_E1_v2_RR1.wav
+aa826bae797c1c9b5a4191859fd65321c93949c0  Strings/Cello Section/spic/spic_E1_v2_RR2.wav
+fdb46242bb68876ad275b9b8ed10c4b8508b9292  Strings/Cello Section/susvib/susvib_D2_v3_1.wav
+e66dde25194ee27477b4fdd31fd7726e84df2d73  Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_D1_v3_rr1.wav
+0ca70c1a4810a6b40e2a3724aa36b94e2fd661b1  Strings/Viola Section/spic/Violas_spic_B2_v2_rr1.wav
+c9a87c2769b0d900c8dcbc1f9bd4f9bd521eed53  Strings/Viola Section/spic/Violas_spic_D3_v2_rr1.wav
+86e2428bca77c49d795e5e3d5be7dd9b022fce65  Strings/Viola Section/susvib/ViolaEns_susvib_B2_v1_1.wav
+0f7bee6ccadc6e25a101cbd7be1c27ac6e896ea4  Strings/Viola Section/susvib/ViolaEns_susvib_B2_v2_1.wav
+d1635ae9f437b1d3e5038738340cd17f4e85c069  Strings/Viola Section/trem/Violas_trem_B2_v2_rr1.wav
+77b862bb6b6f888ce3f0f2008ef458317c04f182  Strings/Viola Section/trem/Violas_trem_D3_v2_rr1.wav
+66d1023bfd02f10777084846c854141139e7db6d  Strings/Violin Section/Trem/VlnEns_Trem_A3_v2.wav
+49809c75b1bc8a2aaf2ff41a258676a43de1ee20  Strings/Violin Section/Trem/VlnEns_Trem_D3_v2.wav
+e47f9a53d487475fb049039ca7846e11c1ff830a  Strings/Violin Section/susVib/VlnEns_susVib_D3_v1.wav
+31143ae1a31ddd57baa38b3e79a4415b108a0007  Strings/Violin Section/susVib/VlnEns_susVib_D3_v2.wav
+2c33cc296b9b3654fd08fc9e9887042eabee738d  Strings/Violin Section/susVib/VlnEns_susVib_E4_v2.wav
+996ca7e6b1d9541d2f2fd7f53ba88294693893e7  Strings/Violin Section/susVib/VlnEns_susVib_F#3_v1.wav
+33a19df9d89a5dbb174b9f72e6ae79a07327b2b6  Strings/Violin Section/susVib/VlnEns_susVib_F#3_v2.wav
