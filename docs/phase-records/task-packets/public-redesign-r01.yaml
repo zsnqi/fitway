@@ -34,6 +34,10 @@ authorities:
       reason: Preserve security, privacy, accessibility, bilingual behavior, the capacity-free contract and the demo switch rule.
     - role: design
       path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "FITWAY Design Guide" }
+      reason: The Public redesign scope note above "1. Direction" - the page's identity and content list.
+    - role: design
+      path: DESIGN_GUIDE.md
       selector: { kind: markdown-heading, value: "1. Direction" }
       reason: The public page's questions, its states, and the Public redesign scope.
     - role: design
@@ -97,7 +101,7 @@ evidence:
     - Confirmation that production, canonical, Paper and manifest state is unchanged.
 limitations:
   - This packet authorizes a concept only. The shipped public page and its canonicals stay as they are until a separate promotion.
-  - The page is built from Eclipse's shared sheet, which owner-design-exploration-r04 owns; this milestone writes only its public files and DESIGN-SPEC.md §6.
+  - The page lives in Eclipse's folder (DECISIONS item 1); this milestone writes only its public files and DESIGN-SPEC.md §6.
   - Screen-reader testing with a real reader waits for production (SPEC.md, the visual and accessibility acceptance); the concept carries the markup that costs nothing.
 visual:
   surfaceKey: public
@@ -114,7 +118,7 @@ visual:
     variableAxes:
       - Everything outside the locked axes.
     requiredDepartures:
-      - The 28-bar signal and the oxblood atmosphere of the shipped page are not carried over.
+      - The oxblood atmosphere of the shipped page is not carried over.
     antiRuts:
       - Superseded Public Paper frames and canonicals are not composition authority (ADR-010).
       - Owner page compositions are siblings in one family, not templates to copy onto the public page.

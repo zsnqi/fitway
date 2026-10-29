@@ -80,7 +80,7 @@ The public page answers these questions (on the shipped page, in this order):
 4. What does the level mark show?
 5. When was the reading updated?
 
-The crowd level outranks the approximate count. Public surfaces never show capacity,
+On the shipped page, the crowd level outranks the approximate count. Public surfaces never show capacity,
 a denominator, health diagnostics, or a person-unit suffix, and in v1 no capacity-derived
 percentage, `% full`, or history either (`SPEC.md`'s post-v1 reservations). A historical
 mockup containing one of those is evidence of composition only and cannot authorize the
@@ -137,7 +137,7 @@ normal text below readable contrast.
 - Use the self-hosted Cairo Arabic and Latin subsets at actual weights 400, 500, 600,
   and 700. Do not request synthetic 800 or 900. Shipped page: Cairo, as above. Public
   redesign: Readex Pro, self-hosted, real weights only, until promoted.
-- Crowd level is the decisive public display. The approximate count is large and
+- Shipped page: Crowd level is the decisive public display. The approximate count is large and
   tabular, but visually secondary.
 - Use Western digits `0–9` in both locales. Apply `font-variant-numeric: tabular-nums`
   where values update or align.
@@ -259,7 +259,7 @@ everything uniformly.
 
 The required review widths are **320, 360, 390, 721, 768, 820, 1024, 1200, and 1440px**.
 
-- `1200–1440`: broad public board and wide operational/data compositions.
+- `1200–1440`: Shipped page: broad public board and wide operational/data compositions.
 - `821–1199`: compressed desktop with the hierarchy intact.
 - `721–820`: explicit tablet recomposition. Do not let large display type, a fixed count
   column, or desktop gaps collide.
