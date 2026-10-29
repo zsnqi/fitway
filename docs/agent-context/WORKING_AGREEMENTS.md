@@ -15,7 +15,8 @@ latest wording; never copy an entry into a resume point.
   questions together in one message. Everything else it decides, does, and reports in a line.
   (user, 2026-09-29, 2026-10-01 and 2026-10-02)
 - A product or rule change the user has already decided is written and reported in a line: its wording is not shown
-  for approval first, and a detail the user's decision already points to is not asked again. (user, 2026-10-29)
+  for approval first. A choice inside the user's decision (a default, a detail, an order) is the coordinator's: it
+  weighs the options, picks the most suitable, and reports the pick and its reason in a line. (user, 2026-10-29)
 - Inside an announced task, process, tooling and ordering are the coordinator's decisions; it
   reports them at the end. (user, 2026-10-02)
 - The user sees a round only when it is finished: every finding the coordinator would fix anyway,
