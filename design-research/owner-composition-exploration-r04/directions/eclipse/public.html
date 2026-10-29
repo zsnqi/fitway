@@ -1,26 +1,24 @@
 <!doctype html>
-<html lang="ar" dir="rtl" data-state="fresh" data-option="a">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#070707">
   <title>FITWAY</title>
-  <meta name="description" content="FITWAY public crowd page concept, Eclipse direction, first options (a, b, c). Exploration concept with synthetic data. Not production.">
+  <meta name="description" content="FITWAY public crowd page concept, public-redesign-r01 direction 2 (the day's timetable). Exploration concept with synthetic data. Not production.">
   <script>
-    // Before first paint: ?lang=ar|en (default ar); ?option=a|b|c (default a); ?state=fresh|stale|closed (default
-    // fresh). The state switch is the demo's hidden switch: a query parameter only, never a control on the page, and it
-    // never ships (SPEC.md, the implementation authority and fidelity contract; r04 DECISIONS item 90).
+    // Before first paint: ?lang=ar|en (default ar). Demo hook only, never a control on the page: ?pct=off takes the
+    // percentage away, to show the page reads whole without it.
     (function () {
       var p = new URLSearchParams(location.search), r = document.documentElement;
       var en = p.get("lang") === "en";
       r.lang = en ? "en" : "ar";
       r.dir = en ? "ltr" : "rtl";
-      r.dataset.option = ["b", "c"].indexOf(p.get("option")) >= 0 ? p.get("option") : "a";
-      r.dataset.state = ["stale", "closed"].indexOf(p.get("state")) >= 0 ? p.get("state") : "fresh";
+      if (p.get("pct") === "off") r.dataset.pct = "off";
     })();
   </script>
   <link rel="stylesheet" href="fonts/readex-pro.css">
-  <!-- style.css is the family's shared sheet (DESIGN-SPEC.md section 1): tokens, the lights, the focus ring, the press. -->
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="public.css">
   <script>
     for (var weight of ["400", "500"]) {
@@ -28,34 +26,26 @@
         .catch(function () { /* Failed faces keep the existing fallback. */ });
     }
   </script>
-  <script src="motion.js" defer blocking="render"></script>
   <script src="public.js" defer blocking="render"></script>
 </head>
-<body class="pub">
-  <div class="pub-page">
-    <!-- The page's own top-corner wash (LGT-3): part of the page box, never fixed to the viewport, lit in every state. -->
-    <i class="wash" aria-hidden="true"><i class="wash-light"></i></i>
-    <div class="pub-col">
-      <header class="pub-frame">
-        <span class="pub-brand" lang="en">
-          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-            <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
-            <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
-            <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
-            <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
-          </svg>
-          <span class="wordmark">FITWAY</span>
-        </span>
-        <button class="pub-lang" id="lang" type="button" data-press="dark"><span class="glyph" id="lang-glyph" lang="en"></span></button>
-      </header>
-      <main class="pub-main" id="main">
-        <h1 class="pub-gym" id="gym"></h1>
-        <!-- One reading, drawn by the option (public.js): the answers in FITWAY_PRODUCT.md's order. -->
-        <section class="pub-reading" id="reading" aria-labelledby="gym"></section>
-        <!-- One polite live region: a new reading is announced once, as whole figures, never digit by digit. -->
-        <p class="sr-only" id="say" aria-live="polite" aria-atomic="true"></p>
-      </main>
-    </div>
+<body>
+  <div class="page">
+    <!-- The gym's own light at the top start corner: part of the page box, never fixed to the viewport. -->
+    <i class="wash" aria-hidden="true"></i>
+    <header class="top">
+      <span class="brand" lang="en">
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
+          <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
+          <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
+          <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
+        </svg>
+        <span class="wordmark">FITWAY</span>
+      </span>
+      <button class="lang" id="lang" type="button"><span id="lang-glyph" lang="en"></span></button>
+    </header>
+    <!-- The day, drawn by public.js: the gym, the answer and the day's hours on one grid. -->
+    <main class="day" id="day"></main>
   </div>
 </body>
 </html>

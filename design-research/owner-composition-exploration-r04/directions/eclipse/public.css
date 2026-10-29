@@ -1,157 +1,300 @@
-/* FITWAY public crowd page, Eclipse, first options (public-redesign-r01). Loaded after style.css, whose tokens, lights,
- * focus ring and press it uses as they are (DESIGN-SPEC.md section 1): no new token, no Owner rule changed. Every
- * selector here is the public page's own (.pub, .pa, .pb, .pc and their parts). */
+/* FITWAY public crowd page, public-redesign-r01 direction 2: the day's timetable. Concept only, synthetic data.
+ * Self-contained: it loads no Owner sheet. The identity is FITWAY's (dark ground, FITWAY red, the light, Readex Pro at
+ * 400 and 500); the composition, scale and surfaces are this page's own. No cards: the board is ruled by hairlines,
+ * and the one light is the horizon drawn across the page at the current hour. */
 
-/* ------------------------------------------------------------------ the page and its frame */
-.pub { min-height: 100vh; }
-.pub-page {
-  position: relative;
-  isolation: isolate;
-  min-height: 100vh;
-  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --red-deep: #ba1530;
+  --ox: #4d0713;
+  --live: #4be29b;
+  --line: rgba(255, 255, 255, 0.075);
+  --line-2: rgba(255, 255, 255, 0.1);
+  --line-3: rgba(255, 255, 255, 0.24);
+  --guide: rgba(255, 255, 255, 0.055);
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* The phone first; the computer below. Six sizes: display, figure, title, label, caption, and the second figure. */
+  --pad: 16px;
+  --time-w: 64px;
+  --past-h: 10px;
+  --next-h: 40px;
+  --display: 64px;
+  --figure: 40px;
+  --figure-2: 22px;
+  --title: 20px;
+  --title-lh: 28px;
+  --cell-h: 12px;
+  /* The horizon's hottest point, measured from the reading start; the atmosphere's width and height. */
+  --hx-s: 30%;
+  --atm-w: 75%;
+  --atm-h: 150px;
 }
-.pub-col { width: 100%; max-width: var(--col, none); margin-inline: auto; }
-@media (min-width: 721px) {
-  .pub-col { --col: 760px; }
+[dir="rtl"] { --hx: calc(100% - var(--hx-s)); }
+[dir="ltr"] { --hx: var(--hx-s); }
+
+@media (min-width: 1024px) {
+  :root {
+    --pad: 48px;
+    --time-w: 112px;
+    --gap-w: 96px;
+    --past-h: 16px;
+    --next-h: 40px;
+    --display: 104px;
+    --figure: 56px;
+    --figure-2: 30px;
+    --title: 30px;
+    --title-lh: 36px;
+    --cell-h: 16px;
+    --hx-s: 22%;
+    --atm-w: 52%;
+    --atm-h: 230px;
+  }
 }
-/* The frame is the brand, the language switch and the gym's name (r04 DECISIONS item 90, P5): no rail, bar or header. */
-.pub-frame { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; }
-.pub-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
-.pub-brand svg { width: 28px; height: 28px; flex: none; }
-.pub-brand .mk { fill: none; stroke: var(--red); stroke-linecap: butt; }
-.pub-brand .mk-dot { fill: var(--red); stroke: none; }
-.pub-lang {
-  display: grid;
+
+/* ------------------------------------------------------------------ base and browser surfaces */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  background: var(--page);
+  color-scheme: dark;
+  scrollbar-color: rgba(245, 243, 242, 0.2) var(--page);
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+h1, p, table { margin: 0; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only, .defs { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* ------------------------------------------------------------------ the page, the light at its corner, the bar */
+.page { position: relative; isolation: isolate; min-height: 100dvh; overflow-x: clip; }
+.wash { position: absolute; inset: 0 0 auto 0; height: 420px; z-index: -1; pointer-events: none; }
+.wash {
+  --wash-ramp: rgb(229 25 53 / 0.3) 0%, rgb(229 25 53 / 0.16) 9%, rgb(77 7 19 / 0.5) 28%, rgb(77 7 19 / 0.16) 60%, rgb(8 9 10 / 0) 100%;
+  --wash-size: 300px 160px;
+}
+[dir="rtl"] .wash { background: radial-gradient(ellipse var(--wash-size) at 100% 0%, var(--wash-ramp)); }
+[dir="ltr"] .wash { background: radial-gradient(ellipse var(--wash-size) at 0% 0%, var(--wash-ramp)); }
+@media (min-width: 1024px) { .wash { --wash-size: 620px 260px; } }
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px var(--pad) 0;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); stroke-linecap: butt; }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: 15px; line-height: 22px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  display: inline-grid;
   place-items: center;
-  width: 44px;
+  min-width: 44px;
   height: 44px;
-  flex: none;
+  padding-inline: 12px;
   border-radius: 12px;
   border: 1px solid var(--line-2);
-  background: var(--tile);
+  color: var(--ink-2);
+  font-size: 13.5px;
+  white-space: nowrap;
+  line-height: 20px;
+  font-weight: 500;
+}
+@media (hover: hover) { .lang:hover { border-color: var(--line-3); color: var(--ink); } }
+
+/* ------------------------------------------------------------------ the grid
+ * Phone: two columns, the hours' times and the band area. Computer: the answer's column at the reading start, then
+ * the board. Every row of the board (the strip of hours gone, the lit hour, the hours to come) shares the columns. */
+.day {
+  display: grid;
+  grid-template-columns:
+    [full-start] var(--pad) [time-start] var(--time-w) [time-end band-start] minmax(0, 1fr) [band-end] var(--pad) [full-end];
+  padding-block: 20px 24px;
+}
+.gym { grid-column: time-start / band-end; grid-row: 1; }
+.cap { grid-column: time-start / band-end; grid-row: 2; margin-block-start: 28px; }
+.past { grid-column: time-start / band-end; grid-row: 3; margin-block-start: 22px; }
+.horizon { grid-column: full-start / full-end; grid-row: 4 / 6; }
+.reading { grid-column: time-start / time-end; grid-row: 4 / 6; }
+.answer { grid-column: band-start / band-end; grid-row: 4; }
+.mark { grid-column: band-start / band-end; grid-row: 5; }
+.next { grid-column: time-start / band-end; grid-row: 6; }
+
+@media (min-width: 1024px) {
+  .day {
+    grid-template-columns:
+      [full-start] var(--pad) [ans-start] max-content [ans-end] var(--gap-w)
+      [time-start] var(--time-w) [time-end band-start] minmax(0, 1fr) [band-end] var(--pad) [full-end];
+    padding-block: 32px 24px;
+  }
+  .gym { grid-column: ans-start / ans-end; grid-row: 1; align-self: end; }
+  .cap { grid-column: time-start / band-end; grid-row: 1; align-self: end; margin: 0; }
+  .past { grid-row: 2; margin-block-start: 24px; }
+  .horizon { grid-row: 3; }
+  .reading { grid-row: 3; }
+  .answer { grid-column: ans-start / ans-end; grid-row: 3; }
+  .mark { grid-row: 3; align-self: end; }
+  .next { grid-row: 4; }
+}
+
+/* ------------------------------------------------------------------ the gym */
+.gym-n { font-size: var(--title); line-height: var(--title-lh); font-weight: 500; }
+.gym-o { margin-block-start: 2px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.gym-ow { color: var(--ink); font-weight: 500; }
+.cap { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+
+/* ------------------------------------------------------------------ the board's rows */
+.past, .next, .answer, .reading, .mark { position: relative; z-index: 1; }
+.hr { position: relative; display: grid; grid-template-columns: var(--time-w) minmax(0, 1fr); }
+.hr-past { height: var(--past-h); }
+.hr-next { height: var(--next-h); }
+.hr-close { height: 32px; }
+.plot {
+  grid-column: 2;
+  position: relative;
+  border-inline-start: 1px solid var(--line-2);
+  background-image: linear-gradient(90deg,
+    transparent calc(25% - 0.5px), var(--guide) 0 calc(25% + 0.5px),
+    transparent 0 calc(50% - 0.5px), var(--guide) 0 calc(50% + 0.5px),
+    transparent 0 calc(75% - 0.5px), var(--guide) 0 calc(75% + 0.5px), transparent 0);
+}
+.hr-next .plot, .hr-close .plot { border-block-start: 1px solid var(--line); }
+.hr-close .plot { background: none; border-inline-start-color: transparent; }
+/* An hour's time sits on its hour line, as on a day planner. */
+.hr-t {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.hr-next .hr-t, .hr-close .hr-t { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+/* The closing word sits under the closing line, where the curve has ended. */
+.hr-w {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: 6px;
+  font-size: 13.5px;
+  line-height: 20px;
   color: var(--ink-2);
 }
-@media (hover: hover) { .pub-lang:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); } }
-.pub-gym { margin-block-start: 24px; font-size: 19px; line-height: 28.5px; font-weight: 500; }
-@media (min-width: 721px) { .pub-gym { margin-block-start: 32px; font-size: 30px; line-height: 36px; } }
-.pub-reading { margin-block-start: 16px; }
+.seg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+[dir="rtl"] .seg { transform: scaleX(-1); }
+.seg-area { fill: url(#usual-fill); }
+.seg-line { fill: none; stroke: var(--red); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.hr-past .seg-area { fill: rgba(255, 255, 255, 0.04); }
+.hr-past .seg-line { stroke: #686264; stroke-width: 1.5; }
 
-/* ------------------------------------------------------------------ the shared parts */
-/* The status (STW-1): live, the green dot; delayed, the amber clock; closed, a hollow ring. Label type. */
-.st { display: flex; align-items: center; gap: 8px; min-height: 20px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
-.st-w { font-weight: 500; color: var(--ink); }
-.st .dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--live); }
-.st .dot.ring { background: none; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
-.st .ico { color: var(--delayed); }
-.st .sep { margin-inline: 0; }
-.st.is-stale .st-f, .ago { color: #e8b62e; }
-.lbl { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
-/* Display type (TYP-3): the band word and the count, 46 / 46 at 500, chalk; dimmed with the value while stale (LVL-6). */
-.bw, .big { font-size: 46px; line-height: 46px; font-weight: 500; color: var(--ink); text-wrap: balance; }
-.big { display: inline-block; white-space: nowrap; }
-[data-state="stale"] :is(.bw, .big) { color: var(--ink-2); }
-.tm { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
-.tm .sep { margin-inline: 8px; }
-.t { white-space: nowrap; }
-.note { margin-block-start: 4px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
-/* A digit that changes rolls inside its own ink box (MOT-2): the slot is one em tall at any text size, its window the
- * digits' cap line to baseline, and a digit travels that window's height, so two digits never overlap. */
-.roll { display: inline-block; position: relative; line-height: 1; clip-path: inset(0.12em -0.1em 0.14em -0.1em); }
-.roll-old { position: absolute; inset: 0; }
-
-/* ------------------------------------------------------------------ a: the sheet */
-/* One plate holds the five answers in ruled rows, in order; it carries the page's summary light while live. */
-.pa { padding: 4px 20px; }
-.pa-r { padding-block: 16px; }
-.pa-r + .pa-r { border-block-start: 1px solid var(--line); }
-.pa .v { margin-block-start: 8px; }
-.pa-open .big { margin-block-start: 8px; }
-.track-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
-.tu { display: grid; align-content: start; gap: 8px; min-width: 0; }
-/* The unit is its own plate (SRF-5): the unlit step is drawn over the opaque card colour, so a light never tints it. */
-.tu-bar {
-  position: relative;
-  display: block;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-  background: linear-gradient(rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.16)), var(--card-solid);
+/* ------------------------------------------------------------------ the horizon: the page's one live light
+ * A light behind the page with the dark ground in front of it: its rim is the current hour's line, brightest at one
+ * fixed point; the atmosphere rises over the hours just gone and a little light spills below the rim. Static: it never
+ * moves, pulses or follows the data. */
+.horizon { position: relative; z-index: 0; pointer-events: none; border-block-end: 1px solid var(--line); }
+.horizon > i { position: absolute; inset-inline: 0; display: block; }
+.atm {
+  bottom: 100%;
+  height: var(--atm-h);
+  background: radial-gradient(ellipse var(--atm-w) 100% at var(--hx) 100%,
+    rgb(229 25 53 / 0.36) 0%, rgb(170 16 40 / 0.3) 14%, rgb(77 7 19 / 0.34) 36%, rgb(77 7 19 / 0.1) 66%, rgb(8 9 10 / 0) 100%);
 }
-.fl { position: absolute; inset: 0; display: block; border-radius: inherit; background: var(--red); transform: scaleX(0); }
-[dir="rtl"] .tu .fl { transform-origin: right center; }
-[dir="ltr"] .tu .fl { transform-origin: left center; }
-.tu.on .fl { transform: none; }
-.tu.cur .fl { background: var(--red-hi); }
-[data-state="stale"] .tu.on .fl { background: #8f898b; }
-.tu-w { font-size: 12px; line-height: 18px; color: var(--ink-3); text-wrap: balance; }
-/* LGT-9: a word inside the plate's light is --ink-2 or brighter. */
-.pa.lit .tu-w { color: var(--ink-2); }
-.tu.cur .tu-w { color: var(--ink); font-weight: 500; }
-[data-state="stale"] .tu.cur .tu-w { color: var(--ink-2); }
-@media (min-width: 721px) {
-  .pa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 8px 32px; }
-  .pa-r { grid-column: 1 / -1; padding-block: 24px; }
-  .pa-band { grid-column: 1; }
-  .pa-count { grid-column: 2; padding-inline-start: 32px; border-inline-start: 1px solid var(--line); }
-  .pa-band + .pa-count { border-block-start: 0; }
-  .pa-band { padding-inline-end: 32px; }
+.atm::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.18;
+  -webkit-mask-image: radial-gradient(ellipse var(--atm-w) 100% at var(--hx) 100%, #000, transparent 80%);
+  mask-image: radial-gradient(ellipse var(--atm-w) 100% at var(--hx) 100%, #000, transparent 80%);
+}
+.rim {
+  top: -1px;
+  height: 2px;
+  background: linear-gradient(90deg,
+    rgb(229 25 53 / 0) 0%, rgb(229 25 53 / 0.5) calc(var(--hx) - 32%), var(--red-hi) var(--hx),
+    rgb(229 25 53 / 0.5) calc(var(--hx) + 32%), rgb(229 25 53 / 0) 100%);
+}
+.spill {
+  top: 0;
+  height: 72px;
+  background: radial-gradient(ellipse calc(var(--atm-w) * 0.8) 100% at var(--hx) 0%,
+    rgb(229 25 53 / 0.13) 0%, rgb(77 7 19 / 0.12) 45%, rgb(8 9 10 / 0) 100%);
 }
 
-/* ------------------------------------------------------------------ b: the dial */
-/* A data-lit card: the U of light cups the half ring. The band word sits on the ring's chord, the count under it. */
-.pb { display: grid; justify-items: center; padding: 20px 20px 24px; text-align: center; }
-.pb > .st { justify-self: start; }
-/* The ring reaches 8 px from the card's edges, so the band word has the hollow's full width (EN "Moderate" at 320). */
-.pb-g { position: relative; width: calc(100% + 24px); max-width: 380px; margin: 16px -12px 0; container-type: inline-size; display: grid; justify-items: center; }
-.dial { position: absolute; inset: 0 0 auto 0; }
-.dial-svg { display: block; width: 100%; height: auto; overflow: visible; }
-[dir="rtl"] .dial-svg { transform: scaleX(-1); }
-.dial-svg path { fill: none; stroke-width: 15; stroke-linecap: butt; }
-.ds-plate { stroke: var(--card-solid); }
-.ds-off { stroke: rgb(255 255 255 / 0.16); }
-.ds-on { stroke: var(--red); stroke-dasharray: 1; stroke-dashoffset: 1; }
-.ds-on.on { stroke-dashoffset: 0; }
-.ds-on.cur { stroke: var(--red-hi); }
-[data-state="stale"] .ds-on.on { stroke: #8f898b; }
-/* The word stands on the chord, where the hollow is widest. */
-.pb-band { position: relative; z-index: 1; margin-block-start: calc(50cqw - 40px); max-width: 82cqw; }
-.pb-n { position: relative; z-index: 1; margin-block-start: 16px; }
-.pb-k { position: relative; z-index: 1; margin-block-start: 8px; }
-.pb-tm { margin-block-start: 24px; }
-.pb-open { margin-block-start: 24px; }
-.pb-open .big { margin-block-start: 8px; }
-@media (min-width: 721px) {
-  .pb { padding: 24px 32px 32px; }
-  .pb-g { width: 480px; max-width: calc(100% + 24px); margin-block-start: 8px; }
-  .dial-svg path { stroke-width: 13; }
+/* ------------------------------------------------------------------ the lit hour: the answer */
+.answer { padding-block-start: 20px; }
+.word { font-size: var(--display); line-height: 1.15; font-weight: 500; }
+.figs { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-block-start: 10px; }
+.fig { display: flex; flex-direction: column; align-items: flex-start; }
+.fig-n { font-size: var(--figure); line-height: 1; font-weight: 500; }
+.fig-l { margin-block-start: 8px; font-size: 12px; line-height: 18px; color: var(--ink-2); }
+.fig-pct { align-items: flex-end; text-align: end; }
+.fig-pct .fig-n { font-size: var(--figure-2); }
+[data-pct="off"] .fig-pct { display: none; }
+@media (min-width: 1024px) {
+  /* The answer's last line and the mark's words end on one line across the horizon. */
+  .answer { align-self: end; padding-block: 28px 18px; }
+  .figs { justify-content: flex-start; gap: 56px; margin-block-start: 16px; }
+  .fig-pct { align-items: flex-start; text-align: start; }
+  .fig-l { font-size: 13.5px; line-height: 20px; }
 }
 
-/* ------------------------------------------------------------------ c: the stair */
-/* No card: the answers stand on the page under its wash, and CHP-5's four bars stand at the page's scale below them,
- * in the badge's own proportions (a bar 3 wide, 2 apart, 4 / 6.5 / 9 / 11 tall), every lit bar #FF2946. */
-.pc { display: grid; }
-.pc-txt { display: grid; justify-items: start; }
-.pc-band { margin-block-start: 24px; }
-.pc-n { margin-block-start: 24px; }
-.pc-txt .lbl { margin-block-start: 8px; }
-.stair { margin-block-start: 40px; container-type: inline-size; }
-.stair-in { display: flex; align-items: flex-end; gap: calc(100cqw / 9); height: calc(100cqw * 11 / 18); }
-.sb { position: relative; display: block; flex: 1 1 0; border-radius: 8px; overflow: hidden; background: rgb(255 255 255 / 0.16); }
-.sb:nth-child(1) { height: calc(400% / 11); }
-.sb:nth-child(2) { height: calc(650% / 11); }
-.sb:nth-child(3) { height: calc(900% / 11); }
-.sb:nth-child(4) { height: 100%; }
-.sb .fl { background: var(--red-hi); transform: scaleY(0); transform-origin: center bottom; }
-.sb.on .fl { transform: none; }
-[data-state="stale"] .sb.on .fl { background: #8f898b; }
-.pc-tm { margin-block-start: 24px; }
-.pc-open { margin-block-start: 24px; }
-.pc-open .big { margin-block-start: 8px; }
-@media (min-width: 721px) {
-  /* The stair stands at the inline end, as tall as the answers beside it (320 wide, so 196 tall). */
-  .pc { grid-template-columns: minmax(0, 1fr) 320px; column-gap: 48px; align-items: end; }
-  .pc-txt { grid-column: 1; }
-  .stair { grid-column: 2; margin-block-start: 0; }
-  .pc-tm { grid-column: 1 / -1; margin-block-start: 32px; padding-block-start: 16px; border-block-start: 1px solid var(--line); }
-  .pc.is-closed { grid-template-columns: 1fr; }
+/* The reading's time and its freshness, in the time column of the lit hour. */
+.reading { display: flex; flex-direction: column; gap: 6px; padding-block-start: 28px; }
+.rd { display: flex; flex-direction: column-reverse; }
+.rd-t { font-size: 15px; line-height: 22px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.rd-l { font-size: 12px; line-height: 18px; color: var(--ink-2); }
+.live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; line-height: 18px; color: var(--ink-2); }
+.dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--live); }
+@media (min-width: 1024px) { .reading { padding-block-start: 40px; } }
+
+/* The level mark: four whole cells on the board's four band columns, filled in reading direction up to the band;
+ * completed bands deep red, the current one the brightest, the ones above drawn as outlines; each word under its
+ * cell, the current in chalk. */
+.mark { padding-block: 22px 14px; }
+.mark-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cell { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cell-bar { display: block; height: var(--cell-h); margin-inline: 2px; border-radius: 2px; }
+.cell:first-child .cell-bar { margin-inline-start: 0; }
+.cell:last-child .cell-bar { margin-inline-end: 0; }
+.is-done .cell-bar { background: var(--red-deep); }
+.is-cur .cell-bar { background: var(--red-hi); }
+.is-next .cell-bar { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38); }
+.cell-w { padding-inline-end: 6px; font-size: 12px; line-height: 16px; color: var(--ink-3); }
+.is-cur .cell-w { color: var(--ink); font-weight: 500; }
+@media (min-width: 1024px) {
+  .mark { padding-block: 0 18px; }
+  .cell-w { font-size: 13.5px; line-height: 20px; }
+}
+
+@media (forced-colors: active) {
+  .is-done .cell-bar, .is-cur .cell-bar { background: CanvasText; forced-color-adjust: none; }
+  .is-next .cell-bar { box-shadow: inset 0 0 0 1px CanvasText; forced-color-adjust: none; }
+  .seg-line { stroke: CanvasText; }
+  .horizon > i, .wash { display: none; }
 }

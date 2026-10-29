@@ -1,246 +1,176 @@
-/* FITWAY public crowd page, Eclipse, first options (public-redesign-r01). Concept only, synthetic data.
+/* FITWAY public crowd page, public-redesign-r01 direction 2: the day's timetable. Concept only, synthetic data.
  *
- * One page answers, in FITWAY_PRODUCT.md's order: is the gym open and is the information live; the crowd band; the
- * approximate count; the level mark; when it was updated; and, closed, when it opens (stale: what the visitor can
- * safely conclude). Three options draw that same order three ways, each with its own level mark:
- *   a  the sheet   one lit plate, the answers in ruled rows; the mark is a four-step track with the four words
- *   b  the dial    a data-lit card; the mark is a four-sector arc around the band word
- *   c  the stair   no card; the mark is Eclipse's four-bar level badge (CHP-5) drawn at the page's scale
- * Every mark comes from the band only, keeps the written band word visible, runs in reading direction, has one
- * accessible name and hides its parts (DESIGN_GUIDE.md section 5). The page is complete at first paint; digits roll
- * only when a new live reading arrives (section 10), never on opening, never while stale or closed, never under
- * reduced motion or ?motion=off. Demo hooks, never controls: ?state=, ?option=, ?arrive (a new reading 1.5 s after
- * opening, fresh only; ?arrive=busy crosses a band), ?band= (layout checks only). */
+ * The page is today's timetable at the gym, read top to bottom from opening to closing like a prayer-times board.
+ * The hours already gone are folded into a dim strip; the current hour is the one lit row and opens into the answer
+ * (the band word, the approximate count, the percentage, the last reading); the hours still to come carry the usual
+ * crowd. One grid holds every part, so the level mark's four cells stand on the same four band columns the usual
+ * curve runs through.
+ *
+ * Truth: the mark comes from the band only (four whole cells, never the percentage), its written word is always
+ * shown, it fills in reading direction, has one accessible name and hides its parts. The percentage is a separate
+ * figure and the page reads whole without it (?pct=off). Times are gym time (Riyadh), 12-hour with «ص/م», Western
+ * digits. Every value below is a fixture, not measured FITWAY truth. */
 (() => {
   "use strict";
   const root = document.documentElement;
-  const $ = (s, c = document) => c.querySelector(s);
   const en = root.lang === "en";
-  const OPTION = root.dataset.option, STATE = root.dataset.state;
   const params = new URLSearchParams(location.search);
-  const BANDS = ["quiet", "moderate", "busy", "packed"];
-  // Synthetic fixtures (FITWAY_PRODUCT.md names 37 a fixture, not measured truth). Times are minutes after midnight in
-  // gym time (Riyadh), as the Owner concept's Wednesday: the live reading at 7:42 PM, the stale one 13 minutes older
-  // (the age is measured against the payload's server time, never the device clock), the opening at 6:00 AM.
-  const BAND_COUNT = { quiet: 14, moderate: 37, busy: 56, packed: 74 };
-  const asked = BANDS.includes(params.get("band")) ? params.get("band") : "moderate";
-  const reading = {
-    band: BANDS.indexOf(asked),
-    count: BAND_COUNT[asked],
-    at: STATE === "stale" ? 19 * 60 + 29 : 19 * 60 + 42,
-    serverNow: 19 * 60 + 42,
-    opens: 6 * 60,
+
+  // Synthetic fixtures, all in gym time. A Wednesday evening: the gym opens at 6:00 AM and closes at 1:00 AM; the
+  // live reading arrived at 7:41 PM and the page is read at 7:42 PM. 70 inside of a hidden 120 is 58%, which is Busy.
+  const DAY = {
+    open: 6, // hour the gym opens
+    close: 25, // hour it closes: 1:00 AM, the next morning
+    // Usual crowd on Wednesdays, percent, on each hour from 6:00 AM (index 0) to 1:00 AM (index 19).
+    usual: [8, 18, 22, 20, 16, 14, 12, 11, 13, 17, 24, 33, 44, 54, 66, 78, 70, 46, 26, 10],
   };
+  const NOW = { at: 19 * 60 + 42 };
+  const READING = { at: 19 * 60 + 41, count: 70, pct: 58 };
+  // Bands: Quiet below 25, Moderate 25-49, Busy 50-74, Packed 75 and over.
+  const bandOf = (pct) => (pct < 25 ? 0 : pct < 50 ? 1 : pct < 75 ? 2 : 3);
+  READING.band = bandOf(READING.pct);
 
   const STR = {
     ar: {
       gym: "نادي الياسمين",
-      langGlyph: "EN", langAria: "التبديل إلى اللغة الإنجليزية",
-      open: "مفتوح", status: { fresh: "مباشر", stale: "متأخر", closed: "مغلق" },
-      level: "مستوى الازدحام", levelStale: "آخر مستوى معروف",
-      count: "داخل الصالة الآن · تقريبًا", countStale: "آخر عدد معروف · تقريبًا",
+      langName: "English", langOther: "en",
+      open: "مفتوح", until: (t) => `حتى ${t}`,
       bands: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
+      now: "الازدحام الآن",
+      count: "داخل الصالة الآن · تقريبًا",
+      pct: "من السعة",
       last: "آخر قراءة",
-      ago: (m) => (m === 1 ? "قبل دقيقة" : m === 2 ? "قبل دقيقتين" : m <= 10 ? `قبل ${m} دقائق` : `قبل ${m} دقيقة`),
-      staleNote: "قد يكون الازدحام الآن مختلفًا.",
-      opens: "يفتح",
-      mark: (b) => `مستوى الازدحام: ${b}`, markStale: (b) => `آخر مستوى معروف: ${b}`,
-      say: (b, n, t) => `${b}، ${n} داخل الصالة الآن تقريبًا، آخر قراءة ${t}`,
+      live: "مباشر",
+      mark: (b) => `مستوى الازدحام: ${b}`,
+      usual: "الازدحام المعتاد أيام الأربعاء",
+      hour: "الساعة", usualCol: "المعتاد",
+      closes: "يغلق",
       am: "ص", pm: "م",
     },
     en: {
       gym: "Al Yasmin Gym",
-      langGlyph: "AR", langAria: "Switch to Arabic",
-      open: "Open", status: { fresh: "Live", stale: "Delayed", closed: "Closed" },
-      level: "Crowd level", levelStale: "Last known level",
-      count: "Inside now · approx.", countStale: "Last known count · approx.",
+      langName: "العربية", langOther: "ar",
+      open: "Open", until: (t) => `until ${t}`,
       bands: ["Quiet", "Moderate", "Busy", "Packed"],
+      now: "Crowd now",
+      count: "Inside now · approx.",
+      pct: "of capacity",
       last: "Last reading",
-      ago: (m) => `${m} min ago`,
-      staleNote: "It may be different now.",
-      opens: "Opens",
-      mark: (b) => `Crowd level: ${b}`, markStale: (b) => `Last known level: ${b}`,
-      say: (b, n, t) => `${b}, about ${n} inside now, last reading ${t}`,
+      live: "Live",
+      mark: (b) => `Crowd level: ${b}`,
+      usual: "Usual crowd on Wednesdays",
+      hour: "Hour", usualCol: "Usual",
+      closes: "Closes",
       am: "AM", pm: "PM",
     },
   };
   const L = STR[en ? "en" : "ar"];
 
-  // A 12-hour time in gym time, Western digits, «ص/م» or AM/PM (DAT-1); one unbreakable phrase (DAT-4).
+  // A 12-hour time in gym time, Western digits, «ص/م» or AM/PM. Minutes may pass midnight (1:00 AM is 25 * 60).
   const clock = (min) => {
     const h = Math.floor(min / 60) % 24, m = String(min % 60).padStart(2, "0");
-    return `${h % 12 || 12}:${m} ${h < 12 ? L.am : L.pm}`;
+    return `${h % 12 || 12}:${m} ${h < 12 ? L.am : L.pm}`;
   };
-  const SEP = `<span class="sep" aria-hidden="true">·</span><span class="sr-only">${en ? ", " : "، "}</span>`;
-  const ICON = {
-    clock: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 2"/></svg>`,
-  };
-  const LAMP = `<i class="lamp" aria-hidden="true"><i class="lamp-in"><i class="lamp-rim"></i></i></i>`;
+  const t = (min, cls = "") => `<bdi class="num${cls ? ` ${cls}` : ""}">${clock(min)}</bdi>`;
 
-  /* ---- the parts every option shares */
-  const stale = STATE === "stale";
-  const part = {
-    status() {
-      const mark = STATE === "fresh" ? `<i class="dot" aria-hidden="true"></i>`
-        : STATE === "stale" ? ICON.clock : `<i class="dot ring" aria-hidden="true"></i>`;
-      // Question 1 has two parts: open, then live. Open and live (or delayed) say both; closed says closed.
-      const words = STATE === "closed" ? "" : `<span class="st-w">${L.open}</span>${SEP}`;
-      return `<p class="st is-${STATE}">${mark}${words}<span class="st-w st-f">${L.status[STATE]}</span></p>`;
-    },
-    band: (cls = "") => `<p class="bw ${cls}" id="band-w">${L.bands[reading.band]}</p>`,
-    count: () => `<bdi class="big num" id="count-n">${reading.count}</bdi>`,
-    countLabel: () => (stale ? L.countStale : L.count),
-    levelLabel: () => (stale ? L.levelStale : L.level),
-    markName: () => (stale ? L.markStale : L.mark)(L.bands[reading.band]),
-    time() {
-      const t = `<bdi class="t" id="time-t">${clock(reading.at)}</bdi>`;
-      if (!stale) return `<p class="tm">${L.last} ${t}</p>`;
-      const age = reading.serverNow - reading.at;
-      return `<p class="tm">${L.last} ${t}${SEP}<span class="ago">${L.ago(age)}</span></p>`;
-    },
-    note: () => (stale ? `<p class="note">${L.staleNote}</p>` : ""),
-    opens: (cls) => `<div class="${cls}"><p class="lbl">${L.opens}</p><p class="big"><bdi class="t">${clock(reading.opens)}</bdi></p></div>`,
-  };
-  const on = (i) => (i <= reading.band ? " on" : "") + (i === reading.band ? " cur" : "");
+  /* ---- the usual curve: a monotone cubic through the hourly points (Fritsch-Carlson), so it never overshoots below
+   * zero or above a peak the data does not have. x is percent of the band area, from the reading start. */
+  const curve = (() => {
+    const y = DAY.usual, n = y.length, d = [], m = [];
+    for (let i = 0; i < n - 1; i++) d.push(y[i + 1] - y[i]);
+    m[0] = d[0];
+    m[n - 1] = d[n - 2];
+    for (let i = 1; i < n - 1; i++) m[i] = d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2;
+    for (let i = 0; i < n - 1; i++) {
+      if (d[i] === 0) { m[i] = 0; m[i + 1] = 0; continue; }
+      const a = m[i] / d[i], b = m[i + 1] / d[i], s = a * a + b * b;
+      if (s > 9) { const k = 3 / Math.sqrt(s); m[i] = k * a * d[i]; m[i + 1] = k * b * d[i]; }
+    }
+    return (hour) => {
+      const x = Math.min(Math.max(hour - DAY.open, 0), n - 1);
+      const i = Math.min(Math.floor(x), n - 2), u = x - i;
+      const h00 = 2 * u ** 3 - 3 * u ** 2 + 1, h10 = u ** 3 - 2 * u ** 2 + u;
+      const h01 = -2 * u ** 3 + 3 * u ** 2, h11 = u ** 3 - u ** 2;
+      return h00 * y[i] + h10 * m[i] + h01 * y[i + 1] + h11 * m[i + 1];
+    };
+  })();
 
-  /* ---- the level marks. Each fills from the reading start: right to left in Arabic, left to right in English. */
-  const mark = {
-    // a: four whole units on one unbroken line, each word under its unit, the current one in chalk.
-    track: () => `<div class="track" id="mark" role="img" aria-label="${part.markName()}"><span class="track-in" aria-hidden="true">${
-      BANDS.map((_, i) => `<span class="tu${on(i)}"><i class="tu-bar"><b class="fl"></b></i><span class="tu-w">${L.bands[i]}</span></span>`).join("")
-    }</span></div>`,
-    // b: a half ring of four sectors. Drawn left to right and mirrored in Arabic (it holds no text).
-    dial() {
-      const rc = 92, pt = (t) => {
-        const a = Math.PI - (t * Math.PI) / 180;
-        return `${(100 + rc * Math.cos(a)).toFixed(2)} ${(100 - rc * Math.sin(a)).toFixed(2)}`;
-      };
-      const arcs = BANDS.map((_, i) => {
-        const t0 = i * 45 + (i ? 1.6 : 0), t1 = (i + 1) * 45 - (i < 3 ? 1.6 : 0);
-        return `M${pt(t0)} A${rc} ${rc} 0 0 1 ${pt(t1)}`;
-      });
-      const layer = (cls, extra = () => "") => arcs.map((d, i) => `<path class="${cls}${extra(i)}" d="${d}" pathLength="1"/>`).join("");
-      return `<div class="dial" id="mark" role="img" aria-label="${part.markName()}"><svg class="dial-svg" viewBox="0 0 200 100" aria-hidden="true" focusable="false">${
-        layer("ds-plate") + layer("ds-off") + layer("ds-on", (i) => on(i))
-      }</svg></div>`;
-    },
-    // c: CHP-5's four bars at the page's scale: heights 4, 6.5, 9 and 11, every lit bar #FF2946.
-    stair: () => `<div class="stair" id="mark" role="img" aria-label="${part.markName()}"><span class="stair-in" aria-hidden="true">${
-      BANDS.map((_, i) => `<i class="sb${on(i)}"><b class="fl"></b></i>`).join("")
-    }</span></div>`,
+  // One hour's piece of the curve, drawn in its own row: x across 0-100, y down 0-1. Pieces meet exactly at the hour
+  // lines, so the rows build one continuous curve whatever their heights. Drawn left to right and mirrored in Arabic.
+  const piece = (hour) => {
+    const pts = [];
+    for (let k = 0; k <= 12; k++) pts.push([curve(hour + k / 12), k / 12]);
+    const line = pts.map(([x, yy], k) => `${k ? "L" : "M"}${x.toFixed(2)} ${yy.toFixed(4)}`).join("");
+    const area = `M0 0${pts.map(([x, yy]) => `L${x.toFixed(2)} ${yy.toFixed(4)}`).join("")}L0 1Z`;
+    return `<svg class="seg" viewBox="0 0 100 1" preserveAspectRatio="none" aria-hidden="true" focusable="false">`
+      + `<path class="seg-area" d="${area}"/><path class="seg-line" d="${line}"/></svg>`;
   };
 
-  /* ---- the three options. Closed shows no count, band, mark or freshness: the status and the next opening only. */
-  const OPTIONS = {
-    a() {
-      if (STATE === "closed") return `<div class="card pa"><div class="pa-r">${part.status()}</div>${part.opens("pa-r pa-open")}</div>`;
-      const lit = STATE === "fresh";
-      return `<div class="card pa${lit ? " lit lit-card" : ""}">${lit ? LAMP : ""}
-        <div class="pa-r pa-st">${part.status()}</div>
-        <div class="pa-r pa-band"><p class="lbl">${part.levelLabel()}</p>${part.band("v")}</div>
-        <div class="pa-r pa-count"><p class="lbl">${part.countLabel()}</p><p class="v">${part.count()}</p></div>
-        <div class="pa-r pa-mk">${mark.track()}</div>
-        <div class="pa-r pa-tm">${part.time()}${part.note()}</div>
-      </div>`;
-    },
-    b() {
-      if (STATE === "closed") return `<div class="card pb">${part.status()}${part.opens("pb-open")}</div>`;
-      const lit = STATE === "fresh";
-      return `<div class="card pb${lit ? " lit lit-chart" : ""}">${lit ? LAMP : ""}
-        ${part.status()}
-        <div class="pb-g">${part.band("pb-band")}<p class="pb-n">${part.count()}</p><p class="lbl pb-k">${part.countLabel()}</p>${mark.dial()}</div>
-        <div class="pb-tm">${part.time()}${part.note()}</div>
-      </div>`;
-    },
-    c() {
-      if (STATE === "closed") return `<div class="pc is-closed">${part.status()}${part.opens("pc-open")}</div>`;
-      return `<div class="pc">
-        <div class="pc-txt">${part.status()}${part.band("pc-band")}<p class="pc-n">${part.count()}</p><p class="lbl">${part.countLabel()}</p></div>
-        ${mark.stair()}
-        <div class="pc-tm">${part.time()}${part.note()}</div>
-      </div>`;
-    },
+  const nowHour = Math.floor(NOW.at / 60);
+  const hours = (from, to) => Array.from({ length: Math.max(to - from, 0) }, (_, i) => from + i);
+  const pastHours = hours(DAY.open, nowHour);
+  const nextHours = hours(nowHour + 1, DAY.close);
+
+  // The hours gone: a dim strip, labelled every third hour (the opening included).
+  const pastRow = (h) => {
+    const label = (h - DAY.open) % 3 === 0 ? `<span class="hr-t">${t(h * 60)}</span>` : "";
+    return `<div class="hr hr-past">${label}<span class="plot">${piece(h)}</span></div>`;
   };
+  // The hours to come: one ruled row each, its time on the hour line.
+  const nextRow = (h) => `<div class="hr hr-next"><span class="hr-t">${t(h * 60)}</span><span class="plot">${piece(h)}</span></div>`;
+  // The closing line: the curve ends on it.
+  const closeRow = `<div class="hr hr-close"><span class="hr-t">${t(DAY.close * 60)}</span><span class="plot"><span class="hr-w">${L.closes}</span></span></div>`;
 
-  function render() {
-    document.title = `${L.gym} · FITWAY`;
-    $("#gym").textContent = L.gym;
-    const lang = $("#lang");
-    lang.setAttribute("aria-label", L.langAria);
-    $("#lang-glyph").textContent = L.langGlyph;
-    lang.addEventListener("click", () => {
-      const url = new URL(location.href);
-      url.searchParams.set("lang", en ? "ar" : "en");
-      location.assign(url);
-    });
-    $("#reading").innerHTML = OPTIONS[OPTION]();
-  }
+  const word = L.bands[READING.band];
+  const cells = L.bands.map((b, i) => {
+    const state = i < READING.band ? "done" : i === READING.band ? "cur" : "next";
+    return `<span class="cell is-${state}"><i class="cell-bar"></i><span class="cell-w">${b}</span></span>`;
+  }).join("");
 
-  /* ---- a new live reading (fresh only). Only what changed moves: changed digits roll inside their own ink box (MOT-2,
-   * 280 ms), a unit, sector or bar fills or empties (MOT-3, 200 ms, 50 ms apart), the band word swaps at once (never a
-   * cross-fade, DO-NOT); assistive technology hears the new reading once. */
-  const motionOn = () => (window.EclipseMotion ? window.EclipseMotion.on() : !matchMedia("(prefers-reduced-motion: reduce)").matches);
-  const STATE_EASE = "cubic-bezier(0.25, 1, 0.5, 1)";
-  function roll(el, text, up) {
-    const old = el.textContent;
-    el.textContent = text;
-    if (old === text || old.length !== text.length || !motionOn()) return;
-    el.textContent = "";
-    const timing = { duration: 280, easing: STATE_EASE };
-    const anims = [];
-    // Each numeric run («7:43») is an LTR isolate while it rolls: a slot is bidi-neutral, and inside a time that holds
-    // «م» it would otherwise be ordered right to left («37:4»).
-    let run = null;
-    [...text].forEach((ch, i) => {
-      if (!/[\d:]/.test(ch)) { run = null; el.append(ch); return; }
-      if (!run) { run = document.createElement("span"); run.dir = "ltr"; el.append(run); }
-      if (ch === old[i] || !/\d/.test(ch) || !/\d/.test(old[i])) { run.append(ch); return; }
-      const slot = document.createElement("span"), nw = document.createElement("span"), was = document.createElement("span");
-      slot.className = "roll"; was.className = "roll-old";
-      nw.textContent = ch; was.textContent = old[i];
-      was.setAttribute("aria-hidden", "true");
-      slot.append(nw, was);
-      run.append(slot);
-      const d = up ? 0.78 : -0.78;
-      anims.push(nw.animate([{ transform: `translateY(${d}em)` }, { transform: "none" }], timing));
-      anims.push(was.animate([{ transform: "none" }, { transform: `translateY(${-d}em)` }], { ...timing, fill: "forwards" }));
-    });
-    Promise.all(anims.map((a) => a.finished)).then(() => { el.textContent = text; }, () => { el.textContent = text; });
-  }
-  // The mark's parts that change state fill (lower first when the level rises) or empty (upper first when it falls).
-  function moveMark(from, to) {
-    const parts = [...document.querySelectorAll("#mark .tu, #mark .sb, #mark .ds-on")];
-    parts.forEach((p, i) => { p.classList.toggle("on", i <= to); p.classList.toggle("cur", i === to); });
-    if (!motionOn() || from === to) return;
-    const rising = to > from;
-    const changed = parts.map((p, i) => ({ p, i })).filter(({ i }) => (i <= from) !== (i <= to));
-    (rising ? changed : changed.reverse()).forEach(({ p }, k) => {
-      const timing = { duration: 200, delay: k * 50, easing: STATE_EASE, fill: "backwards" };
-      if (p.matches(".ds-on")) {
-        p.animate([{ strokeDashoffset: rising ? 1 : 0 }, { strokeDashoffset: rising ? 0 : 1 }], timing);
-        return;
-      }
-      const axis = p.matches(".sb") ? "scaleY" : "scaleX";
-      p.querySelector(".fl").animate([{ transform: `${axis}(${rising ? 0 : 1})` }, { transform: `${axis}(${rising ? 1 : 0})` }], timing);
-    });
-  }
-  function arrive(next) {
-    if (STATE !== "fresh") return;
-    const from = reading.band;
-    Object.assign(reading, next);
-    roll($("#count-n"), String(reading.count), reading.count >= next.prev);
-    roll($("#time-t"), clock(reading.at), true);
-    $("#band-w").textContent = L.bands[reading.band];
-    $("#mark").setAttribute("aria-label", part.markName());
-    moveMark(from, reading.band);
-    $("#say").textContent = L.say(L.bands[reading.band], reading.count, clock(reading.at));
-  }
+  // The accessible equivalent of the curve: every hour and its usual band, in words.
+  const table = `<table class="sr-only"><caption>${L.usual}</caption><thead><tr><th scope="col">${L.hour}</th><th scope="col">${L.usualCol}</th></tr></thead><tbody>${
+    hours(DAY.open, DAY.close).map((h) => `<tr><th scope="row">${t(h * 60)}</th><td>${L.bands[bandOf(DAY.usual[h - DAY.open])]}</td></tr>`).join("")
+  }</tbody></table>`;
 
-  render();
-  // The readiness signal verify-fitway waits for: the page is drawn.
-  window.__public = { ready: true, arrive: (n) => arrive({ prev: reading.count, ...n }) };
-  if (params.has("arrive") && STATE === "fresh") {
-    const busy = params.get("arrive") === "busy";
-    setTimeout(() => window.__public.arrive({ count: busy ? 52 : 39, band: busy ? 2 : reading.band, at: reading.at + 1, serverNow: reading.at + 1 }), 1500);
-  }
+  const day = document.getElementById("day");
+  day.innerHTML = `
+    <section class="gym" aria-labelledby="gym">
+      <h1 class="gym-n" id="gym">${L.gym}</h1>
+      <p class="gym-o"><span class="gym-ow">${L.open}</span> ${L.until(t(DAY.close * 60))}</p>
+    </section>
+    <section class="answer" aria-label="${L.now}">
+      <p class="word">${word}</p>
+      <div class="figs">
+        <p class="fig fig-count"><bdi class="num fig-n">${READING.count}</bdi><span class="fig-l">${L.count}</span></p>
+        <p class="fig fig-pct"><bdi class="num fig-n">${READING.pct}%</bdi><span class="fig-l">${L.pct}</span></p>
+      </div>
+    </section>
+    <div class="reading">
+      <p class="rd"><span class="rd-l">${L.last}</span> ${t(READING.at, "rd-t")}</p>
+      <p class="live"><i class="dot" aria-hidden="true"></i>${L.live}</p>
+    </div>
+    <div class="mark" role="img" aria-label="${L.mark(word)}"><span class="mark-in" aria-hidden="true">${cells}</span></div>
+    <p class="cap" aria-hidden="true">${L.usual}</p>
+    <div class="past" aria-hidden="true">${pastHours.map(pastRow).join("")}</div>
+    <div class="horizon" aria-hidden="true"><i class="atm"></i><i class="spill"></i><i class="rim"></i></div>
+    <div class="next" aria-hidden="true">${nextHours.map(nextRow).join("")}${closeRow}</div>
+    ${table}
+    <svg class="defs" aria-hidden="true" focusable="false"><defs>
+      <linearGradient id="usual-fill" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0">
+        <stop offset="0" stop-color="#4d0713" stop-opacity=".5"/><stop offset="1" stop-color="#e51935" stop-opacity=".42"/>
+      </linearGradient></defs></svg>`;
+
+  // The language switch names the other language in that language, so its visible words are its name.
+  const lang = document.getElementById("lang");
+  const glyph = document.getElementById("lang-glyph");
+  glyph.textContent = L.langName;
+  glyph.lang = L.langOther;
+  lang.addEventListener("click", () => {
+    const u = new URL(location.href);
+    u.searchParams.set("lang", en ? "ar" : "en");
+    location.href = u.toString();
+  });
+  document.title = `${L.gym} · FITWAY`;
+  // The page is complete at first paint; the capture tools wait on this.
+  window.__public = { ready: true };
 })();
