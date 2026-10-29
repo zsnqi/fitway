@@ -5,6 +5,7 @@ import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import { runInNewContext } from "node:vm";
 import { outputPath } from "./probes/lib.mjs";
+import { specs, partHeader } from "./spec-parts.mjs";
 
 const source = await readFile(new URL("./build-index.mjs", import.meta.url), "utf8");
 const scriptEntries = runInNewContext(`${source.slice(source.indexOf("const identifier"), source.indexOf("\nfunction shortTitle"))}\nscriptEntries;`);
@@ -32,13 +33,19 @@ const root = await mkdtemp(await outputPath("index-fixture-"));
 const runner = resolve(root, "tools/build-index.mjs");
 await mkdir(resolve(root, "tools"), { recursive: true });
 await writeFile(runner, source, "utf8");
+// The generator reads the design parts through spec-parts.mjs, so the fixture holds it and a parts layout in place of one DESIGN-SPEC.md.
+await writeFile(resolve(root, "tools/spec-parts.mjs"), await readFile(new URL("./spec-parts.mjs", import.meta.url), "utf8"), "utf8");
 // The fixture holds every script the generator reads, taken from its own list, so a file added there never breaks this check.
 const filesLine = source.slice(source.indexOf("const files"), source.indexOf("\n", source.indexOf("const files")));
 const generatorFiles = runInNewContext(`${filesLine}\nfiles;`);
 const scripts = Array.from(generatorFiles).filter((name) => name.endsWith(".js"));
 assert.ok(scripts.includes("access.js") && scripts.includes("shared-frame.js") && scripts.at(-1) === "picker.js", `unexpected generator file list: ${scripts.join(", ")}`);
 for (const name of scripts) await writeFile(resolve(root, name), fixture, "utf8");
-await writeFile(resolve(root, "DESIGN-SPEC.md"), "# Spec\n| STA-10 | K | Short title |\n```\n# Ignored\n```\n", "utf8");
+await mkdir(resolve(root, "spec"), { recursive: true });
+for (const [number, part] of specs.design.parts.entries()) {
+	const body = number === 0 ? "# Spec\n| STA-10 | K | Short title |\n```\n# Ignored\n```\n" : `## Part ${number + 1}\n`;
+	await writeFile(resolve(root, part.path), `${partHeader(specs.design.file)}\n\n${body}`, "utf8");
+}
 const run = (...args) => spawnSync(process.execPath, [runner, ...args], { cwd: root, windowsHide: true, encoding: "utf8", timeout: 10000 });
 let result = run("--check");
 assert.equal(result.status, 1);

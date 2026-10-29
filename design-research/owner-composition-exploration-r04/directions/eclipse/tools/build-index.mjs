@@ -1,7 +1,8 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { readParts } from "./spec-parts.mjs";
 
 const eclipse = new URL("../", import.meta.url);
-const files = ["DESIGN-SPEC.md", "daily.js", "components.js", "reports.js", "activity.js", "access.js", "shared-frame.js", "picker.js"];
+const files = ["daily.js", "components.js", "reports.js", "activity.js", "access.js", "shared-frame.js", "picker.js"];
 const command =
 	"node design-research/owner-composition-exploration-r04/directions/eclipse/tools/build-index.mjs";
 const identifier = /^[A-Za-z_$][\w$]*$/;
@@ -199,7 +200,8 @@ function shortTitle(text) {
 	return `${prefix.slice(0, boundary > 50 ? boundary : prefix.length)}…`;
 }
 
-function specEntries(source) {
+// `first` is the line of the part file the source starts at, so an entry carries its line in that file.
+function specEntries(source, first = 1) {
 	const entries = [];
 	let fence = null;
 	for (const [index, line] of source.split(/\r?\n/).entries()) {
@@ -212,11 +214,11 @@ function specEntries(source) {
 		if (fence) continue;
 		const heading = /^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$/.exec(line);
 		if (heading) {
-			entries.push({ line: index + 1, name: heading[1], title: shortTitle(heading[2]) });
+			entries.push({ line: index + first, name: heading[1], title: shortTitle(heading[2]) });
 			continue;
 		}
 		const row = /^\s*\|\s*([A-Z]+(?:-[A-Z]+)*-?[A-Z]*\d+)\s*\|\s*[RCKP]\s*\|\s*((?:\\\||[^|])+)/.exec(line);
-		if (row) entries.push({ line: index + 1, name: row[1], title: shortTitle(row[2]) });
+		if (row) entries.push({ line: index + first, name: row[1], title: shortTitle(row[2]) });
 	}
 	return entries;
 }
@@ -227,16 +229,17 @@ async function main() {
 		throw new Error(`Usage: ${command} [--check]`);
 	}
 	const groups = [];
+	// DESIGN-SPEC.md is an index; its sections are in the parts listed by spec-parts.mjs.
+	for (const { path, line, text } of readParts("design")) groups.push({ file: path, entries: specEntries(text, line) });
 	for (const file of files) {
 		const source = await readFile(new URL(file, eclipse), "utf8");
-		const entries = file.endsWith(".md") ? specEntries(source) : scriptEntries(source);
-		groups.push({ file, entries });
+		groups.push({ file, entries: scriptEntries(source) });
 	}
 	const lines = [
 		"Generated Eclipse navigation index: spec headings and row IDs, plus script functions, classes and named function bindings (const, let, var).",
 		`From the repository root, regenerate: \`${command}\`; check: \`${command} --check\`.`,
 		"",
-		"Script top level includes each outer IIFE's body; nested helpers are excluded. Entries use source line numbers.",
+		"Script top level includes each outer IIFE's body; nested helpers are excluded. Entries use source line numbers; a design part's are lines of its part file.",
 	];
 	for (const { file, entries } of groups) {
 		lines.push("", `## ${file}`, "");
