@@ -84,3 +84,8 @@ the public page are numbered here.
    the computer. It was tidier than direction 2 («اي هذا ارتب كان»): the order is kept, the character is missing.
    Next, at the coordinator's suggestion («يلا موافق»): the user marks a numbered sheet of varied references, liked or
    not, so the next brief carries the user's taste as images.
+8. **No references for the next direction; the designer creates from its own judgment and Impeccable** (the user,
+   2026-10-30: none of the 15-tile sheet was close to the goal, «ما يشبه هدفنا»; the user's own Pinterest search found
+   nothing either: «الظاهر انه بنحتاج المصمم يبدع من عنده و ب استخدام المهارة»). The gathering of gym apps' crowd
+   screens was stopped unfinished. Direction 4's brief gives no reference set and carries the user's words on
+   directions 2 and 3.
