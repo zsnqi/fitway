@@ -1,0 +1,11 @@
+# Restored by `npm install` (setup.mjs); never committed.
+node_modules/
+vendor/
+scripts/
+fonts/*.woff2
+fonts/*.txt
+assets/fitway-mark.svg
+assets/mark-geometry.json
+build/
+out/
+snapshots/
