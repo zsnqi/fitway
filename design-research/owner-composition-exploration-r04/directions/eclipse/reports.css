@@ -102,10 +102,9 @@ html.rp-faces > body.rp { opacity: 0; }
 [dir="rtl"] .switch[aria-checked="true"] .switch-thumb { transform: translateX(-14px); }
 
 /* ------------------------------------------------------------ the pattern card
- * The data light (a U around a dark disc, LGT-3). The grid sits on an opaque plate of the card's own base (SRF-5), so
- * the light frames it and never changes a cell's colour: the ramp stays calibrated. Section padding 24 (SPC-5). */
+ * A plain card at every size and state (DECISIONS 103; it carried the data light, LGT-3, until then). The grid sits on an
+ * opaque plate of the card's own base (SRF-5), so a cell's colour is its own: the ramp stays calibrated. Section padding 24 (SPC-5). */
 .pattern { display: flex; flex-direction: column; gap: 16px; padding: 24px; }
-.pattern:not(.lit) > .lamp { display: none; }
 .pattern-head, .days-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
 .pattern-head h2, .days-head h2 { font-size: 19px; line-height: 28.5px; font-weight: 500; }
 .pattern-sub, .days-sub { margin-block-start: 4px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }

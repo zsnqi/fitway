@@ -124,7 +124,7 @@
   const params = new URLSearchParams(location.search);
   /* K-02: Reports' own page states (reports.html sets data-page before first paint), as the user decided on 2026-10-03
    * (DECISIONS item 14): the options round's option A, Daily's grammar (one skeleton with a placeholder in every awaited
-   * value, the pattern's light out under every status but Live, a waiting span noted where it falls), with option C's
+   * value, the pattern a plain card in every state (DECISIONS 103), a waiting span noted where it falls), with option C's
    * error (one message for the page in place of the cards). The concept's moment is the Daily page's: Wednesday
    * 23 September, 7:42 PM; Closed is 5:12 AM the same day, before opening. Reports shows complete days only, so a status
    * about now leaves its history whole, except in `pending`, where the edge has been offline since 9:10 PM on Tuesday
@@ -719,7 +719,7 @@
     } else {
       tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.wowEmpty}</span></p><div class="stat-foot"><span class="stat-aside">${L.wowEmptyNote()}</span></div>`;
     }
-    // "Last 7 days" is plain in every period: Reports keeps only the pattern's data light (OWN-R6, user 2026-10-01, Q13).
+    // "Last 7 days" is plain in every period, and so is the pattern (OWN-R6, user 2026-10-01, Q13; DECISIONS 103): Reports has no card light.
     trendCard.setAttribute("aria-description", plain(L.wowSay(periodWords(WOW.cur[0], WOW.cur[1]), periodWords(WOW.prev[0], WOW.prev[1]))));
 
     const none = (id) => { $(id).innerHTML = `<p class="stat-value"><span class="stat-say">${L.noReadings}</span></p><div class="stat-foot"></div>`; };
@@ -811,10 +811,8 @@
       <thead><tr role="row"><th scope="col" class="heat-corner" role="columnheader"><span class="sr-only">${L.dayHead}</span></th>${hours.join("")}</tr></thead>
       <tbody>${rows.join("")}</tbody>`;
     }
-    // The data light stays only while the pattern holds a value: an empty period is drawn as a plain card (LGT-7, LGT-8).
-    const lit = hasValues();
-    $("#pattern").classList.toggle("lit", lit);
-    $("#pattern").classList.toggle("lit-chart", lit);
+    // The pattern is a plain card at every size and state (DECISIONS 103); the day form's key names its marks only while it holds a value.
+    const hasVals = hasValues();
     heatSlots = [0, 1, 2, 3, 4, 5, 6].map(() => new Array(HOURS));
     $$(".hc", heat).forEach((td) => { for (let c = +td.dataset.c0; c <= +td.dataset.c1; c++) heatSlots[+td.dataset.r][c] = td; });
     // The roving cell starts on the busiest hour (or the first cell). The day form draws no cells.
@@ -832,7 +830,7 @@
     // (data-mark: a mark the data brings; while the page loads or could not load it keeps its place, unseen.)
     const marks = (b ? `<li data-mark><span class="k kt" aria-hidden="true"></span><span>${L.busiestKey}</span></li>` : "") +
       (anyFew ? `<li data-mark><span class="k kf" aria-hidden="true"></span><span>${L.fewKey}</span></li>` : "");
-    $("#heat-key").innerHTML = day ? (lit ? marks : "") : `<li><span>${L.keyFewer}</span><span class="ramp" aria-hidden="true"></span><span>${L.keyMore}</span></li>
+    $("#heat-key").innerHTML = day ? (hasVals ? marks : "") : `<li><span>${L.keyFewer}</span><span class="ramp" aria-hidden="true"></span><span>${L.keyMore}</span></li>
     <li><span class="k k0" aria-hidden="true">0</span><span>${L.empty}</span></li>
     <li><span class="k kc" aria-hidden="true"></span><span>${L.closed}</span></li>
     <li><span class="k kn" aria-hidden="true"></span><span>${L.noReadings}</span></li>` + marks;
@@ -1254,8 +1252,8 @@
    *            page under its controls, in the empty period's form (EMP-1: the mark, one sentence naming what is
    *            missing and its dates, one action); the cards, the pattern and day by day step aside. The one retry
    *            takes focus and runs as an action (STA-9), then arrives into live.
-   *   closed, delayed, unavailable  the header's status (STW-1); the history is whole, so the page is unchanged but
-   *            for its light: the pattern's light is off under every status but Live (DECISIONS 8, Daily's rule).
+   *   closed, delayed, unavailable  the header's status (STW-1); the history is whole, so the page is unchanged
+   *            (the pattern is a plain card in every state, DECISIONS 103).
    *   pending  Offline since 9:10 PM on 22 September: the received part of that day counts and the rest is noted,
    *            «بانتظار القراءات منذ 9:10 م»; "Last 7 days" waits («قيد الانتظار»). */
   const LOAD = { delay: 300, min: 400, say: 1000, ceiling: 10000, retry: 1200 };
@@ -1403,10 +1401,6 @@
     exportBtn.disabled = waiting;
     if (phase === "loading") paintLoading();
     else if (waiting) { paintError(focusAlert); focusAlert = false; }
-    // The light (OWN-R6): the pattern's, while it holds a value, and only under Live (Daily's rule, DECISIONS 8).
-    const lit = !waiting && hasValues() && pageNow === "live";
-    $("#pattern").classList.toggle("lit", lit);
-    $("#pattern").classList.toggle("lit-chart", lit);
     frame.refreshStatus();
   }
   function startLoading(arriveAfter) {
