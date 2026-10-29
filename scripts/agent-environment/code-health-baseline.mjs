@@ -17,6 +17,7 @@ import {
 	compareCodeHealth,
 	conceptHealthFolder,
 	date,
+	directoryExcepted,
 	HEALTH_ROOTS,
 	normalizePath,
 	pathWithin,
@@ -191,10 +192,12 @@ export function checkCodeHealth({ root = process.cwd(), today = date() } = {}) {
 				directoryCounts: baseline.directories ?? {},
 				hits: {},
 				directoryHits: {},
-			}).filter(
-				(change) =>
-					change.direction === "rise" &&
-					!namedCurrentAdmission(baseline, change, snapshot),
+			}).filter((change) =>
+				change.scope === "directory"
+					? change.direction === "fall" &&
+						!directoryExcepted(snapshot, change, today)
+					: change.direction === "rise" &&
+						!namedCurrentAdmission(baseline, change, snapshot),
 			)
 		: [];
 	return {
