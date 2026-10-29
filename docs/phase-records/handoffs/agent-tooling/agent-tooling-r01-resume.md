@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 10:40 +03:00
-  (leading-comments launched; branch-merge-checks' brief in its two reviews)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 11:25 +03:00
+  (leading-comments merged; branch-merge-checks launched)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-20; 20 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -22,27 +22,20 @@
 
 ## Running now
 
-Measured 2026-10-29 10:40. main `45e4635f`: the retro's four rounds (code-map-index, evidence-home, run-and-ref,
-cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`.
+Measured 2026-10-29 11:25. main `45e4635f`; the coordinator line carries the retro's four rounds and leading-comments
+(merge `2e6318b2`, record `docs/phase-records/handoffs/agent-tooling/rounds/leading-comments.md`), pushed for CI.
 
-- **leading-comments** (worktree `D:/Projects/fitway-worktrees/tooling-leading-comments` from `ac337544`) is running
-  on DeepSeek at `max`, launched 10:33 from `7c564947`: run folder
-  `D:/fitway-temp/codex-round-6933ecc9-8094-4f89-a4d3-ee592dbd9625`, thread `01a18694-4ee1-7711-b373-a738fd628d94`,
-  launcher log `D:/fitway-temp/launch-logs/leading-comments-launch.log`. Sol's two readings (existing comments that do
-  not say what the file is for; `!` or `?` inside the first sentence) are closed in the brief, dispositions in
-  `D:/fitway-temp/brief-review/codex-leading-comments-1-sol` (the Codex account `smhsdxsz5h` was limited until 10:49,
-  so `hhmam1435` is current).
-- **branch-merge-checks** (DECISIONS items 19-20; worktree `D:/Projects/fitway-worktrees/tooling-branch-merge-checks`
-  at `853111c2`, installed): the brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-branch-merge-checks.md`
-  has both reviews' readings dispositioned (`D:/fitway-temp/brief-review/codex-branch-merge-checks-1` and `...-1-sol`;
-  one left open: the upstream is the coordinator's act and the message names the base). It launches after
-  leading-comments merges, because that round adds lines at the top of the files
-  this one changes: fast-forward the worktree to the merge, move the brief's HEAD and line numbers, write the new hash
-  in both dispositions. On the base, `pnpm check:repository` counts 125 gone citations (102 distinct paths), all on
-  unchanged lines, and `pnpm check:code-health` passes. Two shapes the coordinator settled in the brief: the base a
-  gone citation is compared against is the upstream only when the upstream is another branch (a pushed line on
-  `codex/owner-redesign-r04` is still the branch's own), from the merge base; and a second admission of a folder is
-  refused, so the door cannot become a standing exception.
+- **branch-merge-checks** (DECISIONS items 19-20) is running on DeepSeek at `max`, launched 11:24 from `856d8043` in
+  `D:/Projects/fitway-worktrees/tooling-branch-merge-checks` at `be8985b9`: run folder
+  `D:/fitway-temp/codex-round-6ca4ca88-1285-485d-9afd-b3146f27a003`, launcher log
+  `D:/fitway-temp/launch-logs/branch-merge-checks-launch.log`. Both reviews' readings are dispositioned
+  (`D:/fitway-temp/brief-review/codex-branch-merge-checks-1` and `...-1-sol`; one left open: the upstream is the
+  coordinator's act and the message names the base). On the base, `pnpm check:repository` counts 125 gone citations
+  (102 distinct paths), all on unchanged lines, and `pnpm check:code-health` passes. Two shapes the coordinator
+  settled in the brief: a gone citation is compared from the merge base with the upstream only when the upstream is
+  another branch (a pushed line on `codex/owner-redesign-r04` is still the branch's own); and a second admission of a
+  folder is refused, so the door cannot become a standing exception.
+- **main:advance** waits on the CI run of the push that carries leading-comments' merge (K1 of that round).
 - **The concept's specs are split** (`2aa2fc4d`, on `owner-followup-r04-build`, pushed and green, and on
   `public-redesign-r01`): both originals rebuild byte for byte from the concept's new `spec` folder.
 - **Done** (item 18): the four rounds; r04's `DECISIONS.md` split into an index and parts (`92a4e9a7`); the round records
@@ -52,9 +45,8 @@ cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/ag
 
 ## Next steps
 
-1. leading-comments: when it exits, the diff review, fix, grade, merge and record.
-2. **branch-merge-checks:** launch it once step 1 is merged; then the review, fix,
-   grade, merge and record. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the
+1. When the pushed CI run passes, `pnpm main:advance` to its commit.
+2. **branch-merge-checks:** when it exits, the Sol diff review, fix, grade, merge and record. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the
    merge of main (the trial is `d2f86a8d`), admit the concept's giant files, pin the build's reference frame
    (`563e1c83`) in the packet on that branch, and run the four checks there.
 3. The public page's designer (its own resume point) once step 2 is in.
@@ -62,6 +54,8 @@ cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/ag
    `D:/fitway-temp/retro-20261028/patterns.mjs` and the survey's script count.
 5. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
    `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date.
+   When `compare.mjs`'s is retired, its purpose line goes on its first line (leading-comments left it out: a
+   giant-file exception counts only on line 1).
 6. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
    citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more).
 
