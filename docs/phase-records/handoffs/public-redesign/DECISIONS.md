@@ -78,3 +78,9 @@ the public page are numbered here.
      halves (its size was fine); its motion did not feel good, the Owner Daily chart's motion is better. Not the
      cause: too many things on the page. What the eye meets first and the page's feel: the designer's («خلها للمصمم»,
      «خلّه يجرب»).
+7. **Direction 3, the status page, is turned down** (the user, 2026-10-29, on its phone and computer frames: «برضو ما
+   عجبني»; `5f809979`). To the coordinator's questions, all four causes: plain, with no character, like any app; closer
+   to the Owner dashboard than to a page for a visitor; the rows of facts read like a table, dull; small and empty on
+   the computer. It was tidier than direction 2 («اي هذا ارتب كان»): the order is kept, the character is missing.
+   Next, at the coordinator's suggestion («يلا موافق»): the user marks a numbered sheet of varied references, liked or
+   not, so the next brief carries the user's taste as images.
