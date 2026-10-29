@@ -123,7 +123,7 @@
       <div class="mark" role="img" aria-label="${L.mark(word)}">${steps}</div>
       <p class="ends" aria-hidden="true"><span>${L.bands[0]}</span><span>${L.bands[3]}</span></p>
       <dl class="facts">
-        <div class="row"><dt>${L.last}</dt><dd><span class="live"><i aria-hidden="true"></i>${L.live}</span> · ${roll(clock(READING.at))}</dd></div>
+        <div class="row"><dt>${L.last}</dt><dd><span class="live"><i aria-hidden="true"></i>${L.live}</span> <span class="roll"><span>· <bdi class="num">${clock(READING.at)}</bdi></span></span></dd></div>
         <div class="row"><dt>${L.count}</dt><dd>${roll(READING.count)}</dd></div>
         <div class="row row-pct"><dt>${L.pct}</dt><dd>${roll(`${READING.pct}%`)}</dd></div>
         <div class="row"><dt>${L.hours}</dt><dd>${L.openUntil(time(DAY.close))}</dd></div>

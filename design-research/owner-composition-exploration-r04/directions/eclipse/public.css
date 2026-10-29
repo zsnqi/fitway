@@ -50,7 +50,7 @@
   --row: 48px;
   --step: 8px;
   --step-cur: 14px;
-  --word-mark: 20px;
+  --word-mark: 24px;
   --plot: 176px;
   --line-w: 2px;
   /* The page wash, scaled to the screen: the light's ellipse, and the dark disc that leaves only its arc. */
@@ -66,7 +66,7 @@
 
 @media (min-width: 1024px) {
   :root {
-    --col: 776px;
+    --col: 720px;
     --gut: 24px;
     --in: 32px;
     --display: 96px;
@@ -78,7 +78,7 @@
     --row: 52px;
     --step: 10px;
     --step-cur: 18px;
-    --word-mark: 28px;
+    --word-mark: 36px;
     --plot: 176px;
     --line-w: 2.5px;
     --wash-w: 1120px;
