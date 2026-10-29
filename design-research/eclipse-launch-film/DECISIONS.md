@@ -41,11 +41,21 @@ coordinator's default.
 15. Review stations: (1) storyboard stills plus music sketches, (2) motion without sound, (3) the full film.
 16. Every note the user gives becomes a rule in `RULES.md` and stays in force.
 
+## Station 1 outcome (user, 2026-10-29)
+17. Music: sketch 3, "Drive" (`music-sketches/sketch-3-drive.m4a`, 128 BPM, D minor). The full score grows from it.
+18. The concept is approved: Eclipse's red crowd line draws the day, and its live reading becomes the FITWAY mark's dot
+    (`TREATMENT.md`).
+19. The three copy lines are approved: "Every day has a shape." / "Every week, a rhythm." / "Now, read yours." → FITWAY.
+20. Carried into Station 2 (coordinator's review): the device stills (09, 10) are the weakest. The screen is too small to
+    read and the phone sits far from the laptop at a different scale. Bring the camera closer, make the devices larger
+    and keep the phone beside the laptop at true relative scale.
+
 ## References
 - A: Polar launch film (Emil Widlund), 85 s.
 - B: Polar logo sting, 33 s.
 - C: Ramp Inspect, 30 s.
-- The analysis is in the coordinator's scratchpad (`refs/`). The rules it supports are folded into `RULES.md`.
+- The analysis notes are in `references/ref-{A,B,C}-notes.md`. The rules they support are folded into `RULES.md`. The videos
+  were user uploads and are not in git; ask the user to re-upload them if a frame-level comparison is needed.
 - Emil Widlund's thread and Florence's "Opus 5.5 Motion Lab" article.
 
 ## Source pin

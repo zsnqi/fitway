@@ -1,0 +1,5 @@
+# B (looks like Polar logo sting; unverified) 32.7s 4K 60fps
+Detector: scene score max 0.09 (never >0.25). One continuous take with soft transitions. Peaks >0.02: 24.37, 25.27, 28.52 -> 4 segments (0-24.4, 24.4-25.3 flash, 25.3-28.5, 28.5-32.6); median 3.67 mean 8.15.
+Timeline (1 fps sheet): 0-14 thin 1px circle drawn, construction lines / radii / dot nodes / micro labels build the mark on near-black; 9-14 second circle slides in; 15-16 mark pops huge in bright white then settles to small (17); 18-20 mark small with square guide frame; 21 wordmark "Polar" appears beside mark (one word, whole); 22 guide frame flashes; 24.4-25.3 inverted flash (grey frame), 25-26 white lockup; 26.7-31.9 lockup over inset moving macro footage (grey stems/plume) in a 16:9 panel; fade to black 31.9-32.6.
+Lockup visible 21-31.9 = ~11 s (mark alone 17-21). No other copy (only tiny technical micro-labels).
+Audio: 123.0 BPM B minor, -18.9 LUFS, LRA 1.9 (flat bed, -18 +-1 throughout, nudges to -17.8 at 24-25 s), TP -4.5 dBTP; fade last ~1 s; onset ~0.1 s.
