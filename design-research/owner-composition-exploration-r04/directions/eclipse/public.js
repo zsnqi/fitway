@@ -32,7 +32,6 @@
 
   const STR = {
     ar: {
-      gym: "نادي الياسمين",
       langName: "English", langOther: "en",
       open: "مفتوح", until: (t) => `حتى ${t}`,
       bands: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
@@ -48,7 +47,6 @@
       am: "ص", pm: "م",
     },
     en: {
-      gym: "Al Yasmin Gym",
       langName: "العربية", langOther: "ar",
       open: "Open", until: (t) => `until ${t}`,
       bands: ["Quiet", "Moderate", "Busy", "Packed"],
@@ -135,7 +133,7 @@
   const day = document.getElementById("day");
   day.innerHTML = `
     <section class="gym" aria-labelledby="gym">
-      <h1 class="gym-n" id="gym">${L.gym}</h1>
+      <h1 class="sr-only" id="gym">FITWAY</h1>
       <p class="gym-o"><span class="gym-ow">${L.open}</span> ${L.until(t(DAY.close * 60))}</p>
     </section>
     <section class="answer" aria-label="${L.now}">
@@ -170,7 +168,7 @@
     u.searchParams.set("lang", en ? "ar" : "en");
     location.href = u.toString();
   });
-  document.title = `${L.gym} · FITWAY`;
+  document.title = "FITWAY";
   // The page is complete at first paint; the capture tools wait on this.
   window.__public = { ready: true };
 })();

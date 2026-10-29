@@ -159,8 +159,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 
 /* ------------------------------------------------------------------ the gym */
-.gym-n { font-size: var(--title); line-height: var(--title-lh); font-weight: 500; }
-.gym-o { margin-block-start: 2px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.gym-o { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
 .gym-ow { color: var(--ink); font-weight: 500; }
 .cap { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
 
