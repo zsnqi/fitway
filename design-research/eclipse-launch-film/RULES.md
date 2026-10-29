@@ -34,8 +34,11 @@ Motion Lab article, cinetic.
   give the user an A/B to judge by ear.
 - The feeling is Polar's confidence and luxury, building to an explosion. Effects are few, and each one belongs to
   something in this film's story.
-- The product is the hero: every move shows its beauty and quality, and nothing is there to show off. Avoid cliché
-  moves (trial 1).
-- Design the transitions as one family before the shots; an entrance (like Reports' in trial 1) never arrives
-  abruptly or in a style of its own.
-- The language switch needs a better idea than reshuffling every block (trial 1).
+- The product is the hero: every move shows its beauty and quality, and nothing is there to show off.
+
+## Trial 1's notes are not rules (user, 2026-10-29)
+The user's notes on the trial render (its opening, its navigation, the Reports entrance, the language switch, the
+mark's position) are observations in `TRIAL-1-RECORD.md`, not rules. The user does not want rules drawn from a trial
+cut to a particular piece of music, because they would constrain the next design. Two rules first written from them
+on 2026-10-29 (transitions as one family; a new idea for the language switch) were withdrawn the same day for that
+reason.

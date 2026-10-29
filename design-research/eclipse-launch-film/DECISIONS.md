@@ -75,6 +75,9 @@ pinned version into the gitignored `vendor/`, and never committed. The sample so
     notes and the lessons, and is not fixed. The film's purpose is to present the product's beauty and quality.
 28. The real film also shows the Public page. It starts only when the user says so, once the pages the demo needs
     are finished (the user expects Public about today).
+29. No devices. The laptop and phone moment (items 4 and 20) is dropped, and with it three.js and the Blender idea.
+    As in Polar, the product's own interface carries the film.
+30. The story will change. The trial's concept and copy (items 18–19) are no longer binding; the new story is open.
 
 ## References
 - A: Polar launch film (Emil Widlund), 85 s.

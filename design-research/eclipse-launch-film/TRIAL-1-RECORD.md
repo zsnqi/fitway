@@ -13,14 +13,17 @@ film. User notes still to come are added under "The user's notes".
 - **The Busy times card on Reports:** the red light under and behind the card should be off. This is a note on
   Eclipse's design, carried for when Eclipse is next worked on; the film shows the pinned Eclipse (`fedbdb6d`), so
   nothing changed here.
-- **The opening:** weak. There is no real entrance, and the first line's animation was bad.
+- **The opening:** there is no moment that grips. The first line's animation was fast and felt dead.
 - **Daily's navigation:** the punch-in on the Inside now card, then back out to the page, then another zoom on the
-  chart did not feel smooth, and the moves between them were not good. The user questions the storyboard's way of
-  showing the product, not only the execution. The reasons are being clarified with the user.
-- **The devices:** the transition into the laptop and the phone is not good, and the device shots are still not good
-  enough after the item 20 fix. A better idea is welcome, and Blender (driven through Blender MCP once the user works
-  locally) is a candidate.
-- **The mark's construction:** could be better.
+  chart, felt like moves without a reason and cuts without a link. The user notes they cannot judge the cause fairly,
+  because the cut followed one particular piece of music, and asks that no rule be drawn from it.
+- **The devices:** the transition into them and the device shots were not good. Resolved by dropping the devices
+  (DECISIONS item 29).
+- **The mark's construction:** good, but it could be better, and it did not feel centred. This is an observation, not
+  a rule about where the mark sits.
+- **The story:** it will change (DECISIONS item 30).
+
+These notes are observations. The user asked that they not become rules, so they do not constrain the next design.
 
 ## The direction for the real film (user)
 - **Purpose:** the film presents the product: its beauty and its quality. The product is the hero, and every move
@@ -55,10 +58,9 @@ film. User notes still to come are added under "The user's notes".
 - **Pace:** the trial is busy from the 4th second, with many screens, many moves and short holds. That is the
   opposite of Polar, which holds fewer screens for longer and saves its energy for one lift. It is the likely root of
   "cliché".
-- **Transitions as a system:** each shot's entrance was designed alone (Reports' cover wipe, the montage cuts, the
-  language FLIP), so they do not belong to one family. Design the transitions first, as one family, and then the
-  shots.
-- **The language switch needs a different idea.** Reshuffling every block reads as a gimmick.
+- **Transitions (a hypothesis, not a rule):** each shot's entrance was designed alone (Reports' cover wipe, the
+  montage cuts, the language FLIP), so they may not read as one family.
+- **The language switch** may read as a gimmick when every block reshuffles.
 - **The music came before its reference.** The three sketches were written to a verbal brief ("warm cinematic pulse"),
   and the user picked Drive. Once earshot could listen, it heard Drive as synthwave (96%). Start from an analysed
   reference and measure every sketch against it.
