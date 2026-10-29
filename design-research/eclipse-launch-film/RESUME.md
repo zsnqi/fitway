@@ -16,17 +16,27 @@ order. Talk to the user in Arabic (Gulf dialect is fine), even though the files 
   stems go to the gitignored `out/`.
 - **Music, awaiting the user's ear:** with earshot's listening open, it heard Drive as synthwave (p_real 0.39). The
   user allowed Drive to change and CC0 recorded instruments (DECISIONS items 21–23). Drive v2 (`music-v2/`, VSCO-2 CE
-  strings, piano and percussion over Drive's frame) reads p_real 0.85 and is no longer synthwave, but leans orchestral
-  trailer (46% when offered) and its onset rate (1.0/s) is below the launch films'. `music-v2/ab-preview.mp4` went to
-  the user as an A/B; the full score grows from whichever they pick.
-- **Next: Station 2.** Build the motion, with no sound:
-  1. Scaffold the film in `film/` with cinetic's HyperFrames engine (`references/hyperframes-engine.md`,
-     `scripts/new-film.sh`) at 1920x1080, 60 fps, 128 BPM, 16 bars plus a 2 s tail.
-  2. Animate the treatment.
-  3. Fix the device shots (DECISIONS item 20).
-  4. Render previews and review them on contact sheets.
-  5. Send the user a silent MP4.
-- **Then Station 3:** the full 32 s score grown from "Drive", with stems. Then the earshot kit effects (movement is silent,
+  strings, piano and percussion over Drive's frame) reads p_real 0.85, but its pulse is weak (the beat tracker reads 64
+  BPM at clarity 0.17, against Drive's 128 at 0.51), its hit stands 8 dB over the bed against Drive's 22, and it leans
+  orchestral trailer. The coordinator advised against v2 as it stands. `music-v2/ab-preview.mp4` went to the user.
+- **Direction re-opened (user, 2026-10-29):** the user feels "the idea or the music I want" has not arrived yet and
+  re-sent the three references. `references/refs-listening-notes.md` holds the new listening analysis. Five questions
+  went to the user: the feeling at the end (calm confidence like Polar, energy like Ramp, or a build to a drop); which
+  reference's music is closest and why; whether the gap is the music only or the story and look too; how many effects
+  (Polar's few and blended, or Ramp's many and exposed); and any outside track to analyse as a reference.
+  **Wait for the answers before resuming either station.**
+- **Station 2: paused before review**, at the user's re-opening. `film/` holds a HyperFrames composition with every
+  beat-sheet row playing (first full sharp render, no review round, no MP4 yet). Its report: almost every cue derives
+  from `motion.js` (FPS, BPM) through `b(bar, beat, sixteenth)` in `timeline.js`, so a tempo or bar-map change is mostly
+  a retime; about ten typed frame numbers and the act-to-screen mapping in `src/film.js` need checking after one.
+  `film/README.md` documents the 128 BPM workaround. Open: no review rounds, no `blur.json`, legend cut in bars 4–5,
+  card overlap mid-switch, the Settings rail tile below the montage frame. A full render takes 16 minutes.
+- **Station 2's remaining steps, once the direction is settled:**
+  1. Review on contact sheets.
+  2. Fix and review again.
+  3. Motion blur and encode.
+  4. Send the user a silent MP4.
+- **Then Station 3:** the full 32 s score in the direction the user settles, with stems. Then the earshot kit effects (movement is silent,
   no whooshes), the mix (-14 LUFS, true peak ≤ -1.5 dBTP), the sync audit and the final render.
 
 ## How the work runs
