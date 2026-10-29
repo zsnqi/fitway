@@ -5,14 +5,16 @@ packetStatus: READY
 stateRef: PROJECT_STATE.yaml#/milestones/public-redesign-r01
 task:
   objective: >-
-    Redesign the public crowd page, concept-only, in the Eclipse concept's style from its shared foundations, as the
-    user decided (owner-design-exploration-r04 DECISIONS items 90, 98 and 99); present it for the user's acceptance by
-    eye, and leave production, canonical, Paper and the shipped public page unchanged.
+    Redesign the public crowd page, concept-only, in FITWAY's identity (dark, FITWAY red, the light of Eclipse's
+    lights as the gym's own, Readex Pro at real weights only), as the user decided (owner-design-exploration-r04
+    DECISIONS items 90, 98 and 99, as public-redesign DECISIONS items 3 and 4 amend them); present it for the user's
+    acceptance by eye, and leave production, canonical, Paper and the shipped public page unchanged.
   acceptanceCriteria:
-    - Build the page in Eclipse's folder beside the Owner pages (public.html, public.css, public.js, PUBLIC-SPEC.md, public-capture.mjs), from DESIGN-SPEC.md §1, and record its rows in DESIGN-SPEC.md §6 under the coordinator lease.
-    - Start with two or three whole directions in Eclipse's style, each with its own composition and level-mark form, at 390 px first in Arabic and English (item 99; no grey skeleton); the user picks by eye.
-    - Meet item 90 and the applied amendments of item 98 (dark, Readex Pro, «داخل الصالة الآن · تقريبًا», «شديد الازدحام», no verdict line, no typical-day chart, the level mark's accessibility rules, the digit roll only on a new live reading, the frame, the last update absolute and its age when stale, no canvas, WebGL, rAF loops or video, the demo's hidden state switch in the concept only).
-    - Use synthetic data and keep the capacity-free public contract, privacy, truthful states (loading, fresh, stale, closed, unavailable, error), Western digits, the 12-hour clock in gym time, Arabic RTL and English LTR, and 320-1440 px without sideways scroll.
+    - Build the page in Eclipse's folder beside the Owner pages (public.html, public.css, public.js, PUBLIC-SPEC.md, public-capture.mjs), and record its rows in DESIGN-SPEC.md §6 under the coordinator lease.
+    - Draw whole directions in Arabic and English (item 99; no grey skeleton); the user picks by eye.
+    - Meet item 90 and the applied amendments of item 98 as public-redesign DECISIONS items 3 and 4 amend them (dark, FITWAY red, the light, Readex Pro at real weights only, «داخل الصالة الآن · تقريبًا», «شديد الازدحام», the level mark from `band` only with its written label always visible and its accessibility rules, the digit roll only on a new live reading, the frame with no Owner rail, bar or header and the brand as the gym's only name, the last update absolute and its age when stale, no canvas, WebGL, rAF loops or video, the demo's hidden state switch in the concept only).
+    - Carry the crowd level, the approximate count, open or closed, the last update, the typical-day curve, and a percentage (the page reads whole without it).
+    - Use synthetic data (the curve and the percentage reach production only through SPEC's post-v1 reservations) and keep the capacity-free v1 public contract, privacy, truthful states (loading, fresh, stale, closed, unavailable, error), Western digits, the 12-hour clock in gym time, Arabic RTL and English LTR, and 320-1440 px without sideways scroll.
     - Render and personally inspect exact Arabic and English frames at 390 x 844 and 1440 x 900 for each state presented; record the frames and the reviewer.
     - Keep the Public composition authority vacant and production, canonical, Paper and manifest state unchanged.
   explicitExclusions:
@@ -33,7 +35,7 @@ authorities:
     - role: design
       path: DESIGN_GUIDE.md
       selector: { kind: markdown-heading, value: "1. Direction" }
-      reason: The public page's order, its states, and the Public redesign scope.
+      reason: The public page's questions, its states, and the Public redesign scope.
     - role: design
       path: DESIGN_GUIDE.md
       selector: { kind: markdown-heading, value: "15. Phase visual gate" }
@@ -73,12 +75,11 @@ continuity:
   predecessorMilestones:
     - owner-design-exploration-r04
   unresolvedDecisions:
-    - The level mark's form is picked by the user by eye from the forms the design round draws.
-    - The public page's motion beyond the digit roll (an intro, the level mark's own) is decided by watching it.
+    - The public page's motion beyond the digit roll is decided by watching it.
     - The weight and speed budget on a slow phone waits until after the demo; one smoothness check on the demo phone comes before it.
     - Any production baseline departure, manifest re-status or canonical promotion requires a separate explicit human decision.
 verification:
-  profile: concept-only Public redesign in the Eclipse family; no production or promotion verification
+  profile: concept-only Public redesign in FITWAY's identity; no production or promotion verification
   orderedGates:
     - Validate the READY packet and ledger with context:show and check:agent-context, then read the ordered routed sources.
     - Run check:design-context, and use Browser for interaction plus repository Playwright for repeatable concept captures.
@@ -106,11 +107,12 @@ visual:
   explorationEnvelope:
     mode: EXPLORATION
     lockedAxes:
-      - The Eclipse family's foundations (DESIGN-SPEC.md §1); the redesign is not a new style.
-      - Product/Spec behavior and content semantics, the capacity-free contract, truthful states, privacy, security, accessibility, Western digits, and Arabic RTL / English LTR.
-      - Dark only; Readex Pro; no canvas, WebGL, requestAnimationFrame loops or video.
+      - FITWAY's identity - dark, FITWAY red, the light (Eclipse's lights, as the gym's own), and Readex Pro at real weights only; the Owner pages' rules are a reference for this identity only.
+      - Product/Spec behavior and content semantics, the capacity-free v1 contract, truthful states, privacy, security, accessibility, Western digits, and Arabic RTL / English LTR.
+      - The content the page carries - the crowd level, the approximate count, open or closed, the last update, the typical-day curve, and a percentage on synthetic data (the page reads whole without it).
+      - No canvas, WebGL, requestAnimationFrame loops or video.
     variableAxes:
-      - The page's composition within the order the Spec fixes, the level mark's form, the lights' placement, and motion beyond the digit roll.
+      - Everything outside the locked axes.
     requiredDepartures:
       - The 28-bar signal and the oxblood atmosphere of the shipped page are not carried over.
     antiRuts:
@@ -119,7 +121,7 @@ visual:
     promotionRule: >-
       This milestone selects, validates or promotes no concept on the user's behalf. Any production change requires
       separate human selection, baseline approval, a manifest re-status and the perceptual gate.
-    authorizingDecision: docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md
+    authorizingDecision: docs/phase-records/handoffs/public-redesign/DECISIONS.md
   currentFrames:
     - path: tests/browser/__screenshots__/win32/chromium/public-baseline.browser.spec.ts/public-live-ar-mobile-390x844.png
       sha256: 617effa6a8e92b9cb09500e7294c73628203ca76ebafa354cb995207d1fe969b
@@ -129,7 +131,7 @@ visual:
     - path: design-research/owner-composition-exploration-r04/directions/eclipse/evidence/daily-ar-1440x900.png
       sha256: bc12ff9fd50ddb6b72c4f6fe01f3e752385e4faa75d601c2e775ad363a968317
   openHumanDecisions:
-    - The direction and the level mark's form are the user's choice after seeing them.
+    - The direction is the user's choice after seeing it.
     - Public composition authority remains vacant under ADR-010 until a concept is selected and promoted.
     - Production, manifest and canonical promotion require separate explicit human approval.
   paperAvailability: UNAVAILABLE

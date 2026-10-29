@@ -33,10 +33,14 @@
 >
 > **Public redesign scope:** from
 > [ADR-010](docs/adr/ADR-010-public-composition-authority-supersession.md), the Public page may
-> be redesigned in the style of the Owner concept (Eclipse, `DESIGN-SPEC.md` §1), which supplies
-> palette, surfaces, radii, spacing, type and lights for it. RTL/LTR, numerals, truthful data,
-> state grammar (§6), loading behaviour, interaction, accessibility and reduced motion remain
-> binding. The shipped page keeps this guide's tokens until the redesign is promoted.
+> be redesigned. Its identity is FITWAY's: dark, FITWAY red, the light (Eclipse's lights, as the
+> gym's own), and Readex Pro at real weights only; the Owner pages' rules (Eclipse,
+> `DESIGN-SPEC.md` §1) are a reference for that identity only. The page carries the crowd level,
+> the approximate count, open or closed, the last update, the typical-day curve, and a
+> percentage; the concept shows the curve and the percentage on synthetic data, and the page
+> reads whole without the percentage. RTL/LTR, numerals, truthful data, state grammar (§6),
+> loading behaviour, interaction, accessibility and reduced motion remain binding. The shipped
+> page keeps this guide's tokens until the redesign is promoted.
 >
 ## 1. Direction
 
@@ -48,8 +52,8 @@ FITWAY red, disciplined whitespace, decisive Cairo type, and honest live-state s
 The background atmosphere is static. It may use layered CSS gradients and blurred
 pseudo-elements, but never canvas, WebGL, OGL, `requestAnimationFrame`, video, or a
 motion/reduced-motion branch for the background. On the shipped page a page-level FITWAY
-watermark can sit behind the product surface. The Public redesign sets its atmosphere with
-Eclipse's static lights (Eclipse LGT-1…LGT-11) and no watermark; no light, grain or blur moves.
+watermark can sit behind the product surface. The Public redesign's atmosphere is the light,
+Eclipse's lights as the gym's own; no light, grain or blur moves.
 Neither atmosphere, watermark nor lights may reduce readability or become part of a data card.
 
 Improve a route while implementing that route, then close the phase with the focused polish
@@ -68,7 +72,7 @@ sentence stands unchanged.
 
 ### Public Live
 
-The public page answers, in this order:
+The public page answers these questions (on the shipped page, in this order):
 
 1. Is the gym open, and is the information live?
 2. What is the labeled crowd level?
@@ -77,9 +81,10 @@ The public page answers, in this order:
 5. When was the reading updated?
 
 The crowd level outranks the approximate count. Public surfaces never show capacity,
-a denominator, a capacity-derived percentage, `% full`, health diagnostics, history,
-or a person-unit suffix. A historical mockup containing one of those is evidence of
-composition only and cannot authorize the content.
+a denominator, health diagnostics, or a person-unit suffix, and in v1 no capacity-derived
+percentage, `% full`, or history either (`SPEC.md`'s post-v1 reservations). A historical
+mockup containing one of those is evidence of composition only and cannot authorize the
+content.
 
 ### Authenticated operations
 
@@ -131,7 +136,7 @@ normal text below readable contrast.
 
 - Use the self-hosted Cairo Arabic and Latin subsets at actual weights 400, 500, 600,
   and 700. Do not request synthetic 800 or 900. Shipped page: Cairo, as above. Public
-  redesign: Readex Pro, self-hosted, real weights only (Eclipse TYP-1), until promoted.
+  redesign: Readex Pro, self-hosted, real weights only, until promoted.
 - Crowd level is the decisive public display. The approximate count is large and
   tabular, but visually secondary.
 - Use Western digits `0–9` in both locales. Apply `font-variant-numeric: tabular-nums`
@@ -148,14 +153,12 @@ normal text below readable contrast.
 ## 5. Public crowd instrument
 
 The shipped page keeps the 28-bar instrument below until the redesign is promoted. The Public
-redesign replaces it with a level mark chosen by eye in its design round (candidates include
-Eclipse's four-bar badge with its word, Eclipse CHP-5). Whichever is chosen:
+redesign replaces it with a level mark:
 
 - it is derived from the public `band` only and never reconstructs a hidden ratio;
 - it uses no green, yellow or orange categorical meter (this section's rule, kept);
 - the four labels are Quiet, Moderate, Busy and Packed, localized naturally, and the current
-  written label is always visible, so neither color nor position is the only channel
-  (Eclipse LVL-4);
+  written label is always visible, so neither color nor position is the only channel;
 - any progression or category order follows reading direction;
 - it has one concise localized accessible name;
 - its decorative parts are hidden from assistive technology;
@@ -216,14 +219,14 @@ values, to be tuned against real data.
 
 The exact stale-signal colors and pattern treatment remain a phase-owned semantic-polish
 item in `docs/POLISH_BACKLOG.md`; implementations must preserve the truth rules above while
-that treatment is refined. For the Public redesign the dimmed level mark (Eclipse LVL-6, STA-2)
-settles it.
+that treatment is refined.
 
 ## 7. Composition
 
 ### Public board
 
-The Public redesign's board is composed in Eclipse's sheet (§6), not here.
+The Public redesign's composition is recorded in its concept (Eclipse `DESIGN-SPEC.md` §6), not
+here.
 
 - Shipped page: Use one panoramic dominant board on desktop with disciplined page gutters, aligned
   header/board rails, strong negative space, and an asymmetric metric hierarchy.
@@ -231,10 +234,10 @@ The Public redesign's board is composed in Eclipse's sheet (§6), not here.
   edge, and a premium shadow. The board itself must not become a bright red slab.
 - Shipped page: Desktop may arrange crowd level and count in an asymmetric split with one intentional
   structural separator. The signal spans the composition below.
-- Mobile recomposes into explicit groups: crowd level, count, signal, then freshness.
+- Shipped page: Mobile recomposes into explicit groups: crowd level, count, signal, then freshness.
   It is not a proportionally scaled desktop.
-- Do not add marketing copy, promotions, photos, charts, staff diagnostics, or extra cards
-  to Public Live.
+- Do not add marketing copy, promotions, photos, or staff diagnostics to Public Live; on the
+  shipped page, no charts or extra cards either.
 
 ### Staff and owner
 
@@ -293,8 +296,7 @@ focus, press, drawer, and dialog feedback. Avoid `transition: all`.
   new live reading arrives; never on opening, never while Delayed, Closed, Unavailable or
   loading, and never under reduced motion (instant). Roll by CSS or WAAPI, never by
   `requestAnimationFrame` or canvas. Assistive technology gets one announcement of the final
-  value, not the intermediate digits. Any other motion (an intro, the level mark's own motion)
-  is decided in the design round by looking at it and recorded in the acceptance record.
+  value, not the intermediate digits.
 - Charts may use a short first-draw reveal only when it improves comprehension. Under
   reduced motion they render the complete final line, fill, points, and labels immediately.
 - Loading skeletons follow Loading behaviour (section 6) and are static under reduced

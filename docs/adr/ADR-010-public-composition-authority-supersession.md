@@ -4,15 +4,17 @@
 - Date: 2026-10-28
 - Supersedes ADR-007 in part, limited to Public composition authority; follows ADR-009's pattern for the `public`
   surface
+- Amended 2026-10-29: the redesign's tie to Eclipse narrowed to FITWAY's identity
+  (`docs/phase-records/handoffs/public-redesign/DECISIONS.md` items 3 and 4)
 
 ## Context
 
 Until this ADR the public crowd page was under Paper composition authority: `docs/design/VISUAL_AUTHORITY_STATUS.md` (§"Register",
 row `public`, `ACCEPTED_PAPER_AUTHORITY`), ADR-007, and `DESIGN_GUIDE.md` §15 item 7. On 2026-10-27 the user said the
 old public page's design is bad and that the page will be redesigned
-(`docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` item 90). The redesign is not a new style: it
-is the public page in the Eclipse concept's style, built from the same sheet as the Owner pages (Eclipse
-`DESIGN-SPEC.md` §1, shared foundations; its §6 "Public" is filled by the redesign's round). The user asked the
+(`docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` item 90). Item 90 framed the redesign as the
+public page in the Eclipse concept's style, built from the same sheet as the Owner pages; on 2026-10-29 the user
+narrowed that to FITWAY's identity (public-redesign DECISIONS item 3). The user asked the
 coordinator to write an ADR that makes Paper reference-only for the public page, as ADR-009 did for Owner (item 90,
 P7, «اي»), and to see it, the amendments and the milestone before any design.
 
@@ -27,8 +29,10 @@ P7, «اي»), and to see it, the amendments and the milestone before any design
 3. **No Public composition authority is in force** until a new concept is approved through the concept-selection
    gate and the perceptual-promotion gate in `docs/WORKFLOW.md` ("Design work: authority, concepts, and perceptual
    gates"). The per-surface state is recorded in `docs/design/VISUAL_AUTHORITY_STATUS.md`.
-4. **The redesign belongs to the Eclipse family.** It shares Eclipse's foundations (`DESIGN-SPEC.md` §1) with the
-   Owner concept and records its own rows in §6. It runs as its own milestone, not as part of the Owner exploration.
+4. **The redesign carries FITWAY's identity.** Dark, FITWAY red, the light (Eclipse's lights, as the gym's own), and
+   Readex Pro at real weights only; the Owner pages' rules (Eclipse `DESIGN-SPEC.md` §1) are a reference for that
+   identity only. It records its own rows in Eclipse's §6 and runs as its own milestone, not as part of the Owner
+   exploration.
 5. **Login and Staff composition authority under ADR-007 is unaffected**, and so is ADR-009 for the Owner surfaces.
    Paper remains the visual source of truth for every surface where ADR-007 applies and no supersession is recorded.
 
@@ -79,7 +83,8 @@ reject a redesign for differing from them.
 
 ## References
 
-- Decision record: `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` items 90, 96, 97 and 98
+- Decision record: `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` items 90, 96, 97 and 98;
+  `docs/phase-records/handoffs/public-redesign/DECISIONS.md` items 3 and 4
 - Line sort of the three files: `D:/fitway-temp/owner-r04-public-rules-sort/REPORT.md` (provenance only)
 - ADR-007 (`docs/adr/ADR-007-paper-visual-source-of-truth.md`), ADR-009
   (`docs/adr/ADR-009-owner-composition-authority-supersession.md`)
