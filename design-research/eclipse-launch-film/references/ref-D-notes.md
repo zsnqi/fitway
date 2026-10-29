@@ -1,7 +1,11 @@
 # D (Agentic Fabriq brand board; user upload, 2026-10-29; not in git)
 
-A still board, not a film: a brand identity for an AI-agent identity company, shown across six touchpoints. The user
-sent it after closing trial 1 and has not yet said what role it plays. Ask before using it.
+A still board, not a film: a brand identity for an AI-agent identity company, shown across six touchpoints.
+
+**Not a reference (user, 2026-10-29).** What caught the user's eye is only the logo with its typography: the pixel
+mark beside the name set in two lines, held in a hairline frame with small squares at its corners (top-left panel),
+and the large mark-plus-name in the browser bar. That is an observation for the mark's lockup, not a rule. The notes
+below describe the board for context only.
 
 - **Palette:** Carbon Black #0D0D0D, Soft White #F5F5F5, Steel Gray #7A7A7A, Graphite Navy #1C2633, and one accent,
   Electric Cyan #59EBFF.
