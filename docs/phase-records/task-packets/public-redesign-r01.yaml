@@ -39,7 +39,7 @@ authorities:
     - role: design
       path: DESIGN_GUIDE.md
       selector: { kind: markdown-heading, value: "1. Direction" }
-      reason: The public page's questions, its states, and the Public redesign scope.
+      reason: The public page's questions and its states.
     - role: design
       path: DESIGN_GUIDE.md
       selector: { kind: markdown-heading, value: "15. Phase visual gate" }

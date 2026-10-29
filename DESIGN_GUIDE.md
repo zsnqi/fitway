@@ -259,7 +259,7 @@ everything uniformly.
 
 The required review widths are **320, 360, 390, 721, 768, 820, 1024, 1200, and 1440px**.
 
-- `1200–1440`: Shipped page: broad public board and wide operational/data compositions.
+- `1200–1440`: broad public board (shipped page) and wide operational/data compositions.
 - `821–1199`: compressed desktop with the hierarchy intact.
 - `721–820`: explicit tablet recomposition. Do not let large display type, a fixed count
   column, or desktop gaps collide.
