@@ -12,6 +12,7 @@ import {
 	auditTempCitations,
 	LOST_TEMP_EVIDENCE_PATH,
 } from "../.agents/skills/gardener/cited-evidence.mjs";
+import { readGit } from "./agent-environment/code-health-ratchet.mjs";
 import {
 	bomExceptionPathKey,
 	normalizeGitPath,
@@ -40,6 +41,92 @@ import {
 } from "./repository-files.mjs";
 import { repositoryOptions } from "./verify-repository-options.mjs";
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
+
+const PROJECT_STATE_FILE = "PROJECT_STATE.yaml";
+
+// A failed query other than the HEAD probe stops the check with Git's message.
+function gitStdout(result, command) {
+	if (result.status !== 0)
+		throw new Error(`git ${command} failed: ${result.stderr.trim()}`);
+	return result.stdout.trim();
+}
+
+function offsetMinutes(timestamp) {
+	const offset = /(Z|[+-]\d{2}:\d{2})$/.exec(timestamp)?.[1];
+	if (!offset) return 0;
+	if (offset === "Z") return 0;
+	const sign = offset.startsWith("-") ? -1 : 1;
+	const hours = Number(offset.slice(1, 3));
+	const minutes = Number(offset.slice(4, 6));
+	return sign * (hours * 60 + minutes);
+}
+
+function calendarDateInOffset(timestamp, offset) {
+	const instant = Date.parse(timestamp);
+	if (!Number.isFinite(instant)) return null;
+	return new Date(instant + offset * 60_000).toISOString().slice(0, 10);
+}
+
+// The working ledger's text and parsed state come from the caller, which has
+// read and validated them; only HEAD's copy and the history are read here.
+export function assertProjectStateUpdatedAt({
+	repositoryRoot = root,
+	currentText,
+	state,
+}) {
+	// A failed probe means no repository or no commit: nothing to compare with.
+	if (
+		readGit(repositoryRoot, ["rev-parse", "--verify", "--quiet", "HEAD"])
+			.status !== 0
+	)
+		return;
+
+	const listed = gitStdout(
+		readGit(repositoryRoot, [
+			"ls-tree",
+			"--name-only",
+			"HEAD",
+			"--",
+			PROJECT_STATE_FILE,
+		]),
+		"ls-tree HEAD",
+	);
+	const headText = listed
+		? gitStdout(
+				readGit(repositoryRoot, ["show", `HEAD:${PROJECT_STATE_FILE}`]),
+				`show HEAD:${PROJECT_STATE_FILE}`,
+			)
+		: null;
+
+	if (headText !== null && currentText.trimEnd() !== headText.trimEnd()) {
+		const head = parseYaml(headText);
+		if (Date.parse(state.updatedAt) <= Date.parse(head.updatedAt)) {
+			fail(
+				`${PROJECT_STATE_FILE} updatedAt ${state.updatedAt} is not later than HEAD's ${head.updatedAt}; set updatedAt to the time of the write`,
+			);
+		}
+	}
+
+	const committerTime = gitStdout(
+		readGit(repositoryRoot, [
+			"log",
+			"-1",
+			"--format=%cI",
+			"--",
+			PROJECT_STATE_FILE,
+		]),
+		"log -1",
+	);
+	if (!committerTime) return;
+	const offset = offsetMinutes(state.updatedAt);
+	const updatedDate = calendarDateInOffset(state.updatedAt, offset);
+	const committedDate = calendarDateInOffset(committerTime, offset);
+	if (updatedDate !== committedDate) {
+		fail(
+			`${PROJECT_STATE_FILE} updatedAt ${state.updatedAt} is ${updatedDate} in its offset, but the last commit changing it has committer time ${committerTime} (${committedDate}); set updatedAt to the time of the write`,
+		);
+	}
+}
 
 export function listTrackedFiles(
 	cwd = root,
@@ -258,7 +345,7 @@ export async function assertTrackedTempCitations({
 	return audit;
 }
 
-function assertNoDiffErrors() {
+function assertWorkingTree() {
 	execFileSync("git", ["diff", "HEAD", "--check", "--"], {
 		cwd: root,
 		stdio: "inherit",
@@ -266,7 +353,7 @@ function assertNoDiffErrors() {
 }
 
 async function main(options = {}) {
-	assertNoDiffErrors();
+	assertWorkingTree();
 
 	const required = [
 		"AGENTS.md",
@@ -286,9 +373,8 @@ async function main(options = {}) {
 	];
 	for (const relativePath of required) await readBytes(relativePath);
 
-	const state = parseYaml(
-		(await readBytes("PROJECT_STATE.yaml")).toString("utf8"),
-	);
+	const stateText = (await readBytes("PROJECT_STATE.yaml")).toString("utf8");
+	const state = parseYaml(stateText);
 	const history = parseYaml(
 		(await readBytes("PROJECT_STATE_HISTORY.yaml")).toString("utf8"),
 	);
@@ -322,6 +408,7 @@ async function main(options = {}) {
 			`PROJECT_STATE_HISTORY.yaml schema validation failed:\n${JSON.stringify(validateHistory.errors, null, 2)}`,
 		);
 	}
+	assertProjectStateUpdatedAt({ currentText: stateText, state });
 	const trackedFiles = listTrackedFiles(root);
 	await assertTrackedTempCitations();
 	const bomCheck = assertNoUnexpectedBom({

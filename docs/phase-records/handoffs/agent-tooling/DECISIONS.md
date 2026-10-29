@@ -241,3 +241,34 @@ through these pointers, not copied here.
     kept files by extension and size without reading citations, the one-off `remove-worktrees.ps1`, other grading
     worktree removals, paths absent before the prune, causes not found, and documentation examples that never
     existed. Built in item 19's Codex round.
+21. **`NEXT-DIRECTION-BRIEF.md` is split by section on r04's branch before the real merge** (the user, 2026-10-29:
+    «بخصوص تقسيم ملف الملف حق ال brief موافق اي»). The grade of branch-merge-checks found that
+    `design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md`, outside the giant root,
+    stands 73 bytes over main's baseline on `owner-followup-r04-build` (59,178 against 59,105), so `--admit` refuses
+    the concept folder while it does (A1 keeps every file outside the folder to today's rule). The file is
+    owner-design-exploration-r04's and grew on its branch, so the coordinator splits it there as r04's work, by its
+    `##` sections into parts under 40,000 bytes behind an index that keeps its name, its preamble and every heading,
+    with not one word changed and the original rebuilt byte for byte from the parts (as `2aa2fc4d` did for the
+    specs); no record cites its lines by number. It then reaches `public-redesign-r01` through the merge. Done on
+    2026-10-29: `ef9fa810` on `owner-followup-r04-build`, nine parts in a `next-direction-brief` folder beside it
+    (the largest 10,566 bytes), the 59,178 bytes rebuilt byte for byte; merged into `public-redesign-r01` and recorded
+    in r04's resume point.
+22. **Expired leases fail a check, and a coordinator holding two milestones works in the other's files as that
+    milestone's work** (the user, 2026-10-29: «اي الاثنين», on the coordinator's two proposals). Found on 2026-10-29:
+    this milestone's five shared leases ran out on 2026-10-23 unnoticed, since `project-state-invariants.mjs` reads
+    only overlaps; and the coordinator paused before splitting an r04 file it coordinates (item 21), for want of a rule.
+    - **Leases:** a lease's end is written in one form (`through YYYY-MM-DD`), and `pnpm check:repository` fails on a
+      non-terminal milestone holding an expired lease, naming the fix (renew it or drop it). One Codex round, with
+      F302's fix; before it, the coordinator renews or drops the five expired leases in `PROJECT_STATE.yaml`. Done on
+      2026-10-29: `package.json` (scripts) and `README.md` (the map) renewed through 2026-11-15, the date this
+      milestone's giant-file exceptions end; `checks.yml`, `vitest.config.ts` and `lefthook.yml` dropped, their work
+      done. `package.json` was changed after its lease ended (`52fb52af`, 2026-10-28), the case the check is for.
+      The check judges a lease against the ledger's `updatedAt`, never the wall clock: agent-environment r03 replaced
+      a wall-clock lease check that failed old commits on CI (`docs/phase-records/handoffs/agent-environment/r03/AUDIT.md`,
+      "Lease check"); the ledger written on 2026-10-28 would have failed. A lease with no end lasts its milestone.
+    - **Two milestones, one coordinator:** a line in `docs/agent-context/WORKING_AGREEMENTS.md` ("Ownership" or the
+      nearest section), its wording approved by the user on 2026-10-29 («اي موافق») as the resume point quotes it.
+      Added on 2026-10-29 as `WORKING_AGREEMENTS.md` §"Ownership", word for word.
+    - **The round:** lease-ends, merged `0389ccd2` (`rounds/lease-ends.md`): the end read against `updatedAt`, and
+      `updatedAt` held to the day of the commit that last changed the ledger (the reviews' reading that nothing made it
+      move); F302 fixed; F303 left open.

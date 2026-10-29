@@ -14,6 +14,9 @@ latest wording; never copy an entry into a resume point.
   settings and security, product decisions, or a request that is itself unclear. It asks all open
   questions together in one message. Everything else it decides, does, and reports in a line.
   (user, 2026-09-29, 2026-10-01 and 2026-10-02)
+- A product or rule change the user has already decided is written and reported in a line: its wording is not shown
+  for approval first. A choice inside the user's decision (a default, a detail, an order) is the coordinator's: it
+  weighs the options, picks the most suitable, and reports the pick and its reason in a line. (user, 2026-10-29)
 - Inside an announced task, process, tooling and ordering are the coordinator's decisions; it
   reports them at the end. (user, 2026-10-02)
 - The user sees a round only when it is finished: every finding the coordinator would fix anyway,
@@ -46,16 +49,29 @@ latest wording; never copy an entry into a resume point.
 
 - The coordinator's own context stays small: fresh agents do the reading and building, and the
   coordinator reads their reports and the key frames. (user, 2026-10-02)
+- The user opens one session and the coordinator runs the work in it, through agents; it never sends the user to a
+  new session for the next step. "Not in this session" from the user means that session only. (user, 2026-10-29)
 - When the coordinator's context grows, the user asks it to bring the milestone's resume file up to
   date (`pnpm handoff:new`, `docs/WORKFLOW.md` "Handoff format"). The next session starts from the
   user's "كمّل" alone. (user, 2026-10-02)
 - Reply in Saudi-dialect Arabic when the user writes Arabic; code, paths, commit messages and
   repository documents stay in English. (user)
 
+## Ownership
+
+- When the coordinator of one milestone needs a change in files another milestone owns, and coordinates that
+  milestone too, it makes the change as the owning milestone's work: on that milestone's branch, recorded in its
+  records, with a line in the requesting milestone's record. It first confirms that no writer is active there (the
+  worktree is clean and no session or agent of that milestone is running). It asks the user only where `AGENTS.md`
+  already requires it (a locked decision, a material visual-direction change, privacy or security); a change that
+  keeps every word and behaviour, shown by the diff or a byte-for-byte rebuild, needs no question. (user, 2026-10-29)
+
 ## Delegation
 
 - Visual design and taste judgments stay with Claude on the Opus definitions. Exact renders of
   every option go to the user for picks. (user, 2026-10-02)
+- Rule, spec and record text edits go to Sonnet (`owner-direction-fixer`), even when finding the lines takes
+  judgment; the coordinator reviews the diff. Opus is kept for design, taste and verification. (user, 2026-10-29)
 - The coordinator's questions to the user and its designer briefs carry what the owner must see and
   be able to do, and why; the composition, forms and colours are the designer's, and the coordinator
   recommends none of them. (user, 2026-10-04)
@@ -124,6 +140,9 @@ latest wording; never copy an entry into a resume point.
 
 ## Rules and findings
 
+- When the user lifts a ban, the ban is deleted where it is written, and nothing says the thing is now allowed. Rules,
+  specs and briefs name only the limits and the content the page must carry; anything merely permitted goes
+  unmentioned, so the designer is not steered towards it. (user, 2026-10-29)
 - A rule is a hypothesis, not a verdict. When a reviewer, designer or builder finds a problem or an observation, it
   reports it even when the work meets every rule, decision and check: meeting a rule is never a reason to let it
   pass, because a rule can be fragile or wrong. It names the rule that produced the finding as the suspect; when

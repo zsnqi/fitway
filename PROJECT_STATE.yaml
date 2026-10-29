@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-28T18:30:00+03:00
+updatedAt: 2026-10-29T14:55:00+03:00
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -84,6 +84,7 @@ milestones:
       - scripts/agent-environment/**
       - scripts/verify.mjs and scripts/verify.test.ts
       - scripts/check-agent-context.mjs, scripts/show-agent-context.mjs, scripts/verify-repository.mjs, scripts/check-design-context.mjs, scripts/check-concept-css.mjs, scripts/run-vitest.mjs and their tests
+      - scripts/agent-context-packets.mjs, scripts/agent-context-paths.mjs, scripts/agent-context-references.mjs, scripts/agent-context-rules.mjs, scripts/agent-context-schema.mjs, scripts/project-state-invariants.mjs, scripts/repository-files.mjs, scripts/verify-repository-options.mjs, scripts/list-agent-tools.mjs and their tests (this milestone's own rounds split or made them, 2026-10-17 and 18; named on 2026-10-29)
       - .agents/skills/verify-fitway/**
       - .agents/skills/gardener/**
       - docs/agent-context/** (WORKING_AGREEMENTS.md only on the user's word)
@@ -98,11 +99,8 @@ milestones:
       - CLAUDE.md, .claude/agents/** and .claude/skills/** (read only; a change needs the user's word)
       - D:/fitway-grader (held-out rows never enter the repository or a brief)
     sharedLeases:
-      - "package.json, its scripts section only (the tools registry and the test:verification timeout, F145 and F251), a coordinator lease through 2026-10-23; no dependency change"
-      - "README.md, its documentation map only (the map check, DECISIONS 73), a coordinator lease through 2026-10-23"
-      - ".github/workflows/checks.yml, only where a new ladder step needs it or for the job time limit (raised to 45 min on 2026-10-18: the ladder took 27-28 min, codex-round.test.ts alone 1,415 s), a coordinator lease through 2026-10-23"
-      - "vitest.config.ts, its test timeouts only (F261, F281, F282; DECISIONS item 13), a coordinator lease through 2026-10-23"
-      - "lefthook.yml, one pre-commit job for the giant-file check on staged files only, and the hook's `piped: true` so that job reads the index after Biome's re-staging (DECISIONS item 13, the user's ratchet-2 addition; F286, F289), a coordinator lease through 2026-10-23"
+      - "package.json, its scripts section only (the tools registry and the test:verification timeout, F145 and F251), a coordinator lease through 2026-11-15 (renewed on 2026-10-29, DECISIONS item 22); no dependency change"
+      - "README.md, its documentation map only (the map check, DECISIONS 73), a coordinator lease through 2026-11-15 (renewed on 2026-10-29, DECISIONS item 22)"
     validationRepairAttempts: 0
     handoff: docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md
     stopReason: null

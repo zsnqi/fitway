@@ -1,10 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:00 +03:00 (the retro's
-  four fixes come first, decision 102; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 19:40 +03:00 (decision 103
+  built; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-102; 102 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-103; 103 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -33,11 +33,13 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 22:00; the PC's LAN address is 192.168.8.186). main `8c41282f` (CI 40706472283);
-this line adds decisions 97-102, for `pnpm main:advance` once its CI passes. Build branch
-`owner-followup-r04-build` at `fedbdb6d`, pushed. Status page for the user:
+Nothing of this milestone runs (measured 2026-10-29 19:40; the PC's LAN address is 192.168.8.186). main `2278a896`
+carries decisions 97-103. Build branch `owner-followup-r04-build` at `18411a15`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
+- **Layout splits on the build branch, as this milestone's work** (2026-10-29, `WORKING_AGREEMENTS.md` §"Ownership"):
+  `2aa2fc4d` (`DESIGN-SPEC.md`, `SETTINGS-SPEC.md` into Eclipse's spec folder) and `ef9fa810` (`NEXT-DIRECTION-BRIEF.md`
+  into a folder of parts beside it, agent-tooling item 21). No word changed; edit a section in its part.
 - **The belonging check is built** (DECISIONS 93, `codex-rounds.md` §"belonging-check", measured):
   `pnpm verify:owner belonging-check`, merged `dbf9b683`; today's concept passes all 13,028 frames. Sol and Terra were
   at capacity, so DeepSeek alone reviewed the brief and Opus the diff (the user, 2026-10-28: continue on DeepSeek).
@@ -47,28 +49,27 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   narrowed (`8c4976cf`, the user's word).
 - **Verify 11** (Opus, `D:/fitway-temp/owner-r04-verify-11/REPORT.md`): `d04890a4` against `d9ae9e35`, every item
   PASS but C5 (spec text), no High or Medium; findings 1-6 fixed in `fedbdb6d` (`D:/fitway-temp/owner-r04-verify11-fix/`),
-  finding 7 is decision 95 itself. The coordinator reproduced finding 5's fix: Arabic Reports shifted on 11 of 15 loads
-  at `d04890a4`, 0 of 15 at `fedbdb6d`. `fedbdb6d` is checked by the coordinator only, not by a second verifier.
+  checked by the coordinator only (finding 5: Arabic Reports shifted on 11 of 15 loads before, 0 of 15 after).
 - **Left from finding 5:** Reports' first paint now waits for Readex Pro (opacity, 1.5 s cap); Activity, Access and
-  Settings keep the same font-swap pattern (the verifier saw Activity's in the base too). Not visible enough for the
-  demo (decision 52's order); the same hold belongs in the shared frame after the demo.
+  Settings keep the same font-swap pattern. Not visible enough for the demo (decision 52); the hold goes in the shared
+  frame after it.
 
-- **Built the night before on the build branch** (measured, each checked by the coordinator against its frames):
-  `c774fd77` DECISIONS 91 (1) (two fixed lines below 330 px in Arabic) and 91 (2) (superseded by 92 (1));
-  `bb26be02` DECISIONS 92 (option B: figure and time on the slot's right edge in Arabic; a note stays in the day's column
-  and breaks only between its words and range; `noteColumnCheck` in reports-capture); `3076869a` DECISIONS 94 (English
-  peak and time on the column's left edge); `950e19d2` TBL-14 (91 (3)). Reports: `D:/fitway-temp/owner-r04-reports-phone-fix-v1{2,3,4}/`.
 - **The builder eval, task 1** (DECISIONS 92 (3)): `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (Sonnet and Opus at
   `high`, byte-identical code from a reference implementation, 6/6 each; decision 85's Sonnet trial there too). The builder stays Opus; the next paired task
   has no reference code. Worktrees `owner-r04-tbl14-a`/`-b` stay (see Known risks before removing).
 - **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
   coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
-- **Next, in order:**
-  1. `pnpm main:advance` to this commit once its CI passes (if not already done; check `git log -1 origin/main`).
-  2. **The tooling first** (decisions 96 (1), 101, 102): the `compare` fix is graded and waits to merge, and the
-     retro's four rounds are drafted; both are in `docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md`
-     §"Running now" and §"Next steps".
+- **Decision 103 is built** (`18411a15`, measured; brief, frames and logs in `D:/fitway-temp/owner-r04-busy-unlit/`):
+  the pattern card and its Components specimen are plain; OWN-R6, PAT-12, K-02, K-13, Q13 say so. 214 frames against
+  `ef9fa810`: no box moved, pixels change only in the card (and 1-7 levels at its edge under a dialog's blur).
+  Belonging check 13,028/13,028 with this branch's CLI (the build branch lacks `dbf9b683`; rerun on the merged head).
+  Accepted by the user on the 1440 and 390 Arabic pairs (2026-10-29). F304 and F305 open, after the demo.
+- **The launch-film trial** (the user's, a cloud session): branch `ccr-026baa79-tycnnr`, its folder
+  eclipse-launch-film under design-research (start at its RESUME.md). An experiment kept for its lessons, unmerged and no
+  milestone; read it when the demo's materials start (decision 84).
+- **Next: the tooling first** (decisions 96 (1), 101, 102): the retro's four rounds and the `compare` fix are merged;
+  what is left is `docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md` §"Next steps".
 - **The public page:** its paper accepted and applied (decisions 98, 99; ADR-010); it runs as its own milestone,
   public-redesign-r01 (`docs/phase-records/handoffs/public-redesign/public-redesign-r01-resume.md`), its first round
   without a skeleton, after the retro's four fixes (decision 102). Friday's dash: A kept (DECISIONS 89).

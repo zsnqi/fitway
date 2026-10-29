@@ -5,7 +5,7 @@ For a fresh `owner-direction-designer` (Opus, xhigh). Concept-only (ADR-010 for 
 Owner pages it sits beside): the superseded Public Paper frames and canonicals are reference only. This round shows the
 user options and stops; the next round builds the pick.
 
-- **Worktree:** `D:/Projects/fitway-worktrees/public-redesign-r01`, branch `public-redesign-r01`, HEAD `<set at launch: main merged into fedbdb6d>`
+- **Worktree:** `D:/Projects/fitway-worktrees/public-redesign-r01`, branch `public-redesign-r01`, HEAD `adabebff`
 - **Milestone:** `public-redesign-r01`. Decisions: `docs/phase-records/handoffs/public-redesign/DECISIONS.md` items 1-2;
   `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` items 84, 90, 98, 99.
 - **Read first, only these:**
@@ -14,7 +14,7 @@ user options and stops; the next round builds the pick.
   - `DESIGN_GUIDE.md` §"5. Public crowd instrument", §"6. Public state grammar" and §"10. Interaction and motion": the level mark's rules, the states, the digit roll.
   - `SPEC.md` §"Interfaces & Contracts", the public payload's fields only: what the page may show.
   - `docs/adr/ADR-010-public-composition-authority-supersession.md` §"What remains binding".
-  - `design-research/owner-composition-exploration-r04/directions/eclipse/DESIGN-SPEC.md` §"1. Shared foundations (Owner, Staff and Public)" and §"2. Content rules": the family's sheet.
+  - The family's sheet, `DESIGN-SPEC.md` §1 and §2, in its parts: `design-research/owner-composition-exploration-r04/directions/eclipse/spec/design-02-foundations-1-9.md` §"1. Shared foundations (Owner, Staff and Public)", `design-research/owner-composition-exploration-r04/directions/eclipse/spec/design-03-foundations-10-11.md` (1.10 and 1.11) and `design-research/owner-composition-exploration-r04/directions/eclipse/spec/design-04-content-rules.md` §"2. Content rules".
   - `design-research/owner-composition-exploration-r04/directions/DO-NOT.md`, in full.
 
 <!-- environment:start v1 -->
@@ -80,12 +80,17 @@ three states: fresh, stale and closed. Number every crop the same way across opt
 No recommendation is needed; say where an option breaks. Also check each option at 320 px and at 200% zoom for
 sideways scroll and clipped text, and say what broke.
 
-Write options only under `design-research/owner-composition-exploration-r04/directions/eclipse/` in those three files
-and a `public-capture.mjs` that renders the frames into `D:/fitway-temp/<run>/`; commit when done.
-`public-capture.mjs` takes the shape of `settings-capture.mjs` in the same folder (its own server on one port,
-a fresh context per frame, a required output folder outside the repository). The 320 px and 200% zoom check is
-`page.evaluate(overflowProbe)` from `tools/probes/lib.mjs`, with `PROBE_OUT` set to the run folder. It reports the
-sideways scroll as `hScroll` and every clipped or spilled text; none is expected. (agent-tooling DECISIONS item 16)
+Write options only under `design-research/owner-composition-exploration-r04/directions/eclipse/` in those three files;
+commit when done. Render the frames with verify-fitway's `run`
+(`.agents/skills/verify-fitway/SKILL.md` §"Run one check"), which owns the preview, the browser and a fresh context
+per frame: one script in `D:/fitway-temp/<run>/`,
+run with `--concept` set to this worktree's Eclipse folder and `--out` inside the run folder, opening `public.html`
+through `url("build", ...)` with `newPage` at the sizes `phone` (390 x 844), `desktop` (1440 x 900), `narrow`
+(320 px) and `zoom` (200%). No capture script goes in the repository (agent-tooling DECISIONS item 17, finding 1). The
+320 px and 200% zoom check is `page.evaluate(overflowProbe)` from
+`design-research/owner-composition-exploration-r04/directions/eclipse/tools/probes/lib.mjs`, with
+`PROBE_OUT` set to the run folder. It reports the sideways scroll as `hScroll` and every clipped or spilled text;
+none is expected. (agent-tooling DECISIONS item 16)
 
 ## Report
 

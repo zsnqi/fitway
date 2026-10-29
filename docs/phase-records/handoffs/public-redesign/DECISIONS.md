@@ -11,3 +11,58 @@ the public page are numbered here.
 2. **No skeleton** (the user, 2026-10-28, r04 item 99): the first round draws two or three whole directions in
    Eclipse's style, at 390 px first in Arabic and English, and the user picks by eye. The loading state's placeholders
    are still designed and built.
+3. **The first round's three directions are set aside, and the page is designed free of the Owner rules** (the user,
+   2026-10-29, after seeing `cbff8300`: «الخيارات كلها ما عجبتني»; then, on the coordinator's restatement of the goals,
+   «ب الضبط», «نعم», «اي», «يب»). Supersedes the parts of r04 item 90 named below and the first brief's constraints.
+   - **Why the round failed (the coordinator's reading, which the user confirmed):** the first brief carried the Owner
+     dashboard's rules into a one-message public page: Eclipse's sheet "as it is, no new tokens" (so cards, and the
+     largest type capped at 46 px), the answers' fixed vertical order, and an open question framed as "the level mark's
+     form", so the three options differed only in a meter's shape; with most content removed, each page ended halfway
+     down the phone. The process was narrowed too: three options from one designer, no reference study, no word on what
+     the visitor should feel, and Impeccable's own steps skipped because only three files could be written. And a gym
+     name was invented because item 90's frame named one beside the brand.
+   - **Goals:** visitors open the page on their phones to see whether the gym is busy now; the page is designed at every
+     size, phone to computer. Its identity is FITWAY's: dark, the red and the light are the gym's own colours, not the
+     Owner pages'. Everything but the identity is the designer's: composition, sizes and type scale, cards or none, the
+     crowd mark's form, the order on screen, and how the whole screen is used. The Owner pages' rules are a reference
+     for the identity only.
+   - **Content:** the crowd level, the approximate count, open or closed and the last update; the typical-day curve
+     comes back (the user: it helps the visitor); a verdict sentence and "best time to come today" are allowed, the
+     designer's choice, never required. The typical-day curve needs history the public endpoint never reads today
+     (`docs/spec/06-interfaces-and-contracts.md`); the concept uses synthetic data, and the coordinator writes the SPEC
+     amendment for production and shows it to the user then («تمام»).
+   - **The name:** the gym is FITWAY, its only branch; the brand at the top is its name, with no second name line.
+   - **Kept, as truth rules, not design rules:** the count is labelled approximate; stale, closed or absent data never
+     looks live; no personal data; Arabic and English.
+   - **A percentage:** the user prefers to show one for now and leave it to the gym's owner later (open; see the resume
+     point). Product and SPEC forbid it publicly today (`FITWAY_PRODUCT.md`, the capacity-free contract;
+     `docs/spec/06-interfaces-and-contracts.md`, the post-v1 reservation: count plus percentage reveals capacity).
+   - **Also fixed with the rules:** `DO-NOT.md` ("Public stays light") and `DESIGN-SPEC.md` §6 ("mobile-first, light")
+     say dark, as item 90 does (the user: «اي لازم نحلها»).
+   - **The next round:** several designers, each drawing one whole direction of its own, starting from references and
+     following Impeccable's full process. The rule changes and the brief are done in a new session (the user: «ممتاز
+     ولكن مو ب الجلسة الحالية»).
+4. **A public percentage: shown in the concept, the owner's setting later, on by default** (the user, 2026-10-29, in
+   the coordinator session: «1» to the coordinator's suggestion, then «2» to "on by default", after the coordinator
+   recommended off for privacy). Settles item 3's open percentage.
+   - **The concept** may show a percentage on synthetic data; the page reads whole without it, since the owner can turn
+     it off.
+   - **Production:** approved in principle for after v1, through `docs/spec/06-interfaces-and-contracts.md`'s reservation
+     (a new versioned API, the server deciding, an owner-only setting, an audit), with the setting on by default and no
+     warning (the user, the same evening: «شيل التحذيرات, مب طفل هو»; the reservation's warning clause is removed). Its own versioned Product/Spec change still comes before any implementation; v1's public contract stays
+     capacity-free.
+   - **Applied** to `FITWAY_PRODUCT.md` (the success-and-boundary paragraph) and
+     `docs/spec/06-interfaces-and-contracts.md` (the capacity boundary), as shown to the user before writing.
+5. **One direction at a time, in two stages** (the user, 2026-10-29, in the coordinator session; supersedes item 3's
+   "several designers" for the next round).
+   - **One direction per round**, never several in parallel: the user sees it, then decides to carry it on or to draw
+     another; what the user says about one goes into the next brief.
+   - **Stage one, the draft:** `owner-direction-designer` (Opus) draws the direction in Arabic, in the live state, on
+     the phone and on the computer. The user sees two frames and a link for the phone on the home network. The brief
+     names only that scope; it says nothing about motion, states, English or the tablet, so nothing steers the design
+     (motion the idea needs, the designer builds).
+   - **References:** a Sonnet researcher gathers a wide set (links and screenshots, unranked, no judgment) before the
+     designer starts; the designer looks at the images and picks. Sonnet fetches, Opus chooses («بس احس فيه سلبية»:
+     a Sonnet summary would filter by Sonnet's taste).
+   - **Stage two, only for the direction the user accepts:** every state, English, the tablet and every other size,
+     the motion's details and reduced motion, by a builder; then the verifier and the user's acceptance.

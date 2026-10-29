@@ -15,8 +15,8 @@ field that is always null in v1 **[Resolved here — trend deferred; slot reserv
 Capacity, denominator, percentage, health, device identity, and history are not exposed by
 the current schema-version-2 contract.
 The level mark (28-bar signal on the shipped page) is rendered from `band`, not from a hidden
-capacity ratio. This endpoint reads only the current-state row and settings — never history — and is the only
-thing visitors touch. Version 2 is an intentional pre-Phase-4 privacy correction; web,
+capacity ratio. In v1 this endpoint reads only the current-state row and settings — never history — and is the
+only thing visitors touch. Version 2 is an intentional pre-Phase-4 privacy correction; web,
 server, fixtures, and tests upgrade atomically and version 1 is not served in parallel.
 
 **Public capacity boundary and post-v1 safety reservation.** Schema version 2 is strict and
@@ -24,9 +24,19 @@ does not accept or emit `capacity`, a denominator, or `percentFull`. There is no
 migration, feature flag, procedure, UI, or client-side toggle for public percentage disclosure.
 If a later product version explicitly approves disclosure, it must use a new versioned API; omit
 the optional field entirely while disabled; make the server the disclosure authority; permit
-only an authenticated owner to change it; warn that count plus percentage can reveal capacity;
-and audit actor/prior/new values/time. These constraints reserve a safe boundary only. They do
-not authorize implementation, and historical visual artifacts do not pre-authorize the feature.
+only an authenticated owner to change it; and audit actor/prior/new values/time. These
+constraints reserve a safe boundary only. They do not authorize implementation, and historical visual artifacts do not pre-authorize the feature.
+Product approved the feature in principle on 2026-10-29 (public-redesign-r01 DECISIONS item 4): when built,
+after v1 and under every constraint above, the owner's setting is on by default with no warning (the user: the owner
+knows count plus percentage reveals capacity), and turning it off omits the field. The approval still needs its
+versioned Product/Spec change before any implementation.
+
+**Public typical-day curve: post-v1 reservation.** Schema version 2 carries no history, and the v1 contract stays
+unchanged. If a later product version explicitly approves a public typical-day curve, it must use a new versioned
+API; carry one aggregate curve per weekday, computed server-side from history; and contain no per-visitor data, no
+capacity, denominator or ratio. These constraints reserve a safe boundary only. They do not authorize
+implementation. The user approved the curve in principle on 2026-10-29 (public-redesign-r01 DECISIONS item 3); the
+approval still needs its own versioned Product/Spec change before any implementation.
 
 **2. Staff/owner procedures (oRPC, session + role enforced server-side).**
 
@@ -72,8 +82,8 @@ thresholds) lives in the settings table, not env.
 **Routes (web). [Resolved here]**
 
 - `/` — public occupancy page (no auth chrome and no header/nav from the scaffold demo; no
-  Owner rail, bar or header; the page carries the brand, the language switch, the gym's name as
-  fixed text, and in the error state only «إعادة المحاولة»).
+  Owner rail, bar or header; the page carries the brand, which is the gym's name (FITWAY, its only
+  branch), the language switch, and in the error state only «إعادة المحاولة»).
 - `/login` — PIN-based staff sign-in; owner access uses its separately provisioned real
   account path. No sign-up route; the scaffolded email/password staff form is not the target.
 - `/staff` — operational view; requires `staff` or `owner`.

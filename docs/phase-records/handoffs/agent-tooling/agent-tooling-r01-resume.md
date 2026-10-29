@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 12:35 +03:00
-  (leading-comments and branch-merge-checks merged; main at `c14fb5d7`)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-20; 20 last), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 16:48 +03:00
+  (lease-ends merged; its CI and `pnpm main:advance` are next)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-22; 22 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -22,21 +22,24 @@
 
 ## Running now
 
-Measured 2026-10-29 12:35. main `c14fb5d7` (leading-comments, merge `2e6318b2`). The coordinator line also carries
-branch-merge-checks (merge `98ce29d3`, record `docs/phase-records/handoffs/agent-tooling/rounds/branch-merge-checks.md`),
-pushed for CI: `pnpm code-health:baseline --admit <folder> --reason "<why>"`, gone citations compared from the merge
-base with the branch an upstream names, and `docs/agent-context/LOST_TEMP_EVIDENCE.tsv` (125 rows). Its grade
-replayed the trial merge `d2f86a8d` with the tooling merged in (`D:/fitway-temp/code-review/branch-merge-checks-1/GRADE.md`
-and its `T*.log`; the throwaway worktree is removed): with the upstream set, the citations pass and the concept folder
-admits, once the next point is settled.
+Measured 2026-10-29 16:48. Nothing of this milestone runs; CI runs on the coordinator line's push carrying
+`0389ccd2`. main `5575697f` (`pnpm main:advance`, 2026-10-29).
 
-- **`NEXT-DIRECTION-BRIEF.md` blocks the admission.**
-  `design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md` is outside the giant root
-  and stands 73 bytes over main's baseline on `owner-followup-r04-build` (59,178 against 59,105), so `--admit`
-  refuses the whole run, as A1 asks. It is r04's file and grew on r04's branch, so it is split by section there (the
-  giant-document rule), behind an index that keeps its name, and reaches `public-redesign-r01` through the merge.
-- **The rest of the trial** (`T8.log`): the packet's pinned frame fails, item 19's third problem; and 33 gone
-  citations the build's own records hold are counted on unchanged lines, not failed.
+- **lease-ends is merged** (`0389ccd2`, record `docs/phase-records/handoffs/agent-tooling/rounds/lease-ends.md`,
+  DECISIONS item 22): `pnpm check:repository` reads each lease's end (`through YYYY-MM-DD`) against `updatedAt`, and
+  `updatedAt` must carry the date of the commit that last changed the ledger, so every ledger edit sets `updatedAt` to
+  the time of the write, on the day it is committed. F302 is fixed; F303 (a committed baseline is never compared with
+  its parent's) is open.
+- **The real merge is in** (items 19 and 21), measured: `ef9fa810` split `NEXT-DIRECTION-BRIEF.md` on r04's branch
+  as r04's work (nine parts in a `next-direction-brief` folder beside it, the original rebuilt byte for byte;
+  recorded in r04's resume point); `public-redesign-r01` fast-forwarded to it, set to track `origin/owner-followup-r04-build`, merged main
+  `bc6b9464` with no conflict (`ac0effa7`), then `adabebff`: `pnpm code-health:baseline --admit` for the concept folder
+  with its reason (one admission record, 12 files, `NEXT-DIRECTION-BRIEF.md` out of the baseline) and the packet's
+  reference frame pinned to `563e1c83`. There `pnpm check:code-health`, `pnpm check:repository` (0 unlisted gone
+  citations on changed lines, 33 on unchanged lines, 125 listed), `pnpm check:design-context` and the pre-commit hook
+  pass. The CI runs on the two pushes are the record's last rows.
+- **DECISIONS item 22, the coordinator's part, done:** two leases renewed through 2026-11-15, three dropped
+  (`PROJECT_STATE.yaml`); the agreement line is `WORKING_AGREEMENTS.md` §"Ownership".
 - **The concept's specs are split** (`2aa2fc4d`, on `owner-followup-r04-build`, pushed and green, and on
   `public-redesign-r01`): both originals rebuild byte for byte from the concept's new `spec` folder.
 - **Done** (item 18): the four rounds; r04's `DECISIONS.md` split into an index and parts (`92a4e9a7`); the round records
@@ -46,13 +49,11 @@ admits, once the next point is settled.
 
 ## Next steps
 
-1. When the pushed CI run passes, `pnpm main:advance` to its commit.
-2. **The real merge:** split `NEXT-DIRECTION-BRIEF.md` on `owner-followup-r04-build` (`git grep` its line citations
-   first) and merge that into `public-redesign-r01`; set `public-redesign-r01`'s upstream to
-   `origin/owner-followup-r04-build`; redo the merge of main (the trial is `d2f86a8d`); run
-   `pnpm code-health:baseline --admit design-research/owner-composition-exploration-r04/directions/eclipse --reason
-   "<why>"`; pin the build's reference frame (`563e1c83`) in the packet on that branch; run the four checks there.
-3. The public page's designer (its own resume point) once step 2 is in.
+1. **The CI run on `0389ccd2`'s push**; a failure is repaired here. Then `pnpm main:advance` to it.
+2. The public page waits on the user (its own resume point): the first round's three directions were set aside on
+   2026-10-29, and its rules are being reworked with the user.
+3. F303 as a round of its own when a later round touches the ratchet: compare a commit's baseline with its parent's,
+   merges included.
 4. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,
    `D:/fitway-temp/retro-20261028/patterns.mjs` and the survey's script count.
 5. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
@@ -61,8 +62,9 @@ admits, once the next point is settled.
    giant-file exception counts only on line 1).
 6. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
    citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more). From
-   2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once) and F302 (a raised test floor counts as inflation
-   until the commit).
+   2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once).
+7. **The renewed leases end on 2026-11-15** (`package.json` scripts, the README map): renew or drop them then, with
+   the giant-file exceptions of step 5.
 
 ## Waiting on the user
 

@@ -1,8 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:00 +03:00 (the first round waits for the retro's fixes)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-2), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 20:10 +03:00 (the first
+  round set aside; the percentage settled; the rules and a new brief are next, in a new session)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-5; 5 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -14,27 +15,33 @@
   from the draft), and the register's `public` row at status 5 (measured: `pnpm check:repository` and `pnpm
   check:agent-context` pass at the opening commit). The drafts stay as provenance in
   `docs/phase-records/handoffs/owner-design-exploration/r04/public-page-paper/`.
-- Nothing is designed or built. The page lives in Eclipse's folder on `owner-followup-r04-build` (at `fedbdb6d`), beside
-  the Owner pages.
+- The first round's three directions (`cbff8300` on `public-redesign-r01`, pushed) are set aside (DECISIONS item 3).
+  The page lives in Eclipse's folder, beside the Owner pages, and reaches `owner-followup-r04-build` through the merge.
 
 ## Running now
 
-Nothing (measured 2026-10-28 22:00). The first round waits for the retro's four fixes (r04 DECISIONS item 102;
-agent-tooling DECISIONS item 17), including finding 3's split of `DESIGN-SPEC.md` and `SETTINGS-SPEC.md` on this
-milestone's branch (`docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md` §"Next steps" 3).
+Nothing (measured 2026-10-29 17:14). The first round (`designer-public-directions-1.md`, `cbff8300`; report and
+frames in `D:/fitway-temp/public-redesign-r01-directions-1/`) drew three options the user set aside, for the causes
+DECISIONS item 3 records. The LAN preview entry `public-redesign-lan` (port 3181) serves this worktree's Eclipse
+folder.
 
 ## Next steps
 
-1. **The first design round** (r04 item 99: no skeleton): two or three whole directions in Eclipse's style, each with
-   its own composition and level-mark form, at 390 px first, Arabic and English. Brief written:
-   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-directions-1.md` (`36879371`; it names
-   `settings-capture.mjs`'s shape and `overflowProbe` for the 320 px and zoom check, item 16 of agent-tooling;
-   revisit those pointers once verify-fitway's `run` lands). Worktree `D:/Projects/fitway-worktrees/public-redesign-r01`,
-   branch `public-redesign-r01` off `fedbdb6d`, no install yet. At launch: merge main into the branch, run its own
-   `pnpm install --frozen-lockfile --offline`, set the brief's HEAD, run `pnpm brief:check`, commit, and start a fresh
-   `owner-direction-designer`. The frames go to the user, who picks by eye.
-2. After the pick: the chosen direction across every state and width, `PUBLIC-SPEC.md` and §6, the verifier, the
-   user's acceptance; the smoothness check on the demo phone (item 90 P4).
+The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
+
+1. **The percentage is settled** (DECISIONS item 4, applied to Product and SPEC): the concept shows one on synthetic
+   data, and the page reads whole without it.
+2. **Change the rules** to item 3: the content lines of r04 item 90 and the amended Product and Design Guide lines that
+   ban the typical-day curve and the verdict line; the frame's separate gym name (the brand is FITWAY's name);
+   `DO-NOT.md` and `DESIGN-SPEC.md` §6 say dark; the first brief's "no new tokens" and fixed order go. A lifted ban is
+   deleted, never rewritten as "allowed" (`WORKING_AGREEMENTS.md`, "Rules and findings"); report the change in a line.
+3. **The stage-one brief** (DECISIONS items 3 and 5): references gathered by Sonnet, then one `owner-direction-designer`
+   draws one direction, Arabic, live, phone and computer; the identity fixed and everything else free; content as item
+   3 lists, without its permitted extras; no "level mark form" framing, no word on motion; Impeccable's whole process,
+   with the writes that needs. Both reviewers read the brief first. Stage two only for the direction the user accepts.
+4. After the pick: that direction in every state and size, `PUBLIC-SPEC.md` and §6, the verifier, the user's
+   acceptance; the copy outside the glossary (five lines in the first report) goes to the user; the page stops loading
+   the Owner pages' whole `style.css` (two class names clashed).
 
 ## Waiting on the user
 
