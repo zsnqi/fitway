@@ -11,3 +11,34 @@ the public page are numbered here.
 2. **No skeleton** (the user, 2026-10-28, r04 item 99): the first round draws two or three whole directions in
    Eclipse's style, at 390 px first in Arabic and English, and the user picks by eye. The loading state's placeholders
    are still designed and built.
+3. **The first round's three directions are set aside, and the page is designed free of the Owner rules** (the user,
+   2026-10-29, after seeing `cbff8300`: «الخيارات كلها ما عجبتني»; then, on the coordinator's restatement of the goals,
+   «ب الضبط», «نعم», «اي», «يب»). Supersedes the parts of r04 item 90 named below and the first brief's constraints.
+   - **Why the round failed (the coordinator's reading, which the user confirmed):** the first brief carried the Owner
+     dashboard's rules into a one-message public page: Eclipse's sheet "as it is, no new tokens" (so cards, and the
+     largest type capped at 46 px), the answers' fixed vertical order, and an open question framed as "the level mark's
+     form", so the three options differed only in a meter's shape; with most content removed, each page ended halfway
+     down the phone. The process was narrowed too: three options from one designer, no reference study, no word on what
+     the visitor should feel, and Impeccable's own steps skipped because only three files could be written. And a gym
+     name was invented because item 90's frame named one beside the brand.
+   - **Goals:** visitors open the page on their phones to see whether the gym is busy now; the page is designed at every
+     size, phone to computer. Its identity is FITWAY's: dark, the red and the light are the gym's own colours, not the
+     Owner pages'. Everything but the identity is the designer's: composition, sizes and type scale, cards or none, the
+     crowd mark's form, the order on screen, and how the whole screen is used. The Owner pages' rules are a reference
+     for the identity only.
+   - **Content:** the crowd level, the approximate count, open or closed and the last update; the typical-day curve
+     comes back (the user: it helps the visitor); a verdict sentence and "best time to come today" are allowed, the
+     designer's choice, never required. The typical-day curve needs history the public endpoint never reads today
+     (`docs/spec/06-interfaces-and-contracts.md`); the concept uses synthetic data, and the coordinator writes the SPEC
+     amendment for production and shows it to the user then («تمام»).
+   - **The name:** the gym is FITWAY, its only branch; the brand at the top is its name, with no second name line.
+   - **Kept, as truth rules, not design rules:** the count is labelled approximate; stale, closed or absent data never
+     looks live; no personal data; Arabic and English.
+   - **A percentage:** the user prefers to show one for now and leave it to the gym's owner later (open; see the resume
+     point). Product and SPEC forbid it publicly today (`FITWAY_PRODUCT.md`, the capacity-free contract;
+     `docs/spec/06-interfaces-and-contracts.md`, the post-v1 reservation: count plus percentage reveals capacity).
+   - **Also fixed with the rules:** `DO-NOT.md` ("Public stays light") and `DESIGN-SPEC.md` §6 ("mobile-first, light")
+     say dark, as item 90 does (the user: «اي لازم نحلها»).
+   - **The next round:** several designers, each drawing one whole direction of its own, starting from references and
+     following Impeccable's full process. The rule changes and the brief are done in a new session (the user: «ممتاز
+     ولكن مو ب الجلسة الحالية»).

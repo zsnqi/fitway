@@ -4,7 +4,7 @@
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:40 +03:00 (the retro's
   four fixes come first, decision 102; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-102; 102 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-103; 103 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -53,7 +53,7 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   at `d04890a4`, 0 of 15 at `fedbdb6d`. `fedbdb6d` is checked by the coordinator only, not by a second verifier.
 - **Left from finding 5:** Reports' first paint now waits for Readex Pro (opacity, 1.5 s cap); Activity, Access and
   Settings keep the same font-swap pattern (the verifier saw Activity's in the base too). Not visible enough for the
-  demo (decision 52's order); the same hold belongs in the shared frame after the demo.
+  demo (decision 52); the hold belongs in the shared frame after it.
 
 - **Built the night before on the build branch** (measured, each checked by the coordinator against its frames):
   `c774fd77` DECISIONS 91 (1) (two fixed lines below 330 px in Arabic) and 91 (2) (superseded by 92 (1));
@@ -66,6 +66,7 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
 - **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
   coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
+- **Next: decision 103**, in a new session.
 - **Next: the tooling first** (decisions 96 (1), 101, 102): the retro's four rounds and the `compare` fix are merged;
   what is left is `docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md` §"Next steps".
 - **The public page:** its paper accepted and applied (decisions 98, 99; ADR-010); it runs as its own milestone,
