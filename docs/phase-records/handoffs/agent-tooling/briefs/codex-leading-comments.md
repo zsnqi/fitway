@@ -42,7 +42,8 @@
 
 An agent looking for where something lives reads the tooling map, one line per file. 86 of its 122 files show
 `(no leading comment)`, so the map names their exports but not what they are for, and the agent opens the file to
-find out. After this round every mapped file opens with a comment that says what it is for.
+find out; three more show a comment that does not say it. After this round every mapped file opens with a comment
+that says what it is for.
 
 ## Causes and required outcomes
 
@@ -51,9 +52,14 @@ find out. After this round every mapped file opens with a comment that says what
   with `(no leading comment)` at `ac337544` gains a leading comment as the map reads one: `//` lines before the first
   statement (after a shebang if there is one). So does `.agents/skills/verify-fitway/compare.mjs`, whose leading
   comment is only the ratchet's `code-health-exception:` marker: its purpose line goes above the marker, which stays
-  unchanged (the ratchet finds the marker anywhere, `scripts/agent-environment/code-health-ratchet.mjs:31`).
+  unchanged (the ratchet finds the marker anywhere, `scripts/agent-environment/code-health-ratchet.mjs:31`). So do
+  three files whose comment the map shows does not say what the file is for: `scripts/concept-css-parse.mjs` (a
+  constraint), `.agents/skills/verify-fitway/worker-pool.mjs` (an ordering rule) and
+  `scripts/agent-environment/shell-words.mjs` (cut off at "`powershell ...`"): a purpose sentence goes above the
+  existing comment, which stays unchanged.
   - The map shows only the first sentence, so the first sentence carries the purpose: one plain sentence of at most
-    120 characters, ending with a period, with no other `.` followed by a space inside it (no "e.g." or "i.e.").
+    120 characters, ending with a period, with no `.`, `!` or `?` followed by a space inside it (no "e.g." or
+    "i.e."), so the map shows it whole.
   - It names the file's own subject and what it does with it (what it reads, builds, checks, writes or runs), read
     from its code and exports, specific enough that it would be false for every other mapped file in its folder, in
     the style of the existing entries (for example `survey-checks.mjs`: "Survey rule-home, graph, environment, and
@@ -61,8 +67,9 @@ find out. After this round every mapped file opens with a comment that says what
   - It names what the file does, not its history: no round, decision or finding numbers and no dates. A second
     sentence is allowed for a reader of the file; the map does not show it.
 
-  Check: `pnpm map:tooling` prints `0 without a leading comment` and `pnpm check:tooling-map` passes; each sentence is
-  read against its file at the diff review. Intent: the map answers "where does X live" without opening files.
+  Check: `pnpm map:tooling` prints `0 without a leading comment` and `pnpm check:tooling-map` passes; each changed
+  file's line in the regenerated map shows its whole first sentence, ending with its period; each sentence is read
+  against its file at the diff review. Intent: the map answers "where does X live" without opening files.
 - **L2.** Comments are the only change. Outcome: in every changed source file, the diff against `ac337544` adds lines
   only, all of them comment lines (and at most one blank line after the comment) above the first statement; no
   existing line changes. Check: a script in the run folder reads `git diff --numstat` and each file's diff, and
@@ -78,8 +85,8 @@ find out. After this round every mapped file opens with a comment that says what
 
 ## Scope
 
-You may change, in the files the map shows with `(no leading comment)` at `ac337544` and in `compare.mjs`, only the
-lines above each file's first statement (adding lines, never changing one); and `docs/agent-context/AGENT_TOOLING_CODE_MAP.md` and
+You may change, in the files the map shows with `(no leading comment)` at `ac337544` and in the four files L1 names,
+only the lines above each file's first statement (adding lines, never changing one); and `docs/agent-context/AGENT_TOOLING_CODE_MAP.md` and
 `docs/agent-context/CODE_HEALTH_BASELINE.json` (both regenerated). Commit once when done. Everything else is
 read-only. Add no dependencies.
 
