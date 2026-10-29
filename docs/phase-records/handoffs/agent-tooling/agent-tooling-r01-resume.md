@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 12:35 +03:00
-  (leading-comments and branch-merge-checks merged; main at `c14fb5d7`)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-20; 20 last), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:15 +03:00
+  (both rounds merged and CI-green at `bc6b9464`; the user asked to compact the conversation before the next step)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-21; 21 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -22,10 +22,12 @@
 
 ## Running now
 
-Measured 2026-10-29 12:35. main `c14fb5d7` (leading-comments, merge `2e6318b2`). The coordinator line also carries
-branch-merge-checks (merge `98ce29d3`, record `docs/phase-records/handoffs/agent-tooling/rounds/branch-merge-checks.md`),
-pushed for CI: `pnpm code-health:baseline --admit <folder> --reason "<why>"`, gone citations compared from the merge
-base with the branch an upstream names, and `docs/agent-context/LOST_TEMP_EVIDENCE.tsv` (125 rows). Its grade
+Measured 2026-10-29 14:15. Nothing runs. main `c14fb5d7` (leading-comments, merge `2e6318b2`). The coordinator line
+also carries branch-merge-checks (merge `98ce29d3`, its CI repair merge `9b9ce06f`, record
+`docs/phase-records/handoffs/agent-tooling/rounds/branch-merge-checks.md`); CI passed on `bc6b9464` (run 40857415956)
+and main is not advanced yet, held by the user's pause. The round gives `pnpm code-health:baseline --admit <folder>
+--reason "<why>"`, gone citations compared from the merge base with the branch an upstream names, and
+`docs/agent-context/LOST_TEMP_EVIDENCE.tsv` (125 rows). Its grade
 replayed the trial merge `d2f86a8d` with the tooling merged in (`D:/fitway-temp/code-review/branch-merge-checks-1/GRADE.md`
 and its `T*.log`; the throwaway worktree is removed): with the upstream set, the citations pass and the concept folder
 admits, once the next point is settled.
@@ -34,7 +36,9 @@ admits, once the next point is settled.
   `design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md` is outside the giant root
   and stands 73 bytes over main's baseline on `owner-followup-r04-build` (59,178 against 59,105), so `--admit`
   refuses the whole run, as A1 asks. It is r04's file and grew on r04's branch, so it is split by section there (the
-  giant-document rule), behind an index that keeps its name, and reaches `public-redesign-r01` through the merge.
+  giant-document rule), behind an index that keeps its name, and reaches `public-redesign-r01` through the merge: the
+  user approved the split (DECISIONS item 21); not started. Its 14 `##` sections run from line 9 to line 821; no
+  record cites its lines by number (22 files name it).
 - **The rest of the trial** (`T8.log`): the packet's pinned frame fails, item 19's third problem; and 33 gone
   citations the build's own records hold are counted on unchanged lines, not failed.
 - **The concept's specs are split** (`2aa2fc4d`, on `owner-followup-r04-build`, pushed and green, and on
@@ -46,9 +50,10 @@ admits, once the next point is settled.
 
 ## Next steps
 
-1. When the pushed CI run passes, `pnpm main:advance` to its commit.
-2. **The real merge:** split `NEXT-DIRECTION-BRIEF.md` on `owner-followup-r04-build` (`git grep` its line citations
-   first) and merge that into `public-redesign-r01`; set `public-redesign-r01`'s upstream to
+1. `pnpm main:advance bc6b9464` (its CI passed; check that the coordinator line has no newer pushed commit first).
+2. **The real merge:** split `NEXT-DIRECTION-BRIEF.md` on `owner-followup-r04-build` (DECISIONS item 21; worktree
+   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, clean at `2aa2fc4d`; `2aa2fc4d`'s spec split is the
+   pattern) and merge that into `public-redesign-r01`; set `public-redesign-r01`'s upstream to
    `origin/owner-followup-r04-build`; redo the merge of main (the trial is `d2f86a8d`); run
    `pnpm code-health:baseline --admit design-research/owner-composition-exploration-r04/directions/eclipse --reason
    "<why>"`; pin the build's reference frame (`563e1c83`) in the packet on that branch; run the four checks there.
@@ -63,6 +68,9 @@ admits, once the next point is settled.
    citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more). From
    2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once) and F302 (a raised test floor counts as inflation
    until the commit).
+7. **The ledger's shared leases for this milestone expired on 2026-10-23** (package.json scripts, README map,
+   checks.yml, vitest.config.ts, lefthook.yml); neither round of 2026-10-29 touched those files. Renew or drop them
+   in `PROJECT_STATE.yaml` before a round needs one; no check reads a lease's date.
 
 ## Waiting on the user
 

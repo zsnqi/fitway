@@ -241,3 +241,13 @@ through these pointers, not copied here.
     kept files by extension and size without reading citations, the one-off `remove-worktrees.ps1`, other grading
     worktree removals, paths absent before the prune, causes not found, and documentation examples that never
     existed. Built in item 19's Codex round.
+21. **`NEXT-DIRECTION-BRIEF.md` is split by section on r04's branch before the real merge** (the user, 2026-10-29:
+    «بخصوص تقسيم ملف الملف حق ال brief موافق اي»). The grade of branch-merge-checks found that
+    `design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md`, outside the giant root,
+    stands 73 bytes over main's baseline on `owner-followup-r04-build` (59,178 against 59,105), so `--admit` refuses
+    the concept folder while it does (A1 keeps every file outside the folder to today's rule). The file is
+    owner-design-exploration-r04's and grew on its branch, so the coordinator splits it there as r04's work, by its
+    `##` sections into parts under 40,000 bytes behind an index that keeps its name, its preamble and every heading,
+    with not one word changed and the original rebuilt byte for byte from the parts (as `2aa2fc4d` did for the
+    specs); no record cites its lines by number. It then reaches `public-redesign-r01` through the merge. Not started:
+    the user asked to compact the conversation first.
