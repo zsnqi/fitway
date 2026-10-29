@@ -263,6 +263,9 @@ through these pointers, not copied here.
       2026-10-29: `package.json` (scripts) and `README.md` (the map) renewed through 2026-11-15, the date this
       milestone's giant-file exceptions end; `checks.yml`, `vitest.config.ts` and `lefthook.yml` dropped, their work
       done. `package.json` was changed after its lease ended (`52fb52af`, 2026-10-28), the case the check is for.
+      The check judges a lease against the ledger's `updatedAt`, never the wall clock: agent-environment r03 replaced
+      a wall-clock lease check that failed old commits on CI (`docs/phase-records/handoffs/agent-environment/r03/AUDIT.md`,
+      "Lease check"); the ledger written on 2026-10-28 would have failed. A lease with no end lasts its milestone.
     - **Two milestones, one coordinator:** a line in `docs/agent-context/WORKING_AGREEMENTS.md` ("Ownership" or the
       nearest section), its wording approved by the user on 2026-10-29 («اي موافق») as the resume point quotes it.
       Added on 2026-10-29 as `WORKING_AGREEMENTS.md` §"Ownership", word for word.

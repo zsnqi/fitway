@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 15:10 +03:00 (the retro's
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:40 +03:00 (the retro's
   four fixes come first, decision 102; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-102; 102 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
@@ -33,7 +33,7 @@
 
 ## Running now
 
-Nothing of this milestone runs (measured 2026-10-29 15:10; the PC's LAN address is 192.168.8.186). main `bc6b9464`
+Nothing of this milestone runs (measured 2026-10-29 14:40; the PC's LAN address is 192.168.8.186). main `bc6b9464`
 carries decisions 97-102. Build branch `owner-followup-r04-build` at `ef9fa810`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 

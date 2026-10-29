@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 15:10 +03:00
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:40 +03:00
   (main at `bc6b9464`; the real merge into `public-redesign-r01` is in and waits on CI; the expired-lease round is next)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-22; 22 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -22,7 +22,7 @@
 
 ## Running now
 
-Measured 2026-10-29 15:10. CI runs on `owner-followup-r04-build` at `ef9fa810` and on `public-redesign-r01` at
+Measured 2026-10-29 14:40. CI runs on `owner-followup-r04-build` at `ef9fa810` and on `public-redesign-r01` at
 `adabebff` (its first push). main `bc6b9464` (`pnpm main:advance`, 2026-10-29): both rounds of the day, leading-comments
 and branch-merge-checks (`docs/phase-records/handoffs/agent-tooling/rounds/branch-merge-checks.md`).
 

@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 15:10 +03:00 (main merged into the branch; the first round waits on its CI)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:40 +03:00 (main merged into the branch; the first round waits on its CI)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-2), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -19,7 +19,7 @@
 
 ## Running now
 
-CI on `adabebff` (measured 2026-10-29 15:10). The retro's four fixes are in (agent-tooling DECISIONS items 17-18), and
+CI on `adabebff` (measured 2026-10-29 14:40). The retro's four fixes are in (agent-tooling DECISIONS items 17-18), and
 the branch `public-redesign-r01` is pushed at `adabebff`: `ef9fa810` (the build branch, both specs and
 `NEXT-DIRECTION-BRIEF.md` split), then main `bc6b9464` merged (`ac0effa7`, no conflict; install done), then the
 concept folder's giant sizes admitted once into the code-health baseline with the date and the reason, and the packet's
