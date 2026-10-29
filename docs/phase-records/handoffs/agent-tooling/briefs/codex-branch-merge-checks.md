@@ -43,9 +43,11 @@
 ## Goal
 
 Main's tooling is merged into `public-redesign-r01`, a branch that lives for weeks and integrates into
-`owner-followup-r04-build`, not into main. A trial merge failed three checks that work on main. After this round the
-merge passes them with nothing loosened: the concept's current page sizes enter the baseline once, on record; a gone
-citation fails on the branch that writes it; and the citations already lost are explained once, in one list.
+`owner-followup-r04-build`, not into main. A trial merge failed three checks that work on main. This round gives the
+tooling for two of them, with nothing loosened: the concept's current page sizes can enter the baseline once, on
+record; a gone citation fails on the branch that writes it; and the citations already lost are explained once, in one
+list. The third, the packet's pinned frame, is a line the coordinator changes on that branch, and the coordinator then
+redoes the merge there with the upstream set and the admission run (DECISIONS item 19); neither is this round's work.
 
 ## Causes and required outcomes
 
@@ -59,16 +61,20 @@ citation fails on the branch that writes it; and the citations already lost are 
   `--admit`, and for every file outside the folder and every other measure with it, the command refuses what it
   refuses today. A folder not in `giantRoots`, a folder the baseline already holds an admission for (the message names
   that admission's date and reason), and a missing or empty reason are refused, each with a message that names the
-  cause. The option is in the tools registry, so `--help` lists it. The commit holding the admission passes the
-  pre-commit hook. `pnpm check:code-health` passes before and after that commit: an admitted value is not
-  working-baseline inflation, while a value raised by hand in the same baseline still is; a later rise in an admitted
-  file fails as any rise does. Check: beside H3 in `scripts/agent-environment/code-health-ratchet.test.ts:193`, a
-  fixture with a concept page baselined at 801 lines grown to 900 is refused without `--admit`; admitted with a
-  reason, the baseline holds 900 and its admission names the date, the reason and 801 to 900; the check passes before
-  and after the commit; growth to 901 then fails; a second admission of the folder is refused; admitting `scripts` is
-  refused; a `scripts/` file raised by one line in the same run is still refused; a `scripts/` value raised by hand in
-  the admitted baseline is reported as inflation. Intent: the concept's pages enter once with a reason anyone can
-  read, and no other file, and no later growth, gets through the same door.
+  cause. Every later regeneration, with or without `--admit`, keeps the admissions already recorded. The option is in
+  the tools registry, so `--help` lists it. The commit holding the admission passes the pre-commit hook.
+  `pnpm check:code-health` passes before and after that commit: a value the new admission names and that equals the
+  file's current measure is not working-baseline inflation, while a value raised by hand in the same baseline still
+  is; a later rise in an admitted file fails as any rise does. A baseline value that differs from the current measure,
+  admitted or not, already fails the check, which reports every difference (`compareCodeHealth`,
+  `code-health-ratchet.mjs:490-530`); that stays. Check: beside H3 in
+  `scripts/agent-environment/code-health-ratchet.test.ts:193`, a fixture with a concept page baselined at 801 lines
+  grown to 900 is refused without `--admit`; admitted with a reason, the baseline holds 900 and its admission names the
+  date, the reason and 801 to 900; the check passes before and after the commit; growth to 901 then fails; a fall to
+  850 followed by a plain `pnpm code-health:baseline` keeps the admission, and a second admission of the folder is
+  still refused; admitting `scripts` is refused; a `scripts/` file raised by one line in the same run is still refused;
+  a `scripts/` value raised by hand in the admitted baseline is reported as inflation. Intent: the concept's pages
+  enter once with a reason anyone can read, and no other file, and no later growth, gets through the same door.
 - **A2.** The gone-citation audit diffs the working tree against `origin/main` (`cited-evidence.mjs:45-48`). On a
   branch that integrates elsewhere every branch-only line counts as changed: 33 old citations in the concept's briefs
   failed the trial merge. It also counts a line main changed after the branch left it. Outcome: a line counts as
@@ -92,20 +98,24 @@ citation fails on the branch that writes it; and the citations already lost are 
   removal, absent before the prune, a documentation example that never existed, or cause not found. The cause is the
   one the report's §2A or §2B gives for that path or a folder above it; the five citations in
   `.agents/skills/gardener/CLEANUP.md`, `.agents/skills/gardener/SKILL.md`, `.agents/skills/verify-fitway/SKILL.md`
-  and `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` are documentation examples; any other path the report does not cover is "cause not
-  found", never a guess. `pnpm check:repository` accepts a gone citation when a row names its path and its record,
-  whatever line it is on now; the list's own lines are not citations. A gone citation no row names keeps today's
-  behaviour, and the fix it prints names the list beside `(gone: <why>)`. The check fails, naming the row, when a
-  listed path exists again or its record no longer cites it. No other record changes. Check: extend
+  and `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` are documentation examples; any other path the report
+  does not cover is "cause not found", never a guess. Rows and citations match one to one: a row accepts one gone citation of its path in its
+  record, whatever line that citation is on now, so a record that cites a listed path more often than rows name it
+  has the extra citations unlisted; the list's own lines are not citations. `pnpm check:repository` accepts a listed
+  citation; a gone citation no row accepts keeps today's behaviour, and the fix it prints names the list beside
+  `(gone: <why>)`. The check fails, naming the row, on a malformed row, a cause outside the six, or a row whose record
+  no longer cites its path as often as rows name it, whether or not `D:/fitway-temp` exists (CI has none), and, when
+  it exists, on a listed path that exists again. No other record changes. Check: extend
   `.agents/skills/gardener/cited-evidence.test.ts`: a listed citation on a changed line passes; the same path cited by
-  a record no row names fails; a listed path that exists fails naming the row; a row whose record dropped the citation
-  fails naming the row. On the result, `pnpm check:repository` prints 0 unlisted gone citations and the listed count,
-  125 unless a citation went or came back during the round, which the report then names. Intent: every loss is
-  explained once, and nothing new hides behind the list.
-- **K1.** The audit's other behaviour (fixture temp roots, the `(gone:` mark, the count on unchanged lines, "not
-  checked" when `D:/fitway-temp` is absent, as in CI) and the baseline's refusals stay as they are; the existing tests
-  in `cited-evidence.test.ts` and `code-health-ratchet.test.ts` pass unchanged. `pnpm verify:fast` passes after the
-  commit.
+  a record no row names fails; a second citation of a listed path in the same record, on a changed line, fails; a
+  listed path that exists fails naming the row; a row whose record dropped the citation fails naming the row, with
+  the fixture temp root absent too. On the result, `pnpm check:repository` prints 0 unlisted gone citations and the
+  listed count, 125 unless a citation went or came back during the round, which the report then names. Intent: every
+  loss is explained once, and nothing new hides behind the list.
+- **K1.** The audit's other behaviour (fixture temp roots, the `(gone:` mark, the count on unchanged lines, and "not
+  checked" for the existence of paths when `D:/fitway-temp` is absent, as in CI) and the baseline's refusals stay as
+  they are; the existing tests in `cited-evidence.test.ts` and `code-health-ratchet.test.ts` pass unchanged.
+  `pnpm verify:fast` passes after the commit.
 - **K2.** No giant-file, ratchet, test floor or check limit is loosened, and this round admits nothing: the
   committed baseline gains no admission. A fall is recorded with `pnpm code-health:baseline`, each change named in the
   commit message; `pnpm check:tooling-map` passes (regenerate with `pnpm map:tooling`).
