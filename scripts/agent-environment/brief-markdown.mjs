@@ -112,8 +112,9 @@ export function codexScopeProblem(prose) {
 	};
 }
 
+// Each ATX or setext heading outside comments and fenced code, in order, with its level.
 function headings(text) {
-	const result = new Set();
+	const result = [];
 	let fence = null;
 	const sourceLines = withoutComments(text).split(/\r?\n/);
 	for (let index = 0; index < sourceLines.length; index += 1) {
@@ -130,13 +131,18 @@ function headings(text) {
 			continue;
 		}
 		if (fence) continue;
-		const atx = line.match(/^ {0,3}#{1,6}\s+(.+?)\s*$/);
-		if (atx) result.add(atx[1].replace(/\s+#+\s*$/, ""));
-		else if (
-			line.trim() &&
-			/^ {0,3}(?:=+|-+)\s*$/.test(sourceLines[index + 1] ?? "")
-		)
-			result.add(line.trim());
+		const atx = line.match(/^ {0,3}(#{1,6})\s+(.+?)\s*$/);
+		const setext = (sourceLines[index + 1] ?? "").match(/^ {0,3}(=+|-+)\s*$/);
+		if (atx)
+			result.push({
+				level: atx[1].length,
+				title: atx[2].replace(/\s+#+\s*$/, ""),
+			});
+		else if (line.trim() && setext)
+			result.push({
+				level: setext[1].startsWith("=") ? 1 : 2,
+				title: line.trim(),
+			});
 	}
 	return result;
 }
@@ -150,8 +156,9 @@ function briefTitle(text) {
 			mask(environment[0]) +
 			text.slice(environment.index + environment[0].length)
 		: text;
-	const visible = withoutFencedCode(withoutComments(outsideEnvironment));
-	const title = visible.match(/^ {0,3}#\s+(.+?)\s*#*\s*$/m)?.[1]?.trim();
+	const title = headings(outsideEnvironment).find(
+		(heading) => heading.level === 1,
+	)?.title;
 	return title?.replace(/^Codex brief:\s*/i, "") ?? null;
 }
 

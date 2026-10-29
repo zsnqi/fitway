@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
+import { MARKDOWN_PATHSPEC } from "../../.agents/skills/gardener/code-health.mjs";
 import { listTrackedFiles } from "../verify-repository.mjs";
 import {
 	BASELINE_COMMAND,
@@ -36,7 +37,11 @@ export {
 
 export function listCodeHealthFiles(root = process.cwd()) {
 	const concept = conceptHealthFolder(root);
-	const patterns = [...HEALTH_ROOTS, "*.md", ...(concept ? [concept] : [])];
+	const patterns = [
+		...HEALTH_ROOTS,
+		MARKDOWN_PATHSPEC,
+		...(concept ? [concept] : []),
+	];
 	const files = new Set([
 		...listTrackedFiles(root, patterns),
 		...listTrackedFiles(root, patterns, { untracked: true }),

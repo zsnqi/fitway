@@ -84,6 +84,9 @@ function slashPath(file) {
 	return file.replaceAll("\\", "/");
 }
 
+// Git pathspecs match case, so a Markdown pathspec names the extension in any case.
+export const MARKDOWN_PATHSPEC = ":(icase)*.md";
+
 export function isMarkdownDocument(file) {
 	return path.extname(file).toLowerCase() === ".md";
 }
@@ -572,7 +575,7 @@ export async function collectCodeHealth({
 					.split("\0")
 					.filter(Boolean),
 			),
-			...gitText(git, ["ls-files", "-z", "--", "*.md"])
+			...gitText(git, ["ls-files", "-z", "--", MARKDOWN_PATHSPEC])
 				.split("\0")
 				.filter(Boolean),
 		]),

@@ -235,7 +235,34 @@ function addGiantCounts(
 	}
 }
 
-function addDocumentCounts(files, exceptions, today, counts, hits) {
+// One scan of each source file serves the exceptions and the giant-file count.
+function scanSources(files) {
+	const scans = files.map((file) =>
+		isSourceFile(file.file) ? scanSource(file) : null,
+	);
+	return {
+		scans,
+		exceptions: parseExceptions(
+			files,
+			scans.map((scan) => scan ?? { comments: [] }),
+		),
+	};
+}
+
+// The giant-file and giant-document counts, for snapshotCodeHealth and snapshotGiantSizes.
+function addGiantSizeCounts(files, scans, exceptions, today, counts, hits) {
+	addGiantCounts(
+		scanGiantFiles(
+			files.filter((_file, index) => scans[index]),
+			scans.filter(Boolean),
+		),
+		GIANT_FILE_MEASURE,
+		"lineCount",
+		exceptions,
+		today,
+		counts,
+		hits,
+	);
 	addGiantCounts(
 		scanGiantDocuments(files),
 		GIANT_DOCUMENT_MEASURE,
@@ -247,43 +274,13 @@ function addDocumentCounts(files, exceptions, today, counts, hits) {
 	);
 }
 
-function snapshotGiantContent(files, measures, { today = date() } = {}) {
-	const sourceFiles = files.filter((file) => isSourceFile(file.file));
-	const sources = sourceFiles.map((file) => scanSource(file));
-	const exceptions = parseExceptions(
-		files,
-		files.map((file) =>
-			isSourceFile(file.file) ? scanSource(file) : { comments: [] },
-		),
-	);
+// The giant-file and giant-document part of snapshotCodeHealth.
+export function snapshotGiantSizes(files, { today = date() } = {}) {
+	const { scans, exceptions } = scanSources(files);
 	const counts = new Map();
 	const hits = new Map();
-	if (measures.includes(GIANT_FILE_MEASURE))
-		addGiantCounts(
-			scanGiantFiles(sourceFiles, sources),
-			GIANT_FILE_MEASURE,
-			"lineCount",
-			exceptions,
-			today,
-			counts,
-			hits,
-		);
-	if (measures.includes(GIANT_DOCUMENT_MEASURE))
-		addDocumentCounts(files, exceptions, today, counts, hits);
+	addGiantSizeCounts(files, scans, exceptions, today, counts, hits);
 	return { counts: Object.fromEntries(counts), hits: sortedHits(hits) };
-}
-
-// The giant-file part of snapshotCodeHealth, from one scan of each file.
-export function snapshotGiantFiles(files, { today = date() } = {}) {
-	return snapshotGiantContent(files, [GIANT_FILE_MEASURE], { today });
-}
-
-export function snapshotGiantSizes(files, { today = date() } = {}) {
-	return snapshotGiantContent(
-		files,
-		[GIANT_FILE_MEASURE, GIANT_DOCUMENT_MEASURE],
-		{ today },
-	);
 }
 
 function addReportCounts(report, exceptions, today, counts, hits) {
@@ -328,32 +325,10 @@ function addDirectoryReportCounts(report, directoryCounts, directoryHits) {
 	}
 }
 
-function addAllGiantCounts(files, exceptions, today, counts, hits) {
-	const sourceFiles = files.filter((file) => isSourceFile(file.file));
-	addGiantCounts(
-		scanGiantFiles(
-			sourceFiles,
-			sourceFiles.map((file) => scanSource(file)),
-		),
-		GIANT_FILE_MEASURE,
-		"lineCount",
-		exceptions,
-		today,
-		counts,
-		hits,
-	);
-	addDocumentCounts(files, exceptions, today, counts, hits);
-}
-
 export function snapshotCodeHealth(files, { today = date() } = {}) {
 	const regularFiles = files.filter((file) => !file.giantOnly);
 	const report = scanScope(regularFiles);
-	const exceptions = parseExceptions(
-		files,
-		files.map((file) =>
-			isSourceFile(file.file) ? scanSource(file) : { comments: [] },
-		),
-	);
+	const { scans, exceptions } = scanSources(files);
 	const status = exceptionStatus(exceptions, today);
 	const counts = new Map();
 	const hits = new Map();
@@ -361,7 +336,7 @@ export function snapshotCodeHealth(files, { today = date() } = {}) {
 	const directoryHits = new Map();
 	addReportCounts(report, exceptions, today, counts, hits);
 	addDirectoryReportCounts(report, directoryCounts, directoryHits);
-	addAllGiantCounts(files, exceptions, today, counts, hits);
+	addGiantSizeCounts(files, scans, exceptions, today, counts, hits);
 
 	return {
 		counts: Object.fromEntries(counts),

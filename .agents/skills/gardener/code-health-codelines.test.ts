@@ -1,5 +1,11 @@
-import { describe, expect, it } from "vitest";
-import { scanScope } from "./code-health.mjs";
+import { afterEach, describe, expect, it } from "vitest";
+import {
+	cleanupHealthFixtures,
+	createHealthFixture,
+} from "../../../scripts/agent-environment/code-health-fixture.ts";
+import { collectCodeHealth, scanScope } from "./code-health.mjs";
+
+afterEach(cleanupHealthFixtures);
 
 function javascriptLines(count: number) {
 	return Array.from(
@@ -71,6 +77,26 @@ describe("giant documents", () => {
 		expect(report.giantDocuments.hits[0].file).toBe(
 			"docs/phase-records/large.md",
 		);
+	});
+
+	it("lists a tracked Markdown file whose extension is upper case", async () => {
+		const fixture = createHealthFixture();
+		fixture.write("PLANT.MD", "a".repeat(40_001));
+		fixture.commit("plant");
+		const result = await collectCodeHealth({
+			config: {
+				codeHealth: {
+					concept: { branch: "no-concept", folder: "concept" },
+					toolingRoots: [],
+				},
+			},
+			git: (args: string[]) => fixture.git(...args),
+		});
+		const tooling = result.scopes.find(({ name }) => name === "tooling");
+		expect(tooling?.measures.giantDocuments).toMatchObject({
+			total: 1,
+			hits: [{ file: "PLANT.MD", byteCount: 40_001 }],
+		});
 	});
 });
 

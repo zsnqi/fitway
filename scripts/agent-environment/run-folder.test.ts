@@ -1,21 +1,20 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { createRunFolder } from "./run-folder.mjs";
 import {
-	initializeGit,
-	removeTemporaryRoots,
+	cleanupHealthFixtures,
 	runGit,
-	temporaryRoot,
-} from "./test-git-fixture.ts";
+	temporaryRepository,
+} from "./code-health-fixture.ts";
+import { createRunFolder } from "./run-folder.mjs";
 
-afterEach(removeTemporaryRoots);
+afterEach(cleanupHealthFixtures);
 
 function fixture() {
-	const root = temporaryRoot("fitway-run-folder-");
-	const repository = path.join(root, "repository");
-	mkdirSync(repository);
-	initializeGit(repository, "run-folder@example.invalid");
+	const { root, repository } = temporaryRepository(
+		"fitway-run-folder-",
+		"run-folder@example.invalid",
+	);
 	const brief = path.join(repository, "brief.md");
 	writeFileSync(brief, "# Fixture round\n\nBody\n");
 	runGit(repository, ["add", "."]);

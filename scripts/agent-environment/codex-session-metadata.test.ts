@@ -3,11 +3,11 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+	cleanupHealthFixtures,
 	initializeGit,
-	removeTemporaryRoots,
 	runGit,
 	temporaryRoot,
-} from "./test-git-fixture.ts";
+} from "./code-health-fixture.ts";
 
 vi.mock("./codex-environment.mjs", async (importOriginal) => ({
 	...(await importOriginal<typeof import("./codex-environment.mjs")>()),
@@ -37,7 +37,7 @@ vi.mock("./codex-review-launch.mjs", async (importOriginal) => ({
 
 import { prepareLaunch } from "./codex-session.mjs";
 
-afterEach(removeTemporaryRoots);
+afterEach(cleanupHealthFixtures);
 
 function repository(root: string) {
 	initializeGit(root, "metadata@example.invalid");

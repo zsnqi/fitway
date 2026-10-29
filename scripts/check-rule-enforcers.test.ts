@@ -19,11 +19,13 @@ function fixture({
 	script = "node scripts/check.mjs",
 	files = ["scripts/check.mjs"],
 	rowFiles = "`scripts/check.mjs`",
+	enforcer = `\`pnpm ${command}\``,
 }: {
 	command?: string;
 	script?: string;
 	files?: string[];
 	rowFiles?: string;
+	enforcer?: string;
 } = {}) {
 	const root = mkdtempSync(path.join(tmpdir(), "fitway-rule-enforcers-"));
 	roots.push(root);
@@ -45,7 +47,7 @@ function fixture({
 			"",
 			"| Rule | Source | Enforced by | Where it fails |",
 			"| --- | --- | --- | --- |",
-			`| A rule | AGENTS.md | \`pnpm ${command}\` | ${rowFiles} |`,
+			`| A rule | AGENTS.md | ${enforcer} | ${rowFiles} |`,
 			"| A written rule | AGENTS.md | written only |  |",
 			"",
 		].join("\n"),
@@ -87,6 +89,42 @@ describe("rule-enforcer validation", () => {
 		expect(errors).toEqual([
 			`${RULE_ENFORCERS_PATH}:5: row "A rule" names missing file: scripts/missing.mjs`,
 		]);
+	});
+
+	it.each([
+		{
+			span: "`pnpm -s check:gone`",
+			named:
+				'names pnpm command "check:gone", which package.json does not define',
+		},
+		{
+			span: "`scripts/gone-dir/`",
+			named: "names missing folder: scripts/gone-dir/",
+		},
+		{
+			span: "`node scripts/gone.mjs`",
+			named:
+				'names command "node scripts/gone.mjs", whose repository file does not exist: scripts/gone.mjs',
+		},
+		{
+			span: "`a loose phrase`",
+			named: "names code span `a loose phrase`, which is none of",
+		},
+	])("fails $span, naming the row", ({ span, named }) => {
+		const errors = checkRuleEnforcers({ root: fixture({ enforcer: span }) });
+		expect(errors).toHaveLength(1);
+		expect(errors[0]).toContain(
+			`${RULE_ENFORCERS_PATH}:5: row "A rule" ${named}`,
+		);
+	});
+
+	it("passes the same forms when what they name exists", () => {
+		const root = fixture({
+			enforcer:
+				"`pnpm -s check:real` (part: a note), `node scripts/check.mjs`, `CI`, `branch protection`",
+			rowFiles: "`scripts/`, `scripts/check.mjs`",
+		});
+		expect(checkRuleEnforcers({ root })).toEqual([]);
 	});
 
 	it("passes a row enforced only in writing", () => {

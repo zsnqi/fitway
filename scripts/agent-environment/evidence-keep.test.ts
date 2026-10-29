@@ -7,22 +7,21 @@ import {
 } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { keepEvidence } from "./evidence-keep.mjs";
 import {
-	initializeGit,
-	removeTemporaryRoots,
+	cleanupHealthFixtures,
 	runGit,
-	temporaryRoot,
-} from "./test-git-fixture.ts";
+	temporaryRepository,
+} from "./code-health-fixture.ts";
+import { keepEvidence } from "./evidence-keep.mjs";
 
-afterEach(removeTemporaryRoots);
+afterEach(cleanupHealthFixtures);
 
 function repository() {
-	const root = temporaryRoot("fitway-evidence-");
-	const repo = path.join(root, "repo");
-	mkdirSync(repo);
-	initializeGit(repo, "evidence@example.invalid");
-	return { root, repo };
+	const { root, repository } = temporaryRepository(
+		"fitway-evidence-",
+		"evidence@example.invalid",
+	);
+	return { root, repo: repository };
 }
 
 function write(root: string, relative: string, bytes: string | Buffer) {

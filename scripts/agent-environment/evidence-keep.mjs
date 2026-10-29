@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import {
 	copyFileSync,
 	existsSync,
@@ -12,6 +11,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { readGit } from "./code-health-ratchet.mjs";
+import { sha256 } from "./codex-environment.mjs";
 import { beginToolCommand } from "./tool-contract.mjs";
 
 const EVIDENCE_ROOT = "docs/phase-records/evidence";
@@ -53,10 +53,6 @@ export const EVIDENCE_LIMITS = Object.freeze({
 
 function normalized(value) {
 	return value.replaceAll("\\", "/");
-}
-
-function sha256(bytes) {
-	return createHash("sha256").update(bytes).digest("hex");
 }
 
 function inside(root, candidate) {
@@ -125,20 +121,6 @@ function walkNamedPath(source, relative = path.basename(source)) {
 	return files;
 }
 
-function walkFiles(root) {
-	if (!existsSync(root)) return [];
-	const files = [];
-	for (const entry of readdirSync(root, { withFileTypes: true })) {
-		const child = path.join(root, entry.name);
-		if (entry.isSymbolicLink())
-			throw new Error(`refusing symbolic link in evidence folder: ${child}`);
-		if (entry.isDirectory()) files.push(...walkFiles(child));
-		else if (entry.isFile()) files.push(child);
-		else throw new Error(`unsupported entry in evidence folder: ${child}`);
-	}
-	return files;
-}
-
 function tableCell(value) {
 	return `\`${normalized(value).replaceAll("|", "\\|")}\``;
 }
@@ -185,7 +167,7 @@ function checkIgnored(repositoryRoot, target, sources) {
 	}
 }
 
-function plannedEvidence(repositoryRoot, inputs, destination, limits) {
+function plannedEvidence(repositoryRoot, inputs, destination) {
 	const entries = [];
 	for (const input of inputs) {
 		const source = path.resolve(repositoryRoot, input);
@@ -206,7 +188,7 @@ function plannedEvidence(repositoryRoot, inputs, destination, limits) {
 		if (!inside(destination, target))
 			throw new Error(`evidence path escapes destination: ${entry.source}`);
 		const bytes = readFileSync(entry.source);
-		if (bytes.byteLength > limits.fileBytes)
+		if (bytes.byteLength > EVIDENCE_LIMITS.fileBytes)
 			throw new Error(
 				`file exceeds 1 MB: ${entry.source} (${bytes.byteLength} bytes)`,
 			);
@@ -231,7 +213,7 @@ function plannedEvidence(repositoryRoot, inputs, destination, limits) {
 	return [...targets.values()];
 }
 
-function plannedAdditions(planned, limits) {
+function plannedAdditions(planned) {
 	const additions = [];
 	let addedBytes = 0;
 	for (const item of planned) {
@@ -249,13 +231,13 @@ function plannedAdditions(planned, limits) {
 				`evidence target already holds a different file: ${item.target}`,
 			);
 	}
-	if (additions.length > limits.callFiles)
+	if (additions.length > EVIDENCE_LIMITS.callFiles)
 		throw new Error(
-			`evidence call would copy ${additions.length} files; limit is ${limits.callFiles}`,
+			`evidence call would copy ${additions.length} files; limit is ${EVIDENCE_LIMITS.callFiles}`,
 		);
-	if (addedBytes > limits.callBytes)
+	if (addedBytes > EVIDENCE_LIMITS.callBytes)
 		throw new Error(
-			`evidence call would copy ${addedBytes} bytes; limit is ${limits.callBytes}`,
+			`evidence call would copy ${addedBytes} bytes; limit is ${EVIDENCE_LIMITS.callBytes}`,
 		);
 	return { additions, addedBytes };
 }
@@ -266,7 +248,6 @@ function plannedSources({
 	repositoryRoot,
 	sources,
 	addedBytes,
-	limits,
 }) {
 	const existingSources = existsSync(sources)
 		? readFileSync(sources, "utf8")
@@ -277,26 +258,22 @@ function plannedSources({
 	const nextSources = sourcesText(existingSources, lines);
 	const sourceDelta =
 		Buffer.byteLength(nextSources) - Buffer.byteLength(existingSources);
-	const evidenceBytes =
-		walkFiles(path.join(repositoryRoot, EVIDENCE_ROOT)).reduce(
-			(total, file) => total + lstatSync(file).size,
-			0,
-		) +
-		addedBytes +
-		sourceDelta;
-	if (evidenceBytes > limits.evidenceBytes)
+	const evidenceFolder = path.join(repositoryRoot, EVIDENCE_ROOT);
+	const keptBytes = existsSync(evidenceFolder)
+		? walkNamedPath(evidenceFolder, "").reduce(
+				(total, entry) => total + lstatSync(entry.source).size,
+				0,
+			)
+		: 0;
+	const evidenceBytes = keptBytes + addedBytes + sourceDelta;
+	if (evidenceBytes > EVIDENCE_LIMITS.evidenceBytes)
 		throw new Error(
-			`evidence folder would reach ${evidenceBytes} bytes; limit is ${limits.evidenceBytes}`,
+			`evidence folder would reach ${evidenceBytes} bytes; limit is ${EVIDENCE_LIMITS.evidenceBytes}`,
 		);
 	return { existingSources, nextSources };
 }
 
-export function keepEvidence({
-	root = process.cwd(),
-	inputs,
-	to,
-	limits = EVIDENCE_LIMITS,
-} = {}) {
+export function keepEvidence({ root = process.cwd(), inputs, to } = {}) {
 	if (!Array.isArray(inputs) || inputs.length === 0)
 		throw new Error("at least one evidence path is required");
 	const repositoryRoot = assertCanonicalRoot(root);
@@ -305,15 +282,14 @@ export function keepEvidence({
 	const destination = path.join(evidenceRoot, ...parts);
 	const sources = path.join(destination, SOURCES_FILE);
 	checkIgnored(repositoryRoot, destination, sources);
-	const planned = plannedEvidence(repositoryRoot, inputs, destination, limits);
-	const { additions, addedBytes } = plannedAdditions(planned, limits);
+	const planned = plannedEvidence(repositoryRoot, inputs, destination);
+	const { additions, addedBytes } = plannedAdditions(planned);
 	const { existingSources, nextSources } = plannedSources({
 		planned,
 		destination,
 		repositoryRoot,
 		sources,
 		addedBytes,
-		limits,
 	});
 
 	for (const item of additions) {

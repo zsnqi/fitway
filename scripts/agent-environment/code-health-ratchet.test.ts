@@ -226,6 +226,14 @@ describe("code-health ratchet commands", () => {
 		);
 	});
 
+	it("C2 counts a giant Markdown document whose extension is upper case", () => {
+		const root = fixture();
+		write(root, "PLANT.MD", "a".repeat(40_001));
+		expect(writeBaseline(root).files["PLANT.MD"]).toEqual({
+			giantDocuments: 40_001,
+		});
+	});
+
 	it("H2 rejects a count below its baseline", () => {
 		const root = fixture();
 		write(

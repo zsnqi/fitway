@@ -921,8 +921,8 @@
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 119,
-			"expectCalls": 380
+			"testCases": 120,
+			"expectCalls": 381
 		},
 		"apps/server/src": {
 			"testCases": 215,
@@ -1041,12 +1041,12 @@
 			"expectCalls": 73
 		},
 		"scripts": {
-			"testCases": 246,
-			"expectCalls": 520
+			"testCases": 248,
+			"expectCalls": 523
 		},
 		"scripts/agent-environment": {
-			"testCases": 380,
-			"expectCalls": 1098
+			"testCases": 381,
+			"expectCalls": 1099
 		},
 		"scripts/demo": {
 			"testCases": 17,
