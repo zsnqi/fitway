@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 09:55 +03:00 (the four
-  rounds on main; DECISIONS items 19-20 decided; leading-comments' brief waits on Sol)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 10:40 +03:00
+  (leading-comments launched; branch-merge-checks' brief in its two reviews)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-20; 20 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -22,16 +22,26 @@
 
 ## Running now
 
-Measured 2026-10-29 09:55. main `45e4635f`: the retro's four rounds (code-map-index, evidence-home, run-and-ref,
+Measured 2026-10-29 10:40. main `45e4635f`: the retro's four rounds (code-map-index, evidence-home, run-and-ref,
 cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`.
 
-- **leading-comments** (worktree `D:/Projects/fitway-worktrees/tooling-leading-comments` from `ac337544`): the brief
-  `docs/phase-records/handoffs/agent-tooling/briefs/codex-leading-comments.md` has DeepSeek's four readings closed
-  (dispositions in `D:/fitway-temp/brief-review/codex-leading-comments-1`). Sol's review stopped on the ChatGPT Codex
-  account's limit and has not run: switch accounts with `node D:/fitway-temp/codex-accounts.mjs next` (WORKING_AGREEMENTS
-  "Delegation"; the coordinator missed it on 2026-10-29) and rerun it in
-  `D:/fitway-temp/brief-review/codex-leading-comments-1-sol`, copying the brief in again; write its dispositions with
-  the brief's SHA, then launch it (its run folder is named `codex-round-leading-comments`).
+- **leading-comments** (worktree `D:/Projects/fitway-worktrees/tooling-leading-comments` from `ac337544`) is running
+  on DeepSeek at `max`, launched 10:33 from `7c564947`: run folder
+  `D:/fitway-temp/codex-round-6933ecc9-8094-4f89-a4d3-ee592dbd9625`, thread `01a18694-4ee1-7711-b373-a738fd628d94`,
+  launcher log `D:/fitway-temp/launch-logs/leading-comments-launch.log`. Sol's two readings (existing comments that do
+  not say what the file is for; `!` or `?` inside the first sentence) are closed in the brief, dispositions in
+  `D:/fitway-temp/brief-review/codex-leading-comments-1-sol` (the Codex account `smhsdxsz5h` was limited until 10:49,
+  so `hhmam1435` is current).
+- **branch-merge-checks** (DECISIONS items 19-20; worktree `D:/Projects/fitway-worktrees/tooling-branch-merge-checks`
+  at `853111c2`, installed): the brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-branch-merge-checks.md`
+  (`c6377e26`) is in DeepSeek's review (`D:/fitway-temp/brief-review/codex-branch-merge-checks-1`) and Sol's
+  (`...-1-sol`). It launches after leading-comments merges, because that round adds lines at the top of the files
+  this one changes: fast-forward the worktree to the merge, move the brief's HEAD and line numbers, write the new hash
+  in both dispositions. On the base, `pnpm check:repository` counts 125 gone citations (102 distinct paths), all on
+  unchanged lines, and `pnpm check:code-health` passes. Two shapes the coordinator settled in the brief: the base a
+  gone citation is compared against is the upstream only when the upstream is another branch (a pushed line on
+  `codex/owner-redesign-r04` is still the branch's own), from the merge base; and a second admission of a folder is
+  refused, so the door cannot become a standing exception.
 - **The concept's specs are split** (`2aa2fc4d`, on `owner-followup-r04-build`, pushed and green, and on
   `public-redesign-r01`): both originals rebuild byte for byte from the concept's new `spec` folder.
 - **Done** (item 18): the four rounds; r04's `DECISIONS.md` split into an index and parts (`92a4e9a7`); the round records
@@ -41,13 +51,11 @@ cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/ag
 
 ## Next steps
 
-1. leading-comments: Sol's review, dispositions, launch; then the review, fix, grade, merge and record.
-2. **DECISIONS items 19-20, one Codex round:** a one-time admission in `pnpm code-health:baseline` for a folder's
-   current giant files, recorded with its date and reason; gone citations compared against the branch's upstream when
-   it has one; and the tracked list of lost temp paths (each with its citing record, line and cause from the retro's
-   report §2), which the gone-citation check accepts. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the merge of main
-   (the trial is `d2f86a8d`), admit the concept's giant files, pin the build's reference frame (`563e1c83`) in the
-   packet on that branch, and run the four checks there.
+1. leading-comments: when it exits, the diff review, fix, grade, merge and record.
+2. **branch-merge-checks:** close both reviews' readings, then launch it once step 1 is merged; then the review, fix,
+   grade, merge and record. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the
+   merge of main (the trial is `d2f86a8d`), admit the concept's giant files, pin the build's reference frame
+   (`563e1c83`) in the packet on that branch, and run the four checks there.
 3. The public page's designer (its own resume point) once step 2 is in.
 4. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,
    `D:/fitway-temp/retro-20261028/patterns.mjs` and the survey's script count.
