@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 11:25 +03:00
-  (leading-comments merged; branch-merge-checks launched)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 12:35 +03:00
+  (leading-comments and branch-merge-checks merged; main at `c14fb5d7`)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-20; 20 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -22,20 +22,21 @@
 
 ## Running now
 
-Measured 2026-10-29 11:25. main `45e4635f`; the coordinator line carries the retro's four rounds and leading-comments
-(merge `2e6318b2`, record `docs/phase-records/handoffs/agent-tooling/rounds/leading-comments.md`), pushed for CI.
+Measured 2026-10-29 12:35. main `c14fb5d7` (leading-comments, merge `2e6318b2`). The coordinator line also carries
+branch-merge-checks (merge `98ce29d3`, record `docs/phase-records/handoffs/agent-tooling/rounds/branch-merge-checks.md`),
+pushed for CI: `pnpm code-health:baseline --admit <folder> --reason "<why>"`, gone citations compared from the merge
+base with the branch an upstream names, and `docs/agent-context/LOST_TEMP_EVIDENCE.tsv` (125 rows). Its grade
+replayed the trial merge `d2f86a8d` with the tooling merged in (`D:/fitway-temp/code-review/branch-merge-checks-1/GRADE.md`
+and its `T*.log`; the throwaway worktree is removed): with the upstream set, the citations pass and the concept folder
+admits, once the next point is settled.
 
-- **branch-merge-checks** (DECISIONS items 19-20) is running on DeepSeek at `max`, launched 11:24 from `856d8043` in
-  `D:/Projects/fitway-worktrees/tooling-branch-merge-checks` at `be8985b9`: run folder
-  `D:/fitway-temp/codex-round-6ca4ca88-1285-485d-9afd-b3146f27a003`, launcher log
-  `D:/fitway-temp/launch-logs/branch-merge-checks-launch.log`. Both reviews' readings are dispositioned
-  (`D:/fitway-temp/brief-review/codex-branch-merge-checks-1` and `...-1-sol`; one left open: the upstream is the
-  coordinator's act and the message names the base). On the base, `pnpm check:repository` counts 125 gone citations
-  (102 distinct paths), all on unchanged lines, and `pnpm check:code-health` passes. Two shapes the coordinator
-  settled in the brief: a gone citation is compared from the merge base with the upstream only when the upstream is
-  another branch (a pushed line on `codex/owner-redesign-r04` is still the branch's own); and a second admission of a
-  folder is refused, so the door cannot become a standing exception.
-- **main:advance** waits on the CI run of the push that carries leading-comments' merge (K1 of that round).
+- **`NEXT-DIRECTION-BRIEF.md` blocks the admission.**
+  `design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md` is outside the giant root
+  and stands 73 bytes over main's baseline on `owner-followup-r04-build` (59,178 against 59,105), so `--admit`
+  refuses the whole run, as A1 asks. It is r04's file and grew on r04's branch, so it is split by section there (the
+  giant-document rule), behind an index that keeps its name, and reaches `public-redesign-r01` through the merge.
+- **The rest of the trial** (`T8.log`): the packet's pinned frame fails, item 19's third problem; and 33 gone
+  citations the build's own records hold are counted on unchanged lines, not failed.
 - **The concept's specs are split** (`2aa2fc4d`, on `owner-followup-r04-build`, pushed and green, and on
   `public-redesign-r01`): both originals rebuild byte for byte from the concept's new `spec` folder.
 - **Done** (item 18): the four rounds; r04's `DECISIONS.md` split into an index and parts (`92a4e9a7`); the round records
@@ -46,9 +47,11 @@ Measured 2026-10-29 11:25. main `45e4635f`; the coordinator line carries the ret
 ## Next steps
 
 1. When the pushed CI run passes, `pnpm main:advance` to its commit.
-2. **branch-merge-checks:** when it exits, the Sol diff review, fix, grade, merge and record. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the
-   merge of main (the trial is `d2f86a8d`), admit the concept's giant files, pin the build's reference frame
-   (`563e1c83`) in the packet on that branch, and run the four checks there.
+2. **The real merge:** split `NEXT-DIRECTION-BRIEF.md` on `owner-followup-r04-build` (`git grep` its line citations
+   first) and merge that into `public-redesign-r01`; set `public-redesign-r01`'s upstream to
+   `origin/owner-followup-r04-build`; redo the merge of main (the trial is `d2f86a8d`); run
+   `pnpm code-health:baseline --admit design-research/owner-composition-exploration-r04/directions/eclipse --reason
+   "<why>"`; pin the build's reference frame (`563e1c83`) in the packet on that branch; run the four checks there.
 3. The public page's designer (its own resume point) once step 2 is in.
 4. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,
    `D:/fitway-temp/retro-20261028/patterns.mjs` and the survey's script count.
@@ -57,7 +60,9 @@ Measured 2026-10-29 11:25. main `45e4635f`; the coordinator line carries the ret
    When `compare.mjs`'s is retired, its purpose line goes on its first line (leading-comments left it out: a
    giant-file exception counts only on line 1).
 6. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
-   citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more).
+   citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more). From
+   2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once) and F302 (a raised test floor counts as inflation
+   until the commit).
 
 ## Waiting on the user
 
