@@ -1,4 +1,4 @@
-// Resolve repository path references and validate their existence against Git.
+// Resolve path references to missing repository files, skipping Git branch names and suggesting tracked matches.
 import { stat } from "node:fs/promises";
 import path from "node:path";
 import { readGit } from "./git-context.mjs";

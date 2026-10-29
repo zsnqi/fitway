@@ -20,7 +20,7 @@ Counts: 122 files, 0 without a leading comment.
 - `survey-checks.mjs`: Survey rule-home, graph, environment, and command checks. Exports: `checkEnvironment`, `checkFailed`, `checkGraph`, `ruleHomes`, `runChecks`, `surveyPnpmEnv`.
 - `survey-cli.mjs`: Survey options, cleanup commands, outcomes, and console summary. Exports: `cleanupScript`, `consoleSummary`, `finalFolderSelection`, `parseOptions`, `powershellQuote`, `pruneScript`, `surveyOutcome`, `surveyProposals`, `worktreeRemovalCommand`, `writeSurveyOutputs`.
 - `survey-evidence.mjs`: Git, record, folder, and worktree evidence collection. Exports: `briefLifecycle`, `collectFolderRecords`, `collectFolders`, `collectGit`, `collectRecords`, `defaultTempRoot`, `describeLink`, `filesystemPath`, `git`, `inspectWorktreeLinks`, `measureFolder`, `plainPath`, `record`, `root`, `safeDeletionPath`.
-- `survey-output.mjs`: Validate a fresh gardener survey output folder outside worktrees and temp root. Exports: `validateOutput`.
+- `survey-output.mjs`: Validate a fresh gardener survey output folder inside the temp root and outside every worktree. Exports: `validateOutput`.
 - `survey.mjs`: Assemble the gardener survey and format its repository-health report. Exports: `collectSurveyCodeHealth`, `formatReport`.
 
 ## `.agents/skills/verify-fitway`
@@ -119,7 +119,7 @@ Counts: 122 files, 0 without a leading comment.
 - `markdown-lines.mjs`: Count lines and locate indexes in Markdown text. Exports: `lineAt`, `lines`.
 - `new-handoff.mjs`: Create or refresh a milestone resume point from the current repository state. Exports: `createResumePoint`, `localTimestamp`, `parseHandoffArgs`, `replaceYamlScalars`.
 - `path-identity.mjs`: Resolve real and not-yet-created paths into stable identity keys. Exports: `pathKey`, `samePath`.
-- `path-reference.mjs`: Resolve repository path references and validate their existence against Git. Exports: `createPathReferenceResolver`, `exists`, `referenceTarget`.
+- `path-reference.mjs`: Resolve path references to missing repository files, skipping Git branch names and suggesting tracked matches. Exports: `createPathReferenceResolver`, `exists`, `referenceTarget`.
 - `resume-point.mjs`: Validate milestone resume-point files, sections, citations, and size limits. Exports: `hasResumePointMarker`, `MAX_RESUME_POINT_BYTES`, `repositoryPath`, `RESUME_POINT_HEADERS`, `RESUME_POINT_MARKER`, `RESUME_POINT_SECTIONS`, `resumePointFilename`, `validateActiveResumePoints`, `validateResumePoint`.
 - `rule-enforcers.mjs`: Check that each documented rule names a recognizable enforcer. Exports: `checkRuleEnforcers`, `RULE_ENFORCERS_PATH`.
 - `run-folder.mjs`: Create isolated Codex run folders and copy launch inputs safely. Exports: `createRunFolder`, `defaultRunFolderRoot`, `runFolderOptions`.
