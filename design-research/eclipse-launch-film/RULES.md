@@ -15,7 +15,7 @@ Motion Lab article, cinetic.
 - Use only transform and opacity for motion. Use seeded randomness only. Every frame is a function of t.
 
 ## Copy
-- Copy arrives in fragments of 3–7 words. A card caption is a 2-word label plus one line of 10 words or fewer.
+- Copy arrives in fragments of 3–5 words (tightened from 3–7 at Station 1 to meet cinetic's limit). A card caption is a 2-word label plus one line of 10 words or fewer.
 - Hold each line at least 0.3 s per word + 0.5 s (about 1.0–1.2 s for a short line); holds drift and never freeze.
 - The count is always approximate ("approx."). Make no claims beyond what Eclipse shows.
 

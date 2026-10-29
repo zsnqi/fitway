@@ -16,9 +16,9 @@
   --line-2: rgba(255, 255, 255, 0.1);
   --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
   /* One copy role and one anchor for the whole film (reference A: the caption always in the same place). */
-  --copy-size: 68px;
+  --copy-size: 80px;
   --copy-x: 160px;          /* Eclipse's content edge at 1x film scale (120 px x 1.333) */
-  --copy-baseline: 956px;   /* lower third; 124 px above the frame's bottom */
+  --copy-baseline: 950px;   /* lower third; 130 px above the frame's bottom */
 }
 
 html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--page); }

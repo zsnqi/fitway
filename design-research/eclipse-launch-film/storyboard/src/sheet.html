@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eclipse film contact sheet</title>
+<link rel="stylesheet" href="./film.css">
+<style>
+  html, body { width: 2400px; height: auto; overflow: visible; }
+  .sheet { padding: 56px 56px 64px; }
+  h1 { margin: 0 0 6px; font: 500 30px/1.2 var(--font); color: var(--ink); }
+  .sub { margin: 0 0 36px; font: 400 18px/1.4 var(--font); color: var(--ink-3); }
+  .grid { display: grid; grid-template-columns: repeat(3, 744px); gap: 40px 28px; }
+  figure { margin: 0; }
+  img { display: block; width: 744px; height: 418.5px; border-radius: 6px; outline: 1px solid var(--line-2); }
+  figcaption { display: flex; gap: 14px; align-items: baseline; margin-top: 12px; font: 400 17px/1.35 var(--font); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .id { font-weight: 500; color: var(--ink); }
+  .bar { color: var(--red-hi); font-weight: 500; }
+  .what { display: block; margin-top: 4px; color: var(--ink-3); font-size: 16px; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <h1>Eclipse launch film · Station 1 style stills</h1>
+  <p class="sub">1920×1080 at 60 fps · 128 BPM, one bar 1.875 s · bar.beat on the grid · t in seconds · f = round(60 t)</p>
+  <div class="grid" id="grid"></div>
+</div>
+<script type="module">
+  import { barBeat, fr } from './eclipse.js';
+  const list = await (await fetch('./stills.json')).json();
+  const grid = document.getElementById('grid');
+  const loads = [];
+  for (const s of list) {
+    const { bar, beat } = barBeat(s.t);
+    const where = bar > 16 ? `tail +${(s.t - 30).toFixed(2)} s` : `bar ${bar}.${beat}`;
+    const fig = document.createElement('figure');
+    const img = new Image();
+    img.src = `../still-${s.id}-${s.slug}.png?${Date.now()}`;
+    loads.push(new Promise((r) => { img.onload = r; img.onerror = r; }));
+    fig.append(img);
+    fig.insertAdjacentHTML('beforeend', `<figcaption><span class="id">${s.id}</span><span class="bar">${where}</span><span>${s.t.toFixed(2)} s · f${fr(s.t)}</span><span>${s.beat}</span></figcaption><span class="what">${s.what}</span>`);
+    grid.append(fig);
+  }
+  await Promise.all(loads);
+  await document.fonts.ready;
+  document.body.dataset.ready = '1';
+</script>
+</body>
+</html>

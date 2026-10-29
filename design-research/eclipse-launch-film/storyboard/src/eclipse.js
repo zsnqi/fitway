@@ -34,7 +34,9 @@ export const clamp01 = (v) => Math.min(1, Math.max(0, v));
 export const prog = (t, a, b, e = (x) => x) => e(clamp01((t - a) / (b - a)));
 export const lmix = (a, b, p) => Math.exp(Math.log(a) + (Math.log(b) - Math.log(a)) * p);
 
-export async function loadPage(parent, { page, lang = 'en', w = 1440, h = 900, query = '' }) {
+export async function loadPage(parent, { page, lang = 'en', w = 1600, h = 900, query = '' }) {
+  // 1600x900 is a real Eclipse layout (its first screen is fixed to the viewport from 1200 px) and exactly 16:9, so a
+  // wide shot at 1.2x fills the frame with no pillar cutting the page wash.
   const cam = document.createElement('div');
   cam.className = 'cam';
   const frame = document.createElement('iframe');
@@ -66,7 +68,7 @@ const SVGNS = 'http://www.w3.org/2000/svg';
  *  answers: { now, peak, entries, busy } 0..1 each, the digit roll from below inside the digits' ink box
  *  (0 = out of sight, 1 = in place; never a count-up). pulse: 0..1 of the live ring's 5 s cycle, or null. */
 export function dailyState(doc, { line = 1, mark = 1, answers = {}, pulse = null } = {}) {
-  const svg = doc.querySelector('.chart svg') || doc.querySelector('svg #ln-0')?.ownerSVGElement;
+  const svg = doc.getElementById('ln-0').ownerSVGElement; // the plot's own SVG (the first SVG in .chart is an icon)
   const end = doc.getElementById('end-dot');
   const ex = Number(end.getAttribute('cx'));
   const paths = [...doc.querySelectorAll('[id^="ln-"]')].filter((p) => /^ln-\d+$/.test(p.id));
@@ -164,4 +166,17 @@ export function reportsFill(doc, rows, { light = false, busiest = true } = {}) {
   let st = doc.getElementById('film-style');
   if (!st) { st = doc.createElement('style'); st.id = 'film-style'; doc.head.append(st); }
   st.textContent = `.hc.is-top.film-no-top::after{display:none}`;
+}
+
+/** The hook's isolation: before the drop, only today's line, its fine vertical lines and the faint usual line show on
+ *  the black stage; every surface, label, grid line and light appears at once on the drop's cut (bar 3). */
+export function isolateLine(doc, on = true) {
+  let st = doc.getElementById('film-isolate');
+  if (!st) { st = doc.createElement('style'); st.id = 'film-isolate'; doc.head.append(st); }
+  st.textContent = on ? `body *:not(#plot-svg, #plot-svg *) { visibility: hidden !important; } #plot-svg { visibility: visible !important; }` : '';
+  const svg = doc.getElementById('ln-0').ownerSVGElement;
+  // the grid, the time axis and the missing span's dots: hidden with the rest of the chrome
+  svg.querySelectorAll('path[stroke^="rgba(255,255,255"], circle[r="1"]').forEach((el) => {
+    if (on) el.setAttribute('visibility', 'hidden'); else el.removeAttribute('visibility');
+  });
 }

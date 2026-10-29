@@ -9,7 +9,7 @@
  {
   "id": "02",
   "slug": "drop",
-  "t": 3.9,
+  "t": 4.3,
   "beat": "Drop: Daily",
   "what": "Cut wide on the drop; the four answers roll in"
  },
@@ -23,7 +23,7 @@
  {
   "id": "04",
   "slug": "now-lands",
-  "t": 8.2,
+  "t": 8.6,
   "beat": "Landing: now",
   "what": "The line lands at 7:42 PM; the reading swells into its ring"
  },
@@ -58,7 +58,7 @@
  {
   "id": "09",
   "slug": "devices",
-  "t": 23.2,
+  "t": 23.1,
   "beat": "Device reveal",
   "what": "Laptop and phone land on the biggest lift"
  },

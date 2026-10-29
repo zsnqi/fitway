@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FITWAY mark sheet</title>
+<link rel="stylesheet" href="./film.css">
+<style>
+  html, body { width: 1920px; height: auto; overflow: visible; }
+  .sheet { padding: 56px 64px 72px; display: grid; gap: 44px; }
+  h1 { margin: 0; font: 500 30px/1.2 var(--font); }
+  h2 { margin: 0 0 16px; font: 500 20px/1.3 var(--font); color: var(--ink); }
+  p, li { font: 400 16px/1.5 var(--font); color: var(--ink-2); margin: 0; }
+  .row { display: flex; gap: 28px; align-items: flex-start; }
+  .cell { display: flex; flex-direction: column; gap: 10px; }
+  .cap { font: 400 15px/1.4 var(--font); color: var(--ink-3); max-width: 420px; }
+  .tile { background: #0f0e0f; outline: 1px solid var(--line-2); border-radius: 8px; display: grid; place-items: center; }
+  .sizes { display: flex; gap: 36px; align-items: end; padding: 28px; }
+  .lock { padding: 40px 48px; display: flex; flex-direction: column; gap: 36px; align-items: flex-start; }
+  .lk { display: flex; align-items: center; }
+  .lk .wm { font-weight: 500; letter-spacing: 0.12em; color: #fff; line-height: 1; white-space: nowrap; }
+  .num { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="sheet" id="sheet">
+  <div><h1>FITWAY mark sheet · the vector reconstruction and its construction</h1>
+  <p id="fit"></p></div>
+  <div class="row" id="r1"></div>
+  <div class="row" id="r2"></div>
+  <div class="row" id="r3"></div>
+</div>
+<script type="module">
+  import { loadMark } from './mark.js';
+  const g = await loadMark();
+  const rep = await (await fetch('./mark-fit/report.json')).json();
+  document.getElementById('fit').innerHTML = `Fitted to <code>brand/fitway-logo.png</code> at 1024. Edge offset across ${rep.all.samples} samples: RMS <span class="num">${rep.all.rms}</span> px, 95th percentile <span class="num">${rep.all.p95}</span> px, max <span class="num">${rep.all.max}</span> px (${rep.all.over_1px} of samples over 1 px, at two cut corners). Six near-circular edges, eleven 45° lines, one dot.`;
+  const P = g.paths, D = g.dot;
+  const fill = (col = '#fff') => Object.values(P).map((d) => `<path d="${d}" fill="${col}"/>`).join('') + `<circle cx="${D.cx}" cy="${D.cy}" r="${D.r}" fill="${col}"/>`;
+  const outline = (col) => Object.values(P).map((d) => `<path d="${d}" fill="none" stroke="${col}" stroke-width="2.2"/>`).join('') + `<circle cx="${D.cx}" cy="${D.cy}" r="${D.r}" fill="none" stroke="${col}" stroke-width="2.2"/>`;
+  const svg = (inner, size, vb = '0 0 1024 1024') => `<svg width="${size}" height="${size}" viewBox="${vb}">${inner}</svg>`;
+  const cons = () => {
+    let s = '';
+    for (const c of Object.values(g.circles)) s += `<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f5f3f2" stroke-opacity=".35" stroke-width="2"/>`;
+    s += `<circle cx="${D.cx}" cy="${D.cy}" r="${D.r + 14}" fill="none" stroke="#f5f3f2" stroke-opacity=".35" stroke-width="2"/>`;
+    for (const [k, L] of Object.entries(g.lines)) {
+      const th = L.angle * Math.PI / 180, n = [Math.cos(th), Math.sin(th)], t = [-n[1], n[0]], cx = 513.44, cy = 510.67;
+      const d = n[0] * cx + n[1] * cy - L.c, p = [cx - n[0] * d, cy - n[1] * d], len = ['u1', 'u2', 'l1', 'l2', 'u2L'].includes(k) ? 560 : 120;
+      s += `<line x1="${p[0] - t[0] * len}" y1="${p[1] - t[1] * len}" x2="${p[0] + t[0] * len}" y2="${p[1] + t[1] * len}" stroke="#f5f3f2" stroke-opacity=".35" stroke-width="2"/>`;
+    }
+    for (const n of Object.values(g.nodes).flat()) s += `<circle cx="${n[0]}" cy="${n[1]}" r="7" fill="none" stroke="#ff2946" stroke-width="2"/>`;
+    return s;
+  };
+  const cell = (inner, cap) => `<div class="cell">${inner}<div class="cap">${cap}</div></div>`;
+  // Row 1: the PNG, the vector, the overlay, the construction
+  document.getElementById('r1').innerHTML =
+    cell(`<div class="tile" style="width:420px;height:420px"><svg width="380" height="380" viewBox="0 0 1024 1024"><image href="./build/logo.png" width="1024" height="1024"/></svg></div>`, 'brand/fitway-logo.png, as supplied') +
+    cell(`<div class="tile" style="width:420px;height:420px">${svg(fill(), 380)}</div>`, 'fitway-mark.svg: five pieces (ring, upper arc, lower arc, two arms) and the dot') +
+    cell(`<div class="tile" style="width:420px;height:420px">${svg(`<image href="./build/logo.png" width="1024" height="1024" opacity=".9"/>` + outline('#ff2946'), 380)}</div>`, 'Overlay: the PNG with the vector outline in red') +
+    cell(`<div class="tile" style="width:420px;height:420px">${svg(cons() + fill('rgba(255,255,255,.92)'), 380, '-60 -60 1144 1144')}</div>`, 'The construction the film draws: the fitted circles, the 45° bands and cuts, the nodes in red');
+  // Row 2: sizes and the misread test
+  document.getElementById('r2').innerHTML =
+    cell(`<div class="tile sizes">${[256, 64, 32, 16].map((s) => svg(fill(), s)).join('')}</div>`, 'At 256, 64, 32 and 16 px on Eclipse ink. At 64 px it reads as a round emblem with an arrow entering it; the closest common symbols are a target or a play button, and the arrow passing through the ring\'s opening breaks both. At 16 px the dot and the inner arc merge; the rail tile uses 26 px.') +
+    cell(`<div class="tile sizes" style="background:#f5f3f2">${[64, 32].map((s) => svg(fill('#070707'), s)).join('')}</div>`, 'One colour, inverse: it holds as ink on chalk.');
+  // Row 3: three lockup settings, at the end card's size and at a quarter
+  const SET = [
+    { id: 'A, tight', ratio: 2.0, gap: 0.34, w: 500 },
+    { id: 'B, balanced (chosen)', ratio: 2.3, gap: 0.42, w: 500 },
+    { id: 'C, airy', ratio: 2.7, gap: 0.5, w: 400 },
+  ];
+  const lock = (s, size) => { const cap = size * 0.7, h = s.ratio * cap; return `<div class="lk" style="gap:${h * s.gap}px">${svg(fill(), h, '120.5 117.5 785.6 785.6')}<span class="wm" style="font-size:${size}px;font-weight:${s.w}">FITWAY</span></div>`; };
+  document.getElementById('r3').innerHTML = SET.map((s) => cell(`<div class="tile lock">${lock(s, 112)}${lock(s, 28)}</div>`, `${s.id}: ring height ${s.ratio}× the name's cap height, gap ${s.gap}× the ring, Readex Pro ${s.w}, 0.12 em`)).join('');
+  await document.fonts.ready;
+  await new Promise((r) => setTimeout(r, 400));
+  document.body.dataset.ready = '1';
+</script>
+</body>
+</html>
