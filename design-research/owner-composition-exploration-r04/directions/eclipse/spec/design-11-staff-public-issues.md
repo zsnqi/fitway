@@ -6,7 +6,7 @@ To come (step 6, its own milestone).
 
 ## 6. Public
 
-To come (step 7, its own milestone; mobile-first, light, no control or personal data).
+To come (step 7, its own milestone; mobile-first, dark, no control or personal data).
 
 ## 7. Known issues register
 
