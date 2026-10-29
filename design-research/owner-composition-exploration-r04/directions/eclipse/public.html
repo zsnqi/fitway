@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#070707">
   <title>FITWAY</title>
-  <meta name="description" content="FITWAY public crowd page concept, public-redesign-r01 direction 2 (the day's timetable). Exploration concept with synthetic data. Not production.">
+  <meta name="description" content="FITWAY public crowd page concept, public-redesign-r01 direction 3. Exploration concept with synthetic data. Not production.">
   <script>
-    // Before first paint: ?lang=ar|en (default ar). Demo hook only, never a control on the page: ?pct=off takes the
-    // percentage away, to show the page reads whole without it.
+    // Before first paint: ?lang=ar|en (default ar). Demo hooks only, never controls on the page: ?pct=off takes the
+    // percentage away, to show the page reads whole without it; ?motion=off plays no intro.
     (function () {
       var p = new URLSearchParams(location.search), r = document.documentElement;
       var en = p.get("lang") === "en";
@@ -21,10 +21,10 @@
   <link rel="stylesheet" href="fonts/readex-pro.css">
   <link rel="stylesheet" href="public.css">
   <script>
-    for (var weight of ["400", "500"]) {
-      document.fonts.load(weight + ' 16px "Readex Pro"', "العربية FITWAY 0123456789")
+    window.publicFonts = Promise.all(["400", "500"].map(function (weight) {
+      return document.fonts.load(weight + ' 16px "Readex Pro"', "العربية FITWAY 0123456789")
         .catch(function () { /* Failed faces keep the existing fallback. */ });
-    }
+    }));
   </script>
   <script src="public.js" defer blocking="render"></script>
 </head>
@@ -32,20 +32,22 @@
   <div class="page">
     <!-- The gym's own light at the top start corner: part of the page box, never fixed to the viewport. -->
     <i class="wash" aria-hidden="true"></i>
-    <header class="top">
-      <span class="brand" lang="en">
-        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-          <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
-          <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
-          <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
-          <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
-        </svg>
-        <span class="wordmark">FITWAY</span>
-      </span>
-      <button class="lang" id="lang" type="button"><span id="lang-glyph" lang="en"></span></button>
-    </header>
-    <!-- The day, drawn by public.js: the gym, the answer and the day's hours on one grid. -->
-    <main class="day" id="day"></main>
+    <div class="col">
+      <header class="top">
+        <span class="brand" lang="en">
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
+            <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
+            <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
+            <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
+          </svg>
+          <span class="wordmark">FITWAY</span>
+        </span>
+        <a class="lang" id="lang" href="?lang=en"></a>
+      </header>
+      <!-- Drawn by public.js from the fixtures: the answer card and the usual day. -->
+      <main class="board" id="board"></main>
+    </div>
   </div>
 </body>
 </html>
