@@ -127,7 +127,7 @@ visual:
       sha256: ee6e34c3194deb20c20850fe570fb2256a6f442bd988b1089a6d3091389d71bf
   referenceFrames:
     - path: design-research/owner-composition-exploration-r04/directions/eclipse/evidence/daily-ar-1440x900.png
-      sha256: bc12ff9fd50ddb6b72c4f6fe01f3e752385e4faa75d601c2e775ad363a968317
+      sha256: 563e1c836c5dbb120832da5c1da5b6eb8d4ed853cc85b565eb7ae6da68f8b5bf
   openHumanDecisions:
     - The direction and the level mark's form are the user's choice after seeing them.
     - Public composition authority remains vacant under ADR-010 until a concept is selected and promoted.

@@ -558,17 +558,41 @@
 		"design-research/FITWAY_CROWD_LEVEL_VISUAL_RESEARCH-20260730.md": {
 			"giantDocuments": 51472
 		},
-		"design-research/owner-composition-exploration-r04/directions/eclipse/app.js": {
-			"giantFiles": 1860
+		"design-research/owner-composition-exploration-r04/directions/eclipse/access.js": {
+			"giantFiles": 1202
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/activity.js": {
+			"giantFiles": 810
 		},
 		"design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs": {
-			"giantFiles": 1991
+			"giantFiles": 1754
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/components.js": {
+			"giantFiles": 985
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/daily.js": {
+			"giantFiles": 2300
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/HISTORY.md": {
+			"giantDocuments": 133559
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/INDEX.md": {
+			"giantDocuments": 84714
 		},
 		"design-research/owner-composition-exploration-r04/directions/eclipse/README.md": {
-			"giantDocuments": 146755
+			"giantDocuments": 88737
 		},
-		"design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md": {
-			"giantDocuments": 59105
+		"design-research/owner-composition-exploration-r04/directions/eclipse/reports.js": {
+			"giantFiles": 1428
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/settings-capture.mjs": {
+			"giantFiles": 1012
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/settings.js": {
+			"giantFiles": 1817
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/style.css": {
+			"giantFiles": 915
 		},
 		"docs/phase-records/handoffs/agent-environment/codex-rounds.md": {
 			"giantDocuments": 89768
@@ -1052,6 +1076,75 @@
 			"expectCalls": 73
 		}
 	},
+	"admissions": [
+		{
+			"folder": "design-research/owner-composition-exploration-r04/directions/eclipse",
+			"date": "2026-10-29",
+			"reason": "The Eclipse concept's accepted pages from owner-followup-r04-build enter the baseline once, on the merge of main into public-redesign-r01 (agent-tooling DECISIONS item 19); from now on only growth fails.",
+			"files": [
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/access.js",
+					"measure": "giantFiles",
+					"old": 0,
+					"new": 1202
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/activity.js",
+					"measure": "giantFiles",
+					"old": 0,
+					"new": 810
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/components.js",
+					"measure": "giantFiles",
+					"old": 0,
+					"new": 985
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/daily.js",
+					"measure": "giantFiles",
+					"old": 0,
+					"new": 2300
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/HISTORY.md",
+					"measure": "giantDocuments",
+					"old": 0,
+					"new": 133559
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/INDEX.md",
+					"measure": "giantDocuments",
+					"old": 0,
+					"new": 84714
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/reports.js",
+					"measure": "giantFiles",
+					"old": 0,
+					"new": 1428
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/settings-capture.mjs",
+					"measure": "giantFiles",
+					"old": 0,
+					"new": 1012
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/settings.js",
+					"measure": "giantFiles",
+					"old": 0,
+					"new": 1817
+				},
+				{
+					"file": "design-research/owner-composition-exploration-r04/directions/eclipse/style.css",
+					"measure": "giantFiles",
+					"old": 0,
+					"new": 915
+				}
+			]
+		}
+	],
 	"giantRoots": [
 		"design-research/owner-composition-exploration-r04/directions/eclipse"
 	]
