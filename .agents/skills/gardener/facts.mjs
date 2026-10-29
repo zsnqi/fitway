@@ -1,8 +1,68 @@
+// Gardener evidence, record, path, worktree, and gate facts from repository text.
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import ts from "typescript";
+import { isMap, parseDocument } from "yaml";
 
 export const MIN_FOLDER_AGE_DAYS = 7;
 export const TRUNK_REF = "origin/main";
+export const config = JSON.parse(
+	readFileSync(new URL("./config.json", import.meta.url), "utf8"),
+);
+
+export function ledgerHash(text) {
+	const document = parseDocument(text);
+	if (document.errors.length) throw document.errors[0];
+	if (!isMap(document.contents))
+		throw new Error("Open ledger must be a mapping");
+	const entry = document.contents.items.find(
+		(item) => item.key.value === "gardener",
+	);
+	const openState = document.toJS();
+	delete openState.gardener;
+	let guarded = text;
+	if (entry) {
+		// Keep every other byte, including comments and whitespace in open records.
+		let start = entry.key.range[0];
+		let end =
+			entry.value?.range[document.contents.flow ? 1 : 2] ?? entry.key.range[2];
+		if (document.contents.flow) {
+			let next = end;
+			while (/\s/.test(text[next] ?? "")) next++;
+			if (text[next] === ",") {
+				end = next + 1;
+				while (/\s/.test(text[end] ?? "")) end++;
+			} else {
+				let previous = start - 1;
+				while (/\s/.test(text[previous] ?? "")) previous--;
+				if (text[previous] === ",") start = previous;
+			}
+		}
+		guarded = text.slice(0, start) + text.slice(end);
+	}
+	// An alias in an open field can resolve through gardener; guard that value too.
+	return createHash("sha256")
+		.update(guarded)
+		.update("\0")
+		.update(JSON.stringify(openState))
+		.digest("hex");
+}
+
+export function changedRecords(recorded, current) {
+	const before = new Map(
+		recorded.map(({ source, sha256 }) => [source, sha256]),
+	);
+	const after = new Map(current.map(({ source, sha256 }) => [source, sha256]));
+	return [...new Set([...before.keys(), ...after.keys()])]
+		.filter(
+			(source) =>
+				!before.has(source) ||
+				!after.has(source) ||
+				before.get(source) !== after.get(source),
+		)
+		.sort();
+}
 
 export function localDate(date = new Date()) {
 	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -49,8 +109,102 @@ export function referenceText(record) {
 	);
 }
 
+const PATH_CITATION =
+	/[`"']((?:[a-z]:\/|\/)[^`"'\r\n]+)[`"']|<((?:[a-z]:\/|\/)(?:<[^<>\r\n]*>|[^<>\r\n])+)>|(?:[a-z]:\/|\/)(?:<[^<>\r\n]*>|[^\s`"'<>),;])+/g;
+
+function citationTargets(line, tempRoot) {
+	return [...line.matchAll(PATH_CITATION)].flatMap((match) => {
+		const quoted = match[1] ?? match[2];
+		let raw = quoted ?? match[0];
+		// Paired Markdown bold markers are formatting, not wildcards.
+		if (
+			!quoted &&
+			line.slice(Math.max(0, match.index - 2), match.index) === "**" &&
+			raw.endsWith("**")
+		)
+			raw = raw.slice(0, -2);
+		// Ambiguous sentence punctuation must also protect a folder whose real
+		// name ends in a dot; quoted spelling stays exact.
+		const targets = quoted
+			? [raw]
+			: [...new Set([raw, raw.replace(/[.:]+$/, "")])];
+		return targets.flatMap((value) => {
+			let target = value
+				.replace(/:\d+(?:-\d+)?$/, "")
+				.replace(/^\/([a-z])\//, "$1:/");
+			const placeholder = target.search(/[<*?{]/);
+			if (placeholder !== -1) {
+				// A pattern names only the complete segments before its first
+				// patterned segment, never a partial folder name.
+				target = target.slice(0, target.lastIndexOf("/", placeholder));
+				if (!inside(tempRoot, target)) return [];
+			}
+			return [
+				{
+					target,
+					index: match.index,
+					end: match.index + match[0].length,
+				},
+			];
+		});
+	});
+}
+
+export function pathCitations(record, { tempRoot = "D:/fitway-temp" } = {}) {
+	return referenceText(record)
+		.replaceAll("\\", "/")
+		.split(/\r?\n/)
+		.flatMap((line, index) => {
+			const text = line
+				.toLowerCase()
+				.replace(/(^|[^a-z0-9_./:-])(fitway-temp\/)/g, "$1d:/$2");
+			return citationTargets(text, tempRoot).flatMap((citation) => {
+				if (
+					key(citation.target) === key(tempRoot) ||
+					!inside(tempRoot, citation.target) ||
+					/\(gone:\s*[^)]+\)/i.test(text.slice(citation.end))
+				)
+					return [];
+				return [
+					{
+						source: record.source,
+						line: index + 1,
+						path: citation.target,
+						text: line.trim(),
+					},
+				];
+			});
+		});
+}
+
+export function citationIndex(records, { tempRoot = "D:/fitway-temp" } = {}) {
+	const index = new Map();
+	for (const citation of records.flatMap((record) =>
+		pathCitations(record, { tempRoot }),
+	)) {
+		const target = key(citation.path);
+		const entries = index.get(target) ?? [];
+		entries.push(citation);
+		index.set(target, entries);
+	}
+	return index;
+}
+
+export function citationsAtOrAbove(value, index) {
+	let target = key(value);
+	const citations = [];
+	while (target) {
+		citations.push(...(index.get(target) ?? []));
+		const slash = target.lastIndexOf("/");
+		if (slash < 0) break;
+		target = target.slice(0, slash);
+	}
+	return citations;
+}
+
 export function references(value, records, { branch = false, tempRoot } = {}) {
 	const normalized = key(value);
+	const root = tempRoot ?? "D:/fitway-temp";
 	const aliases = branch
 		? [
 				normalized,
@@ -58,8 +212,17 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 			]
 		: [];
 	return records.flatMap((record) => {
-		const lines = referenceText(record).replaceAll("\\", "/").split(/\r?\n/);
-		return lines.flatMap((line, index) => {
+		const cached =
+			!branch &&
+			record.referenceScope &&
+			key(record.referenceScope) === key(root) &&
+			inside(record.referenceScope, value);
+		const lines = cached
+			? record.referenceLines
+			: referenceText(record).replaceAll("\\", "/").split(/\r?\n/);
+		return lines.flatMap((entry, index) => {
+			const line = cached ? entry.text : entry;
+			const lineNumber = cached ? entry.line : index + 1;
 			const text = line
 				.toLowerCase()
 				.replace(/(^|[^a-z0-9_./:-])(fitway-temp\/)/g, "$1d:/$2");
@@ -72,30 +235,17 @@ export function references(value, records, { branch = false, tempRoot } = {}) {
 			// A pointer to an ancestor or to evidence below a folder protects it.
 			const cited =
 				!branch &&
-				[
-					...text.matchAll(
-						/(?:[a-z]:\/|\/)[^\s`"'<>),;]+|[`"'<]((?:[a-z]:\/|\/)[^`"'<>\r\n]+)[`"'>]/g,
-					),
-				].some((match) => {
-					const raw = match[1] ?? match[0];
-					// Ambiguous sentence punctuation must also protect a folder
-					// whose real name ends in a dot; quoted spelling stays exact.
-					const targets = match[1] ? [raw] : [raw, raw.replace(/[.:*]+$/, "")];
-					return targets.some((value) => {
-						const target = value
-							.replace(/:\d+(?:-\d+)?$/, "")
-							.replace(/^\/([a-z])\//, "$1:/");
-						return (
-							text[match.index + match[0].length] !== "<" &&
-							!/[<*?]/.test(target) &&
-							key(target) !== key(tempRoot ?? "D:/fitway-temp") &&
-							key(target) !== key("D:/fitway-temp") &&
-							(inside(target, normalized) || inside(normalized, target))
-						);
-					});
+				citationTargets(text, root).some((citation) => {
+					const { target } = citation;
+					return (
+						text[citation.end] !== "<" &&
+						!inside(target, root) &&
+						key(target) !== key(root) &&
+						(inside(target, normalized) || inside(normalized, target))
+					);
 				});
 			return named || cited
-				? [{ source: record.source, line: index + 1, text: line.trim() }]
+				? [{ source: record.source, line: lineNumber, text: line.trim() }]
 				: [];
 		});
 	});
@@ -123,7 +273,13 @@ export function classifyBranches(branches, records, worktrees) {
 	});
 }
 
-export function classifyWorktrees(worktrees, records, current) {
+export function classifyWorktrees(
+	worktrees,
+	records,
+	current,
+	weeklyWorktree = process.env.FITWAY_GARDENER_WORKTREE ??
+		config.weeklyWorktree,
+) {
 	return worktrees.map((worktree) => {
 		const protectedBy = [
 			...references(worktree.path, records),
@@ -135,11 +291,24 @@ export function classifyWorktrees(worktrees, records, current) {
 		];
 		const statusMeasured = typeof worktree.status === "string";
 		const clean = statusMeasured ? worktree.status === "" : null;
+		const linksSafe =
+			worktree.linksMeasured === true &&
+			!worktree.linkErrors?.length &&
+			!worktree.links?.some((link) => link.outside || link.error);
 		const ageDays = (Date.now() - Date.parse(worktree.lastCommitAt)) / 86400000;
 		const self =
 			key(worktree.path) === key(current) ||
-			key(worktree.path) === "d:/projects/fitway-worktrees/gardener" ||
+			key(worktree.path) === key(weeklyWorktree) ||
 			worktree.branch?.startsWith("refs/heads/gardener/");
+		const candidate =
+			worktree.exists &&
+			worktree.merged &&
+			clean &&
+			linksSafe &&
+			!worktree.locked &&
+			!protectedBy.length &&
+			!self &&
+			worktree.branch !== "refs/heads/main";
 		return {
 			...worktree,
 			status: worktree.status ?? null,
@@ -151,6 +320,7 @@ export function classifyWorktrees(worktrees, records, current) {
 						? "Registration path is missing"
 						: "Status was not measured")),
 			clean,
+			linksSafe,
 			self,
 			coordinatorReview:
 				worktree.exists &&
@@ -160,15 +330,11 @@ export function classifyWorktrees(worktrees, records, current) {
 				ageDays >= MIN_FOLDER_AGE_DAYS,
 			protectedBy,
 			missing: worktree.exists === false,
-			mergedClean: worktree.exists && worktree.merged && clean,
-			candidate:
-				worktree.exists &&
-				worktree.merged &&
-				clean &&
-				!worktree.locked &&
-				!protectedBy.length &&
-				!self &&
-				worktree.branch !== "refs/heads/main",
+			linksWithheld: worktree.exists && !linksSafe,
+			mergedCleanWithheldForLinks:
+				worktree.exists && worktree.merged && clean && !linksSafe,
+			mergedClean: candidate,
+			candidate,
 		};
 	});
 }
@@ -197,6 +363,7 @@ export function classifyFolders(folders, records, worktrees, tempRoot, now) {
 		}
 		const safe =
 			deletionPathSafe &&
+			!folder.gone &&
 			key(path.dirname(folder.path)) === key(tempRoot) &&
 			!folder.link &&
 			!(folder.skippedLinks > 0) &&
@@ -319,16 +486,38 @@ export function parseFastSteps(source) {
 		(node) => ts.isFunctionDeclaration(node) && node.name?.text === "fastSteps",
 	);
 	const statement = fn?.body?.statements.find(ts.isReturnStatement);
-	function literal(node) {
-		if (ts.isStringLiteral(node)) return node.text;
-		if (ts.isArrayLiteralExpression(node)) return node.elements.map(literal);
-		throw new Error(
-			"fastSteps contains a non-literal step; cannot establish gate coverage",
-		);
-	}
 	if (!statement?.expression)
 		throw new Error("fastSteps return array is missing");
-	return literal(statement.expression);
+	// A step may carry a trailing environment object; only its label and args matter.
+	if (!ts.isArrayLiteralExpression(statement.expression))
+		throw new Error(
+			"fastSteps return array is not literal; cannot establish gate coverage",
+		);
+	return statement.expression.elements.map((step, index) => {
+		const array = ts.isArrayLiteralExpression(step);
+		const label = array ? step.elements[0] : undefined;
+		const identity =
+			label && ts.isStringLiteral(label)
+				? `label ${JSON.stringify(label.text)}`
+				: `position ${index + 1} (1-based)`;
+		const fail = (part) => {
+			throw new Error(
+				`fastSteps step ${identity}: ${part} is not literal; cannot establish gate coverage`,
+			);
+		};
+		if (!array) fail("step");
+		if (!label || !ts.isStringLiteral(label)) fail("label");
+		const args = step.elements[1];
+		if (!args || !ts.isArrayLiteralExpression(args)) fail("arguments array");
+		return [
+			label.text,
+			args.elements.map((arg, argIndex) => {
+				if (!ts.isStringLiteral(arg))
+					fail(`argument ${argIndex + 1} (1-based)`);
+				return arg.text;
+			}),
+		];
+	});
 }
 
 export function calledImports(source) {

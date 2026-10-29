@@ -1,11 +1,18 @@
+// Build and print a milestone's ordered agent-context reading and resume plan.
 import { readFile as readFileFromFs } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
+import { inspectPath } from "./agent-context-paths.mjs";
 import { behindUpstreamWarning } from "./agent-environment/git-context.mjs";
 import { hasResumePointMarker } from "./agent-environment/resume-point.mjs";
-import { inspectPath } from "./check-agent-context.mjs";
+import {
+	beginToolCommand,
+	runToolStartup,
+	ToolStartupError,
+	toolStartupLine,
+} from "./agent-environment/tool-contract.mjs";
 
 const root = process.cwd();
 const OPEN_STATUSES = new Set([
@@ -26,7 +33,7 @@ async function inspectRepositoryPath(
 	repositoryRoot,
 	relativePath,
 	inspectPathImpl = inspectPath,
-	{ allowMissing = false, packet = false } = {},
+	{ packet = false } = {},
 ) {
 	const details = await inspectPathImpl(repositoryRoot, relativePath);
 	if (details.unsafe) throw new Error(details.unsafe);
@@ -40,7 +47,6 @@ async function inspectRepositoryPath(
 			throw new Error(
 				`${packet ? "case-mismatched packet path" : "case-mismatched path"} ${relativePath}; actual entry is ${details.actualCase}`,
 			);
-		if (allowMissing) return null;
 		throw new Error(`missing repository path: ${relativePath}`);
 	}
 	if (details.isDirectory)
@@ -73,15 +79,6 @@ function normalizePath(value) {
 		throw new Error(`unsafe repository path: ${value}`);
 	}
 	return normalized.replace(/^\.\//, "");
-}
-
-function packetMetadataMode(milestone, milestoneId, registryMode) {
-	if (Object.hasOwn(milestone, "taskPacket")) return "registered";
-	if (registryMode === "active")
-		throw new Error(
-			`${milestoneId}: active routing requires packet metadata and a validated task packet for an open milestone`,
-		);
-	return "compatibility";
 }
 
 function validateRegisteredPacket({
@@ -120,26 +117,6 @@ function selectorText(selector) {
 	return `${selector?.kind ?? "unknown"}=${JSON.stringify(selector?.value ?? "")}`;
 }
 
-function parseArgs(inputArgs) {
-	const args = inputArgs[0] === "--" ? inputArgs.slice(1) : inputArgs;
-	let milestoneId = null;
-	for (let index = 0; index < args.length; index += 1) {
-		const argument = args[index];
-		if (argument === "--milestone") {
-			milestoneId = args[++index];
-			if (!milestoneId) throw new Error("--milestone requires a value");
-		} else if (argument === "--help" || argument === "-h") {
-			console.log(
-				"Usage: node scripts/show-agent-context.mjs --milestone <id>",
-			);
-			process.exit(0);
-		} else {
-			throw new Error(`Unknown argument: ${argument}`);
-		}
-	}
-	return milestoneId;
-}
-
 function printSource(lines, source, prefix = "") {
 	lines.push(
 		`${prefix}- ${source.role ? `${source.role}: ` : ""}${source.path} (${selectorText(source.selector)})`,
@@ -171,10 +148,6 @@ export async function buildAgentContextPlan({
 			readFileImpl,
 		});
 	const registry = await readYaml("docs/agent-context/ROUTES.yaml");
-	if (registry.mode !== "compatibility" && registry.mode !== "active")
-		throw new Error(
-			`ROUTES.yaml mode must be "compatibility" or "active", got ${JSON.stringify(registry.mode)}`,
-		);
 	const state = await readYaml("PROJECT_STATE.yaml");
 	const active = state.milestones ?? {};
 	const selectedId =
@@ -197,57 +170,39 @@ export async function buildAgentContextPlan({
 	}
 	const milestone = active[selectedId];
 	if (!milestone)
-		throw new Error(
+		throw new ToolStartupError(
 			`requested milestone does not exist in PROJECT_STATE.yaml: ${selectedId}`,
+			Object.keys(active).length
+				? `pass --milestone one of: ${Object.keys(active).join(", ")}`
+				: "PROJECT_STATE.yaml has no active milestone; ask the coordinator to open one",
 		);
-	const metadataMode = packetMetadataMode(milestone, selectedId, registry.mode);
+	if (!Object.hasOwn(milestone, "taskPacket"))
+		throw new Error(
+			`${selectedId}: active routing requires packet metadata and a validated task packet for an open milestone`,
+		);
 	const expectedPacketPath = stablePacketPath(selectedId);
-	if (
-		metadataMode === "registered" &&
-		milestone.taskPacket !== expectedPacketPath
-	)
+	if (milestone.taskPacket !== expectedPacketPath)
 		throw new Error(
 			`${expectedPacketPath}: active milestone taskPacket must be the stable path ${expectedPacketPath}`,
 		);
-	const packetPath =
-		metadataMode === "registered" ? milestone.taskPacket : expectedPacketPath;
-	const safePacketPath = normalizePath(packetPath);
+	const safePacketPath = normalizePath(milestone.taskPacket);
 	const packetDetails = await inspectRepositoryPath(
 		repositoryRoot,
 		safePacketPath,
 		inspectPathImpl,
-		{ allowMissing: metadataMode === "compatibility", packet: true },
+		{ packet: true },
 	);
-	let packet = null;
-	const packetMessages = [];
-	if (!packetDetails) {
-		packetMessages.push(`packet: ${safePacketPath} (absent)`);
-		packetMessages.push(
-			"compatibility warning: no active packet is available; packet context is not claimed",
-		);
-	} else {
-		const packetBytes = await readFileImpl(packetDetails.absolute);
-		packet = parseYaml(packetBytes.toString("utf8"));
-		if (metadataMode === "registered") {
-			validateRegisteredPacket({
-				milestoneId: selectedId,
-				milestone,
-				packet,
-				packetPath: safePacketPath,
-			});
-		} else {
-			packetMessages.push(
-				"compatibility note: this packet was not validated against active state; packet context is not claimed",
-			);
-		}
-		packetMessages.push(`packet: ${safePacketPath}`);
-		packetMessages.push(
-			`packetStatus: ${packet.packetStatus ?? "(not recorded)"}`,
-		);
-	}
-	const taskClass = packet?.taskClass ?? null;
-	const route = taskClass ? registry.routes?.[taskClass] : null;
-	if (metadataMode === "registered" && !route)
+	const packetBytes = await readFileImpl(packetDetails.absolute);
+	const packet = parseYaml(packetBytes.toString("utf8"));
+	validateRegisteredPacket({
+		milestoneId: selectedId,
+		milestone,
+		packet,
+		packetPath: safePacketPath,
+	});
+	const taskClass = packet.taskClass;
+	const route = registry.routes?.[taskClass];
+	if (!route)
 		throw new Error(`packet taskClass ${taskClass} has no registered route`);
 	const lines = [
 		"FITWAY bounded agent-context plan",
@@ -259,23 +214,10 @@ export async function buildAgentContextPlan({
 	for (const field of ["ownedPaths", "forbiddenPaths", "sharedLeases"])
 		lines.push(`scope.${field}: ${JSON.stringify(milestone[field] ?? [])}`);
 	lines.push(`handoff: ${milestone.handoff ?? "(none)"}`);
-	lines.push(
-		`taskClass: ${taskClass ?? "(not recorded; compatibility mode does not infer one)"}`,
-	);
-	lines.push(...packetMessages);
-	if (packet) formatPacketAuthorities(lines, packet);
-	if (!route) {
-		lines.push(
-			"route: unavailable because the packet does not record a task class",
-		);
-		lines.push(
-			`registered task classes: ${Object.keys(registry.routes ?? {}).join(", ")}`,
-		);
-		lines.push(
-			"stop conditions: missing or stale task class/packet must be resolved by the coordinator; do not infer authority",
-		);
-		return lines.join("\n");
-	}
+	lines.push(`taskClass: ${taskClass}`);
+	lines.push(`packet: ${safePacketPath}`);
+	lines.push(`packetStatus: ${packet.packetStatus}`);
+	formatPacketAuthorities(lines, packet);
 	lines.push(`route responsibility: ${route.responsibility}`);
 	lines.push("destinations:");
 	for (const destination of route.destinations ?? []) {
@@ -334,10 +276,14 @@ export async function agentContextEnding({
 	return lines.join("\n");
 }
 
-async function main() {
+export function contextShowMilestone(parsed) {
+	return parsed.options.milestoneId ?? null;
+}
+
+async function main(milestoneId) {
 	const plan = await buildAgentContextPlan({
 		repositoryRoot: root,
-		milestoneId: parseArgs(process.argv.slice(2)),
+		milestoneId,
 	});
 	console.log(plan);
 	const ending = await agentContextEnding({ repositoryRoot: root, plan });
@@ -348,11 +294,17 @@ const isMain =
 	process.argv[1] &&
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
+	const milestoneId = runToolStartup("context:show", () =>
+		contextShowMilestone(
+			beginToolCommand("context:show", process.argv.slice(2)),
+		),
+	);
 	try {
-		await main();
+		await main(milestoneId);
 	} catch (error) {
 		console.error(
-			`context:show FAILED: ${error instanceof Error ? error.message : String(error)}`,
+			toolStartupLine("context:show", error) ??
+				`context:show FAILED: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		process.exitCode = 1;
 	}

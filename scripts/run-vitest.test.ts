@@ -143,3 +143,18 @@ process.exitCode = 7;
 		expect(result.stderr).toContain("MODULE_NOT_FOUND");
 	});
 });
+
+describe("R2: focused Vitest CLI arguments", () => {
+	it.each([
+		["run", "--", "selected.test.ts"],
+		["run", "selected.test.ts"],
+		["--", "run", "--", "selected.test.ts"],
+	])("forwards only the selected filter for %j", (...args) => {
+		const test = fixture(
+			"console.log(JSON.stringify(process.argv.slice(2)));\n",
+		);
+		const result = test.run(args);
+		expect(result.status, result.stderr).toBe(0);
+		expect(JSON.parse(result.stdout)).toEqual(["run", "selected.test.ts"]);
+	});
+});

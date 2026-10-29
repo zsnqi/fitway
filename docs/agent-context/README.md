@@ -11,16 +11,19 @@ only insofar as it agrees with them; history, handoffs and archives are read onl
 conservative 24,000-byte warning threshold is reported but is not itself a failure.
 
 `ROUTES.yaml` names the minimum initial route for each task class. It does not copy authority text.
-`TASK_PACKET_TEMPLATE.yaml` and `EVIDENCE_RECEIPT_TEMPLATE.md` are templates, not authority. A
-packet is coordinator-authored derived context; it never resolves a conflict with a cited source.
+`TASK_PACKET_TEMPLATE.yaml` is a template, not authority. A packet is coordinator-authored derived
+context; it never resolves a conflict with a cited source.
+`pnpm tools` lists every agent command and its exact invocation from `scripts/agent-environment/tool-registry.mjs`.
+The generated agent tooling map is `docs/agent-context/AGENT_TOOLING_CODE_MAP.md`, listing each mapped file's path, leading-comment summary and sorted exports; regenerate it with `pnpm map:tooling`.
+The code-health baseline is `docs/agent-context/CODE_HEALTH_BASELINE.json`; tighten it with `pnpm code-health:baseline` and enforce it with `pnpm check:code-health`.
 The packet path remains stable for the lifetime of its milestone and becomes immutable evidence
 after closure. A route's optional `packetRequiredConditionals` list explicitly names conditional
 sources that may be promoted to required for a packet. Supplemental packet sources may add exact
 affected files/selectors only under a role registered by that route; arbitrary or unauthorized
 historical authorities are rejected.
 
-`ROUTES.yaml` records the startup-routing mode. In `active` mode every open milestone must have
-exactly one validated packet, and a milestone may not reach `READY` without it. A missing
+Every open milestone must have exactly one validated packet, and a milestone may not reach
+`READY` without it. A missing
 packet blocks both `check-agent-context` and `context:show`. The repository-wide checker
 validates schema, tracking, sources and lifecycle; `context:show` checks the selected packet's
 identity, state reference, route and lifecycle.
@@ -55,7 +58,7 @@ startup context. Agents open historical content only when a named trigger or poi
 
 Closed history entries and CLOSED packets are frozen records. Checks validate their shape and
 lifecycle without following any path inside them. Active records still require valid, tracked
-source paths and selectors. `evidence.receiptTemplate` is optional; no check opens its target.
+source paths and selectors. `evidence.receiptTemplate` survives only in closed packets; no check opens its target.
 
 A closure is one commit that moves the terminal milestone from `PROJECT_STATE.yaml` to the end
 of `PROJECT_STATE_HISTORY.yaml`. No receipt, declaration, or anchor is required. Existing
@@ -72,3 +75,9 @@ Only DONE satisfies a dependency; dependents must name the completed successor.
 every byte except its As of line. Only the file and ledger handoff pointer change; git history
 is the resume chain. Timestamped handoffs remain valid, and Previous resume point is optional
 and never followed by a check.
+
+## Which check enforces each rule
+
+`docs/agent-context/RULE_ENFORCERS.md` names, for each rule in `AGENTS.md`, `WORKING_AGREEMENTS.md` and
+`docs/WORKFLOW.md`, the check that rejects a violation, or `written only`. Look there before searching the code for a
+check.

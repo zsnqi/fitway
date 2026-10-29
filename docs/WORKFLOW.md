@@ -32,12 +32,12 @@ PLANNED → READY → IN_PROGRESS → VALIDATING → READY_FOR_INTEGRATION → D
   unblock condition; difficulty alone is not a blocker.
 - `NEEDS_HUMAN`: a locked decision, security/privacy ambiguity, material visual change, or
   shared-ownership conflict needs human authority.
-- `FAILED_VALIDATION`: the same gate remains red after two focused repair attempts or the fresh
-  verifier rejects the result.
+- `FAILED_VALIDATION`: the coordinator or the user judges the approach itself wrong after repeated
+  repairs (`AGENTS.md`, the repair rule).
 - `SUPERSEDED`: a successor milestone carries the open work. The record names it in `supersededBy`
   and says why in `stopReason`; it never satisfies a dependency, so a dependent names the successor.
 
-The repair budget, the successor gate and plan deliveries are ruled in `AGENTS.md`, "Ownership and
+The repair rule, the successor gate and plan deliveries are ruled in `AGENTS.md`, "Ownership and
 records". A successor needs human authorization whenever another rule also requires it.
 
 Only the coordinator changes states. The top-level baseline status/commit must match the
@@ -62,7 +62,7 @@ provenance from the earlier closure procedure; nothing reads them.
 The ledger's optional `gardener` entry names the last gardener pass the coordinator reviewed. The
 weekly pass runs from the Windows scheduled task `FITWAY gardener weekly` (Fridays 14:00; a missed
 run starts at the user's next logon): `scripts/agent-environment/gardener-weekly.ps1` fetches, starts
-`gardener/<date>` from `origin/main` in `D:/Projects/fitway-worktrees/gardener`, and runs
+`gardener/<date>` from `origin/main` in the weekly worktree that `.agents/skills/gardener/config.json` names, and runs
 `.agents/skills/gardener/SKILL.md` headless on Sonnet 5.5 at `high`. It deletes and pushes nothing,
 and a Windows notification reports its end. The coordinator reviews each `gardener/*` branch newer
 than the entry, merges what it accepts, writes the entry, and then reruns the report's final survey
@@ -94,18 +94,11 @@ runs; the user gets the new script.
    `CORS_ORIGIN=http://127.0.0.1`) is enough: `tests/integration/setup.ts` loads it after
    `apps/server/.env`, and shell values still win.
 
-   The ignored `apps/server/.env` does not by itself reach the unit test process in every shell.
-   `pnpm verify:fast` additionally requires process-local synthetic NON-SECRET values for every key
-   declared in `packages/env/src/server.ts`. Recorded runs use exactly these non-secret
-   placeholders:
-   `DATABASE_URL=postgresql://unit_test:unit_test@127.0.0.1:1/fitway_unit_placeholder`
-   (valid but non-routable), `BETTER_AUTH_SECRET` and `CRON_SECRET` at 32+ non-secret characters,
-   `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` non-secret placeholders,
-   `BETTER_AUTH_URL=http://127.0.0.1:9/api/auth`, `CORS_ORIGIN=http://127.0.0.1:9`, and
-   `NODE_ENV=test`. CI sets the same values in `.github/workflows/checks.yml`. A
-   `pnpm verify:fast` failure in `apps/server/src/cron.test.ts` or
-   `apps/server/src/reference-gating.test.ts` caused by missing those values is an
-   environment-provisioning gap, not a candidate defect, and consumes no repair budget. Real
+   The ignored `apps/server/.env` does not reach the unit test process. `pnpm verify:fast` gives
+   its unit step non-secret placeholders for every key declared in `packages/env/src/server.ts`
+   (`UNIT_TEST_ENV` in `scripts/verify.mjs`, the single source locally and in CI; the database URL
+   is valid but non-routable). A bare `pnpm test` lacks them, and then fails in
+   `apps/server/src/cron.test.ts` and `apps/server/src/reference-gating.test.ts`. Real
    credentials, production databases, and `.env` contents are never exported into a unit process
    or written into any record.
 
@@ -123,8 +116,8 @@ if the base or the ownership differs from the ledger.
 3. Run the focused test/type check frequently.
 4. Run the fast ladder, `pnpm verify:fast`, before broad integration checks.
 5. Run the phase-selected verification with a unique run ID and disposable resources.
-6. If a gate fails, record the command, concise failure, and artifact; make at most two focused
-   repair attempts. Do not reset the count by changing sessions. A successor after
+6. If a gate fails, record the command, concise failure, and artifact, and repair it under the
+   repair rule in `AGENTS.md`. Count repairs per failure across sessions. A successor after
    `FAILED_VALIDATION` must satisfy the evidence gate in the state machine section above.
 7. UI work completes the phase polish loop below.
 8. Produce a durable handoff and set the candidate ready for independent verification.
@@ -343,8 +336,6 @@ changes Owner, Staff, or Public presentation, in addition to the gates above.
 - **Round report.** A Codex round or a subagent reports in its brief's Report block, as its final
   message; the coordinator saves the report verbatim as `REPORT.md` in the round's run folder
   outside the repository and cites in the records only what decides something.
-- **Evidence receipt.** A worker's or verifier's handback at a milestone's closure, using
-  `docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md`.
 
 Keep them concise and evidence-based.
 
@@ -374,6 +365,8 @@ The coordinator integrates candidates one at a time in the order defined by `PHA
 5. confirm validation left the worktree clean;
 6. record the integrated commit and evidence, then close the milestone in one commit (see
    "Active ledger and closed history"), which also releases its scope and leases.
+7. move `main` with `pnpm main:advance <commit>` once that commit's CI run has passed (`--dry-run` shows
+   what it would do); never by a direct push.
 
 A worker branch being green is `READY_FOR_INTEGRATION`, never `DONE`. Pushing and the trunk follow
 `AGENTS.md`, "Git, CI and verification"; deploying or provisioning external systems needs the

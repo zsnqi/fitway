@@ -1,4 +1,11 @@
+// Run the repository's registered fast, phase, or full verification ladder.
 import { spawn } from "node:child_process";
+import { pathToFileURL } from "node:url";
+import {
+	beginToolCommand,
+	ToolStartupError,
+	toolStartupLine,
+} from "./agent-environment/tool-contract.mjs";
 import { repositoryFingerprint } from "./repository-fingerprint.mjs";
 
 const phases = {
@@ -279,73 +286,139 @@ Optional Playwright isolation:
 `);
 }
 
-function parseArguments() {
-	const args = process.argv.slice(2).filter((argument) => argument !== "--");
-	const mode = args.shift();
-	if (!mode || mode === "--help" || mode === "-h") {
-		usage();
-		process.exit(mode ? 0 : 1);
-	}
+export function verificationOptions(parsed) {
+	const mode = parsed.fixedArgs[0];
 	if (!new Set(["fast", "phase", "full"]).has(mode)) {
 		throw new Error(`Unknown verification mode: ${mode}`);
 	}
-	let phase = process.env.FITWAY_PHASE;
-	while (args.length > 0) {
-		const argument = args.shift();
-		if (argument === "--phase") {
-			const argumentPhase = args.shift();
-			if (!argumentPhase) throw new Error("--phase requires a value");
-			if (phase && phase !== argumentPhase) {
-				throw new Error(
-					"FITWAY_PHASE and --phase must agree when both are set",
-				);
-			}
-			phase = argumentPhase;
-			continue;
-		}
-		throw new Error(`Unknown argument: ${argument}`);
+	const phase = parsed.options.phase ?? process.env.FITWAY_PHASE;
+	if (
+		parsed.options.phase &&
+		process.env.FITWAY_PHASE &&
+		parsed.options.phase !== process.env.FITWAY_PHASE
+	) {
+		throw new ToolStartupError(
+			"FITWAY_PHASE and --phase must agree when both are set",
+			"pass the same --phase as FITWAY_PHASE, or unset FITWAY_PHASE",
+		);
 	}
 	if (mode === "phase" && (!phase || !(phase in phases))) {
-		throw new Error(
+		throw new ToolStartupError(
 			`verify:phase requires one of: ${Object.keys(phases).join(", ")}`,
+			`pass --phase <${Object.keys(phases).join("|")}>`,
+			{ what: `unknown phase ${phase ?? "(none)"}` },
 		);
 	}
 	if (mode !== "phase" && phase) {
-		throw new Error("--phase is valid only with verify:phase");
+		throw new ToolStartupError(
+			"--phase is valid only with verify:phase",
+			"unset FITWAY_PHASE, or run pnpm verify:phase --phase <phase>",
+		);
 	}
 	return { mode, phase };
 }
 
-async function runStep(label, args) {
-	console.log(`\n==> ${label}`);
+// The unit step's server configuration, the same locally and in CI: placeholders that reach no service.
+const UNIT_TEST_ENV = {
+	DATABASE_URL:
+		"postgresql://unit_test:unit_test@127.0.0.1:1/fitway_unit_placeholder",
+	BETTER_AUTH_SECRET: "fitway_unit_placeholder_auth_secret_32_chars",
+	CRON_SECRET: "fitway_unit_placeholder_cron_secret_32_chars",
+	TELEGRAM_BOT_TOKEN: "fitway_unit_placeholder_bot_token",
+	TELEGRAM_CHAT_ID: "fitway_unit_placeholder_chat_id",
+	BETTER_AUTH_URL: "http://127.0.0.1:9/api/auth",
+	CORS_ORIGIN: "http://127.0.0.1:9",
+	NODE_ENV: "test",
+};
+
+function localClock(date = new Date()) {
+	const pad = (value) => String(value).padStart(2, "0");
+	const offset = -date.getTimezoneOffset();
+	const sign = offset >= 0 ? "+" : "-";
+	const offsetHours = pad(Math.floor(Math.abs(offset) / 60));
+	const offsetMinutes = pad(Math.abs(offset) % 60);
+	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())} ${sign}${offsetHours}:${offsetMinutes}`;
+}
+
+function materializeStep(step) {
+	if (Array.isArray(step)) {
+		const [label, args, env = {}] = step;
+		return { label, args, env };
+	}
+	if (
+		step &&
+		typeof step.label === "string" &&
+		Array.isArray(step.args) &&
+		(step.command === undefined || typeof step.command === "string")
+	)
+		return {
+			label: step.label,
+			args: step.args,
+			env: step.env ?? {},
+			command: step.command,
+		};
+	throw new Error("Invalid verification step");
+}
+
+async function runStep({ label, args, env = {}, command }) {
+	console.log(`\n[${localClock()}] ==> ${label}`);
 	const started = performance.now();
-	await new Promise((resolve, reject) => {
-		const command =
-			process.platform === "win32"
-				? (process.env.ComSpec ?? "C:\\Windows\\System32\\cmd.exe")
-				: "pnpm";
-		const commandArgs =
-			process.platform === "win32" ? ["/d", "/s", "/c", "pnpm", ...args] : args;
-		const child = spawn(command, commandArgs, {
-			cwd: process.cwd(),
-			env: process.env,
-			stdio: "inherit",
-			windowsHide: true,
+	let launchError;
+	let status = null;
+	let signal = null;
+	try {
+		await new Promise((resolve, reject) => {
+			const executable =
+				command ??
+				(process.platform === "win32"
+					? (process.env.ComSpec ?? "C:\\Windows\\System32\\cmd.exe")
+					: "pnpm");
+			const commandArgs =
+				command !== undefined
+					? args
+					: process.platform === "win32"
+						? ["/d", "/s", "/c", "pnpm", ...args]
+						: args;
+			let settled = false;
+			const child = spawn(executable, commandArgs, {
+				cwd: process.cwd(),
+				env: { ...process.env, ...env },
+				stdio: "inherit",
+				windowsHide: true,
+			});
+			child.once("error", (error) => {
+				settled = true;
+				launchError = error;
+				reject(error);
+			});
+			child.once("close", (code, closeSignal) => {
+				if (settled) return;
+				status = code;
+				signal = closeSignal;
+				if (code === 0) {
+					resolve();
+					return;
+				}
+				reject(
+					new Error(
+						`${label} failed${closeSignal ? ` with signal ${closeSignal}` : ` with exit code ${code}`}`,
+					),
+				);
+			});
 		});
-		child.once("error", reject);
-		child.once("close", (code, signal) => {
-			if (code === 0) {
-				resolve();
-				return;
-			}
-			reject(
-				new Error(
-					`${label} failed${signal ? ` with signal ${signal}` : ` with exit code ${code}`}`,
-				),
-			);
-		});
-	});
-	console.log(`<== ${label} (${elapsedSeconds(started)}s)`);
+	} catch (error) {
+		launchError ??= error;
+	}
+	const detail =
+		signal !== null
+			? `, signal ${signal}`
+			: status !== null
+				? `, exit code ${status}`
+				: "";
+	console.log(
+		`[${localClock()}] <== ${label} (${elapsedSeconds(started)}s${detail})`,
+	);
+	if (launchError) throw launchError;
 }
 
 function elapsedSeconds(started) {
@@ -356,6 +429,8 @@ function fastSteps() {
 	return [
 		["Repository invariants", ["check:repository"]],
 		["Verification map drift", ["check:verification-map"]],
+		["Agent tooling map drift", ["check:tooling-map"]],
+		["Code health ratchet", ["check:code-health"]],
 		["Verification CLI contracts", ["test:verification"]],
 		["Biome check", ["check"]],
 		[
@@ -363,7 +438,7 @@ function fastSteps() {
 			["exec", "node", "scripts/check-owner-tokens.mjs"],
 		],
 		["Type checks", ["check-types"]],
-		["Unit tests", ["test"]],
+		["Unit tests", ["test"], UNIT_TEST_ENV],
 		["Python simulator tests", ["test:simulator"]],
 	];
 }
@@ -390,11 +465,16 @@ function focusedSteps(phase) {
 	return steps;
 }
 
-async function main() {
-	const { mode, phase } = parseArguments();
+export async function runVerification({
+	mode,
+	phase,
+	steps: configuredSteps,
+} = {}) {
 	const started = performance.now();
-	const before = await repositoryFingerprint();
-	const steps = fastSteps();
+	const initialFingerprint = await repositoryFingerprint();
+	let previousFingerprint = initialFingerprint;
+	let fingerprintSeconds = 0;
+	const steps = configuredSteps ?? fastSteps();
 	if (mode === "phase") {
 		console.log(
 			`Focused profile: ${phases[phase].label}. Build and non-profile integration/browser tests are intentionally deferred to verify:full.`,
@@ -410,34 +490,50 @@ async function main() {
 	}
 
 	let failure;
-	try {
-		for (const [label, args] of steps) await runStep(label, args);
-	} catch (error) {
-		failure = error;
+	let mutationFailure;
+	for (const step of steps) {
+		const definition = materializeStep(step);
+		try {
+			await runStep(definition);
+		} catch (error) {
+			failure = error;
+		}
+		const fingerprintStarted = performance.now();
+		const after = await repositoryFingerprint();
+		fingerprintSeconds += (performance.now() - fingerprintStarted) / 1000;
+		if (after !== previousFingerprint) {
+			console.log(
+				`[${localClock()}] MUTATION: ${definition.label} changed the repository`,
+			);
+			await new Promise((resolve, reject) => {
+				const status = spawn("git", ["status", "--short"], {
+					cwd: process.cwd(),
+					stdio: "inherit",
+					windowsHide: true,
+				});
+				status.once("error", reject);
+				status.once("close", resolve);
+			});
+			mutationFailure ??= new Error(
+				"Verification changed tracked or untracked repository content; ignored build/test artifacts are permitted only under configured output directories",
+			);
+		}
+		previousFingerprint = after;
+		if (failure) break;
 	}
 
-	console.log("\n==> Repository mutation guard");
+	console.log(`\n[${localClock()}] ==> Repository mutation guard`);
 	const guardStarted = performance.now();
-	const after = await repositoryFingerprint();
-	if (before !== after) {
-		await new Promise((resolve) => {
-			const status = spawn("git", ["status", "--short"], {
-				cwd: process.cwd(),
-				stdio: "inherit",
-				windowsHide: true,
-			});
-			status.once("close", resolve);
-		});
-		const mutationFailure = new Error(
+	if (previousFingerprint !== initialFingerprint)
+		mutationFailure ??= new Error(
 			"Verification changed tracked or untracked repository content; ignored build/test artifacts are permitted only under configured output directories",
 		);
-		failure ??= mutationFailure;
-	}
 	console.log(
-		`<== Repository mutation guard (${elapsedSeconds(guardStarted)}s)`,
+		`[${localClock()}] <== Repository mutation guard (${elapsedSeconds(guardStarted)}s; step fingerprints ${fingerprintSeconds.toFixed(2)}s)`,
 	);
 
 	if (failure) throw failure;
+	if (mutationFailure) throw mutationFailure;
 	console.log(
 		`\nVerification ${mode} passed without repository mutation (${elapsedSeconds(started)}s).`,
 	);
@@ -446,7 +542,29 @@ async function main() {
 	}
 }
 
-main().catch((error) => {
-	console.error(`\nFAILED_VALIDATION: ${error.message}`);
-	process.exitCode = 1;
-});
+async function main(parsed) {
+	const { mode, phase } = verificationOptions(parsed);
+	await runVerification({ mode, phase });
+}
+
+if (
+	process.argv[1] !== undefined &&
+	import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+	const parsed = beginToolCommand(
+		["verify:fast", "verify:phase", "verify:full"],
+		process.argv.slice(2),
+		{
+			unmatched: ({ help }) => {
+				usage();
+				process.exit(help ? 0 : 1);
+			},
+		},
+	);
+	main(parsed).catch((error) => {
+		const line = toolStartupLine(parsed.entry.name, error);
+		if (line) console.error(line);
+		console.error(`\nFAILED_VALIDATION: ${error.message}`);
+		process.exitCode = 1;
+	});
+}

@@ -1,7 +1,9 @@
 # agent-environment: Codex rounds as evaluations
 
 One entry per round: the brief, brief rows passed, held-out rows passed, and the failure cause. The
-held-out checks live outside the repository and never appear here or in a brief.
+held-out checks live outside the repository and never appear here or in a brief. `rounds.tsv` and
+`findings.tsv` beside this file hold one line per round and per side finding, for this file and the Owner
+`docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md` (DECISIONS item 21).
 
 ## Round 1: `briefs/codex-r1-resume-tooling.md`, result `3b91b9d`
 
@@ -410,3 +412,648 @@ held-out checks live outside the repository and never appear here or in a brief.
   until the coordinator acts; the weekly worktree's path is fixed in `facts.mjs`.
 - **Failure cause:** none in the code for the rows; Z5's listing is the round's reading of "listed". Follow-ups:
   a named section for worktrees awaiting review; the final survey rerun after the ledger entry (docs/WORKFLOW.md).
+
+## agent-environment-r03 round 13: `r03/briefs/round-13.md`, result `644e8abc` (level high)
+
+- **Set-up:** the brief's commit `ae89c7a9` over HEAD `70bc51c1`, on branch `agent-environment-r03-css`, launched with
+  rounds 10-12 side by side. Held-out rows T1-T5 by a Sonnet grader in a disposable worktree at the result, on a
+  `git archive` of the build's Eclipse folder at `1d3539a3` and planted fixtures; T3 reproduced by the coordinator.
+- **Brief rows, as Codex graded them:** 3 of 3 (C1-C3); 68 tests; the fast ladder passed on its clean tree.
+- **Held-out rows:** 4 of 5 pass, 1 partial.
+  - T1: on the build's folder the lint exits 1 with 87 findings: 76 ungated hover selectors (80 less 4 gated, as the
+    review and the facts scan found), 0 `transition: all`, 0 `ease-in`, 11 outline removals without a ring. The grader
+    opened all 11: none is a false positive; 5 have no ring anywhere and 6 move it to a child or parent (no declared
+    ring comment exists yet). The twelfth, `style.css:941` `.fw-pop`, passes on its own border and shadow.
+  - T2, T4 and T5 pass: the planted gating, `all`, `ease-in` and `cubic-bezier` cases; a folder outside the repository
+    and one named with a space and Arabic letters; no CSS is `NO_CSS ... not a pass`, exit 2; hashes and times
+    unchanged; diff in scope, not in the ladder; breaking the hover gate fails 5 tests, the ease-in check 7.
+  - T3 is partial: a `focus-ring:` comment naming a missing selector is flagged, but the finding does not name it.
+- **Also found:** `outline: 0 none` and `outline-style: none` are not seen as removals; `@media not all and (hover:
+  hover)` counts as gated; the finding does not tell a moved ring from no ring; a decorative border or shadow counts
+  as a ring (`.fw-pop`).
+- **Failure cause:** none in the rows but T3's wording; the findings above go to the follow-up list with the other
+  rounds'.
+
+## agent-environment-r03 round 11: `r03/briefs/round-11.md`, result `c7e0e404` (level high)
+
+- **Set-up:** the brief's commit `35e2ed33` over HEAD `70bc51c1`, on branch `agent-environment-r03-verify`, launched with
+  rounds 10, 12 and 13. Held-out rows Q1-Q7 by a Sonnet grader in a disposable worktree at the result, on a
+  `git archive` of the build's Eclipse folder at `1d3539a3`, planted copies and a clone without node_modules; Q1
+  reproduced by the coordinator. Before launch the coordinator added to V1 that the fast ladder runs
+  `check:verification-map` and must still pass with no recipe file.
+- **Brief rows, as Codex graded them:** 7 of 7 (V1-V7); 39 contract tests, six failing on the base; ladder passed.
+- **Held-out rows:** 7 of 7 pass.
+  - Q1: no recipe file prints `DRIFT SKIP: no recipe file was found; nothing checked.`, exit 0; with the build's file
+    `DRIFT PASS: 1 recipe files found and checked.`; a gone selector still fails.
+  - Q2-Q3: without node_modules, map, list and drift name typescript and the install line, doctor and compare name
+    `@playwright/test`, no stack, exit 1; each failure prints once.
+  - Q4-Q6: Access's PIN opener out of the tab order reads `1 keyboard unreachable (access.html/pinChange ...); 0
+    problems`, exit 1, and a failing state proof stays a problem; the summary carries `featureProof`
+    (`#dlg-pin[open]`) beside the state proof; the 12 Tab steps read `Tab move to <selector>` and only Enter carries
+    the activation. The grader looked at the 768 frame: the Arabic PIN dialog open, focus on the new-code field.
+  - Q7: round 9's PIN drive and Daily's compare (42 equal) pass; drift passes on the build; diff in scope; reverting
+    the V1 branch fails its test.
+- **Also found:** the keyboard-unreachable text quotes the whole body's text as where focus stopped; "not reachable"
+  and "keyboard unreachable" read alike; `featureProof` records the recipe's declared proof, not a measured value; the
+  CLI accepts only ports 3176-3177 (`core.mjs:295`), so a grader cannot move off the builders' ports.
+- **Failure cause:** none.
+
+## agent-environment-r03 round 10: `r03/briefs/round-10.md`, result `d8945397` (level high)
+
+- **Set-up:** the brief's commit `95cc46c2` over HEAD `70bc51c1`, on branch `agent-environment-r03`, launched with
+  rounds 11-13. Held-out rows P1-P7 by a Sonnet grader in a disposable worktree at the result, with scratch ledgers,
+  packets and homes; the lease finding confirmed by the coordinator in the diff.
+- **Brief rows, as Codex graded them:** 7 of 7 (R1-R7); ladder passed.
+- **Held-out rows:** 5 of 7 pass, 2 partial; one unrequested regression.
+  - P2, P4, P5 and P7 pass: `pnpm test [--] <file>` runs one file in both shells and keeps `-t`; the checker's ids are
+    now `brief-format`, `brief-readiness`, `brief-references` and `brief-length`, and codex.md's B10 names
+    `brief-references`; the Impeccable fallback is found under any home in `.codex` or `.agents`; reverting
+    run-vitest's repair fails 2 of its 9 tests.
+  - P6 passes with gaps: file against glob, nested globs and bare against scoped `SPEC.md` fail naming both milestones;
+    disjoint globs, a lease and a closed record pass; the real ledger passes. But prose words are claimed as paths
+    (`tests` from "... and its tests"; "one new frontier policy pointer document"), and access-reason-cap-r01's folder
+    named inside prose (`docs/phase-records/handoffs/coordinator/`) is not claimed.
+  - P1 is partial: each misplaced `supersededBy` is named, but the check stops at the first fault, so one run names
+    only one of two. P3 is partial: a bad `taskClass` fails with a schema dump that omits the value.
+  - Regression: the check at `70bc51c1` that failed two open milestones sharing a lease string is gone; with the new
+    rule an overlap passes when either milestone's lease names the path, so both may hold it (AGENTS.md: a lease for
+    a shared file).
+- **Failure cause:** the brief. R7 said an overlap passes "unless a `sharedLeases` entry names that path" without
+  saying a lease has one holder, and it left the scope-line rule to the round. Repair attempt 1 is round 10b.
+
+## agent-environment-r03 round 12: `r03/briefs/round-12.md`, result `db995501` (level high)
+
+- **Set-up:** the brief's commit `9f28df01` over HEAD `70bc51c1`, on branch `agent-environment-r03-gardener`, launched
+  with rounds 10, 11 and 13. Held-out rows S1-S5 by a Sonnet grader in a disposable worktree at the result, a scratch
+  clone with a planted 10-day-old worktree, scratch temp roots and planted folders. Before launch the coordinator
+  changed G2 to keep the ledger's `gardener` outcome values, whose schema was round 10's scope.
+- **Brief rows, as Codex graded them:** 5 of 5 (G1-G5); 35 gardener tests; ladder passed.
+- **Held-out rows:** 4 of 5 pass, 1 partial.
+  - S2: the planted worktree appears under "Worktrees awaiting review" with path, branch, date and status, is not
+    proposed, the console counts it, and the implied ledger entry passes `check:repository`; with the other findings
+    neutralised the outcome is `clean`.
+  - S3: the weekly path is a literal only in `config.json`; `FITWAY_GARDENER_WORKTREE` relocates it and the relocated
+    worktree is no longer proposed; this machine's `gardener` worktree is not proposed. S4: the skill's closing order
+    matches `docs/WORKFLOW.md`. S5: diff in scope, 35 tests with TEMP on D: and in 8.3 form, round 8b's Z4, Z5, Z7 and
+    Z8 re-run; reverting `cleanup.mjs` fails the G1 test.
+  - S1 is partial: a `gardener`-entry edit or removal leaves the script runnable and a report edit is refused, but an
+    edited or added milestone is refused naming `PROJECT_STATE.yaml`, not the milestone.
+- **Also found:** `updatedAt` is outside the exemption, and `check:repository` fails a `gardener` date after it, so a
+  real entry written after a later pass also bumps `updatedAt` and voids the old script; the workflow's rerun of the
+  final survey still hands the user a working one. At `70bc51c1` the resume point's bare `FACTS.md` beside "briefs"
+  read as an open brief and blocked every survey; the coordinator line no longer has it. `docs/WORKFLOW.md` still
+  names the weekly path in prose.
+- **Failure cause:** none in the rows but S1's wording ("the record" read as the file).
+
+## agent-environment-r03 round 10b: `r03/briefs/round-10b.md`, result `24aa82e9` (level high)
+
+- **Set-up:** repair attempt 1 of round 10: the brief's commit `a9f456fa` over `d8945397`, on branch
+  `agent-environment-r03`. Held-out rows PB1-PB5 by a Sonnet grader in a disposable worktree at the result, with
+  scratch ledgers and packets; PB1 reproduced by the coordinator in a scratch repository.
+- **Brief rows, as Codex graded them:** 4 of 4 (L1-L4); 11 of 13 new tests fail on `d8945397`; ladder passed. Its
+  report lists what every open milestone's entries claim.
+- **Held-out rows:** 5 of 5 pass.
+  - PB1: two open milestones holding `lib/foo.mjs`, or `lib/**` and `lib/foo.mjs`, fail with "a lease must have one
+    holder"; disjoint leases pass; an overlap passes with a lease on exactly one side; a closed record's lease does not
+    count.
+  - PB2: access-reason-cap-r01's prose line claims `docs/phase-records/handoffs/coordinator/**` and nothing else; no
+    prose word is claimed; an entry with no path before `: ` fails naming the milestone and the entry.
+  - PB3: `taskClass "historical-audit" has no route` names the packet. PB4: round 10's P2-P6 hold; diff in scope.
+    PB5: round 10's parser restored fails 6 of 7 L2 tests.
+- **Also found:** prose tokens such as "and/or" or "v1.2" before `: ` would be claimed (none in the ledger today); a
+  second, cascaded line in the task-class failure; the checks still stop at the first fault.
+- **Failure cause:** none.
+
+## Replay baseline (agent-environment-r03 step 4, DECISIONS item 23): ten Owner rounds on the environment of `af13c16f`
+
+- **Set-up:** each round reran on Codex (`gpt-6.1-sol`, its original level; nav rounds at high) in a clone holding
+  only its base's history, with agent-environment-r03's owned paths from `af13c16f` laid over it and its original
+  brief edited only mechanically; three-rounds-fix replaces nav-3, whose inputs are gone. Method, clones and every
+  edit: `D:/fitway-grader/replay/README.md`; grades: `D:/fitway-grader/replay/<task>/GRADE.md`, one Sonnet grader
+  per task on the original held-out rows, blind to the original grades. One run per task.
+- **Held-out rows:** 72 of 82 pass, 7 partial, 3 fail (`rounds.tsv`, lines `replay:*`). The originals scored 69 of
+  83 with other graders, mostly Opus, and fix-1 counted H8 then: indicative only. By task (replay / original):
+  card-1 9/9 / 8/9, fix-2 9/11 / 9/11, nav-4 8/8 / 8/8, nav-1 6/7 / 5/7, three-rounds-fix 7/8 / 7/8, nav-5 7/7 / 6/7,
+  motion-lows 7/8 / 8/8, d3-d8 5/8 / 5/8, fix-3 8/8 / 6/8, fix-1 6/8 / 7/9.
+- **Start load:** 24.7K-27.3K input tokens in Codex's first request (`start-load.json`, all ten).
+- **Codex's self-grade against the graders:** wrong both ways. PASS on outcomes met by hiding the defect (d3-d8's
+  `overflow-x:hidden`, a value left to spill), on Arabic turned into `?` (motion-lows), on a ring tap broken at its
+  centre (fix-2), on a probe never run on the real pages (nav-4); literal FAILs that were existing design or capture
+  noise (fix-3, three-rounds-fix). The graders, not the self-grades, are the measure.
+- **Interventions:** five runs stopped at a Codex account's usage limit and resumed on their threads (fix-3,
+  three-rounds-fix, motion-lows, d3-d8, fix-1); one stale preview stopped with the user's yes.
+- **Contamination:** no command in any run read `D:/fitway-grader` or an original round's run folder; d3-d8 read a
+  tracked resume point that quotes its held-out path, as the original could.
+- **Also found:** F093-F099 (`findings.tsv`); F095-F098 are environment faults, fixed next (item 23, "No rush").
+- **Use:** after a material change to Codex's environment, rebuild the clones with `prepare.mjs` (`REPLAY_MAIN` set
+  to the new main) and rerun; compare by task, with N and one sample per task in mind.
+
+## agent-environment-r03 round 14: `r03/briefs/round-14.md`, result `bdbdd870` (level high)
+
+- **Set-up:** the brief's commit `1d0d21fd` over HEAD `7e1ff148`, on branch `agent-environment-r03-verify`, launched
+  alone. Before writing it the coordinator reproduced the three faults on `03c96437`
+  (verify-fitway identical): with 3176 and 3177 held, `pnpm test:verification` failed 4 of 39; cleanup given the
+  session file or a missing path printed PASS with 3176 still served. Held-out rows U1-U6 by a Sonnet grader in a
+  disposable worktree at the result, with its own installed dependencies, port holders on 127.0.0.1 and on the
+  wildcards, and the build's Eclipse folder from `git archive ec314ce2`; U4's evidence sampled by the coordinator.
+- **Brief rows, as Codex graded them:** 4 of 4 (W1-W4); 45 contract tests; the ladder passed with the ports free and
+  held.
+- **Held-out rows:** 5 of 5 pass; Codex's self-grade matches (U6).
+  - U1-U2: 45 of 45 with 3176-3177 held on 127.0.0.1, on `::` and `0.0.0.0` and swapped, skipped 0; the three port
+    tests now listen on ephemeral ports through a new `--isolated-port <49152-65535>`, named in `help`; every
+    assertion kept; `--port` still refuses all but 3176-3177, and the isolated route refuses 3174 and 3178-3185.
+  - U3: the default bound is 30 minutes in code, `help` and SKILL.md; shortened through `--idle-timeout-ms`, an idle
+    preview freed its port and process 4.04 s after a 4 s bound, one requested every second kept serving; after the
+    stop, doctor and drive say to relaunch and cleanup passes as already stopped.
+  - U4: cleanup of the session file stops the preview; a missing path fails naming it while the preview keeps
+    serving; a refused launch and a cleaned session pass as before; a foreign server on the session's port is refused.
+  - U5: launch, doctor, one drive and cleanup pass on the build's Eclipse; reverting the W2 or the W3 change fails 2
+    new tests each; scope and lockfile hold.
+- **Also found:** the relaunch FIX names `--port 3177` whatever port the session used (`cli.mjs:314`, older than the
+  round); cleanup refuses a foreign server on the session's port with a JSON parse error instead of "not owned"
+  (`core.mjs`, `ownedSession`); V3 passes with the ports held because compare now checks the concept first, so no
+  test covers doctor or compare refusing a held 3176-3177 (nor did one before).
+- **Failure cause:** none. During round 15 the coordinator's removal of eight grading worktrees emptied
+  agent-environment-r03-gardener's `node_modules` through a junction (F100).
+
+## agent-environment-r03 round 15: `r03/briefs/round-15.md`, result `18e18b42` (level high)
+
+- **Set-up:** the brief's commit `452ef2b6` over HEAD `32ac00be`, on branch `agent-environment-r03-gardener`,
+  launched after round 14 finished; from the 2026-10-09 weekly pass's report (its "Correction seen twice" and "Gate
+  gaps" rows). Held-out rows X1-X5 by a Sonnet grader in a disposable worktree at the result with its own installed
+  dependencies, planted scripts and skip entries, and a survey on the base for comparison; the config and the test's
+  real-file read sampled by the coordinator.
+- **Brief rows, as Codex graded them:** 3 of 3 (G1-G3) after one resume; G3 first failed when the coordinator's
+  worktree removal emptied this worktree's `node_modules` (F100), and passed after the reinstall: 37 gardener tests,
+  the ladder, and a survey with `0 failing/blocked checks; 1 not-run checks; repository unchanged=true`.
+- **Held-out rows:** 2 of 4 pass, 2 partial; Codex's self-grade matches on G1-G3 (X5).
+  - X2-X3: the survey reports `check:concept-css` as not run with its reason, which lives only in `config.json`
+    (`notRunChecks`); planted checks exiting 1, or printing a usage line and exiting 2, block; a skip naming an
+    undefined script is reported and blocks; with the skip removed the check runs and fails as before.
+  - X1 partial: the test reads the real `scripts/verify.mjs`, fails with `fb8fd51e`'s hunk reverted and with a call,
+    computed label or template argument planted, and passes with an ordinary or environment-carrying step; the
+    failure says "non-literal step" without naming the step.
+  - X4 partial at grading only: scope, lockfile, 37 tests and the ladder hold; CI had not run on the unpushed result
+    (it runs on the merge).
+- **Survey outcome:** still blocked on the result, as on the base, by findings older than the round: three scripts
+  outside the fast ladder (`deploy:check`, `brief:check`, `check:design-context`), duplicated rule lines, absent-path
+  mentions and temp folders. `check:concept-css` is still counted among the gate gaps but exempt by name from the
+  block.
+- **Also found:** a skip naming an undefined script also marks collection blocked; the report shows not-run checks
+  only in its counts and JSON, with no prose line.
+- **Failure cause:** the brief, for one clause: G3 asked for G1's test to fail on `32ac00be`, which already held the
+  parser repair (B7); Codex reported it and proved G1 by reverting the repair. One intervention: the resume after
+  F100.
+
+## agent-environment-r03 round 17: `r03/briefs/round-17.md`, result `b9fbc832` (level high)
+
+- **Set-up:** the brief's commit `3d858907` over HEAD `edaf626c`, on branch `agent-environment-r03-verify`, launched
+  beside round 16. Before writing it the coordinator reproduced both faults on `edaf626c`
+  (`D:/fitway-temp/r03-r17-baseline/repro.mjs`): a 3176 session expired and `doctor --session` named `--port 3177`;
+  with plain text served on the session's port, cleanup and doctor printed `Unexpected token 'o' ... is not valid JSON`.
+  Held-out rows Z1-Z4 by a Sonnet grader (`sonnet-researcher`) in a disposable worktree at the result with its own
+  installed dependencies, real foreign servers and the build's Eclipse from `git archive ec314ce2`; the coordinator
+  sampled Z1-Z2's output and reran the new tests on the base code (2 fail, then 2 pass).
+- **Brief rows, as Codex graded them:** 3 of 3 (V1-V3); 47 contract tests; the ladder passed with the ports free and
+  held.
+- **Held-out rows:** 3 of 3 pass; Codex's self-grade matches (Z4). Grade: `D:/fitway-temp/r03-r17-grade/REPORT.md`.
+  - Z1: the FIX names the session's own port when free (3176 and 3177 each), the other port when a foreign process
+    holds it, and `FIX BLOCKED: verification ports 3176 and 3177 are both held` when both are held; every FIX ran as
+    printed and launched; `drive --session` now prints the same FIX; a planted opposite-port FIX is caught.
+  - Z2: plain text, foreign JSON, 404 and a closed socket on the session's port, on both ports: cleanup, doctor and
+    drive exit 1 with `Port <n> is not owned by this session`, no parse error, and the foreign server keeps serving.
+  - Z3: `--port` still refuses 3174, 3175, 3178 and 3185; launch, doctor, drive and cleanup pass on Eclipse and free
+    the port; 47 of 47 with the ports held; the ladder passes; scope and lockfile hold.
+- **Also found:** the foreign-pid refusal no longer prints the pid (it moved into the error's cause, F105); doctorFix
+  ignores an unreadable `session.json` and prefers 3176, which still yields a correct FIX.
+- **Failure cause:** none.
+
+## agent-environment-r03 round 16: `r03/briefs/round-16.md`, result `e0d00b5a` (level xhigh)
+
+- **Set-up:** the brief's commit `3534889e` over HEAD `edaf626c`, on branch `agent-environment-r03-gardener`,
+  launched beside round 17. Before writing it the coordinator reproduced F103 on `edaf626c`
+  (`D:/fitway-temp/r03-r16-baseline/f103.mjs`: four planted steps, one generic message) and ran a survey of the base
+  (`D:/fitway-temp/r03-r16-baseline/survey-base-2/`: 101 s, collection complete, 38 folders proposed, `reports-phone`
+  among them). Held-out rows Y1-Y6 by a Sonnet grader (`sonnet-researcher`) in a disposable worktree at the result
+  with its own installed dependencies, a disposable clone with real junctions and symbolic links for Y1, and a
+  private temp root for planted folders; the coordinator sampled Y2's survey and the offending files.
+- **Brief rows, as Codex graded them:** 4 of 4 (R1-R4); 13 new tests, 50 gardener tests; the ladder passed; a survey
+  in 254 s with `reports-phone` not proposed.
+- **Held-out rows:** 2 of 5 pass, 2 partial, 1 fail. Grade: `D:/fitway-temp/r03-r16-grade/REPORT.md`.
+  - Y1 pass: worktrees with an outward junction (at the root or three levels deep), a directory or file symbolic link,
+    or a dangling junction are withheld and their links named; a worktree with only internal links is proposed with
+    a new helper (`remove-worktree.mjs`) that unlinks internal links and rechecks before `git worktree remove`; run
+    as printed in PowerShell 5.1 it removed that worktree, refused the others, and every sentinel survived; a bare
+    `git worktree remove` control deleted its sentinel.
+  - Y2 fail: the survey of `D:/fitway-temp` proposed 0 of 852 folders. Every tracked file is a citation source, read
+    as text; 13 PNG and zip files hold byte runs such as `/d/`, which `references` reads as `d:/`, an ancestor of every
+    folder. With those files removed in a planted commit, every R2 rule held (backslashes, case, below the folder,
+    closed history; the proposals section and a prose word protect nothing).
+  - Y3 partial: unreachable on the result; on the planted tree the cleanup kept a folder cited after the survey and
+    named the citation, but took about 3 minutes for 4 folders (all tracked files re-read per folder).
+  - Y4 pass: each planted step is named by label or 1-based position with the part that is not literal.
+  - Y5 partial: scope, lockfile, 50 tests and the ladder hold; the survey took 268.6 s against the base's 101 s.
+- **Also found:** the merged-clean count includes worktrees withheld for links (`facts.mjs:242`); the report lists
+  withheld worktrees only in its JSON dump (F106, F107).
+- **Failure cause:** the brief and the code. R2 named its sources as every tracked file and kept a citation "above"
+  the folder as protecting, but had no outcome that uncited folders stay proposable (B7's every-limit item), so
+  Codex's fixture tests passed while the real survey proposed nothing; Codex's report stated the protection without
+  the count. Repair 1 is round 16b.
+
+## agent-environment-r03 round 16b: `r03/briefs/round-16b.md`, result `eb5560d0` (level high, repair 1 of round 16's Y2)
+
+- **Set-up:** the brief's commits `6457d9bd` and `f61e3add` (the read-first heading on one line, after `brief:check`
+  failed on a wrapped heading) over HEAD `e0d00b5a`, launched alone. The coordinator listed before launch which of the
+  base survey's 38 folders tracked text cites (8) and which it does not (30). Graded by the coordinator from its own
+  survey of the result outside Codex's sandbox (`D:/fitway-temp/r03-r16b-coordinator/survey-1/`, 246 s, collection
+  complete): held-out row Y7 only; Y8-Y10 are graded on the repair-2 result, which carries this round's code.
+- **Brief rows, as Codex graded them:** R6 PASS (30 disposable proposals, one citation collection, 29 removed, a
+  late citation kept, 3.5 s); R5 and R7 FAIL: Codex's survey was blocked in its sandbox by
+  `[ERR_PNPM_VERIFY_DEPS_BEFORE_RUN] The value of the enableGlobalVirtualStore setting has changed` (F108), and it
+  reported the block without installing anything.
+- **Held-out rows:** Y7 partial. The survey proposes 31 folders, no binary file is a citation source, and 7 of the 8
+  cited folders are protected with their citations; `owner-r04-k02` is still proposed: its only citation is a path
+  written as a pattern (`D:/fitway-temp/owner-r04-k02/out/sheets/NN-<state>-<ar|en>.png`), which `references`
+  discards whole.
+- **Failure cause:** the code, for a case neither brief named: placeholders in a cited path. Repair 2 is round 16c.
+
+## agent-environment-r03 round 16c: `r03/briefs/round-16c.md`, result `e0cd4c6e` (level high, repair 2 of round 16's Y2)
+
+- **Set-up:** the brief's commit `e4cd6678` over HEAD `eb5560d0`, launched alone; the coordinator listed the
+  patterned citations under concrete temp folders first (`owner-r04-k02` the only one among the proposed folders).
+  Held-out rows Y7-Y12 (round 16b's and this round's) by a Sonnet grader (`sonnet-researcher`) on this result, which
+  carries both rounds' code: one real survey of `D:/fitway-temp` and planted folders, PNG and patterned citations in
+  a private temp root; the coordinator sampled the real survey.
+- **Brief rows, as Codex graded them:** 2 of 2 (R8-R9); its sandbox survey completed this time: 30 proposed, one
+  exclusion (`owner-r04-k02`, the resume's line 43); 61 gardener tests; the ladder passed.
+- **Held-out rows:** 5 of 5 pass (Y7-Y9, Y11-Y12); Codex's self-grade matches except the reason for 16b's R5 FAIL
+  (Y10). Grade: `D:/fitway-temp/r03-r16bc-grade/REPORT.md`.
+  - Y7: the real survey proposes 30 of the base's 38, none new; the 8 folders tracked text cites are protected with
+    their citations; no binary file is a citation source; a PNG holding `/d/` and `D:/`, `see D:/`, the temp root
+    itself and a prose word protect nothing; backslash and forward-slash paths protect.
+  - Y8: a 10-folder cleanup in a private root took 7 s (round 16: about 3 minutes for 4), removed 9 and kept the one
+    cited after the survey, naming the citation.
+  - Y9: 61 tests; the new tests fail on the earlier code (7 of 7; 4 of 4); the ladder passes; scope and lockfile hold;
+    the real survey takes 252 s against the base's 101 s.
+  - Y11: `<root>/k/out/NN-<state>.png`, `<root>/m/*.png` and `<root>/k3/{a,b}/file.txt` protect k, m and k3;
+    `<root>/<run>/`, `<root>/run-*` and `<root>/{a,b}/x` protect nothing.
+  - Y12: nothing was installed or reconfigured; F108 did not recur.
+- **Also found:** the new test and the brief cite the real `owner-r04-k02` path, so that folder has three protectors
+  and a check of "protected" alone would not notice the resume citation failing (F109); `pass.ps1` requires `-Out`
+  under `-TempRoot`.
+- **Failure cause:** none. Round 16's Y2 failure closed after two repairs; F100, F103 and F104 are fixed.
+
+## agent-environment-r03 round 18: `r03/briefs/round-18.md`, result `70adc082` (level medium)
+
+- **Set-up:** CI failed on `c08f83e4` in one test, round 16's R1 (`round16.test.ts:120`): the runner's temp folder is
+  the short path `C:/Users/RUNNER~1/...` while Git reports `C:/Users/runneradmin/...`. The coordinator reproduced it
+  with `TEMP` on `C:/Users/PCFORC~1/AppData/Local/Temp/<run>` (drive D makes no 8.3 names). The brief's commit
+  `74a96346` over HEAD `c08f83e4`, launched alone. Held-out rows Q1-Q4 by the coordinator.
+- **Brief rows, as Codex graded them:** T1 pass (61 gardener tests on both temp paths); T2 fail on the short path
+  only, in a Python simulator test outside the scope (`edge/test_windows_lifecycle.py:392`, `no such table: starts`,
+  F110); the ladder passed on `D:/fitway-temp`.
+- **Held-out rows:** Q2 and Q3 pass, Q1 on the merge's CI. Q2: the coordinator's run, 61 of 61 on both temp paths.
+  Q3: only `round16.test.ts` changed; the outward link's path, target and resolved target are now each compared as
+  the same folder (the target was not checked before), `outside`, the ENOENT and the candidate flags kept; the
+  report check now looks for the reported target rather than the fixture's spelling. Q4: Codex's T1 matches; its T2
+  FAIL is the out-of-scope Python test.
+- **Failure cause:** round 16's test, which compared spellings; no brief named the runner's short temp path.
+
+## agent-environment-r03 round 19: `r03/briefs/round-19.md`, result `01e704f4` (level high)
+
+- **Set-up:** F105 reproduced on `f2daff93` (a session on 127.0.0.1:3176 and a foreign listener on `::1` port 3176:
+  doctor and cleanup printed the generic "not served by this session" refusal without the pid,
+  `D:/fitway-temp/r03-r19-baseline/f105-out.txt`). The brief's commit `0667a8aa` over HEAD `f2daff93`, launched alone
+  in a new worktree. F106-F107 and F109 left out: the 2026-10-10 survey found no worktree with an outward link (0 of
+  31), and F109's folder is also cited by round 16c's brief and this file. Held-out rows Z1-Z4 by the coordinator.
+- **Brief rows, as Codex graded them:** V1 and V2 pass (48 verification tests, the fast ladder with 3176-3177 free and
+  held, the Eclipse launch, doctor, drive and cleanup).
+- **Held-out rows:** Z1-Z3 pass, Z3's CI part on the merge. Planted control: the base fails Z1 in 12 checks. Z1: on
+  3176 and on 3177, doctor, cleanup and drive refuse naming the port and the foreign pid ("served by this session but
+  also held by foreign pid N"), without the false cause or advice to stop a process; the holder and the preview keep
+  answering; cleanup passes once the holder stops. Z2: the stopped-preview and foreign-only refusals keep their
+  meaning. Z3: ports 3175 and 3178 refused; Eclipse smoke passes and the ports are free after; 48 tests (47 before)
+  with both ports held; diff only in `core.mjs` and `cli.test.mjs`; the fast ladder passes on the clean tree. Z4:
+  Codex's grades match.
+- **Failure cause:** none; round 17 had moved the pid into the error's cause, which the CLI does not print.
+
+## agent-environment-r03 round 20: `r03/briefs/round-20.md`, result `28a77408` (level high)
+
+- **Set-up:** the Owner CSS round's spec (build branch `ab504b28`, seam 3) needs forced-colours frames and ring
+  measurements. On `0d84bfbd` the CLI ignored an unknown `--colors` and printed `DRIVE PASS` in normal colours, and
+  ui-forensics 1.1.0 had no forced-colours option. Chromium's emulation was checked first: it renders the forced
+  palette (body to Canvas, box-shadow removed). The brief's commit `81cfa957` over HEAD `0d84bfbd` ran in a new
+  worktree, with a ui-forensics copy at `D:/fitway-temp/r03-r20-forensics/ui-forensics`. Held-out rows W1-W8 by the
+  coordinator; hashes of the machine-level skill were taken before launch.
+- **Brief rows, as Codex graded them:** V1-V3 pass:
+  - the colours axis on drive and compare, proved on the page by body background = Canvas;
+  - normal frames byte-identical, and an unknown value refused;
+  - the copy at 1.2.0, with the option in every browser tool and the self-test at 44 of 44;
+  - a refusal naming the version needed with 1.1.0;
+  - 51 verification tests, and the fast ladder with 3176-3177 free and held.
+- **Held-out rows:** W1-W8 pass (`D:/fitway-temp/r03-r20-grade/REPORT.md`):
+  - forced with touch, keyboard and file;
+  - compare EQUAL under forced;
+  - normal byte identity against the base CLI;
+  - probes under forced;
+  - the machine-level skill untouched;
+  - drive, measure and compare all refuse with 1.1.0;
+  - docs and `--help` updated, and the image self-test at 55 of 55;
+  - a planted copy that drops the option fails exactly the two new controls.
+- **Failure cause:** none. The copy is installed over the machine-level skill only with the user's yes.
+
+## agent-environment-r03 round 21: `r03/briefs/round-21.md`, result `6ba81a0c` (level high, two repairs)
+
+- **Set-up:** the Owner CSS round's pressed state needs frames and traces taken while a control is held.
+  - Every pointer action released at once.
+  - The coordinator's probe found that headless Chromium never shows `:active` under a held emulated touch.
+  - The brief's commit `37d81b0f` over `95a212af` waited for the Owner CSS round's ports.
+  - The ui-forensics 1.2.0 copy is at `D:/fitway-temp/r03-r21-forensics/ui-forensics`.
+  - Held-out rows are Y1-Y9.
+- **Result `69d34845`:** H1, H2 and H4 pass.
+  - The copy is at 1.3.0, with `hold:`/`release:` actions, `heldPressInfo` and 47/47 self-test controls.
+  - drive saves a `held` frame and records the classification. Keyboard and 1.2.0 refuse.
+- **Held-out on the pressed concept `dbdcea0a`** (`D:/fitway-temp/r03-r21-grade/`): Y3, Y4, Y5, Y6 and Y7 pass.
+  - A mouse hold on Reports' 7d segment is classified `shown while held`, and the before and held frames differ.
+  - Touch is classified `exists but emulated touch does not show it`.
+  - Y2 failed: under forced colours from file://, a changed export button was classified `no pressed style`.
+    `heldPressInfo` read only top-level `:active` rules, ignored pointer-event presses and left out `scale`.
+  - H3's fast-ladder tests and the SKILL.md guide were missing. Codex graded H3 on its self-test instead.
+- **Repair 1 (`d1eebafc`):** the classification reads nested rules, counts any rendered change and compares
+  `scale`/`translate`/`rotate`. Y2 now classifies `shown while held`. But the new CLI test required the copy at a
+  `D:/fitway-temp` path, which would have failed CI on Linux.
+- **Repair 2 (`6ba81a0c`):** stub tools as R20 does. test:verification passes 54/54 with no ui-forensics reachable,
+  confirmed by the coordinator, and no test names a temp path.
+- **Failure cause:** a classification written from the brief's three cases without nesting. A test written against
+  the round's own copy instead of CI.
+- **Exceptions and notes:**
+  - The user allowed a third repair (DECISIONS 27); it was not needed.
+  - The first resume of repair 1 failed on PowerShell 5.1 quoting (F114).
+- **After acceptance** (2026-10-10, the Owner CSS round's independent review,
+  `D:/fitway-temp/owner-r04-css-review/`): the held press counts a hover style as a press with a mouse, because the
+  before style is read before the pointer reaches the control; on `691d62d5`, which has no press, most controls
+  report a press. It reads only the selected element, and `release` is refused without a colon (F115). The planted
+  control was a control without hover, so the round's rows could not see it. The reviewer measured the press with its
+  own script instead.
+
+## Item 21 step 6: the question-and-spec trial, graded (2026-10-10)
+
+- **What ran:** two `grilling` rounds with the user, then `/to-spec` wrote `css-round-spec.md` (`ab504b28`), and the
+  Codex brief, both designer briefs and the verifier brief were written from it. The trial closes with the round's
+  independent review (`verifier-css-round.md`, `767cd57c`).
+- **Repair attempts:** the Codex part took 2 attempts (one repair, X10, caused by the check's false positives, F113);
+  the mean for high Codex rounds in `rounds.tsv` is 1.27, and 22 % of them needed a repair. The press took two
+  designers, the first cut off by a session limit, not by a failure.
+- **Brief-caused failed rows:** 1 (C5's "shows"); the high-round mean is 0.30, and 24 % of rounds have one.
+- **After acceptance:** the review found two defects in the Codex part (the figures region's ring in forced colours, a
+  residue of the X10 failure mode; a dialog cap that divides by a length) and none in the press beyond taste (the
+  held chalk rim, two text sizes in one row) and structure (the press spread over selector lists).
+- **Reading:** on these two measures the spec did not do better than an ordinary brief; the round was also wider than
+  an ordinary one (five causes in one pass, B6 relaxed). Where it helped: every question was settled before the
+  briefs, no decision arrived mid-round except item 42, which the designer's own questions raised, and the review's
+  checklist came straight from the spec's user stories and seams. One trial is a signal, not a verdict.
+
+## agent-environment-r03 round 23: `r03/briefs/round-23.md`, result `fda6416b` (level high, one repair)
+
+- **Set-up:** F116, `brief:check` passing a decision item the named file does not hold. The brief's commit `a798440e`
+  over `eddee7b8`, run beside round 22. On the base, a brief citing item 99 passed. Held-out rows Q1-Q9.
+- **Result `ef6c312a`:** D1-D3 pass as Codex graded them. Items after a backticked path are resolved in the named
+  worktree's copy, as a single item, a list, a range or a mixed list with `and`.
+- **Held-out** (`D:/fitway-temp/r03-r23-grade/`): 7 of 9 on the first attempt.
+  - Q1: the F116 case replayed on the build worktree, whose copy ends at item 41: 42 fails, 41 passes.
+  - Q2: all 50 landed briefs, pointed at the round's worktree, have no decision-item failure.
+  - Q3, Q5, Q7 and Q8 pass. A planted rule that never reports fails 7 tests.
+  - Q4 failed: a citation after an absolute path was never checked.
+  - Q6 failed: a numbered line inside a fenced block counted as an entry.
+- **Repair 1 (`fda6416b`):** absolute paths are read as written, and fenced lines are excluded. Q4 and Q6 pass, and
+  Q2 still has no failure: 9 of 9.
+- **Failure cause:** the brief, for Q4. Its D1 asked for absolute paths "as written" and also "as the existing path
+  check resolves it", which judges no absolute path (audit R1). B7 already asks that each case an outcome names be
+  checked on the base; this one was not. Q6 was not stated in the brief.
+
+## agent-environment-r03 round 25: `r03/briefs/round-25.md`, result `833ec599` (level high)
+
+- **Set-up:** DECISIONS items 20-21 say the gardener counts the findings list and reports the monthly trend, but no
+  script read `findings.tsv` or `rounds.tsv`. The brief's commit `7bd07f7d` over `a798440e`, run beside round 24,
+  which also changes `survey.mjs`, so the logic went into a new module. Held-out rows K1-K9.
+- **Brief rows, as Codex graded them:** C1-C4 pass. `records.mjs` and 5 tests; the survey gains a Records section.
+  - On the real files, the October line is N=72 for Codex: mean attempts 1.18 (n=71), repair share 0.15, held-out
+    665/736 (n=65).
+  - Two rows with an empty date are listed as malformed.
+- **Held-out** (`D:/fitway-temp/r03-r25-grade/`): 9 of 9.
+  - K1: 44 open, 69 fixed and 3 other, equal to the file.
+  - K2: the empty-milestone lines are counted by status, never as zero.
+  - K3-K4: months and writers are split; `9/10` gives 9 of 10, and an empty cell or `n/a` is unknown.
+  - K5-K7: two lines from one round do not recur; `cli-gap:<kind>` is counted per kind and named as due; an extra
+    tab is malformed.
+  - K8: the module only reads the two files.
+  - K9: a planted month parser fails a test.
+- **Failure cause:** none.
+- **Also found:**
+  - `survey.json`'s `records` key now holds these counts; the open-record hashes moved to `recordSources`, and
+    nothing else reads it.
+  - A duplicated id is reported as malformed but still counted.
+
+## agent-environment-r03 round 26: `r03/briefs/round-26.md`, result `c88266ea` (level high, one repair)
+
+- **Set-up:** F114, a resume message with double quotes was split by Windows PowerShell 5.1. The brief's commit
+  `20dbfa70` over `7bd07f7d`. The first launch went out at `medium` by mistake and was stopped within seconds,
+  before Codex had made any change; it was relaunched at `high`, the level the agreement gives a known defect in a
+  known place. Held-out rows J1-J7.
+- **Result `1a2c4850`:** M1-M2 pass as Codex graded them. `--message-file` sends the file's bytes, and tests run real
+  `powershell.exe` and Git Bash against a stand-in `codex`.
+- **Held-out:** J1-J4, J6 and J7 pass. J5 failed: a file written by Windows PowerShell 5.1's `Out-File` (UTF-16LE with
+  a BOM) reached Codex garbled, and a UTF-8 BOM reached it as text.
+- **Repair 1 (`c88266ea`):** files with a UTF-8, UTF-16LE or UTF-16BE BOM are decoded and sent as UTF-8 without the BOM.
+  A file without a BOM must be valid UTF-8 or it is refused; tests cover files written by `Out-File` and
+  `Set-Content`. The account reached its limit before Codex ran the ladder, so the coordinator ran it:
+  - the test file passes 41 of 41;
+  - `node scripts/verify.mjs fast` passes without mutation (174.6 s), after one earlier run in which the CLI
+    contracts failed once and did not fail again.
+- **Failure cause:** J5 was not stated in the brief; its intent ("Codex receives that text exactly") covered it.
+
+## agent-environment-r03 round 24: `r03/briefs/round-24.md`, result `01c01409` (level high, one repair)
+
+- **Set-up:** DECISIONS items 20 and 24, the gardener's code-health section and its weight. The brief's commit
+  `7bd07f7d` over `a798440e`, run beside round 25 (both change `survey.mjs`; each put its logic in a new module).
+  Held-out rows G1-G10.
+- **Result `e38b4298`:** H1-H4 pass as Codex graded them. `code-health.mjs` reads the concept on
+  `owner-followup-r04-build` through git objects, and the repository's tooling through `HEAD`. The cleanup procedure
+  moved to `CLEANUP.md`, and `SKILL.md` went from 198 to 141 lines.
+- **Held-out** (`D:/fitway-temp/r03-r24-grade/`): 6 of 10 on the first attempt.
+  - G1, G5, G6, G7, G9 and G10 pass: the seven giant concept files I counted, the boundary fixture, a missing branch
+    reads unknown, the trend, git objects only.
+  - G2 and G4 failed: 10 of 11 "any as a type" hits were the English word in test names and comments, and the test
+    fixtures' own strings were counted.
+  - G3 failed: a block found in three places was three hits.
+  - G8 failed: the shortened text dropped many guards, among them `origin/main` as last fetched, `notRunChecks`, a
+    mutating check blocking the pass, the pnpm preflight, a prose word not being a citation, and the placeholder
+    examples.
+- **Repair 1 (`01c01409`):** a source scanner keeps code, comments and strings apart, and duplicate blocks are listed
+  once with every place they occur. Every dropped guard is back; `SKILL.md` is 157 lines with `CLEANUP.md` at 62.
+  - G2, G3, G4 and G8 pass. The 7 tooling type escapes are real `as unknown as` casts.
+  - Real totals, concept / tooling: giant files 7 / 8, type escapes 0 / 7, suppressions 0 / 1, workarounds 72 / 0,
+    duplicate blocks 45 / 35, boundary breaks 110 / 0.
+  - The first resume met the account's limit before any change; the repair ran after the user switched accounts.
+- **Not proved:** H4's folder proposals equal to the base's. Every survey that night, the base's included, was
+  blocked by a temp folder that vanished mid-scan (F117). Branch and worktree proposals were equal.
+- **Merge:** one conflict with round 25 in `survey.mjs`'s section filter, resolved by keeping both names. The
+  gardener suite passes 81 of 81 on the merge.
+- **Failure cause:** G2, G4 and G8 come from the code, not the brief: the brief named TypeScript type use, and
+  "unchanged in meaning".
+
+## agent-environment-r03 round 29: `r03/briefs/round-29.md`, result `f90f4464` (level high)
+
+- **Set-up:** the closing triage's open lines on `check:concept-css` (F041-F044, F113), a check that round 13 made but
+  that no milestone's scope named until `8275d1c7`. The brief's commit is `8275d1c7`; the base on the concept
+  archive at `d1a01f3c` gives 6 findings. Held-out rows W1-W7.
+- **Brief rows, as Codex graded them:** R1-R5 pass. R6 failed only on the fast ladder: its CLI contracts failed while
+  ports 3176-3177 were held by round 22's live sessions (F119).
+  - On `bb637f1f` the new tests give 26 failed and 2 passed; after the change, 112 pass.
+  - The concept goes from 6 findings to 5: the subject restricted to `[tabindex="-1"]` is exempt.
+  - Two older fixtures that accepted a decorative ring now fail, as R4 requires.
+- **Held-out** (`D:/fitway-temp/r03-r29-grade/`): 7 of 7.
+  - W1-W5 pass, 16 fixture cases in all; the base gets 7 of them wrong.
+  - W6: the change in the concept's count is explained finding by finding.
+  - W7: the base fails the resting-border case.
+  - The coordinator ran the fast ladder once the ports were free: it passes without mutation (179 s).
+- **Failure cause:** none in the round. The ladder failure comes from concurrent rounds sharing the verification
+  ports (F119).
+
+## agent-environment-r03 round 22: `r03/briefs/round-22.md`, result `7ab0a660` (level high, one repair)
+
+- **Set-up:** F115, found by the Owner CSS round's review: the held press counted a hover as a press, read only the
+  selected element, and refused a bare `release`.
+  - The brief's commit is `a798440e` over `eddee7b8`.
+  - A ui-forensics 1.3.0 copy is at `D:/fitway-temp/r03-r22-forensics/ui-forensics/`.
+  - The concept was read at `691d62d5` (no press) and `d1a01f3c` (press).
+  - Held-out rows Z1-Z10, plus Z11-Z12 added at grading.
+- **Result `60fbe943`:** P1-P5 pass as Codex graded them. With a mouse, the base is read after the hover settles,
+  and the control, its descendants and their `::before` and `::after` are compared. A bare `release` works, and
+  verify-fitway requires 1.3.1.
+- **Held-out** (Sonnet grader, `D:/fitway-temp/r03-r22-grade/REPORT.md`): 9 of 12 on the first attempt.
+  - Passed:
+    - Z1: at `691d62d5`, 8 controls in both languages read `no pressed style`, where the review had found 320 false
+      presses;
+    - Z2: at `d1a01f3c` the same controls read `shown`;
+    - Z3-Z5, Z10 and Z12: the fixtures;
+    - Z6: both release forms;
+    - Z7: the machine-level 1.3.0 is untouched and refused;
+    - Z8: the frames without a hold are byte-identical.
+  - Failed:
+    - Z9 and the P4 self-test: the copy's self-test was unchanged at 47 of 47 and caught neither planted defect;
+    - Z11: a touch press drawn by pointer events read `no pressed style`, a regression of round 21;
+    - the four new CLI press tests were skipped unless an unset variable named the copy.
+- **Repair 1 (`7ab0a660`):** the touch path keeps a base too. The copy's self-test gains planted controls (53 of 53;
+  the mutants give 52 and 51), and the CLI tests run without a copy (57 pass, 0 skipped).
+  - The coordinator reran the grader's fixtures on the repaired copy: touch `z11a` reads `shown`, and every other
+    case is unchanged.
+  - A copy planted with the pre-hover base fails the new P1 control.
+- **Failure cause:** the code, for Z11. Codex reported P4 as passing without the self-test change the brief named.
+- **Waiting on the user:** installing the 1.3.1 copy as the machine-level ui-forensics. Until then the CLI refuses a
+  held press with the machine-level 1.3.0 and names 1.3.1.
+
+## agent-environment-r03 round 28: `r03/briefs/round-28.md`, result `0e89866b` (level high, one repair)
+
+- **Set-up:** the closing triage's open lines on the record checkers: F003, F007, F051, F052 and F053. The brief's
+  commit is `8275d1c7`, and the round ran beside round 29. Held-out rows N1-N7.
+- **Result `cea5aea5`:** K1, K2, K4 and K5 pass as Codex graded them.
+  - K1: the registry test now fails when the check loses a milestone or reports a wrong one.
+  - K2: placeholders joined to a path pattern pass.
+  - K4: one bad task class gives one line.
+  - K5: every misplaced `supersededBy` is reported.
+  - Codex rightly stopped on K3. The brief also required that every scope line of history claim the same paths, and
+    a closed record's prose `layout/material` is claimed today. History is never parsed for ownership (only open
+    milestones are), so the condition was wrong in the brief.
+  - Its fast ladder failed while round 22 held 3176-3177 (F119).
+- **Repair 1 (`0e89866b`), with the corrected K3:** prose tokens are never claimed, and open milestones claim the same
+  paths. The fast ladder passes (141.6 s).
+- **Held-out** (`D:/fitway-temp/r03-r28-grade/`):
+  - N3: across the real ledger the claimed paths are identical before and after. A prose-only entry is refused for
+    naming no path, and `docs/a.md and/or docs/b.md v1.2` claims the two paths.
+  - N6: `check:repository` passes on the merge.
+  - N7: `check-brief.mjs` is untouched.
+  - N1, N2, N4 and N5 rest on the round's own tests, which fail on the base; the coordinator did not rerun them.
+- **Failure cause:** the brief, for K3. It required history claims to stay the same without checking that history
+  carries prose claims that bind nothing (B7).
+
+## agent-environment-r03 round 27: `r03/briefs/round-27.md`, result `5e5f142e` (level high)
+
+- **Set-up:** F106, F107 and F109 (inputs to the closing review), and F117, a temp folder vanishing mid-survey that
+  blocked collection. The brief's commit is `63cbff3a`; held-out rows E1-E6. The run stopped once at the second
+  account's limit and resumed on its thread after the user switched accounts.
+- **Brief rows, as Codex graded them:** G1-G5 pass.
+  - Only removable worktrees count as merged and clean (13 to 9 on the real state).
+  - The report names withheld worktrees and vanished folders in prose.
+  - A vanished folder is reported as gone and never blocks; other errors still block, and the cleanup script still
+    refuses.
+  - The round 16c fixture uses a made-up path.
+  - The new tests give 5 failed of 8 on the base, and the real survey's proposals equal the base's.
+- **Held-out:**
+  - E4, rerun by the coordinator: no gardener test names a temp folder that exists or that a record cites as a
+    path.
+  - E5: the real survey completes, with proposals equal to the base's (Codex's comparison of two real surveys).
+  - E1-E3 and E6 rest on the round's tests, which fail on the base.
+- **Failure cause:** none.
+
+## agent-environment-r03 round 31: `r03/briefs/round-31.md`, result `9d0e4b29` (level high)
+
+- **Set-up:** F120, the code-health workaround count holding `!important` inside accessibility overrides. The brief's
+  commit is `e0b199df`; held-out rows H1-H5.
+- **Brief rows, as Codex graded them:** A1-A2 pass.
+  - On the base, 6 tests fail.
+  - The concept's workarounds go from 72 to 20, and 52 accessibility overrides are counted on their own, all in
+    `style.css`'s forced-colours and reduced-motion blocks.
+  - The fast ladder passes.
+- **Held-out** (`D:/fitway-temp/r03-r31-grade/`): 5 of 5.
+  - These are set aside: a combined `screen and (forced-colors: active)` query, a reduced-motion query with a width
+    condition, and a forced-colours block inside an HTML `<style>`.
+  - A `not` query and `no-preference` stay workarounds.
+  - A comment inside an override block counts nothing.
+- **Failure cause:** none.
+
+## agent-environment-r03 round 32: `r03/briefs/round-32.md`, result `7ba018a6` (level high)
+
+- **Set-up:** F121. Twice that night Codex reported an outcome PASS whose required change it had not made, and only
+  the grading caught it. The brief's commit is `e0b199df`; held-out rows M1-M6.
+- **Brief rows, as Codex graded them:** C1-C3 pass.
+  - A brief marks a path ` (must change)`, and `brief:check` refuses the marker on a missing path.
+  - `codex:round` records the marked paths' bytes at launch and compares them after the run and after each resume.
+    It prints `Required change unchanged: <path> (brief line N ...)` and writes `required-changes*.json` beside the
+    events.
+  - The template checklist gains one line.
+  - On the base, 18 tests fail; the fast ladder passes.
+- **Held-out:** 5 of 6.
+  - M1-M3 and M5 by reading the code: bytes are compared, so a line-ending change counts as a change. An added file
+    in a folder and a deleted path both count, and the file lands in the run folder.
+  - M6, rerun by the coordinator: the 50 landed briefs give the same failures under the new checker.
+  - M4 (a marker after a heading or a line range) was not run.
+- **Failure cause:** none.
+
+## agent-environment-r03 round 30: `r03/briefs/round-30.md`, result `2b9ac5fe` (level xhigh, two repairs)
+
+- **Set-up:** F045, F046, F112 and F119. The brief's commit is `63cbff3a` over `356515f2`; held-out rows U1-U7.
+  The concept was read at `d1a01f3c` from an archive.
+- **First result `1dde2ffd`:** V1-V2 pass. Focus is named by its selector and accessible name, or its role, and focus
+  on the body reads "on the page itself". The two statuses say what failed. Under full motion, Daily's status was
+  equal 5 of 5, but Access's pin-change validation and my-password differed against themselves: a blinking caret.
+  V4 was not reproduced: the base passes 57 of 57 with both ports held.
+- **Repair 1 (`84f66ae4`):** compare hides native carets and turns off Chromium's partial raster; ordinary drive keeps
+  its options. The coordinator stopped it mid-change for a new session; it resumed on its thread.
+- **Repair 2 (`2b9ac5fe`):** one whole-concept self-compare by the coordinator under full motion still differed on
+  Daily's chart hover and on the chart drawn after a retry, both moved by `requestAnimationFrame`. Compare now waits
+  for queued frames to drain, within one five-second bound per capture; a loop that never settles is a capture
+  problem. Its fast-ladder test runs on a simulated page; the real-browser proof is outside the ladder.
+- **Held-out** (coordinator, `D:/fitway-temp/r03-r30-grade/`): 6 of 7.
+  - U1, U2: by the code and the round's tests.
+  - U3: under full motion Daily's status, Access's add, pin-change validation and my-password, and Reports'
+    custom period were equal 5 of 5. Reports' `dialog=range` cannot be measured: its state has no recipe proof (F124).
+  - U4: a one-shade change planted in the open status popover and one in the focused invalid pin field both read
+    different, before and after repair 2. After repair 2, Daily's 42 features were equal in 3 of 3 runs and the
+    whole concept read 125 equal, 0 different.
+  - U6: Reports' frames are byte-identical to the base CLI. Daily's phone frame under reduced motion alternates
+    between two renders of the Lights chip with either CLI (F126), so it matches the base on reruns.
+  - U7: by the code: one bounded wait, only carets hidden, persistent animations paused at time zero.
+  - U5 (two sessions from two worktrees at once) was not run. F119 stays open.
+- **Failure cause:** the code, for both repairs. The brief asked for every feature equal; repair 1 was checked only on
+  the features reported to differ. V4 is not met: its cause is unknown, and no failing test is named.

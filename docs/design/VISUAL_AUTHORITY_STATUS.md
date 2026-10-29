@@ -16,6 +16,7 @@
   `docs/phase-records/handoffs/coordinator/20260915-185500-human-owner-visual-authority-decision.md`.
 - Derivation sources: `docs/adr/ADR-007-paper-visual-source-of-truth.md` (ADR-007),
   `docs/adr/ADR-009-owner-composition-authority-supersession.md` (ADR-009),
+  `docs/adr/ADR-010-public-composition-authority-supersession.md` (ADR-010),
   `visual-direction-gate/approved/APPROVAL_MANIFEST.yaml`,
   `visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml`
   (abbreviated below as `RAM`), and the accepted human/independent records cited per row.
@@ -24,7 +25,8 @@
   and root cause 7 at `:235-239`. Stored exports and canonicals are provenance and comparison
   references, never live authority.
 - This file changes no locked decision. It does not downgrade or upgrade any surface; the Owner
-  statuses below derive from ADR-009 and grant no approval of their own.
+  statuses below derive from ADR-009, the `public` status below derives from ADR-010, and neither
+  grants any approval of its own.
 
 ## Status vocabulary (exactly five statuses plus one flag)
 
@@ -32,11 +34,12 @@
 2. **`Paper identity/behavior cues only`** — Paper no longer governs composition.
 3. **`Previous baseline / comparison reference`** — Paper is retained only as a comparison reference.
 4. **`Superseded by newly approved concept`** — a new human-approved concept governs composition.
-5. **`Owner composition redesign authorized — composition authority vacant; prior composition and canonicals reference-only (ADR-009)`** — the seven Owner surfaces only. No composition authority is in force: the previous Owner Paper compositions, their accepted canonical routed screenshots, the accepted-case authority mappings, and the frozen `owner-governance-layout-recomposition-r02` candidate are provenance and comparison references only and cannot constrain the redesign; `DESIGN_GUIDE.md` system rules and the non-visual contracts listed in ADR-009 remain binding; authority returns only when a new concept is approved through the concept-selection gate and the perceptual-promotion gate in `docs/WORKFLOW.md`.
+5. **`Owner composition redesign authorized — composition authority vacant; prior composition and canonicals reference-only (ADR-009)`** — the seven Owner surfaces only, and `public` in its ADR-010 form, `Public composition redesign authorized — composition authority vacant; prior composition and canonicals reference-only (ADR-010)`, under which the previous Public Paper composition and its accepted canonical routed screenshots are provenance and comparison references only (ADR-010 decisions 2 and 3). No composition authority is in force: the previous Owner Paper compositions, their accepted canonical routed screenshots, the accepted-case authority mappings, and the frozen `owner-governance-layout-recomposition-r02` candidate are provenance and comparison references only and cannot constrain the redesign; `DESIGN_GUIDE.md` system rules and the non-visual contracts listed in ADR-009 remain binding; authority returns only when a new concept is approved through the concept-selection gate and the perceptual-promotion gate in `docs/WORKFLOW.md`.
 6. **`DECISION REQUIRED`** (flag, not a status) — a change of status is requested but not granted.
 
-`public`, `login`, and `staff` are status 1 today; the seven Owner surfaces are status 5, derived
-from ADR-009 and the 2026-09-15 decision record. Statuses 2, 3, and 4 are unassigned; assigning one
+`login` and `staff` are status 1 today; the seven Owner surfaces are status 5, derived from
+ADR-009 and the 2026-09-15 decision record, and `public` is status 5 in its ADR-010 form, derived
+from ADR-010 (accepted 2026-10-28). Statuses 2, 3, and 4 are unassigned; assigning one
 requires the human decision recorded in a reviewed record.
 
 ## Register
@@ -49,11 +52,11 @@ below. All ten surfaces carry the 2026-09-05 human visual approval
 grant 2 at `:19-36`) and the closure record
 (`docs/phase-records/handoffs/full-route-paper-fidelity/20260905-fidelity-closure.md:13-21`); for
 the seven Owner surfaces that approval is superseded as composition authority and retained as
-provenance only (ADR-009 decision 2).
+provenance only (ADR-009 decision 2), and likewise for `public` (ADR-010 decision 2).
 
 | Surface | Current status | Exact authority source | Governing acceptance record(s) | Known composition concern (exact evidence path) |
 | --- | --- | --- | --- | --- |
-| `public` | `Paper composition authority` | `RAM` `surfaces.public` (`:32-35`), `status: ACCEPTED_PAPER_AUTHORITY` (`:35`); area `PUBLIC CROWD BOARD PRODUCTION SET — CURRENT` (`:33`) | `docs/phase-records/handoffs/full-route-paper-fidelity/20260902-213926-public-paper-repair.md`; 2026-09-05 approval + closure | Minor accepted difference: Public EN 390 legend spacing differs slightly from Paper, no collision or clipping (`docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md:30`). Paper-vs-guide conflicts: see `PAPER_GUIDE_CONFLICT_MAP.md`. |
+| `public` | `Public composition redesign authorized — composition authority vacant; prior composition and canonicals reference-only (ADR-010)` | ADR-010 decisions 1-3 and 5 (`docs/adr/ADR-010-public-composition-authority-supersession.md`); previous source `RAM` `surfaces.public` (`:32-35`), `status: ACCEPTED_PAPER_AUTHORITY` (`:35`), area `PUBLIC CROWD BOARD PRODUCTION SET — CURRENT` (`:33`) retained as provenance | Superseded as composition authority (ADR-010); retained as provenance: `docs/phase-records/handoffs/full-route-paper-fidelity/20260902-213926-public-paper-repair.md`; 2026-09-05 approval + closure | **Redesign input (ADR-010), not an authority conflict:** minor accepted difference: Public EN 390 legend spacing differs slightly from Paper, no collision or clipping (`docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md:30`). Paper-vs-guide conflicts: see `PAPER_GUIDE_CONFLICT_MAP.md`. |
 | `login` | `Paper composition authority` | `RAM` `surfaces.login` (`:83-87`), `status: ACCEPTED_PAPER_AUTHORITY` (`:86`) | `docs/phase-records/handoffs/full-route-paper-fidelity/20260902-211102-login-staff-paper-checkpoint.md`; 2026-09-05 approval + closure | Open, unmapped hover-contrast exception — see "Login hover-contrast exception" below. |
 | `staff` | `Paper composition authority` | `RAM` `surfaces.staff` (`:139-145`), `status: ACCEPTED_SPLIT_AUTHORITY` (`:144`); composition area QPD-0 (`:140-141`), interaction area 146R-0 (`:142-143`) | `20260902-211102-login-staff-paper-checkpoint.md`; 2026-09-05 approval + closure; capacity/monitoring-only human decision 2026-08-09 | Capacity is DTO-only and unrendered by human decision 2 (`docs/phase-records/handoffs/phase5-staff-ui/20260809-030128-p5_staff_monitoring-activation-ratification.md:39-43`; `PHASES.md:184-189`). Approved deviation `staff-camera-failure-semantic-distinction` (`RAM:145`). No composition-weakness finding. |
 | `owner-shared-navigation` | `Owner composition redesign authorized — composition authority vacant; prior composition and canonicals reference-only (ADR-009)` | ADR-009 decisions 1-2 and 5 (`docs/adr/ADR-009-owner-composition-authority-supersession.md`) plus the decision record `docs/phase-records/handoffs/coordinator/20260915-185500-human-owner-visual-authority-decision.md`; previous source `RAM` `surfaces.ownerSharedNavigation` (`:247-254`, `status: SUPERSEDED_FOR_OWNER_REDESIGN` `:250`, area `OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT` `:248`) retained as provenance, re-statused from `ACCEPTED_PAPER_AUTHORITY` by the follow-on manifest workstream | Superseded as composition authority (ADR-009); retained as provenance: human approval `docs/phase-records/handoffs/full-route-paper-fidelity/20260902-192833-owner-shell-approved-activity-candidate-needs-human.md` (also `RAM:253`); 2026-09-05 approval + closure | **Redesign input (ADR-009), not an authority conflict:** provenance deviation `owner-shared-navigation-uniform-material` (`RAM:254`). Cross-surface (not shell-topology) concern: section tab strip anchored from content-measured heading heights re-lands 3-7px between sections (`docs/phase-records/handoffs/owner-demo-polish/20260912-owner-presentation-audit-r01.md:22`). |
@@ -158,14 +161,17 @@ in `scripts/owner-supersession-policy.mjs`, not a data edit.
   `RAM:35` (`public`) and `:86` (`login`). The seven Owner entries previously carried this status;
   per ADR-009 the follow-on manifest workstream re-statuses them
   `SUPERSEDED_FOR_OWNER_REDESIGN` (`:250`, `:270`, `:343`, `:392`, `:433`, `:474`, `:515`), and
-  this register treats them as status 5.
+  this register treats them as status 5. Per ADR-010 this register treats `public` as status 5 too;
+  its manifest entry keeps `ACCEPTED_PAPER_AUTHORITY` until the same kind of follow-on manifest
+  workstream re-statuses it.
 - `SUPERSEDED_FOR_OWNER_REDESIGN` — entry-level surface signal applied to the seven Owner surface
   entries (`ownerSharedNavigation`, `ownerDaily`, `ownerReports`, `ownerAccountsAndSignIn`,
   `ownerActivityLog`, `ownerSystemStatus`, `ownerSettings`) by the follow-on manifest workstream.
   The surface's previous Paper composition and accepted cases are superseded as composition
   authority and retained as reference; no Owner composition authority is in force until a new
   concept is approved through the concept-selection and perceptual-promotion gates (ADR-009).
-  Public and Login entry statuses remain `ACCEPTED_PAPER_AUTHORITY`; Staff remains
+  Public and Login entry statuses remain `ACCEPTED_PAPER_AUTHORITY` (Public's until its follow-on
+  manifest workstream under ADR-010); Staff remains
   `ACCEPTED_SPLIT_AUTHORITY`.
 - `ACCEPTED_SPLIT_AUTHORITY` — Staff only (`RAM:144`). Paper composition authority is the
   `STAFF MONITORING PRODUCTION SET — CURRENT` area (`:140-141`, nodeId `QPD-0`); interaction

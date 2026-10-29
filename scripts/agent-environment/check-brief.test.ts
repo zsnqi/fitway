@@ -1,7 +1,9 @@
+// code-health-exception: giantFiles; until=2026-11-15; reason=giant-split moved imported names; the giant test files split next
 import { execFileSync, spawnSync } from "node:child_process";
 import {
 	mkdirSync,
 	mkdtempSync,
+	readdirSync,
 	readFileSync,
 	realpathSync,
 	rmSync,
@@ -10,13 +12,118 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { codexScopeProblem } from "./brief-markdown.mjs";
+import {
+	reviewSourcePlan,
+	setReviewSourcePlaceObserver,
+} from "./brief-review-sources.mjs";
 import {
 	checkBrief,
 	formatBriefResult,
 	parseBriefArgs,
 } from "./check-brief.mjs";
+import { captureReviewSourceAccess } from "./check-brief-review-access-fixture.mjs";
+import { copyReviewSources } from "./codex-review-launch.mjs";
 import { git, put } from "./fixtures";
+
+vi.mock("node:fs", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs")>();
+	return {
+		...actual,
+		readFileSync: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "readFileSync",
+					value: args[0],
+				});
+			return (
+				actual.readFileSync as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+		createReadStream: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "createReadStream",
+					value: args[0],
+				});
+			return (
+				actual.createReadStream as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+	};
+});
+
+vi.mock("node:fs/promises", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs/promises")>();
+	return {
+		...actual,
+		readFile: vi.fn((...args: unknown[]) => {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "readFile",
+					value: args[0],
+				});
+			return (actual.readFile as unknown as (...values: unknown[]) => unknown)(
+				...args,
+			);
+		}),
+	};
+});
+
+vi.mock("node:child_process", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:child_process")>();
+	const recordGitShow = (args: unknown[]) => {
+		const command = args[0];
+		const commandArgs = args[1];
+		if (
+			command === "git" &&
+			Array.isArray(commandArgs) &&
+			commandArgs[0] === "show"
+		) {
+			const log = Reflect.get(
+				globalThis,
+				Symbol.for("fitway.review-source-access-test"),
+			);
+			if (Array.isArray(log))
+				log.push({
+					type: "read",
+					route: "git-show",
+					value: commandArgs[2],
+				});
+		}
+	};
+	return {
+		...actual,
+		execFileSync: vi.fn((...args: unknown[]) => {
+			recordGitShow(args);
+			return (
+				actual.execFileSync as unknown as (...values: unknown[]) => unknown
+			)(...args);
+		}),
+		spawnSync: vi.fn((...args: unknown[]) => {
+			recordGitShow(args);
+			return (actual.spawnSync as unknown as (...values: unknown[]) => unknown)(
+				...args,
+			);
+		}),
+	};
+});
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const script = path.join(
@@ -29,6 +136,36 @@ const environment = readFileSync(
 	"utf8",
 );
 const roots: string[] = [];
+
+it("C2: the coordinator checklist explains the must change marker", () => {
+	const template = readFileSync(
+		path.join(repository, "docs/agent-context/briefs/codex.md"),
+		"utf8",
+	);
+	expect(template).toContain(
+		"- [ ] Mark with ` (must change)` each path an outcome requires to change.",
+	);
+});
+
+it("R4: checker diagnostics name their checks without colliding with B1-B10", async () => {
+	const f = fixture();
+	const text =
+		f.valid
+			.replace("role: codex", "role: unknown")
+			.replace("feature/build", "missing/branch") +
+		"\n<unfilled>\n" +
+		"\n".repeat(85);
+	const result = await f.check(text);
+	expect(
+		new Set(result.problems.map((problem: { rule: string }) => problem.rule)),
+	).toEqual(new Set(["brief-references", "brief-format", "brief-readiness"]));
+	expect(formatBriefResult(result)).not.toMatch(/\b(?:FAIL|WARNING) B\d+:/);
+	const template = readFileSync(
+		path.join(repository, "docs/agent-context/briefs/codex.md"),
+		"utf8",
+	);
+	expect(template).toMatch(/B10\.[\s\S]*?brief-references/);
+});
 
 afterEach(() => {
 	for (const root of roots.splice(0)) {
@@ -72,7 +209,7 @@ function fixture() {
 	git(commandRepository, "commit", "-m", "fixture base");
 	const head = git(commandRepository, "rev-parse", "--short", "HEAD");
 	git(commandRepository, "worktree", "add", "-b", "feature/build", worktree);
-	const valid = `<!-- brief-format: v1 role: codex -->\n# Fixture brief\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`\n\n${environment}\n## Goal\n\nRead \`docs/guide.md:4\` §"Selected heading".\n`;
+	const valid = `<!-- brief-format: v1 role: codex delivers: report -->\n# Fixture brief\n\n- **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`\n\n${environment}\n## Goal\n\nRead \`docs/guide.md:4\` §"Selected heading".\n\n## Scope\n\nWrite only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.\n\n## Report\n\nFixture report.\n`;
 	const briefPath = path.join(commandRepository, "brief.md");
 	const check = async (text = valid, fillEnvironment = false) => {
 		writeFileSync(briefPath, text);
@@ -85,7 +222,78 @@ function fixture() {
 	return { root, commandRepository, worktree, head, valid, briefPath, check };
 }
 
-describe("B1: resolve a brief against its named Git worktree", () => {
+// Review sources must sit under D:/fitway-temp; a CI runner has no such folder until something makes it.
+beforeAll(() => {
+	mkdirSync("D:/fitway-temp", { recursive: true });
+});
+
+describe("C1 must change references", () => {
+	it("accepts existing repository and absolute files and folders, including bare paths", async () => {
+		const f = fixture();
+		const absolute = path.join(f.root, "outside git.bin").replaceAll("\\", "/");
+		writeFileSync(absolute, "content");
+		const paths = [
+			"docs/guide.md",
+			"docs/",
+			"LICENSE",
+			absolute,
+			f.root.replaceAll("\\", "/"),
+		];
+		const text =
+			f.valid +
+			paths
+				.map((file) => `\n- Outcome: Update \`${file}\` (must change).`)
+				.join("") +
+			"\n";
+		const result = await f.check(text);
+		expect(result.problems).toEqual([]);
+		expect(
+			result.requiredChanges.map((entry: { path: string }) => entry.path),
+		).toEqual(paths);
+		for (const entry of result.requiredChanges)
+			expect(text.split("\n")[entry.line - 1]).toBe(entry.outcome);
+	});
+	it.each([
+		"repository",
+		"absolute",
+		"bare",
+	])("refuses a missing marked %s path", async (kind) => {
+		const f = fixture();
+		const file =
+			kind === "absolute"
+				? path.join(f.root, "missing.bin").replaceAll("\\", "/")
+				: kind === "bare"
+					? "missing"
+					: "docs/missing.md";
+		const text = `${f.valid}\n- Outcome: Update \`${file}\` (must change).\n`;
+		const result = await f.check(text);
+		expect(result.ok).toBe(false);
+		expect(formatBriefResult(result)).toContain(
+			"must change path does not exist:",
+		);
+		writeFileSync(f.briefPath, text);
+		const cli = spawnSync(process.execPath, [script, f.briefPath], {
+			cwd: f.commandRepository,
+			encoding: "utf8",
+			windowsHide: true,
+		});
+		expect(cli.status).toBe(1);
+		expect(cli.stdout).toContain(
+			"FAIL brief-references: must change path does not exist:",
+		);
+	});
+	it("ignores markers in comments and keeps unmarked machine-local paths unjudged", async () => {
+		const f = fixture();
+		const missing = path.join(f.root, "missing.bin").replaceAll("\\", "/");
+		const result = await f.check(
+			`${f.valid}\n\`${missing}\`\n<!-- \`${missing}\` (must change) -->\n`,
+		);
+		expect(result.ok).toBe(true);
+		expect(result.requiredChanges).toEqual([]);
+	});
+});
+
+describe("brief-references: resolve a brief against its named Git worktree", () => {
 	it("Q2: accepts short and long named roots and Windows letter case", async () => {
 		const f = fixture();
 		const long = realpathSync.native(f.worktree);
@@ -171,7 +379,7 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 		const result = await f.check();
 		expect(result.ok).toBe(false);
 		expect(formatBriefResult(result)).toMatch(
-			/:4: FAIL B1:.*non-Markdown paths: build.js/,
+			/:4: FAIL brief-references:.*non-Markdown paths: build.js/,
 		);
 	});
 
@@ -195,22 +403,22 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 					),
 				),
 			),
-		).toMatch(/B1: worktree does not exist/);
+		).toMatch(/brief-references: worktree does not exist/);
 		expect(
 			formatBriefResult(
 				await f.check(f.valid.replace("`feature/build`", "`wrong/branch`")),
 			),
-		).toMatch(/B1: branch mismatch/);
+		).toMatch(/brief-references: branch mismatch/);
 		expect(
 			formatBriefResult(
 				await f.check(f.valid.replace(`\`${f.head}\``, "`--help`")),
 			),
-		).toMatch(/B1: HEAD must be a commit hash/);
+		).toMatch(/brief-references: HEAD must be a commit hash/);
 		expect(
 			formatBriefResult(
 				await f.check(f.valid.replace(`\`${f.head}\``, "`deadbeef`")),
 			),
-		).toMatch(/B1: named HEAD.*missing/);
+		).toMatch(/brief-references: named HEAD.*missing/);
 		put(f.commandRepository, "coordinator-only.md", "# New commit\n");
 		git(f.commandRepository, "add", "coordinator-only.md");
 		git(f.commandRepository, "commit", "-m", "coordinator ahead");
@@ -219,7 +427,7 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 			formatBriefResult(
 				await f.check(f.valid.replace(`\`${f.head}\``, `\`${future}\``)),
 			),
-		).toMatch(/B1: named HEAD.*not an ancestor/);
+		).toMatch(/brief-references: named HEAD.*not an ancestor/);
 		git(f.worktree, "checkout", "--detach");
 		expect(formatBriefResult(await f.check())).toContain(
 			"found <detached HEAD>",
@@ -271,7 +479,7 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 		expect(text.split("\n")[problem.line - 1]).toMatch(/and `docs\/$/);
 		expect(formatBriefResult(result)).toMatch(
 			new RegExp(
-				`:${problem.line}: FAIL B1: missing path .*breaks across lines`,
+				`:${problem.line}: FAIL brief-references: missing path .*breaks across lines`,
 			),
 		);
 	});
@@ -381,7 +589,493 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 	});
 });
 
-describe("B2: shared environment and brief role", () => {
+describe("brief-review-sources: the pre-launch source contract", () => {
+	it("checks each source's place before reading it", async () => {
+		const f = fixture();
+		const temporary = mkdtempSync(
+			path.join("D:/fitway-temp", "brief-source-place-"),
+		);
+		const temporaryFile = path.join(temporary, "source.md");
+		const checkout = path.join(f.commandRepository, "checkout-place-dir");
+		const checkoutFile = path.join(f.commandRepository, "docs", "guide.md");
+		const outside = path.join(f.root, "outside-place-dir");
+		const outsideFile = path.join(f.root, "outside-source.md");
+		mkdirSync(checkout);
+		mkdirSync(outside);
+		writeFileSync(temporaryFile, "temporary source\n");
+		writeFileSync(outsideFile, "outside source\n");
+		try {
+			const plan = (value: string) =>
+				reviewSourcePlan(value, {
+					worktree: f.worktree,
+					head: f.head,
+					checkoutRoot: f.commandRepository,
+				});
+			const accessKey = Symbol.for("fitway.review-source-access-test");
+			const cases = [
+				{
+					name: "temp directory",
+					value: temporary,
+					error: "named review source is not a file",
+				},
+				{
+					name: "checkout directory",
+					value: checkout,
+					error: "named review source is not a file",
+				},
+				{
+					name: "outside directory",
+					value: outside,
+					error:
+						"absolute review source is outside D:/fitway-temp and the launcher checkout",
+				},
+				{ name: "temp file", value: temporaryFile },
+				{ name: "checkout file", value: checkoutFile },
+				{
+					name: "outside file",
+					value: outsideFile,
+					error:
+						"absolute review source is outside D:/fitway-temp and the launcher checkout",
+				},
+				{ name: "repository file", value: "docs/guide.md" },
+			] as const;
+			for (const item of cases) {
+				const events: {
+					type: "place" | "read";
+					kind?: string;
+					route?: string;
+					value?: unknown;
+				}[] = [];
+				Reflect.set(globalThis, accessKey, events);
+				setReviewSourcePlaceObserver((event) => {
+					events.push({ type: "place", ...event });
+				});
+				try {
+					if ("error" in item) {
+						await expect(plan(item.value), item.name).rejects.toThrow(
+							item.error,
+						);
+					} else {
+						await expect(plan(item.value), item.name).resolves.toBeTruthy();
+					}
+				} finally {
+					setReviewSourcePlaceObserver(undefined);
+					Reflect.deleteProperty(globalThis, accessKey);
+				}
+				const reads = events.filter((event) => event.type === "read");
+				if ("error" in item) {
+					expect(reads, item.name).toEqual([]);
+					continue;
+				}
+				const firstPlace = events.findIndex((event) => event.type === "place");
+				const firstRead = events.findIndex((event) => event.type === "read");
+				expect(firstPlace, item.name).toBeGreaterThanOrEqual(0);
+				expect(firstRead, item.name).toBeGreaterThan(firstPlace);
+			}
+		} finally {
+			rmSync(temporary, { recursive: true, force: true });
+		}
+	});
+
+	it("keeps source reads after the place check through the checker", async () => {
+		const f = fixture();
+		const goal = f.valid.indexOf("## Goal");
+		expect(goal).toBeGreaterThan(0);
+		const text = `${f.valid.slice(0, goal)}- **Read first, only these:**
+
+  - \`docs/guide.md\`
+
+## Goal
+
+No file references.
+`;
+		const events = await captureReviewSourceAccess(() => f.check(text));
+		const allowed = new Set([
+			path.normalize(path.resolve(f.briefPath)),
+			path.normalize(path.resolve(f.commandRepository, environmentPath)),
+		]);
+		const sourceReads = events.filter(
+			(event) =>
+				event.type === "read" &&
+				(typeof event.value !== "string" ||
+					!allowed.has(path.normalize(path.resolve(event.value)))),
+		);
+		const firstPlace = events.findIndex((event) => event.type === "place");
+		expect(sourceReads.length).toBeGreaterThan(0);
+		for (const read of sourceReads)
+			expect(events.indexOf(read)).toBeGreaterThan(firstPlace);
+	});
+
+	it("keeps source reads after the place check through review copying", async () => {
+		const f = fixture();
+		const brief = `- **Read first, only these:**
+
+  - \`docs/guide.md\`
+`;
+		const events = await captureReviewSourceAccess(() =>
+			copyReviewSources(
+				path.join(f.root, "copy-review"),
+				brief,
+				f.worktree,
+				f.head,
+			),
+		);
+		const firstPlace = events.findIndex((event) => event.type === "place");
+		const firstRead = events.findIndex((event) => event.type === "read");
+		expect(firstPlace).toBeGreaterThanOrEqual(0);
+		expect(firstRead).toBeGreaterThan(firstPlace);
+	});
+
+	it("checks a repository source's type before reading it", async () => {
+		const f = fixture();
+		const source = "docs/gitlink-source";
+		const trace = path.join(f.root, "git-trace.jsonl");
+		git(
+			f.worktree,
+			"update-index",
+			"--add",
+			"--cacheinfo",
+			`160000,${"1".repeat(40)},${source}`,
+		);
+		git(f.worktree, "commit", "-m", "add gitlink review source");
+		const head = git(f.worktree, "rev-parse", "HEAD");
+		const previous = process.env.GIT_TRACE2_EVENT;
+		process.env.GIT_TRACE2_EVENT = trace;
+		try {
+			await expect(
+				reviewSourcePlan(source, {
+					worktree: f.worktree,
+					head,
+					checkoutRoot: f.commandRepository,
+				}),
+			).rejects.toThrow("named review source is not a file");
+		} finally {
+			if (previous === undefined) delete process.env.GIT_TRACE2_EVENT;
+			else process.env.GIT_TRACE2_EVENT = previous;
+		}
+		const events = readFileSync(trace, "utf8");
+		expect(events).toContain("ls-tree");
+		expect(events).not.toContain("show");
+	});
+
+	it("reports every refused source in one pass with its line", async () => {
+		const f = fixture();
+		const outside = path.join(f.root, "outside-review-source.txt");
+		writeFileSync(outside, "outside\n");
+		writeFileSync(path.join(f.worktree, ".env"), "SECRET=value\n");
+		const sources = [
+			"docs/guide.md",
+			"docs/./guide.md",
+			"docs/missing-review-source.md",
+			"docs/",
+			".env",
+			outside.replaceAll("\\", "/"),
+		];
+		const text = f.valid.replace(
+			"## Goal",
+			`- **Read first, only these:**\n\n${sources
+				.map((source) => `  - \`${source}\``)
+				.join("\n")}\n\n## Goal`,
+		);
+		const result = await f.check(text);
+		const problems = result.problems.filter(
+			(problem: { rule: string }) => problem.rule === "brief-review-sources",
+		);
+		expect(problems).toHaveLength(5);
+		expect(formatBriefResult(result)).toContain(
+			"two named review sources map to one file: docs/./guide.md",
+		);
+		expect(formatBriefResult(result)).toContain(
+			"named review source not found: docs/missing-review-source.md",
+		);
+		expect(formatBriefResult(result)).toContain(
+			"named review source is not a file: docs/",
+		);
+		expect(formatBriefResult(result)).toContain(
+			"named review source holds credentials: .env",
+		);
+		expect(formatBriefResult(result)).toContain(
+			"absolute review source is outside D:/fitway-temp and the launcher checkout",
+		);
+		const lines = text.split("\n");
+		for (const problem of problems)
+			expect(lines[problem.line - 1]).toMatch(
+				/docs\/|\.env|outside-review-source/,
+			);
+	});
+
+	it("refuses a repository source that is a symbolic link at the named HEAD", async () => {
+		const f = fixture();
+		const target = path.join(f.root, "link-target.txt");
+		writeFileSync(target, "link target\n");
+		const blob = git(f.worktree, "hash-object", "-w", target);
+		git(
+			f.worktree,
+			"update-index",
+			"--add",
+			"--cacheinfo",
+			`120000,${blob},docs/link-source.md`,
+		);
+		git(f.worktree, "commit", "-m", "add symbolic review source");
+		const head = git(f.worktree, "rev-parse", "--short=8", "HEAD");
+		const text = f.valid
+			.replace(f.head, head)
+			.replace(
+				"## Goal",
+				"- **Read first, only these:**\n\n  - `docs/link-source.md`\n\n## Goal",
+			);
+		const result = await f.check(text);
+		expect(formatBriefResult(result)).toContain(
+			"named review source is a symbolic link: docs/link-source.md",
+		);
+	});
+
+	it("accepts a committed launcher-checkout absolute source and refuses untracked or changed copies", async () => {
+		const f = fixture();
+		const accepted = path
+			.join(f.commandRepository, "docs", "guide.md")
+			.replaceAll("\\", "/");
+		const untracked = path
+			.join(f.commandRepository, "docs", "untracked-source.md")
+			.replaceAll("\\", "/");
+		const changed = path
+			.join(f.commandRepository, "docs", "changed-source.md")
+			.replaceAll("\\", "/");
+		put(f.commandRepository, "docs/changed-source.md", "head\n");
+		git(f.commandRepository, "add", ".");
+		git(f.commandRepository, "commit", "-m", "checkout source");
+		put(f.commandRepository, "docs/changed-source.md", "working\n");
+		put(f.commandRepository, "docs/untracked-source.md", "untracked\n");
+		const acceptedResult = await f.check(
+			f.valid.replace(
+				"## Goal",
+				`- **Read first, only these:**\n\n  - \`${accepted}\`\n\n## Goal`,
+			),
+		);
+		expect(acceptedResult.ok, formatBriefResult(acceptedResult)).toBe(true);
+		const result = await f.check(
+			f.valid.replace(
+				"## Goal",
+				`- **Read first, only these:**\n\n  - \`${untracked}\`\n  - \`${changed}\`\n\n## Goal`,
+			),
+		);
+		expect(formatBriefResult(result)).toContain(
+			`absolute review source not found: ${untracked}`,
+		);
+		expect(formatBriefResult(result)).toContain(
+			`absolute review source differs from the launcher checkout HEAD: ${changed}`,
+		);
+	});
+});
+
+describe("brief-references: decision item citations", () => {
+	it.each([
+		["single", "1. One.\n", "item 2", [2]],
+		["list", "1. One.\n3. Three.\n", "items 1, 2, 3", [2]],
+		["range", "1. One.\n2. Two.\n3. Three.\n4. Four.\n", "items 1-5", [5]],
+		[
+			"mixed list",
+			"1. One.\n2. Two.\n3. Three.\n4. Four.\n",
+			"items 1-2, 5 and 3-4",
+			[5],
+		],
+	])("rejects a missing item in a %s citation", async (_shape, decisions, citation, missing) => {
+		const f = fixture();
+		put(f.worktree, "docs/DECISIONS.md", decisions);
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` ${citation}.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(missing.length);
+		for (const item of missing)
+			expect(formatBriefResult(result)).toContain(
+				`missing decision item ${item}`,
+			);
+	});
+
+	it("accepts single, list, range and mixed citations when all items exist", async () => {
+		const f = fixture();
+		put(
+			f.worktree,
+			"docs/DECISIONS.md",
+			"1. One.\n2. Two.\n3. Three.\n4. Four.\n5. Five.\n",
+		);
+		for (const citation of [
+			"item 3",
+			"items 1, 3 and 5",
+			"items 1-5",
+			"items 1-2, 5 and 3-4",
+		])
+			expect(
+				(await f.check(`${f.valid}\n\`docs/DECISIONS.md\` ${citation}.\n`))
+					.problems,
+			).toEqual([]);
+	});
+
+	it("rejects a missing middle item in a range", async () => {
+		const f = fixture();
+		put(f.worktree, "docs/DECISIONS.md", "1. One.\n3. Three.\n");
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` items 1-3.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(1);
+		expect(formatBriefResult(result)).toContain("missing decision item 2");
+	});
+
+	it("checks decision items for absolute paths, including paths inside the named worktree", async () => {
+		const f = fixture();
+		const decisions = "1. One.\n2. Two.\n";
+		put(f.worktree, "docs/DECISIONS.md", decisions);
+		put(f.root, "absolute-DECISIONS.md", decisions);
+		for (const file of [
+			path.join(f.worktree, "docs/DECISIONS.md"),
+			path.join(f.root, "absolute-DECISIONS.md"),
+		]) {
+			const absolute = file.replaceAll("\\", "/");
+			const result = await f.check(
+				`${f.valid}\n\`${absolute}\` items 2 and 999.\n`,
+			);
+			expect(result.ok).toBe(false);
+			expect(result.problems).toHaveLength(1);
+			expect(formatBriefResult(result)).toContain("missing decision item 999");
+		}
+	});
+
+	it("ignores numbered lines inside fenced decision content", async () => {
+		const f = fixture();
+		put(
+			f.worktree,
+			"docs/DECISIONS.md",
+			"1. One.\n```text\n7. Fenced example.\n```\n",
+		);
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` items 1 and 7.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(1);
+		expect(formatBriefResult(result)).toContain("missing decision item 7");
+	});
+
+	it("does not accept a decisions file that only exists in the command repository", async () => {
+		const f = fixture();
+		put(f.commandRepository, "docs/DECISIONS.md", "42. Command only.\n");
+		const result = await f.check(
+			`${f.valid}\n\`docs/DECISIONS.md\` item 42.\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(formatBriefResult(result)).toContain("drift: missing");
+		expect(formatBriefResult(result)).toMatch(/docs[\\/]DECISIONS\.md/);
+	});
+});
+
+describe("brief-references: row citations", () => {
+	const kinds = ["tsv", "markdown"] as const;
+	const presentCases = [
+		["single row", "row F101", ["F101"]],
+		["comma list", "rows F101, F102", ["F101", "F102"]],
+		["and list", "rows F101 and F102", ["F101", "F102"]],
+		["range", "rows F101-F103", ["F101", "F102", "F103"]],
+		["separate backticks", "rows `F101`, `F102`", ["F101", "F102"]],
+		[
+			"whole list in one code span",
+			"rows `F101, F102 and F103`",
+			["F101", "F102", "F103"],
+		],
+	] as const;
+	const missingCases = [
+		["single row", "row F999", "F999"],
+		["comma list", "rows F101, F999", "F999"],
+		["and list", "rows F101 and F999", "F999"],
+		["range", "rows F109-F111", "F110"],
+		["separate backticks", "rows `F101`, `F999`", "F999"],
+		["whole list in one code span", "rows `F101, F999 and F102`", "F999"],
+	] as const;
+
+	function addRows(
+		f: ReturnType<typeof fixture>,
+		kind: (typeof kinds)[number],
+		ids: readonly string[],
+	) {
+		const file = kind === "tsv" ? "docs/rows.tsv" : "docs/rows.md";
+		const content =
+			kind === "tsv"
+				? `${ids.map((id) => `${id}\tvalue`).join("\n")}\n`
+				: [
+						"| ID | Value |",
+						"| --- | --- |",
+						...ids.map((id) => `| ${id} | value |`),
+						"",
+					].join("\n");
+		put(f.worktree, file, content);
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", `add ${kind} row fixture`);
+		return {
+			file,
+			head: git(f.worktree, "rev-parse", "--short", "HEAD"),
+		};
+	}
+
+	function brief(
+		f: ReturnType<typeof fixture>,
+		head: string,
+		file: string,
+		citation: string,
+	) {
+		return `${f.valid.replace(`, HEAD \`${f.head}\``, `, HEAD \`${head}\``)}\n\`${file}\` ${citation}.\n`;
+	}
+
+	for (const kind of kinds) {
+		it(`accepts every row citation form in ${kind}`, async () => {
+			const f = fixture();
+			const { file, head } = addRows(f, kind, ["F101", "F102", "F103"]);
+			for (const [, citation, ids] of presentCases) {
+				const result = await f.check(brief(f, head, file, citation));
+				expect(result.problems, `${citation}: ${ids.join(", ")}`).toEqual([]);
+			}
+		});
+
+		it(`reports every missing row form in ${kind}`, async () => {
+			const f = fixture();
+			const { file, head } = addRows(f, kind, ["F101", "F102", "F103"]);
+			for (const [, citation, missing] of missingCases) {
+				const result = await f.check(brief(f, head, file, citation));
+				const output = formatBriefResult(result);
+				expect(result.ok, `${citation}: ${output}`).toBe(false);
+				expect(output).toContain(`missing row ${missing} in ${file}`);
+				expect(output).toContain(`HEAD ${head}`);
+			}
+		});
+	}
+
+	it("does not read a row from the command repository", async () => {
+		const f = fixture();
+		put(f.commandRepository, "docs/command-rows.tsv", "F999\tvalue\n");
+		const result = await f.check(
+			`${f.valid}\n\`docs/command-rows.tsv\` row F999.\n`,
+		);
+		const output = formatBriefResult(result);
+		expect(result.ok).toBe(false);
+		expect(output).toContain("drift: missing");
+		expect(output).toContain("command-rows.tsv");
+	});
+
+	it("checks rows at the named HEAD, not the working copy", async () => {
+		const f = fixture();
+		put(
+			f.worktree,
+			"docs/guide.md",
+			"# Guide\n\n## Selected heading\nLast line.\n\n| ID | Value |\n| --- | --- |\n| F999 | working only |\n",
+		);
+		const result = await f.check(`${f.valid}\n\`docs/guide.md\` row F999.\n`);
+		const output = formatBriefResult(result);
+		expect(result.ok).toBe(false);
+		expect(output).toContain("missing row F999 in docs/guide.md");
+		expect(output).toContain(`HEAD ${f.head}`);
+	});
+});
+
+describe("brief-format: shared environment and brief role", () => {
 	it.each([
 		"codex",
 		"builder",
@@ -390,7 +1084,10 @@ describe("B2: shared environment and brief role", () => {
 	])("accepts role %s and ignores line-ending differences", async (role) => {
 		const f = fixture();
 		const text = f.valid
-			.replace("role: codex", `role: ${role}`)
+			.replace(
+				"role: codex delivers: report",
+				role === "codex" ? "role: codex delivers: report" : `role: ${role}`,
+			)
 			.replace(/\r?\n/g, "\r\n");
 		expect((await f.check(text)).ok).toBe(true);
 	});
@@ -404,7 +1101,7 @@ describe("B2: shared environment and brief role", () => {
 			`\uFEFF${f.valid}`,
 		])
 			expect(formatBriefResult(await f.check(text))).toMatch(
-				/:1: FAIL B2: must start/,
+				/:1: FAIL brief-format: must start/,
 			);
 	});
 
@@ -423,7 +1120,7 @@ describe("B2: shared environment and brief role", () => {
 		])
 			expect(
 				(await f.check(text)).problems.some(
-					(problem: { rule: string }) => problem.rule === "B2",
+					(problem: { rule: string }) => problem.rule === "brief-format",
 				),
 			).toBe(true);
 	});
@@ -470,7 +1167,7 @@ describe("B2: shared environment and brief role", () => {
 	});
 });
 
-describe("B3 and B4: launch readiness and diagnostics", () => {
+describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostics", () => {
 	it.each([
 		"coordinator checklist",
 		"COORDINATOR CHECKLIST",
@@ -481,7 +1178,7 @@ describe("B3 and B4: launch readiness and diagnostics", () => {
 		const result = await f.check(text);
 		expect(result.ok).toBe(false);
 		expect(result.problems).toHaveLength(1);
-		expect(result.problems[0].rule).toBe("B3");
+		expect(result.problems[0].rule).toBe("brief-readiness");
 		expect(text.split("\n")[result.problems[0].line - 1]).toBe(
 			`## ${heading} (delete before launch)`,
 		);
@@ -511,23 +1208,131 @@ describe("B3 and B4: launch readiness and diagnostics", () => {
 		const text = `${f.valid}\n\`FITWAY-GRADER\` <!-- HeLd-OuT -->\n`;
 		expect(
 			(await f.check(text)).problems.filter(
-				(problem: { rule: string }) => problem.rule === "B3",
+				(problem: { rule: string }) => problem.rule === "brief-readiness",
 			),
 		).toHaveLength(2);
 		for (const role of ["builder", "designer", "verifier"])
 			expect(
-				(await f.check(text.replace("role: codex", `role: ${role}`))).ok,
+				(
+					await f.check(
+						text.replace("role: codex delivers: report", `role: ${role}`),
+					)
+				).ok,
 			).toBe(true);
 	});
 
-	it("warns at 81 lines without failing; 80 lines has no warning", async () => {
+	it("prints outcome and limit ID counts without a length warning", async () => {
 		const f = fixture();
-		const base = f.valid.trimEnd().split(/\r?\n/);
-		const eighty = `${[...base, ...Array(80 - base.length).fill("Detail.")].join("\n")}\n`;
-		expect((await f.check(eighty)).problems).toEqual([]);
-		const result = await f.check(`${eighty}Detail.\n`);
+		const result = await f.check(
+			`${f.valid}\n## Causes and required outcomes\n\n- **C1.** First.\n- **C2.** Second.\n\n## Limits\n\n- **L1.** Keep it.\n\n${"Detail.\n".repeat(81)}`,
+		);
 		expect(result.ok).toBe(true);
-		expect(formatBriefResult(result)).toMatch(/:81: WARNING B4: 81 lines/);
+		expect(result.outcomeIds).toBe(2);
+		expect(result.limitIds).toBe(1);
+		expect(formatBriefResult(result)).toContain(
+			"INFO brief-ids: 2 outcome IDs, 1 limit IDs",
+		);
+		expect(formatBriefResult(result)).not.toContain("brief-length");
+	});
+
+	it("fails a Codex Scope with the wrong final visible sentence", async () => {
+		const f = fixture();
+		const sentence =
+			"If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.";
+		expect(codexScopeProblem(`## Scope\n\nOnly this.\n${sentence}`)).toBeNull();
+		expect(
+			codexScopeProblem(
+				"## Scope\n\nOnly this.\nIf an outcome cannot be met, do not work around it:\nfinish and measure the others, then stop and report.",
+			),
+		).toBeNull();
+		expect(codexScopeProblem("## Goal\n\nNo scope.\n")).toMatchObject({
+			line: 1,
+		});
+		expect(
+			codexScopeProblem(`## Scope\n\n${sentence}\n\n## Scope\n\n${sentence}\n`),
+		).toMatchObject({ line: 1 });
+		expect(
+			codexScopeProblem("## Scope\n\nWrong final sentence.\n"),
+		).toMatchObject({ line: 1 });
+		expect(
+			codexScopeProblem(
+				`## Scope\n\nUnmet outcomes are reported. ${sentence}\n<!-- ${sentence} -->\n\`${sentence}\`\n`,
+			),
+		).toBeNull();
+
+		const missing = await f.check(
+			f.valid.replace(/\n## Scope\n[\s\S]*?(?=\n## Report)/, "\n"),
+		);
+		expect(
+			missing.problems.some(
+				(problem: { rule: string }) => problem.rule === "brief-scope",
+			),
+		).toBe(true);
+	});
+
+	it("fails brief:check when a Codex brief has no Scope or its sentence is indented code", async () => {
+		const f = fixture();
+		const sentence =
+			"If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.";
+		const cases = [
+			["no Scope and no Report", f.valid.slice(0, f.valid.indexOf("## Scope"))],
+			[
+				"Scope sentence in indented code",
+				f.valid.replace(
+					`## Scope\n\nWrite only in the fixture. ${sentence}`,
+					`## Scope\n\n    ${sentence}`,
+				),
+			],
+		] as const;
+
+		for (const [name, text] of cases) {
+			const result = await f.check(text);
+			expect(
+				result.problems.some(
+					(problem: { rule: string }) => problem.rule === "brief-scope",
+				),
+				name,
+			).toBe(true);
+
+			writeFileSync(f.briefPath, text);
+			const cli = spawnSync(process.execPath, [script, f.briefPath], {
+				cwd: f.commandRepository,
+				encoding: "utf8",
+				windowsHide: true,
+			});
+			expect(cli.status, name).toBe(1);
+			expect(cli.stdout, name).toContain("FAIL brief-scope:");
+		}
+	});
+
+	it("rejects the five historical briefs and accepts every current r04 brief", () => {
+		const historicalDirectory = path.join(
+			repository,
+			"scripts/agent-environment/fixtures/historical-briefs",
+		);
+		const historical = [
+			"codex-motion-lows.md",
+			"codex-three-rounds-fix.md",
+			"codex-one-clock.md",
+			"codex-narrow-sheet.md",
+			"codex-variants-removal.md",
+		];
+		for (const name of historical) {
+			const text = readFileSync(path.join(historicalDirectory, name), "utf8");
+			expect(codexScopeProblem(text), name).toMatchObject({
+				message: expect.stringContaining("Codex Scope must end with"),
+			});
+		}
+
+		const currentDirectory = path.join(
+			repository,
+			"docs/phase-records/handoffs/owner-design-exploration/r04/briefs",
+		);
+		for (const entry of readdirSync(currentDirectory)) {
+			if (!entry.endsWith(".md")) continue;
+			const text = readFileSync(path.join(currentDirectory, entry), "utf8");
+			expect(codexScopeProblem(text), entry).toBeNull();
+		}
 	});
 
 	it.each([
@@ -543,16 +1348,18 @@ describe("B3 and B4: launch readiness and diagnostics", () => {
 		expect(result.ok).toBe(false);
 		expect(
 			result.problems.some(
-				(problem: { rule: string }) => problem.rule === "B1",
+				(problem: { rule: string }) => problem.rule === "brief-references",
 			),
 		).toBe(true);
 		expect(
 			result.problems.some(
-				(problem: { rule: string }) => problem.rule === "B3",
+				(problem: { rule: string }) => problem.rule === "brief-readiness",
 			),
 		).toBe(true);
 		for (const line of formatBriefResult(result).split("\n"))
-			expect(line).toMatch(/:\d+: FAIL B[1-4]:/);
+			expect(line).toMatch(
+				/:\d+: (?:FAIL brief-(?:references|format|readiness|scope):|INFO brief-ids:)/,
+			);
 	});
 
 	it("CLI returns only 0 or 1 with one numbered line per problem, including read errors", () => {
@@ -566,12 +1373,13 @@ describe("B3 and B4: launch readiness and diagnostics", () => {
 			});
 		const pass = run(["brief.md"]);
 		expect(pass.status).toBe(0);
-		expect(pass.stdout).toContain("WARNING B4");
+		expect(pass.stdout).toContain("INFO brief-ids:");
+		expect(pass.stdout).not.toContain("brief-length");
 		writeFileSync(f.briefPath, `${f.valid}\n<unfilled>\n`);
 		const fail = run(["brief.md"]);
 		expect(fail.status).toBe(1);
-		expect(fail.stdout.trim().split("\n")).toHaveLength(1);
-		expect(fail.stdout).toMatch(/:\d+: FAIL B3:/);
+		expect(fail.stdout.trim().split("\n")).toHaveLength(2);
+		expect(fail.stdout).toMatch(/:\d+: FAIL brief-readiness:/);
 		const missing = run(["missing.md"]);
 		expect(missing.status).toBe(1);
 		expect(missing.stderr.trim().split("\n")).toHaveLength(1);

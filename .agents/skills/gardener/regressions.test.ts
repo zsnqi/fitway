@@ -22,16 +22,15 @@ import {
 	openBriefs,
 	references,
 } from "./facts.mjs";
+import { runChecks } from "./survey-checks.mjs";
+import { cleanupScript, parseOptions } from "./survey-cli.mjs";
 import {
-	cleanupScript,
 	collectFolders,
 	collectGit,
 	collectRecords,
 	filesystemPath,
 	measureFolder,
-	parseOptions,
-	runChecks,
-} from "./survey.mjs";
+} from "./survey-evidence.mjs";
 
 function fixture() {
 	const base = process.env.GARDENER_TEST_RUN ?? os.tmpdir();
@@ -217,6 +216,7 @@ describe("gardener round 8 regressions", () => {
 			const checks = await runChecks(scripts, {
 				cwd: f.checkout,
 				tempRoot: f.run,
+				notRunChecks: {},
 			});
 			expect(checks.map((check) => check.name)).toEqual(Object.keys(scripts));
 			expect(checks[0].exitCode).toBe(9);
@@ -256,7 +256,9 @@ describe("gardener round 8 regressions", () => {
 				out,
 				tempRoot,
 			});
-			const folders = await collectFolders([], [], out, tempRoot);
+			const folders = await collectFolders([], [], out, tempRoot, {
+				checkout: f.checkout,
+			});
 			expect(folders.map((folder) => folder.path)).toEqual([
 				path.join(tempRoot, "evidence.").replaceAll("\\", "/"),
 			]);

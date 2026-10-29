@@ -1,7 +1,7 @@
 schemaVersion: 1
 milestoneId: access-reason-cap-r01
 taskClass: backend-api-data
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/access-reason-cap-r01
 task:
   objective: >-
@@ -11,11 +11,12 @@ task:
     - A focused test first reproduces the defect (a 241-500 character reason passes the access contract, then fails on the audit write) and passes after the fix.
     - The access contract's required reason accepts at most 240 characters for both deactivations, matching AUDIT_REASON_MAX_LENGTH and the database check.
     - The owner Access form refuses a reason past 240 with its own message in Arabic and English, tied to the field, instead of silently truncating.
+    - "Each deactivation form starts empty: Cancel, and opening the form for another owner, clear its reason, its too-long message and its refusal, so neither the text nor the error reaches another owner or a later opening (coordinator, 2026-10-14, from the independent review's findings 1 and 2)."
     - SPEC.md records the 240-character limit in one line where it describes the audit reason (r04 DECISIONS item 33).
     - The repository's authoritative test commands for the touched packages pass, and git status is unchanged by the runs.
   explicitExclusions:
     - Migrations (the database already enforces 240) and tests/browser/** canonicals and screenshots.
-    - Any other access, audit or Owner behavior, copy or visual change.
+    - Any other access, audit or Owner behavior, copy or visual change beyond the criteria above.
     - Owner concept work under design-research/**.
 authorities:
   required:
@@ -74,3 +75,4 @@ limitations:
   - Opened by the coordinator on 2026-10-04 at the user's request ("fix it", r04 DECISIONS item 33), from the r04 Access research digest D:/fitway-temp/owner-r04-access-questions/REPORT.md section 5.
   - "2026-10-04: check:frontier protects three granted access files as part of the pre-repair dirty frontier (pinned snapshot 20260915-183000). The live main checkout no longer holds them dirty and history keeps their protected content; the user authorized a narrow recorded transition for exactly those three paths (2026-10-04, \"لك الصلاحية\"), and the independent review checks it."
   - Based on the codex/owner-redesign-r04 lineage, which carries the baseline's production code; integration follows that lineage.
+  - "2026-10-14 (coordinator): scope widened by one criterion after the independent review of 0ee0f618 (PASS; D:/fitway-temp/access-reason-cap-r01/review-20261014/): the new too-long message stayed on the owner form after Cancel and showed on the next owner's form (finding 1, this change's own state), and a reason typed for one owner was sent for another (finding 2, older, an audit row naming the wrong owner's reason). One reset fixes both, as openReset already does for the password draft."

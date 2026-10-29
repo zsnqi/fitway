@@ -1,7 +1,7 @@
 schemaVersion: 1
 milestoneId: agent-environment-r03
 taskClass: repository-infrastructure
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/agent-environment-r03
 task:
   objective: >-

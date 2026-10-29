@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-08T16:30:00+03:00
+updatedAt: 2026-10-28T18:30:00+03:00
 gardener:
-  date: '2026-10-08'
+  date: '2026-10-09'
   outcome: blocked
   report: .agents/skills/gardener/REPORT.md
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; agent-environment-r03 (the environment phase) and Owner r04 (concept-only Eclipse work) are IN_PROGRESS, access-reason-cap-r01 is paused by the user, agent-environment-r01 is DONE and agent-environment-r02 is SUPERSEDED by r03, both archived.
+  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-tooling-r01 (the agent tooling, opened 2026-10-16) and public-redesign-r01 (the public page in the Eclipse family, opened 2026-10-28) are IN_PROGRESS, access-reason-cap-r01 is DONE (restarted by the coordinator on 2026-10-14, integrated at bfc23713), agent-environment-r01 and r03 are DONE and agent-environment-r02 is SUPERSEDED by r03, all archived.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -31,16 +31,16 @@ milestones:
       production, canonical, Paper, and visual-authority state unchanged.
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r04.yaml
     dependencies: []
-    ownerSession: claude-code-desktop:local_47dd1bf2-be3b-442a-8532-a8cfbeba5014
+    ownerSession: claude-code-desktop:local_ebe19758-0780-4d7d-8d0b-eac4f06d48b8
     branch: codex/owner-redesign-r04
     worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04
     baseCommit: e5d5027ab67966c38612dd973f2f4bcb85f3441b
     ownedPaths:
-      - design-research/owner-composition-exploration-r04/directions/**
+      - design-research/owner-composition-exploration-r04/directions/** except Eclipse's public.html, public.css, public.js, PUBLIC-SPEC.md and public-capture.mjs (public-redesign-r01's from 2026-10-28, DECISIONS 98; DESIGN-SPEC.md §6 leased to it)
       - docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
       - docs/phase-records/handoffs/owner-design-exploration/r04/**
       - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-      - SPEC.md
+      - .impeccable/config.json on the build branch owner-followup-r04-build only (from 2026-10-14, the tuner round's byte-order mark, F140, DECISIONS 47)
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
       - design-research/owner-visual-preferences/** (user-supplied reference; read only)
@@ -49,10 +49,11 @@ milestones:
       - tests/browser/** including canonicals and screenshots
       - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
       - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-      - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits), and all of SPEC.md except the user-authorized 2026-09-24 entries-framing wording
+      - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits; WORKFLOW's main line excepted above), and SPEC.md (the user-authorized 2026-09-24 entries-framing wording landed in 4851cccf; a later Product/Spec amendment opens separately)
       - docs/archive/**, prior handoffs, and unrelated phase records
       - pnpm-lock.yaml, dependencies, and migrations
-      - CLAUDE.md, .claude/agents/**, .claude/skills/** and biome.json (owned by agent-environment-r03 since 2026-10-07)
+      - CLAUDE.md, .claude/agents/** and .claude/skills/** (owned by agent-environment-r03 since 2026-10-07, now DONE; read only here)
+      - The agent tooling (scripts/agent-environment, scripts/verify.mjs, the context and repository checkers, the verify-fitway and gardener skills, docs/agent-context, biome.json), owned by agent-tooling-r01 from 2026-10-16 (DECISIONS 73, F253); this milestone uses those tools and launches its rounds with them, and changes none
     sharedLeases: []
     validationRepairAttempts: 0
     handoff: docs/phase-records/handoffs/owner-design-exploration/r04/owner-design-exploration-r04-resume.md
@@ -65,107 +66,45 @@ milestones:
       visual: PENDING
       independentReview: PENDING
     integratedCommit: null
-  access-reason-cap-r01:
+  agent-tooling-r01:
     status: IN_PROGRESS
     objective: >-
-      Cap the reason an owner gives when deactivating the front-desk PIN or an owner at the 240 characters the audit
-      log stores, so a longer reason is refused with its own message instead of failing on the audit write.
-    taskPacket: docs/phase-records/task-packets/access-reason-cap-r01.yaml
+      Own and improve the agent tooling that owner-design-exploration-r04 held: one CLI contract with a generated
+      tools listing, a generated code map with a drift check, a lighter pickup, map upkeep, and the open launcher and
+      verify-fitway findings, so agents and Codex rounds work from clearer, cheaper, checked tools.
+    taskPacket: docs/phase-records/task-packets/agent-tooling-r01.yaml
     dependencies: []
-    ownerSession: claude-code-desktop:task_fdc69808
-    branch: claude/busy-bartik-858366
-    worktree: D:/Projects/fitway/.claude/worktrees/busy-bartik-858366
-    baseCommit: 312bd861edb2ac642c1a5f27cc358015af3f3267
+    ownerSession: claude-code-desktop:local_ebe19758-0780-4d7d-8d0b-eac4f06d48b8
+    branch: agent-tooling-r01
+    worktree: D:/Projects/fitway-worktrees/agent-tooling-r01
+    baseCommit: f5172ecc
     ownedPaths:
-      - packages/api/src/access/** and its tests
-      - apps/web/src/components/owner/access/** and its message files and tests
-      - "SPEC.md: one line recording the 240-character audit reason limit only"
-      - "apps/server/src/phase11-access.integration.test.ts: one added test block for the 241-character reason refusal only"
-      - "scripts/check-frontier-preservation.mjs and scripts/check-frontier-preservation.test.ts: only the recorded transition that excludes apps/web/src/components/owner/access/messages.ts, owner-access-view.tsx and owner-access-view.test.tsx (the source exclusion list and the pinned policy pointer)"
-      - "one new frontier policy pointer document (and its companion if required) under docs/phase-records/handoffs/coordinator/; the pinned snapshot, its companion, the baseline listing and every earlier pointer stay unchanged"
-      - docs/phase-records/handoffs/access-reason-cap/**
-      - docs/phase-records/task-packets/access-reason-cap-r01.yaml
-    forbiddenPaths:
-      - migrations, packages/db/** schema, pnpm-lock.yaml and dependencies
-      - tests/browser/** including canonicals and screenshots
-      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
-      - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md, and all of SPEC.md except the one line above
-      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-      - CLAUDE.md, .claude/** and other milestones' handoffs and packets
-    sharedLeases: []
-    validationRepairAttempts: 0
-    handoff: docs/phase-records/handoffs/access-reason-cap/access-reason-cap-r01-resume.md
-    stopReason: null
-    gates:
-      unit: PENDING
-      integration: PENDING
-      browser: NOT_REQUIRED
-      accessibility: NOT_REQUIRED
-      visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
-  agent-environment-r03:
-    status: IN_PROGRESS
-    objective: >-
-      Clean, simplify and improve the working environment itself: audit every rule, tool, check and record and keep,
-      merge, replace or remove each on evidence; deliver the verification path (verify-fitway skill, generated
-      feature map, CLI, no-store preview, Codex launch command, tested B8 and B9 fields, the two checker faults); and
-      leave a permanent gardener that keeps it clean.
-    taskPacket: docs/phase-records/task-packets/agent-environment-r03.yaml
-    dependencies: []
-    ownerSession: claude-code-desktop:coordinator-ad094a60
-    branch: agent-environment-r03
-    worktree: D:/Projects/fitway-worktrees/agent-environment-r03
-    baseCommit: cf7758eb06b0a76f4f8b2bcea387d142847fc98e
-    ownedPaths:
-      - AGENTS.md
-      - CLAUDE.md
-      - .claude/agents/**
-      - .claude/skills/**
-      - .agents/**
-      - docs/WORKFLOW.md
-      - docs/agent-context/**
-      - docs/schemas/**
-      - docs/phase-records/handoffs/agent-environment/**
-      - docs/phase-records/history-transitions/**
-      - docs/phase-records/task-packets/agent-environment-r03.yaml
+      - docs/phase-records/handoffs/agent-tooling/**
+      - docs/phase-records/task-packets/agent-tooling-r01.yaml
       - scripts/agent-environment/**
-      - scripts/check-agent-context.mjs
-      - scripts/check-agent-context.test.ts
-      - scripts/check-design-context.mjs
-      - scripts/check-frontier-preservation.mjs
-      - scripts/check-frontier-preservation.test.ts
-      - scripts/check-owner-tokens.mjs
-      - scripts/check-test-runtime.mjs
-      - scripts/check-test-runtime.test.ts
-      - scripts/project-state-history-transition.mjs
-      - scripts/project-state-history-transition.test.ts
-      - scripts/project-state-history-v2.test.ts
-      - scripts/repository-fingerprint.mjs
-      - scripts/run-vitest.mjs
-      - scripts/show-agent-context.mjs
-      - scripts/show-agent-context.test.ts
-      - scripts/verify-repository.mjs
-      - scripts/verify-repository.schema.test.ts
-      - scripts/verify.mjs
-      - scripts/vitest-runtime.bootstrap.test.mjs
-      - scripts/vitest-runtime.mjs
-      - scripts/vitest-runtime.test.ts
-      - .github/workflows/**
-      - lefthook.yml
+      - scripts/verify.mjs and scripts/verify.test.ts
+      - scripts/check-agent-context.mjs, scripts/show-agent-context.mjs, scripts/verify-repository.mjs, scripts/check-design-context.mjs, scripts/check-concept-css.mjs, scripts/run-vitest.mjs and their tests
+      - .agents/skills/verify-fitway/**
+      - .agents/skills/gardener/**
+      - docs/agent-context/** (WORKING_AGREEMENTS.md only on the user's word)
       - biome.json
-      - package.json (the scripts section only; no dependency changes)
+      - AGENTS.md and docs/WORKFLOW.md, the startup and main-advance lines only (the user's permission, owner-design-exploration-r04 DECISIONS 62 and 73)
     forbiddenPaths:
-      - apps/**, packages/**, edge/**, tests/** and migrations (product code and its tests; CI may run them)
-      - design-research/** (read only; owned by owner-design-exploration-r04)
-      - visual-direction-gate/**, docs/design/**, docs/adr/**, approval manifests, pinned hashes, scripts/visual-authority.mjs, scripts/visual-authority.test.ts and scripts/owner-supersession-policy.mjs
-      - FITWAY_PRODUCT.md, PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md and RESEARCH.md
+      - apps/**, packages/**, edge/** and their tests; production code, copy, behavior and data semantics
+      - design-research/** (the Owner concept stays with owner-design-exploration-r04; this milestone reads it)
       - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-      - pnpm-lock.yaml and dependencies
-      - docs/archive/** and other milestones' handoffs and packets
-    sharedLeases: []
-    validationRepairAttempts: 1
-    handoff: docs/phase-records/handoffs/agent-environment/r03/agent-environment-r03-resume.md
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
+      - pnpm-lock.yaml, dependencies and migrations
+      - CLAUDE.md, .claude/agents/** and .claude/skills/** (read only; a change needs the user's word)
+      - D:/fitway-grader (held-out rows never enter the repository or a brief)
+    sharedLeases:
+      - "package.json, its scripts section only (the tools registry and the test:verification timeout, F145 and F251), a coordinator lease through 2026-10-23; no dependency change"
+      - "README.md, its documentation map only (the map check, DECISIONS 73), a coordinator lease through 2026-10-23"
+      - ".github/workflows/checks.yml, only where a new ladder step needs it or for the job time limit (raised to 45 min on 2026-10-18: the ladder took 27-28 min, codex-round.test.ts alone 1,415 s), a coordinator lease through 2026-10-23"
+      - "vitest.config.ts, its test timeouts only (F261, F281, F282; DECISIONS item 13), a coordinator lease through 2026-10-23"
+      - "lefthook.yml, one pre-commit job for the giant-file check on staged files only, and the hook's `piped: true` so that job reads the index after Biome's re-staging (DECISIONS item 13, the user's ratchet-2 addition; F286, F289), a coordinator lease through 2026-10-23"
+    validationRepairAttempts: 0
+    handoff: docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md
     stopReason: null
     gates:
       unit: PENDING
@@ -173,5 +112,43 @@ milestones:
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+  public-redesign-r01:
+    status: IN_PROGRESS
+    objective: >-
+      Redesign the public crowd page, concept-only, in the Eclipse concept's style from its shared foundations, as the
+      user decided (owner-design-exploration-r04 DECISIONS items 90, 98 and 99): present it for the user's acceptance
+      by eye, and leave production, canonical, Paper, the manifest and the shipped public page unchanged.
+    taskPacket: docs/phase-records/task-packets/public-redesign-r01.yaml
+    dependencies: []
+    ownerSession: claude-code-desktop:local_0abbf6f6-fc93-4b0c-9dd1-8042cda3c233
+    branch: public-redesign-r01 (its rounds), integrated into owner-followup-r04-build
+    worktree: D:/Projects/fitway-worktrees/public-redesign-r01 (created at the first round)
+    baseCommit: fedbdb6d
+    ownedPaths:
+      - docs/phase-records/handoffs/public-redesign/**
+      - docs/phase-records/task-packets/public-redesign-r01.yaml
+      - docs/adr/ADR-010-public-composition-authority-supersession.md, the amended lines of FITWAY_PRODUCT.md, DESIGN_GUIDE.md and SPEC.md, and the `public` row and legend of docs/design/VISUAL_AUTHORITY_STATUS.md (applied at opening, owner-design-exploration-r04 DECISIONS item 98)
+    forbiddenPaths:
+      - apps/** and packages/** production code, copy, behavior and data semantics
+      - tests/browser/** including canonicals and screenshots
+      - visual-direction-gate/**, approval manifests and pinned hashes (the manifest's `public` entry waits for a follow-on manifest workstream)
+      - every other file of design-research/owner-composition-exploration-r04/** (owner-design-exploration-r04's), except DESIGN-SPEC.md §6 under the lease below
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - the agent tooling (agent-tooling-r01's), CLAUDE.md, .claude/agents/** and .claude/skills/**
+      - pnpm-lock.yaml, dependencies and migrations
+    sharedLeases:
+      - "design-research/owner-composition-exploration-r04/directions/eclipse/public.html, public.css, public.js, PUBLIC-SPEC.md and public-capture.mjs, written by this milestone only, a coordinator lease from owner-design-exploration-r04 (DECISIONS item 98)"
+      - "design-research/owner-composition-exploration-r04/directions/eclipse/DESIGN-SPEC.md, §6 Public only, a coordinator lease from owner-design-exploration-r04 (DECISIONS item 98)"
+    validationRepairAttempts: 0
+    handoff: docs/phase-records/handoffs/public-redesign/public-redesign-r01-resume.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
       independentReview: PENDING
     integratedCommit: null

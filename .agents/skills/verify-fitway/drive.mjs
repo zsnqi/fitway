@@ -1,3 +1,4 @@
+// Prove page states, actions, keyboard reach, focus, and feature outcomes.
 import { outputFile } from "./core.mjs";
 
 async function prove(page, proof, language) {
@@ -122,16 +123,16 @@ export async function proveFeature(page, proof, language, input) {
 	try {
 		await prove(page, proof, language);
 	} catch (error) {
-		if (input === "keyboard")
+		if (input === "keyboard" && !proof.path)
 			throw new KeyboardReachError(
-				`Not reachable by keyboard via the recorded sequence: ${proof.selector || "feature result"}; focus stopped at ${(await focusedElement(page)).selector}; ${error.message}`,
+				`Not reachable by keyboard via the recorded sequence: ${proof.selector || "feature result"}; focus stopped ${focusDescription(await focusedElement(page))}; ${error.message}`,
 			);
 		throw error;
 	}
 }
 
 export async function focusedElement(page) {
-	return page.evaluate(() => {
+	const focus = await page.evaluate(() => {
 		const element = document.activeElement;
 		if (!element) return { selector: "<none>" };
 		const parts = [];
@@ -151,21 +152,117 @@ export async function focusedElement(page) {
 			selector: parts.join(" > "),
 			tag: element.localName,
 			role: element.getAttribute("role"),
-			text: (element.getAttribute("aria-label") || element.textContent || "")
-				.replace(/\s+/g, " ")
-				.trim()
-				.slice(0, 120),
+			page: element === document.body || element === document.documentElement,
 			tabindex: element.getAttribute("tabindex"),
 		};
 	});
+	if (focus.page) return { ...focus, role: "document", name: "" };
+	if (!focus.tag) return { ...focus, name: "" };
+	// Query Chromium's accessibility node for this element only. A subtree's
+	// snapshot can start with a child when a generic focused container is ignored.
+	const session = await page.context().newCDPSession(page);
+	let objectId;
+	try {
+		const { result } = await session.send("Runtime.evaluate", {
+			expression: "document.activeElement",
+		});
+		objectId = result.objectId;
+		const { nodes } = await session.send("Accessibility.getPartialAXTree", {
+			objectId,
+			fetchRelatives: false,
+		});
+		return {
+			...focus,
+			role: nodes[0]?.role?.value || focus.role || focus.tag,
+			name: nodes[0]?.name?.value || "",
+		};
+	} finally {
+		try {
+			if (objectId) await session.send("Runtime.releaseObject", { objectId });
+		} finally {
+			await session.detach();
+		}
+	}
 }
 
-export async function keyboardStep(page, key, entry, action) {
+export const focusDescription = (focus) =>
+	focus.page
+		? `on the page itself: ${focus.selector} (document)`
+		: `at ${focus.selector} (${focus.name ? JSON.stringify(focus.name) : focus.role || focus.tag || "element"})`;
+
+async function keyboardPress(page, key, press, waitForNavigation = false) {
+	const baseKey = key.split("+").at(-1);
+	if (
+		!waitForNavigation ||
+		!["Enter", "Space"].includes(baseKey) ||
+		!page.waitForNavigation
+	)
+		return press();
+	const navigation = page
+		.waitForNavigation({
+			waitUntil: "domcontentloaded",
+			timeout: 5000,
+		})
+		.catch(() => null);
+	await press();
+	await Promise.race([
+		navigation,
+		new Promise((done) => setTimeout(done, 880)),
+	]);
+}
+
+export async function keyboardStep(
+	page,
+	key,
+	entry,
+	action,
+	waitForNavigation = false,
+) {
 	const before = await focusedElement(page);
-	await page.keyboard.press(key);
+	await keyboardPress(
+		page,
+		key,
+		() => page.keyboard.press(key),
+		waitForNavigation,
+	);
 	const after = await focusedElement(page);
 	entry.focusSteps ||= [];
-	entry.focusSteps.push({ action, key, before, after });
+	entry.focusSteps.push({
+		action: key === "Tab" ? `Tab move to ${after.selector}` : action,
+		key,
+		before,
+		after,
+	});
+}
+
+async function keyboardActivationStep(
+	page,
+	key,
+	entry,
+	action,
+	waitForNavigation,
+) {
+	const before = await focusedElement(page);
+	await keyboardPress(
+		page,
+		key,
+		async () => {
+			await page.keyboard.down(key);
+			// Chromium paints :active during a real keyboard hold. Keep the key down
+			// through a frame so the pressed pose is observable before activation.
+			await new Promise((done) => setTimeout(done, 16));
+			await page.keyboard.up(key);
+		},
+		waitForNavigation,
+	);
+	const after = await focusedElement(page);
+	entry.focusSteps ||= [];
+	entry.focusSteps.push({
+		action,
+		key,
+		before,
+		after,
+	});
 }
 
 export async function reachByKeyboard(page, selector, entry, action) {
@@ -180,23 +277,89 @@ export async function reachByKeyboard(page, selector, entry, action) {
 			return target;
 		if (seen.has(focused.selector))
 			throw new KeyboardReachError(
-				`Not reachable by keyboard: ${selector}; focus stopped at ${focused.selector} (${focused.text}); Tab cycle repeated`,
+				`Not reachable by keyboard: ${selector}; focus stopped ${focusDescription(focused)}; Tab cycle repeated`,
 			);
 		seen.add(focused.selector);
 		await keyboardStep(page, "Tab", entry, action);
 	}
 	const focused = await focusedElement(page);
 	throw new KeyboardReachError(
-		`Not reachable by keyboard: ${selector}; focus stopped at ${focused.selector} (${focused.text}); 200-key limit`,
+		`Not reachable by keyboard: ${selector}; focus stopped ${focusDescription(focused)}; 200-key limit`,
 	);
 }
 
+const navigationActionKinds = new Set([
+	"activate",
+	"click",
+	"tap",
+	"download",
+	"press",
+]);
+
+async function runNavigationAction(page, action, run) {
+	const [kind] = action.includes(":") ? action.split(":", 1) : [action];
+	if (!navigationActionKinds.has(kind) || !page.waitForNavigation) return run();
+	const navigation = page
+		.waitForNavigation({
+			waitUntil: "domcontentloaded",
+			timeout: 5000,
+		})
+		.catch(() => null);
+	const result = await run();
+	await Promise.race([navigation, new Promise((done) => setTimeout(done, 80))]);
+	return result;
+}
+
+async function keyboardActivationTarget(target) {
+	const activation = await target.evaluate((element) => {
+		const button =
+			element.localName === "button" ||
+			(element.localName === "input" &&
+				["button", "submit", "reset"].includes(element.type)) ||
+			element.getAttribute("role") === "button";
+		const href = element.getAttribute("href");
+		const destination = href ? new URL(href, location.href) : null;
+		return {
+			key: button ? "Space" : "Enter",
+			navigation: Boolean(
+				destination &&
+					(destination.pathname !== location.pathname ||
+						destination.search !== location.search),
+			),
+		};
+	});
+	if (typeof activation === "string")
+		return { key: activation, navigation: false };
+	if (typeof activation === "boolean")
+		return { key: activation ? "Space" : "Enter", navigation: false };
+	return activation;
+}
+
 async function performAction(ui, page, action, input, out, stem, entry) {
+	const [actionKind] = action.includes(":") ? action.split(":", 1) : [action];
+	if (["hold", "release"].includes(actionKind)) {
+		const version = ui.TOOL_VERSION || "unknown";
+		const [major, minor, patch] = String(version).split(".").map(Number);
+		if (
+			!(
+				major > 1 ||
+				(major === 1 && (minor > 3 || (minor === 3 && patch >= 1)))
+			)
+		)
+			throw new Error(
+				`Held presses require ui-forensics >=1.3.1; found ${version}`,
+			);
+	}
 	if (input === "keyboard") {
 		const split = action.indexOf(":");
-		const kind = action.slice(0, split);
-		const argument = action.slice(split + 1);
-		if (kind === "press") return keyboardStep(page, argument, entry, action);
+		const kind = actionKind;
+		const argument = split < 0 ? "" : action.slice(split + 1);
+		if (kind === "press")
+			return keyboardStep(page, argument, entry, action, true);
+		if (["hold", "release"].includes(kind))
+			throw new KeyboardReachError(
+				`Keyboard input cannot hold a pointer press; ${action} requires mouse or touch`,
+			);
 		if (
 			[
 				"activate",
@@ -236,7 +399,7 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 				const index = choices.indexOf(argument.slice(valueStart + 1));
 				if (index < 0)
 					throw new KeyboardReachError(
-						`Not reachable by keyboard: option ${argument}; focus stopped at ${(await focusedElement(page)).selector}`,
+						`Not reachable by keyboard: option ${argument}; focus stopped ${focusDescription(await focusedElement(page))}`,
 					);
 				await keyboardStep(page, "Home", entry, action);
 				for (let i = 0; i < index; i++)
@@ -245,9 +408,16 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 				return;
 			}
 			if (kind === "download") {
+				const activation = await keyboardActivationTarget(target);
 				const [download] = await Promise.all([
 					page.waitForEvent("download"),
-					keyboardStep(page, "Enter", entry, action),
+					keyboardActivationStep(
+						page,
+						activation.key,
+						entry,
+						action,
+						activation.navigation,
+					),
 				]);
 				const file = `${stem}-download.csv`;
 				await download.saveAs(await outputFile(out, file));
@@ -260,11 +430,18 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 					throw new Error(`Download failed: ${entry.download.failure}`);
 				return;
 			}
-			return keyboardStep(page, "Enter", entry, action);
+			const activation = await keyboardActivationTarget(target);
+			return keyboardActivationStep(
+				page,
+				activation.key,
+				entry,
+				action,
+				activation.navigation,
+			);
 		}
 		if (!["wait", "waitFor"].includes(kind))
 			throw new KeyboardReachError(
-				`Not reachable by keyboard: ${action} needs an authored keyboardActions sequence; focus stopped at ${(await focusedElement(page)).selector}`,
+				`Not reachable by keyboard: ${action} needs an authored keyboardActions sequence; focus stopped ${focusDescription(await focusedElement(page))}`,
 			);
 	}
 	if (action.startsWith("gesture:"))
@@ -282,7 +459,12 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 		await page.locator(selector).waitFor({ state: "visible", timeout: 10000 });
 		const [download] = await Promise.all([
 			page.waitForEvent("download"),
-			ui.runAction(page, `${input === "touch" ? "tap" : "click"}:${selector}`),
+			runNavigationAction(page, action, () =>
+				ui.runAction(
+					page,
+					`${input === "touch" ? "tap" : "click"}:${selector}`,
+				),
+			),
 		]);
 		const file = `${stem}-download.csv`;
 		await download.saveAs(await outputFile(out, file));
@@ -293,7 +475,48 @@ async function performAction(ui, page, action, input, out, stem, entry) {
 		};
 		if (entry.download.failure)
 			throw new Error(`Download failed: ${entry.download.failure}`);
-	} else await ui.runAction(page, action);
+	} else
+		return runNavigationAction(page, action, () => ui.runAction(page, action));
+}
+
+// Performs a feature recipe's actions as one input reaches them: its keyboard sequence for the
+// keyboard, `activate:` as a tap or a click otherwise. `around`, when given, wraps each step.
+export async function runFeatureActions({
+	ui,
+	page,
+	recipe,
+	input,
+	out,
+	stem,
+	entry,
+	around,
+}) {
+	const actions =
+		(input === "keyboard"
+			? recipe.keyboardActions || recipe.actions
+			: recipe.actions) || [];
+	for (const [index, action] of actions.entries()) {
+		const resolved = action.replace(
+			/^activate:/,
+			input === "keyboard"
+				? "activate:"
+				: input === "touch"
+					? "tap:"
+					: "click:",
+		);
+		const perform = async () => {
+			await performAction(ui, page, resolved, input, out, stem, entry);
+			entry?.actions.push(resolved);
+		};
+		if (around)
+			await around({
+				action: resolved,
+				last: index === actions.length - 1,
+				perform,
+			});
+		else await perform();
+	}
+	return actions;
 }
 
 export { performAction, prove };

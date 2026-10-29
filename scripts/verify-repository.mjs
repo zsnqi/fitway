@@ -1,270 +1,190 @@
+// Verify repository files, project state, Claude instructions, and temporary citations.
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
-import { readdir, readFile, stat } from "node:fs/promises";
+import { readFileSync } from "node:fs";
+import { stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
-import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs";
 import {
-	checkAgentContext,
-	formatAgentContextWarnings,
-	TERMINAL_STATUSES,
-} from "./check-agent-context.mjs";
+	auditTempCitations,
+	LOST_TEMP_EVIDENCE_PATH,
+} from "../.agents/skills/gardener/cited-evidence.mjs";
+import {
+	bomExceptionPathKey,
+	normalizeGitPath,
+} from "./agent-environment/git-path-key.mjs";
+import { lineAt } from "./agent-environment/markdown-lines.mjs";
+import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs";
+import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
+import { checkAgentContext } from "./check-agent-context.mjs";
+import { formatAgentContextWarnings } from "./check-agent-context-options.mjs";
+import {
+	assertProjectRecordUnion,
+	supersededByErrors,
+} from "./project-state-invariants.mjs";
+import {
+	assertFileRecord,
+	assertTreeRecord,
+	CLAUDE_AGENT_DIRECTORY,
+	CLAUDE_INSTRUCTIONS_FILE,
+	fail,
+	normalizeClaudeModel,
+	readBytes,
+	resolveRepositoryPath,
+	root,
+	TRACKED_BOM_EXCEPTIONS,
+	UTF8_BOM,
+} from "./repository-files.mjs";
+import { repositoryOptions } from "./verify-repository-options.mjs";
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
-const root = process.cwd();
-
-function fail(message) {
-	throw new Error(message);
+export function listTrackedFiles(
+	cwd = root,
+	patterns = [],
+	{ untracked = false } = {},
+) {
+	const args = ["ls-files"];
+	if (untracked) args.push("--others", "--exclude-standard");
+	args.push("-z", "--", ...patterns);
+	const output = execFileSync("git", args, { cwd });
+	return output
+		.toString("utf8")
+		.split("\0")
+		.filter(Boolean)
+		.map(normalizeGitPath)
+		.sort();
 }
 
-function resolveRepositoryPath(relativePath) {
-	const absolute = path.resolve(root, relativePath);
-	const relative = path.relative(root, absolute);
-	if (relative.startsWith("..") || path.isAbsolute(relative)) {
-		fail(`Path escapes the repository: ${relativePath}`);
-	}
-	return absolute;
-}
-
-async function readBytes(relativePath) {
-	return readFile(resolveRepositoryPath(relativePath));
-}
-
-function sha256(bytes) {
-	return createHash("sha256").update(bytes).digest("hex");
-}
-
-async function assertFileRecord(record, label) {
-	if (!record?.path || !Number.isInteger(record.bytes) || !record.sha256) {
-		fail(`${label} is missing path, bytes, or sha256`);
-	}
-	const bytes = await readBytes(record.path);
-	if (bytes.byteLength !== record.bytes) {
-		fail(`${label} byte count changed: ${record.path}`);
-	}
-	if (sha256(bytes) !== record.sha256) {
-		fail(`${label} SHA-256 changed: ${record.path}`);
-	}
-}
-
-async function walkFiles(directory, prefix = "") {
-	const entries = await readdir(directory, { withFileTypes: true });
-	const files = [];
-	for (const entry of entries) {
-		const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
-		const absolute = path.join(directory, entry.name);
-		if (entry.isDirectory())
-			files.push(...(await walkFiles(absolute, relative)));
-		else if (entry.isFile()) files.push({ absolute, relative });
-		else fail(`Approval tree contains a non-file entry: ${relative}`);
-	}
-	return files;
-}
-
-async function assertTreeRecord(record, label) {
-	if (
-		!record?.path ||
-		!Number.isInteger(record.fileCount) ||
-		!record.treeSha256
-	) {
-		fail(`${label} is missing path, fileCount, or treeSha256`);
-	}
-	const directory = resolveRepositoryPath(record.path);
-	if (!(await stat(directory)).isDirectory())
-		fail(`${label} is not a directory`);
-	const files = (await walkFiles(directory)).sort((a, b) =>
-		a.relative < b.relative ? -1 : a.relative > b.relative ? 1 : 0,
+export function assertNoUnexpectedBom({
+	repositoryRoot = root,
+	trackedFiles = listTrackedFiles(repositoryRoot),
+	exceptions = TRACKED_BOM_EXCEPTIONS,
+} = {}) {
+	const trackedByPath = new Map(
+		trackedFiles.map((relativePath) => [
+			bomExceptionPathKey(relativePath),
+			relativePath,
+		]),
 	);
-	if (files.length !== record.fileCount) {
-		fail(`${label} file count changed: ${record.path}`);
+	const seenExceptions = new Map();
+	const allowed = new Map();
+	for (const entry of exceptions) {
+		const pathKey = bomExceptionPathKey(entry.path);
+		if (!entry.reason?.trim())
+			fail(`BOM exception ${entry.path} must have a non-empty reason.`);
+		if (seenExceptions.has(pathKey))
+			fail(
+				`BOM exception ${entry.path} duplicates ${seenExceptions.get(pathKey)} for the same file.`,
+			);
+		seenExceptions.set(pathKey, entry.path);
+		const trackedPath = trackedByPath.get(pathKey);
+		if (!trackedPath)
+			fail(`BOM exception ${entry.path} is not a tracked file.`);
+		const bytes = readFileSync(path.resolve(repositoryRoot, trackedPath));
+		if (!bytes.subarray(0, UTF8_BOM.length).equals(UTF8_BOM))
+			fail(`BOM exception ${entry.path} does not start with a UTF-8 BOM.`);
+		allowed.set(pathKey, entry.reason);
 	}
-	const tree = createHash("sha256");
-	for (const file of files) {
-		tree.update(
-			`${sha256(await readFile(file.absolute))}  ${file.relative}\n`,
+	let allowedCount = 0;
+	for (const relativePath of trackedFiles) {
+		const bytes = readFileSync(path.resolve(repositoryRoot, relativePath));
+		if (!bytes.subarray(0, UTF8_BOM.length).equals(UTF8_BOM)) continue;
+		if (allowed.has(bomExceptionPathKey(relativePath))) {
+			allowedCount += 1;
+			continue;
+		}
+		fail(
+			`File starts with a UTF-8 BOM: ${relativePath}. Remove the BOM or add the path to TRACKED_BOM_EXCEPTIONS with its reason.`,
+		);
+	}
+	return { checked: trackedFiles.length, allowed: allowedCount };
+}
+
+export function assertClaudeAgentTable({
+	repositoryRoot = root,
+	trackedFiles = listTrackedFiles(repositoryRoot, [CLAUDE_AGENT_DIRECTORY]),
+} = {}) {
+	const instructionsPath = path.resolve(
+		repositoryRoot,
+		CLAUDE_INSTRUCTIONS_FILE,
+	);
+	const instructions = readFileSync(instructionsPath, "utf8");
+	const trackedDefinitions = trackedFiles.filter(
+		(relativePath) =>
+			relativePath.startsWith(`${CLAUDE_AGENT_DIRECTORY}/`) &&
+			relativePath.endsWith(".md"),
+	);
+	const trackedNames = new Set(
+		trackedDefinitions.map((relativePath) =>
+			path.posix.basename(relativePath, ".md"),
+		),
+	);
+	const rows = new Map();
+	for (const match of instructions.matchAll(
+		/^\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|/gm,
+	)) {
+		const name = match[1].trim();
+		const row = {
+			name,
+			model: match[2].trim(),
+			effort: match[3].trim(),
+			line: lineAt(instructions, match.index),
+		};
+		if (rows.has(name))
+			fail(
+				`${CLAUDE_INSTRUCTIONS_FILE}:${row.line}: agent table names ${name} more than once`,
+			);
+		rows.set(name, row);
+	}
+	if (rows.size === 0)
+		fail(`${CLAUDE_INSTRUCTIONS_FILE}: agent definition table is missing`);
+
+	for (const row of rows.values()) {
+		const relativeDefinition = `${CLAUDE_AGENT_DIRECTORY}/${row.name}.md`;
+		if (!trackedNames.has(row.name))
+			fail(
+				`${CLAUDE_INSTRUCTIONS_FILE}:${row.line}: agent table names ${row.name}, but ${relativeDefinition} is not tracked`,
+			);
+		const definitionText = readFileSync(
+			path.resolve(repositoryRoot, relativeDefinition),
 			"utf8",
 		);
-	}
-	if (tree.digest("hex") !== record.treeSha256) {
-		fail(`${label} tree SHA-256 changed: ${record.path}`);
-	}
-}
-
-function assertAcyclicMilestones(milestones) {
-	const visited = new Set();
-	const active = new Set();
-	function visit(id) {
-		if (active.has(id)) fail(`Milestone dependency cycle includes ${id}`);
-		if (visited.has(id)) return;
-		const milestone = milestones[id];
-		if (!milestone) fail(`Milestone dependency does not exist: ${id}`);
-		active.add(id);
-		for (const dependency of milestone.dependencies) visit(dependency);
-		active.delete(id);
-		visited.add(id);
-	}
-	for (const id of Object.keys(milestones)) visit(id);
-}
-
-export function assertProjectRecordUnion(state, history) {
-	for (const [id, milestone] of Object.entries(history.milestones)) {
-		if (Object.hasOwn(state.milestones, id)) {
-			fail(
-				`Milestone ${id} is duplicated in PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml`,
-			);
-		}
-		if (!TERMINAL_STATUSES.has(milestone.status)) {
-			fail(
-				`PROJECT_STATE_HISTORY.yaml must contain only terminal milestone records: ${id} is ${milestone.status}`,
-			);
-		}
-	}
-	const milestones = { ...history.milestones, ...state.milestones };
-	assertAcyclicMilestones(milestones);
-	assertProjectStateInvariants(state, milestones);
-	return milestones;
-}
-
-export function assertProjectStateInvariants(state, milestones) {
-	const baselineMilestone = milestones["baseline-reconciliation-gate"];
-	if (!baselineMilestone) {
-		fail(
-			"Active and history milestone records are missing baseline-reconciliation-gate",
+		const frontmatter = definitionText.match(
+			/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/,
 		);
-	}
-	if (state.baseline.status !== baselineMilestone.status) {
-		fail(
-			"Top-level baseline status must match baseline-reconciliation-gate status",
-		);
-	}
-	if (state.baseline.integratedCommit !== baselineMilestone.integratedCommit) {
-		fail(
-			"Top-level baseline commit must match baseline-reconciliation-gate commit",
-		);
-	}
-
-	const dependencyReadyStatuses = new Set([
-		"READY",
-		"IN_PROGRESS",
-		"VALIDATING",
-		"READY_FOR_INTEGRATION",
-		"DONE",
-	]);
-	const stoppedStatuses = new Set([
-		"BLOCKED",
-		"NEEDS_HUMAN",
-		"FAILED_VALIDATION",
-		"SUPERSEDED",
-	]);
-	const activeWorkerStatuses = new Set([
-		"READY",
-		"IN_PROGRESS",
-		"VALIDATING",
-		"READY_FOR_INTEGRATION",
-	]);
-	if (
-		state.baseline.integratedCommit === "SELF" &&
-		Object.entries(state.milestones).some(
-			([id, milestone]) =>
-				id !== "baseline-reconciliation-gate" &&
-				activeWorkerStatuses.has(milestone.status),
+		if (!frontmatter)
+			fail(`${relativeDefinition}: agent definition is missing frontmatter`);
+		const definition = parseYaml(frontmatter[1]);
+		if (typeof definition?.model !== "string")
+			fail(`${relativeDefinition}: agent definition is missing model`);
+		if (typeof definition?.effort !== "string")
+			fail(`${relativeDefinition}: agent definition is missing effort`);
+		if (
+			normalizeClaudeModel(row.model) !== normalizeClaudeModel(definition.model)
 		)
-	) {
+			fail(
+				`${CLAUDE_INSTRUCTIONS_FILE}:${row.line}: agent ${row.name} model ${row.model} does not match ${definition.model}`,
+			);
+		if (row.effort.toLowerCase() !== definition.effort.toLowerCase())
+			fail(
+				`${CLAUDE_INSTRUCTIONS_FILE}:${row.line}: agent ${row.name} effort ${row.effort} does not match ${definition.effort}`,
+			);
+	}
+
+	for (const relativeDefinition of trackedDefinitions) {
+		const name = path.posix.basename(relativeDefinition, ".md");
+		if (name.startsWith("impeccable-") || rows.has(name)) continue;
 		fail(
-			"The baseline commit cannot remain SELF after a worker slice is activated",
+			`${CLAUDE_INSTRUCTIONS_FILE}: agent table is missing tracked definition ${relativeDefinition}`,
 		);
 	}
-	const assignedBranches = new Map();
-	const assignedWorktrees = new Map();
-	const assignedLeases = new Map();
-	for (const [id, milestone] of Object.entries(milestones)) {
-		if (milestone.status === "SUPERSEDED") {
-			if (
-				typeof milestone.supersededBy !== "string" ||
-				milestone.supersededBy === id ||
-				!Object.hasOwn(milestones, milestone.supersededBy)
-			)
-				fail(`${id}: supersededBy must name a different existing milestone`);
-		} else if (Object.hasOwn(milestone, "supersededBy")) {
-			fail(`${id}: only SUPERSEDED records may carry supersededBy`);
-		}
-		if (stoppedStatuses.has(milestone.status)) {
-			if (!milestone.stopReason?.trim()) {
-				fail(`${id} is ${milestone.status} without an explicit stop reason`);
-			}
-		} else if (milestone.stopReason !== null) {
-			fail(`${id} is ${milestone.status} with a stale stop reason`);
-		}
-		if (dependencyReadyStatuses.has(milestone.status)) {
-			for (const dependency of milestone.dependencies) {
-				if (milestones[dependency].status !== "DONE") {
-					fail(
-						`${id} cannot be ${milestone.status} while ${dependency} is not DONE`,
-					);
-				}
-			}
-		}
-		if (milestone.status !== "DONE") continue;
-		if (!milestone.integratedCommit) {
-			fail(`${id} is DONE without an integrated commit`);
-		}
-		for (const [gate, result] of Object.entries(milestone.gates)) {
-			if (result !== "PASS" && result !== "NOT_REQUIRED") {
-				fail(`${id} is DONE while ${gate} is ${result}`);
-			}
-		}
-	}
-	for (const [id, milestone] of Object.entries(state.milestones)) {
-		if (activeWorkerStatuses.has(milestone.status)) {
-			for (const field of [
-				"ownerSession",
-				"branch",
-				"worktree",
-				"baseCommit",
-				"handoff",
-			]) {
-				if (!milestone[field]) {
-					fail(`${id} is ${milestone.status} without ${field}`);
-				}
-			}
-			if (milestone.ownedPaths.length === 0) {
-				fail(`${id} is ${milestone.status} without owned paths`);
-			}
-			for (const [value, assignments, label] of [
-				[milestone.branch, assignedBranches, "branch"],
-				[milestone.worktree, assignedWorktrees, "worktree"],
-			]) {
-				const assigned = assignments.get(value);
-				if (assigned) fail(`${id} and ${assigned} share the same ${label}`);
-				assignments.set(value, id);
-			}
-			for (const lease of milestone.sharedLeases) {
-				const assigned = assignedLeases.get(lease);
-				if (assigned) fail(`${id} and ${assigned} share lease ${lease}`);
-				assignedLeases.set(lease, id);
-			}
-		}
-	}
-	if (
-		state.baseline.status === "DONE" &&
-		(!state.baseline.validationRecord ||
-			!state.baseline.independentVerification)
-	) {
-		fail(
-			"A DONE baseline requires validation and independent-verification records",
-		);
-	}
-	if (baselineMilestone.status === "DONE") {
-		for (const [gate, result] of Object.entries(baselineMilestone.gates)) {
-			if (result !== "PASS") {
-				fail(`baseline-reconciliation-gate requires ${gate}=PASS when DONE`);
-			}
-		}
-	}
+	return {
+		rows: rows.size,
+		trackedDefinitions: trackedDefinitions.length,
+	};
 }
 
 async function assertMissing(relativePath) {
@@ -297,11 +217,56 @@ export async function verifyGardenerRecord(state, read = readBytes) {
 	);
 }
 
-async function main() {
+export async function assertTrackedTempCitations({
+	checkout = root,
+	tempRoot = "D:/fitway-temp",
+	trackedFiles,
+} = {}) {
+	const audit = await auditTempCitations({
+		checkout,
+		tempRoot,
+		trackedFiles,
+	});
+	if (!audit.checked) {
+		console.log(
+			`Evidenced temp citations not checked: ${tempRoot} does not exist; compared against ${audit.base}.`,
+		);
+		return audit;
+	}
+	if (audit.unchanged.length) {
+		const examples = audit.unchanged
+			.slice(0, 5)
+			.map((citation) => `${citation.source}:${citation.line} ${citation.path}`)
+			.join("; ");
+		console.warn(
+			`Evidenced temp citations already gone on unchanged lines: ${audit.unchanged.length}. First five: ${examples}. Mark each citation with (gone: <why>) or list it in ${LOST_TEMP_EVIDENCE_PATH} after recovering or accepting the loss.`,
+		);
+	}
+	if (audit.changed.length) {
+		const details = audit.changed
+			.map(
+				(citation) => `${citation.source}:${citation.line}: ${citation.path}`,
+			)
+			.join("\n");
+		throw new Error(
+			`Evidenced temp citations are gone on unlisted changed lines compared against ${audit.base}:\n${details}\nFix: correct each path, mark it (gone: <why>), or add one row per citation to ${LOST_TEMP_EVIDENCE_PATH}.`,
+		);
+	}
+	console.log(
+		`Evidenced temp citations passed compared against ${audit.base}: 0 unlisted on changed lines, ${audit.unchanged.length} unlisted on unchanged lines, ${audit.listed.length} listed.`,
+	);
+	return audit;
+}
+
+function assertNoDiffErrors() {
 	execFileSync("git", ["diff", "HEAD", "--check", "--"], {
 		cwd: root,
 		stdio: "inherit",
 	});
+}
+
+async function main(options = {}) {
+	assertNoDiffErrors();
 
 	const required = [
 		"AGENTS.md",
@@ -342,6 +307,11 @@ async function main() {
 	ajv.addSchema(stateSchema);
 	const validateState = ajv.compile(stateSchema);
 	const validateHistory = ajv.compile(historySchema);
+	const supersessionErrors = [
+		...supersededByErrors(state?.milestones, "PROJECT_STATE.yaml"),
+		...supersededByErrors(history?.milestones, "PROJECT_STATE_HISTORY.yaml"),
+	];
+	if (supersessionErrors.length) fail(supersessionErrors.join("\n"));
 	if (!validateState(state)) {
 		fail(
 			`PROJECT_STATE.yaml schema validation failed:\n${JSON.stringify(validateState.errors, null, 2)}`,
@@ -352,6 +322,19 @@ async function main() {
 			`PROJECT_STATE_HISTORY.yaml schema validation failed:\n${JSON.stringify(validateHistory.errors, null, 2)}`,
 		);
 	}
+	const trackedFiles = listTrackedFiles(root);
+	await assertTrackedTempCitations();
+	const bomCheck = assertNoUnexpectedBom({
+		repositoryRoot: root,
+		trackedFiles,
+	});
+	const claudeAgentTable = assertClaudeAgentTable({
+		repositoryRoot: root,
+		trackedFiles,
+	});
+	console.log(
+		`Tracked encoding and agent checks passed: ${bomCheck.checked} tracked files checked, ${bomCheck.allowed} allowed BOM(s), ${claudeAgentTable.rows} agent table rows, and ${claudeAgentTable.trackedDefinitions} tracked definitions.`,
+	);
 	await verifyGardenerRecord(state);
 	if (state.gardener)
 		console.log(
@@ -452,7 +435,7 @@ async function main() {
 		);
 	}
 	for (const line of formatAgentContextWarnings(agentContext, {
-		verbose: process.argv.slice(2).includes("--verbose"),
+		verbose: options.verbose === true,
 		warningPrefix: "Agent context warning: ",
 	})) {
 		console.warn(line);
@@ -467,7 +450,8 @@ if (
 	process.argv[1] &&
 	path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-	main().catch((error) => {
+	const parsed = beginToolCommand("check:repository", process.argv.slice(2));
+	main(repositoryOptions(parsed)).catch((error) => {
 		console.error(`FAILED_VALIDATION: ${error.message}`);
 		process.exitCode = 1;
 	});

@@ -87,10 +87,14 @@ beforeAll(() => {
 	git(foreignRepository, "add", ".");
 	git(foreignRepository, "commit", "-m", "foreign fixture");
 	git(foreignRepository, "branch", "feature/command-only");
-	brief = `<!-- brief-format: v1 role: codex -->
+	brief = `<!-- brief-format: v1 role: codex delivers: report -->
 # Fixture brief
 - **Worktree:** \`${worktree.replaceAll("\\", "/")}\`, branch \`feature/build\`, HEAD \`${head}\`
 ${environment}
+## Scope
+
+Write only in the fixture. If an outcome cannot be met, do not work around it: finish and measure the others, then stop and report.
+
 ## Goal
 `;
 }, 60_000);

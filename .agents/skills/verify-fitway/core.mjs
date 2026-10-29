@@ -1,7 +1,23 @@
+// Provide verify-fitway output, preview, port, session, and filesystem primitives.
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, lstatSync, readlinkSync, realpathSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import {
+	existsSync,
+	lstatSync,
+	mkdirSync,
+	readdirSync,
+	readlinkSync,
+	realpathSync,
+	writeFileSync,
+} from "node:fs";
+import {
+	mkdir,
+	readdir,
+	readFile,
+	rm,
+	rmdir,
+	writeFile,
+} from "node:fs/promises";
 import { createServer } from "node:http";
 import { networkInterfaces } from "node:os";
 import {
@@ -12,6 +28,10 @@ import {
 	resolve,
 	sep,
 } from "node:path";
+import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
+
+// A command already printed this failure's outcome block; callers still fail.
+export class ReportedFailure extends Error {}
 
 export const inside = (root, target) => {
 	const rel = relative(root, target);
@@ -54,11 +74,83 @@ export function assertOutsideGit(target) {
 	for (const start of [resolve(target), resolved]) {
 		for (let dir = start; ; dir = dirname(dir)) {
 			if (existsSync(resolve(dir, ".git")))
-				throw new Error(`Refusing output inside git working tree: ${target}`);
+				throw new ToolStartupError(
+					`Refusing output inside git working tree: ${target}`,
+					"pass --out a folder outside every Git working tree, such as one under D:/fitway-temp",
+				);
 			if (dir === dirname(dir)) break;
 		}
 	}
 	return resolved;
+}
+
+const outputManifests = new Map();
+
+export function freshEmptyOutput(target, command, metadata = {}) {
+	const resolved = assertOutsideGit(target);
+	if (existsSync(resolved) && readdirSync(resolved).length)
+		throw new ToolStartupError(
+			`${command} requires a fresh empty output folder; this prevents descendant links or old evidence from redirecting writes.`,
+			"pass a fresh --out folder: a new or empty folder outside Git",
+		);
+	const manifest = {
+		command,
+		arguments: metadata.arguments || [],
+		checkout:
+			typeof metadata.checkout === "function"
+				? metadata.checkout()
+				: metadata.checkout || {
+						commit: null,
+						branch: null,
+					},
+		...(metadata.concept ? { concept: metadata.concept } : {}),
+		...(metadata.ref ? { ref: metadata.ref } : {}),
+		...(metadata.baseline ? { baseline: metadata.baseline } : {}),
+		...(metadata["baseline-ref"]
+			? { "baseline-ref": metadata["baseline-ref"] }
+			: {}),
+		startedAt: metadata.startedAt || new Date().toISOString(),
+	};
+	metadata.checkout = manifest.checkout;
+	mkdirSync(resolved, { recursive: true });
+	try {
+		writeFileSync(
+			resolve(resolved, "manifest.json"),
+			`${JSON.stringify(manifest, null, 2)}\n`,
+			{ encoding: "utf8", flag: "wx" },
+		);
+	} catch (error) {
+		if (error.code !== "EEXIST") throw error;
+		throw new ToolStartupError(
+			`${command} requires a fresh empty output folder; another process claimed it.`,
+			"pass a fresh --out folder: a new or empty folder outside Git",
+		);
+	}
+	outputManifests.set(resolved, manifest);
+	return resolved;
+}
+
+export async function finishOutputManifest(target, exitStatus) {
+	const resolved = canonical(target);
+	const initial = outputManifests.get(resolved);
+	if (!initial) throw new Error(`No output manifest was claimed for ${target}`);
+	const current = await readFile(resolve(resolved, "manifest.json"), "utf8")
+		.then(JSON.parse)
+		.catch(() => ({}));
+	const manifest = {
+		...current,
+		...initial,
+		status: exitStatus === 0 ? "passed" : "failed",
+		exitStatus,
+		endedAt: new Date().toISOString(),
+	};
+	await writeFile(
+		resolve(resolved, "manifest.json"),
+		`${JSON.stringify(manifest, null, 2)}\n`,
+		"utf8",
+	);
+	outputManifests.delete(resolved);
+	return manifest;
 }
 
 export function freshOutput() {
@@ -107,13 +199,21 @@ export async function preview({
 	lan = false,
 	token = randomBytes(24).toString("hex"),
 	cache = "no-store",
+	idleTimeoutMs = 30 * 60 * 1000,
+	portLease,
 }) {
-	if (!Number.isInteger(port) || port < 1 || port > 65535)
+	if (!Number.isInteger(port) || port < 0 || port > 65535)
 		throw new Error(`Invalid port: ${port}`);
 	const root = realpathSync(concept);
-	await portAvailable(port);
+	if (port !== 0) await portAvailable(port, portLease);
 	const sockets = new Set();
+	let idleTimer;
+	const touch = () => {
+		clearTimeout(idleTimer);
+		idleTimer = setTimeout(() => close(), idleTimeoutMs);
+	};
 	const server = createServer(async (req, res) => {
+		touch();
 		if (cache === "no-store") res.setHeader("Cache-Control", "no-store");
 		const send = (code, body = "", type = "text/plain; charset=utf-8") => {
 			res.writeHead(code, {
@@ -171,6 +271,7 @@ export async function preview({
 	});
 	let closing;
 	function close() {
+		clearTimeout(idleTimer);
 		closing ??= new Promise((done) => {
 			server.close(done);
 			for (const socket of sockets) socket.destroy();
@@ -182,13 +283,22 @@ export async function preview({
 			reject(
 				new Error(
 					error.code === "EADDRINUSE"
-						? `Port ${port} busy; choose another port (never stop its owner).`
+						? `Port ${port} busy; ${portPairMessage(port)}`
 						: error.message,
 				),
 			),
 		);
 		server.listen(port, lan ? "0.0.0.0" : "127.0.0.1", done);
 	});
+	const assigned = server.address().port;
+	if (port === 0 && assigned < 49152) {
+		await close();
+		throw new Error(
+			`Kernel assigned port ${assigned} outside the isolated high-port range.`,
+		);
+	}
+	port = assigned;
+	touch();
 	return {
 		server,
 		close,
@@ -199,12 +309,13 @@ export async function preview({
 	};
 }
 
-export async function portAvailable(port) {
+export async function portAvailable(port, lease) {
+	await checkVerificationLease(port, lease);
 	if (process.platform === "win32") {
 		const owners = portOwners(port);
 		if (owners.length)
 			throw new Error(
-				`Port ${port} held by a process this CLI did not start (${owners.map((o) => `${o.address} pid=${o.pid}`).join(", ")}); use a free port.`,
+				`Port ${port} held by a process this CLI did not start (${owners.map((o) => `${o.address} pid=${o.pid}`).join(", ")}); ${portPairMessage(port)}`,
 			);
 	}
 	const listener = createServer();
@@ -212,7 +323,7 @@ export async function portAvailable(port) {
 		listener.once("error", () =>
 			reject(
 				new Error(
-					`Port ${port} held by a process this CLI did not start; use a free port.`,
+					`Port ${port} held by a process this CLI did not start; ${portPairMessage(port)}`,
 				),
 			),
 		);
@@ -288,12 +399,178 @@ export function lanOrigins(
 	);
 }
 
+export const verificationPairs = [
+	[3176, 3177],
+	[3186, 3187],
+	[3188, 3189],
+];
+export const verificationPairNames = () =>
+	verificationPairs.map((pair) => pair.join("-")).join(", ");
+const portPairMessage = (port) => {
+	const pair = verificationPairs.find((pair) => pair.includes(Number(port)));
+	return pair
+		? `verification pair ${pair.join("-")} is busy; choose a free pair (never stop its owner).`
+		: "use a free port.";
+};
 export function verificationPort(port) {
-	if (![3176, 3177].includes(Number(port)))
-		throw new Error(
-			`Port ${port} is outside the verification allocation; choose 3176 or 3177. Ports 3174 and 3178-3185 belong to other previews.`,
+	if (!verificationPairs.flat().includes(Number(port)))
+		throw new ToolStartupError(
+			`Port ${port} is outside the verification allocation; choose 3176 or 3177, or a port in the pairs ${verificationPairNames()}. Ports 3174 and 3178-3185 belong to other previews.`,
+			`choose 3176 or 3177, or a port in the pairs ${verificationPairNames()}; ports 3174 and 3178-3185 belong to other previews`,
+			{ what: `port ${port} is outside the verification allocation` },
 		);
 	return Number(port);
+}
+
+export function comparisonPorts(options, command = "compare") {
+	const ports = [
+		verificationPort(options.port ?? 3176),
+		verificationPort(options["baseline-port"] ?? 3177),
+	];
+	if (
+		!verificationPairs.some(
+			(pair) => pair[0] === ports[0] && pair[1] === ports[1],
+		)
+	)
+		throw new Error(
+			`${command} requires one ordered verification pair: ${verificationPairNames()}; received ${ports.join("-")}.`,
+		);
+	return ports;
+}
+
+const leaseRoot = "D:/fitway-verify-captures";
+const leaseFolder = (port) => resolve(leaseRoot, `.port-${port}-lease`);
+export async function checkVerificationLease(port, lease) {
+	if (!verificationPairs.flat().includes(Number(port))) return;
+	const claims = await resourceOwners(leaseFolder(port));
+	if (claims.some((claim) => claim.token === lease?.tokens?.[port])) return;
+	if (claims.length)
+		throw new Error(
+			`Port ${port} held by another command; ${portPairMessage(port)}`,
+		);
+}
+
+// Claim before capture startup, including file-only commands. No waiter
+// can share a pair during the gap before the HTTP listeners have been created.
+export async function reserveVerificationPorts(ports) {
+	assertOutsideGit(leaseRoot);
+	await mkdir(leaseRoot, { recursive: true });
+	const lease = { tokens: {} };
+	const owned = [];
+	lease.release = async () => {
+		for (const claim of owned) await claim.release();
+	};
+	try {
+		for (const port of ports) {
+			await checkVerificationLease(port);
+			let claim;
+			try {
+				claim = await claimResource(leaseFolder(port), true, [
+					leaseFolder(port),
+				]);
+			} catch (error) {
+				if (error.code === "RESOURCE_BUSY")
+					throw new Error(
+						`Port ${port} held by another command; ${portPairMessage(port)}`,
+					);
+				throw error;
+			}
+			owned.push(claim);
+			lease.tokens[port] = claim.token;
+			await portAvailable(port, lease);
+		}
+		return lease;
+	} catch (error) {
+		await lease.release();
+		throw error;
+	}
+}
+
+// A bakery lock gives each claimant a never-reused directory. Reaping a dead
+// generation cannot delete a successor's claim, even with simultaneous reapers.
+async function resourceOwners(root) {
+	const owners = [];
+	for (const entry of await readdir(root, { withFileTypes: true }).catch(
+		(error) => {
+			if (error.code === "ENOENT") return [];
+			throw error;
+		},
+	)) {
+		const match = /^claim-(\d+)-([a-f0-9]{48})$/.exec(entry.name);
+		if (!entry.isDirectory() || !match) continue;
+		const pid = Number(match[1]);
+		const folder = resolve(root, entry.name);
+		try {
+			process.kill(pid, 0);
+		} catch (error) {
+			if (error.code !== "ESRCH") throw error;
+			await rm(folder, { recursive: true, force: true });
+			continue;
+		}
+		const owner = await readFile(resolve(folder, "owner.json"), "utf8")
+			.then(JSON.parse)
+			.catch(() => null);
+		owners.push({
+			token: match[2],
+			ticket:
+				Number.isSafeInteger(owner?.ticket) && owner.ticket > 0
+					? owner.ticket
+					: null,
+		});
+	}
+	return owners;
+}
+
+async function removeEmptyDirectory(path) {
+	try {
+		await rmdir(path);
+	} catch (error) {
+		if (!["ENOENT", "ENOTEMPTY", "EPERM"].includes(error.code)) throw error;
+	}
+}
+
+export async function claimResource(root, tryOnly = false, emptyParents = []) {
+	assertOutsideGit(root);
+	await mkdir(root, { recursive: true });
+	const token = randomBytes(24).toString("hex");
+	const folder = resolve(root, `claim-${process.pid}-${token}`);
+	await mkdir(folder);
+	const release = async () => {
+		await rm(folder, { recursive: true, force: true });
+		for (const parent of emptyParents) await removeEmptyDirectory(parent);
+	};
+	try {
+		const ownerFile = resolve(folder, "owner.json");
+		await writeFile(ownerFile, JSON.stringify({ ticket: null }));
+		const ticket =
+			1 +
+			Math.max(
+				0,
+				...(await resourceOwners(root)).map((owner) => owner.ticket || 0),
+			);
+		await writeFile(ownerFile, JSON.stringify({ ticket }));
+		const deadline = Date.now() + 60000;
+		for (;;) {
+			const blocked = (await resourceOwners(root)).some(
+				(owner) =>
+					owner.token !== token &&
+					(owner.ticket === null ||
+						owner.ticket < ticket ||
+						(owner.ticket === ticket && owner.token < token)),
+			);
+			if (!blocked) return { token, release };
+			if (tryOnly)
+				throw Object.assign(new Error(`Resource busy: ${root}`), {
+					code: "RESOURCE_BUSY",
+				});
+			if (Date.now() >= deadline)
+				throw new Error(`Resource publication lock timed out: ${root}`);
+			await new Promise((done) => setTimeout(done, 50));
+		}
+	} catch (error) {
+		await release();
+		throw error;
+	}
 }
 
 export async function ownedSession(folder) {
@@ -302,30 +579,54 @@ export async function ownedSession(folder) {
 	);
 	if (!Number.isInteger(session.port))
 		throw new Error("Invalid session port; relaunch.");
-	const response = await fetch(
-		`http://127.0.0.1:${session.port}/__verify/identity`,
-		{
-			headers: { "x-verify-token": session.token },
-			signal: AbortSignal.timeout(1500),
-		},
-	);
-	if (!response.ok)
-		throw new Error(
-			`Port ${session.port} is not owned by this session; refuse cleanup.`,
+	const refused = (cause) =>
+		new Error(
+			`Port ${session.port} is not owned by this session (not served by this session); refuse session.`,
+			{ cause },
 		);
-	const identity = await response.json();
+	let response;
+	try {
+		response = await fetch(
+			`http://127.0.0.1:${session.port}/__verify/identity`,
+			{
+				headers: { "x-verify-token": session.token },
+				redirect: "error",
+				signal: AbortSignal.timeout(1500),
+			},
+		);
+	} catch (error) {
+		try {
+			await portAvailable(session.port);
+		} catch {
+			throw refused(error);
+		}
+		throw new Error(
+			`Session preview on port ${session.port} has stopped or is unreachable; relaunch.`,
+			{ cause: error },
+		);
+	}
+	if (!response.ok) throw refused();
+	let identity;
+	try {
+		identity = await response.json();
+	} catch (error) {
+		throw refused(error);
+	}
 	if (
+		!identity ||
 		identity.token !== session.token ||
 		identity.concept !== session.concept ||
 		identity.pid !== session.pid
 	)
-		throw new Error("Session identity mismatch; refuse cleanup.");
+		throw refused();
 	const foreign = portOwners(session.port).filter(
 		(owner) => owner.pid !== session.pid,
 	);
-	if (foreign.length)
+	if (foreign.length) {
+		const pids = [...new Set(foreign.map((owner) => owner.pid))];
 		throw new Error(
-			`Port ${session.port} also held by foreign pid ${foreign.map((o) => o.pid)}; refuse this session.`,
+			`Port ${session.port} is served by this session but also held by foreign pid${pids.length === 1 ? "" : "s"} ${pids.join(", ")}; refuse session.`,
 		);
+	}
 	return session;
 }

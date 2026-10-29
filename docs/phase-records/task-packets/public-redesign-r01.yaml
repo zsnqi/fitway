@@ -1,0 +1,149 @@
+schemaVersion: 1
+milestoneId: public-redesign-r01
+taskClass: visual-authority-change
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/public-redesign-r01
+task:
+  objective: >-
+    Redesign the public crowd page, concept-only, in the Eclipse concept's style from its shared foundations, as the
+    user decided (owner-design-exploration-r04 DECISIONS items 90, 98 and 99); present it for the user's acceptance by
+    eye, and leave production, canonical, Paper and the shipped public page unchanged.
+  acceptanceCriteria:
+    - Build the page in Eclipse's folder beside the Owner pages (public.html, public.css, public.js, PUBLIC-SPEC.md, public-capture.mjs), from DESIGN-SPEC.md §1, and record its rows in DESIGN-SPEC.md §6 under the coordinator lease.
+    - Start with two or three whole directions in Eclipse's style, each with its own composition and level-mark form, at 390 px first in Arabic and English (item 99; no grey skeleton); the user picks by eye.
+    - Meet item 90 and the applied amendments of item 98 (dark, Readex Pro, «داخل الصالة الآن · تقريبًا», «شديد الازدحام», no verdict line, no typical-day chart, the level mark's accessibility rules, the digit roll only on a new live reading, the frame, the last update absolute and its age when stale, no canvas, WebGL, rAF loops or video, the demo's hidden state switch in the concept only).
+    - Use synthetic data and keep the capacity-free public contract, privacy, truthful states (loading, fresh, stale, closed, unavailable, error), Western digits, the 12-hour clock in gym time, Arabic RTL and English LTR, and 320-1440 px without sideways scroll.
+    - Render and personally inspect exact Arabic and English frames at 390 x 844 and 1440 x 900 for each state presented; record the frames and the reviewer.
+    - Keep the Public composition authority vacant and production, canonical, Paper and manifest state unchanged.
+  explicitExclusions:
+    - Production UI, CSS, copy, hooks, routes, i18n, dependencies, schemas, APIs and data semantics.
+    - Selecting a direction, declaring visual acceptance or promoting any concept on the user's behalf.
+    - Canonical, Paper, manifest, token-baseline, approval-hash or production promotion changes, including the manifest's `public` entry (a follow-on manifest workstream).
+    - Changing any Owner page or Eclipse file other than the public files and DESIGN-SPEC.md §6.
+authorities:
+  required:
+    - role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Approved visual baseline" }
+      reason: The production baseline and the Public redesign's place beside it.
+    - role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }
+      reason: Preserve security, privacy, accessibility, bilingual behavior, the capacity-free contract and the demo switch rule.
+    - role: design
+      path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "1. Direction" }
+      reason: The public page's order, its states, and the Public redesign scope.
+    - role: design
+      path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "15. Phase visual gate" }
+      reason: Preserve responsive, RTL/LTR, typography, accessibility, motion and visual-gate rules.
+    - role: visual-status
+      path: docs/design/VISUAL_AUTHORITY_STATUS.md
+      selector: { kind: markdown-heading, value: "Register" }
+      reason: Confirm Public composition authority is vacant under ADR-010 and other surfaces are unaffected.
+    - role: adr
+      path: docs/adr/ADR-010-public-composition-authority-supersession.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      reason: Public composition is vacant; prior Public compositions are provenance only.
+    - role: adr
+      path: docs/adr/ADR-007-paper-visual-source-of-truth.md
+      selector: { kind: markdown-heading, value: "Authority split" }
+      reason: Preserve the Paper versus repository boundary where it still applies (Login and Staff).
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Design work: authority, concepts, and perceptual gates" }
+      reason: Follow concept, perceptual, accessibility, review and human decision gates.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Preserve repository state and artifact invariants.
+  conditional:
+    - trigger: the route or surface is Owner
+      role: adr
+      path: docs/adr/ADR-009-owner-composition-authority-supersession.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      actionIfTriggered: READ
+    - trigger: Paper is unavailable and composition depends on it
+      role: visual-status
+      path: docs/design/PAPER_GUIDE_CONFLICT_MAP.md
+      selector: { kind: whole-file, value: "" }
+      actionIfTriggered: NEEDS_HUMAN
+continuity:
+  predecessorMilestones:
+    - owner-design-exploration-r04
+  unresolvedDecisions:
+    - The level mark's form is picked by the user by eye from the forms the design round draws.
+    - The public page's motion beyond the digit roll (an intro, the level mark's own) is decided by watching it.
+    - The weight and speed budget on a slow phone waits until after the demo; one smoothness check on the demo phone comes before it.
+    - Any production baseline departure, manifest re-status or canonical promotion requires a separate explicit human decision.
+verification:
+  profile: concept-only Public redesign in the Eclipse family; no production or promotion verification
+  orderedGates:
+    - Validate the READY packet and ledger with context:show and check:agent-context, then read the ordered routed sources.
+    - Run check:design-context, and use Browser for interaction plus repository Playwright for repeatable concept captures.
+    - Produce the directions from the brief with synthetic data; keep each self-contained in Eclipse's folder.
+    - Render and personally inspect exact Arabic and English 390 x 844 and 1440 x 900 frames before presenting any direction; name the frames, states and reviewer.
+    - Check accessibility across every state, keyboard and focus, reduced motion, the one announcement of a new reading, 320 px and 200% reflow.
+    - Record the user's choose, revise, request-more or pause decision without implying approval or promotion.
+  independentReviewRequired: true
+evidence:
+  requiredArtifacts:
+    - Exact context:show and check:agent-context results with the packet's SHA-256.
+    - Impeccable design-context PASS from the authorized host context.
+    - Each direction's artifact, thesis, synthetic-data note and exact Arabic and English rendered frames personally inspected.
+    - The user's explicit decision or a recorded pending decision; no implied selection.
+    - Confirmation that production, canonical, Paper and manifest state is unchanged.
+limitations:
+  - This packet authorizes a concept only. The shipped public page and its canonicals stay as they are until a separate promotion.
+  - The page is built from Eclipse's shared sheet, which owner-design-exploration-r04 owns; this milestone writes only its public files and DESIGN-SPEC.md §6.
+  - Screen-reader testing with a real reader waits for production (SPEC.md, the visual and accessibility acceptance); the concept carries the markup that costs nothing.
+visual:
+  surfaceKey: public
+  authorityStatus: VACANT
+  authorityKey: ADR-010
+  governingDecision: docs/adr/ADR-010-public-composition-authority-supersession.md#decision
+  explorationEnvelope:
+    mode: EXPLORATION
+    lockedAxes:
+      - The Eclipse family's foundations (DESIGN-SPEC.md §1); the redesign is not a new style.
+      - Product/Spec behavior and content semantics, the capacity-free contract, truthful states, privacy, security, accessibility, Western digits, and Arabic RTL / English LTR.
+      - Dark only; Readex Pro; no canvas, WebGL, requestAnimationFrame loops or video.
+    variableAxes:
+      - The page's composition within the order the Spec fixes, the level mark's form, the lights' placement, and motion beyond the digit roll.
+    requiredDepartures:
+      - The 28-bar signal and the oxblood atmosphere of the shipped page are not carried over.
+    antiRuts:
+      - Superseded Public Paper frames and canonicals are not composition authority (ADR-010).
+      - Owner page compositions are siblings in one family, not templates to copy onto the public page.
+    promotionRule: >-
+      This milestone selects, validates or promotes no concept on the user's behalf. Any production change requires
+      separate human selection, baseline approval, a manifest re-status and the perceptual gate.
+    authorizingDecision: docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md
+  currentFrames:
+    - path: tests/browser/__screenshots__/win32/chromium/public-baseline.browser.spec.ts/public-live-ar-mobile-390x844.png
+      sha256: 617effa6a8e92b9cb09500e7294c73628203ca76ebafa354cb995207d1fe969b
+    - path: tests/browser/__screenshots__/win32/chromium/public-baseline.browser.spec.ts/public-live-en-desktop-1440x900.png
+      sha256: ee6e34c3194deb20c20850fe570fb2256a6f442bd988b1089a6d3091389d71bf
+  referenceFrames:
+    - path: design-research/owner-composition-exploration-r04/directions/eclipse/evidence/daily-ar-1440x900.png
+      sha256: bc12ff9fd50ddb6b72c4f6fe01f3e752385e4faa75d601c2e775ad363a968317
+  openHumanDecisions:
+    - The direction and the level mark's form are the user's choice after seeing them.
+    - Public composition authority remains vacant under ADR-010 until a concept is selected and promoted.
+    - Production, manifest and canonical promotion require separate explicit human approval.
+  paperAvailability: UNAVAILABLE
+  perceptualGate:
+    status: PENDING
+    criteria: Exact rendered Arabic and English phone and desktop frames and an independent perceptual judgment remain pending before VALIDATING or DONE.
+  promotionGate:
+    status: NOT_REQUIRED
+    criteria: This concept changes no canonical or production baseline; promotion is a separate serialized human decision.
+  acceptanceAuthority: NONE
+designContextCheck:
+  command: pnpm check:design-context
+  status: PASS
+  artifact: docs/phase-records/handoffs/public-redesign/public-redesign-r01-resume.md
+accessibilityGate:
+  status: PENDING
+  criteria: Review RTL/LTR, 320 px and 200% reflow, keyboard and focus, reduced motion, truthful states and the one announcement of a new reading before VALIDATING.

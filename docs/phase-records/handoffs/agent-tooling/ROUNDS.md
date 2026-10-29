@@ -1,0 +1,144 @@
+# Codex round records: index
+
+The two `codex-rounds.md` files are frozen: their line numbers are cited. Each round from now on is its own file
+in `docs/phase-records/handoffs/agent-tooling/rounds/<round>.md`, listed here.
+
+## r04 codex-rounds.md
+
+- nav-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-1-readme-split.md`, result `32958e1` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:10-24`
+- nav-2: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-2-index.md`, result `25795c9` on `owner-r04-nav` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:25-33`
+- nav-3: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-3-probe-kit.md`, result `0c51f7c` on `owner-r04-nav` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:34-46`
+- nav-4: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-4-tools-repair.md`, result `fa797b3` on `owner-r04-nav` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:47-57`
+- nav-5: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-5-readme-repair.md`, result `d26f507` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:58-72`
+- D3-D8 run 4: `design-research/owner-composition-exploration-r04/directions/briefs/codex-d3-d8-defects.md`, result `e6db2e4` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:73-99`
+- fix-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-fix-d21-d24.md`, result `f5f0e2d` on `owner-followup-r04-build`, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:100-118`
+- card-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-busiest-card.md`, result `0fcd3e3` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:119-144`
+- touch-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-touch-native.md`, result `38a86cd` on `owner-r04-touch-fix`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:145-166`
+- fix-2: `design-research/owner-composition-exploration-r04/directions/briefs/codex-fix-2-review-436fe40.md`, from `5855094` on `owner-followup-r04-build`, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:167-192`
+- fix-3: `design-research/owner-composition-exploration-r04/directions/briefs/codex-fix-3.md`, from `41de51d` on `owner-followup-r04-build`, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:193-212`
+- activity-followup: `design-research/owner-composition-exploration-r04/directions/briefs/codex-activity-followup.md`, result `31e9dd9` on `owner-r04-activity`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:213-228`
+- access-fix: `design-research/owner-composition-exploration-r04/directions/briefs/codex-access-fix.md`, result `376c845` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:229-254`
+- motion-lows: `design-research/owner-composition-exploration-r04/directions/briefs/codex-motion-lows.md`, result `4850e58` and WIP `48ff52b` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:255-273`
+- three-rounds-fix: `design-research/owner-composition-exploration-r04/directions/briefs/codex-three-rounds-fix.md`, result `ce3f07e` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:274-295`
+- one-clock: `design-research/owner-composition-exploration-r04/directions/briefs/codex-one-clock.md`, WIP `dbee42d` and result `809aa09` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:296-314`
+- narrow-sheet: `design-research/owner-composition-exploration-r04/directions/briefs/codex-narrow-sheet.md`, result `b6d6a5c` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:315-327`
+- variants-removal: `design-research/owner-composition-exploration-r04/directions/briefs/codex-variants-removal.md`, result `e74ca06` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:328-341`
+- tuner-reach: `design-research/owner-composition-exploration-r04/directions/briefs/codex-tuner-reach.md`, result `1305c0ee` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:342-359`
+- tuner-reach fix-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-tuner-reach-fix-1.md`, result `ec314ce2` on `owner-followup-r04-build`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:360-383`
+- css-round (the mechanical part): `directions/briefs/codex-css-round.md` on the build branch, result `691d62d5` (level high) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:384-426`
+- css-review-fixes: `directions/briefs/codex-css-review-fixes.md` on the build branch, result `3b673daa` (level high) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:427-453`
+- press-hook (F3): `directions/briefs/codex-press-hook.md` on the build branch, result `eb18b17a` (level high) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:454-482`
+- press-hook-2: `directions/briefs/codex-press-hook-2.md` on the build branch, result `d1a01f3c` (level high) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:483-507`
+- recipe-proofs: `directions/briefs/codex-recipe-proofs.md` on the build branch, result `e097d82c` (level high) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:508-539`
+- recipe-proofs-2: `directions/briefs/codex-recipe-proofs-2.md` on the build branch, result `8c1a7c5d` (level high) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:540-569`
+- daily-files: `directions/briefs/codex-daily-files.md` on the build branch, result `50097ff7` (level xhigh) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:570-597`
+- daily-files-fix: `directions/briefs/codex-daily-files-fix.md` on the build branch, result `7e28c713` (level high) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:598-629`
+- midmotion-compare: `briefs/codex-midmotion-compare.md` (this folder), result `e39225e6` on `owner-r04-midmotion`, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:630-661`
+- Evaluation: a blind review of the brief before launch (2026-10-11, the user agreed to the trial) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:662-681`
+- midmotion-compare-fix: `briefs/codex-midmotion-compare-fix.md` (this folder, `07c5a87f`), result `84cacbad` on `owner-r04-midmotion`, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:682-714`
+- gardener-shared-files: `briefs/codex-gardener-shared-files.md` (this folder, `554eee67`), result `040bc5c8` on `owner-r04-gardener`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:715-738`
+- gardener-shared-files-fix: `briefs/codex-gardener-shared-files-fix.md` (this folder, `005b9fa2`), result `dd8f0fb8` on `owner-r04-gardener`, level `high` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:739-753`
+- launch-review: `briefs/codex-launch-review.md` (this folder, `fe8856fd`), result `7d262d68` on `owner-r04-launch-review`, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:754-775`
+- vf-speed: `briefs/codex-vf-speed.md` (this folder), result `5ba2c2f2` on `owner-r04-vf-speed`, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:776-818`
+- vf-hold: `briefs/codex-vf-hold.md` (this folder), result `7c8418fb` on `owner-r04-vf-hold`, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:819-863`
+- Evaluation: DeepSeek for the brief review (2026-10-13, the user asked for the trials) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:864-881`
+- deepseek-route: `briefs/codex-deepseek-route.md` (this folder, `107c71e5`), result `96e4f36b` on `owner-r04-deepseek-route`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:882-904`
+- launcher-fixes: `briefs/codex-launcher-fixes.md` (this folder, `c30cac54`), result `5b58492e` on `owner-r04-launcher-fixes`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:905-926`
+- Evaluation: Claude Code on DeepSeek, the partial replay (2026-10-13 to 14, DECISIONS 53, deferred by 58) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:927-945`
+- vf-parallel: `briefs/codex-vf-parallel.md` (this folder), continued by `codex-vf-parallel-continue.md` and `codex-vf-parallel-continue-2.md`, result `70cf9180` on `owner-r04-vf-parallel`, GPT-6.1 Sol `xhigh`, then DeepSeek V4.1 Flash `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:946-1006`
+- launcher-fixes-2: `briefs/codex-launcher-fixes-2.md` (this folder, `c609e08b`), result `a6ad0ae4` on `owner-r04-launcher-fixes-2`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1007-1038`
+- shared-frame: `directions/briefs/codex-shared-frame.md` and `codex-shared-frame-continue.md` on the build branch, then `briefs/codex-shared-frame-continue-2.md` (this folder), result `4352181f` on `owner-followup-r04-build`, GPT-6.1 Sol `xhigh`, then DeepSeek V4.1 Flash `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1039-1081`
+- launcher-fixes-3: `briefs/codex-launcher-fixes-3.md` (this folder), result `d802b101` on `owner-r04-launcher-fixes-2`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1082-1121`
+- tuner-removal: `briefs/codex-tuner-removal.md`, continued by `codex-tuner-removal-continue.md` (this folder), result `aeb7d35a` (on `58e39ede`) on `owner-followup-r04-build`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1122-1169`
+- tuner-removal-fix: `briefs/codex-tuner-removal-fix.md` (this folder, `763156e0`), result `c2fe4661` on `owner-followup-r04-build`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1170-1199`
+- vf-fixes: `briefs/codex-vf-fixes.md` (this folder), continued by `codex-vf-fixes-continue.md` (`81806a2c`), result `9c69abe5` on `owner-r04-vf-fixes`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1200-1261`
+- encoding-checks: `briefs/codex-encoding-checks.md` (this folder), continued by `codex-encoding-checks-fix.md`, result `c93f423d` on `owner-r04-encoding-checks`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1262-1285`
+- encoding-launcher: `briefs/codex-encoding-launcher.md` (this folder), continued by `codex-encoding-launcher-fix.md`, result `d6e603fc` on `owner-r04-encoding-launcher`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1286-1312`
+- no-comments: `briefs/codex-no-comments.md` (this folder), report-only, at `c699d3fb` on `owner-r04-no-comments`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1313-1330`
+- diagnosis: `briefs/codex-diagnosis.md` (this folder), report-only, at `c699d3fb` on `owner-r04-diagnosis` with the concept at `c2fe4661`, GPT-6.1 Sol, level `xhigh` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1331-1349`
+- launcher-fixes-4: `briefs/codex-launcher-fixes-4.md` (this folder), result `954968b0` on `owner-r04-launcher-fixes-4`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1350-1371`
+- vf-runner, one brief on both models (decision 66): `briefs/codex-vf-runner.md` (Sol arm, result `78a1c34e` on `owner-r04-vf-runner`, GPT-6.1 Sol `xhigh`) and `briefs/codex-vf-runner-ds.md` (DeepSeek arm, result `3ac1770a` on `owner-r04-vf-runner-ds`, DeepSeek V4.1 Flash `max`), both from `c699d3fb` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1372-1407`
+- reports-css: `briefs/codex-reports-css.md` (this folder), result `23314b3a` on `owner-r04-reports-css`, DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1408-1465`
+- vf-runner-fix-2: `briefs/codex-vf-runner-fix-2.md` (this folder), result `a8791d1a` on `owner-r04-vf-runner-ds` (from `1ff1f9cf`), DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1466-1488`
+- vf-proofs: `briefs/codex-vf-proofs.md` (this folder), result `0eafd08c` on `owner-r04-vf-proofs` (from `5b81b3b7`), DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1489-1510`
+- brief-ladder: `briefs/codex-brief-ladder.md` (this folder), result `166a4ba7` on `owner-r04-brief-ladder` (from `5b81b3b7`), DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1511-1527`
+- launcher-fixes-5 with fix and fix-2: `briefs/codex-launcher-fixes-5.md`, `-fix.md` and `-fix-2.md` (this folder), results `4964b95d`, `34065b3d` and `0949bea1` on `owner-r04-launcher-fixes-5` (from `5b81b3b7`), DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1528-1554`
+- ladder-seam: `briefs/codex-ladder-seam.md` (this folder), result `4131dd8c` on `owner-r04-ladder-seam` (from `c87bf5b3`), DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1555-1571`
+- Evaluation: both reviewers, decision 66's rule applied (2026-10-16) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1572-1584`
+- shared-lows-fix-2: `briefs/codex-shared-lows-fix-2.md` (this folder), result `4cc2db93` on `owner-r04-shared-lows` (from `9619f3ce`), DeepSeek V4.1 Flash, level `max`; review fix `538b280a` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1585-1627`
+- agent-tooling-r01: the ratchet, ratchet-fix and the review fixer: `../../agent-tooling/briefs/codex-ratchet.md` and `codex-ratchet-fix.md`, results `7c28d15a`, `3f80f091` and `b3946bc3` on `tooling-ratchet` (from `fcc8365b`), DeepSeek V4.1 Flash, level `max` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1628-1658`
+- agent-tooling-r01: ratchet-fix-2: `../../agent-tooling/briefs/codex-ratchet-fix-2.md`, results `204ed1dc`, `42fd405a` and `4ed45355` on `tooling-ratchet` (from `b3946bc3`), DeepSeek V4.1 Flash, level `max`; review fix `6ca46c2e` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1659-1691`
+- agent-tooling-r01: the CLI contract and cli-contract-fix: `../../agent-tooling/briefs/codex-cli-contract.md` and `codex-cli-contract-fix.md`, results `cb1cfe65` and `dda8e020` on `tooling-cli-contract` (from `57dad1c0`), DeepSeek V4.1 Flash, level `max`; review builder `97f61712` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1692-1766`
+- DeepSeek V4.1 Flash 1017 (2026-10-17, the user's records note) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1767-1791`
+- vf-runner on DeepSeek V4.1 Flash 1017: a replay of the DeepSeek arm (2026-10-17, the user's comparison) `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1792-1822`
+- agent-tooling-r01: the verification map (F252): results `14eab215` and `eee192ce` on `tooling-verification-map` (from `cf5d7858`), written by a side session (Opus 5.5), no Codex round `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1823-1852`
+- agent-tooling-r01: report-fields: `../../agent-tooling/briefs/codex-report-fields.md`, result `610b54a6` on `tooling-report-fields` (from `cf5d7858`), DeepSeek V4.1 Flash 1017, level `max`; review builders `d2fad437` and `a90da2e2` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1853-1931`
+- agent-tooling-r01: ratchet-codelines: `../../agent-tooling/briefs/codex-ratchet-codelines.md`, results `61c0e47b` and `d54f4354` on `tooling-ratchet-codelines` (from `72b95888`), DeepSeek V4.1 Flash 1017, level `max`; review builders `e3f95470` and `26e279f8` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1932-1998`
+- agent-tooling-r01: giant-split: `../../agent-tooling/briefs/codex-giant-split.md`, result `18b5c276` on `tooling-giant-split` (from `72b95888`), DeepSeek V4.1 Flash 1017, level `max`; review builder `59a1c0b6`, fixer `747de7c6` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:1999-2070`
+- agent-tooling-r01: ratchet-2: `../../agent-tooling/briefs/codex-ratchet-2.md`, result `78730971` on `tooling-ratchet-2`, DeepSeek V4.1 Flash 1017, level `max`; review builder `c8abc04a` (after the merge `da828661`), fixer `50cecbc9`, grade fixes `504d6572` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:2071-2097`
+- agent-tooling-r01: belonging-check: `../../agent-tooling/briefs/codex-belonging-check.md`, result `cd4fb770` on `tooling-belonging` (from `2e4f01e9`), DeepSeek V4.1 Flash, level `max`; review builder `ca8fb902`; merged `dbf9b683` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:2098-2142`
+- agent-tooling-r01: compare-fullpage: `../../agent-tooling/briefs/codex-compare-fullpage.md`, result `1a81021d` on `tooling-compare-fullpage` (from `9db242bb`), DeepSeek V4.1 Flash, level `max`; review builder `5e6f7268`; merged `a5e6b5b6` `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md:2143-2174`
+
+## agent-environment codex-rounds.md
+
+- Round 1: `briefs/codex-r1-resume-tooling.md`, result `3b91b9d` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:8-21`
+- Round 2: `briefs/codex-r2-repair.md`, result `aa3d13f` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:22-33`
+- Round 3: `briefs/codex-r3-quiet-tooling.md`, result `3d80304` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:34-45`
+- Round 4: `briefs/codex-r4-brief-check.md`, result `d333762` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:46-57`
+- Round 5: `briefs/codex-r5-repair.md`, result `a7c9ecc` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:58-71`
+- Round 6: `briefs/codex-r6-path-tokens.md`, result `dc8d2e0` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:72-86`
+- Round 7: `briefs/codex-r7-path-identity.md`, result `4d5d2f3` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:87-96`
+- Round 8 and 8b: `briefs/codex-r8-acceptance-repairs.md` and `briefs/codex-r8b-resume-name.md`, results `c071d87` and `c99d07c` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:97-108`
+- Evaluation C2 (agent-environment-r02): round 5 rerun with and without line C2, results `ece0794` and `ad51e1a` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:109-122`
+- Evaluation C2b (agent-environment-r02): the brief only, no Codex run `docs/phase-records/handoffs/agent-environment/codex-rounds.md:123-134`
+- Evaluation C2c (agent-environment-r02): round 5 rerun with line C2c, result `66052a6` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:135-149`
+- Evaluation C3 (agent-environment-r02): OW nav-1 rerun with and without line C3, results `0f669f0` and `9accd86` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:150-168`
+- agent-environment-r03 round 2: `r03/briefs/round-2.md`, result `5848607` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:169-182`
+- agent-environment-r03 round 3: `r03/briefs/round-3.md`, result `eb87d09` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:183-199`
+- agent-environment-r03 round 4: `r03/briefs/round-4.md`, result `7c7a768` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:200-220`
+- agent-environment-r03 round 5: `r03/briefs/round-5.md`, result `34f472e` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:221-232`
+- agent-environment-r03 round 5b: `r03/briefs/round-5b.md`, result `a40ba39` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:233-244`
+- agent-environment-r03 round 5c: `r03/briefs/round-5c.md`, result `b80c3ad` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:245-252`
+- Evaluation B8 and B9 (agent-environment-r03): card-1 and touch-1 rerun with and without the fields (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:253-280`
+- agent-environment-r03 round 6: `r03/briefs/round-6.md`, result `8e520995` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:281-312`
+- agent-environment-r03 round 7: `r03/briefs/round-7.md`, result `a36e97fe` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:313-341`
+- agent-environment-r03 round 8: `r03/briefs/round-8.md`, result `3003f7ff` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:342-370`
+- agent-environment-r03 round 9: `r03/briefs/round-9.md`, result `f32d4cca` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:371-392`
+- agent-environment-r03 round 8b: `r03/briefs/round-8b.md`, result `e0fcb90e` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:393-415`
+- agent-environment-r03 round 13: `r03/briefs/round-13.md`, result `644e8abc` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:416-436`
+- agent-environment-r03 round 11: `r03/briefs/round-11.md`, result `c7e0e404` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:437-460`
+- agent-environment-r03 round 10: `r03/briefs/round-10.md`, result `d8945397` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:461-483`
+- agent-environment-r03 round 12: `r03/briefs/round-12.md`, result `db995501` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:484-507`
+- agent-environment-r03 round 10b: `r03/briefs/round-10b.md`, result `24aa82e9` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:508-526`
+- Replay baseline (agent-environment-r03 step 4, DECISIONS item 23): ten Owner rounds on the environment of `af13c16f` `docs/phase-records/handoffs/agent-environment/codex-rounds.md:527-550`
+- agent-environment-r03 round 14: `r03/briefs/round-14.md`, result `bdbdd870` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:551-578`
+- agent-environment-r03 round 15: `r03/briefs/round-15.md`, result `18e18b42` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:579-607`
+- agent-environment-r03 round 17: `r03/briefs/round-17.md`, result `b9fbc832` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:608-630`
+- agent-environment-r03 round 16: `r03/briefs/round-16.md`, result `e0d00b5a` (level xhigh) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:631-662`
+- agent-environment-r03 round 16b: `r03/briefs/round-16b.md`, result `eb5560d0` (level high, repair 1 of round 16's Y2) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:663-679`
+- agent-environment-r03 round 16c: `r03/briefs/round-16c.md`, result `e0cd4c6e` (level high, repair 2 of round 16's Y2) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:680-705`
+- agent-environment-r03 round 18: `r03/briefs/round-18.md`, result `70adc082` (level medium) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:706-721`
+- agent-environment-r03 round 19: `r03/briefs/round-19.md`, result `01e704f4` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:722-739`
+- agent-environment-r03 round 20: `r03/briefs/round-20.md`, result `28a77408` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:740-764`
+- agent-environment-r03 round 21: `r03/briefs/round-21.md`, result `6ba81a0c` (level high, two repairs) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:765-798`
+- Item 21 step 6: the question-and-spec trial, graded (2026-10-10) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:799-815`
+- agent-environment-r03 round 23: `r03/briefs/round-23.md`, result `fda6416b` (level high, one repair) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:816-833`
+- agent-environment-r03 round 25: `r03/briefs/round-25.md`, result `833ec599` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:834-856`
+- agent-environment-r03 round 26: `r03/briefs/round-26.md`, result `c88266ea` (level high, one repair) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:857-874`
+- agent-environment-r03 round 24: `r03/briefs/round-24.md`, result `01c01409` (level high, one repair) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:875-904`
+- agent-environment-r03 round 29: `r03/briefs/round-29.md`, result `f90f4464` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:905-922`
+- agent-environment-r03 round 22: `r03/briefs/round-22.md`, result `7ab0a660` (level high, one repair) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:923-955`
+- agent-environment-r03 round 28: `r03/briefs/round-28.md`, result `0e89866b` (level high, one repair) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:956-979`
+- agent-environment-r03 round 27: `r03/briefs/round-27.md`, result `5e5f142e` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:980-998`
+- agent-environment-r03 round 31: `r03/briefs/round-31.md`, result `9d0e4b29` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:999-1014`
+- agent-environment-r03 round 32: `r03/briefs/round-32.md`, result `7ba018a6` (level high) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:1015-1032`
+- agent-environment-r03 round 30: `r03/briefs/round-30.md`, result `2b9ac5fe` (level xhigh, two repairs) `docs/phase-records/handoffs/agent-environment/codex-rounds.md:1033-1059`
+
+## Rounds since the freeze
+
+- agent-tooling-r01 code-map-index: `briefs/codex-code-map-index.md`, result `ffe2d51f` (level max, one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`
+- agent-tooling-r01 evidence-home: `briefs/codex-evidence-home.md`, result `52fb52af` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/evidence-home.md`
+- agent-tooling-r01 run-and-ref: `briefs/codex-run-and-ref.md`, result `1c218aa6` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/run-and-ref.md`
+- agent-tooling-r01 cited-evidence: `briefs/codex-cited-evidence.md`, result `564625f5` (level max, one builder and one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/cited-evidence.md`
+- agent-tooling-r01 leading-comments: `briefs/codex-leading-comments.md`, result `eca3739c` (level max, one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/leading-comments.md`
+- agent-tooling-r01 branch-merge-checks: `briefs/codex-branch-merge-checks.md`, result `2d923ebc` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/branch-merge-checks.md`

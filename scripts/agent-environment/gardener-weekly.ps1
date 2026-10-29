@@ -5,12 +5,17 @@
 # coordinator reviews the branch and writes the ledger's gardener entry. -Smoke checks the set-up with a one-line reply.
 param(
 	[string]$Repository = 'D:/Projects/fitway',
-	[string]$Worktree = 'D:/Projects/fitway-worktrees/gardener',
+	[string]$Worktree,
 	[string]$Runs = 'D:/fitway-temp/gardener-weekly',
 	[switch]$Smoke
 )
 
 $ErrorActionPreference = 'Stop'
+$configPath = Join-Path $PSScriptRoot '../../.agents/skills/gardener/config.json'
+$gardenerConfig = Get-Content -Raw -Encoding utf8 -LiteralPath $configPath | ConvertFrom-Json
+if (-not $Worktree) { $Worktree = $gardenerConfig.weeklyWorktree }
+$Worktree = [System.IO.Path]::GetFullPath($Worktree)
+$env:FITWAY_GARDENER_WORKTREE = $Worktree
 $env:TEMP = 'D:/fitway-temp'
 $env:TMP = 'D:/fitway-temp'
 $date = Get-Date -Format 'yyyy-MM-dd'

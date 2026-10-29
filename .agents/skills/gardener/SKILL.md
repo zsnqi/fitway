@@ -17,14 +17,18 @@ Review every class, recording evidence or “none” for each:
    or template field, or record why that would not help. Compare the previous
    rolling report and the current open records; follow a named review pointer
    when the trigger is a repeated review finding.
-2. **Drift:** docs, maps, indexes and code disagree. Follow only the flagged
+2. **Code health:** report giant files, type escapes, suppressions, repeated
+   workarounds, duplication, and concept boundary breaks with file and line
+   evidence. Propose at most one report-only improvement to the coordinator;
+   never edit architecture in this class.
+3. **Drift:** docs, maps, indexes and code disagree. Follow only the flagged
    source pair; product regressions go to the coordinator.
-3. **Sediment:** dead files/scripts, duplicate tools, stale handoffs, merged
-   branches/worktrees, dead registrations and unreferenced temp folders.
 4. **Gate gaps:** a check is local only, called twice, fails, or cannot fail on
    its claimed defect. The survey identifies coverage/failures; verify a
    suspected ineffective gate with a disposable fixture outside the checkout.
-5. **Rules nothing needs:** duplicate or dead-path rules and rules whose reason
+5. **Sediment:** dead files/scripts, duplicate tools, stale handoffs, merged
+   branches/worktrees, dead registrations and unreferenced temp folders.
+6. **Rules nothing needs:** duplicate or dead-path rules and rules whose reason
    no longer applies. Propose policy removals to the coordinator.
 
 ## Survey
@@ -36,64 +40,61 @@ From PowerShell in any FITWAY checkout, run this unchanged. The launcher resolve
 & ./.agents/skills/gardener/pass.ps1
 ```
 
-The launcher chooses a fresh output directory; use `-Out <absolute-fresh-run>`
-to name it and `-TempRoot <absolute-temp-root>` to choose the inventory root
-(default `D:/fitway-temp`). Folders qualify only when their newest modification
-is at least **7 days** old, no open record or rolling report cites them by path,
-and every link, readability and worktree guard passes. The rolling report's
-explicit `## Folder removal proposals` section is a proposal list, not evidence;
-citations elsewhere, including its survey folders, remain protected. A prose word matching a
-folder name is not a citation. The report names the checkout and the local date.
+For folder, branch, registration, or worktree proposals, read
+`.agents/skills/gardener/CLEANUP.md` before reviewing generated cleanup scripts
+and their safety evidence.
 
-The console states the outcome first: `SURVEY CLEAN` or `SURVEY BLOCKED`, then
-whether collection completed. A blocked outcome may still have a usable proposal.
-Read both
-`REPORT.md` and `survey.json` there. The command reads local Git state without
-fetching, follows the ledger's open resume files and packets and their named
-briefs, measures temp folders without traversing junctions, and executes every
-`check:*` in package.json via pnpm, including newly added scripts, plus
-`brief:check` for running/next briefs without a recorded result in the environment
-round log. A clean worktree with committed implementation beyond its brief's launch
-HEAD is listed as waiting for its round record; an unlaunched or ambiguous brief
-still gets checked. Checks run serially; their exit codes, output and per-check checkout
-status/content changes are evidence. A mutating check is named and blocks the
-pass. pnpm's dependency preflight uses `error`, never `install`; a dependency
-mismatch names the blocker and withholds collection and cleanup. Scratch files live
-under the excluded output directory. No dependencies or services are installed.
-The sole writes are its external report and proposed cleanup script; no
-housekeeping runs during the survey. Merged branches and worktrees are judged
-against **`origin/main` as last fetched**, with its exact commit in the report;
-the survey does not fetch or fall back to local main. Unmeasured worktree status
-is explicitly unknown with its reason, never described as dirty.
-Every registered worktree's status is attempted. Old unmerged, unreferenced worktrees
-include branch, last commit date and status for coordinator review, never removal.
-The invoking checkout and weekly gardener worktree are always excluded from removal.
+The console states `SURVEY CLEAN` or `SURVEY BLOCKED` first, except when the survey cannot start:
+a value it cannot use (such as `--out`) prints `gardener:survey: FAIL: <what> (<how to fix>)` first,
+then `SURVEY BLOCKED`. Read both
+`REPORT.md` and `survey.json` in the output. Collection runs local checks
+without housekeeping; removal safety is defined in CLEANUP.md.
+
+The survey runs every `check:*` in package.json except `config.json`'s
+`notRunChecks`; each exception is reported as not run with its reason. A
+configured name missing from package.json is a blocker. Every nonzero exit
+remains a failure. Checks run serially; a mutating check is named and blocks
+the pass. pnpm's dependency preflight uses `error`, never `install`; a
+dependency mismatch withholds collection and cleanup. No dependencies or
+services are installed, and scratch files stay under the excluded output.
+
+The code-health concept scope derives its boundary-break shared-file set from
+the configured concept folder's HTML pages. Stylesheet and script links are
+followed through CSS `@import` and JavaScript `import` edges, and configured
+specimen pages are excluded as page origins. Shared-file matching uses the
+resolved path in the concept folder, never a basename. When this derivation
+method changes, the concept boundary-break measure starts a new baseline rather
+than reporting a rise or fall against the old list.
+
+The survey runs `brief:check` for running or next briefs without a recorded
+result in the environment round log. A clean worktree with committed work
+beyond its brief's launch HEAD waits for its round record; an unlaunched or
+ambiguous brief still gets checked. Unmeasured worktree status is explicitly
+unknown with its reason, never dirty. The **Worktrees awaiting review** section
+names old unmerged worktrees and the console counts them; review-only findings
+are deferred to the coordinator and do not by themselves block the pass.
 
 ## Pass procedure
 
 1. Read `AGENTS.md` and the open ledger. Establish ownership before a change.
    Run the survey. Collection errors, missing sources and ambiguous open-brief
    references remain blockers; preserve their output, never call them clean.
-2. Review all five classes. Treat flags as facts to investigate, not permission
+2. Review all six classes. Treat flags as facts to investigate, not permission
    to remove anything. Preserve evidence any record points to, including a
    report named by a decision. Search references before proposing removal.
 3. Choose **at most one bounded change**, ordered by repeated correction,
-   drift, sediment, gate gaps, then obsolete rules; within a class sort by
-   repository path. Prefer the first proven, authorized fix. Record every
-   deferred finding so two passes on the same state choose the same outcome.
-   The pass deletes nothing: branch, worktree, registration and folder removals
-   are proposals with user/coordinator commands in the survey report. Preserve
-   all deferred findings so another pass on the same state has the same outcome.
+   code health, drift, gate gaps, sediment, then obsolete rules; within a
+   class sort by repository path. Prefer the first proven, authorized fix.
+   Record every deferred finding so two passes on the same state have the same
+   outcome. The pass deletes nothing; removals are proposals.
+
 4. Verify the change with its focused check and required project gates; record
    command, exit code and proof line. A failed verification is **blocked**.
-   For folders, only propose the generated `cleanup.mjs` for the user to run:
-   `node <survey-output>/cleanup.mjs`. Never run a real cleanup yourself.
-   It uses `rmdir /s /q` with a `\\?\` absolute path, rechecks open records and
-   worktree cleanliness, skips unsafe candidates, continues after failures,
-   and reports each result. Folder age/size alone never authorizes deletion.
-   Its real deletion regression tests run only on disposable test-created folders.
+   For any removal proposal, follow CLEANUP.md. The pass deletes nothing and
+   proposes only the generated script for user or coordinator review.
+
 5. Replace `.agents/skills/gardener/REPORT.md` with the last pass's date,
-   outcome, survey path and findings, the five-class assessment, change made
+   outcome, survey path and findings, the six-class assessment, change made
    or proposed, verification and items waiting for the coordinator. This is
    one rolling report, not a new milestone. Reports themselves are pass
    bookkeeping, not the bounded correction. Include the coordinator's proposed
@@ -132,11 +133,18 @@ The invoking checkout and weekly gardener worktree are always excluded from remo
    ledger/report date or outcome mismatch is reported as waiting for the coordinator;
    its failed check remains visible but does not block collection. Do not wait for
    the coordinator to write the ledger before producing the final script.
-   Give the user that final `cleanup.mjs`; any later record change invalidates it
-   and requires another survey. Do not edit the report after that survey.
+   The coordinator reviews and merges the accepted pass, writes its `gardener`
+   ledger entry, then reruns the report's final survey command with a fresh `-Out`
+   and the same `-FinalReport`, as `docs/WORKFLOW.md` prescribes. Give the user
+   that rerun's `cleanup.mjs`. Do not edit the report after its final survey.
+   A change only to the ledger's `gardener` entry leaves the earlier script
+   runnable; any other open-record change invalidates it and names the changed
+   source in the refusal. The coordinator still reruns to refresh checks and
+   safety evidence after integration and bookkeeping.
    Keep the report's referenced
-   initial evidence. The cleanup script checks every open-record hash as well
-   as current references, so it cannot use a stale proposal.
+   initial evidence. The cleanup script checks every open-record hash (excluding
+   only the ledger's `gardener` entry) as well as current references, so it
+   cannot use a stale proposal.
 
 ## Limits and outcomes
 
@@ -146,7 +154,7 @@ ambiguity, and any action outside authorization go to the coordinator as
 proposals. Folder deletion always belongs to the user. Remote branch deletion
 needs explicit authorization; the survey does not fetch or push.
 
-- **clean:** collection and all five assessments complete, no actionable
+- **clean:** collection and all six assessments complete, no actionable
   findings, no correction needed.
 - **changed:** one authorized correction verified, collection complete, and
   every remaining flag resolved or explicitly deferred to the coordinator.

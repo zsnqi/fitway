@@ -1,3 +1,4 @@
+// Load supported measurement probes from a concept without booting its server.
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";

@@ -10,19 +10,20 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { classifyWorktrees, references } from "./facts.mjs";
+import { classifyWorktrees, config, references } from "./facts.mjs";
+import { formatReport } from "./survey.mjs";
+import {
+	checkEnvironment,
+	runChecks,
+	surveyPnpmEnv,
+} from "./survey-checks.mjs";
+import { cleanupScript, finalFolderSelection } from "./survey-cli.mjs";
 import {
 	briefLifecycle,
-	checkEnvironment,
-	cleanupScript,
 	collectFolders,
 	collectGit,
 	collectRecords,
-	finalFolderSelection,
-	formatReport,
-	runChecks,
-	surveyPnpmEnv,
-} from "./survey.mjs";
+} from "./survey-evidence.mjs";
 
 describe("gardener round 8b", () => {
 	it("R2: proposal citations do not protect folders; evidence and other records do", () => {
@@ -57,11 +58,18 @@ describe("gardener round 8b", () => {
 	});
 	it("R3: excludes the invoking checkout and weekly worktree even without citations", () => {
 		const trees = classifyWorktrees(
-			["D:/current", "D:/Projects/fitway-worktrees/gardener", "D:/old"].map(
-				(value) => ({ path: value, exists: true, merged: true, status: "" }),
-			),
+			["D:/current", config.weeklyWorktree, "D:/old"].map((value) => ({
+				path: value,
+				exists: true,
+				merged: true,
+				status: "",
+				linksMeasured: true,
+				links: [],
+				linkErrors: [],
+			})),
 			[],
 			"D:/current",
+			config.weeklyWorktree,
 		);
 		expect(trees.map((tree) => tree.candidate)).toEqual([false, false, true]);
 		console.log(
@@ -69,15 +77,15 @@ describe("gardener round 8b", () => {
 		);
 	});
 	it.each([
-		"D:/fitway-temp/keep.",
-		"D:/fitway-temp/keep:",
-		"**D:/fitway-temp/keep**",
-		"fitway-temp/keep",
-		"/d/fitway-temp/keep",
-		"`D:/fitway-temp/keep/REPORT.md:12`",
+		"D:/fitway-temp/gardener-fixture-keep.",
+		"D:/fitway-temp/gardener-fixture-keep:",
+		"**D:/fitway-temp/gardener-fixture-keep**",
+		"fitway-temp/gardener-fixture-keep",
+		"/d/fitway-temp/gardener-fixture-keep",
+		"`D:/fitway-temp/gardener-fixture-keep/REPORT.md:12`",
 	])("R4: protects ordinary citation %s", (citation) => {
 		expect(
-			references("D:/fitway-temp/keep", [
+			references("D:/fitway-temp/gardener-fixture-keep", [
 				{ source: "record", text: `Evidence ${citation}` },
 			]),
 		).toHaveLength(1);
@@ -150,6 +158,7 @@ describe("gardener round 8b", () => {
 		};
 		const mismatch = await runChecks(scripts, {
 			cwd: checkout,
+			notRunChecks: {},
 			capture: (name: string) => ({
 				name,
 				exitCode: 1,
@@ -164,6 +173,7 @@ describe("gardener round 8b", () => {
 		});
 		const dependency = await runChecks(scripts, {
 			cwd: checkout,
+			notRunChecks: {},
 			capture: (name: string) => ({
 				name,
 				exitCode: 1,
@@ -236,7 +246,13 @@ describe("gardener round 8b", () => {
 			]);
 			git(["update-ref", "refs/remotes/origin/main", "HEAD"]);
 			const context = await collectRecords({ checkout });
-			const measured = await collectFolders(context.records, [], out, tempRoot);
+			const measured = await collectFolders(
+				context.records,
+				[],
+				out,
+				tempRoot,
+				{ checkout },
+			);
 			expect(measured.map((folder) => path.basename(folder.path))).toEqual([
 				"old",
 			]);
@@ -315,7 +331,11 @@ describe("gardener round 8b", () => {
 			]);
 			const scratch = path.join(base, "runtime");
 			mkdirSync(scratch, { recursive: true });
-			const checks = await runChecks(scripts, { cwd: run, tempRoot: scratch });
+			const checks = await runChecks(scripts, {
+				cwd: run,
+				tempRoot: scratch,
+				notRunChecks: {},
+			});
 			expect(checks[0]).toMatchObject({
 				dependencyBlocker: true,
 				repositoryChanged: false,

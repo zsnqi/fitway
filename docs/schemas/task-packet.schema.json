@@ -192,13 +192,9 @@
 	"$defs": {
 		"taskClass": {
 			"enum": [
-				"analysis-review",
 				"backend-api-data",
 				"ui-maintenance",
 				"visual-authority-change",
-				"verification-independent",
-				"resume-integration",
-				"historical-audit",
 				"repository-infrastructure"
 			]
 		},

@@ -1,0 +1,87 @@
+{
+	"measured": "2026-10-08",
+	"source": "Claude Code transcripts of the worktree owner-design-exploration-r04: the 25 most recent coordinator sessions and their 138 subagent transcripts; DECISIONS item 21",
+	"units": "thousands of tokens (K), upper median; reads is a count of tool calls",
+	"coordinator": {
+		"n": 23,
+		"firstK": 71,
+		"workK": 119,
+		"reads": 21,
+		"note": "23 of 25 sessions carried usage; first ranged 68-74K and work 76-200K"
+	},
+	"roles": {
+		"sonnet-researcher": {
+			"n": 60,
+			"firstK": 17,
+			"workK": 76,
+			"reads": 38,
+			"peakK": 84
+		},
+		"sonnet-scout": {
+			"n": 26,
+			"firstK": 16,
+			"workK": 28,
+			"reads": 3,
+			"peakK": 17
+		},
+		"owner-direction-verifier": {
+			"n": 17,
+			"firstK": 55,
+			"workK": 148,
+			"reads": 24,
+			"peakK": 276,
+			"measuredAs": "owner-direction-verifier-high",
+			"note": "merged into this definition; work is the report"
+		},
+		"owner-direction-designer": {
+			"n": 14,
+			"firstK": 56,
+			"workK": 185,
+			"reads": 32,
+			"peakK": 420
+		},
+		"owner-direction-builder": {
+			"n": 6,
+			"firstK": 56,
+			"workK": 178,
+			"reads": 36,
+			"peakK": 414
+		},
+		"owner-direction-fixer": {
+			"n": 4,
+			"firstK": 52,
+			"workK": 92,
+			"reads": 24,
+			"peakK": 101
+		},
+		"rtl-ltr-reviewer": {
+			"n": 4,
+			"firstK": 61,
+			"workK": 124,
+			"reads": 15,
+			"peakK": 214
+		},
+		"owner-direction-designer-max": {
+			"n": 3,
+			"firstK": 55,
+			"workK": 407,
+			"reads": 59,
+			"peakK": 756,
+			"note": "merged into owner-direction-designer, now a call-time effort"
+		},
+		"claude-code-guide": {
+			"n": 2,
+			"firstK": 36,
+			"workK": 36,
+			"reads": 10,
+			"peakK": 61
+		},
+		"general-purpose": {
+			"n": 2,
+			"firstK": 52,
+			"workK": 52,
+			"reads": 1,
+			"peakK": 53
+		}
+	}
+}

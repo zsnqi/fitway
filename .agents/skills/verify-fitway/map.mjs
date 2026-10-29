@@ -1,6 +1,7 @@
+// Generate, validate, repair, and diff verify-fitway concept coverage maps.
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { resolve } from "node:path";
 import {
 	lineAt as at,
 	discoverElements,
@@ -8,6 +9,7 @@ import {
 	repository,
 	ts,
 } from "./discover.mjs";
+import { validateStateRules } from "./state-rules.mjs";
 
 export { discoverElements, extractDependencies, repository };
 
@@ -194,7 +196,63 @@ export function readRecipes(
 	const recipes = JSON.parse(readFileSync(path, "utf8"));
 	if (recipes.schema !== 1 || !recipes.pages)
 		throw new Error(`Invalid recipes: ${path}; repair schema=1 and pages.`);
+	for (const [page, recipe] of Object.entries(recipes.pages))
+		validateStateRules(recipe, `${path}:${page}`);
 	return { recipes, path };
+}
+
+const dependencyCondition = (need) =>
+	need?.present
+		? { present: true }
+		: need && Object.hasOwn(need, "value")
+			? { value: need.value }
+			: null;
+
+function mergeDependencies(found, declared, recipePath) {
+	const merged = new Map();
+	const add = (dependency, source) => {
+		if (
+			!dependency ||
+			typeof dependency.switch !== "string" ||
+			!Object.hasOwn(dependency, "value") ||
+			!Array.isArray(dependency.requires)
+		)
+			throw new Error(
+				`${recipePath}: dependency for ${dependency?.switch || "<missing switch>"} must name switch, value and requires.`,
+			);
+		const key = JSON.stringify([dependency.switch, dependency.value]);
+		const existing = merged.get(key);
+		const requirements = dependency.requires.map((need) => {
+			const condition = dependencyCondition(need);
+			if (!need || typeof need.name !== "string" || !condition)
+				throw new Error(
+					`${recipePath}: dependency ${dependency.switch}=${dependency.value} requires a value or present condition.`,
+				);
+			return { name: need.name, ...condition };
+		});
+		if (!existing) {
+			merged.set(key, {
+				switch: dependency.switch,
+				value: dependency.value,
+				requires: requirements,
+				source: source || dependency.source,
+			});
+			return;
+		}
+		for (const requirement of requirements) {
+			const prior = existing.requires.find(
+				(need) => need.name === requirement.name,
+			);
+			if (prior && JSON.stringify(prior) !== JSON.stringify(requirement))
+				throw new Error(
+					`${recipePath}: declared dependency conflicts with source for ${dependency.switch}=${dependency.value}: ${requirement.name} conflicts.`,
+				);
+			if (!prior) existing.requires.push(requirement);
+		}
+	};
+	for (const dependency of found) add(dependency, dependency.source);
+	for (const dependency of declared) add(dependency);
+	return [...merged.values()];
 }
 
 export function generateMap(concept, recipePath, suppliedRecipes) {
@@ -272,14 +330,26 @@ export function generateMap(concept, recipePath, suppliedRecipes) {
 				...js.filter((t) => t.file !== page),
 			]);
 			const authored = recipes.pages[page] || { features: [], states: [] };
+			const declaredDependencies = Array.isArray(authored.dependencies)
+				? authored.dependencies
+				: [];
+			for (const dependency of declaredDependencies)
+				if (!byName.has(dependency?.switch))
+					throw new Error(
+						`${path}: dependency names unmapped switch ${dependency?.switch || "<missing>"} on ${page}.`,
+					);
 			const switches = [...byName.values()]
 				.sort((a, b) => a.name.localeCompare(b.name))
 				.map((item) => ({
 					...item,
 					samples: authored.samples?.[item.name] || [],
-					dependencies: js
-						.flatMap(({ file, text }) => extractDependencies(text, file))
-						.filter((d) => d.switch === item.name),
+					dependencies: mergeDependencies(
+						js
+							.flatMap(({ file, text }) => extractDependencies(text, file))
+							.filter((d) => d.switch === item.name),
+						declaredDependencies.filter((d) => d?.switch === item.name),
+						path,
+					),
 				}));
 			return {
 				page,
@@ -636,26 +706,4 @@ export function drift(map, concept, recipePath = map.recipePath) {
 	// Source edits, relocations and CSS changes are expected. Coverage is the contract,
 	// not a source hash cache; each consumer uses the freshly discovered map.
 	return problems;
-}
-
-export function checkCommittedMaps(root = repository) {
-	let count = 0;
-	const visit = (dir) => {
-		for (const entry of readdirSync(dir, { withFileTypes: true })) {
-			if (
-				[".git", "node_modules", ".next", "dist", ".local"].includes(entry.name)
-			)
-				continue;
-			const path = resolve(dir, entry.name);
-			if (entry.isDirectory() && !entry.isSymbolicLink()) visit(path);
-			else if (entry.name === "verification-recipes.json") {
-				const map = generateMap(dirname(path), path);
-				const problems = coverageProblems(map, dirname(path));
-				if (problems.length) throw new Error(problems.join("\n"));
-				count++;
-			}
-		}
-	};
-	visit(root);
-	return count;
 }

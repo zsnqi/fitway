@@ -14,7 +14,7 @@ import {
 	parseWorktreePorcelain,
 	references,
 } from "./facts.mjs";
-import { collectRecords } from "./survey.mjs";
+import { collectRecords } from "./survey-evidence.mjs";
 
 describe("gardener fixture classifications", () => {
 	it("builds extended Windows deletion paths and refuses root, nested, escaped and shell-injected targets", () => {
@@ -70,7 +70,7 @@ describe("gardener fixture classifications", () => {
 	const records = [
 		{
 			source: "resume.md",
-			text: "Keep branch `active/topic` and D:/fitway-temp/keep/REPORT.md",
+			text: "Keep branch `active/topic` and D:/fitway-temp/gardener-fixture-keep/REPORT.md",
 		},
 	];
 	it("protects named branches, symbolic refs, main and registered worktrees", () => {
@@ -146,7 +146,15 @@ describe("gardener fixture classifications", () => {
 		const trees = classifyWorktrees(
 			[
 				{ ...raw[0], exists: false },
-				{ ...raw[1], exists: true, merged: true, status: "" },
+				{
+					...raw[1],
+					exists: true,
+					merged: true,
+					status: "",
+					linksMeasured: true,
+					links: [],
+					linkErrors: [],
+				},
 				{ path: "D:/dirty", exists: true, merged: true, status: "?? new.txt" },
 				{ path: "D:/current", exists: true, merged: true, status: "" },
 				{
@@ -186,7 +194,7 @@ describe("gardener fixture classifications", () => {
 		const trees = [{ path: "D:/fitway-temp/dirty/tree", candidate: false }];
 		const result = classifyFolders(
 			[
-				folder("keep"),
+				folder("gardener-fixture-keep"),
 				folder("old"),
 				folder("evidence."),
 				folder("dirty"),
@@ -224,8 +232,8 @@ describe("gardener fixture classifications", () => {
 			]),
 		).toEqual([]);
 		expect(
-			references("D:/fitway-temp/keep/child", [
-				{ source: "x", text: "D:/fitway-temp/keep/" },
+			references("D:/fitway-temp/gardener-fixture-keep/child", [
+				{ source: "x", text: "D:/fitway-temp/gardener-fixture-keep/" },
 			]).length,
 		).toBe(1);
 	});
@@ -294,7 +302,7 @@ describe("gardener fixture classifications", () => {
 		expect(gaps.duplicates[0].trails).toHaveLength(2);
 		expect(() =>
 			parseFastSteps("function fastSteps(){return getSteps()}"),
-		).toThrow(/non-literal/);
+		).toThrow(/return array is not literal/);
 		expect(
 			calledImports(
 				'import { check } from "./context.mjs"; import { unused } from "./unused.mjs"; check();',

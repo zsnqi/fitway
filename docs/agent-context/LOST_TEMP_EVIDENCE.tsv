@@ -1,0 +1,126 @@
+path	record	line	cause
+d:/fitway-temp/brief-review/codex-tuner-removal-fix-1	docs/phase-records/handoffs/agent-environment/findings.tsv	173	cause not found
+d:/fitway-temp/check-output	.agents/skills/verify-fitway/SKILL.md	315	documentation example that never existed
+d:/fitway-temp/check.mjs	.agents/skills/verify-fitway/SKILL.md	315	documentation example that never existed
+d:/fitway-temp/code-quality-review-	docs/phase-records/handoffs/agent-tooling/DECISIONS.md	28	documentation example that never existed
+d:/fitway-temp/codex-companion/agent-environment-r01-3752c7b43b4b7289/jobs/task-mur8qqzz-9yhvme.log	docs/phase-records/handoffs/agent-environment/20261002-214500-agent-environment-r01-resume.md	73	2026-10-24 prune
+d:/fitway-temp/example-folder	.agents/skills/gardener/SKILL.md	124	documentation example that never existed
+d:/fitway-temp/gardener-r24-repair1/survey-retry/report.md	docs/phase-records/handoffs/agent-environment/findings.tsv	118	cause not found
+d:/fitway-temp/gardener-r24-repair1/survey-retry/report.md	docs/phase-records/handoffs/agent-environment/findings.tsv	119	cause not found
+d:/fitway-temp/heldout-r5/	docs/phase-records/handoffs/agent-environment/20261002-235031-agent-environment-r01-resume.md	39	cause not found
+d:/fitway-temp/introspeed-verify/state.md	docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md	2306	absent before the prune
+d:/fitway-temp/introspeed-verify/state.md	docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md	2367	absent before the prune
+d:/fitway-temp/keep/out	.agents/skills/gardener/CLEANUP.md	27	documentation example that never existed
+d:/fitway-temp/lane-verify/v1/report.md	docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md	2121	absent before the prune
+d:/fitway-temp/lane-verify/v1b/report.md	docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md	2167	absent before the prune
+d:/fitway-temp/lane-verify/v2/report.md	docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md	2137	absent before the prune
+d:/fitway-temp/lane-verify/v3/report.md	docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md	2198	absent before the prune
+d:/fitway-temp/owner-css-grade/x10-index/001-page-default-en-desktop-mouse-reduce-http-forced-after.png	docs/phase-records/handoffs/agent-environment/findings.tsv	114	cause not found
+d:/fitway-temp/owner-r04-brief-ladder-grade/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-brief-ladder-grade.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-brief-ladder/	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-brief-ladder.md	41	2026-10-24 prune
+d:/fitway-temp/owner-r04-busiest-card/crops/context/	docs/phase-records/handoffs/owner-design-exploration/r04/20261004-015612-owner-design-exploration-r04-resume.md	14	2026-10-24 prune
+d:/fitway-temp/owner-r04-card-1/work/pixel-comparison.json	docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md	123	2026-10-24 prune
+d:/fitway-temp/owner-r04-copy-round-2/sheets/	design-research/owner-composition-exploration-r04/directions/briefs/designer-copy-round-2.md	65	2026-10-24 prune
+d:/fitway-temp/owner-r04-copy-round/sheets/	design-research/owner-composition-exploration-r04/directions/briefs/designer-coverage-copy.md	73	2026-10-24 prune
+d:/fitway-temp/owner-r04-copy-round/sheets/	docs/phase-records/handoffs/owner-design-exploration/r04/20261003-154200-owner-design-exploration-r04-resume.md	20	2026-10-24 prune
+d:/fitway-temp/owner-r04-d5-d6-pick/d5-options-1440-en.png	design-research/owner-composition-exploration-r04/directions/briefs/designer-en-tables-direction.md	14	2026-10-24 prune
+d:/fitway-temp/owner-r04-en-tables/sheets/	design-research/owner-composition-exploration-r04/directions/briefs/designer-en-tables-direction.md	57	2026-10-24 prune
+d:/fitway-temp/owner-r04-encoding-launcher-grade/el5.log	docs/phase-records/handoffs/agent-environment/findings.tsv	182	cause not found
+d:/fitway-temp/owner-r04-gardener-fix/	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-gardener-shared-files-fix.md	31	cause not found
+d:/fitway-temp/owner-r04-k02-fix/crops/focus.png	docs/phase-records/handoffs/owner-design-exploration/r04/20261003-021956-owner-design-exploration-r04-resume.md	49	2026-10-24 prune
+d:/fitway-temp/owner-r04-k02-fix/frames/	docs/phase-records/handoffs/owner-design-exploration/r04/20261003-021956-owner-design-exploration-r04-resume.md	17	2026-10-24 prune
+d:/fitway-temp/owner-r04-k02/out/sheets	docs/phase-records/handoffs/agent-environment/codex-rounds.md	676	cause not found
+d:/fitway-temp/owner-r04-k02/out/sheets	docs/phase-records/handoffs/agent-environment/r03/briefs/round-16c.md	47	cause not found
+d:/fitway-temp/owner-r04-k02/out/sheets	docs/phase-records/handoffs/owner-design-exploration/r04/20261002-235032-owner-design-exploration-r04-resume.md	43	cause not found
+d:/fitway-temp/owner-r04-launcher-fixes-2/	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-2.md	39	cause not found
+d:/fitway-temp/owner-r04-launcher-fixes-3/	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-3.md	41	cause not found
+d:/fitway-temp/owner-r04-launcher-fixes-4-grade/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-4-grade.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-launcher-fixes-4/	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-4.md	40	cause not found
+d:/fitway-temp/owner-r04-launcher-fixes-5-fix-grade/parser-cases.cjs	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5-fix-2.md	10	2026-10-24 prune
+d:/fitway-temp/owner-r04-launcher-fixes-5-grade/g8-negative-corrected.log	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5-fix.md	10	2026-10-24 prune
+d:/fitway-temp/owner-r04-launcher-fixes-5-grade/grade.cjs	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5-fix-grade.md	10	2026-10-24 prune
+d:/fitway-temp/owner-r04-launcher-fixes-5-grade/supplement.cjs	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5-fix-grade.md	10	2026-10-24 prune
+d:/fitway-temp/owner-r04-launcher-fixes-5-grade/supplement.log	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5-fix.md	9	2026-10-24 prune
+d:/fitway-temp/owner-r04-launcher-fixes-5-grade/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5-fix-grade.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-launcher-fixes-5-grade/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-launcher-fixes-5-grade.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-midmotion-evidence/h11-diff.png	docs/phase-records/handoffs/agent-environment/findings.tsv	143	cause not found
+d:/fitway-temp/owner-r04-midmotion-fix-grade/h9c.log	docs/phase-records/handoffs/agent-environment/findings.tsv	146	cause not found
+d:/fitway-temp/owner-r04-ports/free-for-vf-hold.txt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-hold.md	41	absent before the prune
+d:/fitway-temp/owner-r04-ports/free-for-vf-speed.txt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-speed.md	40	absent before the prune
+d:/fitway-temp/owner-r04-recipe-proofs-2-grade/grade.log	docs/phase-records/handoffs/agent-environment/findings.tsv	137	cause not found
+d:/fitway-temp/owner-r04-recipe-proofs-grade/grade.log	docs/phase-records/handoffs/agent-environment/findings.tsv	133	cause not found
+d:/fitway-temp/owner-r04-recipe-proofs/compare-index-page/comparison.json	docs/phase-records/handoffs/agent-environment/findings.tsv	135	cause not found
+d:/fitway-temp/owner-r04-reports-css-grade/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-reports-css-grade.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-shared-frame/live/dense-status-diagnosis-vfhold-435.json	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-frame-continue-2.md	51	2026-10-24 prune
+d:/fitway-temp/owner-r04-shared-lows-fix-2-grade/coordinator/g4-boxes.log	docs/phase-records/handoffs/agent-environment/findings.tsv	266	cause not found
+d:/fitway-temp/owner-r04-shared-lows-fix-2-grade/inspected/g9/contact-02.png	docs/phase-records/handoffs/agent-environment/findings.tsv	265	cause not found
+d:/fitway-temp/owner-r04-shared-lows/s4-all-features/comparison.json	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-grade.md	89	2026-10-24 prune
+d:/fitway-temp/owner-r04-shared-lows/s5-access-focus/comparison.json	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-shared-lows-grade.md	89	2026-10-24 prune
+d:/fitway-temp/owner-r04-step4-review/grid-daily390.png	docs/phase-records/handoffs/owner-design-exploration/r04/20261003-171600-owner-design-exploration-r04-resume.md	45	2026-10-24 prune
+d:/fitway-temp/owner-r04-tuner-grade/runs/tr6-access.log	docs/phase-records/handoffs/agent-environment/findings.tsv	172	cause not found
+d:/fitway-temp/owner-r04-vf-fixes-grade/queue-a.progress	docs/phase-records/handoffs/agent-environment/findings.tsv	176	cause not found
+d:/fitway-temp/owner-r04-vf-fixes-grade/queue-b.progress	docs/phase-records/handoffs/agent-environment/findings.tsv	177	cause not found
+d:/fitway-temp/owner-r04-vf-fixes-grade/runs/vf5-option-advanced.log	docs/phase-records/handoffs/agent-environment/findings.tsv	177	cause not found
+d:/fitway-temp/owner-r04-vf-parallel-grade/queue.progress	docs/phase-records/handoffs/agent-environment/findings.tsv	160	cause not found
+d:/fitway-temp/owner-r04-vf-parallel/r5-phase-self-4-trace.json	docs/phase-records/handoffs/agent-environment/findings.tsv	159	cause not found
+d:/fitway-temp/owner-r04-vf-proofs-grade/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-proofs-grade.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-ds/...	docs/phase-records/handoffs/agent-environment/findings.tsv	241	cause not found
+d:/fitway-temp/owner-r04-vf-runner-fix-2-grade/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-fix-2-grade.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-fix-grade/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-fix-grade.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-fix-grade/wt/.agents/skills/verify-fitway/cli.mjs	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-fix-grade.md	38	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-fix-opus/vf9/lang_split.json	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-fix-2-grade.md	73	2026-10-24 prune
+d:/fitway-temp/owner-r04-vf-runner-grade-1017/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-grade-1017.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-grade-1017/wt/.agents/skills/verify-fitway/cli.mjs	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-grade-1017.md	38	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-grade-ds/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-grade-ds.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-grade-ds/wt/.agents/skills/verify-fitway/cli.mjs	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-grade-ds.md	38	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-grade-sol/wt	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-grade-sol.md	4	another grading-worktree removal
+d:/fitway-temp/owner-r04-vf-runner-grade-sol/wt/.agents/skills/verify-fitway/cli.mjs	docs/phase-records/handoffs/owner-design-exploration/r04/briefs/codex-vf-runner-grade-sol.md	38	another grading-worktree removal
+d:/fitway-temp/quarantine-home-git-20261016/.git	docs/phase-records/handoffs/agent-environment/findings.tsv	260	cause not found
+d:/fitway-temp/r03-closing-review/gardener1/report.md	docs/phase-records/handoffs/agent-environment/findings.tsv	128	cause not found
+d:/fitway-temp/r03-closing-review/gardener1/report.md	docs/phase-records/handoffs/agent-environment/findings.tsv	129	cause not found
+d:/fitway-temp/r03-r16-baseline/survey-base-2/survey.json	docs/phase-records/handoffs/agent-environment/r03/briefs/round-16b.md	48	2026-10-24 prune
+d:/fitway-temp/r03-r16b-coordinator/survey-1/survey.json	docs/phase-records/handoffs/agent-environment/r03/briefs/round-16c.md	48	2026-10-24 prune
+d:/fitway-temp/r03-r30-grade/base-cli/node_modules	docs/phase-records/handoffs/agent-environment/r03/agent-environment-r03-resume.md	77	2026-10-24 prune
+d:/fitway-temp/r03-r30-grade/r2-broad-self-full/comparison.json	docs/phase-records/handoffs/agent-environment/findings.tsv	125	cause not found
+d:/fitway-temp/r03-r30-grade/r2-broad-self-full/comparison.json	docs/phase-records/handoffs/agent-environment/findings.tsv	126	cause not found
+d:/fitway-temp/r03-round30/all-features-self/comparison.json	docs/phase-records/handoffs/agent-environment/findings.tsv	124	cause not found
+d:/fitway-temp/r03-round5b/ci-a40ba39-failed.log	docs/phase-records/handoffs/agent-environment/r03/briefs/round-5c.md	9	2026-10-24 prune
+d:/fitway-temp/tooling-cli-contract-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-cli-contract-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-grade.md	145	remove-worktrees.ps1
+d:/fitway-temp/tooling-cli-contract-regrade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-regrade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-cli-contract-regrade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-cli-contract-regrade.md	132	remove-worktrees.ps1
+d:/fitway-temp/tooling-code-map-fix-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-fix-3-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-code-map-fix-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-fix-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-code-map-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-giant-split-grade/moved-declarations.cjs	docs/phase-records/handoffs/agent-tooling/briefs/codex-giant-split-grade.md	11	2026-10-24 prune
+d:/fitway-temp/tooling-giant-split-grade/moved-declarations.cjs	docs/phase-records/handoffs/agent-tooling/briefs/codex-giant-split-grade.md	59	2026-10-24 prune
+d:/fitway-temp/tooling-giant-split-grade/unbound.cjs	docs/phase-records/handoffs/agent-tooling/briefs/codex-giant-split-grade.md	12	2026-10-24 prune
+d:/fitway-temp/tooling-giant-split-grade/unbound.cjs	docs/phase-records/handoffs/agent-tooling/briefs/codex-giant-split-grade.md	63	2026-10-24 prune
+d:/fitway-temp/tooling-giant-split-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-giant-split-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-giant-split-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-giant-split-grade.md	60	remove-worktrees.ps1
+d:/fitway-temp/tooling-giant-split/unbound.cjs	docs/phase-records/handoffs/agent-environment/findings.tsv	291	cause not found
+d:/fitway-temp/tooling-launcher-fixes-6-fix-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix-2-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-launcher-fixes-6-fix-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix-3-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-launcher-fixes-6-fix-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-fix-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-launcher-fixes-6-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-launcher-fixes-6-grade.md	4	another grading-worktree removal
+d:/fitway-temp/tooling-ratchet-2/coordinator/g13-base.log	docs/phase-records/handoffs/agent-environment/findings.tsv	294	2026-10-24 prune
+d:/fitway-temp/tooling-ratchet-2/coordinator/g13-base.log	docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md	2088	2026-10-24 prune
+d:/fitway-temp/tooling-ratchet-2/coordinator/replay-c8abc04a.log	docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md	2089	2026-10-24 prune
+d:/fitway-temp/tooling-ratchet-codelines-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-codelines-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-ratchet-codelines/builder-2/rerun-report-tests.log	docs/phase-records/handoffs/agent-environment/findings.tsv	283	cause not found
+d:/fitway-temp/tooling-ratchet-fix-2-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix-2-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-ratchet-fix-2-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix-2-grade.md	116	remove-worktrees.ps1
+d:/fitway-temp/tooling-ratchet-fix-2-grade/wt/scripts/agent-environment/check-code-health.mjs	docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix-2-grade.md	42	remove-worktrees.ps1
+d:/fitway-temp/tooling-ratchet-grade/coordinator/g7-9619.log	docs/phase-records/handoffs/agent-environment/findings.tsv	268	2026-10-24 prune
+d:/fitway-temp/tooling-ratchet-grade/coordinator/g7-9619.log	docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md	1649	2026-10-24 prune
+d:/fitway-temp/tooling-ratchet-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-ratchet-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-grade.md	161	remove-worktrees.ps1
+d:/fitway-temp/tooling-ratchet-grade/wt/scripts/agent-environment/check-code-health.mjs	docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-grade.md	42	remove-worktrees.ps1
+d:/fitway-temp/tooling-ratchet/fixer-2/ladder.log	docs/phase-records/handoffs/agent-tooling/briefs/codex-ratchet-fix-2-grade.md	105	2026-10-24 prune
+d:/fitway-temp/tooling-report-fields-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-report-fields-grade.md	4	remove-worktrees.ps1
+d:/fitway-temp/tooling-report-fields-grade/wt	docs/phase-records/handoffs/agent-tooling/briefs/codex-report-fields-grade.md	132	remove-worktrees.ps1
+d:/fitway-temp/verification-map-f252	docs/phase-records/handoffs/agent-environment/findings.tsv	253	2026-10-24 prune
+d:/fitway-temp/verification-map-f252	docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md	1843	2026-10-24 prune
+d:/fitway-temp/verification-map-f252/verify-fast-3.log	docs/phase-records/handoffs/agent-environment/findings.tsv	278	2026-10-24 prune
+d:/fitway-temp/x	docs/phase-records/handoffs/agent-environment/codex-rounds.md	354	cause not found
+d:/fitway-temp/x	docs/phase-records/handoffs/agent-environment/codex-rounds.md	354	cause not found

@@ -1,0 +1,1058 @@
+{
+	"version": 1,
+	"measures": [
+		"duplication",
+		"typeEscapes",
+		"suppressions",
+		"repeatedWorkarounds",
+		"longFunctions",
+		"longFunctionLines",
+		"emptyBlocks",
+		"giantFiles",
+		"giantDocuments",
+		"testCases",
+		"expectCalls"
+	],
+	"files": {
+		".agents/skills/gardener/cleanup.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 83
+		},
+		".agents/skills/gardener/code-health-source.mjs": {
+			"emptyBlocks": 1
+		},
+		".agents/skills/gardener/code-health.test.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/records.mjs": {
+			"duplication": 2
+		},
+		".agents/skills/gardener/records.test.ts": {
+			"duplication": 6,
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/regressions.test.ts": {
+			"duplication": 4,
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/round12.test.ts": {
+			"duplication": 6,
+			"longFunctions": 2
+		},
+		".agents/skills/gardener/round15.test.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/round16.test.ts": {
+			"duplication": 6,
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/round16c.test.ts": {
+			"duplication": 8,
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/round27.test.ts": {
+			"duplication": 6
+		},
+		".agents/skills/gardener/round8b.test.ts": {
+			"duplication": 8,
+			"longFunctions": 1
+		},
+		".agents/skills/gardener/survey-checks.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 89
+		},
+		".agents/skills/gardener/survey-evidence.mjs": {
+			"duplication": 1,
+			"longFunctions": 2,
+			"longFunctionLines": 189
+		},
+		".agents/skills/gardener/survey.mjs": {
+			"longFunctions": 2,
+			"longFunctionLines": 275
+		},
+		".agents/skills/verify-fitway/baseline-cache.mjs": {
+			"duplication": 1
+		},
+		".agents/skills/verify-fitway/capture-records.mjs": {
+			"duplication": 1
+		},
+		".agents/skills/verify-fitway/cli.mjs": {
+			"longFunctions": 2,
+			"longFunctionLines": 259,
+			"emptyBlocks": 2
+		},
+		".agents/skills/verify-fitway/cli.test.mjs": {
+			"duplication": 61,
+			"suppressions": 1,
+			"longFunctions": 8
+		},
+		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
+			"duplication": 9,
+			"longFunctions": 1
+		},
+		".agents/skills/verify-fitway/compare-runtime.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 139,
+			"emptyBlocks": 1
+		},
+		".agents/skills/verify-fitway/compare-speed.test.mjs": {
+			"duplication": 6,
+			"longFunctions": 1
+		},
+		".agents/skills/verify-fitway/compare.mjs": {
+			"duplication": 6,
+			"longFunctions": 1,
+			"longFunctionLines": 799
+		},
+		".agents/skills/verify-fitway/core.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 115
+		},
+		".agents/skills/verify-fitway/discover.mjs": {
+			"longFunctions": 3,
+			"longFunctionLines": 1009
+		},
+		".agents/skills/verify-fitway/drive-plan.mjs": {
+			"duplication": 2
+		},
+		".agents/skills/verify-fitway/drive.mjs": {
+			"duplication": 2,
+			"longFunctions": 2,
+			"longFunctionLines": 258
+		},
+		".agents/skills/verify-fitway/map.mjs": {
+			"longFunctions": 5,
+			"longFunctionLines": 682
+		},
+		".agents/skills/verify-fitway/reaches.mjs": {
+			"longFunctions": 4,
+			"longFunctionLines": 397
+		},
+		".agents/skills/verify-fitway/runner.mjs": {
+			"duplication": 2,
+			"longFunctions": 2,
+			"longFunctionLines": 1182,
+			"emptyBlocks": 3
+		},
+		".agents/skills/verify-fitway/timeline-hold.test.mjs": {
+			"duplication": 2,
+			"longFunctions": 2
+		},
+		".agents/skills/verify-fitway/timeline.mjs": {
+			"suppressions": 1,
+			"longFunctions": 2,
+			"longFunctionLines": 808,
+			"emptyBlocks": 1
+		},
+		"apps/server/src/access-repository.ts": {
+			"duplication": 24
+		},
+		"apps/server/src/access-service.ts": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 128
+		},
+		"apps/server/src/alert-notifier.test.ts": {
+			"duplication": 1
+		},
+		"apps/server/src/alert-repository.ts": {
+			"longFunctions": 2,
+			"longFunctionLines": 218
+		},
+		"apps/server/src/analytics-repository.ts": {
+			"duplication": 5
+		},
+		"apps/server/src/audit-repository.test.ts": {
+			"duplication": 1
+		},
+		"apps/server/src/auth/postgres-auth-repository.ts": {
+			"duplication": 6
+		},
+		"apps/server/src/auth/routes.ts": {
+			"longFunctions": 1,
+			"longFunctionLines": 113
+		},
+		"apps/server/src/command-repository.ts": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 156
+		},
+		"apps/server/src/cron.test.ts": {
+			"duplication": 7,
+			"longFunctions": 1
+		},
+		"apps/server/src/health-incident-repository.ts": {
+			"duplication": 4
+		},
+		"apps/server/src/index.ts": {
+			"longFunctions": 1,
+			"longFunctionLines": 175
+		},
+		"apps/server/src/occupancy-repositories.ts": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 81
+		},
+		"apps/server/src/openapi.test.ts": {
+			"duplication": 2,
+			"longFunctions": 1
+		},
+		"apps/server/src/openapi.ts": {
+			"duplication": 6,
+			"longFunctions": 1,
+			"longFunctionLines": 127
+		},
+		"apps/server/src/phase10-csv-transport.integration.test.ts": {
+			"duplication": 17,
+			"typeEscapes": 2,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase10-domain.integration.test.ts": {
+			"duplication": 12,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase10-ui-csv.integration.test.ts": {
+			"duplication": 18,
+			"typeEscapes": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase11-access.integration.test.ts": {
+			"duplication": 13,
+			"typeEscapes": 1,
+			"giantFiles": 848
+		},
+		"apps/server/src/phase11-audit-generalization.integration.test.ts": {
+			"duplication": 12,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase11-audit.integration.test.ts": {
+			"duplication": 21,
+			"typeEscapes": 2,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase11-health.integration.test.ts": {
+			"duplication": 14,
+			"typeEscapes": 2,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase11-settings.integration.test.ts": {
+			"duplication": 19,
+			"typeEscapes": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase2.integration.test.ts": {
+			"duplication": 18,
+			"typeEscapes": 3,
+			"longFunctions": 4,
+			"giantFiles": 1507
+		},
+		"apps/server/src/phase4-auth.integration.test.ts": {
+			"duplication": 5,
+			"typeEscapes": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase4-health.integration.test.ts": {
+			"duplication": 14,
+			"typeEscapes": 2
+		},
+		"apps/server/src/phase5-command-domain.integration.test.ts": {
+			"duplication": 28,
+			"typeEscapes": 4,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase6-offline.integration.test.ts": {
+			"duplication": 24,
+			"typeEscapes": 2,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase7-integration.integration.test.ts": {
+			"duplication": 32,
+			"typeEscapes": 9,
+			"longFunctions": 6,
+			"giantFiles": 1874
+		},
+		"apps/server/src/phase8-alert-evaluator.integration.test.ts": {
+			"duplication": 16,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase8-integration.integration.test.ts": {
+			"duplication": 17,
+			"longFunctions": 2
+		},
+		"apps/server/src/phase9-analytics.integration.test.ts": {
+			"duplication": 12,
+			"longFunctions": 1
+		},
+		"apps/server/src/phase9-owner-ui.integration.test.ts": {
+			"duplication": 17,
+			"typeEscapes": 1,
+			"longFunctions": 2
+		},
+		"apps/server/src/public-occupancy.test.ts": {
+			"duplication": 1
+		},
+		"apps/server/src/reporting-repository.test.ts": {
+			"duplication": 14
+		},
+		"apps/server/src/reporting-repository.ts": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 120
+		},
+		"apps/server/src/reset-repository.test.ts": {
+			"duplication": 6,
+			"typeEscapes": 1,
+			"longFunctions": 1
+		},
+		"apps/server/src/reset-repository.ts": {
+			"duplication": 1
+		},
+		"apps/server/src/settings-repository.test.ts": {
+			"duplication": 1,
+			"typeEscapes": 1
+		},
+		"apps/server/src/settings-repository.ts": {
+			"duplication": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 95
+		},
+		"apps/server/src/settings-service.test.ts": {
+			"duplication": 2
+		},
+		"apps/web/src/components/crowd-signal.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 105
+		},
+		"apps/web/src/components/login/login.css": {
+			"duplication": 5
+		},
+		"apps/web/src/components/occupancy-status.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 133
+		},
+		"apps/web/src/components/owner/access/owner-access-view.test.tsx": {
+			"duplication": 28,
+			"longFunctions": 1,
+			"giantFiles": 1223
+		},
+		"apps/web/src/components/owner/access/owner-access-view.tsx": {
+			"duplication": 5,
+			"longFunctions": 2,
+			"longFunctionLines": 951,
+			"giantFiles": 961
+		},
+		"apps/web/src/components/owner/access/owner-access.css": {
+			"duplication": 7
+		},
+		"apps/web/src/components/owner/audit/owner-audit-section.tsx": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 349
+		},
+		"apps/web/src/components/owner/audit/owner-audit-view.test.tsx": {
+			"duplication": 5
+		},
+		"apps/web/src/components/owner/audit/owner-audit-view.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 92
+		},
+		"apps/web/src/components/owner/audit/owner-audit.css": {
+			"duplication": 5
+		},
+		"apps/web/src/components/owner/health/owner-health-section.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 133
+		},
+		"apps/web/src/components/owner/health/owner-health-view.test.tsx": {
+			"duplication": 1
+		},
+		"apps/web/src/components/owner/health/owner-health-view.tsx": {
+			"duplication": 6,
+			"longFunctions": 3,
+			"longFunctionLines": 282
+		},
+		"apps/web/src/components/owner/health/owner-health.css": {
+			"duplication": 6
+		},
+		"apps/web/src/components/owner/owner-analytics-view.test.tsx": {
+			"duplication": 10,
+			"longFunctions": 4,
+			"giantFiles": 824
+		},
+		"apps/web/src/components/owner/owner-analytics-view.tsx": {
+			"duplication": 2,
+			"longFunctions": 3,
+			"longFunctionLines": 964,
+			"giantFiles": 1380
+		},
+		"apps/web/src/components/owner/owner-analytics.css": {
+			"duplication": 4,
+			"giantFiles": 1182
+		},
+		"apps/web/src/components/owner/owner-date-field.css": {
+			"duplication": 2
+		},
+		"apps/web/src/components/owner/owner-date-field.tsx": {
+			"longFunctions": 2,
+			"longFunctionLines": 359
+		},
+		"apps/web/src/components/owner/owner-retained-disclosure.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 166
+		},
+		"apps/web/src/components/owner/owner-scroll-region.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 83
+		},
+		"apps/web/src/components/owner/owner-select.css": {
+			"duplication": 3
+		},
+		"apps/web/src/components/owner/owner-select.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 81
+		},
+		"apps/web/src/components/owner/owner-shell.css": {
+			"duplication": 4
+		},
+		"apps/web/src/components/owner/owner-shell.tsx": {
+			"duplication": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 123
+		},
+		"apps/web/src/components/owner/reporting/messages.ts": {
+			"duplication": 1
+		},
+		"apps/web/src/components/owner/reporting/owner-analytics-mode-switch.test.tsx": {
+			"duplication": 7,
+			"repeatedWorkarounds": 1,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/owner/reporting/owner-analytics-mode-switch.tsx": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 94
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting-export.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 190
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting-section.tsx": {
+			"duplication": 5,
+			"longFunctions": 1,
+			"longFunctionLines": 304
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting-view.test.tsx": {
+			"duplication": 1
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting-view.tsx": {
+			"duplication": 1,
+			"longFunctions": 3,
+			"longFunctionLines": 473
+		},
+		"apps/web/src/components/owner/reporting/owner-reporting.css": {
+			"duplication": 11,
+			"giantFiles": 1307
+		},
+		"apps/web/src/components/owner/reporting/owner-section-switch.tsx": {
+			"longFunctions": 3,
+			"longFunctionLines": 671
+		},
+		"apps/web/src/components/owner/settings/messages.ts": {
+			"duplication": 3
+		},
+		"apps/web/src/components/owner/settings/owner-settings-draft.ts": {
+			"duplication": 1
+		},
+		"apps/web/src/components/owner/settings/owner-settings-section.test.tsx": {
+			"duplication": 11,
+			"repeatedWorkarounds": 1
+		},
+		"apps/web/src/components/owner/settings/owner-settings-section.tsx": {
+			"longFunctions": 1,
+			"longFunctionLines": 190
+		},
+		"apps/web/src/components/owner/settings/owner-settings-view.tsx": {
+			"duplication": 6,
+			"longFunctions": 2,
+			"longFunctionLines": 793
+		},
+		"apps/web/src/components/owner/settings/owner-settings.css": {
+			"duplication": 2
+		},
+		"apps/web/src/components/public-states.test.tsx": {
+			"duplication": 4,
+			"longFunctions": 1
+		},
+		"apps/web/src/components/skip-link.tsx": {
+			"duplication": 1
+		},
+		"apps/web/src/components/staff/operational-snapshot-view.test.tsx": {
+			"duplication": 5
+		},
+		"apps/web/src/components/staff/operational-snapshot-view.tsx": {
+			"longFunctions": 2,
+			"longFunctionLines": 268
+		},
+		"apps/web/src/components/staff/staff-board-shell.tsx": {
+			"duplication": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 91
+		},
+		"apps/web/src/components/staff/staff-board.css": {
+			"duplication": 4,
+			"giantFiles": 1042
+		},
+		"apps/web/src/components/staff/staff.css": {
+			"duplication": 4
+		},
+		"apps/web/src/hooks/use-owner-access.test.tsx": {
+			"duplication": 6,
+			"repeatedWorkarounds": 1,
+			"longFunctions": 1
+		},
+		"apps/web/src/hooks/use-owner-access.ts": {
+			"duplication": 4
+		},
+		"apps/web/src/hooks/use-owner-audit.test.tsx": {
+			"duplication": 5,
+			"repeatedWorkarounds": 1
+		},
+		"apps/web/src/hooks/use-owner-daily-analytics.test.tsx": {
+			"duplication": 5,
+			"repeatedWorkarounds": 2
+		},
+		"apps/web/src/hooks/use-owner-reporting.test.tsx": {
+			"duplication": 7,
+			"repeatedWorkarounds": 1
+		},
+		"apps/web/src/hooks/use-owner-reporting.ts": {
+			"longFunctions": 1,
+			"longFunctionLines": 113
+		},
+		"apps/web/src/hooks/use-owner-settings.test.tsx": {
+			"duplication": 12,
+			"repeatedWorkarounds": 1
+		},
+		"apps/web/src/hooks/use-public-occupancy.test.tsx": {
+			"duplication": 28
+		},
+		"apps/web/src/hooks/use-public-occupancy.ts": {
+			"longFunctions": 1,
+			"longFunctionLines": 88
+		},
+		"apps/web/src/i18n/locale.test.ts": {
+			"typeEscapes": 1
+		},
+		"apps/web/src/index.css": {
+			"duplication": 5,
+			"giantFiles": 1141
+		},
+		"apps/web/src/routes/login.tsx": {
+			"duplication": 1,
+			"suppressions": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 154
+		},
+		"design-research/FITWAY_CROWD_LEVEL_VISUAL_RESEARCH-20260730.md": {
+			"giantDocuments": 51472
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/app.js": {
+			"giantFiles": 1860
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs": {
+			"giantFiles": 1991
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/README.md": {
+			"giantDocuments": 146755
+		},
+		"design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md": {
+			"giantDocuments": 59105
+		},
+		"docs/phase-records/handoffs/agent-environment/codex-rounds.md": {
+			"giantDocuments": 89768
+		},
+		"docs/phase-records/handoffs/coordinator/20260816-224000-completion-preflight-and-remaining-execution-plan.md": {
+			"giantDocuments": 44813
+		},
+		"docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md": {
+			"giantDocuments": 340749
+		},
+		"docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md": {
+			"giantDocuments": 210183
+		},
+		"docs/phase-records/handoffs/phase8-integration/20260814-133826-p8_integration_b01-plan.md": {
+			"giantDocuments": 44631
+		},
+		"packages/api/src/access/procedures.ts": {
+			"suppressions": 7
+		},
+		"packages/api/src/alerts/evaluator.test.ts": {
+			"longFunctions": 1
+		},
+		"packages/api/src/alerts/message.test.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/analytics/daily-analytics.test.ts": {
+			"duplication": 4
+		},
+		"packages/api/src/analytics/daily-analytics.ts": {
+			"duplication": 3,
+			"longFunctions": 1,
+			"longFunctionLines": 97
+		},
+		"packages/api/src/analytics/reporting/contracts.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/analytics/reporting/csv-transport.test.ts": {
+			"duplication": 4
+		},
+		"packages/api/src/analytics/reporting/queries.test.ts": {
+			"duplication": 3
+		},
+		"packages/api/src/analytics/reporting/reporting.test.ts": {
+			"duplication": 5,
+			"longFunctions": 2
+		},
+		"packages/api/src/analytics/reporting/reporting.ts": {
+			"duplication": 8,
+			"longFunctions": 2,
+			"longFunctionLines": 234
+		},
+		"packages/api/src/audit/governance.test.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/audit/governance.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/audit/list.test.ts": {
+			"duplication": 9,
+			"longFunctions": 1
+		},
+		"packages/api/src/audit/list.ts": {
+			"duplication": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 91
+		},
+		"packages/api/src/auth/session-router.test.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/commands/service.test.ts": {
+			"duplication": 4
+		},
+		"packages/api/src/commands/service.ts": {
+			"longFunctions": 1,
+			"longFunctionLines": 145
+		},
+		"packages/api/src/context.ts": {
+			"duplication": 4
+		},
+		"packages/api/src/edge-push.test.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/edge-push.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/health/evaluator.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/health/incidents.test.ts": {
+			"duplication": 4
+		},
+		"packages/api/src/health/incidents.ts": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 132
+		},
+		"packages/api/src/health/snapshot.test.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/occupancy/business-day.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/occupancy/engine.test.ts": {
+			"duplication": 6
+		},
+		"packages/api/src/occupancy/engine.ts": {
+			"duplication": 1,
+			"longFunctions": 2,
+			"longFunctionLines": 335
+		},
+		"packages/api/src/occupancy/schedule.test.ts": {
+			"duplication": 1
+		},
+		"packages/api/src/occupancy/schedule.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/offline/reconciliation.test.ts": {
+			"duplication": 2
+		},
+		"packages/api/src/public/payload-builder.test.ts": {
+			"duplication": 1,
+			"typeEscapes": 1
+		},
+		"packages/api/src/public/payload-builder.ts": {
+			"longFunctions": 1,
+			"longFunctionLines": 97
+		},
+		"packages/api/src/reset/evaluator.test.ts": {
+			"duplication": 44,
+			"longFunctions": 1,
+			"giantFiles": 901
+		},
+		"packages/api/src/reset/evaluator.ts": {
+			"duplication": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 88
+		},
+		"packages/api/src/reset/runner.test.ts": {
+			"duplication": 3
+		},
+		"packages/api/src/settings/procedures.test.ts": {
+			"duplication": 3,
+			"typeEscapes": 3
+		},
+		"packages/auth/src/access.ts": {
+			"duplication": 1
+		},
+		"packages/auth/src/auth-service.test.ts": {
+			"duplication": 1
+		},
+		"packages/auth/src/crypto.ts": {
+			"duplication": 2
+		},
+		"packages/db/src/schema/application.ts": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 122
+		},
+		"packages/ui/src/styles/globals.css": {
+			"duplication": 8
+		},
+		"RESEARCH.md": {
+			"giantDocuments": 41995
+		},
+		"scripts/agent-context-packets.mjs": {
+			"duplication": 2,
+			"longFunctions": 2,
+			"longFunctionLines": 326
+		},
+		"scripts/agent-context-paths.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 97
+		},
+		"scripts/agent-context-references.mjs": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 93
+		},
+		"scripts/agent-context-rules.mjs": {
+			"duplication": 1
+		},
+		"scripts/agent-environment/brief-checks.mjs": {
+			"duplication": 3,
+			"longFunctions": 2,
+			"longFunctionLines": 325
+		},
+		"scripts/agent-environment/brief-markdown.mjs": {
+			"duplication": 3
+		},
+		"scripts/agent-environment/brief-readings.mjs": {
+			"duplication": 4
+		},
+		"scripts/agent-environment/brief-references.mjs": {
+			"duplication": 4
+		},
+		"scripts/agent-environment/check-brief.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 134
+		},
+		"scripts/agent-environment/check-brief.test.ts": {
+			"duplication": 3,
+			"typeEscapes": 5,
+			"longFunctions": 1
+		},
+		"scripts/agent-environment/code-health-ratchet.test.ts": {
+			"duplication": 10
+		},
+		"scripts/agent-environment/codex-execution.mjs": {
+			"duplication": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 90
+		},
+		"scripts/agent-environment/codex-review-launch.mjs": {
+			"duplication": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 119
+		},
+		"scripts/agent-environment/codex-round.test.ts": {
+			"duplication": 42,
+			"typeEscapes": 10,
+			"longFunctions": 2,
+			"giantFiles": 4185
+		},
+		"scripts/agent-environment/codex-session.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 112
+		},
+		"scripts/agent-environment/context-ending.test.ts": {
+			"duplication": 1
+		},
+		"scripts/agent-environment/generate-tooling-map.test.ts": {
+			"duplication": 3
+		},
+		"scripts/agent-environment/new-handoff.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 160
+		},
+		"scripts/agent-environment/new-handoff.test.ts": {
+			"duplication": 3
+		},
+		"scripts/agent-environment/path-tokens.test.ts": {
+			"duplication": 1
+		},
+		"scripts/agent-environment/quiet-tooling.test.ts": {
+			"duplication": 1
+		},
+		"scripts/agent-environment/resume-point.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 99
+		},
+		"scripts/agent-environment/resume-point.test.ts": {
+			"duplication": 5
+		},
+		"scripts/agent-environment/start-load.mjs": {
+			"emptyBlocks": 1
+		},
+		"scripts/agent-environment/start-load.test.ts": {
+			"duplication": 1
+		},
+		"scripts/check-agent-context.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 111
+		},
+		"scripts/check-agent-context.test.ts": {
+			"duplication": 22,
+			"typeEscapes": 6,
+			"longFunctions": 1
+		},
+		"scripts/check-concept-css.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 87
+		},
+		"scripts/demo/cli.ts": {
+			"duplication": 2,
+			"longFunctions": 1,
+			"longFunctionLines": 121
+		},
+		"scripts/demo/seed.test.ts": {
+			"duplication": 1
+		},
+		"scripts/demo/seed.ts": {
+			"duplication": 9,
+			"typeEscapes": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 423
+		},
+		"scripts/demo/text-update.test.ts": {
+			"duplication": 1,
+			"longFunctions": 1
+		},
+		"scripts/demo/text-update.ts": {
+			"duplication": 1,
+			"longFunctions": 1,
+			"longFunctionLines": 133
+		},
+		"scripts/owner-supersession-policy.mjs": {
+			"duplication": 1,
+			"longFunctions": 2,
+			"longFunctionLines": 334
+		},
+		"scripts/project-state-invariants.mjs": {
+			"longFunctions": 3,
+			"longFunctionLines": 328
+		},
+		"scripts/repository-files.mjs": {
+			"duplication": 1
+		},
+		"scripts/run-vitest.mjs": {
+			"duplication": 1
+		},
+		"scripts/run-vitest.test.ts": {
+			"duplication": 6
+		},
+		"scripts/show-agent-context.mjs": {
+			"longFunctions": 1,
+			"longFunctionLines": 114
+		},
+		"scripts/show-agent-context.test.ts": {
+			"longFunctions": 1
+		},
+		"scripts/verify-repository.mjs": {
+			"duplication": 1,
+			"longFunctions": 2,
+			"longFunctionLines": 263
+		},
+		"scripts/verify-repository.schema.test.ts": {
+			"duplication": 19,
+			"longFunctions": 1
+		},
+		"scripts/verify.mjs": {
+			"duplication": 3
+		},
+		"scripts/verify.test.ts": {
+			"duplication": 8,
+			"longFunctions": 1
+		},
+		"scripts/visual-authority.mjs": {
+			"duplication": 1,
+			"longFunctions": 2,
+			"longFunctionLines": 617
+		},
+		"scripts/visual-authority.test.ts": {
+			"duplication": 9,
+			"giantFiles": 1887
+		}
+	},
+	"directories": {
+		".agents/skills/gardener": {
+			"testCases": 146,
+			"expectCalls": 471
+		},
+		".agents/skills/verify-fitway": {
+			"testCases": 14
+		},
+		"apps/server/src": {
+			"testCases": 215,
+			"expectCalls": 1195
+		},
+		"apps/web/src/components": {
+			"testCases": 11,
+			"expectCalls": 61
+		},
+		"apps/web/src/components/owner": {
+			"testCases": 19,
+			"expectCalls": 139
+		},
+		"apps/web/src/components/owner/access": {
+			"testCases": 33,
+			"expectCalls": 156
+		},
+		"apps/web/src/components/owner/audit": {
+			"testCases": 14,
+			"expectCalls": 47
+		},
+		"apps/web/src/components/owner/health": {
+			"testCases": 19,
+			"expectCalls": 65
+		},
+		"apps/web/src/components/owner/reporting": {
+			"testCases": 26,
+			"expectCalls": 133
+		},
+		"apps/web/src/components/owner/settings": {
+			"testCases": 14,
+			"expectCalls": 97
+		},
+		"apps/web/src/components/staff": {
+			"testCases": 6,
+			"expectCalls": 35
+		},
+		"apps/web/src/hooks": {
+			"testCases": 63,
+			"expectCalls": 175
+		},
+		"apps/web/src/i18n": {
+			"testCases": 6,
+			"expectCalls": 18
+		},
+		"apps/web/src/lib": {
+			"testCases": 3,
+			"expectCalls": 11
+		},
+		"packages/api/src": {
+			"testCases": 15,
+			"expectCalls": 50
+		},
+		"packages/api/src/access": {
+			"testCases": 3,
+			"expectCalls": 6
+		},
+		"packages/api/src/alerts": {
+			"testCases": 13,
+			"expectCalls": 33
+		},
+		"packages/api/src/analytics": {
+			"testCases": 7,
+			"expectCalls": 25
+		},
+		"packages/api/src/analytics/reporting": {
+			"testCases": 27,
+			"expectCalls": 106
+		},
+		"packages/api/src/audit": {
+			"testCases": 26,
+			"expectCalls": 94
+		},
+		"packages/api/src/auth": {
+			"testCases": 5,
+			"expectCalls": 11
+		},
+		"packages/api/src/commands": {
+			"testCases": 10,
+			"expectCalls": 25
+		},
+		"packages/api/src/cron": {
+			"testCases": 11,
+			"expectCalls": 26
+		},
+		"packages/api/src/health": {
+			"testCases": 32,
+			"expectCalls": 101
+		},
+		"packages/api/src/occupancy": {
+			"testCases": 26,
+			"expectCalls": 72
+		},
+		"packages/api/src/offline": {
+			"testCases": 2,
+			"expectCalls": 4
+		},
+		"packages/api/src/public": {
+			"testCases": 9,
+			"expectCalls": 15
+		},
+		"packages/api/src/reset": {
+			"testCases": 32,
+			"expectCalls": 48
+		},
+		"packages/api/src/retention": {
+			"testCases": 9,
+			"expectCalls": 18
+		},
+		"packages/api/src/settings": {
+			"testCases": 20,
+			"expectCalls": 38
+		},
+		"packages/auth/src": {
+			"testCases": 28,
+			"expectCalls": 73
+		},
+		"scripts": {
+			"testCases": 248,
+			"expectCalls": 523
+		},
+		"scripts/agent-environment": {
+			"testCases": 385,
+			"expectCalls": 1120
+		},
+		"scripts/demo": {
+			"testCases": 17,
+			"expectCalls": 73
+		}
+	},
+	"giantRoots": [
+		"design-research/owner-composition-exploration-r04/directions/eclipse"
+	]
+}

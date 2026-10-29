@@ -1,6 +1,8 @@
+// Validate milestone resume-point files, sections, citations, and size limits.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { inspectPath } from "../check-agent-context.mjs";
+import { inspectPath } from "../agent-context-paths.mjs";
+import { readGit } from "./git-context.mjs";
 import {
 	createPathReferenceResolver,
 	exists,
@@ -36,10 +38,12 @@ const TEMPLATE_PLACEHOLDERS = [
 ].map(
 	(placeholder) =>
 		new RegExp(
-			placeholder
-				.split(/\s+/)
-				.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-				.join("\\s+"),
+			(placeholder.startsWith("<") ? "(?<![\\w./\\\\*?-])" : "") +
+				placeholder
+					.split(/\s+/)
+					.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+					.join("\\s+") +
+				(placeholder.startsWith("<") ? "(?![\\w./\\\\*?-])" : ""),
 		),
 );
 
@@ -83,6 +87,16 @@ export async function repositoryPath(
 	if (!allowMissing && !details.exists)
 		throw new Error(`Missing repository path: ${relativePath}`);
 	return details;
+}
+
+// Exit 0 means ignored; tracked files are never reported. Exit 1 (not ignored) and 128 (no repository) pass.
+function gitIgnored(repositoryRoot, relativePath) {
+	try {
+		readGit(repositoryRoot, ["check-ignore", "-q", "--", relativePath]);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 async function referencedFilePaths(text, resolver) {
@@ -170,6 +184,7 @@ export async function validateResumePoint({
 		);
 	}
 	for (const relativePath of await referencedFilePaths(text, resolver)) {
+		let ignored = false;
 		try {
 			const { wildcard, file } = referenceTarget(relativePath);
 			if (path.isAbsolute(file)) {
@@ -179,17 +194,20 @@ export async function validateResumePoint({
 			} else {
 				// inspectPath rejects empty segments; a final slash denotes a folder.
 				const folder = wildcard || file.endsWith("/");
-				const details = await repositoryPath(
-					repositoryRoot,
-					file.endsWith("/") ? file.slice(0, -1) : file,
-				);
+				const target = file.endsWith("/") ? file.slice(0, -1) : file;
+				const details = await repositoryPath(repositoryRoot, target);
 				if (folder && !details.isDirectory) throw new Error("not a folder");
+				ignored = gitIgnored(repositoryRoot, target);
 			}
 		} catch {
 			fail(
 				`resume point references a missing or unsafe repository path: ${relativePath}${resolver.missingPathHint(relativePath)}`,
 			);
 		}
+		if (ignored)
+			fail(
+				`resume point references a git-ignored path, present on this disk and absent in CI: ${relativePath}`,
+			);
 	}
 	return true;
 }

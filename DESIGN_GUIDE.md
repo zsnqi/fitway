@@ -5,7 +5,7 @@
 > gate, after the Baseline Reconciliation Gate (2026-07-15). Product, privacy, security,
 > content, and data semantics remain governed by `FITWAY_PRODUCT.md` and `SPEC.md`.
 >
-> **Visual source of truth:** Paper, not this guide, except where superseded (ADR-009). See
+> **Visual source of truth:** Paper, not this guide, except where superseded (ADR-009, ADR-010). See
 > [ADR-007](docs/adr/ADR-007-paper-visual-source-of-truth.md) for the authority split, the Paper
 > file identity, and the four approved production families. This guide is subject to ADR-007 for
 > visual composition; where an approved Paper production materially conflicts with a section
@@ -31,6 +31,13 @@
 > red glow is required. RTL/LTR, numerals, truthful data, interaction, accessibility, and reduced
 > motion remain binding. Concepts do not change the production baseline.
 >
+> **Public redesign scope:** from
+> [ADR-010](docs/adr/ADR-010-public-composition-authority-supersession.md), the Public page may
+> be redesigned in the style of the Owner concept (Eclipse, `DESIGN-SPEC.md` §1), which supplies
+> palette, surfaces, radii, spacing, type and lights for it. RTL/LTR, numerals, truthful data,
+> state grammar (§6), loading behaviour, interaction, accessibility and reduced motion remain
+> binding. The shipped page keeps this guide's tokens until the redesign is promoted.
+>
 ## 1. Direction
 
 FITWAY is **premium first, athletic second, minimal third**. It should feel focused,
@@ -40,9 +47,10 @@ FITWAY red, disciplined whitespace, decisive Cairo type, and honest live-state s
 
 The background atmosphere is static. It may use layered CSS gradients and blurred
 pseudo-elements, but never canvas, WebGL, OGL, `requestAnimationFrame`, video, or a
-motion/reduced-motion branch for the background. A page-level FITWAY watermark can sit
-behind the product surface. Neither atmosphere nor watermark may reduce readability or
-become part of a data card.
+motion/reduced-motion branch for the background. On the shipped page a page-level FITWAY
+watermark can sit behind the product surface. The Public redesign sets its atmosphere with
+Eclipse's static lights (Eclipse LGT-1…LGT-11) and no watermark; no light, grain or blur moves.
+Neither atmosphere, watermark nor lights may reduce readability or become part of a data card.
 
 Improve a route while implementing that route, then close the phase with the focused polish
 and screenshot loop in `docs/WORKFLOW.md`. No opportunistic product-wide redesign is allowed:
@@ -50,9 +58,10 @@ replacing an approved composition requires an explicit per-surface authority dec
 in `docs/design/VISUAL_AUTHORITY_STATUS.md` — a scoped ADR-007 amendment or a superseding
 human-approved record — plus the concept-selection gate in `docs/WORKFLOW.md`. Until then the
 approved Paper composition remains binding. For the Owner surfaces superseded by
-[ADR-009](docs/adr/ADR-009-owner-composition-authority-supersession.md), the prior Paper
-composition and canonicals are reference only, `docs/design/VISUAL_AUTHORITY_STATUS.md` records
-the state, and the redesign proceeds through the concept gate; for all other surfaces this
+[ADR-009](docs/adr/ADR-009-owner-composition-authority-supersession.md) and for the Public page
+superseded by [ADR-010](docs/adr/ADR-010-public-composition-authority-supersession.md), the prior
+Paper composition and canonicals are reference only, `docs/design/VISUAL_AUTHORITY_STATUS.md`
+records the state, and the redesign proceeds through the concept gate; for all other surfaces this
 sentence stands unchanged.
 
 ## 2. Product hierarchy
@@ -64,7 +73,7 @@ The public page answers, in this order:
 1. Is the gym open, and is the information live?
 2. What is the labeled crowd level?
 3. What is the approximate count?
-4. What does the continuous crowd signal show?
+4. What does the level mark show?
 5. When was the reading updated?
 
 The crowd level outranks the approximate count. Public surfaces never show capacity,
@@ -121,7 +130,8 @@ normal text below readable contrast.
 ## 4. Typography and numerals
 
 - Use the self-hosted Cairo Arabic and Latin subsets at actual weights 400, 500, 600,
-  and 700. Do not request synthetic 800 or 900.
+  and 700. Do not request synthetic 800 or 900. Shipped page: Cairo, as above. Public
+  redesign: Readex Pro, self-hosted, real weights only (Eclipse TYP-1), until promoted.
 - Crowd level is the decisive public display. The approximate count is large and
   tabular, but visually secondary.
 - Use Western digits `0–9` in both locales. Apply `font-variant-numeric: tabular-nums`
@@ -136,6 +146,20 @@ normal text below readable contrast.
   word-for-word mirror of Arabic.
 
 ## 5. Public crowd instrument
+
+The shipped page keeps the 28-bar instrument below until the redesign is promoted. The Public
+redesign replaces it with a level mark chosen by eye in its design round (candidates include
+Eclipse's four-bar badge with its word, Eclipse CHP-5). Whichever is chosen:
+
+- it is derived from the public `band` only and never reconstructs a hidden ratio;
+- it uses no green, yellow or orange categorical meter (this section's rule, kept);
+- the four labels are Quiet, Moderate, Busy and Packed, localized naturally, and the current
+  written label is always visible, so neither color nor position is the only channel
+  (Eclipse LVL-4);
+- any progression or category order follows reading direction;
+- it has one concise localized accessible name;
+- its decorative parts are hidden from assistive technology;
+- no numeric meter/progress ARIA values are used.
 
 The Public Live signal is one continuous **28-bar cumulative instrument**.
 
@@ -160,10 +184,10 @@ The Public Live signal is one continuous **28-bar cumulative instrument**.
 | State | Required truth | Data visibility |
 | --- | --- | --- |
 | Loading | Structural skeleton after a short delay, `aria-busy`, one announcement when slow; see Loading behaviour | No fabricated values |
-| Live | Verified live status, band, approximate count, signal, freshness | Current values |
-| Delayed | Explicit last-known language and timestamp; never claim live | Last-known count/band/signal may remain visibly qualified |
-| Unavailable | Explain that old data is not presented as current | Remove count, band, signal, and timestamp |
-| Closed | State closed and show next opening when known | Remove live readings and signal |
+| Live | Verified live status, band, approximate count, level mark, freshness, last update as an absolute time | Current values |
+| Delayed | Explicit last-known language and timestamp, with the last update's age beside the absolute time; the value dims but its words and time stay (dimming is never the only channel); never claim live. Digits do not roll. | Last-known count/band/level mark may remain visibly qualified |
+| Unavailable | Explain that old data is not presented as current | Remove count, band, level mark, and timestamp |
+| Closed | State closed and show next opening when known | Remove live readings and level mark |
 | Error | State the failure and offer one focused retry action | Remove readings from visual and accessibility trees |
 
 Status is always text plus a non-color cue. Keep live announcements short and announce
@@ -192,17 +216,20 @@ values, to be tuned against real data.
 
 The exact stale-signal colors and pattern treatment remain a phase-owned semantic-polish
 item in `docs/POLISH_BACKLOG.md`; implementations must preserve the truth rules above while
-that treatment is refined.
+that treatment is refined. For the Public redesign the dimmed level mark (Eclipse LVL-6, STA-2)
+settles it.
 
 ## 7. Composition
 
 ### Public board
 
-- Use one panoramic dominant board on desktop with disciplined page gutters, aligned
+The Public redesign's board is composed in Eclipse's sheet (§6), not here.
+
+- Shipped page: Use one panoramic dominant board on desktop with disciplined page gutters, aligned
   header/board rails, strong negative space, and an asymmetric metric hierarchy.
-- The board shell uses a subtle border, restrained internal graphite/oxblood depth, a red
+- Shipped page: The board shell uses a subtle border, restrained internal graphite/oxblood depth, a red
   edge, and a premium shadow. The board itself must not become a bright red slab.
-- Desktop may arrange crowd level and count in an asymmetric split with one intentional
+- Shipped page: Desktop may arrange crowd level and count in an asymmetric split with one intentional
   structural separator. The signal spans the composition below.
 - Mobile recomposes into explicit groups: crowd level, count, signal, then freshness.
   It is not a proportionally scaled desktop.
@@ -262,6 +289,12 @@ focus, press, drawer, and dialog feedback. Avoid `transition: all`.
 - Background atmosphere, watermark, occupancy readings, signal bars, and charts at rest
   do not animate.
 - Do not animate a number through intermediate values; update it atomically.
+- Public redesign: lights and the level mark at rest do not animate. A digit rolls only when a
+  new live reading arrives; never on opening, never while Delayed, Closed, Unavailable or
+  loading, and never under reduced motion (instant). Roll by CSS or WAAPI, never by
+  `requestAnimationFrame` or canvas. Assistive technology gets one announcement of the final
+  value, not the intermediate digits. Any other motion (an intro, the level mark's own motion)
+  is decided in the design round by looking at it and recorded in the acceptance record.
 - Charts may use a short first-draw reveal only when it improves comprehension. Under
   reduced motion they render the complete final line, fill, points, and labels immediately.
 - Loading skeletons follow Loading behaviour (section 6) and are static under reduced
@@ -370,11 +403,13 @@ A UI-producing phase is not done until its affected routes and states pass:
 4. the applicable canonical widths, including 721–820 when the shell changes;
 5. keyboard/focus, reduced motion, 200% zoom/reflow, screen-reader names, and no page overflow;
 6. automated accessibility plus manual semantic review;
-7. on surfaces where Paper composition authority is active (Public, Login, and Staff), screenshot
-   comparison against the approved baseline or the most recent accepted phase-specific baseline;
-   for superseded Owner surfaces (ADR-009), the existing canonicals are reference-only regression
-   evidence and cannot accept or reject the redesign for differing from them; acceptance runs
-   through the concept-selection and perceptual-promotion gates in `docs/WORKFLOW.md` with the
+7. on surfaces where Paper composition authority is active (Login and Staff), screenshot
+   comparison against the approved baseline or the
+   most recent accepted phase-specific baseline; for superseded Owner surfaces (ADR-009), the
+   existing canonicals are reference-only regression evidence and cannot accept or reject the
+   redesign for differing from them; for the superseded Public page (ADR-010), as for Owner, the
+   existing canonicals are reference-only regression evidence; acceptance runs through the
+   concept-selection and perceptual-promotion gates in `docs/WORKFLOW.md` with the
    human-approved concept/acceptance record;
 8. at most two focused correction cycles;
 9. a fresh independent verifier; and

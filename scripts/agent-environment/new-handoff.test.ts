@@ -2,11 +2,12 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
 import {
 	fixture,
+	gitFixture,
 	HANDOFF,
 	MARKED,
 	MILESTONE,
@@ -21,9 +22,13 @@ import {
 	replaceYamlScalars,
 } from "./new-handoff.mjs";
 import { validateResumePoint } from "./resume-point.mjs";
+import { toolEntry } from "./tool-contract.mjs";
 
 const roots: string[] = [];
 const script = fileURLToPath(new URL("./new-handoff.mjs", import.meta.url));
+const contextScript = fileURLToPath(
+	new URL("../show-agent-context.mjs", import.meta.url),
+);
 afterEach(() => {
 	for (const root of roots.splice(0))
 		rmSync(root, { recursive: true, force: true });
@@ -53,6 +58,20 @@ function snapshot(root: string) {
 		bytes(root, PACKET),
 		bytes(root, HANDOFF),
 	];
+}
+function runProcess(root: string, args: string[]) {
+	const result = spawnSync(process.execPath, args, {
+		cwd: root,
+		encoding: "utf8",
+		windowsHide: true,
+	});
+	return { ...result, output: `${result.stdout}${result.stderr}` };
+}
+function runHandoff(root: string, args: string[]) {
+	return runProcess(root, [script, ...args]);
+}
+function runContext(root: string) {
+	return runProcess(root, [contextScript, "--milestone", MILESTONE]);
 }
 
 describe("M4: one resume file and one ledger pointer", () => {
@@ -263,10 +282,7 @@ describe("M4: one resume file and one ledger pointer", () => {
 		}
 	});
 	it("CLI help describes the stable file and has no lease option", () => {
-		const result = spawnSync(process.execPath, [script, "--help"], {
-			encoding: "utf8",
-			windowsHide: true,
-		});
+		const result = runHandoff(process.cwd(), ["--help"]);
 		expect(result.status).toBe(0);
 		expect(result.stdout).toContain("writes <milestone-id>-resume.md");
 		expect(result.stdout).not.toContain("lease-hours");
@@ -289,11 +305,7 @@ describe("M4: one resume file and one ledger pointer", () => {
 	)("invalid arguments do not write %j", async ({ args }) => {
 		const { root } = fixture(roots);
 		const before = snapshot(root);
-		const result = spawnSync(process.execPath, [script, ...args], {
-			cwd: root,
-			encoding: "utf8",
-			windowsHide: true,
-		});
+		const result = runHandoff(root, args);
 		expect(result.status).toBe(1);
 		expect(snapshot(root)).toEqual(before);
 		expect(existsSync(path.join(root, target))).toBe(false);
@@ -314,5 +326,179 @@ describe("M4: one resume file and one ledger pointer", () => {
 		).toBe(
 			"plain: \"#new\" # keep\r\nsingle: 'it''s new'\r\ndouble: \"new\" # \u0643\u0645\u0644\r\n",
 		);
+	});
+});
+
+describe("V2: handoff:new opens a milestone", () => {
+	function openableFixture() {
+		const { root, state } = fixture(roots);
+		gitFixture(root);
+		const ledgerHandoff = `docs/phase-records/handoffs/new/${MILESTONE}-resume.md`;
+		put(
+			root,
+			"PROJECT_STATE.yaml",
+			state.replace(`handoff: '${HANDOFF}'`, `handoff: '${ledgerHandoff}'`),
+		);
+		rmSync(path.join(root, path.dirname(ledgerHandoff)), {
+			recursive: true,
+			force: true,
+		});
+		return { root };
+	}
+
+	it.each([
+		{
+			label: "the ledger directory",
+			directory: undefined,
+			target: `docs/phase-records/handoffs/new/${MILESTONE}-resume.md`,
+		},
+		{
+			label: "--dir",
+			directory: "docs/phase-records/handoffs/option",
+			target: `docs/phase-records/handoffs/option/${MILESTONE}-resume.md`,
+		},
+	])("V2 creates the first resume point with %s", ({ directory, target }) => {
+		const { root } = openableFixture();
+		const args = (now: string) => [
+			"--milestone",
+			MILESTONE,
+			"--now",
+			now,
+			...(directory ? ["--dir", directory] : []),
+		];
+
+		const first = runHandoff(root, args(NOW));
+		expect(first.status, first.output).toBe(0);
+		expect(first.stdout).toContain(`Created resume point: ${target}`);
+		expect(bytes(root, target).toString()).toContain(
+			`# ${MILESTONE}: resume point`,
+		);
+		expect(
+			parseYaml(bytes(root, "PROJECT_STATE.yaml").toString()).milestones[
+				MILESTONE
+			].handoff,
+		).toBe(target);
+
+		const context = runContext(root);
+		expect(context.status, context.output).toBe(0);
+		expect(context.stdout).toContain(`handoff: ${target}`);
+
+		const firstText = bytes(root, target).toString();
+		const stateBeforeSecond = bytes(root, "PROJECT_STATE.yaml");
+		const second = runHandoff(root, args("2026-10-03T20:40:12+03:00"));
+		expect(second.status, second.output).toBe(0);
+		expect(second.stdout).toContain(`Updated resume point: ${target}`);
+		const secondText = bytes(root, target).toString();
+		const withoutAsOf = (text: string) =>
+			text.replace(/^- \*\*As of:\*\*[^\r\n]*/m, "- **As of:** <changed>");
+		expect(withoutAsOf(secondText)).toBe(withoutAsOf(firstText));
+		expect(secondText).not.toContain(
+			firstText.match(/^- \*\*As of:\*\*[^\r\n]*/m)?.[0] ??
+				"missing As of line",
+		);
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(stateBeforeSecond);
+	});
+
+	it("V2 keeps the unknown-milestone refusal", () => {
+		const { root } = openableFixture();
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		const result = runHandoff(root, [
+			"--milestone",
+			"missing-r01",
+			"--now",
+			NOW,
+		]);
+		expect(result.status).toBe(1);
+		expect(result.output).toContain("Unknown active milestone");
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
+	});
+
+	it("V2 keeps the missing-packet refusal", () => {
+		const { root } = openableFixture();
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		const result = runHandoff(root, ["--milestone", "other-r01", "--now", NOW]);
+		expect(result.status).toBe(1);
+		expect(result.output).toContain("a registered task packet is required");
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
+	});
+
+	it("V2 keeps the invalid-packet refusal", () => {
+		const { root } = openableFixture();
+		put(root, PACKET, "schemaVersion: [invalid\n");
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		const result = runHandoff(root, ["--milestone", MILESTONE, "--now", NOW]);
+		expect(result.status).toBe(1);
+		expect(result.output).toContain("handoff:new FAILED:");
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
+	});
+
+	it("V2 keeps the --dir file refusal", () => {
+		const { root } = openableFixture();
+		put(root, "not-a-directory", "file");
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		const result = runHandoff(root, [
+			"--milestone",
+			MILESTONE,
+			"--dir",
+			"not-a-directory",
+			"--now",
+			NOW,
+		]);
+		expect(result.status).toBe(1);
+		expect(result.output).toContain("--dir must target a directory");
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
+	});
+
+	it.each([
+		[["--milestone", "missing-r01"], `pass --milestone one of: ${MILESTONE}`],
+		[["--milestone", MILESTONE, "--dir", "not-a-directory"], "pass --dir"],
+		[["--milestone", MILESTONE, "--dir", "../outside"], "pass --dir"],
+	])("C4 refuses the value in %j with one line that names the fix", (args, fix) => {
+		const { root } = openableFixture();
+		put(root, "not-a-directory", "file");
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		const result = runHandoff(root, [...args, "--now", NOW]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe("");
+		expect(result.stderr).toMatch(
+			/^handoff:new: FAIL: [^\r\n]+ \([^\r\n]+\)\r?\n$/,
+		);
+		expect(result.stderr).toContain(fix);
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
+	});
+
+	it("C4 prints a start-up exception as one line naming the usage", () => {
+		const { root } = openableFixture();
+		const state = bytes(root, "PROJECT_STATE.yaml");
+		// The test's own preload makes beginToolCommand throw an ordinary error, as a start-up
+		// defect would; the command reads no test flag.
+		put(
+			root,
+			"startup-throws.mjs",
+			[
+				"const isArray = Array.isArray;",
+				"Array.isArray = (value) => {",
+				'\tif (value === "handoff:new") throw new Error("injected start-up failure");',
+				"\treturn isArray(value);",
+				"};",
+				"",
+			].join("\n"),
+		);
+		const preload = pathToFileURL(path.join(root, "startup-throws.mjs")).href;
+		const result = runProcess(root, [
+			"--import",
+			preload,
+			script,
+			"--milestone",
+			MILESTONE,
+			"--now",
+			NOW,
+		]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe("");
+		expect(result.stderr).toBe(
+			`handoff:new: FAIL: injected start-up failure (run ${toolEntry("handoff:new").usage} after fixing the reported error)\n`,
+		);
+		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(state);
 	});
 });

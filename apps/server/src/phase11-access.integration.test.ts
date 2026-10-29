@@ -938,6 +938,56 @@ describe("the audit log the governance rows land in", () => {
 	});
 });
 
+/**
+ * The audit log stores a reason of at most 240 characters, so a longer one must
+ * be refused by the contract as a bad request — not accepted and then lost when
+ * the audit row fails its check and takes the deactivation down with it.
+ */
+describe("a reason longer than the audit log stores", () => {
+	const tooLong = "r".repeat(241);
+
+	it("refuses it on the staff PIN, which stays active and unaudited", async () => {
+		const listed = await rpc<{ principals: PrincipalGovernance[] }>("list");
+		const staff = listed.principals.find(
+			(entry) => entry.principalKind === "shared_staff",
+		);
+		if (staff?.credentialActive !== true) {
+			await rpc<RevealPayload>("staffPin/provision", {});
+		}
+		const floor = await highestAuditId();
+
+		expect(
+			await refusal("staffPin/deactivate", { reason: tooLong }),
+		).toMatchObject({ status: 400 });
+
+		const after = await rpc<{ principals: PrincipalGovernance[] }>("list");
+		expect(
+			after.principals.find((entry) => entry.principalKind === "shared_staff")
+				?.credentialActive,
+		).toBe(true);
+		expect(await accessRowsSince(floor, "staff_pin_deactivated")).toEqual([]);
+	});
+
+	it("refuses it on an owner, who stays active and unaudited", async () => {
+		const target = await provisionOwnerAccount("Long-reason owner");
+		const floor = await highestAuditId();
+
+		expect(
+			await refusal("owner/deactivate", {
+				targetPrincipalId: target.principalId,
+				reason: tooLong,
+			}),
+		).toMatchObject({ status: 400 });
+
+		const after = await rpc<{ principals: PrincipalGovernance[] }>("list");
+		expect(
+			after.principals.find((entry) => entry.principalId === target.principalId)
+				?.active,
+		).toBe(true);
+		expect(await accessRowsSince(floor, "owner_deactivated")).toEqual([]);
+	});
+});
+
 describe("the last-active-owner rule under concurrency", () => {
 	it("lets only one of two simultaneous deactivations through", async () => {
 		// Reduce to exactly two active owners besides nobody else, then aim both

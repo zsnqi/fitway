@@ -6,9 +6,11 @@ output:
 no_tty: true
 
 pre-commit:
-  parallel: true
+  piped: true
   jobs:
     - name: biome
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files} 2>&1
       stage_fixed: true
+    - name: giant-files
+      run: node scripts/agent-environment/check-staged-giant-files.mjs
