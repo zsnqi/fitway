@@ -1,13 +1,13 @@
 <!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: main's checks pass a long-lived branch's merge without loosening (agent-tooling-r01, round branch-merge-checks)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/tooling-branch-merge-checks`, branch `tooling-branch-merge-checks`, HEAD `853111c2`
+- **Worktree:** `D:/Projects/fitway-worktrees/tooling-branch-merge-checks`, branch `tooling-branch-merge-checks`, HEAD `be8985b9`
 - **Milestone:** `agent-tooling-r01`. Decisions: `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` items 14, 16,
   19 and 20.
 - **Read first, only these:**
-  - `scripts/agent-environment/code-health-ratchet.mjs:490-571` and `scripts/agent-environment/code-health-baseline.mjs`:
+  - `scripts/agent-environment/code-health-ratchet.mjs:491-572` and `scripts/agent-environment/code-health-baseline.mjs`:
     how the baseline is written, what it refuses, and the inflation check.
-  - `.agents/skills/gardener/cited-evidence.mjs` and `scripts/verify-repository.mjs:216-255`: the gone-citation audit
+  - `.agents/skills/gardener/cited-evidence.mjs` and `scripts/verify-repository.mjs:217-256`: the gone-citation audit
     and its messages.
   - `D:/fitway-temp/retro-20261028/gone-evidence/REPORT.md` §2A and §2B: how each lost path went.
   - `docs/agent-context/briefs/CODE_REVIEW.md`: D1-D8, which the diff is reviewed against.
@@ -53,7 +53,7 @@ redoes the merge there with the upstream set and the admission run (DECISIONS it
 
 - **A1.** Main's baseline holds an older copy of the concept folder (`giantRoots` names
   `design-research/owner-composition-exploration-r04/directions/eclipse`), and the build branch has no baseline, so
-  every page the build grew is a rise `refusedChanges` refuses (`code-health-ratchet.mjs:552-571`): the trial merge
+  every page the build grew is a rise `refusedChanges` refuses (`code-health-ratchet.mjs:553-572`): the trial merge
   could not regenerate the baseline (DECISIONS item 19). Outcome: `pnpm code-health:baseline --admit <folder> --reason
   "<why>"` admits a folder the committed baseline names in `giantRoots`: it writes the current `giantFiles` and
   `giantDocuments` value of every file under that folder, new files and rises included, and records the admission in
@@ -69,7 +69,7 @@ redoes the merge there with the upstream set and the admission run (DECISIONS it
   file's current measure is not working-baseline inflation, while a value raised by hand in the same baseline still
   is; a later rise in an admitted file fails as any rise does. A baseline value that differs from the current measure,
   admitted or not, already fails the check, which reports every difference (`compareCodeHealth`,
-  `code-health-ratchet.mjs:490-530`); that stays. Check: beside H3 in
+  `code-health-ratchet.mjs:491-531`); that stays. Check: beside H3 in
   `scripts/agent-environment/code-health-ratchet.test.ts:193`, a fixture with a concept page baselined at 801 lines
   grown to 900 is refused without `--admit`; admitted with a reason, the baseline holds 900 and its admission names the
   date, the reason and 801 to 900; the check passes before and after the commit; growth to 901 then fails; a fall to
@@ -77,7 +77,7 @@ redoes the merge there with the upstream set and the admission run (DECISIONS it
   still refused; admitting `scripts` is refused; a `scripts/` file raised by one line in the same run is still refused;
   a `scripts/` value raised by hand in the admitted baseline is reported as inflation. Intent: the concept's pages
   enter once with a reason anyone can read, and no other file, and no later growth, gets through the same door.
-- **A2.** The gone-citation audit diffs the working tree against `origin/main` (`cited-evidence.mjs:45-48`). On a
+- **A2.** The gone-citation audit diffs the working tree against `origin/main` (`cited-evidence.mjs:46-49`). On a
   branch that integrates elsewhere every branch-only line counts as changed: 33 old citations in the concept's briefs
   failed the trial merge. It also counts a line main changed after the branch left it. Outcome: a line counts as
   changed when the current branch wrote it, committed since the merge base of `HEAD` and the branch it integrates
