@@ -84,8 +84,15 @@ function pruneProposalLines(prune) {
 		lines.push(`- Withheld ${JSON.stringify(item.path)}: ${item.withheld}`);
 	for (const item of proposed) {
 		const kept = item.kept;
+		const whole = item.deleteDirectories?.length ?? 0;
+		const frees = whole
+			? `${item.bytes} bytes from ${item.deleteFiles.length} files and ${whole} whole ${whole === 1 ? "folder" : "folders"}, ${item.unmeasured} of them not measured`
+			: `${item.bytes} bytes from ${item.candidates} files`;
+		const keptWhole = kept.wholeFolders
+			? `; ${kept.wholeFolders} node_modules or Git folders kept whole, not measured`
+			: "";
 		lines.push(
-			`- ${JSON.stringify(item.path)}: frees ${item.bytes} bytes from ${item.candidates} files; keeps ${kept.files} files (${kept.citedFile} cited, ${kept.nonCaptureInCitedFolder} non-captures in cited folders, ${kept.captureNamedByText} named captures; ${kept.bytes} bytes); links not followed: ${item.links.length}.`,
+			`- ${JSON.stringify(item.path)}: frees ${frees}; keeps ${kept.files} files (${kept.citedFile} cited, ${kept.nonCaptureInCitedFolder} non-captures in cited folders, ${kept.captureNamedByText} named captures; ${kept.bytes} bytes${keptWhole}); links not followed: ${item.links.length}.`,
 		);
 	}
 	if (!withheld.length && !proposed.length) lines.push("None.");

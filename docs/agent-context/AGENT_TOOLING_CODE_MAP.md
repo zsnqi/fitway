@@ -19,7 +19,7 @@ Counts: 112 files, 77 without a leading comment.
 - `remove-worktree.mjs`: (no leading comment) Exports: `removeWorktree`, `removeWorktreeOptions`.
 - `survey-checks.mjs`: Survey rule-home, graph, environment, and command checks. Exports: `checkEnvironment`, `checkFailed`, `checkGraph`, `ruleHomes`, `runChecks`, `surveyPnpmEnv`.
 - `survey-cli.mjs`: Survey options, cleanup commands, outcomes, and console summary. Exports: `cleanupScript`, `consoleSummary`, `finalFolderSelection`, `parseOptions`, `powershellQuote`, `pruneScript`, `surveyOutcome`, `surveyProposals`, `worktreeRemovalCommand`, `writeSurveyOutputs`.
-- `survey-evidence.mjs`: Git, record, folder, and worktree evidence collection. Exports: `briefLifecycle`, `collectFolderRecords`, `collectFolders`, `collectGit`, `collectRecords`, `defaultTempRoot`, `filesystemPath`, `git`, `inspectWorktreeLinks`, `measureFolder`, `plainPath`, `record`, `root`, `safeDeletionPath`.
+- `survey-evidence.mjs`: Git, record, folder, and worktree evidence collection. Exports: `briefLifecycle`, `collectFolderRecords`, `collectFolders`, `collectGit`, `collectRecords`, `defaultTempRoot`, `describeLink`, `filesystemPath`, `git`, `inspectWorktreeLinks`, `measureFolder`, `plainPath`, `record`, `root`, `safeDeletionPath`.
 - `survey-output.mjs`: (no leading comment) Exports: `validateOutput`.
 - `survey.mjs`: (no leading comment) Exports: `collectSurveyCodeHealth`, `formatReport`.
 

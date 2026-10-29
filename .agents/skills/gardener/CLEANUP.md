@@ -62,13 +62,23 @@ The survey also emits `prune.mjs`, separately from `cleanup.mjs`, and never
 runs either. Prune proposals cover each top-level temp folder that yields
 deletable files. They keep a cited file, every non-capture in a cited folder,
 and a capture whose file name a kept text file anywhere in the same top-level
-folder mentions. An uncited capture is deletable. A kept text file that cannot
-be read withholds its top-level folder's proposal, naming the file. The
-tracked-record rule is the same citation matcher used by the
-cleanup and the gone-citation audit, over tracked `.md`, `.yaml`, `.yml`,
-`.tsv` and `.txt` files. The proposal reports each folder's freed bytes and the
-files and reasons it keeps. The generated script rechecks citations, registered
-worktrees and links before unlinking individual files; it never follows a link.
+folder mentions. A name is a token without spaces (`frames/en.png` names
+`en.png`); inside backticks or straight quotes it may hold spaces. An uncited
+capture is deletable. A kept text file that cannot be read withholds its
+top-level folder's proposal, naming the file. The tracked-record rule is the
+same citation matcher used by the cleanup and the gone-citation audit, over
+tracked `.md`, `.yaml`, `.yml`, `.tsv` and `.txt` files.
+
+The prune walks only what a decision needs. A directory no citation reaches is
+proposed whole without being walked, unless it holds a capture a kept text file
+names; a whole top-level folder takes its bytes from the survey's measurement,
+and any other whole folder is reported as not measured. Inside a cited folder, a
+`node_modules` and a directory holding `.git` are kept whole without being
+walked. The proposal reports each folder's freed bytes and the files and
+reasons it keeps. The generated script rechecks citations, registered worktrees
+and links before deleting: it unlinks individual files, and removes a whole
+folder only while it holds and sits in no registered worktree and every link in
+it resolves inside it. It never follows a link.
 
 The final survey is run with a fresh `-Out` and
 `-FinalReport <absolute-checkout>/.agents/skills/gardener/REPORT.md`. It

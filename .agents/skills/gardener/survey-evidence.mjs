@@ -231,6 +231,25 @@ export function plainPath(value) {
 		.replaceAll("\\", "/");
 }
 
+// A link's target and whether it resolves outside `base`; a read failure is the link's error.
+export async function describeLink(target, base, readLink = readlink) {
+	const link = {
+		path: plainPath(target),
+		target: null,
+		resolvedTarget: null,
+		outside: null,
+		error: null,
+	};
+	try {
+		link.target = plainPath(await readLink(filesystemPath(target)));
+		link.resolvedTarget = plainPath(await realpath(filesystemPath(target)));
+		link.outside = !inside(base, link.resolvedTarget);
+	} catch (error) {
+		link.error = `${error.code ?? "ERROR"}: ${error.message}`;
+	}
+	return link;
+}
+
 export async function inspectWorktreeLinks(
 	absolute,
 	{ readLink = readlink } = {},
@@ -241,23 +260,7 @@ export async function inspectWorktreeLinks(
 		try {
 			const info = await lstat(filesystemPath(target));
 			if (info.isSymbolicLink()) {
-				const link = {
-					path: plainPath(target),
-					target: null,
-					resolvedTarget: null,
-					outside: null,
-					error: null,
-				};
-				result.links.push(link);
-				try {
-					link.target = plainPath(await readLink(filesystemPath(target)));
-					link.resolvedTarget = plainPath(
-						await realpath(filesystemPath(target)),
-					);
-					link.outside = !inside(base, link.resolvedTarget);
-				} catch (error) {
-					link.error = `${error.code ?? "ERROR"}: ${error.message}`;
-				}
+				result.links.push(await describeLink(target, base, readLink));
 				return; // Never enter a junction or symlink, even an internal one.
 			}
 			if (info.isDirectory()) {
