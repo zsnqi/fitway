@@ -52,6 +52,15 @@ latest wording; never copy an entry into a resume point.
 - Reply in Saudi-dialect Arabic when the user writes Arabic; code, paths, commit messages and
   repository documents stay in English. (user)
 
+## Ownership
+
+- When the coordinator of one milestone needs a change in files another milestone owns, and coordinates that
+  milestone too, it makes the change as the owning milestone's work: on that milestone's branch, recorded in its
+  records, with a line in the requesting milestone's record. It first confirms that no writer is active there (the
+  worktree is clean and no session or agent of that milestone is running). It asks the user only where `AGENTS.md`
+  already requires it (a locked decision, a material visual-direction change, privacy or security); a change that
+  keeps every word and behaviour, shown by the diff or a byte-for-byte rebuild, needs no question. (user, 2026-10-29)
+
 ## Delegation
 
 - Visual design and taste judgments stay with Claude on the Opus definitions. Exact renders of

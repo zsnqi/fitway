@@ -1,8 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:00 +03:00 (the retro's
-  four fixes come first, decision 102; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 15:10 +03:00 (the retro's
+  four fixes come first, decision 102; §"Running now" is where to pick up; 2026-10-29 adds the build branch's two
+  layout splits)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-102; 102 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -35,9 +36,14 @@
 
 Nothing runs (measured 2026-10-28 22:00; the PC's LAN address is 192.168.8.186). main `8c41282f` (CI 40706472283);
 this line adds decisions 97-102, for `pnpm main:advance` once its CI passes. Build branch
-`owner-followup-r04-build` at `fedbdb6d`, pushed. Status page for the user:
+`owner-followup-r04-build` at `ef9fa810`, pushed (2026-10-29). Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
+- **Two layout splits on the build branch, as this milestone's work** (2026-10-29, by its coordinator for the merge of
+  main into public-redesign-r01; `WORKING_AGREEMENTS.md` §"Ownership"): `2aa2fc4d` split `DESIGN-SPEC.md` and
+  `SETTINGS-SPEC.md` into `eclipse/spec/`, and `ef9fa810` split `NEXT-DIRECTION-BRIEF.md` by section into
+  `directions/next-direction-brief/` (agent-tooling DECISIONS item 21, the user's word). No word changed; each original
+  rebuilds byte for byte from its index and parts. Edit a section in its part; the index lists every heading.
 - **The belonging check is built** (DECISIONS 93, `codex-rounds.md` §"belonging-check", measured):
   `pnpm verify:owner belonging-check`, merged `dbf9b683`; today's concept passes all 13,028 frames. Sol and Terra were
   at capacity, so DeepSeek alone reviewed the brief and Opus the diff (the user, 2026-10-28: continue on DeepSeek).
