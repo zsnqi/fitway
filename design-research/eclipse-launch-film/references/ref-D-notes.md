@@ -2,10 +2,11 @@
 
 A still board, not a film: a brand identity for an AI-agent identity company, shown across six touchpoints.
 
-**Not a reference (user, 2026-10-29).** What caught the user's eye is only the logo with its typography: the pixel
-mark beside the name set in two lines, held in a hairline frame with small squares at its corners (top-left panel),
-and the large mark-plus-name in the browser bar. That is an observation for the mark's lockup, not a rule. The notes
-below describe the board for context only.
+**Not a reference (user, 2026-10-29).** The one thing that caught the user's eye is the browser-tab panel (middle
+right), which they circled. The FITWAY-style mark and name sit inside a browser tab, and the tab's edge flows into the
+toolbar below through a smooth concave curve, so the tab and the bar read as one continuous surface. The coordinator
+first misread "التبويبة" (the tab) as typography; corrected. This is an observation, not a rule. The notes below
+describe the board for context only.
 
 - **Palette:** Carbon Black #0D0D0D, Soft White #F5F5F5, Steel Gray #7A7A7A, Graphite Navy #1C2633, and one accent,
   Electric Cyan #59EBFF.
