@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-28 22:36 +03:00 (three
-  of the retro's rounds running; evidence-home under review)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 03:40 +03:00 (three
+  rounds' fixes with builders; the concept's specs being split)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-18; 18 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -22,32 +22,38 @@
 
 ## Running now
 
-Measured 2026-10-28 22:36. main `8c41282f`; the coordinator line is ahead and unpushed past `f79adba4`, whose CI run
-(`40752311394`) `pnpm main:advance` waits on; push the rest after it.
+Measured 2026-10-29 03:40. main `8398bd72` (code-map-index merged and recorded in
+`docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`).
 
-- **Three of the retro's rounds run on DeepSeek `max`** from `f79adba4`, each brief reviewed by DeepSeek and Sol
-  `xhigh` with dispositions in `D:/fitway-temp/brief-review/codex-<round>-1` and `-1-sol` (`22d42ef6`):
-  - run-and-ref (`D:/Projects/fitway-worktrees/tooling-run-and-ref`, run `D:/fitway-temp/codex-round-run-and-ref`);
-  - cited-evidence (`D:/Projects/fitway-worktrees/tooling-cited-evidence`, run `D:/fitway-temp/codex-round-cited-evidence`);
-  - code-map-index (`D:/Projects/fitway-worktrees/tooling-code-map-index`, run `D:/fitway-temp/codex-round-code-map-index`).
-  For each when it ends: the commit and ladder against its events, a Sol diff review, a builder, the coordinator's
-  grade with planted defects, the merge, and its record as a file in a `rounds` folder beside `ROUNDS.md`.
-- **evidence-home's brief is under review** (worktree `D:/Projects/fitway-worktrees/tooling-evidence-home` from
-  `7930c80b`): DeepSeek's reading is in, Sol's runs in `D:/fitway-temp/brief-review/codex-evidence-home-1-sol`. Then
-  dispositions and the launch.
-- **Done this session** (item 18): compare-fullpage merged and recorded; r04's `DECISIONS.md` split into an index and
-  parts (`92a4e9a7`); the round records frozen behind `docs/phase-records/handoffs/agent-tooling/ROUNDS.md`; `SPEC.md` split by
-  section into `docs/spec/` (`82138b9a`, the user's word); `docs/agent-context/RULE_ENFORCERS.md` (112 rules, 64 written only).
+- **Three rounds ended and are with `owner-direction-builder`s**, each from a frozen brief that first merges main
+  `8398bd72` into its branch. Each round's review folder `D:/fitway-temp/code-review/<round>-1/` holds Sol's
+  findings (`last.md`), `dispositions.md` and the coordinator's `GRADE.md`; the brief is
+  `D:/fitway-temp/tooling-<round>/fix-1/BRIEF.md`:
+  - cited-evidence: result `564625f5`; merge `b5d46db4` and fix `9bc4911c` in, items 8 (the prune walked the real
+    temp root for over 28 minutes) and 9 (the capture-name pattern took phrases) running;
+  - evidence-home: result `52fb52af`; fix running;
+  - run-and-ref: result `1c218aa6`; fix running. Its change to the read-only `tool-contract.mjs` stays (disposition 1)
+    and its record names the departure.
+  For each when it reports: check its commits and tests, then the merge, its record in `rounds/`, push, CI and
+  `pnpm main:advance`. run-and-ref and evidence-home both change `tool-registry.mjs` and `tool-help-notes.mjs`:
+  merge one, then resolve the other against it.
+- **The concept's specs are being split** by an `owner-direction-fixer` on branch `concept-spec-split` (worktree
+  `D:/Projects/fitway-worktrees/concept-spec-split`, from `fedbdb6d`; brief `D:/fitway-temp/concept-spec-split/BRIEF.md`).
+  When it is verified, fast-forward `owner-followup-r04-build` and `public-redesign-r01` to it and push the build branch.
+- **Done** (item 18): compare-fullpage and code-map-index merged and recorded; r04's `DECISIONS.md` split into an
+  index and parts (`92a4e9a7`); the round records frozen behind `docs/phase-records/handoffs/agent-tooling/ROUNDS.md`;
+  `SPEC.md` split by section into `docs/spec/` (`82138b9a`, the user's word); `docs/agent-context/RULE_ENFORCERS.md`
+  (112 rules, 64 written only).
 
 ## Next steps
 
-1. `pnpm main:advance` to `f79adba4` once its CI passes; then push the line and advance again after its CI.
-2. evidence-home: dispositions, launch; then each round's review, builder, grade and merge.
-3. **Finding 3's concept specs** (on `public-redesign-r01`, after main is merged into it): split `DESIGN-SPEC.md`
-   (283 KB) and `SETTINGS-SPEC.md` (78 KB) by section behind `DESIGN-SPEC.md` as the index, keeping its `##`
-   headings; the concept's spec scripts (lint-spec, build-index, check-index, on the build branch) read the parts;
-   the content shown preserved; `pnpm code-health:baseline` there once H3 is in. The concept's page scripts are not
-   split now (accepted pages; the ratchet stops their growth).
+1. Each builder's report: verify, merge, record, push, CI, `pnpm main:advance` (as in "Running now").
+2. The four merged: add the coordinator's rule to `WORKING_AGREEMENTS.md` that coordinator folders are made with
+   `pnpm run-folder:new` (evidence-home's H2).
+3. **Finding 3's concept specs:** after the split is verified and on the build branch, merge main into
+   `public-redesign-r01` once H3 is in main and run `pnpm code-health:baseline` there. The concept's `HISTORY.md`
+   (134 KB), `README.md` (89 KB) and `INDEX.md` (76 KB) stay over the line, baselined; the page scripts are not split
+   now (accepted pages; the ratchet stops their growth).
 4. After the four merge: a one-sentence leading comment for each mapped file the new map shows without one.
 5. **Repair the gone citations** with `(gone: <why>)` once cited-evidence's check lists them.
 6. **Measure again:** rerun `D:/fitway-temp/retro-20261028/measure.mjs` and `D:/fitway-temp/retro-20261028/patterns.mjs`
