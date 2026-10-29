@@ -66,3 +66,7 @@ the public page are numbered here.
      a Sonnet summary would filter by Sonnet's taste).
    - **Stage two, only for the direction the user accepts:** every state, English, the tablet and every other size,
      the motion's details and reduced motion, by a builder; then the verifier and the user's acceptance.
+6. **Direction 2 is turned down** (the user, 2026-10-29, on its phone and computer frames: «ما عجبني»; then «كل شي»,
+   start from nothing with a wholly different idea; «حسيت الشكل مب مرتب»; «شكل المنحنى الطولي مب كويس»). Direction 2,
+   the day as a timetable with the current hour lit (`32732dbf`, its invented gym name removed in `c5f64fa5`), stays in
+   history only. Direction 3's brief carries the user's words; the brand FITWAY is the only name on the page.
