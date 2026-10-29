@@ -2,6 +2,7 @@
 
 import path from "node:path";
 import { TERMINAL_STATUSES } from "./agent-context-rules.mjs";
+import { dateValue } from "./agent-environment/code-health-ratchet.mjs";
 import { fail } from "./repository-files.mjs";
 
 function assertAcyclicMilestones(milestones) {
@@ -92,6 +93,50 @@ export function scopePatterns(entries, label = "scope") {
 			fail(`${label}: no repository path in entry ${JSON.stringify(entry)}`);
 		return patterns;
 	});
+}
+
+function invalidLeaseEnd(id, entry) {
+	fail(
+		`${id} sharedLeases entry ${JSON.stringify(entry)} has an invalid end; write one end as through YYYY-MM-DD`,
+	);
+}
+
+function leaseEnd(id, entry) {
+	const through = [...entry.matchAll(/\bthrough\b/gi)];
+	if (through.length > 1) invalidLeaseEnd(id, entry);
+	for (const date of entry.matchAll(/\b\d{4}-\d{1,2}-\d{1,2}\b/g)) {
+		const prefix = entry.slice(0, date.index);
+		if (!/(?:\bthrough\s+|\bfrom\s+|\brenewed\s+on\s+)$/i.test(prefix))
+			invalidLeaseEnd(id, entry);
+		if (
+			!/^\d{4}-\d{2}-\d{2}$/.test(date[0]) ||
+			!Number.isFinite(dateValue(date[0]))
+		)
+			invalidLeaseEnd(id, entry);
+	}
+	if (!through.length) return null;
+	const rest = entry.slice(through[0].index + through[0][0].length);
+	const end = /^\s+(\d{4}-\d{2}-\d{2})(?=$|[\s,.;:)])/.exec(rest)?.[1];
+	if (!end || !Number.isFinite(dateValue(end))) invalidLeaseEnd(id, entry);
+	return end;
+}
+
+function assertSharedLeaseEnds(milestones, updatedAt) {
+	const updatedDate = updatedAt.slice(0, 10);
+	if (!Number.isFinite(dateValue(updatedDate)))
+		fail(
+			`PROJECT_STATE.yaml updatedAt has no valid calendar date: ${updatedAt}`,
+		);
+	for (const [id, milestone] of Object.entries(milestones)) {
+		if (TERMINAL_STATUSES.has(milestone.status)) continue;
+		for (const entry of milestone.sharedLeases ?? []) {
+			const end = leaseEnd(id, entry);
+			if (end && end < updatedDate)
+				fail(
+					`${id} sharedLeases entry ${JSON.stringify(entry)} ended ${end}, before PROJECT_STATE.yaml updatedAt ${updatedAt}; renew it with a later through YYYY-MM-DD date or drop it`,
+				);
+		}
+	}
 }
 
 const NON_SLASH = [
@@ -275,7 +320,8 @@ function unleasedIntersection(left, right, leases) {
 	return null;
 }
 
-function assertDisjointOwnedPaths(milestones) {
+function assertDisjointOwnedPaths(milestones, updatedAt) {
+	assertSharedLeaseEnds(milestones, updatedAt);
 	const open = Object.entries(milestones)
 		.filter(([, record]) => !TERMINAL_STATUSES.has(record.status))
 		.map(([id, record]) => [
@@ -418,7 +464,7 @@ export function assertProjectStateInvariants(state, milestones) {
 			}
 		}
 	}
-	assertDisjointOwnedPaths(state.milestones);
+	assertDisjointOwnedPaths(state.milestones, state.updatedAt);
 	if (
 		state.baseline.status === "DONE" &&
 		(!state.baseline.validationRecord ||

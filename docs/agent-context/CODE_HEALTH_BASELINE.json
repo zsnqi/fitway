@@ -1040,12 +1040,12 @@
 			"expectCalls": 73
 		},
 		"scripts": {
-			"testCases": 248,
-			"expectCalls": 523
+			"testCases": 258,
+			"expectCalls": 542
 		},
 		"scripts/agent-environment": {
-			"testCases": 385,
-			"expectCalls": 1120
+			"testCases": 386,
+			"expectCalls": 1126
 		},
 		"scripts/demo": {
 			"testCases": 17,

@@ -97,7 +97,7 @@ export function date(value = new Date()) {
 	return value.toISOString().slice(0, 10);
 }
 
-function dateValue(value) {
+export function dateValue(value) {
 	const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
 	if (!match) return Number.NaN;
 	const [, year, month, day] = match.map(Number);
@@ -542,7 +542,7 @@ function establishedMeasures(baseline) {
 	);
 }
 
-function directoryExcepted(snapshot, change, today) {
+export function directoryExcepted(snapshot, change, today) {
 	return snapshot.openExceptions.some(
 		(exception) =>
 			exception.measure === change.measure &&

@@ -1,3 +1,5 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import {
 	expect as assert,
 	afterEach as cleanupAfter,
@@ -37,6 +39,8 @@ function exception(measure: string, reason: string) {
 		.toISOString()
 		.slice(0, 10)}; reason=${reason}`;
 }
+
+const baselinePath = "docs/agent-context/CODE_HEALTH_BASELINE.json";
 
 suite("long-function growth", () => {
 	spec("refuses a new 90-line production function", () => {
@@ -222,6 +226,9 @@ suite("directory test floors", () => {
 			testCases: 2,
 			expectCalls: 2,
 		});
+		const raisedCheck = fixture.runCheck();
+		assert(raisedCheck.status, raisedCheck.stderr).toBe(0);
+		assert(raisedCheck.stdout).toContain("PASS: code health");
 		fixture.commit("raised floor");
 		fixture.write("scripts/nested/.keep", "");
 		fixture.git("mv", "scripts/a.test.ts", "scripts/nested/a.test.ts");
@@ -244,9 +251,35 @@ suite("directory test floors", () => {
 			testCases: 1,
 			expectCalls: 1,
 		});
+		const acceptedBeforeCommit = fixture.runCheck();
+		assert(acceptedBeforeCommit.status, acceptedBeforeCommit.stderr).toBe(0);
+		assert(acceptedBeforeCommit.stdout).toContain("PASS: code health");
 		fixture.commit("accepted directory move");
 		const checked = fixture.runCheck();
 		assert(checked.status, checked.stderr).toBe(0);
 		assert(checked.stdout).toContain("PASS: code health");
+	});
+
+	spec("rejects a hand-lowered test floor before it is committed", () => {
+		const fixture = createHealthFixture();
+		fixture.write("scripts/a.test.ts", testSource("one"));
+		fixture.writeBaseline();
+		fixture.commit("test floor baseline");
+		fixture.write("scripts/a.test.ts", 'import { it } from "vitest";\n');
+		const working = JSON.parse(
+			readFileSync(path.join(fixture.root, baselinePath), "utf8"),
+		);
+		delete working.directories.scripts;
+		writeFileSync(
+			path.join(fixture.root, baselinePath),
+			`${JSON.stringify(working, null, "\t")}\n`,
+			"utf8",
+		);
+
+		const checked = fixture.runCheck();
+		assert(checked.status, checked.stderr).toBe(1);
+		assert(checked.stdout).toContain(
+			"working baseline inflation: scripts: testCases baseline=1 current=0",
+		);
 	});
 });
