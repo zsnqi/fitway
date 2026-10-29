@@ -40,6 +40,10 @@ export const OWNER_NOTES = Object.freeze([
 	"Every use rediscovers source facts; --map is an optional prior map for drift provenance.",
 	"map writes <out>/verification-map.json; generated maps are evidence, never committed.",
 	"Output defaults to a fresh D:/fitway-temp/verify-fitway-*; git trees/links into them are refused.",
+	"Every --out folder records command, arguments, checkout, start, status and end in manifest.json.",
+	"--ref and --baseline-ref extract the declared concept at that commit once and reuse the folder.",
+	"run executes a script's default export with the command-owned preview, browser, contexts, rewrite and evidence.",
+	"diff-folders compares PNG paths with compare's exact diff and exits 0 only when every picture is equal.",
 	"Sizes: desktop=1440x900, boundary=1024x900, tablet=768x1024, phone=390x844,",
 	"       narrow=320x844, zoom=1440x900 at 200% (720x450 CSS px, phone frame).",
 	"--page and --feature select one path; the remaining axes multiply its frames.",
@@ -74,6 +78,72 @@ export const OWNER_NOTES = Object.freeze([
 	"help and preview lifecycle need only Node. For discovery/drive/compare/doctor, install checkout dependencies:",
 	`  pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile`,
 ]);
+
+export function ownerTailCommands({ ownerOptions, flag, value, exits }) {
+	return [
+		{
+			name: "measure",
+			usage:
+				"pnpm verify:owner measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] [--colors normal|forced] [--feature <name>] [--states <state>] [--languages <list>] [--sizes <list>] [--inputs <list>] [--motions <list>] [--transports <list>] -- <tool arguments>",
+			purpose: "Run one specialized measurement tool.",
+			options: [
+				value("--tool", "Measurement tool.", {
+					sample: "focus",
+					choices: "focus motion a11y probe perf capture sheet diff".split(" "),
+				}),
+				ownerOptions.out,
+				ownerOptions.forensics,
+				ownerOptions.colors,
+				ownerOptions.feature,
+				ownerOptions.states,
+				ownerOptions.languages,
+				ownerOptions.sizes,
+				ownerOptions.inputs,
+				ownerOptions.motions,
+				ownerOptions.transports,
+			],
+			requiredOptions: ["--tool", "--out"],
+			passthrough: true,
+			exitCodes: exits(
+				[0, "Measurement passed."],
+				[1, "Findings or command failure."],
+			),
+		},
+		{
+			name: "cleanup",
+			usage: "pnpm verify:owner cleanup --session <launch-folder|session.json>",
+			purpose: "Stop an owned preview session.",
+			options: [ownerOptions.session],
+			requiredOptions: ["--session"],
+			exitCodes: exits(
+				[0, "Session stopped."],
+				[1, "Command refused or failed."],
+			),
+		},
+		{
+			name: "_serve",
+			usage: "pnpm verify:owner _serve --concept <folder> [options]",
+			purpose: "Internal preview server.",
+			options: [
+				{ ...ownerOptions.concept, absolute: false },
+				ownerOptions.port,
+				flag("--lan", "Listen on LAN."),
+				value("--token", "Session token."),
+				value("--idle-timeout-ms", "Idle timeout in milliseconds.", {
+					sample: "60000",
+					integer: [1, 1800000],
+					valueNote: "at most 30 minutes",
+				}),
+			],
+			requiredOptions: ["--concept"],
+			internal: true,
+			exitCodes: exits(
+				[0, "Server stopped."],
+				[1, "Command refused or failed."],
+			),
+		},
+	];
+}
 
 export const TOOLING_MAP_NOTES = Object.freeze([
 	"Writes docs/agent-context/AGENT_TOOLING_CODE_MAP.md with one entry per mapped file: its path, leading-comment summary and sorted exports.",

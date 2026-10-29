@@ -3,40 +3,15 @@ import { pathToFileURL } from "node:url";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { belongingStates, belongingWidths } from "./belonging-plan.mjs";
 import { runBelongingFrames } from "./belonging-runner.mjs";
+import { resolveConceptSide } from "./concept-source.mjs";
 import {
-	canonical,
-	freshEmptyOutput,
-	freshOutput,
 	jsonOutput,
 	preview,
 	ReportedFailure,
 	verificationPort,
 } from "./core.mjs";
-import { extractDeclaredConcept } from "./drift-tree.mjs";
 import { axis } from "./drive-plan.mjs";
-import { repository } from "./map.mjs";
 import { loadProbes } from "./probes.mjs";
-
-function conceptSource(options) {
-	let extracted;
-	let concept;
-	let commit;
-	let recipes;
-	if (options.concept) {
-		concept = canonical(options.concept);
-		recipes = options.recipes
-			? canonical(resolve(options.recipes))
-			: resolve(concept, "verification-recipes.json");
-	} else {
-		extracted = extractDeclaredConcept(repository);
-		concept = extracted.concept;
-		recipes = options.recipes
-			? canonical(resolve(options.recipes))
-			: extracted.recipes;
-		commit = extracted.commit;
-	}
-	return { extracted, concept, commit, recipes };
-}
 
 const startupValue = (fix, parse) => {
 	try {
@@ -115,7 +90,7 @@ function resultSummary(source, widths, languages, frames, startedAt) {
 		concept: {
 			folder: source.concept,
 			commit: source.commit,
-			declared: source.extracted?.declaredConcept ?? null,
+			declared: source.declaredConcept ?? null,
 		},
 		widths,
 		languages,
@@ -136,12 +111,14 @@ function resultSummary(source, widths, languages, frames, startedAt) {
 
 export async function belongingCheck(options, services) {
 	const startedAt = Date.now();
-	const out = freshEmptyOutput(options.out || freshOutput(), "belonging-check");
+	const out = options.out;
 	const languages = startupValue("pass --languages ar,en, ar or en", () =>
 		axis(options.languages, "ar,en", ["ar", "en"]),
 	);
 	const widths = belongingWidths(options.widths);
-	const source = conceptSource(options);
+	const source = resolveConceptSide(options, "build", {
+		declaredDefault: true,
+	});
 	try {
 		const setup = await services.doctor({
 			...options,
@@ -181,6 +158,6 @@ export async function belongingCheck(options, services) {
 				`Belonging check found ${summary.findings.length} finding(s) or ${summary.totals.fail} failed frame(s); evidence ${out}`,
 			);
 	} finally {
-		source.extracted?.cleanup();
+		source.cleanup();
 	}
 }

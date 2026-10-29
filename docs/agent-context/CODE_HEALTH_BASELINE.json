@@ -82,9 +82,8 @@
 			"duplication": 1
 		},
 		".agents/skills/verify-fitway/cli.mjs": {
-			"duplication": 1,
 			"longFunctions": 2,
-			"longFunctionLines": 302,
+			"longFunctionLines": 259,
 			"emptyBlocks": 2
 		},
 		".agents/skills/verify-fitway/cli.test.mjs": {
@@ -108,7 +107,7 @@
 		".agents/skills/verify-fitway/compare.mjs": {
 			"duplication": 6,
 			"longFunctions": 1,
-			"longFunctionLines": 844
+			"longFunctionLines": 799
 		},
 		".agents/skills/verify-fitway/core.mjs": {
 			"longFunctions": 1,
@@ -122,7 +121,7 @@
 			"duplication": 2
 		},
 		".agents/skills/verify-fitway/drive.mjs": {
-			"duplication": 3,
+			"duplication": 2,
 			"longFunctions": 2,
 			"longFunctionLines": 258
 		},
@@ -137,7 +136,7 @@
 		".agents/skills/verify-fitway/runner.mjs": {
 			"duplication": 2,
 			"longFunctions": 2,
-			"longFunctionLines": 1188,
+			"longFunctionLines": 1182,
 			"emptyBlocks": 3
 		},
 		".agents/skills/verify-fitway/timeline-hold.test.mjs": {
@@ -923,6 +922,9 @@
 		".agents/skills/gardener": {
 			"testCases": 120,
 			"expectCalls": 381
+		},
+		".agents/skills/verify-fitway": {
+			"testCases": 14
 		},
 		"apps/server/src": {
 			"testCases": 215,

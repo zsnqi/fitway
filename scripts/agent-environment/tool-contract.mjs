@@ -316,6 +316,70 @@ function validateParsed(entry, command, parsed) {
 	}
 	validateOptionPaths(entry, command, parsed, available, failureName, exitCode);
 	validateOptionValues(parsed, available, failureName, exitCode);
+	validateRequiredOptionGroups(
+		subject,
+		available,
+		parsed,
+		failureName,
+		exitCode,
+	);
+}
+
+function validateRequiredOptionGroups(
+	subject,
+	available,
+	parsed,
+	failureName,
+	exitCode,
+) {
+	for (const group of subject.requiredOptionGroups ?? []) {
+		const present = group.some((name) => {
+			const declared = available.find((candidate) => candidate.name === name);
+			return declared && Object.hasOwn(parsed.options, optionKey(declared));
+		});
+		if (!present)
+			reject(
+				failureName,
+				`missing one of ${group.join(" or ")}`,
+				`run ${subject.usage}`,
+				exitCode,
+			);
+	}
+}
+
+function parseCommandArguments(entry, command, args, parsed) {
+	const passthrough = selectedPassthrough(entry, command);
+	for (let index = 0; index < args.length; index += 1) {
+		const argument = args[index];
+		if (argument === "--") {
+			if (index === 0 && !passthrough) continue;
+			if (passthrough) {
+				parsed.passthrough = args.slice(index + 1);
+				break;
+			}
+			parsed.positionals.push(...args.slice(index + 1));
+			break;
+		}
+		if (index === 0 && command && argument === command.name) continue;
+		if (!argument.startsWith("-") || argument === "-") {
+			parsed.positionals.push(argument);
+			continue;
+		}
+		const option = findOption(entry, command, argument);
+		const state = {};
+		const result = validateOption(
+			entry,
+			option,
+			argument,
+			args[index + 1],
+			state,
+			command,
+		);
+		const key = optionKey(result.option);
+		parsed.options[key] = result.option.takesValue ? result.value : true;
+		parsed.counts[key] = (parsed.counts[key] ?? 0) + 1;
+		if (state.skip) index += 1;
+	}
 }
 
 export function resolveToolArguments(
@@ -355,46 +419,14 @@ export function resolveToolArguments(
 		entry,
 		command,
 		fixedArgs: hasFixed ? fixed : [],
+		rawArguments: args.slice(),
 		options: {},
 		counts: {},
 		positionals: [],
 		passthrough: [],
 		help: false,
 	};
-	const passthrough = selectedPassthrough(entry, command);
-	for (let index = 0; index < commandArgs.length; index += 1) {
-		const argument = commandArgs[index];
-		if (argument === "--") {
-			if (index === 0 && !passthrough) continue;
-			if (passthrough) {
-				parsed.passthrough = commandArgs.slice(index + 1);
-				break;
-			}
-			parsed.positionals.push(...commandArgs.slice(index + 1));
-			break;
-		}
-		if (index === 0 && command && argument === command.name) continue;
-		if (!argument.startsWith("-") || argument === "-") {
-			parsed.positionals.push(argument);
-			continue;
-		}
-		const option = findOption(entry, command, argument);
-		const state = {};
-		const result = validateOption(
-			entry,
-			option,
-			argument,
-			commandArgs[index + 1],
-			state,
-			command,
-		);
-		parsed.options[optionKey(result.option)] = result.option.takesValue
-			? result.value
-			: true;
-		const key = optionKey(result.option);
-		parsed.counts[key] = (parsed.counts[key] ?? 0) + 1;
-		if (state.skip) index += 1;
-	}
+	parseCommandArguments(entry, command, commandArgs, parsed);
 	if (validate) validateParsed(entry, command, parsed);
 	return parsed;
 }
