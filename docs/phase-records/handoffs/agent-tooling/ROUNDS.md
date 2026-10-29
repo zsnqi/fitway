@@ -139,3 +139,4 @@ in `docs/phase-records/handoffs/agent-tooling/rounds/<round>.md`, listed here.
 - agent-tooling-r01 code-map-index: `briefs/codex-code-map-index.md`, result `ffe2d51f` (level max, one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`
 - agent-tooling-r01 evidence-home: `briefs/codex-evidence-home.md`, result `52fb52af` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/evidence-home.md`
 - agent-tooling-r01 run-and-ref: `briefs/codex-run-and-ref.md`, result `1c218aa6` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/run-and-ref.md`
+- agent-tooling-r01 cited-evidence: `briefs/codex-cited-evidence.md`, result `564625f5` (level max, one builder and one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/cited-evidence.md`
