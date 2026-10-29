@@ -33,4 +33,8 @@
   `design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md`, outside the giant root,
   stands 73 bytes over main's baseline (59,178 against 59,105); and the packet's pinned frame fails, the third problem
   of item 19.
-- **Rows:** A1-A3 and K2 met at `6d9459cb`; K1 is the CI run on the push that carries the merge.
+- **CI repair:** the push of `94a8c560` failed CI (run 40850201319): the test "uses origin/main when a branch tracks
+  its own remote copy" ran `git commit` without the fixture's identity, and CI has none; locally the user's global
+  identity hid it. Reproduced with an empty global Git configuration, fixed in `f50fe990` (merge `9b9ce06f`), 40/40
+  then.
+- **Rows:** A1-A3 and K2 met at `6d9459cb`; K1 is the CI run on the push that carries `9b9ce06f`.
