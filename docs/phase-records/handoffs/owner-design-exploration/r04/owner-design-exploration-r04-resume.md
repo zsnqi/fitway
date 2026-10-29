@@ -33,8 +33,8 @@
 
 ## Running now
 
-Nothing of this milestone runs (measured 2026-10-29 19:40; the PC's LAN address is 192.168.8.186). main `bc6b9464`
-carries decisions 97-102. Build branch `owner-followup-r04-build` at `18411a15`, pushed. Status page for the user:
+Nothing of this milestone runs (measured 2026-10-29 19:40; the PC's LAN address is 192.168.8.186). main `2278a896`
+carries decisions 97-103. Build branch `owner-followup-r04-build` at `18411a15`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
 - **Layout splits on the build branch, as this milestone's work** (2026-10-29, `WORKING_AGREEMENTS.md` §"Ownership"):
@@ -64,7 +64,7 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
   the pattern card and its Components specimen are plain; OWN-R6, PAT-12, K-02, K-13, Q13 say so. 214 frames against
   `ef9fa810`: no box moved, pixels change only in the card (and 1-7 levels at its edge under a dialog's blur).
   Belonging check 13,028/13,028 with this branch's CLI (the build branch lacks `dbf9b683`; rerun on the merged head).
-  The coordinator looked at 1440 AR and 390 EN; the user has not yet. F304 and F305 open, after the demo.
+  Accepted by the user on the 1440 and 390 Arabic pairs (2026-10-29). F304 and F305 open, after the demo.
 - **The launch-film trial** (the user's, a cloud session): branch `ccr-026baa79-tycnnr`, its folder
   eclipse-launch-film under design-research (start at its RESUME.md). An experiment kept for its lessons, unmerged and no
   milestone; read it when the demo's materials start (decision 84).
