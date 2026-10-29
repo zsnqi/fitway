@@ -86,7 +86,8 @@ Each was built as described and the user accepted it on 2026-10-01 (Q13 with the
   period changes; Reports is history, and the period's figures arrive at once.
 - **Q13** (OWN-R6): decided by the user on 2026-10-01, accepted with the other arrangement: Reports has no summary light;
   the pattern's data light alone, held while it holds a value, and every figure card, "Last 7 days" included, plain in
-  every period.
+  every period. DECISIONS 103 (2026-10-29) supersedes the pattern's light: the pattern is plain at every size and state, and
+  Reports lights nothing.
 - **Q14** (K-37): decided by the user on 2026-10-01, accepted: rename "Last 4 weeks" / «آخر 4 أسابيع» to "Last 28 days" / «آخر 28 يومًا», so "week" keeps its one
   meaning (GLO-13).
 - **Q15** (HDR-3): decided by the user on 2026-10-01, accepted, stays as built: from 721 px the status is boxless at rest with a chevron (BTN-5's form) and keeps Daily's quiet

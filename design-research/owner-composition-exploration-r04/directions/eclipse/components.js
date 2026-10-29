@@ -591,7 +591,7 @@
     const topCell = model.rows[model.top.r].find((c) => c.top);
     const sub = `${L.patternSub}<span class="sep" style="margin-inline:8px">·</span>${L.busiest(L.wd[model.top.r], b(hourRange(HOURS[topCell.c0])))}`;
     const key = `<ul class="cx-legend"><li>${L.fewer}<i class="ramp" aria-hidden="true"></i>${L.more}</li><li><i class="k k0" aria-hidden="true">0</i>${L.emptyWord}</li><li><i class="k kc" aria-hidden="true"></i>${L.closed}</li><li><i class="k kn" aria-hidden="true"></i>${L.noReadings}</li><li><i class="k kt" aria-hidden="true"></i>${L.busiestKey}</li><li><i class="k kf" aria-hidden="true"></i>${L.fewKey}</li></ul>`;
-    const main = `<figure class="cx-fig" style="align-items:stretch"><section class="card lit lit-chart cx-pattern" aria-labelledby="pattern-t">${LAMP}
+    const main = `<figure class="cx-fig" style="align-items:stretch"><section class="card cx-pattern" aria-labelledby="pattern-t">
       <header class="cx-pattern-head"><div><h3 id="pattern-t">${L.patternTitle}</h3><p id="pattern-sub">${sub}</p></div>
         <div class="cx-pattern-tools">${key}<button data-press="dark" class="cx-switch" id="numbers" type="button" role="switch" aria-checked="false"><span class="cx-track" aria-hidden="true"><span class="cx-thumb"></span></span><span>${L.numbers}</span></button></div></header>
       <div class="cx-heat-wrap" id="heat-wrap"><div class="cx-plate">${heatTable(model, { id: "heat" })}</div><div class="cx-tip cx-heat-tip" id="heat-tip" hidden></div></div>

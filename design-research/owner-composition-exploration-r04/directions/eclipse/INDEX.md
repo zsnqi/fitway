@@ -411,7 +411,7 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - spec/design-08-owner-today-reports.md:29 — OWN-R2 — Header: the title, the period in the subtitle and the frame's status (HDR-3); no…
 - spec/design-08-owner-today-reports.md:30 — OWN-R3 — At a glance (step 4). One card of the period's figures (CRD-11) under the period…
 - spec/design-08-owner-today-reports.md:31 — OWN-R4 — Busy times: the weekday × hour pattern (7 × 19, Sunday first) across the page, with…
-- spec/design-08-owner-today-reports.md:32 — OWN-R6 — Where the light goes (step 4). Reports has no summary light. The pattern carries the…
+- spec/design-08-owner-today-reports.md:32 — OWN-R6 — Where the light goes (step 4). Reports has no summary light. The pattern is plain at…
 - spec/design-08-owner-today-reports.md:33 — OWN-R7 — 1440 × 900: the header 60.25 px, then 16 to the controls (44), 16 to the glance row…
 - spec/design-08-owner-today-reports.md:34 — OWN-R8 — 1024-1279 px (the desktop frame; 1024, 1200 and 1279 checked; the fix round, the…
 - spec/design-08-owner-today-reports.md:35 — OWN-R9 — 721-1023 px (the tablet frame, 768 designed; step 4's build, the user's pick of option…
@@ -517,8 +517,8 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - spec/design-12-open-questions.md:48 — ### — Decided 2026-10-01 (step 4's fix round)
 - spec/design-12-open-questions.md:61 — ### — Decided 2026-10-01 (step 4's build, the user's pick of option B)
 - spec/design-12-open-questions.md:81 — ### — Decided 2026-10-01 (step 4 phase A)
-- spec/design-12-open-questions.md:97 — ### — Answered 2026-10-01
-- spec/design-12-open-questions.md:106 — ### — Answered 2026-09-30
+- spec/design-12-open-questions.md:98 — ### — Answered 2026-10-01
+- spec/design-12-open-questions.md:107 — ### — Answered 2026-09-30
 
 ## daily.js
 
@@ -864,69 +864,69 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - reports.js:764 — heatCell — function
 - reports.js:781 — heatRuns — function
 - reports.js:791 — renderHeat — function
-- reports.js:850 — hasValues — function constant
-- reports.js:851 — weekMax — function constant
-- reports.js:852 — dayMax — function constant
-- reports.js:855 — dayBar — function
-- reports.js:861 — renderDay — function
-- reports.js:876 — renderHours — function
-- reports.js:898 — pickDay — function
-- reports.js:924 — tipHTML — function
-- reports.js:936 — showTip — function
-- reports.js:945 — hideTip — function
-- reports.js:951 — focusCell — function
-- reports.js:1023 — sortedDays — function
-- reports.js:1032 — daysNote — function constant
-- reports.js:1034 — gapNote — function constant
-- reports.js:1037 — waitNote — function constant
-- reports.js:1038 — dayNotes — function constant
-- reports.js:1039 — renderDays — function
-- reports.js:1125 — renderList — function
-- reports.js:1162 — fitSort — function
-- reports.js:1188 — tableFile — function
-- reports.js:1220 — goPreset — function
-- reports.js:1224 — renderAll — function
-- reports.js:1232 — setRange — function
-- reports.js:1264 — later — function constant
-- reports.js:1265 — clearTimers — function constant
-- reports.js:1266 — ph — function constant
-- reports.js:1267 — phBox — function constant
-- reports.js:1268 — valueSlot — function constant
-- reports.js:1269 — busyEls — function constant
-- reports.js:1274 — pendGlance — function
-- reports.js:1288 — pendPattern — function
-- reports.js:1323 — rangeNow — function constant
-- reports.js:1325 — pendDays — function
-- reports.js:1355 — retryLabels — function constant
-- reports.js:1356 — alertHTML — function
-- reports.js:1361 — wireAlert — function
-- reports.js:1368 — paintLoading — function
-- reports.js:1373 — paintError — function
-- reports.js:1390 — clearPhase — function
-- reports.js:1398 — applyPhase — function
-- reports.js:1412 — startLoading — function
-- reports.js:1425 — arrive — function
-- reports.js:1442 — fail — function
-- reports.js:1451 — retry — function
-- reports.js:1479 — focusables — function constant
-- reports.js:1481 — openDialog — function
-- reports.js:1492 — closeDialog — function
-- reports.js:1522 — openRangeDialog — function
-- reports.js:1540 — p2 — function constant
-- reports.js:1541 — csvDay — function
-- reports.js:1564 — fileName — function constant
-- reports.js:1566 — fileNameHTML — function constant
-- reports.js:1567 — rowsText — function constant
-- reports.js:1569 — fileLine — function
-- reports.js:1575 — progressHTML — function
-- reports.js:1579 — labels — function constant
-- reports.js:1580 — showLabel — function constant
-- reports.js:1587 — renderExport — function
-- reports.js:1625 — resetExport — function
-- reports.js:1631 — openExportDialog — function
-- reports.js:1641 — revealProgress — function
-- reports.js:1647 — wait — function constant
-- reports.js:1648 — runExport — function
+- reports.js:848 — hasValues — function constant
+- reports.js:849 — weekMax — function constant
+- reports.js:850 — dayMax — function constant
+- reports.js:853 — dayBar — function
+- reports.js:859 — renderDay — function
+- reports.js:874 — renderHours — function
+- reports.js:896 — pickDay — function
+- reports.js:922 — tipHTML — function
+- reports.js:934 — showTip — function
+- reports.js:943 — hideTip — function
+- reports.js:949 — focusCell — function
+- reports.js:1021 — sortedDays — function
+- reports.js:1030 — daysNote — function constant
+- reports.js:1032 — gapNote — function constant
+- reports.js:1035 — waitNote — function constant
+- reports.js:1036 — dayNotes — function constant
+- reports.js:1037 — renderDays — function
+- reports.js:1123 — renderList — function
+- reports.js:1160 — fitSort — function
+- reports.js:1186 — tableFile — function
+- reports.js:1218 — goPreset — function
+- reports.js:1222 — renderAll — function
+- reports.js:1230 — setRange — function
+- reports.js:1262 — later — function constant
+- reports.js:1263 — clearTimers — function constant
+- reports.js:1264 — ph — function constant
+- reports.js:1265 — phBox — function constant
+- reports.js:1266 — valueSlot — function constant
+- reports.js:1267 — busyEls — function constant
+- reports.js:1272 — pendGlance — function
+- reports.js:1286 — pendPattern — function
+- reports.js:1321 — rangeNow — function constant
+- reports.js:1323 — pendDays — function
+- reports.js:1353 — retryLabels — function constant
+- reports.js:1354 — alertHTML — function
+- reports.js:1359 — wireAlert — function
+- reports.js:1366 — paintLoading — function
+- reports.js:1371 — paintError — function
+- reports.js:1388 — clearPhase — function
+- reports.js:1396 — applyPhase — function
+- reports.js:1406 — startLoading — function
+- reports.js:1419 — arrive — function
+- reports.js:1436 — fail — function
+- reports.js:1445 — retry — function
+- reports.js:1473 — focusables — function constant
+- reports.js:1475 — openDialog — function
+- reports.js:1486 — closeDialog — function
+- reports.js:1516 — openRangeDialog — function
+- reports.js:1534 — p2 — function constant
+- reports.js:1535 — csvDay — function
+- reports.js:1558 — fileName — function constant
+- reports.js:1560 — fileNameHTML — function constant
+- reports.js:1561 — rowsText — function constant
+- reports.js:1563 — fileLine — function
+- reports.js:1569 — progressHTML — function
+- reports.js:1573 — labels — function constant
+- reports.js:1574 — showLabel — function constant
+- reports.js:1581 — renderExport — function
+- reports.js:1619 — resetExport — function
+- reports.js:1625 — openExportDialog — function
+- reports.js:1635 — revealProgress — function
+- reports.js:1641 — wait — function constant
+- reports.js:1642 — runExport — function
 
 ## activity.js
 
