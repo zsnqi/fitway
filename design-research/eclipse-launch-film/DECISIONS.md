@@ -73,8 +73,8 @@ pinned version into the gitignored `vendor/`, and never committed. The sample so
 ## Trial 1 closed as an experiment (user, 2026-10-29)
 27. The Station 2 render was a trial that set the direction. It is recorded in `TRIAL-1-RECORD.md`, with the user's
     notes and the lessons, and is not fixed. The film's purpose is to present the product's beauty and quality.
-28. The real film also shows the Public page, which the user expects to finish about today. It starts only when the
-    user says so.
+28. The real film also shows the Public page. It starts only when the user says so, once the pages the demo needs
+    are finished (the user expects Public about today).
 
 ## References
 - A: Polar launch film (Emil Widlund), 85 s.

@@ -23,8 +23,8 @@ order. Talk to the user in Arabic (Gulf dialect is fine), even though the files 
   trial render, the direction for the real film (Polar's confidence and luxury building to an explosion, the product
   as the hero, few effects from our own story, Polar's score as the music reference), what worked, the lessons, and
   every tool pin. `film/` keeps the trial composition and `film/trial-1-contact-sheet.png`.
-- **Waiting on the user:** the rest of their notes on the trial, the Public page being finished, and their go for
-  the real film. Do not start a redesign before that go (DECISIONS items 26–28).
+- **Waiting on the user:** answers to the coordinator's questions on why the trial's opening, navigation and device
+  transition felt wrong, the pages the demo needs being finished, and their go for the real film. Do not start a redesign before that go (DECISIONS items 26–28).
 
 ## How the work runs
 - The main session is the coordinator only. Keep its context lean and delegate.

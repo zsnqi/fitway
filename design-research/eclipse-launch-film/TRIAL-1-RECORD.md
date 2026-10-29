@@ -1,8 +1,9 @@
 # Trial 1: what the first Eclipse film taught us
 
 Trial 1 ran 2026-10-28 to 2026-10-29. The user closed it as an experiment that set the direction: "the experiment was
-excellent and taught us a lot". No fix is applied to it. The real film starts when the user says so, after the Public
-page is finished, and it shows Public as well as Owner (DECISIONS items 27–28). Read this file before planning that
+excellent and taught us a lot". No fix is applied to it. Its lessons are used once the pages the demo needs (Public among
+them) are finished; the real film starts when the user says so and shows Public as well as Owner (DECISIONS items
+27–28). Read this file before planning that
 film. User notes still to come are added under "The user's notes".
 
 ## The user's notes on the trial render
@@ -12,7 +13,14 @@ film. User notes still to come are added under "The user's notes".
 - **The Busy times card on Reports:** the red light under and behind the card should be off. This is a note on
   Eclipse's design, carried for when Eclipse is next worked on; the film shows the pinned Eclipse (`fedbdb6d`), so
   nothing changed here.
-- **More notes to come.** The user said there are others, which is expected for a trial.
+- **The opening:** weak. There is no real entrance, and the first line's animation was bad.
+- **Daily's navigation:** the punch-in on the Inside now card, then back out to the page, then another zoom on the
+  chart did not feel smooth, and the moves between them were not good. The user questions the storyboard's way of
+  showing the product, not only the execution. The reasons are being clarified with the user.
+- **The devices:** the transition into the laptop and the phone is not good, and the device shots are still not good
+  enough after the item 20 fix. A better idea is welcome, and Blender (driven through Blender MCP once the user works
+  locally) is a candidate.
+- **The mark's construction:** could be better.
 
 ## The direction for the real film (user)
 - **Purpose:** the film presents the product: its beauty and its quality. The product is the hero, and every move
