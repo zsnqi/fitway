@@ -54,8 +54,9 @@ the whole width); the eye did not know where to start, the answer squeezed betwe
 two ways (a thin grey line above, a red fill below); too many type sizes; on the computer, the answer far on one side,
 the curve on the other, and empty gaps between them. The curve read badly («شكل المنحنى الطولي مب كويس»): time running
 top to bottom, its twisting shape, and its two halves. Its motion did not feel good either; the user prefers how the
-Owner Daily chart moves (its first-open intro, `spec/design-03-foundations-10-11.md` row MOT-10, in `index.html` and
-`daily.js` of the Eclipse folder). Before you report, look at your own frames for each of these. That direction made the page the day's timetable, the hours as rows from
+Owner Daily chart moves (its first-open intro: row MOT-10 of
+`design-research/owner-composition-exploration-r04/directions/eclipse/spec/design-03-foundations-10-11.md`, built in
+`index.html` and `daily.js` beside it). Before you report, look at your own frames for each of these. That direction made the page the day's timetable, the hours as rows from
 opening to closing with the current hour lit; its frames are
 `D:/fitway-temp/public-redesign-r01-direction-2/frames-final/final-phone-first.png` and `final-desktop-first.png`
 beside it.
