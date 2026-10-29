@@ -1,3 +1,4 @@
+// Resolve repository path references and validate their existence against Git.
 import { stat } from "node:fs/promises";
 import path from "node:path";
 import { readGit } from "./git-context.mjs";

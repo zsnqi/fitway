@@ -1,3 +1,4 @@
+// Extract declared concepts, check recipe maps, and verify drift in temporary trees.
 import { spawnSync } from "node:child_process";
 import {
 	existsSync,

@@ -1,3 +1,4 @@
+// Read gardener round, finding, and metrics TSV records into a survey.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 

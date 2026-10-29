@@ -1,3 +1,4 @@
+// Record verify-fitway server port binds and closes for contract tests.
 const { appendFileSync } = require("node:fs");
 const net = require("node:net");
 

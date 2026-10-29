@@ -1,3 +1,4 @@
+// Parse a brief's format header and recorded delivery target.
 const FORMAT =
 	/^<!-- brief-format: v1 role: (codex|builder|designer|verifier)(?: delivers: ([a-z]+))? -->(?:\r?\n|$)/;
 const CODEX_FORMAT =

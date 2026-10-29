@@ -1,3 +1,4 @@
+// Install browser helpers that collect and outline page items for belonging checks.
 export function installBelongingPageHelpers() {
 	const canvas = document.createElement("canvas");
 	const context = canvas.getContext("2d");

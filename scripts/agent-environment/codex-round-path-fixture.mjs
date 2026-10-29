@@ -1,3 +1,4 @@
+// Find a drive path that exposes an abbreviated Windows path for fixture tests.
 import { spawnSync } from "node:child_process";
 import { readdirSync } from "node:fs";
 import path from "node:path";

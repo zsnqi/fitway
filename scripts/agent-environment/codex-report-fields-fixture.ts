@@ -1,3 +1,4 @@
+// Build Codex report event, message, and launcher fixtures for report-field tests.
 import { execFileSync } from "node:child_process";
 import {
 	mkdtempSync as createTempDirSync,

@@ -1,3 +1,4 @@
+// Hold command-specific help text and evidence-folder command notes.
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 

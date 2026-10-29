@@ -1,3 +1,4 @@
+// Generate or check the agent-tooling code map through the CLI contract.
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 import { beginToolCommand } from "./tool-contract.mjs";

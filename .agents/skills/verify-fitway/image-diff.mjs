@@ -1,3 +1,4 @@
+// Compare two images through the image diff map and report changed regions.
 import { createHash } from "node:crypto";
 import { readFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";

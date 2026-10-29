@@ -1,3 +1,4 @@
+// Read, write, and evaluate the code-health baseline and its allowed exceptions.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";

@@ -1,3 +1,4 @@
+// Write and run a fake Codex executable for launcher tests.
 import { spawnSync } from "node:child_process";
 import { chmodSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";

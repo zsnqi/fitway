@@ -1,3 +1,4 @@
+// Run a verify-fitway capture plan and record its comparison evidence.
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";

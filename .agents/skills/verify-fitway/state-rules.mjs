@@ -1,3 +1,4 @@
+// Validate and match recipe state transitions by language and query.
 const isRecord = (value) =>
 	value !== null && typeof value === "object" && !Array.isArray(value);
 

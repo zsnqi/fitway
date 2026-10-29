@@ -1,3 +1,4 @@
+// Run the repository's registered fast, phase, or full verification ladder.
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import {

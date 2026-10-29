@@ -1,3 +1,4 @@
+// Resolve real and not-yet-created paths into stable identity keys.
 import { realpath } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";

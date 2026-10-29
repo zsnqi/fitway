@@ -1,3 +1,4 @@
+// Create disposable Git repositories and health files for code-health tests.
 import { execFileSync, spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import { tmpdir } from "node:os";

@@ -1,3 +1,4 @@
+// Validate milestone resume-point files, sections, citations, and size limits.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { inspectPath } from "../agent-context-paths.mjs";

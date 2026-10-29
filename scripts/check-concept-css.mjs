@@ -1,3 +1,4 @@
+// Lint concept CSS for interaction, transition, and focus-ring rules.
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";

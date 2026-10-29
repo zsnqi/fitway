@@ -1,3 +1,4 @@
+// Aggregate code-health scans, linked-file resolution, and baseline measures.
 import path from "node:path";
 import ts from "typescript";
 import {

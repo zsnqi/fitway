@@ -1,3 +1,4 @@
+// Run verification jobs concurrently while preserving input order and failure order.
 // Start in input order and finish active jobs before command-owned cleanup.
 async function runWorkers(jobs, count, onFailure) {
 	let next = 0;

@@ -1,3 +1,4 @@
+// Validate and remove an unneeded gardener worktree without losing cited evidence.
 import { realpath, unlink } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

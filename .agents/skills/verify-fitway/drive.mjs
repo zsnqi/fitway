@@ -1,3 +1,4 @@
+// Prove page states, actions, keyboard reach, focus, and feature outcomes.
 import { outputFile } from "./core.mjs";
 
 async function prove(page, proof, language) {

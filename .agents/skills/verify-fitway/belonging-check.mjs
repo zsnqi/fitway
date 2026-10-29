@@ -1,3 +1,4 @@
+// Run the belonging layout check across recipe pages, states, and widths.
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";

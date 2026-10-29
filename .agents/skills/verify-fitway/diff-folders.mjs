@@ -1,3 +1,4 @@
+// Compare PNG folders and write folder image differences.
 import { resolve } from "node:path";
 import { ReportedFailure } from "./core.mjs";
 import { diffImages } from "./image-diff.mjs";

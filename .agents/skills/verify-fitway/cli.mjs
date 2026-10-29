@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Parse and run verify-fitway CLI commands for comparison, measurement, and evidence.
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import {

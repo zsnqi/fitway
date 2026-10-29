@@ -1,3 +1,4 @@
+// Plan and apply safe pruning of gardener evidence folders and captures.
 import { existsSync, realpathSync } from "node:fs";
 import { lstat, readdir, readFile, rm, unlink } from "node:fs/promises";
 import path from "node:path";

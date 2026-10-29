@@ -1,3 +1,4 @@
+// Define the agent tool commands, options, help, and exit contracts.
 import {
 	CODEX_ROUND_NOTES,
 	CONCEPT_CSS_NOTES,

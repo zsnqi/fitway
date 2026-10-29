@@ -1,3 +1,4 @@
+// Serialize verify-fitway cache publication and remove folders inside cache root.
 import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { canonical, claimResource, inside } from "./core.mjs";

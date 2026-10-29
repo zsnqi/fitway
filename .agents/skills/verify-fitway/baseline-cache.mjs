@@ -1,3 +1,4 @@
+// Cache and merge verify-fitway captures with bounded disk eviction.
 import {
 	mkdir,
 	readdir,

@@ -1,3 +1,4 @@
+// Record child-process and file mutations during tool-contract tests.
 const childProcess = require("node:child_process");
 const fs = require("node:fs");
 

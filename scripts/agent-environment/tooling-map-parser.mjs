@@ -1,3 +1,4 @@
+// Select mapped source files and read their leading comments and exports.
 import path from "node:path";
 import process from "node:process";
 import ts from "typescript";

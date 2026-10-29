@@ -1,3 +1,4 @@
+// Share browser, preview, and upstream HTTP resources across comparison captures.
 import { Agent, request } from "node:http";
 import { preview } from "./core.mjs";
 

@@ -1,3 +1,4 @@
+// Parse source files into code-health function, type, and suppression measures.
 import path from "node:path";
 import ts from "typescript";
 

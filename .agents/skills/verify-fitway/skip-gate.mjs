@@ -1,3 +1,4 @@
+// Turn skipped Windows verification tests into failures through a test wrapper.
 import { before } from "node:test";
 
 const violations = new Set();

@@ -1,3 +1,4 @@
+// Validate a fresh gardener survey output folder outside worktrees and temp root.
 import { existsSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";

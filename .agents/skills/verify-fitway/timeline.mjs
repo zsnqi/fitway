@@ -1,3 +1,4 @@
+// Observe and advance page clocks for deterministic timeline captures.
 import { writeFile } from "node:fs/promises";
 import { outputFile } from "./core.mjs";
 

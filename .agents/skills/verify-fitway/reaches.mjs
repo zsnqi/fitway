@@ -1,3 +1,4 @@
+// Hash files and trace CSS and script references to reached concept pages.
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { extname, resolve } from "node:path";

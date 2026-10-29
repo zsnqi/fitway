@@ -1,3 +1,4 @@
+// Read Git context and warn when the local branch is behind its upstream.
 import { execFileSync } from "node:child_process";
 
 export function readGit(repositoryRoot, args) {

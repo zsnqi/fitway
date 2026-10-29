@@ -1,3 +1,4 @@
+// Merge text fragments and analyze row belonging and overlap geometry.
 const sameLine = (left, right) => {
 	const leftCenter = (left.top + left.bottom) / 2;
 	const rightCenter = (right.top + right.bottom) / 2;

@@ -1,3 +1,4 @@
+// Resolve a concept and run verify-fitway page captures into command output.
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
