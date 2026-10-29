@@ -254,6 +254,51 @@ describe("tracked temp citation audit", () => {
 		}
 	});
 
+	it("leaves a listed citation on an unchanged line out of the unchanged count", async () => {
+		const f = checkoutFixture("gardener-cited-evidence-");
+		try {
+			const listedMissing = path.join(f.tempRoot, "gone", "listed");
+			const unlistedMissing = path.join(f.tempRoot, "gone", "unlisted");
+			const listedPath = listedMissing.replaceAll("\\", "/").toLowerCase();
+			const trackedFiles = [
+				"PROJECT_STATE.yaml",
+				"record.txt",
+				lostEvidencePath,
+			];
+			writeFileSync(
+				path.join(f.checkout, "record.txt"),
+				`Listed: \`${listedMissing}\`\n`,
+			);
+			writeLostEvidence(f.checkout, [
+				{ path: listedPath, record: "record.txt", line: 1 },
+			]);
+			f.commit();
+			const listedOnly = await auditFiles(f, trackedFiles);
+			expect(listedOnly.listed).toHaveLength(1);
+			expect(listedOnly.changed).toEqual([]);
+			expect(listedOnly.unchanged).toEqual([]);
+
+			writeFileSync(
+				path.join(f.checkout, "record.txt"),
+				`Listed: \`${listedMissing}\`\nUnlisted: \`${unlistedMissing}\`\n`,
+			);
+			f.commit();
+			const beside = await auditFiles(f, trackedFiles);
+			expect(beside.listed).toHaveLength(1);
+			expect(beside.changed).toEqual([]);
+			expect(beside.unchanged).toHaveLength(1);
+			expect(beside.unchanged[0]).toMatchObject({
+				line: 2,
+				source: "record.txt",
+			});
+			expect(beside.unchanged[0].path.toLowerCase()).toBe(
+				unlistedMissing.replaceAll("\\", "/").toLowerCase(),
+			);
+		} finally {
+			f.dispose();
+		}
+	});
+
 	it("rejects a returned listed path and a row whose record dropped it", async () => {
 		const f = checkoutFixture("gardener-cited-evidence-");
 		try {

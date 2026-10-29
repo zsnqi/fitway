@@ -28,7 +28,6 @@ function lostEvidenceError(row, message) {
 }
 
 function parseLostTempEvidence(text) {
-	if (text === null) return [];
 	const lines = text.split(/\r?\n/);
 	if (lines.at(-1) === "") lines.pop();
 	if (!lines.length) {
@@ -85,7 +84,16 @@ function rowCitationKey(row) {
 	return `${row.record}\0${key(row.path)}`;
 }
 
-function assertLostEvidenceRows(rows, records, { exists, tempRoot }) {
+function rowCountsByCitation(rows) {
+	const counts = new Map();
+	for (const row of rows) {
+		const citationKey = rowCitationKey(row);
+		counts.set(citationKey, (counts.get(citationKey) ?? 0) + 1);
+	}
+	return counts;
+}
+
+function assertLostEvidenceRows(rows, declared, records, { exists, tempRoot }) {
 	const citationCounts = new Map();
 	for (const record of records) {
 		for (const citation of pathCitations(record, { tempRoot })) {
@@ -99,7 +107,6 @@ function assertLostEvidenceRows(rows, records, { exists, tempRoot }) {
 			);
 		}
 	}
-	const declared = new Map();
 	for (const row of rows) {
 		if (!inside(tempRoot, row.path)) {
 			throw lostEvidenceError(
@@ -107,8 +114,6 @@ function assertLostEvidenceRows(rows, records, { exists, tempRoot }) {
 				`path is outside ${tempRoot}: ${row.path}`,
 			);
 		}
-		const citationKey = rowCitationKey(row);
-		declared.set(citationKey, (declared.get(citationKey) ?? 0) + 1);
 	}
 	for (const [citationKey, count] of declared) {
 		const current = citationCounts.get(citationKey) ?? 0;
@@ -223,7 +228,8 @@ export async function auditTempCitations({
 	const sources =
 		records ??
 		(await collectTrackedCitationRecords({ checkout, trackedFiles }));
-	assertLostEvidenceRows(rows, sources, { exists, tempRoot });
+	const rowCounts = rowCountsByCitation(rows);
+	assertLostEvidenceRows(rows, rowCounts, sources, { exists, tempRoot });
 	const integrationBase = citationIntegrationBase(checkout, readGit);
 	if (!exists(tempRoot)) {
 		return {
@@ -253,11 +259,7 @@ export async function auditTempCitations({
 		}
 		return { ...citation, changed: lines.has(citation.line) };
 	});
-	const availableRows = new Map();
-	for (const row of rows) {
-		const citationKey = rowCitationKey(row);
-		availableRows.set(citationKey, (availableRows.get(citationKey) ?? 0) + 1);
-	}
+	const availableRows = new Map(rowCounts);
 	const listed = [];
 	const unlisted = [];
 	for (const citation of withChanges) {
@@ -281,7 +283,7 @@ export async function auditTempCitations({
 		listed,
 		rows,
 		tempRoot,
-		unchanged: withChanges.filter((citation) => !citation.changed),
+		unchanged: unlisted.filter((citation) => !citation.changed),
 		unlisted,
 	};
 }

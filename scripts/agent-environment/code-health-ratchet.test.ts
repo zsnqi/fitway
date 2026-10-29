@@ -95,13 +95,6 @@ function day(offset: number) {
 	return date.toISOString().slice(0, 10);
 }
 
-function repeatedSource(prefix: string) {
-	return Array.from(
-		{ length: 8 },
-		(_, index) => `const ${prefix}${index} = ${index};`,
-	).join("\n");
-}
-
 function sourceLines(count: number, prefix: string) {
 	return Array.from(
 		{ length: count },
@@ -127,7 +120,7 @@ function committedConceptFixture() {
 	return { concept, page, root, script };
 }
 
-function admittedConceptFixture({ commit = true } = {}) {
+function admittedConceptFixture() {
 	const fixture = committedConceptFixture();
 	const reason = "Concept pages grew on the long-lived branch";
 	write(fixture.root, fixture.page, sourceLines(900, "page"));
@@ -143,10 +136,8 @@ function admittedConceptFixture({ commit = true } = {}) {
 	const baseline = JSON.parse(
 		readFileSync(path.join(fixture.root, baselinePath), "utf8"),
 	);
-	if (commit) {
-		git(fixture.root, "add", "--all");
-		git(fixture.root, "commit", "-qm", "admit concept pages");
-	}
+	git(fixture.root, "add", "--all");
+	git(fixture.root, "commit", "-qm", "admit concept pages");
 	return { ...fixture, baseline, reason };
 }
 
@@ -540,7 +531,7 @@ describe("code-health ratchet commands", () => {
 
 	it("N2 counts a third copy in one file, including inserted blanks", () => {
 		const root = fixture();
-		const block = repeatedSource("copy");
+		const block = sourceLines(8, "copy");
 		write(root, "scripts/copy.ts", `${block}\n${block}\n`);
 		writeBaseline(root);
 		const copyWithBlankLines = block.split("\n").join("\n\n");
@@ -558,7 +549,7 @@ describe("code-health ratchet commands", () => {
 
 	it("N2 raises the count of a second file that receives another copy", () => {
 		const root = fixture();
-		const block = repeatedSource("other");
+		const block = sourceLines(8, "other");
 		write(root, "scripts/a.ts", `${block}\n`);
 		write(root, "scripts/b.ts", `${block}\n`);
 		writeBaseline(root);
