@@ -1,0 +1,157 @@
+/* FITWAY public crowd page, Eclipse, first options (public-redesign-r01). Loaded after style.css, whose tokens, lights,
+ * focus ring and press it uses as they are (DESIGN-SPEC.md section 1): no new token, no Owner rule changed. Every
+ * selector here is the public page's own (.pub, .pa, .pb, .pc and their parts). */
+
+/* ------------------------------------------------------------------ the page and its frame */
+.pub { min-height: 100vh; }
+.pub-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+.pub-col { width: 100%; max-width: var(--col, none); margin-inline: auto; }
+@media (min-width: 721px) {
+  .pub-col { --col: 760px; }
+}
+/* The frame is the brand, the language switch and the gym's name (r04 DECISIONS item 90, P5): no rail, bar or header. */
+.pub-frame { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; }
+.pub-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+.pub-brand svg { width: 28px; height: 28px; flex: none; }
+.pub-brand .mk { fill: none; stroke: var(--red); stroke-linecap: butt; }
+.pub-brand .mk-dot { fill: var(--red); stroke: none; }
+.pub-lang {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: var(--tile);
+  color: var(--ink-2);
+}
+@media (hover: hover) { .pub-lang:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); } }
+.pub-gym { margin-block-start: 24px; font-size: 19px; line-height: 28.5px; font-weight: 500; }
+@media (min-width: 721px) { .pub-gym { margin-block-start: 32px; font-size: 30px; line-height: 36px; } }
+.pub-reading { margin-block-start: 16px; }
+
+/* ------------------------------------------------------------------ the shared parts */
+/* The status (STW-1): live, the green dot; delayed, the amber clock; closed, a hollow ring. Label type. */
+.st { display: flex; align-items: center; gap: 8px; min-height: 20px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.st-w { font-weight: 500; color: var(--ink); }
+.st .dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--live); }
+.st .dot.ring { background: none; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.st .ico { color: var(--delayed); }
+.st .sep { margin-inline: 0; }
+.st.is-stale .st-f, .ago { color: #e8b62e; }
+.lbl { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+/* Display type (TYP-3): the band word and the count, 46 / 46 at 500, chalk; dimmed with the value while stale (LVL-6). */
+.bw, .big { font-size: 46px; line-height: 46px; font-weight: 500; color: var(--ink); text-wrap: balance; }
+.big { display: inline-block; white-space: nowrap; }
+[data-state="stale"] :is(.bw, .big) { color: var(--ink-2); }
+.tm { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.tm .sep { margin-inline: 8px; }
+.t { white-space: nowrap; }
+.note { margin-block-start: 4px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+/* A digit that changes rolls inside its own ink box (MOT-2): the slot is one em tall at any text size, its window the
+ * digits' cap line to baseline, and a digit travels that window's height, so two digits never overlap. */
+.roll { display: inline-block; position: relative; line-height: 1; clip-path: inset(0.12em -0.1em 0.14em -0.1em); }
+.roll-old { position: absolute; inset: 0; }
+
+/* ------------------------------------------------------------------ a: the sheet */
+/* One plate holds the five answers in ruled rows, in order; it carries the page's summary light while live. */
+.pa { padding: 4px 20px; }
+.pa-r { padding-block: 16px; }
+.pa-r + .pa-r { border-block-start: 1px solid var(--line); }
+.pa .v { margin-block-start: 8px; }
+.pa-open .big { margin-block-start: 8px; }
+.track-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.tu { display: grid; align-content: start; gap: 8px; min-width: 0; }
+/* The unit is its own plate (SRF-5): the unlit step is drawn over the opaque card colour, so a light never tints it. */
+.tu-bar {
+  position: relative;
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: linear-gradient(rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.16)), var(--card-solid);
+}
+.fl { position: absolute; inset: 0; display: block; border-radius: inherit; background: var(--red); transform: scaleX(0); }
+[dir="rtl"] .tu .fl { transform-origin: right center; }
+[dir="ltr"] .tu .fl { transform-origin: left center; }
+.tu.on .fl { transform: none; }
+.tu.cur .fl { background: var(--red-hi); }
+[data-state="stale"] .tu.on .fl { background: #8f898b; }
+.tu-w { font-size: 12px; line-height: 18px; color: var(--ink-3); text-wrap: balance; }
+/* LGT-9: a word inside the plate's light is --ink-2 or brighter. */
+.pa.lit .tu-w { color: var(--ink-2); }
+.tu.cur .tu-w { color: var(--ink); font-weight: 500; }
+[data-state="stale"] .tu.cur .tu-w { color: var(--ink-2); }
+@media (min-width: 721px) {
+  .pa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 8px 32px; }
+  .pa-r { grid-column: 1 / -1; padding-block: 24px; }
+  .pa-band { grid-column: 1; }
+  .pa-count { grid-column: 2; padding-inline-start: 32px; border-inline-start: 1px solid var(--line); }
+  .pa-band + .pa-count { border-block-start: 0; }
+  .pa-band { padding-inline-end: 32px; }
+}
+
+/* ------------------------------------------------------------------ b: the dial */
+/* A data-lit card: the U of light cups the half ring. The band word sits on the ring's chord, the count under it. */
+.pb { display: grid; justify-items: center; padding: 20px 20px 24px; text-align: center; }
+.pb > .st { justify-self: start; }
+/* The ring reaches 8 px from the card's edges, so the band word has the hollow's full width (EN "Moderate" at 320). */
+.pb-g { position: relative; width: calc(100% + 24px); max-width: 380px; margin: 16px -12px 0; container-type: inline-size; display: grid; justify-items: center; }
+.dial { position: absolute; inset: 0 0 auto 0; }
+.dial-svg { display: block; width: 100%; height: auto; overflow: visible; }
+[dir="rtl"] .dial-svg { transform: scaleX(-1); }
+.dial-svg path { fill: none; stroke-width: 15; stroke-linecap: butt; }
+.ds-plate { stroke: var(--card-solid); }
+.ds-off { stroke: rgb(255 255 255 / 0.16); }
+.ds-on { stroke: var(--red); stroke-dasharray: 1; stroke-dashoffset: 1; }
+.ds-on.on { stroke-dashoffset: 0; }
+.ds-on.cur { stroke: var(--red-hi); }
+[data-state="stale"] .ds-on.on { stroke: #8f898b; }
+/* The word stands on the chord, where the hollow is widest. */
+.pb-band { position: relative; z-index: 1; margin-block-start: calc(50cqw - 40px); max-width: 82cqw; }
+.pb-n { position: relative; z-index: 1; margin-block-start: 16px; }
+.pb-k { position: relative; z-index: 1; margin-block-start: 8px; }
+.pb-tm { margin-block-start: 24px; }
+.pb-open { margin-block-start: 24px; }
+.pb-open .big { margin-block-start: 8px; }
+@media (min-width: 721px) {
+  .pb { padding: 24px 32px 32px; }
+  .pb-g { width: 480px; max-width: calc(100% + 24px); margin-block-start: 8px; }
+  .dial-svg path { stroke-width: 13; }
+}
+
+/* ------------------------------------------------------------------ c: the stair */
+/* No card: the answers stand on the page under its wash, and CHP-5's four bars stand at the page's scale below them,
+ * in the badge's own proportions (a bar 3 wide, 2 apart, 4 / 6.5 / 9 / 11 tall), every lit bar #FF2946. */
+.pc { display: grid; }
+.pc-txt { display: grid; justify-items: start; }
+.pc-band { margin-block-start: 24px; }
+.pc-n { margin-block-start: 24px; }
+.pc-txt .lbl { margin-block-start: 8px; }
+.stair { margin-block-start: 40px; container-type: inline-size; }
+.stair-in { display: flex; align-items: flex-end; gap: calc(100cqw / 9); height: calc(100cqw * 11 / 18); }
+.sb { position: relative; display: block; flex: 1 1 0; border-radius: 8px; overflow: hidden; background: rgb(255 255 255 / 0.16); }
+.sb:nth-child(1) { height: calc(400% / 11); }
+.sb:nth-child(2) { height: calc(650% / 11); }
+.sb:nth-child(3) { height: calc(900% / 11); }
+.sb:nth-child(4) { height: 100%; }
+.sb .fl { background: var(--red-hi); transform: scaleY(0); transform-origin: center bottom; }
+.sb.on .fl { transform: none; }
+[data-state="stale"] .sb.on .fl { background: #8f898b; }
+.pc-tm { margin-block-start: 24px; }
+.pc-open { margin-block-start: 24px; }
+.pc-open .big { margin-block-start: 8px; }
+@media (min-width: 721px) {
+  /* The stair stands at the inline end, as tall as the answers beside it (320 wide, so 196 tall). */
+  .pc { grid-template-columns: minmax(0, 1fr) 320px; column-gap: 48px; align-items: end; }
+  .pc-txt { grid-column: 1; }
+  .stair { grid-column: 2; margin-block-start: 0; }
+  .pc-tm { grid-column: 1 / -1; margin-block-start: 32px; padding-block-start: 16px; border-block-start: 1px solid var(--line); }
+  .pc.is-closed { grid-template-columns: 1fr; }
+}
