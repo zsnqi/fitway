@@ -687,8 +687,18 @@ export const TOOL_REGISTRY = Object.freeze([
 			"scripts/agent-environment/code-health-baseline.mjs",
 		),
 		purpose: "Write the code-health baseline.",
-		usage: "pnpm code-health:baseline",
-		options: [],
+		usage: "pnpm code-health:baseline [--admit <folder> --reason <text>]",
+		options: [
+			value(
+				"--admit",
+				"Admit rises in one folder named by the committed baseline giantRoots.",
+				{ sample: "design-research/concept" },
+			),
+			value("--reason", "Reason recorded for an admission.", {
+				freeText: true,
+				sample: "Branched concept pages diverged from the baseline.",
+			}),
+		],
 		exitCodes: exits([0, "Baseline written."], [1, "Baseline refused."]),
 	}),
 	packageEntry({

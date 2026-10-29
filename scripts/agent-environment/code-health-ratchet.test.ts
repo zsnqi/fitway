@@ -95,11 +95,50 @@ function day(offset: number) {
 	return date.toISOString().slice(0, 10);
 }
 
-function repeatedSource(prefix: string) {
+function sourceLines(count: number, prefix: string) {
 	return Array.from(
-		{ length: 8 },
+		{ length: count },
 		(_, index) => `const ${prefix}${index} = ${index};`,
 	).join("\n");
+}
+
+function committedConceptFixture() {
+	const root = fixture();
+	const concept = "design-research/concept";
+	const page = `${concept}/page.js`;
+	const script = "scripts/sample.ts";
+	write(
+		root,
+		".agents/skills/verify-fitway/concept-source.json",
+		`${JSON.stringify({ concept })}\n`,
+	);
+	write(root, page, sourceLines(801, "page"));
+	write(root, script, sourceLines(801, "script"));
+	writeBaseline(root);
+	git(root, "add", "--all");
+	git(root, "commit", "-qm", "baseline");
+	return { concept, page, root, script };
+}
+
+function admittedConceptFixture() {
+	const fixture = committedConceptFixture();
+	const reason = "Concept pages grew on the long-lived branch";
+	write(fixture.root, fixture.page, sourceLines(900, "page"));
+	const result = run(
+		baselineScript,
+		fixture.root,
+		"--admit",
+		fixture.concept,
+		"--reason",
+		reason,
+	);
+	expect(result.status, result.stderr).toBe(0);
+	const baseline = JSON.parse(
+		readFileSync(path.join(fixture.root, baselinePath), "utf8"),
+	);
+	git(fixture.root, "add", "--all");
+	git(fixture.root, "commit", "-qm", "admit concept pages");
+	return { ...fixture, baseline, reason };
 }
 
 describe("code-health ratchet commands", () => {
@@ -223,6 +262,128 @@ describe("code-health ratchet commands", () => {
 		);
 		expect(result.stdout).toContain(
 			"split by section into files a reader opens one at a time",
+		);
+	});
+
+	it("requires a non-empty reason for an admission", () => {
+		const { concept, page, root } = committedConceptFixture();
+		write(root, page, sourceLines(900, "page"));
+		for (const reason of [null, "   "]) {
+			const args =
+				reason === null
+					? ["--admit", concept]
+					: ["--admit", concept, "--reason", reason];
+			const result = run(baselineScript, root, ...args);
+			expect(result.status, result.stderr).toBe(1);
+			expect(result.stderr).toContain(
+				`--admit ${concept} requires a non-empty --reason`,
+			);
+		}
+	});
+
+	it("admits an existing giant root once with recorded old and new values", () => {
+		const { concept, page, root } = committedConceptFixture();
+		write(root, page, sourceLines(900, "page"));
+		const refused = run(baselineScript, root);
+		expect(refused.status, refused.stderr).toBe(1);
+		expect(refused.stderr).toContain(
+			`${page}: giantFiles baseline=801 current=900`,
+		);
+		const reason = "Concept pages grew on the long-lived branch";
+		const admitted = run(
+			baselineScript,
+			root,
+			"--admit",
+			concept,
+			"--reason",
+			reason,
+		);
+		expect(admitted.status, admitted.stderr).toBe(0);
+		const baseline = JSON.parse(
+			readFileSync(path.join(root, baselinePath), "utf8"),
+		);
+		expect(baseline.files[page]).toMatchObject({ giantFiles: 900 });
+		expect(baseline.admissions).toEqual([
+			{
+				folder: concept,
+				date: new Date().toISOString().slice(0, 10),
+				reason,
+				files: [{ file: page, measure: "giantFiles", old: 801, new: 900 }],
+			},
+		]);
+
+		const beforeCommit = run(checkScript, root);
+		expect(beforeCommit.status, beforeCommit.stderr).toBe(0);
+		git(root, "add", "--all");
+		git(root, "commit", "-qm", "admit concept pages");
+		const afterCommit = run(checkScript, root);
+		expect(afterCommit.status, afterCommit.stderr).toBe(0);
+
+		write(root, page, sourceLines(901, "page"));
+		const laterGrowth = run(checkScript, root);
+		expect(laterGrowth.status, laterGrowth.stderr).toBe(1);
+		expect(laterGrowth.stdout).toContain(
+			`${page}: giantFiles baseline=900 current=901`,
+		);
+
+		write(root, page, sourceLines(850, "page"));
+		expect(writeBaseline(root).admissions).toEqual(baseline.admissions);
+		const duplicate = run(
+			baselineScript,
+			root,
+			"--admit",
+			concept,
+			"--reason",
+			"again",
+		);
+		expect(duplicate.status, duplicate.stderr).toBe(1);
+		expect(duplicate.stderr).toContain(
+			`already admitted on ${baseline.admissions[0].date}: ${reason}`,
+		);
+		const wrongFolder = run(
+			baselineScript,
+			root,
+			"--admit",
+			"scripts",
+			"--reason",
+			"not a giant root",
+		);
+		expect(wrongFolder.status, wrongFolder.stderr).toBe(1);
+		expect(wrongFolder.stderr).toContain(
+			"--admit scripts is not in the committed baseline giantRoots",
+		);
+	});
+
+	it("rejects hand inflation in an admitted baseline", () => {
+		const { root, script } = admittedConceptFixture();
+		const baseline = JSON.parse(
+			readFileSync(path.join(root, baselinePath), "utf8"),
+		);
+		baseline.files[script] = { giantFiles: 802 };
+		write(root, baselinePath, `${JSON.stringify(baseline, null, "\t")}\n`);
+		const inflation = run(checkScript, root);
+		expect(inflation.status, inflation.stderr).toBe(1);
+		expect(inflation.stdout).toContain(
+			"working baseline inflation: scripts/sample.ts: giantFiles baseline=801 current=802",
+		);
+	});
+
+	it("does not admit another rise made in the same baseline run", () => {
+		const { concept, page, root, script } = committedConceptFixture();
+		write(root, page, sourceLines(900, "page"));
+		write(root, script, sourceLines(802, "script"));
+
+		const admitted = run(
+			baselineScript,
+			root,
+			"--admit",
+			concept,
+			"--reason",
+			"concept growth",
+		);
+		expect(admitted.status, admitted.stderr).toBe(1);
+		expect(admitted.stderr).toContain(
+			"scripts/sample.ts: giantFiles baseline=801 current=802",
 		);
 	});
 
@@ -370,7 +531,7 @@ describe("code-health ratchet commands", () => {
 
 	it("N2 counts a third copy in one file, including inserted blanks", () => {
 		const root = fixture();
-		const block = repeatedSource("copy");
+		const block = sourceLines(8, "copy");
 		write(root, "scripts/copy.ts", `${block}\n${block}\n`);
 		writeBaseline(root);
 		const copyWithBlankLines = block.split("\n").join("\n\n");
@@ -388,7 +549,7 @@ describe("code-health ratchet commands", () => {
 
 	it("N2 raises the count of a second file that receives another copy", () => {
 		const root = fixture();
-		const block = repeatedSource("other");
+		const block = sourceLines(8, "other");
 		write(root, "scripts/a.ts", `${block}\n`);
 		write(root, "scripts/b.ts", `${block}\n`);
 		writeBaseline(root);
