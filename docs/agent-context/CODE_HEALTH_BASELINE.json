@@ -82,7 +82,7 @@
 		},
 		".agents/skills/verify-fitway/cli.mjs": {
 			"longFunctions": 2,
-			"longFunctionLines": 262,
+			"longFunctionLines": 259,
 			"emptyBlocks": 2
 		},
 		".agents/skills/verify-fitway/cli.test.mjs": {
@@ -106,7 +106,7 @@
 		".agents/skills/verify-fitway/compare.mjs": {
 			"duplication": 6,
 			"longFunctions": 1,
-			"longFunctionLines": 805
+			"longFunctionLines": 799
 		},
 		".agents/skills/verify-fitway/core.mjs": {
 			"longFunctions": 1,
@@ -890,7 +890,7 @@
 			"expectCalls": 377
 		},
 		".agents/skills/verify-fitway": {
-			"testCases": 4
+			"testCases": 14
 		},
 		"apps/server/src": {
 			"testCases": 215,

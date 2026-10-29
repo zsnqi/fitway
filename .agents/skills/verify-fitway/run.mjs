@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
 import { relative, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { resolveCommandConcepts } from "./concept-source.mjs";
@@ -11,8 +11,6 @@ import {
 	reserveVerificationPorts,
 } from "./core.mjs";
 import { contextOptions } from "./drive-plan.mjs";
-
-const pageRoots = new WeakMap();
 
 export function newPageContextOptions(axes, sizes) {
 	const dimensions = sizes[axes.size];
@@ -41,30 +39,78 @@ function occurrences(text, from) {
 	return count;
 }
 
-export async function rewritePage(page, root, file, from, to, origin) {
-	const target = resolve(root, file);
-	if (!inside(canonical(root), canonical(target)))
-		throw new Error(`Rewrite source escapes the concept: ${file}`);
-	const source = await readFile(target, "utf8");
-	const count = occurrences(source, from);
-	if (count !== 1)
-		throw new Error(
-			`Rewrite source ${file} occurs ${count} times; expected exactly once.`,
-		);
-	const rewritten = source.replace(from, to);
-	const expected = `/${relative(root, target).split(sep).join("/")}`;
-	const pageOrigin = origin || new URL(page.url()).origin;
-	await page.route("**/*", async (route) => {
-		const request = new URL(route.request().url());
-		const pathname = decodeURIComponent(request.pathname).replaceAll("\\", "/");
-		if (request.origin !== pageOrigin || pathname !== expected)
-			return route.continue();
-		const response = await route.fetch();
-		await route.fulfill({ response, body: rewritten });
-	});
+function rewriteFailure(file, side, sides, from, count, earlier) {
+	const where = sides > 1 ? ` on the ${side}` : "";
+	const after = earlier
+		? ` in the text ${earlier} earlier rewrite${earlier === 1 ? "" : "s"} of it leave${earlier === 1 ? "s" : ""}`
+		: "";
+	return new Error(
+		`Rewrite of ${file}${where}: ${JSON.stringify(from)} occurs ${count} times${after}; expected exactly once.`,
+	);
 }
 
-async function startRun(options, { doctor }) {
+// rewrite(page, file, from, to) for any page: each request that page makes for
+// the file gets the text of the side whose origin the request goes to, after
+// every rewrite of that file on that page, in call order. Files on disk stay.
+export function createRewrite(sources, origins) {
+	const sides = Object.keys(origins).filter(
+		(side) => origins[side] && sources[side],
+	);
+	const pages = new WeakMap();
+	const serve = (texts) => async (route) => {
+		const request = new URL(route.request().url());
+		const side = sides.find((name) => origins[name] === request.origin);
+		const pathname = decodeURIComponent(request.pathname).replaceAll("\\", "/");
+		const entry = side && texts.get(`${side} ${pathname}`);
+		if (!entry) return route.continue();
+		const response = await route.fetch();
+		await route.fulfill({ response, body: entry.text });
+	};
+	return async (page, file, from, to) => {
+		const texts = pages.get(page) ?? new Map();
+		const staged = [];
+		for (const side of sides) {
+			const root = sources[side].concept;
+			const target = resolve(root, file);
+			if (!inside(canonical(root), canonical(target)))
+				throw new Error(`Rewrite source escapes the concept: ${file}`);
+			if (!existsSync(target)) continue;
+			const key = `${side} /${relative(root, target).split(sep).join("/")}`;
+			const current = texts.get(key) ?? {
+				text: readFileSync(target, "utf8"),
+				rewrites: 0,
+			};
+			const count = occurrences(current.text, from);
+			if (count !== 1)
+				throw rewriteFailure(
+					file,
+					side,
+					sides.length,
+					from,
+					count,
+					current.rewrites,
+				);
+			staged.push([
+				key,
+				{
+					text: current.text.replace(from, () => to),
+					rewrites: current.rewrites + 1,
+				},
+			]);
+		}
+		if (!staged.length)
+			throw new Error(`Rewrite source ${file} is not in the concept.`);
+		for (const [key, entry] of staged) texts.set(key, entry);
+		if (pages.has(page)) return;
+		pages.set(page, texts);
+		await page.route("**/*", serve(texts));
+	};
+}
+
+async function startRun(
+	options,
+	{ doctor, preview: serve = preview, reservePorts = reserveVerificationPorts },
+) {
 	const sources = resolveCommandConcepts(options, {
 		baseline: Boolean(options.baseline || options["baseline-ref"]),
 	});
@@ -76,19 +122,19 @@ async function startRun(options, { doctor }) {
 		port: ports[0],
 		quiet: true,
 	});
-	const lease = await reserveVerificationPorts(ports);
+	const lease = await reservePorts(ports);
 	let browser;
 	let buildPreview;
 	let baselinePreview;
 	try {
-		buildPreview = await preview({
+		buildPreview = await serve({
 			concept: sources.build.concept,
 			port: ports[0],
 			cache: options.cache || "no-store",
 			portLease: lease,
 		});
 		if (sources.baseline)
-			baselinePreview = await preview({
+			baselinePreview = await serve({
 				concept: sources.baseline.concept,
 				port: ports[1],
 				cache: options.cache || "no-store",
@@ -132,39 +178,32 @@ function runApi(runtime) {
 			newPageContextOptions(axes, sizes),
 		);
 		current.page.setDefaultTimeout(5000);
-		pageRoots.set(current.page, { sources, origins });
 		return current;
 	};
+	const served = Object.keys(origins).filter((side) => origins[side]);
 	const url = (side, page, query = {}) => {
-		if (!origins[side]) throw new Error(`No preview for side ${side}.`);
+		if (!origins[side])
+			throw new Error(
+				`url() has no side ${side}; this run serves ${served.join(" and ")}.`,
+			);
 		return ui.withParams(`${origins[side]}/${page}`, query);
-	};
-	const rewrite = (page, file, from, to) => {
-		const record = pageRoots.get(page);
-		if (!record) throw new Error("rewrite needs a page created by newPage.");
-		const current = new URL(page.url());
-		const side =
-			current.origin === record.origins.baseline ? "baseline" : "build";
-		const source = record.sources[side];
-		if (!source) throw new Error(`No preview for side ${side}.`);
-		return rewritePage(
-			page,
-			source.concept,
-			file,
-			from,
-			to,
-			record.origins[side],
-		);
 	};
 	return {
 		playwright: setup.loaded.pw,
 		browser,
 		url,
 		newPage,
-		rewrite,
+		rewrite: createRewrite(sources, origins),
 		concept: sources.build.concept,
 		baseline: sources.baseline?.concept,
 	};
+}
+
+function describeExport(value) {
+	if (value === null) return "null";
+	if (Array.isArray(value)) return "an array";
+	if (typeof value === "object") return "an object";
+	return `the ${typeof value} ${String(value).slice(0, 60)}`;
 }
 
 export async function runScript(options, services) {
@@ -172,8 +211,12 @@ export async function runScript(options, services) {
 	try {
 		const scriptPath = resolve(options.script);
 		const script = await import(pathToFileURL(scriptPath).href);
-		if (typeof script.default !== "function")
+		if (!("default" in script))
 			throw new Error(`Script has no default export: ${scriptPath}`);
+		if (typeof script.default !== "function")
+			throw new Error(
+				`Script's default export is ${describeExport(script.default)}, not a function: ${scriptPath}`,
+			);
 		const result = await script.default({
 			...runApi(runtime),
 			out: options.out,

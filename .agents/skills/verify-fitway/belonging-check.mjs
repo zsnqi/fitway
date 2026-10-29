@@ -5,39 +5,13 @@ import { belongingStates, belongingWidths } from "./belonging-plan.mjs";
 import { runBelongingFrames } from "./belonging-runner.mjs";
 import { resolveConceptSide } from "./concept-source.mjs";
 import {
-	canonical,
 	jsonOutput,
 	preview,
 	ReportedFailure,
 	verificationPort,
 } from "./core.mjs";
-import { extractDeclaredConcept } from "./drift-tree.mjs";
 import { axis } from "./drive-plan.mjs";
-import { repository } from "./map.mjs";
 import { loadProbes } from "./probes.mjs";
-
-function conceptSource(options) {
-	const selected = resolveConceptSide(options, "build", { required: false });
-	if (selected)
-		return {
-			extracted: selected,
-			concept: selected.concept,
-			commit: selected.commit,
-			recipes: selected.recipes,
-		};
-	const extracted = extractDeclaredConcept(repository, { cache: true });
-	console.log(
-		`CONCEPT ${extracted.reused ? "EXTRACT REUSED" : "EXTRACTED"}: ${extracted.concept}; commit ${extracted.commit}`,
-	);
-	return {
-		extracted,
-		concept: extracted.concept,
-		commit: extracted.commit,
-		recipes: options.recipes
-			? canonical(resolve(options.recipes))
-			: extracted.recipes,
-	};
-}
 
 const startupValue = (fix, parse) => {
 	try {
@@ -116,7 +90,7 @@ function resultSummary(source, widths, languages, frames, startedAt) {
 		concept: {
 			folder: source.concept,
 			commit: source.commit,
-			declared: source.extracted?.declaredConcept ?? null,
+			declared: source.declaredConcept ?? null,
 		},
 		widths,
 		languages,
@@ -142,7 +116,9 @@ export async function belongingCheck(options, services) {
 		axis(options.languages, "ar,en", ["ar", "en"]),
 	);
 	const widths = belongingWidths(options.widths);
-	const source = conceptSource(options);
+	const source = resolveConceptSide(options, "build", {
+		declaredDefault: true,
+	});
 	try {
 		const setup = await services.doctor({
 			...options,
@@ -182,6 +158,6 @@ export async function belongingCheck(options, services) {
 				`Belonging check found ${summary.findings.length} finding(s) or ${summary.totals.fail} failed frame(s); evidence ${out}`,
 			);
 	} finally {
-		source.extracted?.cleanup();
+		source.cleanup();
 	}
 }

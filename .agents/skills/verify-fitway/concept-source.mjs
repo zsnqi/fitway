@@ -19,7 +19,13 @@ const sideOptions = {
 	},
 };
 
-export function resolveConceptSide(options, side, { required = true } = {}) {
+// Neither option given: refuse, or with declaredDefault extract the declared
+// concept at this checkout's commit, as belonging-check does.
+export function resolveConceptSide(
+	options,
+	side,
+	{ declaredDefault = false } = {},
+) {
 	const names = sideOptions[side];
 	const folder = options[names.folder];
 	const ref = options[names.ref];
@@ -28,12 +34,12 @@ export function resolveConceptSide(options, side, { required = true } = {}) {
 			`Use --${names.folder} or --${names.ref}, not both.`,
 			`drop one of --${names.folder} or --${names.ref}`,
 		);
-	if (required && !folder && !ref)
+	if (!declaredDefault && !folder && !ref)
 		throw new ToolStartupError(
 			`Missing --${names.folder} or --${names.ref}.`,
 			`pass --${names.folder} <folder> or --${names.ref} <commit>`,
 		);
-	if (ref) {
+	if (!folder) {
 		const extracted = extractDeclaredConcept(repository, {
 			ref,
 			cache: true,
@@ -44,10 +50,11 @@ export function resolveConceptSide(options, side, { required = true } = {}) {
 		return {
 			...extracted,
 			concept: extracted.concept,
-			recipes: options[names.recipes] || extracted.recipes,
+			recipes: options[names.recipes]
+				? canonical(resolve(options[names.recipes]))
+				: extracted.recipes,
 		};
 	}
-	if (!folder) return null;
 	const concept = canonical(resolve(folder));
 	return {
 		concept,

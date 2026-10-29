@@ -16,6 +16,10 @@ export async function diffFolders(options, { tools, child }) {
 	const files = [...new Set([...a.keys(), ...b.keys()])].sort((left, right) =>
 		left.localeCompare(right),
 	);
+	if (!files.length)
+		throw new Error(
+			`No PNG in --a ${options.a} or --b ${options.b}; nothing was compared.`,
+		);
 	const counts = {
 		equal: 0,
 		different: 0,

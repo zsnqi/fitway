@@ -298,8 +298,10 @@ results. A difference or problem makes the command fail. Inspect its frames and 
 When no command makes the check, write the check as a script for `run`; the command owns the preview pair, browser,
 contexts and evidence folder. The default export receives `playwright`, `browser`, `url`, `newPage`, `rewrite`,
 `concept`, `baseline`, `out` and `args`. `newPage({size, language, input, motion, colours})` uses drive's context settings. Arguments after
-`--` arrive unchanged in `args`. `rewrite(page, file, from, to)` changes only the named file on that page and refuses
-unless `from` occurs exactly once in the concept file.
+`--` arrive unchanged in `args`. `rewrite(page, file, from, to)` works on any page and changes only the named file: each
+request that page makes for it gets the file of the side whose origin the request goes to, with every rewrite of it on
+that page applied in call order. It refuses unless `from` occurs exactly once, on each side holding the file, in the text
+the earlier rewrites leave. The files on disk do not change.
 
 ```javascript
 export default async ({ url, newPage }) => {
@@ -357,7 +359,7 @@ Verifier rules (one canonical statement):
 | extraction | `drift-tree.mjs` | `extractDeclaredConcept`, `CONCEPT_EXTRACTION_ROOT` |
 | port pairs | `core.mjs` | `verificationPairs`, `comparisonPorts`, `reserveVerificationPorts` |
 | output folders | `core.mjs` | `freshEmptyOutput`, `finishOutputManifest` |
-| custom run | `run.mjs` | `runScript`, `newPageContextOptions`, `rewritePage` |
+| custom run | `run.mjs` | `runScript`, `newPageContextOptions`, `createRewrite` |
 | exact image diff | `image-diff.mjs` | `diffImages` |
 | folder diff | `diff-folders.mjs` | `diffFolders` |
 | fixture copy | `fixture-copy.mjs` | `copyAllFixture`, `copyHelpFixture` |
@@ -373,5 +375,5 @@ Verifier rules (one canonical statement):
 | compare capture, verdict, or cache | `comparison-capture.test.mjs`, `compare-parallel.test.mjs`, or `invalidationCases` |
 | preview, port pair, or lease | the existing port and lifecycle cases in `cli.test.mjs` |
 | commit extraction | `concept-extraction-cache.test.mjs` |
-| output folder or provenance | `output-manifest.test.mjs` |
+| output folder or provenance | `output-manifest.test.mjs`, which runs each command through `fake-cli.mjs` |
 | this location map | `skill-navigation.test.mjs` |

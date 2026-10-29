@@ -17,6 +17,7 @@ import {
 	renderToolHelp,
 	resolveToolArguments,
 	ToolStartupError,
+	toolEntry,
 	toolStartupLine,
 } from "../../../scripts/agent-environment/tool-contract.mjs";
 import {
@@ -25,13 +26,12 @@ import {
 	requireForcedColors,
 } from "./colors.mjs";
 import { withOutputCommand } from "./command-output.mjs";
-import { compare } from "./compare.mjs";
+import { compare, validateCompareOptions } from "./compare.mjs";
 import { resolveConceptSide } from "./concept-source.mjs";
 import {
 	assertOutsideGit,
 	canonical,
 	checkVerificationLease,
-	comparisonPorts,
 	defaultLanAddresses,
 	freshOutput,
 	jsonOutput,
@@ -57,7 +57,6 @@ import {
 	refuseOutputArguments,
 	refuseServingSpecs,
 } from "./measure-arguments.mjs";
-import { timelineTimes } from "./timeline.mjs";
 
 const self = fileURLToPath(import.meta.url);
 export const help = renderToolHelp("verify:owner");
@@ -500,15 +499,7 @@ async function prepareMeasureOptions(options) {
 
 function preflight(command, options) {
 	if (command === "launch") verificationPort(options.port || 3176);
-	if (command === "compare") {
-		comparisonPorts(options);
-		timelineTimes(options["timeline-times"]);
-		if (options.session)
-			throw new ToolStartupError(
-				"compare owns its previews; omit --session.",
-				"drop --session; compare launches and stops its own previews",
-			);
-	}
+	if (command === "compare") validateCompareOptions(options);
 	if (command === "measure") {
 		refuseOutputArguments(options.extra);
 		refuseServingSpecs(options.extra);
@@ -536,17 +527,14 @@ function requireHeldForensics(options) {
 		);
 }
 
-const outputCommands = new Set([
-	"belonging-check",
-	"compare",
-	"diff-folders",
-	"drive",
-	"launch",
-	"map",
-	"measure",
-	"repair-recipes",
-	"run",
-]);
+// A command writes an output folder when the registry declares --out for it.
+function writesOutput(command) {
+	return Boolean(
+		toolEntry("verify:owner")
+			.commands.find((entry) => entry.name === command)
+			?.options.some((option) => option.key === "out"),
+	);
+}
 
 export async function main(input, services = {}) {
 	const parsed = Array.isArray(input)
@@ -571,7 +559,7 @@ export async function main(input, services = {}) {
 		await requireForcedColors(forensicsPath(options));
 	if (command === "measure") await prepareMeasureOptions(options);
 	preflight(command, options);
-	if (!outputCommands.has(command)) return dispatch(command, options, services);
+	if (!writesOutput(command)) return dispatch(command, options, services);
 	const out = options.out || freshOutput();
 	return withOutputCommand(
 		out,
@@ -589,6 +577,7 @@ export async function main(input, services = {}) {
 }
 
 async function dispatch(command, options, services) {
+	const owned = { doctor, ...services[command] };
 	if (command === "belonging-check")
 		return (await import("./belonging-check.mjs")).belongingCheck(options, {
 			doctor,
@@ -713,9 +702,7 @@ async function dispatch(command, options, services) {
 		return;
 	}
 	if (command === "run")
-		return (await import("./run.mjs")).runScript(options, {
-			doctor,
-		});
+		return (await import("./run.mjs")).runScript(options, owned);
 	if (command === "diff-folders")
 		return (await import("./diff-folders.mjs")).diffFolders(options, {
 			tools: forensicsPath(options),
@@ -743,9 +730,7 @@ async function dispatch(command, options, services) {
 	if (command === "launch") return launch(options);
 	if (command === "doctor") return doctor(options);
 	if (command === "drive")
-		return (await import("./drive-command.mjs")).driveCommand(options, {
-			doctor,
-		});
+		return (await import("./drive-command.mjs")).driveCommand(options, owned);
 	throw new Error(`Unknown command: ${command}; run help.`);
 }
 

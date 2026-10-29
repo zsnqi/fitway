@@ -76,8 +76,20 @@ async function capture(options, setup, out) {
 	}
 }
 
+// The one check of compare's own options; the CLI's preflight calls it too.
+export function validateCompareOptions(options) {
+	const ports = comparisonPorts(options);
+	timelineTimes(options["timeline-times"]);
+	if (options.session)
+		throw new ToolStartupError(
+			"compare owns its previews; omit --session.",
+			"drop --session; compare launches and stops its own previews",
+		);
+	return ports;
+}
+
 export async function compare(inputOptions, services) {
-	comparisonPorts(inputOptions);
+	validateCompareOptions(inputOptions);
 	const workers = Number(inputOptions.workers ?? 1);
 	return compareOwned({ ...inputOptions, workers }, services);
 }
@@ -92,15 +104,9 @@ async function compareOwned(
 			inputOptions.timeline || inputOptions["timeline-times"] !== undefined,
 		),
 	};
-	timelineTimes(options["timeline-times"]);
+	const ports = validateCompareOptions(options);
 	const out = options.out;
 	assertOutsideGit(out);
-	const ports = comparisonPorts(options);
-	if (options.session)
-		throw new ToolStartupError(
-			"compare owns its previews; omit --session.",
-			"drop --session; compare launches and stops its own previews",
-		);
 	// Preserve malformed-input diagnostics, but refuse an occupied valid input's
 	// pair before browser/tool/map prerequisite work.
 	if (

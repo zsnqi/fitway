@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, resolve } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import { diffFolders } from "./diff-folders.mjs";
 
 async function fakeDiff(_command, args) {
@@ -82,4 +84,37 @@ test("diff-folders reports nested equal, changed, size and only-a PNGs", async (
 		lines.at(-1),
 		/DIFF-FOLDERS SUMMARY: 1 equal; 1 different; 1 size; 1 only-a; 0 only-b/,
 	);
+});
+
+test("diff-folders fails when neither folder holds a PNG", async () => {
+	const root = await mkdtemp(resolve(tmpdir(), "verify-fitway-diff-empty-"));
+	try {
+		const a = resolve(root, "a");
+		const b = resolve(root, "b");
+		await mkdir(a);
+		await mkdir(resolve(b, "nested"), { recursive: true });
+		await writeFile(resolve(b, "nested/notes.txt"), "not a picture");
+		const result = spawnSync(
+			process.execPath,
+			[
+				fileURLToPath(new URL("./cli.mjs", import.meta.url)),
+				"diff-folders",
+				"--a",
+				a,
+				"--b",
+				b,
+				"--out",
+				resolve(root, "out"),
+			],
+			{ encoding: "utf8", windowsHide: true },
+		);
+		assert.equal(result.status, 1, result.stdout + result.stderr);
+		assert.match(
+			result.stderr,
+			/FAIL: No PNG in --a .* or --b .*; nothing was compared\./,
+		);
+		assert.doesNotMatch(result.stdout, /DIFF-FOLDERS SUMMARY/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
 });
