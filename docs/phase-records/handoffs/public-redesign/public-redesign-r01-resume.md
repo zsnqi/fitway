@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:40 +03:00 (main merged into the branch; the first round waits on its CI)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 15:55 +03:00 (the first round's three directions wait for the user's pick)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-2), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -14,37 +14,35 @@
   from the draft), and the register's `public` row at status 5 (measured: `pnpm check:repository` and `pnpm
   check:agent-context` pass at the opening commit). The drafts stay as provenance in
   `docs/phase-records/handoffs/owner-design-exploration/r04/public-page-paper/`.
-- Nothing is designed or built. The page lives in Eclipse's folder on `owner-followup-r04-build` (at `ef9fa810`), beside
-  the Owner pages.
+- The first round's three directions are built on `public-redesign-r01` (`cbff8300`, pushed), not yet chosen. The page
+  lives in Eclipse's folder, beside the Owner pages, and reaches `owner-followup-r04-build` through the merge.
 
 ## Running now
 
-CI on `adabebff` (measured 2026-10-29 14:40). The retro's four fixes are in (agent-tooling DECISIONS items 17-18), and
-the branch `public-redesign-r01` is pushed at `adabebff`: `ef9fa810` (the build branch, both specs and
-`NEXT-DIRECTION-BRIEF.md` split), then main `bc6b9464` merged (`ac0effa7`, no conflict; install done), then the
-concept folder's giant sizes admitted once into the code-health baseline with the date and the reason, and the packet's
-reference frame pinned to the build's `daily-ar-1440x900.png` (`563e1c83`; agent-tooling DECISIONS item 19). The
-branch tracks `origin/owner-followup-r04-build`, so gone citations compare from its merge base. At `adabebff`
-`pnpm check:code-health`, `pnpm check:repository` and `pnpm check:design-context` pass, and the commit passed the
-pre-commit hook; `pnpm check:repository` warns of 33 gone citations on the build's unchanged lines (its own briefs).
+Nothing (measured 2026-10-29 15:55). The first designer round is done: `owner-direction-designer` from
+`docs/phase-records/handoffs/public-redesign/briefs/designer-public-directions-1.md` (`99f56a8b`, frames through
+verify-fitway's `run`) built three options in one set of files,
+`public.html?option=a|b|c&state=fresh|stale|closed&lang=ar|en` (`cbff8300`): a, the sheet (one card, a four-step
+track with the band words); b, the dial (a half ring around the band word); c, the stair (CHP-5's four bars at page
+scale). Report, frames and the coordinator's contact sheets: `D:/fitway-temp/public-redesign-r01-directions-1/`
+(its REPORT.md and two folders). The coordinator checked the commit (three
+files) and the frames: no sideways scroll or clipping at 320 px and 200% zoom in 48 probe runs (the designer's); b
+reads like a gauge, c like a chart, and every option leaves the lower phone screen and most of the desktop black.
+LAN preview for the user's phones: the coordinator's local launch entry `public-redesign-lan`, port 3181 (the PC's address
+192.168.8.186 on 2026-10-29).
 
 ## Next steps
 
-1. **The first design round** (r04 item 99: no skeleton): two or three whole directions in Eclipse's style, each with
-   its own composition and level-mark form, at 390 px first, Arabic and English. Brief written:
-   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-directions-1.md` (`36879371`; it names
-   `settings-capture.mjs`'s shape and `overflowProbe` for the 320 px and zoom check, item 16 of agent-tooling;
-   revisit those pointers once verify-fitway's `run` lands). Worktree `D:/Projects/fitway-worktrees/public-redesign-r01`,
-   branch `public-redesign-r01` at `adabebff` with main merged and installed. At launch, once its CI passes: set the
-   brief's HEAD, run `pnpm brief:check`, commit, and start a fresh `owner-direction-designer`; the brief's pointers to
-   `DESIGN-SPEC.md` and `NEXT-DIRECTION-BRIEF.md` sections now reach them through their indexes. The frames go to the
-   user, who picks by eye.
-2. After the pick: the chosen direction across every state and width, `PUBLIC-SPEC.md` and §6, the verifier, the
-   user's acceptance; the smoothness check on the demo phone (item 90 P4).
+1. **The user's pick** among a, b and c, by eye (r04 item 99).
+2. After the pick: the chosen direction across every state and width (loading, unavailable and error too),
+   `PUBLIC-SPEC.md` and §6, the verifier, the user's acceptance; the smoothness check on the demo phone (item 90 P4).
+   With it, the designer's findings: `DO-NOT.md` ("Public stays light") and `DESIGN-SPEC.md` §6 ("mobile-first,
+   light") contradict item 90's dark page; the copy outside the glossary (five lines in the report) goes to the user;
+   the page loads the Owner pages' whole `style.css` (two class names clashed).
 
 ## Waiting on the user
 
-Nothing.
+The pick among the three directions (the frames and the LAN preview).
 
 ## Known risks
 
