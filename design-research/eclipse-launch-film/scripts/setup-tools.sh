@@ -15,14 +15,16 @@ clone_at() { # owner/repo commit [sparse-path]
 			GIT_LFS_SKIP_SMUDGE=1 git clone -q --depth 1 "https://github.com/$1" "$dir"
 		fi
 	fi
-	git -C "$dir" fetch -q --depth 1 origin "$2" && git -C "$dir" checkout -q "$2"
+	# A fetch by SHA needs the full 40-character id; a short one fails with "couldn't find remote ref".
+	git -C "$dir" fetch -q --depth 1 origin "$2"
+	git -C "$dir" checkout -q "$2"
 	echo "$1 @ $(git -C "$dir" rev-parse --short=12 HEAD)"
 }
 
-clone_at Leonxlnx/earshot 591fa3e02803
-clone_at Leonxlnx/cinetic ecfa6605de1a
-clone_at Leonxlnx/taste-skill 12af471f627f
-clone_at heygen-com/hyperframes 81959201f0ac skills
+clone_at Leonxlnx/earshot 591fa3e028032e6dce56620a20e932e35667e8d8
+clone_at Leonxlnx/cinetic ecfa6605de1adb9345ce937724810dc32267d068
+clone_at Leonxlnx/taste-skill 12af471f627f866411b4bd785b19646d3672784c
+clone_at heygen-com/hyperframes 81959201f0acb2e265e4d8c30daa89ffc1c9607d skills
 
 # earshot: the full install needs CPU torch (download.pytorch.org) and its models (huggingface.co). Without those hosts
 # only the model-free commands work (measure, sfx, kit), which is enough to make the sound.

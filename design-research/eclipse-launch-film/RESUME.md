@@ -50,6 +50,10 @@ order. Talk to the user in Arabic (Gulf dialect is fine), even though the files 
    - npm, PyPI and GitHub reads work.
    - earshot's listening commands (`describe`, `match`, `timeline`, `critique`, realness) need `huggingface.co` and
      `download.pytorch.org`. Without them, only `measure`, `sfx` and `kit` work.
+   - Both hosts are open since 2026-10-29. The script then does the full earshot install, and
+     `earshot doctor --fetch` downloads its two models (1.1 GB) into the earshot clone's `.cache/hf`. Hugging Face
+     downloads redirect to `us.aws.cdn.hf.co`. The old `cdn-lfs.huggingface.co` name no longer resolves, and nothing
+     needs it.
    - Chromium is preinstalled for Playwright.
 
 ## Ground truth to keep
