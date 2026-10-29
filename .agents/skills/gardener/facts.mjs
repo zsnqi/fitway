@@ -1,3 +1,4 @@
+// Gardener evidence, record, path, worktree, and gate facts from repository text.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";

@@ -1,3 +1,4 @@
+// Build, write, and compare the generated agent-tooling code map.
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";

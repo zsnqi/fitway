@@ -1,3 +1,4 @@
+// Load verify-fitway dependencies and discover page elements and imports.
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";

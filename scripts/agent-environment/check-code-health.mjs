@@ -1,3 +1,4 @@
+// Run the code-health baseline check and print allowance details.
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 import {

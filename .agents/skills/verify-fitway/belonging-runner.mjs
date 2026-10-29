@@ -1,3 +1,4 @@
+// Capture and crop belonging frames across pages, languages, and widths.
 import { analyzeBelongingItems } from "./belonging-geometry.mjs";
 import {
 	clearBelongingOutlines,

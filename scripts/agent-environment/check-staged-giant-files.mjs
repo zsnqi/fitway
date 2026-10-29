@@ -1,3 +1,4 @@
+// Check staged giant-file and giant-document growth against the indexed baseline.
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 import {

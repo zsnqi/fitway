@@ -1,3 +1,4 @@
+// Run read-only Git commands for gardener evidence with bounded output.
 import { execFileSync } from "node:child_process";
 
 export function readGit(args, cwd, { trimEnd = true } = {}) {

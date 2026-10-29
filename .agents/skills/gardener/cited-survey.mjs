@@ -1,3 +1,4 @@
+// Collect gone-citation, prune-plan, and new-temp-script survey evidence.
 import {
 	auditTempCitations,
 	collectTrackedCitationRecords,

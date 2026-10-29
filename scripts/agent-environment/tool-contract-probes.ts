@@ -1,3 +1,4 @@
+// Generate and run tool-contract probes for registry arguments and side effects.
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";

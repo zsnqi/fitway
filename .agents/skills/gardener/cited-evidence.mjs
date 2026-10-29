@@ -1,3 +1,4 @@
+// Tracked record citations, dead temp paths, and changed citation lines.
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { pathCitations } from "./facts.mjs";

@@ -1,3 +1,4 @@
+// Capture review-source placement events for brief-check fixture tests.
 import { setReviewSourcePlaceObserver } from "./brief-review-sources.mjs";
 
 export async function captureReviewSourceAccess(action) {

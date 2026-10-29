@@ -1,3 +1,4 @@
+// Clean cited-safe gardener temp folders from a saved survey snapshot.
 import { execFileSync } from "node:child_process";
 import { existsSync, rmSync } from "node:fs";
 import path from "node:path";

@@ -1,3 +1,4 @@
+// Build command events and report messages for Codex launcher fixtures.
 export function commandEvent(command, exitCode = 0, aggregatedOutput = "") {
 	return `${JSON.stringify({
 		type: "item.completed",

@@ -1,3 +1,4 @@
+// Parse comma-separated timeline capture times into sorted milliseconds.
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 
 // --timeline-times read as sorted unique milliseconds. A value that is not one is a value the

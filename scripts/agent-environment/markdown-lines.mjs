@@ -1,3 +1,4 @@
+// Count lines and locate indexes in Markdown text.
 export function lineAt(text, index) {
 	return text.slice(0, index).split("\n").length;
 }

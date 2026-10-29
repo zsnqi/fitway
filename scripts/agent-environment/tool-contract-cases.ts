@@ -1,3 +1,4 @@
+// Define and probe command-specific startup cases missing from the tool registry.
 import * as fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";

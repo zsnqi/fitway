@@ -1,3 +1,4 @@
+// Copy selected evidence into the repository with hashes and source records.
 import {
 	copyFileSync,
 	existsSync,

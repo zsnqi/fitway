@@ -1,3 +1,4 @@
+// Resolve registered tool arguments, render help, and report startup failures.
 import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";

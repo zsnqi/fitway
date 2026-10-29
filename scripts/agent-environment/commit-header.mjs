@@ -1,3 +1,4 @@
+// Extract a commit SHA from terminal Git commit output.
 const ESC = String.fromCharCode(27);
 const BEL = String.fromCharCode(7);
 const TERMINAL_ESCAPES = new RegExp(

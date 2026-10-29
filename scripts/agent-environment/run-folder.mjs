@@ -1,3 +1,4 @@
+// Create isolated Codex run folders and copy launch inputs safely.
 import {
 	copyFileSync,
 	existsSync,

@@ -1,3 +1,4 @@
+// Provide verify-fitway output, preview, port, session, and filesystem primitives.
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import {

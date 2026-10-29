@@ -1,3 +1,4 @@
+// Build and print a milestone's ordered agent-context reading and resume plan.
 import { readFile as readFileFromFs } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";

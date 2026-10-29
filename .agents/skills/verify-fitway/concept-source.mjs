@@ -1,3 +1,4 @@
+// Resolve verify-fitway concept and recipe folders from build or baseline options.
 import { resolve } from "node:path";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { canonical } from "./core.mjs";

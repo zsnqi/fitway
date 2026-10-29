@@ -1,3 +1,4 @@
+// Copy complete and help-only verify-fitway tool fixtures for tests.
 import { copyFile, mkdir, readdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";

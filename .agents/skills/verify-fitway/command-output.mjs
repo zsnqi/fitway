@@ -1,3 +1,4 @@
+// Create command output manifests with checkout and runtime metadata.
 import { execFileSync } from "node:child_process";
 import { finishOutputManifest, freshEmptyOutput } from "./core.mjs";
 import { repository } from "./discover.mjs";

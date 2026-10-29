@@ -1,3 +1,4 @@
+// Create agent-context fixture repositories with packets, handoffs, and Git history.
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";

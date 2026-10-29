@@ -1,3 +1,4 @@
+// Verify repository files, project state, Claude instructions, and temporary citations.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { stat } from "node:fs/promises";

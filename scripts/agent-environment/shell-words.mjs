@@ -1,3 +1,4 @@
+// Scan shell command words and unwrap PowerShell or Bash command wrappers.
 // The launcher's one reader of a shell command: the words of a command line, and the command
 // Codex ran inside a `powershell ... -Command <x>` or `bash ... -lc <x>` wrapper. Commit detection
 // in codex-round.mjs and report-row matching in codex-report.mjs both read recorded commands

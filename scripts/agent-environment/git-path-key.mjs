@@ -1,3 +1,4 @@
+// Normalize Git paths and case-insensitive BOM exception keys.
 export function normalizeGitPath(value) {
 	return value.replaceAll("\\", "/");
 }

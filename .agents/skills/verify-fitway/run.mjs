@@ -1,3 +1,4 @@
+// Rewrite and run concept scripts inside isolated previews with requested browser axes.
 import { existsSync, readFileSync } from "node:fs";
 import { relative, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";

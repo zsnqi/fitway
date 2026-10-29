@@ -1,3 +1,4 @@
+// Check that each documented rule names a recognizable enforcer.
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { shellTokens } from "./shell-words.mjs";

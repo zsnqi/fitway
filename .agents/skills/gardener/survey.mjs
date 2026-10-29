@@ -1,3 +1,4 @@
+// Assemble the gardener survey and format its repository-health report.
 import { existsSync } from "node:fs";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";

@@ -1,3 +1,4 @@
+// Scan source files for copied eight-line windows and count hit places.
 const DUPLICATION_WINDOW_LINES = 8;
 
 export function countDuplicationCopies(hits, visit) {

@@ -1,3 +1,4 @@
+// Parse Codex reports and match their rows to recorded run activity.
 import { appendFile, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathKey } from "./path-identity.mjs";

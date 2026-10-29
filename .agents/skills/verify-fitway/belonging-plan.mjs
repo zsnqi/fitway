@@ -1,3 +1,4 @@
+// Plan belonging-check widths, segments, heights, and page states.
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { resolveQuery, stateCases, stateName } from "./drive-plan.mjs";
 

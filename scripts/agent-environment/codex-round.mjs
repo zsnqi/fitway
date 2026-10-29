@@ -1,3 +1,4 @@
+// Launch the Codex round tool when this module is run directly.
 import { fileURLToPath } from "node:url";
 import { main } from "./codex-execution.mjs";
 import { samePath } from "./path-identity.mjs";

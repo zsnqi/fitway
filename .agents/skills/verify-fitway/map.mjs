@@ -1,3 +1,4 @@
+// Generate, validate, repair, and diff verify-fitway concept coverage maps.
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";

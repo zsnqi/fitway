@@ -1,3 +1,4 @@
+// Refuse measurement arguments that bypass the launcher's output or preview.
 import { readFileSync } from "node:fs";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
 

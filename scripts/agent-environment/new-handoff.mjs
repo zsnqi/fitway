@@ -1,3 +1,4 @@
+// Create or refresh a milestone resume point from the current repository state.
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";

@@ -1,3 +1,4 @@
+// Parse CSS selectors, functions, and delimiters while preserving source offsets.
 // Keep offsets intact: diagnostics refer to the original file, including CRLF.
 function maskComments(source) {
 	const comments = [];

@@ -1,3 +1,4 @@
+// Check a Codex brief's format, scope, references, worktree, and review sources.
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
