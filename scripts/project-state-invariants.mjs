@@ -411,7 +411,8 @@ export function assertProjectStateInvariants(state, milestones) {
 			"The baseline commit cannot remain SELF after a worker slice is activated",
 		);
 	}
-	const [assignedBranches, assignedWorktrees] = [new Map(), new Map()];
+	const assignedBranches = new Map();
+	const assignedWorktrees = new Map();
 	for (const [id, milestone] of Object.entries(milestones)) {
 		if (stoppedStatuses.has(milestone.status)) {
 			if (!milestone.stopReason?.trim()) {
@@ -467,6 +468,10 @@ export function assertProjectStateInvariants(state, milestones) {
 	}
 	assertSharedLeaseEnds(state.milestones, state.updatedAt);
 	assertDisjointOwnedPaths(state.milestones);
+	assertDoneBaselineRecords(state, baselineMilestone);
+}
+
+function assertDoneBaselineRecords(state, baselineMilestone) {
 	if (
 		state.baseline.status === "DONE" &&
 		(!state.baseline.validationRecord ||
@@ -484,4 +489,5 @@ export function assertProjectStateInvariants(state, milestones) {
 		}
 	}
 }
+
 export { supersededByErrors };

@@ -871,7 +871,7 @@
 		},
 		"scripts/project-state-invariants.mjs": {
 			"longFunctions": 3,
-			"longFunctionLines": 328
+			"longFunctionLines": 314
 		},
 		"scripts/repository-files.mjs": {
 			"duplication": 1
