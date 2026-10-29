@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 20:10 +03:00 (the first
   round set aside; the percentage settled; the rules and a new brief are next, in a new session)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-5; 5 last), and the founding
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-9; 9 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -38,7 +38,10 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 3. **The stage-one brief** (DECISIONS items 3 and 5): references gathered by Sonnet, then one `owner-direction-designer`
    draws one direction, Arabic, live, phone and computer; the identity fixed and everything else free; content as item
    3 lists, without its permitted extras; no "level mark form" framing, no word on motion; Impeccable's whole process,
-   with the writes that needs. Both reviewers read the brief first. Stage two only for the direction the user accepts.
+   with the writes that needs. Stage two only for the direction the user accepts. Written:
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-direction-2.md`, worktree at `c2c4ceb5`. No
+   pre-launch review (the coordinator): it hunts literal readings of outcomes, and this brief states only limits and
+   leaves the result to the designer and the user's eye; its readings would add the constraints the user asked not to write.
 4. After the pick: that direction in every state and size, `PUBLIC-SPEC.md` and §6, the verifier, the user's
    acceptance; the copy outside the glossary (five lines in the first report) goes to the user; the page stops loading
    the Owner pages' whole `style.css` (two class names clashed).

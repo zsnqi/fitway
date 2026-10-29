@@ -66,3 +66,37 @@ the public page are numbered here.
      a Sonnet summary would filter by Sonnet's taste).
    - **Stage two, only for the direction the user accepts:** every state, English, the tablet and every other size,
      the motion's details and reduced motion, by a builder; then the verifier and the user's acceptance.
+6. **Direction 2 is turned down** (the user, 2026-10-29, on its phone and computer frames: «ما عجبني»; then «كل شي»,
+   start from nothing with a wholly different idea; «حسيت الشكل مب مرتب»; «شكل المنحنى الطولي مب كويس»). Direction 2,
+   the day as a timetable with the current hour lit (`32732dbf`, its invented gym name removed in `c5f64fa5`), stays in
+   history only. Direction 3's brief carries the user's words; the brand FITWAY is the only name on the page.
+   - **Why, from the user's answers** to the coordinator's observations and questions: nothing sat on one line (the
+     hours on one edge, the percentage on the other, the mark across the page) «ب الضبط»; the eye did not know where to
+     start, the answer squeezed between two pieces of curve; the curve drawn two ways (a thin grey line, then a red
+     fill); too many type sizes; on the computer, the answer far on one side, the curve on the other, empty gaps
+     between «نعم» («فوضى ... مدري وين اناظر»). The curve: time running top to bottom, its twisting shape, and its two
+     halves (its size was fine); its motion did not feel good, the Owner Daily chart's motion is better. Not the
+     cause: too many things on the page. What the eye meets first and the page's feel: the designer's («خلها للمصمم»,
+     «خلّه يجرب»).
+7. **Direction 3, the status page, is turned down** (the user, 2026-10-29, on its phone and computer frames: «برضو ما
+   عجبني»; `5f809979`). To the coordinator's questions, all four causes: plain, with no character, like any app; closer
+   to the Owner dashboard than to a page for a visitor; the rows of facts read like a table, dull; small and empty on
+   the computer. It was tidier than direction 2 («اي هذا ارتب كان»): the order is kept, the character is missing.
+   Next, at the coordinator's suggestion («يلا موافق»): the user marks a numbered sheet of varied references, liked or
+   not, so the next brief carries the user's taste as images.
+8. **No references for the next direction; the designer creates from its own judgment and Impeccable** (the user,
+   2026-10-30: none of the 15-tile sheet was close to the goal, «ما يشبه هدفنا»; the user's own Pinterest search found
+   nothing either: «الظاهر انه بنحتاج المصمم يبدع من عنده و ب استخدام المهارة»). The gathering of gym apps' crowd
+   screens was stopped unfinished. Direction 4's brief gives no reference set and carries the user's words on
+   directions 2 and 3.
+9. **Direction 4, the instrument cluster, is turned down; quick sketches next; the curve is no longer required**
+   (the user, 2026-10-30: «ما عجبني انه يكون ك عداد سيارة»; nothing in it liked, «الصفحة بشكل عام ما عجبتني وفكرة
+   المحرك»; `4932b9e8`).
+   - **The common cause,** the coordinator's observation the user confirmed («اعجبتني ملاحظتك ... اي صحيحة»): each
+     turned-down direction borrowed its idea from another world (a prayer-times board, a service status page, a car's
+     tachometer). The page should have a language of its own.
+   - **The typical-day curve** is no longer required content («ممكن نستغني عنه و يصمم شكل غير ... ما نبي نحده ب ذا»);
+     the page's content is the level, the approximate count, open or closed, the last update and the percentage.
+   - **Sketches before a draft** (the coordinator's suggestion, «اتفق معك»; amends item 5's stage one): the designer
+     first draws four quick phone stills, each a different idea, Arabic, live, no motion, no computer; the user picks
+     one, and it becomes a full draft. The user will name apps whose feel they like later.
