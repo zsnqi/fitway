@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:40 +03:00 (the retro's
-  four fixes come first, decision 102; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 19:40 +03:00 (decision 103
+  built; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-103; 103 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -33,8 +33,8 @@
 
 ## Running now
 
-Nothing of this milestone runs (measured 2026-10-29 14:40; the PC's LAN address is 192.168.8.186). main `bc6b9464`
-carries decisions 97-102. Build branch `owner-followup-r04-build` at `ef9fa810`, pushed. Status page for the user:
+Nothing of this milestone runs (measured 2026-10-29 19:40; the PC's LAN address is 192.168.8.186). main `bc6b9464`
+carries decisions 97-102. Build branch `owner-followup-r04-build` at `18411a15`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
 - **Layout splits on the build branch, as this milestone's work** (2026-10-29, `WORKING_AGREEMENTS.md` §"Ownership"):
@@ -66,7 +66,18 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
 - **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
   coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
-- **Next: decision 103**, in a new session.
+- **Decision 103 is built** (`18411a15`, measured; brief, frames and logs in `D:/fitway-temp/owner-r04-busy-unlit/`):
+  `#pattern` and the Components pattern specimen are plain cards, OWN-R6, PAT-12, K-02, K-13 and Q13 say so. Rect diff
+  against `ef9fa810` over 214 frames (Reports in 14 states, Components, Daily; seven widths, AR and EN): no box moved;
+  pixels change only inside the card, but for 1-7 levels within about 7 px of its edge under a dialog's blurred
+  scrim. Belonging check 13,028 of 13,028, run with this branch's CLI because the build branch lacks `dbf9b683`: rerun
+  it on the merged head. The coordinator looked at the 1440 AR and 390 EN pairs. Not yet seen by the user;
+  `HISTORY.md` about 1083 still says, in the past tense, that the pattern was Reports' only light. F304 (reports-capture
+  flaky, exit 1 at the base too) and F305 (a dead lamp on "Last 7 days") are open, after the demo.
+- **The launch-film trial** (the user's own, in a cloud session, 2026-10-29): branch `ccr-026baa79-tycnnr`, folder
+  `design-research/eclipse-launch-film/` (its `RESUME.md`, storyboard, music sketches and reference notes). The user
+  calls it an experiment that taught them things for later; unmerged and not a milestone. Read it when the demo's
+  materials start (decision 84).
 - **Next: the tooling first** (decisions 96 (1), 101, 102): the retro's four rounds and the `compare` fix are merged;
   what is left is `docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md` §"Next steps".
 - **The public page:** its paper accepted and applied (decisions 98, 99; ADR-010); it runs as its own milestone,
