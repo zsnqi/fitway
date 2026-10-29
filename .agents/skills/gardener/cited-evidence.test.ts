@@ -182,7 +182,15 @@ describe("tracked temp citation audit", () => {
 				`Pushed: \`${missing}\`\n`,
 			);
 			f.git(["add", "--all"]);
-			f.git(["commit", "-qm", "branch citation"]);
+			f.git([
+				"-c",
+				"user.name=Gardener fixture",
+				"-c",
+				"user.email=gardener@example.test",
+				"commit",
+				"-qm",
+				"branch citation",
+			]);
 			f.git([
 				"update-ref",
 				"refs/remotes/origin/codex/owner-redesign-r04",
