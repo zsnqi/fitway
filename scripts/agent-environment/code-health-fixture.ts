@@ -8,12 +8,35 @@ const repository = fileURLToPath(new URL("../../", import.meta.url));
 const baselinePath = "docs/agent-context/CODE_HEALTH_BASELINE.json";
 const roots = new Set<string>();
 
-function runGit(root: string, args: string[]) {
+export function runGit(root: string, args: string[]) {
 	return execFileSync("git", args, {
 		cwd: root,
 		encoding: "utf8",
 		windowsHide: true,
 	}).trim();
+}
+
+// A temporary folder that cleanupHealthFixtures removes.
+export function temporaryRoot(prefix: string) {
+	const root = fs.mkdtempSync(path.join(tmpdir(), prefix));
+	roots.add(root);
+	return root;
+}
+
+export function initializeGit(root: string, email: string) {
+	runGit(root, ["init", "--quiet"]);
+	runGit(root, ["config", "user.email", email]);
+	runGit(root, ["config", "user.name", "Code Health Fixture"]);
+}
+
+// A temporary folder whose repository/ subfolder is a Git repository, so a
+// suite can keep files beside the repository rather than in it.
+export function temporaryRepository(prefix: string, email: string) {
+	const root = temporaryRoot(prefix);
+	const repository = path.join(root, "repository");
+	fs.mkdirSync(repository);
+	initializeGit(repository, email);
+	return { root, repository };
 }
 
 function runScript(script: string, root: string) {
@@ -30,11 +53,8 @@ export function cleanupHealthFixtures() {
 }
 
 export function createHealthFixture() {
-	const root = fs.mkdtempSync(path.join(tmpdir(), "fitway-code-health-"));
-	roots.add(root);
-	runGit(root, ["init", "--quiet"]);
-	runGit(root, ["config", "user.email", "code-health@example.invalid"]);
-	runGit(root, ["config", "user.name", "Code Health Fixture"]);
+	const root = temporaryRoot("fitway-code-health-");
+	initializeGit(root, "code-health@example.invalid");
 	return {
 		root,
 		git: (...args: string[]) => runGit(root, args),

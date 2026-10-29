@@ -9,6 +9,7 @@
 		"longFunctionLines",
 		"emptyBlocks",
 		"giantFiles",
+		"giantDocuments",
 		"testCases",
 		"expectCalls"
 	],
@@ -558,6 +559,36 @@
 			"longFunctions": 1,
 			"longFunctionLines": 154
 		},
+		"design-research/FITWAY_CROWD_LEVEL_VISUAL_RESEARCH-20260730.md": {
+			"giantDocuments": 51472
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/app.js": {
+			"giantFiles": 1860
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs": {
+			"giantFiles": 1991
+		},
+		"design-research/owner-composition-exploration-r04/directions/eclipse/README.md": {
+			"giantDocuments": 146755
+		},
+		"design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md": {
+			"giantDocuments": 59105
+		},
+		"docs/phase-records/handoffs/agent-environment/codex-rounds.md": {
+			"giantDocuments": 89768
+		},
+		"docs/phase-records/handoffs/coordinator/20260816-224000-completion-preflight-and-remaining-execution-plan.md": {
+			"giantDocuments": 44813
+		},
+		"docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md": {
+			"giantDocuments": 340749
+		},
+		"docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md": {
+			"giantDocuments": 210183
+		},
+		"docs/phase-records/handoffs/phase8-integration/20260814-133826-p8_integration_b01-plan.md": {
+			"giantDocuments": 44631
+		},
 		"packages/api/src/access/procedures.ts": {
 			"suppressions": 7
 		},
@@ -702,6 +733,9 @@
 		},
 		"packages/ui/src/styles/globals.css": {
 			"duplication": 8
+		},
+		"RESEARCH.md": {
+			"giantDocuments": 41995
 		},
 		"scripts/agent-context-packets.mjs": {
 			"duplication": 2,
@@ -887,8 +921,8 @@
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 117,
-			"expectCalls": 377
+			"testCases": 120,
+			"expectCalls": 381
 		},
 		"apps/server/src": {
 			"testCases": 215,
@@ -1007,16 +1041,19 @@
 			"expectCalls": 73
 		},
 		"scripts": {
-			"testCases": 240,
-			"expectCalls": 509
+			"testCases": 248,
+			"expectCalls": 523
 		},
 		"scripts/agent-environment": {
-			"testCases": 366,
-			"expectCalls": 1057
+			"testCases": 381,
+			"expectCalls": 1099
 		},
 		"scripts/demo": {
 			"testCases": 17,
 			"expectCalls": 73
 		}
-	}
+	},
+	"giantRoots": [
+		"design-research/owner-composition-exploration-r04/directions/eclipse"
+	]
 }

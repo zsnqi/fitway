@@ -307,7 +307,7 @@ async function validateReferences(
 				line,
 				`${reference.file}:${reference.line}${reference.endLine === null ? "" : `-${reference.endLine}`} exceeds file length (${lines(content)} lines), is below line 1, or ends before it starts in ${worktree}`,
 			);
-		if (heading && !headings(content).has(heading))
+		if (heading && !headings(content).some(({ title }) => title === heading))
 			report(
 				"brief-references",
 				line,

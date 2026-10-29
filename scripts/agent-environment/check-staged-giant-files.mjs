@@ -1,33 +1,19 @@
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 import {
+	GIANT_DOCUMENT_MEASURE,
 	GIANT_FILE_MEASURE,
-	isSourceFile,
 } from "../../.agents/skills/gardener/code-health.mjs";
 import {
 	compareCodeHealth,
 	formatCodeHealthChange,
-	HEALTH_ROOTS,
-	readCommittedCodeHealthBaseline,
 	readGit,
-	snapshotGiantFiles,
+	readIndexedCodeHealthBaseline,
+	selectCodeHealthPath,
+	snapshotGiantSizes,
 } from "./code-health-ratchet.mjs";
 
-// The index holds what the commit will hold, so each file is read from it,
-// never from the working tree.
-export function readStagedCodeHealthFiles(root = process.cwd()) {
-	const listed = readGit(root, [
-		"diff",
-		"--cached",
-		"--name-only",
-		"--diff-filter=ACMR",
-		"-z",
-		"--",
-		...HEALTH_ROOTS,
-	]);
-	if (listed.status !== 0)
-		throw new Error(`git diff failed: ${listed.stderr.trim()}`);
-	const files = listed.stdout.split("\0").filter(isSourceFile);
+function readIndexFiles(root, files) {
 	if (!files.length) return [];
 	const batch = readGit(root, ["cat-file", "--batch"], {
 		input: Buffer.from(files.map((file) => `:${file}\n`).join("")),
@@ -46,14 +32,45 @@ export function readStagedCodeHealthFiles(root = process.cwd()) {
 	});
 }
 
+function selectedIndexFiles(root, output) {
+	return output
+		.split("\0")
+		.filter(Boolean)
+		.filter((file) => selectCodeHealthPath(root, file));
+}
+
+// The index holds what the commit will hold, so each file is read from it,
+// never from the working tree.
+export function readStagedCodeHealthFiles(root = process.cwd()) {
+	const listed = readGit(root, [
+		"diff",
+		"--cached",
+		"--name-only",
+		"--diff-filter=ACMR",
+		"-z",
+	]);
+	if (listed.status !== 0)
+		throw new Error(`git diff failed: ${listed.stderr.trim()}`);
+	return readIndexFiles(root, selectedIndexFiles(root, listed.stdout));
+}
+
+function readAllIndexedCodeHealthFiles(root = process.cwd()) {
+	const listed = readGit(root, ["ls-files", "-z"]);
+	if (listed.status !== 0)
+		throw new Error(`git ls-files failed: ${listed.stderr.trim()}`);
+	return readIndexFiles(root, selectedIndexFiles(root, listed.stdout));
+}
+
 export function checkStagedGiantFiles(root = process.cwd()) {
-	const snapshot = snapshotGiantFiles(readStagedCodeHealthFiles(root));
-	return compareCodeHealth(
-		readCommittedCodeHealthBaseline(root),
-		snapshot,
-	).filter(
+	const indexedBaseline = readIndexedCodeHealthBaseline(root);
+	const files = indexedBaseline.indexed
+		? readAllIndexedCodeHealthFiles(root)
+		: readStagedCodeHealthFiles(root);
+	const snapshot = snapshotGiantSizes(files);
+	return compareCodeHealth(indexedBaseline.baseline, snapshot).filter(
 		(change) =>
-			change.measure === GIANT_FILE_MEASURE && change.direction === "rise",
+			[GIANT_FILE_MEASURE, GIANT_DOCUMENT_MEASURE].includes(change.measure) &&
+			(indexedBaseline.indexed || change.direction === "rise"),
 	);
 }
 
@@ -66,7 +83,7 @@ if (
 		for (const change of rises) console.log(formatCodeHealthChange(change));
 		if (rises.length) process.exitCode = 1;
 	} catch (error) {
-		console.error(`pre-commit giant-file check: FAIL: ${error.message}`);
+		console.error(`pre-commit giant-content check: FAIL: ${error.message}`);
 		process.exitCode = 1;
 	}
 }

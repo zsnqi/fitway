@@ -190,6 +190,50 @@ describe("code-health ratchet commands", () => {
 		);
 	});
 
+	it("H3 baselines giant documents and concept source, then rejects growth", () => {
+		const root = fixture();
+		const concept = "design-research/concept";
+		write(
+			root,
+			".agents/skills/verify-fitway/concept-source.json",
+			`${JSON.stringify({ concept })}\n`,
+		);
+		write(
+			root,
+			`${concept}/page.js`,
+			[
+				...Array.from(
+					{ length: 800 },
+					(_, index) => `const conceptLine${index} = ${index};`,
+				),
+				"const conceptOnlyEscape: any = 1;",
+			].join("\n"),
+		);
+		const document = "docs/phase-records/large-document.md";
+		write(root, document, "a".repeat(40_001));
+		const baseline = writeBaseline(root);
+		expect(baseline.files[document]).toEqual({ giantDocuments: 40_001 });
+		expect(baseline.files[`${concept}/page.js`]).toEqual({ giantFiles: 801 });
+
+		write(root, document, "a".repeat(40_002));
+		const result = run(checkScript, root);
+		expect(result.status, result.stderr).toBe(1);
+		expect(result.stdout).toContain(
+			`${document}: giantDocuments baseline=40001 current=40002`,
+		);
+		expect(result.stdout).toContain(
+			"split by section into files a reader opens one at a time",
+		);
+	});
+
+	it("C2 counts a giant Markdown document whose extension is upper case", () => {
+		const root = fixture();
+		write(root, "PLANT.MD", "a".repeat(40_001));
+		expect(writeBaseline(root).files["PLANT.MD"]).toEqual({
+			giantDocuments: 40_001,
+		});
+	});
+
 	it("H2 rejects a count below its baseline", () => {
 		const root = fixture();
 		write(

@@ -15,6 +15,7 @@ import { homedir } from "node:os";
 import path from "node:path";
 import { createInterface } from "node:readline";
 import { recordedBriefDelivery } from "./brief-format.mjs";
+import { briefTitle } from "./brief-markdown.mjs";
 import { outcomeIdsFromBrief } from "./brief-readings.mjs";
 import { checkBrief, formatBriefResult } from "./check-brief.mjs";
 import {
@@ -27,6 +28,7 @@ import {
 	readDeepSeekCatalog,
 	repositoryRoot,
 	resolvePath,
+	sha256,
 	validateModelLevel,
 	writeCatalog,
 } from "./codex-environment.mjs";
@@ -37,6 +39,29 @@ import {
 } from "./codex-review-launch.mjs";
 import { readGit } from "./git-context.mjs";
 import { samePath } from "./path-identity.mjs";
+
+function briefIdentity(options, brief) {
+	const round = briefTitle(brief.toString("utf8"));
+	if (!round) throw new Error("brief has no Markdown title");
+	const repository = readGit(path.dirname(options.brief), [
+		"rev-parse",
+		"--show-toplevel",
+	]);
+	return {
+		briefPath: path.relative(repository, options.brief).replaceAll("\\", "/"),
+		briefSha256: sha256(brief),
+		round,
+		report: path.join(options.run, "last-message.md"),
+	};
+}
+
+function assertBriefTracked(options) {
+	readGit(path.dirname(options.brief), [
+		"ls-files",
+		"--error-unmatch",
+		options.brief,
+	]);
+}
 
 async function prepareLaunch(options) {
 	const environment = await codexEnvironment();
@@ -55,14 +80,13 @@ async function prepareLaunch(options) {
 	const worktree = resolvePath(result.worktree);
 	if (readGit(worktree, ["status", "--short"]))
 		throw new Error("target worktree has uncommitted changes");
-	readGit(path.dirname(options.brief), [
-		"ls-files",
-		"--error-unmatch",
-		options.brief,
-	]);
+	assertBriefTracked(options);
 	await assertFresh(options.run);
-	const executable = await findCodex();
-	const brief = await readFile(options.brief);
+	const [executable, brief] = await Promise.all([
+		findCodex(),
+		readFile(options.brief),
+	]);
+	const identity = briefIdentity(options, brief);
 	const outcomeIds = outcomeIdsFromBrief(brief);
 	if (!outcomeIds.size)
 		throw new Error(
@@ -101,6 +125,7 @@ async function prepareLaunch(options) {
 		version: 1,
 		worktree,
 		head,
+		...identity,
 		level: options.level,
 		model: options.model,
 	};
