@@ -53,3 +53,16 @@ the public page are numbered here.
      capacity-free.
    - **Applied** to `FITWAY_PRODUCT.md` (the success-and-boundary paragraph) and
      `docs/spec/06-interfaces-and-contracts.md` (the capacity boundary), as shown to the user before writing.
+5. **One direction at a time, in two stages** (the user, 2026-10-29, in the coordinator session; supersedes item 3's
+   "several designers" for the next round).
+   - **One direction per round**, never several in parallel: the user sees it, then decides to carry it on or to draw
+     another; what the user says about one goes into the next brief.
+   - **Stage one, the draft:** `owner-direction-designer` (Opus) draws the direction in Arabic, in the live state, on
+     the phone and on the computer. The user sees two frames and a link for the phone on the home network. The brief
+     names only that scope; it says nothing about motion, states, English or the tablet, so nothing steers the design
+     (motion the idea needs, the designer builds).
+   - **References:** a Sonnet researcher gathers a wide set (links and screenshots, unranked, no judgment) before the
+     designer starts; the designer looks at the images and picks. Sonnet fetches, Opus chooses («بس احس فيه سلبية»:
+     a Sonnet summary would filter by Sonnet's taste).
+   - **Stage two, only for the direction the user accepts:** every state, English, the tablet and every other size,
+     the motion's details and reduced motion, by a builder; then the verifier and the user's acceptance.

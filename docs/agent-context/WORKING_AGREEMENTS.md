@@ -70,6 +70,8 @@ latest wording; never copy an entry into a resume point.
 
 - Visual design and taste judgments stay with Claude on the Opus definitions. Exact renders of
   every option go to the user for picks. (user, 2026-10-02)
+- Rule, spec and record text edits go to Sonnet (`owner-direction-fixer`), even when finding the lines takes
+  judgment; the coordinator reviews the diff. Opus is kept for design, taste and verification. (user, 2026-10-29)
 - The coordinator's questions to the user and its designer briefs carry what the owner must see and
   be able to do, and why; the composition, forms and colours are the designer's, and the coordinator
   recommends none of them. (user, 2026-10-04)
