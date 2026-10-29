@@ -253,7 +253,7 @@ export async function assertTrackedTempCitations({
 		);
 	}
 	console.log(
-		`Evidenced temp citations passed compared against ${audit.base}: 0 unlisted gone citations, ${audit.listed.length} listed.`,
+		`Evidenced temp citations passed compared against ${audit.base}: 0 unlisted on changed lines, ${audit.unchanged.length} unlisted on unchanged lines, ${audit.listed.length} listed.`,
 	);
 	return audit;
 }
