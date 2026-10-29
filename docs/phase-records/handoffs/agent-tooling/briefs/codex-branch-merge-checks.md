@@ -62,7 +62,9 @@ redoes the merge there with the upstream set and the admission run (DECISIONS it
   refuses today. A folder not in `giantRoots`, a folder the baseline already holds an admission for (the message names
   that admission's date and reason), and a missing or empty reason are refused, each with a message that names the
   cause. Every later regeneration, with or without `--admit`, keeps the admissions already recorded. The option is in
-  the tools registry, so `--help` lists it. The commit holding the admission passes the pre-commit hook.
+  the tools registry, so `--help` lists it. The commit holding the admission passes the pre-commit hook, which holds
+  already: with the baseline staged, `scripts/agent-environment/check-staged-giant-files.mjs` compares it with the
+  staged files, so that file stays unchanged.
   `pnpm check:code-health` passes before and after that commit: a value the new admission names and that equals the
   file's current measure is not working-baseline inflation, while a value raised by hand in the same baseline still
   is; a later rise in an admitted file fails as any rise does. A baseline value that differs from the current measure,
