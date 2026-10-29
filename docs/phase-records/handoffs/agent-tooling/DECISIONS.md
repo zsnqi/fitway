@@ -216,3 +216,19 @@ through these pointers, not copied here.
       frontiers against today's routes (`scripts/check-agent-context.test.ts` K1), so routes naming the parts failed
       CI on `bf190f67`. Its 54 line citations are in August phase records, already stale since its later amendments.
       Whether agents open one part instead of the whole is measured again with the rest.
+19. **Bringing main's tooling to the concept's branch** (coordinator, 2026-10-29, on the user's word «انت شوف وش
+    المناسب»). The trial merge of main into `public-redesign-r01` (`d2f86a8d`, kept on
+    `public-redesign-r01-main-merge-try`) failed three checks; each is decided so:
+    - **The concept's giant files enter the baseline once.** Main holds an older copy of the concept folder, so the
+      build's files (`daily.js` 2,300 lines, `HISTORY.md` 134 KB and others) are new entries the baseline refuses.
+      They are accepted pages; dated exceptions would put markers in each file and expire every few weeks, and
+      splitting them is separate work. A one-time admission writes their current sizes into the baseline with the
+      date and the reason, and from then on only growth fails.
+    - **A gone citation fails on the line that writes it.** `pnpm check:repository` compares against `origin/main`, so
+      on a long-lived branch every branch-only line counts as changed, and 33 old citations in the concept's briefs
+      failed. It compares against the branch's own upstream when one is set, `origin/main` otherwise, and
+      `public-redesign-r01` tracks `origin/owner-followup-r04-build`, the branch it integrates into.
+    - **The designer matches the build's current frame.** The packet pins main's older copy of
+      `design-research/owner-composition-exploration-r04/directions/eclipse/evidence/daily-ar-1440x900.png`
+      (`bc12ff9f`); on `public-redesign-r01` it pins the build's frame (`563e1c83`), the state the r04 rounds accepted.
+    The first two are one Codex round; the third is the packet's line on that branch.

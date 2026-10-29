@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 08:59 +03:00 (the four
-  rounds on main; leading-comments' brief under review)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-18; 18 last), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 09:55 +03:00 (the four
+  rounds on main; DECISIONS item 19 decided; leading-comments' brief waits on Sol)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-19; 19 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -22,14 +22,16 @@
 
 ## Running now
 
-Measured 2026-10-29 08:59. main `ac337544`: the retro's four rounds (code-map-index, evidence-home, run-and-ref,
+Measured 2026-10-29 09:55. main `45e4635f`: the retro's four rounds (code-map-index, evidence-home, run-and-ref,
 cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`.
 
 - **leading-comments** (worktree `D:/Projects/fitway-worktrees/tooling-leading-comments` from `ac337544`): the brief
   `docs/phase-records/handoffs/agent-tooling/briefs/codex-leading-comments.md` has DeepSeek's four readings closed
   (dispositions in `D:/fitway-temp/brief-review/codex-leading-comments-1`). Sol's review stopped on the ChatGPT Codex
-  account's limit (resets 10:49); rerun it in `D:/fitway-temp/brief-review/codex-leading-comments-1-sol`, write its
-  dispositions with the brief's SHA, then launch it (its run folder is named `codex-round-leading-comments`).
+  account's limit and has not run: switch accounts with `node D:/fitway-temp/codex-accounts.mjs next` (WORKING_AGREEMENTS
+  "Delegation"; the coordinator missed it on 2026-10-29) and rerun it in
+  `D:/fitway-temp/brief-review/codex-leading-comments-1-sol`, copying the brief in again; write its dispositions with
+  the brief's SHA, then launch it (its run folder is named `codex-round-leading-comments`).
 - **The concept's specs are split** (`2aa2fc4d`, on `owner-followup-r04-build`, pushed and green, and on
   `public-redesign-r01`): both originals rebuild byte for byte from the concept's new `spec` folder.
 - **Done** (item 18): the four rounds; r04's `DECISIONS.md` split into an index and parts (`92a4e9a7`); the round records
@@ -40,33 +42,25 @@ cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/ag
 ## Next steps
 
 1. leading-comments: Sol's review, dispositions, launch; then the review, fix, grade, merge and record.
-2. **Measure again:** rerun `D:/fitway-temp/retro-20261028/measure.mjs` and `D:/fitway-temp/retro-20261028/patterns.mjs`
-   and the survey's script count.
-3. The public page's designer (its own resume point), once main's tooling is on `public-redesign-r01` (see "Waiting on
-   the user").
-4. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
+2. **DECISIONS item 19, one Codex round:** a one-time admission in `pnpm code-health:baseline` for a folder's current
+   giant files, recorded with its date and reason; and gone citations compared against the branch's upstream when it
+   has one. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the merge of main
+   (the trial is `d2f86a8d`), admit the concept's giant files, pin the build's reference frame (`563e1c83`) in the
+   packet on that branch, and run the four checks there.
+3. The public page's designer (its own resume point) once step 2 is in.
+4. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,
+   `D:/fitway-temp/retro-20261028/patterns.mjs` and the survey's script count.
+5. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
    `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date.
-5. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
+6. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
    citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more).
 
 ## Waiting on the user
 
-- **Merging main into `public-redesign-r01` fails three checks** (the trial merge is kept on branch
-  `public-redesign-r01-main-merge-try`, `d2f86a8d`; `public-redesign-r01` stays at `2aa2fc4d`):
-  - `pnpm code-health:baseline` refuses the concept's giant files and documents (the build branch's `daily.js` 2,300
-    lines, `HISTORY.md` 134 KB and others): main's copy of the concept folder is older, so they are new entries, and the
-    baseline admits none. Choices: a dated exception in each file, a one-time admission when a folder joins the roots,
-    or splitting them first.
-  - `pnpm check:repository`: 33 gone temp citations in the concept's own briefs count as changed lines, since every
-    branch-only line differs from `origin/main`. Choices: mark them `(gone: <why>)`, or compare against the branch's
-    own base.
-  - `pnpm check:agent-context`: the packet's reference frame
-    `design-research/owner-composition-exploration-r04/directions/eclipse/evidence/daily-ar-1440x900.png` pins main's older
-    copy (`bc12ff9f`); the branch holds the build's newer frame (`563e1c83`). Which frame the designer matches is the
-    user's call.
-- **The 125 gone citations on main:** most are in frozen round logs and in briefs whose SHA-256 records cite, which a
-  mark would change. Proposed: mark only the living documents (the gardener's examples, `DECISIONS.md`,
-  `findings.tsv`) and leave the rest counted, not failing.
+- **The 125 gone citations on main.** Most are in frozen round logs and in briefs whose SHA-256 other records cite, so
+  marking each would change them, and marking only the living documents leaves a count nobody reads. Proposed
+  instead: one tracked list of the lost paths, each with its record and why it went, which the check accepts, so no
+  frozen record changes and a new loss still fails the day it is written. Waiting for the user's answer.
 
 ## Known risks
 

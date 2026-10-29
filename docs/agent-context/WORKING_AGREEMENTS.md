@@ -75,9 +75,13 @@ latest wording; never copy an entry into a resume point.
   and GPT runs keep them. Any later per-run setting that a DeepSeek run needs to work with Open Design
   is the coordinator's call, reported in a line; the user's configuration is never changed (user,
   2026-10-13, approved in advance).
-- Usage limits do not shape rounds: when a Codex account reaches its limit, the coordinator tells the
-  user at once, the user switches accounts, and each stopped run resumes on its thread. (user,
-  2026-10-05 and 2026-10-07)
+- Usage limits do not shape rounds. When a Codex account reaches its limit, the coordinator switches
+  to the next saved account itself and continues: `node D:/fitway-temp/codex-accounts.mjs next --from
+  <name> --until <epoch>` for a direct `codex exec` (a Sol review), and
+  `D:/fitway-temp/resume-auto.sh <run folder> <message> [limit-first]` for a stopped round, which
+  resumes it on its thread and waits for the earliest reset only when every account is limited. The
+  user signs in and saves each account (`node D:/fitway-temp/codex-accounts.mjs save`); the agent
+  never signs in. (user, 2026-10-05, 2026-10-07 and 2026-10-13)
 - The coordinator launches Codex from a tracked brief with `pnpm codex:round <brief>` (DeepSeek at `max`;
   `--model gpt-6.1-sol <level>` for GPT) in a harness background shell. The command runs `pnpm brief:check` first and launches nothing on a
   failure, adds the launch note when the brief's own commit sits on the HEAD it names (Codex rightly
