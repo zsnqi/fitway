@@ -1,7 +1,7 @@
-import { rmSync, writeFileSync } from "node:fs";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { stringify as stringifyYaml } from "yaml";
+import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 import { checkoutFixture } from "../.agents/skills/gardener/checkout-test-fixture.mjs";
 import { assertProjectStateInvariants } from "./project-state-invariants.mjs";
 import { assertProjectStateUpdatedAt } from "./verify-repository.mjs";
@@ -61,6 +61,18 @@ function writeLedger(
 		stringifyYaml(state),
 		"utf8",
 	);
+}
+
+function updatedAtCheck(fixture: ReturnType<typeof checkoutFixture>) {
+	const currentText = readFileSync(
+		path.join(fixture.checkout, "PROJECT_STATE.yaml"),
+		"utf8",
+	);
+	return assertProjectStateUpdatedAt({
+		repositoryRoot: fixture.checkout,
+		currentText,
+		state: parseYaml(currentText),
+	});
 }
 
 function withGitDates<T>(date: string, action: () => T) {
@@ -133,6 +145,10 @@ describe("shared lease ends", () => {
 		"scripts/fixture.ts, lease expires on 2026-12-01",
 		"scripts/fixture.ts, lease through 2026-11-15 and through 2026-12-15",
 		"scripts/fixture.ts, lease through 2026-02-30",
+		"scripts/fixture.ts, a coordinator lease expires 2026-10-23T00:00",
+		"scripts/fixture.ts, a coordinator lease until 2026/10/23",
+		"scripts/fixture.ts, lease through 2026.11.15",
+		"scripts/fixture.ts, lease through 2026-11-15T00:00",
 	])("rejects the lease form %s", (entry) => {
 		const message = invariantError(ledger([entry]));
 		expect(message).toContain(entry);
@@ -172,17 +188,13 @@ describe("ledger write time", () => {
 
 		value.state.baseline.validationRecord = "docs/validation-2.md";
 		writeLedger(fixture, value.state);
-		expect(() =>
-			assertProjectStateUpdatedAt({ repositoryRoot: fixture.checkout }),
-		).toThrow(
+		expect(() => updatedAtCheck(fixture)).toThrow(
 			/updatedAt 2026-10-29T10:00:00\+03:00 is not later than HEAD's.*set updatedAt to the time of the write/,
 		);
 
 		value.state.updatedAt = "2026-10-29T11:00:00+03:00";
 		writeLedger(fixture, value.state);
-		expect(() =>
-			assertProjectStateUpdatedAt({ repositoryRoot: fixture.checkout }),
-		).not.toThrow();
+		expect(() => updatedAtCheck(fixture)).not.toThrow();
 	});
 
 	it("requires the ledger date to match its last committer date", () => {
@@ -192,15 +204,11 @@ describe("ledger write time", () => {
 		});
 		writeLedger(fixture, value.state);
 		commitAt(fixture, "2026-10-29T23:59:00+03:00");
-		expect(() =>
-			assertProjectStateUpdatedAt({ repositoryRoot: fixture.checkout }),
-		).not.toThrow();
+		expect(() => updatedAtCheck(fixture)).not.toThrow();
 
 		writeFileSync(path.join(fixture.checkout, "unrelated.txt"), "later\n");
 		commitAt(fixture, "2030-01-01T00:00:00Z");
-		expect(() =>
-			assertProjectStateUpdatedAt({ repositoryRoot: fixture.checkout }),
-		).not.toThrow();
+		expect(() => updatedAtCheck(fixture)).not.toThrow();
 	});
 
 	it.each([
@@ -213,9 +221,7 @@ describe("ledger write time", () => {
 		});
 		writeLedger(fixture, value.state);
 		commitAt(fixture, date);
-		expect(() =>
-			assertProjectStateUpdatedAt({ repositoryRoot: fixture.checkout }),
-		).toThrow(
+		expect(() => updatedAtCheck(fixture)).toThrow(
 			new RegExp(
 				`updatedAt 2026-10-29T10:00:00\\+03:00.*committer time ${date.replaceAll("+", "\\+")}.*set updatedAt to the time of the write`,
 			),
@@ -242,8 +248,6 @@ describe("ledger write time", () => {
 			fixture,
 			ledger(["scripts/fixture.ts, lease through 2026-11-15"]).state,
 		);
-		expect(() =>
-			assertProjectStateUpdatedAt({ repositoryRoot: fixture.checkout }),
-		).not.toThrow();
+		expect(() => updatedAtCheck(fixture)).not.toThrow();
 	});
 });

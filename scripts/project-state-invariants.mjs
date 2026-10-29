@@ -104,12 +104,15 @@ function invalidLeaseEnd(id, entry) {
 function leaseEnd(id, entry) {
 	const through = [...entry.matchAll(/\bthrough\b/gi)];
 	if (through.length > 1) invalidLeaseEnd(id, entry);
-	for (const date of entry.matchAll(/\b\d{4}-\d{1,2}-\d{1,2}\b/g)) {
+	// Every token shaped like a date (four digits, one separator, month and day)
+	// is judged whole: exactly YYYY-MM-DD, real, alone, after a permitted word.
+	for (const date of entry.matchAll(/\d{4}([-/.])\d{1,2}\1\d{1,2}/g)) {
 		const prefix = entry.slice(0, date.index);
-		if (!/(?:\bthrough\s+|\bfrom\s+|\brenewed\s+on\s+)$/i.test(prefix))
-			invalidLeaseEnd(id, entry);
+		const suffix = entry.slice(date.index + date[0].length);
 		if (
+			!/(?:\bthrough\s+|\bfrom\s+|\brenewed\s+on\s+)$/i.test(prefix) ||
 			!/^\d{4}-\d{2}-\d{2}$/.test(date[0]) ||
+			!/^(?:$|[\s,;)]|[.:](?:\s|$))/.test(suffix) ||
 			!Number.isFinite(dateValue(date[0]))
 		)
 			invalidLeaseEnd(id, entry);
@@ -320,8 +323,7 @@ function unleasedIntersection(left, right, leases) {
 	return null;
 }
 
-function assertDisjointOwnedPaths(milestones, updatedAt) {
-	assertSharedLeaseEnds(milestones, updatedAt);
+function assertDisjointOwnedPaths(milestones) {
 	const open = Object.entries(milestones)
 		.filter(([, record]) => !TERMINAL_STATUSES.has(record.status))
 		.map(([id, record]) => [
@@ -409,8 +411,7 @@ export function assertProjectStateInvariants(state, milestones) {
 			"The baseline commit cannot remain SELF after a worker slice is activated",
 		);
 	}
-	const assignedBranches = new Map();
-	const assignedWorktrees = new Map();
+	const [assignedBranches, assignedWorktrees] = [new Map(), new Map()];
 	for (const [id, milestone] of Object.entries(milestones)) {
 		if (stoppedStatuses.has(milestone.status)) {
 			if (!milestone.stopReason?.trim()) {
@@ -464,7 +465,8 @@ export function assertProjectStateInvariants(state, milestones) {
 			}
 		}
 	}
-	assertDisjointOwnedPaths(state.milestones, state.updatedAt);
+	assertSharedLeaseEnds(state.milestones, state.updatedAt);
+	assertDisjointOwnedPaths(state.milestones);
 	if (
 		state.baseline.status === "DONE" &&
 		(!state.baseline.validationRecord ||
