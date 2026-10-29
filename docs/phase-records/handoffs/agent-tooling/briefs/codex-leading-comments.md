@@ -50,9 +50,10 @@ that says what it is for.
 - **L1.** The map round left the comments for later, since the files belonged to other rounds then (the map's brief,
   `docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-index.md`). Outcome: each file the map shows
   with `(no leading comment)` at `ac337544` gains a leading comment as the map reads one: `//` lines before the first
-  statement (after a shebang if there is one). So does `.agents/skills/verify-fitway/compare.mjs`, whose leading
-  comment is only the ratchet's `code-health-exception:` marker: its purpose line goes above the marker, which stays
-  unchanged (the ratchet finds the marker anywhere, `scripts/agent-environment/code-health-ratchet.mjs:31`). So do
+  statement (after a shebang if there is one). `.agents/skills/verify-fitway/compare.mjs` stays unchanged: its leading
+  comment is the ratchet's `code-health-exception:` marker, and a giant-file exception counts only on line 1
+  (`scripts/agent-environment/code-health-ratchet.mjs:233`), so its purpose line waits until the exception is retired.
+  (Corrected on resume, 2026-10-29: the launched brief put a purpose line above the marker, which broke K2.) So do
   three files whose comment the map shows does not say what the file is for: `scripts/concept-css-parse.mjs` (a
   constraint), `.agents/skills/verify-fitway/worker-pool.mjs` (an ordering rule) and
   `scripts/agent-environment/shell-words.mjs` (cut off at "`powershell ...`"): a purpose sentence goes above the
@@ -85,7 +86,7 @@ that says what it is for.
 
 ## Scope
 
-You may change, in the files the map shows with `(no leading comment)` at `ac337544` and in the four files L1 names,
+You may change, in the files the map shows with `(no leading comment)` at `ac337544` and in the three files L1 names,
 only the lines above each file's first statement (adding lines, never changing one); and `docs/agent-context/AGENT_TOOLING_CODE_MAP.md` and
 `docs/agent-context/CODE_HEALTH_BASELINE.json` (both regenerated). Commit once when done. Everything else is
 read-only. Add no dependencies.
