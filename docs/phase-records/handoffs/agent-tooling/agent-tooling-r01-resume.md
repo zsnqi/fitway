@@ -34,8 +34,9 @@ cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/ag
   so `hhmam1435` is current).
 - **branch-merge-checks** (DECISIONS items 19-20; worktree `D:/Projects/fitway-worktrees/tooling-branch-merge-checks`
   at `853111c2`, installed): the brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-branch-merge-checks.md`
-  (`c6377e26`) is in DeepSeek's review (`D:/fitway-temp/brief-review/codex-branch-merge-checks-1`) and Sol's
-  (`...-1-sol`). It launches after leading-comments merges, because that round adds lines at the top of the files
+  has both reviews' readings dispositioned (`D:/fitway-temp/brief-review/codex-branch-merge-checks-1` and `...-1-sol`;
+  one left open: the upstream is the coordinator's act and the message names the base). It launches after
+  leading-comments merges, because that round adds lines at the top of the files
   this one changes: fast-forward the worktree to the merge, move the brief's HEAD and line numbers, write the new hash
   in both dispositions. On the base, `pnpm check:repository` counts 125 gone citations (102 distinct paths), all on
   unchanged lines, and `pnpm check:code-health` passes. Two shapes the coordinator settled in the brief: the base a
@@ -52,7 +53,7 @@ cited-evidence) are merged, each recorded beside `docs/phase-records/handoffs/ag
 ## Next steps
 
 1. leading-comments: when it exits, the diff review, fix, grade, merge and record.
-2. **branch-merge-checks:** close both reviews' readings, then launch it once step 1 is merged; then the review, fix,
+2. **branch-merge-checks:** launch it once step 1 is merged; then the review, fix,
    grade, merge and record. Then set `public-redesign-r01`'s upstream to `origin/owner-followup-r04-build`, redo the
    merge of main (the trial is `d2f86a8d`), admit the concept's giant files, pin the build's reference frame
    (`563e1c83`) in the packet on that branch, and run the four checks there.
