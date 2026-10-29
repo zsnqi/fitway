@@ -29,5 +29,10 @@
   `check:code-health` first failed on the r04 activation handoff, 340,754 bytes against 340,749, because this
   worktree's copy held carriage returns Git does not store (F-row: the measure reads working-tree bytes); restored
   from Git, it passes.
-- **Rows:** H1-H4 and K2-K3 met at `a5c16da6`; K1 is the CI run on the push that carries the merge. The
+- **After the merge:** CI run `40794728187` on `fe43a051` failed `evidence-keep.test.ts` (9) and
+  `codex-session-metadata.test.ts` (1): the runner's temp folder is a short alias (`RUNNER~1`) and Git prints the long
+  path, so the root check refused the repository and `briefPath` came out as `../../../RUNNER~1/...`. Every local run
+  passed because drive D has no short names. Reproduced with a C: short `TEMP` and fixed by resolving both paths
+  (`c4bc59a9`).
+- **Rows:** H1-H4 and K2-K3 met at `a5c16da6`; K1 met at `c4bc59a9`, one defect found after acceptance. The
   coordinator's rule that its folders are made with `pnpm run-folder:new` is in `WORKING_AGREEMENTS.md` §"Delegation".
