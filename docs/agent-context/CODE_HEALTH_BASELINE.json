@@ -884,8 +884,8 @@
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 134,
-			"expectCalls": 438
+			"testCases": 136,
+			"expectCalls": 445
 		},
 		"apps/server/src": {
 			"testCases": 215,

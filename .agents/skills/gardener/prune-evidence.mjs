@@ -3,12 +3,19 @@ import { lstat, readdir, readFile, rm, unlink } from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 import { collectTrackedCitationRecords } from "./cited-evidence.mjs";
-import { citationIndex, citationsAtOrAbove, inside, key } from "./facts.mjs";
+import {
+	citationIndex,
+	citationsAtOrAbove,
+	inside,
+	key,
+	MIN_FOLDER_AGE_DAYS,
+} from "./facts.mjs";
 import {
 	collectGit,
 	describeLink,
 	filesystemPath,
 	inspectWorktreeLinks,
+	measureFolder,
 	plainPath,
 	root,
 } from "./survey-evidence.mjs";
@@ -432,9 +439,19 @@ async function isLinkOrMissing(folder) {
 	}
 }
 
+// The cleanup's rule: only a folder whose newest modification is at least MIN_FOLDER_AGE_DAYS old
+// is proposed, judged from the survey's folder measurement.
+function folderAgeReason(measurement, now) {
+	const ageDays = (now - Date.parse(measurement?.modifiedAt)) / 86400000;
+	if (!Number.isFinite(ageDays)) return "age not measured";
+	return ageDays >= MIN_FOLDER_AGE_DAYS
+		? null
+		: `younger than ${MIN_FOLDER_AGE_DAYS} days`;
+}
+
 async function planFolder(
 	folder,
-	{ excluded, index, measurement, targets, worktrees },
+	{ excluded, index, measurement, now, targets, worktrees },
 ) {
 	if (
 		worktrees.some((worktree) => worktree.path && inside(folder, worktree.path))
@@ -445,6 +462,8 @@ async function planFolder(
 	// The survey's own output folder is never pruned.
 	if (excluded.some((exclude) => inside(exclude, folder)))
 		return withheldFolder(folder, null);
+	const tooYoung = folderAgeReason(measurement, now);
+	if (tooYoung) return withheldFolder(folder, tooYoung);
 	if (!targets.length && !excluded.some((item) => inside(folder, item)))
 		return wholeFolder(folder, measurement);
 	const scanned = await scanFolder(folder, index, targets, excluded);
@@ -479,6 +498,7 @@ export async function planEvidencePrune({
 	excluded = [],
 	folderPaths,
 	measurements = [],
+	now = Date.now(),
 	records,
 	tempRoot = "D:/fitway-temp",
 	worktrees = [],
@@ -510,6 +530,7 @@ export async function planEvidencePrune({
 				excluded: resolvedExcluded,
 				index,
 				measurement: measured.get(key(resolved)),
+				now,
 				targets: targets.get(key(resolved)) ?? [],
 				worktrees,
 			}),
@@ -590,7 +611,23 @@ async function removeWholeFolder(directory, worktrees) {
 	await rm(filesystemPath(directory), { recursive: true });
 }
 
-export async function pruneEvidence(snapshot, { checkout = root } = {}) {
+// The user-run prune measures each folder again, so the age rule judges what is on disk now.
+async function measureFolders(folders) {
+	const measurements = [];
+	for (const folder of folders) {
+		try {
+			measurements.push(await measureFolder(path.resolve(folder)));
+		} catch {
+			// A missing folder has no measurement; the plan withholds it.
+		}
+	}
+	return measurements;
+}
+
+export async function pruneEvidence(
+	snapshot,
+	{ checkout = root, now = Date.now() } = {},
+) {
 	if (
 		key(snapshot.root) !== key(checkout) ||
 		!path.isAbsolute(snapshot.tempRoot)
@@ -600,6 +637,8 @@ export async function pruneEvidence(snapshot, { checkout = root } = {}) {
 	const git = await collectGit(records, { current: checkout });
 	const plans = await planEvidencePrune({
 		folderPaths: snapshot.folders,
+		measurements: await measureFolders(snapshot.folders),
+		now,
 		records,
 		tempRoot: snapshot.tempRoot,
 		worktrees: git.worktrees,

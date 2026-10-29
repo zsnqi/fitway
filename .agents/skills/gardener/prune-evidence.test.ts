@@ -126,11 +126,26 @@ function allowRead(target: string) {
 	else chmodSync(target, 0o755);
 }
 
-async function planOne(f, name: string, measurements = []) {
+const OLD = "2020-01-01T00:00:00.000Z";
+const NOW = Date.parse("2026-10-29T12:00:00.000Z");
+const DAY = 86400000;
+
+// The survey's measurement of a folder; `modifiedAt` is old unless a test says otherwise.
+const measurementOf = (folder: string, extra = {}) => ({
+	path: folder,
+	errors: [],
+	modifiedAt: OLD,
+	...extra,
+});
+
+// Plans one top-level folder at the fixed clock; with no `measurements` the folder is measured old.
+async function planOne(f, name: string, measurements?: object[]) {
 	const records = await collectTrackedCitationRecords({ checkout: f.checkout });
+	const folder = path.join(f.tempRoot, name);
 	const [plan] = await planEvidencePrune({
-		folderPaths: [path.join(f.tempRoot, name)],
-		measurements,
+		folderPaths: [folder],
+		measurements: measurements ?? [measurementOf(folder)],
+		now: NOW,
 		records,
 		tempRoot: f.tempRoot,
 	});
@@ -153,6 +168,26 @@ function layout(f, files: Record<string, string>, cited: string[]) {
 	f.commit();
 }
 
+// Runs the user-run prune over `folders`, returning what it printed to stderr and stdout.
+async function runPrune(f, folders: string[], now?: number) {
+	const previousExit = process.exitCode;
+	const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+	const output = vi.spyOn(console, "log").mockImplementation(() => {});
+	try {
+		await pruneEvidence(
+			{ root: f.checkout, tempRoot: f.tempRoot, folders },
+			{ checkout: f.checkout, ...(now === undefined ? {} : { now }) },
+		);
+		return {
+			failed: errors.mock.calls.flat().join("\n"),
+			printed: output.mock.calls.flat().join("\n"),
+		};
+	} finally {
+		vi.restoreAllMocks();
+		process.exitCode = previousExit;
+	}
+}
+
 const slashed = (file: string) => file.replaceAll("\\", "/");
 
 describe("evidence-safe temp pruning", () => {
@@ -165,6 +200,10 @@ describe("evidence-safe temp pruning", () => {
 			});
 			const git = await collectGit(records, { current: f.checkout });
 			const plans = await planEvidencePrune({
+				measurements: readdirSync(f.tempRoot).map((name) =>
+					measurementOf(path.join(f.tempRoot, name)),
+				),
+				now: NOW,
 				records,
 				tempRoot: f.tempRoot,
 				worktrees: git.worktrees,
@@ -295,7 +334,7 @@ describe("the prune walks only what a decision needs", () => {
 			layout(f, { "whole/sub/run.log": "x\n", "whole/frame.png": "y\n" }, []);
 			denyRead(whole);
 			const measured = await planOne(f, "whole", [
-				{ path: whole, bytes: 123, errors: [] },
+				measurementOf(whole, { bytes: 123 }),
 			]);
 			expect(measured).toMatchObject({
 				withheld: null,
@@ -422,7 +461,6 @@ describe("the prune walks only what a decision needs", () => {
 
 	it("deletes whole folders only through the link and worktree checks", async () => {
 		const f = checkoutFixture("gardener-prune-evidence-");
-		const previousExit = process.exitCode;
 		try {
 			layout(
 				f,
@@ -441,19 +479,11 @@ describe("the prune walks only what a decision needs", () => {
 			writeFileSync(path.join(outside, "sentinel.txt"), "outside\n");
 			symlinkSync(outside, at("linked/junction"), "junction");
 			f.git(["worktree", "add", "--detach", at("registered"), "HEAD"]);
-			const errors = vi.spyOn(console, "error").mockImplementation(() => {});
-			const output = vi.spyOn(console, "log").mockImplementation(() => {});
-			await pruneEvidence(
-				{
-					root: f.checkout,
-					tempRoot: f.tempRoot,
-					folders: ["internal", "linked", "part", "registered"].map(at),
-				},
-				{ checkout: f.checkout },
+			const { failed, printed } = await runPrune(
+				f,
+				["internal", "linked", "part", "registered"].map(at),
+				Date.now() + 30 * DAY,
 			);
-			const failed = errors.mock.calls.flat().join("\n");
-			const printed = output.mock.calls.flat().join("\n");
-			vi.restoreAllMocks();
 			expect(existsSync(at("internal"))).toBe(false);
 			expect(existsSync(at("part/scratch"))).toBe(false);
 			expect(existsSync(at("part/keep/run.log"))).toBe(true);
@@ -468,8 +498,6 @@ describe("the prune walks only what a decision needs", () => {
 				"C3 PASS: internal-link folder and unreached part/scratch deleted; outside-link folder refused naming its junction; registered worktree refused",
 			);
 		} finally {
-			vi.restoreAllMocks();
-			process.exitCode = previousExit;
 			f.dispose();
 		}
 	}, 60000);
@@ -511,4 +539,81 @@ describe("capture names in kept text", () => {
 			f.dispose();
 		}
 	});
+});
+
+describe("the folder-age rule", () => {
+	it("withholds a top-level folder younger than 7 days or not measured, and proposes an older one", async () => {
+		const f = checkoutFixture("gardener-prune-evidence-");
+		try {
+			layout(
+				f,
+				{
+					"six/run.log": "x\n",
+					"eight/run.log": "x\n",
+					"none/run.log": "x\n",
+					"six-cited/run.log": "x\n",
+					"six-cited/frame.png": "x\n",
+				},
+				["six-cited"],
+			);
+			const at = (name: string) => path.join(f.tempRoot, name);
+			const modified = (days: number) => ({
+				modifiedAt: new Date(NOW - days * DAY).toISOString(),
+			});
+			const six = await planOne(f, "six", [
+				measurementOf(at("six"), modified(6)),
+			]);
+			expect(six).toMatchObject({
+				withheld: "younger than 7 days",
+				candidates: 0,
+				deleteDirectories: [],
+				deleteFiles: [],
+			});
+			const eight = await planOne(f, "eight", [
+				measurementOf(at("eight"), modified(8)),
+			]);
+			expect(eight).toMatchObject({
+				withheld: null,
+				deleteDirectories: [{ path: slashed(at("eight")) }],
+			});
+			const none = await planOne(f, "none", []);
+			expect(none).toMatchObject({
+				withheld: "age not measured",
+				candidates: 0,
+				deleteDirectories: [],
+				deleteFiles: [],
+			});
+			// A cited folder is withheld whole too: nothing in a young folder is proposed.
+			const citedSix = await planOne(f, "six-cited", [
+				measurementOf(at("six-cited"), modified(6)),
+			]);
+			expect(citedSix).toMatchObject({
+				withheld: "younger than 7 days",
+				deleteFiles: [],
+			});
+			console.log(
+				"ITEM 10 PASS: 6-day-old uncited and cited folders withheld (younger than 7 days); 8-day-old proposed; unmeasured withheld (age not measured)",
+			);
+		} finally {
+			f.dispose();
+		}
+	});
+
+	it("applies the same rule when the user-run prune measures the folder again", async () => {
+		const f = checkoutFixture("gardener-prune-evidence-");
+		try {
+			layout(f, { "fresh/run.log": "x\n" }, []);
+			const { failed, printed } = await runPrune(f, [
+				path.join(f.tempRoot, "fresh"),
+			]);
+			expect(failed).toContain("younger than 7 days");
+			expect(printed).toContain("PRUNE FAIL: 1 folders, 1 failures");
+			expect(existsSync(path.join(f.tempRoot, "fresh", "run.log"))).toBe(true);
+			console.log(
+				"ITEM 10 PASS: the prune script refuses a folder modified just now (younger than 7 days) and deletes nothing",
+			);
+		} finally {
+			f.dispose();
+		}
+	}, 60000);
 });
