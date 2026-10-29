@@ -7,7 +7,7 @@
   (`tooling-map-coverage.mjs`, `tooling-map-imports.mjs`). `MAPPED_PATHS` is unchanged.
 - **Brief review** (`D:/fitway-temp/brief-review/codex-code-map-index-1` and `-1-sol`): DeepSeek's and Sol `xhigh`'s
   readings closed in the brief, one in part (dispositions in each folder).
-- **Run** (`D:/fitway-temp/codex-round-code-map-index`, start load 174,146): 52 min, then one 45-second automatic
+- **Run** (`D:/fitway-temp/codex-round-code-map-index`, start load 174,146): one turn, then one automatic
   resume when the claim check found no record for the N3 PASS row; 29.2M input tokens (28.6M cached) and 85k output.
   N1-N3 and K1-K3 reported PASS.
 - **Diff review** (`D:/fitway-temp/code-review/code-map-index-1/`): Sol `xhigh`, three findings. Findings 1-2

@@ -108,6 +108,10 @@ latest wording; never copy an entry into a resume point.
 - Every subagent is launched from a definition, at the definition's effort unless `CLAUDE.md` names
   the case for another; `CLAUDE.md` gives the choice between the Opus, Sonnet and Haiku definitions.
   (user, 2026-10-02 and 2026-10-08)
+- A folder the coordinator makes under `D:/fitway-temp` for a subagent, a review or a grade is made
+  with `pnpm run-folder:new <name> --brief <file> --for <who>`, so its `manifest.json` says who made
+  it, from which brief and commit, and where its report is saved. (agent-tooling DECISIONS item 17,
+  finding 1)
 - The Claude subscription is the scarce budget; Codex capacity is not (user, 2026-10-04). A round
   of small fixes gets one Claude review, the verifier at `high`, which also reads the changed
   elements in both directions; the separate reading-direction review is kept for a whole screen or

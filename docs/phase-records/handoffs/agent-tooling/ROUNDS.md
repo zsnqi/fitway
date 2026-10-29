@@ -137,3 +137,4 @@ in `docs/phase-records/handoffs/agent-tooling/rounds/<round>.md`, listed here.
 ## Rounds since the freeze
 
 - agent-tooling-r01 code-map-index: `briefs/codex-code-map-index.md`, result `ffe2d51f` (level max, one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`
+- agent-tooling-r01 evidence-home: `briefs/codex-evidence-home.md`, result `52fb52af` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/evidence-home.md`
