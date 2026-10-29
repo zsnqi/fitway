@@ -1,0 +1,18 @@
+{
+  "name": "eclipse-launch-film",
+  "private": true,
+  "description": "Eclipse launch film, Station 2 (silent motion): cinetic's HyperFrames starter, 1920x1080 at 60 fps, 128 BPM.",
+  "scripts": {
+    "postinstall": "node setup.mjs",
+    "textures": "node tools/textures.mjs",
+    "frames": "node tools/render.mjs --frames",
+    "render": "bash render.sh",
+    "lint": "node scripts/lint-film.mjs .",
+    "grid": "node scripts/grid-check.ts timeline.js",
+    "hf:lint": "npx -y hyperframes@0.8.79 lint ."
+  },
+  "devDependencies": {
+    "gsap": "3.14.2",
+    "three": "0.169.0"
+  }
+}

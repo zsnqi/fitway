@@ -1,0 +1,89 @@
+<!doctype html>
+<!-- The Eclipse launch film (FITWAY design research), Station 2: the picture, silent. cinetic's HyperFrames starter at
+     1920x1080, 60 fps, 128 BPM, 16 bars + a 2 s tail. The palette, the face and the mark are Eclipse's and FITWAY's:
+     cinetic:brand-supplied Eclipse's red light and gradients (inside the real pages and the device scene's red),
+     Readex Pro (Eclipse's face, self-hosted), the white FITWAY mark. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Eclipse launch film</title>
+    <!-- Local copies (npm install runs setup.mjs): renders never depend on the network. -->
+    <script src="vendor/gsap.min.js"></script>
+    <script src="motion.js"></script>
+    <script src="timeline.js"></script>
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+    </script>
+    <style>
+      /* Readex Pro, Eclipse's own face (TYP-1), self-hosted from the pinned snapshot; one variable file for 400 and 500. */
+      @font-face {
+        font-family: "Readex Pro";
+        src: url("fonts/readex-pro-latin.woff2") format("woff2");
+        font-weight: 400 500;
+        font-style: normal;
+        font-display: block;
+      }
+      /* Every colour is Eclipse's (vendor/eclipse/style.css :root, README "Colours"); the film adds none of its own. */
+      :root {
+        --page: #070707; /*       the stage */
+        --obsidian: #08090a; /*   the base every light fades into */
+        --card: #0f0e0f; /*       cards */
+        --ink: #f5f3f2; /*        chalk: the film's copy */
+        --ink-2: #c9c3c4;
+        --ink-3: #aaa4a6;
+        --stale: #8f898b; /*      Eclipse's stale grey; the devices' anodised tint */
+        --oxblood: #4d0713; /*    the light ramp's broad step */
+        --red: #e51935; /*        FITWAY red: the crowd's reading (the one accent, one meaning) */
+        --red-hi: #ff2946; /*     the hottest point and the line */
+        --mark: #ffffff; /*       the white FITWAY mark (brand/fitway-logo.png) */
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--page); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Readex Pro", sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+      .clip { position: absolute; inset: 0; }
+      #bg { background: var(--page); }
+      .layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+      /* The film camera: one transform per page wrapper (all translation inside it, origin 0 0). */
+      .cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden; background: var(--page); }
+      .cam iframe { display: block; border: 0; background: var(--page); pointer-events: none; }
+      #gl { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+      #fx .cl { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+      /* Film copy: Readex Pro 500 at 80 px, chalk, tracking 0 (TYP-5: never negative), tabular figures. One anchor. */
+      .copy {
+        position: absolute; white-space: nowrap; font-family: "Readex Pro", sans-serif; font-weight: 500;
+        font-size: 80px; line-height: 1; letter-spacing: 0; color: var(--ink); font-variant-numeric: tabular-nums;
+        will-change: transform; display: block;
+      }
+      .copy .mask { display: inline-block; overflow: hidden; padding: 0.04em 0.06em 0.2em 0.02em; margin: -0.04em -0.06em -0.2em -0.02em; }
+      .copy .w { display: inline-block; white-space: pre; }
+      /* The wordmark, set as Eclipse's rail sets it (TYP-5: the Latin wordmark is the only tracked text, 0.12 em). */
+      .wordmark { position: absolute; font-family: "Readex Pro", sans-serif; font-weight: 500; line-height: 1; letter-spacing: 0.12em; color: var(--mark); white-space: nowrap; }
+      .wordmark .ltr { display: inline-block; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="32" data-fps="60" data-width="1920" data-height="1080">
+      <div id="bg" class="clip" data-start="0" data-duration="32" data-track-index="0"></div>
+      <div id="stage" class="clip" data-start="0" data-duration="32" data-track-index="1">
+        <div id="ui" class="layer"></div>
+        <canvas id="gl" width="1920" height="1080"></canvas>
+        <svg id="fx" class="layer" viewBox="0 0 1920 1080" width="1920" height="1080">
+          <circle id="busiest-ring" fill="none" stroke="#f5f3f2" stroke-opacity="0.9" stroke-width="2" r="0" />
+          <g id="fx-body"></g>
+        </svg>
+        <div id="words" class="layer"></div>
+      </div>
+    </div>
+    <script type="module">
+      // Build the film, then register its one paused timeline last, under the composition's id (HyperFrames contract).
+      import { boot } from "./src/film.js";
+      boot().then(({ tl }) => {
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+        if (typeof window.__hfForceTimelineRebind === "function") window.__hfForceTimelineRebind();
+        document.body.dataset.ready = "1";
+      }).catch((e) => { console.error("film boot failed", e); document.body.dataset.error = String((e && e.stack) || e); });
+    </script>
+  </body>
+</html>
