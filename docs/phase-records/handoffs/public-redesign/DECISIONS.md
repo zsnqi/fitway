@@ -70,3 +70,11 @@ the public page are numbered here.
    start from nothing with a wholly different idea; «حسيت الشكل مب مرتب»; «شكل المنحنى الطولي مب كويس»). Direction 2,
    the day as a timetable with the current hour lit (`32732dbf`, its invented gym name removed in `c5f64fa5`), stays in
    history only. Direction 3's brief carries the user's words; the brand FITWAY is the only name on the page.
+   - **Why, from the user's answers** to the coordinator's observations and questions: nothing sat on one line (the
+     hours on one edge, the percentage on the other, the mark across the page) «ب الضبط»; the eye did not know where to
+     start, the answer squeezed between two pieces of curve; the curve drawn two ways (a thin grey line, then a red
+     fill); too many type sizes; on the computer, the answer far on one side, the curve on the other, empty gaps
+     between «نعم» («فوضى ... مدري وين اناظر»). The curve: time running top to bottom, its twisting shape, and its two
+     halves (its size was fine); its motion did not feel good, the Owner Daily chart's motion is better. Not the
+     cause: too many things on the page. What the eye meets first and the page's feel: the designer's («خلها للمصمم»,
+     «خلّه يجرب»).

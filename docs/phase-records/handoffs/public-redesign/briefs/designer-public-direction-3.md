@@ -48,8 +48,14 @@ Draw one whole direction of your own: the composition, sizes and type scale, sur
 order on screen and how the whole screen is used are yours. Look at the references first and pick what you draw on.
 
 The user turned down the last direction as a whole and asked for a wholly different idea, not a revision of it. In
-the user's words: the page did not look orderly («حسيت الشكل مب مرتب»), and the crowd curve drawn top to bottom read
-badly («شكل المنحنى الطولي مب كويس»). That direction made the page the day's timetable, the hours as rows from
+the user's words, the page was a mess and the eye did not know where to look («فوضى ... مدري وين اناظر»). What the
+user confirmed caused it: nothing sat on one line (the hours on one edge, the percentage on the other, the mark across
+the whole width); the eye did not know where to start, the answer squeezed between two pieces of curve; the curve drawn
+two ways (a thin grey line above, a red fill below); too many type sizes; on the computer, the answer far on one side,
+the curve on the other, and empty gaps between them. The curve read badly («شكل المنحنى الطولي مب كويس»): time running
+top to bottom, its twisting shape, and its two halves. Its motion did not feel good either; the user prefers how the
+Owner Daily chart moves (its first-open intro, `spec/design-03-foundations-10-11.md` row MOT-10, in `index.html` and
+`daily.js` of the Eclipse folder). Before you report, look at your own frames for each of these. That direction made the page the day's timetable, the hours as rows from
 opening to closing with the current hour lit; its frames are
 `D:/fitway-temp/public-redesign-r01-direction-2/frames-final/final-phone-first.png` and `final-desktop-first.png`
 beside it.
