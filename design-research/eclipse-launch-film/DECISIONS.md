@@ -50,6 +50,17 @@ coordinator's default.
     read and the phone sits far from the laptop at a different scale. Bring the camera closer, make the devices larger
     and keep the phone beside the laptop at true relative scale.
 
+## After Station 1, with earshot's listening open (user, 2026-10-29)
+21. Drive is the starting point, not a fixed target. The user picked it as the best of three, and the score may change
+    wherever earshot's listening and measurements show a better result. The user still judges it by ear.
+22. Recorded instruments released under CC0 may be played by the score code (for example VSCO-2 CE strings and piano).
+    The notes, the arrangement and the mix stay code, and there is still no licensed track. This narrows item 10.
+23. No AI music-generation models (MusicGen, Stable Audio and the like), for any layer.
+
+Coordinator defaults, stated to the user: the tempo stays 128 BPM, because the picture is cut to its bar grid; the key,
+the voices and the arrangement are free. Sample sets are CC0 only (so the film needs no credit line), fetched at a
+pinned version into the gitignored `vendor/`, and never committed.
+
 ## References
 - A: Polar launch film (Emil Widlund), 85 s.
 - B: Polar logo sting, 33 s.

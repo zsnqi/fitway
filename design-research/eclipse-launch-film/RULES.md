@@ -28,3 +28,7 @@ Motion Lab article, cinetic.
 - A visual hit comes 1 frame before its sound.
 - The music's biggest lift lands on the device reveal. The music resolves, not peaks, as the mark locks up.
 - Audio starts at about 0.2 s and fades over the last 0.8 s.
+- No AI music-generation models, for any layer. Recorded instruments are used only under CC0, played by the score code,
+  pinned and kept out of git.
+- The score may move away from Drive. Measure each change with earshot (realness per stem, `match`, `critique`) and
+  give the user an A/B to judge by ear.
