@@ -47,7 +47,7 @@ const GIANT_DOCUMENT_SPLIT = [
 ].join("\n");
 const CONCEPT_SOURCE_PATH = ".agents/skills/verify-fitway/concept-source.json";
 
-function pathWithin(file, directory) {
+export function pathWithin(file, directory) {
 	const normalizedFile = normalizePath(file);
 	const normalizedDirectory = normalizePath(directory).replace(/\/$/, "");
 	return (
@@ -362,7 +362,7 @@ function measureValue(record, measure) {
 	return record?.[measure] ?? 0;
 }
 
-export function baselineFromSnapshot(snapshot) {
+export function baselineFromSnapshot(snapshot, { admissions = [] } = {}) {
 	const files = {};
 	const directories = {};
 	const paths = Object.keys(snapshot.counts).sort((left, right) =>
@@ -401,6 +401,7 @@ export function baselineFromSnapshot(snapshot) {
 		],
 		files,
 		directories,
+		...(admissions.length ? { admissions } : {}),
 		...(snapshot.giantRoots?.length ? { giantRoots: snapshot.giantRoots } : {}),
 	};
 }
@@ -412,7 +413,8 @@ function parseCodeHealthBaseline(text) {
 		!value.files ||
 		typeof value.files !== "object" ||
 		(value.directories !== undefined &&
-			(typeof value.directories !== "object" || value.directories === null))
+			(typeof value.directories !== "object" || value.directories === null)) ||
+		(value.admissions !== undefined && !Array.isArray(value.admissions))
 	)
 		throw new Error("unsupported baseline shape");
 	return value;

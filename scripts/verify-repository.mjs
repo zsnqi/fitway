@@ -8,7 +8,10 @@ import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
-import { auditTempCitations } from "../.agents/skills/gardener/cited-evidence.mjs";
+import {
+	auditTempCitations,
+	LOST_TEMP_EVIDENCE_PATH,
+} from "../.agents/skills/gardener/cited-evidence.mjs";
 import {
 	bomExceptionPathKey,
 	normalizeGitPath,
@@ -226,7 +229,7 @@ export async function assertTrackedTempCitations({
 	});
 	if (!audit.checked) {
 		console.log(
-			`Evidenced temp citations not checked: ${tempRoot} does not exist.`,
+			`Evidenced temp citations not checked: ${tempRoot} does not exist; compared against ${audit.base}.`,
 		);
 		return audit;
 	}
@@ -236,7 +239,7 @@ export async function assertTrackedTempCitations({
 			.map((citation) => `${citation.source}:${citation.line} ${citation.path}`)
 			.join("; ");
 		console.warn(
-			`Evidenced temp citations already gone on unchanged lines: ${audit.unchanged.length}. First five: ${examples}. Mark each citation with (gone: <why>) after recovering or accepting the loss.`,
+			`Evidenced temp citations already gone on unchanged lines: ${audit.unchanged.length}. First five: ${examples}. Mark each citation with (gone: <why>) or list it in ${LOST_TEMP_EVIDENCE_PATH} after recovering or accepting the loss.`,
 		);
 	}
 	if (audit.changed.length) {
@@ -246,11 +249,11 @@ export async function assertTrackedTempCitations({
 			)
 			.join("\n");
 		throw new Error(
-			`Evidenced temp citations are gone on changed lines:\n${details}\nFix: correct each path, or mark it (gone: <why>).`,
+			`Evidenced temp citations are gone on unlisted changed lines compared against ${audit.base}:\n${details}\nFix: correct each path, mark it (gone: <why>), or add one row per citation to ${LOST_TEMP_EVIDENCE_PATH}.`,
 		);
 	}
 	console.log(
-		`Evidenced temp citations passed: ${audit.dead.length} already gone on unchanged lines, 0 gone on changed lines.`,
+		`Evidenced temp citations passed compared against ${audit.base}: 0 unlisted gone citations, ${audit.listed.length} listed.`,
 	);
 	return audit;
 }

@@ -917,8 +917,8 @@
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 139,
-			"expectCalls": 449
+			"testCases": 145,
+			"expectCalls": 463
 		},
 		".agents/skills/verify-fitway": {
 			"testCases": 14
@@ -1044,8 +1044,8 @@
 			"expectCalls": 523
 		},
 		"scripts/agent-environment": {
-			"testCases": 381,
-			"expectCalls": 1099
+			"testCases": 385,
+			"expectCalls": 1120
 		},
 		"scripts/demo": {
 			"testCases": 17,
