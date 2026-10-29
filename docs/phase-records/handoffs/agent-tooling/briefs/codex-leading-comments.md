@@ -49,12 +49,20 @@ find out. After this round every mapped file opens with a comment that says what
 - **L1.** The map round left the comments for later, since the files belonged to other rounds then (the map's brief,
   `docs/phase-records/handoffs/agent-tooling/briefs/codex-code-map-index.md`). Outcome: each file the map shows
   with `(no leading comment)` at `ac337544` gains a leading comment as the map reads one: `//` lines before the first
-  statement (after a shebang if there is one). Its first sentence says what the file is for in one plain sentence of
-  at most 120 characters, ending with a period, in the style of the existing entries (for example
-  `survey-checks.mjs`: "Survey rule-home, graph, environment, and command checks."). It names what the file does,
-  read from its code and exports, not its history: no round, decision or finding numbers and no dates. A second
-  sentence is allowed where the file's role needs it. Check: `pnpm map:tooling` prints `0 without a leading comment`
-  and `pnpm check:tooling-map` passes. Intent: the map answers "where does X live" without opening files.
+  statement (after a shebang if there is one). So does `.agents/skills/verify-fitway/compare.mjs`, whose leading
+  comment is only the ratchet's `code-health-exception:` marker: its purpose line goes above the marker, which stays
+  unchanged (the ratchet finds the marker anywhere, `scripts/agent-environment/code-health-ratchet.mjs:31`).
+  - The map shows only the first sentence, so the first sentence carries the purpose: one plain sentence of at most
+    120 characters, ending with a period, with no other `.` followed by a space inside it (no "e.g." or "i.e.").
+  - It names the file's own subject and what it does with it (what it reads, builds, checks, writes or runs), read
+    from its code and exports, specific enough that it would be false for every other mapped file in its folder, in
+    the style of the existing entries (for example `survey-checks.mjs`: "Survey rule-home, graph, environment, and
+    command checks."). A sentence that could describe several files ("Helpers for the tooling.") does not meet L1.
+  - It names what the file does, not its history: no round, decision or finding numbers and no dates. A second
+    sentence is allowed for a reader of the file; the map does not show it.
+
+  Check: `pnpm map:tooling` prints `0 without a leading comment` and `pnpm check:tooling-map` passes; each sentence is
+  read against its file at the diff review. Intent: the map answers "where does X live" without opening files.
 - **L2.** Comments are the only change. Outcome: in every changed source file, the diff against `ac337544` adds lines
   only, all of them comment lines (and at most one blank line after the comment) above the first statement; no
   existing line changes. Check: a script in the run folder reads `git diff --numstat` and each file's diff, and
@@ -70,8 +78,8 @@ find out. After this round every mapped file opens with a comment that says what
 
 ## Scope
 
-You may change, in the files the map shows with `(no leading comment)` at `ac337544`, only the lines above each
-file's first statement; and `docs/agent-context/AGENT_TOOLING_CODE_MAP.md` and
+You may change, in the files the map shows with `(no leading comment)` at `ac337544` and in `compare.mjs`, only the
+lines above each file's first statement (adding lines, never changing one); and `docs/agent-context/AGENT_TOOLING_CODE_MAP.md` and
 `docs/agent-context/CODE_HEALTH_BASELINE.json` (both regenerated). Commit once when done. Everything else is
 read-only. Add no dependencies.
 
