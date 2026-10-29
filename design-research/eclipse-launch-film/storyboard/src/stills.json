@@ -1,0 +1,86 @@
+[
+ {
+  "id": "01",
+  "slug": "hook",
+  "t": 1.1,
+  "beat": "Hook",
+  "what": "The day's line draws itself on black, macro"
+ },
+ {
+  "id": "02",
+  "slug": "drop",
+  "t": 3.9,
+  "beat": "Drop: Daily",
+  "what": "Cut wide on the drop; the four answers roll in"
+ },
+ {
+  "id": "03",
+  "slug": "inside-now",
+  "t": 5.0,
+  "beat": "Insert: Inside now",
+  "what": "Punch-in: 49 approx., Busy"
+ },
+ {
+  "id": "04",
+  "slug": "now-lands",
+  "t": 8.2,
+  "beat": "Landing: now",
+  "what": "The line lands at 7:42 PM; the reading swells into its ring"
+ },
+ {
+  "id": "05",
+  "slug": "pattern-fills",
+  "t": 14.1,
+  "beat": "Reports: the fill",
+  "what": "Four weeks fill the pattern on the grid"
+ },
+ {
+  "id": "06",
+  "slug": "busiest-hour",
+  "t": 16.6,
+  "beat": "Reports: busiest",
+  "what": "The busiest hour is marked; Every week, a rhythm."
+ },
+ {
+  "id": "07",
+  "slug": "montage",
+  "t": 18.9,
+  "beat": "Montage",
+  "what": "Activity log, one beat long; the rail holds the frame"
+ },
+ {
+  "id": "08",
+  "slug": "arabic",
+  "t": 21.1,
+  "beat": "EN to AR",
+  "what": "The real Arabic render; the rail has crossed the frame"
+ },
+ {
+  "id": "09",
+  "slug": "devices",
+  "t": 23.2,
+  "beat": "Device reveal",
+  "what": "Laptop and phone land on the biggest lift"
+ },
+ {
+  "id": "10",
+  "slug": "read-yours",
+  "t": 25.2,
+  "beat": "Flat hold",
+  "what": "The one held frame; Now, read yours."
+ },
+ {
+  "id": "11",
+  "slug": "drafting",
+  "t": 27.4,
+  "beat": "Construction",
+  "what": "Drafting lines build the mark around the reading"
+ },
+ {
+  "id": "12",
+  "slug": "lockup",
+  "t": 30.5,
+  "beat": "Lockup",
+  "what": "The white mark and FITWAY; the poster frame"
+ }
+]

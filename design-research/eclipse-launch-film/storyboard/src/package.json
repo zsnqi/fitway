@@ -1,0 +1,12 @@
+{
+  "name": "eclipse-launch-film-storyboard",
+  "private": true,
+  "type": "module",
+  "description": "Station 1 style stills for the Eclipse launch film. Renders with: npm run render (or node render.mjs).",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "three": "0.169.0"
+  }
+}

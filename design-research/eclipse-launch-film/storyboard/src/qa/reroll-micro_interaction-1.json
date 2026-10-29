@@ -1,0 +1,14 @@
+{
+ "seed": 537968787,
+ "format": "launch",
+ "energy": "medium",
+ "category": "micro_interaction",
+ "picks": [
+  {
+   "id": "mi-spinner-to-check",
+   "name": "Spinner resolves to a check",
+   "category": "micro_interaction",
+   "role": "workhorse"
+  }
+ ]
+}

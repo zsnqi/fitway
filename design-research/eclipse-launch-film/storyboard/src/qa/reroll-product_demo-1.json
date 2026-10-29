@@ -1,0 +1,14 @@
+{
+ "seed": 3418037890,
+ "format": "launch",
+ "energy": "medium",
+ "category": "product_demo",
+ "picks": [
+  {
+   "id": "pd-headline-becomes-input",
+   "name": "Headline becomes the product input",
+   "category": "product_demo",
+   "role": "signature"
+  }
+ ]
+}

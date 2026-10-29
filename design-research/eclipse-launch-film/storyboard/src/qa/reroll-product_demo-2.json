@@ -1,0 +1,14 @@
+{
+ "seed": 3884417125,
+ "format": "launch",
+ "energy": "medium",
+ "category": "product_demo",
+ "picks": [
+  {
+   "id": "pd-device-rise-on-cut",
+   "name": "Device rises already moving",
+   "category": "product_demo",
+   "role": "workhorse"
+  }
+ ]
+}

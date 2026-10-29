@@ -1,0 +1,40 @@
+/* The film's own layer. Every colour and the one typeface are Eclipse's (vendor/eclipse/style.css :root, fonts/);
+ * the film adds no colour of its own. */
+@import url("/vendor/eclipse/fonts/readex-pro.css"); /* cinetic:brand-supplied Readex Pro, Eclipse's typeface */
+
+:root {
+  --page: #070707;
+  --card-solid: #0f0e0f;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;      /* FITWAY red: the crowd's reading */
+  --red-hi: #ff2946;   /* the hottest point only */
+  --ox: #4d0713;       /* oxblood, the light ramp's broad step */
+  --obsidian: #08090a;
+  --line: rgba(255, 255, 255, 0.075);
+  --line-2: rgba(255, 255, 255, 0.1);
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  /* One copy role and one anchor for the whole film (reference A: the caption always in the same place). */
+  --copy-size: 68px;
+  --copy-x: 160px;          /* Eclipse's content edge at 1x film scale (120 px x 1.333) */
+  --copy-baseline: 956px;   /* lower third; 124 px above the frame's bottom */
+}
+
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--page); }
+body { font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; }
+.stage { position: absolute; inset: 0; overflow: hidden; background: var(--page); }
+.layer { position: absolute; inset: 0; }
+.cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.cam iframe { display: block; border: 0; background: var(--page); }
+
+/* Film copy: Readex Pro 500, chalk, tracking 0 (TYP-5: never negative), tabular figures. */
+.copy {
+  position: absolute; left: var(--copy-x); top: 0;
+  font: 500 var(--copy-size) / 1 var(--font); color: var(--ink);
+  letter-spacing: 0; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.copy .w { display: inline-block; }
+
+/* The wordmark, set as Eclipse's rail sets it (TYP-5: the Latin wordmark is the only tracked text, 0.12 em). */
+.wordmark { font: 500 100px / 1 var(--font); letter-spacing: 0.12em; color: #fff; white-space: nowrap; }

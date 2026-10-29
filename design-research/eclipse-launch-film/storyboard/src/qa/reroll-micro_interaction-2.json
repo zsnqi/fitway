@@ -1,0 +1,14 @@
+{
+ "seed": 1072833725,
+ "format": "launch",
+ "energy": "medium",
+ "category": "micro_interaction",
+ "picks": [
+  {
+   "id": "mi-shape-handoff-morph",
+   "name": "Shape handoff: pill becomes the icon",
+   "category": "micro_interaction",
+   "role": "signature"
+  }
+ ]
+}

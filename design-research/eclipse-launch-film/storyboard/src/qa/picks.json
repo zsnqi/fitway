@@ -1,0 +1,86 @@
+{
+ "seed": 1760106441,
+ "format": "launch",
+ "energy": "medium",
+ "category": null,
+ "picks": [
+  {
+   "id": "oh-quiet-intro-drop",
+   "name": "Sparse intro, drop on the first hard cut",
+   "category": "opening_hook",
+   "role": "workhorse"
+  },
+  {
+   "id": "tr-shape-match-cut",
+   "name": "Shape match cut",
+   "category": "transition",
+   "role": "workhorse"
+  },
+  {
+   "id": "tr-cover-wipe",
+   "name": "Product surface cover wipe",
+   "category": "transition",
+   "role": "workhorse"
+  },
+  {
+   "id": "ty-phrase-clamp-junction",
+   "name": "Phrase clamp at a junction",
+   "category": "typography_motion",
+   "role": "signature"
+  },
+  {
+   "id": "ty-staggered-word-roll",
+   "name": "Staggered word roll",
+   "category": "typography_motion",
+   "role": "workhorse"
+  },
+  {
+   "id": "pd-fast-prompt-true-scale",
+   "name": "Fast prompt at true scale",
+   "category": "product_demo",
+   "role": "workhorse"
+  },
+  {
+   "id": "ui-live-reflow",
+   "name": "Container resizes, content reflows",
+   "category": "ui_choreography",
+   "role": "workhorse"
+  },
+  {
+   "id": "le-accordion-cta-collapse",
+   "name": "CTA line closes its gaps",
+   "category": "logo_and_end_card",
+   "role": "accent"
+  },
+  {
+   "id": "cam-punch-in-insert",
+   "name": "Punch-in insert on the same render",
+   "category": "camera",
+   "role": "workhorse"
+  },
+  {
+   "id": "dn-count-glyph-swap",
+   "name": "Companion glyph swaps mid-count",
+   "category": "data_and_numbers",
+   "role": "accent"
+  },
+  {
+   "id": "mi-launch-hop",
+   "name": "Launch hop that never lands",
+   "category": "micro_interaction",
+   "role": "accent"
+  },
+  {
+   "id": "cl-specular-sweep",
+   "name": "Specular sweep",
+   "category": "color_and_light",
+   "role": "workhorse"
+  },
+  {
+   "id": "ps-machine-grid-human-gaps",
+   "name": "Machine on the grid, hands off it",
+   "category": "pacing_structure",
+   "role": "workhorse"
+  }
+ ]
+}
