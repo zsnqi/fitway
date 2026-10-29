@@ -2,8 +2,7 @@
 # owner-design-exploration-r04: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 15:10 +03:00 (the retro's
-  four fixes come first, decision 102; §"Running now" is where to pick up; 2026-10-29 adds the build branch's two
-  layout splits)
+  four fixes come first, decision 102; §"Running now" is where to pick up)
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-102; 102 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
@@ -34,16 +33,13 @@
 
 ## Running now
 
-Nothing runs (measured 2026-10-28 22:00; the PC's LAN address is 192.168.8.186). main `8c41282f` (CI 40706472283);
-this line adds decisions 97-102, for `pnpm main:advance` once its CI passes. Build branch
-`owner-followup-r04-build` at `ef9fa810`, pushed (2026-10-29). Status page for the user:
+Nothing of this milestone runs (measured 2026-10-29 15:10; the PC's LAN address is 192.168.8.186). main `bc6b9464`
+carries decisions 97-102. Build branch `owner-followup-r04-build` at `ef9fa810`, pushed. Status page for the user:
 https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
 
-- **Two layout splits on the build branch, as this milestone's work** (2026-10-29, by its coordinator for the merge of
-  main into public-redesign-r01; `WORKING_AGREEMENTS.md` §"Ownership"): `2aa2fc4d` split `DESIGN-SPEC.md` and
-  `SETTINGS-SPEC.md` into `eclipse/spec/`, and `ef9fa810` split `NEXT-DIRECTION-BRIEF.md` by section into
-  `directions/next-direction-brief/` (agent-tooling DECISIONS item 21, the user's word). No word changed; each original
-  rebuilds byte for byte from its index and parts. Edit a section in its part; the index lists every heading.
+- **Layout splits on the build branch, as this milestone's work** (2026-10-29, `WORKING_AGREEMENTS.md` §"Ownership"):
+  `2aa2fc4d` (`DESIGN-SPEC.md`, `SETTINGS-SPEC.md` into Eclipse's spec folder) and `ef9fa810` (`NEXT-DIRECTION-BRIEF.md`
+  into a folder of parts beside it, agent-tooling item 21). No word changed; edit a section in its part.
 - **The belonging check is built** (DECISIONS 93, `codex-rounds.md` §"belonging-check", measured):
   `pnpm verify:owner belonging-check`, merged `dbf9b683`; today's concept passes all 13,028 frames. Sol and Terra were
   at capacity, so DeepSeek alone reviewed the brief and Opus the diff (the user, 2026-10-28: continue on DeepSeek).
@@ -70,11 +66,8 @@ https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: ht
 - **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
   coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
-- **Next, in order:**
-  1. `pnpm main:advance` to this commit once its CI passes (if not already done; check `git log -1 origin/main`).
-  2. **The tooling first** (decisions 96 (1), 101, 102): the `compare` fix is graded and waits to merge, and the
-     retro's four rounds are drafted; both are in `docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md`
-     §"Running now" and §"Next steps".
+- **Next: the tooling first** (decisions 96 (1), 101, 102): the retro's four rounds and the `compare` fix are merged;
+  what is left is `docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md` §"Next steps".
 - **The public page:** its paper accepted and applied (decisions 98, 99; ADR-010); it runs as its own milestone,
   public-redesign-r01 (`docs/phase-records/handoffs/public-redesign/public-redesign-r01-resume.md`), its first round
   without a skeleton, after the retro's four fixes (decision 102). Friday's dash: A kept (DECISIONS 89).

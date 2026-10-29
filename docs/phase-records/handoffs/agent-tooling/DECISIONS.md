@@ -250,9 +250,9 @@ through these pointers, not copied here.
     `##` sections into parts under 40,000 bytes behind an index that keeps its name, its preamble and every heading,
     with not one word changed and the original rebuilt byte for byte from the parts (as `2aa2fc4d` did for the
     specs); no record cites its lines by number. It then reaches `public-redesign-r01` through the merge. Done on
-    2026-10-29: `ef9fa810` on `owner-followup-r04-build`, nine parts in `directions/next-direction-brief/` (the largest
-    10,566 bytes), the 59,178 bytes rebuilt byte for byte; merged into `public-redesign-r01` and recorded in r04's
-    resume point.
+    2026-10-29: `ef9fa810` on `owner-followup-r04-build`, nine parts in a `next-direction-brief` folder beside it
+    (the largest 10,566 bytes), the 59,178 bytes rebuilt byte for byte; merged into `public-redesign-r01` and recorded
+    in r04's resume point.
 22. **Expired leases fail a check, and a coordinator holding two milestones works in the other's files as that
     milestone's work** (the user, 2026-10-29: «اي الاثنين», on the coordinator's two proposals). Found on 2026-10-29:
     this milestone's five shared leases ran out on 2026-10-23 unnoticed, since `project-state-invariants.mjs` reads

@@ -27,8 +27,8 @@ Measured 2026-10-29 15:10. CI runs on `owner-followup-r04-build` at `ef9fa810` a
 and branch-merge-checks (`docs/phase-records/handoffs/agent-tooling/rounds/branch-merge-checks.md`).
 
 - **The real merge is in** (items 19 and 21), measured: `ef9fa810` split `NEXT-DIRECTION-BRIEF.md` on r04's branch
-  as r04's work (nine parts in `directions/next-direction-brief/`, the original rebuilt byte for byte; recorded in r04's
-  resume point); `public-redesign-r01` fast-forwarded to it, set to track `origin/owner-followup-r04-build`, merged main
+  as r04's work (nine parts in a `next-direction-brief` folder beside it, the original rebuilt byte for byte;
+  recorded in r04's resume point); `public-redesign-r01` fast-forwarded to it, set to track `origin/owner-followup-r04-build`, merged main
   `bc6b9464` with no conflict (`ac0effa7`), then `adabebff`: `pnpm code-health:baseline --admit` for the concept folder
   with its reason (one admission record, 12 files, `NEXT-DIRECTION-BRIEF.md` out of the baseline) and the packet's
   reference frame pinned to `563e1c83`. There `pnpm check:code-health`, `pnpm check:repository` (0 unlisted gone
