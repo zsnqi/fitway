@@ -13,13 +13,24 @@ import {
 	plainPath,
 } from "./survey-evidence.mjs";
 
+// Git prints worktrees by their long path; an existing target is looked up by its real path.
+async function registeredWorktree(worktrees, target) {
+	let lookup = target;
+	try {
+		lookup = plainPath(await realpath(filesystemPath(target)));
+	} catch (error) {
+		if (error.code !== "ENOENT") throw error;
+	}
+	return worktrees.find((item) => key(item.path) === key(lookup));
+}
+
 // User-run proposal only. Recheck the target at execution, never trust an old survey.
 export async function removeWorktree(checkout, target) {
 	if (!path.isAbsolute(checkout) || !path.isAbsolute(target))
 		throw new Error("Checkout and worktree must be absolute paths");
 	const context = await collectRecords({ checkout });
 	const state = await collectGit(context.records, { current: checkout });
-	const tree = state.worktrees.find((item) => key(item.path) === key(target));
+	const tree = await registeredWorktree(state.worktrees, target);
 	if (!tree) throw new Error(`Unregistered worktree: ${target}`);
 	if (!tree.linksSafe)
 		throw new Error(

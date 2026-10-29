@@ -1,6 +1,12 @@
 // Test fixture: a disposable Git checkout and temp root under GARDENER_TEST_RUN or the system temp.
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+	mkdirSync,
+	mkdtempSync,
+	realpathSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { expect } from "vitest";
@@ -8,8 +14,10 @@ import { expect } from "vitest";
 // `prefix` names the run folder; `commit` stages everything, commits (an empty commit too), and
 // points `origin/main` at the result; `dispose` checks it removes only that run folder.
 export function checkoutFixture(prefix) {
-	const base = path.resolve(process.env.GARDENER_TEST_RUN ?? os.tmpdir());
-	mkdirSync(base, { recursive: true });
+	const requested = path.resolve(process.env.GARDENER_TEST_RUN ?? os.tmpdir());
+	mkdirSync(requested, { recursive: true });
+	// Git prints worktrees by their long path; a system temp may be a Windows short alias (RUNNER~1).
+	const base = realpathSync.native(requested);
 	const run = mkdtempSync(path.join(base, prefix));
 	const checkout = path.join(run, "checkout");
 	const tempRoot = path.join(run, "temp");

@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
 import { lstat, readdir, readFile, rm, unlink } from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
@@ -503,7 +503,8 @@ export async function planEvidencePrune({
 	tempRoot = "D:/fitway-temp",
 	worktrees = [],
 }) {
-	const resolvedRoot = path.resolve(tempRoot);
+	// Git prints worktrees by their long path, so the root is compared by its real path too.
+	const resolvedRoot = realpathSync.native(path.resolve(tempRoot));
 	const folders =
 		folderPaths ??
 		(
