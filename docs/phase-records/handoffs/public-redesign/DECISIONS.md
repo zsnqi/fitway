@@ -48,9 +48,8 @@ the public page are numbered here.
    - **The concept** may show a percentage on synthetic data; the page reads whole without it, since the owner can turn
      it off.
    - **Production:** approved in principle for after v1, through `docs/spec/06-interfaces-and-contracts.md`'s reservation
-     (a new versioned API, the server deciding, an owner-only setting, the warning that count plus percentage reveals
-     capacity, an audit), with the setting on by default; the warning shows where capacity is set and where the setting
-     is. Its own versioned Product/Spec change still comes before any implementation; v1's public contract stays
+     (a new versioned API, the server deciding, an owner-only setting, an audit), with the setting on by default and no
+     warning (the user, the same evening: «شيل التحذيرات, مب طفل هو»; the reservation's warning clause is removed). Its own versioned Product/Spec change still comes before any implementation; v1's public contract stays
      capacity-free.
    - **Applied** to `FITWAY_PRODUCT.md` (the success-and-boundary paragraph) and
      `docs/spec/06-interfaces-and-contracts.md` (the capacity boundary), as shown to the user before writing.
