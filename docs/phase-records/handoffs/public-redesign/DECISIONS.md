@@ -89,3 +89,14 @@ the public page are numbered here.
    nothing either: «الظاهر انه بنحتاج المصمم يبدع من عنده و ب استخدام المهارة»). The gathering of gym apps' crowd
    screens was stopped unfinished. Direction 4's brief gives no reference set and carries the user's words on
    directions 2 and 3.
+9. **Direction 4, the instrument cluster, is turned down; quick sketches next; the curve is no longer required**
+   (the user, 2026-10-30: «ما عجبني انه يكون ك عداد سيارة»; nothing in it liked, «الصفحة بشكل عام ما عجبتني وفكرة
+   المحرك»; `4932b9e8`).
+   - **The common cause,** the coordinator's observation the user confirmed («اعجبتني ملاحظتك ... اي صحيحة»): each
+     turned-down direction borrowed its idea from another world (a prayer-times board, a service status page, a car's
+     tachometer). The page should have a language of its own.
+   - **The typical-day curve** is no longer required content («ممكن نستغني عنه و يصمم شكل غير ... ما نبي نحده ب ذا»);
+     the page's content is the level, the approximate count, open or closed, the last update and the percentage.
+   - **Sketches before a draft** (the coordinator's suggestion, «اتفق معك»; amends item 5's stage one): the designer
+     first draws four quick phone stills, each a different idea, Arabic, live, no motion, no computer; the user picks
+     one, and it becomes a full draft. The user will name apps whose feel they like later.
