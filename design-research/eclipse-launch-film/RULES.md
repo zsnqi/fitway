@@ -34,3 +34,8 @@ Motion Lab article, cinetic.
   give the user an A/B to judge by ear.
 - The feeling is Polar's confidence and luxury, building to an explosion. Effects are few, and each one belongs to
   something in this film's story.
+- The product is the hero: every move shows its beauty and quality, and nothing is there to show off. Avoid cliché
+  moves (trial 1).
+- Design the transitions as one family before the shots; an entrance (like Reports' in trial 1) never arrives
+  abruptly or in a style of its own.
+- The language switch needs a better idea than reshuffling every block (trial 1).

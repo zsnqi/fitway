@@ -19,25 +19,12 @@ order. Talk to the user in Arabic (Gulf dialect is fine), even though the files 
   strings, piano and percussion over Drive's frame) reads p_real 0.85, but its pulse is weak (the beat tracker reads 64
   BPM at clarity 0.17, against Drive's 128 at 0.51), its hit stands 8 dB over the bed against Drive's 22, and it leans
   orchestral trailer. The coordinator advised against v2 as it stands. `music-v2/ab-preview.mp4` went to the user.
-- **Direction re-opened (user, 2026-10-29):** the user feels "the idea or the music I want" has not arrived yet and
-  re-sent the three references. `references/refs-listening-notes.md` holds the new listening analysis. Five questions
-  went to the user: the feeling at the end (calm confidence like Polar, energy like Ramp, or a build to a drop); which
-  reference's music is closest and why; whether the gap is the music only or the story and look too; how many effects
-  (Polar's few and blended, or Ramp's many and exposed); and any outside track to analyse as a reference.
-  **Wait for the answers before resuming either station.**
-- **Station 2: paused before review**, at the user's re-opening. `film/` holds a HyperFrames composition with every
-  beat-sheet row playing (first full sharp render, no review round, no MP4 yet). Its report: almost every cue derives
-  from `motion.js` (FPS, BPM) through `b(bar, beat, sixteenth)` in `timeline.js`, so a tempo or bar-map change is mostly
-  a retime; about ten typed frame numbers and the act-to-screen mapping in `src/film.js` need checking after one.
-  `film/README.md` documents the 128 BPM workaround. Open: no review rounds, no `blur.json`, legend cut in bars 4–5,
-  card overlap mid-switch, the Settings rail tile below the montage frame. A full render takes 16 minutes.
-- **Station 2's remaining steps, once the direction is settled:**
-  1. Review on contact sheets.
-  2. Fix and review again.
-  3. Motion blur and encode.
-  4. Send the user a silent MP4.
-- **Then Station 3:** the full 32 s score in the direction the user settles, with stems. Then the earshot kit effects (movement is silent,
-  no whooshes), the mix (-14 LUFS, true peak ≤ -1.5 dBTP), the sync audit and the final render.
+- **Trial 1 closed as an experiment (user, 2026-10-29).** Start from `TRIAL-1-RECORD.md`: the user's notes on the
+  trial render, the direction for the real film (Polar's confidence and luxury building to an explosion, the product
+  as the hero, few effects from our own story, Polar's score as the music reference), what worked, the lessons, and
+  every tool pin. `film/` keeps the trial composition and `film/trial-1-contact-sheet.png`.
+- **Waiting on the user:** the rest of their notes on the trial, the Public page being finished, and their go for
+  the real film. Do not start a redesign before that go (DECISIONS items 26–28).
 
 ## How the work runs
 - The main session is the coordinator only. Keep its context lean and delegate.

@@ -70,6 +70,12 @@ pinned version into the gitignored `vendor/`, and never committed. The sample so
 26. There is no outside music reference. The user saw the raw first render of Station 2 before deciding on the idea.
     No redesign starts until the user says so.
 
+## Trial 1 closed as an experiment (user, 2026-10-29)
+27. The Station 2 render was a trial that set the direction. It is recorded in `TRIAL-1-RECORD.md`, with the user's
+    notes and the lessons, and is not fixed. The film's purpose is to present the product's beauty and quality.
+28. The real film also shows the Public page, which the user expects to finish about today. It starts only when the
+    user says so.
+
 ## References
 - A: Polar launch film (Emil Widlund), 85 s.
 - B: Polar logo sting, 33 s.
