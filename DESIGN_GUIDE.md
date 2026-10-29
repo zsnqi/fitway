@@ -36,8 +36,8 @@
 > be redesigned. Its identity is FITWAY's: dark, FITWAY red, the light (Eclipse's lights, as the
 > gym's own), and Readex Pro at real weights only; the Owner pages' rules (Eclipse,
 > `DESIGN-SPEC.md` §1) are a reference for that identity only. The page carries the crowd level,
-> the approximate count, open or closed, the last update, the typical-day curve, and a
-> percentage; the concept shows the curve and the percentage on synthetic data, and the page
+> the approximate count, open or closed, the last update, and a
+> percentage; the concept shows the percentage on synthetic data, and the page
 > reads whole without the percentage. RTL/LTR, numerals, truthful data, state grammar (§6),
 > loading behaviour, interaction, accessibility and reduced motion remain binding. The shipped
 > page keeps this guide's tokens until the redesign is promoted.
