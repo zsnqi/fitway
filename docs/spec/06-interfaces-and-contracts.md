@@ -27,6 +27,10 @@ the optional field entirely while disabled; make the server the disclosure autho
 only an authenticated owner to change it; warn that count plus percentage can reveal capacity;
 and audit actor/prior/new values/time. These constraints reserve a safe boundary only. They do
 not authorize implementation, and historical visual artifacts do not pre-authorize the feature.
+Product approved the feature in principle on 2026-10-29 (public-redesign-r01 DECISIONS item 4): when built,
+after v1 and under every constraint above, the owner's setting is on by default, the warning is shown to the owner
+where capacity is set and where the setting is, and turning it off omits the field. The approval still needs its
+versioned Product/Spec change before any implementation.
 
 **2. Staff/owner procedures (oRPC, session + role enforced server-side).**
 

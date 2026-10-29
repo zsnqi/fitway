@@ -42,3 +42,15 @@ the public page are numbered here.
    - **The next round:** several designers, each drawing one whole direction of its own, starting from references and
      following Impeccable's full process. The rule changes and the brief are done in a new session (the user: «ممتاز
      ولكن مو ب الجلسة الحالية»).
+4. **A public percentage: shown in the concept, the owner's setting later, on by default** (the user, 2026-10-29, in
+   the coordinator session: «1» to the coordinator's suggestion, then «2» to "on by default", after the coordinator
+   recommended off for privacy). Settles item 3's open percentage.
+   - **The concept** may show a percentage on synthetic data; the page reads whole without it, since the owner can turn
+     it off.
+   - **Production:** approved in principle for after v1, through `docs/spec/06-interfaces-and-contracts.md`'s reservation
+     (a new versioned API, the server deciding, an owner-only setting, the warning that count plus percentage reveals
+     capacity, an audit), with the setting on by default; the warning shows where capacity is set and where the setting
+     is. Its own versioned Product/Spec change still comes before any implementation; v1's public contract stays
+     capacity-free.
+   - **Applied** to `FITWAY_PRODUCT.md` (the success-and-boundary paragraph) and
+     `docs/spec/06-interfaces-and-contracts.md` (the capacity boundary), as shown to the user before writing.

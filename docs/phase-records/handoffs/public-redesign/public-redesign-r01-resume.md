@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 17:14 +03:00 (the first
-  round set aside; the rules and a new brief are next, in a new session)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-3; 3 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 20:10 +03:00 (the first
+  round set aside; the percentage settled; the rules and a new brief are next, in a new session)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-4; 4 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -29,12 +29,8 @@ folder.
 
 The user starts a new session for these (DECISIONS item 3):
 
-1. **Settle the percentage first.** The user prefers to show one for now and leave it to the gym's owner later. The
-   coordinator's suggestion, not yet answered: the concept may show it (synthetic data), but the page must read whole
-   without it, since the owner can switch it off; production takes SPEC's reserved path (a new versioned API, the
-   server deciding, an owner-only switch with a warning that count plus percentage reveals capacity, and an audit).
-   Showing it in the concept departs from `FITWAY_PRODUCT.md`'s capacity-free line, so the amendment is shown to the
-   user before it is written.
+1. **The percentage is settled** (DECISIONS item 4, applied to Product and SPEC): the concept may show one on
+   synthetic data and the page reads whole without it; the brief says so.
 2. **Change the rules** to item 3: the content lines of r04 item 90 and the amended Product and Design Guide lines that
    ban the typical-day curve and the verdict line; the frame's separate gym name (the brand is FITWAY's name);
    `DO-NOT.md` and `DESIGN-SPEC.md` §6 say dark; the first brief's "no new tokens" and fixed order go. Show the user the
@@ -49,7 +45,7 @@ The user starts a new session for these (DECISIONS item 3):
 
 ## Waiting on the user
 
-The percentage (step 1).
+Nothing; the user opens the new session for steps 2 and 3.
 
 ## Known risks
 
