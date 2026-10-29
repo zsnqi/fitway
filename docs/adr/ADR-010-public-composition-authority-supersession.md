@@ -53,7 +53,7 @@ Nothing in this ADR changes behavior, semantics, or non-visual contracts. In par
 - A state switch for the demo exists only in the concept and the demo page and never ships (`SPEC.md`'s
   "Implementation authority and fidelity contract": mockup-only content must not ship).
 - Where the redesign needs a look-line of `FITWAY_PRODUCT.md`, `DESIGN_GUIDE.md` or `SPEC.md` to change (the 28-bar
-  signal, Cairo, the static atmosphere, "live data do not animate", the count's label, the stale gap), the change is
+  signal, Cairo, the count's label, the stale gap), the change is
   an amendment the user accepts line by line; this ADR does not change those lines by itself. Until an amendment is
   applied, the shipped page keeps the line as written.
 - Approval and promotion remain separate: no baseline, canonical, manifest or authority hash is regenerated, promoted
