@@ -14,10 +14,11 @@ order. Talk to the user in Arabic (Gulf dialect is fine), even though the files 
 - **Music:** the user picked sketch 3, "Drive". Its code is in `music-sketches/src/`; `music-sketches/NOTES.md` gives
   the key (D minor), the chords and the voices. Re-render with `bash music-sketches/src/render.sh`. The WAV masters and
   stems go to the gitignored `out/`.
-- **Music, in progress:** with earshot's listening open, it heard Drive as synthwave rather than warm cinematic
-  (p_real 0.39; the noise riser reads as a sweep). The user allowed Drive to change and CC0 recorded instruments
-  (DECISIONS items 21–23). A 10 s Drive v2 is being made in `music-v2/`, in its own worktree, in parallel with
-  Station 2, and goes to the user as an A/B against the original.
+- **Music, awaiting the user's ear:** with earshot's listening open, it heard Drive as synthwave (p_real 0.39). The
+  user allowed Drive to change and CC0 recorded instruments (DECISIONS items 21–23). Drive v2 (`music-v2/`, VSCO-2 CE
+  strings, piano and percussion over Drive's frame) reads p_real 0.85 and is no longer synthwave, but leans orchestral
+  trailer (46% when offered) and its onset rate (1.0/s) is below the launch films'. `music-v2/ab-preview.mp4` went to
+  the user as an A/B; the full score grows from whichever they pick.
 - **Next: Station 2.** Build the motion, with no sound:
   1. Scaffold the film in `film/` with cinetic's HyperFrames engine (`references/hyperframes-engine.md`,
      `scripts/new-film.sh`) at 1920x1080, 60 fps, 128 BPM, 16 bars plus a 2 s tail.

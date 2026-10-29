@@ -59,7 +59,9 @@ coordinator's default.
 
 Coordinator defaults, stated to the user: the tempo stays 128 BPM, because the picture is cut to its bar grid; the key,
 the voices and the arrangement are free. Sample sets are CC0 only (so the film needs no credit line), fetched at a
-pinned version into the gitignored `vendor/`, and never committed.
+pinned version into the gitignored `vendor/`, and never committed. The sample source is VSCO-2 Community Edition
+(github.com/sgossner/VSCO-2-CE at `440300901dfe9275fd84e0b7763af1f8443ae62e`, CC0 1.0), fetched by
+`music-v2/src/fetch-samples.sh`; its readme asks, as a courtesy and not a licence term, for credit where applicable.
 
 ## References
 - A: Polar launch film (Emil Widlund), 85 s.
