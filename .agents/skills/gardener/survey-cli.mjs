@@ -1,5 +1,6 @@
 // Survey options, cleanup commands, outcomes, and console summary.
 
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { resolveToolArguments } from "../../../scripts/agent-environment/tool-contract.mjs";
@@ -64,8 +65,23 @@ export function finalFolderSelection(folders, rollingReport) {
 	}));
 }
 
+// A user-run proposal script: it imports `name` from the gardener module `file` and calls it
+// with the snapshot.
+function proposalScript(file, name, snapshot, checkout) {
+	return `// USER-RUN PROPOSAL ONLY. Review the listed folders before running. The survey never executes this file.\nimport { ${name} } from ${JSON.stringify(pathToFileURL(path.join(root, ".agents/skills/gardener", file)).href)};\nawait ${name}(${JSON.stringify(snapshot, null, 2)}, { checkout: ${JSON.stringify(checkout)} });\n`;
+}
+
 export function cleanupScript(snapshot, checkout = root) {
-	return `// USER-RUN PROPOSAL ONLY. Review the listed folders before running. The survey never executes this file.\nimport { cleanup } from ${JSON.stringify(pathToFileURL(path.join(root, ".agents/skills/gardener/cleanup.mjs")).href)};\nawait cleanup(${JSON.stringify(snapshot, null, 2)}, { checkout: ${JSON.stringify(checkout)} });\n`;
+	return proposalScript("cleanup.mjs", "cleanup", snapshot, checkout);
+}
+
+export function pruneScript(snapshot, checkout = root) {
+	return proposalScript(
+		"prune-evidence.mjs",
+		"pruneEvidence",
+		snapshot,
+		checkout,
+	);
 }
 
 function powershellQuote(value) {
@@ -74,6 +90,101 @@ function powershellQuote(value) {
 
 export function worktreeRemovalCommand(target, checkout = root) {
 	return `node ${powershellQuote(path.join(root, ".agents/skills/gardener/remove-worktree.mjs"))} --checkout ${powershellQuote(checkout)} --worktree ${powershellQuote(target)}`;
+}
+
+export function surveyProposals(report, out) {
+	const complete = report.complete;
+	return {
+		folders: {
+			command: complete
+				? `node ${powershellQuote(path.join(out, "cleanup.mjs"))}`
+				: null,
+			paths: complete
+				? report.folders
+						.filter((item) => item.candidate)
+						.map((item) => item.path)
+				: [],
+			condition:
+				"User only; review the whole list before running; incomplete collection withholds cleanup",
+		},
+		prune: {
+			command: complete
+				? `node ${powershellQuote(path.join(out, "prune.mjs"))}`
+				: null,
+			paths:
+				complete && report.prune
+					? report.prune
+							.filter((item) => !item.withheld && item.candidates)
+							.map((item) => item.path)
+					: [],
+			condition:
+				"User only; rechecks tracked citations, links and registered worktrees before deleting any file",
+		},
+		branches:
+			report.git?.branches
+				.filter((item) => item.candidate)
+				.map((item) => ({
+					ref: item.ref,
+					command: item.remote
+						? `git push ${powershellQuote(item.name.split("/")[0])} --delete ${powershellQuote(item.plain)}`
+						: `git branch -d -- ${powershellQuote(item.name)}`,
+					condition:
+						"Coordinator/user only; recheck against the recorded trunk and open references before running",
+				})) ?? [],
+		worktrees:
+			report.git?.worktrees
+				.filter((item) => item.candidate)
+				.map((item) => ({
+					path: item.path,
+					command: worktreeRemovalCommand(item.path),
+				})) ?? [],
+		registrations:
+			report.git?.worktrees
+				.filter(
+					(item) =>
+						item.missing &&
+						!item.self &&
+						!item.locked &&
+						!item.protectedBy.length,
+				)
+				.map((item) => ({
+					path: item.path,
+					command: "git worktree prune --dry-run",
+					removalCommand: report.git.worktrees.some(
+						(item) =>
+							item.missing &&
+							(item.self || item.locked || item.protectedBy.length),
+					)
+						? null
+						: "git worktree prune",
+					condition:
+						"Coordinator/user only; review every missing registration before the global prune",
+				})) ?? [],
+	};
+}
+
+export async function writeSurveyOutputs({ cleanupData, out, report, text }) {
+	await mkdir(out, { recursive: true });
+	await writeFile(
+		path.join(out, "survey.json"),
+		`${JSON.stringify(report, null, 2)}\n`,
+		"utf8",
+	);
+	await writeFile(path.join(out, "REPORT.md"), text, "utf8");
+	await writeFile(
+		path.join(out, "cleanup.mjs"),
+		cleanupScript(cleanupData),
+		"utf8",
+	);
+	await writeFile(
+		path.join(out, "prune.mjs"),
+		pruneScript({
+			root: cleanupData.root,
+			tempRoot: cleanupData.tempRoot,
+			folders: report.proposals.prune.paths,
+		}),
+		"utf8",
+	);
 }
 
 export function surveyOutcome(report) {
@@ -89,6 +200,7 @@ export function surveyOutcome(report) {
 		report.rules?.duplicates.length ||
 		report.rules?.dead.length ||
 		report.folders?.some((item) => item.candidate) ||
+		report.prune?.some((item) => !item.withheld && item.candidates) ||
 		report.git?.branches.some((item) => item.candidate) ||
 		report.git?.worktrees.some(
 			(item) =>

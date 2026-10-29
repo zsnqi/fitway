@@ -2,7 +2,8 @@ import { realpath, unlink } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { beginToolCommand } from "../../../scripts/agent-environment/tool-contract.mjs";
-import { inside, key } from "./facts.mjs";
+import { collectTrackedCitationRecords } from "./cited-evidence.mjs";
+import { inside, key, references } from "./facts.mjs";
 import {
 	collectGit,
 	collectRecords,
@@ -24,6 +25,23 @@ export async function removeWorktree(checkout, target) {
 		throw new Error(
 			`unsafe worktree links: ${target}: ${JSON.stringify({ links: tree.links, errors: tree.linkErrors })}`,
 		);
+	const citationRecords = await collectTrackedCitationRecords({ checkout });
+	const ignored = git(
+		["ls-files", "--others", "--ignored", "--exclude-standard", "-z"],
+		tree.path,
+	)
+		.split("\0")
+		.filter(Boolean);
+	for (const file of ignored) {
+		const absolute = path.resolve(tree.path, file);
+		const citations = references(absolute, citationRecords);
+		if (citations.length)
+			throw new Error(
+				`Ignored evidence would be removed: ${absolute}; cited by ${citations
+					.map((citation) => `${citation.source}:${citation.line}`)
+					.join(", ")}`,
+			);
+	}
 	if (!tree.candidate)
 		throw new Error(`Worktree no longer qualifies for removal: ${target}`);
 	// Git for Windows can follow directory links or leave dangling internal links.

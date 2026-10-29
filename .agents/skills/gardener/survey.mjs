@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -7,6 +7,7 @@ import {
 	toolStartupLine,
 } from "../../../scripts/agent-environment/tool-contract.mjs";
 import { repositoryFingerprint } from "../../../scripts/repository-fingerprint.mjs";
+import { collectCitedSurveyEvidence } from "./cited-survey.mjs";
 import { collectCodeHealth } from "./code-health.mjs";
 import {
 	config,
@@ -28,13 +29,12 @@ import {
 	runChecks,
 } from "./survey-checks.mjs";
 import {
-	cleanupScript,
 	consoleSummary,
 	finalFolderSelection,
 	parseOptions,
-	powershellQuote,
 	surveyOutcome,
-	worktreeRemovalCommand,
+	surveyProposals,
+	writeSurveyOutputs,
 } from "./survey-cli.mjs";
 import {
 	collectFolders,
@@ -56,6 +56,63 @@ export function collectSurveyCodeHealth({
 		previousReportText,
 		previousReportSource,
 	});
+}
+
+function goneCitationLines(goneCitations) {
+	const lines = ["## Cited temp paths gone", ""];
+	if (!goneCitations?.checked)
+		return [
+			...lines,
+			`Not checked: ${JSON.stringify(goneCitations?.tempRoot ?? "D:/fitway-temp")} is absent.`,
+			"",
+		];
+	if (!goneCitations.dead.length) return [...lines, "None.", ""];
+	for (const citation of goneCitations.dead)
+		lines.push(
+			`- ${JSON.stringify(citation.path)} (${citation.source}:${citation.line}${citation.changed ? "; changed" : "; unchanged"})`,
+		);
+	return [...lines, ""];
+}
+
+function pruneProposalLines(prune) {
+	const lines = ["## Evidence prune proposals", ""];
+	const withheld = (prune ?? []).filter((item) => item.withheld);
+	const proposed = (prune ?? []).filter(
+		(item) => !item.withheld && item.candidates,
+	);
+	for (const item of withheld)
+		lines.push(`- Withheld ${JSON.stringify(item.path)}: ${item.withheld}`);
+	for (const item of proposed) {
+		const kept = item.kept;
+		const whole = item.deleteDirectories?.length ?? 0;
+		const frees = whole
+			? `${item.bytes} bytes from ${item.deleteFiles.length} files and ${whole} whole ${whole === 1 ? "folder" : "folders"}, ${item.unmeasured} of them not measured`
+			: `${item.bytes} bytes from ${item.candidates} files`;
+		const keptWhole = kept.wholeFolders
+			? `; ${kept.wholeFolders} node_modules or Git folders kept whole, not measured`
+			: "";
+		lines.push(
+			`- ${JSON.stringify(item.path)}: frees ${frees}; keeps ${kept.files} files (${kept.citedFile} cited, ${kept.nonCaptureInCitedFolder} non-captures in cited folders, ${kept.captureNamedByText} named captures; ${kept.bytes} bytes${keptWhole}); links not followed: ${item.links.length}.`,
+		);
+	}
+	if (!withheld.length && !proposed.length) lines.push("None.");
+	return [...lines, ""];
+}
+
+function scriptFileLines(scriptFiles) {
+	const lines = ["## Script files in new temp folders", ""];
+	if (!scriptFiles?.since)
+		return [
+			...lines,
+			"Previous report date unavailable; no invented comparison.",
+			"",
+		];
+	lines.push(`Since ${scriptFiles.since}:`);
+	for (const folder of scriptFiles.folders)
+		lines.push(
+			`- ${JSON.stringify(folder.path)}: ${folder.scripts} script files`,
+		);
+	return [...lines, `Total: ${scriptFiles.total} script files.`, ""];
 }
 
 export function formatReport(report) {
@@ -104,6 +161,12 @@ export function formatReport(report) {
 	if (!gone.length) lines.push("None.", "");
 	for (const item of gone)
 		lines.push(`- Gone before measurement: ${JSON.stringify(item.path)}`);
+	lines.push(
+		"",
+		...goneCitationLines(report.goneCitations),
+		...pruneProposalLines(report.prune),
+		...scriptFileLines(report.scriptFiles),
+	);
 	lines.push(
 		"## Records",
 		"",
@@ -156,7 +219,10 @@ export function formatReport(report) {
 				"head",
 				"complete",
 				"repositoryUnchanged",
+				"goneCitations",
+				"prune",
 				"records",
+				"scriptFiles",
 				"codeHealth",
 			].includes(name),
 	)) {
@@ -229,6 +295,18 @@ async function main(input) {
 			return finalFolderSelection(report.folders, rolling.text);
 		});
 	}
+	const citedEvidence = await collectCitedSurveyEvidence({
+		attempt,
+		checkout: root,
+		context,
+		folders: report.folders,
+		out,
+		tempRoot,
+		worktrees: report.git?.worktrees,
+	});
+	report.goneCitations = citedEvidence.goneCitations;
+	report.prune = citedEvidence.prune;
+	report.scriptFiles = citedEvidence.scriptFiles;
 	const scripts = JSON.parse(
 		await readFile(path.join(root, "package.json"), "utf8"),
 	).scripts;
@@ -294,67 +372,7 @@ async function main(input) {
 	report.complete = report.errors.length === 0;
 	// Review-only worktrees are explicitly deferred; other findings still block.
 	report.outcome = surveyOutcome(report);
-	report.proposals = {
-		folders: {
-			command: report.complete
-				? `node ${powershellQuote(path.join(out, "cleanup.mjs"))}`
-				: null,
-			paths: report.complete
-				? report.folders
-						.filter((item) => item.candidate)
-						.map((item) => item.path)
-				: [],
-			condition:
-				"User only; review the whole list before running; incomplete collection withholds cleanup",
-		},
-		branches:
-			report.git?.branches
-				.filter((item) => item.candidate)
-				.map((item) => ({
-					ref: item.ref,
-					command: item.remote
-						? `git push ${powershellQuote(item.name.split("/")[0])} --delete ${powershellQuote(item.plain)}`
-						: `git branch -d -- ${powershellQuote(item.name)}`,
-					condition:
-						"Coordinator/user only; recheck against the recorded trunk and open references before running",
-				})) ?? [],
-		worktrees:
-			report.git?.worktrees
-				.filter((item) => item.candidate)
-				.map((item) => ({
-					path: item.path,
-					command: worktreeRemovalCommand(item.path),
-				})) ?? [],
-		registrations:
-			report.git?.worktrees
-				.filter(
-					(item) =>
-						item.missing &&
-						!item.self &&
-						!item.locked &&
-						!item.protectedBy.length,
-				)
-				.map((item) => ({
-					path: item.path,
-					command: "git worktree prune --dry-run",
-					removalCommand: report.git.worktrees.some(
-						(item) =>
-							item.missing &&
-							(item.self || item.locked || item.protectedBy.length),
-					)
-						? null
-						: "git worktree prune",
-					condition:
-						"Coordinator/user only; review every missing registration before the global prune",
-				})) ?? [],
-	};
-	await mkdir(out, { recursive: true });
-	await writeFile(
-		path.join(out, "survey.json"),
-		`${JSON.stringify(report, null, 2)}\n`,
-		"utf8",
-	);
-	await writeFile(path.join(out, "REPORT.md"), formatReport(report), "utf8");
+	report.proposals = surveyProposals(report, out);
 	const cleanupData = {
 		root,
 		tempRoot,
@@ -364,11 +382,12 @@ async function main(input) {
 				? report.folders.filter((item) => item.candidate)
 				: [],
 	};
-	await writeFile(
-		path.join(out, "cleanup.mjs"),
-		cleanupScript(cleanupData),
-		"utf8",
-	);
+	await writeSurveyOutputs({
+		cleanupData,
+		out,
+		report,
+		text: formatReport(report),
+	});
 	console.log(consoleSummary(report, out));
 	process.exitCode = report.complete ? 0 : 1;
 }
