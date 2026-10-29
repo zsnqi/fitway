@@ -14,6 +14,8 @@ latest wording; never copy an entry into a resume point.
   settings and security, product decisions, or a request that is itself unclear. It asks all open
   questions together in one message. Everything else it decides, does, and reports in a line.
   (user, 2026-09-29, 2026-10-01 and 2026-10-02)
+- A product or rule change the user has already decided is written and reported in a line: its wording is not shown
+  for approval first, and a detail the user's decision already points to is not asked again. (user, 2026-10-29)
 - Inside an announced task, process, tooling and ordering are the coordinator's decisions; it
   reports them at the end. (user, 2026-10-02)
 - The user sees a round only when it is finished: every finding the coordinator would fix anyway,
@@ -46,6 +48,8 @@ latest wording; never copy an entry into a resume point.
 
 - The coordinator's own context stays small: fresh agents do the reading and building, and the
   coordinator reads their reports and the key frames. (user, 2026-10-02)
+- The user opens one session and the coordinator runs the work in it, through agents; it never sends the user to a
+  new session for the next step. "Not in this session" from the user means that session only. (user, 2026-10-29)
 - When the coordinator's context grows, the user asks it to bring the milestone's resume file up to
   date (`pnpm handoff:new`, `docs/WORKFLOW.md` "Handoff format"). The next session starts from the
   user's "كمّل" alone. (user, 2026-10-02)
@@ -133,6 +137,9 @@ latest wording; never copy an entry into a resume point.
 
 ## Rules and findings
 
+- When the user lifts a ban, the ban is deleted where it is written, and nothing says the thing is now allowed. Rules,
+  specs and briefs name only the limits and the content the page must carry; anything merely permitted goes
+  unmentioned, so the designer is not steered towards it. (user, 2026-10-29)
 - A rule is a hypothesis, not a verdict. When a reviewer, designer or builder finds a problem or an observation, it
   reports it even when the work meets every rule, decision and check: meeting a rule is never a reason to let it
   pass, because a rule can be fragile or wrong. It names the rule that produced the finding as the suspect; when

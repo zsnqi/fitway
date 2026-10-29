@@ -27,16 +27,16 @@ folder.
 
 ## Next steps
 
-The user starts a new session for these (DECISIONS item 3):
+The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **The percentage is settled** (DECISIONS item 4, applied to Product and SPEC): the concept may show one on
-   synthetic data and the page reads whole without it; the brief says so.
+1. **The percentage is settled** (DECISIONS item 4, applied to Product and SPEC): the concept shows one on synthetic
+   data, and the page reads whole without it.
 2. **Change the rules** to item 3: the content lines of r04 item 90 and the amended Product and Design Guide lines that
    ban the typical-day curve and the verdict line; the frame's separate gym name (the brand is FITWAY's name);
-   `DO-NOT.md` and `DESIGN-SPEC.md` §6 say dark; the first brief's "no new tokens" and fixed order go. Show the user the
-   changed lines in plain words before committing the Product ones.
+   `DO-NOT.md` and `DESIGN-SPEC.md` §6 say dark; the first brief's "no new tokens" and fixed order go. A lifted ban is
+   deleted, never rewritten as "allowed" (`WORKING_AGREEMENTS.md`, "Rules and findings"); report the change in a line.
 3. **A new designer brief** from item 3's goals: every size from phone to computer; the identity fixed and everything
-   else free; content as item 3 lists; no "level mark form" framing; references first and Impeccable's whole process,
+   else free; content as item 3 lists, without its permitted extras (the verdict line, "best time"); no "level mark form" framing; references first and Impeccable's whole process,
    with the writes that needs. Several `owner-direction-designer` runs in parallel, each one direction of its own, each
    in its own worktree or folder so they never write the same files. Both reviewers read the brief first.
 4. After the pick: that direction in every state and size, `PUBLIC-SPEC.md` and §6, the verifier, the user's
@@ -45,7 +45,7 @@ The user starts a new session for these (DECISIONS item 3):
 
 ## Waiting on the user
 
-Nothing; the user opens the new session for steps 2 and 3.
+Nothing.
 
 ## Known risks
 
