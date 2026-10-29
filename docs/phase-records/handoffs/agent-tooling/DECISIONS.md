@@ -269,3 +269,6 @@ through these pointers, not copied here.
     - **Two milestones, one coordinator:** a line in `docs/agent-context/WORKING_AGREEMENTS.md` ("Ownership" or the
       nearest section), its wording approved by the user on 2026-10-29 («اي موافق») as the resume point quotes it.
       Added on 2026-10-29 as `WORKING_AGREEMENTS.md` §"Ownership", word for word.
+    - **The round:** lease-ends, merged `0389ccd2` (`rounds/lease-ends.md`): the end read against `updatedAt`, and
+      `updatedAt` held to the day of the commit that last changed the ledger (the reviews' reading that nothing made it
+      move); F302 fixed; F303 left open.

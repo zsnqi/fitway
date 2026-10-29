@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:40 +03:00
-  (main at `bc6b9464`; the real merge into `public-redesign-r01` is in and waits on CI; the expired-lease round is next)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 16:48 +03:00
+  (lease-ends merged; its CI and `pnpm main:advance` are next)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-22; 22 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -22,10 +22,14 @@
 
 ## Running now
 
-Measured 2026-10-29 14:40. CI runs on `owner-followup-r04-build` at `ef9fa810` and on `public-redesign-r01` at
-`adabebff` (its first push). main `bc6b9464` (`pnpm main:advance`, 2026-10-29): both rounds of the day, leading-comments
-and branch-merge-checks (`docs/phase-records/handoffs/agent-tooling/rounds/branch-merge-checks.md`).
+Measured 2026-10-29 16:48. Nothing of this milestone runs; CI runs on the coordinator line's push carrying
+`0389ccd2`. main `5575697f` (`pnpm main:advance`, 2026-10-29).
 
+- **lease-ends is merged** (`0389ccd2`, record `docs/phase-records/handoffs/agent-tooling/rounds/lease-ends.md`,
+  DECISIONS item 22): `pnpm check:repository` reads each lease's end (`through YYYY-MM-DD`) against `updatedAt`, and
+  `updatedAt` must carry the date of the commit that last changed the ledger, so every ledger edit sets `updatedAt` to
+  the time of the write, on the day it is committed. F302 is fixed; F303 (a committed baseline is never compared with
+  its parent's) is open.
 - **The real merge is in** (items 19 and 21), measured: `ef9fa810` split `NEXT-DIRECTION-BRIEF.md` on r04's branch
   as r04's work (nine parts in a `next-direction-brief` folder beside it, the original rebuilt byte for byte;
   recorded in r04's resume point); `public-redesign-r01` fast-forwarded to it, set to track `origin/owner-followup-r04-build`, merged main
@@ -45,12 +49,11 @@ and branch-merge-checks (`docs/phase-records/handoffs/agent-tooling/rounds/branc
 
 ## Next steps
 
-1. **Read the two CI runs** (`ef9fa810`, `adabebff`); a failure is repaired on its branch. Then `pnpm main:advance`
-   to this line's newest green commit.
-2. **The expired-lease round** (DECISIONS item 22): one Codex brief, reviewed by DeepSeek and Sol: a lease's end in
-   one form (`through YYYY-MM-DD`), `pnpm check:repository` failing on a non-terminal milestone's expired lease and
-   naming the fix, and F302 (a raised test floor is not inflation). `project-state-invariants.mjs` reads the leases.
-3. The public page's designer (its own resume point) once step 1's run on `adabebff` passes.
+1. **The CI run on `0389ccd2`'s push**; a failure is repaired here. Then `pnpm main:advance` to it.
+2. The public page waits on the user (its own resume point): the first round's three directions were set aside on
+   2026-10-29, and its rules are being reworked with the user.
+3. F303 as a round of its own when a later round touches the ratchet: compare a commit's baseline with its parent's,
+   merges included.
 4. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,
    `D:/fitway-temp/retro-20261028/patterns.mjs` and the survey's script count.
 5. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
@@ -59,8 +62,7 @@ and branch-merge-checks (`docs/phase-records/handoffs/agent-tooling/rounds/branc
    giant-file exception counts only on line 1).
 6. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
    citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more). From
-   2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once) and F302 (a raised test floor counts as inflation
-   until the commit).
+   2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once).
 7. **The renewed leases end on 2026-11-15** (`package.json` scripts, the README map): renew or drop them then, with
    the giant-file exceptions of step 5.
 
