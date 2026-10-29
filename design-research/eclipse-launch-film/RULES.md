@@ -32,3 +32,5 @@ Motion Lab article, cinetic.
   pinned and kept out of git.
 - The score may move away from Drive. Measure each change with earshot (realness per stem, `match`, `critique`) and
   give the user an A/B to judge by ear.
+- The feeling is Polar's confidence and luxury, building to an explosion. Effects are few, and each one belongs to
+  something in this film's story.

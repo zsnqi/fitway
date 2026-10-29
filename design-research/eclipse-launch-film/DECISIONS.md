@@ -63,6 +63,13 @@ pinned version into the gitignored `vendor/`, and never committed. The sample so
 (github.com/sgossner/VSCO-2-CE at `440300901dfe9275fd84e0b7763af1f8443ae62e`, CC0 1.0), fetched by
 `music-v2/src/fetch-samples.sh`; its readme asks, as a courtesy and not a licence term, for credit where applicable.
 
+## Direction re-opened (user, 2026-10-29)
+24. The feeling: confidence and luxury like the Polar launch film (reference A), building to an explosion.
+25. The effects come from this film's own story (the count, the line landing on now, the presses, the language key,
+    the mark), not copied from Polar's, because Polar shows a different product.
+26. There is no outside music reference. The user saw the raw first render of Station 2 before deciding on the idea.
+    No redesign starts until the user says so.
+
 ## References
 - A: Polar launch film (Emil Widlund), 85 s.
 - B: Polar logo sting, 33 s.
