@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 03:40 +03:00 (three
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 03:07 +03:00 (three
   rounds' fixes with builders; the concept's specs being split)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-18; 18 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -22,7 +22,7 @@
 
 ## Running now
 
-Measured 2026-10-29 03:40. main `8398bd72` (code-map-index merged and recorded in
+Measured 2026-10-29 03:07. main `8398bd72` (code-map-index merged and recorded in
 `docs/phase-records/handoffs/agent-tooling/rounds/code-map-index.md`).
 
 - **Three rounds ended and are with `owner-direction-builder`s**, each from a frozen brief that first merges main
@@ -34,7 +34,7 @@ Measured 2026-10-29 03:40. main `8398bd72` (code-map-index merged and recorded i
   - evidence-home: result `52fb52af`; fix running;
   - run-and-ref: result `1c218aa6`; fix running. Its change to the read-only `tool-contract.mjs` stays (disposition 1)
     and its record names the departure.
-  For each when it reports: check its commits and tests, then the merge, its record in `rounds/`, push, CI and
+  For each when it reports: check its commits and tests, then the merge, its record file beside `code-map-index.md`, push, CI and
   `pnpm main:advance`. run-and-ref and evidence-home both change `tool-registry.mjs` and `tool-help-notes.mjs`:
   merge one, then resolve the other against it.
 - **The concept's specs are being split** by an `owner-direction-fixer` on branch `concept-spec-split` (worktree
