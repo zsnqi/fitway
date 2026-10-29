@@ -66,8 +66,8 @@ tests makes `pnpm check:code-health` fail until the commit (F302).
   end is written one way, `through YYYY-MM-DD`, a real calendar date, and the lease holds through that day; an entry
   with no end holds while its milestone is open. The failure names the milestone, the entry, its end date and
   `updatedAt`, and the fix: renew it with a later `through` date or drop it. In an entry of a non-terminal milestone a
-  date may stand only after `through` (the end), `from` (a start) or `on` (an event, as in `renewed on 2026-10-29`);
-  a date after any other word or mark (`until 2026-12-01`, `end 2026-12-01`, `expiry=2026-12-01`), more than one
+  date may stand only after `through` (the end), `from` (a start) or `renewed on` (a renewal); a date after any other
+  word or mark (`until 2026-12-01`, `end 2026-12-01`, `expiry=2026-12-01`, `expires on 2026-12-01`), more than one
   `through`, or a `through` not followed by a real date fails naming the entry and the one form. The result
   never reads the clock: the same ledger passes or fails the same way on any day, so a green commit stays green
   (`AUDIT.md:40`). `PROJECT_STATE_HISTORY.yaml` and terminal milestones are not judged. The check runs inside
@@ -77,7 +77,8 @@ tests makes `pnpm check:code-health` fail until the commit (F302).
   a module both tests import, so nothing is copied and the schema test shrinks): a lease through the `updatedAt` date
   passes and through the day before fails, naming the four things above; the same two ledgers give the same results
   with the system clock set to 2026-01-01 and to 2030-01-01; an entry with no end passes; `until 2026-12-01`,
-  `end 2026-12-01`, `expiry=2026-12-01`, two `through` dates and `through 2026-02-30` each fail naming the entry and
+  `end 2026-12-01`, `expiry=2026-12-01`, `expires on 2026-12-01`, two `through` dates and `through 2026-02-30` each
+  fail naming the entry and
   `through YYYY-MM-DD`; `from 2026-10-28 ... through 2026-11-15 (renewed on 2026-10-29)` passes on 2026-10-29; a
   `DONE` milestone holding an ended lease is not failed by this check. The real ledger at the result's HEAD passes.
   Intent: an ended lease is caught the next time the coordinator writes the ledger, and no commit ever turns red
@@ -85,16 +86,17 @@ tests makes `pnpm check:code-health` fail until the commit (F302).
 - **E3.** Nothing makes `updatedAt` move when the ledger is written: `cdc64583` changed the leases and kept
   `2026-10-28T18:30:00+03:00` until the coordinator noticed (`0cca9a87`), so E1's catch rests on a field no check
   reads. Outcome: `pnpm check:repository` fails when the working `PROJECT_STATE.yaml` differs from the copy `HEAD`
-  holds and its `updatedAt` is not later than that copy's; and when the date of `updatedAt` is more than one day before
-  the committer date of the last commit that changed `PROJECT_STATE.yaml`, both read as calendar dates in
-  `updatedAt`'s own offset. Each failure names both values and the fix (set `updatedAt` to the time of the write). The
+  holds and its `updatedAt` is not later than that copy's; and when the date of `updatedAt` differs from the date of
+  the committer time of the last commit that changed `PROJECT_STATE.yaml`, both read as calendar dates in
+  `updatedAt`'s own offset (a write whose commit falls after midnight sets `updatedAt` again). Each failure names both
+  values and the fix (set `updatedAt` to the time of the write). The
   first rule does not apply when `HEAD` holds no ledger, the second when no commit changed it, and neither outside a
   Git checkout; neither reads the clock, and CI has the history the second needs. Check: in
   `scripts/project-state-leases.test.ts` (new), with the Git fixture: an uncommitted ledger edit that keeps `HEAD`'s
-  `updatedAt` fails and one with a later `updatedAt` passes; a ledger committed two days after its `updatedAt` (the
-  commit's date set in the fixture) fails and one committed a day after passes; a later commit that leaves the ledger
-  alone does not change either result; a fixture whose `HEAD` holds no ledger passes this part. Intent: the date E1
-  judges by is the date the ledger was really written, give or take a day.
+  `updatedAt` fails and one with a later `updatedAt` passes; a ledger committed on its `updatedAt` date passes, and
+  one committed a day after it or a day before it (the commit's date set in the fixture) fails; a later commit that
+  leaves the ledger alone does not change any of these results; a fixture whose `HEAD` holds no ledger passes this
+  part. Intent: the date E1 judges by is the day the ledger was really written.
 - **E2.** The end's one form is written nowhere a coordinator reads. Outcome: the lease row of
   `docs/agent-context/RULE_ENFORCERS.md` (the "One writer per worktree" row, `:27`) names the new part of the check in
   its enforcer column, as that row names its other parts, with the form `through YYYY-MM-DD` and that the end is judged
