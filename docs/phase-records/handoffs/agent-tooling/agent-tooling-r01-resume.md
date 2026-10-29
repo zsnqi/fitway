@@ -71,11 +71,12 @@ admits, once the next point is settled.
 7. **DECISIONS item 22:** renew or drop the five leases that expired on 2026-10-23 (package.json scripts, README
    map, checks.yml, vitest.config.ts, lefthook.yml; neither round of 2026-10-29 touched them) in `PROJECT_STATE.yaml`;
    then one Codex round: an expired lease on a non-terminal milestone fails `pnpm check:repository`, with F302's fix
-   (a raised test floor is not inflation); and the agreement line once the user approves its wording.
+   (a raised test floor is not inflation); and the agreement line below, its wording approved.
 
 ## Waiting on the user
 
-The wording of DECISIONS item 22's agreement line; the coordinator's draft, for `docs/agent-context/WORKING_AGREEMENTS.md`:
+Nothing. DECISIONS item 22's agreement line, its wording approved by the user on 2026-10-29 («اي موافق»), goes into
+`docs/agent-context/WORKING_AGREEMENTS.md` ("Ownership" or the nearest section) as written, after the user's compact:
 
 > When the coordinator of one milestone needs a change in files another milestone owns, and coordinates that
 > milestone too, it makes the change as the owning milestone's work: on that milestone's branch, recorded in its

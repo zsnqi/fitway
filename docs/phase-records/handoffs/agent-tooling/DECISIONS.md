@@ -259,4 +259,4 @@ through these pointers, not copied here.
       non-terminal milestone holding an expired lease, naming the fix (renew it or drop it). One Codex round, with
       F302's fix; before it, the coordinator renews or drops the five expired leases in `PROJECT_STATE.yaml`.
     - **Two milestones, one coordinator:** a line in `docs/agent-context/WORKING_AGREEMENTS.md` ("Ownership" or the
-      nearest section), its wording the user's to approve; the coordinator's draft is in the resume point.
+      nearest section), its wording approved by the user on 2026-10-29 («اي موافق») as the resume point quotes it.
