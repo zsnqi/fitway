@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 14:15 +03:00
   (both rounds merged and CI-green at `bc6b9464`; the user asked to compact the conversation before the next step)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-21; 21 last), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-22; 22 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -68,13 +68,21 @@ admits, once the next point is settled.
    citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more). From
    2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once) and F302 (a raised test floor counts as inflation
    until the commit).
-7. **The ledger's shared leases for this milestone expired on 2026-10-23** (package.json scripts, README map,
-   checks.yml, vitest.config.ts, lefthook.yml); neither round of 2026-10-29 touched those files. Renew or drop them
-   in `PROJECT_STATE.yaml` before a round needs one; no check reads a lease's date.
+7. **DECISIONS item 22:** renew or drop the five leases that expired on 2026-10-23 (package.json scripts, README
+   map, checks.yml, vitest.config.ts, lefthook.yml; neither round of 2026-10-29 touched them) in `PROJECT_STATE.yaml`;
+   then one Codex round: an expired lease on a non-terminal milestone fails `pnpm check:repository`, with F302's fix
+   (a raised test floor is not inflation); and the agreement line once the user approves its wording.
 
 ## Waiting on the user
 
-Nothing.
+The wording of DECISIONS item 22's agreement line; the coordinator's draft, for `docs/agent-context/WORKING_AGREEMENTS.md`:
+
+> When the coordinator of one milestone needs a change in files another milestone owns, and coordinates that
+> milestone too, it makes the change as the owning milestone's work: on that milestone's branch, recorded in its
+> records, with a line in the requesting milestone's record. It first confirms that no writer is active there (the
+> worktree is clean and no session or agent of that milestone is running). It asks the user only where `AGENTS.md`
+> already requires it (a locked decision, a material visual-direction change, privacy or security); a change that
+> keeps every word and behaviour, shown by the diff or a byte-for-byte rebuild, needs no question. (user, 2026-10-29)
 
 ## Known risks
 

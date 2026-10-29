@@ -251,3 +251,12 @@ through these pointers, not copied here.
     with not one word changed and the original rebuilt byte for byte from the parts (as `2aa2fc4d` did for the
     specs); no record cites its lines by number. It then reaches `public-redesign-r01` through the merge. Not started:
     the user asked to compact the conversation first.
+22. **Expired leases fail a check, and a coordinator holding two milestones works in the other's files as that
+    milestone's work** (the user, 2026-10-29: «اي الاثنين», on the coordinator's two proposals). Found on 2026-10-29:
+    this milestone's five shared leases ran out on 2026-10-23 unnoticed, since `project-state-invariants.mjs` reads
+    only overlaps; and the coordinator paused before splitting an r04 file it coordinates (item 21), for want of a rule.
+    - **Leases:** a lease's end is written in one form (`through YYYY-MM-DD`), and `pnpm check:repository` fails on a
+      non-terminal milestone holding an expired lease, naming the fix (renew it or drop it). One Codex round, with
+      F302's fix; before it, the coordinator renews or drops the five expired leases in `PROJECT_STATE.yaml`.
+    - **Two milestones, one coordinator:** a line in `docs/agent-context/WORKING_AGREEMENTS.md` ("Ownership" or the
+      nearest section), its wording the user's to approve; the coordinator's draft is in the resume point.
