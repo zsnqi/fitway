@@ -40,15 +40,20 @@ import {
 import { readGit } from "./git-context.mjs";
 import { samePath } from "./path-identity.mjs";
 
-function briefIdentity(options, brief) {
+async function briefIdentity(options, brief) {
 	const round = briefTitle(brief.toString("utf8"));
 	if (!round) throw new Error("brief has no Markdown title");
 	const repository = readGit(path.dirname(options.brief), [
 		"rev-parse",
 		"--show-toplevel",
 	]);
+	// Git prints the long path; a temp root may be a Windows short alias (RUNNER~1).
+	const [root, file] = await Promise.all([
+		realpath(repository),
+		realpath(options.brief),
+	]);
 	return {
-		briefPath: path.relative(repository, options.brief).replaceAll("\\", "/"),
+		briefPath: path.relative(root, file).replaceAll("\\", "/"),
 		briefSha256: sha256(brief),
 		round,
 		report: path.join(options.run, "last-message.md"),
@@ -86,7 +91,7 @@ async function prepareLaunch(options) {
 		findCodex(),
 		readFile(options.brief),
 	]);
-	const identity = briefIdentity(options, brief);
+	const identity = await briefIdentity(options, brief);
 	const outcomeIds = outcomeIdsFromBrief(brief);
 	if (!outcomeIds.size)
 		throw new Error(

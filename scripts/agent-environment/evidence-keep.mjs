@@ -5,6 +5,7 @@ import {
 	mkdirSync,
 	readdirSync,
 	readFileSync,
+	realpathSync,
 	writeFileSync,
 } from "node:fs";
 import path from "node:path";
@@ -72,8 +73,9 @@ function assertCanonicalRoot(root) {
 	}
 	if (result.status !== 0)
 		throw new Error(`not a Git worktree: ${root}: ${result.stderr.trim()}`);
-	const top = path.resolve(result.stdout.trim());
-	if (!inside(top, root))
+	// Git prints the long path; a temp root may be a Windows short alias (RUNNER~1).
+	const top = realpathSync.native(result.stdout.trim());
+	if (!inside(top, realpathSync.native(root)))
 		throw new Error(`repository root is outside its Git worktree: ${root}`);
 	return top;
 }
