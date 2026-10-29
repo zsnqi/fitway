@@ -1,0 +1,159 @@
+/* FITWAY public crowd page, sketch 4 of 4: the four bands. Concept only, synthetic data, a still (phone, Arabic,
+ * live).
+ * The page is the scale. Below the header the screen is cut into four full-width bands, the four levels in reading
+ * order. The current band is open: tall, lit by FITWAY's light from its inline-end foot, and it holds the word and
+ * everything else. The levels passed stay as narrow bands in deepening oxblood; the level above is a dark band.
+ * Derived from the level only; the current word is always written. */
+
+:root {
+  --page: #070707;
+  --card: #0f0e0f;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --oxblood: #4d0713;
+  --live: #4be29b;
+  --line: rgba(255, 255, 255, 0.075);
+  --line-2: rgba(255, 255, 255, 0.1);
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.page {
+  position: relative;
+  height: 100dvh;
+  min-height: 844px;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  padding-inline: 20px;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------------ the bands */
+.bands {
+  display: grid;
+  grid-template-rows: 84px 84px minmax(0, 1fr) 84px;
+  gap: 2px;
+  padding-bottom: 12px;
+}
+.band {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-inline: 20px;
+  overflow: hidden;
+}
+.name { font-size: 19px; line-height: 28px; font-weight: 500; }
+/* The levels passed: oxblood, deepening toward the current band (the light's own ramp). */
+.b1 { background: rgb(77 7 19 / 0.34); color: var(--ink-2); }
+.b2 { background: rgb(77 7 19 / 0.62); color: var(--ink-2); }
+/* The level above: unlit. */
+.later { background: rgba(255, 255, 255, 0.028); color: var(--ink-3); box-shadow: inset 0 1px 0 var(--line); }
+
+/* The open band: FITWAY's summary light (brightest just inside the inline-end foot corner, a dark disc in front). */
+.now {
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  align-items: start;
+  padding: 18px 20px 22px;
+  background: var(--card);
+}
+.now > :not(.lamp) { position: relative; z-index: 1; }
+.lamp {
+  position: absolute;
+  inset: 0;
+  --lit-x: 0%;
+  --light:
+    radial-gradient(ellipse 110px 120px at calc(var(--lit-x) + 3%) 98%, rgb(255 41 70 / 0.85) 0%, rgb(255 41 70 / 0.34) 45%, rgb(255 41 70 / 0) 100%),
+    radial-gradient(ellipse 240px 360px at var(--lit-x) 100%, rgb(229 25 53 / 0.95) 0%, rgb(229 25 53 / 0.8) 20%, rgb(229 25 53 / 0.42) 42%, rgb(77 7 19 / 0.75) 62%, rgb(77 7 19 / 0.3) 82%, rgb(77 7 19 / 0) 100%),
+    radial-gradient(ellipse 430px 64px at var(--lit-x) 100%, rgb(229 25 53 / 0.55) 0%, rgb(77 7 19 / 0.7) 50%, rgb(77 7 19 / 0) 100%),
+    radial-gradient(ellipse 120px 130px at calc(100% - var(--lit-x)) 100%, rgb(229 25 53 / 0.35) 0%, rgb(77 7 19 / 0.5) 45%, rgb(77 7 19 / 0) 100%);
+  background: var(--light);
+  -webkit-mask-image: radial-gradient(ellipse 300px 214px at 62% calc(100% - 10px - 214px), transparent 0, transparent 88%, rgb(0 0 0 / 0.5) 96%, #000 104%);
+  mask-image: radial-gradient(ellipse 300px 214px at 62% calc(100% - 10px - 214px), transparent 0, transparent 88%, rgb(0 0 0 / 0.5) 96%, #000 104%);
+}
+[dir="ltr"] .lamp { --lit-x: 100%; }
+.lamp::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.15;
+  -webkit-mask-image: var(--light);
+  mask-image: var(--light);
+}
+
+.word {
+  font-size: 110px;
+  line-height: 140px;
+  font-weight: 500;
+  margin-inline-start: -4px;
+}
+.facts {
+  grid-row: 3;
+  display: grid;
+  gap: 4px;
+  margin-bottom: 20px;
+  font-size: 19px;
+  line-height: 28px;
+  color: var(--ink-2);
+}
+.facts .count { color: var(--ink); font-weight: 500; }
+.stamp {
+  grid-row: 4;
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-2);
+}
+.fresh { display: inline-flex; align-items: center; gap: 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); }
+.pct bdi { color: var(--ink); }
