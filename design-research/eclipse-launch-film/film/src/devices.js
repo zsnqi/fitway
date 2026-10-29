@@ -34,8 +34,8 @@ function contactShadow(w, h, radius, blur, alpha) {
 
 /** Build the scene. tex: { laptop, phone } image URLs; meta: the laptop page's end point (CSS px) for the match cut. */
 export async function initDevices(canvas, tex, meta) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(2); // render at 2x and let the page downsample: clean edges in SwiftShader
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Number(new URLSearchParams(location.search).get("dpr") || 1.5)); // supersampled 1.5x and downsampled by the page: as clean as 2x here (REVIEW round 1), 45% of its cost
   renderer.setSize(1920, 1080, false);
   canvas.style.width = '1920px'; canvas.style.height = '1080px';
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -43,6 +43,7 @@ export async function initDevices(canvas, tex, meta) {
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.autoUpdate = false; // the devices and the lights never move: the shadow maps are drawn once
   RectAreaLightUniformsLib.init();
 
   const scene = new THREE.Scene();
@@ -162,7 +163,7 @@ export async function initDevices(canvas, tex, meta) {
   scene.add(phone);
 
   // ---- the desk: a dark satin plane that takes the shadows and the red spill, fading into the stage
-  const desk = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: '#070707', roughness: 0.55, metalness: 0.0 }));
+  const desk = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshLambertMaterial({ color: '#070707' })); // matte, and cheap: it covers most of the frame
   desk.rotation.x = -Math.PI / 2; desk.receiveShadow = true;
   scene.add(desk);
   // contact shadows: where a body meets the desk the light cannot reach, so the devices sit on it, never above it
@@ -238,6 +239,7 @@ export async function initDevices(canvas, tex, meta) {
   // the reveal: close on the laptop's screen (about 1300 px across), the phone beside it, partly past the edge
   const REVEAL = frameTo(displayPts, { x0: 210, x1: 1530, y0: 60, y1: 800 }, true);
 
+  renderer.shadowMap.needsUpdate = true;
   R = { renderer, scene, camera, look, dir, HOLD, REVEAL, display, dispW, dispH, meta, phone, laptop };
   return R;
 }
@@ -263,7 +265,9 @@ export function renderDevices(f) {
   if (!R) return;
   cameraAt(f);
   R.renderer.render(R.scene, R.camera);
+  const gl = R.renderer.getContext(); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, PX); // finish the frame now, once
 }
+const PX = new Uint8Array(4);
 
 /** The laptop's live end point on screen on frame f: { x, y, r } (the dot's radius in screen px). */
 export function endPointOnScreen(f) {

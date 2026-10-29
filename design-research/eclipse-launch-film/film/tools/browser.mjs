@@ -8,7 +8,11 @@ try { pw = require('playwright'); } catch { pw = createRequire(`${ROOT}/../story
 export const { chromium } = pw;
 // CPU raster: every tile is complete when the frame is captured (GPU raster on SwiftShader left missing or stale tiles
 // on single frames under large scale transforms: a black band at f223 in the first review render).
-export const GL_ARGS = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--disable-gpu-rasterization', '--disable-zero-copy', '--disable-background-timer-throttling', '--disable-renderer-backgrounding'];
+const BASE_ARGS = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--disable-background-timer-throttling', '--disable-renderer-backgrounding'];
+export const GL_ARGS = [...BASE_ARGS, '--disable-gpu-rasterization', '--disable-zero-copy'];
+// The device act shows no page tiles (only the three.js canvas and the copy), so it may keep GPU raster, which reads the
+// WebGL canvas back far faster than the CPU path.
+export const GL_ARGS_DEVICES = BASE_ARGS;
 /** Seek the film to frame f and wait until the page and every iframe have painted it. */
 export async function seek(page, f) {
   await page.evaluate(async (x) => {
@@ -25,7 +29,7 @@ export async function openFilm(browser, base) {
   const page = await ctx.newPage();
   page.on('pageerror', (e) => console.error('page error:', e.message));
   page.on('console', (m) => { if (m.type() === 'error') console.error('console:', m.text()); });
-  await page.goto(`${base}/index.html`, { waitUntil: 'load' });
+  await page.goto(`${base}/index.html${process.env.FILM_QUERY || ''}`, { waitUntil: 'load' });
   await page.waitForFunction(() => document.body.dataset.ready === '1' || document.body.dataset.error, null, { timeout: 300000 });
   const err = await page.evaluate(() => document.body.dataset.error);
   if (err) throw new Error(`film boot failed: ${err}`);
