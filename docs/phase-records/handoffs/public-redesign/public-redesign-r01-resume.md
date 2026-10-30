@@ -20,7 +20,7 @@
 
 ## Running now
 
-Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `1709f75e`, pushed. The LAN entry
+Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `980ec3fe`, pushed. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
@@ -46,8 +46,11 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **The two gaps of item 18** (the computer's word 104 px, not 127; the phone's Packed still two lines), asked
-   2026-10-30; then a fixer makes the chosen switches the page's default. The word's size (item 17; `?size=75|67`, `1709f75e`; `compare-phone.png` and `compare-computer.png` in
+1. **The phone's Packed: two lines or one** (item 18; `980ec3fe` by the size fixer: `p1` with `size67` gives
+   127 px on one line on the computer, at least `--col-gap` clear 1152-3840; `?p1m` sets only Packed on one line on the
+   phone, 57 px against 70 for the other levels; image
+   `D:/fitway-temp/public-redesign-r01-size-13/compare-packed-2.png`, sent 2026-10-30); then a fixer makes the chosen
+   switches the page's default. The word's size (item 17; `?size=75|67`, `1709f75e`; `compare-phone.png` and `compare-computer.png` in
    `D:/fitway-temp/public-redesign-r01-size-13/`, sent 2026-10-30): word 104/78/70 px on the phone, 190/142/127 on the
    computer; the mark's line does not move; on the computer the count drops up to 38 px with the word's baseline. Then the others' views the user brings back (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
    settle switch 1, then make the accepted switches the page's default (one fixer or builder edit). The switches as
@@ -91,7 +94,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The answer on item 18's two gaps (step 1). No app was named (item 10).
+The phone's Packed, two lines or one (step 1). No app was named (item 10).
 
 ## Known risks
 
