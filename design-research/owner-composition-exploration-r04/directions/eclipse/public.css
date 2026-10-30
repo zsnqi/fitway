@@ -395,17 +395,18 @@ svg.cue .cue-pt { fill: currentColor; stroke: none; }
 }
 
 /* Motion (public.js, "Motion"; ?demo= plays each event). Every state above is a still and stays one: motion only moves
- * between stills, so once it settles the page is exactly the still. Under reduced motion nothing moves and every change
- * is instant. One loop, in live only: the live dot's beat. Everything else runs once, on an event: the first payload
- * arriving, a value replaced by a new reading, the level's light stepping along the mark, a state crossfading into
- * another. No requestAnimationFrame, no canvas; the loop animates opacity and transform only. */
+ * between stills, so once it settles the page is exactly the still. Under reduced motion, or while the page is hidden,
+ * nothing moves and every change is instant. One loop, in live only: the live dot's beat. Everything else runs once, on
+ * an event: the first payload arriving, a value replaced by a new reading, the level's light stepping along the mark, a
+ * state crossfading into another. No requestAnimationFrame, no canvas; the loop animates opacity and transform only,
+ * on the compositor (no paint while it runs). */
 @media (prefers-reduced-motion: no-preference) {
   /* A value a reading replaces is an inline run; public.js makes it a box (inline-block) only while it moves, since a
-   * transform cannot carry an inline run and a box sits on whole layout units where the run need not. */
+   * transform cannot carry an inline run and a box is painted on whole device pixels where the run need not be. */
   /* The bars rise from the line they stand on. */
   .mark i { transform-origin: 50% 100%; }
-  /* The beat: the live dot holds, then dims and draws in a little, and comes back; about once every three seconds.
-   * Nothing else on the page says live, and no other state has the dot. */
+  /* The beat: the live dot holds, then dims and draws in a little, and comes back; once every 3.2 s. The only motion
+   * that runs on its own; no other state has the dot, so it stops the moment the page is not live. */
   .page:not([data-state]) .dot { animation: beat 3.2s infinite; }
   @keyframes beat {
     0%, 56% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }

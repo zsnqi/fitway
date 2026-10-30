@@ -176,7 +176,9 @@
 
   // Motion (public.css, "Motion"). Every change above is a still; what follows only moves between stills. Nothing runs
   // under reduced motion, and nothing here repeats: the one loop, the live dot's beat, is CSS and runs in live only.
-  function moving() { return !matchMedia("(prefers-reduced-motion: reduce)").matches && !!document.body.animate; }
+  // Nothing moves under reduced motion, nor while the page is hidden (a phone in a pocket): a change made then is written
+  // at once, so the page shown again is never mid-motion or behind.
+  function moving() { return !matchMedia("(prefers-reduced-motion: reduce)").matches && !document.hidden && !!document.body.animate; }
   var settle = "cubic-bezier(0.16, 1, 0.3, 1)";
   var swapping = []; // the elements with a value on its way out
 
@@ -187,11 +189,15 @@
     if (document.getAnimations) document.getAnimations().forEach(function (a) { if (!a.animationName && !a.transitionProperty) a.cancel(); });
   }
 
+  document.addEventListener("visibilitychange", function () { if (document.hidden) settleAll(); });
+
   // A state replaces a state: one short crossfade of the whole page where the browser has view transitions.
   function change(apply) {
     settleAll();
-    if (moving() && document.startViewTransition) document.startViewTransition(function () { settleAll(); apply(); });
-    else apply();
+    if (moving() && document.startViewTransition) {
+      var t = document.startViewTransition(function () { settleAll(); apply(); });
+      t.ready.catch(function () {}); // a skipped transition still applies the state; only its crossfade is lost
+    } else apply();
   }
 
   // A value is replaced: the old lifts out, then the new settles into the same place, upward when the value grows (or
@@ -217,8 +223,8 @@
   }
 
   // An inline run (a value's bdi) is a box while it moves, so a transform can carry it, and an inline run again at rest:
-  // a box sits on whole layout units where the run need not, so a box at rest could stand a fraction of a pixel aside.
-  // Returns the undo.
+  // a box is painted on whole device pixels where the run need not be, so a box at rest could stand a fraction of a
+  // device pixel aside (its layout position is the same). Returns the undo.
   function box(el) {
     if (getComputedStyle(el).display !== "inline") return function () {};
     el.style.display = "inline-block";
