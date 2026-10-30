@@ -2,6 +2,7 @@
 // ?level=quiet|moderate|busy|packed shows that level, with values that agree with it (Busy without it).
 // ?p1 (one-line «شديد الازدحام» on the computer), ?p2 (the percentage and the open line swap places) and ?p3 (lower
 // floors on short screens) each switch on one proposal; any combination may be on, none changes the page without it.
+// ?size=75|67 scales the level's word (and its gap to the mark) to 75 % or 67 %; nothing else changes.
 // ?mark=2|3|4 swaps in another form of the four-level mark and changes nothing else (the refined bars without it).
 (function () {
   var q = new URLSearchParams(location.search);
@@ -17,6 +18,7 @@
   // ?p1, ?p2, ?p3 switch on a proposal each (any combination): the class p1/p2/p3 on .page.
   if (q.has("p1")) page.classList.add("p1");
   if (q.has("p3")) page.classList.add("p3");
+  if (q.get("size") === "75" || q.get("size") === "67") page.classList.add("size" + q.get("size")); // the level's word at 75 % or 67 %
   if (q.has("p2")) {
     page.classList.add("p2"); // the percentage and the open line swap places; public.css gives each the styles of its new place
     var facts = document.querySelector(".facts"), stamp = document.querySelector(".stamp");
