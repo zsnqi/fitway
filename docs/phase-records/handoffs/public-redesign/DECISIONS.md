@@ -220,3 +220,12 @@ the public page are numbered here.
     - **The user picked 3** («3 وهات الان شكل جميع الحالات حقه»): the four levels at 40 px on the phone, rendered the
       same way, `D:/fitway-temp/public-redesign-r01-packed-16/compare-all.png`, sent 2026-10-30. The page still sets
       57 px; folding 40 px in (and its rule at other phone widths) waits for the user's word.
+21. **The phone word scales with the width; the computer's size is seen in an image first** (the user, 2026-10-30,
+    «تمام» to both of the coordinator's notes).
+    - Phone: the word keeps one ratio to the width, «شديد الازدحام» about 70 % of the column (40 px at 390, about
+      37 px at 360), every level at that size.
+    - Computer: the word is still 127 px, now large beside the phone's. Rendered with CSS injected at capture, the
+      page unchanged, Busy and Packed at 1440 x 900: 127, 90 and 50 px (50 is twice the count's 24.75 px, the
+      phone's ratio). `D:/fitway-temp/public-redesign-r01-packed-16/compare-pc.png`, sent 2026-10-30. At 50 px the
+      count drops with the word's baseline and its percentage line meets the mark (607-631 against the mark at 626);
+      at 90 px it clears by 20 px. Whichever is picked, a fixer folds the phone and computer sizes in together.
