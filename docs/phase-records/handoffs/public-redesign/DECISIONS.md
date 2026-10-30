@@ -290,3 +290,7 @@ the public page are numbered here.
       100 ms; proportional figures move the count's label) go to the user with round 3.
     - Round 3: brief `designer-public-english-18.md`, run `D:/fitway-temp/public-redesign-r01-english-20/`; then the
       `rtl-ltr-reviewer` on both languages (CLAUDE.md: after a round that changes copy in both languages).
+27. **Round 3 stopped, to continue in a new session** (the user, 2026-10-31: «احفظ شغله الحالي وقفه لو تقدر لان بكمل
+    معك ي جلسة جديدة»). The coordinator stopped the designer mid-work and committed its edit to `public.css` and
+    `public.js` as found, unverified (`adc665f6`, pushed); the designer had begun English and was rendering trial
+    variants of the non-level states, with no notes written.

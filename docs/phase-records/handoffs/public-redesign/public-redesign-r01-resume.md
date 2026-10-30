@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the phone's word shrinks so Packed
-  fits one line; a fixer makes the accepted switches the page)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-26; 26 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (the polish stage's round 3 stopped
+  by the user to continue in a new session)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-27; 27 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,7 +20,8 @@
 
 ## Running now
 
-Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `7aca3e07`, pushed. The LAN entry
+Nothing (measured 2026-10-31; round 3's designer stopped by the coordinator on the user's word). Public branch
+`public-redesign-r01` at `adc665f6`, pushed: round 3's unfinished edit to `public.css` and `public.js`, saved as found. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
@@ -46,7 +47,13 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **The user's look at the page with the switches folded in** (item 19; brief
+1. **Round 3, English and a last polish, resumes** (items 24-27; brief
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
+   `D:/fitway-temp/public-redesign-r01-english-20/`). `adc665f6` holds the stopped designer's unverified work (English
+   begun, no notes; its trial renders in the run folder); a fresh designer either continues from it or resets the two
+   files to `7aca3e07`, its choice, reported. Then the `rtl-ltr-reviewer` on both languages, then the user's review on
+   return: rounds 1-3's frames, the new copy, and the findings in items 25 and 26. Rounds 1 and 2's images were sent
+   2026-10-30. Before them, the page with the switches folded in (item 19; brief
    `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-default-14.md`; `8ac6cad5`, pushed; image
    `D:/fitway-temp/public-redesign-r01-default-15/compare-phone.png`, sent 2026-10-30): no switches remain but
    `?level` and `?mark`; the computer pixel-identical to the old `?p1&p2&p3&size=67` at 1100-1920; the phone word one
@@ -94,7 +101,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing during the polish stage; on return the user inspects each round's frames (item 24). No app was named (item 10).
+The user opens a new session; round 3 resumes there (step 1). No app was named (item 10).
 
 ## Known risks
 
