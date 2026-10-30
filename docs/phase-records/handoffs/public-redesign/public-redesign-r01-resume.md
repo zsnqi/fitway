@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user liked the polish
-  round; a fresh designer runs a second one and lists proposals)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-14; 14 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (a Sonnet fixer draws
+  proposals 1-3 as switches; the user sees images only)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-15; 15 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,11 +20,11 @@
 
 ## Running now
 
-A fresh `owner-direction-designer` (Opus, xhigh) on brief
-`docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-10.md`, in the rounds worktree, run folder
-`D:/fitway-temp/public-redesign-r01-polish-10/` (started 2026-10-30 by the coordinator session; if no report came back,
-check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `638e6e31`,
-pushed. The LAN entry
+An `owner-direction-fixer` (Sonnet, high) on brief
+`docs/phase-records/handoffs/public-redesign/briefs/fixer-public-variants-11.md`, in the rounds worktree, run folder
+`D:/fitway-temp/public-redesign-r01-variants-11/` (started 2026-10-30 by the coordinator session; if no report came
+back, check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at
+`25e06452`, pushed. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
@@ -73,8 +73,19 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **Inspect the second polish round** (item 14; its sheets in the run folder), send the sheets, the LAN links and the
-   designer's numbered proposals in Arabic, and ask which proposals go into a later round. The first polish round,
+1. **Review the fixer's three sheets** (item 15; `sheet-p1.png` to `sheet-p3.png` in its run folder; check the page
+   without switches is unchanged), send them as images (the user does not open the site), and ask which switches
+   become the page. A weak result goes back to a designer. The second polish round and its proposals (item 14; brief
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-10.md`; `25e06452`; sheets, `notes.md`
+   and `critique-a.md` in `D:/fitway-temp/public-redesign-r01-polish-10/`, sent 2026-10-30). Critique 17/20 again; the
+   390 and 1440 frames barely change. Fixed: every size grows in a line from 390 to 1440, the switch moved to 1024 px
+   (the word never shrinks when a window widens); the column word sized from what it holds (tablet 158 px); the
+   language button at the small size; the facts and stamp as four paragraphs; «ص/م» kept with each time; below 360 px
+   the stamp in two lines. Not changed, with reasons: the DOM order (word, mark, count); the computer's dark above
+   one-line words (one size plus the fixed line). Proposals, not applied: 1 Packed on one line on the computer (word
+   about 158 px); 2 swap the percentage and the open line; 3 keep the stamp on short screens; 4 tall tablets fill the
+   column (about 200 px); 5 the level heard twice by a screen reader (needs DESIGN_GUIDE §5 changed); 6 English and
+   the other states next. The first polish round,
    liked by the user (items 13, 14; brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-9.md`; `638e6e31`, only `public.css`;
    sheets and `notes.md` in `D:/fitway-temp/public-redesign-r01-polish-9/`, sent 2026-10-30). Critique 17/20. The
@@ -96,7 +107,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing until the second polish round is shown; then the proposals to apply (step 1). No app was named (item 10).
+Nothing until the three sheets are shown; then which switches stay (step 1). No app was named (item 10).
 
 ## Known risks
 
