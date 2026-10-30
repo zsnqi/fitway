@@ -194,3 +194,18 @@ the public page are numbered here.
     - **Drawn by** `owner-direction-fixer` (Sonnet) on a frozen target: a `?size=` switch scales only the level's word
       and its own gap; the count, the mark and the small type keep their sizes.
     - **Shown as** comparison images (the user looks at images, item 15), with switches 2 and 3 on and switch 1 off.
+18. **The word a third smaller, and Packed on one line** (the user, 2026-10-30: «بختار أصغر بالثلث ويكون شديد الازدحام
+    سطر واحد بدل ما يكون سطرين», then a comparison at Packed only). Settles item 17's size and item 16's switch 1.
+    - **Rendered by the coordinator** (`?p1&p2&p3&size=67` against `?p2&p3`, Packed;
+      `D:/fitway-temp/public-redesign-r01-packed-14/compare-packed.png`), which found two gaps it told the user:
+      on the computer the two switches multiply (switch 1's narrower base times 0.67 gives 104 px, not the 127 px of
+      a third smaller alone, though 127 px fits one line beside the count); on the phone switch 1 does nothing, and at
+      70 px «شديد الازدحام» needs about 430 px against a 350 px column, so one line there needs about 57 px.
+19. **On the phone every level's word shrinks to the size that holds Packed on one line; the accepted switches become
+    the page itself** (the user, 2026-10-30, on `compare-packed-2.png`: «لا زلت محتار ... صغر الخط اكثر ب الجوال حق
+    كلمة المستوى», then option 1 of the coordinator's three: about 57 px for all levels).
+    - Below 1024 px the word is `min(its size a third smaller, (100vw - 2 x pad) / 6.131)` at every level, so the four
+      levels share one size and «شديد الازدحام» sits on one line (about 57 px at 390 px; the computer keeps 127 px).
+    - The page without switches becomes what `?p1&p2&p3&size=67` showed (items 16, 18) plus the line above; the
+      switches `p1`, `p2`, `p3`, `p1m` and `size` are removed. A Sonnet fixer makes the edit (brief
+      `fixer-public-default-14.md`), not the coordinator (the user: «لا مو انت»).

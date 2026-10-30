@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user finds the level's
-  word too large; a Sonnet fixer draws two smaller sizes to compare)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-17; 17 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the phone's word shrinks so Packed
+  fits one line; a fixer makes the accepted switches the page)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-19; 19 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,32 +20,14 @@
 
 ## Running now
 
-An `owner-direction-fixer` (Sonnet, high) on brief
-`docs/phase-records/handoffs/public-redesign/briefs/fixer-public-size-13.md`, in the rounds worktree, run folder
-`D:/fitway-temp/public-redesign-r01-size-13/` (started 2026-10-30 by the coordinator session; if no report came back,
-check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `c1667d00`,
-pushed. The LAN entry
+Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `980ec3fe`, pushed. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
 
-- **Three directions from sketch 1; the user found them alike and asked for three more** (items 10, 11; brief
-  `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-6.md`; `6a148a6d`; sheet and frames in
-  `D:/fitway-temp/public-redesign-r01-sketches-6/`, sent to the user): A the ember (the corner light's strength is the
-  level); B the ink (the word's weight is the level, the four bars as thick as its strokes); C the dated sign (the
-  level over the last reading's time, the stamp gone). The designer's findings: at sketch 1's 118 px «الازدحام» alone
-  is wider than the column, so Packed is set at 100 px in all three; A's growing light may read as sketch 2's
-  measuring light, and its wordmark on the Packed light is about 3.4:1; B and C keep a corner light with no job and an
-  empty band; B's empty Packed bar is the heaviest shape on its line; C's large time may be taken for the phone's
-  clock; A and B's stamp leaves a wide gap before «م».
-- **Three more, D-F, turned down** (items 11, 12: each tried to impress the visitor; brief `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-7.md`;
-  `7e22756e`; sheet and frames in `D:/fitway-temp/public-redesign-r01-sketches-7/`, sent to the user): D answer first
-  (the word at the top edge to edge, no header, the brand and «English» at the foot, the light rising from the bottom);
-  E the inscription (the word's kashida is the four levels, the only light from its lit part; the word at 80 px);
-  F the lit sign (dark letter faces haloed in red, everything centred, four lamps). The designer's findings: F's
-  letter faces are about 1:1 against the wall, readable only through the halo, so a state without the light needs
-  grey faces; F's lit lamps come close to A's glowing segments; E keeps sketch 1's arrangement and each part of its
-  stroke is about 32 px; D's word sits about 6 px outside the text column.
+- **Six directions from sketch 1, A-F** (items 10-12; briefs designer-public-sketches-6 and -7 in this
+  file's briefs folder; `6a148a6d`, `7e22756e`; frames in `D:/fitway-temp/public-redesign-r01-sketches-{6,7}/`): the user
+  found A-C alike, turned D-F down for trying to impress, and picked B (the word's weight as the level, later dropped).
 
 - **The rules follow items 3, 4, 8 and 9** (measured on the coordinator line, `f5336d95` to `d0606df6`): bans lifted
   by deletion; identity only dark, FITWAY red, the light, Readex Pro; content the level, the approximate count, open or
@@ -56,25 +38,21 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
   a timetable (a mess), a status page (tidy, no character), a car's tachometer. The cause the user confirmed: each
   borrowed its idea from another world. Two reference sets found nothing close (items 7, 8;
   `D:/fitway-temp/public-r01-refs/`, `D:/fitway-temp/public-r01-taste/`).
-- **Four sketches; the user kept 1, turned down 2-4** (items 9, 10; brief
-  `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-5.md`; `e0957a19`; sheet
-  `D:/fitway-temp/public-redesign-r01-sketches-5/frames/sheet.png`, sent to the user): 1 the sign (the word as large as
-  the phone allows, a hairline of four levels); 2 the lit edge (the light climbs both sides to the level's height);
-  3 the strip (the four words in one line, the phone a window on the current one); 4 the bands (four full-width bands,
-  the current one open and lit). The coordinator's notes, told the user: 1 and 3 leave a large dark gap above and treat
-  the facts alike; 4's open band is the closest to the Owner's lit card; 2 has the most language of its own; «شديد
-  الازدحام» does not fit whole in 3 and needs two lines in 1 and 4.
-- **The designer's open findings** (its report, in the coordinator's transcript only): §5's "progression follows
-  reading direction" says nothing of vertical order (sketches 2 and 4); in sketch 2 a stale reading turns the light off,
-  so the word carries the level alone; sketch 3's cropped neighbours read as stray letters; each sketch carries the
-  language switch; verify-fitway's `run` needs a readiness signal, so each sketch sets `window.__sketch`.
+- **Four sketches; the user kept 1, turned down 2-4** (items 9, 10; `e0957a19`; sheet
+  `D:/fitway-temp/public-redesign-r01-sketches-5/frames/sheet.png`): 1 the sign, 2 the lit edge, 3 the strip, 4 the
+  bands.
 
 ## Next steps
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **Review the two size comparison images** (item 17; `compare-phone.png` and `compare-computer.png` in the run
-   folder), send them, and ask which size the word takes. Then the others' views the user brings back (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
+1. **The accepted switches become the page** (item 19; brief
+   `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-default-14.md`, run
+   `D:/fitway-temp/public-redesign-r01-default-15/`): the page as `?p1&p2&p3&size=67`, and below 1024 px every level's
+   word capped so Packed fits one line (about 57 px at 390); review its frames and send
+   `compare-phone.png`. Before it, `980ec3fe`: 127 px on one line on the computer; `?p1m` Packed alone at 57 px. The word's size (item 17; `?size=75|67`, `1709f75e`; `compare-phone.png` and `compare-computer.png` in
+   `D:/fitway-temp/public-redesign-r01-size-13/`, sent 2026-10-30): word 104/78/70 px on the phone, 190/142/127 on the
+   computer; the mark's line does not move; on the computer the count drops up to 38 px with the word's baseline. Then the others' views the user brings back (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
    settle switch 1, then make the accepted switches the page's default (one fixer or builder edit). The switches as
    drawn (item 15; brief
    `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-variants-11.md`; `19b038d3`, `c1667d00`; sheets
@@ -116,7 +94,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing until the size images are shown; then the word's size and the others' views on switch 1 (step 1). No app was named (item 10).
+Nothing until the fixer's images (step 1). No app was named (item 10).
 
 ## Known risks
 
