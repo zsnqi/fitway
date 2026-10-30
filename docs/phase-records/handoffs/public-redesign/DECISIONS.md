@@ -176,3 +176,14 @@ the public page are numbered here.
     - **Not drawn:** 4 (tall tablets), 5 (the level heard twice by a screen reader; the user does not want the focus
       on screen readers; DESIGN_GUIDE §5 stays as it is). 6 (English and the other states) is the stage after the look.
     - **The user sees images, not the site:** before-and-after sheets.
+16. **Switches 2 and 3 are accepted; 1 is approved but shown to others first; the count keeps its wording** (the user,
+    2026-10-30, on the switches (`c1667d00`) explained in three labelled images: «موافق» to 2 and 3; to 1 «موافق»,
+    then high-resolution images of two lines and one line, at Quiet too, on the computer and the phone, to show «كم
+    شخص و اخد اقتراحاتهم»).
+    - **The count:** «70 داخل الصالة الآن · تقريبًا» stays without «شخص» (GLO-2), the coordinator's view, «اتفق معك
+      خلص»; adding it would need the noun to agree with each number and a glossary change.
+    - **The images** (2× on the computer, 3× on the phone, switches 2 and 3 on), rendered by the coordinator from the
+      page: `D:/fitway-temp/public-redesign-r01-share-12/` (the computer at Packed and Quiet, each with and without
+      switch 1; the phone at Packed and Quiet, which switch 1 does not touch).
+    - **Next:** the user brings back the others' views; switch 1 is settled then, and the accepted switches become the
+      page's default.

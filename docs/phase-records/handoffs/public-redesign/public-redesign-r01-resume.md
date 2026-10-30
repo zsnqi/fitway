@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (proposals 1-3 drawn as
-  switches wait for the user's choice)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-15; 15 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (switches 2 and 3 accepted;
+  the user shows switch 1's images to others before settling it)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-16; 16 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -69,7 +69,9 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **The user's choice of switches** (item 15; brief
+1. **The others' views the user brings back** (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
+   settle switch 1, then make the accepted switches the page's default (one fixer or builder edit). The switches as
+   drawn (item 15; brief
    `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-variants-11.md`; `19b038d3`, `c1667d00`; sheets
    `sheet-p1.png` to `sheet-p3.png` in `D:/fitway-temp/public-redesign-r01-variants-11/`, sent 2026-10-30; the page
    without switches pixel-identical to polish 10). p1: Packed on one line from 1152 px (divisor 8.1, width term
@@ -109,7 +111,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing until the three sheets are shown; then which switches stay (step 1). No app was named (item 10).
+The others' views on switch 1 (step 1). No app was named (item 10).
 
 ## Known risks
 
