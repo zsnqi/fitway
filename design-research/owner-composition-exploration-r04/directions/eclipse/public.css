@@ -1,10 +1,12 @@
-/* FITWAY public crowd page, the draft from direction B (public-redesign-r01). Concept only, synthetic data, a still
- * (Arabic, live; ?level= and ?mark= in public.js).
+/* FITWAY public crowd page, the draft from direction B (public-redesign-r01), polished. Concept only, synthetic data,
+ * a still (Arabic, live; ?level= and ?mark= in public.js).
  * B drawn in full: the level's word, large and at one weight for every level, stands on the four-level mark; under
  * them the count and, quieter, that the gym is open; the stamp at the foot; the red light in the top corner. The mark
  * derives from the level only (data-level 1-4) and the word is always written. The mark's line is the page's ground:
  * it keeps its place at every level, and the two-line Packed grows upward from it.
- * One stylesheet for the phone and the computer: sizes are custom properties, set again from 900 px. */
+ * Three sizes of type: the word, the count, and one small size for the open line and the stamp.
+ * One stylesheet for the phone and the computer: sizes are custom properties, set again from 900 px, where the count
+ * moves up beside the word, onto its baseline. */
 
 @font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
 @font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
@@ -55,8 +57,7 @@ a { color: inherit; text-decoration: none; }
   --gap-mark: 34px;
   --below: clamp(48px, 22dvh, 220px);
   --fs-count: 20px;
-  --fs-open: 15px;
-  --fs-stamp: 13px;
+  --fs-small: 14px; /* the open line and the stamp: one quiet size */
   --fs-scale: 12.5px;
   --ux: 1px;
   --uy: 1px;
@@ -132,6 +133,9 @@ a { color: inherit; text-decoration: none; }
 }
 .word {
   grid-row: 2;
+  /* Never longer than about four ems, so «شديد الازدحام» takes two lines at every size and nothing else moves;
+   * the one-word levels, the widest about 3.3 em, keep one line. */
+  max-inline-size: 4.2em;
   font-size: var(--word);
   font-weight: 600;
   line-height: 1.12;
@@ -199,8 +203,8 @@ a { color: inherit; text-decoration: none; }
   margin-block-start: var(--gap-mark);
 }
 .count-line { font-size: var(--fs-count); line-height: 1.4; color: var(--ink-2); }
-.count { color: var(--ink); font-weight: 500; }
-.open { font-size: var(--fs-open); line-height: 1.5; color: var(--ink-3); }
+.count { color: var(--ink); font-weight: 600; } /* the number leads its line, at the word's weight */
+.open { font-size: var(--fs-small); line-height: 1.5; color: var(--ink-3); }
 
 .stamp {
   grid-row: 6;
@@ -208,7 +212,7 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  font-size: var(--fs-stamp);
+  font-size: var(--fs-small);
   line-height: 20px;
   color: var(--ink-3);
 }
@@ -216,27 +220,44 @@ a { color: inherit; text-decoration: none; }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
 .pct bdi { color: var(--ink-2); }
 
-/* The computer: the same column grown into the screen. The word keeps one line at every level, the mark runs the
- * width of the page as its horizon, and the light grows wider than it grows tall. */
+/* The computer: the column grows into the screen and opens into two. The word keeps the start edge; the count
+ * moves up to the end edge, onto the word's last baseline, with the open line hanging under it; the mark runs the
+ * width of the page as the horizon both stand on; the stamp keeps the foot. Every element sits on one of the two
+ * edges: brand, word, the Quiet bar and the live stamp on the start edge; the language button, the count, the
+ * Packed bar and the percentage on the end edge. The light grows wider than it grows tall. */
 @media (min-width: 900px) {
   .page {
     --pad: clamp(40px, 4.5vw, 80px);
     --top-h: 96px;
-    /* «شديد الازدحام» at 0.885 vw of ink against a 0.91 vw column: one line at every level. */
-    --word: clamp(120px, min(14.6vw, 24dvh), 220px);
+    /* The horizon at about seven tenths of the screen: the field under it is about two thirds of the dark above a
+     * one-word level, and the two-line Packed (2.67 em from its top to the mark) still fits under the header. */
+    --below: clamp(56px, 22dvh, 240px);
+    --col-gap: clamp(32px, 4vw, 80px);
+    /* One size for every level, the largest that fits both ways: across, «متوسط» (3.31 em), the gap and the count's
+     * line (about 1.9 em of the word) with room to spare, 5.6 em in all; down, that fit of Packed, where 200 px is
+     * the header, the free row's least, the mark, the stamp and the padding. */
+    --word: clamp(120px, min(calc((100vw - 2 * var(--pad) - var(--col-gap)) / 5.6), calc((100dvh - var(--below) - 200px) / 2.67)), 220px);
     --mark-h: 24px;
     --mark-gap: 10px;
     --rule: 7px;
-    --gap-mark: 44px;
-    --below: clamp(56px, 18dvh, 220px);
-    --fs-count: 26px;
-    --fs-open: 18px;
-    --fs-stamp: 15px;
+    --fs-count: clamp(24px, calc(var(--word) * 0.16), 34px);
+    --fs-small: 16px;
     --fs-scale: 15px;
     --ux: 2.1px;
     --uy: 1.15px;
     padding-block-end: max(32px, env(safe-area-inset-bottom));
   }
+  .sign {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(24px, 1fr) auto auto var(--below) auto;
+    column-gap: var(--col-gap);
+  }
+  .word { grid-column: 1; align-self: last baseline; }
+  /* The count's line is the facts' only line in flow, so its baseline is the one that meets the word's. */
+  .facts { grid-column: 2; grid-row: 2; align-self: last baseline; position: relative; margin-block-start: 0; }
+  .open { position: absolute; inset-block-start: 100%; inset-inline-start: 0; margin-block-start: 4px; white-space: nowrap; }
+  .mark { grid-column: 1 / -1; }
+  .stamp { grid-column: 1 / -1; grid-row: 5; }
   .brand { gap: 12px; }
   .brand svg { width: 32px; height: 32px; }
   .wordmark { font-size: 14px; }
