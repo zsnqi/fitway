@@ -1,0 +1,164 @@
+/* FITWAY public crowd page, direction 7a from sketch 1: answer first. Concept only, synthetic data, a still
+ * (phone, Arabic, live; ?level=packed for the highest level).
+ * Sketch 1 read from the bottom up: a corner of light, a word low on the page, the stamp at the foot. Here the page
+ * reads in the order a visitor asks. The word is the first thing on the screen, edge to edge, with no bar above it;
+ * the four levels run under it as the masthead's rule; whether the reading is live sits right under the rule, then
+ * the facts. The brand and the language leave the top and sign the page at its foot, where sketch 1's light now
+ * rises. No chrome: no bordered buttons, the type is the interface. Derived from the level only (data-level 1-4). */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --deep: #a3112a;
+  --graphite: rgba(255, 255, 255, 0.16);
+  --live: #4be29b;
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+h1, p { margin: 0; }
+a { color: inherit; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* The answer, from the top edge down. */
+.answer { grid-row: 1; position: relative; z-index: 1; padding-top: 22px; }
+.word {
+  font-size: 125px;
+  line-height: 1.16;
+  font-weight: 500;
+  letter-spacing: 0;
+  padding-inline: 10px;
+  white-space: nowrap;
+}
+.page[data-level="4"] .word { font-size: 109px; line-height: 1.06; white-space: normal; padding-top: 6px; }
+
+/* The masthead's rule: the four levels edge to edge, in reading order. Lower levels deep red, the current one
+ * FITWAY's hottest red and twice as thick, the higher ones graphite. */
+.rule {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  align-items: center;
+  margin-top: 34px; /* clears the final letter's tail */
+}
+.page[data-level="4"] .rule { margin-top: 36px; }
+.rule i { display: block; height: 3px; background: var(--graphite); }
+.page[data-level="2"] .rule i:nth-child(-n+1),
+.page[data-level="3"] .rule i:nth-child(-n+2),
+.page[data-level="4"] .rule i:nth-child(-n+3) { background: var(--deep); }
+.page[data-level="1"] .rule i:nth-child(1),
+.page[data-level="2"] .rule i:nth-child(2),
+.page[data-level="3"] .rule i:nth-child(3),
+.page[data-level="4"] .rule i:nth-child(4) { height: 7px; background: var(--red-hi); }
+
+/* Whether it is live, right under the claim it qualifies. */
+.stamp {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px 0;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--ink-3);
+}
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); }
+.pct bdi { color: var(--ink-2); }
+
+.facts {
+  display: grid;
+  gap: 2px;
+  padding: 34px 20px 0;
+  font-size: 26px;
+  line-height: 38px;
+  color: var(--ink-2);
+}
+.facts .count { color: var(--ink); font-weight: 500; }
+
+/* Sketch 1's light, moved to the foot: it rises from the bottom inline-start corner, under the signature, behind a
+ * dark disc that holds the answer, so it reads as one long rim sweeping from the start edge down to the foot.
+ * Grain only where lit. */
+.light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  --at: 100% 100%;
+  --disc: circle 430px at -8% 50%;
+  --ramp: rgb(255 41 70 / 0.78) 0%, rgb(229 25 53 / 0.56) 14%, rgb(120 12 30 / 0.7) 34%, rgb(77 7 19 / 0.55) 56%, rgb(8 9 10 / 0) 82%;
+  --lit: radial-gradient(ellipse 900px 700px at var(--at), var(--ramp));
+  background: var(--lit);
+  -webkit-mask-image: radial-gradient(var(--disc), transparent 0, transparent 84%, rgb(0 0 0 / 0.55) 93%, #000 100%);
+  mask-image: radial-gradient(var(--disc), transparent 0, transparent 84%, rgb(0 0 0 / 0.55) 93%, #000 100%);
+}
+[dir="ltr"] .light { --at: 0% 100%; --disc: circle 430px at 108% 50%; }
+.light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.16;
+  -webkit-mask-image: var(--lit);
+  mask-image: var(--lit);
+}
+
+/* The signature at the foot: the brand and the language as type, no chrome. */
+.foot {
+  grid-row: 3;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 14px;
+  min-height: 64px;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  display: inline-grid;
+  place-items: center;
+  min-height: 44px;
+  padding-inline: 6px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+  text-decoration-color: rgba(245, 243, 242, 0.45);
+}

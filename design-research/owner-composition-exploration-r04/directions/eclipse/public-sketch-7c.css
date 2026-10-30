@@ -1,0 +1,172 @@
+/* FITWAY public crowd page, direction 7c from sketch 1: the lit sign. Concept only, synthetic data, a still
+ * (phone, Arabic, live; ?level=packed for the highest level).
+ * Sketch 1's light came from a corner and lit nothing in particular; its dark disc in front of the light is what
+ * made it read as a rim. Here every letter is that disc. The word is a halo-lit sign at night: dark letter faces
+ * standing off a dark wall, FITWAY red thrown on the wall behind them, so the light outlines the word and nothing
+ * else. The page carries no other light. One centred axis: the sign, its four lamps, the facts, the stamp. The
+ * lamps are lights: lower levels glow deep red, the current one burns, the higher ones are dark. A lit sign means
+ * a live reading; a stale or closed page would put the halo out and paint the faces in grey ink, so the word stays
+ * written (not drawn in this still).
+ * Derived from the level only (data-level 1-4); the word is always written. */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+
+:root {
+  --page: #070707;
+  --face: #0c0a0b;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --deep: #a3112a;
+  --oxblood: #4d0713;
+  --live: #4be29b;
+  --line-2: rgba(255, 255, 255, 0.1);
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* The halo: a hot line at the letter's edge, the red thrown on the wall, its falloff into oxblood. */
+  --halo: 0 0 2px rgb(255 41 70 / 0.9), 0 0 6px rgb(255 41 70 / 0.85), 0 0 14px rgb(229 25 53 / 0.75), 0 0 30px rgb(200 20 46 / 0.6), 0 0 60px rgb(163 17 42 / 0.55), 0 0 120px rgb(77 7 19 / 0.9);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+h1, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 0 20px 22px;
+}
+
+/* The wall behind the sign, warmed by it; grain only where it is lit. */
+.wall {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  --lit: radial-gradient(ellipse 420px 300px at 50% 44%, rgb(110 11 27 / 0.5) 0%, rgb(77 7 19 / 0.38) 40%, rgb(8 8 8 / 0) 100%);
+  background: var(--lit);
+}
+.page[data-level="4"] .wall { --lit: radial-gradient(ellipse 440px 380px at 50% 43%, rgb(110 11 27 / 0.52) 0%, rgb(77 7 19 / 0.4) 40%, rgb(8 8 8 / 0) 100%); }
+.wall::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.2;
+  -webkit-mask-image: var(--lit);
+  mask-image: var(--lit);
+}
+
+.top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink-2); }
+.brand .mk-dot { fill: var(--ink-2); }
+.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; color: var(--ink-2); }
+.lang {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* One axis. The sign stands a little above the optical centre; the facts and the stamp hang under it. */
+.sign {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: 1fr auto auto auto 1fr auto;
+  justify-items: center;
+  text-align: center;
+}
+.word {
+  grid-row: 2;
+  font-size: 118px;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--face);
+  text-shadow: var(--halo);
+}
+.page[data-level="4"] .word { font-size: 100px; line-height: 1.16; }
+
+/* The four lamps, in reading order. Unlike the letters they are lights themselves: lower levels glow deep red, the
+ * current one burns FITWAY's hottest red, the higher ones are dark. */
+.lamps {
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: repeat(4, 46px);
+  gap: 12px;
+  margin-block: 34px 34px;
+}
+.lamps i {
+  display: block;
+  height: 9px;
+  border-radius: 1px;
+  background: var(--face);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1);
+}
+.page[data-level="2"] .lamps i:nth-child(-n+1),
+.page[data-level="3"] .lamps i:nth-child(-n+2),
+.page[data-level="4"] .lamps i:nth-child(-n+3) { background: var(--deep); box-shadow: 0 0 6px rgb(163 17 42 / 0.75), 0 0 16px rgb(120 12 30 / 0.55); }
+.page[data-level="1"] .lamps i:nth-child(1),
+.page[data-level="2"] .lamps i:nth-child(2),
+.page[data-level="3"] .lamps i:nth-child(3),
+.page[data-level="4"] .lamps i:nth-child(4) { background: var(--red-hi); box-shadow: 0 0 4px rgb(255 41 70 / 1), 0 0 12px rgb(255 41 70 / 0.85), 0 0 30px rgb(229 25 53 / 0.6); }
+
+.facts {
+  grid-row: 4;
+  display: grid;
+  gap: 4px;
+  font-size: 19px;
+  line-height: 28px;
+  color: var(--ink-2);
+}
+.facts .count { color: var(--ink); font-weight: 500; }
+
+.stamp {
+  grid-row: 6;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-3);
+}
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); }
+.pct bdi { color: var(--ink-2); }
