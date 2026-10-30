@@ -300,3 +300,92 @@ a { color: inherit; text-decoration: none; }
   .page { --word-fs: calc((100vw - 2 * var(--pad)) / 6.131 * 0.7); }
   .word { max-inline-size: none; white-space: nowrap; }
 }
+
+/* The other states (?state=, public.js), drawn at rest on the same page: the header, the light, the type sizes and the
+ * places stay; only the values and the status change. Live has the only green dot and the only lit level.
+ * The status keeps the live stamp's place at the foot's start, text with a cue that is not colour alone: the live dot
+ * emptied into a ring of the same size, or Error's alert mark. */
+.cue { flex: none; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; }
+svg.cue { width: 12px; height: 12px; border: 0; border-radius: 0; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+svg.cue .cue-pt { fill: currentColor; stroke: none; }
+
+/* Loading. Each placeholder stands on its line's baseline, as tall as the value's letters, an empty inline block (it
+ * rests on its bottom edge, so the line keeps its height), as wide as the value's median form: Readex sets its figures
+ * proportionally (tabular-nums finds no tnum), so no width fits every value; these are the median of the two-digit
+ * counts (1.140 em), of the two-digit percentages (1.948 em) and of the open line over the twelve hours (8.943 em).
+ * The mark's place is a flat baseline. */
+.ph {
+  display: inline-block;
+  vertical-align: baseline;
+  height: 0.62em; /* the Arabic letters' body; the figures' below */
+  border-radius: max(2px, 0.1em);
+  background: var(--graphite);
+}
+.num .ph { height: 0.71em; } /* the figures' height */
+.ph[data-ph="count"] { width: 1.140em; }
+.ph[data-ph="pct"] { width: 1.948em; }
+.ph[data-ph="open"] { width: 8.943em; }
+.ph-word { width: 2.6em; margin-inline-start: 0.04em; } /* about a one-word level; a bar has no side bearing to offset */
+.page[data-wait] .ph, .page[data-wait] .fresh { visibility: hidden; } /* the first 300 ms: the space kept, empty */
+.page[data-state="loading"] .mark i { visibility: hidden; }
+.page[data-state="loading"] .mark { position: relative; }
+.page[data-state="loading"] .mark::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; border-radius: 1px; background: var(--graphite); }
+
+/* Delayed: the last reading kept, qualified. The word, the count and its line dim; the bars up to the last level are
+ * hatched in ink, the last level's the lighter, so the level keeps its place with nothing lit; the rest stay graphite. */
+.page[data-state="delayed"] {
+  --known: repeating-linear-gradient(-45deg, rgb(162 156 158 / 0.55) 0 1.5px, transparent 1.5px 4.5px);
+  --known-now: repeating-linear-gradient(-45deg, rgb(201 195 196 / 0.95) 0 1.5px, transparent 1.5px 4.5px);
+}
+.page[data-state="delayed"] .word,
+.page[data-state="delayed"] .count-line,
+.page[data-state="delayed"] .count { color: var(--ink-3); }
+.page[data-state="delayed"][data-level="2"] .mark i:nth-child(-n+1),
+.page[data-state="delayed"][data-level="3"] .mark i:nth-child(-n+2),
+.page[data-state="delayed"][data-level="4"] .mark i:nth-child(-n+3) { --c: var(--known); }
+.page[data-state="delayed"][data-level="1"] .mark i:nth-child(1),
+.page[data-state="delayed"][data-level="2"] .mark i:nth-child(2),
+.page[data-state="delayed"][data-level="3"] .mark i:nth-child(3),
+.page[data-state="delayed"][data-level="4"] .mark i:nth-child(4) { --c: var(--known-now); }
+/* The status is longer than the live stamp's: where it and the open line no longer share a line, the stamp grows
+ * upward, the status rising over the open line, which keeps its place at the foot's end, so the word keeps its place. */
+@media (min-width: 360px) {
+  .page[data-state="delayed"] .stamp { height: 20px; align-content: flex-end; }
+  .page[data-state="delayed"] .stamp .open { margin-inline-start: auto; }
+}
+
+/* Closed, Unavailable, Error: the state's answer stands in the word's place, at the word's size; the line under it
+ * moves up into the mark's room on the phone, and the stamp takes up what the mark left, so the answer keeps the word's
+ * place. */
+.page:is([data-state="closed"], [data-state="unavailable"], [data-state="error"]) {
+  --gap-answer: calc(var(--word-fs) * 0.3);
+}
+.page:is([data-state="closed"], [data-state="unavailable"], [data-state="error"]) .stamp { margin-block-start: calc(var(--gap-word) + var(--mark-h)); }
+.mark[hidden] { display: none; }
+.count-line .lead { color: var(--ink); font-weight: 600; }
+.retry {
+  justify-self: start;
+  height: 48px;
+  margin-block-start: 16px;
+  padding-inline: 22px;
+  border-radius: 12px;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  background: rgb(255 255 255 / 0.04);
+  color: var(--ink);
+  font: 500 16px/1 var(--font);
+  cursor: pointer;
+}
+.retry:hover { border-color: rgb(255 255 255 / 0.42); }
+.retry[aria-disabled="true"] { cursor: default; color: var(--ink-2); }
+@media (min-width: 1024px) {
+  .retry { position: absolute; inset-block-start: 100%; inset-inline-start: 0; }
+}
+@media (max-width: 1023px) {
+  /* The facts keep the live facts' height (the count's line, the gap, the percentage's line), whatever they hold: a
+   * shorter answer leaves the room, a longer one (Error's retry) hangs into the space below. */
+  .page:is([data-state="closed"], [data-state="unavailable"], [data-state="error"]) .facts {
+    margin-block-start: var(--gap-answer);
+    height: calc(1.4 * var(--fs-count) + 4px + 1.5 * var(--fs-small));
+  }
+  .page:is([data-state="closed"], [data-state="unavailable"], [data-state="error"]) .stamp { margin-block-start: calc(var(--gap-word) + var(--mark-h) + var(--gap-mark) - var(--gap-answer)); }
+}
