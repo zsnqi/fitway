@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the phone's word shrinks so Packed
   fits one line; a fixer makes the accepted switches the page)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-19; 19 last), and the founding
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-20; 20 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -94,7 +94,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The user's view of `compare-phone.png` (step 1). No app was named (item 10).
+The phone Packed pick, 1, 2 or 3 (item 20; step 1). No app was named (item 10).
 
 ## Known risks
 

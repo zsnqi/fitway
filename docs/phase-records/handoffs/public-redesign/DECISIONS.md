@@ -209,3 +209,11 @@ the public page are numbered here.
     - The page without switches becomes what `?p1&p2&p3&size=67` showed (items 16, 18) plus the line above; the
       switches `p1`, `p2`, `p3`, `p1m` and `size` are removed. A Sonnet fixer makes the edit (brief
       `fixer-public-default-14.md`), not the coordinator (the user: «لا مو انت»).
+20. **The phone's Packed, three ways, as an image only** (the user, 2026-10-30, on `8ac6cad5`'s
+    `compare-phone.png` with a sketch of a smaller word: «بنجرب اصغر بعد بحيث يكون جملة شديد الازدحام ما تاخذ طول
+    الشاشة كاملة ... الحالي ضد لو كان سطرين بنفس الحجم الحالي ضد لو كان مثل المثال», the size of the third left to
+    the coordinator: «شوف الانسب انت»).
+    - The coordinator rendered it with CSS injected at capture time, the page unchanged: 1 the page (57 px, one
+      line), 2 two lines at 57 px, 3 one line at 40 px (the phrase about 70 % of the 350 px column, twice the
+      count's 20 px; the user's sketch was about 32 px). Image
+      `D:/fitway-temp/public-redesign-r01-packed-16/compare-packed.png`, sent 2026-10-30.
