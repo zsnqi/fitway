@@ -155,3 +155,12 @@ the public page are numbered here.
     - **Quiet and Moderate sitting about 40 px above the mark** (the fixed ground line): the user did not see a problem
       and the coordinator agreed; the fixed line stays.
     - **Packed on the computer:** one line edge to edge (the frame shown to the user on their question).
+14. **The polish round is liked; a second one, with the designer's proposals listed apart** (the user, 2026-10-30, on
+    `638e6e31`: the critique «ممتاز الصراحة الامر دا», the changes «ممتاز التحسن الي صار»; the user asked for another
+    round and for the designer's own proposals; then, to the coordinator's proposal, «ممتاز», «تمام», «ممتاز ايضا», «اي»).
+    - **A fresh designer** runs `critique` again on the polished page and fixes what it finds, with the last designer's
+      three leftovers: the dark area above short words on the computer; the computer's visual order differing from the
+      reading order; the word's size jump crossing 900 px. It ends with `polish`.
+    - **Proposals, not applied:** the designer lists its further proposals, each in a line or two with its reason; the
+      user chooses which go into a later round. Same limit: no new idea, nothing to impress.
+    - **Every state and English** wait until the user says the look is settled.
