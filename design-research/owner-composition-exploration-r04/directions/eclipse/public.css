@@ -1,5 +1,5 @@
 /* FITWAY public crowd page, the draft from direction B (public-redesign-r01), polished. Concept only, synthetic data,
- * a still (Arabic, live; ?level= and ?mark= in public.js).
+ * a still (Arabic, live; ?level=, ?mark= and the other states' ?state= in public.js; the states at the end of this file).
  * B drawn in full: the level's word, large and at one weight for every level, stands on the four-level mark; under
  * them the count and, quieter, that the gym is open; the stamp at the foot, with the percentage under the count; the
  * red light in the top corner. The mark derives from the level only (data-level 1-4) and the word is always written.
@@ -379,6 +379,10 @@ svg.cue .cue-pt { fill: currentColor; stroke: none; }
 .retry[aria-disabled="true"] { cursor: default; color: var(--ink-2); }
 @media (min-width: 1024px) {
   .retry { position: absolute; inset-block-start: 100%; inset-inline-start: 0; }
+}
+/* On the narrowest phones the live stamp takes two lines; Closed and Error have the status alone, kept on the lower. */
+@media (max-width: 359px) {
+  .page:is([data-state="closed"], [data-state="error"]) .stamp { min-height: 44px; justify-content: flex-end; }
 }
 @media (max-width: 1023px) {
   /* The facts keep the live facts' height (the count's line, the gap, the percentage's line), whatever they hold: a

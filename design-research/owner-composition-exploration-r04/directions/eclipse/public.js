@@ -63,6 +63,7 @@
     page.setAttribute("data-state", "loading");
     page.removeAttribute("data-level");
     sign.setAttribute("aria-busy", "true");
+    n.sr.textContent = "الازدحام الآن";
     n.text.innerHTML = '<i class="ph ph-word" aria-hidden="true"></i>';
     markOff();
     n.count.innerHTML = ph("count");
@@ -92,6 +93,7 @@
     page.removeAttribute("data-state");
     page.setAttribute("data-level", v.n);
     sign.removeAttribute("aria-busy");
+    n.sr.textContent = "الازدحام الآن: ";
     n.text.textContent = v.word;
     markEl.removeAttribute("aria-hidden");
     markEl.setAttribute("role", "img");
