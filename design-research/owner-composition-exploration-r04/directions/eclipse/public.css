@@ -273,13 +273,20 @@ a { color: inherit; text-decoration: none; }
 /* p2: the percentage and the open line swap places (public.js moves them); each takes the styles of its new place. */
 .p2 .stamp .open bdi { color: var(--ink-2); }
 
-/* p3: short screens keep the stamp. Both word formulas and --below lower their floors; nothing else changes. */
-.page.p3 { --below: clamp(16px, 22dvh, 240px); --word-min: 40px; }
-
-/* p1, from 1024 px: «شديد الازدحام» sets on one line in the word's column. The formula's width divisor is the phrase's
- * measured width at weight 600 (6.131 em, in place of 5.6) and its height term counts one word line: the word's line
- * (1.12 em) and the mark's gap (0.43 em), 1.55 em from the word's top to the mark's, in place of 2.67. */
-@media (min-width: 1024px) {
-  .page.p1 { --word-div: 6.131; --word-lines: 1.55; }
+/* p1, from 1152 px wide (from 1024 to 1151 the page is as without it): «شديد الازدحام» sets on one line in the word's
+ * column. The formula keeps its other terms, its floor and its clamp. Width term: the divisor is the phrase's measured
+ * width (6.131 em, at weight 600) plus room for the count column, 8.1 in all (in place of 5.6), and the column's own
+ * limit bounds the width (min(100vw, 1600px) in place of 100vw). Height term: one word line, the word's line (1.12 em)
+ * and the mark's gap (0.43 em), 1.55 em from the word's top to the mark's (in place of 2.67). Below 1152 px the word,
+ * floored at 120 px, cannot clear the count. Placed before p3, whose lower floor wins when both are on. */
+@media (min-width: 1152px) {
+  .page.p1 {
+    --word-div: 8.1;
+    --word-lines: 1.55;
+    --word: clamp(var(--word-min), min(calc((min(100vw, 1600px) - 2 * var(--pad) - var(--col-gap)) / var(--word-div)), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 44px) / var(--word-lines))), 220px);
+  }
   .page.p1 .word { max-inline-size: none; white-space: nowrap; }
 }
+
+/* p3: short screens keep the stamp. Both word formulas and --below lower their floors; nothing else changes. */
+.page.p3 { --below: clamp(16px, 22dvh, 240px); --word-min: 40px; }
