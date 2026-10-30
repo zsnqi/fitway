@@ -125,3 +125,20 @@ the public page are numbered here.
       only what the user turned down and that A, B and C read alike; it says nothing of what the user liked (item 10).
     - **The longest word:** at sketch 1's 118 px «الازدحام» alone is wider than the column; A, B and C set Packed at
       100 px. Given to the designer as a fact.
+12. **D, E and F are turned down; B becomes the full draft, with craft and no new idea** (the user, 2026-10-30, on D-F
+    (`7e22756e`): «كلها سيئة»; then, in a discussion the user asked for, «B كويس الصدق», and to the coordinator's
+    restatement, point by point: «اي», «نعم», «اي ممكن نطلع ب اشكال احسن ممكن», «نعم و كم فيه شخص ب النادي», «اي نعم»).
+    Settles item 11's pick; amends item 5's stage one by the mark's forms below.
+    - **Why D-F failed** (the user's words): each tried to impress the visitor, too much invention
+      («تحاول انها تبهر الزائر بشكل كبير او فيه ابداع بشكل كبير»); «مزدحم» in E and F is bad. The designer is told this.
+    - **The coordinator's reading the user confirmed:** of about fourteen options only sketch 1 and B were liked, the
+      plainest; each round that asked for a new idea got a borrowed world or a trick. The page needs no new idea; what
+      it lacks is craft: sizes, spacing, balance, the computer, and later every state.
+    - **The visitor takes away three things:** whether the gym is busy, how many people are inside, and that it is open.
+      Open need not be prominent: the gym's hours are known («مب لازم نوضحها بشكل كبير عادي»).
+    - **One weight for the word at every level** («يفضل ب سماكة وحدة»): B's weight-per-level is dropped.
+    - **The four-level mark:** the full draft carries B's bars refined, and the same round draws three other forms of
+      the mark, each on the refined page, not on B as it is («حتى الباقي قلنا تحتاج تحسين»). The user picks one.
+    - **No subscription to a reference service** («اسحب على المواقع»), after the coordinator's research
+      (`D:/fitway-temp/reference-services-research/REPORT.md`); the taste-skill trial is dropped too (only its global
+      copy was updated, at the user's word, outside the repository).
