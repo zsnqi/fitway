@@ -154,8 +154,12 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600;
   line-height: 1.12;
   letter-spacing: 0;
-  margin-inline-start: calc(var(--word-fs) * -0.04); /* optical: the first letter's side bearing */
+  margin-inline-start: calc(var(--word-fs) * var(--bearing) * -1); /* optical: the first letter's side bearing */
 }
+/* The first letter's side bearing, in the word's ems: Arabic's first letters about 0.04; Latin capitals 0.08 on a
+ * stem (B, M, P) and 0.04 on a bowl (Q), set at 0.07 so a stem stands on the column's edge and a bowl just over it. */
+:root { --bearing: 0.04; }
+:root[lang="en"] { --bearing: 0.07; }
 
 /* The four-level mark: four parts in reading order, the lower levels deep red, the current one FITWAY's hottest
  * red, the higher ones graphite. Its box keeps one height in every form, so a form changes nothing else. */
@@ -220,25 +224,40 @@ a { color: inherit; text-decoration: none; }
 .count { color: var(--ink); font-weight: 600; } /* the number leads its line, at the word's weight */
 .facts .pct { font-size: var(--fs-small); line-height: 1.5; color: var(--ink-3); } /* the percentage sits under the count */
 
+/* The foot keeps the live foot's height in every state: one line, or two where the live foot stacks. A longer status
+ * (Delayed's) grows upward into the space above, its lines packed to the foot, so nothing in the foot moves the word or
+ * the mark. Each item keeps its edge: the status the start, the open line the end. */
 .stamp {
   grid-row: 6;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap; /* a time never parts from its ص/م; each item keeps whole */
+  flex-wrap: wrap; /* a time never parts from its ص/م or AM/PM; each item keeps whole */
+  align-content: flex-end;
+  height: 20px;
   gap: 4px 12px;
   font-size: var(--fs-small);
   line-height: 20px;
   color: var(--ink-3);
 }
 .stamp > p { white-space: nowrap; }
+.stamp .open { margin-inline-start: auto; } /* on a line of its own it keeps the end edge */
 .fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); } /* two items: the dot, the text */
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
 .stamp .open bdi { color: var(--ink-2); }
-/* On the narrowest phones the percentage takes a second line at every level: the two items need about 281 px, and a
- * row that wrapped at some levels and not others would move the mark's line between them. */
+/* On the narrowest phones the foot stacks at every level and in every state: the live foot's two items need about 299
+ * px in Arabic (below 360 px) and up to 341 px in English (below 390 px, a reading at 12:41 PM), and a row that wrapped
+ * at some levels and not others would move the mark's line between them. Stacked, both items keep the start edge,
+ * packed to the foot; a status alone keeps the lower line, and one too long for the column wraps upward. */
 @media (max-width: 359px) {
-  .stamp { flex-direction: column; align-items: flex-start; }
+  .stamp { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; justify-content: flex-end; height: 44px; }
+  .stamp .open { margin-inline-start: 0; }
+  .stamp .fresh > span { white-space: normal; }
+}
+@media (max-width: 389px) {
+  :root[lang="en"] .stamp { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; justify-content: flex-end; height: 44px; }
+  :root[lang="en"] .stamp .open { margin-inline-start: 0; }
+  :root[lang="en"] .stamp .fresh > span { white-space: normal; }
 }
 
 /* The computer: the column grows into the screen and opens into two. The word keeps the start edge; the count
@@ -325,18 +344,30 @@ svg.cue .cue-pt { fill: currentColor; stroke: none; }
 .ph[data-ph="count"] { width: 1.140em; }
 .ph[data-ph="pct"] { width: 1.948em; }
 .ph[data-ph="open"] { width: 8.943em; }
-.ph-word { width: 2.6em; margin-inline-start: 0.04em; } /* about a one-word level; a bar has no side bearing to offset */
+.ph-word { width: 2.6em; margin-inline-start: calc(var(--bearing) * 1em); } /* about a one-word level; a bar has no side bearing to offset */
+/* English: the capitals' height (0.70 em, the figures 0.71), and the open line's median over the twelve hours
+ * ("Open until 1:00 AM" to "Open until 12:00 PM", 9.103 em). */
+:root[lang="en"] .ph { height: 0.7em; }
+:root[lang="en"] .num .ph { height: 0.71em; }
+:root[lang="en"] .ph[data-ph="open"] { width: 9.103em; }
 .page[data-wait] .ph, .page[data-wait] .fresh { visibility: hidden; } /* the first 300 ms: the space kept, empty */
-.page[data-state="loading"] .mark i { visibility: hidden; }
-.page[data-state="loading"] .mark { position: relative; }
-.page[data-state="loading"] .mark::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; border-radius: 1px; background: var(--graphite); }
+
+/* Where no level is shown (Loading, Closed, Unavailable, Error) the mark's place keeps its ground: a flat line where the
+ * bars stand, with nothing on it, so the page keeps its horizon and every place under it. A flat line is no reading,
+ * never a low one (DESIGN_GUIDE §6: a crowd-signal placeholder is a flat baseline); the mark is hidden from assistive
+ * technology. */
+.page:not([data-level]) .mark i { visibility: hidden; }
+.page:not([data-level]) .mark { position: relative; }
+.page:not([data-level]) .mark::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; border-radius: 1px; background: var(--graphite); }
 
 /* Delayed: the last reading kept, qualified. The word, the count and its line dim; the bars up to the last level are
  * hatched in ink, the last level's the lighter, so the level keeps its place with nothing lit; the rest stay graphite. */
 .page[data-state="delayed"] {
-  --known: repeating-linear-gradient(-45deg, rgb(162 156 158 / 0.55) 0 1.5px, transparent 1.5px 4.5px);
-  --known-now: repeating-linear-gradient(-45deg, rgb(201 195 196 / 0.95) 0 1.5px, transparent 1.5px 4.5px);
+  --hatch: -45deg; /* the strokes lean back against the reading direction; mirrored in English */
+  --known: repeating-linear-gradient(var(--hatch), rgb(162 156 158 / 0.55) 0 1.5px, transparent 1.5px 4.5px);
+  --known-now: repeating-linear-gradient(var(--hatch), rgb(201 195 196 / 0.95) 0 1.5px, transparent 1.5px 4.5px);
 }
+[dir="ltr"] .page[data-state="delayed"] { --hatch: 45deg; }
 .page[data-state="delayed"] .word,
 .page[data-state="delayed"] .count-line,
 .page[data-state="delayed"] .count { color: var(--ink-3); }
@@ -347,21 +378,11 @@ svg.cue .cue-pt { fill: currentColor; stroke: none; }
 .page[data-state="delayed"][data-level="2"] .mark i:nth-child(2),
 .page[data-state="delayed"][data-level="3"] .mark i:nth-child(3),
 .page[data-state="delayed"][data-level="4"] .mark i:nth-child(4) { --c: var(--known-now); }
-/* The status is longer than the live stamp's: where it and the open line no longer share a line, the stamp grows
- * upward, the status rising over the open line, which keeps its place at the foot's end, so the word keeps its place. */
-@media (min-width: 360px) {
-  .page[data-state="delayed"] .stamp { height: 20px; align-content: flex-end; }
-  .page[data-state="delayed"] .stamp .open { margin-inline-start: auto; }
-}
+/* The status is longer than the live stamp's: where it and the open line no longer share a line, the foot grows
+ * upward (see .stamp), the status rising over the open line, which keeps its place at the foot's end. */
 
-/* Closed, Unavailable, Error: the state's answer stands in the word's place, at the word's size; the line under it
- * moves up into the mark's room on the phone, and the stamp takes up what the mark left, so the answer keeps the word's
- * place. */
-.page:is([data-state="closed"], [data-state="unavailable"], [data-state="error"]) {
-  --gap-answer: calc(var(--word-fs) * 0.3);
-}
-.page:is([data-state="closed"], [data-state="unavailable"], [data-state="error"]) .stamp { margin-block-start: calc(var(--gap-word) + var(--mark-h)); }
-.mark[hidden] { display: none; }
+/* Closed, Unavailable, Error: the state's answer stands in the word's place, the mark's ground under it, and the line
+ * that says what follows in the count's place, so every place is live's. */
 .count-line .lead { color: var(--ink); font-weight: 600; }
 .retry {
   justify-self: start;
@@ -380,18 +401,11 @@ svg.cue .cue-pt { fill: currentColor; stroke: none; }
 @media (min-width: 1024px) {
   .retry { position: absolute; inset-block-start: 100%; inset-inline-start: 0; }
 }
-/* On the narrowest phones the live stamp takes two lines; Closed and Error have the status alone, kept on the lower. */
-@media (max-width: 359px) {
-  .page:is([data-state="closed"], [data-state="error"]) .stamp { min-height: 44px; justify-content: flex-end; }
-}
 @media (max-width: 1023px) {
-  /* The facts keep the live facts' height (the count's line, the gap, the percentage's line), whatever they hold: a
-   * shorter answer leaves the room, a longer one (Error's retry) hangs into the space below. */
-  .page:is([data-state="closed"], [data-state="unavailable"], [data-state="error"]) .facts {
-    margin-block-start: var(--gap-answer);
-    height: calc(1.4 * var(--fs-count) + 4px + 1.5 * var(--fs-small));
-  }
-  .page:is([data-state="closed"], [data-state="unavailable"], [data-state="error"]) .stamp { margin-block-start: calc(var(--gap-word) + var(--mark-h) + var(--gap-mark) - var(--gap-answer)); }
+  /* The facts keep the live facts' height (the count's line, the gap, the percentage's line) in every state, whatever
+   * they hold: a shorter answer leaves the room, a longer one (Error's retry, Delayed's count line where it wraps on
+   * the narrowest phones) hangs into the space below. */
+  .facts { height: calc(1.4 * var(--fs-count) + 4px + 1.5 * var(--fs-small)); }
 }
 
 /* Motion (public.js, "Motion"; ?demo= plays each event). Every state above is a still and stays one: motion only moves
