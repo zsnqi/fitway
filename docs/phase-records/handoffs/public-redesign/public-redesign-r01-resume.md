@@ -94,7 +94,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The phone Packed pick, 1, 2 or 3 (item 20; step 1). No app was named (item 10).
+Whether a fixer folds the phone word at 40 px into the page (item 20; step 1). No app was named (item 10).
 
 ## Known risks
 

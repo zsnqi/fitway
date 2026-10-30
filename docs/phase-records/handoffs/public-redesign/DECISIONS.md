@@ -217,3 +217,6 @@ the public page are numbered here.
       line), 2 two lines at 57 px, 3 one line at 40 px (the phrase about 70 % of the 350 px column, twice the
       count's 20 px; the user's sketch was about 32 px). Image
       `D:/fitway-temp/public-redesign-r01-packed-16/compare-packed.png`, sent 2026-10-30.
+    - **The user picked 3** («3 وهات الان شكل جميع الحالات حقه»): the four levels at 40 px on the phone, rendered the
+      same way, `D:/fitway-temp/public-redesign-r01-packed-16/compare-all.png`, sent 2026-10-30. The page still sets
+      57 px; folding 40 px in (and its rule at other phone widths) waits for the user's word.
