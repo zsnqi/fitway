@@ -267,6 +267,8 @@ a { color: inherit; text-decoration: none; }
   /* The count's line is the facts' only line in flow, so its baseline is the one that meets the word's. */
   .facts { grid-column: 2; grid-row: 2; align-self: last baseline; position: relative; margin-block-start: 0; }
   .facts .pct { position: absolute; inset-block-start: 100%; inset-inline-start: 0; margin-block-start: 4px; white-space: nowrap; }
+  /* The count column (count and percentage) rises by what is missing for the percentage to stand 16 px above the mark: 21.5 px less the estimate of the word's room below its baseline (0.613 em), plus the count's (0.328 em) and the percentage's (1.5 em); the fit's rounding errors are added so the gap is never under 16 px. */
+  .facts { translate: 0 calc(-1 * max(0px, 21.5px - 0.613 * var(--word-fs) + 0.328 * var(--fs-count) + 1.5 * var(--fs-small))); }
   .mark { grid-column: 1 / -1; }
   .stamp { grid-column: 1 / -1; grid-row: 5; }
   .page[data-mark="4"] .mark span { margin-block-start: 10px; }
