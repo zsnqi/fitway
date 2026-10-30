@@ -61,7 +61,9 @@ a { color: inherit; text-decoration: none; }
   --word: clamp(var(--word-min), min(calc((100vw - 2 * var(--pad)) / 3.36), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 142px) / 2.67)), 158px);
   /* The mark stands clear of the deepest descender, «م»'s tail (0.27 em below the line box), by 0.16 em. */
   --size: 1; /* the level's word scaled: ?size=75 and ?size=67 set 0.75 and 0.67; only the word and its gap to the mark use it */
-  --gap-word: calc(var(--word) * var(--size) * 0.43);
+  --wbase: var(--word); /* the size the word is scaled from; p1 with a size switch changes it below, the count's size does not follow */
+  --word-fs: calc(var(--wbase) * var(--size)); /* the word's own size */
+  --gap-word: calc(var(--word-fs) * 0.43);
   --gap-mark: 34px;
   --fs-count: clamp(20px, calc(var(--word) * 0.16), 34px);
   --fs-small: clamp(14px, calc(0.19vw + 13.26px), 16px); /* the open line, the stamp, the language button */
@@ -145,11 +147,11 @@ a { color: inherit; text-decoration: none; }
   /* Never longer than about four ems, so «شديد الازدحام» takes two lines at every size and nothing else moves;
    * the one-word levels, the widest about 3.3 em, keep one line. */
   max-inline-size: 4.2em;
-  font-size: calc(var(--word) * var(--size)); /* --word itself stays whole: the count's size is computed from it */
+  font-size: var(--word-fs); /* --word itself stays whole: the count's size is computed from it */
   font-weight: 600;
   line-height: 1.12;
   letter-spacing: 0;
-  margin-inline-start: calc(var(--word) * var(--size) * -0.04); /* optical: the first letter's side bearing */
+  margin-inline-start: calc(var(--word-fs) * -0.04); /* optical: the first letter's side bearing */
 }
 
 /* The four-level mark: four parts in reading order, the lower levels deep red, the current one FITWAY's hottest
@@ -287,10 +289,24 @@ a { color: inherit; text-decoration: none; }
     --word: clamp(var(--word-min), min(calc((min(100vw, 1600px) - 2 * var(--pad) - var(--col-gap)) / var(--word-div)), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 44px) / var(--word-lines))), 220px);
   }
   .page.p1 .word { max-inline-size: none; white-space: nowrap; }
+  /* p1 with a size switch: the word is the factor times the word WITHOUT p1 (the formula of the 1024 px step, its own
+   * divisor 5.6 and line count 2.67), but never wider than the room p1's own count column leaves: the phrase (6.131 em
+   * at the scaled size) and the count's line (12.3 of its own size) share the column's width with the column gap
+   * between them. The count's size still comes from p1's own word. */
+  .page.p1.size75, .page.p1.size67 {
+    --wbase: clamp(var(--word-min), min(calc((100vw - 2 * var(--pad) - var(--col-gap)) / 5.6), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 44px) / 2.67), calc((min(100vw, 1600px) - 2 * var(--pad) - var(--col-gap) - 12.3 * var(--fs-count)) / (6.131 * var(--size)))), 220px);
+  }
 }
 
 /* p3: short screens keep the stamp. Both word formulas and --below lower their floors; nothing else changes. */
 .page.p3 { --below: clamp(16px, 22dvh, 240px); --word-min: 40px; }
+
+/* p1m: below 1024 px, «شديد الازدحام» on one line, at the largest size the column holds (the phrase is 6.131 em wide);
+ * only the Packed word shrinks, the other levels keep their size, and the mark's line stays where it is. */
+@media (max-width: 1023px) {
+  .page.p1m[data-level="4"] { --word-fs: min(calc(var(--wbase) * var(--size)), calc((100vw - 2 * var(--pad)) / 6.131)); }
+  .page.p1m[data-level="4"] .word { max-inline-size: none; white-space: nowrap; }
+}
 
 /* size: the level's word at 75 % or 67 % of its size, and its gap to the mark with it; nothing else changes. */
 .page.size75 { --size: 0.75; }
