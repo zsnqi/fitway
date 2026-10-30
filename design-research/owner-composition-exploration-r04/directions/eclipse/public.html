@@ -6,31 +6,12 @@
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#070707">
   <title>FITWAY</title>
-  <meta name="description" content="FITWAY public crowd page concept, public-redesign-r01 direction 4. Exploration concept with synthetic data. Not production.">
-  <script>
-    // Before first paint: ?lang=ar|en (default ar). Demo hooks only, never controls on the page: ?pct=off takes the
-    // percentage away, to show the page reads whole without it; ?level=0..3 shows another fixture reading (checks of
-    // the four words only); ?motion=off plays no intro; ?hold=<ms> holds the intro at that moment (captures only).
-    (function () {
-      var p = new URLSearchParams(location.search), r = document.documentElement;
-      var en = p.get("lang") === "en";
-      r.lang = en ? "en" : "ar";
-      r.dir = en ? "ltr" : "rtl";
-      if (p.get("pct") === "off") r.dataset.pct = "off";
-    })();
-  </script>
-  <link rel="stylesheet" href="fonts/readex-pro.css">
+  <meta name="description" content="FITWAY public crowd page, the draft from direction B (public-redesign-r01). Concept only, synthetic data, a still. Not production.">
   <link rel="stylesheet" href="public.css">
-  <script>
-    window.publicFonts = Promise.all(["400", "500"].map(function (weight) {
-      return document.fonts.load(weight + ' 16px "Readex Pro"', "العربية FITWAY 0123456789")
-        .catch(function () { /* Failed faces keep the existing fallback. */ });
-    }));
-  </script>
-  <script src="public.js" defer blocking="render"></script>
 </head>
 <body>
-  <div class="page">
+  <div class="page" data-level="3" data-mark="1">
+    <div class="light" aria-hidden="true"></div>
     <header class="top">
       <span class="brand" lang="en">
         <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -41,10 +22,24 @@
         </svg>
         <span class="wordmark">FITWAY</span>
       </span>
-      <a class="lang" id="lang" href="?lang=en"></a>
+      <a class="lang" href="#" lang="en">English</a>
     </header>
-    <!-- Drawn by public.js from the fixtures: the dial, the band of readouts, the usual day. -->
-    <main class="cluster" id="cluster"></main>
+
+    <main class="sign">
+      <h1 class="word" data-probe="word"><span class="sr-only">الازدحام الآن: </span><span data-k="word">مزدحم</span></h1>
+      <div class="mark" role="img" aria-label="مستوى الازدحام: مزدحم" data-k="mark" data-probe="mark">
+        <i aria-hidden="true"><span>هادئ</span></i><i aria-hidden="true"><span>متوسط</span></i><i aria-hidden="true"><span>مزدحم</span></i><i aria-hidden="true"><span>شديد الازدحام</span></i>
+      </div>
+      <p class="facts" data-probe="facts">
+        <span class="count-line"><bdi class="num count" data-k="count">70</bdi> داخل الصالة الآن · تقريبًا</span>
+        <span class="open">مفتوح حتى <bdi class="num">1:00</bdi> ص</span>
+      </p>
+      <footer class="stamp" data-probe="stamp">
+        <span class="fresh"><i class="dot" aria-hidden="true"></i><span>مباشر · آخر قراءة <bdi class="num">7:41</bdi> م</span></span>
+        <span class="pct">نسبة الامتلاء <bdi class="num" data-k="pct">58%</bdi></span>
+      </footer>
+    </main>
   </div>
+  <script src="public.js"></script>
 </body>
 </html>

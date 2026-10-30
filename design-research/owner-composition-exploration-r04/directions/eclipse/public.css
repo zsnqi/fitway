@@ -1,184 +1,92 @@
-/* FITWAY public crowd page, public-redesign-r01 direction 4: the gym's instrument cluster. Concept only, synthetic data.
- * Self-contained: it loads no Owner sheet. The identity is FITWAY's (dark ground, FITWAY red, the light, Readex Pro at
- * 400 and 500).
- *
- * Two instruments on the page's own dark field, no cards: the dial (a tachometer: four arcs in reading order, the needle
- * in the level's arc, the lit sweep glowing behind it, the level word on its dark face) and the usual day (one red line
- * over fine graduations). Between them one band of three readouts. Three text sizes: display (the word), body, small.
- * One tonal ramp: obsidian, oxblood, a deep red, FITWAY red, and #FF2946 only at the hottest point (the current arc,
- * now on the day). Chalk is the needle and the day's now-mark, nothing else on the instruments. */
+/* FITWAY public crowd page, the draft from direction B (public-redesign-r01). Concept only, synthetic data, a still
+ * (Arabic, live; ?level= and ?mark= in public.js).
+ * B drawn in full: the level's word, large and at one weight for every level, stands on the four-level mark; under
+ * them the count and, quieter, that the gym is open; the stamp at the foot; the red light in the top corner. The mark
+ * derives from the level only (data-level 1-4) and the word is always written. The mark's line is the page's ground:
+ * it keeps its place at every level, and the two-line Packed grows upward from it.
+ * One stylesheet for the phone and the computer: sizes are custom properties, set again from 900 px. */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
 
 :root {
   --page: #070707;
   --ink: #f5f3f2;
   --ink-2: #c9c3c4;
-  --ink-3: #aaa4a6;
-  --red: #e51935;
+  --ink-3: #a29c9e;
   --red-hi: #ff2946;
-  --red-deep: #a3112a;
-  --oxblood: #4d0713;
+  --deep: #a3112a;
+  --graphite: rgb(255 255 255 / 0.1);
   --live: #4be29b;
-  --line: rgba(255, 255, 255, 0.075);
-  --line-2: rgba(255, 255, 255, 0.1);
-  --line-3: rgba(255, 255, 255, 0.24);
+  --line: rgb(255 255 255 / 0.12);
   --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
-
-  /* The phone first. --R is the dial's radius to the outer end of its graduations. */
-  --gut: 16px;
-  --R: min(178px, calc((100vw - 34px) / 2));
-  --display: 64px;
-  --display-lh: 72px;
-  --display-long: 44px;
-  --display-long-lh: 52px;
-  --body: 16px;
-  --body-lh: 24px;
-  --small: 13px;
-  --small-lh: 20px;
-  --plot: 196px;
-  --face-gap: 10px;
-  --line-w: 2px;
 }
 
-@media (min-width: 1024px) {
-  :root {
-    --gut: 48px;
-    --R: min(340px, 24vw, calc((100dvh - 160px) / 1.8));
-    --display: 112px;
-    --display-lh: 120px;
-    --display-long: 76px;
-    --display-long-lh: 88px;
-    --body: 18px;
-    --body-lh: 28px;
-    --small: 14px;
-    --small-lh: 20px;
-    --line-w: 2.5px;
-    --face-gap: 18px;
-  }
-}
-
-/* ------------------------------------------------------------------ base and browser surfaces */
 *, *::before, *::after { box-sizing: border-box; }
-html {
-  background: var(--page);
-  color-scheme: dark;
-  scrollbar-color: rgba(245, 243, 242, 0.2) var(--page);
-  -webkit-text-size-adjust: 100%;
-}
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--page);
   color: var(--ink);
   font-family: var(--font);
-  font-size: var(--body);
-  line-height: var(--body-lh);
-  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
   -webkit-font-smoothing: antialiased;
-  -webkit-tap-highlight-color: transparent;
 }
-::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
-h1, h2, p, dl, dd, table { margin: 0; }
+::selection { background: rgb(229 25 53 / 0.55); color: #fff; }
+h1, p { margin: 0; }
 a { color: inherit; text-decoration: none; }
 .num { font-variant-numeric: tabular-nums; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
-/* ------------------------------------------------------------------ the page */
+/* The phone: one column 20 px from each edge. */
 .page {
+  --pad: 20px;
+  --top-h: 64px;
+  /* One size for every level, the largest at which «متوسط», the widest one-line word, fills the column. */
+  --word: clamp(64px, min(calc((100vw - 2 * var(--pad)) / 3.36), 16dvh), 160px);
+  --mark-h: 18px;
+  --mark-gap: 6px;
+  --rule: 5px;
+  --block: 16px;
+  /* The mark stands clear of the deepest descender, «م»'s tail (0.27 em below the line box), by 0.16 em. */
+  --gap-word: calc(var(--word) * 0.43);
+  --gap-mark: 34px;
+  --below: clamp(48px, 22dvh, 220px);
+  --fs-count: 20px;
+  --fs-open: 15px;
+  --fs-stamp: 13px;
+  --fs-scale: 12.5px;
+  --ux: 1px;
+  --uy: 1px;
   position: relative;
   min-height: 100dvh;
-  overflow: clip; /* the corona's outer glow ends at the page's edges and never makes it scroll */
+  overflow: clip;
   display: grid;
   grid-template-rows: auto 1fr;
-  padding: 0 var(--gut) 24px;
-}
-
-/* The header: the brand on the start edge, the language on the end edge. */
-.top {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 56px;
-}
-.brand { display: inline-flex; align-items: center; gap: 10px; }
-.brand svg { width: 28px; height: 28px; flex: none; }
-.brand .mk { fill: none; stroke: var(--ink); stroke-linecap: butt; }
-.brand .mk-dot { fill: var(--ink); }
-.wordmark { font-size: var(--small); line-height: var(--small-lh); font-weight: 500; letter-spacing: 0.12em; }
-.lang {
-  display: inline-grid;
-  place-items: center;
-  min-width: 44px;
-  height: 40px;
-  padding-inline: 14px;
-  border-radius: 12px;
-  border: 1px solid var(--line-2);
-  color: var(--ink-2);
-  font-size: var(--small);
-  line-height: var(--small-lh);
-  font-weight: 500;
-  white-space: nowrap;
-}
-@media (hover: hover) { .lang:hover { border-color: var(--line-3); color: var(--ink); } }
-
-/* ------------------------------------------------------------------ the cluster */
-.cluster {
-  display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "dial" "band" "day";
-  align-content: start;
-  padding-block-start: 12px;
-}
-@media (min-width: 1024px) {
-  .top { min-height: 80px; }
-  .cluster {
-    grid-template-columns: calc(2 * var(--R)) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-areas: "dial band" "dial day";
-    column-gap: clamp(48px, 5vw, 80px);
-    align-self: center;
-    padding-block: 8px 32px;
-  }
+  padding: env(safe-area-inset-top) max(var(--pad), env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
 }
 
-/* ------------------------------------------------------------------ the dial */
-.dial {
-  grid-area: dial;
-  position: relative;
-  justify-self: center;
-  width: calc(2 * var(--R));
-  /* The ring's top (graduations) is the box's top; the end ticks reach 1.707 R; the end words start under them. */
-  height: calc(1.73 * var(--R) + var(--small-lh) + 2px);
-}
-.dial svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-
-/* The corona: a red light behind the lit sweep, the dark face in front of it (the eclipse). Its angles come from the
- * level only (public.js sets --c-from and --c-to, clockwise from the top, as a conic gradient counts). */
-.corona {
+/* The light, B's: an arc from the top inline-start corner, a dark disc in front so it reads as a rim. */
+.light {
+  --at: 100% 0%;
+  --disc-at: calc(100% - 320 * var(--ux)) calc(430 * var(--uy));
+  --ramp: rgb(255 41 70 / 0.62) 0%, rgb(229 25 53 / 0.45) 10%, rgb(77 7 19 / 0.85) 30%, rgb(77 7 19 / 0.45) 58%, rgb(8 9 10 / 0) 100%;
+  --glow: radial-gradient(ellipse calc(760 * var(--ux)) calc(420 * var(--uy)) at var(--at), var(--ramp));
+  --disc: radial-gradient(ellipse calc(560 * var(--ux)) calc(360 * var(--uy)) at var(--disc-at), transparent 0, transparent 70%, rgb(0 0 0 / 0.5) 86%, #000 100%);
   position: absolute;
-  left: calc(50% - 1.42 * var(--R));
-  top: calc(var(--R) - 1.42 * var(--R));
-  width: calc(2.84 * var(--R));
-  height: calc(2.84 * var(--R));
+  inset: 0 0 auto 0;
+  height: calc(560 * var(--uy));
   pointer-events: none;
-  background:
-    radial-gradient(circle at var(--hot-x, 50%) var(--hot-y, 50%), rgb(255 41 70 / 0.5) 0, rgb(255 41 70 / 0.18) calc(0.1 * var(--R)), rgb(255 41 70 / 0) calc(0.26 * var(--R))),
-    radial-gradient(circle closest-side,
-      rgb(8 9 10 / 0) 50%,
-      rgb(77 7 19 / 0.5) 55%,
-      rgb(229 25 53 / 0.62) 60.5%,
-      rgb(229 25 53 / 0.5) 63%,
-      rgb(150 14 34 / 0.42) 68%,
-      rgb(77 7 19 / 0.34) 78%,
-      rgb(77 7 19 / 0.12) 90%,
-      rgb(8 9 10 / 0) 100%);
-  -webkit-mask-image: conic-gradient(from var(--c-from), transparent 0deg, #000 var(--c-soft), #000 calc(var(--c-span) - var(--c-soft)), transparent var(--c-span));
-  mask-image: conic-gradient(from var(--c-from), transparent 0deg, #000 var(--c-soft), #000 calc(var(--c-span) - var(--c-soft)), transparent var(--c-span));
+  background: var(--glow);
+  -webkit-mask-image: var(--disc);
+  mask-image: var(--disc);
 }
-.corona::after {
+[dir="ltr"] .light { --at: 0% 0%; --disc-at: calc(320 * var(--ux)) calc(430 * var(--uy)); }
+.light::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -186,134 +94,153 @@ a { color: inherit; text-decoration: none; }
   background-size: 120px 120px;
   mix-blend-mode: overlay;
   opacity: 0.15;
-  -webkit-mask-image: radial-gradient(circle closest-side, transparent 52%, #000 60%, #000 72%, transparent 96%);
-  mask-image: radial-gradient(circle closest-side, transparent 52%, #000 60%, #000 72%, transparent 96%);
+  -webkit-mask-image: var(--glow);
+  mask-image: var(--glow);
 }
 
-.tick { stroke: rgba(245, 243, 242, 0.3); stroke-width: 1.25; }
-.tick.is-major { stroke: rgba(245, 243, 242, 0.62); stroke-width: 2; }
-.arc-bed { fill: none; stroke: var(--line-3); stroke-width: 1; }
-.arc.is-done { fill: var(--red-deep); }
-.arc.is-cur { fill: var(--red-hi); }
-.needle { fill: var(--ink); }
-.needle-edge { fill: none; stroke: var(--page); stroke-width: 2; stroke-linejoin: round; }
+.top, .sign { position: relative; z-index: 1; width: 100%; max-width: 1600px; margin-inline: auto; }
 
-/* The face: the word, and the count under it, on the dial's axis. */
-.face {
-  position: absolute;
-  left: 50%;
-  top: calc(1.02 * var(--R));
-  transform: translate(-50%, -50%);
-  width: calc(1.36 * var(--R));
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--top-h);
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+.lang::after { content: ""; position: absolute; inset: -3px; } /* a 46 px target around the 40 px button */
+.lang:hover { color: var(--ink); border-color: rgb(255 255 255 / 0.22); }
+
+/* The sign: free space above, the word, the mark, the facts, a measured space, the stamp. */
+.sign {
   display: grid;
-  justify-items: center;
-  text-align: center;
-  gap: var(--face-gap); /* clear of the word's descenders (ح, م) */
+  grid-template-rows: minmax(24px, 1fr) auto auto auto var(--below) auto;
 }
 .word {
-  font-size: var(--display);
-  line-height: var(--display-lh);
-  font-weight: 500;
-  color: var(--ink);
+  grid-row: 2;
+  font-size: var(--word);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: 0;
+  margin-inline-start: calc(var(--word) * -0.04); /* optical: the first letter's side bearing */
+}
+
+/* The four-level mark: four parts in reading order, the lower levels deep red, the current one FITWAY's hottest
+ * red, the higher ones graphite. Its box keeps one height in every form, so a form changes nothing else. */
+.mark {
+  grid-row: 3;
+  height: var(--mark-h);
+  margin-block-start: var(--gap-word);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--mark-gap);
+  align-items: end;
+}
+.mark i { --c: var(--graphite); display: block; position: relative; }
+.mark i:nth-child(1) { --k: 0.3333; }
+.mark i:nth-child(2) { --k: 0.5556; }
+.mark i:nth-child(3) { --k: 0.7778; }
+.mark i:nth-child(4) { --k: 1; }
+.mark span { display: none; }
+.page[data-level="2"] .mark i:nth-child(-n+1),
+.page[data-level="3"] .mark i:nth-child(-n+2),
+.page[data-level="4"] .mark i:nth-child(-n+3) { --c: var(--deep); }
+.page[data-level="1"] .mark i:nth-child(1),
+.page[data-level="2"] .mark i:nth-child(2),
+.page[data-level="3"] .mark i:nth-child(3),
+.page[data-level="4"] .mark i:nth-child(4) { --c: var(--red-hi); --now: 1; }
+
+/* 1, the bars (B's, refined): four steps across the column, rising by one even step in reading order. */
+.page[data-mark="1"] .mark i { height: calc(var(--mark-h) * var(--k)); border-radius: 2px; background: var(--c); }
+
+/* 2, the rule: the same four parts at one thin height, across the column. */
+.page[data-mark="2"] .mark { align-items: center; }
+.page[data-mark="2"] .mark i { height: var(--rule); border-radius: 1px; background: var(--c); }
+
+/* 3, the blocks: four square marks at the start of the line, the size of the bars' highest step. */
+.page[data-mark="3"] .mark { display: flex; align-items: end; gap: calc(var(--block) * 0.3); }
+.page[data-mark="3"] .mark i { flex: none; width: var(--block); height: var(--block); border-radius: 2px; background: var(--c); }
+
+/* 4, the scale: the thin rule with the four levels written under it, the current one in full ink. */
+.page[data-mark="4"] .mark { align-items: start; }
+.page[data-mark="4"] .mark i::before { content: ""; display: block; height: var(--rule); border-radius: 1px; background: var(--c); }
+.page[data-mark="4"] .mark span {
+  display: block;
+  margin-block-start: 7px;
+  font-size: var(--fs-scale);
+  line-height: 1.3;
+  font-style: normal;
+  color: var(--ink-3);
   white-space: nowrap;
 }
-/* «شديد الازدحام» takes two lines, inside the needle's reach when it stands in the last arc (its base is at 0.64 R). */
-.word.is-long { max-width: calc(1.12 * var(--R)); font-size: var(--display-long); line-height: var(--display-long-lh); white-space: normal; text-wrap: balance; }
-.count { color: var(--ink-2); white-space: nowrap; }
-.count b { font-weight: 500; color: var(--ink); }
+.page[data-level="1"][data-mark="4"] .mark i:nth-child(1) span,
+.page[data-level="2"][data-mark="4"] .mark i:nth-child(2) span,
+.page[data-level="3"][data-mark="4"] .mark i:nth-child(3) span,
+.page[data-level="4"][data-mark="4"] .mark i:nth-child(4) span { color: var(--ink); font-weight: 500; }
 
-/* The two end words under the ring's ends, centred on them (public.js places them). */
-.end {
-  position: absolute;
-  bottom: 0;
-  transform: translateX(-50%);
-  font-size: var(--small);
-  line-height: var(--small-lh);
-  color: var(--ink-2);
-  white-space: nowrap;
-}
-
-/* ------------------------------------------------------------------ the band of readouts */
-.band {
-  grid-area: band;
+.facts {
+  grid-row: 4;
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  margin-block-start: 24px;
-  border-block: 1px solid var(--line);
-  padding-block: 12px;
+  gap: 4px;
+  margin-block-start: var(--gap-mark);
 }
-.ro {
-  display: grid;
-  justify-items: center;
-  text-align: center;
-  padding-inline: 8px;
-}
-.ro + .ro { border-inline-start: 1px solid var(--line); }
-.ro dd { order: -1; font-weight: 500; color: var(--ink); white-space: nowrap; }
-.ro dt { font-size: var(--small); line-height: var(--small-lh); color: var(--ink-3); white-space: nowrap; }
-.live { display: inline-flex; align-items: center; gap: 8px; }
-.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
-[data-pct="off"] .ro-pct { display: none; }
+.count-line { font-size: var(--fs-count); line-height: 1.4; color: var(--ink-2); }
+.count { color: var(--ink); font-weight: 500; }
+.open { font-size: var(--fs-open); line-height: 1.5; color: var(--ink-3); }
 
-@media (min-width: 1024px) {
-  .band { margin-block-start: 0; padding-block: 16px; align-self: start; }
-  .ro { justify-items: start; text-align: start; padding-inline: 24px; }
-  .ro:first-child { padding-inline-start: 0; }
-}
-
-/* ------------------------------------------------------------------ the usual day */
-.day {
-  grid-area: day;
-  display: grid;
-  grid-template-rows: auto minmax(var(--plot), 1fr) auto;
-  margin-block-start: 28px;
-}
-@media (min-width: 1024px) { .day { margin-block-start: 40px; } }
-.day h2 { font-size: var(--body); line-height: var(--body-lh); font-weight: 500; }
-.plot { position: relative; margin-block-start: 12px; min-height: var(--plot); }
-.plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.u-base { stroke: var(--line-3); stroke-width: 1; }
-.u-hour { stroke: rgba(245, 243, 242, 0.3); stroke-width: 1; }
-.u-hatch { fill: url(#u-hatch); }
-.u-line { fill: none; stroke: var(--red-hi); stroke-width: var(--line-w); stroke-linecap: round; stroke-linejoin: round; }
-.u-now-l { stroke: var(--ink); stroke-width: 1.5; }
-.u-dot { fill: var(--red-hi); stroke: var(--ink); stroke-width: 2; }
-.u-pk { fill: var(--page); stroke: var(--ink-2); stroke-width: 1.6; }
-.tag {
-  position: absolute;
-  transform: translate(-50%, -100%);
-  font-size: var(--small);
-  line-height: var(--small-lh);
-  color: var(--ink-2);
-  white-space: nowrap;
-}
-.axis {
-  position: relative;
-  height: var(--small-lh);
-  margin-block-start: 8px;
-  font-size: var(--small);
-  line-height: var(--small-lh);
+.stamp {
+  grid-row: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-stamp);
+  line-height: 20px;
   color: var(--ink-3);
 }
-.axis span { position: absolute; top: 0; white-space: nowrap; }
-.axis .a-start { inset-inline-start: 0; }
-.axis .a-end { inset-inline-end: 0; }
-.axis .a-now { transform: translateX(-50%); color: var(--ink); font-weight: 500; }
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); } /* two items: the dot, the text */
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
+.pct bdi { color: var(--ink-2); }
 
-/* ------------------------------------------------------------------ the intro (public.js): its holds only */
-.roll { display: inline-block; }
-.roll > span { display: inline-block; }
-
-/* ------------------------------------------------------------------ forced colours */
-@media (forced-colors: active) {
-  .corona { display: none; }
-  .tick, .tick.is-major, .arc-bed { stroke: CanvasText; }
-  .arc { forced-color-adjust: none; fill: CanvasText; }
-  .needle { fill: Highlight; }
-  .live i { forced-color-adjust: none; background: CanvasText; }
-  .u-line, .u-base, .u-hour, .u-now-l { stroke: CanvasText; }
-  .u-hatch { fill: none; }
-  .u-dot { fill: CanvasText; stroke: Canvas; }
-  .u-pk { stroke: CanvasText; fill: Canvas; }
+/* The computer: the same column grown into the screen. The word keeps one line at every level, the mark runs the
+ * width of the page as its horizon, and the light grows wider than it grows tall. */
+@media (min-width: 900px) {
+  .page {
+    --pad: clamp(40px, 4.5vw, 80px);
+    --top-h: 96px;
+    --word: clamp(120px, min(12.6vw, 21dvh), 200px);
+    --mark-h: 24px;
+    --mark-gap: 10px;
+    --rule: 7px;
+    --block: 22px;
+    --gap-mark: 44px;
+    --below: clamp(56px, 18dvh, 220px);
+    --fs-count: 26px;
+    --fs-open: 18px;
+    --fs-stamp: 15px;
+    --fs-scale: 15px;
+    --ux: 2.1px;
+    --uy: 1.15px;
+    padding-block-end: max(32px, env(safe-area-inset-bottom));
+  }
+  .brand { gap: 12px; }
+  .brand svg { width: 32px; height: 32px; }
+  .wordmark { font-size: 14px; }
+  .lang { height: 44px; padding-inline: 18px; font-size: 15px; }
+  .page[data-mark="4"] .mark span { margin-block-start: 10px; }
 }
