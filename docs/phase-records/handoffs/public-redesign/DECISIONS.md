@@ -235,3 +235,10 @@ the public page are numbered here.
     - The phone: `(100vw - 2 x pad) / 6.131 x 0.7` at every level (about 40 px at 390). The computer: `--size`
       `0.67 x 90 / 126.974`, so 90 px at 1440 x 900 and today's formula elsewhere; Packed on one line from 1024 px.
     - A Sonnet fixer makes the edit (brief `fixer-public-sizes-15.md`, run `D:/fitway-temp/public-redesign-r01-sizes-17/`).
+    - Done in `1b2e09eb` (only `public.css`): phone 36.54 / 39.96 / 79.8 px at 360 / 390 / 768 (the brief's 74 at 768
+      was the coordinator's arithmetic; `--pad` there is 4.5vw); computer 90 px at 1440 x 900, Packed on one line
+      1024-3840, at least 161.9 px clear of the count. One check failed and was left as found: the percentage line
+      sits 11.3 px above the mark at 1024 x 768 and 6.5 px at 1280 x 720 (the count drops with the word's baseline);
+      the coordinator's crop at 1280 x 720 shows it cramped against the bars. Sheets `compare-phone.png`,
+      `compare-computer.png` and the crop `D:/fitway-temp/public-redesign-r01-packed-16/frames/check-1280-crop.png`
+      sent 2026-10-30.
