@@ -7,8 +7,9 @@
  * Three sizes of type: the word, the count, and one small size for the open line, the stamp and the language button.
  * One stylesheet for the phone and the computer. Every size grows smoothly from the phone (390 px) to the computer
  * (1440 px); the steps are at 1024 px, where the count moves up beside the word, onto its baseline, and at 1152 px,
- * where «شديد الازدحام» sets on one line. The word is two thirds of the size its column would allow; on the phone it
- * is also capped so that «شديد الازدحام» fits one line, and all four levels share that size. */
+ * where the word's base size changes. The word is 0.4749 (0.67 * 90 / 126.974) of the size its column would allow, 90 px
+ * at 1440 x 900; «شديد الازدحام» sets on one line from 1024 px. On the phone the word is 0.7 of the
+ * column's width over the phrase's 6.131 em (about 40 px at 390 px), the same for all four levels. */
 
 @font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
 @font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
@@ -62,9 +63,9 @@ a { color: inherit; text-decoration: none; }
    * size (1024 px). The count's size is computed from it. */
   --word: clamp(var(--word-min), min(calc((100vw - 2 * var(--pad)) / 3.36), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 142px) / 2.67)), 158px);
   /* The mark stands clear of the deepest descender, «م»'s tail (0.27 em below the line box), by 0.16 em. */
-  --size: 0.67; /* the level's word is two thirds of --wbase; only the word and its gap to the mark use it */
+  --size: calc(0.67 * 90 / 126.974); /* the level's word is this part of --wbase (90 px at 1440 x 900); only the word and its gap to the mark use it */
   --wbase: var(--word); /* the size the word is scaled from; from 1152 px it changes below, the count's size does not follow */
-  --word-fs: calc(var(--wbase) * var(--size)); /* the word's own size; the phone caps it below */
+  --word-fs: calc(var(--wbase) * var(--size)); /* the word's own size; the phone sets its own below */
   --gap-word: calc(var(--word-fs) * 0.43);
   --gap-mark: 34px;
   --fs-count: clamp(20px, calc(var(--word) * 0.16), 34px);
@@ -146,8 +147,8 @@ a { color: inherit; text-decoration: none; }
 }
 .word {
   grid-row: 2;
-  /* Never longer than about four ems, so «شديد الازدحام» takes two lines at every size and nothing else moves;
-   * the one-word levels, the widest about 3.3 em, keep one line. */
+  /* Never longer than about four ems, so «شديد الازدحام» would take two lines; from 1024 px (and on the phone) the word
+   * stays on one line, see the blocks below. The one-word levels, the widest about 3.3 em, keep one line. */
   max-inline-size: 4.2em;
   font-size: var(--word-fs); /* --word itself stays whole: the count's size is computed from it */
   font-weight: 600;
@@ -244,8 +245,8 @@ a { color: inherit; text-decoration: none; }
  * moves up to the end edge, onto the word's last baseline, with the percentage hanging under it; the mark runs the
  * width of the page as the horizon both stand on; the stamp keeps the foot. Every element sits on one of the two
  * edges: brand, word, the Quiet bar and the live stamp on the start edge; the language button, the count, the
- * Packed bar and the percentage on the end edge. From 1024 px: at 1024 the computer's word (159 px) first reaches
- * the column's largest (158 px). */
+ * Packed bar and the percentage on the end edge. From 1024 px: at 1024 the column's size (159 px) first reaches its
+ * largest (158 px); «شديد الازدحام» sets on one line. */
 @media (min-width: 1024px) {
   .page {
     --col-gap: clamp(32px, 4vw, 80px);
@@ -269,31 +270,31 @@ a { color: inherit; text-decoration: none; }
   .mark { grid-column: 1 / -1; }
   .stamp { grid-column: 1 / -1; grid-row: 5; }
   .page[data-mark="4"] .mark span { margin-block-start: 10px; }
+  .word { max-inline-size: none; white-space: nowrap; }
 }
 
 
-/* From 1152 px wide (from 1024 to 1151 the word stays as above): «شديد الازدحام» sets on one line in the word's column.
- * The formula keeps its other terms, its floor and its clamp. Width term: the divisor is the phrase's measured width
- * (6.131 em, at weight 600) plus room for the count column, 8.1 in all (in place of 5.6), and the column's own limit
- * bounds the width (min(100vw, 1600px) in place of 100vw). Height term: one word line, the word's line (1.12 em) and
- * the mark's gap (0.43 em), 1.55 em from the word's top to the mark's (in place of 2.67). Below 1152 px the phrase
- * could not clear the count. */
+/* From 1152 px wide (from 1024 to 1151 the word's base stays as above): the column's size (--word, which the count
+ * follows) is computed for «شديد الازدحام» on one line in the word's column. The formula keeps its other terms, its
+ * floor and its clamp. Width term: the divisor is the phrase's measured width (6.131 em, at weight 600) plus room for
+ * the count column, 8.1 in all (in place of 5.6), and the column's own limit bounds the width (min(100vw, 1600px) in
+ * place of 100vw). Height term: one word line, the word's line (1.12 em) and the mark's gap (0.43 em), 1.55 em from the
+ * word's top to the mark's (in place of 2.67). */
 @media (min-width: 1152px) {
   .page {
     --word: clamp(var(--word-min), min(calc((min(100vw, 1600px) - 2 * var(--pad) - var(--col-gap)) / 8.1), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 44px) / 1.55)), 220px);
-    /* The word is two thirds of the word WITHOUT the one-line change (the formula of the 1024 px step, its own divisor
-     * 5.6 and line count 2.67), but never wider than the room the count column leaves: the phrase (6.131 em at the
+    /* The word's base is the formula of the 1024 px step (its own divisor 5.6 and line count 2.67), scaled by --size
+     * (0.67 * 90 / 126.974), but never wider than the room the count column leaves: the phrase (6.131 em at the
      * scaled size) and the count's line (12.3 of its own size) share the column's width with the column gap between
      * them. The count's size still comes from --word above. */
     --wbase: clamp(var(--word-min), min(calc((100vw - 2 * var(--pad) - var(--col-gap)) / 5.6), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 44px) / 2.67), calc((min(100vw, 1600px) - 2 * var(--pad) - var(--col-gap) - 12.3 * var(--fs-count)) / (6.131 * var(--size)))), 220px);
   }
-  .word { max-inline-size: none; white-space: nowrap; }
 }
 
-/* The phone, below 1024 px: «شديد الازدحام» on one line, at the largest size the column holds (the phrase is 6.131 em
- * wide). The cap applies to all four levels, so the four share one size at every width; the mark's line stays where
- * it is, and the gap to the mark follows the word's size. */
+/* The phone, below 1024 px: «شديد الازدحام» on one line, at 0.7 of the column (the phrase is 6.131 em wide; about 40 px
+ * at 390 px, 36.5 at 360, 74 at 768). All four levels share this size at every width; the mark's line stays where it
+ * is, and the gap to the mark follows the word's size. */
 @media (max-width: 1023px) {
-  .page { --word-fs: min(calc(var(--wbase) * var(--size)), calc((100vw - 2 * var(--pad)) / 6.131)); }
+  .page { --word-fs: calc((100vw - 2 * var(--pad)) / 6.131 * 0.7); }
   .word { max-inline-size: none; white-space: nowrap; }
 }
