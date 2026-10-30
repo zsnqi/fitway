@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (two smaller sizes of the
-  level's word wait for the user's pick)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-17; 17 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user chose the word a
+  third smaller and Packed on one line; two gaps wait for the user's answer)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-18; 18 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -46,7 +46,8 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **The word's size** (item 17; `?size=75|67`, `1709f75e`; `compare-phone.png` and `compare-computer.png` in
+1. **The two gaps of item 18** (the computer's word 104 px, not 127; the phone's Packed still two lines), asked
+   2026-10-30; then a fixer makes the chosen switches the page's default. The word's size (item 17; `?size=75|67`, `1709f75e`; `compare-phone.png` and `compare-computer.png` in
    `D:/fitway-temp/public-redesign-r01-size-13/`, sent 2026-10-30): word 104/78/70 px on the phone, 190/142/127 on the
    computer; the mark's line does not move; on the computer the count drops up to 38 px with the word's baseline. Then the others' views the user brings back (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
    settle switch 1, then make the accepted switches the page's default (one fixer or builder edit). The switches as
@@ -90,7 +91,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The word's size and the others' views on switch 1 (step 1). No app was named (item 10).
+The answer on item 18's two gaps (step 1). No app was named (item 10).
 
 ## Known risks
 
