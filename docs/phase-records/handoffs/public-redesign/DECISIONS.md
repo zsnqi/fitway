@@ -275,3 +275,18 @@ the public page are numbered here.
       figures), against §6's zero shift. These go to round 3's polish unless the user decides otherwise.
     - Round 2: brief `designer-public-motion-17.md`, run `D:/fitway-temp/public-redesign-r01-motion-19/`; the
       designer chooses the motion, given limits only (item 24).
+26. **Round 2, motion, reviewed by the coordinator; round 3, English and a last polish, starts** (the coordinator,
+    2026-10-30, under item 24).
+    - `923684e6`, `7aca3e07`: six motions, played by `?demo=`. The green dot beats every 3.2 s in live only (the
+      page's one loop, 0 paints in 6.4 s); a new reading swaps only the changed values (120 ms out, 300 ms in, the
+      direction of the change); a level change swaps the word and steps the light along the bars; the first reading
+      raises the bars from the loading line in reading order; a state change is one 260 ms crossfade; the button's
+      feedback 150 ms. Not animated: the red light, the brand, any entrance on the plain page, counting through
+      numbers, the skeleton, Delayed. Under reduced motion and at rest, 18 of 18 frames identical to before; no
+      motion adds a layout shift; nothing that signals live runs outside live (probed every 10 ms, with a planted
+      control). Videos and strips in `D:/fitway-temp/public-redesign-r01-motion-19/`.
+    - The coordinator read the level and arrival strips as restrained and true, and moves on. The designer's
+      findings (a swap leaves its place empty for about a frame; the crossfade doubles reflowing text for about
+      100 ms; proportional figures move the count's label) go to the user with round 3.
+    - Round 3: brief `designer-public-english-18.md`, run `D:/fitway-temp/public-redesign-r01-english-20/`; then the
+      `rtl-ltr-reviewer` on both languages (CLAUDE.md: after a round that changes copy in both languages).
