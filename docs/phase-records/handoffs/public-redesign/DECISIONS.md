@@ -116,3 +116,12 @@ the public page are numbered here.
     - **No app named:** the user found none whose feel a visitor should get («ما حصلت تطبيق»); no reference set is
       gathered. The brief names the turned-down directions and sketches so they are not returned to.
     - **Next:** the user picks one direction (or none, or parts of two); it becomes the full draft of item 5's stage one.
+11. **Three more directions from sketch 1, each going further from it** (the user, 2026-10-30, on the sheet of A the
+    ember, B the ink and C the dated sign (`6a148a6d`): «احس كلها متشابه ومب مشكلة لكن خل يسوي توجهات اكثر»; then, to the
+    coordinator's restatement and questions, «اي ب الضبط», «أ» to "still from sketch 1, each going further from it, so
+    they differ from one another", «ثلاثة زيادة اي»).
+    - **A, B and C stay** as options beside the three new ones (the user's «زيادة»; not asked separately).
+    - **A fresh designer**, so the first one's reasoning does not pull the new ones toward A, B and C. Its brief carries
+      only what the user turned down and that A, B and C read alike; it says nothing of what the user liked (item 10).
+    - **The longest word:** at sketch 1's 118 px «الازدحام» alone is wider than the column; A, B and C set Packed at
+      100 px. Given to the designer as a fact.

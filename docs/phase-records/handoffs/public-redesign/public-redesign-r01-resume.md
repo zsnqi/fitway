@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user kept sketch 1;
-  a designer draws three directions from it)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-10; 10 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user found A, B and C
+  alike; a fresh designer draws three more from sketch 1)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-11; 11 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,12 +20,23 @@
 
 ## Running now
 
-An `owner-direction-designer` (Opus, xhigh) on brief
-`docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-6.md`, in the rounds worktree, run folder
-`D:/fitway-temp/public-redesign-r01-sketches-6/` (started 2026-10-30 by the coordinator session; if no report came back,
-check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `5c82d414`, pushed, carries the rules
-through `d0606df6`. The LAN entry `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse
-folder: `public.html` is direction 4, `public-sketch-1.html` to `-4.html` the sketches.
+A fresh `owner-direction-designer` (Opus, xhigh) on brief
+`docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-7.md`, in the rounds worktree, run folder
+`D:/fitway-temp/public-redesign-r01-sketches-7/` (started 2026-10-30 by the coordinator session; if no report came back,
+check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `6a148a6d`, pushed. The LAN entry
+`public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is direction 4,
+`public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` the three directions from
+sketch 1 (`?level=packed` shows «شديد الازدحام»).
+
+- **Three directions from sketch 1; the user found them alike and asked for three more** (items 10, 11; brief
+  `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-6.md`; `6a148a6d`; sheet and frames in
+  `D:/fitway-temp/public-redesign-r01-sketches-6/`, sent to the user): A the ember (the corner light's strength is the
+  level); B the ink (the word's weight is the level, the four bars as thick as its strokes); C the dated sign (the
+  level over the last reading's time, the stamp gone). The designer's findings: at sketch 1's 118 px «الازدحام» alone
+  is wider than the column, so Packed is set at 100 px in all three; A's growing light may read as sketch 2's
+  measuring light, and its wordmark on the Packed light is about 3.4:1; B and C keep a corner light with no job and an
+  empty band; B's empty Packed bar is the heaviest shape on its line; C's large time may be taken for the phone's
+  clock; A and B's stamp leaves a wide gap before «م».
 
 - **The rules follow items 3, 4, 8 and 9** (measured on the coordinator line, `f5336d95` to `d0606df6`): bans lifted
   by deletion; identity only dark, FITWAY red, the light, Readex Pro; content the level, the approximate count, open or
@@ -53,9 +64,8 @@ folder: `public.html` is direction 4, `public-sketch-1.html` to `-4.html` the sk
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **Inspect the three directions from sketch 1** (item 10; `public-sketch-6a.html` to `-6c.html`, the sheet in
-   the run folder), send the sheet and the LAN links, and ask which
-   becomes the full draft (or parts of two, or none).
+1. **Inspect the three new directions** (item 11; `public-sketch-7a.html` to `-7c.html`, the sheet in the run folder),
+   send the sheet and the LAN links, and ask which of the six becomes the full draft (or parts of two, or none).
 2. **The picked direction as a full draft** (item 5's stage one): Arabic, live, phone and computer, one designer; the
    other stages after the user accepts it.
 3. After the pick is accepted: every state and size, English, `PUBLIC-SPEC.md` and §6, the verifier, the user's
@@ -63,7 +73,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The pick among the directions, once they are shown (step 1). No app was named (item 10).
+Nothing until the new directions are shown; then the pick (step 1). No app was named (item 10).
 
 ## Known risks
 
