@@ -164,3 +164,15 @@ the public page are numbered here.
     - **Proposals, not applied:** the designer lists its further proposals, each in a line or two with its reason; the
       user chooses which go into a later round. Same limit: no new idea, nothing to impress.
     - **Every state and English** wait until the user says the look is settled.
+15. **The second round is liked; three of its proposals are drawn as switches, at the least cost, for images only**
+    (the user, 2026-10-30, on `25e06452` and the six proposals: each change «ممتاز», «كويس», «تمام», «حلو»; to 2 and 3
+    «بس ابي اشوف ب اقل تكلفة هل يمدي»; to 1 «ابي اشوف الفرق»; to 4 «اتفق معك»; to 5 «ما يحتاج نركز على قارئ
+    الشاشة»; then, to the coordinator's plan, «جيب لي صور بس ما يحتاج افتح الموقع»).
+    - **Drawn:** proposal 1 (Packed on one line on the computer), 2 (the percentage and the open line swap places),
+      3 (short screens keep the stamp), each behind its own URL switch (`?p1`, `?p2`, `?p3`), the page without them
+      unchanged.
+    - **At the least cost:** `owner-direction-fixer` (Sonnet) on a frozen target, the coordinator reviewing its frames
+      before the user sees them; a weak result goes back to a designer.
+    - **Not drawn:** 4 (tall tablets), 5 (the level heard twice by a screen reader; the user does not want the focus
+      on screen readers; DESIGN_GUIDE §5 stays as it is). 6 (English and the other states) is the stage after the look.
+    - **The user sees images, not the site:** before-and-after sheets.
