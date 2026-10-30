@@ -249,3 +249,15 @@ the public page are numbered here.
       16 px; the word, the mark and every size where the gap is already 16 px or more stay as they are. The same
       Sonnet fixer as item 22, resumed with the frozen target.
     - The polish stage and whether it carries motion wait for the user's answer to the coordinator's proposal.
+    - Done in `e1080740` (only `public.css`): one `translate` on `.facts` from 1024 px, a linear fit with about 1.4 px
+      of margin because Chrome rounds line metrics; the gap is at least 16.38 px over 2,178 viewports (1280 x 720 was
+      6.53, now 18.09); 1440 x 900, 1920 x 1080 and the phone unchanged to the pixel. The column rises up to about
+      3 px more than needed, in 55 viewports where the gap was already over 16.
+24. **The polish stage: three designer rounds, run by the coordinator while the user is away** (the user, 2026-10-30,
+    «موافق» to the coordinator's plan, then «خلاص انا الحين بتابع مسلسل و انت خلص الصقل للصفحة»).
+    - Round 1, the other states: Loading, Delayed, Unavailable, Closed and Error (§6's table; the coordinator named
+      three, §6 adds Unavailable and Error). Round 2, motion with Impeccable, the designer choosing the motion
+      within limits only. Round 3, English and a last polish.
+    - The coordinator reviews each round on its frames and moves to the next. The user's authorization to proceed
+      is not visual acceptance (AGENTS.md): the user inspects the frames on return and accepts or turns down each
+      round. New lines of copy outside the glossary go to the user then.

@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the phone's word shrinks so Packed
   fits one line; a fixer makes the accepted switches the page)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-23; 23 last), and the founding
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-24; 24 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,7 +20,7 @@
 
 ## Running now
 
-Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `1b2e09eb`, pushed. The LAN entry
+Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `e1080740`, pushed. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
@@ -94,7 +94,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The polish stage: its scope and whether it carries motion (item 23); the 16 px fix runs (same fixer as item 22). No app was named (item 10).
+Nothing during the polish stage; on return the user inspects each round's frames (item 24). No app was named (item 10).
 
 ## Known risks
 
