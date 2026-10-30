@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the phone's word shrinks so Packed
   fits one line; a fixer makes the accepted switches the page)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-21; 21 last), and the founding
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-22; 22 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -94,7 +94,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The computer word size, 127, 90 or 50 px (item 21; step 1); then one fixer folds both sizes in. No app was named (item 10).
+Nothing until the size fixer's images (item 22; brief `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-sizes-15.md`; step 1). No app was named (item 10).
 
 ## Known risks
 

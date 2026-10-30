@@ -229,3 +229,9 @@ the public page are numbered here.
       phone's ratio). `D:/fitway-temp/public-redesign-r01-packed-16/compare-pc.png`, sent 2026-10-30. At 50 px the
       count drops with the word's baseline and its percentage line meets the mark (607-631 against the mark at 626);
       at 90 px it clears by 20 px. Whichever is picked, a fixer folds the phone and computer sizes in together.
+22. **The computer's word at 90 px; both sizes go into the page** (the user, 2026-10-30, «اتفق معك اي» to the
+    coordinator's view that 90 px suits the computer: 50 px is lost on a large screen, 127 px stays heavy beside the
+    phone, at 90 px the word still leads and the count clears the mark).
+    - The phone: `(100vw - 2 x pad) / 6.131 x 0.7` at every level (about 40 px at 390). The computer: `--size`
+      `0.67 x 90 / 126.974`, so 90 px at 1440 x 900 and today's formula elsewhere; Packed on one line from 1024 px.
+    - A Sonnet fixer makes the edit (brief `fixer-public-sizes-15.md`, run `D:/fitway-temp/public-redesign-r01-sizes-17/`).
