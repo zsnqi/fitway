@@ -50,7 +50,6 @@ a { color: inherit; text-decoration: none; }
   --mark-h: 18px;
   --mark-gap: 6px;
   --rule: 5px;
-  --block: 16px;
   /* The mark stands clear of the deepest descender, «م»'s tail (0.27 em below the line box), by 0.16 em. */
   --gap-word: calc(var(--word) * 0.43);
   --gap-mark: 34px;
@@ -173,8 +172,8 @@ a { color: inherit; text-decoration: none; }
 .page[data-mark="2"] .mark i { height: var(--rule); border-radius: 1px; background: var(--c); }
 
 /* 3, the blocks: four square marks at the start of the line, the size of the bars' highest step. */
-.page[data-mark="3"] .mark { display: flex; align-items: end; gap: calc(var(--block) * 0.3); }
-.page[data-mark="3"] .mark i { flex: none; width: var(--block); height: var(--block); border-radius: 2px; background: var(--c); }
+.page[data-mark="3"] .mark { display: flex; gap: calc(var(--mark-h) * 0.3); }
+.page[data-mark="3"] .mark i { flex: none; width: var(--mark-h); height: var(--mark-h); border-radius: 2px; background: var(--c); }
 
 /* 4, the scale: the thin rule with the four levels written under it, the current one in full ink. */
 .page[data-mark="4"] .mark { align-items: start; }
@@ -223,11 +222,11 @@ a { color: inherit; text-decoration: none; }
   .page {
     --pad: clamp(40px, 4.5vw, 80px);
     --top-h: 96px;
-    --word: clamp(120px, min(12.6vw, 21dvh), 200px);
+    /* «شديد الازدحام» at 0.885 vw of ink against a 0.91 vw column: one line at every level. */
+    --word: clamp(120px, min(14.6vw, 24dvh), 220px);
     --mark-h: 24px;
     --mark-gap: 10px;
     --rule: 7px;
-    --block: 22px;
     --gap-mark: 44px;
     --below: clamp(56px, 18dvh, 220px);
     --fs-count: 26px;
