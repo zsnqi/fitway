@@ -4,9 +4,10 @@
  * them the count and, quieter, that the gym is open; the stamp at the foot; the red light in the top corner. The mark
  * derives from the level only (data-level 1-4) and the word is always written. The mark's line is the page's ground:
  * it keeps its place at every level, and the two-line Packed grows upward from it.
- * Three sizes of type: the word, the count, and one small size for the open line and the stamp.
- * One stylesheet for the phone and the computer: sizes are custom properties, set again from 900 px, where the count
- * moves up beside the word, onto its baseline. */
+ * Three sizes of type: the word, the count, and one small size for the open line, the stamp and the language button.
+ * One stylesheet for the phone and the computer. Every size grows smoothly from the phone (390 px) to the computer
+ * (1440 px); the one step is at 1024 px, where the count moves up beside the word, onto its baseline. The step sits
+ * where the computer's word first reaches the column's largest, so a widening window never shrinks the word. */
 
 @font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
 @font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
@@ -43,31 +44,36 @@ a { color: inherit; text-decoration: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
-/* The phone: one column 20 px from each edge. */
+/* The column, from the phone to 1023 px. Each size below is the phone's at 390 px and the computer's at 1440 px, and
+ * moves in a straight line between them. */
 .page {
-  --pad: 20px;
-  --top-h: 64px;
-  /* One size for every level, the largest at which «متوسط», the widest one-line word, fills the column. */
-  --word: clamp(64px, min(calc((100vw - 2 * var(--pad)) / 3.36), 16dvh), 160px);
-  --mark-h: 18px;
-  --mark-gap: 6px;
+  --pad: clamp(20px, 4.5vw, 80px);
+  --pad-end: clamp(22px, calc(0.952vw + 18.29px), 32px);
+  --top-h: clamp(64px, calc(3.2vw + 50px), 96px);
+  --mark-h: clamp(18px, calc(0.7vw + 14px), 24px);
+  --mark-gap: clamp(6px, 0.7vw, 10px);
   --rule: 5px;
+  --below: clamp(48px, 22dvh, 240px);
+  /* One size for every level, the largest at which «متوسط», the widest one-line word, fills the column, and the
+   * two-line Packed with the mark, the facts and the stamp fits the screen (the column's 142 px: the free row's least,
+   * the gap to the facts, the facts at their tallest, the stamp). Never above the computer's first size (1024 px). */
+  --word: clamp(64px, min(calc((100vw - 2 * var(--pad)) / 3.36), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 142px) / 2.67)), 158px);
   /* The mark stands clear of the deepest descender, «م»'s tail (0.27 em below the line box), by 0.16 em. */
   --gap-word: calc(var(--word) * 0.43);
   --gap-mark: 34px;
-  --below: clamp(48px, 22dvh, 220px);
-  --fs-count: 20px;
-  --fs-small: 14px; /* the open line and the stamp: one quiet size */
+  --fs-count: clamp(20px, calc(var(--word) * 0.16), 34px);
+  --fs-small: clamp(14px, calc(0.19vw + 13.26px), 16px); /* the open line, the stamp, the language button */
   --fs-scale: 12.5px;
-  --ux: 1px;
-  --uy: 1px;
+  /* The light's unit, wider than it grows tall. */
+  --ux: clamp(1px, calc(0.10476vw + 0.5914px), 2.1px);
+  --uy: clamp(1px, calc(0.014286vw + 0.94429px), 1.15px);
   position: relative;
   min-height: 100dvh;
   overflow: clip;
   display: grid;
   grid-template-rows: auto 1fr;
   grid-template-columns: minmax(0, 1fr);
-  padding: env(safe-area-inset-top) max(var(--pad), env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
+  padding: env(safe-area-inset-top) max(var(--pad), env(safe-area-inset-right)) max(var(--pad-end), env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
 }
 
 /* The light, B's: an arc from the top inline-start corner, a dark disc in front so it reads as a rim. */
@@ -106,24 +112,25 @@ a { color: inherit; text-decoration: none; }
   justify-content: space-between;
   height: var(--top-h);
 }
-.brand { display: inline-flex; align-items: center; gap: 10px; }
-.brand svg { width: 28px; height: 28px; }
+/* The brand is a logo, at its own tracked size; the language button takes the small size of the page's text. */
+.brand { display: inline-flex; align-items: center; gap: clamp(10px, calc(0.19vw + 9.26px), 12px); }
+.brand svg { width: clamp(28px, calc(0.381vw + 26.51px), 32px); height: clamp(28px, calc(0.381vw + 26.51px), 32px); }
 .brand .mk { fill: none; stroke: var(--ink); }
 .brand .mk-dot { fill: var(--ink); }
-.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.wordmark { font-size: clamp(13px, calc(0.095vw + 12.63px), 14px); line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
 .lang {
   position: relative;
   display: inline-grid;
   place-items: center;
-  height: 40px;
-  padding-inline: 14px;
+  height: clamp(40px, calc(0.381vw + 38.51px), 44px);
+  padding-inline: clamp(14px, calc(0.381vw + 12.51px), 18px);
   border-radius: 12px;
   border: 1px solid var(--line);
   color: var(--ink-2);
-  font-size: 13px;
+  font-size: var(--fs-small);
   font-weight: 500;
 }
-.lang::after { content: ""; position: absolute; inset: -3px; } /* a 46 px target around the 40 px button */
+.lang::after { content: ""; position: absolute; inset: -3px; } /* a target 6 px larger than the button */
 .lang:hover { color: var(--ink); border-color: rgb(255 255 255 / 0.22); }
 
 /* The sign: free space above, the word, the mark, the facts, a measured space, the stamp. */
@@ -211,43 +218,38 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap; /* on the narrowest phones the percentage takes a second line; a time never parts from its ص/م */
+  flex-wrap: wrap; /* a time never parts from its ص/م; each item keeps whole */
   gap: 4px 12px;
   font-size: var(--fs-small);
   line-height: 20px;
   color: var(--ink-3);
 }
-.stamp > span { white-space: nowrap; }
+.stamp > p { white-space: nowrap; }
 .fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); } /* two items: the dot, the text */
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
 .pct bdi { color: var(--ink-2); }
+/* On the narrowest phones the percentage takes a second line at every level: the two items need about 281 px, and a
+ * row that wrapped at some levels and not others would move the mark's line between them. */
+@media (max-width: 359px) {
+  .stamp { flex-direction: column; align-items: flex-start; }
+}
 
 /* The computer: the column grows into the screen and opens into two. The word keeps the start edge; the count
  * moves up to the end edge, onto the word's last baseline, with the open line hanging under it; the mark runs the
  * width of the page as the horizon both stand on; the stamp keeps the foot. Every element sits on one of the two
  * edges: brand, word, the Quiet bar and the live stamp on the start edge; the language button, the count, the
- * Packed bar and the percentage on the end edge. The light grows wider than it grows tall. */
-@media (min-width: 900px) {
+ * Packed bar and the percentage on the end edge. From 1024 px: at 1024 the computer's word (159 px) first reaches
+ * the column's largest (158 px). */
+@media (min-width: 1024px) {
   .page {
-    --pad: clamp(40px, 4.5vw, 80px);
-    --top-h: 96px;
-    /* The horizon at about seven tenths of the screen: the field under it is about two thirds of the dark above a
-     * one-word level, and the two-line Packed (2.67 em from its top to the mark) still fits under the header. */
-    --below: clamp(56px, 22dvh, 240px);
     --col-gap: clamp(32px, 4vw, 80px);
     /* One size for every level, the largest that fits both ways: across, «متوسط» (3.31 em), the gap and the count's
-     * line (about 1.9 em of the word) with room to spare, 5.6 em in all; down, that fit of Packed, where 200 px is
-     * the header, the free row's least, the mark, the stamp and the padding. */
-    --word: clamp(120px, min(calc((100vw - 2 * var(--pad) - var(--col-gap)) / 5.6), calc((100dvh - var(--below) - 200px) / 2.67)), 220px);
-    --mark-h: 24px;
-    --mark-gap: 10px;
+     * line (about 1.9 em of the word) with room to spare, 5.6 em in all; down, the two-line Packed (2.67 em from its
+     * top to the mark) under the header, with the mark, the stamp and the padding (44 px: the free row's least and the
+     * stamp). The horizon sits at about seven tenths of the screen. */
+    --word: clamp(120px, min(calc((100vw - 2 * var(--pad) - var(--col-gap)) / 5.6), calc((100dvh - var(--below) - var(--top-h) - var(--mark-h) - var(--pad-end) - 44px) / 2.67)), 220px);
     --rule: 7px;
-    --fs-count: clamp(24px, calc(var(--word) * 0.16), 34px);
-    --fs-small: 16px;
     --fs-scale: 15px;
-    --ux: 2.1px;
-    --uy: 1.15px;
-    padding-block-end: max(32px, env(safe-area-inset-bottom));
   }
   .sign {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -260,9 +262,5 @@ a { color: inherit; text-decoration: none; }
   .open { position: absolute; inset-block-start: 100%; inset-inline-start: 0; margin-block-start: 4px; white-space: nowrap; }
   .mark { grid-column: 1 / -1; }
   .stamp { grid-column: 1 / -1; grid-row: 5; }
-  .brand { gap: 12px; }
-  .brand svg { width: 32px; height: 32px; }
-  .wordmark { font-size: 14px; }
-  .lang { height: 44px; padding-inline: 18px; font-size: 15px; }
   .page[data-mark="4"] .mark span { margin-block-start: 10px; }
 }
