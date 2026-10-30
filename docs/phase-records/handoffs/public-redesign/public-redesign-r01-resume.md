@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (B's full draft and four forms
-  of the level mark wait for the user's view)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-12; 12 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (B's draft, mark form 1, in a
+  polish round with Impeccable's commands)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-13; 13 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,7 +20,11 @@
 
 ## Running now
 
-Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `8bd73ee7`, pushed. The LAN entry
+A fresh `owner-direction-designer` (Opus, xhigh) on brief
+`docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-9.md`, in the rounds worktree, run folder
+`D:/fitway-temp/public-redesign-r01-polish-9/` (started 2026-10-30 by the coordinator session; if no report came back,
+check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `8bd73ee7`,
+pushed. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
@@ -69,7 +73,8 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **The user's view of B's draft and the pick of the mark's form** (item 12; brief
+1. **Inspect the polish round** (item 13; `sheet-before-after.png` and `sheet-levels.png` in the run folder), send the
+   sheets and the LAN links, and ask for the user's view. The draft it polishes, as shown to the user (item 12; brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-draft-8.md`; `8bd73ee7`; sheets
    `sheet-draft.png` and `sheet-marks.png` in `D:/fitway-temp/public-redesign-r01-draft-8/frames/`, sent 2026-10-30).
    The word is 600 and 104 px at every level on the phone (210 px on the computer, one line); marks: 1 B's bars
@@ -83,7 +88,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The user's view of the draft and the mark's form (step 1). No app was named (item 10).
+Nothing until the polish round is shown; then the user's view (step 1). No app was named (item 10).
 
 ## Known risks
 

@@ -142,3 +142,16 @@ the public page are numbered here.
     - **No subscription to a reference service** («اسحب على المواقع»), after the coordinator's research
       (`D:/fitway-temp/reference-services-research/REPORT.md`); the taste-skill trial is dropped too (only its global
       copy was updated, at the user's word, outside the repository).
+13. **B's draft goes to a polish round with Impeccable's commands; the mark is form 1 so far** (the user, 2026-10-30,
+    on the draft (`8bd73ee7`) and the coordinator's notes, point by point; then «اتفق مع اقتراحك» to the coordinator's
+    proposal: one designer on the draft with form 1, Impeccable's `critique`, then `layout` and `typeset`, then
+    `polish`, with no new idea and nothing to impress; Impeccable's commands «ممتازة الصراحة»).
+    - **The mark:** form 1, B's bars refined («اشوف رقم 1 احسن الى الان»); its unlit Packed bar being the tallest shape
+      is not a problem («مب مشكلة»).
+    - **Order and the open line are the designer's** («الترتيب بكيفه و ايضا كلمة مفتوح ... له الحرية ب التصميم»), told
+      that visitors already know the gym's hours, since the gym is not new («النادي مب جديد»).
+    - **The computer's empty half** above the mark with a short word: acceptable, worth a second look («يستاهل نظرة
+      ثانية»).
+    - **Quiet and Moderate sitting about 40 px above the mark** (the fixed ground line): the user did not see a problem
+      and the coordinator agreed; the fixed line stays.
+    - **Packed on the computer:** one line edge to edge (the frame shown to the user on their question).
