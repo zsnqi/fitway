@@ -29,23 +29,9 @@ pushed. The LAN entry
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
 
-- **Three directions from sketch 1; the user found them alike and asked for three more** (items 10, 11; brief
-  `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-6.md`; `6a148a6d`; sheet and frames in
-  `D:/fitway-temp/public-redesign-r01-sketches-6/`, sent to the user): A the ember (the corner light's strength is the
-  level); B the ink (the word's weight is the level, the four bars as thick as its strokes); C the dated sign (the
-  level over the last reading's time, the stamp gone). The designer's findings: at sketch 1's 118 px «الازدحام» alone
-  is wider than the column, so Packed is set at 100 px in all three; A's growing light may read as sketch 2's
-  measuring light, and its wordmark on the Packed light is about 3.4:1; B and C keep a corner light with no job and an
-  empty band; B's empty Packed bar is the heaviest shape on its line; C's large time may be taken for the phone's
-  clock; A and B's stamp leaves a wide gap before «م».
-- **Three more, D-F, turned down** (items 11, 12: each tried to impress the visitor; brief `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-7.md`;
-  `7e22756e`; sheet and frames in `D:/fitway-temp/public-redesign-r01-sketches-7/`, sent to the user): D answer first
-  (the word at the top edge to edge, no header, the brand and «English» at the foot, the light rising from the bottom);
-  E the inscription (the word's kashida is the four levels, the only light from its lit part; the word at 80 px);
-  F the lit sign (dark letter faces haloed in red, everything centred, four lamps). The designer's findings: F's
-  letter faces are about 1:1 against the wall, readable only through the halo, so a state without the light needs
-  grey faces; F's lit lamps come close to A's glowing segments; E keeps sketch 1's arrangement and each part of its
-  stroke is about 32 px; D's word sits about 6 px outside the text column.
+- **Six directions from sketch 1, A-F** (items 10-12; briefs designer-public-sketches-6 and -7 in this
+  file's briefs folder; `6a148a6d`, `7e22756e`; frames in `D:/fitway-temp/public-redesign-r01-sketches-{6,7}/`): the user
+  found A-C alike, turned D-F down for trying to impress, and picked B (the word's weight as the level, later dropped).
 
 - **The rules follow items 3, 4, 8 and 9** (measured on the coordinator line, `f5336d95` to `d0606df6`): bans lifted
   by deletion; identity only dark, FITWAY red, the light, Readex Pro; content the level, the approximate count, open or
@@ -56,18 +42,9 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
   a timetable (a mess), a status page (tidy, no character), a car's tachometer. The cause the user confirmed: each
   borrowed its idea from another world. Two reference sets found nothing close (items 7, 8;
   `D:/fitway-temp/public-r01-refs/`, `D:/fitway-temp/public-r01-taste/`).
-- **Four sketches; the user kept 1, turned down 2-4** (items 9, 10; brief
-  `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-5.md`; `e0957a19`; sheet
-  `D:/fitway-temp/public-redesign-r01-sketches-5/frames/sheet.png`, sent to the user): 1 the sign (the word as large as
-  the phone allows, a hairline of four levels); 2 the lit edge (the light climbs both sides to the level's height);
-  3 the strip (the four words in one line, the phone a window on the current one); 4 the bands (four full-width bands,
-  the current one open and lit). The coordinator's notes, told the user: 1 and 3 leave a large dark gap above and treat
-  the facts alike; 4's open band is the closest to the Owner's lit card; 2 has the most language of its own; «شديد
-  الازدحام» does not fit whole in 3 and needs two lines in 1 and 4.
-- **The designer's open findings** (its report, in the coordinator's transcript only): §5's "progression follows
-  reading direction" says nothing of vertical order (sketches 2 and 4); in sketch 2 a stale reading turns the light off,
-  so the word carries the level alone; sketch 3's cropped neighbours read as stray letters; each sketch carries the
-  language switch; verify-fitway's `run` needs a readiness signal, so each sketch sets `window.__sketch`.
+- **Four sketches; the user kept 1, turned down 2-4** (items 9, 10; `e0957a19`; sheet
+  `D:/fitway-temp/public-redesign-r01-sketches-5/frames/sheet.png`): 1 the sign, 2 the lit edge, 3 the strip, 4 the
+  bands.
 
 ## Next steps
 
