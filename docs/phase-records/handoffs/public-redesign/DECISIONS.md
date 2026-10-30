@@ -187,3 +187,10 @@ the public page are numbered here.
       switch 1; the phone at Packed and Quiet, which switch 1 does not touch).
     - **Next:** the user brings back the others' views; switch 1 is settled then, and the accepted switches become the
       page's default.
+17. **The level's word feels too large; two smaller sizes are drawn to compare** (the user, 2026-10-30, on the
+    comparison images: «احس الخط كبير ب زيادة و احس ماله داعي الحجم دا»; to the coordinator's questions: the level's
+    word only, on every size («كلها»), compare the current size with about a quarter and about a third smaller
+    («تمام»), and not drawn by the coordinator itself («لا مو انت»)).
+    - **Drawn by** `owner-direction-fixer` (Sonnet) on a frozen target: a `?size=` switch scales only the level's word
+      and its own gap; the count, the mark and the small type keep their sizes.
+    - **Shown as** comparison images (the user looks at images, item 15), with switches 2 and 3 on and switch 1 off.

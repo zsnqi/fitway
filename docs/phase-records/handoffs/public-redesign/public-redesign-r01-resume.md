@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (switches 2 and 3 accepted;
-  the user shows switch 1's images to others before settling it)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-16; 16 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user finds the level's
+  word too large; a Sonnet fixer draws two smaller sizes to compare)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-17; 17 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,7 +20,11 @@
 
 ## Running now
 
-Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `c1667d00`, pushed. The LAN entry
+An `owner-direction-fixer` (Sonnet, high) on brief
+`docs/phase-records/handoffs/public-redesign/briefs/fixer-public-size-13.md`, in the rounds worktree, run folder
+`D:/fitway-temp/public-redesign-r01-size-13/` (started 2026-10-30 by the coordinator session; if no report came back,
+check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `c1667d00`,
+pushed. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
@@ -69,7 +73,8 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **The others' views the user brings back** (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
+1. **Review the two size comparison images** (item 17; `compare-phone.png` and `compare-computer.png` in the run
+   folder), send them, and ask which size the word takes. Then the others' views the user brings back (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
    settle switch 1, then make the accepted switches the page's default (one fixer or builder edit). The switches as
    drawn (item 15; brief
    `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-variants-11.md`; `19b038d3`, `c1667d00`; sheets
@@ -111,7 +116,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The others' views on switch 1 (step 1). No app was named (item 10).
+Nothing until the size images are shown; then the word's size and the others' views on switch 1 (step 1). No app was named (item 10).
 
 ## Known risks
 
