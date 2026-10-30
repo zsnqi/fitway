@@ -242,3 +242,10 @@ the public page are numbered here.
       the coordinator's crop at 1280 x 720 shows it cramped against the bars. Sheets `compare-phone.png`,
       `compare-computer.png` and the crop `D:/fitway-temp/public-redesign-r01-packed-16/frames/check-1280-crop.png`
       sent 2026-10-30.
+23. **The percentage line keeps at least 16 px above the mark; the look is settled and a polish stage is next**
+    (the user, 2026-10-30: «تمام» to the coordinator's 16 px, then «خلاص كدا حددنا وش نبي ف نبي الحين مرحلة صقل و هل
+    بيكون فيه انميشين ؟ يخلي الصفحة حية او شي ؟»).
+    - On the computer only the count column (the count and the percentage) rises, and only where the gap is under
+      16 px; the word, the mark and every size where the gap is already 16 px or more stay as they are. The same
+      Sonnet fixer as item 22, resumed with the frozen target.
+    - The polish stage and whether it carries motion wait for the user's answer to the coordinator's proposal.
