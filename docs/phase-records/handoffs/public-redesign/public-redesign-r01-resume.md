@@ -2,7 +2,7 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user kept sketch 1;
-  a designer draws four variations of it)
+  a designer draws three directions from it)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-10; 10 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -53,17 +53,17 @@ folder: `public.html` is direction 4, `public-sketch-1.html` to `-4.html` the sk
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **Inspect the four variations of sketch 1** (item 10; `public-sketch-6a.html` to `-6d.html`, the sheet in
+1. **Inspect the three directions from sketch 1** (item 10; `public-sketch-6a.html` to `-6c.html`, the sheet in
    the run folder), send the sheet and the LAN links, and ask which
    becomes the full draft (or parts of two, or none).
-2. **The picked variation as a full draft** (item 5's stage one): Arabic, live, phone and computer, one designer; the
+2. **The picked direction as a full draft** (item 5's stage one): Arabic, live, phone and computer, one designer; the
    other stages after the user accepts it.
 3. After the pick is accepted: every state and size, English, `PUBLIC-SPEC.md` and §6, the verifier, the user's
    acceptance; the copy outside the glossary (five lines in the first round's report) goes to the user.
 
 ## Waiting on the user
 
-The pick among the variations, once they are shown (step 1). No app was named (item 10).
+The pick among the directions, once they are shown (step 1). No app was named (item 10).
 
 ## Known risks
 

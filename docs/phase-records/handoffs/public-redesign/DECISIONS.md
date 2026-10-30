@@ -100,15 +100,19 @@ the public page are numbered here.
    - **Sketches before a draft** (the coordinator's suggestion, «اتفق معك»; amends item 5's stage one): the designer
      first draws four quick phone stills, each a different idea, Arabic, live, no motion, no computer; the user picks
      one, and it becomes a full draft. The user will name apps whose feel they like later.
-10. **Sketch 1, the sign, is kept; four variations of it next** (the user, 2026-10-30, on the sheet of four
+10. **Sketch 1, the sign, is kept; three directions grown from it next** (the user, 2026-10-30, on the sheet of four
     (`e0957a19`): «الاول احسه كويس ممكن نحسنه او نسوي توجهات منه اكثر»; «الرابع سيء»; «الثالث مب مره كويس»; of
-    sketch 2, «ما عجبتني الحركة حق القياس ذي», the light climbing both edges to the level's height). Amends item 9's
-    "it becomes a full draft": the coordinator chose variations first, since the user offered both and four directions
-    were turned down before.
+    sketch 2, «ما عجبتني الحركة حق القياس ذي», the light climbing both edges to the level's height). Then, to the
+    coordinator's questions (asked after the coordinator had started a designer on four variations without asking, «بس
+    ماتبي تسألني اول شي»; stopped before it wrote anything): directions grown from it, not a direct draft («أ»); three,
+    not four. Amends item 9's "it becomes a full draft". The user confirmed the coordinator's restatement of what
+    follows («اي فهمتني»).
+    - **The designer is not steered:** the brief does not say what the user liked in sketch 1 (the user: «ما يحتاج تذكر
+      انه مرتب او شيء زي كذا عشان ما يميل للكلام»), only that it was kept; the designer sees the sketch and judges it.
+    - **The coordinator's three notes on sketch 1:** the large dark gap above the word, the user finds natural, so it
+      is not raised; the facts all at one weight, the user is unsure of, so it is not raised; «شديد الازدحام» needing
+      two lines is a real problem («صادق يب ف مشكلة ذي»), given as a fact each direction meets, with a second still at
+      that level.
     - **No app named:** the user found none whose feel a visitor should get («ما حصلت تطبيق»); no reference set is
-      gathered. The designer works from sketch 1 and its own judgment.
-    - **The variations** keep sketch 1's idea (the level's word as the sign, as large as the phone allows, with the four
-      levels shown beside it) and each answers the coordinator's notes another way: the dark gap above the word, the
-      facts all at one weight, «شديد الازدحام» on two lines. A level shown as light rising along the page's edges is
-      not used (sketch 2, turned down).
-    - **Next:** the user picks one variation (or none, or parts of two); it becomes the full draft of item 5's stage one.
+      gathered. The brief names the turned-down directions and sketches so they are not returned to.
+    - **Next:** the user picks one direction (or none, or parts of two); it becomes the full draft of item 5's stage one.

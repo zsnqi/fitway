@@ -1,5 +1,5 @@
 <!-- brief-format: v1 role: designer -->
-# Designer brief: the public crowd page, four variations of sketch 1 (public-redesign-r01)
+# Designer brief: the public crowd page, three directions from sketch 1 (public-redesign-r01)
 
 For a fresh `owner-direction-designer` (Opus, xhigh). Concept-only (ADR-010): the superseded Public Paper frames,
 the shipped page and the earlier rounds' pages are reference only, never a reason to accept or reject.
@@ -37,29 +37,27 @@ the shipped page and the earlier rounds' pages are reference only, never a reaso
 
 - `<run>` is `public-redesign-r01-sketches-6`.
 - Run `pnpm check:design-context` and `pnpm context:show --milestone public-redesign-r01` first. Impeccable is the one
-  design skill; load no other design or taste skill. Use Impeccable to find and shape the variations; a sketch skips
+  design skill; load no other design or taste skill. Use Impeccable to find and shape the directions; a sketch skips
   its build-out and finish steps. Its context, notes and any file it writes outside the pages go in
   `D:/fitway-temp/<run>/`, never in the repository. (AGENTS.md)
 
 ## The question
 
 A gym's visitors open this page on their phones to see whether the gym is busy right now. Of four quick sketches, the
-user kept sketch 1, the sign: the level's word as large as the phone allows, a hairline of the four levels under it,
-then one quiet line of facts and a stamp. In the user's words, it is good and can be improved, or grown into more
-directions. The other three were turned down: four full-width bands with the current one open («سيء»), the four words in
-one strip with the phone a window on the current one (not very good), and light climbing both edges of the page to the
-level's height (the user did not like that way of measuring). Its frame and the sheet:
-`D:/fitway-temp/public-redesign-r01-sketches-5/frames/sketch-1.png`, `sheet.png`.
+user kept sketch 1 and asked for directions grown from it. Its frame:
+`D:/fitway-temp/public-redesign-r01-sketches-5/frames/sketch-1.png`; the sheet of all four beside it, `sheet.png`.
 
-Draw four variations of sketch 1. Each keeps its idea, the word as the sign with the four levels shown beside it, and
-takes it somewhere different. What the coordinator saw in it, for you to weigh, not a list to tick:
+Draw three directions from sketch 1. Look at it and judge it yourself; where each direction takes it is yours.
 
-- A large dark gap sits above the word, the red wash alone filling the top third.
-- The count, the hours, the last update and the percentage are all at one quiet weight; nothing among them leads.
-- «شديد الازدحام», the longest level, needs two lines at this size.
+One fact each direction meets: «شديد الازدحام», the longest level, needs two lines at sketch 1's size.
 
-The page should have a language of its own, FITWAY's, for a gym's visitor. Earlier directions were turned down because
-each borrowed its idea from another world (a prayer-times board, a service status page, a car's tachometer).
+Turned down, so not to return to:
+
+- The other three sketches: four full-width bands with the current one open; the four words in one strip with the
+  phone a window on the current one; light climbing both edges of the page to the level's height.
+- Three earlier directions, each borrowing its idea from another world: a prayer-times board (the hours as rows, the
+  current hour lit), a service status page (a card of facts in rows), a car's tachometer (a dial with a needle).
+  Their frames: `D:/fitway-temp/public-redesign-r01-direction-{2,3,4}/frames-final/final-phone-first.png`.
 
 ## Limits
 
@@ -69,28 +67,28 @@ each borrowed its idea from another world (a prayer-times board, a service statu
   always visible; Western digits and a 12-hour time with «ص/م» in gym time; no personal data; synthetic data only.
 - **Content:** the crowd level, the approximate count, that the gym is open, the last update, and a percentage. The
   page reads whole if the percentage is taken away. Use sketch 1's values (مزدحم, 70, open until 1:00 ص, last reading
-  7:41 م, 58%) in all four.
-- **Each variation:** Arabic, the live state, on the phone (390 × 844), its first screen, a still; and a second still of
+  7:41 م, 58%) in all three.
+- **Each direction:** Arabic, the live state, on the phone (390 × 844), its first screen, a still; and a second still of
   the same page at «شديد الازدحام» with values that agree with it, so the longest word is seen. Finished in look, not in
   detail: spend on the idea.
 
 ## Deliverable
 
-Four pages, `public-sketch-6a.html` to `public-sketch-6d.html`, each with its own files named `public-sketch-6X.*`, under
+Three pages, `public-sketch-6a.html` to `public-sketch-6c.html`, each with its own files named `public-sketch-6X.*`, under
 `design-research/owner-composition-exploration-r04/directions/eclipse/`. A query parameter may switch a page to the
 Packed still. Leave `public.html`, `public.css`, `public.js` and the four earlier sketches as they are. You change no
 Owner page file and not the shared `style.css`. Each page sets `window.__sketch = { ready: true }` once its fonts have
-loaded, as sketch 1 does. Commit once the four are done.
+loaded, as sketch 1 does. Commit once the three are done.
 
 Render with verify-fitway's `run` (`.agents/skills/verify-fitway/SKILL.md` §"Run one check"): one script in
 `D:/fitway-temp/<run>/`, `--concept` set to this worktree's Eclipse folder and `--out` inside the run folder, opening
 each page through `url("build", ...)` with `newPage` at `phone`, Arabic. Save `D:/fitway-temp/<run>/frames/6X.png` and
-`6X-packed.png` for each, and one sheet `D:/fitway-temp/<run>/frames/sheet.png`: the four live stills side by side,
-each under a large letter A-D, and under each its Packed still, smaller; nothing else written. No capture script goes in
+`6X-packed.png` for each, and one sheet `D:/fitway-temp/<run>/frames/sheet.png`: the three live stills side by side,
+each under a large letter A-C, and under each its Packed still, smaller; nothing else written. No capture script goes in
 the repository. Look at your frames yourself.
 
 ## Report
 
-At most 30 lines: for each variation, its idea in one or two lines and what it changes from sketch 1; the frame and
-sheet paths; any rule that made a variation read wrong, named (WORKING_AGREEMENTS "Rules and findings"); the files you
+At most 30 lines: for each direction, its idea in one or two lines and what it changes from sketch 1; the frame and
+sheet paths; any rule that made a direction read wrong, named (WORKING_AGREEMENTS "Rules and findings"); the files you
 added and the commit SHA.
