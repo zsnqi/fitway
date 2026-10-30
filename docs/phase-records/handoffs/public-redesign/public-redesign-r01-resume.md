@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user picked B; a designer
-  draws its full draft and three other forms of the level mark)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-12; 12 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (B's draft, mark form 1, in a
+  polish round with Impeccable's commands)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-13; 13 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -21,11 +21,11 @@
 ## Running now
 
 A fresh `owner-direction-designer` (Opus, xhigh) on brief
-`docs/phase-records/handoffs/public-redesign/briefs/designer-public-draft-8.md`, in the rounds worktree, run folder
-`D:/fitway-temp/public-redesign-r01-draft-8/` (started 2026-10-30 by the coordinator session; if no report came back,
-check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `7e22756e`,
+`docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-9.md`, in the rounds worktree, run folder
+`D:/fitway-temp/public-redesign-r01-polish-9/` (started 2026-10-30 by the coordinator session; if no report came back,
+check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `8bd73ee7`,
 pushed. The LAN entry
-`public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is direction 4,
+`public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
 
@@ -73,15 +73,22 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **Inspect the draft of B** (item 12; `public.html`, `?mark=2..4`, `?level=packed`; the two sheets in the run folder),
-   send the sheets and the LAN links, and ask for the user's view and the pick of the mark's form.
+1. **Inspect the polish round** (item 13; `sheet-before-after.png` and `sheet-levels.png` in the run folder), send the
+   sheets and the LAN links, and ask for the user's view. The draft it polishes, as shown to the user (item 12; brief
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-draft-8.md`; `8bd73ee7`; sheets
+   `sheet-draft.png` and `sheet-marks.png` in `D:/fitway-temp/public-redesign-r01-draft-8/frames/`, sent 2026-10-30).
+   The word is 600 and 104 px at every level on the phone (210 px on the computer, one line); marks: 1 B's bars
+   refined, 2 one thin rule, 3 four small blocks, 4 the rule with the four words under it. The designer's findings: the
+   computer's left half above the full-width mark is empty; mark 3 reads small; mark 1's unlit Packed bar is the
+   tallest shape; Quiet and Moderate sit about 40 px above the mark (no descender); the deep red of the lower parts is
+   about 2.3:1, under 3:1 for a graphic alone, passing only because the word carries the level; B's gap before «م» fixed.
 2. **Rounds on the draft** until the user accepts it (item 5's stage one): Arabic, live, phone and computer.
 3. After the pick is accepted: every state and size, English, `PUBLIC-SPEC.md` and §6, the verifier, the user's
    acceptance; the copy outside the glossary (five lines in the first round's report) goes to the user.
 
 ## Waiting on the user
 
-Nothing until the draft is shown; then the user's view and the mark's form (step 1). No app was named (item 10).
+Nothing until the polish round is shown; then the user's view (step 1). No app was named (item 10).
 
 ## Known risks
 
