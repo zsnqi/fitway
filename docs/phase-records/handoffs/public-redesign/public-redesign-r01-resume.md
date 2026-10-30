@@ -53,8 +53,8 @@ folder: `public.html` is direction 4, `public-sketch-1.html` to `-4.html` the sk
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **Inspect the four variations of sketch 1** (item 10; `public-sketch-6a.html` to `-6d.html`, sheet
-   `frames/sheet.png` in the run folder), send the sheet and the LAN links, and ask which
+1. **Inspect the four variations of sketch 1** (item 10; `public-sketch-6a.html` to `-6d.html`, the sheet in
+   the run folder), send the sheet and the LAN links, and ask which
    becomes the full draft (or parts of two, or none).
 2. **The picked variation as a full draft** (item 5's stage one): Arabic, live, phone and computer, one designer; the
    other stages after the user accepts it.
