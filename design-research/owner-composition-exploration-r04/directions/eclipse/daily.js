@@ -472,7 +472,7 @@
   const frame = EclipseFrame.init({
     L, RTL, motionOn, Motion, URL_OFF,
     links: (() => { const p = new URLSearchParams({ lang: LANG }); if (URL_OFF) p.set("motion", "off"); return {
-      reports: `reports.html?${p}`, activity: `activity.html?${p}`, access: `access.html?${p}`,
+      reports: `reports.html?${p}`, activity: `activity.html?${p}`, access: `access.html?${p}`, settings: `settings.html?${p}`,
     }; })(),
     beforeRail: () => endIntro("rail"),
     status: {
