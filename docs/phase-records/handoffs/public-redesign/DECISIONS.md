@@ -261,3 +261,17 @@ the public page are numbered here.
     - The coordinator reviews each round on its frames and moves to the next. The user's authorization to proceed
       is not visual acceptance (AGENTS.md): the user inspects the frames on return and accepts or turns down each
       round. New lines of copy outside the glossary go to the user then.
+25. **Round 1, the states, reviewed by the coordinator; round 2, motion, starts** (the coordinator, 2026-10-30, under
+    item 24).
+    - `5872413c`, `e6594d81` (brief `designer-public-states-16.md`; sheets `sheet-phone.png`, `sheet-desktop.png` and
+      `notes.md` in `D:/fitway-temp/public-redesign-r01-states-18/`). Each state answers in the word's place: Delayed
+      dims the word, hatches the bars, says «حينها» and «متأخر · آخر قراءة 7:28 م · قبل 13 دقيقة»; Closed «مغلق ·
+      يفتح 6:00 ص»; Unavailable «لا عدّ حاليًا»; Error «تعذّر التحميل» with a focused «أعد المحاولة»; Loading flat
+      placeholders and a flat baseline. The live page identical to the pixel in 16 frames.
+    - The coordinator reads them as true and of one page, and moves on. For the user on return: the new copy (four
+      visible lines and four screen-reader lines, in the designer's report and `notes.md`); «غير متصل» may read as the
+      visitor's own connection; on the computer «تعذّر التحميل» and «لا عدّ حاليًا» at 90 px are loud and three
+      states lose the mark's line; Packed's count shifts 12-15 px on arrival from Loading (Readex has no tabular
+      figures), against §6's zero shift. These go to round 3's polish unless the user decides otherwise.
+    - Round 2: brief `designer-public-motion-17.md`, run `D:/fitway-temp/public-redesign-r01-motion-19/`; the
+      designer chooses the motion, given limits only (item 24).
