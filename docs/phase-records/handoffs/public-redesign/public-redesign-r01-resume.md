@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the phone's word shrinks so Packed
   fits one line; a fixer makes the accepted switches the page)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-19; 19 last), and the founding
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-22; 22 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,7 +20,7 @@
 
 ## Running now
 
-Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `980ec3fe`, pushed. The LAN entry
+Nothing (measured 2026-10-30). Public branch `public-redesign-r01` at `8ac6cad5`, pushed. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
 `public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
 to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
@@ -46,11 +46,11 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **The accepted switches become the page** (item 19; brief
-   `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-default-14.md`, run
-   `D:/fitway-temp/public-redesign-r01-default-15/`): the page as `?p1&p2&p3&size=67`, and below 1024 px every level's
-   word capped so Packed fits one line (about 57 px at 390); review its frames and send
-   `compare-phone.png`. Before it, `980ec3fe`: 127 px on one line on the computer; `?p1m` Packed alone at 57 px. The word's size (item 17; `?size=75|67`, `1709f75e`; `compare-phone.png` and `compare-computer.png` in
+1. **The user's look at the page with the switches folded in** (item 19; brief
+   `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-default-14.md`; `8ac6cad5`, pushed; image
+   `D:/fitway-temp/public-redesign-r01-default-15/compare-phone.png`, sent 2026-10-30): no switches remain but
+   `?level` and `?mark`; the computer pixel-identical to the old `?p1&p2&p3&size=67` at 1100-1920; the phone word one
+   size at every level (57.09 px at 390, 52.19 at 360, 105.86 at 768), Packed on one line, nothing clipped. Before it, `980ec3fe`: 127 px on one line on the computer; `?p1m` Packed alone at 57 px. The word's size (item 17; `?size=75|67`, `1709f75e`; `compare-phone.png` and `compare-computer.png` in
    `D:/fitway-temp/public-redesign-r01-size-13/`, sent 2026-10-30): word 104/78/70 px on the phone, 190/142/127 on the
    computer; the mark's line does not move; on the computer the count drops up to 38 px with the word's baseline. Then the others' views the user brings back (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
    settle switch 1, then make the accepted switches the page's default (one fixer or builder edit). The switches as
@@ -94,7 +94,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing until the fixer's images (step 1). No app was named (item 10).
+Nothing until the size fixer's images (item 22; brief `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-sizes-15.md`; step 1). No app was named (item 10).
 
 ## Known risks
 
