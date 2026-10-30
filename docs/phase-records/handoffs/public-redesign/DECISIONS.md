@@ -100,3 +100,15 @@ the public page are numbered here.
    - **Sketches before a draft** (the coordinator's suggestion, «اتفق معك»; amends item 5's stage one): the designer
      first draws four quick phone stills, each a different idea, Arabic, live, no motion, no computer; the user picks
      one, and it becomes a full draft. The user will name apps whose feel they like later.
+10. **Sketch 1, the sign, is kept; four variations of it next** (the user, 2026-10-30, on the sheet of four
+    (`e0957a19`): «الاول احسه كويس ممكن نحسنه او نسوي توجهات منه اكثر»; «الرابع سيء»; «الثالث مب مره كويس»; of
+    sketch 2, «ما عجبتني الحركة حق القياس ذي», the light climbing both edges to the level's height). Amends item 9's
+    "it becomes a full draft": the coordinator chose variations first, since the user offered both and four directions
+    were turned down before.
+    - **No app named:** the user found none whose feel a visitor should get («ما حصلت تطبيق»); no reference set is
+      gathered. The designer works from sketch 1 and its own judgment.
+    - **The variations** keep sketch 1's idea (the level's word as the sign, as large as the phone allows, with the four
+      levels shown beside it) and each answers the coordinator's notes another way: the dark gap above the word, the
+      facts all at one weight, «شديد الازدحام» on two lines. A level shown as light rising along the page's edges is
+      not used (sketch 2, turned down).
+    - **Next:** the user picks one variation (or none, or parts of two); it becomes the full draft of item 5's stage one.

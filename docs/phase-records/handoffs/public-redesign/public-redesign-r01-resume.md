@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 01:50 +03:00 (four
-  sketches wait for the user's pick; the user resumes in a new session the next day)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-9; 9 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-30 (the user kept sketch 1;
+  a designer draws four variations of it)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-10; 10 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,7 +20,10 @@
 
 ## Running now
 
-Nothing (measured 2026-10-30 01:50). Public branch `public-redesign-r01` at `5c82d414`, pushed, carries the rules
+An `owner-direction-designer` (Opus, xhigh) on brief
+`docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-6.md`, in the rounds worktree, run folder
+`D:/fitway-temp/public-redesign-r01-sketches-6/` (started 2026-10-30 by the coordinator session; if no report came back,
+check that folder and the branch for a commit before re-running). Public branch `public-redesign-r01` at `5c82d414`, pushed, carries the rules
 through `d0606df6`. The LAN entry `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse
 folder: `public.html` is direction 4, `public-sketch-1.html` to `-4.html` the sketches.
 
@@ -33,7 +36,7 @@ folder: `public.html` is direction 4, `public-sketch-1.html` to `-4.html` the sk
   a timetable (a mess), a status page (tidy, no character), a car's tachometer. The cause the user confirmed: each
   borrowed its idea from another world. Two reference sets found nothing close (items 7, 8;
   `D:/fitway-temp/public-r01-refs/`, `D:/fitway-temp/public-r01-taste/`).
-- **Four sketches, waiting for the pick** (item 9; brief
+- **Four sketches; the user kept 1, turned down 2-4** (items 9, 10; brief
   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketches-5.md`; `e0957a19`; sheet
   `D:/fitway-temp/public-redesign-r01-sketches-5/frames/sheet.png`, sent to the user): 1 the sign (the word as large as
   the phone allows, a hairline of four levels); 2 the lit edge (the light climbs both sides to the level's height);
@@ -50,16 +53,17 @@ folder: `public.html` is direction 4, `public-sketch-1.html` to `-4.html` the sk
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-1. **Ask the user, all at once:** which sketch becomes a full draft (or a part of one with a part of another, or none);
-   any app or site whose feel the user wants a visitor to get (the user said they would look, item 9).
-2. **The picked sketch as a full draft** (item 5's stage one): Arabic, live, phone and computer, one designer; the
+1. **Inspect the four variations of sketch 1** (item 10; `public-sketch-6a.html` to `-6d.html`, sheet
+   `D:/fitway-temp/public-redesign-r01-sketches-6/frames/sheet.png`), send the sheet and the LAN links, and ask which
+   becomes the full draft (or parts of two, or none).
+2. **The picked variation as a full draft** (item 5's stage one): Arabic, live, phone and computer, one designer; the
    other stages after the user accepts it.
 3. After the pick is accepted: every state and size, English, `PUBLIC-SPEC.md` and §6, the verifier, the user's
    acceptance; the copy outside the glossary (five lines in the first round's report) goes to the user.
 
 ## Waiting on the user
 
-The sketch pick and the apps (step 1).
+The pick among the variations, once they are shown (step 1). No app was named (item 10).
 
 ## Known risks
 
