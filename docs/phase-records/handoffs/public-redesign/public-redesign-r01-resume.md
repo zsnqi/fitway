@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 10 built and
-  reviewed; waiting on the user's reading)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-32; 32 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 10 turned
+  down; sketch 11's brief written)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-33; 33 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -48,12 +48,13 @@ agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) i
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-0. **The user reads sketch 10** (item 32, "Built" and "Left for the user"). It is built (`6fb7adf4`) and reviewed
-   by the coordinator, and the sheets in `D:/fitway-temp/public-redesign-r01-polish-24/` were sent with
-   `http://192.168.8.186:3181/public-sketch-10.html` (`?chart=lit|rim|sky`). Record the user's reading as item 33
-   and write the next brief from it.
-   - The round: the word off-white; the computer's word near 90 px; a shorter chart on the phone; three whole
-     charts with the usual Friday as a haze behind the bars; red only at "Now"; no deep red, ramp or legend.
+0. **Sketch 11, a designer at `max`** (item 33). Brief
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketch-25.md`, cherry-picked to the public
+   worktree; a fresh `owner-direction-designer` with `effort: max` writes `public-sketch-11.*` and
+   `D:/fitway-temp/public-redesign-r01-sketch-25/`. Then look at its sheets, push `public-redesign-r01`, record the
+   result under item 33, and send the user the sheets with `http://192.168.8.186:3181/public-sketch-11.html`.
+   - The round: today's day designed again, bars not required; two or three whole forms (`?chart=`); the usual day
+     drawn only where it earns its place, never as a shadow, haze or outline; red only at "Now".
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
      `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept; sketch 10 (`6fb7adf4`, run
@@ -71,7 +72,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The reading of sketch 10: which chart, and the points item 32 leaves (step 0). No app was named (item 10).
+Nothing until sketch 11 is built (step 0, item 33). No app was named (item 10).
 
 ## Known risks
 
