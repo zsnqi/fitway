@@ -31,9 +31,9 @@ describe("emptyBlocks", () => {
 		expect(result.hits.map((hit) => hit.line)).toEqual(expected ? [line] : []);
 	});
 
-	it("finds Biome's 9 empty blocks outside test files at this HEAD", () => {
+	it("finds Biome's 7 empty blocks outside test files at this HEAD", () => {
 		const files = readCodeHealthFiles().filter((file) => !file.giantOnly);
-		expect(scanScope(files).emptyBlocks?.total ?? 0).toBe(9);
+		expect(scanScope(files).emptyBlocks?.total ?? 0).toBe(7);
 	});
 
 	it("does not count an empty block in a test file", () => {

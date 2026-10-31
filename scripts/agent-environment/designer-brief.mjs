@@ -13,9 +13,6 @@ const ownerCommands = new Set(
 		.filter((command) => !command.internal)
 		.map((command) => command.name),
 );
-// The public-frames round adds these two registered evidence commands.
-ownerCommands.add("frames");
-ownerCommands.add("sheet");
 
 const FORBIDDEN_PHRASES = [
 	[/\bnode\s+scripts?\b/i, (match) => match[0]],
