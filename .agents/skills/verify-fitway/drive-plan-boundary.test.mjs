@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { contextOptions, featureUnreachable } from "./drive-plan.mjs";
+import {
+	contextOptions,
+	drivePlan,
+	featureUnreachable,
+	plannedCaptures,
+} from "./drive-plan.mjs";
+import { VIEWPORT_SIZES } from "./map.mjs";
 
 const phone = { widths: "phone" };
 const wide = { widths: "wide" };
@@ -74,4 +80,52 @@ test("a touch context is mobile only at 720 CSS pixels or less", () => {
 			false,
 		);
 	}
+});
+
+test("phone360 is a named drive size at 360 by 780 CSS pixels", () => {
+	const map = {
+		sizes: VIEWPORT_SIZES,
+		pages: [
+			{
+				page: "index.html",
+				ready: "window.__ready === true",
+				defaults: {},
+				switches: [],
+				states: [],
+				features: [
+					{
+						id: "page",
+						query: {},
+						proof: { ready: true },
+						actions: [],
+					},
+				],
+			},
+		],
+	};
+	assert.deepEqual(map.sizes.phone360, { width: 360, height: 780 });
+	assert.equal(Object.keys(map.sizes).length, 7);
+	const planned = plannedCaptures(map, {
+		page: "index.html",
+		feature: "page",
+		languages: "en",
+		sizes: "phone360",
+		inputs: "touch",
+		motions: "reduce",
+		transports: "http",
+		colors: "normal",
+		states: "default",
+	});
+	assert.equal(planned.items.length, 1);
+	assert.equal(planned.items[0].size, "phone360");
+	assert.deepEqual(
+		drivePlan(map, {
+			page: "index.html",
+			feature: "page",
+			languages: "en",
+			sizes: "phone360",
+			states: "default",
+		}).sizes,
+		["phone360"],
+	);
 });

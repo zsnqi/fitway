@@ -160,6 +160,30 @@ Every forced item records the computed body background and Canvas palette colour
 Each manifest item and FRAME line names normal or forced. Normal keeps its existing filenames;
 forced filenames add `-forced`, so mixed runs cannot overwrite frames.
 
+## Public designer frames
+
+Use `frames` when a public design brief names query combinations, languages and viewport sizes
+but has no state recipes. It waits for the page's source readiness signal and fonts, records
+the page's language, direction and pointer, and claims no state proof. A size is a mapped name
+or `<size>@<density>` with density 1-4. Without `--inputs`, phone-width frames use touch and wider
+frames use mouse. `sheet` draws each whole frame at its CSS size, using the density recorded by
+the adjacent `frames` manifest, and writes one 40 px-or-larger label above every frame.
+pnpm consumes one forwarding separator, so each `sheet` example uses `-- --` to leave the
+tool's own `--` intact.
+
+```powershell
+pnpm run-folder:new <run-name> --brief <brief-file> --for <owner>
+pnpm verify:owner frames --concept <concept-folder> --page <page> --languages en --sizes 'phone@3,phone360@3,desktop@2' --states '<chart=line&level=quiet>,<chart=dots&level=packed>' --out <run-folder>/frames
+pnpm verify:owner frames --ref <commit> --page <page> --languages en --sizes 'phone@3,phone360@3,desktop@2' --states '<chart=line&level=quiet>,<chart=dots&level=packed>' --out <run-folder>/frames
+pnpm verify:owner sheet --out <run-folder>/sheet-chart --title <sheet-title> -- -- '<phone-quiet>=<phone-quiet-png>' '<phone-packed>=<phone-packed-png>' --row '<desktop-quiet>=<desktop-quiet-png>' '<desktop-packed>=<desktop-packed-png>'
+pnpm verify:owner sheet --out <run-folder>/sheet-levels --title <sheet-title> -- -- '<phone-level-one>=<phone-level-one-png>' '<phone-level-two>=<phone-level-two-png>' --row '<desktop-level-one>=<desktop-level-one-png>' '<desktop-level-two>=<desktop-level-two-png>'
+```
+
+`frames` writes `<out>/manifest.json`, one PNG per requested combination, and a summary that
+explicitly says no state proof was claimed. It exits 0 after saving all frames, or 1 when any
+uncaught page error was recorded. `sheet` writes `<out>/sheet.png` and `<out>/manifest.json`;
+it refuses malformed, missing, empty-label and unreadable frame inputs before rendering.
+
 ## Belonging check
 
 `belonging-check` serves the declared concept ref unless `--concept` names an extracted build; `--ref <commit>`
@@ -360,6 +384,12 @@ Verifier rules (one canonical statement):
 | port pairs | `core.mjs` | `verificationPairs`, `comparisonPorts`, `reserveVerificationPorts` |
 | output folders | `core.mjs` | `freshEmptyOutput`, `finishOutputManifest` |
 | custom run | `run.mjs` | `runScript`, `newPageContextOptions`, `createRewrite` |
+| [public designer frames](#public-designer-frames) | `frame-plan.mjs` | `parseFrameSizes`, `framePlan` |
+| public frame capture | `frames-command.mjs` | `framesCommand` |
+| public sheet layout | `sheet-plan.mjs` | `parseSheetRows`, `manifestDensity`, `frameLayout` |
+| public sheet capture | `sheet-command.mjs` | `sheetCommand`, `readSheetFrames`, `planSheetFrames` |
+| drive and frames capture lifecycle | `capture-lifecycle.mjs` | `openCaptureLifecycle` |
+| SKILL guide option check | `guide-options.mjs` | `assertGuideOptions` |
 | exact image diff | `image-diff.mjs` | `diffImages` |
 | folder diff | `diff-folders.mjs` | `diffFolders` |
 | fixture copy | `fixture-copy.mjs` | `copyAllFixture`, `copyHelpFixture` |
@@ -371,6 +401,10 @@ Verifier rules (one canonical statement):
 | --- | --- |
 | size, context, or feature reach | `drive-plan-boundary.test.mjs` and `run-page-context.test.mjs` |
 | custom page action or scoped rewrite | `rewrite-page.test.mjs` and a `run` check in the run folder |
+| public frame matrix or names | `frame-plan.test.mjs` |
+| public sheet rows, density, refusals or scale | `sheet-plan.test.mjs` |
+| options this guide writes | the V5 and Y1 cases in `cli.test.mjs`, with `guide-options.mjs` |
+| command help, arguments and provenance | `tool-contract.test.ts`, `blocked-command-options.test.ts`, `skill-navigation.test.mjs` and `output-manifest.test.mjs` |
 | exact pair image diff | `diff-folders.test.mjs`, using the fake child shape from `cli.test.mjs` |
 | compare capture, verdict, or cache | `comparison-capture.test.mjs`, `compare-parallel.test.mjs`, or `invalidationCases` |
 | preview, port pair, or lease | the existing port and lifecycle cases in `cli.test.mjs` |

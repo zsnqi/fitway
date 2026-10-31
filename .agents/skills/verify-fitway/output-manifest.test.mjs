@@ -92,6 +92,35 @@ test("run output records its result and command arguments", async () => {
 	assert.equal(manifest.status, "passed");
 });
 
+test("frames output records its command, arguments and frame provenance", async () => {
+	const out = resolve(root, "frames-out");
+	const args = [
+		"frames",
+		"--concept",
+		cli.concept,
+		"--page",
+		"index.html",
+		"--languages",
+		"en",
+		"--sizes",
+		"desktop",
+		"--states",
+		"default",
+		"--transports",
+		"file",
+		"--out",
+		out,
+	];
+	const result = await cli.run(args);
+	assert.equal(result.code, 0, result.stdout + result.stderr);
+	assert.match(result.stdout, /FRAMES PASS: 1 frames; no state proof claimed/);
+	const manifest = await manifestOf(out);
+	assertProvenance(manifest, "frames", args);
+	assert.equal(manifest.page, "index.html");
+	assert.equal(manifest.items.length, 1);
+	assert.equal(manifest.items[0].density, 1);
+});
+
 test("a run that throws records exit 1 and an end time", async () => {
 	const script = resolve(root, "throws.mjs");
 	await writeFile(

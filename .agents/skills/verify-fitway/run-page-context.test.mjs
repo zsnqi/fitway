@@ -35,3 +35,27 @@ test("run.newPage uses drive's context options for every named axis", () => {
 						);
 					}
 });
+
+test("frame contexts carry density and leave ordinary contexts at density one", () => {
+	const base = {
+		input: "touch",
+		motion: "reduce",
+		color: "normal",
+		language: "en",
+	};
+	assert.equal(
+		contextOptions({
+			...sizes.phone,
+			...base,
+			dsf: 3,
+		}).dsf,
+		3,
+	);
+	assert.equal(
+		contextOptions({
+			...sizes.desktop,
+			...base,
+		}).dsf,
+		1,
+	);
+});

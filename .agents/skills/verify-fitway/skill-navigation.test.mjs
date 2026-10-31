@@ -73,6 +73,16 @@ test("SKILL location table fails when a required subject row is removed", async 
 	);
 });
 
+test("public designer section names both frame and sheet commands", async () => {
+	const markdown = await readFile(resolve(skill, "SKILL.md"), "utf8");
+	const section = markdown
+		.split(/^## Public designer frames\s*$/m)[1]
+		?.split(/^## /m)[0];
+	assert.ok(section, "Public designer frames section is missing");
+	assert.match(section, /pnpm verify:owner frames/);
+	assert.match(section, /pnpm verify:owner sheet/);
+});
+
 test("SKILL location table fails when a named export is renamed", async () => {
 	const root = await mkdtemp(resolve(tmpdir(), "verify-fitway-navigation-"));
 	try {

@@ -46,7 +46,9 @@ export const OWNER_NOTES = Object.freeze([
 	"run executes a script's default export with the command-owned preview, browser, contexts, rewrite and evidence.",
 	"diff-folders compares PNG paths with compare's exact diff and exits 0 only when every picture is equal.",
 	"Sizes: desktop=1440x900, boundary=1024x900, tablet=768x1024, phone=390x844,",
-	"       narrow=320x844, zoom=1440x900 at 200% (720x450 CSS px, phone frame).",
+	"       phone360=360x780, narrow=320x844, zoom=1440x900 at 200% (720x450 CSS px, phone frame).",
+	"frames renders recipe-free public frames and accepts <size>@<density> for density 1-4.",
+	"sheet groups labelled PNGs into rows and scales frames by their frames manifest density.",
 	"--page and --feature select one path; the remaining axes multiply its frames.",
 	"States all sweeps every discovered switch value/sample; dependencies are applied or refused.",
 	"Use --states 'state=live,state=loading,...' for only the page's data states.",
@@ -80,8 +82,62 @@ export const OWNER_NOTES = Object.freeze([
 	`  pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile`,
 ]);
 
+function publicFrameCommands({ ownerOptions, value, exits }) {
+	return [
+		{
+			name: "frames",
+			usage:
+				"pnpm verify:owner frames (--concept <folder>|--ref <commit>) --page <page> --languages <list> --sizes <list> [--states <states>] [--query <key=value&key=value>] [--inputs <list>] [--motions <list>] [--transports <list>] [--colors <list>] [--recipes <file>] [--port <port>] [--session <launch-folder>] [--out <folder>]",
+			purpose: "Capture public design frames without state proofs.",
+			options: [
+				ownerOptions.concept,
+				ownerOptions.ref,
+				ownerOptions.recipes,
+				ownerOptions.session,
+				ownerOptions.page,
+				ownerOptions.languages,
+				ownerOptions.sizes,
+				ownerOptions.states,
+				ownerOptions.query,
+				ownerOptions.inputs,
+				ownerOptions.motions,
+				ownerOptions.transports,
+				ownerOptions.port,
+				ownerOptions.colors,
+				ownerOptions.out,
+			],
+			requiredOptions: ["--page", "--languages", "--sizes"],
+			requiredOptionGroups: [["--concept", "--ref"]],
+			exitCodes: exits(
+				[0, "Frames captured."],
+				[1, "Capture failed or an uncaught page error was recorded."],
+			),
+		},
+		{
+			name: "sheet",
+			usage:
+				"pnpm verify:owner sheet --out <folder> [--title <text>] -- <label>=<png> ... [--row <label>=<png> ...]",
+			purpose: "Render labelled frame rows into one sheet.",
+			options: [
+				ownerOptions.out,
+				value("--title", "Sheet title.", {
+					sample: "Public frames",
+					freeText: true,
+				}),
+			],
+			requiredOptions: ["--out"],
+			passthrough: true,
+			exitCodes: exits(
+				[0, "Sheet rendered."],
+				[1, "Invalid frame input or render failure."],
+			),
+		},
+	];
+}
+
 export function ownerTailCommands({ ownerOptions, flag, value, exits }) {
 	return [
+		...publicFrameCommands({ ownerOptions, value, exits }),
 		{
 			name: "measure",
 			usage:
