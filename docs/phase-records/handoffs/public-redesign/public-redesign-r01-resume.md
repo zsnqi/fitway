@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 11 built
-  and reviewed; waiting on the user's reading)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-33; 33 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 11 turned
+  down; sketch 12 reframed around the trainee's features, for a new session)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-34; 34 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -48,17 +48,23 @@ agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) i
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-0. **The user reads sketch 11** (item 33, "Built" and "Left for the user"). It is built (`938087a4`) and reviewed
-   by the coordinator, and the sheets in `D:/fitway-temp/public-redesign-r01-sketch-25/` were sent with
-   `http://192.168.8.186:3181/public-sketch-11.html` (`?chart=line|dots`). Record the user's reading as item 34.
-   - The next brief renders with `pnpm verify:owner`, not hand-written scripts, once the agent-tooling round the
-     coordinator proposed on 2026-10-31 lands (the CLI lacks the 360 phone, density and named sheets; the
-     pre-commit hook does not run the gone-evidence check); the user has not yet answered whether it runs.
+0. **Sketch 12, reframed around the trainee's features** (item 34), in the new session the user opens, after the
+   agent-tooling session "Agent-tooling round: run-folder hook and public CLI" (started 2026-10-31) has ended and its
+   round is merged. In order:
+   1. Check that round: its merge commit, CI, and the `pnpm verify:owner` commands it gives for a public brief.
+   2. Look at Google Maps' Popular Times first-hand in Chrome (a gym's page: the usual day, the live hour, switching
+      days, motion). Save frames and a short write-up in a run folder made with `pnpm run-folder:new`.
+   3. Ask the user for a reason for each rejection item 34 lists without one; write any reason the user cannot give
+      as taste, not a rule.
+   4. Write the brief: the features item 34 accepts, few limits (identity, truth, privacy), the turned-down things as
+      information with their reasons, motion allowed, rendering through `pnpm verify:owner`. Then read it line by line
+      for anything that limits the designer, and ask the user about each one kept.
+   5. Launch a fresh `owner-direction-designer` at its default effort, with Impeccable.
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
      `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept; sketch 10 (`6fb7adf4`, run
      `D:/fitway-temp/public-redesign-r01-polish-24/`); sketch 11 (`938087a4`, run
-     `D:/fitway-temp/public-redesign-r01-sketch-25/`).
+     `D:/fitway-temp/public-redesign-r01-sketch-25/`), turned down (item 34).
    - In Arabic time runs right to left, as Eclipse's own day line does
      (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`).
 1. **B's round 3 is parked** (items 24-27). The narrowed direction has replaced B in practice; ask the user before
@@ -72,8 +78,8 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The reading of sketch 11: which form, and the points item 33 leaves (step 0). Whether the agent-tooling round
-for the CLI and the hook runs. No app was named (item 10).
+The reasons for the rejections item 34 lists without one (step 0.3), and the limits kept in the next brief (step
+0.4). The user opens the new session once the agent-tooling session has ended.
 
 ## Known risks
 
