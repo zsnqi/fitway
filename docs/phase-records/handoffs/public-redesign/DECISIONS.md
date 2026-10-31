@@ -294,3 +294,26 @@ the public page are numbered here.
     معك ي جلسة جديدة»). The coordinator stopped the designer mid-work and committed its edit to `public.css` and
     `public.js` as found, unverified (`adc665f6`, pushed); the designer had begun English and was rendering trial
     variants of the non-level states, with no notes written.
+28. **A round of generated images before round 3 resumes; today's curve on the page** (the user, 2026-10-31).
+    - The user brought three ChatGPT-generated mockups of another gym's page as direction, «ما نبي ننسخها طبق
+      الاصل»; agreed: the principle, not the look. Their ring is a gauge (item 9's tachometer) and their card a
+      generic dashboard, both declined. Kept as principles: one dominant element, a clear drop to the secondary facts,
+      one accent, a single calm column, a chart that lights the current hour.
+    - The round: the coordinator writes one English prompt per image (Arabic at build time; the user: start in
+      English), set A six without references, set B four with references (the current B frame and the user's
+      mockups, each with its stated role), each set in a fresh chat; B1-B3 repeat A1-A3's compositions so each pair
+      shows what references change; both orders tried, count first and word first (the user: the word need not lead).
+      The user runs them in the ChatGPT chat, which the user reports does not draw on Codex limits; the official
+      pricing page says Codex image generation counts toward Codex limits, 3-5x faster than text turns, and is silent
+      on the chat's image limits (learn.chatgpt.com/docs/pricing, read 2026-10-31). The image model is GPT Image 2.5
+      (Flare, Sunburst; API changelog, 2026-09-08); its only quality control, `quality` up to `max`, is set in the
+      API, not in the chat or in Codex's tool. The images are references; they accept and reject nothing.
+    - **Today's curve is shown** («ابي المنحنى اليومي يظهر لانه عادي»): today's crowd up to now, synthetic in the
+      concept; the usual day may continue faintly after now. Item 9's "no longer required" is replaced. Production
+      needs the SPEC amendment item 3 names, now covering today's curve as well as the usual day (the reservation in
+      `docs/spec/06-interfaces-and-contracts.md` names only a typical-day curve); open for that amendment: whether a
+      fine-grained curve at low counts reveals single arrivals, and the bucketing that prevents it.
+    - The coordinator had called the curve and the best time not allowed, from the resume's content line, without
+      reading item 3; the resume's line now names them.
+    - Research `D:/fitway-temp/public-redesign-r01-imagegen-research/REPORT.md`; prompts
+      `briefs/imagegen-public-prompts-21.md`; run folder `D:/fitway-temp/public-redesign-r01-imagegen-21/`.

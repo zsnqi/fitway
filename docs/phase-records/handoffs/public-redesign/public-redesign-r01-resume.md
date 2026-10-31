@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (the polish stage's round 3 stopped
-  by the user to continue in a new session)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-27; 27 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (a round of generated
+  images opened before round 3 resumes)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-28; 28 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -32,7 +32,8 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 - **The rules follow items 3, 4, 8 and 9** (measured on the coordinator line, `f5336d95` to `d0606df6`): bans lifted
   by deletion; identity only dark, FITWAY red, the light, Readex Pro; content the level, the approximate count, open or
-  closed, the last update and a percentage; lights and numbers free to move (reduced motion, one announcement and no
+  closed, the last update, a percentage and today's curve (item 28), with a verdict sentence and the best time today
+  allowed, never required (item 3); lights and numbers free to move (reduced motion, one announcement and no
   `requestAnimationFrame` or canvas stay); post-v1 reservations in `docs/spec/06-interfaces-and-contracts.md` for the
   percentage (on by default, no warning) and the curve.
 - **Four directions turned down** (items 6, 7, 9; frames `D:/fitway-temp/public-redesign-r01-direction-{2,3,4}/`):
@@ -47,6 +48,12 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
+0. **The generated images come first** (item 28; prompts
+   `docs/phase-records/handoffs/public-redesign/briefs/imagegen-public-prompts-21.md`, references and results in
+   `D:/fitway-temp/public-redesign-r01-imagegen-21/`). The user runs sets A and B in the ChatGPT chat and brings the
+   ten images back; the coordinator reviews them against the prompts, writes edit prompts ("change only X, keep Y")
+   where the user wants one, and the user decides whether a direction from them replaces or adjusts B before round 3
+   resumes.
 1. **Round 3, English and a last polish, resumes** (items 24-27; brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
    `D:/fitway-temp/public-redesign-r01-english-20/`). `adc665f6` holds the stopped designer's unverified work (English
@@ -101,7 +108,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The user opens a new session; round 3 resumes there (step 1). No app was named (item 10).
+The ten generated images (step 0, item 28). Round 3 waits for the user's decision on them. No app was named (item 10).
 
 ## Known risks
 
