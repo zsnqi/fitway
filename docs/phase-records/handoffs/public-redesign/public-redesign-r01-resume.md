@@ -52,8 +52,11 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
    agent-tooling session "Agent-tooling round: run-folder hook and public CLI" (started 2026-10-31) has ended and its
    round is merged. In order:
    1. Check that round: its merge commit, CI, and the `pnpm verify:owner` commands it gives for a public brief.
-   2. Look at Google Maps' Popular Times first-hand in Chrome (a gym's page: the usual day, the live hour, switching
-      days, motion). Save frames and a short write-up in a run folder made with `pnpm run-folder:new`.
+   2. A Codex Sol round captures Google Maps' Popular Times on a gym's page with Playwright: frames of the usual day,
+      the live hour and switching days, a short video of the motion, and a short report, in a run folder made with
+      `pnpm run-folder:new`. It never passes a CAPTCHA or a bot wall: if one appears, the coordinator looks in the
+      user's Chrome instead. The coordinator then looks at the frames and video and writes what the page takes as a
+      principle (item 34).
    3. Ask the user for a reason for each rejection item 34 lists without one; write any reason the user cannot give
       as taste, not a rule.
    4. Write the brief: the features item 34 accepts, few limits (identity, truth, privacy), the turned-down things as
