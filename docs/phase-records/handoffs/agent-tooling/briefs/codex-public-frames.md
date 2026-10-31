@@ -108,38 +108,48 @@ large type, with `pnpm verify:owner` commands alone, and `SKILL.md` gives those 
 - **P4.** `measure --tool sheet` (ui-forensics, the user's machine-level skill, not changed here) has no caption size,
   so each round wrote its own sheet script. Outcome: `pnpm verify:owner sheet --out <folder> [--title <text>] --
   <label>=<png> ... [--row <label>=<png> ...]` writes `<folder>/sheet.png`: the frames in rows (each `--row` after
-  `--` starts a new one), each frame under its label, the label set at 40 CSS px or larger, white on a dark ground,
-  each frame drawn at its CSS width (its PNG width divided by the density the `frames` manifest in the PNG's folder
-  records for that file; a PNG no such manifest lists is drawn at its PNG width), never scaled to fit, frames in a
-  row aligned at their tops, rows one under another, the sheet itself at density 1. A label is the text before the
+  `--` starts a new one), each frame under its label, the label set at 40 CSS px or larger with no transform, zoom
+  or scaling applied to it, white on a dark ground, wholly inside the sheet, above its frame and overlapping
+  nothing; each whole frame drawn at its CSS size, width and height both divided by the density the `frames`
+  manifest in the PNG's folder records for that file (a PNG no such manifest lists is drawn at its PNG size), so its
+  proportions are kept and it is never scaled to fit or cropped; frames in a row aligned at their tops, rows one
+  under another, the sheet itself at density 1. A label is the text before the
   first `=` and the path the rest; an empty label, a missing or unreadable PNG and a token without `=` are refused
   before rendering, each named; an Arabic label is kept as written. The folder's `manifest.json` lists each frame
-  with its label, path, PNG size, density, the CSS width it was drawn at, and the label's computed font size as the
-  browser rendered it. Check: layout tests without a browser (density read from a `frames` manifest and the
-  fallback; the row split; each refusal), and the rendered values in P6. Intent: the user and the designer read
+  with its label, path, PNG size, density, the CSS width and height it was drawn at, and its label's computed font
+  size and rendered box as the browser laid them out. Check: layout tests without a browser (density read from a `frames` manifest and the
+  fallback; the row split; each refusal; a drawn height that is the PNG height divided by the density), and the
+  rendered values in P6. Intent: the user and the designer read
   every frame's name at a glance, at the size the device shows it.
 - **P5.** `SKILL.md` describes Owner verification only, so a designer brief had no commands to name. Outcome:
   `pnpm verify:owner help` and `pnpm tools` list `frames` and `sheet` with their usage, options, defaults and exit
   codes from the registry; `SKILL.md` gains a section, linked from the location map, giving a public-page designer
   the exact PowerShell commands from the checkout root: `pnpm run-folder:new` for the run folder, `frames` with
   `--concept` (the designer's working folder) and with `--ref`, for a list of query combinations at `phone@3`,
-  `phone360@3` and `desktop@2`, and `sheet` for chosen frames in rows, with where each writes. The location map
+  `phone360@3` and `desktop@2`, and `sheet` for chosen frames in rows, with where each writes, in one fenced block
+  whose only placeholders are written `<...>`. The location map
   gains the new files and the "Proving a change to this tool" table names the tests that prove each. Check:
   `skill-navigation.test.mjs` and `scripts/agent-environment/tool-contract.test.ts` pass, and a new
   `skill-navigation.test.mjs` case finds both command names in the new section. Intent: a coordinator can copy the
   commands into a designer brief and a designer can run them as written.
 - **P6.** No ladder test can run a browser (CI has neither Playwright Chromium nor ui-forensics,
   `.github/workflows/checks.yml`), so the real proof is a run, made with the commands themselves. Outcome: in
-  `D:/fitway-temp/<run>/`, using only `pnpm verify:owner` commands (no script file in the run folder), on
+  `D:/fitway-temp/<run>/`, using only the commands of P5's fenced block as written, with only their `<...>`
+  placeholders filled (no script file in the run folder), on
   `--ref 938087a4`, page `public-sketch-11.html`, language `en`: the frames `designer-public-sketch-25.md:114-121`
   lists (charts `line` and `dots` at `level=quiet` and `level=packed` on `phone@3`; each chart at `level=busy` on
   `desktop@2`; on `chart=line` the four levels on `phone@3` and `desktop@2`, and `level=busy` on `phone360@3`, with
   `pct=off` on `phone@3` and with `dir=rtl` on `phone@3`), then the sheets of `:123-127` (`compare` takes
-  `public-sketch-10.html` at `chart=lit` from the same ref). Report the commands as run, the frame count, each size's PNG size (expected 1170 x 2532, 1080 x 2340 and
-  2880 x 1800), `pnpm verify:owner diff-folders` or the manifests' pixel hashes showing `chart=line` and
-  `chart=dots` frames differ, the `dir=rtl` frame's recorded direction, and from each sheet's manifest the smallest
-  label font size and each frame's drawn width (390, 360 or 1440). Look at one sheet yourself and say what it shows.
-  Intent: the commands in `SKILL.md` produce, on the real page, what a designer brief asks for.
+  `public-sketch-10.html` at `chart=lit` from the same ref), each sheet written to a folder named `sheet-chart`,
+  `sheet-levels` or `compare`, its frames in the order those lines give. Write `D:/fitway-temp/<run>/P6.md` with:
+  the commands as run; the frame count; each size's PNG size (expected 1170 x 2532, 1080 x 2340 and 2880 x 1800);
+  that each frame's recorded URL holds its state's query; `pnpm verify:owner diff-folders` or the manifests' pixel
+  hashes showing the `chart=line` and `chart=dots` frames differ; the `dir=rtl` frame's recorded direction, which
+  must be `rtl`; and from each sheet's manifest its labels in order, the smallest label font size and label box
+  height, and each frame's drawn width and height (390 x 844, 360 x 780 or 1440 x 900). Look at each sheet yourself
+  and say what it shows. The report's P6 row names `P6.md`. Whether each state really took effect on the page is
+  judged by eye: `frames` claims no state proof (DECISIONS item 23). Intent: the commands in `SKILL.md` produce, on
+  the real page, what a designer brief asks for.
 - **K1.** Everything else stays: `drive`, `compare`, `measure` and `run` keep their options, verdicts, file names and
   caches, and every existing test passes unchanged; `pnpm test:verification`, `pnpm check:verification-map` and
   `pnpm verify:owner drift-tree` pass; `pnpm verify:fast` passes after the commit. The concept and every file under
