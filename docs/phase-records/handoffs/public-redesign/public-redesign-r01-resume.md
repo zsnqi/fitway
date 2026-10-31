@@ -49,8 +49,9 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
 0. **The narrowed direction, English, live** (items 28-31). The images are in
-   `D:/fitway-temp/public-redesign-r01-imagegen-21/`. Sketch 8 (`82f54e88`, run `...-sketch-22/`) was read by the
-   user. Sketch 9 (`ab7b7f63`, brief `briefs/designer-public-polish-23.md`, run
+   `D:/fitway-temp/public-redesign-r01-imagegen-21/`. Sketch 8 (`82f54e88`, run
+   `D:/fitway-temp/public-redesign-r01-sketch-22/`) was read by the user. Sketch 9 (`ab7b7f63`, brief
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-23.md`, run
    `D:/fitway-temp/public-redesign-r01-polish-23/`) was sent with
    `http://192.168.8.186:3181/public-sketch-9.html`. Next: the user's reading of its lifts and of the five points
    item 31 leaves. In Arabic time runs right to left, as Eclipse's
