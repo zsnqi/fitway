@@ -1,0 +1,253 @@
+/* FITWAY public crowd page, sketch 11 (public-redesign-r01): sketch 10 with today's day designed again. Concept only,
+ * synthetic data, a still: English, live. EXPLORATION BUILD (?chart=, ?place=).
+ * The identity is public.css's: its colours, its two Readex Pro faces, its corner light (--ramp, --glow) and grain, at
+ * sketch 9's reach. Red is in two places only: the light, and the mark at "Now".
+ * Everything is placed from the inline-start edge, and the day by minutes since opening, so dir="rtl" mirrors it.
+ * Nothing moves. */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #a29c9e;
+  --red-hi: #ff2946;
+  --live: #4be29b;
+  --line: rgb(255 255 255 / 0.12);
+  --chalk: 245 243 242; /* the ink as channels, for the chart's marks at their strengths */
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgb(229 25 53 / 0.55); color: #fff; }
+h1, p, figure { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* The page. Each fluid size is the phone's at 390 px and the computer's at 1440 px, in a straight line between. */
+.page {
+  --pad: clamp(20px, 4.5vw, 80px);
+  --pad-end: clamp(22px, calc(0.952vw + 18.29px), 32px);
+  --top-h: clamp(64px, calc(3.2vw + 50px), 96px);
+  --fs-count: clamp(48px, calc(0.762vw + 45.03px), 56px);
+  --fs-pct: clamp(32px, calc(0.571vw + 29.77px), 38px);
+  --fs-text: clamp(17px, calc(0.19vw + 16.26px), 19px);
+  --fs-small: clamp(14px, calc(0.19vw + 13.26px), 16px);
+  --fs-axis: clamp(13px, calc(0.095vw + 12.63px), 14px);
+  /* The corner light's unit, wider than it grows tall (public.css). */
+  --ux: clamp(1px, calc(0.10476vw + 0.5914px), 2.1px);
+  --uy: clamp(1px, calc(0.014286vw + 0.94429px), 1.15px);
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  padding: env(safe-area-inset-top) max(var(--pad), env(safe-area-inset-right)) max(var(--pad-end), env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
+}
+
+.top, .sign { position: relative; z-index: 1; width: 100%; max-width: 1600px; margin-inline: auto; }
+.top { display: flex; align-items: center; justify-content: space-between; height: var(--top-h); }
+.brand { display: inline-flex; align-items: center; gap: clamp(10px, calc(0.19vw + 9.26px), 12px); }
+.brand svg { width: clamp(28px, calc(0.381vw + 26.51px), 32px); height: clamp(28px, calc(0.381vw + 26.51px), 32px); }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: clamp(13px, calc(0.095vw + 12.63px), 14px); line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  height: clamp(40px, calc(0.381vw + 38.51px), 44px);
+  padding-inline: clamp(14px, calc(0.381vw + 12.51px), 18px);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+.lang::after { content: ""; position: absolute; inset: -3px; }
+.lang:hover { color: var(--ink); border-color: rgb(255 255 255 / 0.22); }
+
+/* The sign, in reading order: the word, the facts, the day, when it is quieter, the stamp. */
+.sign {
+  container-type: inline-size;
+  --fs-word: clamp(48px, min(100cqi / 4.6, calc(1.333vw + 70.8px)), 96px);
+  --plot-h: clamp(180px, calc(100dvh - 520px), 330px);
+  display: grid;
+  grid-template-rows: minmax(16px, 0.6fr) auto auto minmax(28px, 0.4fr) auto auto auto;
+}
+
+.word {
+  grid-row: 2;
+  font-size: var(--fs-word);
+  font-weight: 700;
+  line-height: 0.96;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+[dir="ltr"] .word { margin-inline-start: -0.06em; }
+
+.facts {
+  grid-row: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: clamp(16px, calc(1.524vw + 10.1px), 32px);
+  margin-block-start: calc(var(--fs-word) * 0.1 + 6px);
+  font-size: var(--fs-text);
+  line-height: 1.2;
+  color: var(--ink-2);
+}
+.count-line .count, .pct .num { color: var(--ink); font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
+.count-line .count { font-size: var(--fs-count); margin-inline: 0.06em; }
+.pct { padding-inline-start: clamp(16px, calc(1.524vw + 10.1px), 32px); border-inline-start: 1px solid var(--line); }
+.pct .num { font-size: var(--fs-pct); margin-inline-end: 0.08em; }
+@container (max-width: 339px) {
+  .pct { flex-basis: 100%; padding-inline-start: 0; border-inline-start: 0; margin-block-start: 6px; }
+}
+.facts[data-wrap] .pct { flex-basis: 100%; padding-inline-start: 0; border-inline-start: 0; margin-block-start: 6px; }
+
+/* The day: drawn by public-sketch-11.js into .today, by minutes since opening over the day's 1140 minutes. */
+.day {
+  grid-row: 5;
+  --span: 1140;
+  --stroke: 2.25px;
+  --now-r: 6;
+  --pt-r: 2.5;
+  --dot-r: 3.5;
+  --inset: 10;
+  display: flex;
+  flex-direction: column;
+}
+.plot { position: relative; height: var(--plot-h); }
+.plot::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: -1px; height: 1px; background: var(--line); }
+.today { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.marks { position: absolute; inset: 0; }
+
+.today .ln { fill: none; stroke: rgb(var(--chalk) / 0.92); stroke-width: var(--stroke); stroke-linejoin: round; stroke-linecap: round; }
+.today .ln-faint { stroke: rgb(var(--chalk) / 0.3); stroke-width: 1.5px; }
+.today .pt { fill: var(--ink); }
+.today .now { fill: var(--red-hi); stroke: var(--page); stroke-width: 3px; paint-order: stroke; }
+.today .now-ln { fill: none; stroke: var(--red-hi); stroke-width: calc(var(--stroke) + 0.75px); stroke-linecap: round; }
+.today .dash { fill: none; stroke: rgb(var(--chalk) / 0.92); stroke-width: var(--stroke); stroke-linecap: round; }
+.today .stem { stroke: rgb(var(--chalk) / 0.28); stroke-width: 1.5px; }
+.today .stem-now { stroke: var(--red-hi); stroke-width: 2px; }
+.today .grid { stroke: rgb(var(--chalk) / 0.1); stroke-width: 1px; }
+.today .bar { fill: rgb(var(--chalk) / 0.42); }
+.today rect.now { stroke: none; }
+.today .fill { fill: rgb(var(--chalk) / 0.07); }
+.today .tick { stroke: rgb(var(--chalk) / 0.28); stroke-width: 1px; }
+.today .nm { fill: var(--ink-2); font-size: 12px; font-weight: 500; text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
+.today .nm-now { fill: var(--red-hi); font-weight: 600; }
+.today .nowline { stroke: rgb(var(--chalk) / 0.16); stroke-width: 1px; }
+.marks .lv { position: absolute; inset-inline-end: 0; inset-block-end: calc(var(--y) + 3px); font-size: var(--fs-axis); line-height: 16px; color: var(--ink-3); white-space: nowrap; }
+
+/* The axis names an hour under its mark's middle; the first and the last stand on the column's edges. */
+.axis { position: relative; height: 34px; font-size: var(--fs-axis); line-height: 18px; color: var(--ink-3); }
+.axis .t {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-start: calc(var(--m) / var(--span) * 100%);
+  width: 0;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+}
+.axis .t-start { justify-content: flex-start; }
+.axis .t-end { justify-content: flex-end; }
+.axis .t-now { color: var(--ink); font-weight: 500; }
+.axis .t[data-yield] { visibility: hidden; }
+
+.best { grid-row: 6; margin-block-start: clamp(12px, calc(0.762vw + 9px), 20px); font-size: var(--fs-text); line-height: 1.4; color: var(--ink-2); }
+.best .num { color: var(--ink); }
+
+.stamp {
+  grid-row: 7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-block-start: clamp(18px, calc(1.143vw + 13.5px), 30px);
+  padding-block-start: clamp(14px, calc(0.381vw + 12.5px), 18px);
+  border-block-start: 1px solid var(--line);
+  font-size: var(--fs-small);
+  line-height: 20px;
+  color: var(--ink-3);
+}
+.stamp > p { white-space: nowrap; }
+.stamp .open .num { color: var(--ink-2); }
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
+@container (max-width: 339px) {
+  .stamp { flex-direction: column; align-items: flex-start; }
+  .stamp .open { padding-inline-start: 16px; }
+}
+
+/* Exploration: the day beside the word on the computer. */
+@media (min-width: 1024px) {
+  .page[data-place="beside"] .sign {
+    --plot-h: clamp(240px, calc(100dvh - 500px), 440px);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: clamp(48px, 5vw, 96px);
+    grid-template-rows: minmax(16px, 0.7fr) auto auto minmax(24px, 1fr) auto minmax(16px, 0.5fr) auto;
+  }
+  .page[data-place="beside"] .day { --stroke: 2.5px; --now-r: 7; --dot-r: 4; }
+  .page[data-place="beside"] .word { grid-area: 2 / 1; }
+  .page[data-place="beside"] .facts { grid-area: 3 / 1; }
+  .page[data-place="beside"] .best { grid-area: 5 / 1; }
+  .page[data-place="beside"] .day { grid-area: 2 / 2 / 6 / 3; align-self: end; }
+  .page[data-place="beside"] .stamp { grid-area: 7 / 1 / 8 / 3; }
+}
+
+/* The light: the page's light as public.css draws it, at sketch 9's reach (1.25 across, 1.7 down). */
+.light {
+  --lx: calc(var(--ux) * 1.25);
+  --ly: calc(var(--uy) * 1.7);
+  --at: 100% 0%;
+  --disc-at: calc(100% - 320 * var(--lx)) calc(430 * var(--ly));
+  --ramp: rgb(255 41 70 / 0.62) 0%, rgb(229 25 53 / 0.45) 10%, rgb(77 7 19 / 0.85) 30%, rgb(77 7 19 / 0.45) 58%, rgb(8 9 10 / 0) 100%;
+  --glow: radial-gradient(ellipse calc(760 * var(--lx)) calc(420 * var(--ly)) at var(--at), var(--ramp));
+  --disc: radial-gradient(ellipse calc(560 * var(--lx)) calc(360 * var(--ly)) at var(--disc-at), transparent 0, transparent 70%, rgb(0 0 0 / 0.5) 86%, #000 100%);
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(560 * var(--ly));
+  pointer-events: none;
+  background: var(--glow);
+  -webkit-mask-image: var(--disc);
+  mask-image: var(--disc);
+}
+[dir="ltr"] .light { --at: 0% 0%; --disc-at: calc(320 * var(--lx)) calc(430 * var(--ly)); }
+.light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.15;
+  -webkit-mask-image: var(--glow);
+  mask-image: var(--glow);
+}
+
+/* The mirror check (?dir=rtl): each English line keeps its own order inside the mirrored page (public-sketch-11.js). */
+.en-run { unicode-bidi: isolate; direction: ltr; }
+
+/* The owner turned the percentage off: the count stands alone on its line. */
+.page[data-pct="off"] .facts { column-gap: 0; }
