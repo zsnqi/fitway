@@ -1,10 +1,10 @@
-import { createHash } from "node:crypto";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { assertTrackedTempCitations } from "../../../scripts/verify-repository.mjs";
 import { checkoutFixture } from "./checkout-test-fixture.mjs";
 import { TEMP_PROVENANCE_CUTOFF } from "./run-folder-provenance.mjs";
+import { writeProvenance } from "./run-folder-test-fixture.mjs";
 
 const lostEvidencePath = "docs/agent-context/LOST_TEMP_EVIDENCE.tsv";
 
@@ -390,18 +390,7 @@ describe("tracked temp citation audit", () => {
 				}),
 			).rejects.toThrow(/made-by-hand/);
 
-			const brief = "brief\n";
-			writeFileSync(path.join(folder, "BRIEF.md"), brief);
-			writeFileSync(
-				path.join(folder, "manifest.json"),
-				JSON.stringify({
-					version: 1,
-					for: "fixture",
-					briefSha256: createHash("sha256").update(brief).digest("hex"),
-					commit: f.git(["rev-parse", "HEAD"]).trim(),
-					report,
-				}),
-			);
+			writeProvenance(folder, "manifest", f.git(["rev-parse", "HEAD"]));
 			const accepted = await assertTrackedTempCitations({
 				checkout: f.checkout,
 				tempRoot: f.tempRoot,
@@ -414,12 +403,16 @@ describe("tracked temp citation audit", () => {
 		}
 	});
 
-	it("names the run-folder command in a changed gone-citation failure", async () => {
+	it.each([
+		["a file in the run folder", "new-run/REPORT.md"],
+		["the run folder itself", "new-run"],
+		["the run folder with a trailing slash", "new-run/"],
+	])("names the run-folder command in a changed gone-citation failure of %s", async (_name, cited) => {
 		const f = checkoutFixture("gardener-cited-evidence-");
 		try {
 			writeFileSync(path.join(f.checkout, "record.txt"), "No evidence yet.\n");
 			f.commit();
-			const missing = path.join(f.tempRoot, "new-run", "REPORT.md");
+			const missing = path.join(f.tempRoot, cited);
 			writeFileSync(
 				path.join(f.checkout, "record.txt"),
 				`Evidence: \`${missing.replaceAll("\\", "/")}\`\n`,
@@ -431,7 +424,7 @@ describe("tracked temp citation audit", () => {
 					trackedFiles: ["PROJECT_STATE.yaml", "record.txt"],
 				}),
 			).rejects.toThrow(
-				"pnpm run-folder:new new-run --brief <file> --for <who>",
+				"Run folder not made yet? pnpm run-folder:new new-run --brief <file> --for <who>",
 			);
 		} finally {
 			f.dispose();

@@ -1,5 +1,4 @@
 import { spawnSync } from "node:child_process";
-import { createHash } from "node:crypto";
 import {
 	copyFileSync,
 	mkdirSync,
@@ -22,6 +21,7 @@ import {
 	TEMP_PROVENANCE_CUTOFF,
 	TEMP_PROVENANCE_CUTOFF_ISO,
 } from "./run-folder-provenance.mjs";
+import { sha256, writeProvenance } from "./run-folder-test-fixture.mjs";
 
 const repository = fileURLToPath(new URL("../../../", import.meta.url));
 const actualCheck = path.join(
@@ -43,10 +43,6 @@ function statByPath(times: Map<string, Date>) {
 		birthtime: times.get(path.resolve(file)) ?? preCutoff,
 		isDirectory: () => statSync(file).isDirectory(),
 	});
-}
-
-function sha256(bytes: string | Buffer) {
-	return createHash("sha256").update(bytes).digest("hex");
 }
 
 function stageRecord(f: ReturnType<typeof checkoutFixture>, line: string) {
@@ -116,50 +112,6 @@ function evidenceFolder(f: ReturnType<typeof checkoutFixture>, name: string) {
 	mkdirSync(folder, { recursive: true });
 	writeFileSync(path.join(folder, "REPORT.md"), "report\n");
 	return folder;
-}
-
-function writeProvenance(
-	folder: string,
-	kind: "manifest" | "review" | "run",
-	commit = "",
-) {
-	const brief = "brief\n";
-	const hash = sha256(brief);
-	const report = path.join(folder, "REPORT.md");
-	if (kind === "manifest") {
-		const heldCommit = commit.trim();
-		writeFileSync(path.join(folder, "BRIEF.md"), brief);
-		writeFileSync(
-			path.join(folder, "manifest.json"),
-			JSON.stringify({
-				version: 1,
-				for: "fixture",
-				briefSha256: hash,
-				commit: heldCommit,
-				report,
-			}),
-		);
-	}
-	if (kind === "run") {
-		const heldCommit = commit.trim();
-		writeFileSync(
-			path.join(folder, "run.json"),
-			JSON.stringify({
-				version: 1,
-				briefSha256: hash,
-				head: heldCommit,
-				report,
-			}),
-		);
-	}
-	if (kind === "review") {
-		writeFileSync(path.join(folder, "brief.md"), brief);
-		writeFileSync(
-			path.join(folder, "review.json"),
-			JSON.stringify({ sha256: hash, status: "running" }),
-		);
-	}
-	return hash;
 }
 
 const citationForms: Array<[string, (root: string) => string, string]> = [
@@ -276,6 +228,30 @@ describe("staged temp-citation evidence gate", () => {
 		}
 	});
 
+	it.each([
+		["the folder itself", "new-run", true],
+		["the folder with a trailing slash", "new-run/", true],
+		["a nested file", "new-run/REPORT.md", true],
+		["a file directly in the temp root", "codex-accounts.mjs", false],
+	])("gives a gone citation of %s the run-folder command only when it can be a run folder", async (_name, cited, expectsFix) => {
+		const f = checkoutFixture("gardener-staged-evidence-");
+		try {
+			stageRecord(
+				f,
+				citationLine(`${f.tempRoot.replaceAll("\\", "/")}/${cited}`),
+			);
+			const text = (await stagedFailure(f)).failures.join("\n");
+			expect(text).toContain("record.txt:1");
+			if (expectsFix)
+				expect(text).toContain(
+					"Run folder not made yet? pnpm run-folder:new new-run --brief <file> --for <who>",
+				);
+			else expect(text).not.toContain("pnpm run-folder:new");
+		} finally {
+			f.dispose();
+		}
+	});
+
 	it("fails a moved gone citation because its destination is an added line", async () => {
 		const f = checkoutFixture("gardener-staged-evidence-");
 		try {
@@ -343,23 +319,24 @@ describe("staged temp-citation evidence gate", () => {
 		const f = checkoutFixture("gardener-staged-evidence-");
 		try {
 			stageRecord(f, citationLine(`${f.tempRoot}/gone/hooked.md`));
-			const shim = path.join(
-				f.checkout,
-				"scripts/agent-environment/check-staged-evidence.mjs",
-			);
-			mkdirSync(path.dirname(shim), { recursive: true });
-			writeFileSync(
-				shim,
-				`import { runStagedEvidenceCheck } from ${JSON.stringify(pathToFileURL(actualCheck).href)};\ntry { await runStagedEvidenceCheck(); } catch (error) { console.error(error.message); process.exitCode = 1; }\n`,
-			);
 			const config = parseYaml(
 				readFileSync(path.join(repository, "lefthook.yml"), "utf8"),
 			);
 			const job = config["pre-commit"].jobs.find(
 				(candidate: { name: string }) => candidate.name === "staged-evidence",
 			);
-			expect(job?.run).toBe(
-				"node scripts/agent-environment/check-staged-evidence.mjs",
+			expect(typeof job?.run).toBe("string");
+			// The job's own line runs in the fixture checkout; its script is replaced
+			// by a shim that imports the real check, so the line is what is tested.
+			const script = job.run
+				.split(/\s+/)
+				.find((token: string) => token.endsWith(".mjs"));
+			expect(script).toBeTruthy();
+			const shim = path.join(f.checkout, script);
+			mkdirSync(path.dirname(shim), { recursive: true });
+			writeFileSync(
+				shim,
+				`import { runStagedEvidenceCheck } from ${JSON.stringify(pathToFileURL(actualCheck).href)};\ntry { await runStagedEvidenceCheck(); } catch (error) { console.error(error.message); process.exitCode = 1; }\n`,
 			);
 			const result = spawnSync(job.run, {
 				cwd: f.checkout,
@@ -369,6 +346,9 @@ describe("staged temp-citation evidence gate", () => {
 				windowsHide: true,
 			});
 			expect(result.status).not.toBe(0);
+			expect(result.stderr).toContain(
+				"Evidenced temp citations are gone on added staged lines",
+			);
 			expect(result.stderr).toContain("record.txt:1");
 		} finally {
 			f.dispose();

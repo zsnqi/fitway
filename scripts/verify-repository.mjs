@@ -310,13 +310,13 @@ export async function verifyGardenerRecord(state, read = readBytes) {
 
 export async function assertTrackedTempCitations({
 	checkout = root,
+	stat,
 	tempRoot = "D:/fitway-temp",
 	trackedFiles,
-	...auditOptions
 } = {}) {
 	const audit = await auditTempCitations({
-		...auditOptions,
 		checkout,
+		stat,
 		tempRoot,
 		trackedFiles,
 	});

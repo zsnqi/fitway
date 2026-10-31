@@ -36,11 +36,6 @@ function provenanceAt(folder, { holdsCommit, readFile }) {
 			"manifest.json",
 			(record) => {
 				if (
-					Object.hasOwn(record, "command") ||
-					Object.hasOwn(record, "checkout")
-				)
-					return false;
-				if (
 					record.version !== 1 ||
 					typeof record.for !== "string" ||
 					!record.for.trim() ||
@@ -139,9 +134,10 @@ function runFolderNewFix(citationPath, tempRoot = "D:/fitway-temp") {
 		.split(path.sep)
 		.filter(Boolean);
 	const [name] = segments;
-	return name && segments.length > 1
-		? `pnpm run-folder:new ${name} --brief <file> --for <who>`
-		: null;
+	// A single segment is a run folder cited before it exists, unless it names a
+	// file (it has an extension) that sits straight in the temp root.
+	if (!name || (segments.length === 1 && path.extname(name))) return null;
+	return `pnpm run-folder:new ${name} --brief <file> --for <who>`;
 }
 
 export function auditRunFolderProvenance(

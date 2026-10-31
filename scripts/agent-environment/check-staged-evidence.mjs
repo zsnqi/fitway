@@ -54,7 +54,7 @@ function addedLines(root, source) {
 }
 
 function readIndexText(root, file) {
-	return readIndexFiles(root, [file], readGitResult)[0].text;
+	return readIndexFiles(root, [file])[0].text;
 }
 
 function lostEvidenceRows(root) {
@@ -109,11 +109,9 @@ export async function checkStagedEvidence({
 	);
 	let audit = null;
 	if (evidenceRecords.length) {
-		const records = readIndexFiles(
-			checkout,
-			evidenceRecords,
-			readGitResult,
-		).map(({ file, text }) => ({ source: file, text }));
+		const records = readIndexFiles(checkout, evidenceRecords).map(
+			({ file, text }) => ({ source: file, text }),
+		);
 		audit = await auditTempCitations({
 			checkout,
 			exists,
