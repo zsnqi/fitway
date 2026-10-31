@@ -1,0 +1,545 @@
+/* FITWAY public crowd page, sketch 12 (public-redesign-r01). Concept only, synthetic data, English this round.
+ * Built around what the page gives the trainee. Three ideas, ?design=day|week|later (public-sketch-12.js).
+ * The family is Eclipse: the page's corner light at sketch 11's reach and its grain, the near-black glass card with its
+ * 1px edge and the chart card's U light, chalk ink, Readex Pro at 400/500/600/700.
+ * Two materials carry the truth: usual hours are grain (a haze of past weeks, with a chalk top), the live hour is light
+ * (FITWAY red, the only red on the page besides the lights). Nothing after now is drawn as a reading.
+ * Everything is placed with logical properties and flex order, so dir="rtl" runs time from right to left. */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+
+:root {
+  --page: #070707;
+  --card: rgb(15 14 15 / 0.94);
+  --edge: rgb(255 255 255 / 0.075);
+  --line: rgb(255 255 255 / 0.12);
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --ox: #4d0713;
+  --live: #4be29b;
+  --chalk: 245 243 242;
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; }
+::selection { background: rgb(229 25 53 / 0.55); color: #fff; }
+h1, h2, p, figure { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+b { font-weight: 600; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.measure { position: absolute; visibility: hidden; white-space: nowrap; inset: 0 auto auto 0; }
+.en-run { unicode-bidi: isolate; direction: ltr; }
+.ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * The shell: sketch 11's header, wordmark, language switch and corner light. Fluid sizes run in a straight line from
+ * the phone (390 px) to the computer (1440 px).
+ * --------------------------------------------------------------------------------------------------------------- */
+.page {
+  --pad: clamp(16px, 4.5vw, 80px);
+  --pad-end: clamp(16px, calc(0.952vw + 12.29px), 28px);
+  --top-h: clamp(60px, calc(3.2vw + 46px), 92px);
+  --fs-word: clamp(52px, calc(2.286vw + 55.1px), 88px);
+  --fs-count: clamp(30px, calc(0.952vw + 30.29px), 44px);
+  --fs-text: clamp(15px, calc(0.19vw + 15.26px), 18px);
+  --fs-small: clamp(13px, calc(0.095vw + 13.63px), 15px);
+  --fs-axis: clamp(12px, calc(0.143vw + 11.94px), 14px);
+  --ux: clamp(1px, calc(0.10476vw + 0.5914px), 2.1px);
+  --uy: clamp(1px, calc(0.014286vw + 0.94429px), 1.15px);
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  padding: env(safe-area-inset-top) max(var(--pad), env(safe-area-inset-right)) max(var(--pad-end), env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
+}
+.top, .sign { position: relative; z-index: 1; width: 100%; max-width: 1600px; margin-inline: auto; }
+.top { display: flex; align-items: center; justify-content: space-between; height: var(--top-h); }
+.brand { display: inline-flex; align-items: center; gap: clamp(10px, calc(0.19vw + 9.26px), 12px); }
+.brand svg { width: clamp(28px, calc(0.381vw + 26.51px), 32px); height: clamp(28px, calc(0.381vw + 26.51px), 32px); }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: clamp(13px, calc(0.095vw + 12.63px), 14px); line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  height: clamp(40px, calc(0.381vw + 38.51px), 44px);
+  padding-inline: clamp(14px, calc(0.381vw + 12.51px), 18px);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+.lang::after { content: ""; position: absolute; inset: -3px; }
+.lang:hover { color: var(--ink); border-color: rgb(255 255 255 / 0.22); }
+
+/* The page's light: an arc from the top inline-start corner, a dark disc in front so it reads as a rim, the grain where
+ * it is lit; sketch 11's reach (the `reach` the user kept). */
+.light {
+  --lx: calc(var(--ux) * 1.25);
+  --ly: calc(var(--uy) * 1.7);
+  --at: 100% 0%;
+  --disc-at: calc(100% - 320 * var(--lx)) calc(430 * var(--ly));
+  --ramp: rgb(255 41 70 / 0.62) 0%, rgb(229 25 53 / 0.45) 10%, rgb(77 7 19 / 0.85) 30%, rgb(77 7 19 / 0.45) 58%, rgb(8 9 10 / 0) 100%;
+  --glow: radial-gradient(ellipse calc(760 * var(--lx)) calc(420 * var(--ly)) at var(--at), var(--ramp));
+  --disc: radial-gradient(ellipse calc(560 * var(--lx)) calc(360 * var(--ly)) at var(--disc-at), transparent 0, transparent 70%, rgb(0 0 0 / 0.5) 86%, #000 100%);
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(560 * var(--ly));
+  pointer-events: none;
+  background: var(--glow);
+  -webkit-mask-image: var(--disc);
+  mask-image: var(--disc);
+}
+[dir="ltr"] .light { --at: 0% 0%; --disc-at: calc(320 * var(--lx)) calc(430 * var(--ly)); }
+.light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.15;
+  -webkit-mask-image: var(--glow);
+  mask-image: var(--glow);
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * The live reading: the word and its level mark, the count and the percentage, today against usual, the stamp.
+ * --------------------------------------------------------------------------------------------------------------- */
+.sign { display: grid; align-content: start; }
+.live { display: grid; justify-items: start; }
+.word {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2em;
+  font-size: var(--fs-word);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+[dir="ltr"] .word .level { margin-inline-start: -0.05em; }
+/* Four steps rising in reading order, lit to the level: a second, wordless channel, never the only one. Chalk, not
+ * red: the word and its mark stand in the red corner light. */
+.mark { display: inline-flex; align-items: flex-end; gap: 0.05em; height: 0.46em; }
+.mark i { display: block; width: 0.085em; border-radius: 1.5px; background: rgb(var(--chalk) / 0.2); }
+.mark i:nth-child(1) { height: 31%; }
+.mark i:nth-child(2) { height: 54%; }
+.mark i:nth-child(3) { height: 77%; }
+.mark i:nth-child(4) { height: 100%; }
+.mark[data-step="1"] i:nth-child(-n+1), .mark[data-step="2"] i:nth-child(-n+2),
+.mark[data-step="3"] i:nth-child(-n+3), .mark[data-step="4"] i:nth-child(-n+4) { background: var(--ink); }
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 14px;
+  row-gap: 2px;
+  margin-block-start: 10px;
+  font-size: var(--fs-text);
+  line-height: 1.2;
+  color: var(--ink-2);
+}
+.facts .num { font-size: var(--fs-count); font-weight: 600; letter-spacing: -0.01em; color: var(--ink); margin-inline: 0.04em; line-height: 1; }
+.pct { padding-inline-start: 14px; border-inline-start: 1px solid var(--line); }
+.pct .num { margin-inline-start: 0; }
+
+.vs { display: flex; align-items: center; gap: 8px; margin-block-start: 14px; font-size: var(--fs-text); line-height: 1.35; color: var(--ink); }
+.vs .ic { width: 18px; height: 18px; padding: 2px; border-radius: 50%; background: rgb(var(--chalk) / 0.1); box-sizing: content-box; }
+
+.stamp { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; margin-block-start: 10px; font-size: var(--fs-small); line-height: 20px; color: var(--ink-3); }
+.stamp b { color: var(--ink); font-weight: 600; }
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.open .num { color: var(--ink-2); }
+/* The second answer, at the start column's foot on the computer only (public-sketch-12.js, liveBlock). */
+.ahead { display: none; }
+.ahead-label { display: flex; align-items: center; gap: 8px; font-size: var(--fs-small); line-height: 20px; color: var(--ink-2); }
+.ahead-label .ic { width: 16px; height: 16px; color: var(--ink); stroke-width: 2; }
+.ahead-time { margin-block-start: 6px; font-size: var(--fs-count); line-height: 1; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+.ahead-note { margin-block-start: 6px; font-size: var(--fs-text); line-height: 1.3; color: var(--ink-2); }
+.dot { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
+.dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--live); opacity: 0; }
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * The card: Eclipse's glass (near-black, 1px edge) with the chart card's light, a U around a dark disc: an oxblood
+ * band along the bottom and two corner glows, red only near the corners, the grain where it is lit.
+ * --------------------------------------------------------------------------------------------------------------- */
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  border-radius: 24px;
+  background: var(--card);
+  border: 1px solid var(--edge);
+}
+.lamp { position: absolute; inset: -1px; z-index: -1; pointer-events: none; border-radius: inherit; }
+.lamp::before, .lamp::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.lamp {
+  --u-light:
+    radial-gradient(62% 46% at 0% 100%, rgb(229 25 53 / 0.62) 0%, rgb(140 12 30 / 0.5) 22%, rgb(77 7 19 / 0.38) 48%, transparent 78%),
+    radial-gradient(62% 46% at 100% 100%, rgb(229 25 53 / 0.62) 0%, rgb(140 12 30 / 0.5) 22%, rgb(77 7 19 / 0.38) 48%, transparent 78%),
+    linear-gradient(to top, rgb(77 7 19 / 0.85) 0%, rgb(77 7 19 / 0.32) 9%, transparent 22%);
+  --u-disc: radial-gradient(54% 59.5% at 50% 29%, transparent 0, transparent 80%, rgb(0 0 0 / 0.55) 92%, #000 100%);
+}
+.lamp::before { background: var(--u-light); -webkit-mask-image: var(--u-disc); mask-image: var(--u-disc); }
+.lamp::after {
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.15;
+  -webkit-mask-image: var(--u-light);
+  mask-image: var(--u-light);
+}
+
+.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 14px; flex-wrap: wrap; }
+.card-title { font-size: var(--fs-text); line-height: 1.3; font-weight: 500; color: var(--ink); }
+.card-hours { font-size: var(--fs-small); line-height: 20px; color: var(--ink-3); }
+.card-hours .num { color: var(--ink-2); }
+
+.readout { display: flex; align-items: center; gap: 8px; min-height: 24px; font-size: var(--fs-small); line-height: 20px; color: var(--ink-2); }
+.readout b { color: var(--ink); }
+.readout .ic { width: 16px; height: 16px; color: var(--ink); }
+.readout .ic-ring { stroke-width: 2; }
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * The day's hours. A slot per hour (flex, so RTL runs them right to left); in it, the bar and the hour's label.
+ * --------------------------------------------------------------------------------------------------------------- */
+.plot { position: relative; height: var(--plot-h, 240px); }
+.bars { display: flex; height: 100%; }
+.slot {
+  --k: 1;
+  position: relative;
+  flex: var(--g, 1) 1 0px;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: flex-grow 520ms var(--ease-out);
+}
+.slot[data-closed] { cursor: default; }
+.slot:focus-visible { outline-offset: -2px; border-radius: 6px; }
+/* The floor: a hairline under the open hours only. */
+.slot::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: -1px; height: 1px; background: var(--line); transition: opacity 300ms; }
+.slot[data-closed]::after { opacity: 0; }
+.bar { position: absolute; inset-block: 0; inset-inline: var(--bar-inset, 17%); pointer-events: none; }
+.u, .lv, .cap, .ring { position: absolute; display: block; }
+
+/* Usual: a dark column lit at its rim. The light catches the chalk top and falls off over the same depth on every
+ * bar (px, not %), down into grain and dark at the floor: the family's light-behind-the-dark, drawn per hour. */
+.u {
+  --rim: 0.34;
+  --body: 0.12;
+  --floor: 0.025;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: calc(var(--u) * var(--zoom, 1) * var(--k) * 100%);
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgb(var(--chalk) / var(--rim)) 0, rgb(var(--chalk) / var(--body)) 22px, rgb(var(--chalk) / calc(var(--body) * 0.55)) 60%, rgb(var(--chalk) / var(--floor)) 100%);
+  transition: height 560ms var(--ease-out);
+}
+.u::after { content: ""; position: absolute; inset: 0; background: var(--grain); background-size: 120px 120px; mix-blend-mode: overlay; opacity: 0.6; }
+.cap {
+  inset-inline: 0;
+  height: 2px;
+  inset-block-end: calc(var(--u) * var(--zoom, 1) * var(--k) * 100% - 2px);
+  border-radius: 1px;
+  background: rgb(var(--chalk) / 0.92);
+  transition: inset-block-end 560ms var(--ease-out), opacity 300ms;
+}
+.slot[data-closed] .cap, .slot[data-closed] .u { opacity: 0; }
+
+/* Before now today: still usual, dimmed, because it is gone. */
+.slot[data-when="past"] .u { --rim: 0.1; --body: 0.035; --floor: 0.01; }
+.slot[data-when="past"] .u::after { opacity: 0.35; }
+.slot[data-when="past"] .cap { background: rgb(var(--chalk) / 0.3); }
+
+/* Now: the live reading as light, from oxblood at the floor to the hot red at its top, the grain alive in it. The
+ * usual for this hour stays as its chalk top, wider than the bar, so "busier than usual" is the red standing past
+ * it and "quieter" is the grain left above the red. */
+.lv {
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: calc(var(--l, 0) * var(--zoom, 1) * var(--k) * 100%);
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+  background: linear-gradient(to top, var(--ox) 0%, #9c0f27 34%, var(--red) 70%, var(--red-hi) 100%);
+  box-shadow: 0 -2px 18px -2px rgb(229 25 53 / 0.32);
+  transition: height 700ms var(--ease-out);
+}
+.lv::after { content: ""; position: absolute; inset: -60px; background: var(--grain); background-size: 120px 120px; mix-blend-mode: overlay; opacity: 0.32; }
+.slot:not([data-when="now"]) .lv { visibility: hidden; }
+.slot[data-when="now"] .cap { inset-inline: -4px; background: var(--ink); box-shadow: 0 0 0 1.5px var(--page); z-index: 1; }
+
+/* The quietest hour left today: a ring above its top (the Owner pages' peak ring, here for the low). */
+.ring {
+  inset-inline-start: 50%;
+  width: 10px;
+  height: 10px;
+  margin-inline-start: -5px;
+  inset-block-end: calc(var(--u) * var(--k) * 100% + 8px);
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  opacity: 0;
+  transition: inset-block-end 560ms var(--ease-out), opacity 300ms;
+}
+.slot[data-quietest] .ring { opacity: 1; }
+
+/* A picked hour: its haze lifts and its top thickens; the readout says it in words. */
+.slot[aria-pressed="true"] .u { --rim: 0.6; --body: 0.26; --floor: 0.06; }
+.slot[aria-pressed="true"] .cap { height: 3px; background: var(--ink); }
+@media (hover: hover) {
+  .slot:not([data-closed]):hover .u { --rim: 0.5; --body: 0.2; }
+}
+
+/* The hour labels: centred under their bar; the first and last stand on the plot's edges; one too close to "Now"
+ * gives way (public-sketch-12.js). */
+.t {
+  position: absolute;
+  inset-block-start: calc(100% + 10px);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  white-space: nowrap;
+  font-size: var(--fs-axis);
+  line-height: 18px;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+[dir="rtl"] .t { translate: 50% 0; }
+.t[data-edge="start"] { inset-inline-start: 0; translate: none; }
+.t[data-edge="end"] { inset-inline-start: auto; inset-inline-end: 0; translate: none; }
+.t[data-now], .t[data-pick] { color: var(--ink); font-weight: 600; }
+.t[data-yield] { visibility: hidden; }
+.slot[data-closed] .t { opacity: 0; }
+
+/* The day picker: the week's seven days, the picked one in chalk. */
+.days { display: flex; gap: 4px; }
+.day-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.045);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 160ms, color 160ms;
+}
+.day-btn[data-today] { flex-grow: 1.5; }
+.day-btn:hover { color: var(--ink); background: rgb(255 255 255 / 0.08); }
+.day-btn[aria-checked="true"] { background: var(--ink); color: var(--page); font-weight: 600; }
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * day (the default): the live reading above, the usual day in the lit card under it.
+ * --------------------------------------------------------------------------------------------------------------- */
+[data-design="day"] .sign {
+  --plot-h: clamp(150px, calc(100dvh - 548px), 320px);
+  grid-template-rows: minmax(4px, 0.5fr) auto minmax(16px, 0.5fr) auto;
+}
+[data-design="day"] .live { grid-row: 2; }
+[data-design="day"] .daycard { grid-row: 4; padding: 18px 16px 16px; display: grid; }
+.daycard .readout { margin-block: 12px 18px; }
+.daycard .dayfig { padding-block-end: 34px; }
+.daycard .days { margin-block-start: 6px; }
+
+@media (min-width: 1024px) {
+  [data-design="day"] .sign {
+    --plot-h: clamp(240px, calc(100dvh - 440px), 520px);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 8fr);
+    grid-template-rows: minmax(8px, 0.4fr) auto minmax(8px, 1fr);
+    column-gap: clamp(40px, 4.5vw, 88px);
+  }
+  /* The start column: the reading now at its head, when to go later at its foot, level with the card's foot. */
+  [data-design="day"] .live, [data-design="week"] .live { grid-row: 2; grid-column: 1; align-self: stretch; align-content: start; grid-template-rows: auto auto auto auto 1fr; padding-block: 22px 18px; }
+  [data-design="day"] .ahead, [data-design="week"] .ahead { display: block; align-self: end; padding-block-start: 22px; border-block-start: 1px solid var(--line); width: min(100%, 360px); }
+  [data-design="day"] .daycard { grid-row: 2; grid-column: 2; padding: 26px 28px 24px; }
+  .daycard .readout { margin-block: 16px 26px; }
+  .daycard .dayfig { padding-block-end: 40px; }
+  .daycard .days { margin-block-start: 8px; max-width: 520px; }
+  [data-design] .slot { --bar-inset: 21%; }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * week: the seven usual days on one clock. Each day is a row of joined hours, so it reads as a shape; today stands
+ * open, lit at now; any other day opens when picked.
+ * --------------------------------------------------------------------------------------------------------------- */
+[data-design="week"] .sign { grid-template-rows: minmax(4px, 0.5fr) auto minmax(16px, 0.5fr) auto; }
+[data-design="week"] .live { grid-row: 2; }
+[data-design="week"] .weekcard { grid-row: 4; padding: 18px 16px 14px; }
+.weekcard { --name-w: 46px; --row-h: 30px; --row-open-h: clamp(108px, calc(100dvh - 650px), 230px); }
+.legend { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-axis); line-height: 18px; color: var(--ink-3); }
+.legend .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.legend .key-u { background: linear-gradient(to top, rgb(var(--chalk) / 0.1), rgb(var(--chalk) / 0.3)); box-shadow: inset 0 2px 0 rgb(var(--chalk) / 0.9); }
+.legend .key-now { margin-inline-start: 8px; background: linear-gradient(to top, #9c0f27, var(--red-hi)); }
+.rows { display: grid; gap: 7px; margin-block-start: 16px; }
+.row { display: grid; grid-template-columns: var(--name-w) minmax(0, 1fr); align-items: end; }
+.row-name {
+  align-self: stretch;
+  display: grid;
+  align-content: end;
+  justify-items: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: start;
+  font-size: var(--fs-small);
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+.row-name:hover { color: var(--ink); }
+.row[data-open] .row-name { color: var(--ink); font-weight: 600; }
+.row-today { display: block; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ink-3); }
+.row .plot { height: var(--row-h); transition: height 520ms var(--ease-out); }
+.row[data-open] .plot { height: var(--row-open-h); padding-block-start: 26px; } /* room for "Now" over a packed hour */
+.row .plot { padding-block-start: 0; transition: height 520ms var(--ease-out), padding 520ms var(--ease-out); }
+/* A closed row keeps the week's one scale but drops the open row's air for the live reading: its top is the week's
+ * busiest usual hour (--zoom, public-sketch-12.js), so the shapes read at a row's small height. */
+.row:not([data-open]) .slot { --zoom: var(--row-zoom, 1); }
+.weekcard .slot { --bar-inset: 0.75px; }
+.weekcard .u { border-radius: 1.5px 1.5px 0 0; }
+.weekcard .cap { height: 1.5px; }
+/* A closed row's hours join into one shape: no gaps, no rounding, the rim lit over a shallower depth. */
+.weekcard .row:not([data-open]) .slot { --bar-inset: 0px; }
+.weekcard .row:not([data-open]) .u { border-radius: 0; background: linear-gradient(to bottom, rgb(var(--chalk) / var(--rim)) 0, rgb(var(--chalk) / var(--body)) 8px, rgb(var(--chalk) / var(--floor)) 100%); }
+.weekcard .row:not([data-open]) .slot { cursor: pointer; }
+.weekcard .row:not([data-open]) .ring { opacity: 0; }
+.weekcard .row:not([data-open]) .slot[data-when="now"] .cap { inset-inline: 0; box-shadow: none; }
+.weekcard .row:not([data-open]) .slot[aria-pressed="true"] .u { --rim: 0.34; --body: 0.12; --floor: 0.025; }
+.weekcard .slot[data-closed]::after { opacity: 0; }
+/* "Now" over the live hour of the open row. */
+.weekcard .row[data-open] .slot[data-when="now"] .bar::after {
+  content: "Now";
+  position: absolute;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  inset-block-end: calc(max(var(--u), var(--l)) * 100% + 8px);
+  font-size: var(--fs-axis);
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+[dir="rtl"] .weekcard .row[data-open] .slot[data-when="now"] .bar::after { translate: 50% 0; }
+.clock { position: relative; height: 24px; margin-block-start: 8px; margin-inline-start: var(--name-w); }
+.clock .t { inset-block-start: 4px; inset-inline-start: calc(var(--x) * 100%); }
+.clock .minor { display: none; }
+.weekcard .readout { margin-block-start: 10px; }
+
+@media (min-width: 1024px) {
+  [data-design="week"] .sign {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 8fr);
+    grid-template-rows: minmax(8px, 0.4fr) auto minmax(8px, 1fr);
+    column-gap: clamp(40px, 4.5vw, 88px);
+  }
+  [data-design="week"] .weekcard { grid-row: 2; grid-column: 2; padding: 26px 28px 22px; }
+  .weekcard { --name-w: 76px; --row-h: 40px; --row-open-h: clamp(150px, calc(100dvh - 690px), 280px); }
+  .rows { gap: 10px; margin-block-start: 22px; }
+  .clock .minor { display: block; }
+  .weekcard .slot { --bar-inset: 1px; }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * later: now against a later hour, side by side on one scale; the usual day under them is where to pick.
+ * --------------------------------------------------------------------------------------------------------------- */
+[data-design="later"] .sign {
+  --duel-h: clamp(280px, calc(100dvh - 446px), 520px);
+  grid-template-rows: minmax(4px, 0.4fr) auto auto minmax(14px, 0.6fr) auto;
+}
+.duel { grid-row: 2; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 10px; min-height: var(--duel-h); }
+.side { display: flex; flex-direction: column; padding: 16px 16px 0; }
+.side-label { font-size: var(--fs-small); line-height: 20px; color: var(--ink-2); }
+.side-label b { color: var(--ink); font-weight: 600; }
+.side-label .tag { display: block; color: var(--ink-3); }
+.stamp-short { margin-block-start: 12px; }
+/* The word is sized so the longest, "Moderate" (about 4.6 times its size), fits the card's column. */
+.side-now { container-type: inline-size; }
+.side-now .live { width: 100%; }
+.side-now .word { font-size: min(clamp(40px, calc(2.286vw + 35px), 76px), 100cqi / 4.75); margin-block-start: 8px; }
+.side-now .facts { display: grid; row-gap: 4px; margin-block-start: 8px; }
+.side-now .pct { padding-inline-start: 0; border-inline-start: 0; }
+.side-now .facts .num { font-size: clamp(24px, calc(0.952vw + 22px), 36px); }
+.later-word { margin-block-start: 8px; font-size: clamp(30px, calc(1.905vw + 22.6px), 56px); line-height: 1.05; font-weight: 600; letter-spacing: -0.015em; color: var(--ink-2); }
+.later-word .usually { display: block; font-size: var(--fs-text); line-height: 1.3; font-weight: 400; letter-spacing: 0; color: var(--ink-3); margin-block-end: 4px; }
+.later-note { font-size: var(--fs-small); color: var(--ink-3); }
+.pillar { position: relative; flex: 1 1 auto; min-height: 90px; margin-block-start: 16px; margin-inline: 14%; }
+.pillar .u, .pillar .lv { border-radius: 6px 6px 0 0; }
+.pillar .cap { height: 3px; }
+.side-now .pillar .cap { inset-inline: -8px; background: var(--ink); box-shadow: 0 0 0 1.5px var(--page); z-index: 1; }
+.side-now .pillar .u { opacity: 1; }
+.side-later .pillar .u { --rim: 0.4; --body: 0.15; }
+.under { grid-row: 3; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; margin-block-start: 14px; }
+.under .vs, .under .stamp { margin-block-start: 0; }
+.strip { grid-row: 5; padding: 14px 14px 12px; }
+.strip .card-head { margin-block-end: 12px; }
+.strip { --plot-h: clamp(56px, calc(100dvh - 760px), 120px); }
+.strip .dayfig { padding-block-end: 30px; }
+.strip .ring { display: none; }
+
+@media (min-width: 1024px) {
+  [data-design="later"] .sign {
+    --duel-h: clamp(360px, calc(100dvh - 280px), 640px);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 6fr);
+    grid-template-rows: minmax(8px, 0.4fr) auto auto minmax(8px, 1fr);
+    column-gap: clamp(32px, 3.4vw, 64px);
+  }
+  .duel { grid-row: 2; grid-column: 1; gap: 16px; }
+  .side { padding: 24px 24px 0; }
+  .under { grid-row: 3; grid-column: 1; margin-block-start: 18px; }
+  .strip { grid-row: 2; grid-column: 2; display: flex; flex-direction: column; padding: 26px 26px 22px; --plot-h: auto; }
+  .strip .dayfig { flex: 1 1 auto; display: flex; flex-direction: column; padding-block-end: 40px; }
+  .strip .plot { flex: 1 1 auto; min-height: 200px; }
+  .strip .days { margin-block-start: 8px; }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * Motion. One authored moment and one living detail:
+ * - the arrival: the bars rise in the day's order, the live hour last (data-rise, public-sketch-12.js);
+ * - the live hour's grain drifts, and the Live dot breathes: the only things that move while the page rests;
+ * - a picked day reflows the bars to its hours and heights; a picked week row opens.
+ * Under reduced motion nothing moves: every bar stands at its height from the first frame, a picked day appears at
+ * once, and the information is the same.
+ * --------------------------------------------------------------------------------------------------------------- */
+.page[data-intro] .slot, .page[data-intro] .pillar { --k: 0; }
+.page[data-rise] .u, .page[data-rise] .cap, .page[data-rise] .ring { transition-delay: calc(var(--i, 0) * 26ms); }
+.page[data-rise] .lv { transition-duration: 900ms; transition-delay: 520ms; }
+.page[data-rise] .pillar .u, .page[data-rise] .pillar .cap { transition-delay: 120ms; }
+.pillar { --k: 1; }
+.pillar .u { transition: height 800ms var(--ease-out); }
+.pillar .cap { transition: inset-block-end 800ms var(--ease-out); }
+
+@keyframes drift { 0% { translate: 0 0; } 25% { translate: -23px 17px; } 50% { translate: 31px -9px; } 75% { translate: -11px -27px; } 100% { translate: 0 0; } }
+@keyframes breathe { 0% { opacity: 0.7; scale: 1; } 100% { opacity: 0; scale: 2.6; } }
+.lv::after { animation: drift 900ms steps(4, jump-none) infinite; }
+.dot::after { animation: breathe 2400ms var(--ease-out) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* The owner turned the percentage off: the count stands alone. */
+.page[data-pct="off"] .facts { column-gap: 0; }
