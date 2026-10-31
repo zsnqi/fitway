@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 11 turned
-  down; sketch 12 reframed around the trainee's features, for a new session)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-34; 34 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (Popular Times seen;
+  five of eight rejection reasons in; three wait on the images sent)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-35; 35 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,7 +20,7 @@
 
 ## Running now
 
-Nothing (measured 2026-10-31). Public branch `public-redesign-r01` at sketch 11 (`938087a4`), on Markdown-only record
+Nothing (measured 2026-11-01). Public branch `public-redesign-r01` at sketch 11 (`938087a4`), on Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public-sketch-8.html` to
@@ -48,17 +48,11 @@ agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) i
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-0. **Sketch 12, reframed around the trainee's features** (item 34), in the new session the user opens, after the
-   agent-tooling session "Agent-tooling round: run-folder hook and public CLI" (started 2026-10-31) has ended and its
-   round is merged. In order:
-   1. Check that round: its merge commit, CI, and the `pnpm verify:owner` commands it gives for a public brief.
-   2. A Codex Sol round captures Google Maps' Popular Times on a gym's page with Playwright: frames of the usual day,
-      the live hour and switching days, a short video of the motion, and a short report, in a run folder made with
-      `pnpm run-folder:new`. It never passes a CAPTCHA or a bot wall: if one appears, the coordinator looks in the
-      user's Chrome instead. The coordinator then looks at the frames and video and writes what the page takes as a
-      principle (item 34).
-   3. Ask the user for a reason for each rejection item 34 lists without one; write any reason the user cannot give
-      as taste, not a rule.
+0. **Sketch 12, reframed around the trainee's features** (item 34). Done: the agent-tooling round is merged (CI
+   41238840993 green on `9a81a355`; `pnpm verify:owner frames` and `sheet` render a public brief's frames and
+   sheets), and Popular Times is seen and its principle written (item 35). Next, in order:
+   3. The three reasons still open (item 35's last bullet): sketches 3 and 4, the usual Friday outlines, the haze and
+      the bars; the user has the images. Write any reason the user cannot give as taste, not a rule.
    4. Write the brief: the features item 34 accepts, few limits (identity, truth, privacy), the turned-down things as
       information with their reasons, motion allowed, rendering through `pnpm verify:owner`. Then read it line by line
       for anything that limits the designer, and ask the user about each one kept.
@@ -81,8 +75,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The reasons for the rejections item 34 lists without one (step 0.3), and the limits kept in the next brief (step
-0.4). The user opens the new session once the agent-tooling session has ended.
+The three reasons still open (step 0.3), and the limits kept in the next brief (step 0.4).
 
 ## Known risks
 
