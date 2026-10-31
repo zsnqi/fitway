@@ -37,6 +37,7 @@ const doctor=async(options)=>({concept:options.concept,tools,loaded:{pw:{}},
  map:generateMap(options.concept,options.recipes)});
 const services={
  drive:{doctor},
+ frames:{doctor},
  run:{doctor,preview:async({port})=>({origin:"http://127.0.0.1:"+port,close:async()=>{}}),
   reservePorts:async()=>({release:async()=>{}})},
  compare:{doctor,checkPort:async()=>{},child:async()=>{throw new Error("equal frames need no pixel diff")},
