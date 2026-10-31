@@ -290,3 +290,62 @@ the public page are numbered here.
       100 ms; proportional figures move the count's label) go to the user with round 3.
     - Round 3: brief `designer-public-english-18.md`, run `D:/fitway-temp/public-redesign-r01-english-20/`; then the
       `rtl-ltr-reviewer` on both languages (CLAUDE.md: after a round that changes copy in both languages).
+27. **Round 3 stopped, to continue in a new session** (the user, 2026-10-31: «احفظ شغله الحالي وقفه لو تقدر لان بكمل
+    معك ي جلسة جديدة»). The coordinator stopped the designer mid-work and committed its edit to `public.css` and
+    `public.js` as found, unverified (`adc665f6`, pushed); the designer had begun English and was rendering trial
+    variants of the non-level states, with no notes written.
+28. **A round of generated images before round 3 resumes; today's curve on the page** (the user, 2026-10-31).
+    - The user brought three ChatGPT-generated mockups of another gym's page as direction, «ما نبي ننسخها طبق
+      الاصل»; agreed: the principle, not the look. Their ring is a gauge (item 9's tachometer) and their card a
+      generic dashboard, both declined. Kept as principles: one dominant element, a clear drop to the secondary facts,
+      one accent, a single calm column, a chart that lights the current hour.
+    - The round: the coordinator writes one English prompt per image (Arabic at build time; the user: start in
+      English), set A six without references, set B four with references (the current B frame and the user's
+      mockups, each with its stated role), each set in a fresh chat; B1-B3 repeat A1-A3's compositions so each pair
+      shows what references change; both orders tried, count first and word first (the user: the word need not lead).
+      The user runs them in the ChatGPT chat, which the user reports does not draw on Codex limits; the official
+      pricing page says Codex image generation counts toward Codex limits, 3-5x faster than text turns, and is silent
+      on the chat's image limits (learn.chatgpt.com/docs/pricing, read 2026-10-31). The image model is GPT Image 2.5
+      (Flare, Sunburst; API changelog, 2026-09-08); its only quality control, `quality` up to `max`, is set in the
+      API, not in the chat or in Codex's tool. The images are references; they accept and reject nothing.
+    - **Today's curve is shown** («ابي المنحنى اليومي يظهر لانه عادي»): today's crowd up to now, synthetic in the
+      concept; the usual day may continue faintly after now. Item 9's "no longer required" is replaced. Production
+      needs the SPEC amendment item 3 names, now covering today's curve as well as the usual day (the reservation in
+      `docs/spec/06-interfaces-and-contracts.md` names only a typical-day curve); open for that amendment: whether a
+      fine-grained curve at low counts reveals single arrivals, and the bucketing that prevents it.
+    - The coordinator had called the curve and the best time not allowed, from the resume's content line, without
+      reading item 3; the resume's line now names them.
+    - Research `D:/fitway-temp/public-redesign-r01-imagegen-research/REPORT.md`; prompts
+      `briefs/imagegen-public-prompts-21.md`; run folder `D:/fitway-temp/public-redesign-r01-imagegen-21/`.
+    - **The ten images came back the same day** (`A1`-`A6`, `B1`-`B4` and `sheet-A-over-B.png` in the run folder).
+      The user found them beautiful. The coordinator read all ten as holding the identity and copying nothing from the
+      other gym. The references changed the compositions little: they brought the real logo (the prompts never named
+      it), a calmer light and finer secondary type. The user agreed the bars as the curve's form and called A4 loud;
+      an edit prompt for A4 is in the prompts file. No direction is chosen yet.
+29. **The direction narrowed from the images** (the user, 2026-10-31, on the coordinator's reading of the ten).
+    - **B4 is the base**: «B4 احسن من A4 ب الترتيب ... وبشكل عام التصميم كامل». The level word leads in FITWAY red,
+      the count follows on one line, then the percentage, today's curve, the best time, and the open and Live line.
+      The A4 edit is not run («ما يحتاج لان اصلا B4 سوت الشي دا»).
+    - **The count and the percentage as B3 sets them**, side by side under the lead. The page must still read whole
+      when the owner turns the percentage off (item 4).
+    - **The curve as bars** (agreed with the coordinator), **without B2's ramp from graphite through deep red to red**
+      («ما افضل التدريج»).
+    - **The light rising from "Now"** is to be tried («بنجربها»), but not as B3 drew it: the user expects it to come
+      out better when the team designs it, and asked whether bars change it. The coordinator's answer: they do; with a
+      line the light comes from a point, and with bars from a lit column.
+    - Next, on the user's word: a designer builds this as a sketch beside B's page, Arabic and English, phone and
+      computer, with the light's variants switchable; B's `public.html` stays as it is until the user accepts.
+30. **The sketch round: English first, one state; the images are done** (the user, 2026-10-31, confirming the
+    coordinator's restatement point by point).
+    - No more image edits; design starts in code.
+    - **English only, phone and computer, live at Busy only**, because this is still the directions stage. Arabic and
+      the other states come after the user picks. The designer still builds so that Arabic mirrors without a redesign:
+      time runs right to left in Arabic, and the bars, "Now" and the light mirror with it («اتفق»).
+    - **The order** starts from B4, with the count and the percentage side by side as in B3; a better order is the
+      designer's to make («لو فيه ترتيب احسن يقدر يسويه عادي»).
+    - **The bars** correct item 29: closer to A2 than B2, with the past in a plain grey, the last stretch in deep red
+      and "Now" in red. B2's grey ramp is what the user disliked. Not binding; the designer judges it in the page.
+    - **The glow** is the team's own: B3's is bad, A3's nearly better, and the team can do much better. The lead idea
+      is the light rising from the "Now" bar. It must not become a stage spotlight or an equalizer («ما نبي كدا»).
+      The designer tries several glow ideas, switchable.
+    - Brief `briefs/designer-public-sketch-22.md`; run `D:/fitway-temp/public-redesign-r01-sketch-22/`.
