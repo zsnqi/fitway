@@ -5,9 +5,9 @@ For a fresh `owner-direction-designer` (Opus, xhigh). Concept-only (ADR-010): th
 the shipped page, the earlier rounds' pages and the generated images below are reference only, never a reason to
 accept or reject.
 
-- **Worktree:** `D:/Projects/fitway-worktrees/public-redesign-r01`, branch `public-redesign-r01`, HEAD `adc665f6745932e2fdec4ba56c1cb1acdbfa4c66`
-- **Starting point:** the merge that brings in this brief, on top of that HEAD. `public.css` and `public.js` there hold
-  round 3's unfinished, unverified edit; read them for the identity only.
+- **Worktree:** `D:/Projects/fitway-worktrees/public-redesign-r01`, branch `public-redesign-r01`, HEAD `c9ea5e1cc5e41cf6ccec9ec2e49c1674e83f03a0`
+- **Starting point:** that HEAD, the merge that brought in this brief, or the commit after it that names it here.
+  `public.css` and `public.js` there hold round 3's unfinished, unverified edit; read them for the identity only.
 - **Milestone:** `public-redesign-r01`. Decisions: carried by this brief; read no decision record.
 - **Read first, only these:**
   - `design-research/owner-composition-exploration-r04/directions/eclipse/public.css`: the identity to reuse, namely
