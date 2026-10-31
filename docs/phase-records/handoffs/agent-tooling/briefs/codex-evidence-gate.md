@@ -93,57 +93,71 @@ capture scripts or asks for frames without naming `pnpm verify:owner` (DECISIONS
   `pnpm check:repository` (on its changed lines, `cited-evidence.mjs:198-217`) and the G1 job (on added lines) fail a
   citation whose path exists inside a folder under the temp root when no folder from the temp root's child down to
   the cited path itself holds a provenance record, and at least one of those folders was created at or after
-  2026-11-01T00:00:00+03:00 (the folder's creation time, `birthtime`). A provenance record is a `manifest.json`
-  shaped as `createRunFolder` writes it (`version` 1, a non-empty `for`, a 64-hex `briefSha256`, a 40-hex
-  `commit`), a `run.json` shaped as the launcher writes it (`version` 1, a 64-hex `briefSha256`, a 40-hex `head`),
-  or a `review.json` shaped as the brief review writes it (a 64-hex `sha256` and a `status`). A file of that name
-  that is not valid JSON or lacks those fields is not a record; a `manifest.json` written by `pnpm verify:owner`
-  (it has `command` and `checkout`) is not one. A file directly under the temp root (such as
+  2026-11-01T00:00:00+03:00 (the folder's creation time, `birthtime`). A provenance record is one of three files,
+  each tied to the folder that holds it: a `manifest.json` shaped as `createRunFolder` writes it (`version` 1, a
+  non-empty `for`, a 64-hex `briefSha256`, a 40-hex `commit` this repository holds, a `report` path inside that
+  folder) beside a `BRIEF.md` whose SHA-256 is its `briefSha256`; a `run.json` shaped as the launcher writes it
+  (`version` 1, a 64-hex `briefSha256`, a 40-hex `head` this repository holds, a `report` path inside that folder);
+  or a `review.json` shaped as the brief review writes it (a 64-hex `sha256` and a `status`) beside a `brief.md`
+  whose SHA-256 is its `sha256`. A file of that name that is not valid JSON, lacks a field, or fails its tie (a
+  record copied from another folder, a brief edited after the record) is not a record; a `manifest.json` written by
+  `pnpm verify:owner` (it has `command` and `checkout`) is not one. The rule stops the habit of making folders by
+  hand; a record forged on purpose to pass it is outside what a check can see. A file directly under the temp root (such as
   `D:/fitway-temp/codex-accounts.mjs`) is not inside a run folder and is not judged by this rule. A gone citation is
   judged by G1's rules only. Folders whose every level was created before the cutoff are accepted, and the check
   prints how many citations it accepted that way. The failure names the record, line, path and the folder that
-  lacks a record, says it was made after the cutoff with no provenance record, and names the fix
-  `pnpm run-folder:new <name> --brief <file> --for <who>`. Check: in the G1 test file and in
+  lacks a record, says it was made after the cutoff with no provenance record, and names the fix for an existing
+  folder: make a new run folder with `pnpm run-folder:new <name> --brief <file> --for <who>`, move the evidence
+  into it and cite the new folder (`createRunFolder` refuses a folder that exists). Check: in the G1 test file and in
   `.agents/skills/gardener/cited-evidence.test.ts`, with folders made in the fixture's temp root and their creation
   time read through an injectable stat so the cutoff can be tested on either side: a folder made after the cutoff
   with no record fails; the same folder with each of the three records passes; with each record malformed
-  (missing field, wrong length, not JSON) fails; a `pnpm verify:owner` `manifest.json` fails; a nested folder made
-  after the cutoff inside a container made before it (as a review folder named x-sol inside brief-review) with no record fails, and inside one
-  with a record passes; a folder whose levels all predate the cutoff passes and is counted; a cited file directly
+  (missing field, wrong length, not JSON) fails; each record copied into a second folder fails there; a
+  `manifest.json` whose `BRIEF.md` was edited after it fails; a `commit` or `head` the repository does not hold
+  fails; a `pnpm verify:owner` `manifest.json` fails; a nested folder made
+  after the cutoff inside a container made before it (as a review folder named x-sol inside brief-review) with no
+  record fails, and inside one with a record passes; a folder whose levels all predate the cutoff passes and is counted; a cited file directly
   under the temp root passes. Intent: from the rule's first day a folder a record cites says who made it, from
   which brief and commit, while the evidence already on disk stays citable.
 - **G3.** The two failure messages (`verify-repository.mjs:330-341`) do not name the tool that prevents the commonest
   case: a run folder cited before it was made. Outcome: the gone-citation message of `check:repository` and of the
   G1 job names `pnpm run-folder:new <name> --brief <file> --for <who>` as the fix for a run folder not made yet,
-  beside the three fixes it names today, and G2's message names it as its fix. Check: the G1 and G2 tests assert the
-  text `pnpm run-folder:new <name> --brief <file> --for <who>` in each message. Intent: the agent who reads the
-  failure is told the one command that fixes it.
+  beside the three fixes it names today, with `<name>` filled in as the cited folder's name when the citation lies
+  inside a folder directly under the temp root (the brief and the owner stay placeholders: no check can know them),
+  and G2's message names its fix as G2 says. Check: the G1 and G2 tests assert, for a citation of
+  `<temp root>/new-run/REPORT.md`, the text `pnpm run-folder:new new-run --brief <file> --for <who>` in the gone
+  message, and the G2 fix text in G2's. Intent: the agent who reads the failure is told the command that fixes it.
 - **D1.** `brief:check` reads a designer brief's format and references, never what it asks the designer to do, so
   `designer-public-sketch-25.md:114` ("Render with node scripts in the run folder in the style of ...") passed.
   Outcome: `pnpm brief:check` fails a brief whose format role is `designer` when its text, outside the shared
   environment block, holds any of these, in any case: `node script` or `node scripts`; `capture script`,
   `render script`, `rendering script`, `screenshot script`, `sheet script` or `frame script`, each also plural;
-  `your own script` or `your own scripts`; `in the style of` followed on the same line by a `D:/fitway-temp/` or
+  `your own script` or `your own scripts`; `write a script`, `that you write` or `you write yourself`;
+  `in the style of` followed on the same line by a `D:/fitway-temp/` or
   `D:\fitway-temp\` path; `playwright` (which also catches `@playwright/test` and `Playwright's`). It also fails such
   a brief when its text outside that block holds `render`, `renders`, `rendered`, `rendering`, `capture`,
   `captures`, `captured`, `screenshot`, `screenshots`, `frame`, `frames`, `sheet` or `sheets` as a word and does not
-  hold `pnpm verify:owner`. The text includes fenced code and inline code. Each failure names its line, the phrase,
+  hold `pnpm verify:owner` followed by the name of one of its registered commands (`frames`, `sheet`, `drive`,
+  `compare`, `measure`, `run` and the rest the tool registry lists). The text includes fenced code and inline code. Each failure names its line, the phrase,
   and the fix: render with the `pnpm verify:owner` commands that `.agents/skills/verify-fitway/SKILL.md` names. A
   brief with another role is not judged by D1. Check: in `scripts/agent-environment/check-brief.test.ts` or a new
   test file beside it: the real `designer-public-sketch-25.md` text as a fixture role `designer` fails naming line
   114's phrase; one case per phrase above fails and the same text with role `builder` passes; a designer brief that
-  says "Render the frames with `pnpm verify:owner frames`" and names no other phrase passes; a designer brief whose
+  says "Render the frames with `pnpm verify:owner frames`" and names no other phrase passes, and one naming only
+  `pnpm verify:owner` with no command fails; a designer brief whose
   only mention of Playwright is inside the shared environment block passes; a designer brief that asks for no
   frames and names no command passes. Intent: the coordinator cannot launch a designer who is told to build its own
-  capture tools.
+  capture tools out of habit; a brief worded on purpose to evade a phrase list is left to the brief's reviews.
 - **D2.** `brief:check` runs only when someone runs it, and a designer is launched by the coordinator, not by the
-  launcher that runs it for Codex. Outcome: the G1 pre-commit job (or a second job in `lefthook.yml`) applies D1's
-  rule to each file the commit adds (`--diff-filter=A`) whose staged first line is
-  `<!-- brief-format: v1 role: designer -->`, reading the staged text, and refuses the commit with D1's message.
-  It applies none of `brief:check`'s other rules, and a designer brief the commit only modifies is not judged.
-  Check: in the G1 test file: a staged new designer brief holding `node scripts` fails; the same brief already
-  committed and then modified passes; a staged new `role: builder` brief holding it passes. Intent: a new designer
-  brief that asks for hand-built scripts cannot be committed, without failing the frozen records of past rounds.
+  launcher that runs it for Codex. Outcome: the G1 pre-commit job (or a second job in `lefthook.yml`) reads each
+  staged file whose staged first line is `<!-- brief-format: v1 role: designer -->` and refuses the commit with
+  D1's message when the file is new to the commit (`--diff-filter=A`) and fails D1, or when the commit modifies it
+  and a line it adds holds one of D1's refused phrases. It applies none of `brief:check`'s other rules, and a
+  modified brief is not judged on lines the commit leaves alone or on the command it names. Check: in the G1 test
+  file: a staged new designer brief holding `node scripts` fails; the same brief already committed and then
+  modified on another line passes; a committed clean designer brief modified to add `node scripts` fails; a staged
+  new `role: builder` brief holding it passes. Intent: no commit adds an instruction to hand-build capture scripts
+  to a designer brief, without failing the frozen records of past rounds on an unrelated edit.
 - **R1.** The run-folder rule has no row in `docs/agent-context/RULE_ENFORCERS.md`. Outcome: the table gains a row for
   `WORKING_AGREEMENTS.md`'s run-folder rule, naming the G1 job and `pnpm check:repository` with what they check and
   what they do not (the cutoff; files directly under the temp root), and the rule rows the header asks to change
