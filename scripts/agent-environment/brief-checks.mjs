@@ -86,7 +86,7 @@ async function validateWorktree(text, report, git) {
 			);
 			return { root: worktree, head: null };
 		}
-		// Check each intervening commit: a non-Markdown edit followed by a revert still fails.
+		// Check each intervening commit (a non-Markdown edit later reverted still fails); a merge counts only its first-parent diff.
 		const later = git(worktree, ["rev-list", `${namedHead}..HEAD`]);
 		for (const commit of later.split("\n").filter(Boolean)) {
 			const changed = git(worktree, [
@@ -95,7 +95,7 @@ async function validateWorktree(text, report, git) {
 				"--name-only",
 				"--no-renames",
 				"-r",
-				"-m",
+				"--diff-merges=first-parent",
 				"-z",
 				commit,
 			])

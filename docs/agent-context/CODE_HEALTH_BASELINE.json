@@ -64,7 +64,6 @@
 			"longFunctionLines": 89
 		},
 		".agents/skills/gardener/survey-evidence.mjs": {
-			"duplication": 1,
 			"longFunctions": 2,
 			"longFunctionLines": 189
 		},
@@ -751,7 +750,7 @@
 			"duplication": 1
 		},
 		"scripts/agent-environment/brief-checks.mjs": {
-			"duplication": 3,
+			"duplication": 2,
 			"longFunctions": 2,
 			"longFunctionLines": 325
 		},
@@ -1044,8 +1043,8 @@
 			"expectCalls": 542
 		},
 		"scripts/agent-environment": {
-			"testCases": 386,
-			"expectCalls": 1126
+			"testCases": 388,
+			"expectCalls": 1130
 		},
 		"scripts/demo": {
 			"testCases": 17,
