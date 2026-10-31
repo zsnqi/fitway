@@ -2,8 +2,8 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (the generated images
-  narrowed the direction to B4 with bars and the light from "Now")
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-29; 29 last), and the founding
+  narrowed the direction; the English sketch round launched)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-30; 30 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -48,12 +48,12 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-0. **A sketch of the narrowed direction, on the user's word** (item 29; the images and `sheet-A-over-B.png` in
-   `D:/fitway-temp/public-redesign-r01-imagegen-21/`, prompts
-   `docs/phase-records/handoffs/public-redesign/briefs/imagegen-public-prompts-21.md`). The base is B4. Add B3's
-   count and percentage side by side, and bars of one colour with only the bar at "Now" lit. Try the light rising
-   from "Now" in switchable variants, beside the corner light. A designer builds it as a sketch beside B's page, in
-   Arabic and English, on the phone and the computer. In Arabic time runs right to left, as Eclipse's
+0. **The sketch of the narrowed direction** (items 29 and 30; brief
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-sketch-22.md`, run
+   `D:/fitway-temp/public-redesign-r01-sketch-22/`; the images and `sheet-A-over-B.png` in
+   `D:/fitway-temp/public-redesign-r01-imagegen-21/`). It is English only, on the phone and the computer, live at
+   Busy. It starts from B4, with B3's count and percentage and A2-like bars. It has switchable glow ideas, the lead
+   one rising from the "Now" bar. The coordinator reviews the frames, then shows the user the sheets. In Arabic time runs right to left, as Eclipse's
    own day line does (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`). Round 3's English work on `adc665f6` waits until the user picks between this and B.
 1. **Round 3, English and a last polish, resumes** (items 24-27; brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
@@ -109,7 +109,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The go-ahead for step 0's sketch (item 29). Round 3 waits for it. No app was named (item 10).
+Nothing until step 0's sketch is reviewed (item 30). Round 3 waits for the user's pick after it. No app was named (item 10).
 
 ## Known risks
 

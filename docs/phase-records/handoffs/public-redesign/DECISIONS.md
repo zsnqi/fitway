@@ -335,3 +335,17 @@ the public page are numbered here.
       line the light comes from a point, and with bars from a lit column.
     - Next, on the user's word: a designer builds this as a sketch beside B's page, Arabic and English, phone and
       computer, with the light's variants switchable; B's `public.html` stays as it is until the user accepts.
+30. **The sketch round: English first, one state; the images are done** (the user, 2026-10-31, confirming the
+    coordinator's restatement point by point).
+    - No more image edits; design starts in code.
+    - **English only, phone and computer, live at Busy only**, because this is still the directions stage. Arabic and
+      the other states come after the user picks. The designer still builds so that Arabic mirrors without a redesign:
+      time runs right to left in Arabic, and the bars, "Now" and the light mirror with it («اتفق»).
+    - **The order** starts from B4, with the count and the percentage side by side as in B3; a better order is the
+      designer's to make («لو فيه ترتيب احسن يقدر يسويه عادي»).
+    - **The bars** correct item 29: closer to A2 than B2, with the past in a plain grey, the last stretch in deep red
+      and "Now" in red. B2's grey ramp is what the user disliked. Not binding; the designer judges it in the page.
+    - **The glow** is the team's own: B3's is bad, A3's nearly better, and the team can do much better. The lead idea
+      is the light rising from the "Now" bar. It must not become a stage spotlight or an equalizer («ما نبي كدا»).
+      The designer tries several glow ideas, switchable.
+    - Brief `briefs/designer-public-sketch-22.md`; run `D:/fitway-temp/public-redesign-r01-sketch-22/`.
