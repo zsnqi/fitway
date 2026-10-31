@@ -42,3 +42,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 33. **Sketch 10 read by the user: the shadow and the bars go; one designer at `max` designs the day again** `decisions/021-040.md`
 34. **Sketch 11 turned down; the page is reframed around the trainee's features and the usual day; briefs carry few limits** `decisions/021-040.md`
 35. **Popular Times seen first-hand; the reasons for the rejections** `decisions/021-040.md`
+36. **The sketch 12 brief's limits, read line by line with the user** `decisions/021-040.md`
