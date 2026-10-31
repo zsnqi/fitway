@@ -317,3 +317,8 @@ the public page are numbered here.
       reading item 3; the resume's line now names them.
     - Research `D:/fitway-temp/public-redesign-r01-imagegen-research/REPORT.md`; prompts
       `briefs/imagegen-public-prompts-21.md`; run folder `D:/fitway-temp/public-redesign-r01-imagegen-21/`.
+    - **The ten images came back the same day** (`A1`-`A6`, `B1`-`B4` and `sheet-A-over-B.png` in the run folder).
+      The user found them beautiful. The coordinator read all ten as holding the identity and copying nothing from the
+      other gym. The references changed the compositions little: they brought the real logo (the prompts never named
+      it), a calmer light and finer secondary type. The user agreed the bars as the curve's form and called A4 loud;
+      an edit prompt for A4 is in the prompts file. No direction is chosen yet.
