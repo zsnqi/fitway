@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (a round of generated
-  images opened before round 3 resumes)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-28; 28 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (the generated images
+  narrowed the direction to B4 with bars and the light from "Now")
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-29; 29 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -48,12 +48,13 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-0. **The generated images come first** (item 28; prompts
-   `docs/phase-records/handoffs/public-redesign/briefs/imagegen-public-prompts-21.md`, references and results in
-   `D:/fitway-temp/public-redesign-r01-imagegen-21/`). The user runs sets A and B in the ChatGPT chat and brings the
-   ten images back; the coordinator reviews them against the prompts, writes edit prompts ("change only X, keep Y")
-   where the user wants one, and the user decides whether a direction from them replaces or adjusts B before round 3
-   resumes.
+0. **A sketch of the narrowed direction, on the user's word** (item 29; the images and `sheet-A-over-B.png` in
+   `D:/fitway-temp/public-redesign-r01-imagegen-21/`, prompts
+   `docs/phase-records/handoffs/public-redesign/briefs/imagegen-public-prompts-21.md`). The base is B4. Add B3's
+   count and percentage side by side, and bars of one colour with only the bar at "Now" lit. Try the light rising
+   from "Now" in switchable variants, beside the corner light. A designer builds it as a sketch beside B's page, in
+   Arabic and English, on the phone and the computer. In Arabic time runs right to left, as Eclipse's
+   own day line does (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`). Round 3's English work on `adc665f6` waits until the user picks between this and B.
 1. **Round 3, English and a last polish, resumes** (items 24-27; brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
    `D:/fitway-temp/public-redesign-r01-english-20/`). `adc665f6` holds the stopped designer's unverified work (English
@@ -108,7 +109,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The ten generated images (step 0, item 28). Round 3 waits for the user's decision on them. No app was named (item 10).
+The go-ahead for step 0's sketch (item 29). Round 3 waits for it. No app was named (item 10).
 
 ## Known risks
 

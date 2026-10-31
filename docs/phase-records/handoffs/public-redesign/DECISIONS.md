@@ -322,3 +322,16 @@ the public page are numbered here.
       other gym. The references changed the compositions little: they brought the real logo (the prompts never named
       it), a calmer light and finer secondary type. The user agreed the bars as the curve's form and called A4 loud;
       an edit prompt for A4 is in the prompts file. No direction is chosen yet.
+29. **The direction narrowed from the images** (the user, 2026-10-31, on the coordinator's reading of the ten).
+    - **B4 is the base**: «B4 احسن من A4 ب الترتيب ... وبشكل عام التصميم كامل». The level word leads in FITWAY red,
+      the count follows on one line, then the percentage, today's curve, the best time, and the open and Live line.
+      The A4 edit is not run («ما يحتاج لان اصلا B4 سوت الشي دا»).
+    - **The count and the percentage as B3 sets them**, side by side under the lead. The page must still read whole
+      when the owner turns the percentage off (item 4).
+    - **The curve as bars** (agreed with the coordinator), **without B2's ramp from graphite through deep red to red**
+      («ما افضل التدريج»).
+    - **The light rising from "Now"** is to be tried («بنجربها»), but not as B3 drew it: the user expects it to come
+      out better when the team designs it, and asked whether bars change it. The coordinator's answer: they do; with a
+      line the light comes from a point, and with bars from a lit column.
+    - Next, on the user's word: a designer builds this as a sketch beside B's page, Arabic and English, phone and
+      computer, with the light's variants switchable; B's `public.html` stays as it is until the user accepts.
