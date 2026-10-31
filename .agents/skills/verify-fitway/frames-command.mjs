@@ -1,0 +1,213 @@
+// Capture the exact public frames a designer brief names, without state recipes.
+import { writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import { requireForcedColors } from "./colors.mjs";
+import { resolveConceptSide } from "./concept-source.mjs";
+import {
+	jsonOutput,
+	outputFile,
+	ownedSession,
+	preview,
+	ReportedFailure,
+	verificationPort,
+} from "./core.mjs";
+import { contextOptions } from "./drive-plan.mjs";
+import { framePlan } from "./frame-plan.mjs";
+import { captureViewport, prepareViewport } from "./viewport-capture.mjs";
+
+function frameEntry(frame, page) {
+	return {
+		file: frame.file,
+		page,
+		state: frame.state,
+		language: frame.language,
+		size: frame.size,
+		cssWidth: frame.cssWidth,
+		cssHeight: frame.cssHeight,
+		density: frame.density,
+		input: frame.input,
+		motion: frame.motion,
+		transport: frame.transport,
+		colours: frame.colours,
+		query: frame.query,
+		readiness: null,
+		status: "capturing",
+		errors: [],
+	};
+}
+
+function pageEnvironment(page) {
+	return page.evaluate(() => ({
+		lang: document.documentElement.lang,
+		direction: getComputedStyle(document.documentElement).direction,
+		pointer: matchMedia("(pointer: coarse)").matches ? "coarse" : "fine",
+	}));
+}
+
+function finishEntry(entry, errors) {
+	entry.errors.push(...errors);
+	entry.consoleErrors = entry.errors.filter((error) =>
+		error.startsWith("console:"),
+	);
+	entry.pageErrors = entry.errors.filter((error) =>
+		error.startsWith("pageerror:"),
+	);
+	entry.failures = entry.errors.filter(
+		(error) => !error.startsWith("console:"),
+	);
+	entry.status = entry.failures.length ? "failed" : "captured";
+}
+
+async function captureFrame(
+	options,
+	setup,
+	plan,
+	ui,
+	browser,
+	origin,
+	frame,
+	cancelled,
+) {
+	if (cancelled())
+		throw new Error("Frame capture interrupted; owned resources cleaned up.");
+	const size = plan.sizes.find((item) => item.name === frame.size);
+	const current = await ui.newContext(
+		browser,
+		contextOptions({
+			...size.dimensions,
+			dsf: frame.density,
+			input: frame.input,
+			motion: frame.motion,
+			color: frame.colours,
+			language: frame.language,
+		}),
+	);
+	current.page.setDefaultTimeout(5000);
+	const entry = frameEntry(frame, plan.selected.page);
+	try {
+		const url = ui.withParams(
+			frame.transport === "file"
+				? pathToFileURL(resolve(setup.concept, plan.selected.page)).href
+				: `${origin}/${plan.selected.page}`,
+			frame.query,
+		);
+		entry.url = url;
+		entry.readiness = await prepareViewport(
+			ui,
+			current.page,
+			url,
+			plan.selected.ready,
+		);
+		Object.assign(entry, await pageEnvironment(current.page));
+		const png = await captureViewport(ui, current.page);
+		const decoded = ui.decodePNG(png);
+		await writeFile(await outputFile(options.out, frame.file), png);
+		entry.pngWidth = decoded.w;
+		entry.pngHeight = decoded.h;
+		entry.pixelHash = ui.pixelHash(decoded);
+	} catch (error) {
+		entry.errors.push(error.message);
+	} finally {
+		finishEntry(entry, current.errors);
+		await current.context.close();
+	}
+	console.log(
+		`FRAME ${entry.status.toUpperCase()}: ${entry.file}${entry.errors.length ? `; ${entry.errors[0]}` : ""}`,
+	);
+	return entry;
+}
+
+async function frameOrigin(options, setup, plan, port) {
+	if (!plan.frames.some((frame) => frame.transport === "http")) return {};
+	if (options.session) {
+		const session = await ownedSession(options.session);
+		if (session.concept !== setup.concept)
+			throw new Error("Session serves another concept");
+		return { origin: `http://127.0.0.1:${session.port}` };
+	}
+	const server = await preview({
+		concept: setup.concept,
+		port,
+		cache: "no-store",
+	});
+	return { origin: server.origin, server };
+}
+
+async function finishFrames(options, manifest) {
+	await jsonOutput(options.out, "manifest.json", manifest);
+	const failed = manifest.items.filter((entry) => entry.status === "failed");
+	console.log(
+		`FRAMES ${failed.length ? "FAIL" : "PASS"}: ${manifest.items.length} frames; no state proof claimed; evidence ${options.out}/manifest.json`,
+	);
+	if (failed.length)
+		throw new ReportedFailure(
+			"Uncaught page errors; every frame was saved before exit.",
+		);
+	return manifest;
+}
+
+export async function framesCommand(options, { doctor }) {
+	const source = resolveConceptSide(options, "build");
+	try {
+		const resolved = {
+			...options,
+			concept: source.concept,
+			recipes: source.recipes,
+		};
+		const setup = await doctor({
+			...resolved,
+			framesOnly: true,
+			quiet: true,
+		});
+		const plan = framePlan(setup.map, resolved);
+		if (plan.frames.some((frame) => frame.colours === "forced"))
+			await requireForcedColors(setup.tools);
+		const port = verificationPort(options.port || 3176);
+		const ui = await import(
+			pathToFileURL(resolve(setup.tools, "scripts/web/lib.mjs")).href
+		);
+		let server;
+		let browser;
+		let origin;
+		let cancelled = false;
+		const manifest = {
+			schema: 2,
+			...options.commandManifest,
+			concept: setup.concept,
+			page: plan.selected.page,
+			items: [],
+		};
+		const abort = () => {
+			cancelled = true;
+			browser?.close().catch(() => undefined);
+			server?.close().catch(() => undefined);
+		};
+		process.once("SIGINT", abort);
+		process.once("SIGTERM", abort);
+		try {
+			({ origin, server } = await frameOrigin(options, setup, plan, port));
+			browser = await ui.launchChromium(setup.loaded);
+			for (const frame of plan.frames)
+				manifest.items.push(
+					await captureFrame(
+						options,
+						setup,
+						plan,
+						ui,
+						browser,
+						origin,
+						frame,
+						() => cancelled,
+					),
+				);
+			return await finishFrames(options, manifest);
+		} finally {
+			await Promise.allSettled([browser?.close(), server?.close()]);
+			process.removeListener("SIGINT", abort);
+			process.removeListener("SIGTERM", abort);
+		}
+	} finally {
+		source.cleanup();
+	}
+}

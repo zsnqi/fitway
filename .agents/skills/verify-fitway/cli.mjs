@@ -51,6 +51,7 @@ import {
 	coverageProblems,
 	drift,
 	generateMap,
+	readRecipes,
 	repairRecipes,
 	repository,
 } from "./map.mjs";
@@ -177,20 +178,20 @@ function mapFor(options, concept) {
 	};
 }
 
-async function doctorChecks(options) {
-	verificationPort(options.port || 3176);
-	const concept = canonical(options.concept);
-	if (options.session) {
-		const session = await ownedSession(options.session);
-		if (session.concept !== concept)
-			throw new Error(
-				"Session serves a different concept; launch the supplied concept.",
-			);
-	}
-	if (!existsSync(resolve(concept, "tools/probes/lib.mjs")))
-		throw new Error(
-			`Probe kit missing: ${concept}/tools/probes/lib.mjs; use the current Eclipse build (main does not have it).`,
-		);
+function frameMapFor(options, concept) {
+	const path = options.recipes || resolve(concept, "verification-recipes.json");
+	const recipes = existsSync(path)
+		? readRecipes(concept, path).recipes
+		: { schema: 1, pages: {} };
+	return {
+		map: generateMap(concept, path, recipes),
+		path: existsSync(path)
+			? `source discovery; recipe metadata ${path}`
+			: "source discovery; no recipe metadata",
+	};
+}
+
+function browserHarness(options) {
 	const tools = forensicsPath(options);
 	for (const file of [
 		"SKILL.md",
@@ -201,12 +202,35 @@ async function doctorChecks(options) {
 			throw new Error(
 				`ui-forensics missing: ${tools}/${file}; install the user's ui-forensics skill (cloud sessions cannot drive this concept).`,
 			);
-	const loaded = playwright(concept);
+	const loaded = playwright(options.concept || repository);
 	if (!existsSync(loaded.pw.chromium.executablePath()))
 		throw new Error(
 			"Playwright Chromium missing; run pnpm exec playwright install chromium in the repository.",
 		);
-	const { map, path } = mapFor(options, concept);
+	return { tools, loaded };
+}
+
+async function doctorChecks(options) {
+	verificationPort(options.port || 3176);
+	const concept = canonical(options.concept);
+	if (options.session) {
+		const session = await ownedSession(options.session);
+		if (session.concept !== concept)
+			throw new Error(
+				"Session serves a different concept; launch the supplied concept.",
+			);
+	}
+	if (
+		!options.framesOnly &&
+		!existsSync(resolve(concept, "tools/probes/lib.mjs"))
+	)
+		throw new Error(
+			`Probe kit missing: ${concept}/tools/probes/lib.mjs; use the current Eclipse build (main does not have it).`,
+		);
+	const { tools, loaded } = browserHarness(options);
+	const { map, path } = options.framesOnly
+		? frameMapFor(options, concept)
+		: mapFor(options, concept);
 	if (options.tools?.split(",").includes("diff")) {
 		try {
 			await child(process.platform === "win32" ? "py" : "python3", [
@@ -537,6 +561,18 @@ function writesOutput(command) {
 	);
 }
 
+async function runPublicCommand(command, options, owned) {
+	if (command === "frames")
+		return (await import("./frames-command.mjs")).framesCommand(options, owned);
+	if (command === "drive")
+		return (await import("./drive-command.mjs")).driveCommand(options, owned);
+	if (command !== "sheet") return undefined;
+	return (await import("./sheet-command.mjs")).sheetCommand(options, {
+		...owned,
+		browserHarness: () => browserHarness(options),
+	});
+}
+
 export async function main(input, services = {}) {
 	const parsed = Array.isArray(input)
 		? resolveToolArguments("verify:owner", input)
@@ -730,8 +766,8 @@ async function dispatch(command, options, services) {
 	}
 	if (command === "launch") return launch(options);
 	if (command === "doctor") return doctor(options);
-	if (command === "drive")
-		return (await import("./drive-command.mjs")).driveCommand(options, owned);
+	const publicCommand = await runPublicCommand(command, options, owned);
+	if (publicCommand !== undefined) return publicCommand;
 	throw new Error(`Unknown command: ${command}; run help.`);
 }
 

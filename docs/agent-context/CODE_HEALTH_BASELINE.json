@@ -124,7 +124,7 @@
 		},
 		".agents/skills/verify-fitway/map.mjs": {
 			"longFunctions": 5,
-			"longFunctionLines": 682
+			"longFunctionLines": 675
 		},
 		".agents/skills/verify-fitway/reaches.mjs": {
 			"longFunctions": 4,
@@ -133,7 +133,7 @@
 		".agents/skills/verify-fitway/runner.mjs": {
 			"duplication": 2,
 			"longFunctions": 2,
-			"longFunctionLines": 1182,
+			"longFunctionLines": 1170,
 			"emptyBlocks": 3
 		},
 		".agents/skills/verify-fitway/timeline-hold.test.mjs": {
@@ -921,7 +921,7 @@
 			"expectCalls": 471
 		},
 		".agents/skills/verify-fitway": {
-			"testCases": 14
+			"testCases": 15
 		},
 		"apps/server/src": {
 			"testCases": 215,

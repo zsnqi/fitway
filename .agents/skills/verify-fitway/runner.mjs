@@ -43,6 +43,7 @@ import {
 	observeTimeline,
 	timelineTimes,
 } from "./timeline.mjs";
+import { captureViewport, prepareViewport } from "./viewport-capture.mjs";
 import { runWorkers } from "./worker-pool.mjs";
 
 // Before a timed action: reach the last action's target as its input does, settle, then arm.
@@ -234,11 +235,7 @@ export async function drive(options) {
 												await outputFile(out, name),
 												options.comparisonCapture
 													? await captureComparison(current.page)
-													: await ui.screenshot(current.page, {
-															method: "playwright",
-															fullPage: false,
-															animations: "allow",
-														}),
+													: await captureViewport(ui, current.page),
 											);
 											entry.files.push(name);
 										};
@@ -250,13 +247,11 @@ export async function drive(options) {
 												entry.query,
 											);
 											entry.url = url;
-											entry.readiness = await ui.preparePage(
+											entry.readiness = await prepareViewport(
+												ui,
 												current.page,
 												url,
-												{
-													readyJs: selected.ready,
-													timeout: 15000,
-												},
+												selected.ready,
 											);
 											if (input === "keyboard")
 												entry.initialFocus = await focusedElement(current.page);

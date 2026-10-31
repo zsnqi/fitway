@@ -20,6 +20,8 @@ export const newContext=async()=>({errors:[],emulation:{},context:{route:none,cl
 export const launchChromium=async()=>({close:none});
 export const withParams=(url)=>url;
 export const preparePage=async()=>({ready:true});
+export const decodePNG=()=>({w:1440,h:900,d:Buffer.alloc(4)});
+export const pixelHash=()=>"frame-pixels";
 export {frame as screenshot,none as twoFrames,none as injectProbe,none as renderSheet};
 `;
 

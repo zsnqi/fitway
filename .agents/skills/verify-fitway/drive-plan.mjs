@@ -40,6 +40,7 @@ export function contextOptions({
 	width,
 	height,
 	zoom,
+	dsf,
 	input,
 	motion,
 	color,
@@ -48,6 +49,7 @@ export function contextOptions({
 	return {
 		viewport: { width, height },
 		zoom: zoom || 1,
+		dsf: dsf || 1,
 		touch: input === "touch",
 		mobile: input === "touch" && width / (zoom || 1) <= 720,
 		reducedMotion: motion === "reduce" ? "reduce" : "no-preference",

@@ -12,6 +12,15 @@ import {
 import { validateStateRules } from "./state-rules.mjs";
 
 export { discoverElements, extractDependencies, repository };
+export const VIEWPORT_SIZES = Object.freeze({
+	desktop: { width: 1440, height: 900 },
+	boundary: { width: 1024, height: 900 },
+	tablet: { width: 768, height: 1024 },
+	phone: { width: 390, height: 844 },
+	phone360: { width: 360, height: 780 },
+	narrow: { width: 320, height: 844 },
+	zoom: { width: 1440, height: 900, zoom: 2 },
+});
 
 const hash = (text) => createHash("sha256").update(text).digest("hex");
 const domains = {};
@@ -378,14 +387,7 @@ export function generateMap(concept, recipePath, suppliedRecipes) {
 		recipePath: path,
 		recipesHash: hash(JSON.stringify(recipes)),
 		pages,
-		sizes: {
-			desktop: { width: 1440, height: 900 },
-			boundary: { width: 1024, height: 900 },
-			tablet: { width: 768, height: 1024 },
-			phone: { width: 390, height: 844 },
-			narrow: { width: 320, height: 844 },
-			zoom: { width: 1440, height: 900, zoom: 2 },
-		},
+		sizes: VIEWPORT_SIZES,
 		sources: [...sources].map(([file, text]) => ({ file, sha256: hash(text) })),
 	};
 }
