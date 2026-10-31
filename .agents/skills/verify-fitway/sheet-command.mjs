@@ -6,7 +6,8 @@ import { jsonOutput, outputFile } from "./core.mjs";
 import { renderFrameSheet } from "./frame-sheet-render.mjs";
 import { frameLayout, manifestDensity, parseSheetRows } from "./sheet-plan.mjs";
 
-async function readFrames(rows) {
+// Reads every frame's PNG bytes, refusing a missing or unreadable file by its path.
+export async function readSheetFrames(rows) {
 	return Promise.all(
 		rows.map((row) =>
 			Promise.all(
@@ -35,7 +36,8 @@ async function frameManifest(folder, cache) {
 	return cache.get(folder);
 }
 
-async function planSheetFrames(files, readPng) {
+// Plans each read frame's drawn CSS size from its decoded PNG and its frames manifest's density.
+export async function planSheetFrames(files, decodePng) {
 	const manifests = new Map();
 	return Promise.all(
 		files.map((row) =>
@@ -43,7 +45,7 @@ async function planSheetFrames(files, readPng) {
 				row.map(async (frame) => {
 					let png;
 					try {
-						png = readPng(frame.png);
+						png = decodePng(frame.png);
 					} catch (error) {
 						throw new Error(`Unreadable PNG ${frame.path}: ${error.message}`, {
 							cause: error,
@@ -83,18 +85,13 @@ function measuredFrames(planned, measured) {
 	}));
 }
 
-export async function sheetCommand(options, { browserHarness, decodePng }) {
-	const rows = parseSheetRows(options.extra);
-	const files = await readFrames(rows);
-	const runtime = decodePng ? null : await browserHarness();
-	const ui = runtime
-		? await import(
-				pathToFileURL(resolve(runtime.tools, "scripts/web/lib.mjs")).href
-			)
-		: null;
-	const readPng = decodePng || ui.decodePNG;
-	const planned = await planSheetFrames(files, readPng);
-	if (!runtime) throw new Error("Sheet rendering requires browser tools");
+export async function sheetCommand(options, { browserHarness }) {
+	const files = await readSheetFrames(parseSheetRows(options.extra));
+	const runtime = await browserHarness();
+	const ui = await import(
+		pathToFileURL(resolve(runtime.tools, "scripts/web/lib.mjs")).href
+	);
+	const planned = await planSheetFrames(files, ui.decodePNG);
 	const browser = await ui.launchChromium(runtime.loaded);
 	try {
 		const sheetPath = await outputFile(options.out, "sheet.png");

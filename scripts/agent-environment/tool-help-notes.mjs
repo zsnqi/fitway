@@ -82,7 +82,7 @@ export const OWNER_NOTES = Object.freeze([
 	`  pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile`,
 ]);
 
-function publicFrameCommands({ ownerOptions, flag, value, exits }) {
+function publicFrameCommands({ ownerOptions, value, exits }) {
 	return [
 		{
 			name: "frames",
@@ -124,10 +124,6 @@ function publicFrameCommands({ ownerOptions, flag, value, exits }) {
 					sample: "Public frames",
 					freeText: true,
 				}),
-				flag(
-					"--row",
-					"Start another sheet row after the passthrough separator.",
-				),
 			],
 			requiredOptions: ["--out"],
 			passthrough: true,
@@ -141,7 +137,7 @@ function publicFrameCommands({ ownerOptions, flag, value, exits }) {
 
 export function ownerTailCommands({ ownerOptions, flag, value, exits }) {
 	return [
-		...publicFrameCommands({ ownerOptions, flag, value, exits }),
+		...publicFrameCommands({ ownerOptions, value, exits }),
 		{
 			name: "measure",
 			usage:

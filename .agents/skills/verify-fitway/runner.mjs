@@ -2,6 +2,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { openCaptureLifecycle } from "./capture-lifecycle.mjs";
 import { captureIdentity, itemSummary, safe } from "./capture-records.mjs";
 import { requireForcedColors } from "./colors.mjs";
 import {
@@ -13,8 +14,6 @@ import {
 import {
 	jsonOutput,
 	outputFile,
-	ownedSession,
-	preview,
 	ReportedFailure,
 	shortFinding,
 	verificationPort,
@@ -103,10 +102,6 @@ export async function drive(options) {
 	process.env.PROBE_PORT = String(port);
 	const ui = await import(pathToFileURL(resolve(tools, "scripts/web/lib.mjs")));
 	const probes = await loadProbes(concept);
-	let server;
-	let browser;
-	let origin;
-	let cancelled = false;
 	const manifest = captureManifest(options, concept, probes, selected.page);
 	let manifestWrites = Promise.resolve();
 	const writeManifest = () => {
@@ -118,44 +113,35 @@ export async function drive(options) {
 		);
 		return manifestWrites;
 	};
-	const abort = () => {
-		cancelled = true;
-		browser?.close().catch(() => {});
-		server?.close().catch(() => {});
-	};
-	process.once("SIGINT", abort);
-	process.once("SIGTERM", abort);
-	try {
-		if (transports.includes("http")) {
-			if (options.compareRuntime) {
-				origin = await options.compareRuntime.origin(
+	// Compare's runtime serves the origin and owns the browser; the lifecycle owns the rest.
+	const capture = openCaptureLifecycle({
+		concept,
+		port,
+		cache: options.cache,
+		session: options.session,
+		http: transports.includes("http"),
+		origin:
+			options.compareRuntime &&
+			(() =>
+				options.compareRuntime.origin(
 					concept,
 					port,
 					options.cache || "no-store",
-				);
-			} else if (options.session) {
-				const session = await ownedSession(options.session);
-				if (session.concept !== concept)
-					throw new Error("Session serves another concept");
-				origin = `http://127.0.0.1:${session.port}`;
-			} else {
-				server = await preview({
-					concept,
-					port,
-					cache: options.cache || "no-store",
-				});
-				origin = server.origin;
-			}
-		}
+				)),
 		// Partial raster reuse can round animated, fractional button edges differently
 		// after the animation has ended. Compare paints fresh tiles on both sides.
-		browser = options.compareRuntime
-			? await options.compareRuntime.browser(ui, loaded)
-			: options.comparisonCapture
-				? await ui.launchChromium(loaded, {
-						args: ["--disable-partial-raster"],
-					})
-				: await ui.launchChromium(loaded);
+		launch: () =>
+			options.compareRuntime
+				? options.compareRuntime.browser(ui, loaded)
+				: options.comparisonCapture
+					? ui.launchChromium(loaded, {
+							args: ["--disable-partial-raster"],
+						})
+					: ui.launchChromium(loaded),
+		keepBrowser: Boolean(options.compareRuntime),
+	});
+	try {
+		const { origin, browser } = await capture.start();
 		const jobs = [];
 		const serialLengths = [];
 		for (const feature of features)
@@ -168,7 +154,7 @@ export async function drive(options) {
 									const jobIndex = jobs.length;
 									jobs.push(async () => {
 										serialLengths[jobIndex] = manifest.items.length;
-										if (cancelled)
+										if (capture.cancelled())
 											throw new Error(
 												"Drive interrupted; owned resources cleaned up.",
 											);
@@ -731,12 +717,7 @@ export async function drive(options) {
 			);
 		return manifest;
 	} finally {
-		await Promise.allSettled([
-			options.compareRuntime ? undefined : browser?.close(),
-			server?.close(),
-		]);
-		process.removeListener("SIGINT", abort);
-		process.removeListener("SIGTERM", abort);
+		await capture.close();
 		await jsonOutput(out, "manifest.json", manifest);
 	}
 }

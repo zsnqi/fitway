@@ -3,7 +3,11 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
-import { sheetCommand } from "./sheet-command.mjs";
+import {
+	planSheetFrames,
+	readSheetFrames,
+	sheetCommand,
+} from "./sheet-command.mjs";
 import { frameLayout, manifestDensity, parseSheetRows } from "./sheet-plan.mjs";
 
 test("sheet rows keep order and split only at --row", () => {
@@ -77,22 +81,11 @@ test("unreadable PNG bytes are refused before a browser starts", async () => {
 	try {
 		const file = resolve(root, "broken.png");
 		await writeFile(file, "not a png");
+		const files = await readSheetFrames(parseSheetRows([`broken=${file}`]));
 		await assert.rejects(
-			sheetCommand(
-				{
-					extra: [`broken=${file}`],
-					out: root,
-					commandManifest: {},
-				},
-				{
-					decodePng: () => {
-						throw new Error("not a PNG");
-					},
-					browserHarness: () => {
-						throw new Error("browser must not start");
-					},
-				},
-			),
+			planSheetFrames(files, () => {
+				throw new Error("not a PNG");
+			}),
 			/Unreadable PNG .*broken\.png/,
 		);
 	} finally {

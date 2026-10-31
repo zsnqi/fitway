@@ -133,8 +133,8 @@
 		".agents/skills/verify-fitway/runner.mjs": {
 			"duplication": 2,
 			"longFunctions": 2,
-			"longFunctionLines": 1170,
-			"emptyBlocks": 3
+			"longFunctionLines": 1152,
+			"emptyBlocks": 1
 		},
 		".agents/skills/verify-fitway/timeline-hold.test.mjs": {
 			"duplication": 2,

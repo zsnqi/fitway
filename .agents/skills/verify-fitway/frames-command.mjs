@@ -2,13 +2,12 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { openCaptureLifecycle } from "./capture-lifecycle.mjs";
 import { requireForcedColors } from "./colors.mjs";
 import { resolveConceptSide } from "./concept-source.mjs";
 import {
 	jsonOutput,
 	outputFile,
-	ownedSession,
-	preview,
 	ReportedFailure,
 	verificationPort,
 } from "./core.mjs";
@@ -59,16 +58,9 @@ function finishEntry(entry, errors) {
 	entry.status = entry.failures.length ? "failed" : "captured";
 }
 
-async function captureFrame(
-	options,
-	setup,
-	plan,
-	ui,
-	browser,
-	origin,
-	frame,
-	cancelled,
-) {
+// runtime is the capture lifecycle's origin and browser, and its cancelled().
+async function captureFrame(options, setup, plan, ui, runtime, frame) {
+	const { origin, browser, cancelled } = runtime;
 	if (cancelled())
 		throw new Error("Frame capture interrupted; owned resources cleaned up.");
 	const size = plan.sizes.find((item) => item.name === frame.size);
@@ -118,22 +110,6 @@ async function captureFrame(
 	return entry;
 }
 
-async function frameOrigin(options, setup, plan, port) {
-	if (!plan.frames.some((frame) => frame.transport === "http")) return {};
-	if (options.session) {
-		const session = await ownedSession(options.session);
-		if (session.concept !== setup.concept)
-			throw new Error("Session serves another concept");
-		return { origin: `http://127.0.0.1:${session.port}` };
-	}
-	const server = await preview({
-		concept: setup.concept,
-		port,
-		cache: "no-store",
-	});
-	return { origin: server.origin, server };
-}
-
 async function finishFrames(options, manifest) {
 	await jsonOutput(options.out, "manifest.json", manifest);
 	const failed = manifest.items.filter((entry) => entry.status === "failed");
@@ -167,10 +143,6 @@ export async function framesCommand(options, { doctor }) {
 		const ui = await import(
 			pathToFileURL(resolve(setup.tools, "scripts/web/lib.mjs")).href
 		);
-		let server;
-		let browser;
-		let origin;
-		let cancelled = false;
 		const manifest = {
 			schema: 2,
 			...options.commandManifest,
@@ -178,34 +150,22 @@ export async function framesCommand(options, { doctor }) {
 			page: plan.selected.page,
 			items: [],
 		};
-		const abort = () => {
-			cancelled = true;
-			browser?.close().catch(() => undefined);
-			server?.close().catch(() => undefined);
-		};
-		process.once("SIGINT", abort);
-		process.once("SIGTERM", abort);
+		const capture = openCaptureLifecycle({
+			concept: setup.concept,
+			port,
+			session: options.session,
+			http: plan.frames.some((frame) => frame.transport === "http"),
+			launch: () => ui.launchChromium(setup.loaded),
+		});
 		try {
-			({ origin, server } = await frameOrigin(options, setup, plan, port));
-			browser = await ui.launchChromium(setup.loaded);
+			const runtime = await capture.start();
 			for (const frame of plan.frames)
 				manifest.items.push(
-					await captureFrame(
-						options,
-						setup,
-						plan,
-						ui,
-						browser,
-						origin,
-						frame,
-						() => cancelled,
-					),
+					await captureFrame(options, setup, plan, ui, runtime, frame),
 				);
 			return await finishFrames(options, manifest);
 		} finally {
-			await Promise.allSettled([browser?.close(), server?.close()]);
-			process.removeListener("SIGINT", abort);
-			process.removeListener("SIGTERM", abort);
+			await capture.close();
 		}
 	} finally {
 		source.cleanup();

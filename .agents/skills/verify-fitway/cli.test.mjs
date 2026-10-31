@@ -47,6 +47,7 @@ import {
 	reachByKeyboard,
 } from "./drive.mjs";
 import { inputAxis, resolveQuery, stateCases } from "./drive-plan.mjs";
+import { assertGuideOptions } from "./guide-options.mjs";
 import {
 	coverageProblems,
 	discoverElements,
@@ -3869,123 +3870,6 @@ test("V7: navigation settles before the action returns and a wrong destination f
 	assert.equal(focusReads, 2);
 });
 
-function usageCliOptions(helpText) {
-	const options = new Set();
-	const lines = helpText.split(/\r?\n/);
-	const start = lines.findIndex((line) => line.trim() === "Commands:");
-	for (let index = start + 1; index < lines.length; index++) {
-		const line = lines[index];
-		if (!/^\s{2,}\S/.test(line)) break;
-		for (const match of line.matchAll(/--[a-z][a-z0-9-]*/g))
-			options.add(match[0]);
-	}
-	return options;
-}
-
-function shellSegments(command) {
-	const segments = [];
-	let current = [];
-	let tokenStart = null;
-	let quote = null;
-	const pushToken = (end) => {
-		if (tokenStart === null) return;
-		if (end > tokenStart)
-			current.push({
-				text: command.slice(tokenStart, end),
-				index: tokenStart,
-			});
-		tokenStart = null;
-	};
-	for (let index = 0; index < command.length; index++) {
-		const character = command[index];
-		if (quote) {
-			if (character === quote) quote = null;
-			continue;
-		}
-		if (character === "'" || character === '"') {
-			if (tokenStart === null) tokenStart = index;
-			quote = character;
-			continue;
-		}
-		if (/\s/.test(character)) {
-			pushToken(index);
-			continue;
-		}
-		const separator =
-			character === ";"
-				? ";"
-				: character === "&" || character === "|"
-					? command.startsWith(`${character}${character}`, index)
-						? `${character}${character}`
-						: character
-					: null;
-		if (!separator) {
-			if (tokenStart === null) tokenStart = index;
-			continue;
-		}
-		pushToken(index);
-		current.push({ text: separator, index, separator: true });
-		segments.push(current);
-		current = [];
-		index += separator.length - 1;
-	}
-	pushToken(command.length);
-	if (current.length) segments.push(current);
-	return segments;
-}
-
-function measureExemptRanges(skillText) {
-	const ranges = [];
-	const record = (command, offset) => {
-		for (const tokens of shellSegments(command)) {
-			const commandIndex =
-				tokens[0]?.text === "measure"
-					? 0
-					: tokens[0]?.text === "node" &&
-							tokens[1]?.text === "$cli" &&
-							tokens[2]?.text === "measure"
-						? 2
-						: -1;
-			if (commandIndex < 0) continue;
-			const separator = tokens.findIndex(
-				(token, index) => index > commandIndex && token.text === "--",
-			);
-			if (separator < 0) continue;
-			for (let index = separator + 1; index < tokens.length; index++) {
-				const option = /^--[a-z][a-z0-9-]*/.exec(tokens[index].text);
-				if (option)
-					ranges.push({
-						start: offset + tokens[index].index,
-						end: offset + tokens[index].index + option[0].length,
-					});
-			}
-		}
-	};
-	for (const match of skillText.matchAll(/`([^`\n]+)`/g))
-		record(match[1], match.index + 1);
-	for (const fence of skillText.matchAll(/```[^\n]*\n([\s\S]*?)```/g)) {
-		const body = fence[1];
-		const bodyStart = fence.index + fence[0].indexOf(body);
-		for (const line of body.matchAll(/[^\r\n]+/g))
-			record(line[0], bodyStart + line.index);
-	}
-	return ranges;
-}
-
-function assertGuideOptions(skillText, helpText) {
-	const cliOptions = usageCliOptions(helpText);
-	for (const option of cliOptions)
-		assert.ok(skillText.includes(option), `${option} is missing from SKILL.md`);
-	const exempt = measureExemptRanges(skillText);
-	for (const match of skillText.matchAll(/--[a-z][a-z0-9-]*/g))
-		if (
-			!exempt.some(
-				(range) => match.index >= range.start && match.index < range.end,
-			)
-		)
-			assert.ok(cliOptions.has(match[0]), `${match[0]} is not a CLI option`);
-}
-
 const measureSeparatorRejectCases = [
 	[
 		"semicolon attached to the preceding token",
@@ -4047,6 +3931,7 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 		"`measure --invented-before -- --allowed`",
 		"`compare --concept x -- --invented-other`",
 		"`measure --tool focus -- --allowed && other --invented-other`",
+		"`pnpm run-folder:new x --invented-run-folder`",
 		...measureSeparatorRejectCases.map(([, text]) => text),
 	])
 		assert.throws(
@@ -4058,6 +3943,7 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 		"`measure --tool focus --out <folder> -- --invented-tool`",
 		"`node $cli measure --tool focus --out <folder> -- --invented-tool-prefix`",
 		"```powershell\nmeasure --tool focus --out <folder> -- --invented-tool-fence\n```",
+		"`sheet --out <folder> -- -- --row 'a=b.png'`",
 		...measureSeparatorAcceptCases.map(([, text]) => text),
 	])
 		assert.doesNotThrow(() => assertGuideOptions(plant(text), help), text);

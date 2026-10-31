@@ -15,6 +15,7 @@ const HELP_MODULES = [
 	"image-diff.mjs",
 	"runner.mjs",
 	"viewport-capture.mjs",
+	"capture-lifecycle.mjs",
 	"capture-records.mjs",
 	"comparison-capture.mjs",
 	"drive-plan.mjs",

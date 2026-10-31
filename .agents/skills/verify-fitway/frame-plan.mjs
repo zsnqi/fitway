@@ -40,17 +40,18 @@ export function parseFrameSizes(value, sizes) {
 	return parsed;
 }
 
-function suffix(name, values, supplied) {
-	return supplied && values.length > 1 ? `-${safe(name)}` : "";
+// A name carries an axis value exactly when that axis has more than one value for the frame's size.
+function suffix(name, values) {
+	return values.length > 1 ? `-${safe(name)}` : "";
 }
 
+// Without --inputs the input axis is null here: stateFrames gives each size its one input.
 function frameAxes(options) {
-	const suppliedInputs = options.inputs !== undefined;
 	return {
-		suppliedInputs,
-		inputs: suppliedInputs
-			? axis(options.inputs, "", ["mouse", "touch", "keyboard"])
-			: null,
+		inputs:
+			options.inputs === undefined
+				? null
+				: axis(options.inputs, "", ["mouse", "touch", "keyboard"]),
 		motions: axis(options.motions, "reduce", ["reduce", "full"]),
 		transports: axis(options.transports, "http", ["http", "file"]),
 		colors: colorsAxis(options.colors),
@@ -63,10 +64,10 @@ function frameName(
 ) {
 	return (
 		[language, size.name, safe(state.name)].join("-") +
-		suffix(input, axes.effectiveInputs, axes.suppliedInputs) +
-		suffix(motion, axes.motions, axes.motionsSupplied) +
-		suffix(transport, axes.transports, axes.transportsSupplied) +
-		suffix(color, axes.colors, axes.colorsSupplied) +
+		suffix(input, axes.inputs) +
+		suffix(motion, axes.motions) +
+		suffix(transport, axes.transports) +
+		suffix(color, axes.colors) +
 		".png"
 	);
 }
@@ -76,10 +77,12 @@ function stateFrames(state, language, size, axes) {
 	const zoom = dimensions.zoom || 1;
 	const cssWidth = dimensions.width / zoom;
 	const cssHeight = dimensions.height / zoom;
-	const effectiveInputs = axes.inputs || [cssWidth <= 720 ? "touch" : "mouse"];
+	const sizeAxes = {
+		...axes,
+		inputs: axes.inputs || [cssWidth <= 720 ? "touch" : "mouse"],
+	};
 	const frames = [];
-	const context = { ...axes, effectiveInputs };
-	for (const input of effectiveInputs)
+	for (const input of sizeAxes.inputs)
 		for (const motion of axes.motions)
 			for (const transport of axes.transports)
 				for (const color of axes.colors)
@@ -94,7 +97,7 @@ function stateFrames(state, language, size, axes) {
 								transport,
 								color,
 							},
-							context,
+							sizeAxes,
 						),
 						state: state.name,
 						query: {
@@ -140,12 +143,7 @@ export function framePlan(map, options) {
 			"Missing --sizes; use a comma list of <size> or <size>@<density>",
 		);
 	const sizes = parseFrameSizes(options.sizes, map.sizes);
-	const axes = {
-		...frameAxes(options),
-		motionsSupplied: options.motions !== undefined,
-		transportsSupplied: options.transports !== undefined,
-		colorsSupplied: options.colors !== undefined,
-	};
+	const axes = frameAxes(options);
 	const cases = stateCases(selected, options);
 	const frames = uniqueFrames(
 		cases.flatMap((state) =>

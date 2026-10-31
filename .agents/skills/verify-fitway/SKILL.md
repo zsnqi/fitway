@@ -172,9 +172,7 @@ pnpm consumes one forwarding separator, so each `sheet` example uses `-- --` to 
 tool's own `--` intact.
 
 ```powershell
-$briefFlag = '--' + 'brief'
-$ownerFlag = '--' + 'for'
-pnpm run-folder:new <run-name> $briefFlag <brief-file> $ownerFlag <owner>
+pnpm run-folder:new <run-name> --brief <brief-file> --for <owner>
 pnpm verify:owner frames --concept <concept-folder> --page <page> --languages en --sizes 'phone@3,phone360@3,desktop@2' --states '<chart=line&level=quiet>,<chart=dots&level=packed>' --out <run-folder>/frames
 pnpm verify:owner frames --ref <commit> --page <page> --languages en --sizes 'phone@3,phone360@3,desktop@2' --states '<chart=line&level=quiet>,<chart=dots&level=packed>' --out <run-folder>/frames
 pnpm verify:owner sheet --out <run-folder>/sheet-chart --title <sheet-title> -- -- '<phone-quiet>=<phone-quiet-png>' '<phone-packed>=<phone-packed-png>' --row '<desktop-quiet>=<desktop-quiet-png>' '<desktop-packed>=<desktop-packed-png>'
@@ -389,7 +387,9 @@ Verifier rules (one canonical statement):
 | [public designer frames](#public-designer-frames) | `frame-plan.mjs` | `parseFrameSizes`, `framePlan` |
 | public frame capture | `frames-command.mjs` | `framesCommand` |
 | public sheet layout | `sheet-plan.mjs` | `parseSheetRows`, `manifestDensity`, `frameLayout` |
-| public sheet capture | `sheet-command.mjs` | `sheetCommand` |
+| public sheet capture | `sheet-command.mjs` | `sheetCommand`, `readSheetFrames`, `planSheetFrames` |
+| drive and frames capture lifecycle | `capture-lifecycle.mjs` | `openCaptureLifecycle` |
+| SKILL guide option check | `guide-options.mjs` | `assertGuideOptions` |
 | exact image diff | `image-diff.mjs` | `diffImages` |
 | folder diff | `diff-folders.mjs` | `diffFolders` |
 | fixture copy | `fixture-copy.mjs` | `copyAllFixture`, `copyHelpFixture` |
@@ -403,6 +403,7 @@ Verifier rules (one canonical statement):
 | custom page action or scoped rewrite | `rewrite-page.test.mjs` and a `run` check in the run folder |
 | public frame matrix or names | `frame-plan.test.mjs` |
 | public sheet rows, density, refusals or scale | `sheet-plan.test.mjs` |
+| options this guide writes | the V5 and Y1 cases in `cli.test.mjs`, with `guide-options.mjs` |
 | command help, arguments and provenance | `tool-contract.test.ts`, `blocked-command-options.test.ts`, `skill-navigation.test.mjs` and `output-manifest.test.mjs` |
 | exact pair image diff | `diff-folders.test.mjs`, using the fake child shape from `cli.test.mjs` |
 | compare capture, verdict, or cache | `comparison-capture.test.mjs`, `compare-parallel.test.mjs`, or `invalidationCases` |
