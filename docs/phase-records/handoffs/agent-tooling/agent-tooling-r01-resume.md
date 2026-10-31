@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 00:20 +03:00
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 23:56 +03:00
   (item 23 done: both rounds merged, CI green on `9a81a355`, main advanced to it)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-23; 23 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -24,7 +24,7 @@
 
 ## Running now
 
-Measured 2026-11-01 00:20. Nothing of this milestone runs. main `9a81a355` (`pnpm main:advance`, after CI run
+Measured 2026-10-31 23:56. Nothing of this milestone runs. main `9a81a355` (`pnpm main:advance`, after CI run
 41238840993 passed; the run before it, 41238198065, failed on a `frames` test that needed ui-forensics, repaired in
 `9a81a355`).
 
