@@ -12,6 +12,10 @@ import {
 	auditTempCitations,
 	LOST_TEMP_EVIDENCE_PATH,
 } from "../.agents/skills/gardener/cited-evidence.mjs";
+import {
+	formatTempCitationDetails,
+	RUN_FOLDER_REPLACEMENT_FIX,
+} from "../.agents/skills/gardener/run-folder-provenance.mjs";
 import { readGit } from "./agent-environment/code-health-ratchet.mjs";
 import {
 	bomExceptionPathKey,
@@ -306,11 +310,13 @@ export async function verifyGardenerRecord(state, read = readBytes) {
 
 export async function assertTrackedTempCitations({
 	checkout = root,
+	stat,
 	tempRoot = "D:/fitway-temp",
 	trackedFiles,
 } = {}) {
 	const audit = await auditTempCitations({
 		checkout,
+		stat,
 		tempRoot,
 		trackedFiles,
 	});
@@ -330,17 +336,22 @@ export async function assertTrackedTempCitations({
 		);
 	}
 	if (audit.changed.length) {
-		const details = audit.changed
-			.map(
-				(citation) => `${citation.source}:${citation.line}: ${citation.path}`,
-			)
-			.join("\n");
+		const details = formatTempCitationDetails(audit.changed, { tempRoot });
 		throw new Error(
 			`Evidenced temp citations are gone on unlisted changed lines compared against ${audit.base}:\n${details}\nFix: correct each path, mark it (gone: <why>), or add one row per citation to ${LOST_TEMP_EVIDENCE_PATH}.`,
 		);
 	}
+	if (audit.provenanceFailures.length) {
+		const details = formatTempCitationDetails(audit.provenanceFailures, {
+			tempRoot,
+			withProvenance: true,
+		});
+		throw new Error(
+			`Evidenced temp citations lack run-folder provenance on changed lines compared against ${audit.base}:\n${details}\nFix: ${RUN_FOLDER_REPLACEMENT_FIX}`,
+		);
+	}
 	console.log(
-		`Evidenced temp citations passed compared against ${audit.base}: 0 unlisted on changed lines, ${audit.unchanged.length} unlisted on unchanged lines, ${audit.listed.length} listed.`,
+		`Evidenced temp citations passed compared against ${audit.base}: 0 unlisted on changed lines, ${audit.unchanged.length} unlisted on unchanged lines, ${audit.listed.length} listed, ${audit.legacyAccepted} legacy folders accepted without provenance.`,
 	);
 	return audit;
 }

@@ -14,3 +14,5 @@ pre-commit:
       stage_fixed: true
     - name: giant-files
       run: node scripts/agent-environment/check-staged-giant-files.mjs
+    - name: staged-evidence
+      run: node scripts/agent-environment/check-staged-evidence.mjs

@@ -3,6 +3,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { assertTrackedTempCitations } from "../../../scripts/verify-repository.mjs";
 import { checkoutFixture } from "./checkout-test-fixture.mjs";
+import { TEMP_PROVENANCE_CUTOFF } from "./run-folder-provenance.mjs";
+import { writeProvenance } from "./run-folder-test-fixture.mjs";
 
 const lostEvidencePath = "docs/agent-context/LOST_TEMP_EVIDENCE.tsv";
 
@@ -357,6 +359,73 @@ describe("tracked temp citation audit", () => {
 				`path\trecord\tline\tcause\n${row}`,
 			);
 			await expect(auditFiles(f)).rejects.toThrow(/LOST_TEMP_EVIDENCE\.tsv:2/);
+		} finally {
+			f.dispose();
+		}
+	});
+
+	it("applies run-folder provenance to changed existing citations", async () => {
+		const f = checkoutFixture("gardener-cited-evidence-");
+		try {
+			const folder = path.join(f.tempRoot, "made-by-hand");
+			const report = path.join(folder, "REPORT.md");
+			mkdirSync(folder);
+			writeFileSync(report, "report\n");
+			writeFileSync(path.join(f.checkout, "record.txt"), "No evidence yet.\n");
+			f.commit();
+			writeFileSync(
+				path.join(f.checkout, "record.txt"),
+				`Evidence: \`${report}\`\n`,
+			);
+			const stat = (file: string) => ({
+				birthtime: TEMP_PROVENANCE_CUTOFF,
+				isDirectory: () => file !== report,
+			});
+			await expect(
+				assertTrackedTempCitations({
+					checkout: f.checkout,
+					tempRoot: f.tempRoot,
+					trackedFiles: ["PROJECT_STATE.yaml", "record.txt"],
+					stat,
+				}),
+			).rejects.toThrow(/made-by-hand/);
+
+			writeProvenance(folder, "manifest", f.git(["rev-parse", "HEAD"]));
+			const accepted = await assertTrackedTempCitations({
+				checkout: f.checkout,
+				tempRoot: f.tempRoot,
+				trackedFiles: ["PROJECT_STATE.yaml", "record.txt"],
+				stat,
+			});
+			expect(accepted.provenanceFailures).toEqual([]);
+		} finally {
+			f.dispose();
+		}
+	});
+
+	it.each([
+		["a file in the run folder", "new-run/REPORT.md"],
+		["the run folder itself", "new-run"],
+		["the run folder with a trailing slash", "new-run/"],
+	])("names the run-folder command in a changed gone-citation failure of %s", async (_name, cited) => {
+		const f = checkoutFixture("gardener-cited-evidence-");
+		try {
+			writeFileSync(path.join(f.checkout, "record.txt"), "No evidence yet.\n");
+			f.commit();
+			const missing = path.join(f.tempRoot, cited);
+			writeFileSync(
+				path.join(f.checkout, "record.txt"),
+				`Evidence: \`${missing.replaceAll("\\", "/")}\`\n`,
+			);
+			await expect(
+				assertTrackedTempCitations({
+					checkout: f.checkout,
+					tempRoot: f.tempRoot,
+					trackedFiles: ["PROJECT_STATE.yaml", "record.txt"],
+				}),
+			).rejects.toThrow(
+				"Run folder not made yet? pnpm run-folder:new new-run --brief <file> --for <who>",
+			);
 		} finally {
 			f.dispose();
 		}

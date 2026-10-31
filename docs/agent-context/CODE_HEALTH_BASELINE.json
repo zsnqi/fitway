@@ -766,7 +766,7 @@
 		},
 		"scripts/agent-environment/check-brief.mjs": {
 			"longFunctions": 1,
-			"longFunctionLines": 134
+			"longFunctionLines": 129
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
 			"duplication": 3,
@@ -917,8 +917,8 @@
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 146,
-			"expectCalls": 471
+			"testCases": 176,
+			"expectCalls": 520
 		},
 		".agents/skills/verify-fitway": {
 			"testCases": 14
@@ -1044,8 +1044,8 @@
 			"expectCalls": 542
 		},
 		"scripts/agent-environment": {
-			"testCases": 386,
-			"expectCalls": 1126
+			"testCases": 393,
+			"expectCalls": 1137
 		},
 		"scripts/demo": {
 			"testCases": 17,
