@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (the generated images
-  narrowed the direction; the English sketch round launched)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-30; 30 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 8 read by the
+  user; the polish round launched)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-31; 31 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -54,8 +54,11 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
    `D:/fitway-temp/public-redesign-r01-imagegen-21/`). It is English only, on the phone and the computer, live at
    Busy. It starts from B4, with B3's count and percentage and A2-like bars. It has switchable glow ideas, the lead
    one rising from the "Now" bar. Built at `82f54e88` (item 30) and sent to the user with the LAN address
-   `http://192.168.8.186:3181/public-sketch-8.html`. Next: the user's reading of the four lights and of the items
-   left in item 30. After that, Arabic and the other states, or a second sketch round. In Arabic time runs right to left, as Eclipse's
+   `http://192.168.8.186:3181/public-sketch-8.html`. The user read it (item 31): the corner light, hourly bars,
+   one word size, and the page too black. **The polish round runs now** (brief
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-23.md`, run
+   `D:/fitway-temp/public-redesign-r01-polish-23/`, into `public-sketch-9.*`); the coordinator reviews its frames,
+   then sends the sheets with the LAN address of `public-sketch-9.html`. In Arabic time runs right to left, as Eclipse's
    own day line does (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`). Round 3's English work on `adc665f6` waits until the user picks between this and B.
 1. **Round 3, English and a last polish, resumes** (items 24-27; brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
@@ -111,7 +114,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The user's reading of sketch 8 (step 0, item 30). Round 3 waits for the user's pick after it. No app was named (item 10).
+Nothing until the polish round's frames are reviewed (step 0, item 31). Round 3 waits for the user's pick after it. No app was named (item 10).
 
 ## Known risks
 
