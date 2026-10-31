@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 9 read by the
-  user; sketch 10's brief ready for a new session)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 10 built and
+  reviewed; waiting on the user's reading)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-32; 32 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -20,11 +20,11 @@
 
 ## Running now
 
-Nothing (measured 2026-10-31). Public branch `public-redesign-r01` at sketch 9 (`ab7b7f63`) plus Markdown-only record
+Nothing (measured 2026-10-31). Public branch `public-redesign-r01` at sketch 10 (`6fb7adf4`), on Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
-`public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public-sketch-8.html` and
-`-9.html` the narrowed direction, `public.html` B's draft, `public-sketch-1.html` to `-7c.html` the earlier sketches.
+`public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public-sketch-8.html` to
+`-10.html` the narrowed direction, `public.html` B's draft, `public-sketch-1.html` to `-7c.html` the earlier sketches.
 
 - **Six directions from sketch 1, A-F** (items 10-12; briefs designer-public-sketches-6 and -7 in this
   file's briefs folder; `6a148a6d`, `7e22756e`; frames in `D:/fitway-temp/public-redesign-r01-sketches-{6,7}/`): the user
@@ -48,18 +48,16 @@ agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) i
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-0. **Sketch 10, in the new session the user opens** (item 32). The brief
-   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-24.md` passes `pnpm brief:check` in the
-   public worktree, where it already is (cherry-picked with this text). Launch a fresh `owner-direction-designer`
-   with it in the background; it writes `public-sketch-10.*` and `D:/fitway-temp/public-redesign-r01-polish-24/`.
-   Then look at its sheets yourself, push `public-redesign-r01`, record the result under item 32, start the LAN
-   entry if it is down, and send the user the sheets with `http://192.168.8.186:3181/public-sketch-10.html`.
-   - The round: the word off-white; the computer's word near 90 px; a shorter chart on the phone; two or three
-     whole charts (`?chart=`) with the usual Friday as a faint shadow behind the bars; red only at "Now"; no deep
-     red, ramp, equalizer or legend.
+0. **The user reads sketch 10** (item 32, "Built" and "Left for the user"). It is built (`6fb7adf4`) and reviewed
+   by the coordinator, and the sheets in `D:/fitway-temp/public-redesign-r01-polish-24/` were sent with
+   `http://192.168.8.186:3181/public-sketch-10.html` (`?chart=lit|rim|sky`). Record the user's reading as item 33
+   and write the next brief from it.
+   - The round: the word off-white; the computer's word near 90 px; a shorter chart on the phone; three whole
+     charts with the usual Friday as a haze behind the bars; red only at "Now"; no deep red, ramp or legend.
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
-     `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept.
+     `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept; sketch 10 (`6fb7adf4`, run
+     `D:/fitway-temp/public-redesign-r01-polish-24/`).
    - In Arabic time runs right to left, as Eclipse's own day line does
      (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`).
 1. **B's round 3 is parked** (items 24-27). The narrowed direction has replaced B in practice; ask the user before
@@ -73,7 +71,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing: the user opens a new session for sketch 10 (step 0, item 32). No app was named (item 10).
+The reading of sketch 10: which chart, and the points item 32 leaves (step 0). No app was named (item 10).
 
 ## Known risks
 
