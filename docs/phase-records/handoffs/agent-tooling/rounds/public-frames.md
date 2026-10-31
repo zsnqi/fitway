@@ -39,5 +39,5 @@
   here only because this machine has ui-forensics. Reproduced with `USERPROFILE` pointed at an empty folder (1 of 5
   failing), repaired by giving `frames` the harness's doctor (5 of 5 with and without ui-forensics); the steps CI had
   not reached (Biome, types, the new unit suites under an 8.3 short temp path on C) pass here.
-- **Rows:** P1-P6, K1 and K2 met at `b7cdb3d8` with the integration commits; CI on the push that carries the repair
-  is the record's last row.
+- **Rows:** P1-P6, K1 and K2 met at `b7cdb3d8` with the integration commits; CI run 41238840993 passed on
+  `9a81a355`, and main advanced to it.

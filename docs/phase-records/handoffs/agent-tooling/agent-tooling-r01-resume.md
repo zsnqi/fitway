@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 23:30 +03:00
-  (item 23's two rounds merged; CI and `pnpm main:advance` are next)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 00:20 +03:00
+  (item 23 done: both rounds merged, CI green on `9a81a355`, main advanced to it)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-23; 23 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -24,8 +24,9 @@
 
 ## Running now
 
-Measured 2026-10-31 23:30. main `2278a896`. Nothing of this milestone runs; CI runs on the coordinator line's push
-carrying item 23's merges.
+Measured 2026-11-01 00:20. Nothing of this milestone runs. main `9a81a355` (`pnpm main:advance`, after CI run
+41238840993 passed; the run before it, 41238198065, failed on a `frames` test that needed ui-forensics, repaired in
+`9a81a355`).
 
 - **evidence-gate is merged** (`b482e0b3`, `docs/phase-records/handoffs/agent-tooling/rounds/evidence-gate.md`): the pre-commit job `staged-evidence` refuses a
   line a commit adds that cites a gone temp path, or a folder made after 2026-11-01T00:00+03:00 with no
@@ -59,9 +60,9 @@ carrying item 23's merges.
 
 ## Next steps
 
-1. **The CI run on the push carrying item 23's merges**; a failure is repaired here. Then `pnpm main:advance` to it.
-   The public page's next session merges main into `public-redesign-r01` before its sketch 12 brief, so
-   `pnpm verify:owner frames` exists in its worktree.
+1. The public page's next session merges main into `public-redesign-r01` before its sketch 12 brief, so
+   `pnpm verify:owner frames` exists in its worktree; the commands a designer brief carries are `SKILL.md`
+   §"Public designer frames".
 2. **After 2026-11-01T00:00+03:00, once:** make a folder by hand under `D:/fitway-temp`, cite it on a staged line, and
    see the commit refused (the post-cutoff path is proved by tests only so far).
 3. The public page is run by its own session (`public-redesign-r01`'s resume point); this milestone does not touch its

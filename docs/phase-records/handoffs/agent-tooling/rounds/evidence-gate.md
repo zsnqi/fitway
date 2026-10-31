@@ -30,4 +30,5 @@
   Sol's four and C1 and C2; 156 tests and `pnpm verify:fast` (1,009 s) passed. The coordinator replayed the real hook:
   `D:/fitway-temp/eg-grade-gone-2/` (gone: never made; the grade cites it to see the hook refuse it) now names `pnpm run-folder:new eg-grade-gone-2 --brief <file> --for <who>`.
 - **Rows:** G1-G3, D1, D2, R1, K2 and T1 met at `ece1cbd2`; K1 brief-caused, the rest of it met (every touched suite,
-  `check:repository`, the fast ladder). CI on the push that carries the merge is the record's last row.
+  `check:repository`, the fast ladder). CI run 41238840993 passed on `9a81a355`, which carries the merge; main advanced
+  to it.
