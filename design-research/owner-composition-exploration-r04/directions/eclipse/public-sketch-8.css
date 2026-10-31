@@ -1,0 +1,310 @@
+/* FITWAY public crowd page, sketch 8 (public-redesign-r01): the direction narrowed from B4. Concept only, synthetic
+ * data, a still: English, live, Busy. The level's word leads in FITWAY red; the count and the percentage side by side;
+ * today by the half hour, the usual Friday after now; when it is usually quieter; the live stamp and the open line.
+ * The identity is public.css's: its colours, its two Readex Pro faces, its corner light (--ramp, --glow) and grain.
+ * Everything is placed from the inline-start edge, and the day by minutes since opening, so dir="rtl" mirrors it.
+ * Nothing moves. */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #a29c9e;
+  --red-hi: #ff2946;
+  --deep: #a3112a;
+  --graphite: rgb(255 255 255 / 0.1);
+  --live: #4be29b;
+  --line: rgb(255 255 255 / 0.12);
+  --bar: #625d5f; /* today's readings: one plain grey from the ink family, 3:1 on the page */
+  --usual: rgb(201 195 196 / 0.3); /* the usual day: an outline only, never a filled bar */
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgb(229 25 53 / 0.55); color: #fff; }
+h1, p, figure { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* The page. Each fluid size is the phone's at 390 px and the computer's at 1440 px, in a straight line between. */
+.page {
+  --pad: clamp(20px, 4.5vw, 80px);
+  --pad-end: clamp(22px, calc(0.952vw + 18.29px), 32px);
+  --top-h: clamp(64px, calc(3.2vw + 50px), 96px);
+  --fs-word: clamp(104px, min(calc(9.143vw + 68.3px), 23dvh), 208px);
+  --fs-count: clamp(48px, calc(2.286vw + 39.1px), 72px);
+  --fs-pct: clamp(32px, calc(1.524vw + 26.1px), 48px);
+  --fs-text: clamp(17px, calc(0.381vw + 15.5px), 21px);
+  --fs-small: clamp(14px, calc(0.19vw + 13.26px), 16px);
+  --fs-axis: clamp(13px, calc(0.095vw + 12.63px), 14px);
+  /* The corner light's unit, wider than it grows tall (public.css). */
+  --ux: clamp(1px, calc(0.10476vw + 0.5914px), 2.1px);
+  --uy: clamp(1px, calc(0.014286vw + 0.94429px), 1.15px);
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  padding: env(safe-area-inset-top) max(var(--pad), env(safe-area-inset-right)) max(var(--pad-end), env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
+}
+
+.top, .sign { position: relative; z-index: 1; width: 100%; max-width: 1600px; margin-inline: auto; }
+.top { display: flex; align-items: center; justify-content: space-between; height: var(--top-h); }
+.brand { display: inline-flex; align-items: center; gap: clamp(10px, calc(0.19vw + 9.26px), 12px); }
+.brand svg { width: clamp(28px, calc(0.381vw + 26.51px), 32px); height: clamp(28px, calc(0.381vw + 26.51px), 32px); }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: clamp(13px, calc(0.095vw + 12.63px), 14px); line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  height: clamp(40px, calc(0.381vw + 38.51px), 44px);
+  padding-inline: clamp(14px, calc(0.381vw + 12.51px), 18px);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+.lang::after { content: ""; position: absolute; inset: -3px; }
+.lang:hover { color: var(--ink); border-color: rgb(255 255 255 / 0.22); }
+
+/* The sign, in reading order: the word, the facts, the day, when it is quieter, the stamp. The free space sits above
+ * the word and above the day, so the day keeps its place over the foot. */
+.sign {
+  display: grid;
+  grid-template-rows: minmax(8px, 0.8fr) auto auto minmax(40px, 1fr) auto auto auto;
+}
+
+.word {
+  grid-row: 2;
+  font-size: var(--fs-word);
+  font-weight: 700;
+  line-height: 0.96;
+  letter-spacing: -0.02em;
+  color: var(--red-hi);
+}
+/* The B's stem on the column's edge: a Latin first letter's side bearing, so the mirror check (?dir=rtl), whose word
+ * ends at the start edge, keeps none. */
+[dir="ltr"] .word { margin-inline-start: -0.06em; }
+
+/* The count and the percentage side by side, each number leading its words; the percentage parted by a hairline. */
+.facts {
+  grid-row: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: clamp(16px, calc(1.524vw + 10.1px), 32px);
+  margin-block-start: clamp(10px, calc(0.762vw + 7px), 18px);
+  font-size: var(--fs-text);
+  line-height: 1.2;
+  color: var(--ink-2);
+}
+.count-line .count, .pct .num { color: var(--ink); font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
+.count-line .count { font-size: var(--fs-count); margin-inline: 0.06em; }
+.pct { padding-inline-start: clamp(16px, calc(1.524vw + 10.1px), 32px); border-inline-start: 1px solid var(--line); }
+.pct .num { font-size: var(--fs-pct); margin-inline-end: 0.08em; }
+/* Below 380 px the two no longer share a line: the percentage goes under the count, without its hairline. */
+@media (max-width: 379px) {
+  .pct { flex-basis: 100%; padding-inline-start: 0; border-inline-start: 0; margin-block-start: 6px; }
+}
+
+/* The day. Each half hour is a bar placed by its minutes since opening (--m) over the day's 1140 minutes, from the
+ * inline-start edge; its height is its count over the chart's top (--max), never over the gym's capacity. Today's
+ * readings are one grey; the last two hours deep red; the half hour now stands in, FITWAY red; the usual Friday after
+ * it an outline. */
+.day {
+  grid-row: 5;
+  --span: 1140;
+  --max: 76;
+  --now-m: 825;   /* the middle of now's half hour */
+  --now-v: 70;
+  --fill: 0.62;
+  --plot-h: clamp(150px, 24dvh, 216px);
+  --bar-top: calc(var(--now-v) / var(--max) * var(--plot-h));
+  --x-now: calc(var(--now-m) / var(--span) * 100%);
+}
+.plot { position: relative; height: var(--plot-h); margin-block-start: 28px; }
+.plot::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: -1px; height: 1px; background: var(--line); }
+.bars { position: absolute; inset: 0; }
+.bar {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: calc((var(--m) + 30 * (1 - var(--fill)) / 2) / var(--span) * 100%);
+  width: calc(30 * var(--fill) / var(--span) * 100%);
+  height: calc(var(--v) / var(--max) * 100%);
+  border-radius: 2px 2px 0 0;
+  background: var(--bar);
+}
+.bar[data-kind="recent"] { background: var(--deep); }
+.bar[data-kind="now"] { background: var(--red-hi); }
+.bar[data-kind="usual"] { background: none; box-shadow: inset 0 0 0 1px var(--usual); }
+
+/* The usual day's name stands over its first bars, from where it begins. */
+.usual-label {
+  position: absolute;
+  inset-inline-start: calc(840 / var(--span) * 100% + 6px);
+  inset-block-end: calc(69 / var(--max) * 100% + 10px);
+  font-size: var(--fs-axis);
+  line-height: 18px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.axis { position: relative; height: 34px; font-size: var(--fs-axis); line-height: 18px; color: var(--ink-3); }
+.axis .t {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-start: calc(var(--m) / var(--span) * 100%);
+  width: 0;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+}
+.axis .t-start { justify-content: flex-start; }
+.axis .t-now { color: var(--ink); font-weight: 500; }
+.axis .t[data-yield] { visibility: hidden; } /* an hour too close to now gives its place to "Now" (public-sketch-8.js) */
+
+.best { grid-row: 6; margin-block-start: clamp(14px, calc(0.762vw + 11px), 22px); font-size: var(--fs-text); line-height: 1.4; color: var(--ink-2); }
+.best .num { color: var(--ink); }
+
+/* The foot: the live stamp at the start, the open line at the end, under a hairline. */
+.stamp {
+  grid-row: 7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-block-start: clamp(20px, calc(1.143vw + 15.5px), 32px);
+  padding-block-start: clamp(14px, calc(0.381vw + 12.5px), 18px);
+  border-block-start: 1px solid var(--line);
+  font-size: var(--fs-small);
+  line-height: 20px;
+  color: var(--ink-3);
+}
+.stamp > p { white-space: nowrap; }
+.stamp .open { margin-inline-start: auto; }
+.stamp .open .num { color: var(--ink-2); }
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * The lights (?light=). One light on the page at a time. Each but the corner comes from the bar at now: it is placed
+ * on now's minutes from the inline-start edge and drawn symmetric about the bar, so it mirrors with the page and
+ * never leans on a reading direction. The bar is the source, so it carries a bloom of its own red.
+ * --------------------------------------------------------------------------------------------------------------- */
+
+.glow { position: absolute; inset-block-end: 0; inset-inline-start: var(--x-now); width: 0; height: 0; z-index: -1; pointer-events: none; }
+/* Each layer is a box centred on now's bar, --b above the line the bars stand on (none goes below it), --w wide and
+ * --h tall, painted with --g; the grain of public.css's light lies over it. Light falls off as a bell (--falloff):
+ * hottest and reddest at its centre, deepening to the maroon of public.css's ramp, with no edge anywhere; --k is its
+ * strength. */
+.glow i {
+  --b: 0px;
+  --k: 0.5;
+  --falloff: rgb(222 26 52 / calc(var(--k) * 1)) 0%, rgb(200 22 46 / calc(var(--k) * 0.93)) 10%, rgb(165 17 38 / calc(var(--k) * 0.82)) 20%, rgb(130 12 30 / calc(var(--k) * 0.68)) 30%, rgb(100 9 24 / calc(var(--k) * 0.52)) 40%, rgb(84 8 21 / calc(var(--k) * 0.37)) 50%, rgb(77 7 19 / calc(var(--k) * 0.24)) 60%, rgb(77 7 19 / calc(var(--k) * 0.14)) 70%, rgb(77 7 19 / calc(var(--k) * 0.075)) 80%, rgb(77 7 19 / calc(var(--k) * 0.035)) 90%, rgb(77 7 19 / 0) 100%;
+  position: absolute;
+  display: none;
+  inset-block-end: var(--b);
+  inset-inline-start: calc(var(--w) / -2);
+  width: var(--w);
+  height: var(--h);
+  background: var(--g);
+}
+/* The line the bars stand on is where light ends; past the column's ends, where no line is drawn, it ends softly. */
+.glow .g1 { -webkit-mask-image: linear-gradient(to top, transparent, #000 12px); mask-image: linear-gradient(to top, transparent, #000 12px); }
+.glow i::after { content: ""; position: absolute; inset: 0; background: var(--grain); background-size: 120px 120px; mix-blend-mode: overlay; opacity: 0.15; -webkit-mask-image: var(--g); mask-image: var(--g); }
+.page:not([data-light="corner"]) .bar[data-kind="now"] { filter: drop-shadow(0 0 3px rgb(255 41 70 / 0.75)) drop-shadow(0 0 12px rgb(255 41 70 / 0.4)); }
+.page[data-light="corner"] .glow, .page:not([data-light="corner"]) .light { display: none; }
+/* The halo every light from now shares: the bar's top lights the air round it, half down the bar, half above. */
+.page:not([data-light="corner"]) .g2 {
+  display: block;
+  --w: calc(var(--plot-h) * 0.4);
+  --h: calc(var(--plot-h) * 0.7);
+  --b: calc(var(--bar-top) - var(--plot-h) * 0.35);
+  --g: radial-gradient(closest-side, rgb(255 41 70 / 0.34), rgb(255 41 70 / 0.12) 50%, rgb(255 41 70 / 0));
+}
+
+/* now: the light rises from the bar's top into the dark above it, taller than it is wide, brightest at the bar and
+ * gone before the facts; softer than a beam and never reaching past the line the bars stand on. */
+.page[data-light="now"] .g1 {
+  display: block;
+  --k: 0.62;
+  --r: calc(var(--plot-h) * 1.8);
+  --w: calc(var(--plot-h) * 1.8);
+  --h: calc(var(--bar-top) + var(--r));
+  --g: radial-gradient(ellipse 50% var(--r) at 50% calc(100% - var(--bar-top)), var(--falloff));
+}
+
+/* floor: the light runs out from the bar's foot both ways along the line the day stands on, low. */
+.page[data-light="floor"] .g1 {
+  display: block;
+  --k: 0.78;
+  --w: calc(var(--plot-h) * 4);
+  --h: calc(var(--plot-h) * 0.62);
+  --g: radial-gradient(ellipse 50% 100% at 50% 100%, var(--falloff));
+}
+
+/* dusk: now's light fills the sky over the day, from the bar's top up toward the word and out to both edges. */
+.page[data-light="dusk"] .g1 {
+  display: block;
+  --k: 0.42;
+  --r: 58dvh;
+  --w: 150vw;
+  --h: calc(var(--bar-top) + var(--r));
+  --g: radial-gradient(ellipse 50% var(--r) at 50% calc(100% - var(--bar-top)), var(--falloff));
+}
+
+/* corner: the page's light as public.css draws it, unchanged: an arc from the top inline-start corner, a dark disc in
+ * front so it reads as a rim. */
+.light {
+  --at: 100% 0%;
+  --disc-at: calc(100% - 320 * var(--ux)) calc(430 * var(--uy));
+  --ramp: rgb(255 41 70 / 0.62) 0%, rgb(229 25 53 / 0.45) 10%, rgb(77 7 19 / 0.85) 30%, rgb(77 7 19 / 0.45) 58%, rgb(8 9 10 / 0) 100%;
+  --glow: radial-gradient(ellipse calc(760 * var(--ux)) calc(420 * var(--uy)) at var(--at), var(--ramp));
+  --disc: radial-gradient(ellipse calc(560 * var(--ux)) calc(360 * var(--uy)) at var(--disc-at), transparent 0, transparent 70%, rgb(0 0 0 / 0.5) 86%, #000 100%);
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(560 * var(--uy));
+  pointer-events: none;
+  background: var(--glow);
+  -webkit-mask-image: var(--disc);
+  mask-image: var(--disc);
+}
+[dir="ltr"] .light { --at: 0% 0%; --disc-at: calc(320 * var(--ux)) calc(430 * var(--uy)); }
+.light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.15;
+  -webkit-mask-image: var(--glow);
+  mask-image: var(--glow);
+}
+
+/* The mirror check (?dir=rtl): each English line keeps its own order inside the mirrored page (public-sketch-8.js). */
+.en-run { unicode-bidi: isolate; direction: ltr; }
+
+/* The owner turned the percentage off: the count stands alone on its line. */
+.page[data-pct="off"] .facts { column-gap: 0; }
