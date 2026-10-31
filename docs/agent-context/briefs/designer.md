@@ -49,6 +49,13 @@ option breaks.
 
 Write options only under `<path>`; commit when done.
 
+## Frames
+
+Render every frame with `pnpm verify:owner frames` and lay frames out with `pnpm verify:owner sheet`, from the
+worktree root in PowerShell, as `.agents/skills/verify-fitway/SKILL.md` §"Public designer frames" gives them, into
+`D:/fitway-temp/<run>/`, which the coordinator made with `pnpm run-folder:new`. Inspect every frame yourself before
+reporting; a passing command is not a looked-at frame. (AGENTS.md; agent-tooling DECISIONS item 23)
+
 ## Report
 
 Per option: one line on the idea, its frame paths, and where it breaks. Any rule or decision that makes an option
@@ -60,4 +67,5 @@ most 40 lines.
 - [ ] The question is open; no option is prescribed. Examples, if any, are marked as examples.
 - [ ] The sizes match r04 DECISIONS item 2 (1440, 768, 390 designed; 320, 1024 and 200% zoom checked).
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.
+- [ ] The run folder is made with `pnpm run-folder:new <run> --brief <this file> --for owner-direction-designer`.
 - [ ] `pnpm brief:check <this file>` passes against the worktree it names.

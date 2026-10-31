@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 20:30 +03:00
-  (item 23 recorded; its two rounds, evidence-gate and public-frames, are being briefed)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 23:30 +03:00
+  (item 23's two rounds merged; CI and `pnpm main:advance` are next)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-23; 23 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -24,9 +24,16 @@
 
 ## Running now
 
-Measured 2026-10-31 20:30. main `2278a896`. Item 23's two rounds are being briefed from the coordinator line:
-`evidence-gate` (the pre-commit citation check, the run-folder manifest rule, the designer-brief rule) and
-`public-frames` (`pnpm verify:owner frames` and `sheet`, `phone360`, densities).
+Measured 2026-10-31 23:30. main `2278a896`. Nothing of this milestone runs; CI runs on the coordinator line's push
+carrying item 23's merges.
+
+- **evidence-gate is merged** (`b482e0b3`, `docs/phase-records/handoffs/agent-tooling/rounds/evidence-gate.md`): the pre-commit job `staged-evidence` refuses a
+  line a commit adds that cites a gone temp path, or a folder made after 2026-11-01T00:00+03:00 with no
+  `run-folder:new` manifest, launcher `run.json` or review `review.json` tied to it; each message names
+  `pnpm run-folder:new`. `pnpm brief:check` and the same job refuse a designer brief asking for hand-built capture
+  scripts or for frames without a `pnpm verify:owner` command.
+- **public-frames is merged** (`d8433c72`, `docs/phase-records/handoffs/agent-tooling/rounds/public-frames.md`): `pnpm verify:owner frames` and `sheet`,
+  `phone360`, `<size>@<density>`; `SKILL.md` §"Public designer frames" holds the commands a designer brief copies.
 
 - **lease-ends is merged** (`0389ccd2`, record `docs/phase-records/handoffs/agent-tooling/rounds/lease-ends.md`,
   DECISIONS item 22): `pnpm check:repository` reads each lease's end (`through YYYY-MM-DD`) against `updatedAt`, and
@@ -52,23 +59,26 @@ Measured 2026-10-31 20:30. main `2278a896`. Item 23's two rounds are being brief
 
 ## Next steps
 
-1. **Item 23's two rounds**: brief reviews (DeepSeek and Sol), the Codex runs, Sol diff reviews, the grade with
-   planted defects, the merges, CI and `pnpm main:advance`; then the designer and builder templates name the commands,
-   and the public session gets the commands for its sketch 12 brief.
-2. The public page is run by its own session (`public-redesign-r01`'s resume point); this milestone does not touch its
+1. **The CI run on the push carrying item 23's merges**; a failure is repaired here. Then `pnpm main:advance` to it.
+   The public page's next session merges main into `public-redesign-r01` before its sketch 12 brief, so
+   `pnpm verify:owner frames` exists in its worktree.
+2. **After 2026-11-01T00:00+03:00, once:** make a folder by hand under `D:/fitway-temp`, cite it on a staged line, and
+   see the commit refused (the post-cutoff path is proved by tests only so far).
+3. The public page is run by its own session (`public-redesign-r01`'s resume point); this milestone does not touch its
    paths or worktree.
-3. F303 as a round of its own when a later round touches the ratchet: compare a commit's baseline with its parent's,
+4. F303 as a round of its own when a later round touches the ratchet: compare a commit's baseline with its parent's,
    merges included.
-4. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,
+5. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,
    `D:/fitway-temp/retro-20261028/patterns.mjs` and the survey's script count.
-5. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
+6. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
    `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date.
    When `compare.mjs`'s is retired, its purpose line goes on its first line (leading-comments left it out: a
    giant-file exception counts only on line 1).
-6. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
+7. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
    citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more). From
-   2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once).
-7. **The renewed leases end on 2026-11-15** (`package.json` scripts, the README map): renew or drop them then, with
+   2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once). From 2026-10-31: F307 (`sheet` needs `-- --` under
+   pnpm), F308 (the sheet title is small), F309 (the designer definition's "repository Playwright", the user's word).
+8. **The renewed leases end on 2026-11-15** (`package.json` scripts, the README map, `lefthook.yml`): renew or drop them then, with
    the giant-file exceptions of step 5.
 
 ## Waiting on the user

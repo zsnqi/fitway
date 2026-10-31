@@ -39,8 +39,10 @@ For a fresh `owner-direction-builder` (Opus, high). The decision is made; build 
 
 ## Frames
 
-Render with the repository's `@playwright/test`, from <`file://` or the port named here>, at <sizes>, AR and EN,
-in <states>. Inspect every frame yourself before reporting; a passing check is not a looked-at frame. (AGENTS.md)
+Render with `pnpm verify:owner drive` for a page with recipes, or `pnpm verify:owner frames` and
+`pnpm verify:owner sheet` for one without (`.agents/skills/verify-fitway/SKILL.md`), at <sizes>, AR and EN, in
+<states>, into `D:/fitway-temp/<run>/`, made with `pnpm run-folder:new`. Inspect every frame yourself before
+reporting; a passing check is not a looked-at frame. (AGENTS.md; agent-tooling DECISIONS item 23)
 
 ## Scope
 

@@ -330,3 +330,8 @@ through these pointers, not copied here.
       now: the rule on builder briefs, until a builder brief repeats the pattern; the `owner-direction-designer`
       definition's description ("renders exact frames with repository Playwright") needs the user's word
       (`CLAUDE.md`), so it is raised with the user, not changed.
+    - **Built on 2026-10-31:** evidence-gate (`rounds/evidence-gate.md`, merged `b482e0b3`) and public-frames
+      (`rounds/public-frames.md`, merged `d8433c72`), each with both brief reviews, a Sol diff review, the
+      coordinator's grade with planted defects, and a fix round; the designer and builder templates name
+      `pnpm verify:owner frames` and `sheet`. The rule `frames` claims no state proof by design: a state's effect is
+      judged by eye.
