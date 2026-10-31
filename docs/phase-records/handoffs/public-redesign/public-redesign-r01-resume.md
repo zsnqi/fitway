@@ -53,7 +53,9 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
    `D:/fitway-temp/public-redesign-r01-sketch-22/`; the images and `sheet-A-over-B.png` in
    `D:/fitway-temp/public-redesign-r01-imagegen-21/`). It is English only, on the phone and the computer, live at
    Busy. It starts from B4, with B3's count and percentage and A2-like bars. It has switchable glow ideas, the lead
-   one rising from the "Now" bar. The coordinator reviews the frames, then shows the user the sheets. In Arabic time runs right to left, as Eclipse's
+   one rising from the "Now" bar. Built at `82f54e88` (item 30) and sent to the user with the LAN address
+   `http://192.168.8.186:3181/public-sketch-8.html`. Next: the user's reading of the four lights and of the items
+   left in item 30. After that, Arabic and the other states, or a second sketch round. In Arabic time runs right to left, as Eclipse's
    own day line does (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`). Round 3's English work on `adc665f6` waits until the user picks between this and B.
 1. **Round 3, English and a last polish, resumes** (items 24-27; brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
@@ -109,7 +111,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing until step 0's sketch is reviewed (item 30). Round 3 waits for the user's pick after it. No app was named (item 10).
+The user's reading of sketch 8 (step 0, item 30). Round 3 waits for the user's pick after it. No app was named (item 10).
 
 ## Known risks
 
