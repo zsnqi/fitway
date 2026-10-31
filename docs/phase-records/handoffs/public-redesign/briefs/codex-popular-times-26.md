@@ -47,22 +47,26 @@ and a phone width.
 
 - **P1. The gym.** The coordinator has never seen Popular Times first-hand (item 34), and a reading shows live only
   while the place is open. Outcome: one gym in Riyadh whose Google Maps page shows Popular Times, preferably one open
-  24 hours so a live reading is on screen at capture time; the report names it and its Maps URL. If no gym tried shows
-  a live reading, capture one without it and say so. Intent: frames of the feature as a trainee meets it, with the live
-  hour present where Google offers it.
+  24 hours so a live reading is on screen at capture time; the report names it and its Maps URL. Try at least five
+  gyms open at capture time before settling for one without a live reading; if none shows one, capture the best
+  without it, and P2's row is FAIL for the live part, naming the gyms tried. Intent: frames of the feature as a trainee
+  meets it, with the live hour present where Google offers it.
 - **P2. The usual day and the live hour.** Outcome: for each of Arabic (`hl=ar`) and English (`hl=en`), at a computer
-  size (1440x900) and a phone size (390x844), a frame of the Popular Times block on today's weekday, with the live
-  reading and any sentence beside it ("busier than usual" or its Arabic) legible, plus one frame of the whole place
+  size (1440x900) and a phone size (390x844), a frame of the Popular Times block on today's weekday showing the whole
+  day's chart unclipped (every hour Google draws, its axis labels and the live marker), with the live reading and any
+  sentence beside it ("busier than usual" or its Arabic) legible, plus one frame of the whole place
   panel so the block is seen in its context. Intent: the coordinator reads the hierarchy, the words and the direction
   time runs in each language from the frames.
 - **P3. Switching days.** Outcome: in each language, at the computer size, a frame for at least three other weekdays
-  chosen through the page's own day control, and one frame of the control open. Intent: how a visitor picks a day and
-  how the day's shape changes.
+  chosen through the page's own day control, each showing the selected day's name and its whole chart unclipped, and
+  one frame of the control open. Intent: how a visitor picks a day and how the day's shape changes; a frame that does
+  not show which day it is cannot prove a switch happened.
 - **P4. Motion.** Outcome: in each language, at the computer size, a short video (Playwright's own recording, under
   30 seconds) that opens the place, brings Popular Times into view, hovers or taps across several hours, and switches
-  days. Intent: the coordinator judges what moves, how, and what a hover or tap reveals.
+  days, holding at least one second on each hour hovered and after each day switch. Intent: the coordinator judges
+  what moves, how, and what a hover or tap reveals, which a rushed sequence hides.
 - **P5. The record.** Outcome: a `REPORT.md` in the run folder with the gym, its URL, the local capture time, every
-  file with one line on what it shows, the exact visible text of the block in each language (copied from the page),
+  file with its language, size and weekday and one line on what it shows, the exact visible text of the block in each language (copied from the page),
   and anything you could not capture and why. Intent: the frames are found and read without guessing.
 - **L1. No wall is passed.** Outcome: no CAPTCHA, "unusual traffic" page, sign-in prompt or bot check is solved,
   bypassed or retried around; if one appears, stop the browser work, keep what was captured, and report `STOPPED:`
