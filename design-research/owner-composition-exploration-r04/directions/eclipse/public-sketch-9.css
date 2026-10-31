@@ -91,12 +91,13 @@ a { color: inherit; text-decoration: none; }
  * is sized against (a container). The day takes the free space, so the content holds the screen; a tenth of it goes
  * above the word, where the light is, so the word never sits on the header.
  * One size for all four levels (--fs-word): the size at which the longest English word, "Moderate", fits the column
- * (its width is 4.6 times the size, less the start bearing below); only a short screen's height caps it. */
+ * (its width is 4.6 times the size, less the start bearing below); only a short screen caps it, so the page still
+ * holds the screen (about 540 px of the height is the rest of the page). */
 .sign {
   container-type: inline-size;
-  --fs-word: min(calc(100cqi / 4.6), 34dvh);
+  --fs-word: clamp(48px, calc(100cqi / 4.6), calc((100dvh - 540px) / 1.06));
   display: grid;
-  grid-template-rows: minmax(12px, 0.1fr) auto auto minmax(232px, 1fr) auto auto;
+  grid-template-rows: minmax(12px, 0.1fr) auto auto minmax(200px, 1fr) auto auto;
 }
 
 .word {
