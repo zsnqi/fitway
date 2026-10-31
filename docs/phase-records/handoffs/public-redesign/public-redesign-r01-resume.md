@@ -57,8 +57,9 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
    `http://192.168.8.186:3181/public-sketch-8.html`. The user read it (item 31): the corner light, hourly bars,
    one word size, and the page too black. **The polish round runs now** (brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-23.md`, run
-   `D:/fitway-temp/public-redesign-r01-polish-23/`, into `public-sketch-9.*`); the coordinator reviews its frames,
-   then sends the sheets with the LAN address of `public-sketch-9.html`. In Arabic time runs right to left, as Eclipse's
+   `D:/fitway-temp/public-redesign-r01-polish-23/`, into `public-sketch-9.*`). Built at `ab7b7f63`, reviewed by
+   the coordinator, and sent with `http://192.168.8.186:3181/public-sketch-9.html` (item 31). Next: the user's
+   reading of the lifts and of the five points item 31 leaves. In Arabic time runs right to left, as Eclipse's
    own day line does (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`). Round 3's English work on `adc665f6` waits until the user picks between this and B.
 1. **Round 3, English and a last polish, resumes** (items 24-27; brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
@@ -114,7 +115,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing until the polish round's frames are reviewed (step 0, item 31). Round 3 waits for the user's pick after it. No app was named (item 10).
+The user's reading of sketch 9 (step 0, item 31). Round 3 waits for the user's pick after it. No app was named (item 10).
 
 ## Known risks
 
