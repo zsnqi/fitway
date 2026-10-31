@@ -163,7 +163,8 @@ a { color: inherit; text-decoration: none; }
   height: calc(var(--v) / var(--max) * 100%);
 }
 
-/* The usual day's name, at its far end, away from now: on the column's end, resting over the shadow's last hours. */
+/* The usual day's name, at its far end, away from now: on the column's end, resting on the shadow's last hours
+ * (public-sketch-10.js). */
 .usual-label {
   position: absolute;
   inset-inline-end: 0;
@@ -173,6 +174,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--ink-3);
   white-space: nowrap;
 }
+.usual-label[data-stack] { width: min-content; white-space: normal; text-align: end; line-height: 16px; }
 
 /* The axis names an hour under its bar's middle; the first and the last stand on the column's edges. */
 .axis { position: relative; height: 34px; font-size: var(--fs-axis); line-height: 18px; color: var(--ink-3); }

@@ -102,9 +102,17 @@
       '<clipPath id="usual-floor"><rect x="-40" y="-80" width="' + (W + 80) + '" height="' + (H + 80) + '"/></clipPath></defs>' +
       '<g clip-path="url(#usual-floor)"><path class="shade" filter="url(#usual-soft)" d="' + smoothPath(X, Y, soft * 3 + 2) + '"/>' +
       '<path class="rim" filter="url(#usual-rim)" d="' + smoothCurve(X, Y) + '"/></g>';
-    // "Usual Friday" rests on the shadow at its far end, over the shadow's height under the label's middle.
-    var label = document.querySelector(".usual-label"), mid = span - (ink(label).width / 2) / W * span;
-    label.style.setProperty("--v", usualAt(mid));
+    // "Usual Friday" rests on the shadow at its far end, low, where the usual day winds down to closing: over the
+    // shadow's height three quarters of the way along the label, so its start stands in the shadow and it never sits
+    // beside the top of the bar at now.
+    // Where the column is so narrow that the label would come within 12 px of the bar at now, its two words stand one
+    // over the other.
+    var label = document.querySelector(".usual-label"), nowBar = document.querySelector('.bar[data-kind="now"]');
+    label.removeAttribute("data-stack");
+    var gap = function () { var l = ink(label), n = nowBar.getBoundingClientRect(); return rtl ? n.left - l.right : l.left - n.right; };
+    if (gap() < 12) label.setAttribute("data-stack", "");
+    var at = span - (ink(label).width / 4) / W * span;
+    label.style.setProperty("--v", usualAt(at));
   }
 
   function fit() {
