@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (Popular Times seen;
-  five of eight rejection reasons in; three wait on the images sent)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-35; 35 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 12's brief
+  agreed with the user; its designer launched)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-36; 36 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -50,13 +50,11 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 0. **Sketch 12, reframed around the trainee's features** (item 34). Done: the agent-tooling round is merged (CI
    41238840993 green on `9a81a355`; `pnpm verify:owner frames` and `sheet` render a public brief's frames and
-   sheets), and Popular Times is seen and its principle written (item 35). Next, in order:
-   3. The three reasons still open (item 35's last bullet): sketches 3 and 4, the usual Friday outlines, the haze and
-      the bars; the user has the images. Write any reason the user cannot give as taste, not a rule.
-   4. Write the brief: the features item 34 accepts, few limits (identity, truth, privacy), the turned-down things as
-      information with their reasons, motion allowed, rendering through `pnpm verify:owner`. Then read it line by line
-      for anything that limits the designer, and ask the user about each one kept.
-   5. Launch a fresh `owner-direction-designer` at its default effort, with Impeccable.
+   sheets), Popular Times is seen and its principle written, every rejection has its reason (item 35), and the brief's
+   limits are agreed (item 36). Next:
+   5. The designer runs from brief `briefs/designer-public-sketch-27.md` (run
+      `D:/fitway-temp/public-redesign-r01-sketch-27/`, into `public-sketch-12.*` on `public-redesign-r01`). On its
+      report, the coordinator checks the commit and looks at the sheets, then takes them to the user.
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
      `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept; sketch 10 (`6fb7adf4`, run
@@ -75,7 +73,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The three reasons still open (step 0.3), and the limits kept in the next brief (step 0.4).
+Nothing until sketch 12's designer reports; then the user reads its designs.
 
 ## Known risks
 
