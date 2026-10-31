@@ -349,3 +349,13 @@ the public page are numbered here.
       is the light rising from the "Now" bar. It must not become a stage spotlight or an equalizer («ما نبي كدا»).
       The designer tries several glow ideas, switchable.
     - Brief `briefs/designer-public-sketch-22.md`; run `D:/fitway-temp/public-redesign-r01-sketch-22/`.
+    - **Built** (`82f54e88` on `public-redesign-r01`, pushed; `public-sketch-8.html`, `.css`, `.js`): B4's order with
+      B3's pair. The foot sits on the screen's foot, and "Now" sits on the axis under its bar. There are 38 half-hour
+      bars, today in one grey, the last two hours in deep red, "Now" in red, and the usual Friday as outlines. Four
+      lights: `now` (the designer's pick, a plume from the Now bar), `floor`, `dusk`, `corner`. `?pct=off` and the
+      `?dir=rtl` mirror hold. The coordinator looked at the phone sheet, the computer at `now` and the phone mirror,
+      and found them as reported.
+    - **Left for the user:** one word size for all four levels (Moderate and Packed overflow the phone at 104 px; all
+      four fit at about 76 px); the empty bands on the phone above the word and above the chart; the deep red at about
+      2.6:1, under 3:1; the glow showing through the first usual-day outlines; on the computer, `now`'s plume rises
+      high. Narrow phones were not rendered.
