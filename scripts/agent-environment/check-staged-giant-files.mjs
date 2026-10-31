@@ -14,9 +14,9 @@ import {
 	snapshotGiantSizes,
 } from "./code-health-ratchet.mjs";
 
-function readIndexFiles(root, files) {
+export function readIndexFiles(root, files, read = readGit) {
 	if (!files.length) return [];
-	const batch = readGit(root, ["cat-file", "--batch"], {
+	const batch = read(root, ["cat-file", "--batch"], {
 		input: Buffer.from(files.map((file) => `:${file}\n`).join("")),
 		encoding: "buffer",
 	});

@@ -132,6 +132,7 @@ function citationTargets(line, tempRoot) {
 			let target = value
 				.replace(/:\d+(?:-\d+)?$/, "")
 				.replace(/^\/([a-z])\//, "$1:/");
+			if (key(target.replace(/\.{3}$/, "")) === key(tempRoot)) return [];
 			const placeholder = target.search(/[<*?{]/);
 			if (placeholder !== -1) {
 				// A pattern names only the complete segments before its first
@@ -151,13 +152,14 @@ function citationTargets(line, tempRoot) {
 }
 
 export function pathCitations(record, { tempRoot = "D:/fitway-temp" } = {}) {
+	const bareTempRoot = key(tempRoot);
 	return referenceText(record)
 		.replaceAll("\\", "/")
 		.split(/\r?\n/)
 		.flatMap((line, index) => {
 			const text = line
 				.toLowerCase()
-				.replace(/(^|[^a-z0-9_./:-])(fitway-temp\/)/g, "$1d:/$2");
+				.replace(/(^|[^a-z0-9_./:-])(fitway-temp\/)/g, `$1${bareTempRoot}/`);
 			return citationTargets(text, tempRoot).flatMap((citation) => {
 				if (
 					key(citation.target) === key(tempRoot) ||

@@ -8,13 +8,13 @@ import { parseBriefFormat } from "./brief-format.mjs";
 import {
 	codexScopeProblem,
 	ENVIRONMENT_PATH,
-	mask,
 	sectionIds,
 	withoutCode,
 	withoutComments,
 } from "./brief-markdown.mjs";
 import { environmentBlock } from "./brief-references.mjs";
 import { validateReviewSources } from "./brief-review-sources.mjs";
+import { designerBriefProblems, environmentMasked } from "./designer-brief.mjs";
 import { readGit } from "./git-context.mjs";
 import { lineAt, lines } from "./markdown-lines.mjs";
 import { samePath } from "./path-identity.mjs";
@@ -34,6 +34,17 @@ export function parseBriefArgs(inputArgs) {
 		briefPath: parsed.positionals[0],
 		fillEnvironment: parsed.options.fillEnvironment === true,
 	};
+}
+
+function reportDesignerBrief(text, role, report) {
+	if (role !== "designer") return;
+	for (const problem of designerBriefProblems(text))
+		report("brief-readiness", problem.line, problem.message);
+}
+
+function reportBriefFormat(format, text, role, report) {
+	if (format.problem) report("brief-format", 1, format.problem);
+	reportDesignerBrief(text, role, report);
 }
 
 export async function checkBrief({
@@ -77,7 +88,7 @@ export async function checkBrief({
 	}
 	const format = parseBriefFormat(text);
 	const role = format.role;
-	if (format.problem) report("brief-format", 1, format.problem);
+	reportBriefFormat(format, text, role, report);
 	if (!block)
 		report(
 			"brief-format",
@@ -94,12 +105,7 @@ export async function checkBrief({
 			`environment block differs from ${ENVIRONMENT_PATH}${fillEnvironment ? "; --fill-environment only fills empty markers" : ""}`,
 		);
 
-	let prose = text;
-	if (block)
-		prose =
-			prose.slice(0, block.start) +
-			mask(prose.slice(block.start, block.end)) +
-			prose.slice(block.end);
+	let prose = environmentMasked(text, block);
 	const scopeProse = prose;
 	prose = withoutComments(prose);
 	prose = withoutCode(prose);

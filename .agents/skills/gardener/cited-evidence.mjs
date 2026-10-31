@@ -2,6 +2,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { inside, key, pathCitations } from "./facts.mjs";
+import { auditRunFolderProvenance } from "./run-folder-provenance.mjs";
 import { collectFolderRecords, git, root } from "./survey-evidence.mjs";
 
 export const TRACKED_RECORD_EXTENSIONS = new Set([
@@ -27,7 +28,7 @@ function lostEvidenceError(row, message) {
 	return new Error(`${LOST_TEMP_EVIDENCE_PATH}:${row}: ${message}`);
 }
 
-function parseLostTempEvidence(text) {
+export function parseLostTempEvidence(text) {
 	const lines = text.split(/\r?\n/);
 	if (lines.at(-1) === "") lines.pop();
 	if (!lines.length) {
@@ -136,6 +137,18 @@ function assertLostEvidenceRows(rows, declared, records, { exists, tempRoot }) {
 	}
 }
 
+function diffLineNumbers(diff) {
+	const lines = new Set();
+	for (const match of diff.matchAll(
+		/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm,
+	)) {
+		const start = Number(match[1]);
+		const count = match[2] === undefined ? 1 : Number(match[2]);
+		for (let line = start; line < start + count; line += 1) lines.add(line);
+	}
+	return lines;
+}
+
 export async function collectTrackedCitationRecords({
 	checkout = root,
 	trackedFiles,
@@ -146,26 +159,6 @@ export async function collectTrackedCitationRecords({
 		recordExtensions: TRACKED_RECORD_EXTENSIONS,
 	});
 	return records.filter((record) => record.source !== LOST_TEMP_EVIDENCE_PATH);
-}
-
-export function deadTempCitations(
-	records,
-	{ tempRoot = "D:/fitway-temp", exists = existsSync } = {},
-) {
-	return records.flatMap((record) =>
-		pathCitations(record, { tempRoot }).flatMap((citation) =>
-			exists(path.resolve(citation.path))
-				? []
-				: [
-						{
-							source: citation.source,
-							line: citation.line,
-							path: citation.path,
-							text: citation.text,
-						},
-					],
-		),
-	);
 }
 
 export function citationIntegrationBase(checkout, readGit = git) {
@@ -205,60 +198,47 @@ export function changedLineNumbers(
 		["diff", "--unified=0", "--no-ext-diff", base, "--", source],
 		checkout,
 	);
-	const lines = new Set();
-	for (const match of diff.matchAll(
-		/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm,
-	)) {
-		const start = Number(match[1]);
-		const count = match[2] === undefined ? 1 : Number(match[2]);
-		for (let line = start; line < start + count; line += 1) lines.add(line);
-	}
-	return lines;
+	return diffLineNumbers(diff);
 }
 
-export async function auditTempCitations({
-	checkout = root,
-	exists = existsSync,
-	readGit = git,
-	records,
-	tempRoot = "D:/fitway-temp",
-	trackedFiles,
-} = {}) {
-	const rows = readLostTempEvidence(checkout);
-	const sources =
-		records ??
-		(await collectTrackedCitationRecords({ checkout, trackedFiles }));
-	const rowCounts = rowCountsByCitation(rows);
-	assertLostEvidenceRows(rows, rowCounts, sources, { exists, tempRoot });
-	const integrationBase = citationIntegrationBase(checkout, readGit);
-	if (!exists(tempRoot)) {
-		return {
-			base: integrationBase.label,
-			checked: false,
-			changed: [],
-			dead: [],
-			listed: [],
-			rows,
-			tempRoot,
-			unchanged: [],
-			unlisted: [],
-		};
-	}
-	const dead = deadTempCitations(sources, { exists, tempRoot });
+export function stagedLineNumbers(checkout, source, readGit = git) {
+	const diff = readGit(
+		["diff", "--cached", "--unified=0", "--no-ext-diff", "--", source],
+		checkout,
+	);
+	return diffLineNumbers(diff);
+}
+
+function partitionTempCitations(sources, { exists, tempRoot }) {
+	const citations = sources.flatMap((record) =>
+		pathCitations(record, { tempRoot }),
+	);
+	const existing = [];
+	const dead = [];
+	for (const citation of citations)
+		(exists(path.resolve(citation.path)) ? existing : dead).push(citation);
+	return { dead, existing };
+}
+
+function changedCitationMatcher(checkout, readGit, staged, diffBase) {
 	const changedBySource = new Map();
-	const withChanges = dead.map((citation) => {
+	return (citation) => {
 		let lines = changedBySource.get(citation.source);
 		if (!lines) {
-			lines = changedLineNumbers(
-				checkout,
-				citation.source,
-				readGit,
-				integrationBase.diffBase,
-			);
+			lines = staged
+				? stagedLineNumbers(checkout, citation.source, readGit)
+				: changedLineNumbers(checkout, citation.source, readGit, diffBase);
 			changedBySource.set(citation.source, lines);
 		}
-		return { ...citation, changed: lines.has(citation.line) };
-	});
+		return lines.has(citation.line);
+	};
+}
+
+function classifyDeadCitations(dead, rowCounts, lineChanged) {
+	const withChanges = dead.map((citation) => ({
+		...citation,
+		changed: lineChanged(citation),
+	}));
 	const availableRows = new Map(rowCounts);
 	const listed = [];
 	const unlisted = [];
@@ -275,12 +255,81 @@ export async function auditTempCitations({
 			unlisted.push(citation);
 		}
 	}
+	return { listed, unlisted, withChanges };
+}
+
+export async function auditTempCitations({
+	checkout = root,
+	exists = existsSync,
+	lostEvidenceRows,
+	readGit = git,
+	holdsCommit,
+	readFile = readFileSync,
+	records,
+	staged = false,
+	stat,
+	tempRoot = "D:/fitway-temp",
+	trackedFiles,
+	validateLostEvidence = true,
+} = {}) {
+	const rows = lostEvidenceRows ?? readLostTempEvidence(checkout);
+	const sources =
+		records ??
+		(await collectTrackedCitationRecords({ checkout, trackedFiles }));
+	const rowCounts = rowCountsByCitation(rows);
+	if (validateLostEvidence)
+		assertLostEvidenceRows(rows, rowCounts, sources, { exists, tempRoot });
+	const integrationBase = staged
+		? { diffBase: null, label: "the staged index against HEAD" }
+		: citationIntegrationBase(checkout, readGit);
+	if (!exists(tempRoot)) {
+		return {
+			base: integrationBase.label,
+			checked: false,
+			changed: [],
+			dead: [],
+			legacy: [],
+			legacyAccepted: 0,
+			listed: [],
+			provenanceFailures: [],
+			rows,
+			tempRoot,
+			unchanged: [],
+			unlisted: [],
+		};
+	}
+	const { dead, existing } = partitionTempCitations(sources, {
+		exists,
+		tempRoot,
+	});
+	const lineChanged = changedCitationMatcher(
+		checkout,
+		readGit,
+		staged,
+		integrationBase.diffBase,
+	);
+	const { listed, unlisted, withChanges } = classifyDeadCitations(
+		dead,
+		rowCounts,
+		lineChanged,
+	);
+	const { legacy, provenanceFailures } = auditRunFolderProvenance(existing, {
+		checkout,
+		holdsCommit,
+		lineChanged,
+		readFile,
+		stat,
+		tempRoot,
+	});
 	return {
 		base: integrationBase.label,
 		checked: true,
 		changed: unlisted.filter((citation) => citation.changed),
 		dead: withChanges,
+		legacy,
+		legacyAccepted: legacy.length,
 		listed,
+		provenanceFailures,
 		rows,
 		tempRoot,
 		unchanged: unlisted.filter((citation) => !citation.changed),
