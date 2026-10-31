@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 8 read by the
-  user; the polish round launched)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-31; 31 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 (sketch 9 read by the
+  user; sketch 10's brief ready for a new session)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-32; 32 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,11 +20,11 @@
 
 ## Running now
 
-Nothing (measured 2026-10-31; round 3's designer stopped by the coordinator on the user's word). Public branch
-`public-redesign-r01` at `adc665f6`, pushed: round 3's unfinished edit to `public.css` and `public.js`, saved as found. The LAN entry
-`public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public.html` is B's full draft (`?level=packed|quiet|moderate`, `?mark=2|3|4`),
-`public-sketch-1.html` to `-4.html` the first sketches, `public-sketch-6a.html` to `-6c.html` and `public-sketch-7a.html`
-to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «شديد الازدحام»).
+Nothing (measured 2026-10-31). Public branch `public-redesign-r01` at sketch 9 (`ab7b7f63`) plus Markdown-only record
+commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
+agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
+`public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public-sketch-8.html` and
+`-9.html` the narrowed direction, `public.html` B's draft, `public-sketch-1.html` to `-7c.html` the earlier sketches.
 
 - **Six directions from sketch 1, A-F** (items 10-12; briefs designer-public-sketches-6 and -7 in this
   file's briefs folder; `6a148a6d`, `7e22756e`; frames in `D:/fitway-temp/public-redesign-r01-sketches-{6,7}/`): the user
@@ -48,69 +48,32 @@ to `-7c.html` the six directions from sketch 1, A-F (`?level=packed` shows «ش�
 
 The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md`, 2026-10-29):
 
-0. **The narrowed direction, English, live** (items 28-31). The images are in
-   `D:/fitway-temp/public-redesign-r01-imagegen-21/`. Sketch 8 (`82f54e88`, run
-   `D:/fitway-temp/public-redesign-r01-sketch-22/`) was read by the user. Sketch 9 (`ab7b7f63`, brief
-   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-23.md`, run
-   `D:/fitway-temp/public-redesign-r01-polish-23/`) was sent with
-   `http://192.168.8.186:3181/public-sketch-9.html`. Next: the user's reading of its lifts and of the five points
-   item 31 leaves. In Arabic time runs right to left, as Eclipse's
-   own day line does (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`). Round 3's English work on `adc665f6` waits until the user picks between this and B.
-1. **Round 3, English and a last polish, resumes** (items 24-27; brief
+0. **Sketch 10, in the new session the user opens** (item 32). The brief
+   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-24.md` passes `pnpm brief:check` in the
+   public worktree, where it already is (cherry-picked with this text). Launch a fresh `owner-direction-designer`
+   with it in the background; it writes `public-sketch-10.*` and `D:/fitway-temp/public-redesign-r01-polish-24/`.
+   Then look at its sheets yourself, push `public-redesign-r01`, record the result under item 32, start the LAN
+   entry if it is down, and send the user the sheets with `http://192.168.8.186:3181/public-sketch-10.html`.
+   - The round: the word off-white; the computer's word near 90 px; a shorter chart on the phone; two or three
+     whole charts (`?chart=`) with the usual Friday as a faint shadow behind the bars; red only at "Now"; no deep
+     red, ramp, equalizer or legend.
+   - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
+     (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
+     `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept.
+   - In Arabic time runs right to left, as Eclipse's own day line does
+     (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`).
+1. **B's round 3 is parked** (items 24-27). The narrowed direction has replaced B in practice; ask the user before
+   resuming it. Should it resume: brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
-   `D:/fitway-temp/public-redesign-r01-english-20/`). `adc665f6` holds the stopped designer's unverified work (English
-   begun, no notes; its trial renders in the run folder); a fresh designer either continues from it or resets the two
-   files to `7aca3e07`, its choice, reported. Then the `rtl-ltr-reviewer` on both languages, then the user's review on
-   return: rounds 1-3's frames, the new copy, and the findings in items 25 and 26. Rounds 1 and 2's images were sent
-   2026-10-30. Before them, the page with the switches folded in (item 19; brief
-   `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-default-14.md`; `8ac6cad5`, pushed; image
-   `D:/fitway-temp/public-redesign-r01-default-15/compare-phone.png`, sent 2026-10-30): no switches remain but
-   `?level` and `?mark`; the computer pixel-identical to the old `?p1&p2&p3&size=67` at 1100-1920; the phone word one
-   size at every level (57.09 px at 390, 52.19 at 360, 105.86 at 768), Packed on one line, nothing clipped. Before it, `980ec3fe`: 127 px on one line on the computer; `?p1m` Packed alone at 57 px. The word's size (item 17; `?size=75|67`, `1709f75e`; `compare-phone.png` and `compare-computer.png` in
-   `D:/fitway-temp/public-redesign-r01-size-13/`, sent 2026-10-30): word 104/78/70 px on the phone, 190/142/127 on the
-   computer; the mark's line does not move; on the computer the count drops up to 38 px with the word's baseline. Then the others' views the user brings back (item 16; images in `D:/fitway-temp/public-redesign-r01-share-12/`):
-   settle switch 1, then make the accepted switches the page's default (one fixer or builder edit). The switches as
-   drawn (item 15; brief
-   `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-variants-11.md`; `19b038d3`, `c1667d00`; sheets
-   `sheet-p1.png` to `sheet-p3.png` in `D:/fitway-temp/public-redesign-r01-variants-11/`, sent 2026-10-30; the page
-   without switches pixel-identical to polish 10). p1: Packed on one line from 1152 px (divisor 8.1, width term
-   `min(100vw, 1600px)`, floor 120; word 154.67 px at 1440 x 900, was 189.51; the mark's line does not rise; 1024-1151
-   identical to no switch). Two repairs of p1 failed first: the brief's divisor ignored the count column, and no single
-   divisor or floor clears the count below 1152 because the count's 20 px floor keeps its column wide; the scope moved
-   to 1152 and up. p2: the percentage under the count, the open line in the stamp. p3: lower floors; the stamp is
-   inside the first screen at 200 % zoom, not at 844 x 390 (about 32 px short, the word at its 40 px floor). The second polish round and its proposals (item 14; brief
-   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-10.md`; `25e06452`; sheets, `notes.md`
-   and `critique-a.md` in `D:/fitway-temp/public-redesign-r01-polish-10/`, sent 2026-10-30). Critique 17/20 again; the
-   390 and 1440 frames barely change. Fixed: every size grows in a line from 390 to 1440, the switch moved to 1024 px
-   (the word never shrinks when a window widens); the column word sized from what it holds (tablet 158 px); the
-   language button at the small size; the facts and stamp as four paragraphs; «ص/م» kept with each time; below 360 px
-   the stamp in two lines. Not changed, with reasons: the DOM order (word, mark, count); the computer's dark above
-   one-line words (one size plus the fixed line). Proposals, not applied: 1 Packed on one line on the computer (word
-   about 158 px); 2 swap the percentage and the open line; 3 keep the stamp on short screens; 4 tall tablets fill the
-   column (about 200 px); 5 the level heard twice by a screen reader (needs DESIGN_GUIDE §5 changed); 6 English and
-   the other states next. The first polish round,
-   liked by the user (items 13, 14; brief
-   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-9.md`; `638e6e31`, only `public.css`;
-   sheets and `notes.md` in `D:/fitway-temp/public-redesign-r01-polish-9/`, sent 2026-10-30). Critique 17/20. The
-   computer now sets the count beside the word on its baseline (two columns above the mark), Packed in two lines at
-   every size (the computer word 188 px), three type sizes (phone 104/20/14, computer 188/30/16), the count's number at
-   600; the phone barely changed. The designer's findings: a large dark area above short words on the computer (about
-   530 px at Quiet); the computer's visual order (word, count, mark) differs from the reading order (word, mark, count);
-   the word shrinks from about 160 to 140 px crossing 900 px. The draft it polishes, as shown to the user (item 12; brief
-   `docs/phase-records/handoffs/public-redesign/briefs/designer-public-draft-8.md`; `8bd73ee7`; sheets
-   `sheet-draft.png` and `sheet-marks.png` in `D:/fitway-temp/public-redesign-r01-draft-8/frames/`, sent 2026-10-30).
-   The word is 600 and 104 px at every level on the phone (210 px on the computer, one line); marks: 1 B's bars
-   refined, 2 one thin rule, 3 four small blocks, 4 the rule with the four words under it. The designer's findings: the
-   computer's left half above the full-width mark is empty; mark 3 reads small; mark 1's unlit Packed bar is the
-   tallest shape; Quiet and Moderate sit about 40 px above the mark (no descender); the deep red of the lower parts is
-   about 2.3:1, under 3:1 for a graphic alone, passing only because the word carries the level; B's gap before «م» fixed.
+   `D:/fitway-temp/public-redesign-r01-english-20/`. `adc665f6` holds the stopped designer's unverified work. B's
+   history is in DECISIONS items 12-27.
 2. **Rounds on the draft** until the user accepts it (item 5's stage one): Arabic, live, phone and computer.
 3. After the pick is accepted: every state and size, English, `PUBLIC-SPEC.md` and §6, the verifier, the user's
    acceptance; the copy outside the glossary (five lines in the first round's report) goes to the user.
 
 ## Waiting on the user
 
-The user's reading of sketch 9 (step 0, item 31). Round 3 waits for the user's pick after it. No app was named (item 10).
+Nothing: the user opens a new session for sketch 10 (step 0, item 32). No app was named (item 10).
 
 ## Known risks
 
