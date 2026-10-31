@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 16:48 +03:00
-  (lease-ends merged; its CI and `pnpm main:advance` are next)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-22; 22 last), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 20:30 +03:00
+  (item 23 recorded; its two rounds, evidence-gate and public-frames, are being briefed)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-23; 23 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -19,11 +19,14 @@
   guarantees it, and name the test (checklist B14 in `docs/agent-context/briefs/codex.md`).
 - **Item 17 in force:** the retro's four findings are fixed at the root, each finding's fixes as layers built
   together, before the public page's designer starts (r04 decision 102).
+- **Item 23 in force** (the user, 2026-10-31): hand-made run folders and hand-built capture scripts are fixed at the
+  root in two side-by-side rounds; the public page's sketch 12 brief is the first to render through the CLI.
 
 ## Running now
 
-Measured 2026-10-29 16:48. Nothing of this milestone runs; CI runs on the coordinator line's push carrying
-`0389ccd2`. main `5575697f` (`pnpm main:advance`, 2026-10-29).
+Measured 2026-10-31 20:30. main `2278a896`. Item 23's two rounds are being briefed from the coordinator line:
+`evidence-gate` (the pre-commit citation check, the run-folder manifest rule, the designer-brief rule) and
+`public-frames` (`pnpm verify:owner frames` and `sheet`, `phone360`, densities).
 
 - **lease-ends is merged** (`0389ccd2`, record `docs/phase-records/handoffs/agent-tooling/rounds/lease-ends.md`,
   DECISIONS item 22): `pnpm check:repository` reads each lease's end (`through YYYY-MM-DD`) against `updatedAt`, and
@@ -49,9 +52,11 @@ Measured 2026-10-29 16:48. Nothing of this milestone runs; CI runs on the coordi
 
 ## Next steps
 
-1. **The CI run on `0389ccd2`'s push**; a failure is repaired here. Then `pnpm main:advance` to it.
-2. The public page waits on the user (its own resume point): the first round's three directions were set aside on
-   2026-10-29, and its rules are being reworked with the user.
+1. **Item 23's two rounds**: brief reviews (DeepSeek and Sol), the Codex runs, Sol diff reviews, the grade with
+   planted defects, the merges, CI and `pnpm main:advance`; then the designer and builder templates name the commands,
+   and the public session gets the commands for its sketch 12 brief.
+2. The public page is run by its own session (`public-redesign-r01`'s resume point); this milestone does not touch its
+   paths or worktree.
 3. F303 as a round of its own when a later round touches the ratchet: compare a commit's baseline with its parent's,
    merges included.
 4. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,

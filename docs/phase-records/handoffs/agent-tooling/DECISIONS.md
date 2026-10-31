@@ -272,3 +272,61 @@ through these pointers, not copied here.
     - **The round:** lease-ends, merged `0389ccd2` (`rounds/lease-ends.md`): the end read against `updatedAt`, and
       `updatedAt` held to the day of the commit that last changed the ledger (the reviews' reading that nothing made it
       move); F302 fixed; F303 left open.
+23. **Hand-made run folders and hand-built capture scripts are fixed at the root, strongest layer first** (the user,
+    2026-10-31, through the session that started this coordinator, which relayed the approval of its three-layer plan
+    and that the public page's sketch 12 brief is the first to render through the CLI; one round under item 17,
+    findings 1 and 2, so agent-environment item 20 needs no new exemption). Found that day and checked against
+    Lauren Tan's trust order (make it impossible, then a static check, then a rule, then review; digests in
+    `D:/fitway-temp/verification-discussion-20261007/REPORT-1-talk-and-skills.md` and
+    `D:/fitway-temp/agent-env-vision-research/REPORT.md`):
+    - **Two failures, measured.** A run folder was made by hand with no manifest, and a commit citing a
+      `D:/fitway-temp` folder that did not yet exist was pushed before `pnpm check:repository` ran: the pre-commit
+      hook (`lefthook.yml`) runs only Biome and the giant-file check, and the rule to use `pnpm run-folder:new` is
+      written only (`WORKING_AGREEMENTS.md` §"Delegation"). Of the 1,994 entries under `D:/fitway-temp` on
+      2026-10-31, one folder (`public-redesign-r01-directions-1`) holds a `run-folder:new` manifest. And every public
+      designer brief since sketch 8 said "Render with node scripts in the run folder in the style of" the last run,
+      so each round wrote its own server, capture, sheet and crop scripts (5, 8, 10 and 10 for sketches 8-11;
+      `D:/fitway-temp/public-redesign-r01-sketch-25` holds ten, 185 lines).
+    - **What the CLI does today** (measured on sketch 11 at `938087a4`, extracted read-only): `list` discovers the
+      page, its readiness (`window.__sketch?.ready === true`) and its switches `chart`, `dir`, `level` and `pct`;
+      `drive --states 'chart=line&level=quiet,chart=dots&level=packed'` plans the combinations, but every frame
+      fails without a recipe state proof per switch value and is saved as `-error.png`, and drive refuses a page
+      whose direction differs from its language (the `?dir=rtl` mirror check). The size table (`map.mjs`) has no
+      360 x 780 and no density: every frame is density 1. `measure --tool capture` passes a frames file with
+      viewport and density to ui-forensics against a launched preview, and `measure --tool sheet` draws captions
+      at 15 px with no larger size; ui-forensics is the user's machine-level skill and is not changed here.
+    - **The round runs as two Codex rounds side by side on disjoint files** (item 5): `evidence-gate` (findings 1
+      and 3 below: the hook, the manifest rule and the brief rule) and `public-frames` (finding 2: the CLI), each
+      with the reviews and grade of this milestone's rounds. `lefthook.yml` returns to this milestone under a
+      coordinator lease through 2026-11-15, with the other two.
+    - **1. Run folders and commits.** The pre-commit hook checks the lines a commit adds (the index against `HEAD`)
+      with the same audit `pnpm check:repository` runs, so a gone citation fails at the commit that writes it. Both
+      also refuse a citation on such a line whose path lies inside a folder under `D:/fitway-temp` when no folder
+      between the temp root and the cited path holds a provenance record from a repository tool: `manifest.json`
+      from `pnpm run-folder:new`, `run.json` from `pnpm codex:round`, or `review.json` from its brief review (the
+      launcher's folders and nested review folders keep working; a file directly under the temp root, such as a
+      helper script, is not a run folder). The failure names `pnpm run-folder:new <name> --brief <file> --for <who>`
+      as the fix, and so does the gone-citation failure. **Existing folders without a record are accepted when
+      created before 2026-11-01T00:00:00+03:00** (the folder's creation time), among them
+      `public-redesign-r01-polish-24` and `-sketch-25`: their evidence is real and later records cite it (sketch
+      12 compares with sketch 11's frames), their provenance cannot be written honestly after the fact, so a
+      manifest added now would be invented, and a cutoff still refuses every folder made by hand from the day the
+      rule exists. Copying or re-creating a folder resets its creation time, so a copy is new; the count of such
+      legacy acceptances on changed lines is printed, not silent. On CI the temp root is absent and the check says
+      so, as today; the hook on this machine is the gate.
+    - **2. The CLI renders what a public designer brief asks for.** `pnpm verify:owner frames` captures one page's
+      state combinations (`--states`, as drive reads them) at named sizes with a density (`phone@3`, `desktop@2`;
+      the size table gains `phone360`, 360 x 780), in fresh contexts that wait for the page's readiness and fonts
+      as drive does, and claims no state proof: it names each frame and records its URL, size, density and the
+      page's direction, and a page error fails it. `pnpm verify:owner sheet` lays chosen frames out in rows, each
+      under its label in large type and drawn at its CSS width. Drive and compare keep their verdicts; the
+      commands go in `SKILL.md` and the tool registry. Not adopted: drive with proofs switched off (it would make
+      the verification command able to pass what it never proved), and asking ui-forensics for a caption size.
+    - **3. Briefs.** `pnpm brief:check` refuses a `role: designer` brief whose prose, outside the shared environment
+      block, tells the agent to write its own render or capture scripts, or that asks for frames without naming
+      `pnpm verify:owner`; the hook runs the same rule on each designer brief a commit adds. The written layer is
+      the designer and builder templates in `docs/agent-context/briefs/`, which name the commands instead of
+      "the repository's `@playwright/test`", and the rows of `docs/agent-context/RULE_ENFORCERS.md`. Not adopted
+      now: the rule on builder briefs, until a builder brief repeats the pattern; the `owner-direction-designer`
+      definition's description ("renders exact frames with repository Playwright") needs the user's word
+      (`CLAUDE.md`), so it is raised with the user, not changed.
