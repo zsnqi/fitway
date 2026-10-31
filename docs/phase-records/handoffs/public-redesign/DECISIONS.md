@@ -38,3 +38,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 29. **The direction narrowed from the images** `decisions/021-040.md`
 30. **The sketch round: English first, one state; the images are done** `decisions/021-040.md`
 31. **Sketch 8 read by the user; a polish round with Impeccable next** `decisions/021-040.md`
+32. **Sketch 9 read by the user: `reach` kept; a white word; a new chart; the next round in a new session** `decisions/021-040.md`
