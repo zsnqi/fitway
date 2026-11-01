@@ -10,8 +10,17 @@
  * day in the lit card under them, taking the width on the computer.
  * Everything is placed with logical properties and flex order, so dir="rtl" runs time from right to left. */
 
-@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: block; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
-@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: block; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+/* The fallbacks while Readex Pro loads (swap): system faces sized to its widths and set to its ascent and descent, so
+ * the text shows at once and barely moves when Readex Pro arrives. Windows and Apple: Arial; Windows: Segoe UI for
+ * Arabic; Android: Roboto and Noto Naskh Arabic. Numbers measured in Chromium on the page's own strings (run font-34). */
+@font-face { font-family: "Readex Pro Fallback"; font-style: normal; font-weight: 400; src: local("Arial"); unicode-range: U+0000-00FF, U+2000-206F; size-adjust: 108.7%; ascent-override: 92%; descent-override: 23%; line-gap-override: 0%; }
+@font-face { font-family: "Readex Pro Fallback"; font-style: normal; font-weight: 700; src: local("Arial Bold"); unicode-range: U+0000-00FF, U+2000-206F; size-adjust: 104.79%; ascent-override: 95.43%; descent-override: 23.86%; line-gap-override: 0%; }
+@font-face { font-family: "Readex Pro Fallback Roboto"; font-style: normal; font-weight: 400; src: local("Roboto"); unicode-range: U+0000-00FF, U+2000-206F; size-adjust: 107.13%; ascent-override: 93.34%; descent-override: 23.34%; line-gap-override: 0%; }
+@font-face { font-family: "Readex Pro Fallback Roboto"; font-style: normal; font-weight: 700; src: local("Roboto Bold"), local("Roboto"); unicode-range: U+0000-00FF, U+2000-206F; size-adjust: 110.88%; ascent-override: 90.19%; descent-override: 22.55%; line-gap-override: 0%; }
+@font-face { font-family: "Readex Pro Fallback Arabic"; font-style: normal; font-weight: 400; src: local("Segoe UI"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; size-adjust: 105.98%; ascent-override: 94.36%; descent-override: 23.59%; line-gap-override: 0%; }
+@font-face { font-family: "Readex Pro Fallback Arabic Naskh"; font-style: normal; font-weight: 400 700; src: local("Noto Naskh Arabic"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; size-adjust: 122.45%; ascent-override: 81.67%; descent-override: 20.42%; line-gap-override: 0%; }
 
 :root {
   --page: #070707;
@@ -26,7 +35,7 @@
   --ox: #4d0713;
   --live: #4be29b;
   --chalk: 245 243 242;
-  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --font: "Readex Pro", "Readex Pro Fallback", "Readex Pro Fallback Roboto", "Readex Pro Fallback Arabic", "Readex Pro Fallback Arabic Naskh", "Segoe UI", system-ui, sans-serif;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);     /* the arrival's curve, kept */
   /* The interactions' values (review-animations STANDARDS.md): movement on screen eases in and out, entering eases
    * out, hover and colour ease; UI motion stays under 300 ms. */
