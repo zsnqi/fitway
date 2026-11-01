@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 13, `day`
-  polished and reviewed before and after; the user reads it)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-39; 39 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (a second polish of
+  `day` running, item 40)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-40; 40 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -55,6 +55,10 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
    5. `day` is polished as sketch 13 and reviewed before and after (item 39; `14d7564f`; review run
       `D:/fitway-temp/public-redesign-r01-review-28/`, its `CRITIQUE.md` and compare sheets). The user reads the before
       and after, item 39's open points and the new copy; the next round follows the user's word.
+   6. The second polish (item 40: less text, the level word's place on the computer, item 39's open points) runs from
+      `briefs/designer-public-polish-30.md` (run `D:/fitway-temp/public-redesign-r01-polish-30/`, into
+      `public-sketch-14.*`). Then the same reviewers again (A and the finish reviewer resumed, the detector in the
+      browser) and a before and after sheet against sketch 13 (`14d7564f`), for the user.
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
      `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept; sketch 10 (`6fb7adf4`, run
@@ -73,7 +77,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The user's reading of sketch 13's before and after, item 39's open points and its new copy.
+Nothing until the second polish and its review report; the user's full look at the result follows.
 
 ## Known risks
 
