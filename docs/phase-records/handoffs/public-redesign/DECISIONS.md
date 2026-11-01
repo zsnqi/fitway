@@ -45,3 +45,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 36. **The sketch 12 brief's limits, read line by line with the user** `decisions/021-040.md`
 37. **Sketch 12 built: three pages around the trainee's features** `decisions/021-040.md`
 38. **`day` is the pick; a review and polish round with Impeccable's reviewers, before and after** `decisions/021-040.md`
+39. **`day` reviewed and polished: sketch 13** `decisions/021-040.md`
