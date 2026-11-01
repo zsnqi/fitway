@@ -512,10 +512,10 @@
     [title, hours, readout, fig, picker.el].forEach(function (n) { card.appendChild(n); });
     sign.appendChild(card);
 
-    // The card's answer, and a picked hour's words in its place. While an hour is picked the readout holds the tallest
-    // of the answer and every pick the day offers: on a narrow phone the answer takes two lines and an hour one, and a
-    // two-hour bar whose hours read differently takes two where the answer takes one, and the bars would jump a line
-    // under the finger as it slides (sketch 15 moved them 22 px at 360 px).
+    // The card's answer, and a picked hour's words in its place. On the phone the readout holds the tallest of the
+    // answer and every pick the day offers, picked or not: on a narrow phone the answer takes two lines and an hour
+    // one, and a two-hour bar whose hours read differently takes two where the answer takes one, and the bars would
+    // jump a line under the finger on the first pick or as it slides (sketch 15 moved them 22 px at 360 px).
     function pickWords(c) { return "<span>" + run(T.cellUsual(c)) + "</span>"; }
     function words(d, h) {
       var html;
@@ -525,7 +525,7 @@
       else if (nowVsLeft === "later") html = ICON.ring + "<span>" + run(T.quietestLeft(quietLeft)) + "</span>";
       else html = "";
       readout.style.minHeight = "";
-      if (h != null && !wide.matches) { // the computer's answer stands on one line, beside the card's name
+      if (!wide.matches) { // the computer's answer stands on one line, beside the card's name
         // Measured on a silent copy across the same grid area, so the live region announces only the hour.
         var ghost = readout.cloneNode(false), held = 0;
         ghost.removeAttribute("aria-live");
