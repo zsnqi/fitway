@@ -2,8 +2,8 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  sketch 15 reviewed; the arrival fixed for Brave; the widened font fix running, item 49)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-49; 49 last), and the founding
+  sketch 15 reviewed; the arrival fixed for Brave; the font fix done; the fourth polish running, item 50)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-50; 50 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,9 +20,10 @@
 
 ## Running now
 
-The font builder (item 49): brief `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-font-34.md`, run
-`D:/fitway-temp/public-redesign-r01-font-34/`, from `2c911cb1` (sketch 15 with the Brave fix). Public branch
-`public-redesign-r01` at sketch 15 (`2c911cb1`), on Markdown-only record
+The fourth polish's designer (item 50): brief
+`docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-35.md`, run
+`D:/fitway-temp/public-redesign-r01-polish-35/`, into `public-sketch-16.*`. Public branch `public-redesign-r01` at
+sketch 15 with the Brave fix (`2c911cb1`) and the font fix (`1593df75`), on Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public-sketch-8.html` to
@@ -60,12 +61,13 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
    6. The second polish (item 40: less text, the level word's place on the computer, item 39's open points) runs from
       `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-30.md` (run `D:/fitway-temp/public-redesign-r01-polish-30/`, into
       `public-sketch-14.*`). Built and reviewed (item 41; `ce902305`); the user reads it and item 41's open points.
-   7. The third polish (items 44-48): sketch 15, reviewed (A 28/36, finish `ship`). Left on it, in order: the font
-      builder's result checked by the coordinator on frames and a Brave recording; the motion review after, rerun on
-      the result (its stopped run is in `D:/fitway-temp/public-redesign-r01-review-31/motion-after/`), which closes
-      item 47's trial and the question of proposing a rule change; the user's look at sketch 15 (the `?grain=` pick,
-      the hover, the Now readout); and the user's word on the zero-context reader's open confusions (the phone axis
-      skipping hour labels, "Today" where Fri should be, the live head above another day's chart).
+   7. The third polish (items 44-49): sketch 15, reviewed (A 28/36, finish `ship`), with the Brave arrival fix and
+      the font fix (`1593df75`, checked by the coordinator on its sheets and diff).
+   8. The fourth polish (item 50): sketch 16, with `?hours=` (finger picking on long days), `?head=` (the live head
+      above another day) and "Fri" with a dot. Then: the coordinator checks its frames; the user judges the switches
+      by eye; the motion review after reruns on the result (its stopped run is in
+      `D:/fitway-temp/public-redesign-r01-review-31/motion-after/`), which closes item 47's trial and the question of
+      proposing a rule change; and the user's look at the `?grain=` pick, the hover and the Now readout.
    - What then finishes the page is steps 2 and 3 below: the Arabic round (copy with `ux-araby`, time right to left,
      the `rtl-ltr-reviewer`), the states the page must never show as live (closed, stale, absent, loading), every size,
      then `PUBLIC-SPEC.md` and §6, the verifier and the user's acceptance.
@@ -76,10 +78,9 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
      `D:/fitway-temp/public-redesign-r01-sketch-25/`), turned down (item 34).
    - In Arabic time runs right to left, as Eclipse's own day line does
      (`design-research/owner-composition-exploration-r04/directions/eclipse/README.md:726`).
-1. **B's round 3 is parked** (items 24-27). The narrowed direction has replaced B in practice; ask the user before
-   resuming it. Should it resume: brief
+1. **B's round 3 is closed** (item 50; items 24-27): the narrowed direction replaced it. Provenance only: brief
    `docs/phase-records/handoffs/public-redesign/briefs/designer-public-english-18.md`, run
-   `D:/fitway-temp/public-redesign-r01-english-20/`. `adc665f6` holds the stopped designer's unverified work. B's
+   `D:/fitway-temp/public-redesign-r01-english-20/`, `adc665f6` (the stopped designer's unverified work); B's
    history is in DECISIONS items 12-27.
 2. **Rounds on the draft** until the user accepts it (item 5's stage one): Arabic, live, phone and computer.
 3. After the pick is accepted: every state and size, English, `PUBLIC-SPEC.md` and §6, the verifier, the user's
@@ -87,9 +88,9 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Their look at sketch 15 (`?grain=` strengths, the hover, the Now readout), the reader's open confusions, whether
-Roboto and Noto files may be downloaded to match Android and Apple fallbacks (item 49), whether B's parked round 3 is
-closed, and, after the motion review reruns, whether the motion trial's rule change is proposed (item 47).
+Their try of the existing finger drag across the bars, their look at sketch 15 (`?grain=` strengths, the hover, the
+Now readout), a check of the font loading on their Android phone, and, after the motion review reruns, whether the
+motion trial's rule change is proposed (item 47).
 
 ## Known risks
 

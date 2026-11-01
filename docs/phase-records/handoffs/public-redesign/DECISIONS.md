@@ -56,3 +56,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 47. **The designer reads the specialist motion rules with a precedence: a trial** `decisions/041-060.md`
 48. **Sketch 15 reviewed; the font fix; screen readers later; the arrival seen as coming down** `decisions/041-060.md`
 49. **The arrival fixed for Brave; the font fix researched and widened, and run** `decisions/041-060.md`
+50. **The font fix done within 4 px; B closed; the fourth polish: finger picking, the head, the day row** `decisions/041-060.md`
