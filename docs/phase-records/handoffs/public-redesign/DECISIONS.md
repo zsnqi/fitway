@@ -58,3 +58,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 49. **The arrival fixed for Brave; the font fix researched and widened, and run** `decisions/041-060.md`
 50. **The font fix done within 4 px; B closed; the fourth polish: finger picking, the head, the day row** `decisions/041-060.md`
 51. **Sketch 16 built: two-hour bars, a quiet head, "Fri" with a dot** `decisions/041-060.md`
+52. **Two-hour bars kept, by their busier hour, each hour told on a pick; the quiet head kept** `decisions/041-060.md`
