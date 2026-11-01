@@ -3,7 +3,9 @@
 // and under them the usual day in the lit card, with now as the one lit hour on it, the quietest time left, and the
 // other days. This round: on the phone a dense other day shows one bar per two hours, wide enough for a finger
 // (?hours=); the live head steps back while another day is shown, so it reads as now and not as that day (?head=);
-// today's day button reads "Fri" like the others, with a small chalk dot under it for today.
+// today's day button reads "Fri" like the others, with a small chalk dot under it for today. Then: the hour labels
+// under the bars are fixed for a day (a pick, hover, focus or drag never adds, drops or moves one; the readout names
+// the picked time), and a picked bar is drawn as the picked day is, its edges in chalk.
 // Switches: ?level=quiet|moderate|busy|packed (busy), ?day=mon..sun (today, Friday), ?pct=off (the owner turned the
 // percentage off), ?grain=medium|light|faint (the bars' grain, light), ?hours=2|1 (2: on the phone, another day whose
 // hours would be narrower than a finger target shows two hours a bar; 1: every day hourly, as sketch 15),
@@ -212,9 +214,10 @@
   // ---------------------------------------------------------------------------------------------------------------
   // A day as hour bars: the picked day's opening hours fill the width, and a change of day reflows the bars (closed
   // hours fold to nothing). Each bar: .u the usual (grain), .lv the live reading (light, the hour now stands in only),
-  // .cap the usual's chalk top with .ring, the quietest hour left, over it. Nothing after now is measured: those
-  // hours are usual, and drawn as usual. Every height is a transform: each layer is the plot's full height, slid down
-  // until its top stands at its value, and the plot's floor clips what is under it.
+  // .cap the usual's chalk top, .pk the bar's outline (its .edge lit in chalk when picked, the focus ring around it),
+  // and .ring, the quietest hour left, over it. Nothing after now is measured: those hours are usual, and drawn as
+  // usual. Every height is a transform: each layer is the plot's full height, slid down until its top stands at its
+  // value, and the plot's floor clips what is under it.
   // ---------------------------------------------------------------------------------------------------------------
   function dayBars() {
     var wrap = el("div", "plot");
@@ -227,7 +230,7 @@
       b.type = "button";
       b.tabIndex = -1;
       b.setAttribute("data-h", h);
-      b.innerHTML = '<span class="bar"><span class="body"><i class="u"></i><i class="lv"></i><i class="cap"></i></span><i class="rk"><i class="ring"></i></i></span><span class="t"></span>';
+      b.innerHTML = '<span class="bar"><span class="body"><i class="u"></i><i class="lv"></i><i class="cap"></i><i class="pk"><i class="edge"></i></i></span><i class="rk"><i class="ring"></i></i></span><span class="t"></span>';
       bars.appendChild(b);
       slots[h] = b;
     }
@@ -275,12 +278,8 @@
       // Today is hourly, so "now" and the quietest left never meet a bar whose hours read differently.
       if (open) s.setAttribute("aria-label", splits(c) ? T.splitName(c) : spanText(c, " to ") + (when === "now" ? ", " + T.now.toLowerCase() : "") + ", usually " + band(v) + (ring ? T.quietestName : ""));
       else s.removeAttribute("aria-label");
-      var t = s.querySelector(".t");
-      var isNow = open && when === "now", isPick = open && picked === h && !isNow, isRing = open && ring && picked == null;
-      t.innerHTML = isNow ? run(T.now) : isPick ? run(spanText(c)) : isRing ? run(hourText(h)) : "";
-      t.toggleAttribute("data-now", isNow);
-      t.toggleAttribute("data-pick", isPick);
-      t.toggleAttribute("data-ring", isRing && !isNow);
+      // A pick changes no label: its bar's own label, where the day has one, is set bold, and the readout names it.
+      s.querySelector(".t").toggleAttribute("data-pick", open && picked === h);
     }
     // One tab stop for the hours: the picked hour, or now, or the first open hour; arrows move between them.
     var first = picked != null ? picked : isToday ? NOW_H : D.open;
@@ -288,30 +287,33 @@
     B.picked = picked;
   }
 
-  // Labels. How often the clock is labelled follows a bar's width: every bar where there is room for it, else every
-  // second, third or sixth, counted from the opening hour, so the day's first hour is always named (when it opens, by
-  // form). A bar's label is its first hour; picked, a two-hour bar names its span. A label too close to a stronger one
-  // gives way; the first and last stand on the plot's edges. Worked out from the final layout: an hour's width = plot
-  // width / open hours, a bar's = that times its hours.
+  // Labels, fixed for a day: they follow the day, the plot's width and the direction, never a pick, a hover, focus or
+  // a slide, so the clock under the bars never changes under the finger (sketch 16 put a picked bar's span in and
+  // pushed its neighbours out; the readout names the picked time). How often the clock is labelled follows a bar's
+  // width: every bar where there is room for it, else every second, third or sixth, counted from the opening hour, so
+  // the day's first hour is always named (when it opens, by form). A bar's label is its first hour. Today adds two
+  // labels of its own, part of its answer: "Now", and the quietest hour left. A label too close to a stronger one
+  // gives way; the first and last stand on the plot's edges. Each label keeps the width of its bold self, so the one
+  // a pick sets bold keeps its box. Worked out from the final layout: an hour's width = plot width / open hours, a
+  // bar's = that times its hours.
   function placeLabels(B) {
     var D = DAYS[B.day], W = B.bars.clientWidth, hw = W / (D.close - D.open), sw = hw * B.grain;
     var every = sw >= 64 ? 1 : sw >= 34 ? 2 : sw >= 21 ? 3 : 6;
-    var focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(".slot");
-    var items = [];
-    B.cells.forEach(function (cell) {
-      var h = cell.h, t = B.slots[h].querySelector(".t");
+    var isToday = B.day === TODAY, items = [];
+    for (var h = SPAN0; h < SPAN1; h++) {
+      var t = B.slots[h].querySelector(".t"), cell = B.cellAt[h], head = !!cell && cell.h === h;
+      var isNow = head && isToday && h === NOW_H, isRing = head && isToday && h === ringHour && !isNow;
+      var text = !head ? "" : isNow ? T.now : isRing || cell.i % every === 0 ? hourText(h) : "";
+      t.innerHTML = text ? run(text) : "";
+      t.setAttribute("data-label", text);
+      t.toggleAttribute("data-now", isNow);
+      t.toggleAttribute("data-ring", isRing);
       t.removeAttribute("data-yield");
       t.removeAttribute("data-edge");
-      var strong = t.hasAttribute("data-now") || t.hasAttribute("data-pick") || t.hasAttribute("data-ring");
-      if (!strong) t.innerHTML = cell.i % every === 0 || B.slots[h] === focused ? run(hourText(h)) : "";
-      if (!t.textContent) return;
-      var w = measure(t), c = (h - D.open + cell.n / 2) * hw;
-      // Rank: the focused hour (its ringed label is the focus mark; sketch 14 let it give way to "Now" and left the
-      // focus to a column of light the user turned down), then "Now", then a picked hour or the quietest left, then
-      // the clock's hours. The red bar says now when its word gives way to a focused neighbour.
-      var rank = B.slots[h] === focused ? 5 : t.hasAttribute("data-now") ? 4 : strong ? 2 : 0;
-      items.push({ t: t, w: w, c: c, rank: rank });
-    });
+      if (!text) continue;
+      // Rank: "Now", then the quietest left, then the clock's hours.
+      items.push({ t: t, w: measure(t), c: (h - D.open + cell.n / 2) * hw, rank: isNow ? 4 : isRing ? 2 : 0 });
+    }
     items.forEach(function (it) {
       if (it.c - it.w / 2 < 0) { it.t.setAttribute("data-edge", "start"); it.c = it.w / 2; }
       else if (it.c + it.w / 2 > W) { it.t.setAttribute("data-edge", "end"); it.c = W - it.w / 2; }
@@ -330,6 +332,7 @@
   function measure(t) {
     if (!measurer) { measurer = el("span", "measure"); measurer.setAttribute("aria-hidden", "true"); document.body.appendChild(measurer); }
     measurer.style.font = getComputedStyle(t).font;
+    measurer.style.fontWeight = "600"; // a label's box is its bold self's (CSS, .t::after)
     measurer.textContent = t.textContent;
     return measurer.getBoundingClientRect().width;
   }
@@ -434,9 +437,6 @@
       if (e.key === "Escape" && B.picked != null) { e.preventDefault(); onPick(null, true); return; }
       rove(e, B.bars, ".slot", function (s) { onPick(+s.getAttribute("data-h"), true); });
     });
-    // The focused hour's label always shows (it is the focus mark), so labels are placed again as focus moves.
-    B.bars.addEventListener("focusin", function () { placeLabels(B); });
-    B.bars.addEventListener("focusout", function () { requestAnimationFrame(function () { placeLabels(B); }); });
   }
 
   // A picked day reflows the bars as one movement on screen, 280 ms on a strong ease in and out (STANDARDS.md):
@@ -556,8 +556,9 @@
       placeLabels(B);
       if (before) slide(B, before);
     }
+    // A pick leaves the labels where the day put them (placeLabels runs only for a day or a width).
     hourInput(B, function (h, keepFocus) {
-      setDay(B, B.day, h); words(B.day, B.picked); placeLabels(B);
+      setDay(B, B.day, h); words(B.day, B.picked);
       var f = B.slots[h != null ? h : -1];
       if (!keepFocus && f && document.activeElement && document.activeElement.closest(".bars") === B.bars) f.focus();
     });
