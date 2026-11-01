@@ -243,6 +243,8 @@
       var s = B.slots[h], c = head[h], within = cellAt[h], open = !!c, v = within ? within.v : null;
       s.style.setProperty("--i", Math.max(0, h - D.open));
       s.toggleAttribute("data-closed", !open);
+      // An odd last hour on a two-hour day: its bar stays an hour wide, its target reaches past the plot's end (CSS).
+      s.toggleAttribute("data-lone", open && n > 1 && c.n === 1);
       s.style.setProperty("--g", open ? c.n : 0);
       s.style.setProperty("--u", v !== null ? (v / TOP).toFixed(4) : 0);
       if (v !== null) s.style.setProperty("--ug", (v / TOP).toFixed(4)); // the column's ramp (CSS); kept when it closes
@@ -513,8 +515,8 @@
         card.appendChild(ghost);
         readout.style.minHeight = ghost.getBoundingClientRect().height + "px";
         ghost.remove();
-        html = "<span>" + run(T.cellUsual(B.cellAt[h])) + "</span>";
       }
+      if (h != null) html = "<span>" + run(T.cellUsual(B.cellAt[h])) + "</span>";
       readout.innerHTML = html;
       readout.toggleAttribute("data-picked", h != null);
     }

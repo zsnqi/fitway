@@ -206,8 +206,8 @@ b { font-weight: 600; }
  * dim, and the Live stamp stays as it is, so the brightest thing left in the head is "Live" with its time and its
  * green dot: a reading of now, still live, set behind the day the card shows. Picking today brings it forward again.
  * How far it steps back is held by its smallest words: "About" over the brightest of the corner light keeps 4.5:1
- * (WCAG 1.4.3) at 0.7 and falls under it at 0.65 (measured on the rendered page, 390 px). A change of colour, eased
- * (STANDARDS.md), in the day's own 280 ms, so the head and the bars move as one. */
+ * (WCAG 1.4.3) at 0.7 and falls under it at 0.65 (measured on the rendered page, 390 px). A fade, on `ease` as
+ * STANDARDS.md gives a change of colour, in the day's own 280 ms, so the head and the bars move as one. */
 .word, .facts, .vs { transition: opacity var(--t-move) ease; }
 .page[data-head="quiet"][data-away] :is(.word, .facts, .vs) { opacity: 0.7; }
 
@@ -329,6 +329,10 @@ b { font-weight: 600; }
 .slot:focus-visible { outline: none; }
 /* The floor: a hairline under the open hours only. */
 .slot::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: -1px; height: 1px; background: var(--line); }
+/* A lone last hour on a two-hour day (Thursday's 1 AM) keeps its hour's width, so the clock stays true, and its target
+ * reaches 12 px past the plot's end into the card's padding, where nothing else is: 27 px at 390, 26 at 360, over
+ * WCAG 2.5.8's 24 like the two-hour bars beside it. */
+.slot[data-lone]::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; inset-inline-end: -12px; }
 /* The bar: its body (the usual, the live reading, the chalk top) and, apart from the body so a change of width never
  * bends it, the ring's keeper. */
 .bar {
@@ -562,11 +566,14 @@ b { font-weight: 600; }
  * The interactions follow the motion standards: a picked day moves the bars on screen in 280 ms on a strong ease in
  * and out (heights, places and widths, the hours that open unfolding from the day's edge and the hours that close
  * folding into it); an hour under the pointer, a picked hour and the day buttons ease in 160 ms; the ring comes in
- * 200 ms and leaves in 140; the readout's words change at once. Nothing a key starts moves (data-keys), and an hour
- * picked by sliding a finger or a pressed pointer along the day follows it at once (data-drag).
+ * 200 ms and leaves in 140; the readout's words change at once; the head steps back and forward in the day's 280 ms
+ * on `ease` (a change of colour); on the phone two hourly bars merge into a two-hour bar, and part again, in the
+ * day's own movement. Nothing a key starts moves (data-keys), and an hour picked by sliding a finger or a pressed
+ * pointer along the day follows it at once (data-drag).
  * Under reduced motion nothing moves in space: every bar stands at its height from the first frame, a picked day
- * stands at once, the live grain and the dot are still; the fades (the lift, the ring, the colours) stay, and the
- * information is the same (the red's top against its chalk line, the comparison line and its arrow).
+ * stands at once, the live grain and the dot are still; the fades (the lift, the ring, the colours, the head's step
+ * back) stay, and the information is the same (the red's top against its chalk line, the comparison line and its
+ * arrow).
  * --------------------------------------------------------------------------------------------------------------- */
 .page[data-intro] .slot { --k: 0; }
 .page[data-intro] .slot[data-quietest] .ring { scale: 0; }
@@ -576,6 +583,7 @@ b { font-weight: 600; }
 
 /* What a key starts, and an hour a slide picks, changes at once. */
 .page[data-keys] .slot *, .page[data-keys] .slot *::before, .page[data-keys] .slot *::after, .page[data-keys] .day-btn,
+.page[data-keys] :is(.word, .facts, .vs),
 .page[data-drag] .slot *, .page[data-drag] .slot *::before, .page[data-drag] .slot *::after { transition: none; }
 
 @keyframes drift { 0% { translate: 0 0; } 25% { translate: -23px 17px; } 50% { translate: 31px -9px; } 75% { translate: -11px -27px; } 100% { translate: 0 0; } }
