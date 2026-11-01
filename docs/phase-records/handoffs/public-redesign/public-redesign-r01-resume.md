@@ -2,8 +2,8 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  sketch 15 reviewed, the font fix paused, the arrival's direction open, item 48)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-48; 48 last), and the founding
+  sketch 15 reviewed; the arrival fixed for Brave; the widened font fix running, item 49)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-49; 49 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,7 +20,9 @@
 
 ## Running now
 
-Nothing (measured 2026-11-01). Public branch `public-redesign-r01` at sketch 14 (`ce902305`), on Markdown-only record
+The font builder (item 49): brief `docs/phase-records/handoffs/public-redesign/briefs/fixer-public-font-34.md`, run
+`D:/fitway-temp/public-redesign-r01-font-34/`, from `2c911cb1` (sketch 15 with the Brave fix). Public branch
+`public-redesign-r01` at sketch 15 (`2c911cb1`), on Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public-sketch-8.html` to
@@ -58,6 +60,15 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
    6. The second polish (item 40: less text, the level word's place on the computer, item 39's open points) runs from
       `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-30.md` (run `D:/fitway-temp/public-redesign-r01-polish-30/`, into
       `public-sketch-14.*`). Built and reviewed (item 41; `ce902305`); the user reads it and item 41's open points.
+   7. The third polish (items 44-48): sketch 15, reviewed (A 28/36, finish `ship`). Left on it, in order: the font
+      builder's result checked by the coordinator on frames and a Brave recording; the motion review after, rerun on
+      the result (its stopped run is in `D:/fitway-temp/public-redesign-r01-review-31/motion-after/`), which closes
+      item 47's trial and the question of proposing a rule change; the user's look at sketch 15 (the `?grain=` pick,
+      the hover, the Now readout); and the user's word on the zero-context reader's open confusions (the phone axis
+      skipping hour labels, "Today" where Fri should be, the live head above another day's chart).
+   - What then finishes the page is steps 2 and 3 below: the Arabic round (copy with `ux-araby`, time right to left,
+     the `rtl-ltr-reviewer`), the states the page must never show as live (closed, stale, absent, loading), every size,
+     then `PUBLIC-SPEC.md` and §6, the verifier and the user's acceptance.
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
      `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept; sketch 10 (`6fb7adf4`, run
@@ -76,8 +87,9 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-What looks reversed in the bars' arrival on their screen (item 48: a Chromium recording shows them rising), their look
-at sketch 15 (`?grain=` strengths), when the paused font fix runs (nothing runs until the user says), and whether the motion trial's rule change is proposed (item 47).
+Their look at sketch 15 (`?grain=` strengths, the hover, the Now readout), the reader's open confusions, whether
+Roboto and Noto files may be downloaded to match Android and Apple fallbacks (item 49), whether B's parked round 3 is
+closed, and, after the motion review reruns, whether the motion trial's rule change is proposed (item 47).
 
 ## Known risks
 
