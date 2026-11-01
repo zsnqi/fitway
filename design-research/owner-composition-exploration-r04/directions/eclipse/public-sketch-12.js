@@ -59,7 +59,8 @@
 
   function usualAt(d, h) { var D = DAYS[d]; return h >= D.open && h < D.close ? D.usual[h - D.open] : null; }
   function band(v) { return v < 30 ? "quiet" : v < 60 ? "moderate" : v < 90 ? "busy" : "packed"; }
-  function hourText(h) { var c = h % 24, n = c % 12 || 12; return n + (c < 12 ? " AM" : " PM"); }
+  // A time never breaks across lines ("2" and "PM" stay together): a no-break space.
+  function hourText(h) { var c = h % 24, n = c % 12 || 12; return n + (c < 12 ? " AM" : " PM"); }
   function lowest(d, from) {
     var D = DAYS[d], best = null;
     for (var h = Math.max(D.open, from); h < D.close; h++) if (best === null || usualAt(d, h) < usualAt(d, best)) best = h;
@@ -100,7 +101,10 @@
     quietestLeftToday: "Quietest time left today",
     dayRange: function (d) { return 'Usually quietest at <b class="num">' + hourText(lowest(d, 0)) + '</b>, busiest at <b class="num">' + hourText(highest(d)) + "</b>"; },
     hourUsual: function (d, h) { return '<b class="num">' + hourText(h) + "</b>: usually " + band(usualAt(d, h)); },
-    hourNow: function (h) { return '<b class="num">' + hourText(h) + "</b>: " + level.word.toLowerCase() + " now, usually " + band(usualAt(TODAY, h)); },
+    // The hour now stands in: the same comparison as the line under the word, so "busy now" never sits beside
+    // "usually busy" while that line says "busier".
+    hourNow: function (h) { return '<b class="num">' + hourText(h) + "</b>: " + level.word.toLowerCase() + " now, " + T.vsShort[vs]; },
+    vsShort: { "much-quieter": "much quieter than usual", quieter: "quieter than usual", usual: "as busy as usual", busier: "busier than usual", "much-busier": "much busier than usual" },
     now: "Now",
     today: "Today",
     days: "Day",
@@ -211,8 +215,12 @@
     B.day = d;
     B.el.setAttribute("data-day", d);
     B.el.toggleAttribute("data-today", isToday);
+    // The arrival's order: from the day's first hour (or the week's clock), the live hour after the hours before it.
+    var from = B.mode === "fit" ? D.open : SPAN0;
+    B.bars.style.setProperty("--now-i", NOW_H - from);
     for (var h = SPAN0; h < SPAN1; h++) {
       var s = B.slots[h], v = usualAt(d, h), open = v !== null;
+      s.style.setProperty("--i", Math.max(0, h - from));
       s.toggleAttribute("data-closed", !open);
       s.style.setProperty("--g", open || B.mode === "clock" ? 1 : 0);
       s.style.setProperty("--u", open ? (v / TOP).toFixed(4) : 0);
@@ -222,7 +230,7 @@
       s.style.setProperty("--l", open && when === "now" ? (level.n / TOP).toFixed(4) : 0);
       s.toggleAttribute("data-quietest", isToday && h === quietLeft);
       s.setAttribute("aria-pressed", picked === h ? "true" : "false");
-      if (open) s.setAttribute("aria-label", when === "now" ? hourText(h) + ", now " + level.word.toLowerCase() + ", usually " + band(v) : hourText(h) + ", usually " + band(v));
+      if (open) s.setAttribute("aria-label", when === "now" ? hourText(h) + ", now " + level.word.toLowerCase() + ", " + T.vsShort[vs] : hourText(h) + ", usually " + band(v));
       else s.removeAttribute("aria-label");
       var t = s.querySelector(".t");
       if (t) {
@@ -247,10 +255,16 @@
     if (!B.labels) return;
     var D = DAYS[B.day], W = B.bars.clientWidth;
     var a = B.mode === "fit" ? D.open : SPAN0, z = B.mode === "fit" ? D.close : SPAN1, n = z - a, sw = W / n;
+    // The clock's hours every 3, or every 6 where an hour is narrower than 20 px (a 20-hour day on a phone).
+    var every = sw < 20 ? 6 : B.every;
     var items = [];
     for (var h = a; h < z; h++) {
       var t = B.slots[h].querySelector(".t");
-      if (!t || !t.textContent) continue;
+      if (!t) continue;
+      t.removeAttribute("data-yield");
+      t.removeAttribute("data-edge");
+      if (!t.hasAttribute("data-now") && !t.hasAttribute("data-pick")) t.innerHTML = h % every === 0 ? run(hourText(h)) : "";
+      if (!t.textContent) continue;
       var w = t.firstChild ? measure(t) : 0, c = (h - a + 0.5) * sw;
       // Rank: "Now" first, then a picked hour, then the clock's hours.
       items.push({ t: t, h: h, w: w, c: c, rank: t.hasAttribute("data-now") ? 2 : t.hasAttribute("data-pick") ? 1 : 0 });
@@ -260,9 +274,11 @@
       if (it.c - it.w / 2 < 0) { it.t.setAttribute("data-edge", "start"); it.c = it.w / 2; }
       else if (it.c + it.w / 2 > W) { it.t.setAttribute("data-edge", "end"); it.c = W - it.w / 2; }
     });
-    items.forEach(function (it) {
-      items.forEach(function (o) {
-        if (o === it || o.rank <= it.rank) return;
+    // A label gives way to a higher-ranked one it would touch; between two of the same rank, the later one gives way.
+    items.forEach(function (it, i) {
+      items.forEach(function (o, j) {
+        if (o === it || o.rank < it.rank || (o.rank === it.rank && j > i)) return;
+        if (o.rank === it.rank && o.t.hasAttribute("data-yield")) return;
         if (Math.abs(o.c - it.c) < (o.w + it.w) / 2 + 10) it.t.setAttribute("data-yield", "");
       });
     });
@@ -565,11 +581,14 @@
     return function () { placeLabels(B); };
   }
 
+  // Motion: the arrival raises the bars in the day's order, the live hour after the hours before it. Set before the
+  // page is built, so no bar is ever drawn at its height and then lowered. Under reduced motion it never runs and every
+  // bar stands at its height from the first frame.
+  if (!reduce) page.setAttribute("data-intro", "");
   var relayout = { day: buildDay, week: buildWeek, later: buildLater }[design]();
 
-  // Motion: the intro raises the bars in the day's order, the live hour last. Under reduced motion it never runs and
-  // every bar stands at its height from the first frame.
-  if (!reduce) page.setAttribute("data-intro", "");
+  // The arrival's stagger ends at the visitor's first touch or key, so a pick never waits on it.
+  ["pointerdown", "keydown"].forEach(function (t) { addEventListener(t, function () { page.removeAttribute("data-rise"); }, { capture: true, once: true }); });
   addEventListener("resize", function () { relayout(); });
   wide.addEventListener("change", function () { relayout(); });
 
@@ -579,6 +598,12 @@
   })).then(function () {
     relayout();
     window.__sketch = { ready: true };
-    if (!reduce) requestAnimationFrame(function () { requestAnimationFrame(function () { page.removeAttribute("data-intro"); }); });
+    if (!reduce) requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        page.setAttribute("data-rise", "");
+        page.removeAttribute("data-intro");
+        setTimeout(function () { page.removeAttribute("data-rise"); }, 2400);
+      });
+    });
   });
 })();

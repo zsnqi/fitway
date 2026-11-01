@@ -212,9 +212,10 @@ b { font-weight: 600; }
 .card-hours { font-size: var(--fs-small); line-height: 20px; color: var(--ink-3); }
 .card-hours .num { color: var(--ink-2); }
 
-.readout { display: flex; align-items: center; gap: 8px; min-height: 24px; font-size: var(--fs-small); line-height: 20px; color: var(--ink-2); }
+.readout { display: flex; align-items: flex-start; gap: 8px; min-height: 24px; font-size: var(--fs-text); line-height: 22px; color: var(--ink-2); }
+.readout > span { text-wrap: balance; } /* two even lines on the narrow phone, never an orphaned word */
 .readout b { color: var(--ink); }
-.readout .ic { width: 16px; height: 16px; color: var(--ink); }
+.readout .ic { width: 16px; height: 16px; margin-block-start: 3px; color: var(--ink); }
 .readout .ic-ring { stroke-width: 2; }
 
 /* ---------------------------------------------------------------------------------------------------------------
@@ -233,7 +234,7 @@ b { font-weight: 600; }
   background: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: flex-grow 520ms var(--ease-out);
+  transition: flex-grow 640ms var(--ease-out);
 }
 .slot[data-closed] { cursor: default; }
 .slot:focus-visible { outline-offset: -2px; border-radius: 6px; }
@@ -283,7 +284,6 @@ b { font-weight: 600; }
   border-radius: 3px 3px 0 0;
   overflow: hidden;
   background: linear-gradient(to top, var(--ox) 0%, #9c0f27 34%, var(--red) 70%, var(--red-hi) 100%);
-  box-shadow: 0 -2px 18px -2px rgb(229 25 53 / 0.32);
   transition: height 700ms var(--ease-out);
 }
 .lv::after { content: ""; position: absolute; inset: -60px; background: var(--grain); background-size: 120px 120px; mix-blend-mode: overlay; opacity: 0.32; }
@@ -525,9 +525,11 @@ b { font-weight: 600; }
  * once, and the information is the same.
  * --------------------------------------------------------------------------------------------------------------- */
 .page[data-intro] .slot, .page[data-intro] .pillar { --k: 0; }
-.page[data-rise] .u, .page[data-rise] .cap, .page[data-rise] .ring { transition-delay: calc(var(--i, 0) * 26ms); }
-.page[data-rise] .lv { transition-duration: 900ms; transition-delay: 520ms; }
+.page[data-intro] .ring { opacity: 0 !important; }
+.page[data-rise] .u, .page[data-rise] .cap, .page[data-rise] .ring { transition-duration: 900ms; transition-delay: calc(var(--i, 0) * 42ms); }
+.page[data-rise] .lv { transition-duration: 1000ms; transition-delay: calc(var(--now-i, 6) * 42ms + 280ms); }
 .page[data-rise] .pillar .u, .page[data-rise] .pillar .cap { transition-delay: 120ms; }
+.page[data-rise] .pillar .lv { transition-delay: 520ms; }
 .pillar { --k: 1; }
 .pillar .u { transition: height 800ms var(--ease-out); }
 .pillar .cap { transition: inset-block-end 800ms var(--ease-out); }
