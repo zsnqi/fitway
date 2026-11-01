@@ -59,6 +59,65 @@ test("frame planning multiplies states by sizes with density in every name", () 
 	);
 });
 
+test("frame size syntax accepts free CSS sizes with density", () => {
+	assert.deepEqual(
+		parseFrameSizes("1280x720@1,390x844@3", sizes).map(
+			({ name, density, dimensions }) => [name, density, dimensions],
+		),
+		[
+			["1280x720", 1, { width: 1280, height: 720 }],
+			["390x844", 3, { width: 390, height: 844 }],
+		],
+	);
+	assert.doesNotThrow(() =>
+		parseFrameSizes("desktop,zoom", {
+			...sizes,
+			zoom: { width: 1440, height: 900, zoom: 2 },
+		}),
+	);
+});
+
+test("frame size syntax refuses invalid and duplicate free dimensions", () => {
+	for (const value of [
+		"239x720",
+		"3841x720",
+		"390x239",
+		"390x2401",
+		"390.5x720",
+		"phone,390x844",
+		"1280x720@1,1280X720@2",
+	])
+		assert.throws(
+			() => parseFrameSizes(value, sizes),
+			(error) =>
+				error.message.includes(value.split(",")[0]) &&
+				error.message.includes("<width>x<height>"),
+			value,
+		);
+});
+
+test("frame planning records supplied actions and clip on every frame", () => {
+	const plan = framePlan(map, {
+		...options,
+		sizes: "1280x720@1",
+		states: "chart=line&level=quiet",
+		actions: 'click=.slot[data-h="18"];wait=20',
+		clip: ".chart-card",
+	});
+	assert.deepEqual(
+		plan.frames[0].actions.map((action) => action.step),
+		['click=.slot[data-h="18"]', "wait=20"],
+	);
+	assert.equal(plan.frames[0].clip, ".chart-card");
+	const plain = framePlan(map, {
+		...options,
+		sizes: "phone",
+		states: "chart=line&level=quiet",
+	});
+	assert.equal("actions" in plain.frames[0], false);
+	assert.equal("clip" in plain.frames[0], false);
+});
+
 test("an explicit multi-value input axis is added to every frame name", () => {
 	const plan = framePlan(map, {
 		...options,

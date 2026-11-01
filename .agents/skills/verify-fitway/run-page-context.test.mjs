@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { contextOptions } from "./drive-plan.mjs";
-import { newPageContextOptions } from "./run.mjs";
+import { newPageContextOptions, runPorts } from "./run.mjs";
 
 const sizes = {
 	desktop: { width: 1440, height: 900 },
@@ -57,5 +57,38 @@ test("frame contexts carry density and leave ordinary contexts at density one", 
 			...base,
 		}).dsf,
 		1,
+	);
+});
+
+test("run.newPage accepts a free size with density", () => {
+	assert.deepEqual(
+		newPageContextOptions(
+			{
+				size: "1280x720@2",
+				language: "en",
+				input: "mouse",
+				motion: "reduce",
+				colours: "normal",
+			},
+			sizes,
+		),
+		contextOptions({
+			width: 1280,
+			height: 720,
+			dsf: 2,
+			input: "mouse",
+			motion: "reduce",
+			color: "normal",
+			language: "en",
+		}),
+	);
+});
+
+test("a single-concept run owns the full requested pair", () => {
+	assert.deepEqual(runPorts({}), [3176, 3177]);
+	assert.deepEqual(runPorts({ port: "3188" }), [3188, 3189]);
+	assert.throws(
+		() => runPorts({ port: "3189" }),
+		/requires a pair's first port.*received 3189/,
 	);
 });

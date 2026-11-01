@@ -193,6 +193,11 @@ const types = {
 	".txt": "text/plain; charset=utf-8",
 };
 
+function scheduleIdle(idleTimer, timeout, close) {
+	clearTimeout(idleTimer);
+	return timeout === null ? undefined : setTimeout(close, timeout);
+}
+
 export async function preview({
 	concept,
 	port,
@@ -209,8 +214,7 @@ export async function preview({
 	const sockets = new Set();
 	let idleTimer;
 	const touch = () => {
-		clearTimeout(idleTimer);
-		idleTimer = setTimeout(() => close(), idleTimeoutMs);
+		idleTimer = scheduleIdle(idleTimer, idleTimeoutMs, close);
 	};
 	const server = createServer(async (req, res) => {
 		touch();

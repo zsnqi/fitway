@@ -44,6 +44,10 @@ Render with `pnpm verify:owner drive` for a page with recipes, or `pnpm verify:o
 <states>, into `D:/fitway-temp/<run>/`, made with `pnpm run-folder:new`. Inspect every frame yourself before
 reporting; a passing check is not a looked-at frame. (AGENTS.md; agent-tooling DECISIONS item 23)
 
+Use `pnpm verify:owner serve` for a shared or phone-accessible page, `frames --actions` and `--clip` for a working
+shot after interaction, and `measure --page` for motion or other ui-forensics measurements. Use `run` only for a
+check no command makes.
+
 ## Scope
 
 You may change `<paths>`; commit when done. Do not redesign beyond the decision; report anything that seems to need it. (CLAUDE.md)

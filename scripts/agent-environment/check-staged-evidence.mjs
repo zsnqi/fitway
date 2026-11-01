@@ -12,11 +12,12 @@ import {
 	formatTempCitationDetails,
 	RUN_FOLDER_REPLACEMENT_FIX,
 } from "../../.agents/skills/gardener/run-folder-provenance.mjs";
+import { parseBriefFormat } from "./brief-format.mjs";
 import { readIndexFiles } from "./check-staged-giant-files.mjs";
 import { readGit } from "./code-health-ratchet.mjs";
 import { designerBriefProblems } from "./designer-brief.mjs";
 
-const DESIGNER_HEADER = "<!-- brief-format: v1 role: designer -->";
+const WORKFLOW_ROLES = new Set(["designer", "builder", "verifier"]);
 
 function readGitResult(root, args, options = {}) {
 	return readGit(root, args, options);
@@ -71,11 +72,13 @@ function lostEvidenceRows(root) {
 }
 
 function designerFileProblems(root, file, text, newFiles) {
-	if (text.split(/\r?\n/, 1)[0] !== DESIGNER_HEADER) return [];
+	const role = parseBriefFormat(text).role;
+	if (!WORKFLOW_ROLES.has(role)) return [];
 	const lines = newFiles.has(file) ? undefined : addedLines(root, file);
 	if (lines && !lines.size) return [];
 	return designerBriefProblems(text, {
-		checkFrames: newFiles.has(file),
+		role,
+		checkFrames: role === "designer" && newFiles.has(file),
 		lineNumbers: lines,
 	}).map((problem) => ({ ...problem, file }));
 }

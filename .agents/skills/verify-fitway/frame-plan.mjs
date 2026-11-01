@@ -2,13 +2,36 @@
 import { safe } from "./capture-records.mjs";
 import { colorsAxis } from "./colors.mjs";
 import { axis, stateCases } from "./drive-plan.mjs";
+import { parseFrameActions } from "./frame-actions.mjs";
 
 const frameForm =
-	"use <size> or <size>@<density> with a whole density from 1 to 4";
+	"use <size>, <size>@<density>, <width>x<height> or <width>x<height>@<density>, with whole CSS pixels (width 240-3840, height 240-2400) and density 1-4";
+
+function freeDimensions(name, token) {
+	const match = /^(\d+)x(\d+)$/i.exec(name);
+	if (!match) {
+		if (/x/i.test(name))
+			throw new Error(`Invalid free frame size ${token}; ${frameForm}`);
+		return null;
+	}
+	const width = Number(match[1]);
+	const height = Number(match[2]);
+	if (width < 240 || width > 3840 || height < 240 || height > 2400)
+		throw new Error(
+			`Frame size ${token} is outside the free-size bounds; ${frameForm}`,
+		);
+	return { width, height };
+}
+
+function viewportKey(dimensions) {
+	const zoom = dimensions.zoom || 1;
+	return `${dimensions.width / zoom}x${dimensions.height / zoom}`;
+}
 
 export function parseFrameSizes(value, sizes) {
 	const names = Object.keys(sizes);
 	const seen = new Set();
+	const dimensionsSeen = new Map();
 	const parsed = String(value || "")
 		.split(",")
 		.filter((part) => part !== "")
@@ -18,22 +41,32 @@ export function parseFrameSizes(value, sizes) {
 				throw new Error(`Invalid frame size ${token}; ${frameForm}`);
 			const name = parts[0];
 			if (!name) throw new Error(`Invalid frame size ${token}; ${frameForm}`);
-			if (!sizes[name])
+			const free = freeDimensions(name, token);
+			if (!sizes[name] && !free)
 				throw new Error(
 					`Unknown frame size ${name} in ${token}; choose ${names.join(", ")}`,
 				);
-			if (seen.has(name))
+			const canonicalName = free ? `${free.width}x${free.height}` : name;
+			if (seen.has(canonicalName))
 				throw new Error(
-					`Duplicate frame size ${name} in ${value}; ${frameForm}; use each size once`,
+					`Duplicate frame size ${canonicalName} in ${value}; ${frameForm}; use each size once`,
 				);
-			seen.add(name);
+			seen.add(canonicalName);
+			const dimensions = free || sizes[name];
+			const key = viewportKey(dimensions);
+			const duplicate = dimensionsSeen.get(key);
+			if (duplicate)
+				throw new Error(
+					`Duplicate frame size dimensions ${key} in ${value} (${duplicate} and ${token}); ${frameForm}; use each size once`,
+				);
+			dimensionsSeen.set(key, token);
 			const rawDensity = parts[1];
 			if (parts.length === 2 && !/^[1-4]$/.test(rawDensity))
 				throw new Error(`Invalid frame size ${token}; ${frameForm}`);
 			return {
-				name,
+				name: canonicalName,
 				density: rawDensity === undefined ? 1 : Number(rawDensity),
-				dimensions: sizes[name],
+				dimensions,
 			};
 		});
 	if (!parsed.length) throw new Error(`Missing frame sizes; ${frameForm}`);
@@ -145,12 +178,18 @@ export function framePlan(map, options) {
 	const sizes = parseFrameSizes(options.sizes, map.sizes);
 	const axes = frameAxes(options);
 	const cases = stateCases(selected, options);
+	const capture = {
+		...(options.actions === undefined
+			? {}
+			: { actions: parseFrameActions(options.actions) }),
+		...(options.clip === undefined ? {} : { clip: options.clip }),
+	};
 	const frames = uniqueFrames(
 		cases.flatMap((state) =>
 			languages.flatMap((language) =>
 				sizes.flatMap((size) => stateFrames(state, language, size, axes)),
 			),
 		),
-	);
+	).map((frame) => ({ ...frame, ...capture }));
 	return { selected, languages, sizes, cases, frames };
 }

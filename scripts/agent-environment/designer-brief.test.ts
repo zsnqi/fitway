@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { checkBrief, formatBriefResult } from "./check-brief.mjs";
+import { designerBriefProblems } from "./designer-brief.mjs";
 import { readGit } from "./git-context.mjs";
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
@@ -146,5 +147,86 @@ describe("designer brief capture-tool requests", () => {
 				problem.message.includes("hand-built capture work"),
 			).length,
 		).toBeGreaterThan(0);
+	});
+});
+
+describe("design-work briefs use the maintained CLI working loop", () => {
+	it.each([
+		"designer",
+		"builder",
+		"verifier",
+	])("refuses raw ui-forensics scripts in a %s brief", async (role) => {
+		for (const pathLine of [
+			"```powershell\nnode C:/Users/Pc Force/.agents/skills/ui-forensics/scripts/web/motion.mjs\n```",
+			String.raw`C:\Users\Pc Force\.agents\skills\ui-forensics\scripts\web\motion.mjs`,
+		]) {
+			const result = await check(role, pathLine);
+			const problem = result.problems.find((candidate: { message: string }) =>
+				candidate.message.includes("ui-forensics script path"),
+			);
+			expect(problem?.message).toContain("pnpm verify:owner measure --page");
+			expect(problem?.message).toContain(
+				"pnpm verify:owner run --script <file>",
+			);
+		}
+	});
+
+	it("refuses direct script and server starts", async () => {
+		for (const body of [
+			"Run `node capture.mjs`.",
+			"Run `node.exe capture.mjs`.",
+			"Use `python shot.py`.",
+			"Use `python3 shot.py`.",
+			"Run `py -3 shot.py`.",
+			"Use `python -m http.server 3188`.",
+			"Use `npx serve .`.",
+			"Run `node serve.mjs`.",
+		]) {
+			const result = await check("builder", body);
+			expect(result.ok, `${body}\n${formatBriefResult(result)}`).toBe(false);
+			expect(result.problems[0]?.message).toContain("pnpm verify:owner");
+		}
+	});
+
+	it("refuses serve instructions that do not use the maintained server", async () => {
+		for (const body of [
+			"Serve the concept on port 3188.",
+			"Choose a free port to serve the phone build.",
+			"Start a static server for the page.",
+			"Run a local server for the concept.",
+			"Host the page on port 3188.",
+			"`pnpm verify:owner run --script check.mjs` then serve the page.",
+		]) {
+			const result = await check("verifier", body);
+			const problem = result.problems.find((candidate: { message: string }) =>
+				candidate.message.includes("without the maintained command"),
+			);
+			expect(problem?.message).toContain("pnpm verify:owner serve");
+		}
+	});
+
+	it("allows maintained servers, run scripts, and ui-forensics guides", async () => {
+		for (const body of [
+			"`pnpm verify:owner serve --concept <folder> --port 3188 --lan`",
+			"`pnpm verify:owner run --script <file> --ref <commit> --out <folder>`",
+			"C:/Users/Pc Force/.agents/skills/ui-forensics/references/browser-tools.md",
+			String.raw`C:\Users\Pc Force\.agents\skills\ui-forensics\references\browser-tools.md`,
+		]) {
+			const result = await check("verifier", body);
+			expect(result.ok, `${body}\n${formatBriefResult(result)}`).toBe(true);
+		}
+	});
+
+	it("masks the environment and leaves codex outside the capture rule", () => {
+		const inside = `<!-- environment:start v1 -->
+C:/Users/Pc Force/.agents/skills/ui-forensics/scripts/web/motion.mjs
+<!-- environment:end -->`;
+		expect(designerBriefProblems(inside, { role: "designer" })).toEqual([]);
+		expect(
+			designerBriefProblems(
+				"Run C:/Users/Pc Force/.agents/skills/ui-forensics/scripts/web/motion.mjs",
+				{ role: "codex" },
+			),
+		).toEqual([]);
 	});
 });

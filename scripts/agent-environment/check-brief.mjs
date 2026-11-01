@@ -37,8 +37,8 @@ export function parseBriefArgs(inputArgs) {
 }
 
 function reportDesignerBrief(text, role, report) {
-	if (role !== "designer") return;
-	for (const problem of designerBriefProblems(text))
+	if (!["designer", "builder", "verifier"].includes(role)) return;
+	for (const problem of designerBriefProblems(text, { role }))
 		report("brief-readiness", problem.line, problem.message);
 }
 

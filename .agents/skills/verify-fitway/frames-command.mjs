@@ -12,6 +12,7 @@ import {
 	verificationPort,
 } from "./core.mjs";
 import { contextOptions } from "./drive-plan.mjs";
+import { applyFrameActions, frameClip } from "./frame-actions.mjs";
 import { framePlan } from "./frame-plan.mjs";
 import { captureViewport, prepareViewport } from "./viewport-capture.mjs";
 
@@ -30,6 +31,10 @@ function frameEntry(frame, page) {
 		transport: frame.transport,
 		colours: frame.colours,
 		query: frame.query,
+		...(frame.actions === undefined
+			? {}
+			: { actions: frame.actions.map((action) => action.step) }),
+		...(frame.clip === undefined ? {} : { clip: frame.clip }),
 		readiness: null,
 		status: "capturing",
 		errors: [],
@@ -91,8 +96,13 @@ async function captureFrame(options, setup, plan, ui, runtime, frame) {
 			url,
 			plan.selected.ready,
 		);
+		await applyFrameActions(ui, current.page, frame.actions, frame.input);
 		Object.assign(entry, await pageEnvironment(current.page));
-		const png = await captureViewport(ui, current.page);
+		const clip =
+			frame.clip === undefined
+				? undefined
+				: await frameClip(current.page, frame.clip);
+		const png = await captureViewport(ui, current.page, { clip });
 		const decoded = ui.decodePNG(png);
 		await writeFile(await outputFile(options.out, frame.file), png);
 		entry.pngWidth = decoded.w;
