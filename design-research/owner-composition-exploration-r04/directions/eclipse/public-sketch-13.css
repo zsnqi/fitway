@@ -387,8 +387,8 @@ b { font-weight: 600; }
 .slot[data-quietest] .ring { scale: 1; }
 
 /* A picked hour: its haze lifts and its top thickens; the readout says it in words. */
-.slot[aria-pressed="true"] .u { --rim: 0.6; --body: 0.26; --floor: 0.06; }
-.slot[aria-pressed="true"] .cap::before { height: 3px; background: var(--ink); }
+.slot[aria-pressed="true"] .u, .slot:focus-visible .u { --rim: 0.6; --body: 0.26; --floor: 0.06; }
+.slot[aria-pressed="true"] .cap::before, .slot:focus-visible .cap::before { height: 3px; background: var(--ink); }
 
 /* The hour labels: centred under their bar; the first and last stand on the plot's edges; one too close to a
  * stronger one gives way (public-sketch-13.js). */
@@ -409,8 +409,9 @@ b { font-weight: 600; }
 .t[data-now], .t[data-pick], .t[data-ring] { color: var(--ink); font-weight: 600; }
 .t[data-yield] { visibility: hidden; }
 .t:empty { display: none; }
-/* Focus: the hour's label is ringed (it always shows while focused), and its column lifts. */
-.slot:focus-visible .t { visibility: visible; outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 5px; }
+/* Focus: the hour's label is ringed, its bar lifts and its column lights (above). Where its label gives way to "Now"
+ * (the next hour, on a phone), the lift and the column carry the focus. */
+.slot:focus-visible .t { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 5px; }
 
 /* The day picker: the week's seven days under the whole day, the picked one in chalk. */
 .days { display: flex; gap: 4px; }

@@ -233,8 +233,10 @@
       if (!strong) t.innerHTML = h % every === 0 || B.slots[h] === focused ? run(hourText(h)) : "";
       if (!t.textContent) continue;
       var w = measure(t), c = (h - D.open + 0.5) * sw;
-      // Rank: the focused hour, then "Now", then a picked hour or the quietest left, then the clock's hours.
-      var rank = B.slots[h] === focused ? 4 : t.hasAttribute("data-now") ? 3 : strong ? 2 : 0;
+      // Rank: "Now" (never hidden), then the focused hour, then a picked hour or the quietest left, then the clock's
+      // hours. A focused hour whose label gives way to "Now" (next to it, on a phone) still shows its focus: its bar
+      // lifts and its column lights.
+      var rank = t.hasAttribute("data-now") ? 4 : B.slots[h] === focused ? 3 : strong ? 2 : 0;
       items.push({ t: t, w: w, c: c, rank: rank });
     }
     items.forEach(function (it) {
@@ -309,9 +311,11 @@
 
   // Hours answer a tap or a click (again to clear), arrow keys, and a slide: a finger or a pressed pointer drawn
   // sideways along the day picks each hour it passes, so a 16 px hour on a phone Monday needs no aim. A vertical
-  // swipe still scrolls the page (touch-action: pan-y on the bars).
+  // swipe still scrolls the page (touch-action: pan-y on the bars). A pointer's tap is taken on its release, not from
+  // the click that may follow (Chromium drops the click of a tap that comes just after a slide); the click is left to
+  // the keyboard and to assistive technology (a click with no pointer behind it, detail 0).
   function hourInput(B, onPick) {
-    var drag = null, swallow = false;
+    var drag = null;
     function slotAt(x) {
       var best = null, bd = Infinity;
       B.bars.querySelectorAll(".slot:not([data-closed])").forEach(function (s) {
@@ -320,17 +324,15 @@
       });
       return best;
     }
-    B.bars.addEventListener("click", function (e) {
-      if (swallow) { swallow = false; return; }
-      var s = e.target.closest(".slot");
+    function toggle(s) {
       if (!s || s.disabled) return;
       var h = +s.getAttribute("data-h");
       onPick(B.picked === h ? null : h, false);
-    });
+    }
+    B.bars.addEventListener("click", function (e) { if (e.detail === 0) toggle(e.target.closest(".slot")); });
     B.bars.addEventListener("pointerdown", function (e) {
-      swallow = false;
       if (e.button !== 0) return;
-      drag = { id: e.pointerId, x: e.clientX, on: false };
+      drag = { id: e.pointerId, x: e.clientX, on: false, slot: e.target.closest(".slot") };
     });
     B.bars.addEventListener("pointermove", function (e) {
       if (!drag || e.pointerId !== drag.id) return;
@@ -344,8 +346,10 @@
     });
     function end(e) {
       if (!drag || e.pointerId !== drag.id) return;
-      if (drag.on && e.type === "pointerup") swallow = true;
+      var tap = !drag.on && e.type === "pointerup" && drag.slot && drag.slot === e.target.closest(".slot");
+      var s = drag.slot;
       drag = null;
+      if (tap) toggle(s);
     }
     B.bars.addEventListener("pointerup", end);
     B.bars.addEventListener("pointercancel", end);
