@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (a second polish of
-  `day` running, item 40)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-40; 40 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14, the second
+  polish, built and reviewed; the user reads it)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-41; 41 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,11 +20,11 @@
 
 ## Running now
 
-Nothing (measured 2026-11-01). Public branch `public-redesign-r01` at sketch 13 (`14d7564f`), on Markdown-only record
+Nothing (measured 2026-11-01). Public branch `public-redesign-r01` at sketch 14 (`ce902305`), on Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public-sketch-8.html` to
-`-13.html` the narrowed direction, `public.html` B's draft, `public-sketch-1.html` to `-7c.html` the earlier sketches.
+`-14.html` the narrowed direction, `public.html` B's draft, `public-sketch-1.html` to `-7c.html` the earlier sketches.
 
 - **Six directions from sketch 1, A-F** (items 10-12; briefs designer-public-sketches-6 and -7 in this
   file's briefs folder; `6a148a6d`, `7e22756e`; frames in `D:/fitway-temp/public-redesign-r01-sketches-{6,7}/`): the user
@@ -57,8 +57,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
       and after, item 39's open points and the new copy; the next round follows the user's word.
    6. The second polish (item 40: less text, the level word's place on the computer, item 39's open points) runs from
       `briefs/designer-public-polish-30.md` (run `D:/fitway-temp/public-redesign-r01-polish-30/`, into
-      `public-sketch-14.*`). Then the same reviewers again (A and the finish reviewer resumed, the detector in the
-      browser) and a before and after sheet against sketch 13 (`14d7564f`), for the user.
+      `public-sketch-14.*`). Built and reviewed (item 41; `ce902305`); the user reads it and item 41's open points.
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
      `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept; sketch 10 (`6fb7adf4`, run
@@ -77,7 +76,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing until the second polish and its review report; the user's full look at the result follows.
+The user's full look at sketch 14 and item 41's five open points.
 
 ## Known risks
 
