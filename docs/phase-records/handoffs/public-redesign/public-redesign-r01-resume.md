@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 12 built and
-  looked at; the user reads its three pages)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-37; 37 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (`day` picked; the
+  before review done; the polish round running)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-38; 38 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -52,9 +52,12 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
    41238840993 green on `9a81a355`; `pnpm verify:owner frames` and `sheet` render a public brief's frames and
    sheets), Popular Times is seen and its principle written, every rejection has its reason (item 35), and the brief's
    limits are agreed (item 36). Next:
-   5. Sketch 12 is built (item 37; `9f614f5b`, run `D:/fitway-temp/public-redesign-r01-sketch-27/`). The user reads
-      `day`, `week` and `later` (sheets in the run folder; LAN `public-sketch-12.html?design=`) and picks, with item
-      37's open points; the next round follows the pick.
+   5. Sketch 12 is built (item 37) and `day` is picked (item 38). The before review is done
+      (`D:/fitway-temp/public-redesign-r01-review-28/CRITIQUE.md`, brief `briefs/review-public-day-28.md`). The polish
+      runs from `briefs/designer-public-polish-29.md` (run `D:/fitway-temp/public-redesign-r01-polish-29/`, into
+      `public-sketch-13.*`). Then: the same reviewers again on the result (A, B in the browser, the finish reviewer's
+      verdict pass), and a before and after sheet the coordinator renders with `pnpm verify:owner frames --ref` for
+      `9f614f5b` and the polish commit, for the user.
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
      `D:/fitway-temp/public-redesign-r01-polish-23/`), with `reach` kept; sketch 10 (`6fb7adf4`, run
@@ -73,7 +76,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The user's reading of sketch 12's three pages and item 37's open points.
+Nothing until the polish and the after review report; then the user reads before and after.
 
 ## Known risks
 
