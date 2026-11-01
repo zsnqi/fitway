@@ -75,8 +75,9 @@ commands alone, and briefs that point anywhere else are refused.
 - **W1.** Serving a concept by hand is easier than finding `_serve`, which `launch` uses internally and no document
   names. Outcome: `pnpm verify:owner serve (--concept <folder>|--ref <commit>) --port <port> [--lan]
   [--idle-timeout-ms <ms>]` serves the concept read-only with `Cache-Control: no-store` through the existing
-  `preview`, prints `READY <origin>` (and each LAN origin with `--lan`), and serves until it is stopped, or for the
-  given idle time when `--idle-timeout-ms` is passed; `--ref` extracts the commit's concept as `frames` does. The
+  `preview`, prints `READY <origin>`, and with `--lan` binds an interface the local network reaches, as `preview`'s
+  `lan` option does, and prints each LAN origin it serves on (W7 proves a request through one); it serves until it
+  is stopped, or for the given idle time when `--idle-timeout-ms` is passed; `--ref` extracts the commit's concept as `frames` does. The
   port is any whole number from 1024 to 65535; a port with a listener on any address is refused naming the port,
   and the listener is never stopped. `_serve` keeps working exactly as `launch` calls it. Check: a test that `serve`
   on a free high port answers a request for a concept file with status 200 and the no-store header and that a busy
@@ -104,7 +105,9 @@ commands alone, and briefs that point anywhere else are refused.
   place, but agents re-wrote the server, browser and readiness wait instead. Outcome: `run` works with one concept
   (`--concept` or `--ref`, no baseline) on the default pair, as it may today, and its script also receives
   `ready(page)`, which waits for the page's readiness signal and fonts as `frames` waits, and `shot(page, file,
-  { clip })`, which writes a PNG into `out` as `frames` shoots one. Check: `run-page-context.test.mjs` or a new small
+  { clip })`, which writes a PNG into `out` as `frames` shoots one. W6's example and W7's script take their pages,
+  browser, server, readiness and shots from the run context alone: no import of Playwright or ui-forensics, no child
+  process and no server of their own. Check: `run-page-context.test.mjs` or a new small
   test covers `ready` and `shot` through the fake harness; the real run in W7. Intent: a looping check is the loop
   alone.
 - **W5.** Measuring motion needs a launched preview on a port pair, so agents serve their own page and call
@@ -114,8 +117,9 @@ commands alone, and briefs that point anywhere else are refused.
   query, and stops the server after; `--args-file` holds a JSON array of strings appended to the tool's arguments
   unchanged (no shell quoting), and a JSON value that is not an array of strings is refused. Every refusal
   `measure-arguments.mjs` makes stays and applies to the file's arguments too, and so does a tool `--url` beside
-  `--page`. Without `--page`, `measure` is as today. Check: tests for the argument assembly and each refusal; the
-  real run in W7. Intent: motion and the other ui-forensics measurements are one CLI command with the page served
+  `--page`, and so does a `--spec` or `--frames` file whose target URL is not the served page. Without `--page`,
+  `measure` is as today. Check: tests for the argument assembly (the tool receives the served page's URL with the
+  query) and each refusal; the real run in W7. Intent: motion and the other ui-forensics measurements are one CLI command with the page served
   for them.
 - **W6.** Briefs and templates point agents at raw tools. Outcome: (a) `SKILL.md` gains a section after "Public
   designer frames", linked from the location map, giving the exact PowerShell commands from the checkout root for
@@ -125,29 +129,34 @@ commands alone, and briefs that point anywhere else are refused.
   and `verifier.md` name `pnpm verify:owner serve` for a server, `frames --actions` and `--clip` for working shots,
   `measure --page` for motion and `run` for a check no command makes. (c) `pnpm brief:check`, and the pre-commit
   job that runs the designer rule on staged briefs, refuse a brief of role `designer`, `builder` or `verifier`
-  whose prose outside the environment block names a path inside ui-forensics' scripts folder
-  (`C:/Users/Pc Force/.agents/skills/ui-forensics/scripts/`, in any spelling of it; its references folder of
-  guides stays allowed), a server file such as `serve.mjs`, or a port of the agent's own choosing
-  without `pnpm verify:owner serve` on the same brief, each message naming the command to use; `role: codex`
-  briefs are not checked by this rule, and every existing designer-rule case keeps its result. Check:
-  `skill-navigation.test.mjs` finds the new commands in the new section; `designer-brief.test.ts` or a new test
-  covers each new refusal, an allowed guide path in the references folder, a builder and a verifier brief, and a codex brief left
+  whose text outside the environment block, prose and fenced commands alike: (i) names a path inside ui-forensics'
+  scripts folder (`C:/Users/Pc Force/.agents/skills/ui-forensics/scripts/`, in any spelling of it; its references
+  folder of guides stays allowed); (ii) runs a script file with `node`, `python` or `py`, or starts a server
+  (`python -m http.server`, `npx serve`, a server file such as `serve.mjs`), other than the script of a
+  `pnpm verify:owner run --script <file>` command; or (iii) has a line that tells the agent to serve a page or to
+  choose a port to serve on without `pnpm verify:owner serve` on that same line. Each message names the command to
+  use; `role: codex` briefs are not checked by this rule, and every existing designer-rule case keeps its result.
+  Check: `skill-navigation.test.mjs` finds the new commands in the new section; `designer-brief.test.ts` or a new
+  test covers each new refusal (a fenced direct ui-forensics call among them), an allowed guide path in the
+  references folder, a `run --script` command allowed, a builder and a verifier brief, and a codex brief left
   alone. The rule runs where the designer rule runs (one brief under `brief:check`, the briefs a commit adds under
   the hook), so briefs committed before it are not judged again. Intent: the easy path in a brief is the CLI, and
   the hard one is refused.
 - **W7.** No ladder test runs a browser (CI has neither Playwright Chromium nor ui-forensics), so the real proof is a
   run with the commands of W6's fenced block as written, only their `<...>` placeholders filled, on `--ref
-  0fad27b9`, page `public-sketch-16.html`, language `en`, into `D:/fitway-temp/<run>/`: (1) `serve` on port 3189,
-  one request for the page answered 200, then stopped; (2) `frames` at `phone@3` and `1280x720@1` with
+  0fad27b9`, page `public-sketch-16.html`, language `en`, into `D:/fitway-temp/<run>/`: (1) `serve --lan` on port
+  3189, one request for the page through a printed LAN origin (not loopback) answered 200, then stopped; (2) `frames` at `phone@3` and `1280x720@1` with
   `--states 'level=busy&day=sat'`, once as loaded and once with `--actions 'tap=.slot[data-h="18"]'` on `phone@3`
   and `click=.slot[data-h="18"]` on `1280x720@1` (two calls, since a tap needs touch), each also with `--clip` on the
   chart card; (3) a `run` script in the run folder that, at `phone@3` on Saturday, picks each `.slot` in turn and
-  records the hour labels' text and boxes before and after each pick, using `ready` and `shot` for one frame;
+  records each hour label's text, box, computed font weight and whether its bar is the picked one, before and after
+  each pick, using `ready` and `shot` for one frame;
   (4) `measure --tool motion` with `--page`, `--query 'level=busy&day=sat'` and `--args-file`, tracing the picked
   bar's outline element (read the page's CSS at that ref to choose it) after a click on `.slot[data-h="18"]`.
   Write `D:/fitway-temp/<run>/W7.md` with the commands as run, each frame's PNG size (expected 1170 x 2532 and 1280 x
   720, smaller where clipped), whether the picked and unpicked frames differ (pixel hashes), the label records'
-  count and whether any label's text or box changed, and the motion trace's verdict line. Look at the frames
+  count, whether any label's text or box changed, which labels changed weight and whether each was the picked
+  bar's, and the motion trace's verdict line. Look at the frames
   yourself and say what they show. Intent: the commands produce, on the real page, what the last designer built by
   hand.
 - **K1.** Everything else stays: `drive`, `compare`, `launch`, `frames` without the new options, `sheet`, `measure`

@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-31 23:56 +03:00
-  (item 23 done: both rounds merged, CI green on `9a81a355`, main advanced to it)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-23; 23 last), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-02 (item 24: round
+  working-tools under way)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-24; 24 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -24,7 +24,13 @@
 
 ## Running now
 
-Measured 2026-10-31 23:56. Nothing of this milestone runs. main `9a81a355` (`pnpm main:advance`, after CI run
+**Round working-tools** (DECISIONS item 24; the user asleep and asked for it to run to the end): brief
+`docs/phase-records/handoffs/agent-tooling/briefs/codex-working-tools.md`, worktree
+`D:/Projects/fitway-worktrees/tooling-working-tools` from `f5198aa3`, run folder
+`D:/fitway-temp/codex-round-working-tools`; brief reviews in `D:/fitway-temp/brief-review/codex-working-tools-1`
+and `-1-sol`. The public page's session (`public-redesign-r01`) waits idle until this round is merged and told.
+
+Before it, measured 2026-10-31 23:56: main `9a81a355` (`pnpm main:advance`, after CI run
 41238840993 passed; the run before it, 41238198065, failed on a `frames` test that needed ui-forensics, repaired in
 `9a81a355`).
 
