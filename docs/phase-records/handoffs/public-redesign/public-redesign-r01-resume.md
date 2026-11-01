@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14, the second
-  polish, built and reviewed; the user reads it)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-41; 41 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
+  two of its five open points answered, three explained and waiting, item 42)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-42; 42 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -76,7 +76,8 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-The user's full look at sketch 14 and item 41's five open points.
+Item 42's three explained points (a wordless tap cue on the phone, the live reading's own light, the quietest-time
+answer's place on the computer), and whether a third polish follows; the user also gives sketch 14 a full look.
 
 ## Known risks
 
