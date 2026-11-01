@@ -335,3 +335,26 @@ through these pointers, not copied here.
       coordinator's grade with planted defects, and a fix round; the designer and builder templates name
       `pnpm verify:owner frames` and `sheet`. The rule `frames` claims no state proof by design: a state's effect is
       judged by eye.
+24. **The working tools agents still hand-build go into the CLI, in one round before the public page continues**
+    (the user, 2026-11-02, from a forked session: «موافق على الثلاث اقتراحات كلها», «انا موافق على تغيير الوصف»,
+    and that the environment keeps improving over time but this round fixes only the problems found, not more
+    before the demo). A second retro (`D:/fitway-temp/retro-20261102-nav/`, the scripts of the first, by period, each
+    tool call counted once) compared the sessions since item 23 with those before item 17's fixes:
+    - **Item 23 met its target:** official frames and sheets come from `pnpm verify:owner frames|sheet` (104 calls
+      since; none before item 23's rounds), and item 17's gains held (whole `SPEC.md` reads 103 to 1;
+      `node_modules` hunts 26 to 8 per 1,000 calls). No agent relied on an out-of-date document.
+    - **Working tools are still hand-built** (per 1,000 calls 31 before item 17, 19 after it, 28 after item 23):
+      interaction and free-size screenshots (`shot.mjs` run 57 times), static servers (18; `_serve` is
+      undocumented and briefs said "serve on your own port"), and ui-forensics called directly (54) or through
+      copied `run-tool.mjs` wrappers, against `measure --tool` twice and `run` twice: `measure` needs a launched
+      preview on the paired ports, `run`'s `newPage` takes mapped sizes without density, and the coordinator's own
+      briefs named ui-forensics script paths.
+    - **The fixes, as layers:** (1) the CLI gains what those scripts did, in round `working-tools`
+      (`briefs/codex-working-tools.md`); (2) the designer, builder and verifier templates name those commands and
+      `pnpm brief:check` refuses a brief that names a ui-forensics script path or a hand-made server, extending
+      item 23's rule past designer briefs, since builder and verifier briefs now repeat the pattern; (3) the
+      `owner-direction-designer` and `-builder` descriptions say the verification CLI, not "repository
+      Playwright" (F309, done by the coordinator on the user's word). The verifier's "numbers from your own
+      scripts" and the reading-direction reviewer's "your own Playwright runs" are left as they are: they guard
+      independence, and changing them was not asked.
+    - Measured again with the same scripts once sessions have used the new commands.
