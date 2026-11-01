@@ -2,7 +2,7 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  the third polish running, the before reviews first, item 47)
+  the third polish running: before reviews done, the designer on sketch 15, item 47)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-47; 47 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -76,9 +76,11 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Nothing; the third polish runs (item 47). Its before reviews: `docs/phase-records/handoffs/public-redesign/briefs/reader-zero-context-31.md`
-and `docs/phase-records/handoffs/public-redesign/briefs/review-public-motion-31.md`, run `D:/fitway-temp/public-redesign-r01-review-31/`;
-then the designer's sketch 15 and the after reviews. The user judges the result, the motion above all.
+Nothing; the third polish runs (item 47). Before reviews done (`D:/fitway-temp/public-redesign-r01-review-31/`,
+`reader-before/REPORT.md` and `motion-before/REPORT.md`); the designer works on sketch 15 from
+`docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-32.md`, run
+`D:/fitway-temp/public-redesign-r01-polish-32/`; then the after reviews (critique A and B, finish, motion, the reader)
+and the before and after sheets. The user judges the result, the motion above all.
 
 ## Known risks
 
