@@ -2,7 +2,7 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  sketch 15 reviewed; the arrival fixed for Brave; the font fix done; sketch 16 built; its hours round running, item 52)
+  sketch 15 reviewed; the arrival fixed for Brave; the font fix done; sketch 16 and its hours round built, item 52)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-52; 52 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -20,9 +20,8 @@
 
 ## Running now
 
-The hours builder (item 52): brief `docs/phase-records/handoffs/public-redesign/briefs/builder-public-hours-36.md`,
-run `D:/fitway-temp/public-redesign-r01-hours-36/`, in place in `public-sketch-16.*`; and the user's page server
-(port 3181, Terminal tab). Public branch `public-redesign-r01` at sketch 16
+Nothing but the user's page server (port 3181, Terminal tab). Public branch `public-redesign-r01` at sketch 16 with
+the hours round (`77d2469b`, `89d2996d`, item 52)
 (`0fca4c0e`, item 51), on sketch 15 with the Brave fix (`2c911cb1`) and the font fix (`1593df75`), on Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
