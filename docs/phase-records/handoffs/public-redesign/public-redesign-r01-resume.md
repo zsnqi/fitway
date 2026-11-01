@@ -2,8 +2,8 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  the user tried it: the now readout repeats the head, the grain is too strong, item 44)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-44; 44 last), and the founding
+  the user tried it: the now readout repeats the head, the bars' grain is too strong, item 45)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-45; 45 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -76,8 +76,8 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Whether a third polish runs on item 44's notes (the now readout, the grain, the motion), with a zero-context reader
-before and after; the wordless tap cue on the phone once the user has tried it there.
+Whether a third polish runs on items 44-45 (the now readout, the bars' grain, the motion with `review-animations`
+and `ui-forensics`), with a zero-context reader before and after.
 
 ## Known risks
 
