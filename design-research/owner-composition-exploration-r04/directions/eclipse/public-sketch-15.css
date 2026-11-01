@@ -342,7 +342,9 @@ b { font-weight: 600; }
   --floor: 0.025;
   --gk: var(--gs);
   --ga: calc(1.3 / (1 - var(--gk) / 2));
-  translate: 0 calc((1 - var(--u) * var(--k)) * 100%);
+  /* --u falls back to 0: a browser that computes a new bar's style before setDay() gives it --u (Brave does) would
+   * otherwise see translate: none, a full-height bar, and slide it down into the arrival. */
+  translate: 0 calc((1 - var(--u, 0) * var(--k)) * 100%);
   border-radius: 3px 3px 0 0;
   background: linear-gradient(to bottom, rgb(var(--chalk) / calc(var(--rim) * var(--ga))) 0, rgb(var(--chalk) / calc(var(--body) * var(--ga))) 22px,
     rgb(var(--chalk) / calc(var(--body) * 0.55 * var(--ga))) calc(var(--ug) * 60%), rgb(var(--chalk) / calc(var(--floor) * var(--ga) * 1.5)) calc(var(--ug) * 100%));
@@ -363,7 +365,7 @@ b { font-weight: 600; }
   opacity: 0;
   transition: opacity var(--t-ui) ease;
 }
-.cap, .rk { translate: 0 calc((1 - var(--u) * var(--k)) * 100%); transition: translate var(--t-move) var(--ease-io); }
+.cap, .rk { translate: 0 calc((1 - var(--u, 0) * var(--k)) * 100%); transition: translate var(--t-move) var(--ease-io); }
 .cap::before {
   content: "";
   position: absolute;
