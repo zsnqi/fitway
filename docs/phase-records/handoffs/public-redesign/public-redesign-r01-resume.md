@@ -2,8 +2,8 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  two of its five open points answered, three explained and waiting, item 42)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-42; 42 last), and the founding
+  three of its five open points answered, the user tries the page, item 43)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-43; 43 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -76,8 +76,9 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Item 42's three explained points (a wordless tap cue on the phone, the live reading's own light, the quietest-time
-answer's place on the computer), and whether a third polish follows; the user also gives sketch 14 a full look.
+The user tries sketch 14 themself first (item 43). Then: the wordless tap cue on the phone, the live reading's own
+light (the Owner card's red is decoration, item 43), the wording of "Quietest time left", and whether a third polish
+follows.
 
 ## Known risks
 
