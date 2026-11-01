@@ -2,7 +2,7 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  sketch 15 reviewed, a font fix running, the arrival's direction open, item 48)
+  sketch 15 reviewed, the font fix paused, the arrival's direction open, item 48)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-48; 48 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -77,7 +77,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 ## Waiting on the user
 
 What looks reversed in the bars' arrival on their screen (item 48: a Chromium recording shows them rising), their look
-at sketch 15 (`?grain=` strengths), and whether the motion trial's rule change is proposed (item 47).
+at sketch 15 (`?grain=` strengths), when the paused font fix runs (nothing runs until the user says), and whether the motion trial's rule change is proposed (item 47).
 
 ## Known risks
 
