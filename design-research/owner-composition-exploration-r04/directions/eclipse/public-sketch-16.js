@@ -81,16 +81,21 @@
     return best;
   }
   // A day's bars: one per hour, or one per two hours counted from the opening hour (an odd last hour stands alone, at
-  // an hour's width, so the clock stays true). A two-hour bar stands at the mean of its two usual hours.
+  // an hour's width, so the clock stays true). A two-hour bar stands for its busier hour: its height, its word, its
+  // spoken name and the day's quietest and busiest all use it, so the page never promises a quieter time than one of
+  // its hours usually is (sketch 16 used the mean: 6 – 8 PM read "moderate" although 7 PM alone is "busy"). Each hour's
+  // own usual is kept (us), so a picked bar can tell its hours apart.
   function cellsOf(d, n) {
     var D = DAYS[d], out = [];
     for (var h = D.open; h < D.close; h += n) {
-      var k = Math.min(n, D.close - h), sum = 0;
-      for (var j = 0; j < k; j++) sum += usualAt(d, h + j);
-      out.push({ h: h, n: k, v: sum / k, i: out.length });
+      var k = Math.min(n, D.close - h), us = [];
+      for (var j = 0; j < k; j++) us.push(usualAt(d, h + j));
+      out.push({ h: h, n: k, v: Math.max.apply(null, us), us: us, i: out.length });
     }
     return out;
   }
+  // Whether a bar's hours read differently: a two-hour bar whose two hours fall in different words.
+  function splits(c) { return c.n > 1 && c.us.some(function (u) { return band(u) !== band(c.us[0]); }); }
   // A span as the clock writes it: "6 – 8 PM", "10 AM – 12 PM", "10 PM – 12 AM"; one hour is its own hour.
   function spanText(c, to) {
     if (c.n === 1) return hourText(c.h);
@@ -147,8 +152,20 @@
         : 'Quietest at <b class="num">' + lo + '</b>, busiest at <b class="num">' + hi + "</b>";
     },
     // A picked hour, the hour now stands in too: the head above already says now, so the card says what it does not,
-    // the hour's usual (its chalk top) and, under "Now" on the clock, which hour now is. A two-hour bar names its span.
-    cellUsual: function (c) { return '<b class="num">' + spanText(c) + "</b>: usually " + band(c.v); },
+    // the hour's usual (its chalk top) and, under "Now" on the clock, which hour now is. A two-hour bar names its span
+    // where its hours share a word, and each hour in clock order where they do not ("6 PM usually moderate · 7 PM
+    // usually busy"); each hour's words hold together and the dot stays with the first, so a narrow line breaks after
+    // the dot and never opens the next line with it.
+    cellUsual: function (c) {
+      if (!splits(c)) return '<b class="num">' + spanText(c) + "</b>: usually " + band(c.v);
+      return c.us.map(function (u, j) {
+        return '<span class="hr"><b class="num">' + hourText(c.h + j) + "</b> usually " + band(u) + (j < c.n - 1 ? " ·" : "") + "</span>";
+      }).join(" ");
+    },
+    // The spoken name of a bar whose hours read differently: each hour's ("6 PM usually moderate, 7 PM usually busy").
+    splitName: function (c) {
+      return c.us.map(function (u, j) { return hourText(c.h + j) + " usually " + band(u); }).join(", ");
+    },
     quietestName: ", the quietest time left today",
     now: "Now",
     today: "Today",
@@ -255,7 +272,8 @@
       var ring = isToday && h === ringHour;
       s.toggleAttribute("data-quietest", ring);
       s.setAttribute("aria-pressed", open && picked === h ? "true" : "false");
-      if (open) s.setAttribute("aria-label", spanText(c, " to ") + (when === "now" ? ", " + T.now.toLowerCase() : "") + ", usually " + band(v) + (ring ? T.quietestName : ""));
+      // Today is hourly, so "now" and the quietest left never meet a bar whose hours read differently.
+      if (open) s.setAttribute("aria-label", splits(c) ? T.splitName(c) : spanText(c, " to ") + (when === "now" ? ", " + T.now.toLowerCase() : "") + ", usually " + band(v) + (ring ? T.quietestName : ""));
       else s.removeAttribute("aria-label");
       var t = s.querySelector(".t");
       var isNow = open && when === "now", isPick = open && picked === h && !isNow, isRing = open && ring && picked == null;
@@ -494,9 +512,11 @@
     [title, hours, readout, fig, picker.el].forEach(function (n) { card.appendChild(n); });
     sign.appendChild(card);
 
-    // The card's answer, and a picked hour's words in its place. The answer's height is held while an hour is picked:
-    // on a narrow phone the answer takes two lines and an hour one, and the bars would jump a line under the finger
-    // as it picks (sketch 15 moved them 22 px at 360 px).
+    // The card's answer, and a picked hour's words in its place. While an hour is picked the readout holds the tallest
+    // of the answer and every pick the day offers: on a narrow phone the answer takes two lines and an hour one, and a
+    // two-hour bar whose hours read differently takes two where the answer takes one, and the bars would jump a line
+    // under the finger as it slides (sketch 15 moved them 22 px at 360 px).
+    function pickWords(c) { return "<span>" + run(T.cellUsual(c)) + "</span>"; }
     function words(d, h) {
       var html;
       if (d !== TODAY) html = "<span>" + run(T.dayRange(B.cells, B.grain)) + "</span>";
@@ -507,16 +527,19 @@
       readout.style.minHeight = "";
       if (h != null && !wide.matches) { // the computer's answer stands on one line, beside the card's name
         // Measured on a silent copy across the same grid area, so the live region announces only the hour.
-        var ghost = readout.cloneNode(false);
+        var ghost = readout.cloneNode(false), held = 0;
         ghost.removeAttribute("aria-live");
         ghost.setAttribute("aria-hidden", "true");
         ghost.style.cssText = "position:absolute;visibility:hidden;inset-inline:0";
-        ghost.innerHTML = html;
         card.appendChild(ghost);
-        readout.style.minHeight = ghost.getBoundingClientRect().height + "px";
+        [html].concat(B.cells.map(pickWords)).forEach(function (w) {
+          ghost.innerHTML = w;
+          held = Math.max(held, ghost.getBoundingClientRect().height);
+        });
+        readout.style.minHeight = held + "px";
         ghost.remove();
       }
-      if (h != null) html = "<span>" + run(T.cellUsual(B.cellAt[h])) + "</span>";
+      if (h != null) html = pickWords(B.cellAt[h]);
       readout.innerHTML = html;
       readout.toggleAttribute("data-picked", h != null);
     }

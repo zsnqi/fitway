@@ -296,6 +296,7 @@ b { font-weight: 600; }
 .readout { grid-area: read; display: flex; align-items: baseline; gap: 8px; min-height: 22px; margin-block: 12px 20px; font-size: var(--fs-text); line-height: 22px; color: var(--ink-2); }
 .readout > span { text-wrap: balance; } /* two even lines on the narrow phone, never an orphaned word */
 .readout b { color: var(--ink); }
+.readout .hr { white-space: nowrap; } /* a two-hour bar's hours told apart: each hour's words hold together */
 .readout .ic { align-self: flex-start; width: 16px; height: 16px; margin-block-start: 3px; color: var(--ink); }
 .readout .ic-ring { stroke-width: 2; }
 .dayfig { grid-area: fig; align-self: stretch; padding-block-end: 34px; }
