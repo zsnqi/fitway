@@ -2,8 +2,8 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  the third polish agreed, the motion skill's place waiting, item 46)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-46; 46 last), and the founding
+  the third polish running, the before reviews first, item 47)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-47; 47 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -76,9 +76,9 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Item 46: whether the designer reads a specialist motion skill's rules (with a written precedence) or the specialist
-stays with the separate reviewer. Then the third polish runs (items 44-46: the now readout, the bars' grain, the
-hover track, the motion), with a zero-context reader before and after.
+Nothing; the third polish runs (item 47). Its before reviews: `docs/phase-records/handoffs/public-redesign/briefs/reader-zero-context-31.md`
+and `docs/phase-records/handoffs/public-redesign/briefs/review-public-motion-31.md`, run `D:/fitway-temp/public-redesign-r01-review-31/`;
+then the designer's sketch 15 and the after reviews. The user judges the result, the motion above all.
 
 ## Known risks
 

@@ -53,3 +53,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 44. **The user tried sketch 14; three notes** `decisions/041-060.md`
 45. **No tap cue on the phone; the third round's motion review** `decisions/041-060.md`
 46. **The third polish agreed; the hover track goes; a specialist motion skill asked** `decisions/041-060.md`
+47. **The designer reads the specialist motion rules with a precedence: a trial** `decisions/041-060.md`
