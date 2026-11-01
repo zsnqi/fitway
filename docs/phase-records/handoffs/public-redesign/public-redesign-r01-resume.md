@@ -2,8 +2,8 @@
 # public-redesign-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
-  the user tried it: the now readout repeats the head, the bars' grain is too strong, item 45)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-45; 45 last), and the founding
+  the third polish agreed, the motion skill's place waiting, item 46)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-46; 46 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -76,8 +76,9 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Whether a third polish runs on items 44-45 (the now readout, the bars' grain, the motion with `review-animations`
-and `ui-forensics`), with a zero-context reader before and after.
+Item 46: whether the designer reads a specialist motion skill's rules (with a written precedence) or the specialist
+stays with the separate reviewer. Then the third polish runs (items 44-46: the now readout, the bars' grain, the
+hover track, the motion), with a zero-context reader before and after.
 
 ## Known risks
 
