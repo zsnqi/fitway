@@ -56,7 +56,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
       `D:/fitway-temp/public-redesign-r01-review-28/`, its `CRITIQUE.md` and compare sheets). The user reads the before
       and after, item 39's open points and the new copy; the next round follows the user's word.
    6. The second polish (item 40: less text, the level word's place on the computer, item 39's open points) runs from
-      `briefs/designer-public-polish-30.md` (run `D:/fitway-temp/public-redesign-r01-polish-30/`, into
+      `docs/phase-records/handoffs/public-redesign/briefs/designer-public-polish-30.md` (run `D:/fitway-temp/public-redesign-r01-polish-30/`, into
       `public-sketch-14.*`). Built and reviewed (item 41; `ce902305`); the user reads it and item 41's open points.
    - The path so far (items 28-31): the images in `D:/fitway-temp/public-redesign-r01-imagegen-21/`; sketch 8
      (`82f54e88`, run `D:/fitway-temp/public-redesign-r01-sketch-22/`); sketch 9 (`ab7b7f63`, run
