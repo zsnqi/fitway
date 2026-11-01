@@ -87,7 +87,7 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Their look at the axis round's result and its open points (item 53), their look at `?grain=`, the hover and the Now
+Their look at `?grain=`, the hover and the Now
 readout, a check of the font loading on their Android phone, and, after the motion review reruns, whether the motion
 trial's rule change is proposed (item 47).
 
