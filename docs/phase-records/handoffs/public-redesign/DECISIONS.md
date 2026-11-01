@@ -50,3 +50,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 41. **`day` polished a second time: sketch 14** `decisions/041-060.md`
 42. **Sketch 14's open points, first answers** `decisions/041-060.md`
 43. **The quietest-time answer stays; "left" questioned** `decisions/041-060.md`
+44. **The user tried sketch 14; three notes** `decisions/041-060.md`
