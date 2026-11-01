@@ -47,3 +47,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 38. **`day` is the pick; a review and polish round with Impeccable's reviewers, before and after** `decisions/021-040.md`
 39. **`day` reviewed and polished: sketch 13** `decisions/021-040.md`
 40. **A second polish round on sketch 13; less text; the level word's place on the computer** `decisions/021-040.md`
+41. **`day` polished a second time: sketch 14** `decisions/041-060.md`
