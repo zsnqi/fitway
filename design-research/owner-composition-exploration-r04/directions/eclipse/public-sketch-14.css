@@ -432,7 +432,8 @@ b { font-weight: 600; }
   white-space: nowrap;
   transition: background-color 160ms, color 160ms, border-color 160ms;
 }
-.day-btn[data-today] { flex-grow: 1.4; } /* room for "Today" on the phone */
+/* On a phone "Today" keeps room for its word inside its outline (a little wider than the other days). */
+.day-btn[data-today] { min-width: max-content; padding-inline: 9px; }
 .day-btn:hover { color: var(--ink); background: rgb(255 255 255 / 0.08); }
 .day-btn[aria-checked="true"] { background: rgb(var(--chalk) / 0.12); border-color: rgb(var(--chalk) / 0.72); color: var(--ink); font-weight: 600; }
 
@@ -450,8 +451,13 @@ b { font-weight: 600; }
   }
   .sign {
     --plot-h: clamp(180px, calc(100dvh - 520px), 560px);
-    grid-template-rows: minmax(clamp(8px, 1.6vh, 20px), 0.3fr) auto clamp(22px, 3.6vh, 40px) auto minmax(0, 1fr);
+    /* The air above the word is a floor and a share of what a tall screen leaves, in two rows: a share whose floor
+     * is not zero would set the fraction of a grid with no set height, and the last row would stand empty under the
+     * card at that floor (12 px of plot at 1280 x 720). */
+    grid-template-rows: clamp(8px, 1.6vh, 20px) minmax(0, 0.3fr) auto clamp(22px, 3.6vh, 40px) auto minmax(0, 1fr);
   }
+  .live { grid-row: 3; }
+  .daycard { grid-row: 5; }
   /* Clear of the word's descenders ("Busy"): a sixth of the word. */
   .sub { flex-wrap: nowrap; column-gap: clamp(24px, 2.2vw, 40px); margin-block-start: calc(var(--fs-word) * 0.16); }
   .facts { flex-basis: auto; }
@@ -467,7 +473,7 @@ b { font-weight: 600; }
   .dayfig { margin-block-start: 28px; padding-block-end: 40px; }
   .days { margin-block-start: 8px; }
   .day-btn { height: 44px; }
-  .day-btn[data-today] { flex-grow: 1; }
+  .day-btn[data-today] { padding-inline: 0; } /* a seventh of the row is room enough: Today is one day of seven */
   .slot { --bw: min(58%, 64px); }
 }
 /* A short computer screen (1280 x 720, 1366 x 768): the header and the card's frame give their height to the day. */
