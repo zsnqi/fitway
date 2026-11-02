@@ -1,10 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-01 (sketch 14 reviewed;
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-02 (sketch 14 reviewed;
   sketch 15 reviewed; the arrival fixed for Brave; the font fix done; sketch 16 and its hours and axis rounds built,
-  items 52-53)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-53; 53 last), and the founding
+  items 52-53; the overnight sequence running, item 54)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-54; 54 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -21,7 +21,12 @@
 
 ## Running now
 
-Only the user's page server (port 3181, Terminal tab). Public branch `public-redesign-r01` at sketch 16 with the
+The overnight sequence (item 54), now its first step: the motion review after
+(`docs/phase-records/handoffs/public-redesign/briefs/review-public-motion-38.md`, run
+`D:/fitway-temp/public-redesign-r01-motion-38/`, on the frozen `630a3b12`) beside the Arabic round
+(`docs/phase-records/handoffs/public-redesign/briefs/designer-public-arabic-39.md`, run
+`D:/fitway-temp/public-redesign-r01-arabic-39/`, building `public.*`); and the user's page server (port 3181,
+Terminal tab). Public branch `public-redesign-r01` at sketch 16 with the
 axis round (`0fad27b9`, item 53), the hours round (`77d2469b`, `89d2996d`, item 52) and its build (`0fca4c0e`, item 51), on sketch 15 with the Brave fix (`2c911cb1`) and the font fix (`1593df75`), on Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
