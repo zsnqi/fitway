@@ -61,3 +61,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 52. **Two-hour bars kept, by their busier hour, each hour told on a pick; the quiet head kept** `decisions/041-060.md`
 53. **The hour labels under the bars fixed; a picked bar seen at a glance** `decisions/041-060.md`
 54. **The last looks answered; the rest of the page run straight through overnight** `decisions/041-060.md`
+55. **The page in Arabic, as its own files** `decisions/041-060.md`
