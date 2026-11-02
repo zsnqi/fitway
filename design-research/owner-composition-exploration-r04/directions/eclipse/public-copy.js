@@ -1,8 +1,9 @@
 // FITWAY public crowd page (public-redesign-r01): its words. Concept only, synthetic data.
 // Every line the page writes, in each language, written for itself (GLO-17); the run's COPY.md lists them side by
 // side. The four level words are GLO-3's; the comparison is GLO-10's; Live, Delayed, Last reading and the age are
-// GLO-9's; "inside" and "approx." are GLO-2's; Closed and Outside opening hours GLO-7's; the states' words are the
-// family's (STA-10 to STA-13, STW-1, EMP-3).
+// GLO-9's; the count says GLO-2's "inside" and "approx." in the page's own shorter words («نحو 70 في الصالة», a
+// departure); Closed and Outside opening hours are GLO-7's; the states' words are the family's (STA-10 to STA-13,
+// STW-1, EMP-3), but for Unavailable's Arabic, written natively.
 // public.js calls it before it builds anything, with the page's language and what the lines are made of: the clock
 // (an hour, a span, an isolated run), the days and their usual hours, and now.
 window.FitwayPublicCopy = function (en, h) {
@@ -21,7 +22,7 @@ window.FitwayPublicCopy = function (en, h) {
     vs: {
       "much-quieter": "Much quieter than usual",
       quieter: "Quieter than usual",
-      usual: "About as busy as usual",
+      usual: "About usual",
       busier: "Busier than usual",
       "much-busier": "Much busier than usual"
     },
@@ -39,7 +40,7 @@ window.FitwayPublicCopy = function (en, h) {
     offline: "Offline",
     // Closed: the next opening, today's (STA-11's form: the day is named only when it is another).
     closed: "Closed",
-    opens: function (h) { return 'Opens <bdi class="num">' + hourText(h) + "</bdi>"; },
+    opens: function (h) { return 'Opens <bdi class="num time">' + hourText(h) + "</bdi>"; },
     outside: "Outside opening hours",
     // Error: what failed, the one way back under it (EMP-3, EMP-5), and what to do if it fails again.
     cantLoad: "Couldn't load",
@@ -78,8 +79,10 @@ window.FitwayPublicCopy = function (en, h) {
     },
     now: "Now",
     todayName: function (d) { return dayName(d) + ", today"; },
-    days: "Day",
+    days: "Days",
     hours: "Hours",
+    prevHour: "Previous hour",
+    nextHour: "Next hour",
     chartName: function (d, n, withNow) {
       var D = DAYS[d], s = "A usual " + dayName(d) + (n > 1 ? " in two-hour steps, " : " by the hour, ") + hourText(D.open) + " to " + hourText(D.close);
       return withNow ? s + ", with now at " + hourText(NOW_H) : s;
@@ -111,11 +114,12 @@ window.FitwayPublicCopy = function (en, h) {
     comma: "،",
     // «قبل دقيقة»، «قبل دقيقتين»، «قبل 5 دقائق»، «قبل 13 دقيقة»: the counted noun follows the number's rule.
     ago: function (m) { return iso(m === 1 ? "قبل دقيقة" : m === 2 ? "قبل دقيقتين" : "قبل " + m + NB + (m <= 10 ? "دقائق" : "دقيقة")); },
-    noCount: "لا عدّ حاليًا",
-    noOld: "لا نعرض عدًّا قديمًا مكانه.",
+    // Unavailable: the number is not there, and why no old one stands in for it (written natively, not from "No count").
+    noCount: "العدد غير متوفر",
+    noOld: "لا نعرض عددًا قديمًا على أنه الحالي.",
     offline: "غير متصل",
     closed: "مغلق",
-    opens: function (h) { return 'يفتح <bdi class="num">' + hourText(h) + "</bdi>"; },
+    opens: function (h) { return 'يفتح <bdi class="num time">' + hourText(h) + "</bdi>"; },
     outside: "خارج ساعات العمل",
     cantLoad: "تعذّر التحميل",
     checkConn: "تحقّق من الاتصال إن تكرّر ذلك.",
@@ -150,6 +154,8 @@ window.FitwayPublicCopy = function (en, h) {
     todayName: function (d) { return dayName(d) + "، اليوم"; },
     days: "الأيام",
     hours: "الساعات",
+    prevHour: "الساعة السابقة",
+    nextHour: "الساعة التالية",
     chartName: function (d, n, withNow) {
       var D = DAYS[d], s = "المعتاد أيام " + dayName(d) + (n > 1 ? " كل ساعتين، " : " ساعةً بساعة، ") + "من " + hourText(D.open) + " إلى " + hourText(D.close);
       return withNow ? s + "، والآن " + hourText(NOW_H) : s;

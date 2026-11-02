@@ -91,10 +91,9 @@
   // Now, by the gym's clock: 7:41 PM in the 7 PM hour, or 11:20 AM before Friday's 1 PM opening (Closed). Today's
   // closing, 1 AM, is the card's "Open 1 PM – 1 AM".
   var TODAY = "fri", NOW_H = state === "closed" ? 11 : 19, READ_AT = "7:41", LAST_AT = "7:28", AGO = 13;
-  // The week in each language's own order: Arabic from Sunday, Saudi Arabia's first day and the calendar week of the
-  // Owner pages (GLO-13); English from Monday, as Google's English keeps it (sketch 16). Either runs in its reading
-  // direction, so Arabic's Sunday stands at the right.
-  var WEEK = en ? ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] : ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  // The week from Sunday in both languages: Saudi Arabia's first day and the calendar week of the Owner pages (GLO-13).
+  // It runs in the reading direction, so Sunday stands at the right in Arabic and at the left in English.
+  var WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   var SPAN0 = 24, SPAN1 = 0;
   var busiestUsual = 0;
   Object.keys(DAYS).forEach(function (k) {
@@ -135,12 +134,15 @@
   // ---------------------------------------------------------------------------------------------------------------
   // The clock. Gym time on a 12-hour clock, Western digits in both languages (NUM-1): «7 م», "7 PM". An hour and its
   // period never part (a no-break space, DAT-4), and a time or a span in a line is one isolated, unbreakable run
-  // (.iso, NUM-3), so the sentence around it never reorders it. A span shares its period where both ends do. English
-  // keeps sketch 16's "6 – 8 PM"; Arabic writes «6–8 م» (DAT-3): the two numbers one left-to-right run joined after
-  // the dash (U+2060), so the en dash cannot turn them round, with the period after it; a span across noon or midnight
-  // keeps each end's own period, «10 ص – 12 م», and reads from the right like the sentence.
+  // (.iso, NUM-3), so the sentence around it never reorders it. A span shares its period where both ends do, unspaced
+  // (DAT-3): "6–8 PM", «6–8 م»; a span whose ends each keep their own period (across noon or midnight, and the day's
+  // hours) takes a thin space each side of the dash: "10 AM – 12 PM", «10 ص – 12 م». Every Arabic span reads from the
+  // right, as the sentence, the bars and the day's hours do: its first hour stands at the right (an RTL run, so the en
+  // dash puts the later number to its left), and one card never runs two ways (a departure from DAT-3's isolated
+  // left-to-right «6–8 م», for this page). The word joiner after an unspaced dash (U+2060) keeps the span whole even
+  // outside its run.
   // ---------------------------------------------------------------------------------------------------------------
-  var NB = " ", THIN = " ";
+  var NB = " ", THIN = " ", WJ = "⁠";
   function half(h) { return h % 24 < 12 ? (en ? "AM" : "ص") : (en ? "PM" : "م"); }
   function n12(h) { return h % 24 % 12 || 12; }
   function hourText(h) { return n12(h) + NB + half(h); } // plain text: the labels and the spoken names
@@ -149,8 +151,8 @@
   function spanHtml(c) {
     if (c.n === 1) return hourHtml(c.h);
     var a = c.h, b = c.h + c.n;
-    if (half(a) !== half(b)) return iso(hourHtml(a) + " – " + hourHtml(b));
-    return iso(en ? n12(a) + " – " + hourText(b) : '<bdi dir="ltr">' + n12(a) + "–⁠" + n12(b) + "</bdi>" + NB + half(b));
+    if (half(a) !== half(b)) return iso(hourHtml(a) + THIN + "–" + THIN + hourHtml(b));
+    return iso(n12(a) + "–" + WJ + n12(b) + NB + half(b));
   }
   // A span spoken: "6 to 8 PM", «من 6 إلى 8 م».
   function spanSpoken(c) {
@@ -173,9 +175,11 @@
   }
 
   // Today against a usual Friday at this hour: a reading of now, so Live's alone (and always the open gym's 7 PM: the
-  // head's held height is Live's, worked out in every state).
-  var usualNow = usualAt(TODAY, 19), ratio = level.n / usualNow;
-  var vs = ratio < 0.6 ? "much-quieter" : ratio < 0.9 ? "quieter" : ratio <= 1.1 ? "usual" : ratio <= 1.4 ? "busier" : "much-busier";
+  // head's held height is Live's, worked out in every state and at every level).
+  var usualNow = usualAt(TODAY, 19);
+  var COMPARISONS = ["much-quieter", "quieter", "usual", "busier", "much-busier"];
+  function vsOf(n) { var r = n / usualNow; return r < 0.6 ? "much-quieter" : r < 0.9 ? "quieter" : r <= 1.1 ? "usual" : r <= 1.4 ? "busier" : "much-busier"; }
+  var vs = vsOf(level.n);
   // The live hour's grain runs the way today runs against the usual: up when busier, down when quieter (CSS, Motion).
   function setFlow() {
     page.removeAttribute("data-flow"); page.removeAttribute("data-much");
@@ -223,9 +227,11 @@
     // The states' marks (STW-1): Delayed's clock, Unavailable's struck circle, Error's alert.
     clock: '<svg class="ic st" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.25"/><path d="M8 4.75V8l2.25 1.5"/></svg>',
     struck: '<svg class="ic st" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.25"/><path d="M3.6 12.4 12.4 3.6"/></svg>',
-    alert: '<svg class="ic st" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.25"/><path d="M8 4.6v4.1M8 11.2v.2"/></svg>'
+    alert: '<svg class="ic st" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.25"/><path d="M8 4.6v4.1M8 11.2v.2"/></svg>',
+    // The step keys' chevron, drawn towards the later hour (CSS turns it with the reading direction and the key).
+    chev: '<svg class="ic" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6.25 3.5 10.75 8l-4.5 4.5"/></svg>'
   };
-  var vsIcon = vs.indexOf("quieter") >= 0 ? ICON.down : vs === "usual" ? ICON.level : ICON.up;
+  function vsIcon(c) { return c.indexOf("quieter") >= 0 ? ICON.down : c === "usual" ? ICON.level : ICON.up; }
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   // A line with no words yet (a placeholder's, the empty readout's) carries an unseen strut in the language's face, so
@@ -242,22 +248,26 @@
   // time. Delayed: the same reading in --ink-2, said as the last one, with its time and its age, the comparison gone.
   // Unavailable: no count, why none is shown, Offline. Closed: Closed, the next opening, outside opening hours. Error:
   // what failed, what to do, the one retry. Loading: placeholders where the values will stand, and "Loading…".
+  // A level (lk, the page's own by default) and a comparison (cmp, the level's own) can be given, so the head can be
+  // held at the tallest any reading writes (hold).
   // ---------------------------------------------------------------------------------------------------------------
-  function rowsHtml(s) {
-    var facts, line, word;
+  function rowsHtml(s, lk, cmp) {
+    var facts, line, word, lv = LEVELS[lk || levelKey];
+    cmp = cmp || vsOf(lv.n);
     if (s === "live" || s === "delayed") {
-      word = '<span class="sr-only">' + (s === "live" ? T.srNow : T.srLast) + '</span><span class="level">' + T.words[levelKey] + "</span>";
-      facts = '<p class="facts"><span class="count-line">' + T.about(level.n) + "</span>" + (pctOn ? '<span class="pct">' + T.full(level.pct) + "</span>" : "") + "</p>";
+      word = '<span class="sr-only">' + (s === "live" ? T.srNow : T.srLast) + '</span><span class="level">' + T.words[lk || levelKey] + "</span>";
+      facts = '<p class="facts"><span class="count-line">' + T.about(lv.n) + "</span>" + (pctOn ? '<span class="pct">' + T.full(lv.pct) + "</span>" : "") + "</p>";
       line = s === "live"
-        ? '<p class="vs">' + vsIcon + "<span>" + T.vs[vs] + '</span></p><p class="stamp"><i class="dot" aria-hidden="true"></i><b>' + T.live + "</b> · " + T.readAt(READ_AT) + "</p>"
+        ? '<p class="vs">' + vsIcon(cmp) + "<span>" + T.vs[cmp] + '</span></p><p class="stamp"><i class="dot" aria-hidden="true"></i><b>' + T.live + "</b> · " + T.readAt(READ_AT) + "</p>"
         : '<p class="stamp st-late">' + ICON.clock + '<span class="iso"><b>' + T.delayed + "</b> · " + T.lastAt(LAST_AT) + T.comma + '</span> <span class="ago">' + T.ago(AGO) + "</span></p>";
     } else if (s === "unavailable") {
       word = '<span class="level">' + T.noCount + "</span>";
       facts = '<p class="facts note">' + T.noOld + "</p>";
       line = '<p class="stamp">' + ICON.struck + "<b>" + T.offline + "</b></p>";
     } else if (s === "closed") {
+      // «يفتح 1 م» / "Opens 1 PM" is one run, as "About 70 inside" is: its words a word space from the time.
       word = '<span class="level">' + T.closed + "</span>";
-      facts = '<p class="facts">' + T.opens(DAYS[TODAY].open) + "</p>";
+      facts = '<p class="facts"><span class="count-line">' + T.opens(DAYS[TODAY].open) + "</span></p>";
       line = '<p class="stamp"><i class="ring-mark" aria-hidden="true"></i><b>' + T.outside + "</b></p>";
     } else if (s === "error") {
       word = '<span class="level">' + T.cantLoad + "</span>";
@@ -348,9 +358,12 @@
       // A pick changes no label: its bar's own label, where the day has one, is set bold, and the readout names it.
       s.querySelector(".t").toggleAttribute("data-pick", open && picked === h);
     }
-    // One tab stop for the hours: the picked hour, or now, or the first open hour; arrows move between them. None
-    // while the plot is an empty frame.
-    var first = !data ? null : picked != null ? picked : isToday && cellAt[NOW_H] ? NOW_H : D.open;
+    // One tab stop for the hours: the picked hour, else the hour that has focus (a pick cleared with Escape leaves the
+    // stop where focus is, so Tab leaves the hours), else now, else the first open hour; arrows move between them.
+    // None while the plot is an empty frame.
+    var act = document.activeElement, held = act && act.parentNode === B.bars ? +act.getAttribute("data-h") : null;
+    if (held != null && !head[held]) held = null;
+    var first = !data ? null : picked != null ? picked : held != null ? held : isToday && cellAt[NOW_H] ? NOW_H : D.open;
     for (h = SPAN0; h < SPAN1; h++) B.slots[h].tabIndex = h === first ? 0 : -1;
     B.picked = picked;
   }
@@ -358,20 +371,34 @@
   // Labels, fixed for a day: they follow the day, the plot's width and the direction, never a pick, a hover, focus or
   // a slide, so the clock under the bars never changes under the finger. How often the clock is labelled follows a
   // bar's width: every bar where there is room for it, else every second, third or sixth, counted from the opening
-  // hour, so the day's first hour is always named (when it opens, by form). A bar's label is its first hour. Today in
-  // Live adds two labels of its own, part of its answer: "Now", and the quietest hour left (in the other states that
-  // have the day, the quietest hour alone: no "Now" stands under a bar that is not a reading). A label too close to a
-  // stronger one gives way; the first and last stand on the plot's edges. Each label keeps the width of its bold self,
-  // so the one a pick sets bold keeps its box. Worked out from the final layout: an hour's width = plot width / open
-  // hours, a bar's = that times its hours.
+  // hour, so the day's first hour is named (when it opens, by form). A bar's label is its first hour. Today in Live
+  // adds two labels of its own, part of its answer: "Now", and the quietest hour left (in the other states that have
+  // the day, the quietest hour alone: no "Now" stands under a bar that is not a reading). Today keeps one rhythm with
+  // them: the clock is counted from the hour now stands in (from the quietest where the day has no now, Closed), at
+  // the finest step its width allows that the quietest hour also falls on, so the strong labels are part of the clock
+  // and the two languages name the same hours (1 PM, 4 PM, Now, 10 PM on the phone and the tablet; every hour on the
+  // computer). A label too close to a stronger one gives way; the first and last stand on the plot's edges. Each label
+  // keeps the width of its bold self, so the one a pick sets bold keeps its box. Worked out from the final layout: an
+  // hour's width = plot width / open hours, a bar's = that times its hours.
   function placeLabels(B) {
     var D = DAYS[B.day], W = B.bars.clientWidth, hw = W / (D.close - D.open), sw = hw * B.grain;
     var every = sw >= 64 ? 1 : sw >= 34 ? 2 : sw >= 21 ? 3 : 6;
     var isToday = B.day === TODAY, items = [], rh = ringHour();
+    // Today's rhythm: its anchor and its step (else the opening hour and the width's step).
+    var anchor = D.open, step = every;
+    if (isToday && hasDay()) {
+      var nowOn = state !== "closed" && B.cellAt[NOW_H] ? NOW_H : null;
+      anchor = nowOn != null ? nowOn : rh != null ? rh : D.open;
+      if (nowOn != null && rh != null) {
+        for (var k = every; k <= 2 * every && (rh - anchor) % k !== 0; k++);
+        if ((rh - anchor) % k === 0) step = k; else anchor = D.open; // no shared step close by: the opening's clock
+      }
+    }
     for (var h = SPAN0; h < SPAN1; h++) {
       var t = B.slots[h].querySelector(".t"), cell = B.cellAt[h], head = !!cell && cell.h === h;
       var isNow = head && isToday && isLive() && h === NOW_H, isRing = head && isToday && h === rh && !isNow;
-      var text = !head ? "" : isNow ? T.now : isRing || cell.i % every === 0 ? hourText(h) : "";
+      var onClock = isToday && hasDay() ? ((h - anchor) % step + step) % step === 0 : cell && cell.i % every === 0;
+      var text = !head ? "" : isNow ? T.now : isRing || onClock ? hourText(h) : "";
       t.textContent = text;
       t.setAttribute("data-label", text);
       t.toggleAttribute("data-now", isNow);
@@ -540,6 +567,12 @@
     }
     B.bars.addEventListener("pointerup", end);
     B.bars.addEventListener("pointercancel", end);
+    // The hours' one Tab stop follows focus wherever it lands (a key, a click).
+    B.bars.addEventListener("focusin", function (e) {
+      var s = e.target.closest(".slot");
+      if (!s) return;
+      B.bars.querySelectorAll(".slot").forEach(function (o) { o.tabIndex = o === s ? 0 : -1; });
+    });
     // Escape clears a picked hour (as picking it again does), and the card's answer returns.
     B.bars.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && B.picked != null) { e.preventDefault(); onPick(null, true); return; }
@@ -617,14 +650,26 @@
   var hq = q.get("hour"), pickedHour = hq !== null && usualAt(pickedDay, +hq) !== null ? +hq : null;
 
   // The level word takes the size the width gives it (CSS, --fs-word), and a word too long for its line at that size
-  // («شديد الازدحام», "No current count" on the phone) is set down until it fits on one line; the other words keep the
+  // («شديد الازدحام», "Couldn't load" on the phone) is set down until it fits on one line; the other words keep the
   // size. Only the word is set down, never its line, so the line keeps the height every word gives it and the facts
   // under it stay where they are whatever the word (a reading that turns Packed moves nothing).
   // (A word set down can round its line a fraction of a pixel deeper: «تعذّر التحميل» at 390 px by 0.41 px. The line
   // keeps the height the word gave it at full size, measured before it is set down.)
+  // The word's first stroke stands on the facts' start edge. An English word's first letter has a side bearing of its
+  // own ("B", "M", "N", "P" twice that of "C" or "Q"), so it is measured in the face the word is drawn in and taken
+  // back (canvas); the Arabic keeps the CSS's −0.03em. A placeholder is flat, so it starts on the edge itself.
+  var inkPad = null;
+  function inkLead(word) {
+    if (!inkPad) inkPad = document.createElement("canvas").getContext("2d");
+    var cs = getComputedStyle(word);
+    inkPad.font = cs.fontWeight + " 200px " + cs.fontFamily;
+    return -inkPad.measureText(word.textContent).actualBoundingBoxLeft / 200;
+  }
   function fitWord(head) {
     var w = head.word, word = w.querySelector(".level");
-    word.style.fontSize = ""; w.style.blockSize = "";
+    word.style.fontSize = ""; w.style.blockSize = ""; word.style.marginInlineStart = "";
+    if (word.querySelector(".ph")) word.style.marginInlineStart = "0";
+    else if (en) word.style.marginInlineStart = (-inkLead(word)).toFixed(4) + "em";
     var room = sign.clientWidth, need = word.getBoundingClientRect().width;
     if (need > room) {
       var line = w.getBoundingClientRect().height;
@@ -635,10 +680,9 @@
   // The count and the percentage share a line; where a narrow screen parts them, the percentage starts its own line
   // without the rule that stood between them (CSS, data-wrapped).
   function fitFacts(head) {
-    var f = head.sub.querySelector(".facts"), c = f && f.querySelector(".count-line"), p = f && f.querySelector(".pct");
-    if (!p || !c) return;
-    f.removeAttribute("data-wrapped");
-    if (p.getBoundingClientRect().top - c.getBoundingClientRect().top > 4) f.setAttribute("data-wrapped", "");
+    var f = head.sub.querySelector(".facts");
+    if (f) f.removeAttribute("data-wrapped");
+    wrapFacts(head.sub);
   }
   // The week row: seven equal buttons while every day's name stands in its button with room on both sides (at least
   // AIR px, a little under what "Wed" has at 360 px); where one does not («خميس» on the phone), each button takes its
@@ -651,7 +695,41 @@
     if (need > share) row.setAttribute("data-fit", "content");
   }
 
-  var B, head, card, title, hours, readout, fig, picker, relayout;
+  // The step keys: where a picked day's hour is narrower than a finger (today on a phone under 354 px; any hourly day
+  // under it with ?hours=1), a picked hour brings two keys to the end of the readout's line, the earlier hour and the
+  // later one, so every hour has a target of 40 px (WCAG 2.5.8's equivalent control; the family's previous and next
+  // beside a kept reading, CHT-15). The slide stays. They wait at the first and last hour (aria-disabled), and go when
+  // the pick does.
+  function stepKeys() {
+    var g = el("div", "steps");
+    g.hidden = true;
+    var keys = [[-1, T.prevHour], [1, T.nextHour]].map(function (k) {
+      var b = el("button", "step", ICON.chev);
+      b.type = "button";
+      b.setAttribute("data-step", k[0]);
+      b.setAttribute("aria-label", k[1]);
+      g.appendChild(b);
+      return b;
+    });
+    return { el: g, prev: keys[0], next: keys[1] };
+  }
+  function narrow(d, n) { var D = DAYS[d]; return B.bars.clientWidth / (D.close - D.open) * n < FINGER; }
+  function syncSteps() {
+    var on = hasDay() && B.picked != null && narrow(B.day, B.grain);
+    steps.el.hidden = !on;
+    readout.toggleAttribute("data-steps", on);
+    if (!on) return;
+    var i = B.cells.indexOf(B.cellAt[B.picked]);
+    steps.prev.setAttribute("aria-disabled", i <= 0 ? "true" : "false");
+    steps.next.setAttribute("aria-disabled", i >= B.cells.length - 1 ? "true" : "false");
+  }
+  function pickHour(h, keepFocus) {
+    setDay(B, B.day, h); words(B.day, B.picked);
+    var f = B.slots[h != null ? h : -1];
+    if (!keepFocus && f && document.activeElement && document.activeElement.closest(".bars") === B.bars) f.focus();
+  }
+
+  var B, head, card, title, hours, readout, steps, fig, picker, relayout;
   function build() {
     head = { el: el("section", "live") };
     head.el.setAttribute("aria-label", T.rightNow);
@@ -667,18 +745,21 @@
     title = el("h2", "card-title"); title.id = "day-title";
     hours = el("p", "card-hours");
     readout = el("p", "readout");
+    steps = stepKeys();
     fig = el("figure", "dayfig");
     B = dayBars();
     fig.appendChild(B.el);
     picker = dayPicker(pickedDay, function (d) { show(d, null, true); });
-    [title, hours, readout, fig, picker.el].forEach(function (n) { card.appendChild(n); });
+    [title, hours, readout, steps.el, fig, picker.el].forEach(function (n) { card.appendChild(n); });
     sign.appendChild(card);
 
     // A pick leaves the labels where the day put them (placeLabels runs only for a day or a width).
-    hourInput(B, function (h, keepFocus) {
-      setDay(B, B.day, h); words(B.day, B.picked);
-      var f = B.slots[h != null ? h : -1];
-      if (!keepFocus && f && document.activeElement && document.activeElement.closest(".bars") === B.bars) f.focus();
+    hourInput(B, pickHour);
+    steps.el.addEventListener("click", function (e) {
+      var k = e.target.closest(".step");
+      if (!k || k.getAttribute("aria-disabled") === "true" || B.picked == null) return;
+      var c = B.cells[B.cells.indexOf(B.cellAt[B.picked]) + +k.getAttribute("data-step")];
+      if (c) pickHour(c.h, true);
     });
     head.sub.addEventListener("click", function (e) { var r = e.target.closest(".retry"); if (r) retry(r); });
 
@@ -692,6 +773,7 @@
       if (grainFor(B, B.day) !== B.grain) show(B.day, B.picked, false);
       fit();
       placeLabels(B);
+      syncSteps();
     };
   }
 
@@ -731,6 +813,7 @@
     if (h != null) html = pickWords(B.cellAt[h]);
     readout.innerHTML = html;
     readout.toggleAttribute("data-picked", h != null);
+    syncSteps();
   }
   function show(d, h, animate) {
     var before = animate && !reduce && d !== B.day && !page.hasAttribute("data-keys") ? seen(B) : null;
@@ -755,8 +838,10 @@
   // ---------------------------------------------------------------------------------------------------------------
   // Held heights: nothing on the page moves when the day, the state or the reading changes (motion review F1; the
   // Loading behaviour's zero shift). Worked out for the width, again only when it changes:
-  // - the head holds the tallest two rows any state writes at this width (silent copies, measured; Live's, and Delayed's
-  //   two-line status at 320 px in English), so a state that follows another moves nothing;
+  // - the head holds the tallest two rows any state writes at this width, at every level (silent copies, measured), so
+  //   a state that follows another, or a reading that changes level, moves nothing; the comparison holds the room of
+  //   the widest of the five, so the Live stamp after it stands still too, and where the widest and the stamp would
+  //   not share a line, every level's stamp takes the next one;
   // - the card's head stacks its name over its hours where any day's name and hours would not share a line;
   // - on the phone and the tablet the readout holds the tallest of everything it can say at this width: today's
   //   answer in every state, every day's answer and every hour a day offers, picked (on the computer the answer stands
@@ -771,20 +856,44 @@
     host.appendChild(g);
     return g;
   }
+  function wrapFacts(sub) {
+    var f = sub.querySelector(".facts"), c = f && f.querySelector(".count-line"), p = f && f.querySelector(".pct");
+    if (p && c && p.getBoundingClientRect().top - c.getBoundingClientRect().top > 4) f.setAttribute("data-wrapped", "");
+    return f;
+  }
   function hold() {
-    fitWord(head); fitFacts(head); fitDays(picker.el);
-    // The head: Live's rows first (their facts row is the height Error's key stands at), then every other state's; it
-    // holds the tallest.
+    fitWord(head); fitDays(picker.el);
+    // The head. The comparison's room first: the widest of the five at this width. Then the numerals' room: Readex
+    // Pro's digits are not tabular, so the count and the percentage each hold the width of the widest the readings
+    // write (the four levels'; "00" to "99" would hold 3-5 px more and part the Arabic facts at 360 px). Then Live's
+    // rows (their facts row is the height Error's key stands at), every level's in Live and Delayed, and every other
+    // state's; the head holds the tallest.
     head.sub.style.minHeight = "";
-    var gs = ghostOf(head.sub, head.el, rowsHtml("live").sub);
-    var gf = gs.querySelector(".facts"), gc = gf.querySelector(".count-line"), gp = gf.querySelector(".pct");
-    if (gp && gp.getBoundingClientRect().top - gc.getBoundingClientRect().top > 4) gf.setAttribute("data-wrapped", "");
-    var rowA = gf.getBoundingClientRect().height, tallest = gs.getBoundingClientRect().height;
+    var gs = ghostOf(head.sub, head.el, ""), vsW = 0;
+    COMPARISONS.forEach(function (c) {
+      gs.innerHTML = rowsHtml("live", levelKey, c).sub;
+      vsW = Math.max(vsW, gs.querySelector(".vs").getBoundingClientRect().width);
+    });
+    var cW = 0, pW = 0, gn = gs.querySelector(".count-line .num"), gp = gs.querySelector(".pct .num");
+    Object.keys(LEVELS).forEach(function (k) {
+      gn.textContent = LEVELS[k].n; cW = Math.max(cW, gn.getBoundingClientRect().width);
+      if (gp) { gp.textContent = LEVELS[k].pct + "%"; pW = Math.max(pW, gp.getBoundingClientRect().width); }
+    });
+    [gs, head.sub].forEach(function (n) { // whole pixels, so every reading's box is the held one exactly
+      n.style.setProperty("--vs-w", Math.ceil(vsW) + "px");
+      n.style.setProperty("--count-w", Math.ceil(cW) + "px");
+      n.style.setProperty("--pct-w", Math.ceil(pW) + "px");
+    });
+    fitFacts(head);
+    gs.innerHTML = rowsHtml("live").sub;
+    var rowA = wrapFacts(gs).getBoundingClientRect().height, tallest = 0;
     gs.style.setProperty("--row-a", rowA.toFixed(2) + "px");
     STATES.forEach(function (st) {
-      if (st === "live") return;
-      gs.innerHTML = rowsHtml(st).sub;
-      tallest = Math.max(tallest, gs.getBoundingClientRect().height);
+      (st === "live" || st === "delayed" ? Object.keys(LEVELS) : [null]).forEach(function (lk) {
+        gs.innerHTML = rowsHtml(st, lk).sub;
+        wrapFacts(gs);
+        tallest = Math.max(tallest, gs.getBoundingClientRect().height);
+      });
     });
     gs.remove();
     head.sub.style.minHeight = tallest + "px"; // exact: Live, where it is the tallest, keeps its own height
@@ -801,27 +910,34 @@
       title.textContent = keep.t; hours.innerHTML = keep.h;
       card.toggleAttribute("data-stack", stack);
     }
-    // The readout.
+    // The readout. A pick on a day whose hours are narrower than a finger is measured beside the step keys, and the
+    // readout is then never shorter than they are, so their coming and going moves nothing.
     readout.style.minHeight = "";
     if (!wide.matches) {
-      var g = ghostOf(readout, card), held = 0;
+      var g = ghostOf(readout, card), held = 0, keys = false;
       var say = [ICON.ring + "<span>" + T.quietestLeft(quietLeft) + "</span>", ICON.ring + "<span>" + T.quietestSame(quietLeft) + "</span>", "<span>" + T.nowQuietest + "</span>"];
       var early = lowest(TODAY, 0);
       say.push(ICON.ring + "<span>" + T.quietestToday(early) + "</span>");
+      say = say.map(function (w) { return [w, false]; });
       WEEK.forEach(function (d) {
-        var n = grainFor(B, d), cells = cellsOf(d, n);
-        say.push("<span>" + T.dayRange(cells, n) + "</span>");
-        cells.forEach(function (c) { say.push(pickWords(c)); });
+        var n = grainFor(B, d), cells = cellsOf(d, n), k = narrow(d, n);
+        keys = keys || k;
+        say.push(["<span>" + T.dayRange(cells, n) + "</span>", false]);
+        cells.forEach(function (c) { say.push([pickWords(c), k]); });
       });
-      say.forEach(function (w) { g.innerHTML = w; held = Math.max(held, g.getBoundingClientRect().height); });
+      say.forEach(function (w) {
+        g.innerHTML = w[0];
+        g.toggleAttribute("data-steps", w[1]);
+        held = Math.max(held, g.getBoundingClientRect().height);
+      });
       g.remove();
-      readout.style.minHeight = held + "px";
+      readout.style.minHeight = (keys ? Math.max(held, 40) : held) + "px";
     }
   }
 
   // The day fills what the screen leaves it: the page is measured with the plot at nothing, and the plot takes the
-  // rest, between a floor and a ceiling (on a tall screen the rest goes to the space around). The phone's and the
-  // tablet's concept label stays under the fold.
+  // rest, between a floor and a ceiling (on a tall screen the rest goes to the space around). At 390 x 844 and on
+  // the larger phones the plot reaches its ceiling and the page is the screen's height, the concept label at its foot.
   function fit() {
     var min = wide.matches || tablet.matches ? 180 : 150, max = wide.matches ? 560 : tablet.matches ? 520 : 320;
     var foot = document.querySelector(".concept-foot");
