@@ -16,8 +16,12 @@ window.FitwayPublicCopy = function (en, h) {
     usually: function (b) { return "usually " + T.words[b].toLowerCase(); },
     rightNow: "Right now",
     srNow: "Crowd right now: ",
-    about: function (n) { return "About " + num(n) + " inside"; },
-    full: function (p) { return num(p + "%") + " full"; },
+    about: function (n) { return T.aboutOf(num(n)); },
+    aboutOf: function (x) { return "About " + x + " inside"; }, // x: the number's box (Loading: its placeholder)
+    full: function (p) { return T.fullOf(num(p + "%")); },
+    fullOf: function (x) { return x + " full"; },
+    // The arrival, said once from the header: the word's lead, the level, the count, as one sentence.
+    arrival: function (k, n) { return T.srNow + T.words[k] + ", about " + n + " inside"; },
     // Under the word, so "right now" goes without saying.
     vs: {
       "much-quieter": "Much quieter than usual",
@@ -97,8 +101,11 @@ window.FitwayPublicCopy = function (en, h) {
     srNow: "الازدحام الآن: ",
     // The English line's shape, small word, large count, small words: «نحو» says it is not an exact headcount (GLO-2's
     // rule) in one short word, so the count and the percentage hold one line down to 360 px, as the English does.
-    about: function (n) { return "نحو " + num(n) + " في الصالة"; },
-    full: function (p) { return num(p + "%") + " من السعة"; },
+    about: function (n) { return T.aboutOf(num(n)); },
+    aboutOf: function (x) { return "نحو " + x + " في الصالة"; },
+    full: function (p) { return T.fullOf(num(p + "%")); },
+    fullOf: function (x) { return x + " من السعة"; },
+    arrival: function (k, n) { return T.srNow + T.words[k] + "، نحو " + n + " في الصالة"; },
     vs: {
       "much-quieter": "أهدأ بكثير من المعتاد",
       quieter: "أهدأ من المعتاد",

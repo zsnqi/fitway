@@ -53,6 +53,7 @@
   --ease-enter: cubic-bezier(0.23, 1, 0.32, 1);
   --t-move: 280ms;
   --t-ui: 160ms;
+  --t-press: 120ms;   /* every key's release (STANDARDS.md: press feedback 100-160 ms; the system answering, so the faster) */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
   /* The same grain carried in alpha, for masks: the same noise, the same curve, in the alpha channel. */
   --grain-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .34 .33 .33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='2.8' intercept='-.9'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -77,7 +78,7 @@ b { font-weight: 600; }
 /* ---------------------------------------------------------------------------------------------------------------
  * The shell: sketch 11's header, wordmark, language switch and corner light. Fluid sizes run in a straight line from
  * the phone (390 px) to the computer (1440 px), but for the word and the count, which the tablet and the computer set
- * for themselves and which meet at 1024 px (the tablet's rules).
+ * for themselves: the tablet's meet the phone's at 600 px and the computer's at 1024 (the tablet's rules).
  * --------------------------------------------------------------------------------------------------------------- */
 .page {
   --pad: clamp(16px, 4.5vw, 80px);
@@ -118,7 +119,7 @@ b { font-weight: 600; }
   font-size: var(--fs-small);
   font-weight: 500;
   -webkit-tap-highlight-color: transparent;
-  transition: box-shadow 120ms ease-out;
+  transition: box-shadow var(--t-press) ease-out;
 }
 .lang::after { content: ""; position: absolute; inset: -3px; }
 @media (hover: hover) and (pointer: fine) { .lang:hover { color: var(--ink); border-color: rgb(255 255 255 / 0.22); } }
@@ -126,10 +127,8 @@ b { font-weight: 600; }
 .concept { font-size: 13px; line-height: 20px; color: var(--ink-3); }
 .concept-top { display: none; }
 .concept-foot { padding-block-start: 18px; }
-@media (min-width: 1024px) {
-  .concept-top { display: inline; }
-  .concept-foot { display: none; }
-}
+[data-range="computer"] .concept-top { display: inline; }
+[data-range="computer"] .concept-foot { display: none; }
 
 /* The page's light: an arc from the top inline-start corner, a dark disc in front so it reads as a rim, the grain where
  * it is lit; sketch 11's reach (the `reach` the user kept). */
@@ -183,8 +182,9 @@ b { font-weight: 600; }
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
-/* The word's first stroke stands on the start edge the facts start from: the Latin's side bearing is 0.08 of the word
- * ("B", "M", "P"), the Arabic's 0.02-0.04 (measured in Readex Pro 700 on the four words). */
+/* The word's first stroke stands on the start edge the facts start from: its first letter's side bearing is measured in
+ * the face it is drawn in and taken back, in both languages (public.js, fitWord). These are the values before it is
+ * measured: the Latin's bearing is 0.04-0.085 of the word ("C", "B"), the Arabic's 0.02-0.04 (Readex Pro 700). */
 [dir="ltr"] .word .level { margin-inline-start: -0.05em; }
 [dir="rtl"] .word .level { margin-inline-start: -0.03em; }
 /* Arabic is never tracked (TYP-5): a letter-space breaks its joins. Its final mim (مزدحم, شديد الازدحام) falls 0.47 of
@@ -193,10 +193,15 @@ b { font-weight: 600; }
  * in the same place at every level. */
 :lang(ar) .word { letter-spacing: 0; padding-block-end: 0.23em; }
 
+/* The facts, then the status line, 12 px under them in every state: a state with shorter rows than Live's keeps the head's
+ * held height (public.js, hold) with the spare room under its last row, never between its rows. The head's rows take
+ * the column's width whatever they hold, so no box of theirs follows the comparison's length. */
 .sub {
+  justify-self: stretch;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
+  align-content: flex-start;
   column-gap: 18px;
   row-gap: 12px;
   margin-block-start: 10px;
@@ -225,10 +230,13 @@ b { font-weight: 600; }
 .count-line .num:not(.time) { display: inline-block; min-inline-size: var(--count-w, 0); text-align: center; }
 .pct .num { display: inline-block; min-inline-size: var(--pct-w, 0); text-align: center; }
 
-/* The comparison holds the room of the widest of the five at this width (public.js, hold: --vs-w), so a reading that
- * turns from one comparison to another moves nothing after it. */
-.vs { min-inline-size: var(--vs-w, auto); font-size: var(--fs-text); line-height: 1.35; color: var(--ink); white-space: nowrap; }
+/* The status line: the comparison, and the stamp after it at the line's own gap. The room the widest of the five
+ * comparisons needs is left after the stamp: where the widest and the stamp would not share a line, every reading's
+ * stamp takes the next one (public.js, hold: data-stamp), so a reading that turns from one comparison to another moves
+ * the stamp along its line, never off it, and nothing under it. */
+.vs { font-size: var(--fs-text); line-height: 1.35; color: var(--ink); white-space: nowrap; }
 .vs .ic { display: inline-block; vertical-align: -6px; width: 16px; height: 16px; padding: 3px; margin-inline-end: 8px; border-radius: 50%; background: rgb(var(--chalk) / 0.1); box-sizing: content-box; }
+.sub[data-stamp="own"] .vs + .stamp { flex-basis: 100%; }
 
 .stamp { font-size: var(--fs-small); line-height: 20px; color: var(--ink-2); white-space: nowrap; }
 .stamp b { color: var(--ink); font-weight: 600; }
@@ -265,8 +273,9 @@ b { font-weight: 600; }
 /* The word's full size is for an answer to "how busy is it now": a level, or Closed. Unavailable and Error cannot
  * answer, so from 600 px, where a word has room to run wide, theirs stands at 0.7 of it: about as wide as the other
  * states' words («العدد غير متوفر» and "Couldn't load" ran 783-881 px wide at 124), never louder than an answer or the
- * retry. Their line keeps the word's height (the word sits on its baseline), so nothing under it moves. */
-@media (min-width: 600px) { .page:is([data-state="unavailable"], [data-state="error"]) .word .level { font-size: 0.7em; } }
+ * retry. Their line keeps the word's height (the word sits on its baseline), so nothing under it moves. (Decided for
+ * the concept: Unavailable shares Error's 0.7.) */
+.page:not([data-range="phone"]):is([data-state="unavailable"], [data-state="error"]) .word .level { font-size: 0.7em; }
 .facts.note { column-gap: 8px; font-size: var(--fs-text); line-height: 1.35; color: var(--ink-2); text-wrap: balance; } /* never a word alone on its line */
 /* Closed: the word in chalk (a fact about now, from the opening hours, not a reading), the next opening at the
  * count's size, the hollow ring the Live dot's size (STW-1). */
@@ -288,16 +297,22 @@ b { font-weight: 600; }
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: box-shadow 120ms ease-out;
+  transition: box-shadow var(--t-press) ease-out;
 }
 .retry[aria-disabled="true"] { cursor: progress; }
-/* Loading: placeholders only where a value is awaited (PH-1, PH-3), in the value's own slot and type, so the reading
- * lands where they stood: one flat fill, no shimmer; "Loading…" where the status will be (STW-2). Unseen for the
- * first 300 ms, so a payload that lands in time never shows them. */
+/* Loading: Live's own rows and boxes, with placeholders only where a value is awaited (PH-1, PH-3), so the reading lands
+ * where they stood: the count line's and the percentage's words are real text, and their numbers wait in the room the
+ * readings hold (public.js, hold: --count-w, --pct-w); the comparison waits as its arrow's disc and a line, "Loading…"
+ * stands where the stamp will, in the stamp's room (--stamp-w), and the rows part as Live's. One flat fill, no shimmer;
+ * "Loading…" where the status will be (STW-2). Unseen for the first 300 ms, so a payload that lands in time never shows
+ * them. The comparison's own length is the reading's: its line holds "Busier than usual"'s (--ph-vs), the default
+ * reading's, so after another comparison the stamp lands further along its line (the stamp follows its comparison). */
 .ph { display: inline-block; width: var(--w, 4em); height: 0.72em; border-radius: 8px; background: rgb(255 255 255 / 0.07); vertical-align: baseline; }
 .vs .ph, .readout .ph { border-radius: 4px; }
+.vs .ph-ic { display: inline-block; vertical-align: -6px; width: 16px; height: 16px; padding: 3px; margin-inline-end: 8px; border-radius: 50%; background: rgb(255 255 255 / 0.07); box-sizing: content-box; }
+.page[data-state="loading"] .vs + .stamp { min-inline-size: var(--stamp-w, auto); }
 .loading-words { color: var(--ink-2); }
-.page[data-state="loading"]:not([data-shown]) :is(.ph, .loading-words) { visibility: hidden; }
+.page[data-state="loading"]:not([data-shown]) :is(.ph, .ph-ic, .loading-words) { visibility: hidden; }
 .page[data-state="loading"]:not([data-shown]) .pct { border-color: transparent; }
 /* While the usual day has not arrived (Loading, Error) the days are real text and wait. */
 .days[aria-disabled="true"] .day-btn { color: var(--ink-3); cursor: default; }
@@ -395,8 +410,11 @@ b { font-weight: 600; }
 /* The step keys (public.js, stepKeys): a picked hour's earlier and later hour, at the end of the readout's line, where
  * a day's hours are narrower than a finger (today on a phone under 354 px). The day keys' face and press, 40 px square;
  * the chevron points the way time runs, so in Arabic the later hour's points left. The readout's words make room for
- * them, inside the height it already holds. */
-.steps { grid-area: read; justify-self: end; align-self: center; display: flex; gap: 4px; margin-block: 12px 20px; }
+ * them. The keys centre on the picked hour's words, not on the readout's held height: on their first line (22 px),
+ * as the readout's ring sits on its first line, so a pick whose words take two lines (English under 351 px, "4 PM:
+ * usually / moderate") keeps the keys where every other pick has them, and they never move under the finger. They
+ * reach 9 px into the readout's margins, never past them. */
+.steps { grid-area: read; justify-self: end; align-self: start; display: flex; gap: 4px; margin-block: calc(12px + (22px - 40px) / 2) 0; }
 .steps[hidden] { display: none; }
 .readout[data-steps] { padding-inline-end: 92px; } /* the two keys, the 4 px between them and 8 px of air */
 .step {
@@ -411,7 +429,7 @@ b { font-weight: 600; }
   color: var(--ink-2);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color var(--t-ui) ease, color var(--t-ui) ease, border-color var(--t-ui) ease;
+  transition: background-color var(--t-press) ease, color var(--t-press) ease, border-color var(--t-press) ease;
 }
 .step .ic { width: 16px; height: 16px; stroke-width: 2; }
 .step[data-step="-1"] .ic, [dir="rtl"] .step[data-step="1"] .ic { scale: -1 1; }
@@ -647,14 +665,15 @@ b { font-weight: 600; }
   cursor: pointer;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color var(--t-ui) ease, color var(--t-ui) ease, border-color var(--t-ui) ease;
+  transition: background-color var(--t-press) ease, color var(--t-press) ease, border-color var(--t-press) ease;
 }
 @media (hover: hover) and (pointer: fine) { .days:not([aria-disabled="true"]) .day-btn:hover { color: var(--ink); background: rgb(255 255 255 / 0.08); } }
 .day-btn[aria-checked="true"] { background: rgb(var(--chalk) / 0.12); border-color: rgb(var(--chalk) / 0.72); color: var(--ink); font-weight: 600; }
 /* The browser's tap flash is gone from the page's keys (motion review F5), and each answers a press as the family's
  * keys do (STA-16): a day sinks while held, darker than the row inside a faint chalk edge (never lit, so a held day
  * never reads as the chosen one; the chosen one sinks under its ring); the language key takes a step of chalk light;
- * the retry, a chalk key, seats in its bezel. At once on the press, back in 120 ms on release. */
+ * the retry, a chalk key, seats in its bezel. At once on the press, back in 120 ms on release (--t-press, every key's;
+ * a day key's hover and its picked edge take the same 120 ms). */
 .days:not([aria-disabled="true"]) .day-btn:active { background: rgb(0 0 0 / 0.45); border-color: rgb(var(--chalk) / 0.12); color: var(--ink); transition: none; }
 .days:not([aria-disabled="true"]) .day-btn[aria-checked="true"]:active { border-color: rgb(var(--chalk) / 0.72); }
 .lang:active { box-shadow: inset 0 0 0 100vmax rgb(var(--chalk) / 0.1); transition: none; }
@@ -687,33 +706,36 @@ b { font-weight: 600; }
 :lang(ar) .day-btn[data-today]::after { width: 14px; height: 2px; margin-inline-start: -7px; border-radius: 1px; inset-block-end: 4px; }
 
 /* ---------------------------------------------------------------------------------------------------------------
+ * The ranges are the page's own attribute (public.js sets data-range from the widths: phone below 600 px, tablet to
+ * 1023.98, computer from 1024, data-short on a computer 820 px tall or less), so the page can lay itself out as the
+ * range beside it for a moment and measure it: near a range's edge the day's height runs smoothly into the next range's
+ * (public.js, fit).
+ *
  * The tablet (600-1023 px; 768 x 1024 designed, a computer at 200% zoom checked): the phone's order, which suits a
- * screen held in the hand, set at a tablet's sizes. The word grows with the width on the computer's own line, held by
- * the height as the computer's is (91.9 px at 768 x 1024, between the phone's 64 and the computer's 104), so it meets
- * the computer's at 1024 px whatever the height; the count steps down from the phone's 36 px at 600 to the computer's
- * 28 at 1024, so neither jumps where the two meet, and the word stands further above its facts as the screen widens.
- * The card takes the computer's frame and bar width, its days the computer's 44 px, and the day takes the height a
- * tall screen leaves it (up to 520 px; public.js, fit) instead of leaving it as air above the word and over the card.
- * The facts keep the phone's two lines: at 768 one line would not hold the Arabic, and Live and every state keep the
- * same rows.
+ * screen held in the hand, set at a tablet's sizes. The word starts at the phone's size at 600 px and grows to the
+ * computer's own line by 768 (91.9 px at 768 x 1024, between the phone's 64 and the computer's 104), then on that line,
+ * held by the height as the computer's is, so it meets the phone's at 600 and the computer's at 1024 px and never jumps;
+ * the count steps down from the phone's 36 px at 600 to the computer's 28 at 1024, so neither jumps where the ranges
+ * meet, and the word stands further above its facts as the screen widens. The card takes the computer's frame and bar
+ * width, its days the computer's 44 px, and the day takes the height a tall screen leaves it (up to 520 px; public.js,
+ * fit) instead of leaving it as air above the word and over the card. The facts keep the phone's two lines: at 768 one
+ * line would not hold the Arabic, and Live and every state keep the same rows.
  * --------------------------------------------------------------------------------------------------------------- */
-@media (min-width: 600px) and (max-width: 1023.98px) {
-  .page {
-    --fs-word: max(clamp(52px, calc(2.286vw + 55.1px), 88px), min(calc(4.8vw + 55px), 14.5vh));
-    --fs-count: clamp(28px, calc(47.16px - 1.859vw), 36px);
-  }
-  .steps { margin-block: 14px 24px; }
-  .sign { grid-template-rows: minmax(24px, 0.5fr) auto minmax(32px, 0.5fr) auto; }
-  .sub { column-gap: 24px; row-gap: 14px; margin-block-start: 14px; }
-  .daycard { column-gap: 16px; padding: 24px 26px 22px; }
-  .readout { margin-block: 14px 24px; }
-  .dayfig { padding-block-end: 38px; }
-  .days { margin-block-start: 8px; }
-  .day-btn { height: 44px; }
-  .day-btn[data-today]::after { inset-block-end: 6px; }
-  :lang(ar) .day-btn[data-today]::after { inset-block-end: 5px; }
-  .slot { --bw: min(58%, 64px); }
+.page[data-range="tablet"] {
+  --fs-word: max(clamp(52px, calc(2.286vw + 55.1px), 88px), min(calc(4.8vw + 55px), calc(13.719vw - 13.498px), 14.5vh));
+  --fs-count: clamp(28px, calc(47.16px - 1.859vw), 36px);
 }
+[data-range="tablet"] .steps { margin-block: calc(14px + (22px - 40px) / 2) 0; }
+[data-range="tablet"] .sign { grid-template-rows: minmax(24px, 0.5fr) auto minmax(32px, 0.5fr) auto; }
+[data-range="tablet"] .sub { column-gap: 24px; row-gap: 14px; margin-block-start: 14px; }
+[data-range="tablet"] .daycard { column-gap: 16px; padding: 24px 26px 22px; }
+[data-range="tablet"] .readout { margin-block: 14px 24px; }
+[data-range="tablet"] .dayfig { padding-block-end: 38px; }
+[data-range="tablet"] .days { margin-block-start: 8px; }
+[data-range="tablet"] .day-btn { height: 44px; }
+[data-range="tablet"] .day-btn[data-today]::after { inset-block-end: 6px; }
+[data-range="tablet"] .day-btn[data-today]:lang(ar)::after { inset-block-end: 5px; }
+[data-range="tablet"] .slot { --bw: min(58%, 64px); }
 
 /* ---------------------------------------------------------------------------------------------------------------
  * The computer: the phone's order, set for the width. The level word leads on a line of its own, at about four times
@@ -722,50 +744,46 @@ b { font-weight: 600; }
  * day takes the width under them, its head on one line (name and hours at the start, the answer at the end), the days
  * running the full width of the plot.
  * --------------------------------------------------------------------------------------------------------------- */
-@media (min-width: 1024px) {
-  .page {
-    --fs-word: max(88px, min(clamp(96px, calc(4.8vw + 55px), 152px), 14.5vh));
-    --fs-count: clamp(28px, calc(0.5vw + 23px), 36px);
-  }
-  .sign {
-    --plot-h: clamp(180px, calc(100dvh - 520px), 560px);
-    /* The air above the word is a floor and a share of what a tall screen leaves, in two rows: a share whose floor
-     * is not zero would set the fraction of a grid with no set height, and the last row would stand empty under the
-     * card at that floor (12 px of plot at 1280 x 720). */
-    grid-template-rows: clamp(8px, 1.6vh, 20px) minmax(0, 0.3fr) auto clamp(22px, 3.6vh, 40px) auto minmax(0, 1fr);
-  }
-  .live { grid-row: 3; }
-  .daycard { grid-row: 5; }
-  /* Clear of the word's descenders ("Busy"): a sixth of the word. */
-  .sub { flex-wrap: nowrap; column-gap: clamp(24px, 2.2vw, 40px); margin-block-start: calc(var(--fs-word) * 0.16); }
-  .facts { flex-basis: auto; }
-  .daycard {
-    grid-template-columns: auto auto minmax(0, 1fr);
-    grid-template-areas: "title hours read" "fig fig fig" "days days days";
-    column-gap: 16px;
-    padding: 26px 28px 24px;
-  }
-  /* The card's answer reads at a size of its own on the computer (18 px on the phone, 20 at 1440, 22 past 1900). It
-   * takes the head's room after the name and hours and sets its words at the end, so its box is the same whatever it
-   * says (a placeholder, an answer, a pick) and a change of words moves nothing. */
-  .readout { margin: 0; justify-content: flex-end; text-align: end; font-size: clamp(18px, calc(0.45vw + 13.5px), 22px); line-height: 1.3; }
-  .readout .ic { width: 18px; height: 18px; margin-block-start: 0.2em; }
-  .dayfig { margin-block-start: 28px; padding-block-end: 40px; }
-  .days { margin-block-start: 8px; }
-  .day-btn { height: 44px; }
-  .day-btn[data-today]::after { inset-block-end: 6px; }
-  :lang(ar) .day-btn[data-today]::after { inset-block-end: 5px; }
-  .slot { --bw: min(58%, 64px); }
-  .slot:focus-visible .pk { outline-offset: 2px; }
+.page[data-range="computer"] {
+  --fs-word: max(88px, min(clamp(96px, calc(4.8vw + 55px), 152px), 14.5vh));
+  --fs-count: clamp(28px, calc(0.5vw + 23px), 36px);
 }
+[data-range="computer"] .sign {
+  --plot-h: clamp(180px, calc(100dvh - 520px), 560px);
+  /* The air above the word is a floor and a share of what a tall screen leaves, in two rows: a share whose floor
+   * is not zero would set the fraction of a grid with no set height, and the last row would stand empty under the
+   * card at that floor (12 px of plot at 1280 x 720). */
+  grid-template-rows: clamp(8px, 1.6vh, 20px) minmax(0, 0.3fr) auto clamp(22px, 3.6vh, 40px) auto minmax(0, 1fr);
+}
+[data-range="computer"] .live { grid-row: 3; }
+/* Clear of the word's descenders ("Busy"): a sixth of the word. */
+[data-range="computer"] .sub { flex-wrap: nowrap; column-gap: clamp(24px, 2.2vw, 40px); margin-block-start: calc(var(--fs-word) * 0.16); }
+[data-range="computer"] .facts { flex-basis: auto; }
+[data-range="computer"] .daycard {
+  grid-row: 5;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-areas: "title hours read" "fig fig fig" "days days days";
+  column-gap: 16px;
+  padding: 26px 28px 24px;
+}
+/* The card's answer reads at a size of its own on the computer (18 px on the phone, 20 at 1440, 22 past 1900). It
+ * takes the head's room after the name and hours and sets its words at the end, so its box is the same whatever it
+ * says (a placeholder, an answer, a pick) and a change of words moves nothing. */
+[data-range="computer"] .readout { margin: 0; justify-content: flex-end; text-align: end; font-size: clamp(18px, calc(0.45vw + 13.5px), 22px); line-height: 1.3; }
+[data-range="computer"] .readout .ic { width: 18px; height: 18px; margin-block-start: 0.2em; }
+[data-range="computer"] .dayfig { margin-block-start: 28px; padding-block-end: 40px; }
+[data-range="computer"] .days { margin-block-start: 8px; }
+[data-range="computer"] .day-btn { height: 44px; }
+[data-range="computer"] .day-btn[data-today]::after { inset-block-end: 6px; }
+[data-range="computer"] .day-btn[data-today]:lang(ar)::after { inset-block-end: 5px; }
+[data-range="computer"] .slot { --bw: min(58%, 64px); }
+[data-range="computer"] .slot:focus-visible .pk { outline-offset: 2px; }
 /* A short computer screen (1280 x 720, 1366 x 768): the header and the card's frame give their height to the day. */
-@media (min-width: 1024px) and (max-height: 820px) {
-  .page { --top-h: 64px; }
-  .daycard { padding: 20px 24px 18px; }
-  .dayfig { margin-block-start: 24px; padding-block-end: 36px; }
-  .days { margin-block-start: 4px; }
-  .day-btn { height: 40px; }
-}
+.page[data-range="computer"][data-short] { --top-h: 64px; }
+[data-range="computer"][data-short] .daycard { padding: 20px 24px 18px; }
+[data-range="computer"][data-short] .dayfig { margin-block-start: 24px; padding-block-end: 36px; }
+[data-range="computer"][data-short] .days { margin-block-start: 4px; }
+[data-range="computer"][data-short] .day-btn { height: 40px; }
 
 /* ---------------------------------------------------------------------------------------------------------------
  * Motion. One authored moment and one living detail:
@@ -777,7 +795,7 @@ b { font-weight: 600; }
  *   dot breathes.
  * The interactions follow the motion standards: a picked day moves the bars on screen in 280 ms on a strong ease in
  * and out (heights, places and widths, the hours that open unfolding from the day's edge and the hours that close
- * folding into it); an hour under the pointer, a picked hour and the day buttons ease in 160 ms; the ring comes in
+ * folding into it); an hour under the pointer and a picked hour ease in 160 ms, every key in 120; the ring comes in
  * 200 ms and leaves in 140; the readout's words change at once; the head steps back and forward in the day's 280 ms
  * on `ease` (a change of colour); on the phone two hourly bars merge into a two-hour bar, and part again, in the
  * day's own movement. Nothing a key starts moves (data-keys), and an hour picked by sliding a finger or a pressed
