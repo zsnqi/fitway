@@ -46,6 +46,10 @@ Timing checks keep 30 ms from any cap, run to at least 500 ms after `endedAt`, a
 cache header (r04 G1, G3, G4). Removed pre-intro frames are detected with fonts held to first paint + 50 and + 100 ms
 (G2).
 
+Use `pnpm verify:owner serve` for a shared or phone-accessible page, `frames --actions` and `--clip` for a working
+shot after interaction, and `measure --page` for motion or other ui-forensics measurements. Use `run` only for a
+check no command makes.
+
 ## Report
 
 The table with PASS, FAIL or NOT RUN and one line of evidence each; for each FAIL a hypothesis with `file:line`;

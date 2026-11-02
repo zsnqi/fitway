@@ -164,9 +164,10 @@ forced filenames add `-forced`, so mixed runs cannot overwrite frames.
 
 Use `frames` when a public design brief names query combinations, languages and viewport sizes
 but has no state recipes. It waits for the page's source readiness signal and fonts, records
-the page's language, direction and pointer, and claims no state proof. A size is a mapped name
-or `<size>@<density>` with density 1-4. Without `--inputs`, phone-width frames use touch and wider
-frames use mouse. `sheet` draws each whole frame at its CSS size, using the density recorded by
+the page's language, direction and pointer, and claims no state proof. A size is a mapped name,
+`<size>@<density>`, a free `<width>x<height>`, or a free size with density 1-4. Without
+`--inputs`, phone-width frames use touch and wider frames use mouse. `sheet` draws each whole
+frame at its CSS size, using the density recorded by
 the adjacent `frames` manifest, and writes one 40 px-or-larger label above every frame.
 pnpm consumes one forwarding separator, so each `sheet` example uses `-- --` to leave the
 tool's own `--` intact.
@@ -183,6 +184,39 @@ pnpm verify:owner sheet --out <run-folder>/sheet-levels --title <sheet-title> --
 explicitly says no state proof was claimed. It exits 0 after saving all frames, or 1 when any
 uncaught page error was recorded. `sheet` writes `<out>/sheet.png` and `<out>/manifest.json`;
 it refuses malformed, missing, empty-label and unreadable frame inputs before rendering.
+
+## CLI working loop
+
+Use these from the checkout root in PowerShell. `serve` accepts `--concept <concept-folder>` in
+place of `--ref <commit>`; the other commands accept either form too. pnpm consumes one
+forwarding separator, so a `run` script's arguments and a measure tool's arguments follow
+`-- --`, as in the `sheet` examples above.
+
+```powershell
+pnpm verify:owner serve --ref <commit> --port <port> --lan --idle-timeout-ms <milliseconds>
+pnpm verify:owner frames --ref <commit> --page <page> --languages <languages> --sizes '<width>x<height>@<density>' --states '<key=value&...>' --clip '<css>' --port <pair-first-port> --out <run-folder>/frames
+pnpm verify:owner frames --ref <commit> --page <page> --languages <languages> --sizes '<width>x<height>@<density>' --states '<key=value&...>' --actions 'click=<css>;wait=<milliseconds>' --clip '<css>' --port <pair-first-port> --out <run-folder>/frames
+pnpm verify:owner run --script <script-file> --ref <commit> --port <pair-first-port> --out <run-folder>/run -- -- <script-arguments>
+pnpm verify:owner measure --tool motion --ref <commit> --page <page> --query '<key=value&...>' --port <pair-first-port> --args-file <json-file> --out <run-folder>/motion
+```
+
+```javascript
+export default async ({ newPage, url, ready, shot }) => {
+  const { page } = await newPage({ size: "phone@3", language: "en", input: "touch" });
+  await page.goto(url("build", "<page>"));
+  await ready(page);
+  const records = [];
+  for (const button of await page.locator("button").all()) {
+    await button.click();
+    records.push(await page.evaluate((selector) => {
+      const element = document.querySelector(selector);
+      return { text: element.textContent, box: element.getBoundingClientRect().toJSON() };
+    }, "<selector>"));
+  }
+  await shot(page, "<png-file>", { clip: "<selector>" });
+  return { records };
+};
+```
 
 ## Belonging check
 
@@ -320,7 +354,7 @@ results. A difference or problem makes the command fail. Inspect its frames and 
 ## Run one check
 
 When no command makes the check, write the check as a script for `run`; the command owns the preview pair, browser,
-contexts and evidence folder. The default export receives `playwright`, `browser`, `url`, `newPage`, `rewrite`,
+contexts and evidence folder. The default export receives `playwright`, `browser`, `url`, `newPage`, `ready`, `shot`, `rewrite`,
 `concept`, `baseline`, `out` and `args`. `newPage({size, language, input, motion, colours})` uses drive's context settings. Arguments after
 `--` arrive unchanged in `args`. `rewrite(page, file, from, to)` works on any page and changes only the named file: each
 request that page makes for it gets the file of the side whose origin the request goes to, with every rewrite of it on
@@ -386,6 +420,10 @@ Verifier rules (one canonical statement):
 | custom run | `run.mjs` | `runScript`, `newPageContextOptions`, `createRewrite` |
 | [public designer frames](#public-designer-frames) | `frame-plan.mjs` | `parseFrameSizes`, `framePlan` |
 | public frame capture | `frames-command.mjs` | `framesCommand` |
+| [CLI working loop](#cli-working-loop) serving | `serve-command.mjs` | `serveCommand` |
+| public frame actions and clips | `frame-actions.mjs` | `parseFrameActions`, `applyFrameActions`, `frameClip` |
+| served measurement | `measure-command.mjs` | `measureCommand` |
+| served measurement arguments | `measure-arguments.mjs` | `measurePagePort`, `measurePageUrl`, `refuseServingSpecs` |
 | public sheet layout | `sheet-plan.mjs` | `parseSheetRows`, `manifestDensity`, `frameLayout` |
 | public sheet capture | `sheet-command.mjs` | `sheetCommand`, `readSheetFrames`, `planSheetFrames` |
 | drive and frames capture lifecycle | `capture-lifecycle.mjs` | `openCaptureLifecycle` |

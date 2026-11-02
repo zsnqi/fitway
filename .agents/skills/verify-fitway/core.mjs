@@ -193,6 +193,11 @@ const types = {
 	".txt": "text/plain; charset=utf-8",
 };
 
+function scheduleIdle(idleTimer, timeout, close) {
+	clearTimeout(idleTimer);
+	return timeout === null ? undefined : setTimeout(close, timeout);
+}
+
 export async function preview({
 	concept,
 	port,
@@ -209,8 +214,7 @@ export async function preview({
 	const sockets = new Set();
 	let idleTimer;
 	const touch = () => {
-		clearTimeout(idleTimer);
-		idleTimer = setTimeout(() => close(), idleTimeoutMs);
+		idleTimer = scheduleIdle(idleTimer, idleTimeoutMs, close);
 	};
 	const server = createServer(async (req, res) => {
 		touch();
@@ -436,6 +440,20 @@ export function comparisonPorts(options, command = "compare") {
 			`${command} requires one ordered verification pair: ${verificationPairNames()}; received ${ports.join("-")}.`,
 		);
 	return ports;
+}
+
+// A command that serves one concept on a pair names the pair by its first port
+// (3176 when no port is given); the refusal names the command.
+export function firstPortPair(value, command) {
+	const port = value ?? 3176;
+	const firsts = verificationPairs.map(([first]) => first);
+	const pair = verificationPairs.find(([first]) => first === Number(port));
+	if (!pair)
+		throw new ToolStartupError(
+			`${command} requires a pair's first port: ${firsts.join(", ")}; received ${port}.`,
+			`pass --port ${firsts.slice(0, -1).join(", ")} or ${firsts.at(-1)}`,
+		);
+	return pair;
 }
 
 const leaseRoot = "D:/fitway-verify-captures";

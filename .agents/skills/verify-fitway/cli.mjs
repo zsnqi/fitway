@@ -56,7 +56,11 @@ import {
 	repository,
 } from "./map.mjs";
 import {
+	measurePagePort,
+	measurePageUrl,
+	readMeasureArgumentFile,
 	refuseOutputArguments,
+	refusePageUrlArgument,
 	refuseServingSpecs,
 } from "./measure-arguments.mjs";
 
@@ -516,6 +520,8 @@ export function ownerCommandOptions(parsed) {
 }
 
 async function prepareMeasureOptions(options) {
+	const fileArguments = readMeasureArgumentFile(options["args-file"]);
+	options.extra = [...options.extra, ...fileArguments];
 	const requested = measurementColors(options);
 	if (requested.forced) await requireForcedColors(forensicsPath(options));
 	options.extra = requested.args;
@@ -526,8 +532,23 @@ function preflight(command, options) {
 	if (command === "launch") verificationPort(options.port || 3176);
 	if (command === "compare") validateCompareOptions(options);
 	if (command === "measure") {
+		let servedUrl;
+		if (options.page) {
+			if (Boolean(options.concept) === Boolean(options.ref))
+				throw new ToolStartupError(
+					"measure --page requires exactly one of --concept or --ref",
+					"pass measure --concept <folder> or --ref <commit> with --page",
+				);
+			refusePageUrlArgument(options.extra);
+			const port = measurePagePort(options.port);
+			servedUrl = measurePageUrl(
+				`http://127.0.0.1:${port}`,
+				options.page,
+				options.query,
+			);
+		}
 		refuseOutputArguments(options.extra);
-		refuseServingSpecs(options.extra);
+		refuseServingSpecs(options.extra, servedUrl);
 		requireHeldForensics(options);
 	}
 }
@@ -562,6 +583,10 @@ function writesOutput(command) {
 }
 
 async function runPublicCommand(command, options, owned) {
+	if (command === "serve") {
+		await (await import("./serve-command.mjs")).serveCommand(options, owned);
+		return true;
+	}
 	if (command === "frames")
 		return (await import("./frames-command.mjs")).framesCommand(options, owned);
 	if (command === "drive")
@@ -639,42 +664,11 @@ async function dispatch(command, options, services) {
 		return console.log(checkVerificationMaps(options.root || repository));
 	if (command === "cleanup") return cleanup(options.session);
 	if (command === "measure") {
-		const tools = forensicsPath(options);
-		const tool = options.tool;
-		await outputFile(options.out, "tool-output");
-		if (tool === "diff") {
-			await child(process.platform === "win32" ? "py" : "python3", [
-				resolve(tools, "scripts/img/diff_map.py"),
-				...options.extra,
-				"--out",
-				resolve(options.out, "diff"),
-				"--json",
-				resolve(options.out, "diff.json"),
-			]);
-		} else
-			await child(process.execPath, [
-				resolve(tools, `scripts/web/${tool}.mjs`),
-				...options.extra,
-				"--out",
-				tool === "sheet"
-					? resolve(options.out, "sheet.png")
-					: tool === "a11y" && options.extra[0] === "diff"
-						? resolve(options.out, "a11y-diff.json")
-						: options.out,
-			]);
-		await jsonOutput(options.out, "measure-manifest.json", {
-			tool,
-			arguments: options.extra,
-			feature: options.feature || "measurement",
-			state: options.states || "default",
-			language: options.languages || "see tool arguments",
-			size: options.sizes || "see tool arguments",
-			input: options.inputs || "see tool arguments",
-			motion: options.motions || "see tool arguments",
-			transport: options.transports || "see tool arguments",
-			colors: options.colors,
+		return (await import("./measure-command.mjs")).measureCommand(options, {
+			child: owned.child || child,
+			tools: forensicsPath(options),
+			preview: owned.preview || preview,
 		});
-		return console.log(`MEASURE PASS: ${tool}; evidence ${options.out}`);
 	}
 	if (
 		["repair-recipes", "map", "drift", "list", "launch", "doctor"].includes(

@@ -109,3 +109,32 @@ test("SKILL location table fails when a named export is renamed", async () => {
 		await rm(root, { recursive: true, force: true });
 	}
 });
+
+test("CLI working loop names serve, frames actions, run and measure pages", async () => {
+	const markdown = await readFile(resolve(skill, "SKILL.md"), "utf8");
+	const section = markdown
+		.split(/^## CLI working loop\s*$/m)[1]
+		?.split(/^## /m)[0];
+	assert.ok(section, "CLI working loop section is missing");
+	for (const command of [
+		"pnpm verify:owner serve",
+		"pnpm verify:owner frames",
+		"pnpm verify:owner run",
+		"pnpm verify:owner measure",
+	])
+		assert.match(section, new RegExp(command.replaceAll(":", "\\:")));
+	assert.match(section, /--actions/);
+	assert.match(section, /--clip/);
+	assert.match(section, /--page/);
+	const runScript = section.match(/```javascript\r?\n([\s\S]*?)```/)?.[1];
+	assert.ok(runScript, "run script example is missing");
+	assert.ok(
+		runScript.trimEnd().split(/\r?\n/).length <= 15,
+		"run script example exceeds 15 lines",
+	);
+	assert.match(runScript, /locator\("button"\)/);
+	assert.match(runScript, /textContent/);
+	assert.match(runScript, /getBoundingClientRect/);
+	assert.match(runScript, /await ready\(page\)/);
+	assert.match(runScript, /await shot\(page/);
+});

@@ -14,7 +14,11 @@ import {
 } from "./brief-markdown.mjs";
 import { environmentBlock } from "./brief-references.mjs";
 import { validateReviewSources } from "./brief-review-sources.mjs";
-import { designerBriefProblems, environmentMasked } from "./designer-brief.mjs";
+import {
+	DESIGN_WORK_ROLES,
+	designerBriefProblems,
+	environmentMasked,
+} from "./designer-brief.mjs";
 import { readGit } from "./git-context.mjs";
 import { lineAt, lines } from "./markdown-lines.mjs";
 import { samePath } from "./path-identity.mjs";
@@ -37,8 +41,8 @@ export function parseBriefArgs(inputArgs) {
 }
 
 function reportDesignerBrief(text, role, report) {
-	if (role !== "designer") return;
-	for (const problem of designerBriefProblems(text))
+	if (!DESIGN_WORK_ROLES.has(role)) return;
+	for (const problem of designerBriefProblems(text, { role }))
 		report("brief-readiness", problem.line, problem.message);
 }
 

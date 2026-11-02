@@ -6,26 +6,51 @@ import { resolveCommandConcepts } from "./concept-source.mjs";
 import {
 	canonical,
 	comparisonPorts,
+	firstPortPair,
 	inside,
 	jsonOutput,
+	outputFile,
 	preview,
 	reserveVerificationPorts,
 } from "./core.mjs";
 import { contextOptions } from "./drive-plan.mjs";
+import { frameClip } from "./frame-actions.mjs";
+import { parseFrameSizes } from "./frame-plan.mjs";
+import { saveViewport, waitForViewport } from "./viewport-capture.mjs";
 
 export function newPageContextOptions(axes, sizes) {
-	const dimensions = sizes[axes.size];
-	if (!dimensions)
-		throw new Error(
-			`Unknown size ${axes.size}; choose ${Object.keys(sizes).join(", ")}`,
-		);
+	const parsed = parseFrameSizes(String(axes.size), sizes);
+	if (parsed.length !== 1)
+		throw new Error("newPage({ size }) takes one size, not a comma list");
+	const [{ dimensions, density }] = parsed;
 	return contextOptions({
 		...dimensions,
+		dsf: density,
 		input: axes.input,
 		motion: axes.motion,
 		color: axes.colours,
 		language: axes.language,
 	});
+}
+
+export function runPorts(options) {
+	if (options.baseline || options["baseline-ref"])
+		return comparisonPorts(options, "run");
+	return firstPortPair(options.port, "run with one concept");
+}
+
+function pagePlan(setup, rawUrl) {
+	const pathname = decodeURIComponent(new URL(rawUrl).pathname);
+	const pagePath =
+		pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
+	const planned = setup.map.pages.find(
+		(page) => page.page === pagePath || pagePath.endsWith(`/${page.page}`),
+	);
+	if (!planned)
+		throw new Error(
+			`ready(page) cannot map ${rawUrl} to a concept page; served pages: ${setup.map.pages.map((page) => page.page).join(", ")}`,
+		);
+	return planned;
 }
 
 function occurrences(text, from) {
@@ -115,7 +140,7 @@ async function startRun(
 	const sources = resolveCommandConcepts(options, {
 		baseline: Boolean(options.baseline || options["baseline-ref"]),
 	});
-	const ports = comparisonPorts(options, "run");
+	const ports = runPorts(options);
 	const setup = await doctor({
 		...options,
 		concept: sources.build.concept,
@@ -152,6 +177,7 @@ async function startRun(
 		return {
 			sources,
 			setup,
+			out: options.out,
 			lease,
 			browser,
 			buildPreview,
@@ -189,11 +215,26 @@ function runApi(runtime) {
 			);
 		return ui.withParams(`${origins[side]}/${page}`, query);
 	};
+	const ready = (page) =>
+		waitForViewport(ui, page, pagePlan(setup, page.url()).ready);
+	const shot = async (page, file, { clip } = {}) => {
+		if (typeof file !== "string" || !file)
+			throw new Error("shot(page, file) needs a non-empty file name");
+		const target = await outputFile(runtime.out, file);
+		const clipBox =
+			clip === undefined ? undefined : await frameClip(page, String(clip));
+		return {
+			file,
+			...(await saveViewport(ui, page, target, { clip: clipBox })),
+		};
+	};
 	return {
 		playwright: setup.loaded.pw,
 		browser,
 		url,
 		newPage,
+		ready,
+		shot,
 		rewrite: createRewrite(sources, origins),
 		concept: sources.build.concept,
 		baseline: sources.baseline?.concept,

@@ -12,11 +12,13 @@ const none=async()=>{};
 const evaluate=async(fn)=>{const body=fn.toString();
  if(body.includes("coarse"))return {language:"en",direction:"ltr",coarse:false,touchPoints:0};
  if(body.includes("document.scrollingElement"))return {scrollX:0,scrollY:0,viewportWidth:1440,viewportHeight:900,documentHeight:900};
+ if(body.includes("window.innerWidth"))return {width:1440,height:900,scrollX:0,scrollY:0};
  return {}};
-const locator=()=>({first(){return this},count:async()=>1,waitFor:none,ariaSnapshot:async()=>"main"});
+const locator=()=>({first(){return this},count:async()=>1,waitFor:none,ariaSnapshot:async()=>"main",boundingBox:async()=>({x:10,y:20,width:100,height:60})});
 const frame=async()=>Buffer.from("frame");
 export const newContext=async()=>({errors:[],emulation:{},context:{route:none,close:none},
- page:{setDefaultTimeout(){},addInitScript:none,waitForFunction:none,screenshot:frame,route:none,evaluate,locator}});
+ page:{setDefaultTimeout(){},addInitScript:none,waitForFunction:none,screenshot:frame,route:none,evaluate,locator,
+ url:()=>"http://127.0.0.1:3176/index.html",goto:none}});
 export const launchChromium=async()=>({close:none});
 export const withParams=(url)=>url;
 export const preparePage=async()=>({ready:true});

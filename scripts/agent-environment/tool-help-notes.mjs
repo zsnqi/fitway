@@ -6,6 +6,69 @@ import { fileURLToPath } from "node:url";
 // apart from the pnpm usage lines the registry now generates (F272: never lose an explanation).
 // tool-registry.mjs prints them after the options of each command's top-level help.
 
+export const flag = (
+	name,
+	description,
+	{ key = name.slice(2), sample = null, once = false } = {},
+) => ({
+	name,
+	key,
+	takesValue: false,
+	freeText: false,
+	description,
+	sample,
+	once,
+});
+
+export const value = (
+	name,
+	description,
+	{
+		sample = "contract-value",
+		freeText = false,
+		pathKind = null,
+		pathLabel = null,
+		absolute = false,
+		missingFix = null,
+		key = name.slice(2),
+		integer = null,
+		choices = null,
+		valueNote = null,
+	} = {},
+) => ({
+	name,
+	key,
+	takesValue: true,
+	freeText,
+	description,
+	sample,
+	pathKind,
+	pathLabel,
+	absolute,
+	missingFix,
+	integer,
+	choices,
+	valueNote,
+});
+
+export const exits = (...codes) =>
+	codes.map(([code, meaning]) => ({ code, meaning }));
+
+export const nodeInvocation = (entrypoint) => `node ${entrypoint}`;
+
+export const executableEntry = (entry, kind) => {
+	const fixedArgs = entry.fixedArgs ?? [];
+	return {
+		...entry,
+		kind,
+		fixedArgs,
+		invocation: [entry.invocation, ...fixedArgs].join(" "),
+	};
+};
+
+export const packageEntry = (entry) => executableEntry(entry, "package");
+export const nodeEntry = (entry) => executableEntry(entry, "node");
+
 const repository = fileURLToPath(new URL("../../", import.meta.url)).replace(
 	/[\\/]$/,
 	"",
@@ -43,11 +106,12 @@ export const OWNER_NOTES = Object.freeze([
 	"Output defaults to a fresh D:/fitway-temp/verify-fitway-*; git trees/links into them are refused.",
 	"Every --out folder records command, arguments, checkout, start, status and end in manifest.json.",
 	"--ref and --baseline-ref extract the declared concept at that commit once and reuse the folder.",
-	"run executes a script's default export with the command-owned preview, browser, contexts, rewrite and evidence.",
+	"run executes a script's default export with the command-owned preview, browser, contexts, ready, shot, rewrite and evidence.",
 	"diff-folders compares PNG paths with compare's exact diff and exits 0 only when every picture is equal.",
 	"Sizes: desktop=1440x900, boundary=1024x900, tablet=768x1024, phone=390x844,",
 	"       phone360=360x780, narrow=320x844, zoom=1440x900 at 200% (720x450 CSS px, phone frame).",
-	"frames renders recipe-free public frames and accepts <size>@<density> for density 1-4.",
+	"frames renders recipe-free public frames and accepts mapped or free WxH sizes at density 1-4.",
+	"frames --actions applies click, tap, hover, focus, press and wait before each shot; --clip shoots one selector.",
 	"sheet groups labelled PNGs into rows and scales frames by their frames manifest density.",
 	"--page and --feature select one path; the remaining axes multiply its frames.",
 	"States all sweeps every discovered switch value/sample; dependencies are applied or refused.",
@@ -69,7 +133,7 @@ export const OWNER_NOTES = Object.freeze([
 	"Unreached keyboard targets fail with the element where focus stopped; keyboardActions can supply roving keys.",
 	"Colours default to normal; forced requires ui-forensics >=1.2.0 and renders Chromium forced colours.",
 	"measure --colors normal|forced maps to tool --forced-colors none|active.",
-	"measure calls the installed ui-forensics tool; its own --help describes further arguments.",
+	"measure --page serves a concept page for the installed ui-forensics tool and stops it after the measurement.",
 	"--port accepts only ports in 3176-3177, 3186-3187 and 3188-3189; compare requires one ordered pair.",
 	"Ports 3174 and 3178-3185 belong to other previews. --workers defaults to 1 (maximum 4).",
 	"launch --isolated-port selects a separate high port (49152-65535) for isolated tests.",
@@ -82,12 +146,78 @@ export const OWNER_NOTES = Object.freeze([
 	`  pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile`,
 ]);
 
+function workingCommandEntries({
+	ownerOptions,
+	flag,
+	value,
+	exits,
+	idleTimeout,
+}) {
+	const serve = {
+		name: "serve",
+		usage:
+			"pnpm verify:owner serve (--concept <folder>|--ref <commit>) --port <port> [--lan] [--idle-timeout-ms <ms>]",
+		purpose: "Serve one concept read-only with no-store.",
+		options: [
+			ownerOptions.concept,
+			ownerOptions.ref,
+			value("--port", "Port from 1024 to 65535.", {
+				sample: "3188",
+				integer: [1024, 65535],
+			}),
+			flag("--lan", "Listen on all network interfaces."),
+			idleTimeout,
+		],
+		requiredOptions: ["--port"],
+		requiredOptionGroups: [["--concept", "--ref"]],
+		exitCodes: exits([0, "Server stopped."], [1, "Command refused or failed."]),
+	};
+	const measure = {
+		name: "measure",
+		usage:
+			"pnpm verify:owner measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [(--concept <folder>|--ref <commit>) --page <page> [--query <key=value&...>] [--port <port>] [--args-file <json>]] [--forensics <folder>] [--colors normal|forced] [--feature <name>] [--states <state>] [--languages <list>] [--sizes <list>] [--inputs <list>] [--motions <list>] [--transports <list>] -- <tool arguments>",
+		purpose: "Run one specialized measurement tool.",
+		options: [
+			value("--tool", "Measurement tool.", {
+				sample: "focus",
+				choices: "focus motion a11y probe perf capture sheet diff".split(" "),
+			}),
+			ownerOptions.out,
+			ownerOptions.concept,
+			ownerOptions.ref,
+			ownerOptions.page,
+			ownerOptions.query,
+			ownerOptions.port,
+			value("--args-file", "JSON array of tool arguments.", {
+				sample: "arguments.json",
+				pathKind: "file",
+			}),
+			ownerOptions.forensics,
+			ownerOptions.colors,
+			ownerOptions.feature,
+			ownerOptions.states,
+			ownerOptions.languages,
+			ownerOptions.sizes,
+			ownerOptions.inputs,
+			ownerOptions.motions,
+			ownerOptions.transports,
+		],
+		requiredOptions: ["--tool", "--out"],
+		passthrough: true,
+		exitCodes: exits(
+			[0, "Measurement passed."],
+			[1, "Findings or command failure."],
+		),
+	};
+	return { serve, measure };
+}
+
 function publicFrameCommands({ ownerOptions, value, exits }) {
 	return [
 		{
 			name: "frames",
 			usage:
-				"pnpm verify:owner frames (--concept <folder>|--ref <commit>) --page <page> --languages <list> --sizes <list> [--states <states>] [--query <key=value&key=value>] [--inputs <list>] [--motions <list>] [--transports <list>] [--colors <list>] [--recipes <file>] [--port <port>] [--session <launch-folder>] [--out <folder>]",
+				"pnpm verify:owner frames (--concept <folder>|--ref <commit>) --page <page> --languages <list> --sizes <list> [--states <states>] [--query <key=value&key=value>] [--inputs <list>] [--motions <list>] [--transports <list>] [--colors <list>] [--actions <steps>] [--clip <css>] [--recipes <file>] [--port <port>] [--session <launch-folder>] [--out <folder>]",
 			purpose: "Capture public design frames without state proofs.",
 			options: [
 				ownerOptions.concept,
@@ -104,6 +234,14 @@ function publicFrameCommands({ ownerOptions, value, exits }) {
 				ownerOptions.transports,
 				ownerOptions.port,
 				ownerOptions.colors,
+				value("--actions", "Steps applied before every frame shot.", {
+					sample: "click=.slot;wait=150",
+					freeText: true,
+				}),
+				value("--clip", "CSS selector for the frame clip.", {
+					sample: ".chart-card",
+					freeText: true,
+				}),
 				ownerOptions.out,
 			],
 			requiredOptions: ["--page", "--languages", "--sizes"],
@@ -136,36 +274,27 @@ function publicFrameCommands({ ownerOptions, value, exits }) {
 }
 
 export function ownerTailCommands({ ownerOptions, flag, value, exits }) {
-	return [
-		...publicFrameCommands({ ownerOptions, value, exits }),
+	// serve and the internal _serve take the same idle timeout.
+	const idleTimeout = value(
+		"--idle-timeout-ms",
+		"Idle timeout in milliseconds.",
 		{
-			name: "measure",
-			usage:
-				"pnpm verify:owner measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> [--forensics <folder>] [--colors normal|forced] [--feature <name>] [--states <state>] [--languages <list>] [--sizes <list>] [--inputs <list>] [--motions <list>] [--transports <list>] -- <tool arguments>",
-			purpose: "Run one specialized measurement tool.",
-			options: [
-				value("--tool", "Measurement tool.", {
-					sample: "focus",
-					choices: "focus motion a11y probe perf capture sheet diff".split(" "),
-				}),
-				ownerOptions.out,
-				ownerOptions.forensics,
-				ownerOptions.colors,
-				ownerOptions.feature,
-				ownerOptions.states,
-				ownerOptions.languages,
-				ownerOptions.sizes,
-				ownerOptions.inputs,
-				ownerOptions.motions,
-				ownerOptions.transports,
-			],
-			requiredOptions: ["--tool", "--out"],
-			passthrough: true,
-			exitCodes: exits(
-				[0, "Measurement passed."],
-				[1, "Findings or command failure."],
-			),
+			sample: "60000",
+			integer: [1, 1800000],
+			valueNote: "at most 30 minutes",
 		},
+	);
+	const working = workingCommandEntries({
+		ownerOptions,
+		flag,
+		value,
+		exits,
+		idleTimeout,
+	});
+	return [
+		working.serve,
+		...publicFrameCommands({ ownerOptions, value, exits }),
+		working.measure,
 		{
 			name: "cleanup",
 			usage: "pnpm verify:owner cleanup --session <launch-folder|session.json>",
@@ -186,11 +315,7 @@ export function ownerTailCommands({ ownerOptions, flag, value, exits }) {
 				ownerOptions.port,
 				flag("--lan", "Listen on LAN."),
 				value("--token", "Session token."),
-				value("--idle-timeout-ms", "Idle timeout in milliseconds.", {
-					sample: "60000",
-					integer: [1, 1800000],
-					valueNote: "at most 30 minutes",
-				}),
+				idleTimeout,
 			],
 			requiredOptions: ["--concept"],
 			internal: true,

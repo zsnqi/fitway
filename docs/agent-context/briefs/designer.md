@@ -56,6 +56,10 @@ worktree root in PowerShell, as `.agents/skills/verify-fitway/SKILL.md` §"Publi
 `D:/fitway-temp/<run>/`, which the coordinator made with `pnpm run-folder:new`. Inspect every frame yourself before
 reporting; a passing command is not a looked-at frame. (AGENTS.md; agent-tooling DECISIONS item 23)
 
+Use `pnpm verify:owner serve` for a shared or phone-accessible page, `frames --actions` and `--clip` for a working
+shot after interaction, and `measure --page` for motion or other ui-forensics measurements. Use `run` only for a
+check no command makes.
+
 ## Report
 
 Per option: one line on the idea, its frame paths, and where it breaks. Any rule or decision that makes an option

@@ -3,73 +3,18 @@ import {
 	CODEX_ROUND_NOTES,
 	CONCEPT_CSS_NOTES,
 	evidenceFolderToolEntries,
+	exits,
+	flag,
 	NODE_USAGE_NOTES,
+	nodeEntry,
+	nodeInvocation,
 	OWNER_NOTES,
 	ownerTailCommands,
+	packageEntry,
 	TOOLING_MAP_EXITS,
 	TOOLING_MAP_NOTES,
+	value,
 } from "./tool-help-notes.mjs";
-
-const flag = (
-	name,
-	description,
-	{ key = name.slice(2), sample = null, once = false } = {},
-) => ({
-	name,
-	key,
-	takesValue: false,
-	freeText: false,
-	description,
-	sample,
-	once,
-});
-
-const value = (
-	name,
-	description,
-	{
-		sample = "contract-value",
-		freeText = false,
-		pathKind = null,
-		pathLabel = null,
-		absolute = false,
-		missingFix = null,
-		key = name.slice(2),
-		integer = null,
-		choices = null,
-		valueNote = null,
-	} = {},
-) => ({
-	name,
-	key,
-	takesValue: true,
-	freeText,
-	description,
-	sample,
-	pathKind,
-	pathLabel,
-	absolute,
-	missingFix,
-	integer,
-	choices,
-	valueNote,
-});
-
-const nodeInvocation = (entrypoint) => `node ${entrypoint}`;
-
-const executableEntry = (entry, kind) => {
-	const fixedArgs = entry.fixedArgs ?? [];
-	return {
-		...entry,
-		kind,
-		fixedArgs,
-		invocation: [entry.invocation, ...fixedArgs].join(" "),
-	};
-};
-const packageEntry = (entry) => executableEntry(entry, "package");
-const nodeEntry = (entry) => executableEntry(entry, "node");
-
-const exits = (...codes) => codes.map(([code, meaning]) => ({ code, meaning }));
 
 const ownerOptions = {
 	concept: value("--concept", "Concept folder.", {
@@ -102,9 +47,13 @@ const ownerOptions = {
 	languages: value("--languages", "Comma-separated languages.", {
 		sample: "ar,en",
 	}),
-	sizes: value("--sizes", "Comma-separated viewport sizes.", {
-		sample: "desktop,phone",
-	}),
+	sizes: value(
+		"--sizes",
+		"Comma-separated mapped or free WxH viewport sizes.",
+		{
+			sample: "desktop,phone",
+		},
+	),
 	widths: value("--widths", "Comma-separated viewport widths.", {
 		sample: "320,390,768,1440",
 	}),
