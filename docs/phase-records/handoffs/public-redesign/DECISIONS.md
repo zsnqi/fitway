@@ -60,3 +60,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 51. **Sketch 16 built: two-hour bars, a quiet head, "Fri" with a dot** `decisions/041-060.md`
 52. **Two-hour bars kept, by their busier hour, each hour told on a pick; the quiet head kept** `decisions/041-060.md`
 53. **The hour labels under the bars fixed; a picked bar seen at a glance** `decisions/041-060.md`
+54. **The last looks answered; the rest of the page run straight through overnight** `decisions/041-060.md`
