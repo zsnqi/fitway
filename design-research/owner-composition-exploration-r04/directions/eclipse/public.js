@@ -9,12 +9,18 @@
 // picked time), and a picked bar is drawn as the picked day is, its edges in chalk.
 // Time runs in the reading direction: right to left in Arabic, left to right in English (the hours, the slide, the
 // arrow keys, the arrival's order and the week row), all from logical properties, flex order and measured boxes.
+// The six states (DESIGN_GUIDE §6), at ?state=: loading, live (the default), delayed, unavailable, closed, error. Each
+// fills the same three rows of the head (the word, its facts, the status line) and keeps the head's height, so a state
+// that follows another moves nothing on the page; the usual day is history and stays wherever it has arrived, but only
+// Live draws a reading on it (the red hour, the Live dot, the comparison, "Now"), and only Live lights the card.
 // Switches: ?lang=en (Arabic without it; the language link switches and keeps every other switch),
-// ?level=quiet|moderate|busy|packed (busy), ?day=mon..sun (today, Friday), ?pct=off (the owner turned the percentage
-// off), ?grain=medium|light|faint (the bars' grain, light), ?hours=2|1 (2: on the phone, another day whose hours would
-// be narrower than a finger target shows two hours a bar; 1: every day hourly), ?head=quiet|keep (quiet: the head
-// steps back while another day is shown; keep: it stays), ?hour=<0-25> (a picked hour, for frames; on a two-hour day
-// it picks the bar that holds it).
+// ?state=loading|live|delayed|unavailable|closed|error (live), ?arrive=<ms> (with loading: the payload lands then, into
+// Live; without it the load reaches the 10 s ceiling and becomes Error), ?level=quiet|moderate|busy|packed (busy; in
+// Delayed, the last reading's), ?day=mon..sun (today, Friday), ?pct=off (the owner turned the percentage off),
+// ?grain=medium|light|faint (the bars' grain, light), ?hours=2|1 (2: on the phone, another day whose hours would be
+// narrower than a finger target shows two hours a bar; 1: every day hourly), ?head=quiet|keep (quiet: the head steps
+// back while another day is shown; keep: it stays), ?hour=<0-25> (a picked hour, for frames; on a two-hour day it
+// picks the bar that holds it).
 (function () {
   "use strict";
   var q = new URLSearchParams(location.search);
@@ -26,9 +32,23 @@
   document.documentElement.dir = rtl ? "rtl" : "ltr";
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var wide = matchMedia("(min-width: 1024px)");
+  var tablet = matchMedia("(min-width: 600px) and (max-width: 1023.98px)");
 
   // ---------------------------------------------------------------------------------------------------------------
-  // Synthetic data. One room (about 120 at full, never shown), one Friday, the last reading at 7:41 PM.
+  // The state. Live is the default. Loading turns into Live when its payload lands (?arrive=) or into Error at the
+  // ceiling; Error's one retry lands into Live. Delayed, Unavailable and Closed hold for the page's life (concept).
+  // ---------------------------------------------------------------------------------------------------------------
+  var STATES = ["loading", "live", "delayed", "unavailable", "closed", "error"];
+  var state = STATES.indexOf(q.get("state")) >= 0 ? q.get("state") : "live";
+  page.setAttribute("data-state", state);
+  var arriveAt = state === "loading" && /^\d+$/.test(q.get("arrive") || "") ? +q.get("arrive") : null;
+  // What a state has: the usual day (history, arrived with the payload), a reading of now (Live only).
+  function hasDay() { return state !== "loading" && state !== "error"; }
+  function isLive() { return state === "live"; }
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // Synthetic data. One room (about 120 at full, never shown), one Friday, the last reading at 7:41 PM. Delayed's last
+  // reading came 13 minutes before now (7:28 PM); Closed is Friday at 11:20 AM, before the gym opens at 1 PM.
   // ---------------------------------------------------------------------------------------------------------------
   var LEVELS = {
     quiet: { n: 18, pct: 15 },
@@ -68,7 +88,9 @@
   var L = en ? 0 : 1; // the language's index in the names
   function dayName(d) { return DAYS[d].name[L]; }
   function dayShort(d) { return DAYS[d].short[L]; }
-  var TODAY = "fri", NOW_H = 19, READ_AT = "7:41"; // today's closing, 1 AM, is the card's "Open 1 PM – 1 AM"
+  // Now, by the gym's clock: 7:41 PM in the 7 PM hour, or 11:20 AM before Friday's 1 PM opening (Closed). Today's
+  // closing, 1 AM, is the card's "Open 1 PM – 1 AM".
+  var TODAY = "fri", NOW_H = state === "closed" ? 11 : 19, READ_AT = "7:41", LAST_AT = "7:28", AGO = 13;
   // The week in each language's own order: Arabic from Sunday, Saudi Arabia's first day and the calendar week of the
   // Owner pages (GLO-13); English from Monday, as Google's English keeps it (sketch 16). Either runs in its reading
   // direction, so Arabic's Sunday stands at the right.
@@ -81,7 +103,8 @@
     busiestUsual = Math.max(busiestUsual, Math.max.apply(null, d.usual));
   });
   // One scale for every day: the week's busiest usual hour with a little air, or the live count where it runs over
-  // that. Never the gym's capacity, so no height reads back into one.
+  // that. Never the gym's capacity, so no height reads back into one. The same scale in every state, so a reading that
+  // arrives or goes never rescales the usual day under it.
   var TOP = Math.ceil(Math.max(busiestUsual * 1.1, level.n * 1.04));
 
   function usualAt(d, h) { var D = DAYS[d]; return h >= D.open && h < D.close ? D.usual[h - D.open] : null; }
@@ -117,7 +140,7 @@
   // the dash (U+2060), so the en dash cannot turn them round, with the period after it; a span across noon or midnight
   // keeps each end's own period, «10 ص – 12 م», and reads from the right like the sentence.
   // ---------------------------------------------------------------------------------------------------------------
-  var NB = " ", THIN = " ";
+  var NB = " ", THIN = " ";
   function half(h) { return h % 24 < 12 ? (en ? "AM" : "ص") : (en ? "PM" : "م"); }
   function n12(h) { return h % 24 % 12 || 12; }
   function hourText(h) { return n12(h) + NB + half(h); } // plain text: the labels and the spoken names
@@ -138,128 +161,40 @@
 
   // The quietest full hour still ahead today, held against now. The page never sends the visitor to a later hour
   // that is usually busier than it is right now: "now" when the live count is clearly under that hour's usual, "same"
-  // when it is within a tenth of it, "later" when the later hour is clearly quieter.
+  // when it is within a tenth of it, "later" when the later hour is clearly quieter. Without a reading of now (every
+  // state but Live) only the usual can answer, so it names the later hour: the quietest left, by the usual alone.
   var quietLeft = lowest(TODAY, NOW_H + 1);
   var leftUsual = quietLeft != null ? usualAt(TODAY, quietLeft) : null;
   var nowVsLeft = quietLeft == null ? "none" : level.n < leftUsual * 0.9 ? "now" : level.n <= leftUsual * 1.1 ? "same" : "later";
-  var ringHour = nowVsLeft === "later" || nowVsLeft === "same" ? quietLeft : null;
+  function ringHour() {
+    if (!hasDay() || quietLeft == null) return null;
+    if (!isLive()) return quietLeft;
+    return nowVsLeft === "later" || nowVsLeft === "same" ? quietLeft : null;
+  }
 
-  // Today against a usual Friday at this hour.
-  var usualNow = usualAt(TODAY, NOW_H), ratio = level.n / usualNow;
+  // Today against a usual Friday at this hour: a reading of now, so Live's alone (and always the open gym's 7 PM: the
+  // head's held height is Live's, worked out in every state).
+  var usualNow = usualAt(TODAY, 19), ratio = level.n / usualNow;
   var vs = ratio < 0.6 ? "much-quieter" : ratio < 0.9 ? "quieter" : ratio <= 1.1 ? "usual" : ratio <= 1.4 ? "busier" : "much-busier";
   // The live hour's grain runs the way today runs against the usual: up when busier, down when quieter (CSS, Motion).
-  page.setAttribute("data-flow", vs.indexOf("busier") >= 0 ? "up" : vs.indexOf("quieter") >= 0 ? "down" : "still");
-  if (vs.indexOf("much") === 0) page.setAttribute("data-much", "");
+  function setFlow() {
+    page.removeAttribute("data-flow"); page.removeAttribute("data-much");
+    if (!isLive()) return;
+    page.setAttribute("data-flow", vs.indexOf("busier") >= 0 ? "up" : vs.indexOf("quieter") >= 0 ? "down" : "still");
+    if (vs.indexOf("much") === 0) page.setAttribute("data-much", "");
+  }
 
   // ---------------------------------------------------------------------------------------------------------------
-  // Copy. Every line the page writes, in each language, written for itself (COPY.md lists them side by side). The
-  // four level words are GLO-3's; the comparison is GLO-10's; Live is GLO-9's; "inside" and "approx." are GLO-2's.
+  // Copy: every line the page writes, in each language, is public-copy.js's (the run's COPY.md lists them), made
+  // from the page's clock, days and data.
   // ---------------------------------------------------------------------------------------------------------------
   var num = function (x) { return '<bdi class="num">' + x + "</bdi>"; };
-  var T = en ? {
-    words: { quiet: "Quiet", moderate: "Moderate", busy: "Busy", packed: "Packed" },
-    usually: function (b) { return "usually " + T.words[b].toLowerCase(); },
-    rightNow: "Right now",
-    srNow: "Crowd right now: ",
-    about: function (n) { return "About " + num(n) + " inside"; },
-    full: function (p) { return num(p + "%") + " full"; },
-    // Under the word, so "right now" goes without saying.
-    vs: {
-      "much-quieter": "Much quieter than usual",
-      quieter: "Quieter than usual",
-      usual: "About as busy as usual",
-      busier: "Busier than usual",
-      "much-busier": "Much busier than usual"
-    },
-    live: "Live",
-    readAt: function (t) { return num(t + NB + "PM"); },
-    usualDay: function (d) { return "A usual " + dayName(d); },
-    openHours: function (d) { return 'Open <span class="num iso">' + hourText(DAYS[d].open) + THIN + "–" + THIN + hourText(DAYS[d].close) + "</span>"; },
-    // The card's answer keeps one shape for today: "Quietest time left:" and when.
-    quietestLeft: function (h) { return 'Quietest time left: <b class="num">' + hourHtml(h) + "</b>, " + T.usually(band(usualAt(TODAY, h))); },
-    quietestSame: function (h) { return 'Quietest time left: <b>now</b> or <b class="num">' + hourHtml(h) + "</b>"; },
-    nowQuietest: "Quietest time left: <b>now</b>",
-    // Another day: its card is titled "A usual …", so the line says only when; on two-hour bars, the two bars' spans.
-    dayRange: function (cells, n) {
-      var lo = spanHtml(quietCell(cells)), hi = spanHtml(busyCell(cells));
-      return n > 1 ? 'Quietest <b class="num">' + lo + '</b>, busiest <b class="num">' + hi + "</b>"
-        : 'Quietest at <b class="num">' + lo + '</b>, busiest at <b class="num">' + hi + "</b>";
-    },
-    // A picked hour: its usual; a two-hour bar whose hours read differently, each hour in clock order.
-    cellUsual: function (c) {
-      if (!splits(c)) return '<b class="num">' + spanHtml(c) + "</b>: " + T.usually(band(c.v));
-      return c.us.map(function (u, j) {
-        return '<span class="hr"><b class="num">' + hourHtml(c.h + j) + "</b> " + T.usually(band(u)) + (j < c.n - 1 ? " ·" : "") + "</span>";
-      }).join(" ");
-    },
-    splitName: function (c) {
-      return c.us.map(function (u, j) { return hourText(c.h + j) + " " + T.usually(band(u)); }).join(", ");
-    },
-    hourName: function (c, isNow, ring) {
-      return spanSpoken(c) + (isNow ? ", now" : "") + ", " + T.usually(band(c.v)) + (ring ? ", the quietest time left today" : "");
-    },
-    now: "Now",
-    todayName: function (d) { return dayName(d) + ", today"; },
-    days: "Day",
-    hours: "Hours",
-    chartName: function (d, n) {
-      var D = DAYS[d], s = "A usual " + dayName(d) + (n > 1 ? " in two-hour steps, " : " by the hour, ") + hourText(D.open) + " to " + hourText(D.close);
-      return d === TODAY ? s + ", with now at " + hourText(NOW_H) : s;
-    },
-    concept: "Exploration concept · synthetic data",
-    other: "العربية", otherLang: "ar"
-  } : {
-    words: { quiet: "هادئ", moderate: "متوسط", busy: "مزدحم", packed: "شديد الازدحام" },
-    // The level word first, then how often: «مزدحم عادةً».
-    usually: function (b) { return T.words[b] + " عادةً"; },
-    rightNow: "الآن",
-    srNow: "الازدحام الآن: ",
-    // The English line's shape, small word, large count, small words: «نحو» says it is not an exact headcount (GLO-2's
-    // rule) in one short word, so the count and the percentage hold one line down to 360 px, as the English does.
-    about: function (n) { return "نحو " + num(n) + " في الصالة"; },
-    full: function (p) { return num(p + "%") + " من السعة"; },
-    vs: {
-      "much-quieter": "أهدأ بكثير من المعتاد",
-      quieter: "أهدأ من المعتاد",
-      usual: "قريب من المعتاد",
-      busier: "أعلى من المعتاد",
-      "much-busier": "أعلى بكثير من المعتاد"
-    },
-    live: "مباشر",
-    readAt: function (t) { return num(t + NB + "م"); },
-    usualDay: function (d) { return "المعتاد أيام " + dayName(d); },
-    openHours: function (d) { return 'مفتوح <span class="num iso">' + hourHtml(DAYS[d].open) + THIN + "–" + THIN + hourHtml(DAYS[d].close) + "</span>"; },
-    quietestLeft: function (h) { return 'أهدأ ساعة متبقية: <b class="num">' + hourHtml(h) + "</b>، " + T.usually(band(usualAt(TODAY, h))); },
-    quietestSame: function (h) { return 'أهدأ ساعة متبقية: <b>الآن</b> أو <b class="num">' + hourHtml(h) + "</b>"; },
-    nowQuietest: "أهدأ ساعة متبقية: <b>الآن</b>",
-    // One shape for an hour and for a span: the card's title already names the day.
-    dayRange: function (cells) {
-      return 'الأهدأ <b class="num">' + spanHtml(quietCell(cells)) + '</b>، والأكثر ازدحامًا <b class="num">' + spanHtml(busyCell(cells)) + "</b>";
-    },
-    // Two hours that read differently are two short clauses, joined as Arabic joins them, by its comma.
-    cellUsual: function (c) {
-      if (!splits(c)) return '<b class="num">' + spanHtml(c) + "</b>: " + T.usually(band(c.v));
-      return c.us.map(function (u, j) {
-        return '<span class="hr"><b class="num">' + hourHtml(c.h + j) + "</b> " + T.usually(band(u)) + (j < c.n - 1 ? "،" : "") + "</span>";
-      }).join(" ");
-    },
-    splitName: function (c) {
-      return c.us.map(function (u, j) { return hourText(c.h + j) + " " + T.usually(band(u)); }).join("، ");
-    },
-    hourName: function (c, isNow, ring) {
-      return spanSpoken(c) + (isNow ? "، الآن" : "") + "، " + T.usually(band(c.v)) + (ring ? "، أهدأ ساعة متبقية اليوم" : "");
-    },
-    now: "الآن",
-    todayName: function (d) { return dayName(d) + "، اليوم"; },
-    days: "الأيام",
-    hours: "الساعات",
-    chartName: function (d, n) {
-      var D = DAYS[d], s = "المعتاد أيام " + dayName(d) + (n > 1 ? " كل ساعتين، " : " ساعةً بساعة، ") + "من " + hourText(D.open) + " إلى " + hourText(D.close);
-      return d === TODAY ? s + "، والآن " + hourText(NOW_H) : s;
-    },
-    concept: "مفهوم استكشافي · بيانات افتراضية",
-    other: "English", otherLang: "en"
-  };
+  var T = window.FitwayPublicCopy(en, {
+    num: num, iso: iso, hourText: hourText, hourHtml: hourHtml, spanHtml: spanHtml, spanSpoken: spanSpoken,
+    dayName: dayName, usualAt: usualAt, band: band, splits: splits, quietCell: quietCell, busyCell: busyCell,
+    DAYS: DAYS, TODAY: TODAY, NOW_H: NOW_H, NB: NB, THIN: THIN
+  });
+  function plain(html) { var d = document.createElement("div"); d.innerHTML = html; return d.textContent; }
 
   // The page's own lines in the markup: the concept's label and the language link, which names the other language in
   // its own words and opens this page in it with every other switch kept.
@@ -270,35 +205,70 @@
   langLink.lang = T.otherLang;
   langLink.hreflang = T.otherLang;
   langLink.href = location.pathname + (String(there) ? "?" + there : "");
+  // One polite voice for the page, in the header, never inside a busy region: loading after 1 s, and the arrival.
+  var say = document.createElement("p");
+  say.className = "sr-only";
+  say.setAttribute("aria-live", "polite");
+  document.querySelector(".top").appendChild(say);
+  function speak(text) { say.textContent = ""; setTimeout(function () { say.textContent = text; }, 50); }
 
-  // Icons, drawn: one stroke, one weight. Up and down are the reading's own, not the line's, so they never mirror.
+  // Icons, drawn: one stroke, one weight. Up and down are the reading's own, not the line's, so they never mirror;
+  // nor do the states' marks (ICO-5).
   var ICON = {
     up: '<svg class="ic" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 13.5V3M3.5 7.5 8 3l4.5 4.5"/></svg>',
     down: '<svg class="ic" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2.5V13M3.5 8.5 8 13l4.5-4.5"/></svg>',
     level: '<svg class="ic" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2.5 6h11M2.5 10h11"/></svg>',
     // The quietest hour left's own mark: the ring the chart draws over that hour.
-    ring: '<svg class="ic ic-ring" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="4.25"/></svg>'
+    ring: '<svg class="ic ic-ring" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="4.25"/></svg>',
+    // The states' marks (STW-1): Delayed's clock, Unavailable's struck circle, Error's alert.
+    clock: '<svg class="ic st" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.25"/><path d="M8 4.75V8l2.25 1.5"/></svg>',
+    struck: '<svg class="ic st" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.25"/><path d="M3.6 12.4 12.4 3.6"/></svg>',
+    alert: '<svg class="ic st" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.25"/><path d="M8 4.6v4.1M8 11.2v.2"/></svg>'
   };
   var vsIcon = vs.indexOf("quieter") >= 0 ? ICON.down : vs === "usual" ? ICON.level : ICON.up;
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  // A line with no words yet (a placeholder's, the empty readout's) carries an unseen strut in the language's face, so
+  // it stands as tall as the line of words that replaces it: in Arabic the Arabic letter mark (U+061C, which only
+  // Readex Pro's Arabic face covers; the Arabic face sits deeper than the Latin strut), in English a zero-width space.
+  var STRUT = String.fromCharCode(en ? 0x200b : 0x061c);
+  // A placeholder (PH-1): one flat bar where a value is awaited, as tall as its digits' ink, a typical value wide.
+  function ph(w) { return '<i class="ph" style="--w:' + w + '"></i>' + STRUT; }
 
   // ---------------------------------------------------------------------------------------------------------------
-  // The live reading: the word, and one line under it (the count and the percentage, today against usual, the
-  // stamp). No level mark: the word says the level, and the lit hour in the card under it is its picture.
+  // The head: the word, and under it two rows (the facts; the status line, which in Live leads with the comparison).
+  // Every state writes into the same rows, and the head holds the height Live gives it (holdHead), so a state that
+  // follows another moves nothing. Live: the level, the count and the percentage, the comparison and "Live" with its
+  // time. Delayed: the same reading in --ink-2, said as the last one, with its time and its age, the comparison gone.
+  // Unavailable: no count, why none is shown, Offline. Closed: Closed, the next opening, outside opening hours. Error:
+  // what failed, what to do, the one retry. Loading: placeholders where the values will stand, and "Loading…".
   // ---------------------------------------------------------------------------------------------------------------
-  function liveBlock() {
-    var box = el("section", "live");
-    box.setAttribute("aria-label", T.rightNow);
-    var h = el("h1", "word");
-    h.innerHTML = '<span class="sr-only">' + T.srNow + '</span><span class="level">' + T.words[levelKey] + "</span>";
-    box.appendChild(h);
-    var sub = el("div", "sub");
-    sub.appendChild(el("p", "facts", '<span class="count-line">' + T.about(level.n) + "</span>" + (pctOn ? '<span class="pct">' + T.full(level.pct) + "</span>" : "")));
-    sub.appendChild(el("p", "vs", vsIcon + "<span>" + T.vs[vs] + "</span>"));
-    sub.appendChild(el("p", "stamp", '<i class="dot" aria-hidden="true"></i><b>' + T.live + "</b> · " + T.readAt(READ_AT)));
-    box.appendChild(sub);
-    return { el: box, word: h };
+  function rowsHtml(s) {
+    var facts, line, word;
+    if (s === "live" || s === "delayed") {
+      word = '<span class="sr-only">' + (s === "live" ? T.srNow : T.srLast) + '</span><span class="level">' + T.words[levelKey] + "</span>";
+      facts = '<p class="facts"><span class="count-line">' + T.about(level.n) + "</span>" + (pctOn ? '<span class="pct">' + T.full(level.pct) + "</span>" : "") + "</p>";
+      line = s === "live"
+        ? '<p class="vs">' + vsIcon + "<span>" + T.vs[vs] + '</span></p><p class="stamp"><i class="dot" aria-hidden="true"></i><b>' + T.live + "</b> · " + T.readAt(READ_AT) + "</p>"
+        : '<p class="stamp st-late">' + ICON.clock + '<span class="iso"><b>' + T.delayed + "</b> · " + T.lastAt(LAST_AT) + T.comma + '</span> <span class="ago">' + T.ago(AGO) + "</span></p>";
+    } else if (s === "unavailable") {
+      word = '<span class="level">' + T.noCount + "</span>";
+      facts = '<p class="facts note">' + T.noOld + "</p>";
+      line = '<p class="stamp">' + ICON.struck + "<b>" + T.offline + "</b></p>";
+    } else if (s === "closed") {
+      word = '<span class="level">' + T.closed + "</span>";
+      facts = '<p class="facts">' + T.opens(DAYS[TODAY].open) + "</p>";
+      line = '<p class="stamp"><i class="ring-mark" aria-hidden="true"></i><b>' + T.outside + "</b></p>";
+    } else if (s === "error") {
+      word = '<span class="level">' + T.cantLoad + "</span>";
+      facts = '<p class="facts act"><button class="retry" type="button">' + T.retry + "</button></p>";
+      line = '<p class="stamp err">' + ICON.alert + "<span>" + T.checkConn + "</span></p>";
+    } else { // loading: only the awaited values wait; their slots keep the reading's own type, so it lands in place
+      word = '<span class="level">' + ph("2.3em") + "</span>";
+      facts = '<p class="facts"><span class="count-line">' + num(ph("3.6em")) + "</span>" + (pctOn ? '<span class="pct">' + num(ph("2.4em")) + "</span>" : "") + "</p>";
+      line = '<p class="vs">' + ph("9em") + '</p><p class="stamp"><span class="loading-words">' + T.loading + "</span></p>";
+    }
+    return { word: word, sub: facts + line };
   }
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -307,7 +277,8 @@
   // .cap the usual's chalk top, .pk the bar's outline (its .edge lit in chalk when picked, the focus ring around it),
   // and .ring, the quietest hour left, over it. Nothing after now is measured: those hours are usual, and drawn as
   // usual. Every height is a transform: each layer is the plot's full height, slid down until its top stands at its
-  // value, and the plot's floor clips what is under it.
+  // value, and the plot's floor clips what is under it. Before the usual day has arrived (Loading, Error) the plot is
+  // an empty frame: the floor under the open hours and the clock under it, never bars that could read as a reading.
   // ---------------------------------------------------------------------------------------------------------------
   function dayBars() {
     var wrap = el("div", "plot");
@@ -340,15 +311,20 @@
   // Set a day on the bars: heights, which hours are open, past/now/ahead, labels, the live bar, the quietest ring. A
   // two-hour bar is its first hour's slot at twice the width (flex 2); its second hour folds into it (flex 0), taking
   // the bar's height as it goes, so a change between one and two hours a bar is the same movement as a change of day.
+  // Only Live has a now hour (data-when="now": the red, the wide chalk top); in Delayed and Unavailable the hour now
+  // stands in is drawn as its usual, after the dimmed hours gone before it; Closed is before the day's first hour.
   function setDay(B, d, picked) {
-    var D = DAYS[d], isToday = d === TODAY;
+    var D = DAYS[d], isToday = d === TODAY, data = hasDay(), lit = isLive();
     var n = grainFor(B, d), cells = cellsOf(d, n), head = {}, cellAt = {};
     cells.forEach(function (c) { head[c.h] = c; for (var j = 0; j < c.n; j++) cellAt[c.h + j] = c; });
+    if (!data) picked = null;
     if (picked != null) picked = cellAt[picked] ? cellAt[picked].h : null; // an hour inside a bar picks the bar
     B.day = d; B.grain = n; B.cells = cells; B.cellAt = cellAt;
     B.el.toggleAttribute("data-today", isToday);
+    B.bars.toggleAttribute("aria-hidden", !data);
+    var rh = ringHour();
     // The arrival's order: from the day's first hour, the live hour after the hours before it.
-    B.bars.style.setProperty("--now-i", NOW_H - D.open);
+    B.bars.style.setProperty("--now-i", Math.max(0, NOW_H - D.open));
     for (var h = SPAN0; h < SPAN1; h++) {
       var s = B.slots[h], c = head[h], within = cellAt[h], open = !!c, v = within ? within.v : null;
       s.style.setProperty("--i", Math.max(0, h - D.open));
@@ -356,23 +332,25 @@
       // An odd last hour on a two-hour day: its bar stays an hour wide, its target reaches past the plot's end (CSS).
       s.toggleAttribute("data-lone", open && n > 1 && c.n === 1);
       s.style.setProperty("--g", open ? c.n : 0);
-      s.style.setProperty("--u", v !== null ? (v / TOP).toFixed(4) : 0);
+      s.style.setProperty("--u", v !== null && data ? (v / TOP).toFixed(4) : 0);
       if (v !== null) s.style.setProperty("--ug", (v / TOP).toFixed(4)); // the column's ramp (CSS); kept when it closes
-      s.disabled = !open;
-      var when = !isToday ? "usual" : h < NOW_H ? "past" : h === NOW_H ? "now" : "ahead";
+      s.disabled = !open || !data;
+      var when = !isToday ? "usual" : h < NOW_H ? "past" : h === NOW_H ? (lit ? "now" : "current") : "ahead";
       s.setAttribute("data-when", open ? when : "closed");
       s.style.setProperty("--l", open && when === "now" ? (level.n / TOP).toFixed(4) : 0);
-      var ring = isToday && h === ringHour;
+      var ring = data && isToday && h === rh;
       s.toggleAttribute("data-quietest", ring);
       s.setAttribute("aria-pressed", open && picked === h ? "true" : "false");
-      // Today is hourly, so "now" and the quietest left never meet a bar whose hours read differently.
-      if (open) s.setAttribute("aria-label", splits(c) ? T.splitName(c) : T.hourName(c, when === "now", ring));
+      // Today is hourly, so "now" and the quietest left never meet a bar whose hours read differently. The hour now
+      // stands in keeps "now" in its spoken name in every state that has the day: with "usually", it names the clock.
+      if (open && data) s.setAttribute("aria-label", splits(c) ? T.splitName(c) : T.hourName(c, isToday && h === NOW_H, ring));
       else s.removeAttribute("aria-label");
       // A pick changes no label: its bar's own label, where the day has one, is set bold, and the readout names it.
       s.querySelector(".t").toggleAttribute("data-pick", open && picked === h);
     }
-    // One tab stop for the hours: the picked hour, or now, or the first open hour; arrows move between them.
-    var first = picked != null ? picked : isToday ? NOW_H : D.open;
+    // One tab stop for the hours: the picked hour, or now, or the first open hour; arrows move between them. None
+    // while the plot is an empty frame.
+    var first = !data ? null : picked != null ? picked : isToday && cellAt[NOW_H] ? NOW_H : D.open;
     for (h = SPAN0; h < SPAN1; h++) B.slots[h].tabIndex = h === first ? 0 : -1;
     B.picked = picked;
   }
@@ -380,18 +358,19 @@
   // Labels, fixed for a day: they follow the day, the plot's width and the direction, never a pick, a hover, focus or
   // a slide, so the clock under the bars never changes under the finger. How often the clock is labelled follows a
   // bar's width: every bar where there is room for it, else every second, third or sixth, counted from the opening
-  // hour, so the day's first hour is always named (when it opens, by form). A bar's label is its first hour. Today adds
-  // two labels of its own, part of its answer: "Now", and the quietest hour left. A label too close to a stronger one
-  // gives way; the first and last stand on the plot's edges. Each label keeps the width of its bold self, so the one
-  // a pick sets bold keeps its box. Worked out from the final layout: an hour's width = plot width / open hours, a
-  // bar's = that times its hours.
+  // hour, so the day's first hour is always named (when it opens, by form). A bar's label is its first hour. Today in
+  // Live adds two labels of its own, part of its answer: "Now", and the quietest hour left (in the other states that
+  // have the day, the quietest hour alone: no "Now" stands under a bar that is not a reading). A label too close to a
+  // stronger one gives way; the first and last stand on the plot's edges. Each label keeps the width of its bold self,
+  // so the one a pick sets bold keeps its box. Worked out from the final layout: an hour's width = plot width / open
+  // hours, a bar's = that times its hours.
   function placeLabels(B) {
     var D = DAYS[B.day], W = B.bars.clientWidth, hw = W / (D.close - D.open), sw = hw * B.grain;
     var every = sw >= 64 ? 1 : sw >= 34 ? 2 : sw >= 21 ? 3 : 6;
-    var isToday = B.day === TODAY, items = [];
+    var isToday = B.day === TODAY, items = [], rh = ringHour();
     for (var h = SPAN0; h < SPAN1; h++) {
       var t = B.slots[h].querySelector(".t"), cell = B.cellAt[h], head = !!cell && cell.h === h;
-      var isNow = head && isToday && h === NOW_H, isRing = head && isToday && h === ringHour && !isNow;
+      var isNow = head && isToday && isLive() && h === NOW_H, isRing = head && isToday && h === rh && !isNow;
       var text = !head ? "" : isNow ? T.now : isRing || cell.i % every === 0 ? hourText(h) : "";
       t.textContent = text;
       t.setAttribute("data-label", text);
@@ -418,16 +397,53 @@
       });
   }
   var measurer = null;
-  function measure(t) {
+  function measure(t, weight) {
     if (!measurer) { measurer = el("span", "measure"); measurer.setAttribute("aria-hidden", "true"); document.body.appendChild(measurer); }
     measurer.style.font = getComputedStyle(t).font;
-    measurer.style.fontWeight = "600"; // a label's box is its bold self's (CSS, .t::after)
-    measurer.textContent = t.textContent;
+    measurer.style.fontWeight = weight || "600"; // a label's box is its bold self's (CSS, .t::after)
+    measurer.innerHTML = t.innerHTML;
+    if (t.classList.contains("t") || t.classList.contains("day-btn")) measurer.textContent = t.textContent;
     return measurer.getBoundingClientRect().width;
+  }
+
+  // The labels a day change or the arrival puts up or takes down fade instead of swapping in a frame (motion review
+  // F4): 140 ms on the strong ease-out, a new label in from nothing where it stands, a label that goes out from where
+  // it stood (a copy of it, left in place while its bar moves on). Under reduced motion the fades stay; what a key
+  // starts changes at once.
+  var EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+  function shownLabels(B) {
+    var m = {}, pr = B.el.getBoundingClientRect();
+    for (var h = SPAN0; h < SPAN1; h++) {
+      var t = B.slots[h].querySelector(".t");
+      if (!t.textContent || t.hasAttribute("data-yield")) continue;
+      var r = t.getBoundingClientRect();
+      m[h] = { text: t.textContent, x: r.left - pr.left, y: r.top - pr.top, w: r.width, a: getComputedStyle(t).textAlign, cls: t.hasAttribute("data-now") || t.hasAttribute("data-ring") };
+    }
+    return m;
+  }
+  function fadeLabels(B, before) {
+    if (!before || page.hasAttribute("data-keys")) return;
+    var after = shownLabels(B);
+    for (var h = SPAN0; h < SPAN1; h++) {
+      var a = before[h], b = after[h];
+      if (a && b && a.text === b.text) continue;
+      var t = B.slots[h].querySelector(".t");
+      if (b && !t.getAnimations().some(function (x) { return x.id === "open"; })) t.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 140, easing: EASE_OUT, id: "fade" });
+      if (a) {
+        var g = el("span", "t-out");
+        g.textContent = a.text;
+        g.setAttribute("aria-hidden", "true");
+        g.toggleAttribute("data-strong", a.cls);
+        g.style.cssText = "left:" + a.x.toFixed(2) + "px;top:" + a.y.toFixed(2) + "px;width:" + a.w.toFixed(2) + "px;text-align:" + a.a;
+        B.el.appendChild(g);
+        g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: EASE_OUT, fill: "forwards" }).onfinish = (function (n) { return function () { n.remove(); }; })(g);
+      }
+    }
   }
 
   // The day picker: the seven days in the week's order, each by its short name; today is marked by a chalk dot under
   // its name (CSS), and its name says "today" to a screen reader. The visible name leads the spoken one (WCAG 2.5.3).
+  // While the usual day has not arrived (Loading, Error) the days are real text but wait (aria-disabled).
   function dayPicker(current, onPick) {
     var g = el("div", "days");
     g.setAttribute("role", "radiogroup");
@@ -453,11 +469,11 @@
     sync(current);
     g.addEventListener("click", function (e) {
       var b = e.target.closest(".day-btn");
-      if (!b) return;
+      if (!b || g.getAttribute("aria-disabled") === "true") return;
       sync(b.getAttribute("data-day"));
       onPick(b.getAttribute("data-day"));
     });
-    g.addEventListener("keydown", function (e) { rove(e, g, ".day-btn", function (b) { b.click(); }); });
+    g.addEventListener("keydown", function (e) { if (g.getAttribute("aria-disabled") !== "true") rove(e, g, ".day-btn", function (b) { b.click(); }); });
     return { el: g, sync: sync };
   }
 
@@ -500,7 +516,7 @@
     }
     B.bars.addEventListener("click", function (e) { if (e.detail === 0) toggle(e.target.closest(".slot")); });
     B.bars.addEventListener("pointerdown", function (e) {
-      if (e.button !== 0) return;
+      if (e.button !== 0 || !hasDay()) return;
       drag = { id: e.pointerId, x: e.clientX, on: false, slot: e.target.closest(".slot") };
     });
     B.bars.addEventListener("pointermove", function (e) {
@@ -536,9 +552,11 @@
   // (FLIP: a translate on the bar and on its label, a scale on the bar's body, so the ring over it never bends). A
   // closed hour stands folded to nothing at the day's edge (flex 0), so an hour that opens unfolds from that edge as it
   // rises, and an hour that closes folds into it as it sinks. Measured from the screen, so it runs the same way in
-  // either direction, and a second pick in the middle of a movement carries on from where the bars are. Under reduced
-  // motion, or from a key, the new day stands at once.
+  // either direction, and a second pick in the middle of a movement carries on from where the bars are: already
+  // moving, it eases out from there (the strong ease-out, 280 ms: motion review F2), never restarting from rest. Under
+  // reduced motion, or from a key, the new day stands at once.
   var SLIDE = { duration: 280, easing: "cubic-bezier(0.77, 0, 0.175, 1)", id: "slide" };
+  var SLIDE_ON = { duration: 280, easing: EASE_OUT, id: "slide" };
   function seen(B) {
     var m = {};
     for (var h = SPAN0; h < SPAN1; h++) {
@@ -547,9 +565,15 @@
     }
     return m;
   }
+  // Whether the bars are moving: a slide, or a height still gliding (a pick's, or the arrival's).
+  function moving(B) {
+    return B.bars.getAnimations({ subtree: true }).some(function (a) {
+      return a.playState === "running" && (a.id === "slide" || a.transitionProperty === "translate");
+    });
+  }
   function stopSlide(B) {
     B.bars.querySelectorAll(".bar, .body, .t").forEach(function (n) {
-      n.getAnimations().forEach(function (a) { if (a.id === "slide") a.cancel(); });
+      n.getAnimations().forEach(function (a) { if (a.id === "slide" || a.id === "open") a.cancel(); });
     });
     B.bars.querySelectorAll("[data-leaving]").forEach(function (s) { s.removeAttribute("data-leaving"); s.style.removeProperty("--bw"); });
   }
@@ -560,7 +584,7 @@
       body.getAnimations().forEach(function (a) { if (a.id === "slide") a.cancel(); });
     };
   }
-  function slide(B, before) {
+  function slide(B, before, opts) {
     for (var h = SPAN0; h < SPAN1; h++) {
       var s = B.slots[h], o = before[h], open = !s.hasAttribute("data-closed");
       if (!open && o.w < 0.5) continue; // folded before and after
@@ -569,17 +593,20 @@
       var r = bar.getBoundingClientRect(), dx = o.c - (r.left + r.width / 2);
       var from = "translateX(" + dx.toFixed(2) + "px)";
       if (!open) {
-        bar.animate([{ transform: from }, { transform: "none" }], SLIDE);
-        body.animate([{ transform: "none" }, { transform: "scaleX(0)" }], Object.assign({ fill: "forwards" }, SLIDE)).onfinish = folded(s, body);
+        bar.animate([{ transform: from }, { transform: "none" }], opts);
+        body.animate([{ transform: "none" }, { transform: "scaleX(0)" }], Object.assign({ fill: "forwards" }, opts)).onfinish = folded(s, body);
         continue;
       }
       var sx = r.width > 0 ? o.w / r.width : 1;
       if (Math.abs(dx) >= 0.5) {
-        bar.animate([{ transform: from }, { transform: "none" }], SLIDE);
+        bar.animate([{ transform: from }, { transform: "none" }], opts);
         // An opening hour's label rides out with it from the edge, but shows only once the hours have room.
-        if (t.textContent) t.animate(o.w < 0.5 ? [{ transform: from, opacity: 0 }, { opacity: 0, offset: 0.6 }, { transform: "none", opacity: 1 }] : [{ transform: from }, { transform: "none" }], SLIDE);
+        if (t.textContent) {
+          if (o.w < 0.5) t.animate([{ transform: from, opacity: 0 }, { opacity: 0, offset: 0.6 }, { transform: "none", opacity: 1 }], Object.assign({}, opts, { id: "open" }));
+          else t.animate([{ transform: from }, { transform: "none" }], opts);
+        }
       }
-      if (Math.abs(sx - 1) >= 0.005) body.animate([{ transform: "scaleX(" + sx.toFixed(4) + ")" }, { transform: "none" }], SLIDE);
+      if (Math.abs(sx - 1) >= 0.005) body.animate([{ transform: "scaleX(" + sx.toFixed(4) + ")" }, { transform: "none" }], opts);
     }
   }
 
@@ -590,18 +617,26 @@
   var hq = q.get("hour"), pickedHour = hq !== null && usualAt(pickedDay, +hq) !== null ? +hq : null;
 
   // The level word takes the size the width gives it (CSS, --fs-word), and a word too long for its line at that size
-  // («شديد الازدحام» on the phone) is set down until it fits on one line; the other words keep the size.
-  function fitWord(live) {
-    var w = live.word, word = w.querySelector(".level");
-    w.style.fontSize = "";
+  // («شديد الازدحام», "No current count" on the phone) is set down until it fits on one line; the other words keep the
+  // size. Only the word is set down, never its line, so the line keeps the height every word gives it and the facts
+  // under it stay where they are whatever the word (a reading that turns Packed moves nothing).
+  // (A word set down can round its line a fraction of a pixel deeper: «تعذّر التحميل» at 390 px by 0.41 px. The line
+  // keeps the height the word gave it at full size, measured before it is set down.)
+  function fitWord(head) {
+    var w = head.word, word = w.querySelector(".level");
+    word.style.fontSize = ""; w.style.blockSize = "";
     var room = sign.clientWidth, need = word.getBoundingClientRect().width;
-    if (need > room) w.style.fontSize = (parseFloat(getComputedStyle(w).fontSize) * room / need).toFixed(2) + "px";
+    if (need > room) {
+      var line = w.getBoundingClientRect().height;
+      word.style.fontSize = (parseFloat(getComputedStyle(word).fontSize) * room / need).toFixed(2) + "px";
+      w.style.blockSize = line + "px";
+    }
   }
   // The count and the percentage share a line; where a narrow screen parts them, the percentage starts its own line
   // without the rule that stood between them (CSS, data-wrapped).
-  function fitFacts(live) {
-    var f = live.el.querySelector(".facts"), c = f.querySelector(".count-line"), p = f.querySelector(".pct");
-    if (!p) return;
+  function fitFacts(head) {
+    var f = head.sub.querySelector(".facts"), c = f && f.querySelector(".count-line"), p = f && f.querySelector(".pct");
+    if (!p || !c) return;
     f.removeAttribute("data-wrapped");
     if (p.getBoundingClientRect().top - c.getBoundingClientRect().top > 4) f.setAttribute("data-wrapped", "");
   }
@@ -616,103 +651,262 @@
     if (need > share) row.setAttribute("data-fit", "content");
   }
 
+  var B, head, card, title, hours, readout, fig, picker, relayout;
   function build() {
-    var live = liveBlock();
-    sign.appendChild(live.el);
-    var card = el("section", "card daycard");
+    head = { el: el("section", "live") };
+    head.el.setAttribute("aria-label", T.rightNow);
+    head.word = el("h1", "word");
+    head.word.tabIndex = -1; // where focus lands when a retry arrives (the figures)
+    head.sub = el("div", "sub");
+    head.el.appendChild(head.word);
+    head.el.appendChild(head.sub);
+    sign.appendChild(head.el);
+    card = el("section", "card daycard");
     card.setAttribute("aria-labelledby", "day-title");
     card.innerHTML = '<span class="lamp" aria-hidden="true"><span class="lamp-in"></span><span class="lamp-rim"></span></span>';
-    var title = el("h2", "card-title"); title.id = "day-title";
-    var hours = el("p", "card-hours");
-    var readout = el("p", "readout");
-    readout.setAttribute("aria-live", "polite");
-    var fig = el("figure", "dayfig");
-    var B = dayBars();
+    title = el("h2", "card-title"); title.id = "day-title";
+    hours = el("p", "card-hours");
+    readout = el("p", "readout");
+    fig = el("figure", "dayfig");
+    B = dayBars();
     fig.appendChild(B.el);
-    var picker = dayPicker(pickedDay, function (d) { show(d, null, true); });
+    picker = dayPicker(pickedDay, function (d) { show(d, null, true); });
     [title, hours, readout, fig, picker.el].forEach(function (n) { card.appendChild(n); });
     sign.appendChild(card);
 
-    // The card's answer, and a picked hour's words in its place. On the phone the readout holds the tallest of the
-    // answer and every pick the day offers, picked or not: on a narrow phone the answer takes two lines and an hour
-    // one, and a two-hour bar whose hours read differently takes two where the answer takes one, and the bars would
-    // jump a line under the finger on the first pick or as it slides.
-    function pickWords(c) { return "<span>" + T.cellUsual(c) + "</span>"; }
-    function words(d, h) {
-      var html;
-      if (d !== TODAY) html = "<span>" + T.dayRange(B.cells, B.grain) + "</span>";
-      else if (nowVsLeft === "now") html = "<span>" + T.nowQuietest + "</span>";
-      else if (nowVsLeft === "same") html = ICON.ring + "<span>" + T.quietestSame(quietLeft) + "</span>";
-      else if (nowVsLeft === "later") html = ICON.ring + "<span>" + T.quietestLeft(quietLeft) + "</span>";
-      else html = "";
-      readout.style.minHeight = "";
-      if (!wide.matches) { // the computer's answer stands on one line, beside the card's name
-        // Measured on a silent copy across the same grid area, so the live region announces only the hour.
-        var ghost = readout.cloneNode(false), held = 0;
-        ghost.removeAttribute("aria-live");
-        ghost.setAttribute("aria-hidden", "true");
-        ghost.style.cssText = "position:absolute;visibility:hidden;inset-inline:0";
-        card.appendChild(ghost);
-        [html].concat(B.cells.map(pickWords)).forEach(function (w) {
-          ghost.innerHTML = w;
-          held = Math.max(held, ghost.getBoundingClientRect().height);
-        });
-        readout.style.minHeight = held + "px";
-        ghost.remove();
-      }
-      if (h != null) html = pickWords(B.cellAt[h]);
-      readout.innerHTML = html;
-      readout.toggleAttribute("data-picked", h != null);
-    }
-    function show(d, h, animate) {
-      var before = animate && !reduce && d !== B.day && !page.hasAttribute("data-keys") ? seen(B) : null;
-      stopSlide(B);
-      title.textContent = T.usualDay(d);
-      hours.innerHTML = T.openHours(d);
-      setDay(B, d, h);
-      fig.setAttribute("aria-label", T.chartName(d, B.grain));
-      // The head is now's: while another day is shown it steps back (?head=quiet, CSS).
-      page.toggleAttribute("data-away", d !== TODAY);
-      words(d, B.picked);
-      placeLabels(B);
-      if (before) slide(B, before);
-    }
     // A pick leaves the labels where the day put them (placeLabels runs only for a day or a width).
     hourInput(B, function (h, keepFocus) {
       setDay(B, B.day, h); words(B.day, B.picked);
       var f = B.slots[h != null ? h : -1];
       if (!keepFocus && f && document.activeElement && document.activeElement.closest(".bars") === B.bars) f.focus();
     });
-    // The day fills what the screen leaves it: the page is measured with the plot at nothing, and the plot takes the
-    // rest, between a floor and a ceiling (on a tall screen the rest goes to the space around). The phone's concept
-    // label stays under the fold.
-    function fit() {
-      var min = wide.matches ? 180 : 150, max = wide.matches ? 560 : 320;
-      var foot = document.querySelector(".concept-foot");
-      page.classList.add("fitting");
-      B.el.style.height = "0px";
-      var natural = page.getBoundingClientRect().height - (foot && foot.offsetParent ? foot.getBoundingClientRect().height : 0);
-      B.el.style.height = Math.round(Math.max(min, Math.min(max, innerHeight - natural))) + "px";
-      page.classList.remove("fitting");
-    }
-    fitWord(live); fitFacts(live); fitDays(picker.el);
+    head.sub.addEventListener("click", function (e) { var r = e.target.closest(".retry"); if (r) retry(r); });
+
+    renderState(false);
     show(pickedDay, pickedHour, false);
+    hold();
     fit();
     // A new width can change how many hours a bar holds (a phone turned, a window resized): the day is set again.
     return function () {
-      fitWord(live); fitFacts(live); fitDays(picker.el);
+      hold();
       if (grainFor(B, B.day) !== B.grain) show(B.day, B.picked, false);
-      else words(B.day, B.picked); // the answer's held height, at the new width and in the loaded face
       fit();
       placeLabels(B);
     };
   }
 
+  // The state into the page: the head's rows, the card's light (CSS: only Live lights it, LGT-11), the days, the
+  // busy marks. The card's answer and the bars follow in show().
+  function renderState() {
+    page.setAttribute("data-state", state);
+    var r = rowsHtml(state);
+    head.word.innerHTML = r.word;
+    head.sub.innerHTML = r.sub;
+    [head.el, card].forEach(function (n) { if (state === "loading") n.setAttribute("aria-busy", "true"); else n.removeAttribute("aria-busy"); });
+    picker.el.setAttribute("aria-disabled", hasDay() ? "false" : "true");
+    // The readout speaks a pick once the day has arrived, from the frame after its answer is written, so the arrival
+    // says one thing (the reading, from the header).
+    readout.removeAttribute("aria-live");
+    if (hasDay()) requestAnimationFrame(function () { readout.setAttribute("aria-live", "polite"); });
+    setFlow();
+    fitWord(head); fitFacts(head);
+  }
+
+  // The card's answer, and a picked hour's words in its place.
+  function pickWords(c) { return "<span>" + T.cellUsual(c) + "</span>"; }
+  function todayWords() {
+    if (state === "closed") return quietLeft != null ? ICON.ring + "<span>" + T.quietestToday(quietLeft) + "</span>" : "";
+    if (!isLive()) return quietLeft != null ? ICON.ring + "<span>" + T.quietestLeft(quietLeft) + "</span>" : "";
+    if (nowVsLeft === "now") return "<span>" + T.nowQuietest + "</span>";
+    if (nowVsLeft === "same") return ICON.ring + "<span>" + T.quietestSame(quietLeft) + "</span>";
+    if (nowVsLeft === "later") return ICON.ring + "<span>" + T.quietestLeft(quietLeft) + "</span>";
+    return "";
+  }
+  function words(d, h) {
+    var html;
+    if (state === "loading") html = "<span>" + ph("15em") + "</span>";
+    else if (state === "error") html = "<span>" + STRUT + "</span>";
+    else if (d !== TODAY) html = "<span>" + T.dayRange(B.cells, B.grain) + "</span>";
+    else html = todayWords();
+    if (h != null) html = pickWords(B.cellAt[h]);
+    readout.innerHTML = html;
+    readout.toggleAttribute("data-picked", h != null);
+  }
+  function show(d, h, animate) {
+    var before = animate && !reduce && d !== B.day && !page.hasAttribute("data-keys") ? seen(B) : null;
+    var labels = animate && d !== B.day ? shownLabels(B) : null;
+    // A second pick while the bars still move: they carry on from where they are, easing out (F2). The heights' own
+    // transitions take the same curve for this movement (CSS, data-on).
+    var on = !!before && moving(B);
+    stopSlide(B);
+    if (on) { B.bars.setAttribute("data-on", ""); clearTimeout(show.t); show.t = setTimeout(function () { B.bars.removeAttribute("data-on"); }, 300); }
+    title.textContent = T.usualDay(d);
+    hours.innerHTML = T.openHours(d);
+    setDay(B, d, h);
+    fig.setAttribute("aria-label", T.chartName(d, B.grain, hasDay() && state !== "closed" && d === TODAY));
+    // The head is now's: while another day is shown it steps back (?head=quiet, CSS).
+    page.toggleAttribute("data-away", d !== TODAY);
+    words(d, B.picked);
+    placeLabels(B);
+    if (before) slide(B, before, on ? SLIDE_ON : SLIDE);
+    fadeLabels(B, labels);
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // Held heights: nothing on the page moves when the day, the state or the reading changes (motion review F1; the
+  // Loading behaviour's zero shift). Worked out for the width, again only when it changes:
+  // - the head holds the tallest two rows any state writes at this width (silent copies, measured; Live's, and Delayed's
+  //   two-line status at 320 px in English), so a state that follows another moves nothing;
+  // - the card's head stacks its name over its hours where any day's name and hours would not share a line;
+  // - on the phone and the tablet the readout holds the tallest of everything it can say at this width: today's
+  //   answer in every state, every day's answer and every hour a day offers, picked (on the computer the answer stands
+  //   on one line beside the card's name).
+  // ---------------------------------------------------------------------------------------------------------------
+  function ghostOf(node, host, html) {
+    var g = node.cloneNode(false);
+    g.removeAttribute("aria-live"); g.removeAttribute("id");
+    g.setAttribute("aria-hidden", "true");
+    g.style.cssText = "position:absolute;visibility:hidden;inset-inline:0;min-height:0";
+    if (html != null) g.innerHTML = html;
+    host.appendChild(g);
+    return g;
+  }
+  function hold() {
+    fitWord(head); fitFacts(head); fitDays(picker.el);
+    // The head: Live's rows first (their facts row is the height Error's key stands at), then every other state's; it
+    // holds the tallest.
+    head.sub.style.minHeight = "";
+    var gs = ghostOf(head.sub, head.el, rowsHtml("live").sub);
+    var gf = gs.querySelector(".facts"), gc = gf.querySelector(".count-line"), gp = gf.querySelector(".pct");
+    if (gp && gp.getBoundingClientRect().top - gc.getBoundingClientRect().top > 4) gf.setAttribute("data-wrapped", "");
+    var rowA = gf.getBoundingClientRect().height, tallest = gs.getBoundingClientRect().height;
+    gs.style.setProperty("--row-a", rowA.toFixed(2) + "px");
+    STATES.forEach(function (st) {
+      if (st === "live") return;
+      gs.innerHTML = rowsHtml(st).sub;
+      tallest = Math.max(tallest, gs.getBoundingClientRect().height);
+    });
+    gs.remove();
+    head.sub.style.minHeight = tallest + "px"; // exact: Live, where it is the tallest, keeps its own height
+    head.sub.style.setProperty("--row-a", rowA.toFixed(2) + "px"); // Error's key row (CSS)
+    // The card's name and hours.
+    card.removeAttribute("data-stack");
+    if (!wide.matches) {
+      var room = card.clientWidth - parseFloat(getComputedStyle(card).paddingInlineStart) - parseFloat(getComputedStyle(card).paddingInlineEnd);
+      var gap = parseFloat(getComputedStyle(card).columnGap) || 0, keep = { t: title.textContent, h: hours.innerHTML };
+      var stack = WEEK.some(function (d) {
+        title.textContent = T.usualDay(d); hours.innerHTML = T.openHours(d);
+        return measure(title, "500") + measure(hours, "400") + gap > room;
+      });
+      title.textContent = keep.t; hours.innerHTML = keep.h;
+      card.toggleAttribute("data-stack", stack);
+    }
+    // The readout.
+    readout.style.minHeight = "";
+    if (!wide.matches) {
+      var g = ghostOf(readout, card), held = 0;
+      var say = [ICON.ring + "<span>" + T.quietestLeft(quietLeft) + "</span>", ICON.ring + "<span>" + T.quietestSame(quietLeft) + "</span>", "<span>" + T.nowQuietest + "</span>"];
+      var early = lowest(TODAY, 0);
+      say.push(ICON.ring + "<span>" + T.quietestToday(early) + "</span>");
+      WEEK.forEach(function (d) {
+        var n = grainFor(B, d), cells = cellsOf(d, n);
+        say.push("<span>" + T.dayRange(cells, n) + "</span>");
+        cells.forEach(function (c) { say.push(pickWords(c)); });
+      });
+      say.forEach(function (w) { g.innerHTML = w; held = Math.max(held, g.getBoundingClientRect().height); });
+      g.remove();
+      readout.style.minHeight = held + "px";
+    }
+  }
+
+  // The day fills what the screen leaves it: the page is measured with the plot at nothing, and the plot takes the
+  // rest, between a floor and a ceiling (on a tall screen the rest goes to the space around). The phone's and the
+  // tablet's concept label stays under the fold.
+  function fit() {
+    var min = wide.matches || tablet.matches ? 180 : 150, max = wide.matches ? 560 : tablet.matches ? 520 : 320;
+    var foot = document.querySelector(".concept-foot");
+    page.classList.add("fitting");
+    B.el.style.height = "0px";
+    var natural = page.getBoundingClientRect().height - (foot && foot.offsetParent ? foot.getBoundingClientRect().height : 0);
+    B.el.style.height = Math.round(Math.max(min, Math.min(max, innerHeight - natural))) + "px";
+    page.classList.remove("fitting");
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // Loading behaviour (DESIGN_GUIDE §6): for the first 300 ms the value slots keep their space, empty, and a payload
+  // that lands in time fills them directly; from 300 ms the placeholders and "Loading…" show, static, for at least
+  // 400 ms; at 1 s the polite voice says it once; at 10 s the load becomes Error. The arrival: the head's rows are
+  // written into the space they held, the card lights at once (LGT-11), the usual day rises from its floor as the page
+  // arrives (the arrival, unchanged), and the voice says the reading once.
+  // ---------------------------------------------------------------------------------------------------------------
+  var timers = [], shownAt = null;
+  function later(f, ms) { timers.push(setTimeout(f, ms)); }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+  function startLoading() {
+    later(function () { shownAt = performance.now(); page.setAttribute("data-shown", ""); ready(); }, 300);
+    later(function () { speak(T.loadingSay); }, 1000);
+    later(function () { toState("error"); }, 10000);
+    if (arriveAt != null) later(function () {
+      var wait = shownAt == null ? 0 : shownAt + 400 - performance.now();
+      if (wait > 0) later(arrive, wait); else arrive();
+    }, arriveAt);
+  }
+  function toState(s) {
+    clearTimers();
+    state = s;
+    page.removeAttribute("data-shown");
+    renderState();
+    var labels = shownLabels(B);
+    show(B.day, null, false);
+    hold(); fit(); placeLabels(B);
+    fadeLabels(B, labels);
+    if (s === "error") alertOnce();
+  }
+  function arrive(focus) {
+    // The bars wait at their floor while the day is written (the arrival's first frame), then rise.
+    if (!reduce) page.setAttribute("data-intro", "");
+    toState("live");
+    speak(T.srNow + T.words[levelKey] + (en ? ", " : "، ") + plain(T.about(level.n)));
+    if (focus) head.word.focus();
+    ready();
+    rise();
+  }
+  function rise() {
+    if (reduce) { page.removeAttribute("data-intro"); return; }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        page.setAttribute("data-rise", "");
+        page.removeAttribute("data-intro");
+        setTimeout(function () { page.removeAttribute("data-rise"); }, 2600);
+      });
+    });
+  }
+  // Error: the alert is written once it is in place, so it is said once; the one retry takes focus (EMP-5). The retry
+  // works as an action: its words at once, focus kept, at least 400 ms, then the arrival (concept: it always lands).
+  function alertOnce() {
+    var a = el("p", "sr-only");
+    a.setAttribute("role", "alert");
+    head.el.appendChild(a);
+    setTimeout(function () { a.textContent = T.cantLoad + ". " + T.checkConn; }, 50);
+    var r = head.sub.querySelector(".retry");
+    if (r) r.focus();
+  }
+  function retry(r) {
+    if (r.getAttribute("aria-disabled") === "true") return;
+    r.textContent = T.retrying;
+    r.setAttribute("aria-disabled", "true");
+    r.setAttribute("aria-busy", "true");
+    head.el.querySelectorAll('[role="alert"]').forEach(function (n) { n.remove(); });
+    later(function () { arrive(true); }, 900);
+  }
+
   // Motion: the arrival raises the bars from the floor in the day's order, the live hour after the hours before it.
   // Set before the page is built, so no bar is ever drawn at its height and then lowered. Under reduced motion it never
-  // runs and every bar stands at its height from the first frame.
-  if (!reduce) page.setAttribute("data-intro", "");
-  var relayout = build();
+  // runs and every bar stands at its height from the first frame. While Loading the bars wait at their floor.
+  if (!reduce || state === "loading" || state === "error") page.setAttribute("data-intro", "");
+  var initial = state;
+  relayout = build();
+  if (state === "loading") startLoading();
 
   // The arrival's stagger ends at the visitor's first touch or key, so a pick never waits on it.
   ["pointerdown", "keydown"].forEach(function (t) { addEventListener(t, function () { page.removeAttribute("data-rise"); }, { capture: true, once: true }); });
@@ -723,15 +917,28 @@
   addEventListener("pointermove", function (e) { if ((e.movementX || e.movementY) && page.hasAttribute("data-keys")) page.removeAttribute("data-keys"); }, true);
   addEventListener("resize", function () { relayout(); });
   wide.addEventListener("change", function () { relayout(); });
+  tablet.addEventListener("change", function () { relayout(); });
 
-  // Ready once the Readex Pro weights the page uses have loaded, in both scripts: the page's own language and the
-  // other one's name on the language link.
+  // Ready once the page stands in its faces. Readex Pro is optional (CSS): it is used when it is there within the
+  // browser's short block period, which a preloaded file on any working connection is, and otherwise the metric-matched
+  // fallback stays for the visit, so a late file never moves the text (motion review F7). The page waits for the faces
+  // only that long (150 ms at most), then lays out once and the day rises; it never shows its words over an empty day.
   var SAMPLE = "FITWAY English Quiet Moderate Busy Packed 0123456789% هادئ متوسط مزدحم شديد الازدحام العربية";
-  Promise.all(["400", "500", "600", "700"].map(function (w) {
+  var faces = Promise.all(["400", "500", "600", "700"].map(function (w) {
     return document.fonts.load(w + ' 16px "Readex Pro"', SAMPLE).catch(function () {});
-  })).then(function () {
-    relayout();
+  }));
+  var isReady = false;
+  function ready() {
+    if (state === "loading" && shownAt == null) return; // a Loading frame is the skeleton, shown
+    if (isReady) return;
+    isReady = true;
     window.__public = { ready: true };
+  }
+  Promise.race([faces, new Promise(function (r) { setTimeout(r, 150); })]).then(function () {
+    relayout();
+    if (initial === "loading") return; // the loading flow owns the arrival and the ready signal
+    if (state === "error") { page.removeAttribute("data-intro"); alertOnce(); ready(); return; }
+    ready();
     if (!reduce) requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         page.setAttribute("data-rise", "");
@@ -740,4 +947,6 @@
       });
     });
   });
+  // Exposed for the round's measurements: the current state, read-only.
+  window.__publicState = function () { return state; };
 })();

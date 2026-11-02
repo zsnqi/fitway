@@ -12,10 +12,12 @@
  * set for itself where Readex Pro's Arabic asks for it (":lang(ar)" rules): no tracking, room for its ascenders and
  * descenders, and its own sizes where the Latin's would read small. */
 
-@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
-@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
-/* The fallbacks while Readex Pro loads (swap): system faces sized to its widths and set to its ascent and descent, so
- * the text shows at once and barely moves when Readex Pro arrives. Windows and Apple: Arial; Windows: Segoe UI for
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: optional; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: optional; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+/* Readex Pro is optional: a preloaded file in the browser's short block period is used; a later one is not swapped in,
+ * so text never moves once it is drawn (motion review F7), and the visit keeps the fallback below.
+ * The fallbacks: system faces sized to its widths and set to its ascent and descent, so a visit that keeps them, or
+ * the first frames before Readex Pro, look like it. Windows and Apple: Arial; Windows: Segoe UI for
  * Arabic; Android: Roboto and Noto Naskh Arabic. Numbers measured in Chromium on the page's own strings (run font-34). */
 @font-face { font-family: "Readex Pro Fallback"; font-style: normal; font-weight: 400; src: local("Arial"); unicode-range: U+0000-00FF, U+2000-206F; size-adjust: 108.7%; ascent-override: 92%; descent-override: 23%; line-gap-override: 0%; }
 @font-face { font-family: "Readex Pro Fallback"; font-style: normal; font-weight: 700; src: local("Arial Bold"); unicode-range: U+0000-00FF, U+2000-206F; size-adjust: 104.79%; ascent-override: 95.43%; descent-override: 23.86%; line-gap-override: 0%; }
@@ -40,6 +42,8 @@
   --red-hi: #ff2946;
   --ox: #4d0713;
   --live: #4be29b;
+  --amber: #e8b62e;   /* Delayed (the family's, STA-2) */
+  --err: #ff6b7d;     /* Error's mark (the family's, STW-1) */
   --chalk: 245 243 242;
   --font: "Readex Pro", "Readex Pro Fallback", "Readex Pro Fallback Roboto", "Readex Pro Fallback Arabic", "Readex Pro Fallback Arabic Naskh", "Segoe UI", system-ui, sans-serif;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);     /* the arrival's curve, kept */
@@ -112,6 +116,8 @@ b { font-weight: 600; }
   color: var(--ink-2);
   font-size: var(--fs-small);
   font-weight: 500;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 120ms ease-out;
 }
 .lang::after { content: ""; position: absolute; inset: -3px; }
 @media (hover: hover) and (pointer: fine) { .lang:hover { color: var(--ink); border-color: rgb(255 255 255 / 0.22); } }
@@ -168,7 +174,7 @@ b { font-weight: 600; }
   grid-template-columns: minmax(0, 1fr); /* a word wider than the screen never widens the card under it */
   grid-template-rows: minmax(20px, 0.5fr) auto minmax(26px, 0.5fr) auto;
 }
-.live { grid-row: 2; display: grid; justify-items: start; }
+.live { position: relative; grid-row: 2; display: grid; justify-items: start; }
 .word {
   font-size: var(--fs-word);
   font-weight: 700;
@@ -228,6 +234,61 @@ b { font-weight: 600; }
  * STANDARDS.md gives a change of colour, in the day's own 280 ms, so the head and the bars move as one. */
 .word, .facts, .vs { transition: opacity var(--t-move) ease; }
 .page[data-head="quiet"][data-away] :is(.word, .facts, .vs) { opacity: 0.7; }
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * The states (DESIGN_GUIDE §6; public.js, rowsHtml). Each writes into the head's three rows and keeps the height Live
+ * gives them. Only Live has a reading of now: the chalk word, the red hour, the comparison, the green Live dot. The
+ * card's light is the reading's: it is on in Live alone (LGT-11; Delayed too, STA-2: a light is never kept dimmed),
+ * and comes on at once when a reading arrives. The page's corner light is the page's and stays in every state.
+ * Every state's mark is a shape as well as a colour, and never mirrors (STW-1, ICO-5).
+ * --------------------------------------------------------------------------------------------------------------- */
+.page:not([data-state="live"]) .daycard .lamp { display: none; }
+.stamp .st { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; margin-inline-end: 8px; color: var(--ink-2); }
+/* Delayed: the last reading in --ink-2, its words and its time kept (dimming is never the only channel); the status
+ * line says it is the last one, when, and how long ago, in the family's amber with its clock (STA-2, GLO-9). It may
+ * part between its time and its age on a narrow phone, never inside either. */
+.page[data-state="delayed"] :is(.word, .facts, .facts .num) { color: var(--ink-2); }
+.stamp.st-late { white-space: normal; }
+.st-late .st, .st-late b, .st-late .ago { color: var(--amber); }
+/* Unavailable: no count, in --ink-2 (the brightest thing is never unavailable, TRU-3); why none is shown; Offline with
+ * its struck circle. Error's words are --ink-2 too, so its one retry is the brightest thing on the page. */
+.page:is([data-state="unavailable"], [data-state="error"]) .word { color: var(--ink-2); }
+.facts.note { column-gap: 8px; font-size: var(--fs-text); line-height: 1.35; color: var(--ink-2); }
+/* Closed: the word in chalk (a fact about now, from the opening hours, not a reading), the next opening at the
+ * count's size, the hollow ring the Live dot's size (STW-1). */
+.ring-mark { display: inline-block; vertical-align: 1px; width: 8px; height: 8px; margin-inline-end: 8px; border-radius: 50%; border: 1.5px solid var(--ink-2); }
+/* Error: what failed; under it the one retry, a chalk key (EMP-3, EMP-5), standing in the count's row at that row's
+ * height (public.js, hold: --row-a), so the key never makes the head taller than Live's; then the alert mark and what
+ * to do if it fails again, in the status line. */
+.facts.act { height: var(--row-a, auto); align-items: center; }
+.stamp.err .st { color: var(--err); }
+.retry {
+  height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--page);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 120ms ease-out;
+}
+.retry[aria-disabled="true"] { cursor: progress; }
+/* Loading: placeholders only where a value is awaited (PH-1, PH-3), in the value's own slot and type, so the reading
+ * lands where they stood: one flat fill, no shimmer; "Loading…" where the status will be (STW-2). Unseen for the
+ * first 300 ms, so a payload that lands in time never shows them. */
+.ph { display: inline-block; width: var(--w, 4em); height: 0.72em; border-radius: 8px; background: rgb(255 255 255 / 0.07); vertical-align: baseline; }
+.vs .ph, .readout .ph { border-radius: 4px; }
+.loading-words { color: var(--ink-2); }
+.page[data-state="loading"]:not([data-shown]) :is(.ph, .loading-words) { visibility: hidden; }
+.page[data-state="loading"]:not([data-shown]) .pct { border-color: transparent; }
+/* While the usual day has not arrived (Loading, Error) the days are real text and wait. */
+.days[aria-disabled="true"] .day-btn { color: var(--ink-3); cursor: default; }
+.days[aria-disabled="true"] .day-btn[aria-checked="true"] { color: var(--ink-2); }
+.slot:disabled { cursor: default; }
 
 /* ---------------------------------------------------------------------------------------------------------------
  * The card: Eclipse's glass (near-black, 1px edge) with the Owner chart card's light, ported as it is there: a U along
@@ -318,6 +379,9 @@ b { font-weight: 600; }
 .readout .ic { align-self: flex-start; width: 16px; height: 16px; margin-block-start: 3px; color: var(--ink); }
 .readout .ic-ring { stroke-width: 2; }
 .dayfig { grid-area: fig; align-self: stretch; padding-block-end: 34px; }
+/* Where any day's name and hours would not share a line (a 320 px phone: "A usual Wednesday", «المعتاد أيام الأربعاء»),
+ * every day stands its hours under its name, so a day change never moves the card (public.js, hold). */
+.daycard[data-stack] { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "hours" "read" "fig" "days"; }
 .days { grid-area: days; align-self: stretch; margin-block-start: 6px; }
 
 /* ---------------------------------------------------------------------------------------------------------------
@@ -407,14 +471,17 @@ b { font-weight: 600; }
   transition: opacity var(--t-ui) ease;
 }
 .cap, .rk { translate: 0 calc((1 - var(--u, 0) * var(--k)) * 100%); transition: translate var(--t-move) var(--ease-io); }
+/* Every chalk top has the now hour's width (4 px past the bar each side) and is cut to its bar's (clip-path), so the
+ * now hour's wider top is a cut taken away, never a change of layout: a reading that arrives or goes moves no box. */
 .cap::before {
   content: "";
   position: absolute;
-  inset-inline: 0;
+  inset-inline: -4px;
   inset-block-start: 0;
   height: 2px;
   border-radius: 1px;
   background: rgb(var(--chalk) / 0.92);
+  clip-path: inset(0 4px round 1px);
   transform-origin: top;
   transition: scale var(--t-ui) ease, background-color var(--t-ui) ease;
 }
@@ -436,11 +503,12 @@ b { font-weight: 600; }
   transition: translate var(--t-move) var(--ease-io), opacity 0s, visibility 0s;
 }
 .lv::after { content: ""; position: absolute; inset: -60px -60px -180px; background: var(--grain); background-size: 120px 120px; mix-blend-mode: overlay; opacity: 0.32; }
-.slot:not([data-when="now"]) .lv { visibility: hidden; opacity: 0; transition: translate var(--t-move) var(--ease-io), opacity 140ms ease, visibility 0s 140ms; }
-.slot[data-when="now"] .cap::before { inset-inline: -4px; background: var(--ink); box-shadow: 0 0 0 1.5px var(--page); }
+.slot:not([data-when="now"]) .lv { visibility: hidden; opacity: 0; transition: translate var(--t-move) var(--ease-io), opacity 140ms var(--ease-enter), visibility 0s 140ms; }
+.slot[data-when="now"] .cap::before { clip-path: none; background: var(--ink); box-shadow: 0 0 0 1.5px var(--page); }
 
 /* The quietest hour left today: a ring above its top (the Owner pages' peak ring, here for the low); its hour is
- * named on the clock under it. On a picked day it comes in from 0.95 as it fades in, and leaves faster than it came. */
+ * named on the clock under it. On a picked day it comes in from 0.95 as it fades in, and leaves faster than it came,
+ * both on the strong ease-out (motion review F3). */
 .ring {
   position: absolute;
   inset-inline-start: 50%;
@@ -452,7 +520,7 @@ b { font-weight: 600; }
   border: 2px solid var(--ink);
   opacity: 0;
   scale: 0.95;
-  transition: opacity 140ms ease, scale 140ms ease;
+  transition: opacity 140ms var(--ease-enter), scale 140ms var(--ease-enter); /* leaves on the strong ease-out (F3) */
 }
 .slot[data-quietest] .ring { opacity: 1; scale: 1; transition: opacity 200ms var(--ease-enter), scale 200ms var(--ease-enter); }
 
@@ -515,6 +583,9 @@ b { font-weight: 600; }
 .t[data-edge="end"] { inset-inline-start: auto; inset-inline-end: 0; translate: none; text-align: end; }
 .t[data-now], .t[data-pick], .t[data-ring] { color: var(--ink); font-weight: 600; }
 .t[data-yield] { visibility: hidden; }
+/* A label a day change takes down fades out where it stood (public.js, fadeLabels; motion review F4). */
+.t-out { position: absolute; white-space: nowrap; text-align: center; font-size: var(--fs-axis); line-height: 18px; color: var(--ink-3); pointer-events: none; }
+.t-out[data-strong] { color: var(--ink); font-weight: 600; }
 .t:empty { display: none; }
 
 /* The day picker: the week's seven days under the whole day. The picked one is outlined in chalk, not filled, so the
@@ -534,10 +605,19 @@ b { font-weight: 600; }
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
   transition: background-color var(--t-ui) ease, color var(--t-ui) ease, border-color var(--t-ui) ease;
 }
-@media (hover: hover) and (pointer: fine) { .day-btn:hover { color: var(--ink); background: rgb(255 255 255 / 0.08); } }
+@media (hover: hover) and (pointer: fine) { .days:not([aria-disabled="true"]) .day-btn:hover { color: var(--ink); background: rgb(255 255 255 / 0.08); } }
 .day-btn[aria-checked="true"] { background: rgb(var(--chalk) / 0.12); border-color: rgb(var(--chalk) / 0.72); color: var(--ink); font-weight: 600; }
+/* The browser's tap flash is gone from the page's keys (motion review F5), and each answers a press as the family's
+ * keys do (STA-16): a day sinks while held, darker than the row inside a faint chalk edge (never lit, so a held day
+ * never reads as the chosen one; the chosen one sinks under its ring); the language key takes a step of chalk light;
+ * the retry, a chalk key, seats in its bezel. At once on the press, back in 120 ms on release. */
+.days:not([aria-disabled="true"]) .day-btn:active { background: rgb(0 0 0 / 0.45); border-color: rgb(var(--chalk) / 0.12); color: var(--ink); transition: none; }
+.days:not([aria-disabled="true"]) .day-btn[aria-checked="true"]:active { border-color: rgb(var(--chalk) / 0.72); }
+.lang:active { box-shadow: inset 0 0 0 100vmax rgb(var(--chalk) / 0.1); transition: none; }
+.retry:not([aria-disabled="true"]):active { box-shadow: inset 0 3px 8px rgb(7 7 7 / 0.2); transition: none; }
 /* Each name holds its bold self's width (unseen), so picking a day never moves the row. */
 .day-btn::before { content: attr(data-label); display: block; height: 0; overflow: hidden; visibility: hidden; font-weight: 600; }
 /* Where a name would not stand in an equal button with air on both sides («خميس» on the phone; public.js, fitDays),
@@ -566,6 +646,28 @@ b { font-weight: 600; }
 :lang(ar) .day-btn[data-today]::after { width: 14px; height: 2px; margin-inline-start: -7px; border-radius: 1px; inset-block-end: 4px; }
 
 /* ---------------------------------------------------------------------------------------------------------------
+ * The tablet (600-1023 px; 768 x 1024 designed, a computer at 200% zoom checked): the phone's order, which suits a
+ * screen held in the hand, set at a tablet's sizes. The word grows with the width as far as the height allows (96 px at
+ * 768 x 1024, between the phone's 64 and the computer's 104), the card takes the computer's frame and bar width, its
+ * days the computer's 44 px, and the day takes the height a tall screen leaves it (up to 520 px; public.js, fit)
+ * instead of leaving it as air above the word and over the card. The facts keep the phone's two lines: at 768 one line
+ * would not hold the Arabic, and Live and every state keep the same rows.
+ * --------------------------------------------------------------------------------------------------------------- */
+@media (min-width: 600px) and (max-width: 1023.98px) {
+  .page { --fs-word: max(clamp(52px, calc(2.286vw + 55.1px), 88px), min(calc(6.25vw + 48px), 11vh)); }
+  .sign { grid-template-rows: minmax(24px, 0.5fr) auto minmax(32px, 0.5fr) auto; }
+  .sub { column-gap: 24px; row-gap: 14px; margin-block-start: 14px; }
+  .daycard { column-gap: 16px; padding: 24px 26px 22px; }
+  .readout { margin-block: 14px 24px; }
+  .dayfig { padding-block-end: 38px; }
+  .days { margin-block-start: 8px; }
+  .day-btn { height: 44px; }
+  .day-btn[data-today]::after { inset-block-end: 6px; }
+  :lang(ar) .day-btn[data-today]::after { inset-block-end: 5px; }
+  .slot { --bw: min(58%, 64px); }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
  * The computer: the phone's order, set for the width. The level word leads on a line of its own, at about four times
  * its facts, and the facts run as one line under it (sketch 13 set them beside the word, where the word read as their
  * label). The word's size follows the width and is held by the height, so a short screen keeps its day tall. The usual
@@ -590,12 +692,14 @@ b { font-weight: 600; }
   .sub { flex-wrap: nowrap; column-gap: clamp(24px, 2.2vw, 40px); margin-block-start: calc(var(--fs-word) * 0.16); }
   .facts { flex-basis: auto; }
   .daycard {
-    grid-template-columns: auto auto minmax(0, 1fr) auto;
-    grid-template-areas: "title hours . read" "fig fig fig fig" "days days days days";
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-areas: "title hours read" "fig fig fig" "days days days";
     column-gap: 16px;
     padding: 26px 28px 24px;
   }
-  /* The card's answer reads at a size of its own on the computer (18 px on the phone, 20 at 1440, 22 past 1900). */
+  /* The card's answer reads at a size of its own on the computer (18 px on the phone, 20 at 1440, 22 past 1900). It
+   * takes the head's room after the name and hours and sets its words at the end, so its box is the same whatever it
+   * says (a placeholder, an answer, a pick) and a change of words moves nothing. */
   .readout { margin: 0; justify-content: flex-end; text-align: end; font-size: clamp(18px, calc(0.45vw + 13.5px), 22px); line-height: 1.3; }
   .readout .ic { width: 18px; height: 18px; margin-block-start: 0.2em; }
   .dayfig { margin-block-start: 28px; padding-block-end: 40px; }
@@ -645,6 +749,9 @@ b { font-weight: 600; }
 .page[data-keys] .slot *, .page[data-keys] .slot *::before, .page[data-keys] .slot *::after, .page[data-keys] .day-btn,
 .page[data-keys] :is(.word, .facts, .vs),
 .page[data-drag] .slot *, .page[data-drag] .slot *::before, .page[data-drag] .slot *::after { transition: none; }
+/* A day picked while the bars still move (another pick's, or the arrival's): the heights carry on from where they are
+ * on the strong ease-out, as the places and widths do (public.js, show; motion review F2), never from rest. */
+.page .bars[data-on] :is(.u, .lv, .cap, .pk, .rk) { transition-timing-function: var(--ease-enter); }
 
 @keyframes drift { 0% { translate: 0 0; } 25% { translate: -23px 17px; } 50% { translate: 31px -9px; } 75% { translate: -11px -27px; } 100% { translate: 0 0; } }
 @keyframes rise { from { translate: 0 0; } to { translate: 0 -120px; } }
@@ -660,7 +767,12 @@ b { font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) {
   .page .slot :is(.u, .lv, .cap, .pk, .rk) { transition: none; } /* outweighs the red's own rule off today */
+  /* The red still fades as it goes and comes (motion review F6): opacity only, nothing moves. */
+  .page .slot:not([data-when="now"]) .lv { transition: opacity 140ms var(--ease-enter), visibility 0s 140ms; }
+  .page .slot[data-when="now"] .lv { transition: opacity 140ms var(--ease-enter), visibility 0s; }
+  .page[data-keys] .slot .lv, .page[data-drag] .slot .lv { transition: none; }
   .cap::before { transition: background-color var(--t-ui) ease; }
-  .ring, .slot[data-quietest] .ring { scale: 1; transition: opacity 200ms ease; }
+  .ring { scale: 1; transition: opacity 140ms var(--ease-enter); }
+  .slot[data-quietest] .ring { scale: 1; transition: opacity 200ms var(--ease-enter); }
   .slot[data-when="now"] .lv::after, .dot::after { animation: none; }
 }
