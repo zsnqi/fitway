@@ -37,6 +37,11 @@ For a fresh `owner-direction-builder` (Opus, high). The decision is made; build 
 
 - **<X>1.** <The cause, with `path:line`.> Outcome: <what the rendered page shows, at which sizes and states>.
 
+<For an outcome that is behaviour in code (logic, data, a state), name its seam: where the check sits and what it
+catches. Write that check first, show its failing run, then the change and the passing run; never weaken an existing
+assertion to pass. For a visual outcome, the proof is the frame or measurement named above, fixed before you start.>
+(agent-tooling DECISIONS item 25; Matt Pocock's and pstack's `tdd`)
+
 ## Frames
 
 Render with `pnpm verify:owner drive` for a page with recipes, or `pnpm verify:owner frames` and
@@ -54,7 +59,7 @@ You may change `<paths>`; commit when done. Do not redesign beyond the decision;
 
 ## Report
 
-Each outcome PASS or FAIL with its evidence; the frame paths, numbered; the files you changed; the commit SHA;
+Each outcome PASS or FAIL with its evidence; each named seam's failing and passing runs; the frame paths, numbered; the files you changed; the commit SHA;
 anything you could not do; anything the brief's rules produce that reads wrong, with the rule named
 (WORKING_AGREEMENTS "Rules and findings"). At most 40 lines.
 

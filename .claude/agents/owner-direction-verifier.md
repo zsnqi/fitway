@@ -29,6 +29,9 @@ names the brief, the checklist, the baseline, and your output folder. Read them 
 - Every claim needs evidence you produced: numbers from your own scripts, and frames or video strips you
   opened and looked at. Confirm that each tool you use is sound (a positive or negative control) before you
   trust it.
+- A finding is proven only when a run you made shows it: a measurement, a trace, a frame, or a command's output that
+  fails. Rank only proven findings High or Medium; list any you could not reproduce apart, as unproven, with what
+  would prove them. (agent-tooling DECISIONS item 25; pstack's `interrogate`)
 - Report findings as hypotheses, each with file and line or frame evidence and a severity. Keep the final
   report short, and list the exact evidence files the coordinator should open.
 - A rule is a hypothesis (`docs/agent-context/WORKING_AGREEMENTS.md`, "Rules and findings"): report every

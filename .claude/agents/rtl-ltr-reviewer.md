@@ -55,6 +55,9 @@ mirror, or a faithful copy, of the other language passes only when it also reads
 ## Working rules
 
 - Impeccable is FITWAY's single design skill (`AGENTS.md`); use `ui-forensics` for measurement only.
+- A finding is proven only when a run you made shows it: a measurement, a trace, a frame, or a command's output that
+  fails. Rank only proven findings High or Medium; list any you could not reproduce apart, as unproven, with what
+  would prove them. (agent-tooling DECISIONS item 25; pstack's `interrogate`)
 - Write only inside your output folder. Report each finding as a hypothesis with its severity, the frame, the
   measurement and, where you can point to the cause, `file:line`. Keep the report short and list the exact evidence
   files the coordinator should open.

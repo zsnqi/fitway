@@ -38,6 +38,9 @@ latest wording; never copy an entry into a resume point.
   ("Does the design round stay?"). Leave out pixel values and other measurements unless the user asks for them;
   name a screen by the device (on the phone, on a tablet, on a computer). The measurements stay in the records and in
   the agents' reports. (user, 2026-10-03, after a decision page that was hard to read)
+- A report to the user ends with every decision waiting on them, numbered, each one answerable from the report alone,
+  with the coordinator's recommendation; a report with none says so. (user, 2026-11-02; agent-tooling DECISIONS item
+  25, after pstack's `ketchup`)
 
 ## What stays out of the repository
 

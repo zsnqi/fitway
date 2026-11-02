@@ -52,7 +52,9 @@ check no command makes.
 
 ## Report
 
-The table with PASS, FAIL or NOT RUN and one line of evidence each; for each FAIL a hypothesis with `file:line`;
+The table with PASS, FAIL or NOT RUN and one line of evidence each; for each FAIL a hypothesis with `file:line` and
+the run that proves it (findings no run reproduces listed apart, as unproven); for a test the round added, its run
+against the round's base (it must fail) and against the result (it must pass);
 what you could not run and why; anything that reads or behaves wrong though it passes its check or meets its rule,
 with the rule named as the suspect (WORKING_AGREEMENTS "Rules and findings"). At most 50 lines.
 
