@@ -66,3 +66,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 57. **The reading-direction review, the specification, and the coordinator's calls for the fix round** `decisions/041-060.md`
 58. **The fix round, and the final verifier** `decisions/041-060.md`
 59. **The final verifier's result, and the coordinator's calls for the last fix round** `decisions/041-060.md`
+60. **The last fix round in; the page finished for the user's read** `decisions/041-060.md`

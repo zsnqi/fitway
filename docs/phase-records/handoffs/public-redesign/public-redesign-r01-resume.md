@@ -3,8 +3,8 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-02 (sketch 14 reviewed;
   sketch 15 reviewed; the arrival fixed for Brave; the font fix done; sketch 16 and its hours and axis rounds built,
-  items 52-53; the overnight sequence running, item 54; the fix round in, item 58; the final verifier read, item 59)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-59; 59 last), and the founding
+  items 52-53; the overnight sequence running, item 54; the fix round in, item 58; the final verifier read, item 59; the last fix round in, item 60)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-60; 60 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -23,9 +23,8 @@
 
 The overnight sequence (item 54): the motion review, the Arabic round (item 55), the states and sizes round (item
 56), the direction review and the specification (`6fd18e53`, item 57) and the fix round (`5951ae53`, item 58) done;
-the final verifier (`review-public-final-44.md`, item 59) done; now its fixes
-(`docs/phase-records/handoffs/public-redesign/briefs/designer-public-final-fixes-45.md`, run
-`D:/fitway-temp/public-redesign-r01-final-fixes-45/`); then the coordinator's check of its frames, and the report; and the
+the final verifier (`review-public-final-44.md`, item 59) and its fixes (`748c2a7c`, item 60) done; the page waits on
+the user's read of the report and item 60's open points; and the
 user's page server (port 3181,
 Terminal tab). Public branch `public-redesign-r01` at `public.*` (item 55) on sketch 16 with the
 axis round (`0fad27b9`, item 53), the hours round (`77d2469b`, `89d2996d`, item 52) and its build (`0fca4c0e`, item 51), on sketch 15 with the Brave fix (`2c911cb1`) and the font fix (`1593df75`), on Markdown-only record

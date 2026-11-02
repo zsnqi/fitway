@@ -87,7 +87,8 @@ Before it, measured 2026-10-31 23:56: main `9a81a355` (`pnpm main:advance`, afte
    2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once). From 2026-10-31: F307 (`sheet` needs `-- --` under
    pnpm), F308 (the sheet title is small); F309 fixed (`f5198aa3`). From 2026-11-02: F310 (an unquoted
    script path with a space passes the brief rule), F311 (the designer phrase rule still refuses the repository's own
-   `node scripts/...`).
+   `node scripts/...`), F312 (`frames` reported PASS for a frame whose stylesheet failed to load,
+   `ERR_NO_BUFFER_SPACE`, and `run` measured that unstyled page; clean on re-run; public-redesign item 60).
 8. **The renewed leases end on 2026-11-15** (`package.json` scripts, the README map, `lefthook.yml`): renew or drop them then, with
    the giant-file exceptions of step 5.
 
