@@ -92,9 +92,27 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-Their look at `?grain=`, the hover and the Now
-readout, a check of the font loading on their Android phone, and, after the motion review reruns, whether the motion
-trial's rule change is proposed (item 47).
+The user opens a new session on 2026-11-03 and continues from this list, in this order (item 60):
+
+1. **Show pictures, then ask.** They will not decide these from text. Render `748c2a7c` and put the frames in front
+   of them, in plain words:
+   - the Live stamp's movement along its line on arrival (PUB-140): Loading beside Live at Quiet, Moderate and Packed,
+     on the phone and the computer, and the alternative's cost (the widest comparison's room held);
+   - the four calls kept for now: Unavailable's word at Error's size, the Live stamp on its own line at 320, Closed
+     without the day's first hour, the proportional figures (the count's small sideways change).
+2. **Agreed, not started; start only when they say so in that session:** the fix for Arabic Unavailable at 320 (81 px
+   empty above the card, PUB-141), then a second independent verifier on the result. Accepted already: the 1023 px
+   window's scroll.
+3. **Explain `statechart`** (pstack, TLA+) in plain words, and what it could do for the page's six states at a production
+   move, before they decide whether to keep it as a note (agent-tooling item 25).
+4. **Still open from the overnight run:** the page itself, on their phone and computer (they check it that day);
+   Arabic ranges from the right against DAT-3 for the family; the English week starting Sunday; `font-display:
+   optional`; the concept label and «نحو 70 في الصالة» departures; AMD-P1 to AMD-P6; and the motion trial's rule
+   change, a proposal only (item 47: the interactions met `STANDARDS.md` after their fixes).
+
+The phone page's server was started in Terminal tab c2 of the previous session (the `public-redesign-lan` command in
+"Running now"); check it answers, and the PC's address, before giving the link. The agent definitions' new rules
+(agent-tooling item 25) apply from that session on.
 
 ## Known risks
 
