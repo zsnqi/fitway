@@ -2,7 +2,7 @@
 # agent-tooling-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-02 (item 24: round
-  working-tools merged, `a66e5955`; CI and `main:advance` next)
+  working-tools merged, `a66e5955`; main advanced to `68b2c20d` after CI run 41403907289 passed)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-24; 24 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -27,8 +27,9 @@
 **Round working-tools is merged** (`a66e5955`, DECISIONS item 24, record
 `docs/phase-records/handoffs/agent-tooling/rounds/working-tools.md`): `pnpm verify:owner serve`, free sizes,
 `frames --actions` and `--clip`, `run`'s `ready` and `shot`, `measure --page` and `--args-file`, SKILL.md §"CLI
-working loop", and `pnpm brief:check` refusing a designer, builder or verifier brief that points at raw tools. The
-pushed coordinator line's CI run decides `pnpm main:advance`; the public page's session was told the round is in.
+working loop", and `pnpm brief:check` refusing a designer, builder or verifier brief that points at raw tools. CI run
+41403907289 passed on `68b2c20d`, and `pnpm main:advance` moved main there on 2026-11-02; the public page's session
+was told the round is in.
 
 Before it, measured 2026-10-31 23:56: main `9a81a355` (`pnpm main:advance`, after CI run
 41238840993 passed; the run before it, 41238198065, failed on a `frames` test that needed ui-forensics, repaired in
