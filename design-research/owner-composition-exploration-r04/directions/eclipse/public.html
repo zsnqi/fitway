@@ -6,14 +6,16 @@
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#070707">
   <title>FITWAY</title>
-  <meta name="description" content="FITWAY public crowd page, the draft from direction B (public-redesign-r01). Concept only, synthetic data, a still. Not production.">
+  <meta name="description" content="FITWAY public crowd page (public-redesign-r01): sketch 16 as the page's own files, Arabic by default and English at ?lang=en. The live reading over the usual day with now on it, the quietest time left, other days. Concept only, synthetic data. Not production.">
+  <link rel="preload" href="fonts/readex-pro-arabic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/readex-pro-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="public.css">
 </head>
 <body>
-  <div class="page" data-level="3" data-mark="1">
+  <div class="page" data-level="busy">
     <div class="light" aria-hidden="true"></div>
     <header class="top">
-      <span class="brand" lang="en">
+      <span class="brand" lang="en" dir="ltr">
         <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
           <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
           <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
@@ -22,23 +24,13 @@
         </svg>
         <span class="wordmark">FITWAY</span>
       </span>
-      <a class="lang" href="#" lang="en">English</a>
+      <span class="top-end">
+        <span class="concept concept-top">مفهوم استكشافي · بيانات افتراضية</span>
+        <a class="lang" href="?lang=en" lang="en" hreflang="en">English</a>
+      </span>
     </header>
-
-    <main class="sign">
-      <h1 class="word" data-probe="word"><span class="sr-only">الازدحام الآن: </span><span data-k="word">مزدحم</span></h1>
-      <div class="mark" role="img" aria-label="مستوى الازدحام: مزدحم" data-k="mark" data-probe="mark">
-        <i aria-hidden="true"><span>هادئ</span></i><i aria-hidden="true"><span>متوسط</span></i><i aria-hidden="true"><span>مزدحم</span></i><i aria-hidden="true"><span>شديد الازدحام</span></i>
-      </div>
-      <div class="facts" data-probe="facts">
-        <p class="count-line"><bdi class="num count" data-k="count">70</bdi> داخل الصالة الآن · تقريبًا</p>
-        <p class="open">مفتوح حتى <bdi class="num">1:00</bdi>&nbsp;ص</p>
-      </div>
-      <footer class="stamp" data-probe="stamp">
-        <p class="fresh"><i class="dot" aria-hidden="true"></i><span>مباشر · آخر قراءة <bdi class="num">7:41</bdi>&nbsp;م</span></p>
-        <p class="pct">نسبة الامتلاء <bdi class="num" data-k="pct">58%</bdi></p>
-      </footer>
-    </main>
+    <main class="sign" id="sign"></main>
+    <p class="concept concept-foot">مفهوم استكشافي · بيانات افتراضية</p>
   </div>
   <script src="public.js"></script>
 </body>
