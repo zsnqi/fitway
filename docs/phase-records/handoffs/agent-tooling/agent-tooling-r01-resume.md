@@ -2,7 +2,7 @@
 # agent-tooling-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-02 (item 24: round
-  working-tools under way)
+  working-tools merged, `a66e5955`; CI and `main:advance` next)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-24; 24 last), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -24,11 +24,11 @@
 
 ## Running now
 
-**Round working-tools** (DECISIONS item 24; the user asleep and asked for it to run to the end): brief
-`docs/phase-records/handoffs/agent-tooling/briefs/codex-working-tools.md`, worktree
-`D:/Projects/fitway-worktrees/tooling-working-tools` from `f5198aa3`, run folder
-`D:/fitway-temp/codex-round-working-tools`; brief reviews in `D:/fitway-temp/brief-review/codex-working-tools-1`
-and `-1-sol`. The public page's session (`public-redesign-r01`) waits idle until this round is merged and told.
+**Round working-tools is merged** (`a66e5955`, DECISIONS item 24, record
+`docs/phase-records/handoffs/agent-tooling/rounds/working-tools.md`): `pnpm verify:owner serve`, free sizes,
+`frames --actions` and `--clip`, `run`'s `ready` and `shot`, `measure --page` and `--args-file`, SKILL.md §"CLI
+working loop", and `pnpm brief:check` refusing a designer, builder or verifier brief that points at raw tools. The
+pushed coordinator line's CI run decides `pnpm main:advance`; the public page's session was told the round is in.
 
 Before it, measured 2026-10-31 23:56: main `9a81a355` (`pnpm main:advance`, after CI run
 41238840993 passed; the run before it, 41238198065, failed on a `frames` test that needed ui-forensics, repaired in
@@ -75,8 +75,8 @@ Before it, measured 2026-10-31 23:56: main `9a81a355` (`pnpm main:advance`, afte
    paths or worktree.
 4. F303 as a round of its own when a later round touches the ratchet: compare a commit's baseline with its parent's,
    merges included.
-5. **Measure again** after sessions have used the new tools: `D:/fitway-temp/retro-20261028/measure.mjs`,
-   `D:/fitway-temp/retro-20261028/patterns.mjs` and the survey's script count.
+5. **Measure again** after sessions have used the working-tools commands: `D:/fitway-temp/retro-20261102-nav/`
+   (`measure-periods.mjs` with a new period from `a66e5955`, and `p2-tools.mjs`), against item 24's numbers.
 6. **Five dated `giantFiles` exceptions until 2026-11-15** (`compare.mjs`, `cli.test.mjs`, `check-brief.test.ts`,
    `check-agent-context.test.ts`, `verify-repository.schema.test.ts`; F290): renew or retire them before that date.
    When `compare.mjs`'s is retired, its purpose line goes on its first line (leading-comments left it out: a
@@ -84,7 +84,9 @@ Before it, measured 2026-10-31 23:56: main `9a81a355` (`pnpm main:advance`, afte
 7. F-rows from the four rounds: the survey's `collectGit` takes about 11 minutes; gone paths print lower-cased; a
    citation stops at a space; the giant measure reads working-tree bytes (a CRLF checkout counts more). From
    2026-10-29: F301 (round8b R7's cleanup EPERM on CI, once). From 2026-10-31: F307 (`sheet` needs `-- --` under
-   pnpm), F308 (the sheet title is small), F309 (the designer definition's "repository Playwright", the user's word).
+   pnpm), F308 (the sheet title is small); F309 fixed (`f5198aa3`). From 2026-11-02: F310 (an unquoted
+   script path with a space passes the brief rule), F311 (the designer phrase rule still refuses the repository's own
+   `node scripts/...`).
 8. **The renewed leases end on 2026-11-15** (`package.json` scripts, the README map, `lefthook.yml`): renew or drop them then, with
    the giant-file exceptions of step 5.
 

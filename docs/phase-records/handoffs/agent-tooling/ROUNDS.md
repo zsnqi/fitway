@@ -145,3 +145,4 @@ in `docs/phase-records/handoffs/agent-tooling/rounds/<round>.md`, listed here.
 - agent-tooling-r01 lease-ends: `briefs/codex-lease-ends.md`, result `bb5163a4` (level max, one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/lease-ends.md`
 - agent-tooling-r01 evidence-gate: `briefs/codex-evidence-gate.md`, result `9a8a398b` (level max, one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/evidence-gate.md`
 - agent-tooling-r01 public-frames: `briefs/codex-public-frames.md`, result `45e66009` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/public-frames.md`
+- agent-tooling-r01 working-tools: `briefs/codex-working-tools.md`, result `ca0e12da` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/working-tools.md`
