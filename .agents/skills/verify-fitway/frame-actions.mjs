@@ -52,7 +52,9 @@ export async function applyFrameActions(ui, page, actions, input) {
 
 // Screenshot clips are document coordinates. The selector's box is viewport
 // geometry, so clamp it to the visible viewport before adding the scroll offset.
-export async function frameClip(page, selector, padding = 8) {
+// The box is widened by 8 CSS px on each side (W3).
+export async function frameClip(page, selector) {
+	const padding = 8;
 	const locator = page.locator(selector).first();
 	const box = await locator.boundingBox();
 	if (!box)

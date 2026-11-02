@@ -188,14 +188,15 @@ it refuses malformed, missing, empty-label and unreadable frame inputs before re
 ## CLI working loop
 
 Use these from the checkout root in PowerShell. `serve` accepts `--concept <concept-folder>` in
-place of `--ref <commit>`; the other commands accept either form too. Keep the `--` before a
-`run` script's arguments or a measure tool's arguments.
+place of `--ref <commit>`; the other commands accept either form too. pnpm consumes one
+forwarding separator, so a `run` script's arguments and a measure tool's arguments follow
+`-- --`, as in the `sheet` examples above.
 
 ```powershell
 pnpm verify:owner serve --ref <commit> --port <port> --lan --idle-timeout-ms <milliseconds>
 pnpm verify:owner frames --ref <commit> --page <page> --languages <languages> --sizes '<width>x<height>@<density>' --states '<key=value&...>' --clip '<css>' --port <pair-first-port> --out <run-folder>/frames
 pnpm verify:owner frames --ref <commit> --page <page> --languages <languages> --sizes '<width>x<height>@<density>' --states '<key=value&...>' --actions 'click=<css>;wait=<milliseconds>' --clip '<css>' --port <pair-first-port> --out <run-folder>/frames
-pnpm verify:owner run --script <script-file> --ref <commit> --port <pair-first-port> --out <run-folder>/run -- <script-arguments>
+pnpm verify:owner run --script <script-file> --ref <commit> --port <pair-first-port> --out <run-folder>/run -- -- <script-arguments>
 pnpm verify:owner measure --tool motion --ref <commit> --page <page> --query '<key=value&...>' --port <pair-first-port> --args-file <json-file> --out <run-folder>/motion
 ```
 

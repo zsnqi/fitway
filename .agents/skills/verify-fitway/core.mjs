@@ -442,6 +442,20 @@ export function comparisonPorts(options, command = "compare") {
 	return ports;
 }
 
+// A command that serves one concept on a pair names the pair by its first port
+// (3176 when no port is given); the refusal names the command.
+export function firstPortPair(value, command) {
+	const port = value ?? 3176;
+	const firsts = verificationPairs.map(([first]) => first);
+	const pair = verificationPairs.find(([first]) => first === Number(port));
+	if (!pair)
+		throw new ToolStartupError(
+			`${command} requires a pair's first port: ${firsts.join(", ")}; received ${port}.`,
+			`pass --port ${firsts.slice(0, -1).join(", ")} or ${firsts.at(-1)}`,
+		);
+	return pair;
+}
+
 const leaseRoot = "D:/fitway-verify-captures";
 const leaseFolder = (port) => resolve(leaseRoot, `.port-${port}-lease`);
 export async function checkVerificationLease(port, lease) {

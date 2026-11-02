@@ -1,24 +1,22 @@
 // Rewrite and run concept scripts inside isolated previews with requested browser axes.
 import { existsSync, readFileSync } from "node:fs";
-import { writeFile } from "node:fs/promises";
 import { relative, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { resolveCommandConcepts } from "./concept-source.mjs";
 import {
 	canonical,
 	comparisonPorts,
+	firstPortPair,
 	inside,
 	jsonOutput,
 	outputFile,
 	preview,
 	reserveVerificationPorts,
-	verificationPairs,
-	verificationPort,
 } from "./core.mjs";
 import { contextOptions } from "./drive-plan.mjs";
 import { frameClip } from "./frame-actions.mjs";
 import { parseFrameSizes } from "./frame-plan.mjs";
-import { captureViewport, waitForViewport } from "./viewport-capture.mjs";
+import { saveViewport, waitForViewport } from "./viewport-capture.mjs";
 
 export function newPageContextOptions(axes, sizes) {
 	const parsed = parseFrameSizes(String(axes.size), sizes);
@@ -38,13 +36,7 @@ export function newPageContextOptions(axes, sizes) {
 export function runPorts(options) {
 	if (options.baseline || options["baseline-ref"])
 		return comparisonPorts(options, "run");
-	const first = verificationPort(options.port ?? 3176);
-	const pair = verificationPairs.find(([port]) => port === first);
-	if (!pair)
-		throw new Error(
-			`run with one concept requires a pair's first port: ${verificationPairs.map(([port]) => port).join(", ")}; received ${first}.`,
-		);
-	return pair;
+	return firstPortPair(options.port, "run with one concept");
 }
 
 function pagePlan(setup, rawUrl) {
@@ -231,14 +223,9 @@ function runApi(runtime) {
 		const target = await outputFile(runtime.out, file);
 		const clipBox =
 			clip === undefined ? undefined : await frameClip(page, String(clip));
-		const png = await captureViewport(ui, page, { clip: clipBox });
-		await writeFile(target, png);
-		const decoded = ui.decodePNG(png);
 		return {
 			file,
-			pngWidth: decoded.w,
-			pngHeight: decoded.h,
-			pixelHash: ui.pixelHash(decoded),
+			...(await saveViewport(ui, page, target, { clip: clipBox })),
 		};
 	};
 	return {

@@ -1044,8 +1044,8 @@
 			"expectCalls": 542
 		},
 		"scripts/agent-environment": {
-			"testCases": 401,
-			"expectCalls": 1149
+			"testCases": 403,
+			"expectCalls": 1151
 		},
 		"scripts/demo": {
 			"testCases": 17,

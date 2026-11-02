@@ -146,7 +146,13 @@ export const OWNER_NOTES = Object.freeze([
 	`  pnpm --dir '${repository.replaceAll("'", "''")}' install --frozen-lockfile`,
 ]);
 
-function workingCommandEntries({ ownerOptions, flag, value, exits }) {
+function workingCommandEntries({
+	ownerOptions,
+	flag,
+	value,
+	exits,
+	idleTimeout,
+}) {
 	const serve = {
 		name: "serve",
 		usage:
@@ -160,11 +166,7 @@ function workingCommandEntries({ ownerOptions, flag, value, exits }) {
 				integer: [1024, 65535],
 			}),
 			flag("--lan", "Listen on all network interfaces."),
-			value("--idle-timeout-ms", "Idle timeout in milliseconds.", {
-				sample: "60000",
-				integer: [1, 1800000],
-				valueNote: "at most 30 minutes",
-			}),
+			idleTimeout,
 		],
 		requiredOptions: ["--port"],
 		requiredOptionGroups: [["--concept", "--ref"]],
@@ -272,7 +274,23 @@ function publicFrameCommands({ ownerOptions, value, exits }) {
 }
 
 export function ownerTailCommands({ ownerOptions, flag, value, exits }) {
-	const working = workingCommandEntries({ ownerOptions, flag, value, exits });
+	// serve and the internal _serve take the same idle timeout.
+	const idleTimeout = value(
+		"--idle-timeout-ms",
+		"Idle timeout in milliseconds.",
+		{
+			sample: "60000",
+			integer: [1, 1800000],
+			valueNote: "at most 30 minutes",
+		},
+	);
+	const working = workingCommandEntries({
+		ownerOptions,
+		flag,
+		value,
+		exits,
+		idleTimeout,
+	});
 	return [
 		working.serve,
 		...publicFrameCommands({ ownerOptions, value, exits }),
@@ -297,11 +315,7 @@ export function ownerTailCommands({ ownerOptions, flag, value, exits }) {
 				ownerOptions.port,
 				flag("--lan", "Listen on LAN."),
 				value("--token", "Session token."),
-				value("--idle-timeout-ms", "Idle timeout in milliseconds.", {
-					sample: "60000",
-					integer: [1, 1800000],
-					valueNote: "at most 30 minutes",
-				}),
+				idleTimeout,
 			],
 			requiredOptions: ["--concept"],
 			internal: true,

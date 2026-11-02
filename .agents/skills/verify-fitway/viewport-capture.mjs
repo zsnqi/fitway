@@ -1,4 +1,6 @@
 // Readiness and viewport capture shared by drive and recipe-free frame capture.
+import { writeFile } from "node:fs/promises";
+
 export function prepareViewport(ui, page, url, ready) {
 	return ui.preparePage(page, url, {
 		readyJs: ready,
@@ -21,4 +23,16 @@ export function captureViewport(ui, page, { clip } = {}) {
 		fullPage: false,
 		animations: "allow",
 	});
+}
+
+// Shoot the viewport (or clip), write the PNG to target and return its size and pixel hash.
+export async function saveViewport(ui, page, target, { clip } = {}) {
+	const png = await captureViewport(ui, page, { clip });
+	await writeFile(target, png);
+	const decoded = ui.decodePNG(png);
+	return {
+		pngWidth: decoded.w,
+		pngHeight: decoded.h,
+		pixelHash: ui.pixelHash(decoded),
+	};
 }

@@ -1,16 +1,10 @@
 // Refuse measurement arguments that bypass the launcher's output or preview.
 import { readFileSync } from "node:fs";
 import { ToolStartupError } from "../../../scripts/agent-environment/tool-contract.mjs";
-import { verificationPairs } from "./core.mjs";
+import { firstPortPair } from "./core.mjs";
 
-export function measurePagePort(value = 3176) {
-	const port = Number(value);
-	if (!verificationPairs.some((pair) => pair[0] === port))
-		throw new ToolStartupError(
-			`measure --page requires the first port of a verification pair: ${value}`,
-			"pass measure --port 3176, 3186 or 3188",
-		);
-	return port;
+export function measurePagePort(value) {
+	return firstPortPair(value, "measure --page")[0];
 }
 
 export function measurePageUrl(origin, page, query) {

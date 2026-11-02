@@ -1,5 +1,4 @@
 // Capture the exact public frames a designer brief names, without state recipes.
-import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { openCaptureLifecycle } from "./capture-lifecycle.mjs";
@@ -14,7 +13,7 @@ import {
 import { contextOptions } from "./drive-plan.mjs";
 import { applyFrameActions, frameClip } from "./frame-actions.mjs";
 import { framePlan } from "./frame-plan.mjs";
-import { captureViewport, prepareViewport } from "./viewport-capture.mjs";
+import { prepareViewport, saveViewport } from "./viewport-capture.mjs";
 
 function frameEntry(frame, page) {
 	return {
@@ -102,12 +101,15 @@ async function captureFrame(options, setup, plan, ui, runtime, frame) {
 			frame.clip === undefined
 				? undefined
 				: await frameClip(current.page, frame.clip);
-		const png = await captureViewport(ui, current.page, { clip });
-		const decoded = ui.decodePNG(png);
-		await writeFile(await outputFile(options.out, frame.file), png);
-		entry.pngWidth = decoded.w;
-		entry.pngHeight = decoded.h;
-		entry.pixelHash = ui.pixelHash(decoded);
+		Object.assign(
+			entry,
+			await saveViewport(
+				ui,
+				current.page,
+				await outputFile(options.out, frame.file),
+				{ clip },
+			),
+		);
 	} catch (error) {
 		entry.errors.push(error.message);
 	} finally {

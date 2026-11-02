@@ -15,9 +15,7 @@ import {
 import { parseBriefFormat } from "./brief-format.mjs";
 import { readIndexFiles } from "./check-staged-giant-files.mjs";
 import { readGit } from "./code-health-ratchet.mjs";
-import { designerBriefProblems } from "./designer-brief.mjs";
-
-const WORKFLOW_ROLES = new Set(["designer", "builder", "verifier"]);
+import { DESIGN_WORK_ROLES, designerBriefProblems } from "./designer-brief.mjs";
 
 function readGitResult(root, args, options = {}) {
 	return readGit(root, args, options);
@@ -73,7 +71,7 @@ function lostEvidenceRows(root) {
 
 function designerFileProblems(root, file, text, newFiles) {
 	const role = parseBriefFormat(text).role;
-	if (!WORKFLOW_ROLES.has(role)) return [];
+	if (!DESIGN_WORK_ROLES.has(role)) return [];
 	const lines = newFiles.has(file) ? undefined : addedLines(root, file);
 	if (lines && !lines.size) return [];
 	return designerBriefProblems(text, {

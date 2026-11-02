@@ -230,3 +230,74 @@ C:/Users/Pc Force/.agents/skills/ui-forensics/scripts/web/motion.mjs
 		).toEqual([]);
 	});
 });
+
+describe("design-work briefs that discuss code or run tracked scripts", () => {
+	const fixThreeLines = [
+		"3. **Sol 3 (D7).** `servePort` in `.agents/skills/verify-fitway/serve-command.mjs` validates `--port`'s range a second",
+		"   time beside the registry's option contract. The registry's `serve --port` descriptor carries the range 1024-65535",
+		"   and the shared contract refuses a value outside it; `serveCommand` reads the number it is given.",
+	].join("\n");
+	const checksLines = [
+		"From the worktree root in PowerShell: `pnpm test:verification`, `node scripts/run-vitest.mjs run",
+		"scripts/agent-environment/designer-brief.test.ts scripts/agent-environment/check-staged-briefs.test.ts`,",
+		"`pnpm check:tooling-map` (regenerate with `pnpm map:tooling` if the map changed), `pnpm check:code-health`, then",
+	].join("\n");
+
+	it.each([
+		["fix 3's lines", fixThreeLines],
+		["the Checks line", checksLines],
+		[
+			"a fenced repository script",
+			"```powershell\nnode .agents/skills/verify-fitway/cli.mjs help\n```",
+		],
+	])("allows %s in a builder brief", async (_name, body) => {
+		const result = await check("builder", body);
+		expect(result.ok, formatBriefResult(result)).toBe(true);
+	});
+
+	it.each([
+		[
+			"a fenced temp server",
+			"```powershell\nnode D:/fitway-temp/x/serve.mjs\n```",
+			"starts its own server",
+		],
+		[
+			"a fenced temp script",
+			"```powershell\nnode D:/fitway-temp/x/check.mjs\n```",
+			"runs a script directly",
+		],
+		[
+			"a profile script",
+			'Run `node "C:/Users/Pc Force/tools/shot.mjs"`.',
+			"runs a script directly",
+		],
+		[
+			"a single-quoted temp script",
+			"Run `node 'D:/fitway-temp/x/check.mjs'`.",
+			"runs a script directly",
+		],
+		[
+			"a home-folder script",
+			"Run `node ~/tools/shot.mjs`.",
+			"runs a script directly",
+		],
+		[
+			"a script escaping scripts/",
+			"Run `node scripts/../../x/shot.mjs`.",
+			"runs a script directly",
+		],
+		[
+			"serve guidance in prose",
+			"Then serve the page on port 4100.",
+			"without the maintained command",
+		],
+	])("still refuses %s", async (_name, body, message) => {
+		const result = await check("builder", body);
+		expect(
+			result.problems.some((problem: { message: string }) =>
+				problem.message.includes(message),
+			),
+			formatBriefResult(result),
+		).toBe(true);
+	});
+});

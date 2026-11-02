@@ -43,7 +43,7 @@ Counts: 137 files, 0 without a leading comment.
 - `comparison-capture.mjs`: Comparison measures a reproducible picture after the user flow. Exports: `captureComparison`, `ComparisonCaptureError`, `comparisonParts`, `observeComparisonFrames`, `settleComparison`.
 - `concept-fixture.mjs`: Build the minimal authored concept fixture and write it for tests. Exports: `authored`, `html`, `js`, `writeConcept`.
 - `concept-source.mjs`: Resolve verify-fitway concept and recipe folders from build or baseline options. Exports: `resolveCommandConcepts`, `resolveConceptSide`.
-- `core.mjs`: Provide verify-fitway output, preview, port, session, and filesystem primitives. Exports: `assertOutsideGit`, `canonical`, `checkVerificationLease`, `claimResource`, `comparisonPorts`, `defaultLanAddresses`, `finishOutputManifest`, `freshEmptyOutput`, `freshOutput`, `inside`, `jsonOutput`, `lanOrigins`, `outputFile`, `ownedSession`, `parsePortOwners`, `portAvailable`, `portOwners`, `preview`, `ReportedFailure`, `reserveVerificationPorts`, `shortFinding`, `verificationPairNames`, `verificationPairs`, `verificationPort`.
+- `core.mjs`: Provide verify-fitway output, preview, port, session, and filesystem primitives. Exports: `assertOutsideGit`, `canonical`, `checkVerificationLease`, `claimResource`, `comparisonPorts`, `defaultLanAddresses`, `finishOutputManifest`, `firstPortPair`, `freshEmptyOutput`, `freshOutput`, `inside`, `jsonOutput`, `lanOrigins`, `outputFile`, `ownedSession`, `parsePortOwners`, `portAvailable`, `portOwners`, `preview`, `ReportedFailure`, `reserveVerificationPorts`, `shortFinding`, `verificationPairNames`, `verificationPairs`, `verificationPort`.
 - `diff-folders.mjs`: Compare PNG folders and write folder image differences. Exports: `diffFolders`.
 - `discover.mjs`: Load verify-fitway dependencies and discover page elements and imports. Exports: `discoverElements`, `extractDependencies`, `lineAt`, `repository`, `requireDependency`, `ts`.
 - `drift-tree.mjs`: Extract declared concepts, check recipe maps, and verify drift in temporary trees. Exports: `checkVerificationMaps`, `CONCEPT_EXTRACTION_ROOT`, `CONCEPT_SOURCE`, `extractDeclaredConcept`.
@@ -74,7 +74,7 @@ Counts: 137 files, 0 without a leading comment.
 - `state-rules.mjs`: Validate and match recipe state transitions by language and query. Exports: `endedWhenKeys`, `matchesStateRule`, `stateWhenKey`, `validateStateRules`.
 - `timeline-times.mjs`: Parse comma-separated timeline capture times into sorted milliseconds. Exports: `timelineTimes`.
 - `timeline.mjs`: Observe and advance page clocks for deterministic timeline captures. Exports: `captureTimeline`, `observeTimeline`, `timelineTimes (from .agents/skills/verify-fitway/timeline-times.mjs)`.
-- `viewport-capture.mjs`: Readiness and viewport capture shared by drive and recipe-free frame capture. Exports: `captureViewport`, `prepareViewport`, `waitForViewport`.
+- `viewport-capture.mjs`: Readiness and viewport capture shared by drive and recipe-free frame capture. Exports: `captureViewport`, `prepareViewport`, `saveViewport`, `waitForViewport`.
 - `worker-pool.mjs`: Run verification jobs concurrently while preserving input order and failure order. Exports: `runWorkers`.
 - `worker.mjs`: Run an unchanged Node tool with cancellation delivered inside its own process. Exports: none.
 
@@ -124,7 +124,7 @@ Counts: 137 files, 0 without a leading comment.
 - `codex-session.mjs`: Codex launch, resume, process streaming, and snapshots. Exports: `capture`, `prepareLaunch`, `prepareResume`, `recordRequiredChanges`, `recordStartLoad`.
 - `codex-standin-fixture.mjs`: Write and run a fake Codex executable for launcher tests. Exports: `runLauncher`, `writeCodexStandin`.
 - `commit-header.mjs`: Extract a commit SHA from terminal Git commit output. Exports: `commitHeaderSha`.
-- `designer-brief.mjs`: Refuse design-work briefs that ask their agent to build or call capture tooling directly. Exports: `designerBriefProblems`, `environmentMasked`.
+- `designer-brief.mjs`: Refuse design-work briefs that ask their agent to build or call capture tooling directly. Exports: `DESIGN_WORK_ROLES`, `designerBriefProblems`, `environmentMasked`.
 - `evidence-keep.mjs`: Copy selected evidence into the repository with hashes and source records. Exports: `EVIDENCE_LIMITS`, `evidenceOptions`, `keepEvidence`.
 - `fixtures.ts`: Create agent-context fixture repositories with packets, handoffs, and Git history. Exports: `fixture`, `git`, `gitFixture`, `HANDOFF`, `MARKED`, `MILESTONE`, `NOW`, `PACKET`, `put`, `TEMPLATE`.
 - `generate-tooling-map.mjs`: Generate or check the agent-tooling code map through the CLI contract. Exports: `toolingMapOptions`.
