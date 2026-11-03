@@ -105,7 +105,7 @@ After «خلصت», in rounds:
 
 3. **Carry item 61 onto the page**, changing the PUB records it touches, then a design round for the final form (colours, bar motion, English; English Friday «11 PM» is 1.4 px from the card's edge at 320; the 16 px hour against the 24 px touch target), then a second independent verifier. This covers item 60's Unavailable fix, widened by the audit.
 4. **Collected from their notes:** Arabic order at small phones needs rework; proportional figures; ranges from the right everywhere; the week starts Sunday; `font-display: optional`; keep «نحو 70 في الصالة» and remove «مفهوم استكشافي»; the `statechart` note; the narrow AGENTS.md design-skill amendment; hours under bars from opening, never mid-bar; the quietest hour named only by its circle; the quiet line («10 ص هادئ عادةً», «12 ص أقل زحمة عادةً», or hidden; never «لاحقًا» or «الآن»); no shadda in «تعذّر», «تحقّق», «تكرّر»; 6 px between «تحقق من الاتصال» and retry; change or delete «لا نعرض عددًا قديمًا»; the Owner pages' hours; Reports' nearly empty «معدّل الموجودين» card; a general review of text sizes and weights across states, with the audit's copy doubts.
-5. **CI:** the agent-tooling resume cites `decisions/025-040.md`, which should be `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`; `public-redesign-r01` is red on the Code health ratchet, not yet read. Then push.
+5. **CI:** the agent-tooling resume cites its decisions part 025-040 by a short path, which should run from the repository root, `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`; `public-redesign-r01` is red on the Code health ratchet, not yet read. Then push.
 
 Still open from item 60: AMD-P1 to AMD-P6 and the motion trial's rule change, a proposal only (item 47).
 
