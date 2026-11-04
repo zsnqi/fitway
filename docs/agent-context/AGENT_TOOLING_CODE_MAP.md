@@ -132,7 +132,6 @@ Counts: 140 files, 0 without a leading comment.
 - `git-commit-words.mjs`: The launcher's reading of a shell command an agent ran (the claim checks in codex-round.mjs): whether its words are a git commit, past git's own leading options. Exports: `commandStatusIsEvent`, `isGitCommitWords`.
 - `git-context.mjs`: Read Git context and warn when the local branch is behind its upstream. Exports: `behindUpstreamWarning`, `readGit`.
 - `git-path-key.mjs`: Normalize Git paths and case-insensitive BOM exception keys. Exports: `bomExceptionPathKey`, `normalizeGitPath`.
-- `wait-decision-cases.ts`: Probe wait and decision behavior through the shared command contract. Exports: `waitDecisionProbes`.
 - `markdown-lines.mjs`: Count lines and locate indexes in Markdown text. Exports: `lineAt`, `lines`.
 - `new-handoff.mjs`: Create or refresh a milestone resume point from the current repository state. Exports: `createResumePoint`, `localTimestamp`, `parseHandoffArgs`, `replaceYamlScalars`.
 - `path-identity.mjs`: Resolve real and not-yet-created paths into stable identity keys. Exports: `pathKey`, `samePath`.
@@ -150,4 +149,5 @@ Counts: 140 files, 0 without a leading comment.
 - `tool-registry.mjs`: Define the agent tool commands, options, help, and exit contracts. Exports: `TOOL_REGISTRY`.
 - `tooling-map-document.mjs`: Build, write, and compare the generated agent-tooling code map. Exports: `buildToolingMap`, `CHECK_COMMAND (from scripts/agent-environment/tooling-map-parser.mjs)`, `checkToolingMap`, `MAP_RELATIVE_PATH (from scripts/agent-environment/tooling-map-parser.mjs)`, `REGENERATE_COMMAND (from scripts/agent-environment/tooling-map-parser.mjs)`, `writeToolingMap`.
 - `tooling-map-parser.mjs`: Select mapped source files and read their leading comments and exports. Exports: `CHECK_COMMAND`, `describeMappedFiles`, `listMappedSourceFiles`, `listUntrackedMappedSourceFiles`, `MAP_RELATIVE_PATH`, `MAPPED_PATHS`, `REGENERATE_COMMAND`.
+- `wait-decision-cases.ts`: Probe wait and decision behavior through the shared command contract. Exports: `waitDecisionProbes`.
 - `wait.mjs`: Wait for one regular-expression match in a log without loading existing bytes again. Exports: `WAIT_DEFAULT_TIMEOUT_SECONDS`, `waitForPattern`, `waitOptions`.
