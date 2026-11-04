@@ -1,10 +1,10 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-03 (sketch 14 reviewed;
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-04 (sketch 14 reviewed;
   sketch 15 reviewed; the arrival fixed for Brave; the font fix done; sketch 16 and its hours and axis rounds built,
-  items 52-53; the overnight sequence running, item 54; the fix round in, item 58; the final verifier read, item 59; the last fix round in, item 60; the user's notes in a sketch outside the repository, the page paused, item 61)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-61; 61 last), and the founding
+  items 52-53; the overnight sequence running, item 54; the fix round in, item 58; the final verifier read, item 59; the last fix round in, item 60; the user's notes in a sketch outside the repository, the page paused, item 61; the phone's head picked, item 62)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-62; 62 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -94,16 +94,13 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 **Paused 2026-11-03 at the user's word (item 61), while they watch the DeepSeek and GLM comparison in its own session. Do not touch the page until they return.** Then the hold stands: collect their notes; start project work only when they say «خلصت».
 
-Where it stands: everything since item 60 is in a sketch outside the repository, `D:/fitway-temp/public-redesign-r01-sketch-61/` on port 3182, not on the page. Open `public.html?state=live&level=packed&hours=1&type=1&shape=h&audit=1`; `level=moderate` shows live below usual. Its `STATE.md` lists every switch and carries the Google figures that stay off this repository.
+Where it stands: everything since item 60 is in a sketch outside the repository, working copy `D:/fitway-temp/public-redesign-r01-sketch-62/` on port 3182, not on the page; frozen at item 62 in `D:/fitway-temp/public-redesign-r01-sketch-head-62/sketch/`. Open `public.html?state=live&level=packed&hours=1&type=1&shape=h&audit=1&air=b`; `level=moderate` shows live below usual. Its `STATE.md` lists every switch and carries the Google figures that stay off this repository. The user is away from home and cannot open LAN links (2026-11-04): send pictures as files until they say they are back.
 
-When they return:
-
-1. **Their new note, not started:** on the phone, the card a little shorter so the head comes down, with good space around the brand and the language key.
-2. **In the sketch next:** release the hold in Closed and Unavailable on narrow phones. Show the stronger red's frame and confirm the reading in item 61.
+Items 61 and 62 are answered and built in the sketch; nothing is left to do there. More notes may come. They have not said «خلصت».
 
 After «خلصت», in rounds:
 
-3. **Carry item 61 onto the page**, changing the PUB records it touches, then a design round for the final form (colours, bar motion, English; English Friday «11 PM» is 1.4 px from the card's edge at 320; the 16 px hour against the 24 px touch target), then a second independent verifier. This covers item 60's Unavailable fix, widened by the audit.
+3. **Carry items 61 and 62 onto the page**, changing the PUB records it touches, then a design round for the final form (colours, bar motion, English; English Friday «11 PM» is 1.4 px from the card's edge at 320; the 16 px hour against the 24 px touch target), then a second independent verifier. This covers item 60's Unavailable fix, widened by the audit.
 4. **Collected from their notes:** Arabic order at small phones needs rework; proportional figures; ranges from the right everywhere; the week starts Sunday; `font-display: optional`; keep «نحو 70 في الصالة» and remove «مفهوم استكشافي»; the `statechart` note; the narrow AGENTS.md design-skill amendment; hours under bars from opening, never mid-bar; the quietest hour named only by its circle; the quiet line («10 ص هادئ عادةً», «12 ص أقل زحمة عادةً», or hidden; never «لاحقًا» or «الآن»); no shadda in «تعذّر», «تحقّق», «تكرّر»; 6 px between «تحقق من الاتصال» and retry; change or delete «لا نعرض عددًا قديمًا»; the Owner pages' hours; Reports' nearly empty «معدّل الموجودين» card; a general review of text sizes and weights across states, with the audit's copy doubts.
 5. **CI:** the agent-tooling resume cites its decisions part 025-040 by a short path, which should run from the repository root, `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`; `public-redesign-r01` is red on the Code health ratchet, not yet read. Then push.
 
