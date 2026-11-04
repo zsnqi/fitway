@@ -69,3 +69,6 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 60. **The last fix round in; the page finished for the user's read** `decisions/041-060.md`
 61. **The user's notes of 2026-11-03: 20 hourly bars, the see-through live bar, the head audit; the page paused** `decisions/041-060.md`
 62. **The phone's head comes down: `air=b`; the hold released; the stronger red confirmed** `decisions/061-080.md`
+63. **The notes end; the sketch becomes the page** `decisions/061-080.md`
+64. **The final form round** `decisions/061-080.md`
+65. **The user's two picks, and the order of what is left** `decisions/061-080.md`

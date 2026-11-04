@@ -1,10 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-04 (sketch 14 reviewed;
-  sketch 15 reviewed; the arrival fixed for Brave; the font fix done; sketch 16 and its hours and axis rounds built,
-  items 52-53; the overnight sequence running, item 54; the fix round in, item 58; the final verifier read, item 59; the last fix round in, item 60; the user's notes in a sketch outside the repository, the page paused, item 61; the phone's head picked, item 62)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-62; 62 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-04 (items 63-65; 65 last)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-65; 65 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -21,12 +19,9 @@
 
 ## Running now
 
-The overnight sequence (item 54): the motion review, the Arabic round (item 55), the states and sizes round (item
-56), the direction review and the specification (`6fd18e53`, item 57) and the fix round (`5951ae53`, item 58) done;
-the final verifier (`review-public-final-44.md`, item 59) and its fixes (`748c2a7c`, item 60) done; the page waits on
-the user's read of the report and item 60's open points; and the
-user's page server (port 3181,
-Terminal tab). Public branch `public-redesign-r01` at `public.*` (item 55) on sketch 16 with the
+The page at `0db7a443` plus the helper cleanup from job A on `public-redesign-r01`; the user is away from home and judging from pictures. Next: the independent verifier and the reading-direction review, then their fixes and the user's eye, then the single specification round, using the PUB lists in the carry and final-form reports (`D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `D:/fitway-temp/public-redesign-r01-final-form-64/REPORT.md`) plus AMD-P7 (item 65). The user's page server is port 3181 (Terminal tab).
+
+Public branch `public-redesign-r01` at `public.*` (item 55) on sketch 16 with the
 axis round (`0fad27b9`, item 53), the hours round (`77d2469b`, `89d2996d`, item 52) and its build (`0fca4c0e`, item 51), on sketch 15 with the Brave fix (`2c911cb1`) and the font fix (`1593df75`), on Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
@@ -92,17 +87,20 @@ The coordinator does these in the session the user opens (`WORKING_AGREEMENTS.md
 
 ## Waiting on the user
 
-**Paused 2026-11-03 at the user's word (item 61), while they watch the DeepSeek and GLM comparison in its own session. Do not touch the page until they return.** Then the hold stands: collect their notes; start project work only when they say «خلصت».
+The user is away from home and cannot open LAN links (2026-11-04): send pictures as files until they say they are back. Their notes ended with «خلاص خلصت» (item 63); the sketch is on the page, the working copy `D:/fitway-temp/public-redesign-r01-sketch-62/` (port 3182) is provenance only, and its `STATE.md` carries Google figures that stay off this repository. The two picks of item 65 (`note=none`, `whole=line`) are built, no switch left.
 
-Where it stands: everything since item 60 is in a sketch outside the repository, working copy `D:/fitway-temp/public-redesign-r01-sketch-62/` on port 3182, not on the page; frozen at item 62 in `D:/fitway-temp/public-redesign-r01-sketch-head-62/sketch/`. Open `public.html?state=live&level=packed&hours=1&type=1&shape=h&audit=1&air=b`; `level=moderate` shows live below usual. Its `STATE.md` lists every switch and carries the Google figures that stay off this repository. The user is away from home and cannot open LAN links (2026-11-04): send pictures as files until they say they are back.
+What is left, in the order of item 65:
 
-Items 61 and 62 are answered and built in the sketch; nothing is left to do there. More notes may come. They have not said «خلصت».
-
-After «خلصت», in rounds:
-
-3. **Carry items 61 and 62 onto the page**, changing the PUB records it touches, then a design round for the final form (colours, bar motion, English; English Friday «11 PM» is 1.4 px from the card's edge at 320; the 16 px hour against the 24 px touch target), then a second independent verifier. This covers item 60's Unavailable fix, widened by the audit.
-4. **Collected from their notes:** Arabic order at small phones needs rework; proportional figures; ranges from the right everywhere; the week starts Sunday; `font-display: optional`; keep «نحو 70 في الصالة» and remove «مفهوم استكشافي»; the `statechart` note; the narrow AGENTS.md design-skill amendment; hours under bars from opening, never mid-bar; the quietest hour named only by its circle; the quiet line («10 ص هادئ عادةً», «12 ص أقل زحمة عادةً», or hidden; never «لاحقًا» or «الآن»); no shadda in «تعذّر», «تحقّق», «تكرّر»; 6 px between «تحقق من الاتصال» and retry; change or delete «لا نعرض عددًا قديمًا»; the Owner pages' hours; Reports' nearly empty «معدّل الموجودين» card; a general review of text sizes and weights across states, with the audit's copy doubts.
+3. **Done:** items 61 and 62 carried onto the page (item 63) and the final form round (item 64). **Next:** the independent verifier and the reading-direction review (`rtl-ltr-reviewer`), then their fixes and the user's eye, then the single specification round (item 65). Item 64's unmet points go to the fixes: 320 x 568 scrolls and cuts the axis; under 844 px tall the card moves on Closed, Unavailable and Error.
+4. **Collected from their notes** (the reports of items 63 and 64 say which are done): Arabic order at small phones needs rework; proportional figures; ranges from the right everywhere; the week starts Sunday; `font-display: optional`; keep «نحو 70 في الصالة» and remove «مفهوم استكشافي»; the `statechart` note; the narrow AGENTS.md design-skill amendment; hours under bars from opening, never mid-bar; the quietest hour named only by its circle; the quiet line («10 ص هادئ عادةً», «12 ص أقل زحمة عادةً», or hidden; never «لاحقًا» or «الآن»); no shadda in «تعذّر», «تحقّق», «تكرّر»; 6 px between «تحقق من الاتصال» and retry; change or delete «لا نعرض عددًا قديمًا»; the Owner pages' hours; Reports' nearly empty «معدّل الموجودين» card; a general review of text sizes and weights across states, with the audit's copy doubts.
 5. **CI:** the agent-tooling resume cites its decisions part 025-040 by a short path, which should run from the repository root, `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`; `public-redesign-r01` is red on the Code health ratchet, not yet read. Then push.
+
+Tooling findings to carry:
+
+- The worktree CLI lacks `frames`.
+- `run` refuses the sketch.
+- A 60 s timeout in `scripts/agent-environment/codex-round.test.ts:1904` on one CI run, and `git init` dying with 0xC0000142 in that same test file on the run for `7bc83781`; both passed on re-run or later, so CI runner trouble is the working guess.
+- `brief:check` accepts only codex, builder, designer and verifier as roles, so a fixer's brief says builder.
 
 Still open from item 60: AMD-P1 to AMD-P6 and the motion trial's rule change, a proposal only (item 47).
 
