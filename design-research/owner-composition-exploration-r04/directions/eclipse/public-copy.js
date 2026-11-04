@@ -15,6 +15,7 @@ window.FitwayPublicCopy = function (en, h) {
     words: { quiet: "Quiet", moderate: "Moderate", busy: "Busy", packed: "Packed" },
     usually: function (b) { return "usually " + T.words[b].toLowerCase(); },
     rightNow: "Right now",
+    crowd: "Crowd", // the head's name where the page carries no time
     srNow: "Crowd right now: ",
     about: function (n) { return T.aboutOf(num(n)); },
     aboutOf: function (x) { return "About " + x + " inside"; }, // x: the number's box (Loading: its placeholder)
@@ -31,11 +32,11 @@ window.FitwayPublicCopy = function (en, h) {
       "much-busier": "Much busier than usual"
     },
     live: "Live",
-    readAt: function (t) { return num(t + NB + "PM"); },
+    readAt: function (t) { return num(t); }, // t: the clock's time, its period with it
     // Delayed: the last reading, said as the last, with its time and its age (GLO-9).
     srLast: "Last reading: ",
     delayed: "Delayed",
-    lastAt: function (t) { return "Last reading " + iso(t + NB + "PM"); },
+    lastAt: function (t) { return "Last reading " + iso(t); },
     comma: ",", // the age follows the time as a sentence says it, so a narrow phone parts the line after the comma
     ago: function (m) { return iso(m + NB + "min ago"); },
     // Unavailable: no count, and why none is shown (DESIGN_GUIDE §6: old data is never presented as current).
@@ -73,12 +74,14 @@ window.FitwayPublicCopy = function (en, h) {
       var D = DAYS[d], s = "A usual " + dayName(d) + " by the hour, " + hourText(D.open) + " to " + hourText(D.close);
       return withNow ? s + ", with now at " + hourText(NOW_H) : s;
     },
-    other: "العربية", otherLang: "ar"
+    other: "العربية", otherLang: "ar",
+    aboutPage: "See how busy the gym is right now against a usual day, and the quietest hour of each day."
   } : {
     words: { quiet: "هادئ", moderate: "متوسط", busy: "مزدحم", packed: "شديد الازدحام" },
     // The level word first, then how often: «مزدحم عادةً».
     usually: function (b) { return T.words[b] + " عادةً"; },
     rightNow: "الآن",
+    crowd: "الازدحام",
     srNow: "الازدحام الآن: ",
     // The English line's shape, small word, large count, small words: «نحو» says it is not an exact headcount (GLO-2's
     // rule) in one short word, so the count and the percentage hold one line down to about 378 px.
@@ -95,10 +98,10 @@ window.FitwayPublicCopy = function (en, h) {
       "much-busier": "أعلى من المعتاد"
     },
     live: "مباشر",
-    readAt: function (t) { return num(t + NB + "م"); },
+    readAt: function (t) { return num(t); },
     srLast: "آخر قراءة: ",
     delayed: "متأخر",
-    lastAt: function (t) { return "آخر قراءة " + iso(t + NB + "م"); },
+    lastAt: function (t) { return "آخر قراءة " + iso(t); },
     comma: "،",
     // «قبل دقيقة»، «قبل دقيقتين»، «قبل 5 دقائق»، «قبل 13 دقيقة»: the counted noun follows the number's rule.
     ago: function (m) { return iso(m === 1 ? "قبل دقيقة" : m === 2 ? "قبل دقيقتين" : "قبل " + m + NB + (m <= 10 ? "دقائق" : "دقيقة")); },
@@ -131,7 +134,8 @@ window.FitwayPublicCopy = function (en, h) {
       var D = DAYS[d], s = "المعتاد أيام " + dayName(d) + " ساعةً بساعة، من " + hourText(D.open) + " إلى " + hourText(D.close);
       return withNow ? s + "، والآن " + hourText(NOW_H) : s;
     },
-    other: "English", otherLang: "en"
+    other: "English", otherLang: "en",
+    aboutPage: "اعرف ازدحام الصالة الآن مقارنةً بالمعتاد، وأهدأ ساعة في كل يوم."
   };
   return T;
 };

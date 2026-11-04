@@ -80,15 +80,20 @@ b { font-weight: 600; }
  * for themselves: the tablet's meet the phone's at 600 px and the computer's at 1024 (the tablet's rules).
  * --------------------------------------------------------------------------------------------------------------- */
 .page {
-  --pad: clamp(16px, 4.5vw, 80px);
+  --pad: clamp(12px, min(4.5vw, calc(10.5vw - 21.6px)), 80px); /* 12 at 320, so the narrowest phone's words and days have their room; 4.5vw from 360 */
   --pad-end: clamp(16px, calc(0.952vw + 12.29px), 28px);
   --top-h: clamp(60px, calc(3.2vw + 46px), 92px);
   --fs-word: clamp(52px, calc(2.286vw + 55.1px), 88px);
   --fs-count: clamp(34px, calc(0.952vw + 30.29px), 44px); /* never under 34 px on a phone, two lines or one */
-  --fs-text: clamp(16px, calc(0.19vw + 15.26px), 18px);
-  --fs-stamp: clamp(15px, calc(0.095vw + 14.63px), 16px);
-  --fs-small: clamp(14px, calc(0.095vw + 13.63px), 15px);
-  --fs-axis: clamp(12.5px, calc(0.095vw + 12.63px), 14px);
+  /* What a person reads outdoors: the facts' 18 px at 500 is the bar (the user's word on «يفتح»), and every line of words
+   * stands at it. What cannot on a narrow phone, by its room, climbs to it as the width allows. */
+  --fs-facts: 18px;
+  --fs-text: 18px;
+  --fs-stamp: 18px;
+  --fs-small: 16px;
+  --fs-hours: clamp(16px, 5vw, 18px); /* 16 at 320, 18 from 360: English's name and hours share a line */
+  --fs-day: clamp(14px, calc(3.33vw + 2.5px), 18px); /* 14 to 345 px, 16 at 405, 18 from 465: what the week's seven names leave them */
+  --fs-axis: clamp(15px, calc(3.33vw + 2px), 18px); /* 15 to 390 px, 18 from 480: seven labels with air, "12 AM" inside the card */
   --ux: clamp(1px, calc(0.10476vw + 0.5914px), 2.1px);
   --uy: clamp(1px, calc(0.014286vw + 0.94429px), 1.15px);
   position: relative;
@@ -178,6 +183,8 @@ html[dir="ltr"] .brand svg { margin-inline-start: calc(clamp(28px, calc(0.381vw 
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
+/* Focus lands here after a retry, from the script and for a screen reader; nothing is operated here, so no ring boxes the word. */
+.word:focus { outline: none; }
 /* The word's first stroke stands on the start edge the facts start from: its first letter's side bearing is measured in
  * the face it is drawn in and taken back, in both languages (public.js, fitWord). These are the values before it is
  * measured: the Latin's bearing is 0.04-0.085 of the word ("C", "B"), the Arabic's 0.02-0.04 (Readex Pro 700). */
@@ -210,7 +217,7 @@ html[dir="ltr"] .brand svg { margin-inline-start: calc(clamp(28px, calc(0.381vw 
   align-items: baseline;
   column-gap: var(--gap);
   row-gap: 2px;
-  font-size: 18px;
+  font-size: var(--fs-facts);
   font-weight: 500;
   line-height: 1.2;
   color: var(--ink);
@@ -238,24 +245,28 @@ html[dir="rtl"] .pct .num { margin-right: 0; text-align: right; }
 html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 
 /* The status line. "Live" stands under the percentage in every language at every width and no reading moves it (public.js,
- * hold: data-mode). Where the count and the percentage share a line they are two columns, the first holding the widest
- * comparison (cols); where that widest would push the second off the screen it takes two lines (cols-wrap, English on a
- * narrow phone). Where they part, the percentage starts the column's edge, so the stamp does too, the comparison after it
- * (stack; on its own line where they would not share one, stack-rows). The dot's edge stands on the number's ink, 2 px
- * inside its box. */
+ * hold: data-mode). Where the count and the percentage share a line they are two columns, the first the count's: a
+ * comparison may reach into the gap (--vs-reach) and stops short of the stamp (cols), and a longer one takes two lines
+ * (cols-wrap, "Much quieter than usual"). Where they part, the percentage starts the column's edge, the comparison under
+ * it and the stamp on the same edge under that, their words in one line (stack). The dot's edge stands on the number's
+ * ink, 2 px inside its box. */
 .vs { display: flex; align-items: baseline; column-gap: 6px; font-size: var(--fs-text); font-weight: 500; line-height: 1.35; color: var(--ink); white-space: nowrap; }
 .vs .ic { align-self: flex-start; width: 16px; height: 16px; padding: 3px; margin-block-start: calc((1.35em - 22px) / 2); border-radius: 50%; background: rgb(var(--chalk) / 0.1); box-sizing: content-box; }
 .sub[data-mode^="cols"] .count-line { min-inline-size: var(--col-a); }
-.sub[data-mode^="cols"] .vs { inline-size: var(--col-a); }
+.sub[data-mode^="cols"] .vs { inline-size: calc(var(--col-a) + var(--vs-reach, 0px)); margin-inline-end: calc(var(--vs-reach, 0px) * -1); }
+.sub[data-mode^="cols"] .stamp { margin-inline-end: -4px; } /* public.js, STAMP_HANG: the widest clock may run this far into the page's margin */
 .sub[data-mode="cols-wrap"] .vs { white-space: normal; }
 .sub[data-mode="cols-wrap"] .vs > span { text-wrap: balance; }
-.sub[data-mode^="stack"] .pct { flex-basis: 100%; }
-.sub[data-mode^="stack"] .stamp { order: 1; }
-.sub[data-mode^="stack"] .vs { order: 2; }
-.sub[data-mode="stack-rows"] .vs { flex-basis: 100%; }
+.sub[data-mode="stack"] { row-gap: 6px; }
+.sub[data-mode="stack"] .facts { margin-block-end: 4px; }
+.sub[data-mode="stack"] .pct { flex-basis: 100%; }
+.sub[data-mode="stack"] .vs { flex-basis: 100%; white-space: normal; }
+.sub[data-mode="stack"] .stamp { flex-basis: 100%; white-space: normal; }
 .vs + .stamp { padding-inline-start: 2px; }
+.sub[data-mode="stack"] .vs + .stamp { padding-inline-start: 0; }
+.sub[data-mode="stack"] .vs + .stamp .dot { margin-inline: 7px 13px; } /* centred under the arrow's disc, its words under the comparison's */
 
-.stamp { font-size: var(--fs-stamp); font-weight: 500; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.stamp { font-size: var(--fs-stamp); font-weight: 500; line-height: 1.35; color: var(--ink-2); white-space: nowrap; }
 .stamp b { color: var(--ink); font-weight: 600; }
 .dot { position: relative; display: inline-block; vertical-align: 1px; width: 8px; height: 8px; margin-inline-end: 8px; border-radius: 50%; background: var(--live); }
 .dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--live); opacity: 0; }
@@ -277,12 +288,16 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
  * Every state's mark is a shape as well as a colour, and never mirrors (STW-1, ICO-5).
  * --------------------------------------------------------------------------------------------------------------- */
 .page:not([data-state="live"]) .daycard .lamp { display: none; }
-.stamp .st { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; margin-inline-end: 8px; color: var(--ink-2); }
+.stamp .st { display: inline-block; width: 18px; height: 18px; vertical-align: -3.5px; margin-inline-end: 8px; color: var(--ink-2); }
+/* A status line that may take two lines hangs from its mark, so its second line starts under its first word. */
+.stamp:is(.st-late, .err) { display: flex; align-items: flex-start; flex-basis: 100%; white-space: normal; }
+.stamp:is(.st-late, .err) .st { flex: none; margin-block-start: calc((1.35em - 18px) / 2); }
+.stamp.err > span { text-wrap: balance; }
 /* Delayed: the last reading in --ink-2, its words and its time kept (dimming is never the only channel); the status
  * line says it is the last one, when, and how long ago, in the family's amber with its clock (STA-2, GLO-9). It may
  * part between its time and its age on a narrow phone, never inside either. */
 .page[data-state="delayed"] :is(.word, .facts, .facts .num) { color: var(--ink-2); }
-.stamp.st-late { white-space: normal; }
+.late-at, .ago { white-space: nowrap; }
 .st-late .st, .st-late b, .st-late .ago { color: var(--amber); }
 /* Unavailable: no count, in --ink-2 (the brightest thing is never unavailable, TRU-3); why none is shown; Offline with
  * its struck circle. Error's words are --ink-2 too, so its one retry is the brightest thing on the page. */
@@ -302,13 +317,13 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
  * hold: --row-a) and the rest rises into the air under the word. Its focus ring takes 5 px (it has focus on arrival, EMP-5),
  * so the words under it stand 20 px from the key: a margin of the row's own, not a rule on the state, so the silent copy
  * measures it and the states hold it (public.js, hold). */
-.facts.act { align-items: center; margin-block: min(0px, calc(var(--row-a, 40px) - 40px)) 8px; }
+.facts.act { align-items: center; margin-block: min(0px, calc(var(--row-a, 44px) - 44px)) 8px; }
 .page:not([data-range="phone"]) .facts.act { margin-block-end: 6px; }
 [dir="ltr"] .page[data-range="phone"] .facts.act { margin-block-start: 0; } /* the English word keeps no descender room under it, and its ring would stand 4 px from "Couldn't load" */
 .stamp.err .st { color: var(--err); }
 .retry {
-  height: 40px;
-  padding: 0 18px;
+  height: 44px;
+  padding: 0 20px;
   border: 0;
   border-radius: 12px;
   background: var(--ink);
@@ -416,27 +431,27 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
   grid-template-areas: "title hours" "read read" "fig fig" "days days";
   align-items: baseline;
   column-gap: 14px;
-  padding: 18px 16px 16px;
+  padding: 18px var(--card-side, 16px) 16px;
 }
-.card-title { grid-area: title; font-size: var(--fs-text); line-height: 1.3; font-weight: 600; color: var(--ink); }
-.card-hours { grid-area: hours; font-size: var(--fs-small); font-weight: 500; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.card-title { grid-area: title; font-size: var(--fs-title, var(--fs-text)); line-height: 1.3; font-weight: 600; color: var(--ink); }
+.card-hours { grid-area: hours; font-size: var(--fs-hours); font-weight: 500; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
 .daycard[data-tight] .open-word { display: none; } /* a 320 px phone: the span alone keeps the name and hours on one line */
 /* The answer: its text carries the row's baseline; the ring sits on the first line. */
-.readout { grid-area: read; display: flex; align-items: baseline; gap: 8px; min-height: 22px; margin-block: 12px 20px; font-size: var(--fs-text); font-weight: 500; line-height: 22px; color: var(--ink-2); }
+.readout { grid-area: read; display: flex; align-items: baseline; gap: 8px; min-height: 24px; margin-block: 12px 20px; font-size: var(--fs-text); font-weight: 500; line-height: 24px; color: var(--ink-2); }
 .readout > span { text-wrap: balance; } /* two even lines on the narrow phone, never an orphaned word */
 .readout b { color: var(--ink); }
-.readout .ic { align-self: flex-start; width: 16px; height: 16px; margin-block-start: 3px; color: var(--ink); }
+.readout .ic { align-self: flex-start; width: 16px; height: 16px; margin-block-start: 4px; color: var(--ink); }
 .readout .ic-ring { stroke-width: 2; }
 /* The step keys (public.js, stepKeys): a picked hour's earlier and later hour, at the end of the readout's line, where
- * a day's hours are narrower than a finger (today on a phone under 354 px). The day keys' face and press, 40 px square;
+ * a day's hours are narrower than a finger (today on every phone). The day keys' face and press, 40 px square;
  * the chevron points the way time runs, so in Arabic the later hour's points left. The readout's words make room for
- * them. The keys centre on the picked hour's words, not on the readout's held height: on their first line (22 px),
- * as the readout's ring sits on its first line, so a pick whose words take two lines (English under 351 px, "4 PM:
- * usually / moderate") keeps the keys where every other pick has them, and they never move under the finger. They
- * reach 9 px into the readout's margins, never past them. */
-.steps { grid-area: read; justify-self: end; align-self: start; display: flex; gap: 4px; margin-block: calc(12px + (22px - 40px) / 2) 0; }
+ * them. The keys centre on the picked hour's words, not on the readout's held height: on their first line (24 px),
+ * as the readout's ring sits on its first line, so a pick whose words take two lines (a phone at 200%) keeps the keys
+ * where every other pick has them, and they never move under the finger. They reach 8 px into the readout's margins,
+ * never past them. */
+.steps { grid-area: read; justify-self: end; align-self: start; display: flex; gap: 4px; margin-block: calc(12px + (24px - 40px) / 2) 0; }
 .steps[hidden] { display: none; }
-.readout[data-steps] { padding-inline-end: 92px; } /* the two keys, the 4 px between them and 8 px of air */
+.readout[data-steps] { padding-inline-end: 90px; } /* the two keys, the 4 px between them and 6 px of air */
 .step {
   display: grid;
   place-items: center;
@@ -457,7 +472,7 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 .step[aria-disabled="true"] { color: rgb(var(--chalk) / 0.3); cursor: default; }
 @media (hover: hover) and (pointer: fine) { .step:not([aria-disabled="true"]):hover { color: var(--ink); background: rgb(255 255 255 / 0.08); } }
 .step:not([aria-disabled="true"]):active { background: rgb(0 0 0 / 0.45); border-color: rgb(var(--chalk) / 0.12); color: var(--ink); transition: none; }
-.dayfig { grid-area: fig; align-self: stretch; padding-block-end: 34px; }
+.dayfig { grid-area: fig; align-self: stretch; padding-block-end: 36px; }
 /* Where any day's name and hours would not share a line (a 320 px phone: "A usual Wednesday", «المعتاد أيام الأربعاء»),
  * every day stands its hours under its name, so a day change never moves the card (public.js, hold). */
 .daycard[data-stack] { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "hours" "read" "fig" "days"; }
@@ -617,24 +632,24 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
   text-align: center;
   font-size: var(--fs-axis);
   font-weight: 500;
-  line-height: 18px;
+  line-height: 20px;
   color: var(--ink-2);
   pointer-events: none;
   transition: color var(--t-ui) ease;
 }
 .t::after { content: attr(data-label); display: block; height: 0; overflow: hidden; visibility: hidden; font-weight: 600; }
 [dir="rtl"] .t { translate: 50% 0; }
-.sfx { position: absolute; inset-block-start: 0; inset-inline-start: calc(100% + 3px); font-weight: 500; opacity: 0.8; white-space: nowrap; }
+.sfx { position: absolute; inset-block-start: 0; inset-inline-start: calc(100% + 3px); font-weight: 500; white-space: nowrap; }
 .t[data-now], .t[data-pick] { color: var(--ink); font-weight: 600; }
 .t[data-yield] { visibility: hidden; }
 /* A label a day change takes down fades out where it stood (public.js, fadeLabels; motion review F4). */
-.t-out { position: absolute; white-space: nowrap; text-align: center; font-size: var(--fs-axis); font-weight: 500; line-height: 18px; color: var(--ink-2); pointer-events: none; }
+.t-out { position: absolute; white-space: nowrap; text-align: center; font-size: var(--fs-axis); font-weight: 500; line-height: 20px; color: var(--ink-2); pointer-events: none; }
 .t-out[data-strong] { color: var(--ink); font-weight: 600; }
 .t:empty { display: none; }
 
 /* The day picker: the week's seven days under the whole day. The picked one is outlined in chalk, not filled, so the
  * one live hour stays the brightest thing in the card. */
-.days { display: flex; gap: 4px; }
+.days { display: flex; gap: clamp(2px, calc(2.5vw - 6px), 4px); } /* 2 at 320, 3 at 360, 4 from 400 */
 .day-btn {
   position: relative;
   flex: 1 1 0;
@@ -645,7 +660,7 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
   border-radius: 12px;
   background: rgb(255 255 255 / 0.045);
   color: var(--ink-2);
-  font-size: var(--fs-small);
+  font-size: var(--fs-day);
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -668,9 +683,15 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 /* Where a name would not stand in an equal button with air on both sides («خميس» on the phone; public.js, fitDays),
  * each button takes its name's width and the rest of the row is shared out evenly: the same air beside every name. */
 .days[data-fit="content"] .day-btn { flex: 1 1 auto; }
-/* Readex Pro's Arabic names run wider than three letters: on a narrow phone they step down with the width (the Latin's
- * 14 px from 390), never under 13. */
-:lang(ar) .day-btn { font-size: max(13px, min(var(--fs-small), 3.6vw)); }
+/* A phone at 200% zoom: seven names do not stand in one row, so the row wraps and each key keeps its name's own air. */
+.days[data-fit="wrap"] { flex-wrap: wrap; }
+.days[data-fit="wrap"] .day-btn { flex: 1 1 auto; padding-inline: 8px; }
+/* The narrowest phones: Arabic's seven names hold no bold. The picked one keeps its outline and its brighter ink, and the
+ * 0.5 px a side that bold took goes back to the air around the names. */
+@media (max-width: 345px) {
+  :lang(ar) .day-btn[aria-checked="true"] { font-weight: 500; }
+  :lang(ar) .day-btn::before { font-weight: 500; }
+}
 /* Today reads as its day, like the others, and a small chalk dot under its name marks it: not red and not green,
  * which the page keeps for the live reading. */
 .day-btn[data-today]::after {
@@ -694,24 +715,46 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
  * is raised through their ratio; the JS (fitted) gives the plot what is left, so the plot pays for it.
  * --air follows the screen's height (svh: a toolbar that hides never moves the head) and runs out towards 600 px wide,
  * where the tablet's head takes over without a jump. The bar comes down inside the same air (the key's top, --bar-top,
- * more than the side at every phone), so it stands in the white, not on the top: the bar's height follows it, and --air
- * gives back what the bar took.
+ * never less than the side), so it stands in the white, not on the top: the bar's height follows it, and --air gives back
+ * what the bar took.
+ * Under 740 px tall every holder of air gives some back, in a straight line from one measure (--tight: 0 at 740, 172 at
+ * 568), so a state never needs to let go of its hold and a 320 x 568 phone shows its days on the first screen.
  * --------------------------------------------------------------------------------------------------------------- */
 .page[data-range="phone"] {
-  --fs-stamp: clamp(14px, calc(1.43vw + 9.43px), 15px); /* 14 at 320, so English's stamp keeps its column under the percentage */
+  --tight: clamp(0px, calc(740px - 100svh), 172px);
+  --pad-end: calc(16px - var(--tight) * 0.035);
+  --fs-word: clamp(52px, min(calc(2.286vw + 55.1px), calc(63.6px - var(--tight) * 0.056)), 88px);
   --air-end: calc((600px - 100vw) * 0.3);
   --air-full: clamp(8px, calc(11svh - 54px), 52px);
-  --bar-top: clamp(var(--pad), calc(2.4svh + 7px), 30px);
-  --air: max(0px, min(calc(var(--air-full) + 20px - var(--bar-top)), var(--air-end)));
+  --bar-top: max(12px, calc(2.4svh + 7px - var(--tight) * 0.05));
+  --air: max(0px, min(calc(var(--air-full) + 20px - var(--bar-top) - var(--tight) * 0.1), var(--air-end)));
 }
+/* English on the narrowest phones: "A usual Wednesday" shares a line with its hours at 17 px (18 from 340), and a picked hour's
+ * words share one with the step keys: "10 AM: usually moderate" takes 11.96 em of the card's width less the keys' 90 px,
+ * so 15.3 px at 320 and 18 from 371. A second line held for it would take 24 px from the 568 tall phone's plot. */
+[dir="ltr"] .page[data-range="phone"] { --fs-title: clamp(17px, 5.3vw, 18px); }
+[dir="ltr"] .page[data-range="phone"] .readout[data-steps] { font-size: clamp(15px, calc(5.33vw - 1.73px), 18px); }
 [data-range="phone"] .live { margin-block-start: var(--air); }
 /* The floors, then what a tall phone leaves: three parts over the word to one over the card, so the head comes down and
  * stays its card's. Floors of their own, as the computer's: a floor inside a share would raise the fraction of a page that
  * scrolls, and the head with it. */
-[data-range="phone"] .sign { grid-template-rows: 20px 3fr auto 26px 1fr auto; }
+[data-range="phone"] .sign { grid-template-rows: calc(20px - var(--tight) * 0.08) 3fr auto calc(26px - var(--tight) * 0.08) 1fr auto; }
+[data-range="phone"] .sub { margin-block-start: calc(10px - var(--tight) * 0.023); row-gap: calc(12px - var(--tight) * 0.023); }
+[data-range="phone"] .daycard { padding-block: calc(18px - var(--tight) * 0.035) calc(16px - var(--tight) * 0.035); }
+[data-range="phone"] .readout { margin-block: calc(12px - var(--tight) * 0.023) calc(20px - var(--tight) * 0.058); }
+[data-range="phone"] .steps { margin-block-start: calc(12px - var(--tight) * 0.023 + (24px - 40px) / 2); }
+[data-range="phone"] .dayfig { padding-block-end: calc(36px - var(--tight) * 0.02); }
+[data-range="phone"] .days { margin-block-start: calc(6px - var(--tight) * 0.012); }
+.page[data-range="phone"] { --card-side: clamp(10px, calc(7.5vw - 14px), 16px); } /* 10 at 320, 16 from 400: the bars and the days take it */
+[data-range="phone"] .daycard { column-gap: clamp(10px, calc(5vw - 6px), 14px); }
 [data-range="phone"] .live { grid-row: 3; }
 [data-range="phone"] .daycard { grid-row: 6; }
 [data-range="phone"] .top { height: calc(var(--bar-top) + 40px); padding-block-start: var(--bar-top); }
+/* A phone at 200% zoom: the brand and the language key each take a line, and a status line that held one line takes two. */
+@media (max-width: 259px) {
+  .page[data-range="phone"] .top { height: auto; flex-wrap: wrap; row-gap: 8px; padding-block: var(--bar-top) 8px; }
+  .late-at, .ago, .card-hours { white-space: normal; }
+}
 
 /* ---------------------------------------------------------------------------------------------------------------
  * The ranges are the page's own attribute (public.js sets data-range from the widths: phone below 600 px, tablet to
@@ -725,19 +768,24 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
  * held by the height as the computer's is, so it meets the phone's at 600 and the computer's at 1024 px and never jumps;
  * the count steps down from the phone's 36 px at 600 to the computer's 28 at 1024, so neither jumps where the ranges
  * meet, and the word stands further above its facts as the screen widens. The card takes the computer's frame and bar
- * width, its days the computer's 44 px, and the day takes the height a tall screen leaves it (up to 520 px; public.js,
- * fit) instead of leaving it as air above the word and over the card. The facts keep the phone's two lines: at 768 one
- * line would not hold the Arabic, and Live and every state keep the same rows.
+ * width, its days the computer's 44 px, and the day takes three tenths of the screen's height (public.js, fit), so the
+ * card stays about half of a tall tablet and the rest is the white around the brand, the key and the head. The facts keep
+ * the phone's two lines: at 768 one line would not hold the Arabic, and Live and every state keep the same rows.
  * --------------------------------------------------------------------------------------------------------------- */
 .page[data-range="tablet"] {
   --fs-word: max(clamp(52px, calc(2.286vw + 55.1px), 88px), min(calc(4.8vw + 55px), calc(13.719vw - 13.498px), 14.5vh));
   --fs-count: clamp(28px, calc(47.16px - 1.859vw), 36px);
   --r: 6px;
 }
-[data-range="tablet"] .steps { margin-block: calc(14px + (22px - 40px) / 2) 0; }
-[data-range="tablet"] .sign { grid-template-rows: minmax(24px, 0.5fr) auto minmax(32px, 0.5fr) auto; }
+[data-range="tablet"] .steps { margin-block: calc(14px + (24px - 40px) / 2) 0; }
+/* The brand and the key stand in as much white above them as beside them, and the head comes down into what the shorter
+ * card leaves: three parts over the word to one over the card, as the phone's. */
+.page[data-range="tablet"] { --pad-end: var(--pad); }
+[data-range="tablet"] .top { height: calc(var(--pad) + 44px); padding-block-start: var(--pad); }
+[data-range="tablet"] .sign { grid-template-rows: 28px 3fr auto 36px 1fr auto; }
+[data-range="tablet"] .live { grid-row: 3; }
 [data-range="tablet"] .sub { --gap: 24px; row-gap: 14px; margin-block-start: 14px; }
-[data-range="tablet"] .daycard { column-gap: 16px; padding: 24px 26px 22px; }
+[data-range="tablet"] .daycard { grid-row: 6; column-gap: 16px; padding: 24px 26px 22px; }
 [data-range="tablet"] .readout { margin-block: 14px 24px; }
 [data-range="tablet"] .dayfig { padding-block-end: 38px; }
 [data-range="tablet"] .days { margin-block-start: 8px; }
