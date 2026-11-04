@@ -46,13 +46,6 @@ agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) i
   allowed, never required (item 3); lights and numbers free to move (reduced motion, one announcement and no
   `requestAnimationFrame` or canvas stay); post-v1 reservations in `docs/spec/06-interfaces-and-contracts.md` for the
   percentage (on by default, no warning) and the curve.
-- **Four directions turned down** (items 6, 7, 9; frames `D:/fitway-temp/public-redesign-r01-direction-{2,3,4}/`):
-  a timetable (a mess), a status page (tidy, no character), a car's tachometer. The cause the user confirmed: each
-  borrowed its idea from another world. Two reference sets found nothing close (items 7, 8;
-  `D:/fitway-temp/public-r01-refs/`, `D:/fitway-temp/public-r01-taste/`).
-- **Four sketches; the user kept 1, turned down 2-4** (items 9, 10; `e0957a19`; sheet
-  `D:/fitway-temp/public-redesign-r01-sketches-5/frames/sheet.png`): 1 the sign, 2 the lit edge, 3 the strip, 4 the
-  bands.
 
 ## Next steps
 
