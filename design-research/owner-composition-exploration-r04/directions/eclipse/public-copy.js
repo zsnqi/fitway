@@ -8,8 +8,8 @@
 // (an hour, a span, an isolated run), the days and their usual hours, and now.
 window.FitwayPublicCopy = function (en, h) {
   "use strict";
-  var num = h.num, iso = h.iso, hourText = h.hourText, hourHtml = h.hourHtml, spanHtml = h.spanHtml, spanSpoken = h.spanSpoken;
-  var dayName = h.dayName, usualAt = h.usualAt, band = h.band, splits = h.splits, quietCell = h.quietCell, busyCell = h.busyCell;
+  var num = h.num, iso = h.iso, hourText = h.hourText, hourHtml = h.hourHtml;
+  var dayName = h.dayName, band = h.band, quietCell = h.quietCell, busyCell = h.busyCell;
   var DAYS = h.DAYS, TODAY = h.TODAY, NOW_H = h.NOW_H, NB = h.NB, THIN = h.THIN;
   var T = en ? {
     words: { quiet: "Quiet", moderate: "Moderate", busy: "Busy", packed: "Packed" },
@@ -56,30 +56,17 @@ window.FitwayPublicCopy = function (en, h) {
     loadingSay: "Loading how busy it is",
     usualDay: function (d) { return "A usual " + dayName(d); },
     openHours: function (d) { return 'Open <span class="num iso">' + hourText(DAYS[d].open) + THIN + "–" + THIN + hourText(DAYS[d].close) + "</span>"; },
-    // The card's answer keeps one shape for today: "Quietest time left:" and when.
-    quietestLeft: function (h) { return 'Quietest time left: <b class="num">' + hourHtml(h) + "</b>, " + T.usually(band(usualAt(TODAY, h))); },
-    quietestSame: function (h) { return 'Quietest time left: <b>now</b> or <b class="num">' + hourHtml(h) + "</b>"; },
-    nowQuietest: "Quietest time left: <b>now</b>",
-    // Closed: the whole day is still ahead.
-    quietestToday: function (h) { return 'Quietest time today: <b class="num">' + hourHtml(h) + "</b>, " + T.usually(band(usualAt(TODAY, h))); },
-    // Another day: its card is titled "A usual …", so the line says only when; on two-hour bars, the two bars' spans.
-    dayRange: function (cells, n) {
-      var lo = spanHtml(quietCell(cells)), hi = spanHtml(busyCell(cells));
-      return n > 1 ? 'Quietest <b class="num">' + lo + '</b>, busiest <b class="num">' + hi + "</b>"
-        : 'Quietest at <b class="num">' + lo + '</b>, busiest at <b class="num">' + hi + "</b>";
+    // The quiet line, today's: the hour and how it usually is, nothing more. kind: "quiet", a quiet hour left; "less", none
+    // quiet but one lighter than this hour. None lighter, the page hides the line.
+    quietLine: function (h, kind) { return '<b class="num">' + hourText(h) + "</b> " + (kind === "quiet" ? T.usually("quiet") : "usually less busy"); },
+    // Another day: its card is titled "A usual …", so the line says only when.
+    dayRange: function (cells) {
+      return 'Quietest at <b class="num">' + hourHtml(quietCell(cells).h) + '</b>, busiest at <b class="num">' + hourHtml(busyCell(cells).h) + "</b>";
     },
-    // A picked hour: its usual; a two-hour bar whose hours read differently, each hour in clock order.
-    cellUsual: function (c) {
-      if (!splits(c)) return '<b class="num">' + spanHtml(c) + "</b>: " + T.usually(band(c.v));
-      return c.us.map(function (u, j) {
-        return '<span class="hr"><b class="num">' + hourHtml(c.h + j) + "</b> " + T.usually(band(u)) + (j < c.n - 1 ? " ·" : "") + "</span>";
-      }).join(" ");
-    },
-    splitName: function (c) {
-      return c.us.map(function (u, j) { return hourText(c.h + j) + " " + T.usually(band(u)); }).join(", ");
-    },
+    // A picked hour: its usual.
+    cellUsual: function (c) { return '<b class="num">' + hourHtml(c.h) + "</b>: " + T.usually(band(c.v)); },
     hourName: function (c, isNow, ring) {
-      return spanSpoken(c) + (isNow ? ", now" : "") + ", " + T.usually(band(c.v)) + (ring ? ", the quietest time left today" : "");
+      return hourText(c.h) + (isNow ? ", now" : "") + ", " + T.usually(band(c.v)) + (ring ? ", the quietest time left today" : "");
     },
     now: "Now",
     todayName: function (d) { return dayName(d) + ", today"; },
@@ -87,11 +74,10 @@ window.FitwayPublicCopy = function (en, h) {
     hours: "Hours",
     prevHour: "Previous hour",
     nextHour: "Next hour",
-    chartName: function (d, n, withNow) {
-      var D = DAYS[d], s = "A usual " + dayName(d) + (n > 1 ? " in two-hour steps, " : " by the hour, ") + hourText(D.open) + " to " + hourText(D.close);
+    chartName: function (d, withNow) {
+      var D = DAYS[d], s = "A usual " + dayName(d) + " by the hour, " + hourText(D.open) + " to " + hourText(D.close);
       return withNow ? s + ", with now at " + hourText(NOW_H) : s;
     },
-    concept: "Exploration concept · synthetic data",
     other: "العربية", otherLang: "ar"
   } : {
     words: { quiet: "هادئ", moderate: "متوسط", busy: "مزدحم", packed: "شديد الازدحام" },
@@ -100,18 +86,18 @@ window.FitwayPublicCopy = function (en, h) {
     rightNow: "الآن",
     srNow: "الازدحام الآن: ",
     // The English line's shape, small word, large count, small words: «نحو» says it is not an exact headcount (GLO-2's
-    // rule) in one short word, so the count and the percentage hold one line down to 360 px, as the English does.
+    // rule) in one short word, so the count and the percentage hold one line down to about 386 px.
     about: function (n) { return T.aboutOf(num(n)); },
     aboutOf: function (x) { return "نحو " + x + " في الصالة"; },
     full: function (p) { return T.fullOf(num(p + "%")); },
     fullOf: function (x) { return x + " من السعة"; },
     arrival: function (k, n) { return T.srNow + T.words[k] + "، نحو " + n + " في الصالة"; },
     vs: {
-      "much-quieter": "أهدأ بكثير من المعتاد",
+      "much-quieter": "أهدأ من المعتاد",
       quieter: "أهدأ من المعتاد",
       usual: "قريب من المعتاد",
       busier: "أعلى من المعتاد",
-      "much-busier": "أعلى بكثير من المعتاد"
+      "much-busier": "أعلى من المعتاد"
     },
     live: "مباشر",
     readAt: function (t) { return num(t + NB + "م"); },
@@ -128,34 +114,22 @@ window.FitwayPublicCopy = function (en, h) {
     closed: "مغلق",
     opens: function (h) { return 'يفتح <bdi class="num time">' + hourText(h) + "</bdi>"; },
     outside: "خارج ساعات العمل",
-    cantLoad: "تعذّر التحميل",
-    checkConn: "تحقّق من الاتصال إن تكرّر ذلك.",
+    cantLoad: "تعذر التحميل",
+    checkConn: "تحقق من الاتصال إن تكرر ذلك.",
     retry: "إعادة المحاولة",
     retrying: "جارٍ المحاولة…",
     loading: "جارٍ التحميل…",
     loadingSay: "جارٍ تحميل حالة الازدحام",
     usualDay: function (d) { return "المعتاد أيام " + dayName(d); },
     openHours: function (d) { return 'مفتوح <span class="num iso">' + hourHtml(DAYS[d].open) + THIN + "–" + THIN + hourHtml(DAYS[d].close) + "</span>"; },
-    quietestLeft: function (h) { return 'أهدأ ساعة متبقية: <b class="num">' + hourHtml(h) + "</b>، " + T.usually(band(usualAt(TODAY, h))); },
-    quietestSame: function (h) { return 'أهدأ ساعة متبقية: <b>الآن</b> أو <b class="num">' + hourHtml(h) + "</b>"; },
-    nowQuietest: "أهدأ ساعة متبقية: <b>الآن</b>",
-    quietestToday: function (h) { return 'أهدأ ساعة اليوم: <b class="num">' + hourHtml(h) + "</b>، " + T.usually(band(usualAt(TODAY, h))); },
-    // One shape for an hour and for a span: the card's title already names the day.
+    quietLine: function (h, kind) { return '<b class="num">' + hourText(h) + "</b> " + (kind === "quiet" ? T.usually("quiet") : "أقل زحمة عادةً"); },
+    // The card's title already names the day.
     dayRange: function (cells) {
-      return 'الأهدأ <b class="num">' + spanHtml(quietCell(cells)) + '</b>، والأكثر ازدحامًا <b class="num">' + spanHtml(busyCell(cells)) + "</b>";
+      return 'الأهدأ <b class="num">' + hourHtml(quietCell(cells).h) + '</b>، والأكثر ازدحامًا <b class="num">' + hourHtml(busyCell(cells).h) + "</b>";
     },
-    // Two hours that read differently are two short clauses, joined as Arabic joins them, by its comma.
-    cellUsual: function (c) {
-      if (!splits(c)) return '<b class="num">' + spanHtml(c) + "</b>: " + T.usually(band(c.v));
-      return c.us.map(function (u, j) {
-        return '<span class="hr"><b class="num">' + hourHtml(c.h + j) + "</b> " + T.usually(band(u)) + (j < c.n - 1 ? "،" : "") + "</span>";
-      }).join(" ");
-    },
-    splitName: function (c) {
-      return c.us.map(function (u, j) { return hourText(c.h + j) + " " + T.usually(band(u)); }).join("، ");
-    },
+    cellUsual: function (c) { return '<b class="num">' + hourHtml(c.h) + "</b>: " + T.usually(band(c.v)); },
     hourName: function (c, isNow, ring) {
-      return spanSpoken(c) + (isNow ? "، الآن" : "") + "، " + T.usually(band(c.v)) + (ring ? "، أهدأ ساعة متبقية اليوم" : "");
+      return hourText(c.h) + (isNow ? "، الآن" : "") + "، " + T.usually(band(c.v)) + (ring ? "، أهدأ ساعة متبقية اليوم" : "");
     },
     now: "الآن",
     todayName: function (d) { return dayName(d) + "، اليوم"; },
@@ -163,11 +137,10 @@ window.FitwayPublicCopy = function (en, h) {
     hours: "الساعات",
     prevHour: "الساعة السابقة",
     nextHour: "الساعة التالية",
-    chartName: function (d, n, withNow) {
-      var D = DAYS[d], s = "المعتاد أيام " + dayName(d) + (n > 1 ? " كل ساعتين، " : " ساعةً بساعة، ") + "من " + hourText(D.open) + " إلى " + hourText(D.close);
+    chartName: function (d, withNow) {
+      var D = DAYS[d], s = "المعتاد أيام " + dayName(d) + " ساعةً بساعة، من " + hourText(D.open) + " إلى " + hourText(D.close);
       return withNow ? s + "، والآن " + hourText(NOW_H) : s;
     },
-    concept: "مفهوم استكشافي · بيانات افتراضية",
     other: "English", otherLang: "en"
   };
   return T;
