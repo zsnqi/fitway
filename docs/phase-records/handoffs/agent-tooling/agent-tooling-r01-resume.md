@@ -1,9 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-02 (item 24: round
-  working-tools merged, `a66e5955`; main advanced to `68b2c20d` after CI run 41403907289 passed)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-25; 25 last; 25 on in `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-05 (item 26: round lesson-commands merged, `c80cc042`)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-26; 26 last; 25 on in `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -23,6 +22,10 @@
   root in two side-by-side rounds; the public page's sketch 12 brief is the first to render through the CLI.
 
 ## Running now
+
+**Round lesson-commands is merged** (`c80cc042`, DECISIONS item 26, record
+`docs/phase-records/handoffs/agent-tooling/rounds/lesson-commands.md`): `pnpm wait` and `pnpm decision`. Open from it: F312, F313.
+`docs/agent-context/briefs/ENVIRONMENT.md` does not mention `pnpm wait` yet: changing that block touches every brief template, so it is left for a decision.
 
 **Round working-tools is merged** (`a66e5955`, DECISIONS item 24, record
 `docs/phase-records/handoffs/agent-tooling/rounds/working-tools.md`): `pnpm verify:owner serve`, free sizes,

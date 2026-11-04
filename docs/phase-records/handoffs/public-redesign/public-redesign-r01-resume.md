@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-04 (items 63-67; 67 last)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-05 (items 63-67; 67 last)
 - **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-67; 67 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
@@ -19,7 +19,16 @@
 
 ## Running now
 
-The page at `920a08dc` on `public-redesign-r01` (items 66, 67). Waiting on the user's acceptance by eye, then the single specification round, using the PUB lists in the reports of items 63, 64 and 66 (`D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `D:/fitway-temp/public-redesign-r01-final-form-64/REPORT.md`, `D:/fitway-temp/public-redesign-r01-fix-67/REPORT.md`) plus AMD-P7 (item 65). The user's page server is port 3181 (Terminal tab).
+The page at `62adb061` on `public-redesign-r01` (items 66, 67; `087df88c` is that branch's head, CI green, adding only a test timeout). Private link for the user's phone: https://claude.ai/artifact/EPNza8Je3DE29kzVNhPCVe, a copy as at `62adb061`, not checked in its frame. Then the single specification round, after the user's acceptance by eye, using the PUB lists in the reports of items 63, 64 and 66 (`D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `D:/fitway-temp/public-redesign-r01-final-form-64/REPORT.md`, `D:/fitway-temp/public-redesign-r01-fix-67/REPORT.md`) plus AMD-P7 (item 65). The user's page server is port 3181 (Terminal tab).
+
+**Waiting on the user (recorded 2026-11-05, while they slept):**
+
+1. Lesson 2 of the retrospective, yes or no: a short written list of the page's must-haves, where only the user's clear word removes one. A passing remark that would remove one gets the question "take it off the list?". The coordinator recommends yes, narrowly; it binds the coordinator and never stops the user. Not written into the agreements until they answer.
+2. Acceptance of the page by eye, on named frames or the private link. Nothing below starts before it (agreement of 2026-11-04).
+
+No verifier has looked at `94e134d1`, `920a08dc` or `62adb061`; the coordinator held that back too, so a look follows the user's eye rather than spending a round on a page they may change. Not checked anywhere: real phones, Noto Naskh, a screen reader. Not met: English 320's picked hour 15.3 px, days 14-15.5 px on small phones, Arabic 320's day air 2.6 px.
+
+The specification round's list, beyond the PUB lists: `public-ink.js` in the file list, the English comparison wording of `920a08dc`, and the one page of public-page rules (lesson 8).
 
 The public branch `public-redesign-r01` takes Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
