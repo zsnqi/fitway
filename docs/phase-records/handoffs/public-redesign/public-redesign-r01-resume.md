@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-04 (items 63-66; 66 last)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-66; 66 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-04 (items 63-67; 67 last)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-67; 67 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -19,7 +19,7 @@
 
 ## Running now
 
-The page at `920a08dc` on `public-redesign-r01` (item 66). Waiting on the user's word on Unavailable's blank band and their acceptance by eye, then the single specification round, using the PUB lists in the reports of items 63, 64 and 66 (`D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `D:/fitway-temp/public-redesign-r01-final-form-64/REPORT.md`, `D:/fitway-temp/public-redesign-r01-fix-67/REPORT.md`) plus AMD-P7 (item 65). The user's page server is port 3181 (Terminal tab).
+The page at `920a08dc` on `public-redesign-r01` (items 66, 67). Waiting on the user's acceptance by eye, then the single specification round, using the PUB lists in the reports of items 63, 64 and 66 (`D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `D:/fitway-temp/public-redesign-r01-final-form-64/REPORT.md`, `D:/fitway-temp/public-redesign-r01-fix-67/REPORT.md`) plus AMD-P7 (item 65). The user's page server is port 3181 (Terminal tab).
 
 The public branch `public-redesign-r01` takes Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
@@ -90,7 +90,7 @@ The user is away from home and cannot open LAN links (2026-11-04): send pictures
 
 What is left, in the order of item 65:
 
-3. **Done:** items 61 and 62 carried onto the page (item 63), the final form round (item 64), the two picks (item 65), and the verifier, the reading-direction review, their fixes and the recheck (item 66). **Next:** the user's word on Unavailable's blank band and their acceptance by eye, then the single specification round.
+3. **Done:** items 61 and 62 carried onto the page (item 63), the final form round (item 64), the two picks (item 65), and the verifier, the reading-direction review, their fixes and the recheck (item 66). **Next:** the user's acceptance by eye, then the single specification round.
 4. **Collected from their notes** (the reports of items 63 and 64 say which are done): Arabic order at small phones needs rework; proportional figures; ranges from the right everywhere; the week starts Sunday; `font-display: optional`; keep «نحو 70 في الصالة» and remove «مفهوم استكشافي»; the `statechart` note; the narrow AGENTS.md design-skill amendment; hours under bars from opening, never mid-bar; the quietest hour named only by its circle; the quiet line («10 ص هادئ عادةً», «12 ص أقل زحمة عادةً», or hidden; never «لاحقًا» or «الآن»); no shadda in «تعذّر», «تحقّق», «تكرّر»; 6 px between «تحقق من الاتصال» and retry; change or delete «لا نعرض عددًا قديمًا»; the Owner pages' hours; Reports' nearly empty «معدّل الموجودين» card; a general review of text sizes and weights across states, with the audit's copy doubts.
 5. **CI:** the agent-tooling resume cites its decisions part 025-040 by a short path, which should run from the repository root, `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`; `public-redesign-r01` is red on the Code health ratchet, not yet read. Then push.
 

@@ -5,6 +5,8 @@ description: Launch, inspect, drive and compare the FITWAY Owner Eclipse concept
 
 # Verify FITWAY
 
+**Start here.** To render a page and look at it, read only §"Public designer frames" and §"CLI working loop". Everything else in this file is reference: open a section only when you need it.
+
 The concept is a read-only input. Use its `verification-recipes.json`: user paths and observable state/feature
 proofs belong beside the concept on the branch that changes it. `--recipes` can point to a coordinator's evidence
 copy before that file is committed. Generated maps remain in evidence. Never copy the concept into this checkout.

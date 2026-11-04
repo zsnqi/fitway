@@ -27,6 +27,8 @@
   (2026-10-02 retrospective; F154)
 <!-- environment:end -->
 
+- Codex has no Monitor: where the block above says to wait with one, poll the shell you started with `write_stdin`. (2026-11-04 retrospective)
+- A shell output of `bash.exe ... CreateFileMapping ... Win32 error 5` comes from the harness, not your command: run the same command again once. (2026-11-04 retrospective)
 - You run in the workspace-write sandbox with automatic approval review. `git add`, `git commit` and anything that
   starts child processes with piped output (pnpm, Vitest, Playwright, Node scripts that run git) fail inside it:
   request escalation for them from the first attempt, with a one-line justification. (DECISIONS item 7)

@@ -42,6 +42,8 @@ catches. Write that check first, show its failing run, then the change and the p
 assertion to pass. For a visual outcome, the proof is the frame or measurement named above, fixed before you start.>
 (agent-tooling DECISIONS item 25; Matt Pocock's and pstack's `tdd`)
 
+Prove the change with the tests the brief names. CI runs the whole ladder on push; run `pnpm verify:fast` locally only when the brief says why.
+
 ## Frames
 
 Render with `pnpm verify:owner drive` for a page with recipes, or `pnpm verify:owner frames` and

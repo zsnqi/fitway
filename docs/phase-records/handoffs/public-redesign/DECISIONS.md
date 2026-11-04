@@ -73,3 +73,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 64. **The final form round** `decisions/061-080.md`
 65. **The user's two picks, and the order of what is left** `decisions/061-080.md`
 66. **The two reviews, the fix round, the recheck** `decisions/061-080.md`
+67. **The user's answers** `decisions/061-080.md`

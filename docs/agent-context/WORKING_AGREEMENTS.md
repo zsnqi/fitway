@@ -38,9 +38,8 @@ latest wording; never copy an entry into a resume point.
   ("Does the design round stay?"). Leave out pixel values and other measurements unless the user asks for them;
   name a screen by the device (on the phone, on a tablet, on a computer). The measurements stay in the records and in
   the agents' reports. (user, 2026-10-03, after a decision page that was hard to read)
-- A report to the user ends with every decision waiting on them, numbered, each one answerable from the report alone,
-  with the coordinator's recommendation; a report with none says so. (user, 2026-11-02; agent-tooling DECISIONS item
-  25, after pstack's `ketchup`)
+- A report to the user is short and has three parts in this order: what is done, what is left, and what needs their decision. Every decision is numbered and answerable from the report alone, with the coordinator's recommendation; a report with none says so. (user, 2026-11-02 and 2026-11-04; agent-tooling DECISIONS item 25, after pstack's `ketchup`)
+- When the user is away from home, or a link did not open for them, decisions on how a page looks go to them as pictures, and a page they must try goes to them as a private artifact, which opens from anywhere. (user, 2026-11-04, after the public page's choices were reversed once it was really used)
 
 ## What stays out of the repository
 
@@ -59,6 +58,8 @@ latest wording; never copy an entry into a resume point.
   user's "كمّل" alone. (user, 2026-10-02)
 - Reply in Saudi-dialect Arabic when the user writes Arabic; code, paths, commit messages and
   repository documents stay in English. (user)
+- The coordinator reads CI after every push, in the same turn or when it next acts, and a red run is read and handled that day, whichever branch it is on. (user, 2026-11-04, after the public page's branch stayed red and unread for 48 hours)
+- Records stay light. A decision is written when the user makes it, and it travels in the same commit as the round's brief or result where one is due; the resume file is updated once at the end of a turn whose state changed, not per decision. (user, 2026-11-04, after 116 record commits against 56 design commits on the public page)
 
 ## Ownership
 
@@ -78,6 +79,10 @@ latest wording; never copy an entry into a resume point.
 - The coordinator's questions to the user and its designer briefs carry what the owner must see and
   be able to do, and why; the composition, forms and colours are the designer's, and the coordinator
   recommends none of them. (user, 2026-10-04)
+- Before the first designer of a new page or direction runs, the coordinator writes one short page: the target, two or three references, and the feature the page cannot do without, and asks every open question at once. The user confirms it, then the designer starts. (user, 2026-11-04, after 21 whole designs were set aside on the public page for want of an agreed target)
+- A brief grows by what the page must show, not by bans. A rejection is recorded with its reason, and does not become a "never" in the next brief. Rules written for another surface reach a page only when the coordinator names them for that page. (user, 2026-11-04, after the public page's briefs inherited the Owner dashboard's rules and piled up bans)
+- A specification, and a chain of rounds meant to run unattended, starts only after the user has accepted the design by eye on named frames or the running page. (user, 2026-11-04, after an overnight chain on two-hour bars that the user's notes replaced the next day)
+- A fix round's brief names the tests that prove it and leaves the whole ladder to CI on push; an agent runs `pnpm verify:fast` locally only when the brief says why. (user, 2026-11-04, after builders waited about 16 minutes per run for a ladder CI repeats)
 - Codex takes frozen fixes and edits. From 2026-10-13 its rounds run on DeepSeek V4.1 Flash through
   the user's Open Design subscription, with the Codex CLI as the harness, always at `max`: the model
   is cheap enough that a lower level saves nothing (user, 2026-10-13). GPT-6.1 Sol stays available;
