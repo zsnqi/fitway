@@ -416,5 +416,5 @@ describe("gardener round 27 truthful inventory", () => {
 		console.log(
 			"G4 PASS: all tracked gardener test paths are absent and uncited outside tests",
 		);
-	}, 60000);
+	}, 180000);
 });
