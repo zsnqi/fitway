@@ -9,7 +9,7 @@
 window.FitwayPublicCopy = function (en, h) {
   "use strict";
   var num = h.num, iso = h.iso, hourText = h.hourText, hourHtml = h.hourHtml;
-  var dayName = h.dayName, band = h.band, quietCell = h.quietCell, busyCell = h.busyCell;
+  var dayName = h.dayName, band = h.band;
   var DAYS = h.DAYS, TODAY = h.TODAY, NOW_H = h.NOW_H, NB = h.NB, THIN = h.THIN;
   var T = en ? {
     words: { quiet: "Quiet", moderate: "Moderate", busy: "Busy", packed: "Packed" },

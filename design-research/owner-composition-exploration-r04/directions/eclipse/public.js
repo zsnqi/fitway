@@ -118,7 +118,6 @@
     return out;
   }
   function quietCell(cells) { return cells.reduce(function (a, c) { return c.v < a.v ? c : a; }); }
-  function busyCell(cells) { return cells.reduce(function (a, c) { return c.v > a.v ? c : a; }); }
 
   // ---------------------------------------------------------------------------------------------------------------
   // The clock. Gym time on a 12-hour clock, Western digits in both languages (NUM-1): «7 م», "7 PM". An hour and its
@@ -169,7 +168,7 @@
   var num = function (x) { return '<bdi class="num">' + x + "</bdi>"; };
   var T = window.FitwayPublicCopy(en, {
     num: num, iso: iso, hourText: hourText, hourHtml: hourHtml,
-    dayName: dayName, usualAt: usualAt, band: band, quietCell: quietCell, busyCell: busyCell,
+    dayName: dayName, usualAt: usualAt, band: band, quietCell: quietCell,
     DAYS: DAYS, TODAY: TODAY, NOW_H: NOW_H, NB: NB, THIN: THIN
   });
 
