@@ -246,10 +246,10 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 
 /* The status line. "Live" stands under the percentage in every language at every width and no reading moves it (public.js,
  * hold: data-mode). Where the count and the percentage share a line they are two columns, the first the count's: a
- * comparison may reach into the gap (--vs-reach) and stops short of the stamp (cols), and a longer one takes two lines
- * (cols-wrap, "Much quieter than usual"). Where they part, the percentage starts the column's edge, the comparison under
- * it and the stamp on the same edge under that, their words in one line (stack). The dot's edge stands on the number's
- * ink, 2 px inside its box. */
+ * comparison may reach into the gap (--vs-reach) and stops short of the stamp (cols); where the longest would part the
+ * facts by more than a fifth of the head's width, it takes two lines (cols-wrap, "Much quieter than usual"). Where they
+ * part, the percentage starts the column's edge, the comparison under it and the stamp on the same edge under that, their
+ * words in one line (stack). The dot's edge stands on the number's ink, 2 px inside its box. */
 .vs { display: flex; align-items: baseline; column-gap: 6px; font-size: var(--fs-text); font-weight: 500; line-height: 1.35; color: var(--ink); white-space: nowrap; }
 .vs .ic { align-self: flex-start; width: 16px; height: 16px; padding: 3px; margin-block-start: calc((1.35em - 22px) / 2); border-radius: 50%; background: rgb(var(--chalk) / 0.1); box-sizing: content-box; }
 .sub[data-mode^="cols"] .count-line { min-inline-size: var(--col-a); }
@@ -259,6 +259,7 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 .sub[data-mode="cols-wrap"] .vs > span { text-wrap: balance; }
 .sub[data-mode="stack"] { row-gap: 6px; }
 .sub[data-mode="stack"] .facts { margin-block-end: 4px; }
+.sub[data-mode="stack"] .facts.act { margin-block-end: 14px; } /* with the row gap, the 20 px above: the ring stands 15 px from the sentence */
 .sub[data-mode="stack"] .pct { flex-basis: 100%; }
 .sub[data-mode="stack"] .vs { flex-basis: 100%; white-space: normal; }
 .sub[data-mode="stack"] .stamp { flex-basis: 100%; white-space: normal; }
@@ -294,10 +295,10 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 .stamp:is(.st-late, .err) .st { flex: none; margin-block-start: calc((1.35em - 18px) / 2); }
 .stamp.err > span { text-wrap: balance; }
 /* Delayed: the last reading in --ink-2, its words and its time kept (dimming is never the only channel); the status
- * line says it is the last one, when, and how long ago, in the family's amber with its clock (STA-2, GLO-9). It may
- * part between its time and its age on a narrow phone, never inside either. */
+ * line says it is the last one, when, and how long ago, in the family's amber with its clock (STA-2, GLO-9). On a narrow
+ * phone it parts before its time or before its age, never inside either, so no clock and no face takes it to the edge. */
 .page[data-state="delayed"] :is(.word, .facts, .facts .num) { color: var(--ink-2); }
-.late-at, .ago { white-space: nowrap; }
+.ago { white-space: nowrap; }
 .st-late .st, .st-late b, .st-late .ago { color: var(--amber); }
 /* Unavailable: no count, in --ink-2 (the brightest thing is never unavailable, TRU-3); why none is shown; Offline with
  * its struck circle. Error's words are --ink-2 too, so its one retry is the brightest thing on the page. */
@@ -753,7 +754,7 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 /* A phone at 200% zoom: the brand and the language key each take a line, and a status line that held one line takes two. */
 @media (max-width: 259px) {
   .page[data-range="phone"] .top { height: auto; flex-wrap: wrap; row-gap: 8px; padding-block: var(--bar-top) 8px; }
-  .late-at, .ago, .card-hours { white-space: normal; }
+  .ago, .card-hours { white-space: normal; }
 }
 
 /* ---------------------------------------------------------------------------------------------------------------

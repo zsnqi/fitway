@@ -785,9 +785,10 @@
   //   copies, measured), so a state that follows another, or a reading that changes level or hour, moves nothing under the
   //   word; "Live" stands under the percentage at every width (sub, data-mode): where the count and the percentage share a
   //   line they are two columns, the count over the comparison, the percentage over the stamp. The first column is the
-  //   count's, widened only for the three plain comparisons, which may also reach into the gap up to VS_AIR from the stamp,
-  //   so the two facts stay a pair in English as in Arabic; "Much quieter than usual" takes two lines where that leaves it
-  //   short (cols-wrap), and no reading moves either. Where they part, the percentage starts the column's edge, the
+  //   count's, widened for the three plain comparisons, which may also reach into the gap up to VS_AIR from the stamp, so
+  //   the two facts stay a pair in English as in Arabic. It widens for the two longest too where the gap they open stays
+  //   under PAIR_SHARE of the head's width (the tablet and the computer); on a phone "Much quieter than usual" takes two
+  //   lines (cols-wrap), and no reading moves either. Where they part, the percentage starts the column's edge, the
   //   comparison on its own line under it and the stamp on the same edge under that, so the comparison never falls after
   //   "Live" (stack); Loading writes Live's rows into Live's boxes (the numbers' rooms, the stamp's room, the comparison's
   //   as the default reading writes it);
@@ -812,6 +813,7 @@
     return f;
   }
   var VS_AIR = 12; // the least air between a comparison and the stamp beside it
+  var PAIR_SHARE = 0.2; // the widest gap between the two facts, of the head's width, that the longest comparison may open
   var STAMP_HANG = 4; // how far the widest clock ("12:00 ص") may run past the percentage's column, into the page's margin
   var WIDEST_CLOCKS = [10, 12, 22, 24]; // the hours with two digits, "11" being narrow
   function hold() {
@@ -854,7 +856,8 @@
     var pctW = gs.querySelector(".pct") ? gs.querySelector(".pct").getBoundingClientRect().width : 0;
     var firstCol = W - G - Math.max(pctW, stampW - STAMP_HANG), mode = "stack", colA = 0, reach = Math.max(0, G - VS_AIR);
     if (countW + 0.5 <= firstCol) {
-      colA = Math.min(firstCol, Math.max(countW, vsLess - reach));
+      var oneLine = vsW + VS_AIR - countW <= W * PAIR_SHARE;
+      colA = Math.min(firstCol, Math.max(countW, (oneLine ? vsW + 1 : vsLess) - reach));
       mode = vsW + 0.5 > colA + reach ? "cols-wrap" : "cols";
     }
     [gs, head.sub].forEach(function (n) {
@@ -923,7 +926,7 @@
   // rest, between a floor and a ceiling (on a tall screen the rest goes to the space around). The phone's ceiling
   // follows the screen's height, 289 px at 844 tall to 320 at 932, so the card stays a little under three fifths of a
   // tall phone and the rest goes to the white around the head; its floor comes down from 150 px at 740 tall to 107 at
-  // 568, so the days stand on a short phone's first screen, in Readex Pro and in the fallback faces. The tablet's ceiling is three tenths of the screen, so its card
+  // 606, so the days stand on a short phone's first screen, in Readex Pro and in the fallback faces. The tablet's ceiling is three tenths of the screen, so its card
   // stays about half of it and the head stands low in the white above.
   // A range's edge would make the day jump (the next range's frame, rows and floor and ceiling give it another height:
   // at 1023 / 1024 x 768 182 against 300 px in Arabic), so in the BLEND px under an edge the page is also laid out as
@@ -933,7 +936,7 @@
   // 768 and 834 on the tablet, every computer) sit outside, and keep their fit.
   var BLEND = 160;
   function fitted() {
-    var r = range(), min = r === "phone" ? Math.round(Math.max(107, Math.min(150, 150 - (740 - innerHeight) * 0.25))) : 180;
+    var r = range(), min = r === "phone" ? Math.round(Math.max(107, Math.min(150, 150 - (740 - innerHeight) * 0.32))) : 180;
     var max = r === "computer" ? 560 : r === "tablet" ? Math.min(520, Math.round(innerHeight * 0.3)) : Math.min(320, Math.round(289 + (innerHeight - 844) * 0.35));
     page.classList.add("fitting");
     B.el.style.height = "0px";
