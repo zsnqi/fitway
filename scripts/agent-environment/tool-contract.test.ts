@@ -2,7 +2,6 @@ import * as fs from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
-import { lessonCommandProbes } from "./lesson-command-cases";
 import { beginToolCommand, toolEntry } from "./tool-contract.mjs";
 import { sourceScanTest, startupProbes } from "./tool-contract-cases";
 import {
@@ -20,6 +19,7 @@ import {
 	unknownProbe,
 } from "./tool-contract-probes";
 import { TOOL_REGISTRY } from "./tool-registry.mjs";
+import { waitDecisionProbes } from "./wait-decision-cases";
 
 afterAll(() => fs.rmSync(runRoot, { recursive: true, force: true }));
 
@@ -149,7 +149,7 @@ async function startFailurePrefixTest() {
 async function generatedContractTest() {
 	await runProbes([
 		...TOOL_REGISTRY.flatMap(contractProbes),
-		...lessonCommandProbes(),
+		...waitDecisionProbes(),
 	]);
 }
 

@@ -16,7 +16,7 @@ const HANDOFFS = "docs/phase-records/handoffs";
 
 async function findResume(root, milestoneId) {
 	const filename = `${milestoneId}-resume.md`;
-	const found = [];
+	let found = null;
 	async function visit(directory) {
 		let entries;
 		try {
@@ -28,18 +28,11 @@ async function findResume(root, milestoneId) {
 		for (const entry of entries) {
 			const absolute = path.join(directory, entry.name);
 			if (entry.isDirectory()) await visit(absolute);
-			else if (
-				entry.isFile() &&
-				(entry.name === filename ||
-					(entry.name.startsWith(`${milestoneId}-`) &&
-						entry.name.endsWith("-resume.md")))
-			)
-				found.push(absolute);
+			else if (entry.isFile() && entry.name === filename) found ??= absolute;
 		}
 	}
 	await visit(path.join(root, ...HANDOFFS.split("/")));
-	const exact = found.find((file) => path.basename(file) === filename);
-	return exact ?? found.sort().at(-1) ?? null;
+	return found;
 }
 
 function standingLine(text) {

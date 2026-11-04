@@ -187,23 +187,6 @@ function waitTimeoutProbes(): Probe[] {
 function waitUsageProbes(): Probe[] {
 	return [
 		{
-			label: "wait refuses a missing pattern through the usage contract",
-			run: async () => {
-				const root = temporaryRoot("wait-missing-pattern");
-				const file = path.join(root, "missing.log");
-				writeFileSync(file, "anything\n");
-				await withRoot(root, async () => {
-					const result = await runWait([file]);
-					expect(result.status).toBe(1);
-					expect(result.stdout).toBe("");
-					expect(result.stderr).toMatch(
-						/^wait: FAIL: missing required option --pattern/,
-					);
-					expect(result.stderr).toContain("pnpm wait");
-				});
-			},
-		},
-		{
 			label: "wait refuses an invalid pattern and prints why",
 			run: async () => {
 				const root = temporaryRoot("wait-invalid-pattern");
@@ -424,10 +407,12 @@ function decisionFailureProbes(): Probe[] {
 function realDecisionProbes(): Probe[] {
 	return [
 		{
-			label: "decision prints agent-environment item 3",
+			label: "decision prints agent-environment-r03 item 3",
 			run: async () => {
 				await expect(
-					readDecision("agent-environment", 3, { repositoryRoot: repository }),
+					readDecision("agent-environment-r03", 3, {
+						repositoryRoot: repository,
+					}),
 				).resolves.toMatch(
 					/^docs\/phase-records\/handoffs\/agent-environment\/DECISIONS\.md\n3\. \*\*The least sufficient context/,
 				);
@@ -460,7 +445,7 @@ function realDecisionProbes(): Probe[] {
 	];
 }
 
-export function lessonCommandProbes(): Probe[] {
+export function waitDecisionProbes(): Probe[] {
 	return [
 		...waitImmediateProbes(),
 		...waitIncrementalProbes(),

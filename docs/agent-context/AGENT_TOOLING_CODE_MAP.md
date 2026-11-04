@@ -132,7 +132,7 @@ Counts: 140 files, 0 without a leading comment.
 - `git-commit-words.mjs`: The launcher's reading of a shell command an agent ran (the claim checks in codex-round.mjs): whether its words are a git commit, past git's own leading options. Exports: `commandStatusIsEvent`, `isGitCommitWords`.
 - `git-context.mjs`: Read Git context and warn when the local branch is behind its upstream. Exports: `behindUpstreamWarning`, `readGit`.
 - `git-path-key.mjs`: Normalize Git paths and case-insensitive BOM exception keys. Exports: `bomExceptionPathKey`, `normalizeGitPath`.
-- `lesson-command-cases.ts`: Probe wait and decision behavior through the shared command contract. Exports: `lessonCommandProbes`.
+- `wait-decision-cases.ts`: Probe wait and decision behavior through the shared command contract. Exports: `waitDecisionProbes`.
 - `markdown-lines.mjs`: Count lines and locate indexes in Markdown text. Exports: `lineAt`, `lines`.
 - `new-handoff.mjs`: Create or refresh a milestone resume point from the current repository state. Exports: `createResumePoint`, `localTimestamp`, `parseHandoffArgs`, `replaceYamlScalars`.
 - `path-identity.mjs`: Resolve real and not-yet-created paths into stable identity keys. Exports: `pathKey`, `samePath`.
