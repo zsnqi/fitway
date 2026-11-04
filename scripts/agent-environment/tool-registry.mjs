@@ -391,6 +391,45 @@ export const TOOL_REGISTRY = Object.freeze([
 		exitCodes: exits([0, "Table printed."], [1, "Invalid argument."]),
 	}),
 	packageEntry({
+		name: "wait",
+		invocation: nodeInvocation("scripts/agent-environment/wait.mjs"),
+		purpose: "Wait for one matching log line.",
+		usage: "pnpm wait <file> --pattern <regex> [--timeout <seconds>]",
+		options: [
+			value(
+				"--pattern",
+				"Regular expression to match against complete lines.",
+				{
+					sample: "READY",
+					freeText: true,
+				},
+			),
+			value("--timeout", "Maximum wait in seconds.", { sample: "600" }),
+		],
+		requiredOptions: ["--pattern"],
+		positionals: [{ name: "file", required: true, sample: "agent.log" }],
+		extraHelp: ["Default: 600 seconds."],
+		exitCodes: exits(
+			[0, "First matching line printed."],
+			[1, "Timeout or invalid argument."],
+		),
+	}),
+	packageEntry({
+		name: "decision",
+		invocation: nodeInvocation("scripts/agent-environment/decision.mjs"),
+		purpose: "Print one standing decision with its source path.",
+		usage: "pnpm decision <milestone-id> <n>",
+		options: [],
+		positionals: [
+			{ name: "milestone-id", required: true, sample: "agent-tooling-r01" },
+			{ name: "n", required: true, sample: "26" },
+		],
+		exitCodes: exits(
+			[0, "Decision printed."],
+			[1, "Milestone, file, or item not found."],
+		),
+	}),
+	packageEntry({
 		name: "check:repository",
 		invocation: nodeInvocation("scripts/verify-repository.mjs"),
 		purpose: "Validate repository invariants and records.",

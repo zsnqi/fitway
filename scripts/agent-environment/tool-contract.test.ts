@@ -2,6 +2,7 @@ import * as fs from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
+import { lessonCommandProbes } from "./lesson-command-cases";
 import { beginToolCommand, toolEntry } from "./tool-contract.mjs";
 import { sourceScanTest, startupProbes } from "./tool-contract-cases";
 import {
@@ -146,7 +147,10 @@ async function startFailurePrefixTest() {
 }
 
 async function generatedContractTest() {
-	await runProbes(TOOL_REGISTRY.flatMap(contractProbes));
+	await runProbes([
+		...TOOL_REGISTRY.flatMap(contractProbes),
+		...lessonCommandProbes(),
+	]);
 }
 
 async function runProbes(

@@ -8,7 +8,9 @@
 	"commandsWithoutRows": {
 		"tools": "new in cb1cfe65; 57dad1c0 had no pnpm tools",
 		"evidence:keep": "new in evidence-home; 57dad1c0 had no evidence:keep",
-		"run-folder:new": "new in evidence-home; 57dad1c0 had no run-folder:new"
+		"run-folder:new": "new in evidence-home; 57dad1c0 had no run-folder:new",
+		"wait": "new in lesson-commands; 57dad1c0 had no wait",
+		"decision": "new in lesson-commands; 57dad1c0 had no decision"
 	},
 	"rows": {
 		"check:repository": [

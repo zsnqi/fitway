@@ -157,6 +157,7 @@ export function runNode({
 	cwd = repository,
 	clearPhase = false,
 	extraEnv = {},
+	afterSpawn,
 }: {
 	invocation?: string;
 	nodeArgs?: string[];
@@ -165,6 +166,7 @@ export function runNode({
 	cwd?: string;
 	clearPhase?: boolean;
 	extraEnv?: Record<string, string>;
+	afterSpawn?: () => void;
 }) {
 	const parts = invocation
 		? invocation.split(" ")
@@ -198,6 +200,7 @@ export function runNode({
 			timedOut = true;
 			child.kill();
 		}, 15_000);
+		if (afterSpawn) child.once("spawn", afterSpawn);
 		child.once("error", reject);
 		child.once("close", (status) => {
 			clearTimeout(timer);
