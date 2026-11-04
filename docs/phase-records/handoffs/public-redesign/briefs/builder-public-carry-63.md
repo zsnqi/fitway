@@ -78,7 +78,7 @@ into a file, a commit message or your report, and never name their source in the
 4. **The page's code stays within the repository's limits:** `public.js` and `public.css` meet the code-health check
    (`pnpm check:code-health`), with no raised baseline. Split a file if needed, as `public-slide.js` was.
 
-Do not edit `PUBLIC-SPEC.md` or the `spec/` parts: list instead, per PUB record, what no longer matches. A later round writes them.
+Do not edit `design-research/owner-composition-exploration-r04/directions/eclipse/PUBLIC-SPEC.md` or its parts in the spec folder beside it: list instead, per PUB record, what no longer matches. A later round writes them.
 
 ## Keep
 
