@@ -392,6 +392,45 @@ describe("brief-references: resolve a brief against its named Git worktree", () 
 		);
 	});
 
+	// The worktree's own code before the named HEAD differs only between a later merge and its second parent.
+	function mergeFixture() {
+		const f = fixture();
+		put(f.worktree, "app.js", "export const app = 1;\n");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "-m", "worktree code before naming HEAD");
+		const named = git(f.worktree, "rev-parse", "--short", "HEAD");
+		put(f.commandRepository, "notes.md", "# Coordinator notes\n");
+		git(f.commandRepository, "add", ".");
+		git(f.commandRepository, "commit", "-m", "coordinator Markdown");
+		const brief = f.valid.replace(`HEAD \`${f.head}\``, `HEAD \`${named}\``);
+		return { ...f, named, brief };
+	}
+
+	it("accepts a later merge whose first-parent diff changes only Markdown", async () => {
+		const f = mergeFixture();
+		git(f.worktree, "merge", "--no-ff", "--no-edit", "coordinator");
+		const result = await f.check(f.brief);
+		expect(result.problems).toEqual([]);
+		expect(result.ok).toBe(true);
+	});
+
+	it("rejects a later merge whose first-parent diff changes a non-Markdown path", async () => {
+		const f = mergeFixture();
+		git(f.worktree, "merge", "--no-ff", "--no-commit", "coordinator");
+		put(f.worktree, "merge.js", "export const merged = 1;\n");
+		git(f.worktree, "add", ".");
+		git(f.worktree, "commit", "--no-edit");
+		const merge = git(f.worktree, "rev-parse", "HEAD");
+		const result = await f.check(f.brief);
+		expect(result.ok).toBe(false);
+		expect(formatBriefResult(result)).toMatch(
+			new RegExp(
+				`:4: FAIL brief-references: commit ${merge} after named HEAD ${f.named} changes non-Markdown paths: merge\\.js$`,
+				"m",
+			),
+		);
+	});
+
 	it("reports an absent worktree, branch mismatch, detached HEAD, invalid hash and nonancestor", async () => {
 		const f = fixture();
 		expect(
