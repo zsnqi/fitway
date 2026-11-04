@@ -41,6 +41,7 @@ window.FitwayPublicCopy = function (en, h) {
     // Unavailable: no count, and why none is shown (DESIGN_GUIDE §6: old data is never presented as current).
     noCount: "No count",
     noOld: "We never show an old count in its place.",
+    notes: { back: "The count returns when we're back online.", short: "We don't show old counts." },
     offline: "Offline",
     // Closed: the next opening, today's (STA-11's form: the day is named only when it is another).
     closed: "Closed",
@@ -55,7 +56,7 @@ window.FitwayPublicCopy = function (en, h) {
     loading: "Loading…",
     loadingSay: "Loading how busy it is",
     usualDay: function (d) { return "A usual " + dayName(d); },
-    openHours: function (d) { return 'Open <span class="num iso">' + hourText(DAYS[d].open) + THIN + "–" + THIN + hourText(DAYS[d].close) + "</span>"; },
+    openHours: function (d) { return '<span class="open-word">Open </span><span class="num iso">' + hourText(DAYS[d].open) + THIN + "–" + THIN + hourText(DAYS[d].close) + "</span>"; },
     // The quiet line, today's: the hour and how it usually is, nothing more. kind: "quiet", a quiet hour left; "less", none
     // quiet but one lighter than this hour. None lighter, the page hides the line.
     quietLine: function (h, kind) { return '<b class="num">' + hourText(h) + "</b> " + (kind === "quiet" ? T.usually("quiet") : "usually less busy"); },
@@ -63,10 +64,11 @@ window.FitwayPublicCopy = function (en, h) {
     dayRange: function (cells) {
       return 'Quietest at <b class="num">' + hourHtml(quietCell(cells).h) + '</b>, busiest at <b class="num">' + hourHtml(busyCell(cells).h) + "</b>";
     },
+    busiest: function (cells) { return 'Busiest at <b class="num">' + hourHtml(busyCell(cells).h) + "</b>"; },
     // A picked hour: its usual.
     cellUsual: function (c) { return '<b class="num">' + hourHtml(c.h) + "</b>: " + T.usually(band(c.v)); },
     hourName: function (c, isNow, ring) {
-      return hourText(c.h) + (isNow ? ", now" : "") + ", " + T.usually(band(c.v)) + (ring ? ", the quietest time left today" : "");
+      return hourText(c.h) + (isNow ? ", now" : "") + ", " + T.usually(band(c.v)) + (ring === "day" ? ", the quietest hour of the day" : ring ? ", the quietest time left today" : "");
     },
     now: "Now",
     todayName: function (d) { return dayName(d) + ", today"; },
@@ -86,7 +88,7 @@ window.FitwayPublicCopy = function (en, h) {
     rightNow: "الآن",
     srNow: "الازدحام الآن: ",
     // The English line's shape, small word, large count, small words: «نحو» says it is not an exact headcount (GLO-2's
-    // rule) in one short word, so the count and the percentage hold one line down to about 386 px.
+    // rule) in one short word, so the count and the percentage hold one line down to about 378 px.
     about: function (n) { return T.aboutOf(num(n)); },
     aboutOf: function (x) { return "نحو " + x + " في الصالة"; },
     full: function (p) { return T.fullOf(num(p + "%")); },
@@ -110,6 +112,7 @@ window.FitwayPublicCopy = function (en, h) {
     // Unavailable: the number is not there, and why no old one stands in for it (written natively, not from "No count").
     noCount: "العدد غير متوفر",
     noOld: "لا نعرض عددًا قديمًا على أنه الحالي.",
+    notes: { back: "يظهر العدد عند عودة الاتصال.", short: "لا نعرض عددًا قديمًا." },
     offline: "غير متصل",
     closed: "مغلق",
     opens: function (h) { return 'يفتح <bdi class="num time">' + hourText(h) + "</bdi>"; },
@@ -121,15 +124,16 @@ window.FitwayPublicCopy = function (en, h) {
     loading: "جارٍ التحميل…",
     loadingSay: "جارٍ تحميل حالة الازدحام",
     usualDay: function (d) { return "المعتاد أيام " + dayName(d); },
-    openHours: function (d) { return 'مفتوح <span class="num iso">' + hourHtml(DAYS[d].open) + THIN + "–" + THIN + hourHtml(DAYS[d].close) + "</span>"; },
+    openHours: function (d) { return '<span class="open-word">مفتوح </span><span class="num iso">' + hourHtml(DAYS[d].open) + THIN + "–" + THIN + hourHtml(DAYS[d].close) + "</span>"; },
     quietLine: function (h, kind) { return '<b class="num">' + hourText(h) + "</b> " + (kind === "quiet" ? T.usually("quiet") : "أقل زحمة عادةً"); },
     // The card's title already names the day.
     dayRange: function (cells) {
       return 'الأهدأ <b class="num">' + hourHtml(quietCell(cells).h) + '</b>، والأكثر ازدحامًا <b class="num">' + hourHtml(busyCell(cells).h) + "</b>";
     },
+    busiest: function (cells) { return 'الأكثر ازدحامًا <b class="num">' + hourHtml(busyCell(cells).h) + "</b>"; },
     cellUsual: function (c) { return '<b class="num">' + hourHtml(c.h) + "</b>: " + T.usually(band(c.v)); },
     hourName: function (c, isNow, ring) {
-      return hourText(c.h) + (isNow ? "، الآن" : "") + "، " + T.usually(band(c.v)) + (ring ? "، أهدأ ساعة متبقية اليوم" : "");
+      return hourText(c.h) + (isNow ? "، الآن" : "") + "، " + T.usually(band(c.v)) + (ring === "day" ? "، أهدأ ساعة في اليوم" : ring ? "، أهدأ ساعة متبقية اليوم" : "");
     },
     now: "الآن",
     todayName: function (d) { return dayName(d) + "، اليوم"; },

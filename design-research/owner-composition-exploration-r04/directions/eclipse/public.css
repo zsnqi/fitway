@@ -6,8 +6,9 @@
  * 1px edge and the chart card's U light (the Owner chart card's geometry), chalk ink, Readex Pro at 400/500/600/700.
  * Two materials carry the truth: usual hours are flat chalk, the live hour is light (FITWAY red, the only red on the
  * page besides the lights). Nothing after now is drawn as a reading.
- * One composition on every screen: the level word leads in the corner light, its facts under it (two rows below
- * 1024 px, one row on the computer), the usual day in the lit card under them, taking the width on the computer.
+ * One composition on every screen: the level word leads in the corner light, its facts under it in two rows (the count
+ * and the percentage, the comparison and the stamp), the usual day in the lit card under them, taking the width on the
+ * computer.
  * Everything is placed with logical properties and flex order, so Arabic runs time from right to left. The Arabic is
  * set for itself where Readex Pro's Arabic asks for it (":lang(ar)" rules): no tracking, room for its ascenders and
  * descenders, and its own sizes where the Latin's would read small. */
@@ -83,10 +84,11 @@ b { font-weight: 600; }
   --pad-end: clamp(16px, calc(0.952vw + 12.29px), 28px);
   --top-h: clamp(60px, calc(3.2vw + 46px), 92px);
   --fs-word: clamp(52px, calc(2.286vw + 55.1px), 88px);
-  --fs-count: clamp(30px, calc(0.952vw + 30.29px), 44px);
-  --fs-text: clamp(15px, calc(0.19vw + 15.26px), 18px);
-  --fs-small: clamp(13px, calc(0.095vw + 13.63px), 15px);
-  --fs-axis: clamp(12px, calc(0.143vw + 11.94px), 14px);
+  --fs-count: clamp(34px, calc(0.952vw + 30.29px), 44px); /* never under 34 px on a phone, two lines or one */
+  --fs-text: clamp(16px, calc(0.19vw + 15.26px), 18px);
+  --fs-stamp: clamp(15px, calc(0.095vw + 14.63px), 16px);
+  --fs-small: clamp(14px, calc(0.095vw + 13.63px), 15px);
+  --fs-axis: clamp(12.5px, calc(0.095vw + 12.63px), 14px);
   --ux: clamp(1px, calc(0.10476vw + 0.5914px), 2.1px);
   --uy: clamp(1px, calc(0.014286vw + 0.94429px), 1.15px);
   position: relative;
@@ -157,7 +159,7 @@ html[dir="ltr"] .brand svg { margin-inline-start: calc(clamp(28px, calc(0.381vw 
 
 /* ---------------------------------------------------------------------------------------------------------------
  * The live reading: the word, and under it the facts: the count and the percentage, then the status line, today
- * against usual and the stamp (two rows below 1024 px; one row on the computer).
+ * against usual and the stamp, on two rows at every width.
  * --------------------------------------------------------------------------------------------------------------- */
 /* The plot's height is fitted to the screen by the JS (fit); --plot-h is its height without the JS. */
 .page.fitting { min-height: 0; }
@@ -196,7 +198,8 @@ html[dir="ltr"] .brand svg { margin-inline-start: calc(clamp(28px, calc(0.381vw 
   flex-wrap: wrap;
   align-items: baseline;
   align-content: flex-start;
-  column-gap: 18px;
+  --gap: clamp(16px, calc(5.714vw - 2.29px), 20px); /* 16 px at 320, 20 from 390 */
+  column-gap: var(--gap);
   row-gap: 12px;
   margin-block-start: 10px;
 }
@@ -205,7 +208,7 @@ html[dir="ltr"] .brand svg { margin-inline-start: calc(clamp(28px, calc(0.381vw 
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  column-gap: 14px;
+  column-gap: var(--gap);
   row-gap: 2px;
   font-size: 18px;
   font-weight: 500;
@@ -213,14 +216,15 @@ html[dir="ltr"] .brand svg { margin-inline-start: calc(clamp(28px, calc(0.381vw 
   color: var(--ink);
 }
 .facts .num { font-size: var(--fs-count); font-weight: 600; letter-spacing: -0.01em; color: var(--ink); margin-inline: 0.04em; line-height: 1; }
-/* The rule between the facts stands as tall as the numbers and on their baseline, not as tall as the line box, which
- * reached 5 px above the digits, to 3.5 px under the foot of «مزدحم»'s mim, straight below it. An empty inline-block's
- * bottom edge is the baseline, so the rule follows the digits at every size. A border, so it stays under forced colours. */
-.pct::before { content: ""; display: inline-block; height: calc(var(--fs-count) * 0.7); margin-inline-end: 12px; border-inline-start: 1px solid var(--line); vertical-align: baseline; }
+/* The rule between the facts stands in the middle of the gap between the columns, taking no room in the second, whose
+ * number starts on the column's edge. It stands as tall as the numbers and on their baseline, not as tall as the line box,
+ * which reached 5 px above the digits, to 3.5 px under the foot of «مزدحم»'s mim, straight below it. An empty
+ * inline-block's bottom edge is the baseline, so the rule follows the digits at every size. A border, so it stays under
+ * forced colours. */
+.pct::before { content: ""; display: inline-block; height: calc(var(--fs-count) * 0.7); margin-inline: calc(var(--gap) / -2 - 1px) calc(var(--gap) / 2); border-inline-start: 1px solid var(--line); vertical-align: baseline; }
 /* A screen too narrow for one line starts the percentage on its own line, without the rule (public.js, fitFacts). */
 .facts[data-wrapped] .pct { flex-basis: 100%; } /* its own line, always */
 .facts[data-wrapped] .pct::before { display: none; }
-.pct .num { margin-inline-start: 0; }
 .page[data-pct="off"] .facts { column-gap: 0; }
 /* Readex Pro has no tabular figures (tabular-nums changes nothing: "11" is 36.2 px at 34 px, "70" 40.2, "00" 43.5), so
  * the count and the percentage each hold the room of the widest the readings write at this width (public.js, hold:
@@ -228,21 +232,30 @@ html[dir="ltr"] .brand svg { margin-inline-start: calc(clamp(28px, calc(0.381vw 
  * facts part at the same width whatever the level. */
 .count-line .num:not(.time) { display: inline-block; min-inline-size: var(--count-w, 0); text-align: center; }
 .pct .num { display: inline-block; min-inline-size: var(--pct-w, 0); text-align: center; }
-/* On its own line the number's held room starts at the column, not centred in it, so its ink shares the edge "نحو" and the
- * word start from. A <bdi>, so physical. */
-html[dir="rtl"] .facts[data-wrapped] .pct .num { margin-right: 0; text-align: right; }
-html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: left; }
+/* The percentage's held room starts at its column, the number not centred in it, so its ink stands on one edge at every
+ * level: the stamp's under it, or, on its own line, the edge "نحو" and the word start from. A <bdi>, so physical. */
+html[dir="rtl"] .pct .num { margin-right: 0; text-align: right; }
+html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 
-/* The status line: the comparison, and the stamp after it at the line's own gap. The room the widest of the five
- * comparisons needs is left after the stamp: where the widest and the stamp would not share a line, every reading's
- * stamp takes the next one (public.js, hold: data-stamp), so a reading that turns from one comparison to another moves
- * the stamp (in English, along its line; in Arabic, not at all) never off it, and nothing under it. */
-.vs { font-size: var(--fs-text); line-height: 1.35; color: var(--ink); white-space: nowrap; }
-:lang(ar) .vs { min-inline-size: var(--vs-w, 0); } /* «مباشر» stands fixed: no comparison moves it along its line */
-.vs .ic { display: inline-block; vertical-align: -6px; width: 16px; height: 16px; padding: 3px; margin-inline-end: 8px; border-radius: 50%; background: rgb(var(--chalk) / 0.1); box-sizing: content-box; }
-.sub[data-stamp="own"] .vs + .stamp { flex-basis: 100%; }
+/* The status line. "Live" stands under the percentage in every language at every width and no reading moves it (public.js,
+ * hold: data-mode). Where the count and the percentage share a line they are two columns, the first holding the widest
+ * comparison (cols); where that widest would push the second off the screen it takes two lines (cols-wrap, English on a
+ * narrow phone). Where they part, the percentage starts the column's edge, so the stamp does too, the comparison after it
+ * (stack; on its own line where they would not share one, stack-rows). The dot's edge stands on the number's ink, 2 px
+ * inside its box. */
+.vs { display: flex; align-items: baseline; column-gap: 6px; font-size: var(--fs-text); font-weight: 500; line-height: 1.35; color: var(--ink); white-space: nowrap; }
+.vs .ic { align-self: flex-start; width: 16px; height: 16px; padding: 3px; margin-block-start: calc((1.35em - 22px) / 2); border-radius: 50%; background: rgb(var(--chalk) / 0.1); box-sizing: content-box; }
+.sub[data-mode^="cols"] .count-line { min-inline-size: var(--col-a); }
+.sub[data-mode^="cols"] .vs { inline-size: var(--col-a); }
+.sub[data-mode="cols-wrap"] .vs { white-space: normal; }
+.sub[data-mode="cols-wrap"] .vs > span { text-wrap: balance; }
+.sub[data-mode^="stack"] .pct { flex-basis: 100%; }
+.sub[data-mode^="stack"] .stamp { order: 1; }
+.sub[data-mode^="stack"] .vs { order: 2; }
+.sub[data-mode="stack-rows"] .vs { flex-basis: 100%; }
+.vs + .stamp { padding-inline-start: 2px; }
 
-.stamp { font-size: var(--fs-small); line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.stamp { font-size: var(--fs-stamp); font-weight: 500; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
 .stamp b { color: var(--ink); font-weight: 600; }
 .dot { position: relative; display: inline-block; vertical-align: 1px; width: 8px; height: 8px; margin-inline-end: 8px; border-radius: 50%; background: var(--live); }
 .dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--live); opacity: 0; }
@@ -281,14 +294,18 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
  * retry. Their line keeps the word's height (the word sits on its baseline), so nothing under it moves. (Decided for
  * the concept: Unavailable shares Error's 0.7.) */
 .page:not([data-range="phone"]):is([data-state="unavailable"], [data-state="error"]) .word .level { font-size: 0.7em; }
-.facts.note { column-gap: 8px; font-size: var(--fs-text); font-weight: 400; line-height: 1.35; color: var(--ink-2); text-wrap: balance; } /* never a word alone on its line */
+.facts.note { column-gap: 8px; font-size: var(--fs-text); font-weight: 500; line-height: 1.35; color: var(--ink-2); text-wrap: balance; } /* never a word alone on its line */
 /* Closed: the word in chalk (a fact about now, from the opening hours, not a reading), the next opening at the
  * count's size, the hollow ring the Live dot's size (STW-1). */
 .ring-mark { display: inline-block; vertical-align: 1px; width: 8px; height: 8px; margin-inline-end: 8px; border-radius: 50%; border: 1.5px solid var(--ink-2); }
-/* Error: what failed; under it the one retry, a chalk key (EMP-3, EMP-5), standing in the count's row at that row's
- * height (public.js, hold: --row-a), so the key never makes the head taller than Live's; then the alert mark and what
- * to do if it fails again, in the status line. */
-.facts.act { height: var(--row-a, auto); align-items: center; }
+/* Error: what failed; under it the one retry, a chalk key (EMP-3, EMP-5); then the alert mark and what to do if it fails
+ * again, in the status line. The key is taller than Live's facts row, so its bottom stands on that row's bottom (public.js,
+ * hold: --row-a) and the rest rises into the air under the word. Its focus ring takes 5 px (it has focus on arrival, EMP-5),
+ * so the words under it stand 20 px from the key: a margin of the row's own, not a rule on the state, so the silent copy
+ * measures it and the states hold it (public.js, hold). */
+.facts.act { align-items: center; margin-block: min(0px, calc(var(--row-a, 40px) - 40px)) 8px; }
+.page:not([data-range="phone"]) .facts.act { margin-block-end: 6px; }
+[dir="ltr"] .page[data-range="phone"] .facts.act { margin-block-start: 0; } /* the English word keeps no descender room under it, and its ring would stand 4 px from "Couldn't load" */
 .stamp.err .st { color: var(--err); }
 .retry {
   height: 40px;
@@ -297,7 +314,7 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
   border-radius: 12px;
   background: var(--ink);
   color: var(--page);
-  font-size: var(--fs-small);
+  font-size: var(--fs-stamp);
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -311,10 +328,10 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
  * stands where the stamp will, in the stamp's room (--stamp-w), and the rows part as Live's. One flat fill, no shimmer;
  * "Loading…" where the status will be (STW-2). Unseen for the first 300 ms, so a payload that lands in time never shows
  * them. The comparison's own length is the reading's: its line holds "Busier than usual"'s (--ph-vs), the default
- * reading's, so in English after another comparison the stamp lands further along its line (it follows its comparison). */
+ * reading's; the stamp stands where it stands in Live, under the percentage's place, whatever comparison comes. */
 .ph { display: inline-block; width: var(--w, 4em); height: 0.72em; border-radius: 8px; background: rgb(255 255 255 / 0.07); vertical-align: baseline; }
 .vs .ph, .readout .ph { border-radius: 4px; }
-.vs .ph-ic { display: inline-block; vertical-align: -6px; width: 16px; height: 16px; padding: 3px; margin-inline-end: 8px; border-radius: 50%; background: rgb(255 255 255 / 0.07); box-sizing: content-box; }
+.vs .ph-ic { display: block; align-self: flex-start; width: 16px; height: 16px; padding: 3px; margin-block-start: calc((1.35em - 22px) / 2); border-radius: 50%; background: rgb(255 255 255 / 0.07); box-sizing: content-box; }
 .page[data-state="loading"] .vs + .stamp { min-inline-size: var(--stamp-w, auto); }
 .loading-words { color: var(--ink-2); }
 .page[data-state="loading"]:not([data-shown]) :is(.ph, .ph-ic, .loading-words) { visibility: hidden; }
@@ -402,11 +419,11 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
   column-gap: 14px;
   padding: 18px 16px 16px;
 }
-.card-title { grid-area: title; font-size: var(--fs-text); line-height: 1.3; font-weight: 500; color: var(--ink); }
-.card-hours { grid-area: hours; font-size: var(--fs-small); line-height: 20px; color: var(--ink-3); white-space: nowrap; }
-.card-hours .num { color: var(--ink-2); }
+.card-title { grid-area: title; font-size: var(--fs-text); line-height: 1.3; font-weight: 600; color: var(--ink); }
+.card-hours { grid-area: hours; font-size: var(--fs-small); font-weight: 500; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.daycard[data-tight] .open-word { display: none; } /* a 320 px phone: the span alone keeps the name and hours on one line */
 /* The answer: its text carries the row's baseline; the ring sits on the first line. */
-.readout { grid-area: read; display: flex; align-items: baseline; gap: 8px; min-height: 22px; margin-block: 12px 20px; font-size: var(--fs-text); line-height: 22px; color: var(--ink-2); }
+.readout { grid-area: read; display: flex; align-items: baseline; gap: 8px; min-height: 22px; margin-block: 12px 20px; font-size: var(--fs-text); font-weight: 500; line-height: 22px; color: var(--ink-2); }
 .readout > span { text-wrap: balance; } /* two even lines on the narrow phone, never an orphaned word */
 .readout b { color: var(--ink); }
 .readout .ic { align-self: flex-start; width: 16px; height: 16px; margin-block-start: 3px; color: var(--ink); }
@@ -600,18 +617,19 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
   white-space: nowrap;
   text-align: center;
   font-size: var(--fs-axis);
+  font-weight: 500;
   line-height: 18px;
-  color: var(--ink-3);
+  color: var(--ink-2);
   pointer-events: none;
   transition: color var(--t-ui) ease;
 }
 .t::after { content: attr(data-label); display: block; height: 0; overflow: hidden; visibility: hidden; font-weight: 600; }
 [dir="rtl"] .t { translate: 50% 0; }
-.sfx { position: absolute; inset-block-start: 0; inset-inline-start: calc(100% + 3px); font-weight: 400; opacity: 0.8; white-space: nowrap; }
+.sfx { position: absolute; inset-block-start: 0; inset-inline-start: calc(100% + 3px); font-weight: 500; opacity: 0.8; white-space: nowrap; }
 .t[data-now], .t[data-pick] { color: var(--ink); font-weight: 600; }
 .t[data-yield] { visibility: hidden; }
 /* A label a day change takes down fades out where it stood (public.js, fadeLabels; motion review F4). */
-.t-out { position: absolute; white-space: nowrap; text-align: center; font-size: var(--fs-axis); line-height: 18px; color: var(--ink-3); pointer-events: none; }
+.t-out { position: absolute; white-space: nowrap; text-align: center; font-size: var(--fs-axis); font-weight: 500; line-height: 18px; color: var(--ink-2); pointer-events: none; }
 .t-out[data-strong] { color: var(--ink); font-weight: 600; }
 .t:empty { display: none; }
 
@@ -651,10 +669,9 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
 /* Where a name would not stand in an equal button with air on both sides («خميس» on the phone; public.js, fitDays),
  * each button takes its name's width and the rest of the row is shared out evenly: the same air beside every name. */
 .days[data-fit="content"] .day-btn { flex: 1 1 auto; }
-/* Readex Pro's Arabic reads a size larger than its Latin at the same pixels, and its names run wider than three
- * letters: on a narrow phone they step down with the width (13 px at 360, the Latin's 14 from 390), so each keeps
- * about the air "Wed" has beside it. */
-:lang(ar) .day-btn { font-size: min(var(--fs-small), 3.6vw); }
+/* Readex Pro's Arabic names run wider than three letters: on a narrow phone they step down with the width (the Latin's
+ * 14 px from 390), never under 13. */
+:lang(ar) .day-btn { font-size: max(13px, min(var(--fs-small), 3.6vw)); }
 /* Today reads as its day, like the others, and a small chalk dot under its name marks it: not red and not green,
  * which the page keeps for the live reading. */
 .day-btn[data-today]::after {
@@ -682,12 +699,19 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
  * gives back what the bar took.
  * --------------------------------------------------------------------------------------------------------------- */
 .page[data-range="phone"] {
+  --fs-stamp: clamp(14px, calc(1.43vw + 9.43px), 15px); /* 14 at 320, so English's stamp keeps its column under the percentage */
   --air-end: calc((600px - 100vw) * 0.3);
   --air-full: clamp(8px, calc(11svh - 54px), 52px);
   --bar-top: clamp(var(--pad), calc(2.4svh + 7px), 30px);
   --air: max(0px, min(calc(var(--air-full) + 20px - var(--bar-top)), var(--air-end)));
 }
 [data-range="phone"] .live { margin-block-start: var(--air); }
+/* The floors, then what a tall phone leaves: three parts over the word to one over the card, so the head comes down and
+ * stays its card's. Floors of their own, as the computer's: a floor inside a share would raise the fraction of a page that
+ * scrolls, and the head with it. */
+[data-range="phone"] .sign { grid-template-rows: 20px 3fr auto 26px 1fr auto; }
+[data-range="phone"] .live { grid-row: 3; }
+[data-range="phone"] .daycard { grid-row: 6; }
 [data-range="phone"] .top { height: calc(var(--bar-top) + 40px); padding-block-start: var(--bar-top); }
 
 /* ---------------------------------------------------------------------------------------------------------------
@@ -713,7 +737,7 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
 }
 [data-range="tablet"] .steps { margin-block: calc(14px + (22px - 40px) / 2) 0; }
 [data-range="tablet"] .sign { grid-template-rows: minmax(24px, 0.5fr) auto minmax(32px, 0.5fr) auto; }
-[data-range="tablet"] .sub { column-gap: 24px; row-gap: 14px; margin-block-start: 14px; }
+[data-range="tablet"] .sub { --gap: 24px; row-gap: 14px; margin-block-start: 14px; }
 [data-range="tablet"] .daycard { column-gap: 16px; padding: 24px 26px 22px; }
 [data-range="tablet"] .readout { margin-block: 14px 24px; }
 [data-range="tablet"] .dayfig { padding-block-end: 38px; }
@@ -725,8 +749,8 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
 
 /* ---------------------------------------------------------------------------------------------------------------
  * The computer: the phone's order, set for the width. The level word leads on a line of its own, at about four times
- * its facts, and the facts run as one line under it (sketch 13 set them beside the word, where the word read as their
- * label). The word's size follows the width and is held by the height, so a short screen keeps its day tall. The usual
+ * its facts, and the facts run as the phone's two rows under it (sketch 13 set them beside the word, where the word read
+ * as their label). The word's size follows the width and is held by the height, so a short screen keeps its day tall. The usual
  * day takes the width under them, its head on one line (name and hours at the start, the answer at the end), the days
  * running the full width of the plot.
  * --------------------------------------------------------------------------------------------------------------- */
@@ -744,8 +768,7 @@ html[dir="ltr"] .facts[data-wrapped] .pct .num { margin-left: 0; text-align: lef
 }
 [data-range="computer"] .live { grid-row: 3; }
 /* Clear of the word's descenders ("Busy"): a sixth of the word. */
-[data-range="computer"] .sub { flex-wrap: nowrap; column-gap: clamp(24px, 2.2vw, 40px); margin-block-start: calc(var(--fs-word) * 0.16); }
-[data-range="computer"] .facts { flex-basis: auto; }
+[data-range="computer"] .sub { --gap: clamp(24px, 2.2vw, 40px); row-gap: 14px; margin-block-start: calc(var(--fs-word) * 0.16); }
 [data-range="computer"] .daycard {
   grid-row: 5;
   grid-template-columns: auto auto minmax(0, 1fr);
