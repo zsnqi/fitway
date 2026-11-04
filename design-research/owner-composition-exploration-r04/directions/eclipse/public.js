@@ -785,10 +785,9 @@
   //   copies, measured), so a state that follows another, or a reading that changes level or hour, moves nothing under the
   //   word; "Live" stands under the percentage at every width (sub, data-mode): where the count and the percentage share a
   //   line they are two columns, the count over the comparison, the percentage over the stamp. The first column is the
-  //   count's, widened for the three plain comparisons, which may also reach into the gap up to VS_AIR from the stamp, so
-  //   the two facts stay a pair in English as in Arabic. It widens for the two longest too where the gap they open stays
-  //   under PAIR_SHARE of the head's width (the tablet and the computer); on a phone "Much quieter than usual" takes two
-  //   lines (cols-wrap), and no reading moves either. Where they part, the percentage starts the column's edge, the
+  //   count's, widened for the comparison, which may also reach into the gap up to VS_AIR from the stamp, so the two
+  //   facts stay a pair in English as in Arabic; "Quieter than usual" takes two lines where that leaves it short (cols-wrap,
+  //   a phone under 384 px), and no reading moves either. Where they part, the percentage starts the column's edge, the
   //   comparison on its own line under it and the stamp on the same edge under that, so the comparison never falls after
   //   "Live" (stack); Loading writes Live's rows into Live's boxes (the numbers' rooms, the stamp's room, the comparison's
   //   as the default reading writes it);
@@ -813,25 +812,23 @@
     return f;
   }
   var VS_AIR = 12; // the least air between a comparison and the stamp beside it
-  var PAIR_SHARE = 0.2; // the widest gap between the two facts, of the head's width, that the longest comparison may open
   var STAMP_HANG = 4; // how far the widest clock ("12:00 ص") may run past the percentage's column, into the page's margin
   var WIDEST_CLOCKS = [10, 12, 22, 24]; // the hours with two digits, "11" being narrow
   function hold() {
     fitWord(head); fitDays(picker.el);
-    // The head. The status line first: the widest of the five comparisons at this width (and of the three that are not
-    // "much"), the stamp's width; the default reading's comparison words, the length Loading's line holds. Then the numerals' room: Readex Pro's
+    // The head. The status line first: the widest of the five comparisons at this width, the stamp's width; the default
+    // reading's comparison words, the length Loading's line holds. Then the numerals' room: Readex Pro's
     // digits are not tabular, so the count and the percentage each hold the width of the widest the readings write
     // (the four levels'; "00" to "99" would hold 3-5 px more and part the Arabic facts at 360 px). Then Live's rows
     // (their facts row is the height Error's key stands at), every level's in Live and Delayed, Delayed at its widest
     // clocks, and every other state's; the head holds the tallest.
     head.sub.style.minHeight = "";
     head.sub.removeAttribute("data-mode");
-    var gs = ghostOf(head.sub, head.el, ""), vsW = 0, vsLess = 0, stampW = 0, phVs = 0, vsDefault = vsOf(LEVELS.busy.n) || "usual";
+    var gs = ghostOf(head.sub, head.el, ""), vsW = 0, stampW = 0, phVs = 0, vsDefault = vsOf(LEVELS.busy.n) || "usual";
     COMPARISONS.forEach(function (c) {
       gs.innerHTML = rowsHtml("live", levelKey, c).sub;
       var v = gs.querySelector(".vs");
       vsW = Math.max(vsW, v.getBoundingClientRect().width);
-      if (c.indexOf("much") !== 0) vsLess = Math.max(vsLess, v.getBoundingClientRect().width);
       if (c === vsDefault) phVs = v.querySelector("span").getBoundingClientRect().width;
     });
     // The stamp's room is its widest time's, so the hour never changes the head's form.
@@ -856,9 +853,8 @@
     var pctW = gs.querySelector(".pct") ? gs.querySelector(".pct").getBoundingClientRect().width : 0;
     var firstCol = W - G - Math.max(pctW, stampW - STAMP_HANG), mode = "stack", colA = 0, reach = Math.max(0, G - VS_AIR);
     if (countW + 0.5 <= firstCol) {
-      var oneLine = vsW + VS_AIR - countW <= W * PAIR_SHARE;
-      colA = Math.min(firstCol, Math.max(countW, (oneLine ? vsW + 1 : vsLess) - reach));
-      mode = vsW + 0.5 > colA + reach ? "cols-wrap" : "cols";
+      colA = Math.min(firstCol, Math.max(countW, vsW - reach));
+      mode = vsW - 0.5 > colA + reach ? "cols-wrap" : "cols";
     }
     [gs, head.sub].forEach(function (n) {
       n.setAttribute("data-mode", mode);

@@ -25,11 +25,11 @@ window.FitwayPublicCopy = function (en, h) {
     arrival: function (k, n) { return T.srNow + T.words[k] + ", about " + n + " inside"; },
     // Under the word, so "right now" goes without saying.
     vs: {
-      "much-quieter": "Much quieter than usual",
+      "much-quieter": "Quieter than usual",
       quieter: "Quieter than usual",
       usual: "About usual",
       busier: "Busier than usual",
-      "much-busier": "Much busier than usual"
+      "much-busier": "Busier than usual"
     },
     live: "Live",
     readAt: function (t) { return num(t); }, // t: the clock's time, its period with it

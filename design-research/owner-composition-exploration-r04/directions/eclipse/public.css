@@ -246,10 +246,9 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
 
 /* The status line. "Live" stands under the percentage in every language at every width and no reading moves it (public.js,
  * hold: data-mode). Where the count and the percentage share a line they are two columns, the first the count's: a
- * comparison may reach into the gap (--vs-reach) and stops short of the stamp (cols); where the longest would part the
- * facts by more than a fifth of the head's width, it takes two lines (cols-wrap, "Much quieter than usual"). Where they
- * part, the percentage starts the column's edge, the comparison under it and the stamp on the same edge under that, their
- * words in one line (stack). The dot's edge stands on the number's ink, 2 px inside its box. */
+ * comparison may reach into the gap (--vs-reach) and stops short of the stamp (cols), and where it still would not, it
+ * takes two lines (cols-wrap, "Quieter than usual" on a narrow phone). Where they part, the percentage starts the column's
+ * edge, the comparison under it and the stamp on the same edge under that, their words in one line (stack). The dot's edge stands on the number's ink, 2 px inside its box. */
 .vs { display: flex; align-items: baseline; column-gap: 6px; font-size: var(--fs-text); font-weight: 500; line-height: 1.35; color: var(--ink); white-space: nowrap; }
 .vs .ic { align-self: flex-start; width: 16px; height: 16px; padding: 3px; margin-block-start: calc((1.35em - 22px) / 2); border-radius: 50%; background: rgb(var(--chalk) / 0.1); box-sizing: content-box; }
 .sub[data-mode^="cols"] .count-line { min-inline-size: var(--col-a); }
