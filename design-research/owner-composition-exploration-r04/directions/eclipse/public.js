@@ -586,30 +586,19 @@
   // under it stay where they are whatever the word (a reading that turns Packed moves nothing).
   // (A word set down can round its line a fraction of a pixel deeper: «تعذر التحميل» at 390 px by 0.41 px. The line
   // keeps the height the word gave it at full size, measured before it is set down.)
-  // The word's first stroke stands on the facts' start edge. A word's first letter has a side bearing of its own
-  // (in English "B", "M", "N", "P" twice that of "C" or "Q"; in Arabic the first letter at the right, «م», «ه», «ش»,
-  // «ع», «ت» each its own), so it is measured in the face the word is drawn in, in the word's direction, and taken back
-  // (canvas). A placeholder is flat, so it starts on the edge itself.
-  var inkPad = null;
-  function inkLead(word) {
-    if (!inkPad) inkPad = document.createElement("canvas").getContext("2d");
-    var cs = getComputedStyle(word);
-    inkPad.font = cs.fontWeight + " 200px " + cs.fontFamily;
-    inkPad.direction = rtl ? "rtl" : "ltr";
-    inkPad.textAlign = rtl ? "right" : "left";
-    var m = inkPad.measureText(word.textContent);
-    return -(rtl ? m.actualBoundingBoxRight : m.actualBoundingBoxLeft) / 200;
-  }
+  // The word's first stroke stands on the facts' start edge, its side bearing measured and taken back; where a text's
+  // strokes stand is public-ink.js's.
+  var Ink = window.FitwayPublicInk(rtl);
   function fitWord(head) {
     var w = head.word, word = w.querySelector(".level");
     word.style.fontSize = ""; w.style.blockSize = ""; word.style.marginInlineStart = "";
     if (word.querySelector(".ph")) word.style.marginInlineStart = "0";
-    else word.style.marginInlineStart = (-inkLead(word)).toFixed(4) + "em";
+    else word.style.marginInlineStart = (-Ink.lead(word)).toFixed(4) + "em";
     var room = sign.clientWidth, need = word.getBoundingClientRect().width;
     // Arabic fits by its ink, not its box. A last letter's stroke reaches past the box («متوفر» by 1.5 px past the
     // card's edge), and a box that leads with a side bearing leaves «شديد الازدحام» 3.8 px short of the far edge.
     if (rtl && !word.querySelector(".ph")) {
-      var im = inkPad.measureText(word.textContent);
+      var im = Ink.measure(word);
       need = (im.actualBoundingBoxLeft + im.actualBoundingBoxRight) / 200 * parseFloat(getComputedStyle(word).fontSize);
     }
     if (need > room) {
@@ -950,6 +939,23 @@
       plot += (next - plot) * Math.min(1, t);
     }
     B.el.style.height = Math.floor(plot) + "px";
+    keyRoom();
+  }
+  // Error: the word, the ringed key (it has focus on arrival, EMP-5), the sentence and the card stand apart by one gap,
+  // up to KEY_ROOM, stroke to stroke. The head holds Error's rows at their closest (hold), so the card and every other
+  // state never feel this: the key and the sentence only come down into the white between the head and the card (CSS:
+  // --key-down, --line-down), and on a screen too tight for more they stay where the hold put them.
+  var KEY_ROOM = 32, KEY_RING = 5;
+  function keyRoom() {
+    var key = head.sub.querySelector(".retry");
+    if (!key) return;
+    head.sub.style.setProperty("--key-down", "0px");
+    head.sub.style.setProperty("--line-down", "0px");
+    var k = key.getBoundingClientRect(), t = Ink.strokes(head.sub.querySelector(".stamp.err > span")), ink = Ink.strokes(head.word.querySelector(".level")).bottom;
+    var gap = Math.min(KEY_ROOM, (card.getBoundingClientRect().top - ink - k.height - 2 * KEY_RING - (t.bottom - t.top)) / 3) + KEY_RING;
+    var down = Math.max(0, gap - (k.top - ink));
+    head.sub.style.setProperty("--key-down", down.toFixed(2) + "px");
+    head.sub.style.setProperty("--line-down", (down + Math.max(0, gap - (t.top - k.bottom))).toFixed(2) + "px");
   }
 
   // ---------------------------------------------------------------------------------------------------------------

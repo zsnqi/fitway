@@ -313,10 +313,13 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
  * count's size, the hollow ring the Live dot's size (STW-1). */
 .ring-mark { display: inline-block; vertical-align: 1px; width: 8px; height: 8px; margin-inline-end: 8px; border-radius: 50%; border: 1.5px solid var(--ink-2); }
 /* Error: what failed; under it the one retry, a chalk key (EMP-3, EMP-5); then the alert mark and what to do if it fails
- * again, in the status line. The key is taller than Live's facts row, so its bottom stands on that row's bottom (public.js,
- * hold: --row-a) and the rest rises into the air under the word. Its focus ring takes 5 px (it has focus on arrival, EMP-5),
- * so the words under it stand 20 px from the key: a margin of the row's own, not a rule on the state, so the silent copy
- * measures it and the states hold it (public.js, hold). */
+ * again, in the status line. These margins are the rows at their closest, the form the states hold (public.js, hold): the
+ * key's bottom on Live's facts row's bottom (--row-a), the rest in the air under the word, the words under it 20 px from the
+ * key, since its focus ring takes 5 px (it has focus on arrival, EMP-5). The three then stand apart by moving only in paint,
+ * with no effect on the layout, so nothing else on the page feels it (public.js, keyRoom). */
+.facts.act, .stamp.err { position: relative; }
+.facts.act { inset-block-start: var(--key-down, 0px); }
+.stamp.err { inset-block-start: var(--line-down, 0px); }
 .facts.act { align-items: center; margin-block: min(0px, calc(var(--row-a, 44px) - 44px)) 8px; }
 .page:not([data-range="phone"]) .facts.act { margin-block-end: 6px; }
 [dir="ltr"] .page[data-range="phone"] .facts.act { margin-block-start: 0; } /* the English word keeps no descender room under it, and its ring would stand 4 px from "Couldn't load" */
