@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-04 (items 63-65; 65 last)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-65; 65 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-04 (items 63-66; 66 last)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-66; 66 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -19,10 +19,9 @@
 
 ## Running now
 
-The page at `0db7a443` plus the helper cleanup from job A on `public-redesign-r01`; the user is away from home and judging from pictures. Next: the independent verifier and the reading-direction review, then their fixes and the user's eye, then the single specification round, using the PUB lists in the carry and final-form reports (`D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `D:/fitway-temp/public-redesign-r01-final-form-64/REPORT.md`) plus AMD-P7 (item 65). The user's page server is port 3181 (Terminal tab).
+The page at `920a08dc` on `public-redesign-r01` (item 66). Waiting on the user's word on Unavailable's blank band and their acceptance by eye, then the single specification round, using the PUB lists in the reports of items 63, 64 and 66 (`D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `D:/fitway-temp/public-redesign-r01-final-form-64/REPORT.md`, `D:/fitway-temp/public-redesign-r01-fix-67/REPORT.md`) plus AMD-P7 (item 65). The user's page server is port 3181 (Terminal tab).
 
-Public branch `public-redesign-r01` at `public.*` (item 55) on sketch 16 with the
-axis round (`0fad27b9`, item 53), the hours round (`77d2469b`, `89d2996d`, item 52) and its build (`0fca4c0e`, item 51), on sketch 15 with the Brave fix (`2c911cb1`) and the font fix (`1593df75`), on Markdown-only record
+The public branch `public-redesign-r01` takes Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
 agent-tooling-r01's `5f78b77c` (brief:check reads a merge by its first parent) is integrated. The LAN entry
 `public-redesign-lan` (port 3181, the PC at 192.168.8.186) serves its Eclipse folder: `public-sketch-8.html` to
@@ -100,6 +99,7 @@ Tooling findings to carry:
 - The worktree CLI lacks `frames`.
 - `run` refuses the sketch.
 - A 60 s timeout in `scripts/agent-environment/codex-round.test.ts:1904` on one CI run, and `git init` dying with 0xC0000142 in that same test file on the run for `7bc83781`; both passed on re-run or later, so CI runner trouble is the working guess.
+- A 60 s timeout in `.agents/skills/gardener/round27.test.ts` on the CI run for `ba0973c8`.
 - `brief:check` accepts only codex, builder, designer and verifier as roles, so a fixer's brief says builder.
 
 Still open from item 60: AMD-P1 to AMD-P6 and the motion trial's rule change, a proposal only (item 47).
