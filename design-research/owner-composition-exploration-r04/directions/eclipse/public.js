@@ -18,8 +18,7 @@
 // Live; without it the load reaches the 10 s ceiling and becomes Error), ?level=quiet|moderate|busy|packed (busy; in
 // Delayed, the last reading's), ?day=mon..sun (the day shown; today without it), ?today=mon..sun (tue), ?now=<hour>
 // (the clock's hour, 19; before the opening in Closed), ?pct=off (the owner turned the percentage off), ?hour=<0-25>
-// (a picked hour, for frames). Two of the user's open choices, off by default, each to go when they pick:
-// ?note=none|back|short (the line under Unavailable's word), ?whole=circle|line|busiest (a whole day's quiet hour).
+// (a picked hour, for frames).
 (function () {
   "use strict";
   var q = new URLSearchParams(location.search);
@@ -68,8 +67,6 @@
   page.setAttribute("data-level", levelKey);
   var pctOn = q.get("pct") !== "off";
   if (!pctOn) page.setAttribute("data-pct", "off");
-  var NOTE = ["none", "back", "short"].indexOf(q.get("note")) >= 0 ? q.get("note") : null;
-  var WHOLE = ["circle", "line", "busiest"].indexOf(q.get("whole")) >= 0 ? q.get("whole") : null;
   // An hour narrower than this on the phone is too narrow for a finger: WCAG 2.5.8's minimum target (24 CSS px; the
   // hours stand side by side with no spacing, so an hour's own width is its target). Friday's 10 hours stay above it;
   // the other days' 20 fall under it, and a picked hour brings the step keys (stepKeys).
@@ -140,7 +137,7 @@
 
   // The hour the card's line and circle name: the quietest full hour still ahead today, by the usual alone. A quiet one
   // ("quiet"); else one lighter than the hour now stands in ("less"; before the opening every hour is ahead, so the
-  // day's lightest); else nothing, and the line is hidden and no circle stands. Another day has a circle only under ?whole=.
+  // day's lightest); else nothing, and the line is hidden and no circle stands. Another day has its own lowest hour's circle.
   var quietLeft = lowest(TODAY, NOW_H + 1);
   var leftUsual = quietLeft != null ? usualAt(TODAY, quietLeft) : null;
   var usualHere = usualAt(TODAY, NOW_H);
@@ -148,7 +145,7 @@
   function ringHour(d) {
     if (!hasDay()) return null;
     if (d === TODAY) return lineKind === "none" ? null : quietLeft;
-    return WHOLE ? lowest(d, DAYS[d].open) : null;
+    return lowest(d, DAYS[d].open);
   }
 
   // Today against a usual day at this hour: a reading of now, so Live's alone (and always the open gym's 7 PM: the
@@ -240,7 +237,7 @@
         : '<p class="stamp st-late">' + ICON.clock + '<span class="iso"><b>' + T.delayed + "</b> · " + T.lastAt(LAST_AT) + T.comma + '</span> <span class="ago">' + T.ago(AGO) + "</span></p>";
     } else if (s === "unavailable") {
       word = '<span class="level">' + T.noCount + "</span>";
-      facts = NOTE === "none" ? "" : '<p class="facts note">' + (NOTE ? T.notes[NOTE] : T.noOld) + "</p>";
+      facts = "";
       line = '<p class="stamp">' + ICON.struck + "<b>" + T.offline + "</b></p>";
     } else if (s === "closed") {
       // «يفتح 1 م» / "Opens 1 PM" is one run, as "About 70 inside" is: its words a word space from the time.
@@ -715,15 +712,11 @@
     if (lineKind === "none") return "";
     return ICON.ring + "<span>" + T.quietLine(quietLeft, lineKind) + "</span>";
   }
-  // A whole day: another day, or today before it opens. By default today's is named by its circle alone, another's in
-  // words with no circle; ?whole= gives every whole day one form, each with the circle: nothing else (circle), the
-  // circle and today's short line (line), or the circle and what it cannot say (busiest).
+  // A whole day: another day, or today before it opens. Every whole day has the one form, the circle and the day's
+  // quiet line: its lowest hour and how it usually is.
   function dayWords(d) {
-    var cells = cellsOf(d), low = quietCell(cells);
-    if (WHOLE === "circle") return "";
-    if (WHOLE === "line") return ICON.ring + "<span>" + T.quietLine(low.h, band(low.v) === "quiet" ? "quiet" : "less") + "</span>";
-    if (WHOLE === "busiest") return "<span>" + T.busiest(cells) + "</span>";
-    return d === TODAY ? "" : "<span>" + T.dayRange(cells) + "</span>";
+    var low = quietCell(cellsOf(d));
+    return ICON.ring + "<span>" + T.quietLine(low.h, band(low.v) === "quiet" ? "quiet" : "less") + "</span>";
   }
   function words(d, h) {
     var html;

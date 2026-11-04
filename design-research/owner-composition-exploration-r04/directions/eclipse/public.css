@@ -294,7 +294,6 @@ html[dir="ltr"] .pct .num { margin-left: 0; text-align: left; }
  * retry. Their line keeps the word's height (the word sits on its baseline), so nothing under it moves. (Decided for
  * the concept: Unavailable shares Error's 0.7.) */
 .page:not([data-range="phone"]):is([data-state="unavailable"], [data-state="error"]) .word .level { font-size: 0.7em; }
-.facts.note { column-gap: 8px; font-size: var(--fs-text); font-weight: 500; line-height: 1.35; color: var(--ink-2); text-wrap: balance; } /* never a word alone on its line */
 /* Closed: the word in chalk (a fact about now, from the opening hours, not a reading), the next opening at the
  * count's size, the hollow ring the Live dot's size (STW-1). */
 .ring-mark { display: inline-block; vertical-align: 1px; width: 8px; height: 8px; margin-inline-end: 8px; border-radius: 50%; border: 1.5px solid var(--ink-2); }

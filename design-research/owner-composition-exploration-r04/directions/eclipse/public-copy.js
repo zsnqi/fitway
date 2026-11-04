@@ -40,8 +40,6 @@ window.FitwayPublicCopy = function (en, h) {
     ago: function (m) { return iso(m + NB + "min ago"); },
     // Unavailable: no count, and why none is shown (DESIGN_GUIDE §6: old data is never presented as current).
     noCount: "No count",
-    noOld: "We never show an old count in its place.",
-    notes: { back: "The count returns when we're back online.", short: "We don't show old counts." },
     offline: "Offline",
     // Closed: the next opening, today's (STA-11's form: the day is named only when it is another).
     closed: "Closed",
@@ -60,11 +58,6 @@ window.FitwayPublicCopy = function (en, h) {
     // The quiet line, today's: the hour and how it usually is, nothing more. kind: "quiet", a quiet hour left; "less", none
     // quiet but one lighter than this hour. None lighter, the page hides the line.
     quietLine: function (h, kind) { return '<b class="num">' + hourText(h) + "</b> " + (kind === "quiet" ? T.usually("quiet") : "usually less busy"); },
-    // Another day: its card is titled "A usual …", so the line says only when.
-    dayRange: function (cells) {
-      return 'Quietest at <b class="num">' + hourHtml(quietCell(cells).h) + '</b>, busiest at <b class="num">' + hourHtml(busyCell(cells).h) + "</b>";
-    },
-    busiest: function (cells) { return 'Busiest at <b class="num">' + hourHtml(busyCell(cells).h) + "</b>"; },
     // A picked hour: its usual.
     cellUsual: function (c) { return '<b class="num">' + hourHtml(c.h) + "</b>: " + T.usually(band(c.v)); },
     hourName: function (c, isNow, ring) {
@@ -111,8 +104,6 @@ window.FitwayPublicCopy = function (en, h) {
     ago: function (m) { return iso(m === 1 ? "قبل دقيقة" : m === 2 ? "قبل دقيقتين" : "قبل " + m + NB + (m <= 10 ? "دقائق" : "دقيقة")); },
     // Unavailable: the number is not there, and why no old one stands in for it (written natively, not from "No count").
     noCount: "العدد غير متوفر",
-    noOld: "لا نعرض عددًا قديمًا على أنه الحالي.",
-    notes: { back: "يظهر العدد عند عودة الاتصال.", short: "لا نعرض عددًا قديمًا." },
     offline: "غير متصل",
     closed: "مغلق",
     opens: function (h) { return 'يفتح <bdi class="num time">' + hourText(h) + "</bdi>"; },
@@ -126,11 +117,6 @@ window.FitwayPublicCopy = function (en, h) {
     usualDay: function (d) { return "المعتاد أيام " + dayName(d); },
     openHours: function (d) { return '<span class="open-word">مفتوح </span><span class="num iso">' + hourHtml(DAYS[d].open) + THIN + "–" + THIN + hourHtml(DAYS[d].close) + "</span>"; },
     quietLine: function (h, kind) { return '<b class="num">' + hourText(h) + "</b> " + (kind === "quiet" ? T.usually("quiet") : "أقل زحمة عادةً"); },
-    // The card's title already names the day.
-    dayRange: function (cells) {
-      return 'الأهدأ <b class="num">' + hourHtml(quietCell(cells).h) + '</b>، والأكثر ازدحامًا <b class="num">' + hourHtml(busyCell(cells).h) + "</b>";
-    },
-    busiest: function (cells) { return 'الأكثر ازدحامًا <b class="num">' + hourHtml(busyCell(cells).h) + "</b>"; },
     cellUsual: function (c) { return '<b class="num">' + hourHtml(c.h) + "</b>: " + T.usually(band(c.v)); },
     hourName: function (c, isNow, ring) {
       return hourText(c.h) + (isNow ? "، الآن" : "") + "، " + T.usually(band(c.v)) + (ring === "day" ? "، أهدأ ساعة في اليوم" : ring ? "، أهدأ ساعة متبقية اليوم" : "");
