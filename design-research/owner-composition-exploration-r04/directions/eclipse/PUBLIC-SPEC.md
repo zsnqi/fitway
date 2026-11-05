@@ -1,8 +1,8 @@
 # Public: the spec fragment for DESIGN-SPEC.md §6
 
 The coordinator merges this file as DESIGN-SPEC.md §6 (composition rows, **C**). It specifies the public crowd page the
-user accepted by eye on 2026-11-05 as at `62adb061`, which stands unchanged at this specification's HEAD, `c4d804a5`
-(public-redesign-r01, run spec-69, 2026-11-05): what it answers, the head, the usual day's card, the six states, every
+user accepted by eye on 2026-11-05 as at `62adb061`: the page's picture stands as accepted; its spoken names changed after, at `43dad5f8` and the
+verifier-fix commit that follows `V70`, with no line moved (public-redesign-r01, run spec-69, 2026-11-05): what it answers, the head, the usual day's card, the six states, every
 size, the motion, the fonts, Arabic and English, every string, the Product/Spec amendments the move to production needs
 (6.10, each **P**, proposed, never decided), and where the page departs from a family row (6.11). Rows `PUB-n` describe
 what the page does; a row whose feature has left the page says **Gone** in one line and keeps its number; where the code
@@ -13,7 +13,7 @@ movement), `public-ink.js` (where a text's strokes stand: the word's first strok
 
 **The rules that decide the page**, and the file that holds each, are in `PUBLIC-RULES.md`, beside this file.
 
-**Sources.** `file:line` is a line of the concept file at `c4d804a5`. Measured values name their source. Every number
+**Sources.** `file:line` is a line of the concept file at the verifier-fix commit that follows `V70` (no line moved since `43dad5f8`). Measured values name their source. Every number
 this round states was measured again on that page, under the codes `P69`, `X69` and `F69`, unless it names another:
 
 | Code | Source |
@@ -22,6 +22,7 @@ this round states was measured again on that page, under the codes `P69`, `X69` 
 | `X69` | `D:/fitway-temp/public-redesign-r01-spec-69/measure/extra-3/result.json` (`scripts/spec-extra-69.mjs`, same command): zoom at 240 to 260 px and 720 × 450; Loading's stamp against Live's; the arrival; the retry; a change of day on the computer; the widths either side of 440, 600, 864 and 1024 px; the page's other switches; the motion. |
 | `F69` | Frames and sheets in `D:/fitway-temp/public-redesign-r01-spec-69/` (`frames/states`, 5 sizes, 6 states, 2 languages; `frames/picks`, `frames/edges`; `sheet-states-320x568`, `sheet-states-390x844`, `sheet-picks`), `pnpm verify:owner frames`, reduced motion, opened and looked at. |
 | `R63`, `R64`, `R65`, `R67`, `R68` | The reports on the page's last rounds, `D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `final-form-64`, `picks-65`, `fix-67`, `recheck-68`. 6.12 lists where they and the code disagree. |
+| `V70` | `D:/fitway-temp/public-redesign-r01-verify-70/` (`REPORT.md`): the independent verifier's findings H1 to H16 on the accepted page and this specification. Their corrections are in the rows; 6.12 lists what was left. |
 | `M45` | `D:/fitway-temp/public-redesign-r01-final-fixes-45/measure/`: `ink` (the word's ink against the facts', from the pixels), `arrival` (the arrival with motion). Cited, not re-run. |
 | `M43` | `D:/fitway-temp/public-redesign-r01-fixes-43/work/digits` (Readex Pro's digit widths). Cited, not re-run. |
 | `A39`, `C40`, `N40` | Why the words are as they are: `D:/fitway-temp/public-redesign-r01-arabic-39/COPY.md`, `D:/fitway-temp/public-redesign-r01-states-40/COPY.md`, and that round's `NOTES.md`. They tell an earlier page; the rows say what it does now. |

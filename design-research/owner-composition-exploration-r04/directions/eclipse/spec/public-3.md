@@ -15,7 +15,7 @@ Bold marks what the page sets in chalk 600. A row whose line has left the page s
 | PUB-63 | C | **Page.** The wordmark «FITWAY», Latin in both pages (`lang="en" dir="ltr"`, `public.html:18-26`). |
 | PUB-64 | C | **Page.** The language link names the other language in its own words: on the Arabic page «English» (`lang="en"`), on the English page «العربية» (`lang="ar"`) (`public-copy.js:77`, `137`). |
 | PUB-65 | C | **Gone** (the concept label, `db869757`): no screen carries «مفهوم استكشافي · بيانات افتراضية» / "Exploration concept · synthetic data" (PUB-117). |
-| PUB-66 | C | **Page.** The head's region name (spoken) «الآن» / "Right now" in Live and Delayed; «الازدحام» / "Crowd" in the states without a time (`public-copy.js:17-18`, `83-84`; `public.js:714`). |
+| PUB-66 | C | **Page.** The head's region name (spoken) «الآن» / "Right now" in Live alone; «الازدحام» / "Crowd" in every other state (`public-copy.js:17-18`, `83-84`; `public.js:714`). |
 | PUB-67 | C | **Glossary (GLO-3).** The level words «هادئ» · «متوسط» · «مزدحم» · «شديد الازدحام» / "Quiet" · "Moderate" · "Busy" · "Packed" (`public-copy.js:15`, `80`). |
 | PUB-68 | C | **Page.** The word's spoken lead in Live «الازدحام الآن: » / "Crowd right now: " (`public-copy.js:19`, `85`). |
 | PUB-69 | C | **Page, on GLO-2 (a departure, PUB-137).** The count «نحو **70** في الصالة» / "About **70** inside": «الصالة» is GLO-2's word and «نحو» carries GLO-2's "approx." in one short word, so the count and the percentage hold one line down to 380 px in Arabic (A39; `public-copy.js:20-21`, `88-89`; AMD-P4). The same words stand in Loading around the number's placeholder, «نحو ▭ في الصالة» / "About ▭ inside" (`aboutOf`). |
@@ -58,9 +58,9 @@ Bold marks what the page sets in chalk 600. A row whose line has left the page s
 | PUB-106 | C | **Page.** The hours' group name (spoken) «الساعات» / "Hours" (`public-copy.js:70`, `130`). |
 | PUB-135 | C | **Page.** The step keys' names (spoken; PUB-134) «الساعة السابقة» · «الساعة التالية» / "Previous hour" · "Next hour" (`public-copy.js:71-72`, `131-132`; ux-araby). |
 | PUB-107 | C | **Page; «اليوم» Glossary (GLO-14's word).** Today's key (spoken) «الثلاثاء، اليوم» / "Tuesday, today" (`public-copy.js:68`, `128`). |
-| PUB-108 | C | **Page.** A bar (spoken) «7 م، الآن، مزدحم عادةً» / "7 PM, now, usually busy"; another hour «4 م، متوسط عادةً» / "4 PM, usually moderate"; "now" kept in Delayed, where "usually" names the clock, and gone from Unavailable and Closed (`public-copy.js:64-66`, `124-126`; `public.js:157`, `333`). |
+| PUB-108 | C | **Page.** A bar (spoken) «7 م، الآن، مزدحم عادةً» / "7 PM, now, usually busy"; another hour «4 م، متوسط عادةً» / "4 PM, usually moderate"; "now" in Live alone, and gone from Delayed (a stale reading never says it), Unavailable and Closed (`public-copy.js:64-66`, `124-126`; `public.js:333`). |
 | PUB-109 | C | **Page.** The ring's hour, added to its bar's name: today in Live and Delayed «، أهدأ ساعة متبقية اليوم» / ", the quietest time left today"; a whole day «، أهدأ ساعة في اليوم» / ", the quietest hour of the day" (`public-copy.js:65`, `125`). |
 | PUB-110 | C | **Gone** (a two-hour bar's spoken name): PUB-16. |
 | PUB-111 | C | **Gone** (a two-hour bar's spoken name whose hours differ): PUB-16. |
-| PUB-112 | C | **Page.** The figure today in Live and Delayed «المعتاد أيام الثلاثاء ساعةً بساعة، من 6 ص إلى 2 ص، والآن 7 م» / "A usual Tuesday by the hour, 6 AM to 2 AM, with now at 7 PM" (`public-copy.js:73-76`, `133-136`). |
+| PUB-112 | C | **Page.** The figure today in Live alone «المعتاد أيام الثلاثاء ساعةً بساعة، من 6 ص إلى 2 ص، والآن 7 م» / "A usual Tuesday by the hour, 6 AM to 2 AM, with now at 7 PM" (`public-copy.js:73-76`, `133-136`; `public.js:761`); Delayed's says the same without "now". |
 | PUB-113 | C | **Page.** The figure, another day or a state without now «المعتاد أيام السبت ساعةً بساعة، من 6 ص إلى 2 ص» / "A usual Saturday by the hour, 6 AM to 2 AM". "In two-hour steps" is gone (PUB-16). |

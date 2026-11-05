@@ -152,9 +152,9 @@
     if (!wholeDay(d)) return lineKind === "none" ? null : quietLeft;
     return lowest(d, DAYS[d].open);
   }
-  // Live and Delayed carry a time, so the spoken day may name the hour now stands in. Unavailable and Closed carry none
-  // (DESIGN_GUIDE §6), and Error and Loading have no day to name it on.
-  function namesNow() { return state === "live" || state === "delayed"; }
+  // Live and Delayed carry a time, so the quiet hour still left may be spoken; "now" is Live's alone (isLive), a stale
+  // reading never says it. Unavailable and Closed carry no time (DESIGN_GUIDE §6); Error and Loading have no day.
+  function carriesTime() { return state === "live" || state === "delayed"; }
 
   // Today against a usual day at this hour: a reading of now, so Live's alone. The live value against the usual of the hour
   // now stands in, whatever the hour and the level. An hour the gym is shut has no usual, so nothing to compare with.
@@ -328,9 +328,9 @@
       var ring = data && h === rh;
       s.toggleAttribute("data-quietest", ring);
       s.setAttribute("aria-pressed", open && picked === h ? "true" : "false");
-      // The hour now stands in keeps "now" in its spoken name where the page carries a time (namesNow): with "usually", it
-      // names the clock.
-      if (open && data) s.setAttribute("aria-label", T.hourName(c, namesNow() && isToday && h === NOW_H, !ring ? null : whole ? "day" : namesNow() ? "left" : null));
+      // "Now" in the hour's spoken name is Live's alone (isLive), a stale reading never says it; the quiet hour still left
+      // is spoken where the page carries a time (carriesTime).
+      if (open && data) s.setAttribute("aria-label", T.hourName(c, isLive() && isToday && h === NOW_H, !ring ? null : whole ? "day" : carriesTime() ? "left" : null));
       else s.removeAttribute("aria-label");
       // A pick changes no label: its bar's own label, where the day has one, is set bold, and the readout names it.
       s.querySelector(".t").toggleAttribute("data-pick", open && picked === h);
@@ -711,7 +711,7 @@
   // busy marks. The card's answer and the bars follow in show().
   function renderState() {
     page.setAttribute("data-state", state);
-    head.el.setAttribute("aria-label", state === "live" ? T.rightNow : T.crowd);
+    head.el.setAttribute("aria-label", isLive() ? T.rightNow : T.crowd);
     var r = rowsHtml(state);
     head.word.innerHTML = r.word;
     head.sub.innerHTML = r.sub;
@@ -758,7 +758,7 @@
     title.textContent = T.usualDay(d);
     hours.innerHTML = T.openHours(d);
     setDay(B, d, h);
-    if (hasDay()) fig.setAttribute("aria-label", T.chartName(d, namesNow() && d === TODAY)); else fig.removeAttribute("aria-label");
+    if (hasDay()) fig.setAttribute("aria-label", T.chartName(d, isLive() && d === TODAY)); else fig.removeAttribute("aria-label");
     // The head is now's: while another day is shown it steps back (CSS).
     page.toggleAttribute("data-away", d !== TODAY);
     words(d, B.picked);
