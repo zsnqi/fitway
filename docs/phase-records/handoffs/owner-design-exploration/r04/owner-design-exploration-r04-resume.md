@@ -44,9 +44,6 @@
   user's pick on real renders, English option 2, Arabic laid out like the English with the figure before «صفًا»;
   `D:/fitway-temp/owner-r04-export-filebox-fix/`); `fedbdb6d` verify-11's findings 1-6. The "Belonging" bullets are
   narrowed (`8c4976cf`, the user's word).
-- **Verify 11** (Opus, `D:/fitway-temp/owner-r04-verify-11/REPORT.md`): `d04890a4` against `d9ae9e35`, every item
-  PASS but C5 (spec text), no High or Medium; findings 1-6 fixed in `fedbdb6d` (`D:/fitway-temp/owner-r04-verify11-fix/`),
-  checked by the coordinator only (finding 5: Arabic Reports shifted on 11 of 15 loads before, 0 of 15 after).
 - **Left from finding 5:** Reports' first paint now waits for Readex Pro (opacity, 1.5 s cap); Activity, Access and
   Settings keep the same font-swap pattern. Not visible enough for the demo (decision 52); the hold goes in the shared
   frame after it.
