@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # public-redesign-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-05 (items 63-68; 68 last)
-- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-68; 68 last), and the founding
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-05 (items 63-69; 69 last)
+- **Standing decisions:** `docs/phase-records/handoffs/public-redesign/DECISIONS.md` (items 1-69; 69 last), and the founding
   ones in `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 84, 90, 98, 99; its "How this
   milestone's rounds run" applies here, but for rounds item 8), `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -21,11 +21,7 @@
 
 ## Running now
 
-The page at `62adb061` on `public-redesign-r01` (items 66, 67; `087df88c` is that branch's head, CI green, adding only a test timeout). Private link for the user's phone: https://claude.ai/artifact/EPNza8Je3DE29kzVNhPCVe, a copy as at `62adb061`, not checked in its frame. Next: the single specification round, then the merge into `owner-followup-r04-build`, using the PUB lists in the reports of items 63, 64 and 66 (`D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `D:/fitway-temp/public-redesign-r01-final-form-64/REPORT.md`, `D:/fitway-temp/public-redesign-r01-fix-67/REPORT.md`) plus AMD-P7 (item 65). The user's page server is port 3181 (Terminal tab).
-
-The user accepted the page on 2026-11-05 (item 68). No verifier has read `94e134d1`, `920a08dc` or `62adb061`. Not checked: real phones, Noto Naskh, a screen reader. Not met: English 320's picked hour 15.3 px, days 14-15.5 px on small phones, Arabic 320's day air 2.6 px.
-
-The specification round's list, beyond the PUB lists: `public-ink.js` in the file list, the English comparison wording of `920a08dc`, and the one page of public-page rules (lesson 8).
+The accepted page, its specification and the verifier's fixes are merged: `owner-followup-r04-build` at `33677c89`, CI green (items 68, 69). Open: whether to close the milestone; the user is asked. Not checked: real phones, Android's faces, real screen-reader speech, PUB-47, 49, 52 motion timing. Not met, and what is left as it stands: PUB-144 and 6.12 in `PUBLIC-SPEC.md`'s parts. AMD-P1 to AMD-P7 stay proposals for production. Private link: https://claude.ai/artifact/EPNza8Je3DE29kzVNhPCVe, the picture as accepted.
 
 The public branch `public-redesign-r01` takes Markdown-only record
 commits cherry-picked from the coordinator line, pushed. Briefs reach it by cherry-pick, not merge, until
