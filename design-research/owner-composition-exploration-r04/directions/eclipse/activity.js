@@ -373,7 +373,7 @@
   const frame = EclipseFrame.init({
     L, RTL, motionOn, Motion: M, URL_OFF,
     links: (() => { const p = new URLSearchParams({ lang: LANG }); if (URL_OFF) p.set("motion", "off"); return {
-      daily: `index.html?${p}`, reports: `reports.html?${p}`, access: `access.html?${p}`,
+      daily: `index.html?${p}`, reports: `reports.html?${p}`, access: `access.html?${p}`, settings: `settings.html?${p}`,
     }; })(),
     isDialogOpen: () => !!openDlg,
     status: {
