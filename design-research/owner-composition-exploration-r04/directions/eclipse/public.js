@@ -66,7 +66,8 @@
   };
   var levelKey = LEVELS[q.get("level")] ? q.get("level") : "busy";
   var level = LEVELS[levelKey];
-  page.setAttribute("data-level", levelKey);
+  // A reading's level is worked out from its count, so a capacity or limits the owner saved move it; levelKey names the sample.
+  page.setAttribute("data-level", band(level.n));
   var pctOn = q.get("pct") !== "off";
   if (!pctOn) page.setAttribute("data-pct", "off");
   // An hour narrower than this on the phone is too narrow for a finger: WCAG 2.5.8's minimum target (24 CSS px; the
@@ -250,7 +251,7 @@
     var facts, line, word, lv = LEVELS[lk || levelKey];
     cmp = cmp || vsOf(lv.n);
     if (s === "live" || s === "delayed") {
-      word = '<span class="sr-only">' + (s === "live" ? T.srNow : T.srLast) + '</span><span class="level">' + T.words[lk || levelKey] + "</span>";
+      word = '<span class="sr-only">' + (s === "live" ? T.srNow : T.srLast) + '</span><span class="level">' + T.words[band(lv.n)] + "</span>";
       facts = '<p class="facts"><span class="count-line">' + T.about(lv.n) + "</span>" + (pctOn ? '<span class="pct">' + T.full(lv.pct) + "</span>" : "") + "</p>";
       line = s === "live"
         ? '<p class="vs">' + (cmp ? vsIcon(cmp) + "<span>" + T.vs[cmp] + "</span>" : "<span>" + STRUT + "</span>") + '</p><p class="stamp"><i class="dot" aria-hidden="true"></i><b>' + T.live + "</b> · " + T.readAt(READ_AT) + "</p>"
@@ -999,7 +1000,7 @@
     // The bars wait at their floor while the day is written (the arrival's first frame), then rise.
     if (!reduce) page.setAttribute("data-intro", "");
     toState("live");
-    speak(T.arrival(levelKey, level.n));
+    speak(T.arrival(band(level.n), level.n));
     if (focus) head.word.focus();
     ready();
     rise();

@@ -73,6 +73,7 @@
       acctOff: (n) => `تعطيل حساب ${n}`,
       acctOn: (n) => `إعادة تفعيل حساب ${n}`,
       signin: (n) => `إعادة تعيين كلمة مرور ${n}`,
+      pwChanged: (n) => `تغيير كلمة مرور ${n}`,
       settings: "تحديث الإعدادات",
       resetAfter: "تصفير بعد الإغلاق",
       notRecorded: "غير مسجّل",
@@ -140,6 +141,7 @@
       acctOff: (n) => `Account deactivated for ${n}`,
       acctOn: (n) => `Account reactivated for ${n}`,
       signin: (n) => `Password reset for ${n}`,
+      pwChanged: (n) => `Password changed by ${n}`,
       settings: "Settings updated",
       resetAfter: "Reset after closing",
       notRecorded: "Not recorded",
@@ -213,13 +215,16 @@
   // The log keeps about 12 months (SPEC retention): the date picker reaches back a year from today.
   const FIRST_PICK = toDn("2025-09-24");
   const COMMAND = ["correction_delta", "correction_absolute", "reset"];
-  const ACCESS = ["staff_pin_provisioned", "staff_pin_rotated", "staff_pin_deactivated", "owner_provisioned", "owner_deactivated", "owner_reactivated", "credential_reset"];
+  const ACCESS = ["staff_pin_provisioned", "staff_pin_rotated", "staff_pin_deactivated", "owner_provisioned", "owner_deactivated", "owner_reactivated", "credential_reset", "credential_changed"];
   const KIND_ACTIONS = { count: COMMAND, access: ACCESS, settings: ["settings_updated"] };
   /* Who: the two owner accounts (principals, named by the actor's displayName; DECISIONS item 32) and the automatic
    * system. An access or settings record is always written by an owner (the contract), and no one changes the count by
    * hand (ADR-008), so the shared front desk writes no record: it is the target of the PIN records only. The concept
    * shows each stored name unchanged in either language. */
   const BASE_NAMES = { o1: "فهد", o2: "نورة", o3: "Omar Alharbi" };
+  // What the owner saved in this browser (demo-store.js): the owners added and every record. The name fixtures keep to themselves.
+  const DEMO = EclipseDemo.page(["case"]);
+  Object.assign(BASE_NAMES, DEMO.names());
   const OWNERS = { ...BASE_NAMES };
   // Record arrivals carry Access's name-range fixtures. Arrivals without record= keep the original log sample.
   if (params.has("record") && params.get("case") === "long") {
@@ -279,6 +284,8 @@
       if (action.startsWith("staff_pin")) r.target = "desk";
       rows.push(r);
     }
+    // Today at the demo's clock, in the order they were saved (the second keeps it, newest first).
+    DEMO.log().forEach((s, i) => rows.push({ dn: TODAY, mins: NOW_MIN, sec: i, actor: "owner", principal: s.by, actorKind: "owner", action: s.action, cls: s.kind, target: s.target, id: s.id, reason: s.reason ? { raw: s.reason, lang: s.lang } : null, prior: null, eff: null, delta: null }));
     const rnd = mulberry32(23);
     for (let dn = toDn("2026-08-17"); dn <= TODAY; dn++) {
       let prior = isoOf(dn) === "2026-09-05" ? null : GYM.closingCount(dn - 1);
@@ -415,6 +422,7 @@
       case "owner_deactivated": return L.acctOff(name(r));
       case "owner_reactivated": return L.acctOn(name(r));
       case "credential_reset": return L.signin(name(r));
+      case "credential_changed": return L.pwChanged(name(r));
       default: return L.settings;
     }
   }
@@ -432,7 +440,7 @@
   function whyHTML(r) {
     if (!r.reason) return `<p class="rec-why is-none">${L.noReason}</p>`;
     const text = r.reason.raw ?? r.reason[LANG], lang = r.reason.raw ? r.reason.lang : LANG;
-    return `<p class="rec-why"><span class="sr-only">${L.reasonSay}</span><q><bdi${lang !== LANG ? ` lang="${lang}"` : ""}>${text}</bdi></q></p>`;
+    return `<p class="rec-why"><span class="sr-only">${L.reasonSay}</span><q><bdi${lang !== LANG ? ` lang="${lang}"` : ""}>${EclipseDemo.esc(text)}</bdi></q></p>`;
   }
   function recHTML(r) {
     const t = `<time class="rec-t" datetime="${isoOf(r.dn)}T${String(Math.floor(r.mins / 60)).padStart(2, "0")}:${String(r.mins % 60).padStart(2, "0")}+03:00">${bdi(fmtClock(r.mins))}</time>`;

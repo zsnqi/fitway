@@ -1462,7 +1462,8 @@
   /* ---- the export dialog: a real CSV built from the synthetic minutes, in the page. Nothing leaves the page.
    * The file follows the reporting domain's CSV shape: a UTF-8 byte order mark, CRLF lines, and per business day
    * 1440 rows from the 4:00 AM business-day boundary, each with UTC and gym-time columns; closed and missing minutes
-   * keep their state and leave the value columns empty. */
+   * keep their state and leave the value columns empty. Every row is a past day's, so capacity_snapshot stays as recorded,
+   * whatever the owner has saved since; its band follows the saved levels, as the page's words do. */
   const CSV_HEAD = "business_day,minute_start_utc,minute_start_local,time_zone,state,count,entries,exits,band,capacity_snapshot,settings_version,source";
   const p2 = (n) => String(n).padStart(2, "0");
   function csvDay(dn) {
@@ -1479,7 +1480,7 @@
       let tail;
       if (!(m >= open && m < DAY)) tail = "closed,,,,,,,";
       else if (!d || !d.obs(m)) tail = "missing,,,,,,,";
-      else { const c = d.occ[m]; tail = `value,${c},${d.ent[m]},${d.ext[m]},${BAND[levelOf(c)]},${GYM.CAPACITY},${GYM.versionAt(dn, m)},live`; }
+      else { const c = d.occ[m]; tail = `value,${c},${d.ent[m]},${d.ext[m]},${BAND[levelOf(c)]},${GYM.RECORDED.capacity},${GYM.versionAt(dn, m)},live`; }
       out.push(`${iso},${ut},${lt},${TZ},${tail}`);
     }
     return out.join("\r\n") + "\r\n";

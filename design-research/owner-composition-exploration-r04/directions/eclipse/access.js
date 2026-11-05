@@ -350,6 +350,9 @@
     desk: { state: ["none", "off"].includes(params.get("pin")) ? params.get("pin") : "active" },
     owners: OWNERS0.map((o) => ({ ...o })),
   };
+  // What the owner saved in this browser (demo-store.js). A review switch that draws other people keeps to itself.
+  const DEMO = EclipseDemo.page(["pin", "owners", "case", "records", "refuse"]);
+  DEMO.loadAccess(data);
   const ownerOf = (id) => data.owners.find((o) => o.id === id);
   const activeCount = () => data.owners.filter((o) => o.active).length;
   // As loaded: the signed-in owner first, then the other active owners as created, then the deactivated ones, quieter,
@@ -381,9 +384,9 @@
   const LOG_NAMES = { o1: "فهد", o2: "نورة" };  // the names the log stores (activity.js), as typed
   // The records agree with the code's state the page shows: a code never set has no code records; a deactivated one
   // was last deactivated (21 September), not created again.
-  const loadedRecords = () => RECORDS0.filter((r) => (data.desk.state === "none" ? !r.act.startsWith("pin") : data.desk.state === "off" ? r.id !== 54 : true));
+  // A code the owner deactivated here keeps the records before it; those come first, as saved.
+  const loadedRecords = () => [...DEMO.accessRecords(), ...RECORDS0.filter((r) => (DEMO.live ? true : data.desk.state === "none" ? !r.act.startsWith("pin") : data.desk.state === "off" ? r.id !== 54 : true))];
   const records = { phase: RECORDS_MODE === "error" ? "error" : "ready", list: RECORDS_MODE === "none" ? [] : loadedRecords() };
-  let nextRecordId = 57;                       // after the original sample's 1-56; reserved historical ids are skipped
   // A stored name, isolated so it keeps its own direction in either language; an email, left to right, breakable only
   // after its "@" and dots (and anywhere, as a last resort, for the longest the contract allows).
   const nm = (o) => bdi(esc(o.name));
@@ -535,8 +538,7 @@
    * end, as "Add owner" stands at the owners' (a list's action in the list's head; a key's actions under its name). Then
    * the latest eight records, newest first, each in the log's words over who did it and when, and each opening its own
    * record in Activity log. Its states: loading (the rows' bars), none yet, and its own failure with a retry. */
-  const DAY0 = Date.UTC(2026, 8, 23) / 864e5;                  // the concept's today: 23 September 2026 (Daily's)
-  const dayOf = (iso) => Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5;
+  const DAY0 = EclipseGym.NOW.dn, dayOf = EclipseGym.toDn;      // the concept's today: 23 September 2026 (Daily's)
   function whenHTML(r) {
     const d = dayOf(r.date), t = timeText(r.mins);
     if (d === DAY0) return nw(`${L.today} ${t}`);
@@ -589,9 +591,8 @@
   // A change made here writes its record: it tops the card at once, as the log has it (today, now, by the signed-in
   // owner), and arrives there with the change's done line (renderMoving's list).
   function addRecord(act, target, reason = "") {
-    // Activity log reserves these two ids for Omar's older sample records.
-    while ([1001, 1002].includes(nextRecordId)) nextRecordId++;
-    records.list.unshift({ id: nextRecordId++, date: "2026-09-23", mins: NOW_MIN, by: ME, act, target, reason: reason || null });
+    records.list.unshift({ id: DEMO.nextId(), date: "2026-09-23", mins: NOW_MIN, by: ME, act, target, reason: reason || null });
+    DEMO.saveAccess(records.list[0], data.desk.state, ownerOf(target));
   }
   function recRetry() {
     if (records.phase !== "error") return;

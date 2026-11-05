@@ -1,7 +1,8 @@
 /* Eclipse: the one gym every page describes. Concept only, synthetic data.
  * Today, Reports, Activity, Access, Settings and the public page read their shared figures from here and keep no copy:
  * the capacity and level limits, the hours (now and as Settings' history had them), the moment, the week's rhythm, the
- * settings changes, the camera outages, and the seeded minute simulation behind every reading.
+ * settings changes, the camera outages, and the seeded minute simulation behind every reading. A capacity or limits the
+ * owner saved in this browser (demo-store.js) are in force here; the hours and every reading stay the gym's.
  * A classic script, so a page works from file:// too. Minutes count from 6:00 AM of the business day, as on Today.
  * Numbers stay numbers here; each page prints them in its own language. */
 window.EclipseGym = (() => {
@@ -10,9 +11,22 @@ window.EclipseGym = (() => {
   const wdOf = (dn) => new Date(dn * 864e5).getUTCDay();
 
   /* ---------------------------------------------------------- capacity and levels */
-  const CAPACITY = 120;
-  const LIMITS = [25, 50, 75];                                    // percent of capacity
-  const PEOPLE = LIMITS.map((p) => Math.floor((CAPACITY * p) / 100)); // 30, 60, 90
+  // As the gym's history has them: Settings' first version and the export's past rows keep these.
+  const RECORDED = { capacity: 120, limits: [25, 50, 75] };        // limits: percent of capacity
+  // In force: what the owner last saved, else the recorded ones. A count never changes; only the level it reads as.
+  const SAVED = window.EclipseDemo ? window.EclipseDemo.settings() : null;
+  const CAPACITY = SAVED ? SAVED.capacity : RECORDED.capacity;
+  const LIMITS = SAVED ? [SAVED.thresholds.quietMaxPercent, SAVED.thresholds.moderateMaxPercent, SAVED.thresholds.busyMaxPercent] : RECORDED.limits;
+  /* A level holds every whole count whose percent of capacity is at or under its limit, so its last count is the largest
+   * n with (n / capacity) × 100 <= limit, computed in the same floating point bandFor uses
+   * (packages/api/src/occupancy/bands.ts): 25% of 120 is up to 30 people; 24% of 120 up to 28. */
+  const lastCount = (cap, pct) => {
+    let n = Math.floor((pct * cap) / 100);
+    while (((n + 1) / cap) * 100 <= pct) n++;
+    while (n > 0 && (n / cap) * 100 > pct) n--;
+    return n;
+  };
+  const PEOPLE = LIMITS.map((p) => lastCount(CAPACITY, p));        // 30, 60, 90 at the recorded ones
   // A level holds every count at or under its limit; Packed is every count above Busy.
   const levelOf = (v) => (v <= PEOPLE[0] ? 0 : v <= PEOPLE[1] ? 1 : v <= PEOPLE[2] ? 2 : 3);
   const LEVELS = ["quiet", "moderate", "busy", "packed"];
@@ -181,7 +195,7 @@ window.EclipseGym = (() => {
   const closingCount = (dn) => { const H = hoursOn(dn); return day(dn).occ[H.closeM - 1]; };
 
   return {
-    toDn, wdOf, CAPACITY, LIMITS, PEOPLE, levelOf, LEVELS, NOW, WEEKDAYS, WEEK, CHANGES, versionAt,
+    toDn, wdOf, RECORDED, CAPACITY, LIMITS, PEOPLE, lastCount, levelOf, LEVELS, NOW, WEEKDAYS, WEEK, CHANGES, versionAt,
     hoursOn, OUTAGES, FIRST_DAY, LAST_FULL: NOW.dn - 1, DAY: WEEK.wed.close * 60 - WEEK.wed.open * 60, day, closingCount,
   };
 })();

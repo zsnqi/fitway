@@ -421,12 +421,7 @@
    * A level holds every whole count whose percent of capacity is at or under its limit, so its last count is the
    * largest n with (n / capacity) × 100 <= limit, computed in the same floating point bandFor uses: 25% of 120 is up to
    * 30 people; 24% of 120 up to 28 (item 49's "up to 29" was its example's shape). Packed is every count above Busy. */
-  const lastCount = (cap, pct) => {
-    let n = Math.floor((pct * cap) / 100);
-    while (((n + 1) / cap) * 100 <= pct) n++;
-    while (n > 0 && (n / cap) * 100 > pct) n--;
-    return n;
-  };
+  const lastCount = EclipseGym.lastCount;
   // The people level i holds at a capacity, as the phrase after its limit (the card and its window alike): «أو 24
   // شخصًا», the top level «أو 91 شخصًا فأكثر». A Quiet holding only the empty gym keeps the pattern, «أو 0 أشخاص»
   // (part 3: the earlier «الصالة خالية فقط» stood after «حتى 25%» with nothing to join them); a level no count reaches
@@ -447,8 +442,8 @@
   const clone = (s) => JSON.parse(JSON.stringify(s));
   // The one gym (gym.js) gives the capacity, the limits, the moment and the changes' records.
   const V1 = {
-    capacity: EclipseGym.CAPACITY,
-    thresholds: { quietMaxPercent: EclipseGym.LIMITS[0], moderateMaxPercent: EclipseGym.LIMITS[1], busyMaxPercent: EclipseGym.LIMITS[2] },
+    capacity: EclipseGym.RECORDED.capacity,
+    thresholds: { quietMaxPercent: EclipseGym.RECORDED.limits[0], moderateMaxPercent: EclipseGym.RECORDED.limits[1], busyMaxPercent: EclipseGym.RECORDED.limits[2] },
     weeklySchedule: week((d) => (d === "fri" ? H("16:00", "01:00") : H("06:00", "01:00"))),
     businessDayBoundary: "03:00",
     resetBufferMinutes: 30,
@@ -532,6 +527,10 @@
     const [a, b] = versions.slice(-2);
     versions.splice(0, versions.length, { ...a, version: 1, date: null, mins: null, by: null, reason: null }, { ...b, version: 2 });
   }
+  // What the owner saved in this browser (demo-store.js): each a later version, at the demo's clock. A review switch that
+  // draws another history keeps to itself (and so does the conflict's made-up other save, ?refuse, ?other).
+  const DEMO = EclipseDemo.page(["log", "case", "refuse", "other"]);
+  for (const r of DEMO.records("settings")) versions.push({ version: versions.length + 1, date: EclipseGym.NOW.date, mins: EclipseGym.NOW.clock, by: r.by, reason: r.reason ? { raw: r.reason, lang: r.lang } : null, editable: r.editable, id: r.id });
   // The snapshot the page loaded (settings.read): the latest version and its five read-only values, never shown but
   // as «توقيت الرياض» beside the hours (item 49).
   const current = () => versions[versions.length - 1];
@@ -866,8 +865,6 @@
    * or closes never takes it away, so the page behind a window never moves (the brief's hard limit). It arrives at once,
    * with the cards' new values and the history's new record: the page itself has no motion (item 4). */
   let notice = null;                               // { at: "crowd" | "hours" | "day", many, id }
-  // A record a save writes takes the session's next id, as Access's do (57 on; Activity log's sample ends at 56).
-  let nextRecordId = 57;
   const recHref = (id) => `activity.html?kind=settings&record=${id}&${keep}`;
   const CHECK = '<svg class="done-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="m-check" d="M5.5 12.5 10 17l8.5-9.5"/></svg>';
   // Its words sit in one block that rises into the line, the check drawing as it comes (Access's done line, MOT-17).
@@ -1880,10 +1877,11 @@
   const logList = { box: cardEl.log, rows: () => $$(".log-list > .log-rec:not(.is-ph)", cardEl.log).map((li) => [li.dataset.v, li]),
     words: ".log-what, .log-fig, .log-meta, .log-why", empty: ".log-none" };
   function commit(sec) {
-    const reason = flow.reason.trim(), many = changes(flow.base, flow.next).length > 1, id = nextRecordId++, next = flow.next;
+    const reason = flow.reason.trim(), many = changes(flow.base, flow.next).length > 1, id = DEMO.nextId(), next = flow.next;
     closeDialog(D[sec], { quiet: true });
     M.flip(blocks, () => {
       versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN, by: ME, reason: reason ? { raw: reason } : null, editable: next, id });
+      DEMO.saveSettings(current());
       notice = { at: sec, many, id };
       renderAll();
     }, { list: logList });
@@ -1954,7 +1952,7 @@
     keepReason(sec);
     const oldBase = flow.base, latest = clone(current().editable);
     OTHER(latest);
-    versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN - 1, by: ME, reason: null, editable: latest, id: nextRecordId++ });
+    versions.push({ version: current().version + 1, date: "2026-09-23", mins: NOW_MIN - 1, by: ME, reason: null, editable: latest, id: DEMO.nextId() });
     renderAll();
     const mine = overlay(sec, latest);
     rebuildEditor(sec, mine, latest);
