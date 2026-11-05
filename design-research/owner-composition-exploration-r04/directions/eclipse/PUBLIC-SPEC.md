@@ -1,42 +1,38 @@
 # Public: the spec fragment for DESIGN-SPEC.md §6
 
-The coordinator merges this file as DESIGN-SPEC.md §6 (composition rows, **C**). It specifies the public crowd page as
-built at `27758b4e` (public-redesign-r01, run spec-42, 2026-11-02), as the reviews' fix round changed it (run
-fixes-43, 2026-11-02) and as the final verifier's fix round changed it (run final-fixes-45, 2026-11-02; rows either
-round changed say so): what it answers, the head, the usual day's card,
-the six states, every size, the motion, the fonts, Arabic and English, every string, the Product/Spec amendments the
-move to production needs (6.10, each **P**, proposed, never decided), and where the page departs from a family row
-(6.11). Rows `PUB-n` describe what the page does; where the code and the run notes disagree, the code wins and 6.12
-lists each disagreement. Concept only (ADR-010), synthetic data; nothing here is a production contract.
+The coordinator merges this file as DESIGN-SPEC.md §6 (composition rows, **C**). It specifies the public crowd page the
+user accepted by eye on 2026-11-05 as at `62adb061`, which stands unchanged at this specification's HEAD, `c4d804a5`
+(public-redesign-r01, run spec-69, 2026-11-05): what it answers, the head, the usual day's card, the six states, every
+size, the motion, the fonts, Arabic and English, every string, the Product/Spec amendments the move to production needs
+(6.10, each **P**, proposed, never decided), and where the page departs from a family row (6.11). Rows `PUB-n` describe
+what the page does; a row whose feature has left the page says **Gone** in one line and keeps its number; where the code
+and a report disagree, the code wins and 6.12 lists each disagreement. Concept only (ADR-010), synthetic data; nothing
+here is a production contract.
 Concept: `public.html`, `public.css`, `public.js`, `public-copy.js` (the page's words), `public-slide.js` (a picked day's
-movement, since final-fixes-45).
+movement), `public-ink.js` (where a text's strokes stand: the word's first stroke on the facts' edge, and the gaps taken stroke to stroke).
 
-**Sources.** `file:line` is a line of the concept file in the commit that holds this specification (final-fixes-45's;
-the earlier rounds' lines were carried to it). Measured values name their source; `P42` values the fix round did not
-change were measured again in `P43` and agree, and `P43` values final-fixes-45 did not change were measured again in
-`P45` and agree:
+**The rules that decide the page**, and the file that holds each, are in `PUBLIC-RULES.md`, beside this file.
+
+**Sources.** `file:line` is a line of the concept file at `c4d804a5`. Measured values name their source. Every number
+this round states was measured again on that page, under the codes `P69`, `X69` and `F69`, unless it names another:
 
 | Code | Source |
 | --- | --- |
-| `P42` | `D:/fitway-temp/public-redesign-r01-spec-42/measure/spec-1/spec-measure.json` (script `scripts/spec-measure.mjs`, `pnpm verify:owner run`, port 3176): Live at Busy at 320 × 640, 360 × 780, 375 × 667, 390 × 844, 412 × 915, 430 × 932, 600 × 960, 768 × 1024, 1023 × 768, 1024 × 768, 1280 × 720, 1366 × 768, 1440 × 900, 1920 × 1080 and 720 × 450 (1440 × 900 at 200%), Arabic and English, reduced motion: every size and box, each weekday's bars, labels and answer, each level's and each state's word. |
-| `P42x` | `measure/extra-1/spec-extra.json` (`scripts/spec-extra.mjs`): the Tab order in Live, Loading and Error at 390; Thursday's lone last hour at 360 and 390; the head's rows at each level at 320, 360 and 390. |
-| `F42` | Frames and sheets in `D:/fitway-temp/public-redesign-r01-spec-42/` (`frames/states`, `frames/sizes`, `frames/card`, `frames/levels`; `sheet-*`), `pnpm verify:owner frames`, reduced motion, opened and looked at. |
-| `S40` | The states round's measures, `D:/fitway-temp/public-redesign-r01-states-40/` (`NOTES.md`, "Measured this round"): zero movement across day changes, the arrival, the states' geometry, 426 picks. Cited, not re-run. |
-| `P43` | `D:/fitway-temp/public-redesign-r01-fixes-43/measure/spec-b/spec-measure.json`: `P42`'s script, run again on the fix round's page (port 3186). |
-| `M43` | The fix round's measures, `D:/fitway-temp/public-redesign-r01-fixes-43/measure/` (scripts in `../scripts/`, `pnpm verify:owner run`, port 3186, reduced motion unless named): `levels-b` (every level, 17 sizes, both languages, Live and Delayed: every box under the word), `fixes-b` (ranges, ink, gaps, line ends, keys, step keys, labels, sizes, words), `f1-b`, `arrival-b`, `picks-labels-b`, `geometry-b`, `word-line-b` (the states round's scripts, run again), `gap-b` (the air before the Live stamp), and `../work/digits` (Readex Pro's digit widths). |
-| `F43` | Frames and sheets in `D:/fitway-temp/public-redesign-r01-fixes-43/` (`frames/states`, `frames/sizes`, `frames/pick`; `sheet-states`, `sheet-sizes`), opened and looked at. |
-| `P45` | `D:/fitway-temp/public-redesign-r01-final-fixes-45/measure/spec/spec-measure.json`: `P42`'s script, run again on final-fixes-45's page (port 3186). |
-| `M45` | final-fixes-45's measures, `D:/fitway-temp/public-redesign-r01-final-fixes-45/measure/` (scripts in `../scripts/`, `pnpm verify:owner run`, port 3186, reduced motion unless named): `arrival` (every head box, Loading's shown skeleton against Live and against its own arrival, every level, nine sizes, both languages; the hour labels; the voice), `checks` (the gap to the status line in every state, the stamp's air at every level, the step keys, the keys' release), `sizes` (the word, the count and the plot either side of 600 and 1024 px in 2 px steps, and across the blend in 10), `ink` (the word's ink against the facts', from the pixels), and `levels`, `f1`, `picks`, `geometry`, `word-line`, `regress` (the earlier rounds' scripts, run again). |
-| `F45` | Frames and sheets in `D:/fitway-temp/public-redesign-r01-final-fixes-45/` (`frames/states`, `frames/sizes`, `frames/pick`, `frames/edges`; `sheet-states`, `sheet-sizes`, `sheet-extra`), opened and looked at. |
-| `A39`, `C40` | The words: `D:/fitway-temp/public-redesign-r01-arabic-39/COPY.md` and `D:/fitway-temp/public-redesign-r01-states-40/COPY.md`. |
+| `P69` | `D:/fitway-temp/public-redesign-r01-spec-69/measure/all/` (script `scripts/spec-measure-69.mjs`, `pnpm verify:owner run`, port 3176, reduced motion): `states.json` (six states at 20 sizes, both languages, 240 cases), `levels.json` (160 cases), `days.json`, `day-moves.json`, `picks.json` (540 picks), `tabs.json`, `names.json`, `sweep.json` (widths 300 to 1100 px, 4 px and then 20 px steps). The run's last part (zoom) failed on a size the tool refuses; `X69` measured it. |
+| `X69` | `D:/fitway-temp/public-redesign-r01-spec-69/measure/extra-3/result.json` (`scripts/spec-extra-69.mjs`, same command): zoom at 240 to 260 px and 720 × 450; Loading's stamp against Live's; the arrival; the retry; a change of day on the computer; the widths either side of 440, 600, 864 and 1024 px; the page's other switches; the motion. |
+| `F69` | Frames and sheets in `D:/fitway-temp/public-redesign-r01-spec-69/` (`frames/states`, 5 sizes, 6 states, 2 languages; `frames/picks`, `frames/edges`; `sheet-states-320x568`, `sheet-states-390x844`, `sheet-picks`), `pnpm verify:owner frames`, reduced motion, opened and looked at. |
+| `R63`, `R64`, `R65`, `R67`, `R68` | The reports on the page's last rounds, `D:/fitway-temp/public-redesign-r01-carry-63/REPORT.md`, `final-form-64`, `picks-65`, `fix-67`, `recheck-68`. 6.12 lists where they and the code disagree. |
+| `M45` | `D:/fitway-temp/public-redesign-r01-final-fixes-45/measure/`: `ink` (the word's ink against the facts', from the pixels), `arrival` (the arrival with motion). Cited, not re-run. |
+| `M43` | `D:/fitway-temp/public-redesign-r01-fixes-43/work/digits` (Readex Pro's digit widths). Cited, not re-run. |
+| `A39`, `C40`, `N40` | Why the words are as they are: `D:/fitway-temp/public-redesign-r01-arabic-39/COPY.md`, `D:/fitway-temp/public-redesign-r01-states-40/COPY.md`, and that round's `NOTES.md`. They tell an earlier page; the rows say what it does now. |
 
 ## Parts
 
-This specification is this file and the parts below, in order. Each part has the authority of the sections it
-holds; edit a section in its part, and keep each part under 40,000 bytes by splitting it at a heading. Open the part
-a task needs.
+This specification is this file, `PUBLIC-RULES.md`, and the parts below, in order. Each part has the authority of the
+sections it holds; edit a section in its part, and keep each part under 40,000 bytes by splitting it at a heading. Open
+the part a task needs. Rows added in this round: PUB-143 in part 1; PUB-142 and PUB-144 in part 2; PUB-145 and AMD-P7 in part 4.
 
 - `spec/public-1.md`: 6.1 What the page answers, and its frame; 6.2 The head; 6.3 The usual day's card
 - `spec/public-2.md`: 6.4 The states; 6.5 Sizes; 6.6 Motion; 6.7 Fonts; 6.8 Arabic and English
 - `spec/public-3.md`: 6.9 Copy
-- `spec/public-4.md`: 6.10 Product/Spec amendments for the move to production; 6.11 Where the page departs from a family row; 6.12 The code against the notes
+- `spec/public-4.md`: 6.10 Product/Spec amendments for the move to production; 6.11 Where the page departs from a family row; 6.12 The code against the reports
