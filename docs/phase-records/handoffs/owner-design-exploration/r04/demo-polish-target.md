@@ -25,7 +25,6 @@ One gym across all six pages. Today the Owner pages say Wednesday, 49 inside, us
 
 ## Left as it is
 
-- A change saved in Access or Settings is lost on reload and does not reach the other pages (data audit finding 14). The demo is walked through by the user.
 - Data audit findings 15-19; the plain "Last 7 days" card is the user's choice (DECISIONS item 103), so finding 8 is only a stale comment.
 - Not checked until the end: real phones and screen readers.
 
@@ -36,4 +35,4 @@ One gym across all six pages. Today the Owner pages say Wednesday, 49 inside, us
 3. «الوصول» becomes «الحسابات».
 4. The gym has a prayer room inside, so no dip for prayer.
 
-Open: whether saved changes stay (the user asked why they are left).
+5. Saved changes stay, kept in the browser (DECISIONS item 105).
