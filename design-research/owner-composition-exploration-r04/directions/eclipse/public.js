@@ -57,7 +57,7 @@
   // at 7:42 PM. Delayed's last reading came 13 minutes before now (7:29 PM); Closed is the hours before the gym opens.
   // ---------------------------------------------------------------------------------------------------------------
   var GYM = window.EclipseGym;
-  var percentOf = function (n) { return Math.round((n / GYM.CAPACITY) * 100); };
+  var percentOf = function (n) { return Math.min(100, Math.round((n / GYM.CAPACITY) * 100)); };
   var LEVELS = {
     quiet: { n: 18, pct: percentOf(18) },
     moderate: { n: 41, pct: percentOf(41) },

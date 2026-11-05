@@ -73,8 +73,8 @@ html.rp-faces > body.rp { opacity: 0; }
   .rp-period .stat-meta { flex-basis: 100%; margin-inline-start: 0; }
 }
 
-/* "Last 7 days": the summary light while it has a complete value (LGT-6, LGT-8); a plain card while it has none. In the
- * lit card every caption is --ink-2 (LGT-9). */
+/* "Last 7 days" carries no light, by the user's choice: a card without .lit shows no lamp. Where a card is lit, every
+ * caption is --ink-2 (LGT-9). */
 .rp-trend:not(.lit) > .lamp { display: none; }
 .rp-trend.lit .stat-meta, .rp-trend.lit .unit, .rp-trend.lit .stat-aside { color: var(--ink-2); }
 
@@ -278,15 +278,12 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
 }
 .file-line:empty { display: none; }
 .file-line .ico { grid-row: 1; width: 16px; height: 16px; margin-block-start: 1px; color: var(--ink-2); }
-/* DLG-4 (decision 95): the name is Latin and isolated left to right (dir="ltr"); its lines start on the left edge of its
- * column. In Arabic the box is laid out like the English (option 3, the user's pick, amended by the user: the count's line
- * too): the box is set left to right, so the icon sits on the left and the count's line reads left to right as
- * "40,320 rows" does, the figure (its own bdi) first on the left edge under the name's first letter, then «صفًا» to its
- * right. The grid is placed physically; the box's direction is its own. */
+/* DLG-4 (decision 95, amended): the name is Latin and isolated left to right (dir="ltr"); it is the only part of the box that
+ * runs left to right. In Arabic the box starts on the right like the rest of the page: the icon on the right, the row count
+ * under the name's line at the same edge, and the name set against that edge too. */
 .file-name { grid-column: 2; margin: 0; color: var(--ink); overflow-wrap: anywhere; }
 .file-rows { grid-column: 2; justify-self: start; white-space: nowrap; }
-[dir="rtl"] .file-line { direction: ltr; }
-[dir="rtl"] .file-name { text-align: left; }
+[dir="rtl"] .file-name { text-align: right; }
 .progress { margin-block-start: 16px; }
 .progress-text { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
 .progress-bar { display: block; height: 4px; margin-block-start: 8px; overflow: hidden; border-radius: 2px; background: rgba(255, 255, 255, 0.08); }

@@ -148,7 +148,7 @@
   const COPY = {
     ar: {
       // The frame (as on Daily): the bar's short names, the Operations status and its details, the phone's menu.
-      docTitle: "التقارير · FITWAY (مفهوم)",
+      docTitle: "التقارير · FITWAY",
       title: "التقارير",
       rangeName: "الفترة",
       seg: { "7d": `آخر ${bdi(7)} أيام`, "28d": `آخر ${bdi(28)} يومًا`, custom: "فترة أخرى…" },
@@ -166,7 +166,7 @@
       peakTitle: "أعلى ذروة",
       entriesTitle: "مرات الدخول",
       entriesNote: (n) => `نحو ${n} في اليوم`,
-      noReadings: "لا قراءات",
+      noReadings: "لا قراءات", outside: "خارج الفترة",
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       patternTitle: "أوقات الازدحام",
       patternSub: "معدّل الموجودين حسب اليوم والساعة",
@@ -192,7 +192,7 @@
       sortSay: (c, dir, isDay) => `مرتب حسب ${c}، ${isDay ? (dir === "desc" ? "الأحدث أولًا" : "الأقدم أولًا") : dir === "desc" ? "الأعلى أولًا" : "الأقل أولًا"}`,
       // The day list on a phone (step 4's build): sorted with the phone's own picker; 7 days, then all.
       sortName: "الترتيب",
-      sorts: { "day-desc": "الأحدث أولًا", "day-asc": "الأقدم أولًا", "peak-desc": "الذروة الأعلى", "avg-desc": "المعدّل الأعلى", "entries-desc": "مرات الدخول الأكثر" },
+      sorts: { "day-desc": "الأحدث أولًا", "day-asc": "الأقدم أولًا", "peak-desc": "أعلى ذروة", "avg-desc": "أعلى معدّل", "entries-desc": "أكثر مرات دخول" },
       showAll: "عرض كل الأيام",
       showFewer: "عرض أقل",
       peakAt: (t) => `الذروة ${t}`,
@@ -205,7 +205,7 @@
       // One span inside the button: a flex button would make each run of text and the number an item of its own and set
       // its 8 px gap around «28» (the fix round, 2026-10-01).
       emptyAction: `عرض آخر ${bdi(28)} يومًا`,
-      exportMinutes: "تصدير بيانات الدقائق",
+      exportMinutes: "تصدير القراءات دقيقة بدقيقة",
       exportTable: "تصدير الجدول",
       close: "إغلاق",
       cancel: "إلغاء",
@@ -222,7 +222,7 @@
         order: "تاريخ النهاية قبل البداية",
         tooLong: `اختر ${bdi(366)} يومًا أو أقل`,
       },
-      exportTitle: "تصدير بيانات الدقائق",
+      exportTitle: "تصدير القراءات دقيقة بدقيقة",
       rows: (n) => arN(n, ["صف واحد", "صفان", "صفوف", "صفًا", "صف"]),
       exportGo: "تصدير CSV",
       working: "جارٍ التجهيز…",
@@ -248,7 +248,7 @@
       since: "منذ",
     },
     en: {
-      docTitle: "Reports · FITWAY (concept)",
+      docTitle: "Reports · FITWAY",
       title: "Reports",
       rangeName: "Dates",
       seg: { "7d": "Last 7 days", "28d": "Last 28 days", custom: "Custom…" },
@@ -266,7 +266,7 @@
       peakTitle: "Highest peak",
       entriesTitle: "Entries",
       entriesNote: (n) => `About ${n} a day`,
-      noReadings: "No readings",
+      noReadings: "No readings", outside: "Outside the range",
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
       patternTitle: "Busy times",
       patternSub: "Average inside by day and hour",
@@ -356,10 +356,10 @@
   const suffix = (pm) => (RTL ? (pm ? "م" : "ص") : pm ? "PM" : "AM");
   const fmtTime = (m) => { const c = clock(m); return `${c.h12}:${String(c.mm).padStart(2, "0")} ${suffix(c.pm)}`; };
   const fmtHour = (m) => { const c = clock(m); return `${c.h12} ${suffix(c.pm)}`; };
-  // Both languages use the en dash (DAT-3, user 2026-10-01). An unspaced Arabic hour range isolates its numbers LTR and joins
-  // after the dash (U+2060), so the en dash does not reverse them or open a line break; the suffix stays outside, as before.
+  // Both languages use the en dash (DAT-3, user 2026-10-01). An Arabic hour range reads as the public page's does, «6 – 7 م»:
+  // its first number stands on the right, the dash between thin spaces, and word joiners (U+2060) keep the range on one line.
   const DASH = "–";
-  const NUMS = (a, b) => (RTL ? `<bdi dir="ltr">${a}${DASH}\u2060${b}</bdi>` : `${a}${DASH}${b}`);
+  const NUMS = (a, b) => (RTL ? `<bdi dir="rtl">${a}\u2060\u2009\u2060${DASH}\u2060\u2009\u2060${b}</bdi>` : `${a}${DASH}${b}`);
   // DAT-4 (K-17): a date, a time or a range never breaks inside; each is one unbreakable span (.nw).
   const nw = (html) => `<span class="nw">${html}</span>`;
   const range2 = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
@@ -433,7 +433,7 @@
   const HIST_START = STATE === "short" ? toDn("2026-09-13") : FIRST_DAY; // short: readings since Sunday 13 September
   const TZ = "Asia/Riyadh";                 // UTC+3 all year
   const MAX_RANGE = 366;
-  const MIN_DAYS = 3;                       // a pattern slot needs 3 days to be certain (PAT-10, GLO-12; Q5)
+  const MIN_DAYS = 3, FEW_FROM = 21;        // a pattern slot needs 3 days to be certain (PAT-10, GLO-12; Q5); the hatch marks fewer only in a period of 21 days or more, which can reach 3 of every weekday
   const levelOf = (v) => GYM.levelOf(Math.round(v)); // on the figure the page prints, so an average shown as 60 reads as 60 does
   const BAND = GYM.LEVELS;
   // Camera outages: open minutes with no reading (minutes since 6:00 AM, inclusive).
@@ -467,8 +467,8 @@
 
   /* ------------------------------------------------------------ the period's model
    * The same semantics as the reporting domain: a pattern cell is closed when no minute of it is open in the period,
-   * no data when it is open but has no reading (or its weekday is not in the period), and otherwise the mean of the
-   * observed minutes. A genuine zero is a cell whose readings are all 0. */
+   * no data when it is open but has no reading, outside when no date of its weekday is in the period, and otherwise the
+   * mean of the observed minutes. A genuine zero is a cell whose readings are all 0. */
   function buildModel(a, b) {
     const days = [];
     for (let dn = a; dn <= b; dn++) days.push(dayModel(dn));
@@ -489,7 +489,7 @@
             observed++; total += sim.occ[m]; samples.add(d.dn);
           }
         }
-        const state = !ofDay.length ? "missing" : !expected ? "closed" : !observed ? "missing" : "value";
+        const state = !ofDay.length ? "outside" : !expected ? "closed" : !observed ? "missing" : "value";
         row.push({ wd, c, state, avg: state === "value" ? total / observed : null, samples: samples.size, observed, expected });
       }
       heat.push(row);
@@ -702,12 +702,12 @@
       const col = rampColor(cell.avg);
       const top = model.busiest && model.busiest.wd === wd && model.busiest.c === c ? " is-top" : "";
       // PAT-10: a slot drawn from fewer than 3 days keeps its colour under a fine hatch of the card's base.
-      const few = !z && cell.samples < MIN_DAYS ? " few" : "";
+      const few = !z && model.n >= FEW_FROM && cell.samples < MIN_DAYS ? " few" : "";
       return `<td class="hc ${z ? "zero" : "v"}${few}${top}" role="gridcell" tabindex="-1" data-r="${wd}" data-c0="${c}" data-c1="${c}"${z ? "" : ` style="--c: rgb(${col.join(" ")})"`}><span class="hv">${z ? "0" : valText(cell.avg)}</span><span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td>`;
     }
     // PAT-5 (K-32): a closed run says so in words, a single cell included; so does a run with no readings (PAT-6). The
     // cell's word stands alone (the grid's axis gives the hours); its tooltip says the whole sentence.
-    const word = cell.state === "closed" ? L.closed : L.noReadings;
+    const word = cell.state === "closed" ? L.closed : cell.state === "outside" ? L.outside : L.noReadings;
     return `<td class="hc ${cell.state === "closed" ? "closed" : "nodata"}" role="gridcell" tabindex="-1"${spanAttr} data-r="${wd}" data-c0="${run[0]}" data-c1="${run[1]}"><span class="run">${word}</span></td>`;
   }
   // Each weekday's slots as runs: [first hour, last hour], a value slot alone, closed or no-reading slots merged.
@@ -759,7 +759,7 @@
     // The key names every mark the pattern shows (TRU-2): the busiest point while there is one, the hatch while any slot
     // is drawn from fewer than 3 days. The day form writes closed and no-reading hours in words and prints every number,
     // so its key holds only the marks its bars carry, and none in an empty period, where there is nothing to explain.
-    const anyFew = model.heat.flat().some((x) => x.state === "value" && x.avg > 0 && x.samples < MIN_DAYS);
+    const anyFew = model.n >= FEW_FROM && model.heat.flat().some((x) => x.state === "value" && x.avg > 0 && x.samples < MIN_DAYS);
     // (data-mark: a mark the data brings; while the page loads or could not load it keeps its place, unseen.)
     const marks = (b ? `<li data-mark><span class="k kt" aria-hidden="true"></span><span>${L.busiestKey}</span></li>` : "") +
       (anyFew ? `<li data-mark><span class="k kf" aria-hidden="true"></span><span>${L.fewKey}</span></li>` : "");
@@ -812,7 +812,7 @@
       const cell = model.heat[wd][c0];
       if (cell.state === "value") {
         const z = cell.avg === 0;
-        const few = !z && cell.samples < MIN_DAYS ? " few" : "";
+        const few = !z && model.n >= FEW_FROM && cell.samples < MIN_DAYS ? " few" : "";
         const top = b && b.wd === wd && b.c === c0 ? " is-top" : "";
         // A bar is its ramp colour alone, with no edge (the user's decision 2 of 2026-10-01): a quiet hour's tone is close
         // to the plate's, and the number printed at its end carries its value.
@@ -821,7 +821,7 @@
         return `<tr role="row"${c0 % 3 === 0 ? ` class="is-tick"` : ""}><th scope="row" role="rowheader" class="hb-h">${bdi(fmtHour(c0 * 60))}</th><td role="cell" class="hb-c">${bar}<span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td></tr>`;
       }
       // A closed or no-reading run: one sentence, the words first (decision 8): «مغلق من 6 ص إلى 2 م».
-      const words = spanNote(cell.state === "closed" ? L.closed : L.noReadings, hourText(c0 * 60), hourText(c1 * 60 + 60));
+      const words = cell.state === "outside" ? L.outside : spanNote(cell.state === "closed" ? L.closed : L.noReadings, hourText(c0 * 60), hourText(c1 * 60 + 60));
       return `<tr role="row" class="hb-x" style="--span: ${c1 - c0 + 1}"><td role="cell" colspan="2"><span class="hb-run is-${cell.state === "closed" ? "closed" : "none"}">${words}</span></td></tr>`;
     }).join("");
     $("#hb").innerHTML = `<caption class="sr-only">${L.dayHours(wdLong(wd), plain(periodWords(model.a, model.b)))}</caption><tbody>${rows}</tbody>`;
@@ -856,9 +856,9 @@
     const wd = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1, cell = model.heat[wd][c0];
     // A closed or no-reading run names its weekday, then its sentence on two lines, the words first (decision 8): the
     // words, then "from … to …", both in the word's type and colour (one size and one colour, decision 9).
-    const sentence = (w) => `<div class="tip-t"><span>${wdLong(wd)}</span></div><div class="tip-main"><span class="tip-word">${w}</span></div><div class="tip-main tip-span"><span class="tip-word"><span class="nw">${L.spanFrom} ${hourText(c0 * 60)}</span> <span class="nw">${L.spanTo} ${hourText(c1 * 60 + 60)}</span></span></div>`;
+    const sentence = (w) => `<div class="tip-t"><span>${wdLong(wd)}</span></div><div class="tip-main"><span class="tip-word">${w}</span></div>${cell.state === "outside" ? "" : `<div class="tip-main tip-span"><span class="tip-word"><span class="nw">${L.spanFrom} ${hourText(c0 * 60)}</span> <span class="nw">${L.spanTo} ${hourText(c1 * 60 + 60)}</span></span></div>`}`;
     if (cell.state === "closed") return `${sentence(L.closed)}<div class="tip-u">${L.closedTip}</div>`;
-    if (cell.state === "missing") return sentence(L.noReadings);
+    if (cell.state !== "value") return sentence(cell.state === "outside" ? L.outside : L.noReadings);
     const when = `<div class="tip-t"><span>${wdLong(wd)}</span><span aria-hidden="true">·</span><span>${hourRange(c0 * 60, c1 * 60 + 60)}</span></div>`;
     const z = cell.avg === 0;
     return `${when}<div class="tip-main"><span class="tip-v">${bdi(z ? "0" : valText(cell.avg))}</span><span class="tip-l">${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></div><div class="tip-u">${L.avgOf(cell.samples)}</div>`;

@@ -46,16 +46,16 @@
   const nw = (html) => `<span class="nw">${html}</span>`;
   const COPY = {
     ar: {
-      docTitle: "الوصول · FITWAY (مفهوم)",
-      title: "الوصول",
-      history: "سجل الوصول",
-      historyName: "سجل الوصول في سجل النشاط",
+      docTitle: "الحسابات · FITWAY",
+      title: "الحسابات",
+      history: "سجل الحسابات",
+      historyName: "سجل الحسابات في سجل النشاط",
       // The access records card (from 721 px): the latest access records, each opening its own record in Activity log.
-      recTitle: "سجل الوصول",
+      recTitle: "سجل الحسابات",
       recAll: "عرض الكل",
-      recAllName: "عرض كل سجلات الوصول في سجل النشاط",
-      recEmpty: "لا سجلات وصول بعد",
-      recError: "تعذّر تحميل سجل الوصول",
+      recAllName: "عرض كل سجلات الحسابات في سجل النشاط",
+      recEmpty: "لا سجلات حسابات بعد",
+      recError: "تعذّر تحميل سجل الحسابات",
       today: "اليوم",
       yesterday: "أمس",
       months: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
@@ -67,7 +67,7 @@
         add: (n) => `إنشاء حساب ${n}`,
         off: (n) => `تعطيل حساب ${n}`,
         on: (n) => `إعادة تفعيل حساب ${n}`,
-        reset: (n) => `إعادة تعيين كلمة مرور ${n}`,
+        reset: (n) => `عُيّنت كلمة مرور لـ${n}`,
         mine: (n) => `تغيير كلمة مرور ${n}`,
       },
       // The front desk: one shared principal; its code is its only way in.
@@ -128,7 +128,7 @@
       show: "إظهار كلمة المرور",
       addDo: "إضافة المالك",
       adding: "جارٍ الإضافة…",
-      resetTitle: (n) => `كلمة مرور جديدة لحساب ${n}`,
+      resetTitle: (n) => `تعيين كلمة مرور لـ${n}`,
       // The title names the person; the sentence says what happens to the account, so a long name is never said twice.
       resetDesc: () => "يُسجَّل خروج الحساب فورًا، ولا تعمل كلمة المرور السابقة.",
       resetDo: "حفظ كلمة المرور",
@@ -177,7 +177,7 @@
         add: (n) => `أُنشئ حساب ${n}.`,
         off: (n) => `عُطّل حساب ${n}.`,
         on: (n) => `أُعيد تفعيل حساب ${n}.`,
-        reset: (n) => `أُعيد تعيين كلمة مرور ${n}.`,
+        reset: (n) => `عُيّنت كلمة مرور لـ${n}.`,
         mine: () => "غُيّرت كلمة مرورك.",
       },
       doneLink: "عرض في سجل النشاط",
@@ -190,7 +190,7 @@
       arrivedSay: "حُمّل مكتب الاستقبال والمالكون",
     },
     en: {
-      docTitle: "Access · FITWAY (concept)",
+      docTitle: "Access · FITWAY",
       title: "Access",
       history: "Access history",
       historyName: "Access history in the Activity log",
@@ -336,7 +336,7 @@
   const P = (id, name, email, active) => ({ id, name, email, active });
   const OWNERS0 = (() => {
     const set = params.get("owners");
-    const base = [P("o1", "فهد", "fahad@example.com", true), P("o2", "نورة", "noura@example.com", set !== "last"), P("o3", "Omar Alharbi", "omar.alharbi@example.com", false)];
+    const base = [P("o1", "فهد", "fahad@nadi-alshamal.sa", true), P("o2", "نورة", "noura@nadi-alshamal.sa", set !== "last"), P("o3", "Omar Alharbi", "omar.alharbi@nadi-alshamal.sa", false)];
     if (set === "many") {
       base.push(P("o4", "ريم", "reem.alotaibi@example.com", true), P("o5", "Khalid Alqahtani", "khalid@example.com", true), P("o6", "عبدالله الشهري", "a.alshehri@example.com", true),
         P("o7", "سلطان", "sultan.almutairi@example.com", false), P("o8", "Mona Alzahrani", "mona.z@example.com", false));

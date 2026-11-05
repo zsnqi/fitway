@@ -10,7 +10,7 @@
 > `owner_spec_r04_s16`, 2026-10-01: the range first, then the mark and the words, replacing the middle dot (Q11,
 > TBL-12). Sixth pass: run `owner_daily_r04_s17`, 2026-10-01, step 3 phase A: the frame (navigation and header at
 > every size, §1.11, §3.11, §3.13), pending the user's review. Seventh pass: the same run, step 3 phase B: the user's
-> decisions on the frame (one section order, Monitoring in the phone's menu, Operations through the status details, the
+> decisions on the frame (one section order, Monitoring in the phone's menu (hidden in the demo since it leads nowhere), Operations through the status details, the
 > bar's «النشاط» / "Activity"; `user 2026-10-01`), the Daily page at every size (§4.1), every step-3 known issue fixed
 > on Daily (§7), and proposals for Q1 and Q2 (§8), built on Daily so they can be seen. Eighth pass: run `owner_spec_r04_s18`,
 > 2026-10-01: the user's decisions on step 3 phase B (Q1, Q2, the tooltip width, OWN-D2), and phase B named as

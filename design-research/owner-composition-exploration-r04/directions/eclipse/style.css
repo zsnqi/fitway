@@ -711,7 +711,10 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 }
 /* Only the programmatically focused status panel suppresses its default outline. */
 .fw-pop[tabindex="-1"] { outline: none; }
-.fw-pop[hidden] { display: none; }
+/* One rule hides what is not shown: a closed panel, and every link that leads nowhere in the demo (Monitoring, Sign out,
+ * Operations): no item, no gap (the rail's li goes too), no focus stop; the status details' foot goes with its only link.
+ * The markup and the scripts stay. */
+.fw-pop[hidden], [data-inert], li:has(> [data-inert]), .ops-foot:has(> [data-inert]:only-child) { display: none !important; }
 .ops-pop { width: min(288px, calc(100vw - 32px)); }
 .menu-pop { min-width: 200px; }
 .ops-body { padding: 12px 12px 16px; }

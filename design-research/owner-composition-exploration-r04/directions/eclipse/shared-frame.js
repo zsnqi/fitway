@@ -15,14 +15,16 @@
   const f2 = (n) => Number(n).toFixed(2);
   const FRAME_COPY = {
     ar: {
+      metaDesc: "ازدحام النادي الآن وعلى مدار الأيام.",
       loadingWord: "جارٍ التحميل…", opens: (t) => `يفتح ${t}`,
       skip: "انتقل إلى المحتوى", railLabel: "الأقسام", brand: "FITWAY، أسماء الأقسام", railTip: "أسماء الأقسام",
-      nav: { daily: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
-      tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
+      nav: { daily: "اليوم", reports: "التقارير", access: "الحسابات", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
+      tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الحسابات", settings: "الإعدادات" },
       opsTitle: "حالة التشغيل", more: "المزيد", langAria: "التبديل إلى اللغة الإنجليزية", langGlyph: "EN",
       live: "مباشر", delayed: "متأخر", lastReading: "آخر قراءة", hours: "ساعات العمل", closed: "مغلق", closedWord: "مغلق", offline: "غير متصل", noCount: "لا عدّ حاليًا", errorWord: "خطأ", errorLine: "تعذّر التحميل",
     },
     en: {
+      metaDesc: "How busy the gym is, live and over time.",
       loadingWord: "Loading…", opens: (t) => `Opens ${t}`,
       skip: "Skip to content", railLabel: "Sections", brand: "FITWAY, section names", railTip: "Section names",
       nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
@@ -38,6 +40,7 @@
     const frameState = { railOpen: false, openLayer: null };
     const rail = $("#rail"), brand = $("#brand");
     document.title = L.docTitle;
+    $('meta[name="description"]')?.setAttribute("content", L.metaDesc);
     $$("[data-t]").forEach((el) => { const v = L[el.dataset.t]; if (typeof v === "string") el.innerHTML = v; });
     $$("[data-t-label]").forEach((el) => el.setAttribute("aria-label", L[el.dataset.tLabel]));
     rail.setAttribute("aria-label", L.railLabel);
@@ -165,7 +168,7 @@
     });
 
     const layers = { ops: { btn: $("#ops-btn"), pop: $("#ops-pop") }, menu: { btn: $("#menu-btn"), pop: $("#menu-pop") } };
-    const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
+    const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]:not([data-inert])')];
     const showLayer = (name, focus = "first") => {
       if (frameState.openLayer && frameState.openLayer !== name) hideLayer(frameState.openLayer, false, true);
       const { btn, pop } = layers[name];

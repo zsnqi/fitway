@@ -37,7 +37,7 @@
     ar: {
       // The frame (step 3): the logo's name on keyboard focus, the bar's short names (each inside its section's full
       // name, which stays the accessible name), the Operations status, and the phone's menu.
-      docTitle: "اليوم · FITWAY (مفهوم)",
+      docTitle: "اليوم · FITWAY",
       title: "اليوم",
       date: `الأربعاء <bdi>23</bdi> سبتمبر <bdi>2026</bdi>`,
       glance: "اليوم باختصار",
@@ -71,8 +71,8 @@
       say: (v, l, e) => `داخل الصالة الآن ${v} تقريبًا، ${l}. مرات الدخول ${e}.`,
       detailsTitle: "التفاصيل",
       coverageTitle: "تغطية البيانات",
-      cov: { read: "فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءات", wait: "لا قراءات بعد", ahead: "لم يحن بعد", usual: "المعتاد" },
-      covReadVal: (a, b) => `${a} من ${b} دقيقة`,
+      cov: { read: "دقائق فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءات", wait: "لا قراءات بعد", ahead: "لم يحن بعد", usual: "المعتاد" },
+      covReadVal: (a, b) => `${bdi(a)} من ${bdi(arMin(b))}`,
       usualEntries: (n) => `المعتاد ${n}`,
       covUsualVal: `معدّل آخر <bdi>4</bdi> أيام أربعاء`,
       covUsualNone: `يوم أربعاء واحد فقط في السجل (<bdi>16</bdi> سبتمبر)`,
@@ -98,7 +98,7 @@
       sayOffline: "غير متصل: لا عدّ حاليًا.",
     },
     en: {
-      docTitle: "Today · FITWAY (concept)",
+      docTitle: "Today · FITWAY",
       title: "Today",
       date: "Wednesday, 23 September 2026",
       glance: "Today at a glance",
@@ -131,7 +131,7 @@
       detailsTitle: "Details",
       coverageTitle: "Data coverage",
       cov: { read: "With a reading", zero: "Open, empty", miss: "No readings", wait: "No readings yet", ahead: "Still ahead", usual: "Usual" },
-      covReadVal: (a, b) => `${a} of ${b} min`,
+      covReadVal: (a, b) => `${bdi(a)} of ${bdi(b)} min`,
       usualEntries: (n) => `Usual ${n}`,
       covUsualVal: "Average of the last 4 Wednesdays",
       covUsualNone: "Only 1 past Wednesday recorded (16 Sep)",
@@ -179,10 +179,10 @@
   const fmtHour = (m) => { const c = clock(m); return `${c.h12} ${suffix(c.pm)}`; };
   const bdi = (s) => `<bdi>${s}</bdi>`;
   const tb = (m) => bdi(fmtTime(m));
-  // Both languages use the en dash (DAT-3, user 2026-10-01). An unspaced Arabic hour range isolates its numbers LTR and joins
-  // after the dash (U+2060), so the en dash does not reverse them or open a line break; the suffix stays outside, as before.
+  // Both languages use the en dash (DAT-3, user 2026-10-01). An Arabic hour range reads as the public page's does, «6 – 7 م»:
+  // its first number stands on the right, the dash between thin spaces, and word joiners (U+2060) keep the range on one line.
   const DASH = "–";
-  const NUMS = (a, b) => (RTL ? `<bdi dir="ltr">${a}${DASH}\u2060${b}</bdi>` : `${a}${DASH}${b}`);
+  const NUMS = (a, b) => (RTL ? `<bdi dir="rtl">${a}\u2060\u2009\u2060${DASH}\u2060\u2009\u2060${b}</bdi>` : `${a}${DASH}${b}`);
   const range = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
   const timeRange = (a, b) => range(fmtTime(a), fmtTime(b));
   const plainRange = (a, b) => `${a} ${DASH} ${b}`;
@@ -1695,7 +1695,7 @@
     // «· 18 دقيقة» are each one unbreakable unit; the line may wrap only between them. The dot is silent; a screen reader
     // hears a comma.
     const covSpan = (a, b, n = 0) => `<span class="nw">${timeRange(a, b)}</span>${n ? ` <span class="nw"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">·</span> ${bdi(minText(n))}</span>` : ""}`;
-    fact("k-read", L.cov.read, L.covReadVal(bdi(observed), bdi(last + 1)));
+    fact("k-read", L.cov.read, L.covReadVal(observed, last + 1));
     fact("k-zero", L.cov.zero, covSpan(0, ZERO_END), true);
     fact("k-miss", L.cov.miss, covSpan(GAP0, GAP1, GAP1 - GAP0 + 1), true);
     if (STATE === "delayed") fact("k-wait", L.cov.wait, covSpan(last + 1, nowM, nowM - last), true);

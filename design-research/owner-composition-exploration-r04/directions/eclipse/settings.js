@@ -62,9 +62,9 @@
   };
   const COPY = {
     ar: {
-      docTitle: "الإعدادات · FITWAY (مفهوم)",
+      docTitle: "الإعدادات · FITWAY",
       title: "الإعدادات",
-      sec: { crowd: "الزحام", hours: "ساعات العمل", day: "يوم العمل" },
+      sec: { crowd: "الازدحام", hours: "ساعات العمل", day: "يوم العمل" },
       hoursUnit: "توقيت الرياض",
       noOpening: "لا ساعات عمل",
       edit: "تعديل",
@@ -244,7 +244,7 @@
       arrivedSay: "حُمّلت الإعدادات",
     },
     en: {
-      docTitle: "Settings · FITWAY (concept)",
+      docTitle: "Settings · FITWAY",
       title: "Settings",
       sec: { crowd: "Crowd", hours: "Opening hours", day: "Business day" },
       hoursUnit: "Riyadh time",

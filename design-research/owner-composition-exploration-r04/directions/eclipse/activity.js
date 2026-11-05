@@ -40,12 +40,12 @@
   const nw = (html) => `<span class="nw">${html}</span>`;
   const COPY = {
     ar: {
-      docTitle: "سجل النشاط · FITWAY (مفهوم)",
+      docTitle: "سجل النشاط · FITWAY",
       title: "سجل النشاط",
       // The controls.
       kindName: "نوع السجل",
       // The count's kind holds only the automatic reset after each closing (ADR-008; DECISIONS item 32).
-      kinds: { all: "الكل", count: "التصفير", access: "الوصول", settings: "الإعدادات" },
+      kinds: { all: "الكل", count: "التصفير", access: "الحسابات", settings: "الإعدادات" },
       kindsName: { count: "التصفير بعد الإغلاق" },
       personName: "المنفِّذ",
       everyone: "الجميع",
@@ -72,7 +72,7 @@
       acctCreated: (n) => `إنشاء حساب ${n}`,
       acctOff: (n) => `تعطيل حساب ${n}`,
       acctOn: (n) => `إعادة تفعيل حساب ${n}`,
-      signin: (n) => `إعادة تعيين كلمة مرور ${n}`,
+      signin: (n) => `عُيّنت كلمة مرور لـ${n}`,
       pwChanged: (n) => `تغيير كلمة مرور ${n}`,
       settings: "تحديث الإعدادات",
       resetAfter: "تصفير بعد الإغلاق",
@@ -111,7 +111,7 @@
       close: "إغلاق",
     },
     en: {
-      docTitle: "Activity log · FITWAY (concept)",
+      docTitle: "Activity log · FITWAY",
       title: "Activity log",
       kindName: "Kind of record",
       kinds: { all: "All", count: "Resets", access: "Access", settings: "Settings" },
