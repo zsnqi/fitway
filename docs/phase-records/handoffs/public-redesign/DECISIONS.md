@@ -74,3 +74,4 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 65. **The user's two picks, and the order of what is left** `decisions/061-080.md`
 66. **The two reviews, the fix round, the recheck** `decisions/061-080.md`
 67. **The user's answers** `decisions/061-080.md`
+68. **The page is accepted; must-haves leave only by the user's word** `decisions/061-080.md`
