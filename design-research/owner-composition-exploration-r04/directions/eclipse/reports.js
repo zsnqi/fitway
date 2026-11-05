@@ -424,95 +424,28 @@
   const plain = (html) => html.replace(/<[^>]+>/g, "");
 
   /* ------------------------------------------------------------ the gym and its history */
-  const DAY = 1140;                         // 6:00 AM to 1:00 AM next day, gym time (Riyadh), as on the Daily page
+  const GYM = window.EclipseGym;            // the one gym (gym.js): its figures, its hours, its simulated days
+  const DAY = GYM.DAY;                      // 6:00 AM to 1:00 AM next day, gym time (Riyadh), as on the Daily page
   const HOURS = 19;                         // the pattern's hour columns: 6 AM ... 12 AM
-  const openAt = (wd) => (wd === 5 ? 480 : 0); // Friday opens at 2:00 PM; every other day at 6:00 AM
-  const LAST_FULL = toDn("2026-09-22");     // the last complete business day (the Daily page is Wednesday 23 September)
-  const FIRST_DAY = toDn("2026-08-02");     // the full history starts on Sunday 2 August 2026
+  const openOn = (dn) => GYM.hoursOn(dn).openM; // the opening as Settings' history had it that day
+  const LAST_FULL = GYM.LAST_FULL;          // the last complete business day (the Daily page is Wednesday 23 September)
+  const FIRST_DAY = GYM.FIRST_DAY;          // the full history starts on Sunday 2 August 2026
   const HIST_START = STATE === "short" ? toDn("2026-09-13") : FIRST_DAY; // short: readings since Sunday 13 September
-  const CAPACITY = 80;                      // owner-private, as on the Daily page; used only in the CSV's capacity_snapshot
-  const SETTINGS_VERSION = 1;
   const TZ = "Asia/Riyadh";                 // UTC+3 all year
   const MAX_RANGE = 366;
   const MIN_DAYS = 3;                       // a pattern slot needs 3 days to be certain (PAT-10, GLO-12; Q5)
-  const levelOf = (v) => (v <= 24 ? 0 : v <= 48 ? 1 : v <= 68 ? 2 : 3);
-  const BAND = ["quiet", "moderate", "busy", "packed"];
+  const levelOf = (v) => GYM.levelOf(Math.round(v)); // on the figure the page prints, so an average shown as 60 reads as 60 does
+  const BAND = GYM.LEVELS;
   // Camera outages: open minutes with no reading (minutes since 6:00 AM, inclusive).
-  const MISSING = { [toDn("2026-09-17")]: [[240, 479]], [toDn("2026-08-31")]: [[252, 280]] };
+  const MISSING = GYM.OUTAGES;
   // K-02, `pending`: the edge went offline at 9:10 PM on Tuesday 22 September and buffers since; the rest of that day is
   // not received yet (not missing: it backfills on reconnect). The received part counts in the period's figures, and
   // the day notes what it still waits for (DECISIONS item 14).
   const PEND = PAGE === "pending" ? { [LAST_FULL]: [[910, DAY - 1]] } : {};
 
-  // The Daily page's seeded minute simulation, generalised to an opening minute and a quiet start. With open 0 and
-  // quiet 10 it is exactly the Daily page's simulateDay (same random draws), so the four Wednesdays it averages as
-  // "usual" (26 August and 2, 9, 16 September) are the same days here.
-  function mulberry32(a) {
-    return function () {
-      a |= 0; a = (a + 0x6d2b79f5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  const ss = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
-  const bump = (m, mu, sl, sr) => { const z = (m - mu) / (m < mu ? sl : sr); return Math.exp(-0.5 * z * z); };
-  function target(m, p) {
-    const z = m - p.open;
-    if (z < p.quiet) return 0;
-    const ramp = ss((z - (p.quiet - 1)) / 22);
-    const base = 7 * ss((z - p.quiet) / 60) * (1 - ss((m - 1000) / 140));
-    return ramp * (p.am * bump(m, p.amAt, 34, 44) + p.mid * bump(m, p.midAt, 70, 70) + p.pm * bump(m, p.pmAt, 105, 125)) + base;
-  }
-  function simulate(seed, p) {
-    const rnd = mulberry32(seed);
-    const poisson = (l) => { if (l <= 0) return 0; const lim = Math.exp(-l); let k = 0, q = 1; do { k++; q *= rnd(); } while (q > lim); return k - 1; };
-    const occ = new Array(DAY).fill(null), ent = new Array(DAY).fill(0), ext = new Array(DAY).fill(0);
-    let o = 0, prevT = 0;
-    for (let m = p.open; m < DAY; m++) {
-      const z = m - p.open;
-      const T = target(m, p);
-      let lam = z < p.quiet ? 0 : Math.max(0, T - prevT * (63 / 64));
-      if (z === p.quiet) lam = Math.max(lam, 1.2);
-      let x = 0;
-      for (let i = 0; i < o; i++) if (rnd() < 1 / 64) x++;
-      const e = poisson(lam);
-      o = o - x + e;
-      occ[m] = o; ent[m] = e; ext[m] = x; prevT = T;
-    }
-    return { occ, ent, ext };
-  }
-  const DAILY_SEED = 15983;
-  // The Daily page's last four Wednesdays: seed offset and shape (16, 9, 2 September and 26 August).
-  const PAST_WED = {
-    [toDn("2026-09-16")]: { k: 1, f: 0.78, a: 0.95, at: 762 },
-    [toDn("2026-09-09")]: { k: 2, f: 0.74, a: 1.0, at: 747 },
-    [toDn("2026-09-02")]: { k: 3, f: 0.8, a: 0.98, at: 757 },
-    [toDn("2026-08-26")]: { k: 4, f: 0.76, a: 1.03, at: 752 },
-  };
-  // Each weekday's own shape. Thursday evenings are the busiest; Friday opens after midday; on Saturday nobody comes
-  // before 7:00 AM (a genuine zero hour); Wednesday is the Daily page's usual Wednesday.
-  const SHAPE = [
-    { am: 21, amAt: 84, mid: 8, midAt: 420, pm: 43, pmAt: 752 },
-    { am: 22, amAt: 82, mid: 8, midAt: 420, pm: 45, pmAt: 748 },
-    { am: 20, amAt: 84, mid: 8, midAt: 420, pm: 42, pmAt: 758 },
-    { am: 22, amAt: 82, mid: 8, midAt: 420, pm: 41, pmAt: 755 },
-    { am: 19, amAt: 86, mid: 7, midAt: 430, pm: 47, pmAt: 772 },
-    { am: 0, amAt: 0, mid: 11, midAt: 580, pm: 40, pmAt: 812 },
-    { am: 13, amAt: 215, mid: 9, midAt: 440, pm: 35, pmAt: 745 },
-  ];
   const DAYS = new Map(); // day number -> the simulated day, for every day from FIRST_DAY to LAST_FULL
   for (let dn = FIRST_DAY; dn <= LAST_FULL; dn++) {
-    const wd = wdOf(dn), open = openAt(wd), w = PAST_WED[dn];
-    let sim;
-    if (w) {
-      sim = simulate(DAILY_SEED + 1000 * w.k, { open: 0, quiet: 10, am: 22 * w.a, amAt: 82, mid: 8, midAt: 420, pm: 53 * w.f, pmAt: w.at });
-    } else {
-      const j = mulberry32(40000 + dn), s = SHAPE[wd], t = dn - FIRST_DAY;
-      // A gentle rise over the summer, and a busier last week (the start of the autumn season).
-      const g = (0.93 + 0.0016 * t + (dn >= toDn("2026-09-16") ? 0.08 : 0)) * (0.95 + 0.1 * j());
-      sim = simulate(90001 + dn, { open, quiet: wd === 6 ? 60 : 10, am: s.am * g, amAt: s.amAt + Math.round(8 * (j() - 0.5)), mid: s.mid, midAt: s.midAt, pm: s.pm * g, pmAt: s.pmAt + Math.round(20 * (j() - 0.5)) });
-    }
+    const wd = wdOf(dn), open = openOn(dn), sim = GYM.day(dn);
     const miss = MISSING[dn] || [], pend = PEND[dn] || [];
     const obs = (m) => m >= open && m < DAY && !miss.some(([a, b]) => m >= a && m <= b) && !pend.some(([a, b]) => m >= a && m <= b);
     let observed = 0, total = 0, peak = -1, peakM = -1, entries = 0;
@@ -526,7 +459,7 @@
   // A day as the reports see it: before the history starts it has no readings (its open minutes are missing).
   const hasReadings = (dn) => dn >= HIST_START && dn <= LAST_FULL;
   function dayModel(dn) {
-    const wd = wdOf(dn), open = openAt(wd);
+    const wd = wdOf(dn), open = openOn(dn);
     if (!hasReadings(dn)) return { dn, wd, open, expected: DAY - open, observed: 0, total: 0, peak: null, peakM: null, entries: 0, avg: null, miss: [], pend: [], none: true };
     const d = DAYS.get(dn);
     return { dn, wd, open, expected: d.expected, observed: d.observed, total: d.total, peak: d.observed ? d.peak : null, peakM: d.observed ? d.peakM : null, entries: d.entries, avg: d.observed ? d.total / d.observed : null, miss: d.miss, pend: d.pend, none: false };
@@ -625,7 +558,7 @@
   }
 
   /* ---------------------------------------------------------------- shell */
-  const NOW = { last: 822 };
+  const NOW = { last: GYM.NOW.minute };
   const SVG_ERR = EclipseFrame.icons.error;
   const OPS_STATES = {
     live: (m = NOW.last) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
@@ -739,7 +672,7 @@
    * no-data runs are merged cells that say so. The colour is a single-hue ramp from FITWAY's light ramp (oxblood to
    * FITWAY red to #FF2946); closed and no data are neutral, and a genuine zero is an outlined cell with "0". It is a
    * grid (one Tab stop, arrow keys between cells), and hover, keyboard focus and a tap show the same readout. */
-  const RAMP = [[0, [29, 11, 14]], [8, [58, 10, 19]], [16, [77, 7, 19]], [28, [126, 13, 31]], [40, [184, 19, 43]], [52, [229, 25, 53]], [64, [255, 41, 70]]];
+  const RAMP = [[0, [29, 11, 14]], [10, [58, 10, 19]], [20, [77, 7, 19]], [35, [126, 13, 31]], [50, [184, 19, 43]], [65, [229, 25, 53]], [80, [255, 41, 70]]];
   function rampColor(v) {
     if (v >= RAMP[RAMP.length - 1][0]) return RAMP[RAMP.length - 1][1];
     let i = 0;
@@ -1533,7 +1466,7 @@
   const CSV_HEAD = "business_day,minute_start_utc,minute_start_local,time_zone,state,count,entries,exits,band,capacity_snapshot,settings_version,source";
   const p2 = (n) => String(n).padStart(2, "0");
   function csvDay(dn) {
-    const iso = isoOf(dn), open = openAt(wdOf(dn)), d = hasReadings(dn) ? DAYS.get(dn) : null;
+    const iso = isoOf(dn), open = openOn(dn), d = hasReadings(dn) ? DAYS.get(dn) : null;
     const out = [];
     for (let k = 0; k < 1440; k++) {
       // Minute k of the business day starts at 4:00 AM local; gym time is UTC+3.
@@ -1546,7 +1479,7 @@
       let tail;
       if (!(m >= open && m < DAY)) tail = "closed,,,,,,,";
       else if (!d || !d.obs(m)) tail = "missing,,,,,,,";
-      else { const c = d.occ[m]; tail = `value,${c},${d.ent[m]},${d.ext[m]},${BAND[levelOf(c)]},${CAPACITY},${SETTINGS_VERSION},live`; }
+      else { const c = d.occ[m]; tail = `value,${c},${d.ent[m]},${d.ext[m]},${BAND[levelOf(c)]},${GYM.CAPACITY},${GYM.versionAt(dn, m)},live`; }
       out.push(`${iso},${ut},${lt},${TZ},${tail}`);
     }
     return out.join("\r\n") + "\r\n";

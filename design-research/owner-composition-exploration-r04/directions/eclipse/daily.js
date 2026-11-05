@@ -3,8 +3,8 @@
  * motion=off (every change instant). With state=loading, arrive=<ms> lets the first payload arrive that many ms after
  * the page opened (into live) and arrive=never lets the 10 s ceiling turn it into Error; without arrive the skeleton is
  * held, for review (step 3, second part: Daily's states).
- * The data logic (seeded minute simulation, day constants, monotone interpolation) is reused from
- * ../light-study/app.js, which took it from ../backlight/app.js. Western digits only: numbers are printed with
+ * The gym's figures and the seeded minute simulation are gym.js's, shared with every page; the monotone interpolation
+ * is reused from ../light-study/app.js, which took it from ../backlight/app.js. Western digits only: numbers are printed with
  * String(), never Intl or toLocaleString.
  * Motion (Round 6) lives in the "motion" section at the end. The page is complete at first paint; something moves
  * only when the data changes or the owner acts. The one exception is the first-open intro (Round 7 step 3): on the
@@ -157,15 +157,16 @@
   const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
 
   /* ------------------------------------------------------------ day constants */
-  const DAY = 1140;               // 6:00 AM to 1:00 AM next day, gym time (Riyadh)
-  const YMAX = 80;                // chart scale (capacity is owner-private and not drawn)
+  const G = window.EclipseGym;    // the one gym (gym.js)
+  const DAY = G.DAY;              // 6:00 AM to 1:00 AM next day, gym time (Riyadh)
+  const YMAX = 100;               // chart scale, above the day's highest reading (capacity is owner-private and not drawn)
+  const Y_TICKS = [25, 50, 75, 100];
   const GAP0 = 494, GAP1 = 511;   // no reading 2:14 PM - 2:31 PM
   const ZERO_END = 9;             // open, nobody inside 6:00 AM - 6:09 AM
-  const NOW = 822;                // 7:42 PM
-  const STALE_LAST = 809;         // delayed state: last reading 7:29 PM
+  const NOW = G.NOW.minute;       // 7:42 PM
+  const STALE_LAST = NOW - G.NOW.delayedBy; // delayed state: last reading 7:29 PM
   const CLOSED_NOW = -48;         // closed state: 5:12 AM, 48 minutes before today's opening
   const WIN = 30;                 // the line: centred 30-minute average (15 before, 15 after)
-  const SEED = 15983;
 
   /* ------------------------------------------------------------ time format */
   function clock(m) {
@@ -210,62 +211,18 @@
   const waitTip = (a) => tipLines(L.ro.waiting, `<span class="nw">${L.spanSince} ${tb(a)}</span>`);
   const waitText = (a) => `${L.ro.waiting} ${L.spanSince} ${fmtTime(a)}`;
 
-  /* -------------------------------------------------------------- simulation */
-  function mulberry32(a) {
-    return function () {
-      a |= 0; a = (a + 0x6d2b79f5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  const ss = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
-  const bump = (m, mu, sl, sr) => { const z = (m - mu) / (m < mu ? sl : sr); return Math.exp(-0.5 * z * z); };
-  function target(m, p) {
-    if (m < 10) return 0;
-    const ramp = ss((m - 9) / 22);
-    const base = 7 * ss((m - 10) / 60) * (1 - ss((m - 1000) / 140));
-    return ramp * (p.am * bump(m, p.amAt, 34, 44) + p.mid * bump(m, 420, 70, 70) + p.pm * bump(m, p.pmAt, 105, 125)) + base;
-  }
-  // Whole-person count process: entries ~ Poisson(lambda), exits ~ Binomial(occupancy, 1/64), one step per minute.
-  function simulateDay(seed, p) {
-    const rnd = mulberry32(seed);
-    const poisson = (l) => { if (l <= 0) return 0; const lim = Math.exp(-l); let k = 0, q = 1; do { k++; q *= rnd(); } while (q > lim); return k - 1; };
-    const occ = new Array(DAY).fill(0), ent = new Array(DAY).fill(0);
-    let o = 0, prevT = 0;
-    for (let m = 0; m < DAY; m++) {
-      const T = target(m, p);
-      let lam = m < 10 ? 0 : Math.max(0, T - prevT * (63 / 64));
-      if (m === 10) lam = Math.max(lam, 1.2);
-      let x = 0;
-      for (let i = 0; i < o; i++) if (rnd() < 1 / 64) x++;
-      const e = poisson(lam);
-      o = o - x + e;
-      occ[m] = o; ent[m] = e; prevT = T;
-    }
-    return { occ, ent };
-  }
-  // The whole synthetic day is simulated up front; readings after "now" are only revealed one minute at a time by
-  // the key-driven live moments (motion section), so a simulated live update never invents a point.
-  const today = simulateDay(SEED, { am: 22, amAt: 82, mid: 8, pm: 53, pmAt: 752 });
+  /* -------------------------------------------------------------- the day's readings
+   * gym.js simulates the whole day up front; readings after "now" are only revealed one minute at a time by the
+   * key-driven live moments (motion section), so a simulated live update never invents a point. */
+  const DN = G.NOW.dn;
+  const today = G.day(DN);
   // The last 4 Wednesdays (16, 9, 2 Sep and 26 Aug). Complete days.
-  const PAST_WED = [
-    { f: 0.78, a: 0.95, at: 762 },
-    { f: 0.74, a: 1.0, at: 747 },
-    { f: 0.8, a: 0.98, at: 757 },
-    { f: 0.76, a: 1.03, at: 752 },
-  ].map((w, i) => simulateDay(SEED + 1000 * (i + 1), { am: 22 * w.a, amAt: 82, mid: 8, pm: 53 * w.f, pmAt: w.at }));
-  const RECENT = [
-    simulateDay(SEED + 11, { am: 22 * 0.9, amAt: 84, mid: 8, pm: 53 * 0.78, pmAt: 740 }),
-    simulateDay(SEED + 12, { am: 22 * 0.35, amAt: 100, mid: 8 * 0.6, pm: 53 * 0.85, pmAt: 800 }),
-    simulateDay(SEED + 13, { am: 22 * 0.8, amAt: 90, mid: 8, pm: 53 * 0.9, pmAt: 760 }),
-    simulateDay(SEED + 14, { am: 22 * 1.05, amAt: 80, mid: 8, pm: 53 * 1.02, pmAt: 750 }),
-    simulateDay(SEED + 15, { am: 22 * 1.0, amAt: 82, mid: 8, pm: 53 * 1.05, pmAt: 755 }),
-    simulateDay(SEED + 16, { am: 22 * 0.95, amAt: 82, mid: 8, pm: 53 * 0.95, pmAt: 748 }),
-  ];
+  const PAST_WED = [7, 14, 21, 28].map((k) => G.day(DN - k));
+  // The six full days before today (17 to 22 Sep), each with its own hours and outages.
+  const RECENT = [1, 2, 3, 4, 5, 6].map((k) => ({ d: G.day(DN - k), out: G.OUTAGES[DN - k] || [] }));
 
   const occ = today.occ;
-  const levelOf = (v) => (v <= 24 ? 0 : v <= 48 ? 1 : v <= 68 ? 2 : 3);
+  const levelOf = G.levelOf;
 
   // The line: a centred 30-minute average. At each observed minute it is the mean of the readings from 15 minutes
   // before to 15 minutes after, with the window cut short at opening, at both edges of the missing span and at the
@@ -273,8 +230,8 @@
   // its own segment and stays exactly zero.
   const HALF = WIN / 2;
   // Triangular weights inside the same 15-before/15-after window (the middle minute counts most). A plain box mean
-  // puts this day's crest at 6:38 PM, 9 minutes after the true 6:29 PM peak, because the peak is a spike on a
-  // broad plateau; the triangular weights put it at 6:31 PM. It is still shape-preserving and never overshoots.
+  // puts a day's crest minutes after its true peak when the peak is a spike on a broad plateau; the triangular weights
+  // keep the crest beside it. It is still shape-preserving and never overshoots.
   const centred = (series, m, lo, hi) => {
     let s = 0, n = 0;
     for (let w = Math.max(lo, m - HALF); w <= Math.min(hi, m + HALF); w++) { const k = HALF + 1 - Math.abs(w - m); s += series[w] * k; n += k; }
@@ -358,11 +315,17 @@
     const usualEntries = Math.round(PAST_WED.reduce((a, d) => a + d.ent.slice(0, last + 1).reduce((x, y) => x + y, 0), 0) / PAST_WED.length);
 
     // Busiest time (GLO-12, Q7; K-21, step 3): the one-hour slot, on the hour, with the highest average inside over the
-    // last 7 days (six full days plus today so far). Every slot averages 7 days, above Q5's minimum of 3.
+    // last 7 days (six full days plus today so far), each day where it was open and read. Every slot averages at least
+    // 3 days, Q5's minimum, since only Friday and Saturday have shorter hours.
     const busiest = (() => {
       const hourMean = [];
       for (let h = 0; h < 19; h++) {
-        const vals = RECENT.map((d) => { let s = 0; for (let m = h * 60; m < h * 60 + 60; m++) s += d.occ[m]; return s / 60; });
+        const vals = [];
+        for (const { d, out } of RECENT) {
+          let s = 0, n = 0;
+          for (let m = h * 60; m < h * 60 + 60; m++) if (d.occ[m] != null && !out.some(([a, b]) => m >= a && m <= b)) { s += d.occ[m]; n++; }
+          if (n) vals.push(s / n);
+        }
         let s = 0, n = 0;
         for (let m = h * 60; m < h * 60 + 60 && m <= last; m++) if (obs(m)) { s += occ[m]; n++; }
         if (n) vals.push(s / n);
@@ -712,7 +675,7 @@
     geo = { W, H, X, span };
     buildStops();
     const laneBottom = LANE.top + laneTall;
-    const yt = laneBottom + LANE.gap + 9;     // the "80" label's box (18px tall) starts LANE.gap below the lane
+    const yt = laneBottom + LANE.gap + 9;     // the top label's box (18px tall) starts LANE.gap below the lane
     const yb = H - 36;
     const Y = (v) => yb - (v / YMAX) * (yb - yt);
     Object.assign(geo, { Y, yt, yb, laneBottom });
@@ -728,7 +691,7 @@
     </defs>`);
 
     // Faint horizontal grid. The time axis (0) is a touch stronger and breaks into dots over the missing span.
-    [20, 40, 60, 80].forEach((v) => s.push(`<path d="M${f(xL)},${Math.round(Y(v)) + 0.5}H${f(xR)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`));
+    Y_TICKS.forEach((v) => s.push(`<path d="M${f(xL)},${Math.round(Y(v)) + 0.5}H${f(xR)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`));
     const by = Math.round(Y(0)) + 0.5;
     const ga = X(GAP0 - 0.5), gb = X(GAP1 + 0.5), gl = Math.min(ga, gb), gr = Math.max(ga, gb);
     if (last >= GAP0 && !frameOnly) {
@@ -790,7 +753,7 @@
 
     // HTML labels (so bidi and fonts behave), placed on the same geometry.
     const lab = [];
-    [0, 20, 40, 60, 80].forEach((v) => lab.push(`<span class="ax-y" style="inset-inline-start:1px;top:${f(Y(v))}px;transform:translateY(-50%)">${bdi(String(v))}</span>`));
+    [0, ...Y_TICKS].forEach((v) => lab.push(`<span class="ax-y" style="inset-inline-start:1px;top:${f(Y(v))}px;transform:translateY(-50%)">${bdi(String(v))}</span>`));
     // Q2 (proposal, step 3; K-15): one rhythm along the time axis. The step is the shortest of 2, 3, 4 and 6 hours that
     // keeps 64 px between labels (2 at 1024 px and wider, 3 at 768, 6 on a phone); labels run from opening to midnight,
     // and closing is the axis's end, with no label of its own one hour after midnight.
@@ -808,7 +771,7 @@
   /* ------------------------------------------------------ chart inspection
    * Round 6: the reading snaps to stops. A stop every half hour from opening (6:00 AM) to closing (1:00 AM), aligned
    * with the drawn line, plus two of their own: the true peak and the latest reading. A half-hour stop within FOLD
-   * minutes of either is folded into it (the peak at 6:29 PM takes the 6:30 PM stop). The missing span has one stop
+   * minutes of either is folded into it (a peak at 6:29 PM would take the 6:30 PM stop). The missing span has one stop
    * of its own, "no reading", and no normal stop. Values are the line's own (the centred average it draws, never a
    * raw minute), except at the peak, whose marker is the true reading. After now a stop shows "still ahead" and the
    * usual value. Minute detail stays in View details. */
@@ -861,7 +824,7 @@
     if (UNAV) out.push({ ...gapStop(...unavSpan(), UNAV_LAST, nowM), waiting: true });
     if (peakM >= 0) out.push({ key: "peak", kind: "peak", m: peakM, x: X(peakM), value: M.peak, track: `L${segOf(peakM)}`, lift: 1 });
     // Round 7 decision 1: the latest stop shows the latest reading itself, the same number as the Inside now card
-    // (live 49, Busy at 7:42 PM; while delayed, the stale reading the delayed card shows), not the line's value there.
+    // (live 70, Busy at 7:42 PM; while delayed, the stale reading the delayed card shows), not the line's value there.
     // The marker still sits on the line's end point. Closed and unavailable have no reading today, so no latest stop.
     if (last >= 0 && !UNAV) out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: occ[last], track: `L${segOf(last)}`, lift: 0 });
     out.sort((a, b) => a.m - b.m || (a.kind === "peak" ? -1 : b.kind === "peak" ? 1 : 0));
@@ -2295,12 +2258,12 @@
     render();
   }
   // A crowd-level change on the Inside now card, across the nearest level boundary by the smallest step
-  // (Busy 49 goes down to Moderate 48, or up to Packed 69). Live only: a delayed card never moves.
+  // (Busy 70 goes down to Moderate 60, or up to Packed 91). Live only: a delayed card never moves.
   function crowdStep(dir) {
     if (STATE === "delayed" || phase !== "ready" || M.last < 0) return null;
     endIntro("crowd change");
     const v = shownNow(), li = levelOf(v);
-    const next = dir > 0 ? (li >= 3 ? null : [25, 49, 69][li]) : (li <= 0 ? null : [24, 48, 68][li - 1]);
+    const next = dir > 0 ? (li >= 3 ? null : G.PEOPLE[li] + 1) : (li <= 0 ? null : G.PEOPLE[li - 1]);
     if (next == null) return null;
     crowdShown = next === occ[M.last] ? null : next;
     rollTo($("#now-v"), String(next));
@@ -2342,7 +2305,7 @@
   const INTRO_STORE = "fitway.eclipse.v3.intro";
   // ms at 1x; the intro has its own roll (the live digit roll on a new reading keeps T.roll). fontCap is not scaled: it counts from the first paint.
   const INTRO_T = { roll: 400, line: 914, mark: 257, fontCap: 200 };
-  // A whole value: 49, 332, or a time with its own AM/PM (6–8 م, 6–8 PM), which is part of the value, unlike a unit.
+  // A whole value: 70, 332, or a time with its own AM/PM (6–8 م, 6–8 PM), which is part of the value, unlike a unit.
   const INTRO_NUM = /\d+(?:(?:[-–]\u2060?|[:.,])\d+)*(?: (?:ص|م|AM|PM)(?![\p{L}]))?/gu;
   // The peak's label waits by an empty clip, like the answers' slots: out of sight, but still in the accessibility tree
   // (visibility or display would remove it), and never by opacity.

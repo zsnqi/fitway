@@ -7,7 +7,7 @@ wrote OWN-S16…S27, CHG-1, DLG-13 and EMP-8, revised OWN-S10, DLG-12 and AMD-S1
 page's components belong in the shared sheets (the last table). The review's fixes (2026-10-19) revised OWN-S2, S5,
 S6, S22, S25-S27, LOG-1, FLD-11 and FLD-13, and added DLG-14 (a folded history record's window, DECISIONS item 83);
 the finishing pass (2026-10-24) re-measured them and corrected DLG-14's scrolling sizes. Decision 81's round added OWN-S28 (copying one day's hours), OWN-S29 (the history on a phone), BTN-12, FLD-14 and CHK-1, and revised OWN-S2, S6, S12, S16, S18, S22, S26, S27, LOG-1, FLD-11, DLG-13, DLG-14 and SHR-S1. DECISIONS item 89 removed the phone's «سجل الإعدادات» under the header (OWN-S2, S22, S23, S29). The review of 9cff1f8d and bcd1b463 (verify-9) rewrote the step hold in OWN-S16 and OWN-S28 and the measured sentence in OWN-S14.
-Concept: `settings.html`, `settings.css`, `settings.js`; frames from `settings-capture.mjs`.
+The one-gym round (2026-11-05) moved the limits to 25, 50 and 75% (OWN-S4, S9, S11, S14, S16, S25, FLD-13) and the change records to `gym.js`. Concept: `settings.html`, `settings.css`, `settings.js`; frames from `settings-capture.mjs`.
 
 ## Parts
 

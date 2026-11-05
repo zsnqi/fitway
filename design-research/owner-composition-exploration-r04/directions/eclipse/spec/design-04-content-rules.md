@@ -41,7 +41,7 @@
 
 | Id | L | Entry | Src |
 | --- | --- | --- | --- |
-| LVL-1 | R | Levels (synthetic thresholds): Quiet ≤ 24, Moderate ≤ 48, Busy ≤ 68, Packed above. Production reads the historical band from the row, never current settings. | brief, `SPEC.md` |
+| LVL-1 | R | Levels (synthetic thresholds, `gym.js`: 25%, 50% and 75% of a capacity of 120): Quiet ≤ 30, Moderate ≤ 60, Busy ≤ 90, Packed above; a level holds every count at or under its limit, on every page. Production reads the historical band from the row, never current settings. | brief, `SPEC.md` |
 | LVL-2 | R | **F17:** the level badge appears only on "now" and on peaks, never on an average over many hours. | F17 |
 | LVL-3 | R | A readout (a chart stop, a pattern cell) may name the level of that moment or slot, after its value. | T.tipL, R heat tip |
 | LVL-4 | R | The level word is always written; the bars are a redundant cue (an unlit bar is 1.56:1, decorative). | X |

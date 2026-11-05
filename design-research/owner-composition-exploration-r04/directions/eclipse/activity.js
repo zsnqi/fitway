@@ -205,8 +205,9 @@
 
   /* ------------------------------------------------------------ the gym's log (synthetic, from the contract) */
   const YEAR = 2026;
-  const TODAY = toDn("2026-09-23");          // Daily's moment: Wednesday 23 September 2026, 7:42 PM
-  const NOW_MIN = 19 * 60 + 42;
+  const GYM = window.EclipseGym;              // the one gym (gym.js): the moment, the settings changes, each day's closing count
+  const TODAY = GYM.NOW.dn;                   // Daily's moment: Wednesday 23 September 2026, 7:42 PM
+  const NOW_MIN = GYM.NOW.clock;
   const UTC_OFFSET = 3 * 60;                  // Asia/Riyadh, UTC+3 all year
   const PAGE_N = 25;                          // AUDIT_PAGE_LIMIT_DEFAULT
   // The log keeps about 12 months (SPEC retention): the date picker reaches back a year from today.
@@ -240,33 +241,27 @@
    * gym-local date and time, the owner, the action, its values, the reason. */
   const HUMAN = [
     ["2025-12-28", "16:12:31", "o1", "staff_pin_provisioned", {}, null],
-    ["2025-12-28", "16:20:05", "o1", "settings_updated", { ver: 2 }, R("ساعات العمل الشتوية", "Winter opening hours")],
     ["2025-12-30", "21:05:47", "o1", "owner_provisioned", { target: "o2" }, R("حساب لنورة تتابع منه التقارير وقت سفري", "An account for Noura to follow the reports while I'm away")],
-    ["2026-02-15", "22:40:18", "o2", "settings_updated", { ver: 3 }, R("ساعات رمضان", "Ramadan hours")],
-    ["2026-03-22", "13:05:51", "o2", "settings_updated", { ver: 4 }, { raw: "رجعنا لساعات العمل المعتادة بعد العيد", lang: "ar" }],
     ["2026-06-01", "09:48:26", "o1", "staff_pin_rotated", { cv: [1, 2] }, R("دوري", "Routine")],
-    ["2026-08-16", "11:20:12", "o1", "settings_updated", { ver: 5 }, R("التصفير بعد الإغلاق بخمس دقائق", "Reset five minutes after closing")],
     ["2026-08-17", "10:14:40", "o1", "staff_pin_rotated", { cv: [2, 3] }, R("موظف جديد في الفترة الصباحية", "New employee on the morning shift")],
     ["2026-08-27", "14:03:33", "o1", "owner_deactivated", { target: "o2" }, R("عدتُ من السفر", "I'm back from my trip")],
-    ["2026-09-04", "15:15:26", "o1", "settings_updated", { ver: 6 }, null],
     ["2026-09-07", "09:28:03", "o1", "owner_reactivated", { target: "o2" }, null],
     ["2026-09-07", "09:31:44", "o1", "credential_reset", { target: "o2", cv: [1, 2] }, R("طلبت نورة كلمة مرور جديدة", "Noura asked for a new password")],
     ["2026-09-14", "13:20:08", "o2", "staff_pin_rotated", { cv: [3, 4] }, { raw: "Shift change", lang: "en" }],
-    ["2026-09-16", "10:05:59", "o2", "settings_updated", { ver: 7 }, R("ساعات الجمعة الجديدة: من 2 م", "New Friday hours: from 2 PM")],
-    // After midnight: a calendar day's record, under Saturday (the business day would have put it under Friday).
-    ["2026-09-19", "00:22:10", "o2", "settings_updated", { ver: 8 }, R("ساعات نهاية الأسبوع", "Weekend hours")],
     ["2026-09-21", "18:02:46", "o1", "staff_pin_deactivated", {}, LONG],
     ["2026-09-22", "09:15:30", "o1", "staff_pin_provisioned", {}, R("رمز جديد بعد إيقاف القديم", "A new code after deactivating the old one")],
-    ["2026-09-23", "11:32:17", "o1", "settings_updated", { ver: 9 }, R("الإغلاق يوم الخميس الساعة 2 ص", "Thursday closing moved to 2 AM")],
     // Older than the card's eighth record. Reserve ids so adding history never renumbers existing links or
     // uses Access's session-local sequence (57 onward, skipping these two reservations).
     ["2026-01-10", "10:12:00", "o1", "owner_provisioned", { target: "o3", id: 1001 }, null],
     ["2026-02-01", "12:30:00", "o1", "owner_deactivated", { target: "o3", id: 1002 }, null],
+    // The settings records, Settings' history itself (gym.js). The record of 19 September, 12:22 AM, is a calendar day's:
+    // under Saturday (the business day would have put it under Friday).
+    ...GYM.CHANGES.map((c) => [c.date, c.time, c.by, "settings_updated", { ver: c.ver }, c.reason]),
   ];
   function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
   /* The scheduled reset (SPEC, ADR-008): the automatic system zeroes the count five minutes after each closing, from
    * the setting of 16 August on: at 1:05 AM, so on the calendar it falls on the next day. Its prior is the count the
-   * edge held at closing; on 5 September it held none, so the prior is not recorded. Its stored reason is the contract's
+   * edge held at closing (gym.js's day); on 5 September it held none, so the prior is not recorded. Its stored reason is the contract's
    * machine string, which the page says in plain words and never searches.
    * ?case=wide: the widest priors, today's the read contract's (Number.MAX_SAFE_INTEGER) and yesterday's the database
    * column's (2,147,483,647). */
@@ -286,7 +281,7 @@
     }
     const rnd = mulberry32(23);
     for (let dn = toDn("2026-08-17"); dn <= TODAY; dn++) {
-      let prior = isoOf(dn) === "2026-09-05" ? null : [0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6][Math.floor(rnd() * 11)];
+      let prior = isoOf(dn) === "2026-09-05" ? null : GYM.closingCount(dn - 1);
       if (WIDE && dn === TODAY) prior = 9007199254740991;
       if (WIDE && dn === TODAY - 1) prior = 2147483647;
       const business = dn - 1;
@@ -359,7 +354,7 @@
   const M = window.EclipseMotion;
 
   /* ---------------------------------------------------------------- shell */
-  const DAY_OPEN = 360, DAY_CLOSE = 60;
+  const DAY_OPEN = GYM.WEEK.wed.open * 60, DAY_CLOSE = (GYM.WEEK.wed.close - 24) * 60;
   const SVG_ERR = EclipseFrame.icons.error;
   const OPS_STATES = {
     live: (m = NOW_MIN) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${timeText(m)}` }),

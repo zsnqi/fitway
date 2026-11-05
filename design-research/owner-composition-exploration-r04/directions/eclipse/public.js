@@ -4,7 +4,7 @@
 // The level word leads the page in its corner light, two rows of facts under it, and under them the usual day in the
 // lit card: one solid bar per open hour on every screen, now as the one red hour on it, a circle on the quiet hour the
 // card's line names, and the other days. The live head steps back while another day is shown; today's day button reads
-// its short name ("Tue", «ثلاثاء») with a chalk mark under it. The hour labels under the bars are fixed for a day (a
+// its short name ("Wed", «أربعاء») with a chalk mark under it. The hour labels under the bars are fixed for a day (a
 // pick, hover, focus or drag never adds, drops or moves one; the readout names the picked time), and a picked bar lightens.
 // Time runs in the reading direction: right to left in Arabic, left to right in English (the hours, the slide, the
 // arrow keys, the arrival's order and the week row), all from logical properties, flex order and measured boxes.
@@ -16,7 +16,7 @@
 // Switches: ?lang=en (Arabic without it; the language link switches and keeps every other switch),
 // ?state=loading|live|delayed|unavailable|closed|error (live), ?arrive=<ms> (with loading: the payload lands then, into
 // Live; without it the load reaches the 10 s ceiling and becomes Error), ?level=quiet|moderate|busy|packed (busy; in
-// Delayed, the last reading's), ?day=mon..sun (the day shown; today without it), ?today=mon..sun (tue), ?now=<hour>
+// Delayed, the last reading's), ?day=mon..sun (the day shown; today without it), ?today=mon..sun (wed), ?now=<hour>
 // (the clock's hour, 19; before the opening in Closed), ?pct=off (the owner turned the percentage off), ?hour=<0-25>
 // (a picked hour, for frames).
 (function () {
@@ -53,14 +53,16 @@
   function isLive() { return state === "live"; }
 
   // ---------------------------------------------------------------------------------------------------------------
-  // Synthetic data. One room (about 120 at full, never shown), one day, the last reading at 7:41 PM. Delayed's last
-  // reading came 13 minutes before now (7:28 PM); Closed is the hours before the gym opens.
+  // Synthetic data, the one gym of every page (gym.js). One room (120 at full, never shown), one day, the last reading
+  // at 7:42 PM. Delayed's last reading came 13 minutes before now (7:29 PM); Closed is the hours before the gym opens.
   // ---------------------------------------------------------------------------------------------------------------
+  var GYM = window.EclipseGym;
+  var percentOf = function (n) { return Math.round((n / GYM.CAPACITY) * 100); };
   var LEVELS = {
-    quiet: { n: 18, pct: 15 },
-    moderate: { n: 41, pct: 34 },
-    busy: { n: 70, pct: 58 },
-    packed: { n: 96, pct: 80 }
+    quiet: { n: 18, pct: percentOf(18) },
+    moderate: { n: 41, pct: percentOf(41) },
+    busy: { n: GYM.NOW.count, pct: percentOf(GYM.NOW.count) },
+    packed: { n: 96, pct: percentOf(96) }
   };
   var levelKey = LEVELS[q.get("level")] ? q.get("level") : "busy";
   var level = LEVELS[levelKey];
@@ -68,28 +70,33 @@
   var pctOn = q.get("pct") !== "off";
   if (!pctOn) page.setAttribute("data-pct", "off");
   // An hour narrower than this on the phone is too narrow for a finger: WCAG 2.5.8's minimum target (24 CSS px; the
-  // hours stand side by side with no spacing, so an hour's own width is its target). Friday's 10 hours stay above it;
-  // the other days' 20 fall under it, and a picked hour brings the step keys (stepKeys).
+  // hours stand side by side with no spacing, so an hour's own width is its target). Friday's 11 hours stay above it;
+  // the other days' 17 to 20 fall under it, and a picked hour brings the step keys (stepKeys).
   var FINGER = 24;
 
-  // The usual day: the average inside for each hour the gym is open, over past weeks. Hours run from the opening hour;
-  // an hour past 23 is after midnight (24 is the 12 AM hour). Hours are the finest grain. Each day carries its names
-  // in both languages: the full name (the card's title, the spoken names) and the short one (the day buttons).
+  // The usual day: the average inside for each hour the gym is open, over past weeks (gym.js's table, with the hours
+  // Settings shows). Hours run from the opening hour; an hour past 23 is after midnight (24 is the 12 AM hour). Hours are
+  // the finest grain. Each day carries its names in both languages: the full name (the card's title, the spoken names)
+  // and the short one (the day buttons).
   var DAYS = {
-    mon: { name: ["Monday","الاثنين"], short: ["Mon","اثنين"], open: 6, close: 26, usual: [18, 30, 34, 26, 17, 14, 19, 27, 36, 46, 57, 66, 69, 64, 56, 49, 44, 37, 26, 16] },
-    tue: { name: ["Tuesday","الثلاثاء"], short: ["Tue","ثلاثاء"], open: 6, close: 26, usual: [11, 19, 23, 20, 14, 16, 21, 30, 41, 51, 61, 65, 68, 70, 67, 63, 60, 47, 31, 19] },
-    wed: { name: ["Wednesday","الأربعاء"], short: ["Wed","أربعاء"], open: 6, close: 26, usual: [12, 15, 19, 27, 38, 44, 40, 31, 28, 34, 43, 52, 60, 66, 71, 68, 58, 49, 33, 17] },
-    thu: { name: ["Thursday","الخميس"], short: ["Thu","خميس"], open: 6, close: 26, usual: [9, 18, 22, 20, 17, 21, 26, 33, 41, 46, 49, 56, 62, 64, 68, 71, 75, 66, 44, 22] },
-    sat: { name: ["Saturday","السبت"], short: ["Sat","سبت"], open: 6, close: 26, usual: [8, 9, 11, 13, 16, 23, 36, 49, 56, 52, 48, 47, 51, 57, 63, 66, 62, 60, 41, 26] },
-    sun: { name: ["Sunday","الأحد"], short: ["Sun","أحد"], open: 6, close: 26, usual: [14, 21, 23, 17, 13, 19, 31, 44, 54, 60, 62, 64, 67, 72, 76, 80, 74, 61, 39, 24] },
-    fri: { name: ["Friday", "الجمعة"], short: ["Fri", "جمعة"], open: 14, close: 24, usual: [19, 26, 30, 34, 37, 41, 46, 44, 39, 31] }
+    mon: { name: ["Monday","الاثنين"], short: ["Mon","اثنين"] },
+    tue: { name: ["Tuesday","الثلاثاء"], short: ["Tue","ثلاثاء"] },
+    wed: { name: ["Wednesday","الأربعاء"], short: ["Wed","أربعاء"] },
+    thu: { name: ["Thursday","الخميس"], short: ["Thu","خميس"] },
+    sat: { name: ["Saturday","السبت"], short: ["Sat","سبت"] },
+    sun: { name: ["Sunday","الأحد"], short: ["Sun","أحد"] },
+    fri: { name: ["Friday", "الجمعة"], short: ["Fri", "جمعة"] }
   };
+  Object.keys(DAYS).forEach(function (k) {
+    var W = GYM.WEEK[k];
+    DAYS[k].open = W.open; DAYS[k].close = W.close; DAYS[k].usual = W.usual;
+  });
   var L = en ? 0 : 1; // the language's index in the names
   function dayName(d) { return DAYS[d].name[L]; }
   function dayShort(d) { return DAYS[d].short[L]; }
   // Now, by the gym's clock: the 7 PM hour, or in Closed the hours before the opening (4 AM; 11 AM on Friday). The last
-  // reading came at 41 minutes past the hour now stands in; Delayed's came 13 minutes before that.
-  var TODAY = DAYS[q.get("today")] ? q.get("today") : "tue", NOW_H = q.get("now") ? +q.get("now") : state === "closed" ? (TODAY === "fri" ? 11 : 4) : 19, AGO = 13;
+  // reading came at 42 minutes past the hour now stands in; Delayed's came 13 minutes before that.
+  var TODAY = DAYS[q.get("today")] ? q.get("today") : GYM.NOW.weekday, NOW_H = q.get("now") ? +q.get("now") : state === "closed" ? (TODAY === "fri" ? 11 : 4) : GYM.NOW.hour, AGO = GYM.NOW.delayedBy;
   // The week from Sunday in both languages: Saudi Arabia's first day and the calendar week of the Owner pages (GLO-13).
   // It runs in the reading direction, so Sunday stands at the right in Arabic and at the left in English.
   var WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
@@ -106,7 +113,7 @@
   var TOP = Math.ceil(Math.max(busiestUsual * 1.1, level.n * 1.04));
 
   function usualAt(d, h) { var D = DAYS[d]; return h >= D.open && h < D.close ? D.usual[h - D.open] : null; }
-  function band(v) { return v < 30 ? "quiet" : v < 60 ? "moderate" : v < 90 ? "busy" : "packed"; }
+  function band(v) { return GYM.LEVELS[GYM.levelOf(v)]; }
   function lowest(d, from) {
     var D = DAYS[d], best = null;
     for (var h = Math.max(D.open, from); h < D.close; h++) if (best === null || usualAt(d, h) < usualAt(d, best)) best = h;
@@ -136,7 +143,7 @@
   function hourHtml(h) { return iso(hourText(h)); }
   function clockAt(h, m) { return n12(h) + ":" + m + NB + half(h); }
   // Closed's own hours before the opening carry no reading, so its head holds the room of the page's usual hour.
-  var READ_H = q.get("now") ? NOW_H : 19, READ_AT = clockAt(READ_H, 41), LAST_AT = clockAt(READ_H, 28);
+  var READ_H = q.get("now") ? NOW_H : GYM.NOW.hour, READ_AT = clockAt(READ_H, GYM.NOW.min), LAST_AT = clockAt(READ_H, GYM.NOW.min - AGO);
 
   // The hour the card's line and circle name: the quietest full hour still ahead today, by the usual alone. A quiet one
   // ("quiet"); else one lighter than the hour now stands in ("less"; before the opening every hour is ahead, so the
@@ -357,7 +364,7 @@
   // layout: an hour's width = plot width / open hours.
   function placeLabels(B) {
     var D = DAYS[B.day], hw = B.bars.clientWidth / (D.close - D.open);
-    var every = hw >= 64 ? 1 : labelReach(B) + LABEL_AIR <= hw * 3 ? 3 : 6;
+    var every = hw >= 75 ? 1 : labelReach(B) + LABEL_AIR <= hw * 3 ? 3 : 6;
     var isToday = B.day === TODAY, items = [];
     var reach = parseFloat(getComputedStyle(card).paddingInlineEnd) - EDGE_AIR; // how far a period may hang past the last hour
     for (var h = SPAN0; h < SPAN1; h++) {

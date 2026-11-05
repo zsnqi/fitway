@@ -11,9 +11,9 @@
  * the way bandFor counts (packages/api/src/occupancy/bands.ts: a level holds every count whose percent is at or under
  * its limit). The history names each change from → to by comparing each saved version with the one before it (item
  * 49; a Product/Spec amendment), with the reason only where one was given.
- * The synthetic history is Activity log's eight settings records (activity.js, versions 2 to 9: the same dates, owners
+ * The synthetic history is the eight settings records Activity log lists too (gym.js, versions 2 to 9: one list of dates, owners
  * and reasons), each given the change its reason describes; the current snapshot agrees with Daily (Wednesday 6:00 AM
- * to 1:00 AM, levels at 24, 48 and 68 people) and with Activity log's resets five minutes after each closing.
+ * to 1:00 AM, levels at 30, 60 and 90 people) and with Activity log's resets five minutes after each closing.
  * Query: lang=ar|en; ops=delayed|closed|offline (the frame's status, for review); motion=off; edit=crowd|hours|day (a
  * card's window on load); state=loading|error with arrive=<ms>|never (the first load); refuse=bad_request|unauthorized|
  * forbidden|settings_version_conflict, fail=1, hold=1 (the answer to the first application), other=limits (the save
@@ -120,9 +120,9 @@
         said: (what, a, b) => `${what}: من ${a} إلى ${b}`,
       },
       quote: (s) => `«${s}»`,
-      // The people a level holds, after its limit: one «حتى» governs both values, «حتى 20% أو 24 شخصًا», so the people
-      // read as an upper bound without «حتى» twice in the row (the coordinator's ruling of 2026-10-19: a bare «24 شخصًا»
-      // reads as exactly 24). The top level keeps «69 شخصًا فأكثر».
+      // The people a level holds, after its limit: one «حتى» governs both values, «حتى 25% أو 30 شخصًا», so the people
+      // read as an upper bound without «حتى» twice in the row (the coordinator's ruling of 2026-10-19: a bare «30 شخصًا»
+      // reads as exactly 30). The top level keeps «91 شخصًا فأكثر».
       orPeople: (html) => `أو ${nw(html)}`,
       orMorePeople: (n) => `أو ${nw(COPY.ar.people(n))} فأكثر`,
       /* ---- the editor (part 2): each value card's window */
@@ -202,7 +202,7 @@
         listName: "التغييرات",
         pplName: "الأشخاص في كل مستوى",
       },
-      // The people a level holds, before → after, in the confirmation: «حتى 24 ← 28 شخصًا»; said in full as «هادئ: حتى
+      // The people a level holds, before → after, in the confirmation: «حتى 30 ← 36 شخصًا»; said in full as «هادئ: حتى
       // 28 شخصًا بدلًا من 24».
       pplUpTo: (n) => `حتى ${n}`,
       never: "لا يظهر",
@@ -294,7 +294,7 @@
       },
       quote: (s) => `“${s}”`,
       orPeople: (html) => `or ${nw(html)}`,
-      // "or 69+ people": "or at least 69 people" spilled the 390 px card by 4 px beside "above 57%".
+      // "or 91+ people": "or at least 91 people" spilled the 390 px card by 4 px beside "above 75%".
       orMorePeople: (n) => `or ${nw(`${ltr(fmtInt(n))}+ people`)}`,
       close: "Close",
       cancel: "Cancel",
@@ -419,8 +419,8 @@
 
   /* ---------------------------------------------------- the crowd levels in people (bandFor's counting)
    * A level holds every whole count whose percent of capacity is at or under its limit, so its last count is the
-   * largest n with (n / capacity) × 100 <= limit, computed in the same floating point bandFor uses: 20% of 120 is up to
-   * 24 people; 24% of 120 up to 28 (item 49's "up to 29" was its example's shape). Packed is every count above Busy. */
+   * largest n with (n / capacity) × 100 <= limit, computed in the same floating point bandFor uses: 25% of 120 is up to
+   * 30 people; 24% of 120 up to 28 (item 49's "up to 29" was its example's shape). Packed is every count above Busy. */
   const lastCount = (cap, pct) => {
     let n = Math.floor((pct * cap) / 100);
     while (((n + 1) / cap) * 100 <= pct) n++;
@@ -428,8 +428,8 @@
     return n;
   };
   // The people level i holds at a capacity, as the phrase after its limit (the card and its window alike): «أو 24
-  // شخصًا», the top level «أو 69 شخصًا فأكثر». A Quiet holding only the empty gym keeps the pattern, «أو 0 أشخاص»
-  // (part 3: the earlier «الصالة خالية فقط» stood after «حتى 20%» with nothing to join them); a level no count reaches
+  // شخصًا», the top level «أو 91 شخصًا فأكثر». A Quiet holding only the empty gym keeps the pattern, «أو 0 أشخاص»
+  // (part 3: the earlier «الصالة خالية فقط» stood after «حتى 25%» with nothing to join them); a level no count reaches
   // says «لا يظهر بهذه السعة» in the people's place.
   function peoplePhrase(cap, lims, i) {
     const last = lims.map((p) => lastCount(cap, p));
@@ -441,38 +441,37 @@
   /* ------------------------------------------------------------ the gym's settings (synthetic, from the contract)
    * Version 1 is the snapshot the gym started with (it has no record: the log begins with the first owner change);
    * each later version is the one before it with one owner change applied, written by the owner and at the time
-   * Activity log records it (activity.js, settings_updated, versions 2-9), with its reason as typed. */
+   * Activity log records it (gym.js's CHANGES, versions 2-9), with its reason as typed. */
   const H = (open, close) => ({ open, close });
   const week = (f) => Object.fromEntries(DAYS.map((d, i) => [d, f(d, i)]));
   const clone = (s) => JSON.parse(JSON.stringify(s));
+  // The one gym (gym.js) gives the capacity, the limits, the moment and the changes' records.
   const V1 = {
-    capacity: 120,
-    thresholds: { quietMaxPercent: 20, moderateMaxPercent: 40, busyMaxPercent: 57 },
+    capacity: EclipseGym.CAPACITY,
+    thresholds: { quietMaxPercent: EclipseGym.LIMITS[0], moderateMaxPercent: EclipseGym.LIMITS[1], busyMaxPercent: EclipseGym.LIMITS[2] },
     weeklySchedule: week((d) => (d === "fri" ? H("16:00", "01:00") : H("06:00", "01:00"))),
     businessDayBoundary: "03:00",
     resetBufferMinutes: 30,
   };
   const R = (ar, en) => ({ ar, en });
-  const CHANGES = [
-    // [date, time (gym-local), owner, reason, change]
-    ["2025-12-28", "16:20", "o1", R("ساعات العمل الشتوية", "Winter opening hours"), (s) => { for (const d of DAYS) s.weeklySchedule[d].close = "00:00"; }],
-    ["2026-02-15", "22:40", "o2", R("ساعات رمضان", "Ramadan hours"), (s) => { for (const d of DAYS) s.weeklySchedule[d] = d === "fri" ? H("21:00", "02:00") : H("20:00", "02:00"); }],
-    // As typed: Noura's Arabic, in both languages (activity.js keeps it so).
-    ["2026-03-22", "13:05", "o2", { raw: "رجعنا لساعات العمل المعتادة بعد العيد", lang: "ar" }, (s) => { for (const d of DAYS) s.weeklySchedule[d] = d === "fri" ? H("16:00", "01:00") : H("06:00", "01:00"); }],
-    ["2026-08-16", "11:20", "o1", R("التصفير بعد الإغلاق بخمس دقائق", "Reset five minutes after closing"), (s) => { s.resetBufferMinutes = 5; }],
-    ["2026-09-04", "15:15", "o1", null, (s) => { s.businessDayBoundary = "04:00"; }],
-    ["2026-09-16", "10:05", "o2", R("ساعات الجمعة الجديدة: من 2 م", "New Friday hours: from 2 PM"), (s) => { s.weeklySchedule.fri.open = "14:00"; }],
-    // After midnight: Saturday 19 September, 12:22 AM.
-    ["2026-09-19", "00:22", "o2", R("ساعات نهاية الأسبوع", "Weekend hours"), (s) => { s.weeklySchedule.sat.open = "08:00"; }],
-    ["2026-09-23", "11:32", "o1", R("الإغلاق يوم الخميس الساعة 2 ص", "Thursday closing moved to 2 AM"), (s) => { s.weeklySchedule.thu.close = "02:00"; }],
-  ];
+  // What each saved version changed; when, by whom and why are gym.js's records, which Activity log lists too.
+  const APPLY = {
+    2: (s) => { for (const d of DAYS) s.weeklySchedule[d].close = "00:00"; },
+    3: (s) => { for (const d of DAYS) s.weeklySchedule[d] = d === "fri" ? H("21:00", "02:00") : H("20:00", "02:00"); },
+    4: (s) => { for (const d of DAYS) s.weeklySchedule[d] = d === "fri" ? H("16:00", "01:00") : H("06:00", "01:00"); },
+    5: (s) => { s.resetBufferMinutes = 5; },
+    6: (s) => { s.businessDayBoundary = "04:00"; },
+    7: (s) => { s.weeklySchedule.fri.open = "14:00"; },
+    8: (s) => { s.weeklySchedule.sat.open = "08:00"; },
+    9: (s) => { s.weeklySchedule.thu.close = "02:00"; },
+  };
   const OWNER_NAMES = { o1: "فهد", o2: "نورة" };   // the one stored string each owner typed (DECISIONS item 32)
   // Every version, oldest first: { version, date, mins, by, reason, editable }.
   const versions = [{ version: 1, date: null, mins: null, by: null, reason: null, editable: clone(V1) }];
-  for (const [date, time, by, reason, apply] of CHANGES) {
+  for (const { ver, date, time, by, reason } of EclipseGym.CHANGES) {
     const next = clone(versions[versions.length - 1].editable);
-    apply(next);
-    versions.push({ version: versions.length + 1, date, mins: hm(time), by, reason, editable: next });
+    APPLY[ver](next);
+    versions.push({ version: ver, date, mins: hm(time), by, reason, editable: next });
   }
   /* Review switches for the whole range (rounds item 7), each a truthful history: what the cards show is always the
    * latest version, and the history's records are the versions before it.
@@ -497,7 +496,7 @@
   if (LOG_Q === "every") {
     pushToday((s) => {
       s.capacity = 140;
-      s.thresholds = { quietMaxPercent: 25, moderateMaxPercent: 50, busyMaxPercent: 75 };
+      s.thresholds = { quietMaxPercent: 20, moderateMaxPercent: 45, busyMaxPercent: 70 };
       for (const d of ["sun", "mon", "tue"]) s.weeklySchedule[d].close = "00:00";
       s.weeklySchedule.wed = H("07:00", "23:00");
       s.weeklySchedule.thu.open = "07:00";
@@ -603,7 +602,7 @@
   const M = window.EclipseMotion;
 
   /* ---------------------------------------------------------------- shell */
-  const NOW_MIN = 19 * 60 + 42;                    // the concept's now: Wednesday 23 September 2026, 7:42 PM
+  const NOW_MIN = EclipseGym.NOW.clock;                   // the concept's now: Wednesday 23 September 2026, 7:42 PM
   const TODAY_KEY = "wed";
   const SVG_ERR = EclipseFrame.icons.error;
   const todayHours = () => current().editable.weeklySchedule[TODAY_KEY];
@@ -647,7 +646,7 @@
    * four days share their rules across the gutter and the two cards end on one line. A value that stands alone is a
    * figure (VAL-3): its label, then the value in title type over two rows; a list is rows (VAL-2): a label column, then
    * the figures. The crowd: capacity as a figure, then «المستويات» and the four levels, each its level's four bars (CHP-5,
-   * the key the visitors' page and Daily use), «حتى 20%» and the people it holds. The hours: the week from Sunday, each
+   * the key the visitors' page and Daily use), «حتى 25%» and the people it holds. The hours: the week from Sunday, each
    * day's opening and closing as one range phrase (a closing time before the opening is the night after, as every
    * opening-hours list writes it), or «مغلق». The business day: its end and the reset, two figures. Nothing is lit;
    * nothing here is a reading. */
@@ -916,7 +915,7 @@
   // keeps two lines in loading and arrived alike (settings.css, the Packed row), so the arrival moves nothing.
   function crowdPH() {
     const lvRow = (i) => row(`${LEVEL_BARS(i)}<span>${L.levels[i]}</span>`,
-      `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${ph(32.17)}</span><span class="v-p">${ph(i === 3 ? 104 : 72)}</span>`, "is-level");
+      `<span class="v-q">${i === 3 ? L.above : L.upTo}</span><span class="v-n">${ph(31.31)}</span><span class="v-p">${ph(i === 3 ? 104 : 72)}</span>`, "is-level");
     return `${head("crowd")}
     <dl class="set-figs">${fig(L.capacity, ph(108, "ph-fig"), "is-cap")}</dl>
     <h3 class="set-sub" id="levels-title">${L.levelsTitle}</h3>
@@ -1068,7 +1067,7 @@
 
   /* ---- the crowd's window: capacity (a figure: its label over its field, «شخصًا» after it), then «المستويات» and the
    * four levels, each a row on the card's columns: the key and the word, «حتى», the limit (a percent field), and the
-   * people it holds as typed. The top level follows Busy: «فوق 57%» drawn where a field's digits stand, not a field. */
+   * people it holds as typed. The top level follows Busy: «فوق 75%» drawn where a field's digits stand, not a field. */
   function crowdEditor(s) {
     const t = s.thresholds, lims = [t.quietMaxPercent, t.moderateMaxPercent, t.busyMaxPercent];
     const lvRow = (i) => (i < 3
@@ -1903,13 +1902,13 @@
    * holds the same. When what was typed is already saved, there is nothing to apply and «إغلاق» closes; when it no
    * longer fits (a limit now at or under the one below it), «رجوع» leads to the editor's own refusal. */
   // The save that came first (synthetic): capacity 120 → 150 and Friday from 4:00 PM, a minute ago, by the signed-in
-  // owner, the likely case (the same owner on another device, item 78), with no reason. ?other=limits adds Busy at 45%,
-  // so a Moderate typed at 45% or more no longer fits under it (the view's third form, "clash").
+  // owner, the likely case (the same owner on another device, item 78), with no reason. ?other=limits adds Busy at 65%,
+  // so a Moderate typed at 65% or more no longer fits under it (the view's third form, "clash").
   const OTHER_LIMITS = params.get("other") === "limits";
   const OTHER = (s) => {
     s.capacity = 150;
     if (s.weeklySchedule.fri) s.weeklySchedule.fri = { ...s.weeklySchedule.fri, open: "16:00" };
-    if (OTHER_LIMITS) s.thresholds = { ...s.thresholds, busyMaxPercent: 45 };
+    if (OTHER_LIMITS) s.thresholds = { ...s.thresholds, busyMaxPercent: 65 };
   };
   // Which of the window's values the owner changed (against what each field opened with).
   function touched(sec) {

@@ -398,7 +398,8 @@
   const M = window.EclipseMotion;
 
   /* ---------------------------------------------------------------- shell */
-  const NOW_MIN = 19 * 60 + 42, DAY_OPEN = 360, DAY_CLOSE = 60;
+  // The one gym (gym.js): the moment and today's hours.
+  const NOW_MIN = EclipseGym.NOW.clock, DAY_OPEN = EclipseGym.WEEK.wed.open * 60, DAY_CLOSE = (EclipseGym.WEEK.wed.close - 24) * 60;
   const DASH = "–";
   const fmtClock = (mins) => {
     const h = Math.floor(mins / 60) % 24, m = mins % 60;
