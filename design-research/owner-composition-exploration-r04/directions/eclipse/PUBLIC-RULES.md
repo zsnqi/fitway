@@ -1,6 +1,6 @@
 # Public: the rules that decide the page
 
-**Must-haves: the level, the approximate count, open or closed, the last update, the percentage, today's curve.**
+**Must-haves: the level, the approximate count, open or closed, the last update, the percentage, today's curve.** Only the user's clear word removes one (`docs/agent-context/WORKING_AGREEMENTS.md`, 2026-11-05).
 In the rows: the level PUB-8, the count PUB-10 and PUB-69, open or closed PUB-36 and PUB-92, the last update PUB-33 and
 PUB-34, the percentage PUB-10 and AMD-P1, today's curve PUB-14 and AMD-P2.
 

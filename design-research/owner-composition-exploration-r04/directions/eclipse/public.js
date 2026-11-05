@@ -711,7 +711,7 @@
   // busy marks. The card's answer and the bars follow in show().
   function renderState() {
     page.setAttribute("data-state", state);
-    head.el.setAttribute("aria-label", namesNow() ? T.rightNow : T.crowd);
+    head.el.setAttribute("aria-label", state === "live" ? T.rightNow : T.crowd);
     var r = rowsHtml(state);
     head.word.innerHTML = r.word;
     head.sub.innerHTML = r.sub;

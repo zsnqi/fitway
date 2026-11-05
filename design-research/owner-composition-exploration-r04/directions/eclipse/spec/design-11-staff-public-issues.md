@@ -8,8 +8,8 @@ To come (step 6, its own milestone).
 
 The public crowd page (`public.html`, public-redesign-r01) is specified in its own fragment, `PUBLIC-SPEC.md` in this
 folder, and its parts `spec/public-1.md` to `spec/public-4.md`: what it answers, the head, the usual day's card, the six
-states, every size, the motion, the fonts, Arabic and English, every string (rows PUB-1 to PUB-133), the Product/Spec
-amendments the move to production needs (6.10, AMD-P1 to AMD-P6, proposed, not decided), and where the page departs
+states, every size, the motion, the fonts, Arabic and English, every string (rows PUB-1 to PUB-145), the Product/Spec
+amendments the move to production needs (6.10, AMD-P1 to AMD-P7, proposed, not decided), and where the page departs
 from a family row (6.11). Its sections are numbered 6.1 to 6.12 there. Mobile-first, dark, no operational control or
 personal data.
 
