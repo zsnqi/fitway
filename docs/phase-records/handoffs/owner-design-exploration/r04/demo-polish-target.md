@@ -29,8 +29,11 @@ One gym across all six pages. Today the Owner pages say Wednesday, 49 inside, us
 - Data audit findings 15-19; the plain "Last 7 days" card is the user's choice (DECISIONS item 103), so finding 8 is only a stale comment.
 - Not checked until the end: real phones and screen readers.
 
-## Open questions
+## Answers (the user, 2026-11-05; DECISIONS item 104)
 
-1. The gym's capacity and hours.
-2. Whose rhythm: the public page's (recommended) or the Owner pages'.
-3. «الوصول» stays or becomes «الحسابات» (reading audit F2).
+1. Capacity and hours: the concept's stay; a demo needs no real figure.
+2. The rhythm is the public page's.
+3. «الوصول» becomes «الحسابات».
+4. The gym has a prayer room inside, so no dip for prayer.
+
+Open: whether saved changes stay (the user asked why they are left).

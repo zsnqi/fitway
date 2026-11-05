@@ -116,6 +116,7 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 101. **A brief names how an outcome is already proved** `decisions/101-120.md`
 102. **The retro's four findings are fixed first** `decisions/101-120.md`
 103. **Reports' busy-times card loses its light** `decisions/101-120.md`
+104. **The demo's polish: one gym, the public page's rhythm** `decisions/101-120.md`
 
 ## How this milestone's rounds run
 

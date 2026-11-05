@@ -1,10 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-10-29 19:40 +03:00 (decision 103
-  built; §"Running now" is where to pick up)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-05 (the demo's polish round; §"Running now")
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-103; 103 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-104; 104 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -33,9 +32,7 @@
 
 ## Running now
 
-Nothing of this milestone runs (measured 2026-10-29 19:40; the PC's LAN address is 192.168.8.186). main `2278a896`
-carries decisions 97-103. Build branch `owner-followup-r04-build` at `18411a15`, pushed. Status page for the user:
-https://claude.ai/artifact/VVeFg5R2WT5EfmjkBWuxXU; the reading review's page: https://claude.ai/artifact/29vfpNUr81ExEiWNJWzvfK.
+**The demo's polish round** (decision 104; its page `docs/phase-records/handoffs/owner-design-exploration/r04/demo-polish-target.md`): the public page closed at `33677c89`, merged into the build branch. Audits: `D:/fitway-temp/owner-r04-demo-audit-data/REPORT.md`, `D:/fitway-temp/owner-r04-demo-audit-arabic/REPORT.md`. Order: the one-gym data round (`D:/fitway-temp/owner-r04-one-gym/`), then a fixer for dead ends and Arabic words, then a designer for Reports' average card; the user sees the result on named frames.
 
 - **Layout splits on the build branch, as this milestone's work** (2026-10-29, `WORKING_AGREEMENTS.md` §"Ownership"):
   `2aa2fc4d` (`DESIGN-SPEC.md`, `SETTINGS-SPEC.md` into Eclipse's spec folder) and `ef9fa810` (`NEXT-DIRECTION-BRIEF.md`
