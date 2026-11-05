@@ -1,7 +1,7 @@
 schemaVersion: 1
 milestoneId: public-redesign-r01
 taskClass: visual-authority-change
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/public-redesign-r01
 task:
   objective: >-
