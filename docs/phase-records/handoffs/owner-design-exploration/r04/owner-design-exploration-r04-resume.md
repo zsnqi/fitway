@@ -32,7 +32,7 @@
 
 ## Running now
 
-**The demo's polish round** (decisions 104, 105; its page `docs/phase-records/handoffs/owner-design-exploration/r04/demo-polish-target.md`): the public page closed at `33677c89`, merged into the build branch. Audits: `D:/fitway-temp/owner-r04-demo-audit-data/REPORT.md`, `D:/fitway-temp/owner-r04-demo-audit-arabic/REPORT.md`. Order: the one-gym data round (`D:/fitway-temp/owner-r04-one-gym/`), then a builder for saved changes, a fixer for dead ends and Arabic words, then a designer for Reports' average card; the user sees the result on named frames.
+**The demo's polish round** (decisions 104, 105; its page `docs/phase-records/handoffs/owner-design-exploration/r04/demo-polish-target.md`). Built on the build branch, pushed, CI green (measured): `a3e3b90a` one gym, `18180f83` saved changes, `f835e520` words and dead ends; reports in `D:/fitway-temp/owner-r04-one-gym/`, `D:/fitway-temp/owner-r04-saved-changes/`, `D:/fitway-temp/owner-r04-words/`. Reports' average card: options A, B, C as a patch, not built (`D:/fitway-temp/owner-r04-avg-card/REPORT.md`), sent 2026-11-05. Next: build the user's pick, an independent check, then named frames for the user. Nothing in this round is visually accepted.
 
 - **Layout splits on the build branch, as this milestone's work** (2026-10-29, `WORKING_AGREEMENTS.md` §"Ownership"):
   `2aa2fc4d` (`DESIGN-SPEC.md`, `SETTINGS-SPEC.md` into Eclipse's spec folder) and `ef9fa810` (`NEXT-DIRECTION-BRIEF.md`
@@ -45,8 +45,8 @@
   `D:/fitway-temp/owner-r04-export-filebox-fix/`); `fedbdb6d` verify-11's findings 1-6. The "Belonging" bullets are
   narrowed (`8c4976cf`, the user's word).
 - **Left from finding 5:** Reports' first paint now waits for Readex Pro (opacity, 1.5 s cap); Activity, Access and
-  Settings keep the same font-swap pattern. Not visible enough for the demo (decision 52); the hold goes in the shared
-  frame after it.
+  Settings keep the same font-swap pattern. Waits until after the demo (decision 52), then goes in the shared
+  frame.
 
 - **The builder eval, task 1** (DECISIONS 92 (3)): `D:/fitway-temp/owner-r04-tbl14-grade/EVAL.md` (Sonnet and Opus at
   `high`, byte-identical code from a reference implementation, 6/6 each; decision 85's Sonnet trial there too). The builder stays Opus; the next paired task
@@ -85,6 +85,7 @@
 
 ## Waiting on the user
 
+- Reports' average card: A, B (our pick), C, or a bigger idea.
 - Drive C: the user put the open items of D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md off until later
   (2026-10-24; C 34.8 GB free, measured in `D:/fitway-temp/cc-temp-survey/REPORT.md`).
 - fitway-temp: the user ran the prune (2026-10-24, `D:/fitway-temp/cleanup-20261024/`, 352.88 GB freed, 0 failures; D
