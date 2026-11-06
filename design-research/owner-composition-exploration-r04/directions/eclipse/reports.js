@@ -145,6 +145,7 @@
   // Minutes, by the Daily page's own rule (daily.js `arMin`), so «قبل … دقيقة» reads the same on both pages for any count.
   const arMin = (n) => (n === 1 ? "دقيقة" : n === 2 ? "دقيقتين" : n % 100 >= 3 && n % 100 <= 10 ? `${n} دقائق` : `${n} دقيقة`);
   const bdi = (s) => `<bdi>${s}</bdi>`;
+  const { bx, kindOf, compareFor } = window.EclipseCompare; // reports-compare.js: the comparison, the average's pieces and its words
   const COPY = {
     ar: {
       // The frame (as on Daily): the bar's short names, the Operations status and its details, the phone's menu.
@@ -167,7 +168,7 @@
       avgTitle: "معدّل الموجودين",
       // The average's line, under its number: the period alone (the user, 2026-11-06). A preset by its segment's name, a
       // custom period by its dates (the year only when the dates cross it).
-      avgBasis: { preset: (k) => `خلال ${L.seg[k]}`, one: (d) => `في ${d}`, span: (from, to) => `من ${from} إلى ${to}` },
+      avgBasis: { preset: (k) => bx(`خلال ${L.seg[k]}`), one: (d) => bx(`في ${d}`), span: (from, to) => `${bx(`من ${from}`)} ${bx(`إلى ${to}`)}` },
       peakTitle: "أعلى ذروة",
       entriesTitle: "مرات الدخول",
       entriesNote: (n) => `نحو ${n} في اليوم`,
@@ -268,7 +269,7 @@
       wowFew: "Too few readings to compare",
       wowSay: (cur, prev, one) => (one ? `${cur} compared with ${prev}` : `The days ${cur} compared with the days ${prev}`),
       avgTitle: "Average inside",
-      avgBasis: { preset: (k) => `Over the ${L.seg[k].toLowerCase()}`, one: (d) => `On ${d}`, span: (from, to) => `${from} to ${to}` },
+      avgBasis: { preset: (k) => bx(`Over the ${L.seg[k].toLowerCase()}`), one: (d) => bx(`On ${d}`), span: (from, to) => `${bx(from)} ${bx(`to ${to}`)}` },
       peakTitle: "Highest peak",
       entriesTitle: "Entries",
       entriesNote: (n) => `About ${n} a day`,
@@ -517,9 +518,6 @@
   // The comparison follows the period (the user, 2026-11-06, superseding Q3 (b)'s fixed 7 days): the chosen period
   // against the equal span just before it, under the coverage rule (reports-compare.js). K-02, `pending`: a period that
   // ends on the edge's buffered evening waits.
-  function compareFor(a, b) {
-    return window.EclipseCompare.compareFor(dayModel, a, b, PAGE === "pending" && b === LAST_FULL);
-  }
   let wow = null; // the comparison for the period shown, made with the period's model (setRange)
 
   /* ------------------------------------------------------------ motion settings
@@ -544,7 +542,7 @@
     return { kind: k, a: LAST_FULL - PRESETS[k] + 1, b: LAST_FULL };
   })();
   let model = buildModel(range.a, range.b);
-  wow = compareFor(range.a, range.b);
+  wow = compareFor(dayModel, range.a, range.b, PAGE === "pending" && range.b === LAST_FULL);
   function urlFor(extra = {}) {
     const p = new URLSearchParams(location.search);
     ["range", "from", "to", "dialog"].forEach((k) => p.delete(k));
@@ -632,35 +630,34 @@
    * (TRU-1, TRU-7): the chosen period against the equal span just before it, whose dates its head names (the user,
    * 2026-11-06). Every figure keeps its slots' heights in every state: the value's line 46, the foot 42 (CRD-9, CRD-10). */
   const trendCard = $("#card-trend");
+  // The average's line (the period alone, the user, 2026-11-06) and the two cards' feet, each keeping the room of the tallest
+  // words it can hold: reports-compare.js `glance`.
+  const GLANCE = window.EclipseCompare.glance({ L, icon: ICON.same, bdi, periodSentence, toDn, range: () => range });
   function renderCards() {
-    // The average's line is the period alone (the user, 2026-11-06): a preset by its segment's name; a custom period by its
-    // dates, with words in place of a dash, each date kept whole (DAT-4) and the year only across a year.
-    const periodLine = () => (range.kind !== "custom" ? L.avgBasis.preset(range.kind)
-      : periodSentence(range.a, range.b, L.avgBasis.span, L.avgBasis.one, false));
     const [pa, pb] = wow.span.prev;
     $("#trend-meta").innerHTML = rangeText(pa, pb, false);
     const tb = $("#trend-body");
-    const say1 = (words) => `<p class="stat-value"><span class="stat-say">${words}</span></p><div class="stat-foot"></div>`;
+    const say1 = (words) => `<p class="stat-value is-say"><span class="stat-say">${words}</span></p>${GLANCE.trendFoot()}`;
     if (wow.pending) {
       tb.innerHTML = say1(L.pending);
     } else if (wow.comparable) {
-      const c = wow.avgChange, kind = c >= 5 ? "busier" : c <= -5 ? "quieter" : "same";
+      const c = wow.avgChange, kind = kindOf(c);
       // The value and its measure. The span it compares with is not written beside it: the owner reads the comparison
       // without it, and it made the card too full (Q17, rejected by the user on 2026-10-01); the head names the earlier span, and the card's description both spans for assistive technology.
       tb.innerHTML = `<p class="stat-value"><bdi class="num">${pct(c)}</bdi><span class="unit">${L.wowUnit}</span></p>
-        <div class="stat-foot"><span class="cmp cmp-${kind}">${kind === "busier" ? ICON.up : kind === "quieter" ? ICON.down : ICON.same}${L.cmp[kind]}</span><span class="stat-aside">${L.wowEntries(bdi(pct(wow.entriesChange)))}</span></div>`;
+        ${GLANCE.trendFoot(`<span class="cmp cmp-${kind}">${kind === "busier" ? ICON.up : kind === "quieter" ? ICON.down : ICON.same}${L.cmp[kind]}</span><span class="stat-aside">${L.wowEntries(bdi(pct(wow.entriesChange)))}</span>`)}`;
     } else {
-      // No figure: an empty period says what every figure says (STA-8); otherwise the span short of the coverage rule
-      // is named, the earlier first (the user's words, 2026-11-06).
-      tb.innerHTML = say1(!model.withReadings ? L.noReadings : !wow.prevOk ? L.wowFewBefore : L.wowFew);
+      // No figure: an empty period says what every figure says (STA-8); otherwise the span short of the coverage rule is
+      // named: the period itself first, the earlier one only when the period passes (the user's words, 2026-11-06).
+      tb.innerHTML = say1(!model.withReadings ? L.noReadings : !wow.curOk ? L.wowFew : L.wowFewBefore);
     }
     // The comparison is plain in every period, and so is the pattern (OWN-R6, user 2026-10-01, Q13; DECISIONS 103): Reports has no card light.
     trendCard.setAttribute("aria-description", plain(L.wowSay(periodWords(wow.span.cur[0], wow.span.cur[1]), periodWords(pa, pb), wow.n === 1)));
 
-    const none = (id) => { $(id).innerHTML = `<p class="stat-value"><span class="stat-say">${L.noReadings}</span></p><div class="stat-foot"></div>`; };
-    if (model.avg == null) { none("#avg-body"); none("#peak-body"); $("#peak-meta").innerHTML = ""; }
+    const none = (id, f = '<div class="stat-foot"></div>') => { $(id).innerHTML = `<p class="stat-value"><span class="stat-say">${L.noReadings}</span></p>${f}`; };
+    if (model.avg == null) { none("#avg-body", GLANCE.basisFoot()); none("#peak-body"); $("#peak-meta").innerHTML = ""; }
     else {
-      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${Math.round(model.avg)}</bdi></p><div class="stat-foot"><span class="stat-aside avg-basis">${periodLine()}</span></div>`;
+      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${Math.round(model.avg)}</bdi></p>${GLANCE.basisFoot(`<span class="stat-aside avg-basis">${GLANCE.periodLine()}</span>`)}`;
       const t = model.top;
       $("#peak-meta").innerHTML = `${dayText(t.dn)}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${timeText(t.peakM)}`;
       $("#peak-body").innerHTML = `<p class="stat-value"><bdi class="num">${t.peak}</bdi></p><div class="stat-foot">${levelChip(t.peak)}</div>`;
@@ -1165,7 +1162,7 @@
   function setRange(next, announce = true) {
     range = next;
     model = buildModel(range.a, range.b);
-    wow = compareFor(range.a, range.b);
+    wow = compareFor(dayModel, range.a, range.b, PAGE === "pending" && range.b === LAST_FULL);
     // A new period is a new request: while the page could not load, asking for another period is its retry.
     if (phase === "error" || phase === "retrying") { startLoading(LOAD.retry); return; }
     renderAll();
@@ -1206,16 +1203,16 @@
   // The glance in waiting: every value's own slot holds its placeholder. The earlier span in the comparison's head is a date
   // range, known before the payload.
   function pendGlance() {
-    // The average's line waits with its figure: one bar, as wide as the default period's words in this language
-    // («خلال آخر 28 يومًا» / "Over the last 28 days", measured 87.8 and 119.8 px).
-    $("#avg-body").innerHTML = `${valueSlot(56)}<div class="stat-foot"><span class="stat-aside avg-basis">${ph(RTL ? 88 : 120)}</span></div>`;
+    // The average's line waits with its figure: its own words, unseen, each piece drawn as one bar as wide as the piece
+    // (reports.css .is-ph), so the bars are as wide as the line that arrives, for every period.
+    $("#avg-body").innerHTML = `${valueSlot(56)}${GLANCE.basisFoot(`<span class="stat-aside avg-basis is-ph" aria-hidden="true">${GLANCE.periodLine()}</span>`)}`;
     // The peak's "when" as the live meta draws it: the day, then the time (on two lines on a phone). Each bar is as wide
     // as its words in this language («الخميس 17 سبتمبر» and «6:58 م»; "Thu 17 Sep" and "6:58 PM"), so the bars sit inside
     // the card where the words arrive and the arrival moves nothing.
     $("#peak-meta").innerHTML = `${ph(RTL ? 101 : 62)}<span class="sep ph-sep" aria-hidden="true">·</span>${ph(RTL ? 33 : 44)}`;
     $("#peak-body").innerHTML = `${valueSlot(56)}<div class="stat-foot">${phBox()}</div>`;
     $("#entries-body").innerHTML = `${valueSlot(112)}<div class="stat-foot"><span class="stat-aside">${ph(88)}</span></div>`;
-    $("#trend-body").innerHTML = `${valueSlot(88)}<div class="stat-foot">${phBox(104)}<span class="stat-aside">${ph(88)}</span></div>`;
+    $("#trend-body").innerHTML = `${valueSlot(88)}${GLANCE.trendFoot(`${phBox(104)}<span class="stat-aside">${ph(88)}</span>`)}`;
   }
   // The pattern in waiting: its title, the first part of its subtitle, its axes and its key's fixed words are real;
   // the busiest hour (a placeholder) and the key's data marks keep their places, unseen.
