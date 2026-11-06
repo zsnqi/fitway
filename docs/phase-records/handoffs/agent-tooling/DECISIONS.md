@@ -360,3 +360,4 @@ through these pointers, not copied here.
     - Measured again with the same scripts once sessions have used the new commands.
 25. **Three habits taken from pstack and Matt Pocock's skills, and the skills refreshed** `decisions/025-040.md`
 26. **The retrospective's tooling lessons** `decisions/025-040.md`
+27. **CI's four quick fixes** `decisions/025-040.md`

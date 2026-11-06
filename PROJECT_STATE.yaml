@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: "2026-11-05T12:55:10+03:00"
+updatedAt: "2026-11-06T18:10:17+03:00"
 gardener:
   date: '2026-10-09'
   outcome: blocked
@@ -101,7 +101,7 @@ milestones:
     sharedLeases:
       - "package.json, its scripts section only (the tools registry and the test:verification timeout, F145 and F251), a coordinator lease through 2026-11-15 (renewed on 2026-10-29, DECISIONS item 22); no dependency change"
       - "README.md, its documentation map only (the map check, DECISIONS 73), a coordinator lease through 2026-11-15 (renewed on 2026-10-29, DECISIONS item 22)"
-      - "lefthook.yml, its pre-commit jobs only (the citation and designer-brief checks, DECISIONS item 23), a coordinator lease from 2026-10-31 through 2026-11-15"
+      - "lefthook.yml, its pre-commit and pre-push jobs only (the citation and designer-brief checks, DECISIONS item 23; the pre-push checks, DECISIONS item 27), a coordinator lease from 2026-10-31 through 2026-11-15"
     validationRepairAttempts: 0
     handoff: docs/phase-records/handoffs/agent-tooling/agent-tooling-r01-resume.md
     stopReason: null
