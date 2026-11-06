@@ -80,9 +80,8 @@
   // a wider three-digit peak at the widest time, «444» at «10:44 ص», runs at most 2.7 px further into the cell's padding,
   // never past the cell); Average and Entries their sortable header (label, 8 px, the 14 px arrow), wider than any value
   // they hold (999; 99,999). Whole pixels: a fractional column edge left a 1 px seam between the Arabic headers
-  // (decision 25). Re-measure the floors if the type, a label or a format changes (Arabic Average re-measured for
-  // «المتوسط», 47.13 px, 2026-11-06).
-  const COL_FLOOR = { ar: [126.27, 83.17, 69.13, 90.13], en: [79.31, 84.75, 69.33, 62.08] };
+  // (decision 25). Re-measure the floors if the type, a label or a format changes.
+  const COL_FLOOR = { ar: [126.27, 83.17, 59.03, 90.13], en: [79.31, 84.75, 69.33, 62.08] };
   const COL_SHARE = [0.16, 0.18, 0.12, 0.13];
   const fitCols = (table, rtl) => {
     const head = table.tHead && table.tHead.rows[0];
@@ -156,25 +155,26 @@
       days: (n) => arN(n, ["يوم واحد", "يومان", "أيام", "يومًا", "يوم"]),
       daysWith: (k, n) => `قراءات في ${bdi(k)} من ${arN(n, ["يوم واحد", "يومين", "أيام", "يومًا", "يوم"])}`,
       glance: "باختصار",
-      trendTitle: "مقارنة بالفترة السابقة",
-      wowUnit: "متوسط الموجودين",
+      trendTitle: "مقابل الفترة السابقة",
+      wowUnit: "معدّل الموجودين",
       cmp: { busier: "أكثر ازدحامًا", quieter: "أهدأ", same: "قريب من السابق" },
       wowEntries: (p) => `مرات الدخول ${p}`,
       // The period before it falls under the coverage rule (the user's words, 2026-11-06); the period itself does (this
-      // build's choice, the same sentence without «قبلها»).
-      wowFewBefore: "لا قراءات كافية قبلها للمقارنة",
+      // build's choice, the same sentence without «في الفترة السابقة»).
+      wowFewBefore: "لا قراءات كافية في الفترة السابقة للمقارنة",
       wowFew: "لا قراءات كافية للمقارنة",
       wowSay: (cur, prev, one) => (one ? `يوم ${cur} مقارنة بيوم ${prev}` : `الأيام ${cur} مقارنة بالأيام ${prev}`),
-      avgTitle: "متوسط الموجودين",
-      // The average's basis, under its number: the whole opening hours of the period, named as the period control names it.
-      avgBasis: (p) => `${nw("طوال الدوام،")} ${nw(p)}`,
+      avgTitle: "معدّل الموجودين",
+      // The average's line, under its number: the period alone (the user, 2026-11-06). A preset by its segment's name, a
+      // custom period by its dates (the year only when the dates cross it).
+      avgBasis: { preset: (k) => `خلال ${L.seg[k]}`, one: (d) => `في ${d}`, span: (from, to) => `من ${from} إلى ${to}` },
       peakTitle: "أعلى ذروة",
       entriesTitle: "مرات الدخول",
       entriesNote: (n) => `نحو ${n} في اليوم`,
       noReadings: "لا قراءات", outside: "خارج الفترة",
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       patternTitle: "أوقات الازدحام",
-      patternSub: "متوسط الموجودين حسب اليوم والساعة",
+      patternSub: "معدّل الموجودين حسب اليوم والساعة",
       busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
       numbers: "الأرقام",
       keyFewer: "أقل",
@@ -183,21 +183,21 @@
       emptyLong: "الصالة خالية",
       busiestKey: "الأكثر ازدحامًا",
       fewKey: `أقل من ${bdi(3)} أيام`,
-      avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "متوسط يومين" : `متوسط ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
+      avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "معدّل يومين" : `معدّل ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
       closedTip: "خارج ساعات العمل",
       heatKeys: "استخدم مفاتيح الأسهم للتنقل بين الساعات والأيام، وHome وEnd لأول ساعة وآخر ساعة في اليوم.",
-      heatCaption: (r) => `متوسط الموجودين حسب اليوم والساعة، ${r}`,
+      heatCaption: (r) => `معدّل الموجودين حسب اليوم والساعة، ${r}`,
       dayHead: "اليوم",
       // Below 1280 px, one day at a time (step 4's build; K-39): the week strip and the chosen day's hours.
       weekStrip: "أيام الأسبوع",
-      dayHours: (d, r) => `${d}: متوسط الموجودين حسب الساعة، ${r}`,
+      dayHours: (d, r) => `${d}: معدّل الموجودين حسب الساعة، ${r}`,
       daysTitle: "يومًا بيوم",
-      cols: { day: "اليوم", peak: "الذروة", avg: "المتوسط", entries: "مرات الدخول", notes: "ملاحظات" },
-      daysCaption: (r) => `الأيام ${r}: الذروة والمتوسط ومرات الدخول`,
+      cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
+      daysCaption: (r) => `الأيام ${r}: الذروة والمعدّل ومرات الدخول`,
       sortSay: (c, dir, isDay) => `مرتب حسب ${c}، ${isDay ? (dir === "desc" ? "الأحدث أولًا" : "الأقدم أولًا") : dir === "desc" ? "الأعلى أولًا" : "الأقل أولًا"}`,
       // The day list on a phone (step 4's build): sorted with the phone's own picker; 7 days, then all.
       sortName: "الترتيب",
-      sorts: { "day-desc": "الأحدث أولًا", "day-asc": "الأقدم أولًا", "peak-desc": "أعلى ذروة", "avg-desc": "أعلى متوسط", "entries-desc": "أكثر مرات دخول" },
+      sorts: { "day-desc": "الأحدث أولًا", "day-asc": "الأقدم أولًا", "peak-desc": "أعلى ذروة", "avg-desc": "أعلى معدّل", "entries-desc": "أكثر مرات دخول" },
       showAll: "عرض كل الأيام",
       showFewer: "عرض أقل",
       peakAt: (t) => `الذروة ${t}`,
@@ -260,16 +260,15 @@
       days: (n) => `${n} ${n === 1 ? "day" : "days"}`,
       daysWith: (k, n) => `Readings on ${k} of ${n} days`,
       glance: "At a glance",
-      trendTitle: "Compared with the period before",
+      trendTitle: "vs the period before",
       wowUnit: "avg. inside",
       cmp: { busier: "Busier", quieter: "Quieter", same: "About the same" },
       wowEntries: (p) => `Entries ${p}`,
-      wowFewBefore: "Too few readings before it to compare",
+      wowFewBefore: "Too few readings in the period before to compare",
       wowFew: "Too few readings to compare",
       wowSay: (cur, prev, one) => (one ? `${cur} compared with ${prev}` : `The days ${cur} compared with the days ${prev}`),
       avgTitle: "Average inside",
-      avgBasis: (p) => `${nw("Across opening hours,")} ${nw(p)}`,
-      basisPreset: { "7d": "last 7 days", "28d": "last 28 days" },
+      avgBasis: { preset: (k) => `Over the ${L.seg[k].toLowerCase()}`, one: (d) => `On ${d}`, span: (from, to) => `${from} to ${to}` },
       peakTitle: "Highest peak",
       entriesTitle: "Entries",
       entriesNote: (n) => `About ${n} a day`,
@@ -418,12 +417,13 @@
     return nw(`${dateBare(a)} ${DASH} ${dateBare(b)}${year ? ` ${bdi(B.y)}` : ""}`);
   }
   // A period in a sentence names each month/year once (decisions 14 and 21), with words instead of a dash (decision 12).
-  function periodSentence(a, b, span, single) {
+  // `year`: whether the closing date names its year when the period stays inside one (a period across years names both).
+  function periodSentence(a, b, span, single, year = true) {
     const A = partsOf(a), B = partsOf(b);
-    return a === b ? single(dateText(b, true))
+    return a === b ? single(dateText(b, year))
       : A.y !== B.y ? span(dateText(a, true), dateText(b, true))
-      : A.m === B.m ? span(nw(bdi(A.d)), dateText(b, true))
-      : span(dateText(a), dateText(b, true));
+      : A.m === B.m ? span(nw(bdi(A.d)), dateText(b, year))
+      : span(dateText(a), dateText(b, year));
   }
   const emptyPeriod = () => periodSentence(model.a, model.b, L.emptyTable, L.emptyDay);
   const periodWords = (a, b) => periodSentence(a, b,
@@ -627,16 +627,16 @@
 
   /* ---------------------------------------------------------------- at a glance
    * The period's three figures share one card (the period's), under the period control: its average inside (no level
-   * badge on an average over many hours, LVL-2) with its basis under it, its highest peak with the day and time in the
+   * badge on an average over many hours, LVL-2) with its period under it, its highest peak with the day and time in the
    * meta slot (DAT-5) and its level, and its entries with the daily rate. The comparison is its own card beside them
    * (TRU-1, TRU-7): the chosen period against the equal span just before it, whose dates its head names (the user,
    * 2026-11-06). Every figure keeps its slots' heights in every state: the value's line 46, the foot 42 (CRD-9, CRD-10). */
   const trendCard = $("#card-trend");
   function renderCards() {
-    // The period as the period control names it, for the average's basis: a preset by its segment's name, a custom
-    // period by its dates, the range isolated so its en dash reads in order in Arabic (DAT-3).
-    const periodName = () => (range.kind === "custom" ? (RTL ? `<bdi dir="rtl">${rangeText(range.a, range.b, false)}</bdi>` : rangeText(range.a, range.b, false))
-      : RTL ? L.seg[range.kind] : L.basisPreset[range.kind]);
+    // The average's line is the period alone (the user, 2026-11-06): a preset by its segment's name; a custom period by its
+    // dates, with words in place of a dash, each date kept whole (DAT-4) and the year only across a year.
+    const periodLine = () => (range.kind !== "custom" ? L.avgBasis.preset(range.kind)
+      : periodSentence(range.a, range.b, L.avgBasis.span, L.avgBasis.one, false));
     const [pa, pb] = wow.span.prev;
     $("#trend-meta").innerHTML = rangeText(pa, pb, false);
     const tb = $("#trend-body");
@@ -660,7 +660,7 @@
     const none = (id) => { $(id).innerHTML = `<p class="stat-value"><span class="stat-say">${L.noReadings}</span></p><div class="stat-foot"></div>`; };
     if (model.avg == null) { none("#avg-body"); none("#peak-body"); $("#peak-meta").innerHTML = ""; }
     else {
-      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${Math.round(model.avg)}</bdi></p><div class="stat-foot"><span class="stat-aside avg-basis">${L.avgBasis(periodName())}</span></div>`;
+      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${Math.round(model.avg)}</bdi></p><div class="stat-foot"><span class="stat-aside avg-basis">${periodLine()}</span></div>`;
       const t = model.top;
       $("#peak-meta").innerHTML = `${dayText(t.dn)}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${timeText(t.peakM)}`;
       $("#peak-body").innerHTML = `<p class="stat-value"><bdi class="num">${t.peak}</bdi></p><div class="stat-foot">${levelChip(t.peak)}</div>`;
@@ -1206,9 +1206,9 @@
   // The glance in waiting: every value's own slot holds its placeholder. The earlier span in the comparison's head is a date
   // range, known before the payload.
   function pendGlance() {
-    // The average's basis waits with its figure: a bar for each of its two parts, as wide as the default period's words
-    // in this language, so on a phone, where the parts take a line each, the foot already has the arrived line's height.
-    $("#avg-body").innerHTML = `${valueSlot(56)}<div class="stat-foot"><span class="stat-aside avg-basis"><span class="nw">${ph(RTL ? 62 : 128)}</span> <span class="nw">${ph(RTL ? 62 : 66)}</span></span></div>`;
+    // The average's line waits with its figure: one bar, as wide as the default period's words in this language
+    // («خلال آخر 28 يومًا» / "Over the last 28 days", measured 87.8 and 119.8 px).
+    $("#avg-body").innerHTML = `${valueSlot(56)}<div class="stat-foot"><span class="stat-aside avg-basis">${ph(RTL ? 88 : 120)}</span></div>`;
     // The peak's "when" as the live meta draws it: the day, then the time (on two lines on a phone). Each bar is as wide
     // as its words in this language («الخميس 17 سبتمبر» and «6:58 م»; "Thu 17 Sep" and "6:58 PM"), so the bars sit inside
     // the card where the words arrive and the arrival moves nothing.

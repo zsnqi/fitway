@@ -797,37 +797,37 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - reports.js:43 — dayHead — function constant
 - reports.js:47 — dayNoneRow — function constant
 - reports.js:53 — fitSlots — function constant
-- reports.js:87 — fitCols — function constant
-- reports.js:107 — placeHeatTip — function constant
-- reports.js:140 — arN — function constant
-- reports.js:147 — arMin — function constant
-- reports.js:148 — bdi — function constant
-- reports.js:355 — fmtInt — function
-- reports.js:356 — pct — function constant
-- reports.js:358 — clock — function
-- reports.js:363 — suffix — function constant
-- reports.js:364 — fmtTime — function constant
-- reports.js:365 — fmtHour — function constant
-- reports.js:369 — NUMS — function constant
-- reports.js:371 — nw — function constant
-- reports.js:372 — range2 — function constant
-- reports.js:373 — timeRange — function constant
-- reports.js:374 — timeText — function constant
-- reports.js:375 — hourRange — function
-- reports.js:379 — hourText — function constant
-- reports.js:386 — spanNote — function constant
-- reports.js:400 — toDn — function constant
-- reports.js:401 — isoOf — function constant
-- reports.js:402 — partsOf — function constant
-- reports.js:403 — wdOf — function constant
-- reports.js:404 — wdLong — function constant
-- reports.js:405 — wdShort — function constant
-- reports.js:406 — wdStrip — function constant
-- reports.js:407 — monthOf — function constant
-- reports.js:409 — dateBare — function constant
-- reports.js:410 — dateText — function constant
-- reports.js:412 — dayText — function constant
-- reports.js:413 — rangeText — function
+- reports.js:86 — fitCols — function constant
+- reports.js:106 — placeHeatTip — function constant
+- reports.js:139 — arN — function constant
+- reports.js:146 — arMin — function constant
+- reports.js:147 — bdi — function constant
+- reports.js:354 — fmtInt — function
+- reports.js:355 — pct — function constant
+- reports.js:357 — clock — function
+- reports.js:362 — suffix — function constant
+- reports.js:363 — fmtTime — function constant
+- reports.js:364 — fmtHour — function constant
+- reports.js:368 — NUMS — function constant
+- reports.js:370 — nw — function constant
+- reports.js:371 — range2 — function constant
+- reports.js:372 — timeRange — function constant
+- reports.js:373 — timeText — function constant
+- reports.js:374 — hourRange — function
+- reports.js:378 — hourText — function constant
+- reports.js:385 — spanNote — function constant
+- reports.js:399 — toDn — function constant
+- reports.js:400 — isoOf — function constant
+- reports.js:401 — partsOf — function constant
+- reports.js:402 — wdOf — function constant
+- reports.js:403 — wdLong — function constant
+- reports.js:404 — wdShort — function constant
+- reports.js:405 — wdStrip — function constant
+- reports.js:406 — monthOf — function constant
+- reports.js:408 — dateBare — function constant
+- reports.js:409 — dateText — function constant
+- reports.js:411 — dayText — function constant
+- reports.js:412 — rangeText — function
 - reports.js:421 — periodSentence — function
 - reports.js:428 — emptyPeriod — function constant
 - reports.js:429 — periodWords — function constant
