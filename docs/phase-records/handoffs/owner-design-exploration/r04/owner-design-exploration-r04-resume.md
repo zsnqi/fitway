@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-05 (the demo's polish round; §"Running now")
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-105; 105 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-106; 106 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -85,7 +85,7 @@
 
 ## Waiting on the user
 
-- Reports' average card: A, B (our pick), C, or a bigger idea.
+- Reports' average card: A, B and C refused (2026-11-06); the label «معدّل الموجودين» does not say what it measures and can read as the count now. Its wording is open; it is built with decision 106.
 - Drive C: the user put the open items of D:/fitway-temp/drive-c-cleanup-20261016/REPORT.md off until later
   (2026-10-24; C 34.8 GB free, measured in `D:/fitway-temp/cc-temp-survey/REPORT.md`).
 - fitway-temp: the user ran the prune (2026-10-24, `D:/fitway-temp/cleanup-20261024/`, 352.88 GB freed, 0 failures; D
