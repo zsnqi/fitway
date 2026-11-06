@@ -119,6 +119,7 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 104. **The demo's polish: one gym, the public page's rhythm** `decisions/101-120.md`
 105. **Saved changes stay in the demo** `decisions/101-120.md`
 106. **Reports' comparison card follows the chosen period** `decisions/101-120.md`
+107. **The average says what it measures** `decisions/101-120.md`
 
 ## How this milestone's rounds run
 
