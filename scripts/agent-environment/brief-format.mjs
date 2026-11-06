@@ -5,16 +5,28 @@ const CODEX_FORMAT =
 	"<!-- brief-format: v1 role: codex delivers: commit --> or " +
 	"<!-- brief-format: v1 role: codex delivers: report -->";
 
-export function parseBriefFormat(input) {
+export function parseBriefRole(input) {
 	const text = Buffer.isBuffer(input) ? input.toString("utf8") : String(input);
 	const match = text.match(FORMAT);
 	if (!match)
 		return {
 			role: undefined,
-			delivers: undefined,
 			problem:
 				"must start with <!-- brief-format: v1 role: codex|builder|designer|verifier --> using one role",
 		};
+	return { role: match[1], problem: undefined };
+}
+
+export function parseBriefFormat(input) {
+	const text = Buffer.isBuffer(input) ? input.toString("utf8") : String(input);
+	const roleOnly = parseBriefRole(text);
+	if (roleOnly.problem)
+		return {
+			role: undefined,
+			delivers: undefined,
+			problem: roleOnly.problem,
+		};
+	const match = text.match(FORMAT);
 	const [, role, delivers] = match;
 	if (role === "codex" && !["commit", "report"].includes(delivers))
 		return {

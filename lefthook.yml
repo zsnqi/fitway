@@ -16,3 +16,15 @@ pre-commit:
       run: node scripts/agent-environment/check-staged-giant-files.mjs
     - name: staged-evidence
       run: node scripts/agent-environment/check-staged-evidence.mjs
+pre-push:
+  piped: true
+  jobs:
+    - name: checkout-guard
+      use_stdin: true
+      run: node scripts/agent-environment/check-pre-push.mjs
+    - name: repository
+      run: pnpm check:repository
+    - name: code-health
+      run: pnpm check:code-health
+    - name: tooling-map
+      run: pnpm check:tooling-map

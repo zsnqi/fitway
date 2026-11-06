@@ -768,7 +768,7 @@
 			"longFunctionLines": 129
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
-			"duplication": 3,
+			"duplication": 1,
 			"typeEscapes": 5,
 			"longFunctions": 1
 		},
@@ -786,10 +786,7 @@
 			"longFunctionLines": 119
 		},
 		"scripts/agent-environment/codex-round.test.ts": {
-			"duplication": 42,
-			"typeEscapes": 10,
-			"longFunctions": 2,
-			"giantFiles": 4185
+			"typeEscapes": 10
 		},
 		"scripts/agent-environment/codex-session.mjs": {
 			"longFunctions": 1,
@@ -889,12 +886,11 @@
 			"longFunctions": 1
 		},
 		"scripts/verify-repository.mjs": {
-			"duplication": 1,
 			"longFunctions": 2,
-			"longFunctionLines": 263
+			"longFunctionLines": 249
 		},
 		"scripts/verify-repository.schema.test.ts": {
-			"duplication": 19,
+			"duplication": 18,
 			"longFunctions": 1
 		},
 		"scripts/verify.mjs": {
@@ -917,7 +913,7 @@
 	"directories": {
 		".agents/skills/gardener": {
 			"testCases": 176,
-			"expectCalls": 520
+			"expectCalls": 521
 		},
 		".agents/skills/verify-fitway": {
 			"testCases": 15
@@ -1043,7 +1039,7 @@
 			"expectCalls": 542
 		},
 		"scripts/agent-environment": {
-			"testCases": 405,
+			"testCases": 419,
 			"expectCalls": 1155
 		},
 		"scripts/demo": {
