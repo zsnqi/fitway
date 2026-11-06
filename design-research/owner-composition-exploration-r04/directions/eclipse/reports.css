@@ -99,11 +99,12 @@ html.rp-faces > body.rp { opacity: 0; }
 .rp-trend .is-say .stat-say { align-self: flex-start; margin-block-start: 8.75px; }
 @container (max-width: 234.99px) { [lang="en"] .rp-trend .is-say .stat-say { margin-block-start: 0; } }
 
-/* A foot that holds different words in different periods keeps the room of the tallest (reports.js `foot`): the real
+/* A foot that holds different words in different periods keeps the room of the tallest (reports-compare.js `foot`): the real
  * words and an unseen copy of the longest share one cell, so the foot is as tall as the tallest at this width, in every
- * period and every state, in both languages. */
+ * period and every state, in both languages. Each keeps the foot's own 26 px of content (42 less the 16 above it), so a
+ * one-line note stands centred in it, level with its neighbours' notes, as it did before the stack. */
 .rp .foot-stack { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
-.rp .foot-real, .rp .foot-ghost { grid-area: 1 / 1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.rp .foot-real, .rp .foot-ghost { grid-area: 1 / 1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; min-height: 26px; }
 .rp .foot-ghost { visibility: hidden; pointer-events: none; }
 /* The average's line (the period alone): it wraps inside its own column, only between its pieces («من 13 أغسطس» and
  * «إلى 12 سبتمبر»; each piece, a date with its word, never breaks), so nothing crosses the divider beside it. */
