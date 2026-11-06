@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-06 (the demo's polish round; §"Running now")
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-07 (the demo's polish round; §"Running now")
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-109; 109 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-110; 110 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -11,7 +11,7 @@
   (`pnpm codex:round <brief> [level] [--model gpt-6.1-sol]`); the launcher reviews first and stops for dispositions.
 - **The user's order of work (decision 52):** tool and testing fixes before the next pages; what nobody sees waits
   until after the demo; anything visible that would make the demo look bad is fixed before it.
-- **Owner screens:** the six pages on `owner-followup-r04-build`, now at `bac01253` (2026-11-06, measured), worktree
+- **Owner screens:** the six pages on `owner-followup-r04-build`, now at `695600d4` (2026-11-06, measured), worktree
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`. Previews: eclipse-build (3174), LAN (3180).
 - **vf-runner is merged** into the coordinator line (`f6ef81cf`): the trial's DeepSeek arm `3ac1770a`, then
   vf-runner-fix (`1ff1f9cf`: 4/6 brief rows, three overclaims including a commit SHA that never existed, F242) and
@@ -33,9 +33,15 @@
 All four items of that page are built on the build branch, pushed, CI green (measured): `a3e3b90a` one gym,
 `18180f83` saved changes, `f835e520` words and dead ends, then Reports' average and comparison cards (decisions 106,
 108) through two independent checks to `bac01253`. The user accepted that top row on its Arabic frames (decision 109;
-briefs in `docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`, evidence ending in `D:/fitway-temp/owner-r04-avg-level/`). Not yet seen by the user: one
-gym, saved changes, and words and dead ends. Next: the six pages in front of the user to close the target page, then
-the demo's materials (decision 104's clip).
+evidence `D:/fitway-temp/owner-r04-avg-level/`). The six-page check (`D:/fitway-temp/owner-r04-polish-verify/`)
+went to a fixer: `695600d4` on the build branch, pushed, CI green (measured). The user's quick look said
+"ممتازة"; acceptance follows the first-time owner walkthrough (decision 110), whose report is
+`D:/fitway-temp/owner-r04-walkthrough/REPORT.md` (2026-11-07, not yet checked against its frames): F1 the public page
+is unreachable from the owner pages (would notice); F2 Today's and Reports' "last 7 days" disagree and F3 Activity's
+settings row hides what changed (might notice); F4-F6 would not notice. Next: check F1-F3 on their frames, settle
+them (decision 110: small ones the coordinator settles), show the user, then merge the build branch and the demo's
+materials (decision 104's clip). Agent briefs live in
+`docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`.
 
 - **Eclipse's spec is split into parts** (`2aa2fc4d`, `ef9fa810`, 2026-10-29): edit a section in its part.
 - **The belonging check is built** (DECISIONS 93, `codex-rounds.md` §"belonging-check", measured):

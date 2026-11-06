@@ -1,8 +1,8 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-05 (item 26: round lesson-commands merged, `c80cc042`)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-26; 26 last; 25 on in `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-07 (item 27: round ci-speed running)
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-27; 27 last; 25 on in `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 
@@ -22,6 +22,13 @@
   root in two side-by-side rounds; the public page's sketch 12 brief is the first to render through the CLI.
 
 ## Running now
+
+**Round ci-speed is running** (DECISIONS item 27, brief `docs/phase-records/handoffs/agent-tooling/briefs/codex-ci-speed.md`,
+run `D:/fitway-temp/tooling-ci-speed/`, worktree `D:/Projects/fitway-worktrees/tooling-ci-speed`): Codex committed
+`2ebe7612` (2026-11-07 00:34) and was timing Q2 at 02:20 (an untracked timing copy of the old test file sits in the
+worktree). Next: check its report against its events and commit (DeepSeek can overclaim), a Sol diff review, a
+builder for blocking findings, grade, record `rounds/ci-speed.md`, merge, `lefthook install`, push, measure CI's unit
+step, `pnpm main:advance`. After the demo: integration, browser and build in CI, and the job split.
 
 **Round lesson-commands is merged** (`c80cc042`, DECISIONS item 26, record
 `docs/phase-records/handoffs/agent-tooling/rounds/lesson-commands.md`): `pnpm wait` and `pnpm decision`. Open from it: F312, F313.
