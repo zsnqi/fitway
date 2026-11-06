@@ -37,6 +37,7 @@
   <script src="demo-store.js" defer blocking="render"></script>
   <script src="gym.js" defer blocking="render"></script>
   <script src="shared-frame.js" defer blocking="render"></script>
+  <script src="reports-compare.js" defer blocking="render"></script>
   <script src="reports.js" defer blocking="render"></script>
 </head>
 <!-- data-frame (step 4): Reports takes the frame Daily took in step 3 (style.css "the frame"): the rail at 721 px and
@@ -162,8 +163,8 @@
       </header>
 
       <!-- The page's controls (step 4): the period alone at the row's start, and the minute file at its far end (HDR-7,
-           TBL-10; user 2026-10-01). Everything below answers for the period, except "Last 7 days", which names its own
-           span. -->
+           TBL-10; user 2026-10-01). Everything below answers for the period; the comparison names the span before it
+           (user 2026-11-06). -->
       <div class="rp-tools">
         <div class="seg" id="range-seg" role="group" aria-labelledby="range-seg-name">
           <span class="sr-only" id="range-seg-name" data-t="rangeName"></span>
@@ -177,8 +178,8 @@
         </button>
       </div>
 
-      <!-- At a glance: the period's three figures share one card, under the period control; "Last 7 days" leaves their
-           row and names its own span (TRU-1, TRU-7). -->
+      <!-- At a glance: the period's three figures share one card, under the period control; the comparison with the
+           period before stands beside them and names that span (TRU-1, TRU-7). -->
       <section class="rp-glance" id="cards" aria-labelledby="cards-title">
         <h2 class="sr-only" id="cards-title" data-t="glance"></h2>
         <article class="card rp-period" id="card-period" aria-labelledby="period-name">

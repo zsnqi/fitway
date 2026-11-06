@@ -109,7 +109,8 @@ Each answer is the proposal step 3 phase B built on Daily (`637b285`); the entri
 Each answer is the proposal the first draft made; the entries now carry it.
 
 - **Q3** (F1, week over week): (b), the domain's rolling 7 days, out of the period row and labelled by its span → TRU-7,
-  GLO-13; K-01.
+  GLO-13; K-01. Its fixed 7 days superseded by the user on 2026-11-06: the comparison follows the period, against the
+  equal span before it (TRU-7, OWN-R3).
 - **Q4** (F11, export): the table's rows by the table, the minute file by the period → TBL-10; K-14.
 - **Q5** (F5, too few days): 3 days, so a 7-day period shows no "Busiest" → PAT-10, GLO-12, TRU-2; K-05.
 - **Q6** (the usual line after now): `.36` → CHT-4; K-31.

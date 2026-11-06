@@ -50,10 +50,10 @@
       entriesTitle: "مرات الدخول",
       busiestTitle: "أكثر الأوقات ازدحامًا",
       busiestMeta: `آخر <bdi>7</bdi> أيام`,
-      busiestNote: (n) => `المعدّل ${n}`,
+      busiestNote: (n) => `المتوسط ${n}`,
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
       chartTitle: "ازدحام اليوم",
-      keyLine: `معدّل الموجودين`,
+      keyLine: `متوسط الموجودين`,
       keyUsual: "المعتاد أيام الأربعاء",
       keyPeak: "قراءة الذروة",
       noHistory: "لا يكفي السجل للمقارنة بعد",
@@ -66,7 +66,7 @@
       keys: "استخدم مفتاحي السهمين للتنقل بين نقاط كل نصف ساعة، ومنها الذروة وآخر قراءة. Home لوقت الفتح، وEnd لآخر قراءة.",
       // The phone's kept reading (decision 20's trial): its buttons, named for what they do.
       band: { prev: "الوقت السابق", next: "الوقت التالي", close: "إغلاق القراءة" },
-      avgInside: (v) => `معدّل الموجودين ${v}`,
+      avgInside: (v) => `متوسط الموجودين ${v}`,
       crowdIs: (l) => `الازدحام ${l}`,
       say: (v, l, e) => `داخل الصالة الآن ${v} تقريبًا، ${l}. مرات الدخول ${e}.`,
       detailsTitle: "التفاصيل",
@@ -74,7 +74,7 @@
       cov: { read: "دقائق فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءات", wait: "لا قراءات بعد", ahead: "لم يحن بعد", usual: "المعتاد" },
       covReadVal: (a, b) => `${bdi(a)} من ${bdi(arMin(b))}`,
       usualEntries: (n) => `المعتاد ${n}`,
-      covUsualVal: `معدّل آخر <bdi>4</bdi> أيام أربعاء`,
+      covUsualVal: `متوسط آخر <bdi>4</bdi> أيام أربعاء`,
       covUsualNone: `يوم أربعاء واحد فقط في السجل (<bdi>16</bdi> سبتمبر)`,
       minutesTitle: "دقيقة بدقيقة",
       noReadingsYet: "لا قراءات بعد",
@@ -83,7 +83,7 @@
       spanTo: "إلى",
       spanSince: "منذ",
       minutesAria: "قراءات اليوم دقيقة بدقيقة",
-      cols: ["الوقت", "داخل الصالة", "معدّل الموجودين", "ملاحظة"],
+      cols: ["الوقت", "داخل الصالة", "متوسط الموجودين", "ملاحظة"],
       notes: { miss: "لا قراءات", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
       // Daily's states (step 3, second part). The status word is the same in the header, the phone's badge and its
       // details; the rest says what the owner can know or do.
@@ -501,7 +501,7 @@
   const busiestRange = () => hourRange(M.busiest.from, M.busiest.to, true);
   function fillBusiest() {
     $("#busy-v").innerHTML = busiestRange();
-    $("#busy-note").innerHTML = RTL && mqPhone.matches ? `بمعدّل ${bdi(M.busiest.avg)}` : L.busiestNote(bdi(M.busiest.avg));
+    $("#busy-note").innerHTML = RTL && mqPhone.matches ? `بمتوسط ${bdi(M.busiest.avg)}` : L.busiestNote(bdi(M.busiest.avg));
   }
 
   /* ---- Daily's states (step 3, second part; STA-10, K-02). Every card keeps its slots and its height in every state
@@ -1645,25 +1645,25 @@
     if (phase === "error" || phase === "retrying") return `${L.errorFull}.`;
     if (CLOSED) {
       return RTL
-        ? `${L.sayClosed(fmtTime(0))} لا قراءات اليوم بعد. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، طوال اليوم من ${plainSpan(fmtTime(0), fmtTime(DAY))}.`
+        ? `${L.sayClosed(fmtTime(0))} لا قراءات اليوم بعد. يظهر خط متقطع للمعتاد أيام الأربعاء، متوسط آخر 4 أيام أربعاء، طوال اليوم من ${plainSpan(fmtTime(0), fmtTime(DAY))}.`
         : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through the whole day, from ${plainSpan(fmtTime(0), fmtTime(DAY))}.`;
     }
     if (UNAV) {
       const gapSay = waitText(UNAV_LAST);
       return RTL
-        ? `${L.sayOffline} مخطط خطي لمعدّل الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى الساعة ${fmtTime(UNAV_LAST)}. ` +
+        ? `${L.sayOffline} مخطط خطي لمتوسط الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى الساعة ${fmtTime(UNAV_LAST)}. ` +
           `الصالة مفتوحة وخالية من ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
-          `${gapSay}. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
+          `${gapSay}. يظهر خط متقطع للمعتاد أيام الأربعاء، متوسط آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
         : `${L.sayOffline} Line chart of the average number of people inside today, from opening at ${fmtTime(0)} to ${fmtTime(UNAV_LAST)}. ` +
           `Open with nobody inside from ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. No readings from ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
           `${gapSay}. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through to closing time. The rest of the day, from ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
     }
     return RTL
-      ? `مخطط خطي لمعدّل الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
+      ? `مخطط خطي لمتوسط الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
         `الصالة مفتوحة وخالية من ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `أعلى قراءة ${peak} الساعة ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). آخر قراءة ${occ[last]} الساعة ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
         (STATE === "delayed" ? ` البيانات متأخرة، لم تصل قراءة جديدة منذ ${arMin(nowM - last)}.` : "") +
-        (HAS_HISTORY ? ` يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
+        (HAS_HISTORY ? ` يظهر خط متقطع للمعتاد أيام الأربعاء، متوسط آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
         ` بقية اليوم من ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد. كل الدقائق في عرض التفاصيل.`
       : `Line chart of the average number of people inside today, from opening at ${fmtTime(0)} to the latest reading at ${fmtTime(last)}. ` +
         `Open with nobody inside from ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. No readings from ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +

@@ -2,14 +2,14 @@
  * Query: lang=ar|en (default ar), state=full|short (default full), range=7d|28d (default 28d) or from=YYYY-MM-DD&to=YYYY-MM-DD,
  * dialog=range|export (open a dialog at load), export=fail (the first export attempt fails), motion=off.
  * Reports answers "how does my gym usually behave, and which way is it going?": the weekday x hour pattern, the period's
- * figures, day by day, the last 7 days against the 7 before, and the minute CSV. It is complete at first paint (no intro;
+ * figures, day by day, the period against the equal span before it, and the minute CSV. It is complete at first paint (no intro;
  * user 2026-10-01, Q12). The same gym as the Daily page: 6:00 AM to 1:00 AM (Friday 2:00 PM to 1:00 AM),
  * Riyadh time, the same crowd levels and capacity. Step 4 (run owner_reports_r04_s20): the frame (body[data-frame], the
  * header's status at every size, Operations out of the rail) and the page recomposed at 1440 with the review's fixes.
  * Step 4 phase B: the user's refinements at 1440 (the minute export at the controls' far end, a preset's subtitle
  * without its length). Step 4's build (the user's pick of 2026-10-01, option B, "one day at a time"): below 1280 px the
  * pattern shows one weekday at a time (1024-1279 since the user's K-39 decision), chosen from a week strip of one bar a
- * day; below 721 px the day table is a list, 7 days and then all, one plain run of days. The week card's baseline
+ * day; below 721 px the day table is a list, 7 days and then all, one plain run of days. The comparison card's baseline
  * («مقابل …» / "vs …") is gone (Q17, rejected by the user on 2026-10-01). A span with no readings, or closed, is one
  * sentence with the words first: «لا قراءات من 10:00 ص إلى 2:00 م» (decision 8, user 2026-10-01).
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules and
@@ -80,8 +80,9 @@
   // a wider three-digit peak at the widest time, «444» at «10:44 ص», runs at most 2.7 px further into the cell's padding,
   // never past the cell); Average and Entries their sortable header (label, 8 px, the 14 px arrow), wider than any value
   // they hold (999; 99,999). Whole pixels: a fractional column edge left a 1 px seam between the Arabic headers
-  // (decision 25). Re-measure the floors if the type, a label or a format changes.
-  const COL_FLOOR = { ar: [126.27, 83.17, 59.03, 90.13], en: [79.31, 84.75, 69.33, 62.08] };
+  // (decision 25). Re-measure the floors if the type, a label or a format changes (Arabic Average re-measured for
+  // «المتوسط», 47.13 px, 2026-11-06).
+  const COL_FLOOR = { ar: [126.27, 83.17, 69.13, 90.13], en: [79.31, 84.75, 69.33, 62.08] };
   const COL_SHARE = [0.16, 0.18, 0.12, 0.13];
   const fitCols = (table, rtl) => {
     const head = table.tHead && table.tHead.rows[0];
@@ -155,21 +156,25 @@
       days: (n) => arN(n, ["يوم واحد", "يومان", "أيام", "يومًا", "يوم"]),
       daysWith: (k, n) => `قراءات في ${bdi(k)} من ${arN(n, ["يوم واحد", "يومين", "أيام", "يومًا", "يوم"])}`,
       glance: "باختصار",
-      trendTitle: `آخر ${bdi(7)} أيام`,
-      wowUnit: "معدّل الموجودين",
+      trendTitle: "مقارنة بالفترة السابقة",
+      wowUnit: "متوسط الموجودين",
       cmp: { busier: "أكثر ازدحامًا", quieter: "أهدأ", same: "قريب من السابق" },
       wowEntries: (p) => `مرات الدخول ${p}`,
-      wowEmpty: "لا تكفي القراءات بعد",
-      wowEmptyNote: () => `يلزم أسبوعان من القراءات المنتظمة`,
-      wowSay: (cur, prev) => `الأيام ${cur} مقارنة بالأيام ${prev}`,
-      avgTitle: "معدّل الموجودين",
+      // The period before it falls under the coverage rule (the user's words, 2026-11-06); the period itself does (this
+      // build's choice, the same sentence without «قبلها»).
+      wowFewBefore: "لا قراءات كافية قبلها للمقارنة",
+      wowFew: "لا قراءات كافية للمقارنة",
+      wowSay: (cur, prev, one) => (one ? `يوم ${cur} مقارنة بيوم ${prev}` : `الأيام ${cur} مقارنة بالأيام ${prev}`),
+      avgTitle: "متوسط الموجودين",
+      // The average's basis, under its number: the whole opening hours of the period, named as the period control names it.
+      avgBasis: (p) => `${nw("طوال الدوام،")} ${nw(p)}`,
       peakTitle: "أعلى ذروة",
       entriesTitle: "مرات الدخول",
       entriesNote: (n) => `نحو ${n} في اليوم`,
       noReadings: "لا قراءات", outside: "خارج الفترة",
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       patternTitle: "أوقات الازدحام",
-      patternSub: "معدّل الموجودين حسب اليوم والساعة",
+      patternSub: "متوسط الموجودين حسب اليوم والساعة",
       busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
       numbers: "الأرقام",
       keyFewer: "أقل",
@@ -178,21 +183,21 @@
       emptyLong: "الصالة خالية",
       busiestKey: "الأكثر ازدحامًا",
       fewKey: `أقل من ${bdi(3)} أيام`,
-      avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "معدّل يومين" : `معدّل ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
+      avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "متوسط يومين" : `متوسط ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
       closedTip: "خارج ساعات العمل",
       heatKeys: "استخدم مفاتيح الأسهم للتنقل بين الساعات والأيام، وHome وEnd لأول ساعة وآخر ساعة في اليوم.",
-      heatCaption: (r) => `معدّل الموجودين حسب اليوم والساعة، ${r}`,
+      heatCaption: (r) => `متوسط الموجودين حسب اليوم والساعة، ${r}`,
       dayHead: "اليوم",
       // Below 1280 px, one day at a time (step 4's build; K-39): the week strip and the chosen day's hours.
       weekStrip: "أيام الأسبوع",
-      dayHours: (d, r) => `${d}: معدّل الموجودين حسب الساعة، ${r}`,
+      dayHours: (d, r) => `${d}: متوسط الموجودين حسب الساعة، ${r}`,
       daysTitle: "يومًا بيوم",
-      cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
-      daysCaption: (r) => `الأيام ${r}: الذروة والمعدّل ومرات الدخول`,
+      cols: { day: "اليوم", peak: "الذروة", avg: "المتوسط", entries: "مرات الدخول", notes: "ملاحظات" },
+      daysCaption: (r) => `الأيام ${r}: الذروة والمتوسط ومرات الدخول`,
       sortSay: (c, dir, isDay) => `مرتب حسب ${c}، ${isDay ? (dir === "desc" ? "الأحدث أولًا" : "الأقدم أولًا") : dir === "desc" ? "الأعلى أولًا" : "الأقل أولًا"}`,
       // The day list on a phone (step 4's build): sorted with the phone's own picker; 7 days, then all.
       sortName: "الترتيب",
-      sorts: { "day-desc": "الأحدث أولًا", "day-asc": "الأقدم أولًا", "peak-desc": "أعلى ذروة", "avg-desc": "أعلى معدّل", "entries-desc": "أكثر مرات دخول" },
+      sorts: { "day-desc": "الأحدث أولًا", "day-asc": "الأقدم أولًا", "peak-desc": "أعلى ذروة", "avg-desc": "أعلى متوسط", "entries-desc": "أكثر مرات دخول" },
       showAll: "عرض كل الأيام",
       showFewer: "عرض أقل",
       peakAt: (t) => `الذروة ${t}`,
@@ -255,14 +260,16 @@
       days: (n) => `${n} ${n === 1 ? "day" : "days"}`,
       daysWith: (k, n) => `Readings on ${k} of ${n} days`,
       glance: "At a glance",
-      trendTitle: "Last 7 days",
+      trendTitle: "Compared with the period before",
       wowUnit: "avg. inside",
       cmp: { busier: "Busier", quieter: "Quieter", same: "About the same" },
       wowEntries: (p) => `Entries ${p}`,
-      wowEmpty: "Not enough readings yet",
-      wowEmptyNote: () => `Needs two weeks of steady readings`,
-      wowSay: (cur, prev) => `The days ${cur} compared with the days ${prev}`,
+      wowFewBefore: "Too few readings before it to compare",
+      wowFew: "Too few readings to compare",
+      wowSay: (cur, prev, one) => (one ? `${cur} compared with ${prev}` : `The days ${cur} compared with the days ${prev}`),
       avgTitle: "Average inside",
+      avgBasis: (p) => `${nw("Across opening hours,")} ${nw(p)}`,
+      basisPreset: { "7d": "last 7 days", "28d": "last 28 days" },
       peakTitle: "Highest peak",
       entriesTitle: "Entries",
       entriesNote: (n) => `About ${n} a day`,
@@ -507,25 +514,13 @@
     return { a, b, n: b - a + 1, days, heat, observed, total, entries, withReadings, avg: observed ? total / observed : null, top, busiest };
   }
 
-  // Week over week (the reporting domain's rule): the last seven complete business days against the seven before,
-  // compared only when both weeks have readings for at least 80% of their open minutes.
-  const WOW = { cur: [LAST_FULL - 6, LAST_FULL], prev: [LAST_FULL - 13, LAST_FULL - 7], minCoverage: 0.8 };
-  function weekMetrics([a, b]) {
-    let observed = 0, expected = 0, total = 0, entries = 0;
-    for (let dn = a; dn <= b; dn++) { const d = dayModel(dn); observed += d.observed; expected += d.expected; total += d.total; entries += d.entries; }
-    return { observed, expected, coverage: expected ? observed / expected : 0, avg: observed ? total / observed : null, entries };
+  // The comparison follows the period (the user, 2026-11-06, superseding Q3 (b)'s fixed 7 days): the chosen period
+  // against the equal span just before it, under the coverage rule (reports-compare.js). K-02, `pending`: a period that
+  // ends on the edge's buffered evening waits.
+  function compareFor(a, b) {
+    return window.EclipseCompare.compareFor(dayModel, a, b, PAGE === "pending" && b === LAST_FULL);
   }
-  const wow = (() => {
-    const cur = weekMetrics(WOW.cur), prev = weekMetrics(WOW.prev);
-    const comparable = cur.coverage >= WOW.minCoverage && prev.coverage >= WOW.minCoverage;
-    // K-02, `pending`: the last 7 days are not whole until the buffered evening arrives, so the comparison waits («قيد
-    // الانتظار», CRD-10's sentence).
-    return {
-      cur, prev, comparable, pending: PAGE === "pending",
-      avgChange: comparable ? ((cur.avg - prev.avg) / prev.avg) * 100 : null,
-      entriesChange: comparable ? ((cur.entries - prev.entries) / prev.entries) * 100 : null,
-    };
-  })();
+  let wow = null; // the comparison for the period shown, made with the period's model (setRange)
 
   /* ------------------------------------------------------------ motion settings
    * Reports has no load motion. Motion is on unless the system asks for reduced motion or the URL says ?motion=off;
@@ -549,6 +544,7 @@
     return { kind: k, a: LAST_FULL - PRESETS[k] + 1, b: LAST_FULL };
   })();
   let model = buildModel(range.a, range.b);
+  wow = compareFor(range.a, range.b);
   function urlFor(extra = {}) {
     const p = new URLSearchParams(location.search);
     ["range", "from", "to", "dialog"].forEach((k) => p.delete(k));
@@ -631,34 +627,40 @@
 
   /* ---------------------------------------------------------------- at a glance
    * The period's three figures share one card (the period's), under the period control: its average inside (no level
-   * badge on an average over many hours, LVL-2), its highest peak with the day and time in the meta slot (DAT-5) and
-   * its level, and its entries with the daily rate. "Last 7 days" is its own card beside them, outside the period's row
-   * (TRU-1, TRU-7): the last 7 complete days against the 7 before, whatever the period. It carries the page's summary
-   * light while it has a complete value, and is a plain card while it has none (LGT-7, LGT-8). Every figure keeps its
-   * slots' heights in every state: the value's line 46, the foot 42 (CRD-9, CRD-10). */
+   * badge on an average over many hours, LVL-2) with its basis under it, its highest peak with the day and time in the
+   * meta slot (DAT-5) and its level, and its entries with the daily rate. The comparison is its own card beside them
+   * (TRU-1, TRU-7): the chosen period against the equal span just before it, whose dates its head names (the user,
+   * 2026-11-06). Every figure keeps its slots' heights in every state: the value's line 46, the foot 42 (CRD-9, CRD-10). */
   const trendCard = $("#card-trend");
   function renderCards() {
-    $("#trend-meta").innerHTML = rangeText(WOW.cur[0], WOW.cur[1], false);
+    // The period as the period control names it, for the average's basis: a preset by its segment's name, a custom
+    // period by its dates, the range isolated so its en dash reads in order in Arabic (DAT-3).
+    const periodName = () => (range.kind === "custom" ? (RTL ? `<bdi dir="rtl">${rangeText(range.a, range.b, false)}</bdi>` : rangeText(range.a, range.b, false))
+      : RTL ? L.seg[range.kind] : L.basisPreset[range.kind]);
+    const [pa, pb] = wow.span.prev;
+    $("#trend-meta").innerHTML = rangeText(pa, pb, false);
     const tb = $("#trend-body");
+    const say1 = (words) => `<p class="stat-value"><span class="stat-say">${words}</span></p><div class="stat-foot"></div>`;
     if (wow.pending) {
-      tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.pending}</span></p><div class="stat-foot"></div>`;
+      tb.innerHTML = say1(L.pending);
     } else if (wow.comparable) {
       const c = wow.avgChange, kind = c >= 5 ? "busier" : c <= -5 ? "quieter" : "same";
       // The value and its measure. The span it compares with is not written beside it: the owner reads the comparison
-      // without it, and it made the card too full (Q17, rejected by the user on 2026-10-01); the card's description keeps
-      // both spans for assistive technology.
+      // without it, and it made the card too full (Q17, rejected by the user on 2026-10-01); the head names the earlier span, and the card's description both spans for assistive technology.
       tb.innerHTML = `<p class="stat-value"><bdi class="num">${pct(c)}</bdi><span class="unit">${L.wowUnit}</span></p>
         <div class="stat-foot"><span class="cmp cmp-${kind}">${kind === "busier" ? ICON.up : kind === "quieter" ? ICON.down : ICON.same}${L.cmp[kind]}</span><span class="stat-aside">${L.wowEntries(bdi(pct(wow.entriesChange)))}</span></div>`;
     } else {
-      tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.wowEmpty}</span></p><div class="stat-foot"><span class="stat-aside">${L.wowEmptyNote()}</span></div>`;
+      // No figure: an empty period says what every figure says (STA-8); otherwise the span short of the coverage rule
+      // is named, the earlier first (the user's words, 2026-11-06).
+      tb.innerHTML = say1(!model.withReadings ? L.noReadings : !wow.prevOk ? L.wowFewBefore : L.wowFew);
     }
-    // "Last 7 days" is plain in every period, and so is the pattern (OWN-R6, user 2026-10-01, Q13; DECISIONS 103): Reports has no card light.
-    trendCard.setAttribute("aria-description", plain(L.wowSay(periodWords(WOW.cur[0], WOW.cur[1]), periodWords(WOW.prev[0], WOW.prev[1]))));
+    // The comparison is plain in every period, and so is the pattern (OWN-R6, user 2026-10-01, Q13; DECISIONS 103): Reports has no card light.
+    trendCard.setAttribute("aria-description", plain(L.wowSay(periodWords(wow.span.cur[0], wow.span.cur[1]), periodWords(pa, pb), wow.n === 1)));
 
     const none = (id) => { $(id).innerHTML = `<p class="stat-value"><span class="stat-say">${L.noReadings}</span></p><div class="stat-foot"></div>`; };
     if (model.avg == null) { none("#avg-body"); none("#peak-body"); $("#peak-meta").innerHTML = ""; }
     else {
-      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${Math.round(model.avg)}</bdi></p><div class="stat-foot"></div>`;
+      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${Math.round(model.avg)}</bdi></p><div class="stat-foot"><span class="stat-aside avg-basis">${L.avgBasis(periodName())}</span></div>`;
       const t = model.top;
       $("#peak-meta").innerHTML = `${dayText(t.dn)}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${timeText(t.peakM)}`;
       $("#peak-body").innerHTML = `<p class="stat-value"><bdi class="num">${t.peak}</bdi></p><div class="stat-foot">${levelChip(t.peak)}</div>`;
@@ -1163,6 +1165,7 @@
   function setRange(next, announce = true) {
     range = next;
     model = buildModel(range.a, range.b);
+    wow = compareFor(range.a, range.b);
     // A new period is a new request: while the page could not load, asking for another period is its retry.
     if (phase === "error" || phase === "retrying") { startLoading(LOAD.retry); return; }
     renderAll();
@@ -1188,7 +1191,7 @@
    *   closed, delayed, unavailable  the header's status (STW-1); the history is whole, so the page is unchanged
    *            (the pattern is a plain card in every state, DECISIONS 103).
    *   pending  Offline since 9:10 PM on 22 September: the received part of that day counts and the rest is noted,
-   *            «بانتظار القراءات منذ 9:10 م»; "Last 7 days" waits («قيد الانتظار»). */
+   *            «بانتظار القراءات منذ 9:10 م»; a comparison whose period ends that day waits («قيد الانتظار»). */
   const LOAD = { delay: 300, min: 400, say: 1000, ceiling: 10000, retry: 1200 };
   const ARRIVE = (() => { const a = params.get("arrive"); if (a === "never") return "never"; const n = Number(a); return a != null && a !== "" && Number.isFinite(n) && n >= 0 ? n : null; })();
   const load = { shownAt: null, timers: [], announcements: [] };
@@ -1200,10 +1203,12 @@
   const busyEls = () => [$("#cards"), $("#pattern"), $("#days")];
   let retryBtn = null;
 
-  // The glance in waiting: every value's own slot holds its placeholder. The "Last 7 days" span is a date range, known
-  // before the payload.
+  // The glance in waiting: every value's own slot holds its placeholder. The earlier span in the comparison's head is a date
+  // range, known before the payload.
   function pendGlance() {
-    $("#avg-body").innerHTML = `${valueSlot(56)}<div class="stat-foot"></div>`;
+    // The average's basis waits with its figure: a bar for each of its two parts, as wide as the default period's words
+    // in this language, so on a phone, where the parts take a line each, the foot already has the arrived line's height.
+    $("#avg-body").innerHTML = `${valueSlot(56)}<div class="stat-foot"><span class="stat-aside avg-basis"><span class="nw">${ph(RTL ? 62 : 128)}</span> <span class="nw">${ph(RTL ? 62 : 66)}</span></span></div>`;
     // The peak's "when" as the live meta draws it: the day, then the time (on two lines on a phone). Each bar is as wide
     // as its words in this language («الخميس 17 سبتمبر» and «6:58 م»; "Thu 17 Sep" and "6:58 PM"), so the bars sit inside
     // the card where the words arrive and the arrival moves nothing.
@@ -1657,7 +1662,7 @@
         heat: model.heat.map((row) => row.map((c) => ({ state: c.state, avg: c.avg == null ? null : Math.round(c.avg * 10) / 10, samples: c.samples }))),
       };
     },
-    get wow() { return { comparable: wow.comparable, avgChange: wow.avgChange, entriesChange: wow.entriesChange, cur: wow.cur, prev: wow.prev, window: { cur: WOW.cur.map(isoOf), prev: WOW.prev.map(isoOf) } }; },
+    get wow() { return { comparable: wow.comparable, avgChange: wow.avgChange, entriesChange: wow.entriesChange, cur: wow.cur, prev: wow.prev, curOk: wow.curOk, prevOk: wow.prevOk, pending: wow.pending, window: { cur: wow.span.cur.map(isoOf), prev: wow.span.prev.map(isoOf) } }; },
     setRange: (kind, from, to) => setRange(kind === "custom" ? { kind, a: toDn(from), b: toDn(to) } : { kind, a: LAST_FULL - PRESETS[kind] + 1, b: LAST_FULL }),
     openRange: () => openRangeDialog(segButtons[2]),
     picker,

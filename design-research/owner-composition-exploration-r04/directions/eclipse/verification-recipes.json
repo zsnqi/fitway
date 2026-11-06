@@ -3370,7 +3370,7 @@
           "reach": "activate:#ops-btn",
           "source": {
             "file": "reports.html",
-            "line": 120
+            "line": 121
           },
           "covers": [
             "#ops-pop"
@@ -3403,7 +3403,7 @@
           "reach": "activate:#menu-btn",
           "source": {
             "file": "reports.html",
-            "line": 142
+            "line": 143
           },
           "covers": [
             "#menu-pop"
@@ -3424,7 +3424,7 @@
           "reach": "activate:#brand",
           "source": {
             "file": "reports.html",
-            "line": 51
+            "line": 52
           },
           "covers": [
             "#rail",
@@ -3445,7 +3445,7 @@
           "reach": "activate:#lang-link",
           "source": {
             "file": "reports.html",
-            "line": 90
+            "line": 91
           },
           "covers": [],
           "ends": [
@@ -3476,7 +3476,7 @@
           "reach": "activate:#menu-btn → activate:#menu-lang",
           "source": {
             "file": "reports.html",
-            "line": 150
+            "line": 151
           },
           "covers": [],
           "ends": [
@@ -3507,7 +3507,7 @@
           "reach": "reports.html?dialog=range",
           "source": {
             "file": "reports.html",
-            "line": 296
+            "line": 297
           },
           "covers": [
             "#dlg-range"
@@ -3528,7 +3528,7 @@
           "reach": "reports.html?dialog=export",
           "source": {
             "file": "reports.html",
-            "line": 317
+            "line": 318
           },
           "covers": [
             "#dlg-export"
@@ -3549,7 +3549,7 @@
           "reach": "activate:#range-seg [data-range=\"7d\"]",
           "source": {
             "file": "reports.html",
-            "line": 164
+            "line": 165
           },
           "covers": []
         },
@@ -3568,7 +3568,7 @@
           "reach": "activate:#range-seg [data-range=\"28d\"]",
           "source": {
             "file": "reports.html",
-            "line": 164
+            "line": 165
           },
           "covers": []
         },
@@ -3586,7 +3586,7 @@
           "reach": "activate:#range-seg [data-range=\"custom\"]",
           "source": {
             "file": "reports.html",
-            "line": 298
+            "line": 299
           },
           "covers": [
             "#dlg-range",
@@ -3607,7 +3607,7 @@
           "reach": "activate:#export-btn",
           "source": {
             "file": "reports.html",
-            "line": 170
+            "line": 171
           },
           "covers": [
             "#dlg-export"
@@ -3628,7 +3628,7 @@
           "reach": "activate:#export-btn → activate:#export-go",
           "source": {
             "file": "reports.html",
-            "line": 340
+            "line": 341
           },
           "covers": [
             "#export-save",
@@ -3654,7 +3654,7 @@
           "reach": "reports.html?export=fail",
           "source": {
             "file": "reports.html",
-            "line": 335
+            "line": 336
           },
           "covers": [
             "#export-alert"
@@ -3675,7 +3675,7 @@
           "reach": "activate:#export-btn → activate:#export-go → download:#export-save",
           "source": {
             "file": "reports.html",
-            "line": 341
+            "line": 342
           },
           "covers": [
             "#export-save"
@@ -3694,7 +3694,7 @@
           "reach": "download:#table-export",
           "source": {
             "file": "reports.html",
-            "line": 251
+            "line": 252
           },
           "covers": []
         },
@@ -3714,7 +3714,7 @@
           "reach": "activate:#numbers",
           "source": {
             "file": "reports.html",
-            "line": 227
+            "line": 228
           },
           "covers": []
         },
@@ -3733,7 +3733,7 @@
           "reach": "activate:#heat .hc",
           "source": {
             "file": "reports.html",
-            "line": 239
+            "line": 240
           },
           "covers": [
             "#heat-tip"
@@ -3871,7 +3871,7 @@
           "reach": "reports.html?export=fail",
           "source": {
             "file": "reports.html",
-            "line": 340
+            "line": 341
           },
           "covers": [
             "#export-alert",
@@ -3895,7 +3895,7 @@
           "reach": "activate:#range-seg [data-range=\"custom\"] → activate:#dlg-range .dp-day[aria-disabled=\"false\"] → activate:#dlg-range .dp-day[aria-disabled=\"false\"] → activate:#range-form [type=\"submit\"]",
           "source": {
             "file": "reports.html",
-            "line": 296
+            "line": 297
           },
           "covers": [
             "#dlg-range"
@@ -3921,7 +3921,7 @@
           "reach": "activate:#range-seg [data-range=\"custom\"] → focus:#dlg-range .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
           "source": {
             "file": "reports.html",
-            "line": 296
+            "line": 297
           },
           "covers": [
             "#dlg-range",
@@ -3944,7 +3944,7 @@
           "reach": "activate:#range-seg [data-range=\"custom\"] → activate:#dlg-range .dp-step[data-step=\"-1\"] → activate:#dlg-range .dp-step[data-step=\"1\"]",
           "source": {
             "file": "reports.html",
-            "line": 296
+            "line": 297
           },
           "covers": [
             "#dlg-range"
@@ -3965,7 +3965,7 @@
           "reach": "activate:#range-seg [data-range=\"custom\"] → press:Escape",
           "source": {
             "file": "reports.html",
-            "line": 296
+            "line": 297
           },
           "covers": [
             "#dlg-range"
@@ -3988,7 +3988,7 @@
           "reach": "activate:#export-btn → activate:#dlg-export .dp-day[aria-disabled=\"false\"] → activate:#dlg-export .dp-day[aria-disabled=\"false\"] → activate:#export-form [type=\"submit\"]",
           "source": {
             "file": "reports.html",
-            "line": 317
+            "line": 318
           },
           "covers": [
             "#dlg-export",
@@ -4015,7 +4015,7 @@
           "reach": "activate:#export-btn → focus:#dlg-export .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
           "source": {
             "file": "reports.html",
-            "line": 317
+            "line": 318
           },
           "covers": [
             "#dlg-export"
@@ -4037,7 +4037,7 @@
           "reach": "activate:#export-btn → activate:#dlg-export .dp-step[data-step=\"-1\"] → activate:#dlg-export .dp-step[data-step=\"1\"]",
           "source": {
             "file": "reports.html",
-            "line": 317
+            "line": 318
           },
           "covers": [
             "#dlg-export"
@@ -4058,7 +4058,7 @@
           "reach": "activate:#export-btn → press:Escape",
           "source": {
             "file": "reports.html",
-            "line": 317
+            "line": 318
           },
           "covers": [
             "#dlg-export"

@@ -73,6 +73,35 @@ html.rp-faces > body.rp { opacity: 0; }
   .rp-period .stat-meta { flex-basis: 100%; margin-inline-start: 0; }
 }
 
+/* The average's basis (the user, 2026-11-06): «طوال الدوام، » and the period, in the foot. It breaks only between those
+ * two parts, each kept whole (DAT-4). */
+.rp .avg-basis { white-space: normal; }
+.rp .avg-basis .ph-bar { height: 9px; border-radius: 4px; }
+/* The comparison with the period before (the user, 2026-11-06): its title, then the earlier span's dates. Where a figure
+ * is too narrow for both on one line (Arabic under 290 px of content, English under 350: the widest title beside the
+ * widest dates the history can give, «29 يوليو – 25 أغسطس» / "29 Jul – 25 Aug", with room to spare), the dates take a
+ * line of their own under the title, as the peak's day and time do, whatever the period, so a new period never changes
+ * the card's height. In the row (1200 px and wider) the four figures are equally wide and every head takes the same
+ * height, so the values stay level (CRD-11); where the English title itself needs two lines (under 241 px), three. */
+@container (max-width: 289.98px) {
+  [lang="ar"] .rp-trend .stat-head { flex-wrap: wrap; align-content: flex-start; row-gap: 4px; min-height: 42px; }
+  [lang="ar"] .rp-trend .stat-meta { flex-basis: calc(100% - 24px); margin-inline-start: 24px; }
+}
+@container (max-width: 349.98px) {
+  [lang="en"] .rp-trend .stat-head { flex-wrap: wrap; align-content: flex-start; row-gap: 4px; min-height: 42px; }
+  [lang="en"] .rp-trend .stat-meta { flex-basis: calc(100% - 24px); margin-inline-start: 24px; }
+}
+@container (max-width: 240.98px) {
+  [lang="en"] .rp-trend .stat-label { flex: 1 1 0; min-width: 0; white-space: normal; }
+}
+@media (min-width: 1200px) {
+  @container (max-width: 289.98px) { [lang="ar"] .rp-glance .stat-head { min-height: 42px; } }
+  @container (max-width: 349.98px) { [lang="en"] .rp-glance .stat-head { min-height: 42px; } }
+  @container (max-width: 240.98px) { [lang="en"] .rp-glance .stat-head { min-height: 62px; } }
+}
+/* A comparison without a figure says why in one sentence on the value's line (CRD-3), wrapping where the card is narrow. */
+.rp-trend .stat-say { white-space: normal; text-wrap: balance; }
+
 /* "Last 7 days" carries no light, by the user's choice: a card without .lit shows no lamp. Where a card is lit, every
  * caption is --ink-2 (LGT-9). */
 .rp-trend:not(.lit) > .lamp { display: none; }
@@ -399,6 +428,10 @@ html:has(#dlg-export[open]:not(.m-ghost)) { overflow: hidden; }
   .rp-period #fig-avg .stat-head, .rp-period #fig-peak .stat-head { min-height: 64px; }
   .rp-period #fig-peak .stat-meta { flex-direction: column; align-items: flex-start; row-gap: 4px; }
   .rp-period #fig-peak .stat-meta .sep { display: none; }
+  /* The average's basis on two lines in every period and language («طوال الدوام،», then the period): half the card
+   * holds neither "Across opening hours, last 28 days" nor «طوال الدوام، 15 – 17 سبتمبر» on one, and one form for all
+   * keeps the row's height when the period changes. */
+  .rp-period #fig-avg .avg-basis > .nw { display: block; }
 }
 @container glance (max-width: 329.98px) {
   .rp-period { grid-template-columns: minmax(0, 1fr); }

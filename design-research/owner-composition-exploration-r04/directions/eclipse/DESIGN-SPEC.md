@@ -40,7 +40,7 @@
 > list with the middle dot and no brackets, OWN-D11; no «الأعلى» / "Highest" flag at any width, TBL-6, TBL-8, TBL-11,
 > CHP-7, OWN-R12), recorded in §8; measured in `B15`. Seventeenth pass, 2026-10-04, pending review: Activity log at every
 > size, in one pass (DECISIONS items 31 and the rounds' items 6 and 7; §4.3, OWN-A1…A10). It grows with every screen.
-> One-gym round, 2026-11-05: the figures Today, Reports and the rows that quote them read from `gym.js` (LVL-1, CHT-6, CHT-7, CHT-15, TBL-11, OWN-D, OWN-R), hours and limits with Settings; K rows keep the figures of the defects they record. `components.html` renders every component below in its rule form, with its own specimen figures. Saved-changes round, 2026-11-05: the demo's store (TRU-8).
+> One-gym round, 2026-11-05: the figures Today, Reports and the rows that quote them read from `gym.js` (LVL-1, CHT-6, CHT-7, CHT-15, TBL-11, OWN-D, OWN-R), hours and limits with Settings; K rows keep the figures of the defects they record. `components.html` renders every component below in its rule form, with its own specimen figures. Saved-changes round, 2026-11-05: the demo's store (TRU-8). Average-and-comparison round, 2026-11-06: the average names its basis, the comparison follows the period, and «متوسط» names the average (OWN-R3, TRU-7, STA-8, K-01, Q3).
 
 ## Parts
 
