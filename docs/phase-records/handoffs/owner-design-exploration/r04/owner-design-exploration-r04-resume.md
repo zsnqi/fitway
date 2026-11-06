@@ -1,9 +1,9 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-05 (the demo's polish round; §"Running now")
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-06 (the demo's polish round; §"Running now")
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-108; 108 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-109; 109 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -11,10 +11,7 @@
   (`pnpm codex:round <brief> [level] [--model gpt-6.1-sol]`); the launcher reviews first and stops for dispositions.
 - **The user's order of work (decision 52):** tool and testing fixes before the next pages; what nobody sees waits
   until after the demo; anything visible that would make the demo look bad is fixed before it.
-- **Owner screens:** Daily, Reports, Activity log and Access on `owner-followup-r04-build`, now at `51d5a783`
-  (2026-10-17, measured): the shared-lows series (one ring per control, a ring only when a key brought focus there,
-  across pages too; graded, `codex-rounds.md` §"shared-lows-fix-2"), then the user's heat-cell selection (decision
-  75: a flush inner edge for every input, the other cells dimmed, the keyboard ring outside the cell). Worktree
+- **Owner screens:** the six pages on `owner-followup-r04-build`, now at `bac01253` (2026-11-06, measured), worktree
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`. Previews: eclipse-build (3174), LAN (3180).
 - **vf-runner is merged** into the coordinator line (`f6ef81cf`): the trial's DeepSeek arm `3ac1770a`, then
   vf-runner-fix (`1ff1f9cf`: 4/6 brief rows, three overclaims including a commit SHA that never existed, F242) and
@@ -32,18 +29,18 @@
 
 ## Running now
 
-**The demo's polish round** (decisions 104, 105; its page `docs/phase-records/handoffs/owner-design-exploration/r04/demo-polish-target.md`). Built on the build branch, pushed, CI green (measured): `a3e3b90a` one gym, `18180f83` saved changes, `f835e520` words and dead ends; reports in `D:/fitway-temp/owner-r04-one-gym/`, `D:/fitway-temp/owner-r04-saved-changes/`, `D:/fitway-temp/owner-r04-words/`. Reports' average card: A, B, C refused (`D:/fitway-temp/owner-r04-avg-card/REPORT.md`); decisions 106-108 replace them: built at `222bc4c9` from `briefs/builder-reports-average-compare.md` (run folder `D:/fitway-temp/owner-r04-avg-compare/`), then 108's words from `briefs/fixer-reports-average-words.md` (`D:/fitway-temp/owner-r04-avg-words/`) at `802278e2`; Arabic 1440 keeps the comparison's dates on a second line (row 188, measured by the fixer). Checking: `briefs/verifier-reports-average-compare.md` (`D:/fitway-temp/owner-r04-avg-verify/`): 3 High, 3 Medium, 3 Low, every one going to `briefs/fixer-reports-average-findings.md` (`D:/fitway-temp/owner-r04-avg-fix/`); finding 9 (equal spans can hold different weekdays) is kept as agreed and goes into the spec. Fixed at `01cfa201`, `80593834` and `651d6c3e` (the coordinator: "0%" with no sign, TRU-5's words). Second check: `briefs/verifier-reports-average-compare-2.md` (`D:/fitway-temp/owner-r04-avg-verify-2/`). Its findings: 0 numbers wrong, nine first-review faults closed, two Medium (feet not level where the reserve is taller) and two Low spec heights going to `briefs/fixer-reports-level-feet.md` (`D:/fitway-temp/owner-r04-avg-level/`); kept: the badge judges the average only (finding 5), Last 28 days' head names days before the history (finding 6). Level feet at `bac01253` (pushed; feet within 0.5 px over 242 groups, measured by the fixer). Frames for the user, Arabic 1440 and 390 for 28 days, 7 days and 15-17 Sep: `D:/fitway-temp/owner-r04-avg-level/user-frames/`, `-1/`, `-2/`, sent 2026-11-06. Next: the user's look. Nothing in this round is visually accepted.
+**The demo's polish round** (decisions 104, 105; its page `docs/phase-records/handoffs/owner-design-exploration/r04/demo-polish-target.md`).
+All four items of that page are built on the build branch, pushed, CI green (measured): `a3e3b90a` one gym,
+`18180f83` saved changes, `f835e520` words and dead ends, then Reports' average and comparison cards (decisions 106,
+108) through two independent checks to `bac01253`. The user accepted that top row on its Arabic frames (decision 109;
+briefs in `docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`, evidence ending in `D:/fitway-temp/owner-r04-avg-level/`). Not yet seen by the user: one
+gym, saved changes, and words and dead ends. Next: the six pages in front of the user to close the target page, then
+the demo's materials (decision 104's clip).
 
-- **Layout splits on the build branch, as this milestone's work** (2026-10-29, `WORKING_AGREEMENTS.md` §"Ownership"):
-  `2aa2fc4d` (`DESIGN-SPEC.md`, `SETTINGS-SPEC.md` into Eclipse's spec folder) and `ef9fa810` (`NEXT-DIRECTION-BRIEF.md`
-  into a folder of parts beside it, agent-tooling item 21). No word changed; edit a section in its part.
+- **Eclipse's spec is split into parts** (`2aa2fc4d`, `ef9fa810`, 2026-10-29): edit a section in its part.
 - **The belonging check is built** (DECISIONS 93, `codex-rounds.md` §"belonging-check", measured):
   `pnpm verify:owner belonging-check`, merged `dbf9b683`; today's concept passes all 13,028 frames. Sol and Terra were
   at capacity, so DeepSeek alone reviewed the brief and Opus the diff (the user, 2026-10-28: continue on DeepSeek).
-- **Built 2026-10-28 morning** (measured): `b56b6e71` then `d04890a4` the export dialog's file box (DECISIONS 95: the
-  user's pick on real renders, English option 2, Arabic laid out like the English with the figure before «صفًا»;
-  `D:/fitway-temp/owner-r04-export-filebox-fix/`); `fedbdb6d` verify-11's findings 1-6. The "Belonging" bullets are
-  narrowed (`8c4976cf`, the user's word).
 - **Left from finding 5:** Reports' first paint now waits for Readex Pro (opacity, 1.5 s cap); Activity, Access and
   Settings keep the same font-swap pattern. Waits until after the demo (decision 52), then goes in the shared
   frame.
@@ -54,11 +51,8 @@
 - **The reading review** (rtl-ltr-reviewer, Opus): `D:/fitway-temp/owner-r04-reading-review/` (report in the
   coordinator's transcript only; its frames and tools in that folder). Findings 1-5 kept by the user (DECISIONS 93's
   scope, narrowed); finding 6 and the row count under the name: built as DECISIONS 95, which supersedes 93's Arabic part.
-- **Decision 103 is built** (`18411a15`, measured; brief, frames and logs in `D:/fitway-temp/owner-r04-busy-unlit/`):
-  the pattern card and its Components specimen are plain; OWN-R6, PAT-12, K-02, K-13, Q13 say so. 214 frames against
-  `ef9fa810`: no box moved, pixels change only in the card (and 1-7 levels at its edge under a dialog's blur).
-  Belonging check 13,028/13,028 with this branch's CLI (the build branch lacks `dbf9b683`; rerun on the merged head).
-  Accepted by the user on the 1440 and 390 Arabic pairs (2026-10-29). F304 and F305 open, after the demo.
+- **Decision 103 is built** (`18411a15`; `D:/fitway-temp/owner-r04-busy-unlit/`) and accepted (2026-10-29). The
+  build branch lacks `dbf9b683`: rerun the belonging check on the merged head. F304 and F305 open, after the demo.
 - **The launch-film trial** (the user's, a cloud session): branch `ccr-026baa79-tycnnr`, its folder
   eclipse-launch-film under design-research (start at its RESUME.md). An experiment kept for its lessons, unmerged and no
   milestone; read it when the demo's materials start (decision 84).
@@ -102,6 +96,8 @@
   before grading, until the launcher does.
 - **Grading briefs name the round's brief by its absolute coordinator path** (the copy at a result's HEAD can be
   older than the version launched; launcher-fixes-4's grader stopped on it).
+- **`docs/phase-records/handoffs/owner-design-exploration/r04/briefs/` holds Codex briefs only:** two unit tests read
+  every file there as one (CI red from `bb7444b6` to `949c2bbd`). Agent briefs go in the sibling folder agent-briefs.
 - **Timed or load-sensitive work needs a quiet machine** (B13); P3 of `compare-parallel.test.mjs` failed
   once at about 92% CPU.
 - **DeepSeek's catalog source** is pinned at `D:/fitway-private/codex/deepseek-catalog-source.json` (F172).
