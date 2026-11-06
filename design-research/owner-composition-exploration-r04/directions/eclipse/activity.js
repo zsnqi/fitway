@@ -72,7 +72,7 @@
       acctCreated: (n) => `إنشاء حساب ${n}`,
       acctOff: (n) => `تعطيل حساب ${n}`,
       acctOn: (n) => `إعادة تفعيل حساب ${n}`,
-      signin: (n) => `عُيّنت كلمة مرور لـ${n}`,
+      signin: (n) => `تعيين كلمة مرور لـ${n}`,
       pwChanged: (n) => `تغيير كلمة مرور ${n}`,
       settings: "تحديث الإعدادات",
       resetAfter: "تصفير بعد الإغلاق",
@@ -308,7 +308,7 @@
   let arrivalId = params.get("record");
   let arrivalPending = arrivalId !== null;
   const arrivalRecord = LOG.find((r) => String(r.id) === arrivalId);
-  const arrivalMissing = RTL ? "هذا السجل غير موجود في هذه العينة." : "This record isn't in this sample.";
+  const arrivalMissing = RTL ? "هذا السجل غير متاح." : "This record isn't available.";
   const arrivalName = RTL ? "السجل الذي وصلت إليه" : "The record you arrived at";
 
   /* The read contract's list: the filters (an owner principal or the system's actor kind, actions, the occurred range,

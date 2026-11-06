@@ -67,7 +67,7 @@
         add: (n) => `إنشاء حساب ${n}`,
         off: (n) => `تعطيل حساب ${n}`,
         on: (n) => `إعادة تفعيل حساب ${n}`,
-        reset: (n) => `عُيّنت كلمة مرور لـ${n}`,
+        reset: (n) => `تعيين كلمة مرور لـ${n}`,
         mine: (n) => `تغيير كلمة مرور ${n}`,
       },
       // The front desk: one shared principal; its code is its only way in.

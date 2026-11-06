@@ -15,7 +15,7 @@
   const f2 = (n) => Number(n).toFixed(2);
   const FRAME_COPY = {
     ar: {
-      metaDesc: "ازدحام النادي الآن وعلى مدار الأيام.",
+      metaDesc: "ازدحام الصالة الآن وعلى مدار الأيام.",
       loadingWord: "جارٍ التحميل…", opens: (t) => `يفتح ${t}`,
       skip: "انتقل إلى المحتوى", railLabel: "الأقسام", brand: "FITWAY، أسماء الأقسام", railTip: "أسماء الأقسام",
       nav: { daily: "اليوم", reports: "التقارير", access: "الحسابات", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },

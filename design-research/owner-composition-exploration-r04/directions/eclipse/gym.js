@@ -30,6 +30,9 @@ window.EclipseGym = (() => {
   // A level holds every count at or under its limit; Packed is every count above Busy.
   const levelOf = (v) => (v <= PEOPLE[0] ? 0 : v <= PEOPLE[1] ? 1 : v <= PEOPLE[2] ? 2 : 3);
   const LEVELS = ["quiet", "moderate", "busy", "packed"];
+  // The level a count read as under the recorded capacity and limits: what a past row of the export carries.
+  const RECORDED_PEOPLE = RECORDED.limits.map((p) => lastCount(RECORDED.capacity, p));
+  const recordedLevelOf = (v) => (v <= RECORDED_PEOPLE[0] ? 0 : v <= RECORDED_PEOPLE[1] ? 1 : v <= RECORDED_PEOPLE[2] ? 2 : 3);
 
   /* ---------------------------------------------------------- the moment */
   const NOW = {
@@ -195,7 +198,7 @@ window.EclipseGym = (() => {
   const closingCount = (dn) => { const H = hoursOn(dn); return day(dn).occ[H.closeM - 1]; };
 
   return {
-    toDn, wdOf, RECORDED, CAPACITY, LIMITS, PEOPLE, lastCount, levelOf, LEVELS, NOW, WEEKDAYS, WEEK, CHANGES, versionAt,
+    toDn, wdOf, RECORDED, CAPACITY, LIMITS, PEOPLE, lastCount, levelOf, recordedLevelOf, LEVELS, NOW, WEEKDAYS, WEEK, CHANGES, versionAt,
     hoursOn, OUTAGES, FIRST_DAY, LAST_FULL: NOW.dn - 1, DAY: WEEK.wed.close * 60 - WEEK.wed.open * 60, day, closingCount,
   };
 })();
