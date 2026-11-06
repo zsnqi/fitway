@@ -353,7 +353,7 @@
 
   /* ------------------------------------------------------------ numbers and time */
   function fmtInt(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
-  const pct = (x) => `${x > 0 ? "+" : x < 0 ? "−" : ""}${Math.abs(Math.round(x))}%`;
+  const pct = (x) => { const r = Math.round(x); return `${r > 0 ? "+" : r < 0 ? "−" : ""}${Math.abs(r)}%`; };
   // Minutes since 6:00 AM of the business day, as on the Daily page.
   function clock(m) {
     const abs = (((360 + m) % 1440) + 1440) % 1440;
