@@ -42,7 +42,7 @@ settings row hides what changed (might notice); F4-F6 would not notice. F1-F3 ar
 checked on its frames. The user accepted the six pages (decision 112); the build branch is merged into the coordinator line at
 `51a3e18b` (hooks on, after agent-tooling item 28). The belonging check on that head
 (`D:/fitway-temp/owner-r04-merged-belonging/`) fails 190 Activity frames: F3's change lines wrap under the
-time at narrow widths. A builder fixes it
+time when narrow. A builder fixes it
 (`docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/builder-activity-change-lines.md`); then merge again, rerun the check, then the demo's materials
 (decision 104's clip). Agent briefs live in
 `docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`.
