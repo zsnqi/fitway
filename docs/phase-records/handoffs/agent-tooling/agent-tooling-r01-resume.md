@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-07 (item 28: the merge-aware evidence check in progress)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-07 (item 28: round merge-evidence merged)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-28; 28 last; 25 on in `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -23,11 +23,9 @@
 
 ## Running now
 
-**The merge-aware evidence check is being built** (DECISIONS item 28, F316, brief
-`docs/phase-records/handoffs/agent-tooling/briefs/builder-merge-evidence.md`, worktree
-`D:/Projects/fitway-worktrees/tooling-merge-evidence` from `9a957324`, run `D:/fitway-temp/tooling-merge-evidence/`):
-an `owner-direction-builder` started 2026-11-07. Next: check its commit and planted control, merge it, then redo
-r04's merge of `owner-followup-r04-build` (decision 112; the four conflicts take the coordinator side).
+**Round merge-evidence is merged** (`a3c1c243`, DECISIONS item 28, F316, record
+`docs/phase-records/handoffs/agent-tooling/rounds/merge-evidence.md`): the pre-commit evidence job reads a merge
+against every parent; r04's merge of the build branch then committed with hooks on (`51a3e18b`).
 
 **Round ci-speed is merged** (`5e1750ae`, DECISIONS item 27, record
 `docs/phase-records/handoffs/agent-tooling/rounds/ci-speed.md`): the pre-push hook (repository, code health, tooling map),
