@@ -43,7 +43,7 @@ checked on its frames. The user accepted the six pages (decision 112); the build
 `51a3e18b` (hooks on, after agent-tooling item 28). The belonging check on that head
 (`D:/fitway-temp/owner-r04-merged-belonging/`, measured) fails 190 Activity frames: F3's change lines wrap under
 the row's time at narrow widths. A builder fixes it on the build branch
-(`agent-briefs/builder-activity-change-lines.md`); then merge again, rerun the check, then the demo's materials
+(`docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/builder-activity-change-lines.md`); then merge again, rerun the check, then the demo's materials
 (decision 104's clip). Agent briefs live in
 `docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`.
 
