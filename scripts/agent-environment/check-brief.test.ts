@@ -1344,7 +1344,7 @@ describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostic
 		}
 	});
 
-	it("rejects the five historical briefs and accepts every current r04 brief", () => {
+	it("rejects the five historical briefs and accepts the frozen r04 briefs", () => {
 		const historicalDirectory = path.join(
 			repository,
 			"scripts/agent-environment/fixtures/historical-briefs",
@@ -1365,7 +1365,7 @@ describe("brief-readiness, Scope, and ID counts: launch readiness and diagnostic
 
 		const currentDirectory = path.join(
 			repository,
-			"docs/phase-records/handoffs/owner-design-exploration/r04/briefs",
+			"scripts/agent-environment/fixtures/brief-outcomes",
 		);
 		for (const entry of readdirSync(currentDirectory)) {
 			if (!entry.endsWith(".md")) continue;

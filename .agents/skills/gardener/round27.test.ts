@@ -3,7 +3,6 @@ import {
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
-	readdirSync,
 	rmdirSync,
 	rmSync,
 	utimesSync,
@@ -12,17 +11,15 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { assertGardenerFixtureCitations } from "../../../scripts/agent-environment/repository-document-rules.mjs";
 import { cleanup } from "./cleanup.mjs";
-import { classifyWorktrees, references } from "./facts.mjs";
+import { classifyWorktrees } from "./facts.mjs";
 import { formatReport } from "./survey.mjs";
 import { cleanupScript, consoleSummary } from "./survey-cli.mjs";
 import {
-	collectFolderRecords,
 	collectFolders,
 	collectRecords,
-	defaultTempRoot,
 	measureFolder,
-	root,
 } from "./survey-evidence.mjs";
 
 const race = vi.hoisted(() => ({
@@ -363,58 +360,27 @@ describe("gardener round 27 truthful inventory", () => {
 			f.dispose();
 		}
 	}, 60000);
-	it("G4: tracked gardener fixtures cite neither real temp folders nor non-test records", async () => {
-		const records = await collectFolderRecords([], {
-			checkout: root,
-		});
-		const tests = records.filter(
-			(r) =>
-				r.source.startsWith(".agents/skills/gardener/") &&
-				r.source.endsWith(".test.ts"),
-		);
-		const outside = records.filter((r) => !r.source.endsWith(".test.ts"));
-		const collisions = [];
-		for (const test of tests) {
-			const normalized = test.text.replaceAll("\\\\", "/");
-			const names = new Set(
-				[
-					...normalized.matchAll(
-						/(?:d:\/|\/d\/)?fitway-temp\/([a-z0-9_. -]+)/gi,
-					),
-				]
-					.map((m) => m[1].trim().toLowerCase())
-					.filter((n) => n !== "." && n !== ".."),
-			);
-			for (const name of names) {
-				const folder = `${defaultTempRoot}/${name}`;
-				const citations = references(folder, outside);
-				if (existsSync(folder) || citations.length)
-					collisions.push({
-						test: test.source,
-						folder,
-						exists: existsSync(folder),
-						citations: citations.map((c) => `${c.source}:${c.line}`),
-					});
-			}
-		}
-		if (existsSync(defaultTempRoot))
-			for (const entry of readdirSync(defaultTempRoot, {
-				withFileTypes: true,
-			})) {
-				if (!entry.isDirectory() && !entry.isSymbolicLink()) continue;
-				const folder = `${defaultTempRoot}/${entry.name}`;
-				for (const citation of references(folder, tests))
-					collisions.push({
-						test: citation.source,
-						folder,
-						exists: true,
-						citations: [],
-					});
-			}
-		expect(tests.length).toBeGreaterThan(0);
-		expect(collisions).toEqual([]);
-		console.log(
-			"G4 PASS: all tracked gardener test paths are absent and uncited outside tests",
-		);
-	}, 180000);
+
+	it("G4 proof: accepts a unique tracked test path when the temp root is absent", () => {
+		const record = {
+			source: ".agents/skills/gardener/example.test.ts",
+			text: 'const run = "D:/fitway-temp/shared-run";',
+		};
+
+		expect(record.text).toContain("D:/fitway-temp/shared-run");
+		expect(
+			assertGardenerFixtureCitations([record], {
+				tempRoot: "D:/fitway-temp",
+				exists: () => false,
+				readdir: () => [],
+			}),
+		).toEqual({ tests: 1 });
+		expect(() =>
+			assertGardenerFixtureCitations([record], {
+				tempRoot: "D:/fitway-temp",
+				exists: () => false,
+				readdir: () => [],
+			}),
+		).not.toThrow();
+	});
 });

@@ -22,6 +22,7 @@ import {
 	normalizeGitPath,
 } from "./agent-environment/git-path-key.mjs";
 import { lineAt } from "./agent-environment/markdown-lines.mjs";
+import { verifyRepositoryDocumentRules } from "./agent-environment/repository-document-rules.mjs";
 import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs";
 import { beginToolCommand } from "./agent-environment/tool-contract.mjs";
 import { checkAgentContext } from "./check-agent-context.mjs";
@@ -47,6 +48,22 @@ import { repositoryOptions } from "./verify-repository-options.mjs";
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
 const PROJECT_STATE_FILE = "PROJECT_STATE.yaml";
+const REQUIRED_REPOSITORY_FILES = [
+	"AGENTS.md",
+	"FITWAY_PRODUCT.md",
+	"SPEC.md",
+	"DESIGN_GUIDE.md",
+	"PHASES.md",
+	"RESEARCH.md",
+	"README.md",
+	"PROJECT_STATE.yaml",
+	"PROJECT_STATE_HISTORY.yaml",
+	"docs/WORKFLOW.md",
+	"docs/POLISH_BACKLOG.md",
+	"docs/schemas/project-state.schema.json",
+	"docs/schemas/project-state-history.schema.json",
+	"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
+];
 
 // A failed query other than the HEAD probe stops the check with Git's message.
 function gitStdout(result, command) {
@@ -366,23 +383,8 @@ function assertWorkingTree() {
 async function main(options = {}) {
 	assertWorkingTree();
 
-	const required = [
-		"AGENTS.md",
-		"FITWAY_PRODUCT.md",
-		"SPEC.md",
-		"DESIGN_GUIDE.md",
-		"PHASES.md",
-		"RESEARCH.md",
-		"README.md",
-		"PROJECT_STATE.yaml",
-		"PROJECT_STATE_HISTORY.yaml",
-		"docs/WORKFLOW.md",
-		"docs/POLISH_BACKLOG.md",
-		"docs/schemas/project-state.schema.json",
-		"docs/schemas/project-state-history.schema.json",
-		"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
-	];
-	for (const relativePath of required) await readBytes(relativePath);
+	for (const relativePath of REQUIRED_REPOSITORY_FILES)
+		await readBytes(relativePath);
 
 	const stateText = (await readBytes("PROJECT_STATE.yaml")).toString("utf8");
 	const state = parseYaml(stateText);
@@ -538,6 +540,7 @@ async function main(options = {}) {
 	})) {
 		console.warn(line);
 	}
+	await verifyRepositoryDocumentRules(root);
 
 	console.log(
 		`Repository invariants passed: ${Object.keys(state.milestones).length} active milestones, ${Object.keys(history.milestones).length} archived milestones, ${(manifest.canonicalScreenshots ?? []).length} canonical approval screenshots, ${routeAuthority.caseCount} registered full-route visual-authority cases (${routeAuthority.acceptedCaseCount} accepted, ${routeAuthority.supersededCaseCount} superseded), ${routeAuthority.paperExportCount} hash-verified Paper exports, ${routeAuthority.rejectedArtifactCount} hash-frozen rejected r05 screenshots, and ${Object.keys(agentContext.registry?.routes ?? {}).length} agent-context routes.`,

@@ -1,4 +1,6 @@
-// Check staged giant-file and giant-document growth against the indexed baseline.
+// Lock staged giant-file and giant-document falls into the indexed baseline.
+import { writeFileSync } from "node:fs";
+import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 import {
@@ -6,6 +8,7 @@ import {
 	GIANT_FILE_MEASURE,
 } from "../../.agents/skills/gardener/code-health.mjs";
 import {
+	BASELINE_RELATIVE_PATH,
 	compareCodeHealth,
 	formatCodeHealthChange,
 	readGit,
@@ -13,6 +16,8 @@ import {
 	selectCodeHealthPath,
 	snapshotGiantSizes,
 } from "./code-health-ratchet.mjs";
+
+const GIANT_MEASURES = [GIANT_FILE_MEASURE, GIANT_DOCUMENT_MEASURE];
 
 export function readIndexFiles(root, files) {
 	if (!files.length) return [];
@@ -40,19 +45,62 @@ function selectedIndexFiles(root, output) {
 		.filter((file) => selectCodeHealthPath(root, file));
 }
 
-// The index holds what the commit will hold, so each file is read from it,
-// never from the working tree.
-export function readStagedCodeHealthFiles(root = process.cwd()) {
+function parseStagedChanges(output) {
+	const fields = output.split("\0");
+	if (fields.at(-1) === "") fields.pop();
+	const changes = [];
+	for (let index = 0; index < fields.length; ) {
+		const status = fields[index++];
+		const kind = status[0];
+		if (kind === "R") {
+			changes.push({
+				kind,
+				oldPath: fields[index++],
+				path: fields[index++],
+			});
+		} else {
+			changes.push({ kind, oldPath: null, path: fields[index++] });
+		}
+	}
+	return changes;
+}
+
+export function readStagedCodeHealthChanges(root = process.cwd()) {
 	const listed = readGit(root, [
 		"diff",
 		"--cached",
-		"--name-only",
-		"--diff-filter=ACMR",
+		"--name-status",
+		"--find-renames",
 		"-z",
 	]);
 	if (listed.status !== 0)
 		throw new Error(`git diff failed: ${listed.stderr.trim()}`);
-	return readIndexFiles(root, selectedIndexFiles(root, listed.stdout));
+	return parseStagedChanges(listed.stdout)
+		.map((change) => {
+			if (change.kind === "D")
+				return {
+					...change,
+					oldPath: selectCodeHealthPath(root, change.path) ? change.path : null,
+					path: null,
+				};
+			const oldPath = change.oldPath
+				? selectCodeHealthPath(root, change.oldPath)
+					? change.oldPath
+					: null
+				: null;
+			const file = selectCodeHealthPath(root, change.path) ? change.path : null;
+			return { ...change, oldPath, path: file };
+		})
+		.filter((change) => change.oldPath || change.path);
+}
+
+// The index holds what the commit will hold, so each file is read from it,
+// never from the working tree.
+export function readStagedCodeHealthFiles(root = process.cwd()) {
+	const files = readStagedCodeHealthChanges(root)
+		.map((change) => change.path)
+		.filter(Boolean);
+	return readIndexFiles(root, [...new Set(files)]);
 }
 
 function readAllIndexedCodeHealthFiles(root = process.cwd()) {
@@ -62,17 +110,101 @@ function readAllIndexedCodeHealthFiles(root = process.cwd()) {
 	return readIndexFiles(root, selectedIndexFiles(root, listed.stdout));
 }
 
-export function checkStagedGiantFiles(root = process.cwd()) {
+function setGiantValue(baseline, change) {
+	const record = baseline.files[change.file] ?? {};
+	if (change.current) record[change.measure] = change.current;
+	else delete record[change.measure];
+	if (Object.keys(record).length) baseline.files[change.file] = record;
+	else delete baseline.files[change.file];
+}
+
+function updateForRenameTargets(changes, renameSources) {
+	const failures = [];
+	const updates = [];
+	for (const change of changes) {
+		const oldPath = renameSources.get(change.file);
+		if (!oldPath) {
+			if (change.direction === "rise") failures.push(change);
+			else updates.push(change);
+			continue;
+		}
+		const movedFrom = {
+			...change,
+			baseline:
+				changes.find(
+					(candidate) =>
+						candidate.file === oldPath && candidate.measure === change.measure,
+				)?.baseline ?? 0,
+		};
+		if (change.current > movedFrom.baseline) failures.push(movedFrom);
+		else updates.push(movedFrom);
+	}
+	return { failures, updates };
+}
+
+export function updateStagedCodeHealthBaseline(root = process.cwd()) {
 	const indexedBaseline = readIndexedCodeHealthBaseline(root);
-	const files = indexedBaseline.indexed
-		? readAllIndexedCodeHealthFiles(root)
-		: readStagedCodeHealthFiles(root);
-	const snapshot = snapshotGiantSizes(files);
-	return compareCodeHealth(indexedBaseline.baseline, snapshot).filter(
-		(change) =>
-			[GIANT_FILE_MEASURE, GIANT_DOCUMENT_MEASURE].includes(change.measure) &&
-			(indexedBaseline.indexed || change.direction === "rise"),
+	if (indexedBaseline.indexed) {
+		const snapshot = snapshotGiantSizes(readAllIndexedCodeHealthFiles(root));
+		return {
+			changes: compareCodeHealth(indexedBaseline.baseline, snapshot).filter(
+				(change) => GIANT_MEASURES.includes(change.measure),
+			),
+			updates: [],
+		};
+	}
+
+	const staged = readStagedCodeHealthChanges(root);
+	const snapshot = snapshotGiantSizes(readStagedCodeHealthFiles(root));
+	const paths = staged.flatMap((change) =>
+		[change.oldPath, change.path].filter(Boolean),
 	);
+	const touched = new Set(paths);
+	const changes = compareCodeHealth(indexedBaseline.baseline, snapshot).filter(
+		(change) =>
+			change.scope === "file" &&
+			touched.has(change.file) &&
+			GIANT_MEASURES.includes(change.measure),
+	);
+	const deletions = new Set(
+		staged
+			.filter((change) => change.kind === "D" || change.kind === "R")
+			.map((change) => change.oldPath)
+			.filter(Boolean),
+	);
+	const renameSources = new Map(
+		staged
+			.filter((change) => change.kind === "R" && change.oldPath && change.path)
+			.map((change) => [change.path, change.oldPath]),
+	);
+	const { failures, updates } = updateForRenameTargets(changes, renameSources);
+	if (failures.length || !indexedBaseline.baseline) {
+		return { changes: failures, updates: [] };
+	}
+
+	const baseline = structuredClone(indexedBaseline.baseline);
+	for (const file of deletions) delete baseline.files[file];
+	for (const change of updates) {
+		if (deletions.has(change.file)) continue;
+		setGiantValue(baseline, change);
+	}
+	if (updates.length) {
+		writeFileSync(
+			path.join(root, BASELINE_RELATIVE_PATH),
+			`${JSON.stringify(baseline, null, "\t")}\n`,
+			"utf8",
+		);
+		const added = readGit(root, ["add", "--", BASELINE_RELATIVE_PATH]);
+		if (added.status !== 0)
+			throw new Error(
+				`cannot stage the baseline update: ${added.stderr.trim()}`,
+			);
+	}
+	return { changes: failures, updates };
+}
+
+export function checkStagedGiantFiles(root = process.cwd()) {
+	return updateStagedCodeHealthBaseline(root).changes;
 }
 
 if (
@@ -80,9 +212,13 @@ if (
 	import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
 	try {
-		const rises = checkStagedGiantFiles();
-		for (const change of rises) console.log(formatCodeHealthChange(change));
-		if (rises.length) process.exitCode = 1;
+		const { changes, updates } = updateStagedCodeHealthBaseline();
+		for (const change of updates)
+			console.log(
+				`${change.file}: ${change.measure} baseline=${change.baseline} current=${change.current}; updated ${BASELINE_RELATIVE_PATH}`,
+			);
+		for (const change of changes) console.log(formatCodeHealthChange(change));
+		if (changes.length) process.exitCode = 1;
 	} catch (error) {
 		console.error(`pre-commit giant-content check: FAIL: ${error.message}`);
 		process.exitCode = 1;
