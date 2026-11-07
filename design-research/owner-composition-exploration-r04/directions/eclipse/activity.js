@@ -451,14 +451,14 @@
     // The night's reset: its stored reason is the contract's machine string ("scheduled reset for business day …"),
     // said in plain words as part of what happened, so it has no reason of a person's beside it.
     // Counts of seven digits or more (the contract allows up to 9,007,199,254,740,991) and a settings record's lines take
-    // their own line on a phone.
-    const long = (r.cls === "command" && Math.max(r.prior ?? 0, r.eff ?? 0) >= 1e6) || Boolean(r.lines?.length);
+    // their own line on a phone; the lines keep to the text column, never under the time (activity.css "has-lines").
+    const lines = Boolean(r.lines?.length), long = (r.cls === "command" && Math.max(r.prior ?? 0, r.eff ?? 0) >= 1e6) || lines;
     const arrived = String(r.id) === arrivalId;
     if (r.actor === "system") {
       const act = `<span class="rec-what">${ICON.command}<span class="rec-act">${L.resetAfter}</span></span>`;
       return `<li class="rec is-auto${long ? " is-long" : ""}${arrived ? " is-arrival" : ""}" data-id="${r.id}"${arrived ? ' tabindex="-1" aria-current="true"' : ""}>${arrived ? `<span class="sr-only">${arrivalName}: </span>` : ""}${t}<div class="rec-main">${who}${act}</div>${figHTML(r)}</li>`;
     }
-    return `<li class="rec${long ? " is-long" : ""}${arrived ? " is-arrival" : ""}" data-id="${r.id}"${arrived ? ' tabindex="-1" aria-current="true"' : ""}>${arrived ? `<span class="sr-only">${arrivalName}: </span>` : ""}${t}<div class="rec-main">${who}${what}</div>${figHTML(r)}${whyHTML(r)}</li>`;
+    return `<li class="rec${long ? " is-long" : ""}${lines ? " has-lines" : ""}${arrived ? " is-arrival" : ""}" data-id="${r.id}"${arrived ? ' tabindex="-1" aria-current="true"' : ""}>${arrived ? `<span class="sr-only">${arrivalName}: </span>` : ""}${t}<div class="rec-main">${who}${lines ? `<div class="rec-body">${what}${figHTML(r)}</div></div>` : `${what}</div>${figHTML(r)}`}${whyHTML(r)}</li>`;
   }
   function dayHeading(dn) {
     const p = partsOf(dn);

@@ -199,6 +199,10 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
 .rec.is-auto .rec-ico { stroke: var(--ink-3); }
 .rec.is-auto .rec-ico .fill { fill: var(--ink-3); }
 .rec.is-auto .fig-n { color: var(--ink-2); font-weight: 400; }
+/* A settings record's lines keep to the text column for the row's full height and never run under its time. What and
+ * the lines share one block (activity.js), seen through at every width but the tablet's, where it keeps the lines with
+ * the action. */
+.rec-body { display: contents; }
 
 /* From 960 px of log (1440 and 1280): five columns, one line a record but for a long reason. */
 @container log (min-width: 960px) {
@@ -219,6 +223,11 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
   .rec-main { grid-area: main; display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 12px; row-gap: 2px; min-width: 0; }
   .rec-fig { grid-area: fig; }
   .rec > .rec-why { grid-area: why; max-width: 72ch; }
+  /* A settings record: its lines follow the action 16 after it, as above, the action and its lines one block in the
+   * text column. Short of room the block goes under who, whole; shorter still, the lines go under the action, from the
+   * text column's start edge. The reason so never runs part way under a column of wrapped lines. */
+  .rec.has-lines { grid-template-columns: var(--tw) minmax(0, 1fr); grid-template-areas: "t main" ". why"; }
+  .rec-body { display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 16px; row-gap: 4px; min-width: 0; }
 }
 /* Under 520 px of log (a phone): what, its figures after it and its time at the end; who under them; then the reason
  * across the width. The figures start where the action ends, as they do at every width (the review's O3). */
@@ -232,6 +241,10 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
   .rec > .rec-why { grid-area: why; }
   /* Counts of seven digits or more: the figures take a line of their own across the width, from its start edge. */
   .rec.is-long { grid-template-areas: "what what what t" "fig fig fig fig" "who who who who" "why why why why"; }
+  /* A settings record's lines take that line in the text column only, the time's column left clear beside them; a name
+   * wider than that column wraps between its words. */
+  .rec.is-long.has-lines { grid-template-areas: "what what what t" "fig fig fig ." "who who who who" "why why why why"; }
+  .fig-what { white-space: normal; }
 }
 /* Under 330 px of log (a phone under 360 px): the action keeps its line with its time, and the figures follow who,
  * 12 after it, on the second line; the night's reset reads "Automatic system  5 → 0", its figures on one edge down the
