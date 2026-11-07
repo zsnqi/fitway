@@ -201,12 +201,38 @@ export function changedLineNumbers(
 	return diffLineNumbers(diff);
 }
 
-export function stagedLineNumbers(checkout, source, readGit = git) {
+function stagedDiffLineNumbers(checkout, source, readGit, parent) {
+	const against = parent ? [parent] : [];
 	const diff = readGit(
-		["diff", "--cached", "--unified=0", "--no-ext-diff", "--", source],
+		[
+			"diff",
+			"--cached",
+			"--unified=0",
+			"--no-ext-diff",
+			...against,
+			"--",
+			source,
+		],
 		checkout,
 	);
 	return diffLineNumbers(diff);
+}
+
+// Lines the index adds. Outside a merge `parents` is empty and only the diff against HEAD runs;
+// in a merge a line is added only when it is added against HEAD and against every merge parent.
+export function stagedLineNumbers(
+	checkout,
+	source,
+	readGit = git,
+	parents = [],
+) {
+	const lines = stagedDiffLineNumbers(checkout, source, readGit);
+	for (const parent of parents) {
+		if (!lines.size) break;
+		const added = stagedDiffLineNumbers(checkout, source, readGit, parent);
+		for (const line of lines) if (!added.has(line)) lines.delete(line);
+	}
+	return lines;
 }
 
 function partitionTempCitations(sources, { exists, tempRoot }) {
@@ -220,13 +246,19 @@ function partitionTempCitations(sources, { exists, tempRoot }) {
 	return { dead, existing };
 }
 
-function changedCitationMatcher(checkout, readGit, staged, diffBase) {
+function changedCitationMatcher(
+	checkout,
+	readGit,
+	staged,
+	diffBase,
+	mergeParents,
+) {
 	const changedBySource = new Map();
 	return (citation) => {
 		let lines = changedBySource.get(citation.source);
 		if (!lines) {
 			lines = staged
-				? stagedLineNumbers(checkout, citation.source, readGit)
+				? stagedLineNumbers(checkout, citation.source, readGit, mergeParents)
 				: changedLineNumbers(checkout, citation.source, readGit, diffBase);
 			changedBySource.set(citation.source, lines);
 		}
@@ -262,6 +294,7 @@ export async function auditTempCitations({
 	checkout = root,
 	exists = existsSync,
 	lostEvidenceRows,
+	mergeParents = [],
 	readGit = git,
 	holdsCommit,
 	readFile = readFileSync,
@@ -307,6 +340,7 @@ export async function auditTempCitations({
 		readGit,
 		staged,
 		integrationBase.diffBase,
+		mergeParents,
 	);
 	const { listed, unlisted, withChanges } = classifyDeadCitations(
 		dead,

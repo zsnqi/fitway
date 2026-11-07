@@ -50,6 +50,14 @@ function stageRecord(f: ReturnType<typeof checkoutFixture>, line: string) {
 	f.git(["add", "--", "record.txt"]);
 }
 
+function stageRecordLines(
+	f: ReturnType<typeof checkoutFixture>,
+	lines: string[],
+) {
+	writeFileSync(path.join(f.checkout, "record.txt"), `${lines.join("\n")}\n`);
+	f.git(["add", "--", "record.txt"]);
+}
+
 function stageFile(
 	f: ReturnType<typeof checkoutFixture>,
 	file: string,
@@ -353,6 +361,115 @@ describe("staged temp-citation evidence gate", () => {
 		} finally {
 			f.dispose();
 		}
+	});
+});
+
+// Commits `files` on a branch `other`, adds an unrelated commit on main, and leaves
+// `git merge --no-commit --no-ff other` in progress, so MERGE_HEAD names `other`.
+function startMerge(
+	f: ReturnType<typeof checkoutFixture>,
+	files: Record<string, string>,
+) {
+	f.git(["checkout", "-q", "-b", "other"]);
+	for (const [file, text] of Object.entries(files)) {
+		const absolute = path.join(f.checkout, file);
+		mkdirSync(path.dirname(absolute), { recursive: true });
+		writeFileSync(absolute, text);
+	}
+	f.commit();
+	f.git(["checkout", "-q", "main"]);
+	writeFileSync(path.join(f.checkout, "main-only.txt"), "main\n");
+	f.commit();
+	f.git([
+		"-c",
+		"user.name=Gardener fixture",
+		"-c",
+		"user.email=gardener@example.test",
+		"merge",
+		"--no-commit",
+		"--no-ff",
+		"-q",
+		"other",
+	]);
+	expect(f.git(["rev-parse", "-q", "--verify", "MERGE_HEAD"]).trim()).toBe(
+		f.git(["rev-parse", "other"]).trim(),
+	);
+}
+
+describe("staged evidence during a merge", () => {
+	const designer =
+		"<!-- brief-format: v1 role: designer -->\n# Designer brief\n";
+
+	it("passes a merge whose other parent brings a line citing a missing temp folder", async () => {
+		await withEvidenceFixture(async (f) => {
+			startMerge(f, {
+				"record.txt": `${citationLine(`${f.tempRoot}/gone/merged.md`)}\n`,
+			});
+			expect((await stagedFailure(f)).failures).toEqual([]);
+		});
+	});
+
+	it("refuses only the brought missing-folder line that is edited during the merge", async () => {
+		await withEvidenceFixture(async (f) => {
+			startMerge(f, {
+				"record.txt": `${citationLine(`${f.tempRoot}/gone/first.md`)}\n${citationLine(`${f.tempRoot}/gone/second.md`)}\n`,
+			});
+			stageRecordLines(f, [
+				citationLine(`${f.tempRoot}/gone/edited.md`),
+				citationLine(`${f.tempRoot}/gone/second.md`),
+			]);
+			const text = (await stagedFailure(f)).failures.join("\n");
+			expect(text).toContain("record.txt:1");
+			expect(text.replaceAll("\\", "/")).toContain("gone/edited.md");
+			expect(text).not.toContain("record.txt:2");
+		});
+	});
+
+	it("refuses only the missing-folder line added in the merge, not the brought one", async () => {
+		await withEvidenceFixture(async (f) => {
+			startMerge(f, {
+				"record.txt": `${citationLine(`${f.tempRoot}/gone/brought.md`)}\n`,
+			});
+			stageRecordLines(f, [
+				citationLine(`${f.tempRoot}/gone/brought.md`),
+				citationLine(`${f.tempRoot}/gone/added.md`),
+			]);
+			const text = (await stagedFailure(f)).failures.join("\n");
+			expect(text).toContain("record.txt:2");
+			expect(text).not.toContain("record.txt:1");
+		});
+	});
+
+	it("passes a designer brief with a raw-tool line that the other parent added", async () => {
+		await withEvidenceFixture(async (f) => {
+			startMerge(f, {
+				"briefs/other-designer.md": `${designer}\nUse node scripts.\n`,
+			});
+			expect((await stagedFailure(f)).failures).toEqual([]);
+		});
+	});
+
+	it("refuses a raw-tool line added in the merge to the other parent's designer brief", async () => {
+		await withEvidenceFixture(async (f) => {
+			const file = "briefs/other-designer.md";
+			startMerge(f, { [file]: `${designer}\nUse node scripts.\n` });
+			stageFile(f, file, `${designer}\nUse node scripts.\nUse node scripts.\n`);
+			const text = (await stagedFailure(f)).failures.join("\n");
+			expect(text).toContain(`${file}:5`);
+			expect(text).not.toContain(`${file}:4`);
+		});
+	});
+
+	it("still refuses a new missing-folder line in a plain commit with no merge", async () => {
+		await withEvidenceFixture(async (f) => {
+			stageRecord(f, citationLine(`${f.tempRoot}/gone/plain.md`));
+			expect(() =>
+				f.git(["rev-parse", "-q", "--verify", "MERGE_HEAD"]),
+			).toThrow();
+			expect((await stagedFailure(f)).failures.join("\n")).toContain(
+				"record.txt:1",
+			);
+		});
 	});
 });
 
