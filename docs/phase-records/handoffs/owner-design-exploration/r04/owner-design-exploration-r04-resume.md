@@ -3,7 +3,7 @@
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-07 (the demo's polish round; §"Running now")
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261007-103955-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
-- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-111; 111 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
+- **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` (items 40-112; 112 last), `docs/phase-records/handoffs/agent-environment/DECISIONS.md` (items 15, 19 and 29: the tools and the recipes), `docs/agent-context/WORKING_AGREEMENTS.md` (§"Delegation" changed on 2026-10-13), and the brief rules B1-B14 with `docs/agent-context/briefs/REVIEW.md`
 
 ## State
 
@@ -39,7 +39,8 @@ went to a fixer: `695600d4` on the build branch, pushed, CI green (measured). Th
 `D:/fitway-temp/owner-r04-walkthrough/REPORT.md` (2026-11-07, not yet checked against its frames): F1 the public page
 is unreachable from the owner pages (would notice); F2 Today's and Reports' "last 7 days" disagree and F3 Activity's
 settings row hides what changed (might notice); F4-F6 would not notice. F1-F3 are settled and built (decision 111): `17027639` on the build branch, pushed,
-checked on its frames. Next: show the user, then merge the build branch and the demo's materials (decision 104's clip). Agent briefs live in
+checked on its frames. The user accepted the six pages (decision 112). Next: merge the build branch, rerun the belonging check on
+the merged head, then the demo's materials (decision 104's clip). Agent briefs live in
 `docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`.
 
 - **Eclipse's spec is split into parts** (`2aa2fc4d`, `ef9fa810`, 2026-10-29): edit a section in its part.

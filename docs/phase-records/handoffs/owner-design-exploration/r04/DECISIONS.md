@@ -124,6 +124,7 @@ decision in its part. A new decision goes at the end of the last part, or a new 
 109. **Reports' top row is accepted** `decisions/101-120.md`
 110. **The six pages: a walkthrough before acceptance; small realism findings left** `decisions/101-120.md`
 111. **The walkthrough's notes settled; the word to shorten CLAUDE.md** `decisions/101-120.md`
+112. **The six pages are accepted** `decisions/101-120.md`
 
 ## How this milestone's rounds run
 
