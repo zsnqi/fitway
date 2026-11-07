@@ -40,10 +40,9 @@ went to a fixer: `695600d4` on the build branch, pushed, CI green (measured). Th
 is unreachable from the owner pages (would notice); F2 Today's and Reports' "last 7 days" disagree and F3 Activity's
 settings row hides what changed (might notice); F4-F6 would not notice. F1-F3 are settled and built (decision 111): `17027639` on the build branch, pushed,
 checked on its frames. The user accepted the six pages (decision 112); the build branch is merged into the coordinator line at
-`51a3e18b` (hooks on, after agent-tooling item 28). The belonging check on that head
-(`D:/fitway-temp/owner-r04-merged-belonging/`) fails 190 Activity frames: F3's change lines wrap under the
-time when narrow. A builder fixes it
-(`docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/builder-activity-change-lines.md`); then merge again, rerun the check, then the demo's materials
+`51a3e18b` (hooks on, after agent-tooling item 28). The belonging check failed 190 Activity frames (F3's change lines under the time when narrow);
+`b6ee95be` fixed it, merged at `e9ac95e3`, where the full check passes 13,028 frames, 0 findings
+(`D:/fitway-temp/owner-r04-merged-belonging/belonging-2.log`, measured). F317, F318 wait. Next: the demo's materials
 (decision 104's clip). Agent briefs live in
 `docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`.
 
