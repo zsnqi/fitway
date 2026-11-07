@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # agent-tooling-r01: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-07 (item 27: round ci-speed merged, CI's unit step not yet measured)
+- **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-07 (item 28: the merge-aware evidence check in progress)
 - **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-28; 28 last; 25 on in `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
@@ -23,12 +23,18 @@
 
 ## Running now
 
+**The merge-aware evidence check is being built** (DECISIONS item 28, F316, brief
+`docs/phase-records/handoffs/agent-tooling/briefs/builder-merge-evidence.md`, worktree
+`D:/Projects/fitway-worktrees/tooling-merge-evidence` from `9a957324`, run `D:/fitway-temp/tooling-merge-evidence/`):
+an `owner-direction-builder` started 2026-11-07. Next: check its commit and planted control, merge it, then redo
+r04's merge of `owner-followup-r04-build` (decision 112; the four conflicts take the coordinator side).
+
 **Round ci-speed is merged** (`5e1750ae`, DECISIONS item 27, record
 `docs/phase-records/handoffs/agent-tooling/rounds/ci-speed.md`): the pre-push hook (repository, code health, tooling map),
 `codex-round.test.ts` split into twenty files, the pre-commit hook lowering a shrunk file's baseline, and the brief
-rules in `pnpm check:repository`; Sol's four blocking findings fixed in `05b34da7`. Open from it: F314, F315. Next:
-`lefthook install` (done 2026-11-07 with the merge), push, measure CI's unit step against run 42227141365's 1387 s,
-then `pnpm main:advance`. After the demo: integration, browser and build in CI, and the job split.
+rules in `pnpm check:repository`; Sol's four blocking findings fixed in `05b34da7`. Open from it: F314, F315. Measured: CI run 42362033655 on `9a957324` passed, its unit step 901.7 s against run
+42227141365's 1387 s (65%; the run 20.7 min against about 28); `pnpm main:advance` moved main to `9a957324` on
+2026-11-07. Brief Q2's 45% was for the local command, not CI's whole unit step. After the demo: integration, browser and build in CI, and the job split.
 
 **Round lesson-commands is merged** (`c80cc042`, DECISIONS item 26, record
 `docs/phase-records/handoffs/agent-tooling/rounds/lesson-commands.md`): `pnpm wait` and `pnpm decision`. Open from it: F312, F313.
