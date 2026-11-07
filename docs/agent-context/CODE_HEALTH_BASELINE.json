@@ -912,8 +912,8 @@
 	},
 	"directories": {
 		".agents/skills/gardener": {
-			"testCases": 176,
-			"expectCalls": 521
+			"testCases": 182,
+			"expectCalls": 533
 		},
 		".agents/skills/verify-fitway": {
 			"testCases": 15
