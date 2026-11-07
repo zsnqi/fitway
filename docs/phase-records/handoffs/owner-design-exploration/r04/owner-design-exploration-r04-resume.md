@@ -38,9 +38,8 @@ went to a fixer: `695600d4` on the build branch, pushed, CI green (measured). Th
 "ممتازة"; acceptance follows the first-time owner walkthrough (decision 110), whose report is
 `D:/fitway-temp/owner-r04-walkthrough/REPORT.md` (2026-11-07, not yet checked against its frames): F1 the public page
 is unreachable from the owner pages (would notice); F2 Today's and Reports' "last 7 days" disagree and F3 Activity's
-settings row hides what changed (might notice); F4-F6 would not notice. Next: check F1-F3 on their frames, settle
-them (decision 110: small ones the coordinator settles), show the user, then merge the build branch and the demo's
-materials (decision 104's clip). Agent briefs live in
+settings row hides what changed (might notice); F4-F6 would not notice. F1-F3 are settled and built (decision 111): `17027639` on the build branch, pushed,
+checked on its frames. Next: show the user, then merge the build branch and the demo's materials (decision 104's clip). Agent briefs live in
 `docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`.
 
 - **Eclipse's spec is split into parts** (`2aa2fc4d`, `ef9fa810`, 2026-10-29): edit a section in its part.
