@@ -50,14 +50,6 @@ function stageRecord(f: ReturnType<typeof checkoutFixture>, line: string) {
 	f.git(["add", "--", "record.txt"]);
 }
 
-function stageRecordLines(
-	f: ReturnType<typeof checkoutFixture>,
-	lines: string[],
-) {
-	writeFileSync(path.join(f.checkout, "record.txt"), `${lines.join("\n")}\n`);
-	f.git(["add", "--", "record.txt"]);
-}
-
 function stageFile(
 	f: ReturnType<typeof checkoutFixture>,
 	file: string,
@@ -414,10 +406,13 @@ describe("staged evidence during a merge", () => {
 			startMerge(f, {
 				"record.txt": `${citationLine(`${f.tempRoot}/gone/first.md`)}\n${citationLine(`${f.tempRoot}/gone/second.md`)}\n`,
 			});
-			stageRecordLines(f, [
-				citationLine(`${f.tempRoot}/gone/edited.md`),
-				citationLine(`${f.tempRoot}/gone/second.md`),
-			]);
+			stageRecord(
+				f,
+				[
+					citationLine(`${f.tempRoot}/gone/edited.md`),
+					citationLine(`${f.tempRoot}/gone/second.md`),
+				].join("\n"),
+			);
 			const text = (await stagedFailure(f)).failures.join("\n");
 			expect(text).toContain("record.txt:1");
 			expect(text.replaceAll("\\", "/")).toContain("gone/edited.md");
@@ -430,10 +425,13 @@ describe("staged evidence during a merge", () => {
 			startMerge(f, {
 				"record.txt": `${citationLine(`${f.tempRoot}/gone/brought.md`)}\n`,
 			});
-			stageRecordLines(f, [
-				citationLine(`${f.tempRoot}/gone/brought.md`),
-				citationLine(`${f.tempRoot}/gone/added.md`),
-			]);
+			stageRecord(
+				f,
+				[
+					citationLine(`${f.tempRoot}/gone/brought.md`),
+					citationLine(`${f.tempRoot}/gone/added.md`),
+				].join("\n"),
+			);
 			const text = (await stagedFailure(f)).failures.join("\n");
 			expect(text).toContain("record.txt:2");
 			expect(text).not.toContain("record.txt:1");
