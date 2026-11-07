@@ -176,7 +176,7 @@
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       patternTitle: "أوقات الازدحام",
       patternSub: "معدّل الموجودين حسب اليوم والساعة",
-      busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
+      busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`, busiestHour: (h) => `أكثر ساعة ازدحامًا: ${h}`,
       numbers: "الأرقام",
       keyFewer: "أقل",
       keyMore: "أكثر",
@@ -277,7 +277,7 @@
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
       patternTitle: "Busy times",
       patternSub: "Average inside by day and hour",
-      busiest: (w, h) => `Busiest: ${w} ${h}`,
+      busiest: (w, h) => `Busiest: ${w} ${h}`, busiestHour: (h) => `Busiest hour: ${h}`,
       numbers: "Numbers",
       keyFewer: "Fewer",
       keyMore: "More",
@@ -509,10 +509,12 @@
       if (d.peak != null && (!top || d.peak >= top.peak)) top = d;
     });
     // "Busiest" is the one-hour slot with the highest average across 3 days or more (GLO-12, Q5); a slot drawn from fewer
-    // days is qualified on the pattern (PAT-10) and never named busiest, so a 7-day period has none (TRU-2).
+    // days is qualified on the pattern (PAT-10) and never named busiest, so a 7-day period has none (TRU-2). The busiest
+    // hour of the period's days (`hour`, gym.js's one function) is what Last 7 days names in its subtitle, as Today does
+    // for the same seven days (DECISIONS item 111).
     let busiest = null;
     heat.flat().forEach((cell) => { if (cell.state === "value" && cell.samples >= MIN_DAYS && (!busiest || cell.avg > busiest.avg)) busiest = cell; });
-    return { a, b, n: b - a + 1, days, heat, observed, total, entries, withReadings, avg: observed ? total / observed : null, top, busiest };
+    return { a, b, n: b - a + 1, days, heat, observed, total, entries, withReadings, avg: observed ? total / observed : null, top, busiest, hour: GYM.busiestHour(days.filter((d) => !d.none).map((d) => d.dn), PEND) };
   }
 
   // The comparison follows the period (the user, 2026-11-06, superseding Q3 (b)'s fixed 7 days): the chosen period
@@ -748,13 +750,14 @@
     heatSlots = [0, 1, 2, 3, 4, 5, 6].map(() => new Array(HOURS));
     $$(".hc", heat).forEach((td) => { for (let c = +td.dataset.c0; c <= +td.dataset.c1; c++) heatSlots[+td.dataset.r][c] = td; });
     // The roving cell starts on the busiest hour (or the first cell). The day form draws no cells.
-    const b = model.busiest;
+    // The subtitle names the busiest point (28 days, a custom period) or, on Last 7 days, the busiest hour.
+    const b = model.busiest, said = b ? L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60)) : range.kind === "7d" && hasVals && model.hour ? L.busiestHour(hourRange(model.hour.from, model.hour.to)) : "";
     heatCur = b ? { r: b.wd, c: b.c } : { r: 0, c: 0 };
     heatWant = heatCur.c;
     const first = heatSlots[heatCur.r][heatCur.c] || $(".hc", heat);
     if (first) first.tabIndex = 0;
     hideTip();
-    $("#pattern-sub").innerHTML = `<span class="ps-part">${L.patternSub}</span>${b ? `<span class="sep" aria-hidden="true">·</span><span class="ps-part">${SR_SEP}${L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60))}</span>` : ""}`;
+    $("#pattern-sub").innerHTML = `<span class="ps-part">${L.patternSub}</span>${said ? `<span class="sep" aria-hidden="true">·</span><span class="ps-part">${SR_SEP}${said}</span>` : ""}`;
     // The key names every mark the pattern shows (TRU-2): the busiest point while there is one, the hatch while any slot
     // is drawn from fewer than 3 days. The day form writes closed and no-reading hours in words and prints every number,
     // so its key holds only the marks its bars carry, and none in an empty period, where there is nothing to explain.

@@ -16,7 +16,7 @@
  * state=loading); older=fail|hold (the first "Show older" fails, or keeps working); refresh=fail|hold; case=wide (the
  * widest counts the contract allows); record=<id> (the record Access's done sentence links to, which the log opens
  * at; with case=long|short, Access's name-range fixtures); ops=delayed|closed|offline (the frame's status, for review);
- * motion=off.
+ * log=none|one|every|week (Settings' history switches, settings-history.js, so the settings records match); motion=off.
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules
  * and no fetch), so the page works from file:// too. */
 (() => {
@@ -207,7 +207,7 @@
 
   /* ------------------------------------------------------------ the gym's log (synthetic, from the contract) */
   const YEAR = 2026;
-  const GYM = window.EclipseGym;              // the one gym (gym.js): the moment, the settings changes, each day's closing count
+  const GYM = window.EclipseGym, HIST = window.EclipseSettingsHistory.load(); // the one gym (gym.js) and Settings' history (settings-history.js)
   const TODAY = GYM.NOW.dn;                   // Daily's moment: Wednesday 23 September 2026, 7:42 PM
   const NOW_MIN = GYM.NOW.clock;
   const UTC_OFFSET = 3 * 60;                  // Asia/Riyadh, UTC+3 all year
@@ -259,9 +259,9 @@
     // uses Access's session-local sequence (57 onward, skipping these two reservations).
     ["2026-01-10", "10:12:00", "o1", "owner_provisioned", { target: "o3", id: 1001 }, null],
     ["2026-02-01", "12:30:00", "o1", "owner_deactivated", { target: "o3", id: 1002 }, null],
-    // The settings records, Settings' history itself (gym.js). The record of 19 September, 12:22 AM, is a calendar day's:
-    // under Saturday (the business day would have put it under Friday).
-    ...GYM.CHANGES.map((c) => [c.date, c.time, c.by, "settings_updated", { ver: c.ver }, c.reason]),
+    // The settings records, Settings' history itself (settings-history.js), each with the lines Settings names its change
+    // by. The record of 19 September, 12:22 AM, is a calendar day's: under Saturday (the business day would have put it under Friday).
+    ...HIST.records().map((v) => [v.date, v.time, v.by, "settings_updated", { lines: v.lines }, v.reason]),
   ];
   function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
   /* The scheduled reset (SPEC, ADR-008): the automatic system zeroes the count five minutes after each closing, from
@@ -278,14 +278,14 @@
     for (const [date, time, actor, action, v, reason] of HUMAN) {
       const t = at(date, time);
       const cls = COMMAND.includes(action) ? "command" : ACCESS.includes(action) ? "access" : "settings";
-      const r = { ...t, actor: "owner", principal: actor, actorKind: "owner", action, cls, reason, prior: null, eff: null, delta: null };
+      const r = { ...t, actor: "owner", principal: actor, actorKind: "owner", action, cls, reason, prior: null, eff: null, delta: null, lines: v.lines };
       if (v.id) r.id = v.id;
       if (v.target) r.target = v.target;
       if (action.startsWith("staff_pin")) r.target = "desk";
       rows.push(r);
     }
     // Today at the demo's clock, in the order they were saved (the second keeps it, newest first).
-    DEMO.log().forEach((s, i) => rows.push({ dn: TODAY, mins: NOW_MIN, sec: i, actor: "owner", principal: s.by, actorKind: "owner", action: s.action, cls: s.kind, target: s.target, id: s.id, reason: s.reason ? { raw: s.reason, lang: s.lang } : null, prior: null, eff: null, delta: null }));
+    DEMO.log().forEach((s, i) => rows.push({ dn: TODAY, mins: NOW_MIN, sec: i, actor: "owner", principal: s.by, actorKind: "owner", action: s.action, cls: s.kind, target: s.target, id: s.id, reason: s.reason ? { raw: s.reason, lang: s.lang } : null, prior: null, eff: null, delta: null, lines: s.kind === "settings" ? HIST.linesOf(s.id) : null }));
     const rnd = mulberry32(23);
     for (let dn = toDn("2026-08-17"); dn <= TODAY; dn++) {
       let prior = isoOf(dn) === "2026-09-05" ? null : GYM.closingCount(dn - 1);
@@ -430,7 +430,9 @@
   // script keeps its own direction; it wraps between its words and never leaves a separator at a line's edge.
   const name = (r) => `<span class="rec-target">${bdi(nameOf(r.target))}</span>`;
   function figHTML(r) {
-    if (r.cls !== "command") return "";
+    // A settings record: Settings' own lines for its change, what then from → to, one a line (settings-history.js); a
+    // line too wide for the column puts its figures under its name, and figures too wide break before the arrow.
+    if (r.cls !== "command") return r.lines?.length ? `<div class="rec-fig">${r.lines.map((c) => `<span class="fig is-chg" aria-hidden="true"><span class="fig-what">${c.what}</span><span class="fig-ft"><span class="fig-n">${c.from}</span><span class="fig-to">${ICON.arrow}<span class="fig-n">${c.to}</span></span></span></span><span class="sr-only">${EclipseDemo.esc(c.said)}</span>`).join("")}</div>` : "";
     const prior = r.prior == null ? `<span class="fig-nr">${L.notRecorded}</span>` : `<bdi class="fig-n">${fmtInt(r.prior)}</bdi>`;
     const floored = r.action === "correction_delta" && r.prior + r.delta < 0;
     const said = r.prior == null ? L.figSayNoPrior(fmtInt(r.eff)) : L.figSay(fmtInt(r.prior), fmtInt(r.eff));
@@ -448,8 +450,9 @@
     const what = `<span class="rec-what">${ICON[r.cls]}<span class="rec-act">${actText(r)}</span></span>`;
     // The night's reset: its stored reason is the contract's machine string ("scheduled reset for business day …"),
     // said in plain words as part of what happened, so it has no reason of a person's beside it.
-    // Counts of seven digits or more (the contract allows up to 9,007,199,254,740,991) take their own line on a phone.
-    const long = r.cls === "command" && Math.max(r.prior ?? 0, r.eff ?? 0) >= 1e6;
+    // Counts of seven digits or more (the contract allows up to 9,007,199,254,740,991) and a settings record's lines take
+    // their own line on a phone.
+    const long = (r.cls === "command" && Math.max(r.prior ?? 0, r.eff ?? 0) >= 1e6) || Boolean(r.lines?.length);
     const arrived = String(r.id) === arrivalId;
     if (r.actor === "system") {
       const act = `<span class="rec-what">${ICON.command}<span class="rec-act">${L.resetAfter}</span></span>`;
@@ -637,8 +640,8 @@
   // The figures' column is as wide as the widest from → to on the page (at most 200 px; a wider one wraps at its
   // arrow), so every record's figures start on one edge.
   function fitFigs() {
-    // Each figure's natural width, whether or not it wraps: its parts and the two 6 px gaps between them.
-    const natural = (f) => [...f.children].reduce((s, c) => s + c.getBoundingClientRect().width, 0) + 12;
+    // Each figure's natural width, whether or not it wraps: its parts and the 6 px gaps between them.
+    const natural = (f) => [...f.children].reduce((s, c) => s + c.getBoundingClientRect().width, 0) + 6 * (f.children.length - 1);
     const widths = $$(".fig", bodyEl).map(natural).concat($$(".fig-note", bodyEl).map((n) => n.scrollWidth));
     bodyEl.style.setProperty("--fw", `${Math.ceil(Math.min(200, Math.max(64, ...widths)))}px`);
   }

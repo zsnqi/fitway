@@ -33,6 +33,7 @@
   <script src="motion.js" defer blocking="render"></script>
   <script src="demo-store.js" defer blocking="render"></script>
   <script src="gym.js" defer blocking="render"></script>
+  <script src="settings-history.js" defer blocking="render"></script>
   <script src="shared-frame.js" defer blocking="render"></script>
   <script src="settings.js" defer blocking="render"></script>
 </head>
@@ -83,6 +84,10 @@
         <ul class="rail-group rail-foot">
           <li><a class="rail-item" href="#" data-nav="monitoring" data-inert>
             <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+          <li><a class="rail-item" href="public.html" id="public-link" data-nav="public" target="_blank" rel="noopener">
+            <span class="tile"><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.5 13.5v3.3a2.2 2.2 0 0 1-2.2 2.2H7.2A2.2 2.2 0 0 1 5 16.8V7.7a2.2 2.2 0 0 1 2.2-2.2h3.3"/><path d="M14 4.5h5.5V10M19.5 4.5l-8 8"/></svg></span>
             <span class="rail-name"></span>
           </a></li>
           <li><a class="rail-item" href="#" id="lang-link" data-nav="lang">
@@ -141,6 +146,10 @@
               <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-monitoring" data-inert>
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg>
                 <span id="menu-monitoring-name"></span>
+              </a>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="public.html" id="menu-public" target="_blank" rel="noopener">
+                <svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.5 13.5v3.3a2.2 2.2 0 0 1-2.2 2.2H7.2A2.2 2.2 0 0 1 5 16.8V7.7a2.2 2.2 0 0 1 2.2-2.2h3.3"/><path d="M14 4.5h5.5V10M19.5 4.5l-8 8"/></svg>
+                <span id="menu-public-name"></span>
               </a>
               <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-lang"><span class="fw-glyph" id="menu-lang-glyph" aria-hidden="true"></span><span id="menu-lang-name"></span></a>
               <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-signout" data-inert>

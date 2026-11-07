@@ -177,6 +177,14 @@ html:has(> body.ac) {
 .fig-nr { color: var(--ink-3); white-space: nowrap; }
 .fig-arw { width: 14px; height: 14px; flex: none; fill: none; stroke: var(--ink-3); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .fig-note { font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+/* A settings record's values: Settings' own lines for its change (settings-history.js), one a line, what changed in
+ * --ink-2, then from → to in the figures' chalk, as Settings' history card writes them. Wider than the figures' column,
+ * the figures go under the name, whole; wider still, they break before the arrow, which starts the second line. A record
+ * of several changes keeps 4 px between them. */
+.fig.is-chg ~ .fig.is-chg { margin-block-start: 4px; }
+.fig-what { color: var(--ink-2); white-space: nowrap; }
+.fig-ft { display: inline-flex; flex-wrap: wrap; align-items: center; column-gap: 6px; min-width: 0; }
+.fig-to { display: inline-flex; align-items: center; column-gap: 6px; }
 /* Why: the person's own words in the page's quotation marks; no reason is said so, quietly. A reason typed in the other
  * language keeps its own direction inside the line (bdi). Any reason wraps, even one with no space in 240 characters. */
 .rec-why { min-width: 0; color: var(--ink-2); overflow-wrap: anywhere; }

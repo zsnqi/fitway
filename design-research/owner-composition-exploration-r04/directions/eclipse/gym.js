@@ -1,7 +1,8 @@
 /* Eclipse: the one gym every page describes. Concept only, synthetic data.
  * Today, Reports, Activity, Access, Settings and the public page read their shared figures from here and keep no copy:
  * the capacity and level limits, the hours (now and as Settings' history had them), the moment, the week's rhythm, the
- * settings changes, the camera outages, and the seeded minute simulation behind every reading. A capacity or limits the
+ * settings changes, the camera outages, the seeded minute simulation behind every reading, and the busiest hour of a span
+ * of days (Today's and Reports' Last 7 days name it from here). A capacity or limits the
  * owner saved in this browser (demo-store.js) are in force here; the hours and every reading stay the gym's.
  * A classic script, so a page works from file:// too. Minutes count from 6:00 AM of the business day, as on Today.
  * Numbers stay numbers here; each page prints them in its own language. */
@@ -197,8 +198,31 @@ window.EclipseGym = (() => {
   // The count the edge held as the gym closed that business day (the scheduled reset's prior).
   const closingCount = (dn) => { const H = hoursOn(dn); return day(dn).occ[H.closeM - 1]; };
 
+  /* ---------------------------------------------------------- the busiest hour of a span (GLO-12)
+   * The one-hour slot, on the hour, with the highest average inside over complete days: for each hour, the mean of each
+   * day's average inside where that day was open and read (its outages, and any span a page has not received, `unread`,
+   * left out), then the hour with the highest mean; a tie keeps the earlier hour. Today's "Last 7 days" and Reports'
+   * Last 7 days ask it for the same seven days, so they name one hour. Returns { hour, from, to, mean } (minutes since
+   * 6:00 AM), or null when no day was read. */
+  function busiestHour(dns, unread = {}) {
+    const hours = Math.ceil(Math.max(0, ...dns.map((dn) => hoursOn(dn).closeM)) / 60);
+    let best = null;
+    for (let h = 0; h < hours; h++) {
+      const means = [];
+      for (const dn of dns) {
+        const occ = day(dn).occ, gaps = (OUTAGES[dn] || []).concat(unread[dn] || []);
+        let s = 0, n = 0;
+        for (let m = h * 60; m < h * 60 + 60; m++) if (occ[m] != null && !gaps.some(([a, b]) => m >= a && m <= b)) { s += occ[m]; n++; }
+        if (n) means.push(s / n);
+      }
+      const mean = means.reduce((a, b) => a + b, 0) / means.length;
+      if (means.length && (!best || mean > best.mean)) best = { hour: h, from: h * 60, to: h * 60 + 60, mean };
+    }
+    return best;
+  }
+
   return {
     toDn, wdOf, RECORDED, CAPACITY, LIMITS, PEOPLE, lastCount, levelOf, recordedLevelOf, LEVELS, NOW, WEEKDAYS, WEEK, CHANGES, versionAt,
-    hoursOn, OUTAGES, FIRST_DAY, LAST_FULL: NOW.dn - 1, DAY: WEEK.wed.close * 60 - WEEK.wed.open * 60, day, closingCount,
+    hoursOn, OUTAGES, FIRST_DAY, LAST_FULL: NOW.dn - 1, DAY: WEEK.wed.close * 60 - WEEK.wed.open * 60, day, closingCount, busiestHour,
   };
 })();

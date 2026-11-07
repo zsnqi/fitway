@@ -30,7 +30,7 @@
 | Id | L | Entry |
 | --- | --- | --- |
 | AMD-S1 | P | **A reason when saving** (DECISIONS item 49): an optional reason, at most 240 characters (what the log stores), typed in the confirmation (OWN-S16) and sent with the update, stored on the audit row, shown in the settings history and Activity log; the conflict view keeps it as typed. Production's form has no reason input; the audit builder and the database already accept one. |
-| AMD-S2 | P | **The history names each change from → to** (DECISIONS item 49; SPEC story 26): the read of settings records returns, or Activity log computes, the difference between each saved version and the one before it (every version row is kept), so a record reads «إغلاق الخميس: 1:00 ص ← 2:00 ص», not «تحديث الإعدادات». Activity log's settings records take the same lines (outside this page's files, at integration). |
+| AMD-S2 | P | **The history names each change from → to** (DECISIONS item 49; SPEC story 26): the read of settings records returns, or Activity log computes, the difference between each saved version and the one before it (every version row is kept), so a record reads «إغلاق الخميس: 1:00 ص ← 2:00 ص», not «تحديث الإعدادات». Activity log's settings records take the same lines: both pages read them from `settings-history.js` (DECISIONS item 111; OWN-A3). |
 
 #### 4.5.2 What belongs in the shared sheets (at integration)
 

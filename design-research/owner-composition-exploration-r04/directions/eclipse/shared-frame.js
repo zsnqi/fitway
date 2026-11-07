@@ -18,7 +18,8 @@
       metaDesc: "ازدحام الصالة الآن وعلى مدار الأيام.",
       loadingWord: "جارٍ التحميل…", opens: (t) => `يفتح ${t}`,
       skip: "انتقل إلى المحتوى", railLabel: "الأقسام", brand: "FITWAY، أسماء الأقسام", railTip: "أسماء الأقسام",
-      nav: { daily: "اليوم", reports: "التقارير", access: "الحسابات", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
+      nav: { daily: "اليوم", reports: "التقارير", access: "الحسابات", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", public: "صفحة الزوار", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
+      newTab: "، تفتح في تبويب جديد",
       tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الحسابات", settings: "الإعدادات" },
       opsTitle: "حالة التشغيل", more: "المزيد", langAria: "التبديل إلى اللغة الإنجليزية", langGlyph: "EN",
       live: "مباشر", delayed: "متأخر", lastReading: "آخر قراءة", hours: "ساعات العمل", closed: "مغلق", closedWord: "مغلق", offline: "غير متصل", noCount: "لا عدّ حاليًا", errorWord: "خطأ", errorLine: "تعذّر التحميل",
@@ -27,7 +28,8 @@
       metaDesc: "How busy the gym is, live and over time.",
       loadingWord: "Loading…", opens: (t) => `Opens ${t}`,
       skip: "Skip to content", railLabel: "Sections", brand: "FITWAY, section names", railTip: "Section names",
-      nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
+      nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", public: "Visitors' page", lang: "العربية", settings: "Settings", signout: "Sign out" },
+      newTab: ", opens in a new tab",
       tabs: { daily: "Today", reports: "Reports", activity: "Activity", access: "Access", settings: "Settings" },
       opsTitle: "Operations status", more: "More", langAria: "Switch to Arabic", langGlyph: "AR",
       live: "Live", delayed: "Delayed", lastReading: "Last reading", hours: "Open", closed: "Closed", closedWord: "Closed", offline: "Offline", noCount: "No current count", errorWord: "Error", errorLine: "Couldn't load",
@@ -48,7 +50,7 @@
     $$(".rail-item[data-nav]").forEach((a) => {
       const key = a.dataset.nav, name = L.nav[key];
       $(".rail-name", a).textContent = name;
-      a.setAttribute("aria-label", key === "lang" ? L.langAria : name);
+      a.setAttribute("aria-label", key === "lang" ? L.langAria : key === "public" ? name + L.newTab : name);
       if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
     });
     $("#lang-glyph").textContent = L.langGlyph;
@@ -70,6 +72,13 @@
     $("#menu-lang-name").textContent = L.nav.lang;
     $("#menu-lang-name").setAttribute("lang", RTL ? "en" : "ar");
     $("#menu-signout-name").textContent = L.nav.signout;
+    // The visitors' page (DECISIONS item 111): public.html in a new tab, in the language chosen here, carried as the owner
+    // pages carry it between themselves (?lang=; the public page has no motion switch, so none is carried); the rail's
+    // item and the phone's menu item alike.
+    const visit = new URLSearchParams({ lang: RTL ? "ar" : "en" });
+    for (const el of [$("#public-link"), $("#menu-public")]) el.setAttribute("href", `public.html?${visit}`);
+    $("#menu-public-name").textContent = L.nav.public;
+    $("#menu-public").setAttribute("aria-label", L.nav.public + L.newTab);
     $("#menu-monitoring-name").textContent = L.nav.monitoring;
     $("#ops-link-name").textContent = L.nav.operations;
 

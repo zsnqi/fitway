@@ -218,8 +218,8 @@
   const today = G.day(DN);
   // The last 4 Wednesdays (16, 9, 2 Sep and 26 Aug). Complete days.
   const PAST_WED = [7, 14, 21, 28].map((k) => G.day(DN - k));
-  // The six full days before today (17 to 22 Sep), each with its own hours and outages.
-  const RECENT = [1, 2, 3, 4, 5, 6].map((k) => ({ d: G.day(DN - k), out: G.OUTAGES[DN - k] || [] }));
+  // The seven complete days before today (16 to 22 Sep): the busiest time's "Last 7 days", Reports' Last 7 days too.
+  const LAST7 = [7, 6, 5, 4, 3, 2, 1].map((k) => DN - k);
 
   const occ = today.occ;
   const levelOf = G.levelOf;
@@ -314,27 +314,11 @@
     // Usual entries by the latest reading: the last 4 Wednesdays' entries up to the same minute, averaged.
     const usualEntries = Math.round(PAST_WED.reduce((a, d) => a + d.ent.slice(0, last + 1).reduce((x, y) => x + y, 0), 0) / PAST_WED.length);
 
-    // Busiest time (GLO-12, Q7; K-21, step 3): the one-hour slot, on the hour, with the highest average inside over the
-    // last 7 days (six full days plus today so far), each day where it was open and read. Every slot averages at least
-    // 3 days, Q5's minimum, since only Friday and Saturday have shorter hours.
-    const busiest = (() => {
-      const hourMean = [];
-      for (let h = 0; h < 19; h++) {
-        const vals = [];
-        for (const { d, out } of RECENT) {
-          let s = 0, n = 0;
-          for (let m = h * 60; m < h * 60 + 60; m++) if (d.occ[m] != null && !out.some(([a, b]) => m >= a && m <= b)) { s += d.occ[m]; n++; }
-          if (n) vals.push(s / n);
-        }
-        let s = 0, n = 0;
-        for (let m = h * 60; m < h * 60 + 60 && m <= last; m++) if (obs(m)) { s += occ[m]; n++; }
-        if (n) vals.push(s / n);
-        hourMean.push(vals.reduce((a, b) => a + b, 0) / vals.length);
-      }
-      let best = -1, bh = 0;
-      for (let h = 0; h < 19; h++) if (hourMean[h] > best) { best = hourMean[h]; bh = h; }
-      return { from: bh * 60, to: bh * 60 + 60, avg: Math.round(best) };
-    })();
+    // Busiest time (GLO-12, Q7; K-21, step 3; DECISIONS item 111): the one-hour slot, on the hour, with the highest
+    // average inside over the seven complete days before today, each day where it was open and read: gym.js's one
+    // function, which Reports' Last 7 days asks for the same days. Every slot averages at least 3 days, Q5's minimum,
+    // since only Friday and Saturday have shorter hours.
+    const busiest = (({ from, to, mean }) => ({ from, to, avg: Math.round(mean) }))(G.busiestHour(LAST7));
 
     const knotSet = new Set();
     for (let m = 0; m <= last; m += STEP) if (obs(m)) knotSet.add(m);
@@ -567,7 +551,8 @@
       sayInValue(SLOTS.peak, sentence(L.ro.pending));
       sayInValue(SLOTS.entries, sentence(L.ro.pending));
     }
-    // The busiest time over the last 7 days is history, not a reading: it stays (GLO-12; its basis is 6 full days).
+    // The busiest time over the last 7 days is history, not a reading: it stays (GLO-12; its basis is the 7 complete days
+    // before today).
     $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
     fillBusiest();
   }
