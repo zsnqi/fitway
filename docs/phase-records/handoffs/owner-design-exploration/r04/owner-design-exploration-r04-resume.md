@@ -40,8 +40,11 @@ went to a fixer: `695600d4` on the build branch, pushed, CI green (measured). Th
 is unreachable from the owner pages (would notice); F2 Today's and Reports' "last 7 days" disagree and F3 Activity's
 settings row hides what changed (might notice); F4-F6 would not notice. F1-F3 are settled and built (decision 111): `17027639` on the build branch, pushed,
 checked on its frames. The user accepted the six pages (decision 112); the build branch is merged into the coordinator line at
-`51a3e18b` (hooks on, after agent-tooling item 28). Next: the belonging check on that head
-(`D:/fitway-temp/owner-r04-merged-belonging/`), then the demo's materials (decision 104's clip). Agent briefs live in
+`51a3e18b` (hooks on, after agent-tooling item 28). The belonging check on that head
+(`D:/fitway-temp/owner-r04-merged-belonging/`, measured) fails 190 Activity frames: F3's change lines wrap under
+the row's time at narrow widths. A builder fixes it on the build branch
+(`agent-briefs/builder-activity-change-lines.md`); then merge again, rerun the check, then the demo's materials
+(decision 104's clip). Agent briefs live in
 `docs/phase-records/handoffs/owner-design-exploration/r04/agent-briefs/`.
 
 - **Eclipse's spec is split into parts** (`2aa2fc4d`, `ef9fa810`, 2026-10-29): edit a section in its part.
