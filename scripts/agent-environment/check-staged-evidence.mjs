@@ -1,4 +1,6 @@
 // Check the index for dead temp citations, run-folder provenance, and designer-brief asks.
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 import {
@@ -36,7 +38,7 @@ function splitNul(text) {
 	return text.split("\0").filter(Boolean);
 }
 
-function changedFiles(root, filter) {
+function changedFiles(root, filter, parent) {
 	return splitNul(
 		readGitText(root, [
 			"diff",
@@ -44,12 +46,49 @@ function changedFiles(root, filter) {
 			"--name-only",
 			`--diff-filter=${filter}`,
 			"-z",
+			...(parent ? [parent, "--"] : []),
 		]),
 	);
 }
 
-function addedLines(root, source) {
-	return stagedLineNumbers(root, source, stagedDiffReader);
+// The commits a merge in progress brings besides HEAD: every line of MERGE_HEAD, found through
+// `git rev-parse --git-path` (in a worktree `.git` is a file) and resolved by git. Empty outside a merge.
+function mergeParents(root) {
+	const merging = readGitResult(root, [
+		"rev-parse",
+		"-q",
+		"--verify",
+		"MERGE_HEAD",
+	]);
+	if (merging.status === 1) return [];
+	if (merging.status !== 0)
+		throw new Error(`git rev-parse failed: ${String(merging.stderr).trim()}`);
+	const mergeHead = path.resolve(
+		root,
+		readGitText(root, ["rev-parse", "--git-path", "MERGE_HEAD"]).trim(),
+	);
+	return readFileSync(mergeHead, "utf8")
+		.split(/\r?\n/)
+		.map((line) => line.trim())
+		.filter(Boolean)
+		.map((line) =>
+			readGitText(root, ["rev-parse", "--verify", `${line}^{commit}`]).trim(),
+		);
+}
+
+// Files the index adds: new against HEAD and, in a merge, against every merge parent.
+function newStagedFiles(root, parents) {
+	const files = new Set(changedFiles(root, "A"));
+	for (const parent of parents) {
+		if (!files.size) break;
+		const added = new Set(changedFiles(root, "A", parent));
+		for (const file of files) if (!added.has(file)) files.delete(file);
+	}
+	return files;
+}
+
+function addedLines(root, source, parents) {
+	return stagedLineNumbers(root, source, stagedDiffReader, parents);
 }
 
 function readIndexText(root, file) {
@@ -69,10 +108,12 @@ function lostEvidenceRows(root) {
 	return parseLostTempEvidence(readIndexText(root, LOST_TEMP_EVIDENCE_PATH));
 }
 
-function designerFileProblems(root, file, text, newFiles) {
+function designerFileProblems(root, file, text, { newFiles, parents }) {
 	const role = parseBriefFormat(text).role;
 	if (!DESIGN_WORK_ROLES.has(role)) return [];
-	const lines = newFiles.has(file) ? undefined : addedLines(root, file);
+	const lines = newFiles.has(file)
+		? undefined
+		: addedLines(root, file, parents);
 	if (lines && !lines.size) return [];
 	return designerBriefProblems(text, {
 		role,
@@ -89,6 +130,7 @@ export async function checkStagedEvidence({
 	stat,
 	tempRoot = process.env.FITWAY_TEMP_ROOT ?? "D:/fitway-temp",
 } = {}) {
+	const parents = mergeParents(checkout);
 	const staged = changedFiles(checkout, "ACMR");
 	const recordFiles = staged.filter(
 		(file) =>
@@ -98,13 +140,13 @@ export async function checkStagedEvidence({
 			),
 	);
 	const addedByFile = new Map(
-		recordFiles.map((file) => [file, addedLines(checkout, file)]),
+		recordFiles.map((file) => [file, addedLines(checkout, file, parents)]),
 	);
 	const evidenceRecords = recordFiles.filter(
 		(file) => addedByFile.get(file)?.size,
 	);
 	const markdownFiles = staged.filter((file) => /\.md$/i.test(file));
-	const newFiles = new Set(changedFiles(checkout, "A"));
+	const newFiles = newStagedFiles(checkout, parents);
 	const designerFiles = markdownFiles.filter(
 		(file) => newFiles.has(file) || addedByFile.get(file)?.size,
 	);
@@ -118,6 +160,7 @@ export async function checkStagedEvidence({
 			exists,
 			holdsCommit,
 			lostEvidenceRows: lostEvidenceRows(checkout),
+			mergeParents: parents,
 			readFile,
 			readGit: stagedDiffReader,
 			records,
@@ -128,12 +171,10 @@ export async function checkStagedEvidence({
 		});
 	}
 	const designerProblems = designerFiles.flatMap((file) =>
-		designerFileProblems(
-			checkout,
-			file,
-			readIndexText(checkout, file),
+		designerFileProblems(checkout, file, readIndexText(checkout, file), {
 			newFiles,
-		),
+			parents,
+		}),
 	);
 	return { audit, designerProblems, recordFiles };
 }
