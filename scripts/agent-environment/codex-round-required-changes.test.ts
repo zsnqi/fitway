@@ -98,9 +98,7 @@ describe("C1 required changes", () => {
 	it("refuses a marked missing absolute path at brief:check before launching", () => {
 		const f = requiredFixture("absolute");
 		fs.rmSync(f.target);
-		expect(
-			refused(f, f.invoke(), "must change path does not exist:"),
-		).toMatchObject({ status: 1 });
+		refused(f, f.invoke(), "must change path does not exist:");
 		expect(fs.existsSync(f.run)).toBe(false);
 	});
 	it("reports every unchanged marked path, including a folder, on its outcome line", () => {

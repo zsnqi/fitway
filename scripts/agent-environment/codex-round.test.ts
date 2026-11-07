@@ -337,9 +337,7 @@ describe("D5 review sources", () => {
 		const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
 			REVIEW_ANSWER: "No such readings.\n",
 		});
-		expect(refused(f, result, "differs between named HEAD")).toMatchObject({
-			status: 1,
-		});
+		refused(f, result, "differs between named HEAD");
 		expect(f.reviewCalls()).toEqual([]);
 		expect(existsSync(f.reviewRoot)).toBe(false);
 	});
@@ -371,7 +369,7 @@ describe("D5 review sources", () => {
 		const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
 			REVIEW_ANSWER: "No such readings.\n",
 		});
-		expect(refused(f, result, source)).toMatchObject({ status: 1 });
+		refused(f, result, source);
 		expect(f.reviewCalls()).toEqual([]);
 	});
 
@@ -401,13 +399,11 @@ describe("D5 review sources", () => {
 			const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
 				REVIEW_ANSWER: "No such readings.\n",
 			});
-			expect(
-				refused(
-					f,
-					result,
-					"absolute review source is outside D:/fitway-temp and the launcher checkout",
-				),
-			).toMatchObject({ status: 1 });
+			refused(
+				f,
+				result,
+				"absolute review source is outside D:/fitway-temp and the launcher checkout",
+			);
 			expect(f.reviewCalls()).toEqual([]);
 		} finally {
 			rmSync(path.join(linkRoot, "escape"), { force: true });
@@ -431,9 +427,7 @@ describe("D5 review sources", () => {
 		const result = f.invokeRaw([f.brief, "--new-review", "--run", f.run], {
 			REVIEW_ANSWER: "No such readings.\n",
 		});
-		expect(
-			refused(f, result, "absolute review source is outside D:/fitway-temp"),
-		).toMatchObject({ status: 1 });
+		refused(f, result, "absolute review source is outside D:/fitway-temp");
 		expect(f.reviewCalls()).toEqual([]);
 	});
 });

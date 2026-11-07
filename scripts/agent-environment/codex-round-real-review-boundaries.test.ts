@@ -81,9 +81,7 @@ What goes wrong: the proof fails.
 		rmSync(f.reviewRoot, { recursive: true });
 		const result = f.invoke(undefined, { REVIEW_ANSWER: answer });
 		expect(result.stdout.match(/^Reading \d+:$/gm)).toHaveLength(printedLines);
-		expect(
-			reviewRefused(f, result, "record its dispositions before launching"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, result, "record its dispositions before launching");
 	});
 
 	it.each([
@@ -117,9 +115,7 @@ What goes wrong: the proof fails.
 	])("refuses an invalid numbered answer: %s", (_kind, answer) => {
 		const f = fixture();
 		f.answerReview(answer);
-		expect(
-			reviewRefused(f, f.invoke(), "answer cannot be read as readings"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
 	it("refuses a bare answer whose body lists look like reading starts", () => {
@@ -132,9 +128,7 @@ What goes wrong: the proof fails.
    Literal reading: a changed input survives.
 `;
 		f.answerReview(answer);
-		expect(
-			reviewRefused(f, f.invoke(), "answer cannot be read as readings"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
 	it.each([
@@ -147,9 +141,7 @@ What goes wrong: the proof fails.
 		const result = f.invoke(undefined, { REVIEW_ANSWER: answer });
 		expect(result.stdout).toContain("Readings:\nNo such readings.\n");
 		expect(result.stdout.match(/^Reading \d+:$/gm) ?? []).toEqual([]);
-		expect(
-			reviewRefused(f, result, "record its dispositions before launching"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, result, "record its dispositions before launching");
 		writeFileSync(
 			path.join(f.reviewRoot, "brief-1", "dispositions.md"),
 			`Brief SHA-256: ${briefHash(f.brief)}\n`,

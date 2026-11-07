@@ -24,9 +24,7 @@ describe("R1 pre-launch review", () => {
 		const f = fixture();
 		rmSync(f.reviewRoot, { recursive: true });
 		const result = f.invoke(undefined, { REVIEW_ANSWER: readingAnswer });
-		expect(
-			reviewRefused(f, result, "record its dispositions before launching"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, result, "record its dispositions before launching");
 		const folder = path.join(f.reviewRoot, "brief-1");
 		expect(result.stdout).toContain(`Review folder: ${folder}`);
 		expect(result.stdout).toContain("Reading 1:");
@@ -91,9 +89,7 @@ describe("R1 pre-launch review", () => {
 		);
 		const before = readFileSync(path.join(folder, "dispositions.md"));
 		const result = f.invoke();
-		expect(
-			reviewRefused(f, result, "readings without a disposition"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, result, "readings without a disposition");
 		expect(result.stderr).toContain("Reading 1 (## Reading 1: R1)");
 		expect(result.stderr).toContain("Reading 2 (## Reading 2: L1)");
 		expect(readFileSync(path.join(folder, "dispositions.md"))).toEqual(before);
@@ -114,9 +110,7 @@ describe("R1 pre-launch review", () => {
 		);
 		if (answer === "absent") rmSync(path.join(folder, "dispositions.md"));
 		const result = f.invoke();
-		expect(
-			reviewRefused(f, result, "readings without a disposition"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, result, "readings without a disposition");
 		expect(result.stderr).toContain("Reading 2");
 	});
 
@@ -143,13 +137,11 @@ describe("R1 pre-launch review", () => {
 			git(f.coordinator, "add", ".");
 			git(f.coordinator, "commit", "-m", "clarified brief after dispositions");
 		}
-		expect(
-			reviewRefused(
-				f,
-				f.invoke(),
-				"dispositions must name the current brief SHA-256",
-			),
-		).toMatchObject({ status: 1 });
+		reviewRefused(
+			f,
+			f.invoke(),
+			"dispositions must name the current brief SHA-256",
+		);
 		expect(f.reviewCalls()).toEqual([]);
 	});
 
@@ -184,13 +176,11 @@ describe("R1 pre-launch review", () => {
 		const f = fixture();
 		const folder = f.answerReview();
 		rmSync(path.join(folder, "dispositions.md"));
-		expect(
-			reviewRefused(
-				f,
-				f.invoke(),
-				"dispositions must name the current brief SHA-256",
-			),
-		).toMatchObject({ status: 1 });
+		reviewRefused(
+			f,
+			f.invoke(),
+			"dispositions must name the current brief SHA-256",
+		);
 		f.answerReview();
 		const result = f.invoke();
 		expect(result.status, result.output).toBe(0);
@@ -207,9 +197,7 @@ describe("R1 pre-launch review", () => {
 		const latest = f.answerReview("No such readings.\n", undefined, 10);
 		const before = readFileSync(path.join(latest, "dispositions.md"));
 		const result = f.invoke([f.brief, "high", "--new-review", "--run", f.run]);
-		expect(
-			reviewRefused(f, result, "record its dispositions before launching"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, result, "record its dispositions before launching");
 		const folder = path.join(f.reviewRoot, "brief-11");
 		expect(result.stdout).toContain(`Review folder: ${folder}`);
 		expect(result.stdout).toContain("No such readings.");
@@ -232,9 +220,7 @@ describe("R1 pre-launch review", () => {
 			`Brief SHA-256: ${briefHash(f.brief)}\nReading 1: closed\n`,
 			10,
 		);
-		expect(reviewRefused(f, f.invoke(), "Reading 2")).toMatchObject({
-			status: 1,
-		});
+		reviewRefused(f, f.invoke(), "Reading 2");
 		expect(f.reviewCalls()).toEqual([]);
 	});
 
@@ -243,9 +229,7 @@ describe("R1 pre-launch review", () => {
 		const result = f.invoke([f.brief, "high", "--run", f.run, "--new-review"], {
 			REVIEW_EXIT: "29",
 		});
-		expect(reviewRefused(f, result, "Codex exit 29")).toMatchObject({
-			status: 1,
-		});
+		reviewRefused(f, result, "Codex exit 29");
 		const folder = path.join(f.reviewRoot, "brief-2");
 		expect(result.stdout).toContain(`Review folder: ${folder}`);
 		expect(readFileSync(path.join(folder, "brief.md"))).toEqual(f.bytes);
@@ -255,9 +239,7 @@ describe("R1 pre-launch review", () => {
 		expect(
 			JSON.parse(readFileSync(path.join(folder, "review.json"), "utf8")),
 		).toMatchObject({ status: "failed", exitCode: 29 });
-		expect(reviewRefused(f, f.invoke(), "Codex exit 29")).toMatchObject({
-			status: 1,
-		});
+		reviewRefused(f, f.invoke(), "Codex exit 29");
 		expect(f.reviewCalls()).toHaveLength(1);
 	});
 
@@ -272,14 +254,10 @@ describe("R1 pre-launch review", () => {
 				? { REVIEW_NO_ANSWER: "1" }
 				: { REVIEW_ANSWER: "I could not complete this review." },
 		);
-		expect(
-			reviewRefused(f, result, "answer cannot be read as readings"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, result, "answer cannot be read as readings");
 		const folder = path.join(f.reviewRoot, "brief-2");
 		expect(existsSync(path.join(folder, "brief.md"))).toBe(true);
-		expect(
-			reviewRefused(f, f.invoke(), "answer cannot be read as readings"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 		expect(f.reviewCalls()).toHaveLength(1);
 	});
 

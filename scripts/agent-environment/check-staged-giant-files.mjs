@@ -110,28 +110,6 @@ function readAllIndexedCodeHealthFiles(root = process.cwd()) {
 	return readIndexFiles(root, selectedIndexFiles(root, listed.stdout));
 }
 
-function touchedGiantChanges(baseline, snapshot, paths) {
-	return [...new Set(paths)]
-		.sort((left, right) => left.localeCompare(right, "en"))
-		.flatMap((file) =>
-			GIANT_MEASURES.flatMap((measure) => {
-				const before = baseline?.files?.[file]?.[measure] ?? 0;
-				const current = snapshot.counts[file]?.[measure] ?? 0;
-				if (before === current) return [];
-				return [
-					{
-						file,
-						measure,
-						baseline: before,
-						current,
-						hits: snapshot.hits[file]?.[measure] ?? [],
-						direction: current > before ? "rise" : "fall",
-					},
-				];
-			}),
-		);
-}
-
 function setGiantValue(baseline, change) {
 	const record = baseline.files[change.file] ?? {};
 	if (change.current) record[change.measure] = change.current;
@@ -181,10 +159,12 @@ export function updateStagedCodeHealthBaseline(root = process.cwd()) {
 	const paths = staged.flatMap((change) =>
 		[change.oldPath, change.path].filter(Boolean),
 	);
-	const changes = touchedGiantChanges(
-		indexedBaseline.baseline,
-		snapshot,
-		paths,
+	const touched = new Set(paths);
+	const changes = compareCodeHealth(indexedBaseline.baseline, snapshot).filter(
+		(change) =>
+			change.scope === "file" &&
+			touched.has(change.file) &&
+			GIANT_MEASURES.includes(change.measure),
 	);
 	const deletions = new Set(
 		staged

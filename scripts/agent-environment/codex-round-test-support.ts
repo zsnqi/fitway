@@ -689,7 +689,6 @@ export function refused(
 	expect(result.stderr.trim().split(/\r?\n/)).toHaveLength(1);
 	expect(result.stderr).toContain(reason);
 	expect(existsSync(f.capture)).toBe(false);
-	return result;
 }
 
 export function requiredFixture(kind = "repository", marked = true) {
@@ -801,7 +800,6 @@ export function reviewRefused(
 		`Current brief SHA-256: ${briefHash(f.brief)}`,
 	);
 	expect(existsSync(f.run)).toBe(false);
-	return result;
 }
 
 beforeAll(() => {

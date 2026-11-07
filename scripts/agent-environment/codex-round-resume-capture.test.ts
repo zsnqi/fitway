@@ -122,9 +122,7 @@ describe("L2 resume", () => {
 		const messageFile = path.join(f.root, "invalid message.txt");
 		fs.writeFileSync(messageFile, Buffer.from([0x61, 0xc3, 0x28]));
 		const result = f.invoke(["resume", f.run, "--message-file", messageFile]);
-		expect(
-			refused(f, result, "message file is not valid UTF-8; write it as UTF-8"),
-		).toMatchObject({ status: 1 });
+		refused(f, result, "message file is not valid UTF-8; write it as UTF-8");
 		expect(result.stderr).toContain(messageFile);
 	});
 	it.each([
@@ -136,13 +134,11 @@ describe("L2 resume", () => {
 		fs.rmSync(f.capture);
 		const messageFile = path.join(f.root, `${kind} message.txt`);
 		if (kind === "empty") fs.writeFileSync(messageFile, Buffer.alloc(0));
-		expect(
-			refused(
-				f,
-				f.invoke(["resume", f.run, "--message-file", messageFile]),
-				reason,
-			),
-		).toMatchObject({ status: 1 });
+		refused(
+			f,
+			f.invoke(["resume", f.run, "--message-file", messageFile]),
+			reason,
+		);
 	});
 	it.each([
 		[
@@ -159,9 +155,7 @@ describe("L2 resume", () => {
 		],
 	])("refuses malformed resume options %j without starting Codex", (options, reason) => {
 		const f = fixture();
-		expect(
-			refused(f, f.invoke(["resume", f.run, ...options]), reason),
-		).toMatchObject({ status: 1 });
+		refused(f, f.invoke(["resume", f.run, ...options]), reason);
 		expect(fs.existsSync(f.run)).toBe(false);
 	});
 	it("refuses a run whose first event has no thread", () => {
@@ -172,9 +166,7 @@ describe("L2 resume", () => {
 			path.join(f.run, "events.jsonl"),
 			'{}\n{"type":"thread.started","thread_id":"wrong-line"}\n',
 		);
-		expect(
-			refused(f, f.invoke(["resume", f.run]), "first event has no thread id"),
-		).toMatchObject({ status: 1 });
+		refused(f, f.invoke(["resume", f.run]), "first event has no thread id");
 		expect(fs.existsSync(path.join(f.run, "events-resume.jsonl"))).toBe(false);
 	});
 	it("refuses to resume a saved input with no outcome IDs", () => {
@@ -182,9 +174,7 @@ describe("L2 resume", () => {
 		expect(f.invoke().status).toBe(0);
 		fs.rmSync(f.capture);
 		fs.writeFileSync(path.join(f.run, "input.md"), "No outcome IDs.\n");
-		expect(
-			refused(f, f.invoke(["resume", f.run]), "brief has no outcome IDs"),
-		).toMatchObject({ status: 1 });
+		refused(f, f.invoke(["resume", f.run]), "brief has no outcome IDs");
 		expect(fs.existsSync(f.capture)).toBe(false);
 	});
 });

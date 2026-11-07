@@ -70,13 +70,11 @@ describe("L1 launch", () => {
 	it("runs brief:check first and launches nothing for a failing brief", () => {
 		const f = fixture();
 		writeFileSync(f.brief, "broken brief\n");
-		expect(
-			refused(
-				f,
-				f.invoke([f.brief, "invalid", "--run", f.run]),
-				"brief:check failed",
-			),
-		).toMatchObject({ status: 1 });
+		refused(
+			f,
+			f.invoke([f.brief, "invalid", "--run", f.run]),
+			"brief:check failed",
+		);
 		expect(existsSync(f.run)).toBe(false);
 	});
 	it("refuses a brief with no outcome IDs before its review starts", () => {
@@ -93,9 +91,7 @@ describe("L1 launch", () => {
 		git(f.coordinator, "add", ".");
 		git(f.coordinator, "commit", "-m", "remove outcome ids");
 		const result = f.invoke([f.brief, "high", "--new-review", "--run", f.run]);
-		expect(refused(f, result, "brief has no outcome IDs")).toMatchObject({
-			status: 1,
-		});
+		refused(f, result, "brief has no outcome IDs");
 		expect(f.reviewCalls()).toEqual([]);
 		expect(existsSync(f.run)).toBe(false);
 	});

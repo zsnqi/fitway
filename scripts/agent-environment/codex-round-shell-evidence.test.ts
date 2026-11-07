@@ -1,23 +1,23 @@
 import { describe, expect, it } from "vitest";
 import {
+	claimInvoke,
+	claimOutput,
 	expectAcceptedClaimRun,
 	expectResumedClaimFailure,
-	reportClaimFixture,
 } from "./codex-round-report-support.ts";
 import { commandEvent, fixture } from "./codex-round-test-support.ts";
 
-const claim = reportClaimFixture();
 const missingLadderFailure = "without a successful fast-ladder command";
 
 describe("L3 report claims", () => {
 	it("Y1 guard refuses a PowerShell backslash before a separator", () => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
 			commandEvent(
 				`powershell.exe -Command 'git commit -m a \\; echo later'`,
 				0,
-				claim.claimOutput,
+				claimOutput,
 			) + commandEvent("node scripts/verify.mjs fast"),
 		);
 		expectResumedClaimFailure(f, result, "no successful git commit command");
@@ -34,9 +34,9 @@ describe("L3 report claims", () => {
 		],
 	])("Y2 ignores a commented commit in %s", (_name, command) => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
-			commandEvent(command, 0, claim.claimOutput) +
+			commandEvent(command, 0, claimOutput) +
 				commandEvent("node scripts/verify.mjs fast"),
 		);
 		expectResumedClaimFailure(f, result, "no successful git commit command");
@@ -50,9 +50,9 @@ describe("L3 report claims", () => {
 		],
 	])("Y2 ignores a commented ladder in %s", (_name, command) => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
-			commandEvent("git commit -m claim-fixture", 0, claim.claimOutput) +
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
 				commandEvent(command),
 		);
 		expectResumedClaimFailure(f, result, missingLadderFailure);
@@ -71,9 +71,9 @@ describe("L3 report claims", () => {
 		],
 	])("Y2 guard keeps %s", (_name, command) => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
-			commandEvent(command, 0, claim.claimOutput) +
+			commandEvent(command, 0, claimOutput) +
 				commandEvent("node scripts/verify.mjs fast"),
 		);
 		expect(result.status, result.output).toBe(0);
@@ -82,9 +82,9 @@ describe("L3 report claims", () => {
 
 	it("X1 accepts an earlier command before the exact fast ladder", () => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
-			commandEvent("git commit -m claim-fixture", 0, claim.claimOutput) +
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
 				commandEvent("pnpm test && node scripts/verify.mjs fast"),
 		);
 		expectAcceptedClaimRun(f, result);
@@ -102,9 +102,9 @@ describe("L3 report claims", () => {
 		["X1 guard refuses a piped ladder", "node scripts/verify.mjs fast | cat"],
 	])("%s", (_name, ladder) => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
-			commandEvent("git commit -m claim-fixture", 0, claim.claimOutput) +
+			commandEvent("git commit -m claim-fixture", 0, claimOutput) +
 				commandEvent(ladder),
 		);
 		expectResumedClaimFailure(f, result, missingLadderFailure);
@@ -126,9 +126,9 @@ describe("L3 report claims", () => {
 		],
 	])("%s", (_name, commit) => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
-			commandEvent(commit, 0, claim.claimOutput) +
+			commandEvent(commit, 0, claimOutput) +
 				commandEvent("node scripts/verify.mjs fast"),
 		);
 		expectResumedClaimFailure(f, result, "no successful git commit command");
@@ -145,7 +145,7 @@ describe("L3 report claims", () => {
 		],
 	])("%s", (_name, output) => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
 			commandEvent("git commit -m claim-fixture", 0, output) +
 				commandEvent("node scripts/verify.mjs fast"),

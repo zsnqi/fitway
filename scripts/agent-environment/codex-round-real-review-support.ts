@@ -32,16 +32,12 @@ export function verifyRealReviewAnswer(
 		Array.from({ length: count }, (_, index) => `Reading ${index + 1}:`),
 	);
 	expectReviewReadings(result, blocks);
-	expect(
-		reviewRefused(f, result, "record its dispositions before launching"),
-	).toMatchObject({ status: 1 });
+	reviewRefused(f, result, "record its dispositions before launching");
 	const folder = path.join(f.reviewRoot, "brief-1");
 	expect(readFileSync(path.join(folder, "last.md"))).toEqual(bytes);
 	expect(existsSync(path.join(folder, "dispositions.md"))).toBe(false);
 	const unanswered = f.invoke();
-	expect(
-		reviewRefused(f, unanswered, "readings without a disposition"),
-	).toMatchObject({ status: 1 });
+	reviewRefused(f, unanswered, "readings without a disposition");
 	for (let index = 0; index < count; index += 1)
 		expect(unanswered.stderr).toContain(
 			`Reading ${index + 1} (${blocks[index].split(/\r?\n/)[0]})`,
@@ -60,23 +56,10 @@ export function verifyRealReviewAnswer(
 	expect(readFileSync(path.join(f.run, "review-dispositions.md"), "utf8")).toBe(
 		dispositions,
 	);
-	return {
-		status: launched.status,
-		readingCount: printed.length,
-		blockCount: blocks.length,
-		reviewCalls: f.reviewCalls().length,
-		copiedReadings: readFileSync(path.join(f.run, "review-readings.md")).equals(
-			bytes,
-		),
-		copiedDispositions:
-			readFileSync(path.join(f.run, "review-dispositions.md"), "utf8") ===
-			dispositions,
-		dispositionLines: dispositions.trim().split(/\r?\n/).length,
-		inputBytes: Buffer.from(f.captured().input, "base64").length,
-		reviewFolder: folder,
-		launchedOutput: launched.output,
-		unansweredOutput: unanswered.stderr,
-		artifactExists: existsSync(path.join(f.run, "review-dispositions.md")),
-		reviewDispositions: dispositions,
-	};
+	expect(dispositions.trim().split(/\r?\n/)).toHaveLength(count + 1);
+	expect(Buffer.from(f.captured().input, "base64").length).toBeGreaterThan(0);
+	expect(folder).toContain("brief-1");
+	expect(launched.output).toContain("Review folder:");
+	expect(dispositions).toContain("Brief SHA-256:");
+	expect(dispositions).toContain("Reading 1: closed");
 }

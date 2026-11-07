@@ -126,22 +126,6 @@ export function claimInvoke(
 	return claimInvokeReport(f, message, events);
 }
 
-export function reportClaimFixture() {
-	return {
-		cleanStop,
-		claimCommand,
-		claimEvidenceOutput,
-		claimEvidence,
-		claimReport,
-		claimBrief,
-		commitEnvironment: claimCommitEnvironment,
-		resumeLog: claimResumeLog,
-		claimOutput,
-		invokeReport: claimInvokeReport,
-		invokeClaim: claimInvoke,
-	};
-}
-
 export function expectAcceptedClaimRun(f: ClaimFixture, result: InvokeResult) {
 	expect(result.status, result.output).toBe(0);
 	expect(f.captured().args).not.toContain("resume");

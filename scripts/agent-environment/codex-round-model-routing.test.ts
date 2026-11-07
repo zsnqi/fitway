@@ -81,9 +81,7 @@ describe("D1 model choice, catalog, and resume", () => {
 			"--run",
 			f.run,
 		]);
-		expect(refused(f, result, String(accepted[0]))).toMatchObject({
-			status: 1,
-		});
+		refused(f, result, String(accepted[0]));
 		expect(result.stderr).toContain(String(accepted[1]));
 	});
 
@@ -110,9 +108,7 @@ describe("D2 absent catalog and missing key gates", () => {
 		const result = f.invokeRaw([f.brief, "--run", f.run], {
 			OPENDESIGN_API_KEY: "test-only",
 		});
-		expect(
-			refused(f, result, "DeepSeek catalog source not found"),
-		).toMatchObject({ status: 1 });
+		refused(f, result, "DeepSeek catalog source not found");
 		expect(result.stderr).toContain(source);
 		expect(existsSync(f.run)).toBe(false);
 	});
@@ -127,13 +123,11 @@ describe("D2 absent catalog and missing key gates", () => {
 		const result = f.invokeRaw([f.brief, "--run", f.run], {
 			OPENDESIGN_API_KEY: "test-only",
 		});
-		expect(
-			refused(
-				f,
-				result,
-				"DeepSeek catalog source must hold exactly one model entry",
-			),
-		).toMatchObject({ status: 1 });
+		refused(
+			f,
+			result,
+			"DeepSeek catalog source must hold exactly one model entry",
+		);
 		expect(result.stderr).toContain(source);
 		expect(existsSync(f.run)).toBe(false);
 	});
@@ -168,18 +162,14 @@ describe("D2 absent catalog and missing key gates", () => {
 		const reviewResult = review.invoke(undefined, {
 			OPENDESIGN_API_KEY: "",
 		});
-		expect(refused(review, reviewResult, "OPENDESIGN_API_KEY")).toMatchObject({
-			status: 1,
-		});
+		refused(review, reviewResult, "OPENDESIGN_API_KEY");
 		expect(review.reviewCalls()).toEqual([]);
 
 		const launch = fixture();
 		const launchResult = launch.invokeRaw([launch.brief, "--run", launch.run], {
 			OPENDESIGN_API_KEY: "",
 		});
-		expect(refused(launch, launchResult, "OPENDESIGN_API_KEY")).toMatchObject({
-			status: 1,
-		});
+		refused(launch, launchResult, "OPENDESIGN_API_KEY");
 		expect(existsSync(launch.run)).toBe(false);
 
 		const resume = fixture();
@@ -190,8 +180,6 @@ describe("D2 absent catalog and missing key gates", () => {
 		const resumeResult = resume.invokeRaw(["resume", resume.run], {
 			OPENDESIGN_API_KEY: "",
 		});
-		expect(refused(resume, resumeResult, "OPENDESIGN_API_KEY")).toMatchObject({
-			status: 1,
-		});
+		refused(resume, resumeResult, "OPENDESIGN_API_KEY");
 	});
 });

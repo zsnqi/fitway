@@ -6,13 +6,11 @@ import * as support from "./codex-round-test-support.ts";
 describe("R1 pre-launch review", () => {
 	it("refuses a review folder inside Git before running the review", () => {
 		const f = support.fixture();
-		expect(
-			support.reviewRefused(
-				f,
-				f.invoke(undefined, { FITWAY_BRIEF_REVIEW_ROOT: f.coordinator }),
-				"inside a Git working tree",
-			),
-		).toMatchObject({ status: 1 });
+		support.reviewRefused(
+			f,
+			f.invoke(undefined, { FITWAY_BRIEF_REVIEW_ROOT: f.coordinator }),
+			"inside a Git working tree",
+		);
 		expect(f.reviewCalls()).toEqual([]);
 	});
 
@@ -20,9 +18,7 @@ describe("R1 pre-launch review", () => {
 		const f = support.fixture();
 		const folder = f.answerReview("No such readings.\n", undefined, 2);
 		writeFileSync(path.join(folder, "review.json"), '{"status":"running"}\n');
-		expect(
-			support.reviewRefused(f, f.invoke(), "review failed or is unfinished"),
-		).toMatchObject({ status: 1 });
+		support.reviewRefused(f, f.invoke(), "review failed or is unfinished");
 		expect(f.reviewCalls()).toEqual([]);
 	});
 
@@ -44,13 +40,11 @@ describe("R1 pre-launch review", () => {
 			saved,
 		);
 		rmSync(f.capture);
-		expect(
-			support.refused(
-				f,
-				f.invoke(["resume", f.run, "--new-review"]),
-				"expected resume",
-			),
-		).toMatchObject({ status: 1 });
+		support.refused(
+			f,
+			f.invoke(["resume", f.run, "--new-review"]),
+			"expected resume",
+		);
 		expect(f.reviewCalls()).toEqual([]);
 	});
 });

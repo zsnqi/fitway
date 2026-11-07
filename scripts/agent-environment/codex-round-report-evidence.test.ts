@@ -2,11 +2,17 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+	claimBrief,
+	claimEvidence,
+	claimInvoke,
+	claimInvokeReport,
+	claimOutput,
+	claimReport,
+	cleanStop,
 	expectAcceptedClaimRun,
 	expectMissingCommitAndLadder,
 	expectResumedClaimFailure,
 	expectResumedClaimRun,
-	reportClaimFixture,
 } from "./codex-round-report-support.ts";
 import {
 	commandEvent,
@@ -14,15 +20,13 @@ import {
 	jsonLinesIfPresent,
 } from "./codex-round-test-support.ts";
 
-const claim = reportClaimFixture();
-
 describe("L3 report claims", () => {
 	it("accepts a report-only brief that names no commit", () => {
 		const f = fixture();
-		claim.claimBrief(f, { verify: false, commit: false });
+		claimBrief(f, { verify: false, commit: false });
 		const result = f.invoke(undefined, {
-			ROUND_EVENTS: claim.claimEvidence,
-			ROUND_MESSAGE: claim.claimReport(),
+			ROUND_EVENTS: claimEvidence,
+			ROUND_MESSAGE: claimReport(),
 		});
 		expect(result.status, result.output).toBe(0);
 		expect(f.captured().args).not.toContain("resume");
@@ -36,11 +40,11 @@ describe("L3 report claims", () => {
 
 	it("W1 accepts a grading report that names the launch HEAD and quotes the ladder outcome", () => {
 		const f = fixture();
-		claim.claimBrief(f, { commit: false });
+		claimBrief(f, { commit: false });
 		const result = f.invoke(undefined, {
-			ROUND_EVENTS: claim.claimEvidence,
-			ROUND_MESSAGE: `Base commit: \`${f.head}\`\n${claim.claimReport()}`,
-			ROUND_RESUME_MESSAGE: claim.cleanStop,
+			ROUND_EVENTS: claimEvidence,
+			ROUND_MESSAGE: `Base commit: \`${f.head}\`\n${claimReport()}`,
+			ROUND_RESUME_MESSAGE: cleanStop,
 		});
 		expect(result.status, result.output).toBe(0);
 		expectAcceptedClaimRun(f, result);
@@ -48,9 +52,9 @@ describe("L3 report claims", () => {
 
 	it("accepts a report backed by the commit and fast-ladder events", () => {
 		const f = fixture();
-		const result = claim.invokeReport(
+		const result = claimInvokeReport(
 			f,
-			claim.claimReport("__HEAD__"),
+			claimReport("__HEAD__"),
 			commandEvent(
 				"powershell.exe -Command 'git commit -m claim-fixture'",
 				0,
@@ -63,9 +67,9 @@ describe("L3 report claims", () => {
 
 	it("V1 accepts a report that cites the base commit before its own HEAD", () => {
 		const f = fixture();
-		const result = claim.invokeReport(
+		const result = claimInvokeReport(
 			f,
-			`Base commit: \`${f.head}\`\n${claim.claimReport("__HEAD__")}`,
+			`Base commit: \`${f.head}\`\n${claimReport("__HEAD__")}`,
 			commandEvent(
 				"bash -lc 'git commit -m claim-fixture'",
 				0,
@@ -77,9 +81,9 @@ describe("L3 report claims", () => {
 
 	it("V1 accepts an abbreviated worktree HEAD beside a full base SHA", () => {
 		const f = fixture();
-		const result = claim.invokeReport(
+		const result = claimInvokeReport(
 			f,
-			`Base commit: \`${f.head}\`\n${claim.claimReport("__HEAD_SHORT__")}`,
+			`Base commit: \`${f.head}\`\n${claimReport("__HEAD_SHORT__")}`,
 			commandEvent("pnpm verify:fast"),
 			{ ROUND_NO_COMMIT_EVENT: "0" },
 		);
@@ -88,9 +92,9 @@ describe("L3 report claims", () => {
 
 	it("W2 does not count commands named only in echoed text", () => {
 		const f = fixture();
-		const result = claim.invokeReport(
+		const result = claimInvokeReport(
 			f,
-			claim.claimReport("__HEAD__"),
+			claimReport("__HEAD__"),
 			commandEvent("echo git commit") +
 				commandEvent("echo node scripts/verify.mjs fast"),
 		);
@@ -103,9 +107,9 @@ describe("L3 report claims", () => {
 		"--help",
 	])("W2 does not count git commit %s", (option) => {
 		const f = fixture();
-		const result = claim.invokeReport(
+		const result = claimInvokeReport(
 			f,
-			claim.claimReport("__HEAD__"),
+			claimReport("__HEAD__"),
 			commandEvent(
 				`git commit ${option} -m claim-fixture`,
 				0,
@@ -120,9 +124,9 @@ describe("L3 report claims", () => {
 		"||",
 	])("W2 does not count a command masked with %s", (separator) => {
 		const f = fixture();
-		const result = claim.invokeReport(
+		const result = claimInvokeReport(
 			f,
-			claim.claimReport("__HEAD__"),
+			claimReport("__HEAD__"),
 			commandEvent(
 				`git commit -m claim-fixture ${separator} echo later`,
 				0,
@@ -135,9 +139,9 @@ describe("L3 report claims", () => {
 
 	it("W2 requires the last commit output to name worktree HEAD", () => {
 		const f = fixture();
-		const result = claim.invokeReport(
+		const result = claimInvokeReport(
 			f,
-			claim.claimReport("__HEAD__"),
+			claimReport("__HEAD__"),
 			commandEvent(
 				"git commit -m claim-fixture",
 				0,
@@ -174,9 +178,9 @@ describe("L3 report claims", () => {
 		],
 	])("X1 accepts a commit after %s", (_name, command) => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
-			commandEvent(command(f), 0, claim.claimOutput) +
+			commandEvent(command(f), 0, claimOutput) +
 				commandEvent("node scripts/verify.mjs fast"),
 		);
 		expectAcceptedClaimRun(f, result);
@@ -187,9 +191,9 @@ describe("L3 report claims", () => {
 		["PowerShell", `powershell.exe -Command 'git commit -m "a \`"; b | c"'`],
 	])("Y1 accepts an escaped quote in a %s commit message", (_name, command) => {
 		const f = fixture();
-		const result = claim.invokeClaim(
+		const result = claimInvoke(
 			f,
-			commandEvent(command, 0, claim.claimOutput) +
+			commandEvent(command, 0, claimOutput) +
 				commandEvent("node scripts/verify.mjs fast"),
 		);
 		expectAcceptedClaimRun(f, result);

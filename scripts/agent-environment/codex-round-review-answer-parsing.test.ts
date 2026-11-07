@@ -110,13 +110,11 @@ describe("R1 pre-launch review", () => {
 	])("refuses an incomplete one-line reading: %s", (_kind, answer) => {
 		const f = fixture();
 		rmSync(f.reviewRoot, { recursive: true });
-		expect(
-			reviewRefused(
-				f,
-				f.invoke(undefined, { REVIEW_ANSWER: answer }),
-				"answer cannot be read as readings",
-			),
-		).toMatchObject({ status: 1 });
+		reviewRefused(
+			f,
+			f.invoke(undefined, { REVIEW_ANSWER: answer }),
+			"answer cannot be read as readings",
+		);
 	});
 
 	it("reads a wrapped one-line reading as one block", () => {
@@ -209,9 +207,7 @@ describe("R1 pre-launch review", () => {
 	])("refuses an explicitly empty label in %s", (_name, answer) => {
 		const f = fixture();
 		f.answerReview(answer);
-		expect(
-			reviewRefused(f, f.invoke(), "answer cannot be read as readings"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
 	it("refuses a wrapped reading that loses its completing labels", () => {
@@ -229,9 +225,7 @@ describe("R1 pre-launch review", () => {
 			"",
 		);
 		f.answerReview(answer);
-		expect(
-			reviewRefused(f, f.invoke(), "answer cannot be read as readings"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
 	it.each([
@@ -243,9 +237,7 @@ describe("R1 pre-launch review", () => {
 	])("refuses a one-line reading with %s", (_name, answer) => {
 		const f = fixture();
 		f.answerReview(`1. ${answer}\n`);
-		expect(
-			reviewRefused(f, f.invoke(), "answer cannot be read as readings"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 	});
 
 	it("reads the vf-fixes preface answer as exactly five readings", () => {
@@ -258,9 +250,7 @@ describe("R1 pre-launch review", () => {
 		rmSync(f.reviewRoot, { recursive: true });
 		const result = f.invoke(undefined, { REVIEW_ANSWER_FILE: answerFile });
 		expect(result.stdout.match(/^Reading \d+:$/gm)).toHaveLength(5);
-		expect(
-			reviewRefused(f, result, "record its dispositions before launching"),
-		).toMatchObject({ status: 1 });
+		reviewRefused(f, result, "record its dispositions before launching");
 		closeReviewReadings(f);
 		const launched = f.invoke();
 		expect(launched.status, launched.output).toBe(0);

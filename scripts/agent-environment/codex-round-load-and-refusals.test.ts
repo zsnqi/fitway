@@ -99,9 +99,7 @@ describe("L3 refusals", () => {
 			"change\n",
 		);
 		if (kind === "staged") git(f.worktree, "add", ".");
-		expect(refused(f, f.invoke(), "uncommitted changes")).toMatchObject({
-			status: 1,
-		});
+		refused(f, f.invoke(), "uncommitted changes");
 	});
 	it.each([
 		"TEMP",
@@ -113,7 +111,7 @@ describe("L3 refusals", () => {
 		const result = f.invoke([f.brief, "high", "--new-review", "--run", f.run], {
 			[key]: bad,
 		});
-		expect(refused(f, result, key)).toMatchObject({ status: 1 });
+		refused(f, result, key);
 		expect(result.stderr).toContain("D:/fitway-temp");
 		expect(f.reviewCalls()).toEqual([]);
 		expect(existsSync(f.run)).toBe(false);
@@ -128,7 +126,7 @@ describe("L3 refusals", () => {
 		delete f.env.TMP;
 		Object.assign(f.env, { temp: bad });
 		const result = f.invoke();
-		expect(refused(f, result, "temp")).toMatchObject({ status: 1 });
+		refused(f, result, "temp");
 		expect(result.stderr).toContain("temp");
 		expect(f.reviewCalls()).toEqual([]);
 		expect(existsSync(f.run)).toBe(false);
@@ -140,7 +138,7 @@ describe("L3 refusals", () => {
 		const result = f.invoke(["resume", f.run], {
 			TEMP: "D:/FITWAY-TEMP/../fitway-temp/resume",
 		});
-		expect(refused(f, result, "TEMP")).toMatchObject({ status: 1 });
+		refused(f, result, "TEMP");
 		expect(existsSync(f.capture)).toBe(false);
 	});
 	it("keeps a sibling of D:/fitway-temp and other values unchanged", () => {
@@ -176,28 +174,24 @@ describe("L3 refusals", () => {
 	);
 	it("refuses an unsupported level", () => {
 		const f = fixture();
-		expect(
-			refused(
-				f,
-				f.invoke([f.brief, "ultra", "--run", f.run]),
-				"unsupported reasoning level",
-			),
-		).toMatchObject({ status: 1 });
+		refused(
+			f,
+			f.invoke([f.brief, "ultra", "--run", f.run]),
+			"unsupported reasoning level",
+		);
 	});
 	it("refuses a run in any Git tree, including a nonexistent descendant", () => {
 		const f = fixture();
-		expect(
-			refused(
-				f,
-				f.invoke([
-					f.brief,
-					"high",
-					"--run",
-					path.join(f.coordinator, "missing", "run"),
-				]),
-				"inside a Git working tree",
-			),
-		).toMatchObject({ status: 1 });
+		refused(
+			f,
+			f.invoke([
+				f.brief,
+				"high",
+				"--run",
+				path.join(f.coordinator, "missing", "run"),
+			]),
+			"inside a Git working tree",
+		);
 	});
 	it.each([
 		[
@@ -219,18 +213,11 @@ describe("L3 refusals", () => {
 			process.platform === "win32" ? "junction" : "dir",
 		);
 		try {
-			expect(
-				refused(
-					f,
-					f.invoke([
-						f.brief,
-						"high",
-						"--run",
-						path.join(link, "missing", "run"),
-					]),
-					"inside a Git working tree",
-				),
-			).toMatchObject({ status: 1 });
+			refused(
+				f,
+				f.invoke([f.brief, "high", "--run", path.join(link, "missing", "run")]),
+				"inside a Git working tree",
+			);
 		} finally {
 			rmSync(link);
 		}
@@ -240,9 +227,7 @@ describe("L3 refusals", () => {
 		f.invoke();
 		rmSync(f.capture);
 		const original = readFileSync(path.join(f.run, "events.jsonl"));
-		expect(refused(f, f.invoke(), "already holds a run")).toMatchObject({
-			status: 1,
-		});
+		refused(f, f.invoke(), "already holds a run");
 		expect(readFileSync(path.join(f.run, "events.jsonl"))).toEqual(original);
 	});
 	it("refuses absent codex on PATH", () => {
@@ -256,13 +241,11 @@ describe("L3 refusals", () => {
 						.trim()
 						.split(/\r?\n/)[0]
 				: execFileSync("which", ["git"], { encoding: "utf8" }).trim();
-		expect(
-			refused(
-				f,
-				f.invoke(undefined, { PATH: path.dirname(gitExecutable) }),
-				"codex is not on PATH",
-			),
-		).toMatchObject({ status: 1 });
+		refused(
+			f,
+			f.invoke(undefined, { PATH: path.dirname(gitExecutable) }),
+			"codex is not on PATH",
+		);
 		expect(existsSync(f.run)).toBe(false);
 	});
 });

@@ -24,20 +24,16 @@ describe("R1 pre-launch review", () => {
 		const firstChange = answer.indexOf("\n**G2.", firstWrong);
 		const missing = `${answer.slice(0, firstWrong)}${answer.slice(firstChange)}`;
 		f.answerReview(missing);
-		expect(
-			support.reviewRefused(f, f.invoke(), "answer cannot be read as readings"),
-		).toMatchObject({ status: 1 });
+		support.reviewRefused(f, f.invoke(), "answer cannot be read as readings");
 
 		const tooMany = support.fixture();
 		tooMany.answerReview(
 			`${answer}\n**X9. Extra reading**\n- **Literal reading:** Extra text.\n- **What goes wrong:** Extra wrong.\n- **One-line change:** Extra change.\n`,
 		);
-		expect(
-			support.reviewRefused(
-				tooMany,
-				tooMany.invoke(),
-				"answer cannot be read as readings",
-			),
-		).toMatchObject({ status: 1 });
+		support.reviewRefused(
+			tooMany,
+			tooMany.invoke(),
+			"answer cannot be read as readings",
+		);
 	});
 });
