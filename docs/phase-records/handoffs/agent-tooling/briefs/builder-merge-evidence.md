@@ -45,7 +45,7 @@ rule existed. Hooks are never skipped, so the check must understand a merge.
 
 ## Outcome
 
-- **M1.** While a merge is in progress (`git rev-parse -q --verify MERGE_HEAD` succeeds; `.git/MERGE_HEAD` may list
+- **M1.** While a merge is in progress (`git rev-parse -q --verify MERGE_HEAD` succeeds; the merge-head file may list
   several commits, so read every line of it through git, for example `git rev-parse` of each, never a fixed path
   under `.git`, which is a file in a worktree), a staged line counts as added only when it is added against HEAD and
   against every merge parent: the intersection of the added line numbers of `git diff --cached --unified=0 <parent> --
