@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#070707">
+  <title>FITWAY</title>
+  <meta name="description" content="FITWAY public crowd page, direction 7b from sketch 1 (public-redesign-r01): the inscription. Concept only, synthetic data, a still. Not production.">
+  <link rel="stylesheet" href="public-sketch-7b.css">
+</head>
+<body>
+  <div class="page" data-level="3">
+    <div class="bloom" aria-hidden="true"></div>
+    <header class="top">
+      <span class="brand" lang="en">
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
+          <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
+          <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
+          <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
+        </svg>
+        <span class="wordmark">FITWAY</span>
+      </span>
+      <a class="lang" href="#" lang="en">English</a>
+    </header>
+
+    <main class="sign">
+      <h1 class="word">
+        <span class="sr-only" data-k="said">الازدحام الآن: مزدحم</span>
+        <span class="ins" aria-hidden="true" data-probe="word"></span>
+      </h1>
+      <span class="sr-only" role="img" aria-label="مستوى الازدحام: مزدحم" data-k="mark"></span>
+      <p class="facts" data-probe="facts">
+        <span class="line"><bdi class="num count" data-k="count">70</bdi> داخل الصالة الآن · تقريبًا</span>
+        <span class="line">مفتوح حتى <bdi class="num">1:00</bdi> ص</span>
+      </p>
+      <footer class="stamp" data-probe="stamp">
+        <span class="fresh"><i class="dot" aria-hidden="true"></i>مباشر · آخر قراءة <bdi class="num">7:41</bdi> م</span>
+        <span class="pct">نسبة الامتلاء <bdi class="num" data-k="pct">58%</bdi></span>
+      </footer>
+    </main>
+  </div>
+  <script>
+    // A still. ?level=packed shows the same page at the highest level, with values that agree with it.
+    (function () {
+      var packed = /[?&]level=packed(&|$)/.test(location.search);
+      var level = packed ? 4 : 3;
+      var page = document.querySelector(".page");
+      page.setAttribute("data-level", String(level));
+      // Each level word with the place its elongation (kashida) goes: [line, ...], a line is [before, after]
+      // or plain text. The elongation always carries the four levels; its length is the same at every level.
+      var words = {
+        1: { word: "هادئ", lines: [["ه", "ادئ"]] },
+        2: { word: "متوسط", lines: [["متوس", "ط"]] },
+        3: { word: "مزدحم", lines: [["مزدح", "م"]] },
+        4: { word: "شديد الازدحام", lines: ["شديد", ["الازدح", "ام"]] }
+      };
+      var w = words[level];
+      var tat = function (n) { return new Array(n + 1).join("ـ"); };
+      var per = level === 4 ? 6 : 5;
+      var stroke = '<span class="k">' + [1, 2, 3, 4].map(function (i) {
+        return '<span class="s s' + i + '">' + tat(per) + "</span>";
+      }).join("") + "</span>";
+      document.querySelector(".ins").innerHTML = w.lines.map(function (ln) {
+        return '<span class="ln">' + (typeof ln === "string" ? ln : ln[0] + stroke + ln[1]) + "</span>";
+      }).join("");
+      if (packed) {
+        var v = { count: "106", pct: "88%" };
+        document.querySelectorAll("[data-k]").forEach(function (el) {
+          var k = el.getAttribute("data-k");
+          if (k === "mark") el.setAttribute("aria-label", "مستوى الازدحام: " + w.word);
+          else if (k === "said") el.textContent = "الازدحام الآن: " + w.word;
+          else if (v[k]) el.textContent = v[k];
+        });
+      }
+    })();
+    // Ready once the Readex Pro weights in use have loaded; then the light is set on the current length.
+    Promise.all(["400", "500", "600"].map(function (w) {
+      return document.fonts.load(w + ' 16px "Readex Pro"', "العربية FITWAY 0123456789").catch(function () {});
+    })).then(function () {
+      var page = document.querySelector(".page");
+      var cur = document.querySelector(".s" + page.getAttribute("data-level"));
+      var p = page.getBoundingClientRect(), r = cur.getBoundingClientRect();
+      var probe = document.createElement("canvas").getContext("2d");
+      var cs = getComputedStyle(cur);
+      probe.font = cs.fontWeight + " " + cs.fontSize + ' "Readex Pro"';
+      var m = probe.measureText("ـ");
+      // The stroke sits on the baseline; find the baseline from the line box and the font's metrics.
+      var base = r.top + (r.height + m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2;
+      page.style.setProperty("--bx", (r.left + r.width / 2 - p.left) + "px");
+      page.style.setProperty("--by", (base - m.actualBoundingBoxAscent / 2 - p.top) + "px");
+      window.__sketch = { ready: true };
+    });
+  </script>
+</body>
+</html>

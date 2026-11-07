@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#070707">
+  <title>FITWAY</title>
+  <meta name="description" content="FITWAY public crowd page, sketch 3 of 4 (public-redesign-r01): the strip of the four words. Concept only, synthetic data, a still. Not production.">
+  <link rel="stylesheet" href="fonts/readex-pro.css">
+  <link rel="stylesheet" href="public-sketch-3.css">
+</head>
+<body>
+  <div class="page">
+    <div class="wash" aria-hidden="true"></div>
+    <header class="top">
+      <span class="brand" lang="en">
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
+          <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
+          <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
+          <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
+        </svg>
+        <span class="wordmark">FITWAY</span>
+      </span>
+      <a class="lang" href="#" lang="en">English</a>
+    </header>
+
+    <main>
+      <!-- The four words in one line, in reading order, at display size. The screen is a window on the line,
+           centred on the current word; the neighbours run off both edges. -->
+      <h1 class="sr-only">الازدحام الآن: مزدحم</h1>
+      <div class="strip" role="img" aria-label="مستوى الازدحام: مزدحم">
+        <div class="row" aria-hidden="true">
+          <div class="side before"><span>هادئ</span><span>متوسط</span></div>
+          <div class="current"><span data-probe="word">مزدحم</span></div>
+          <div class="side after"><span>شديد الازدحام</span></div>
+        </div>
+      </div>
+      <div class="glow" aria-hidden="true"></div>
+      <p class="facts">
+        <span class="line"><bdi class="num count">70</bdi> داخل الصالة الآن · تقريبًا</span>
+        <span class="line">مفتوح حتى <bdi class="num">1:00</bdi> ص</span>
+      </p>
+      <footer class="stamp">
+        <span class="fresh"><i class="dot" aria-hidden="true"></i>مباشر · آخر قراءة <bdi class="num">7:41</bdi> م</span>
+        <span class="pct">نسبة الامتلاء <bdi class="num">58%</bdi></span>
+      </footer>
+    </main>
+  </div>
+  <script>
+    // A still: ready once both Readex Pro weights have loaded.
+    Promise.all(["400", "500"].map(function (w) {
+      return document.fonts.load(w + ' 16px "Readex Pro"', "العربية FITWAY 0123456789").catch(function () {});
+    })).then(function () { window.__sketch = { ready: true }; });
+  </script>
+</body>
+</html>

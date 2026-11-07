@@ -1,0 +1,151 @@
+/* FITWAY public crowd page, direction 7b from sketch 1: the inscription. Concept only, synthetic data, a still
+ * (phone, Arabic, live; ?level=packed for the highest level).
+ * Sketch 1 drew the four levels as a hairline under the word. Here the hairline moves into the word: the word is
+ * set the way Arabic signs and inscriptions have always met a measure, with a kashida (an elongated joining
+ * stroke), and that stroke carries the four levels in reading order. Lower levels deep red, the current length
+ * lit in FITWAY's hottest red, the levels above it unlit. The light is no longer in a corner: it is the lit length
+ * of the stroke, and it falls on the dark around it. Word and mark are one object; the stroke is the same length
+ * at every level. Derived from the level only (data-level 1-4); the word is always written. */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --deep: #a3112a;
+  --unlit: #2c2a2b;
+  --live: #4be29b;
+  --line-2: rgba(255, 255, 255, 0.1);
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+h1, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 0 20px 20px;
+}
+
+/* The light the lit length throws on the dark around it (placed on the current length once the font is in). */
+.bloom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  --lit: radial-gradient(ellipse 520px 420px at var(--bx, 50%) var(--by, 50%), rgb(229 25 53 / 0.5) 0%, rgb(163 17 42 / 0.36) 16%, rgb(110 11 27 / 0.3) 34%, rgb(77 7 19 / 0.2) 58%, rgb(8 8 8 / 0) 100%);
+  background: var(--lit);
+}
+.bloom::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.18;
+  -webkit-mask-image: var(--lit);
+  mask-image: var(--lit);
+}
+
+.top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sign {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: 1fr auto auto 1.1fr auto;
+}
+
+/* The inscription: the full measure, edge to edge of the content box, at one weight. */
+.word { grid-row: 2; margin-inline: -10px; }
+.ins { display: block; font-size: 80px; line-height: 1.32; font-weight: 600; white-space: nowrap; }
+.page[data-level="4"] .ins { font-size: 70px; line-height: 1.3; }
+.ln { display: block; }
+.k, .s { font-style: normal; }
+
+/* The four lengths of the stroke, in reading order. The gap after each is cut from its end. */
+.s { color: var(--unlit); }
+.s1, .s2, .s3 {
+  -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 4px), transparent 0);
+  mask-image: linear-gradient(to left, #000 calc(100% - 4px), transparent 0);
+}
+.page[data-level="2"] .s1,
+.page[data-level="3"] .s1, .page[data-level="3"] .s2,
+.page[data-level="4"] .s1, .page[data-level="4"] .s2, .page[data-level="4"] .s3 { color: var(--deep); }
+.page[data-level="1"] .s1,
+.page[data-level="2"] .s2,
+.page[data-level="3"] .s3,
+.page[data-level="4"] .s4 { color: var(--red-hi); text-shadow: 0 0 6px rgb(255 41 70 / 0.9), 0 0 18px rgb(229 25 53 / 0.6); }
+
+.facts {
+  grid-row: 3;
+  display: grid;
+  gap: 4px;
+  margin-top: 30px;
+  font-size: 19px;
+  line-height: 28px;
+  color: var(--ink-2);
+}
+.facts .count { color: var(--ink); font-weight: 500; }
+
+.stamp {
+  grid-row: 5;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-3);
+}
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); }
+.pct bdi { color: var(--ink-2); }

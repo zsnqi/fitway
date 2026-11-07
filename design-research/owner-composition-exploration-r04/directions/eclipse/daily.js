@@ -1,7 +1,10 @@
 /* Eclipse: FITWAY Owner Daily concept. Synthetic data only; not production.
- * Query: lang=ar|en (default ar), state=live|delayed|nohistory (default live), motion=off (every change instant).
- * The data logic (seeded minute simulation, day constants, monotone interpolation) is reused from
- * ../light-study/app.js, which took it from ../backlight/app.js. Western digits only: numbers are printed with
+ * Query: lang=ar|en (default ar), state=live|delayed|nohistory|loading|closed|unavailable|error (default live),
+ * motion=off (every change instant). With state=loading, arrive=<ms> lets the first payload arrive that many ms after
+ * the page opened (into live) and arrive=never lets the 10 s ceiling turn it into Error; without arrive the skeleton is
+ * held, for review (step 3, second part: Daily's states).
+ * The gym's figures and the seeded minute simulation are gym.js's, shared with every page; the monotone interpolation
+ * is reused from ../light-study/app.js, which took it from ../backlight/app.js. Western digits only: numbers are printed with
  * String(), never Intl or toLocaleString.
  * Motion (Round 6) lives in the "motion" section at the end. The page is complete at first paint; something moves
  * only when the data changes or the owner acts. The one exception is the first-open intro (Round 7 step 3): on the
@@ -14,27 +17,29 @@
   const root = document.documentElement;
   const LANG = root.lang === "en" ? "en" : "ar";
   const RTL = LANG === "ar";
-  const STATE = root.dataset.state || "live";
+  // A middle dot between two parts of a line is silent (aria-hidden); a screen reader hears this comma instead, so the parts
+  // are two phrases, not one run of words (decision 25). It is invisible and takes no room.
+  const SR_SEP = `<span class="sr-only">${RTL ? "، " : ", "}</span>`;
+  // The URL's state. Loading and error are phases of the first payload: both arrive into live (loading on its own,
+  // error after its one retry), so STATE, the data the page shows or will show, is live for them.
+  const PAGE = root.dataset.state || "live";
+  const STATE = PAGE === "loading" || PAGE === "error" ? "live" : PAGE;
   const HAS_HISTORY = STATE !== "nohistory";
+  const CLOSED = STATE === "closed", UNAV = STATE === "unavailable";
+  // "ready": the payload is here (live, delayed, no history, closed, unavailable); "loading": the first payload is
+  // resolving; "error": it could not be loaded; "retrying": its one retry is running.
+  let phase = PAGE === "loading" ? "loading" : PAGE === "error" ? "error" : "ready";
+  if (phase !== "ready") root.dataset.phase = phase;
 
   /* ------------------------------------------------------------------ copy */
   const arMin = (n) => (n === 1 ? "دقيقة" : n === 2 ? "دقيقتين" : n % 100 >= 3 && n % 100 <= 10 ? `${n} دقائق` : `${n} دقيقة`);
   const COPY = {
     ar: {
-      skip: "انتقل إلى المحتوى",
-      concept: "مفهوم استكشافي · بيانات افتراضية",
-      railLabel: "الأقسام",
-      brand: "FITWAY، أسماء الأقسام",
-      nav: { daily: "اليومي", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
-      langAria: "التبديل إلى اللغة الإنجليزية",
-      langGlyph: "EN",
-      docTitle: "اليوم · FITWAY (مفهوم)",
+      // The frame (step 3): the logo's name on keyboard focus, the bar's short names (each inside its section's full
+      // name, which stays the accessible name), the Operations status, and the phone's menu.
+      docTitle: "اليوم · FITWAY",
       title: "اليوم",
       date: `الأربعاء <bdi>23</bdi> سبتمبر <bdi>2026</bdi>`,
-      hours: "ساعات العمل",
-      live: "مباشر",
-      delayed: "متأخر",
-      lastReading: "آخر قراءة",
       glance: "اليوم باختصار",
       nowTitle: "داخل الصالة الآن",
       staleTitle: "آخر قراءة",
@@ -45,50 +50,57 @@
       entriesTitle: "مرات الدخول",
       busiestTitle: "أكثر الأوقات ازدحامًا",
       busiestMeta: `آخر <bdi>7</bdi> أيام`,
-      busiestNote: (n) => `المتوسط ${n}`,
+      busiestNote: (n) => `المعدّل ${n}`,
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
       chartTitle: "ازدحام اليوم",
-      keyLine: `متوسط كل <bdi>30</bdi> دقيقة`,
-      keyUsual: "الأربعاء المعتاد",
+      keyLine: `معدّل الموجودين`,
+      keyUsual: "المعتاد أيام الأربعاء",
+      keyPeak: "قراءة الذروة",
       noHistory: "لا يكفي السجل للمقارنة بعد",
       details: "عرض التفاصيل",
       hideDetails: "إخفاء التفاصيل",
       peakTag: "الذروة",
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
-      ro: { usual: "المعتاد", peak: "الذروة", latest: "آخر قراءة", empty: "الصالة خالية", noReading: "لا قراءة", noReadingYet: "لا قراءة بعد", ahead: "لم يحن بعد", inside: "داخل الصالة" },
+      ro: { usual: "المعتاد", peak: "الذروة", latest: "آخر قراءة", empty: "الصالة خالية", noReading: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingYet: "لا قراءات بعد", ahead: "لم يحن بعد", inside: "داخل الصالة" },
       chartAria: "ازدحام اليوم حسب الوقت",
       keys: "استخدم مفتاحي السهمين للتنقل بين نقاط كل نصف ساعة، ومنها الذروة وآخر قراءة. Home لوقت الفتح، وEnd لآخر قراءة.",
-      avgInside: (v) => `${v} داخل الصالة في المتوسط`,
+      // The phone's kept reading (decision 20's trial): its buttons, named for what they do.
+      band: { prev: "الوقت السابق", next: "الوقت التالي", close: "إغلاق القراءة" },
+      avgInside: (v) => `معدّل الموجودين ${v}`,
       crowdIs: (l) => `الازدحام ${l}`,
       say: (v, l, e) => `داخل الصالة الآن ${v} تقريبًا، ${l}. مرات الدخول ${e}.`,
       detailsTitle: "التفاصيل",
       coverageTitle: "تغطية البيانات",
-      cov: { read: "فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءة", wait: "لا قراءة بعد", ahead: "لم يحن بعد", line: "الخط", usual: "الأربعاء المعتاد" },
-      covReadVal: (a, b) => `${a} من ${b} دقيقة`,
-      covLineVal: `متوسط <bdi>30</bdi> دقيقة حول كل نقطة: <bdi>15</bdi> قبلها و<bdi>15</bdi> بعدها، والأقرب أثقل وزنًا`,
+      cov: { read: "دقائق فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءات", wait: "لا قراءات بعد", ahead: "لم يحن بعد", usual: "المعتاد" },
+      covReadVal: (a, b) => `${bdi(a)} من ${bdi(arMin(b))}`,
       usualEntries: (n) => `المعتاد ${n}`,
-      covUsualVal: `متوسط <bdi>26</bdi> أغسطس و<bdi>2</bdi> و<bdi>9</bdi> و<bdi>16</bdi> سبتمبر`,
-      covUsualNone: `المسجّل يوم أربعاء واحد (<bdi>16</bdi> سبتمبر)`,
+      covUsualVal: `معدّل آخر <bdi>4</bdi> أيام أربعاء`,
+      covUsualNone: `يوم أربعاء واحد فقط في السجل (<bdi>16</bdi> سبتمبر)`,
       minutesTitle: "دقيقة بدقيقة",
+      noReadingsYet: "لا قراءات بعد",
+      // A span in words, the words first (decision 8, user 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م».
+      spanFrom: "من",
+      spanTo: "إلى",
+      spanSince: "منذ",
       minutesAria: "قراءات اليوم دقيقة بدقيقة",
-      cols: ["الوقت", "داخل الصالة", `متوسط <bdi>30</bdi> دقيقة`, "ملاحظة"],
-      notes: { miss: "لا قراءة", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
+      cols: ["الوقت", "داخل الصالة", "معدّل الموجودين", "ملاحظة"],
+      notes: { miss: "لا قراءات", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
+      // Daily's states (step 3, second part). The status word is the same in the header, the phone's badge and its
+      // details; the rest says what the owner can know or do.
+      loadingSay: "جارٍ تحميل قراءات اليوم",
+      checkOps: "تحقّق من حالة التشغيل",
+      errorFull: "تعذّر تحميل قراءات اليوم",
+      errorSay: "تعذّر تحميل القراءات",
+      errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
+      retry: "إعادة المحاولة",
+      retrying: "جارٍ المحاولة…",
+      sayClosed: (t) => `الصالة مغلقة، وتفتح الساعة ${t}.`,
+      sayOffline: "غير متصل: لا عدّ حاليًا.",
     },
     en: {
-      skip: "Skip to content",
-      concept: "Exploration concept · synthetic data",
-      railLabel: "Sections",
-      brand: "FITWAY, section names",
-      nav: { daily: "Daily", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
-      langAria: "Switch to Arabic",
-      langGlyph: "AR",
-      docTitle: "Today · FITWAY (concept)",
+      docTitle: "Today · FITWAY",
       title: "Today",
       date: "Wednesday, 23 September 2026",
-      hours: "Open",
-      live: "Live",
-      delayed: "Delayed",
-      lastReading: "Last reading",
       glance: "Today at a glance",
       nowTitle: "Inside now",
       staleTitle: "Last reading",
@@ -101,44 +113,60 @@
       busiestNote: (n) => `Average ${n}`,
       cmp: { busier: "Busier than usual", quieter: "Quieter than usual", same: "About usual" },
       chartTitle: "Today's crowd",
-      keyLine: "30-min average",
-      keyUsual: "Usual Wednesday",
+      keyLine: "Average inside",
+      keyUsual: "Usual on Wednesdays",
+      keyPeak: "Peak reading",
       noHistory: "Not enough history to compare yet",
       details: "View details",
       hideDetails: "Hide details",
       peakTag: "Peak",
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
-      ro: { usual: "Usual", peak: "Peak", latest: "Latest", empty: "Empty", noReading: "No reading", noReadingYet: "No reading yet", ahead: "Still ahead", inside: "inside" },
+      ro: { usual: "Usual", peak: "Peak", latest: "Latest", empty: "Empty", noReading: "No readings", waiting: "Waiting for readings", pending: "Pending", noReadingYet: "No readings yet", ahead: "Still ahead", inside: "inside" },
       chartAria: "Today's crowd by time",
       keys: "Use the arrow keys to move between the half-hour points, including the peak and the latest reading. Home goes to opening time and End to the latest reading.",
-      avgInside: (v) => `${v} inside on average`,
+      band: { prev: "Previous time", next: "Next time", close: "Close reading" },
+      avgInside: (v) => `Average inside ${v}`,
       crowdIs: (l) => l,
       say: (v, l, e) => `Inside now about ${v}, ${l}. Entries ${e}.`,
       detailsTitle: "Details",
       coverageTitle: "Data coverage",
-      cov: { read: "With a reading", zero: "Open, nobody inside", miss: "No reading", wait: "No reading yet", ahead: "Still ahead", line: "The line", usual: "Usual Wednesday" },
-      covReadVal: (a, b) => `${a} of ${b} minutes`,
-      covLineVal: "Average of the 30 minutes around each point: 15 before and 15 after, weighted toward the middle",
+      cov: { read: "With a reading", zero: "Open, empty", miss: "No readings", wait: "No readings yet", ahead: "Still ahead", usual: "Usual" },
+      covReadVal: (a, b) => `${bdi(a)} of ${bdi(b)} min`,
       usualEntries: (n) => `Usual ${n}`,
-      covUsualVal: "Average of 26 Aug and 2, 9 and 16 Sep",
-      covUsualNone: "Only 1 past Wednesday recorded (16 Sep)",
+      covUsualVal: "Average of the last 4 Wednesdays",
+      covUsualNone: "Only 1 past Wednesday recorded (16 Sep)",
       minutesTitle: "Minute by minute",
+      noReadingsYet: "No readings yet",
+      spanFrom: "from",
+      spanTo: "to",
+      spanSince: "since",
       minutesAria: "Today's readings, minute by minute",
-      cols: ["Time", "Inside", "30-min average", "Note"],
-      notes: { miss: "No reading", zero: "Empty", peak: "Peak", latest: "Latest reading" },
+      cols: ["Time", "Inside", "Average inside", "Note"],
+      notes: { miss: "No readings", zero: "Empty", peak: "Peak", latest: "Latest reading" },
+      loadingSay: "Loading today's readings",
+      checkOps: "Check the Operations status",
+      errorFull: "Couldn't load today's readings",
+      errorSay: "Couldn't load readings",
+      errorHint: "Check the connection, then try again.",
+      retry: "Try again",
+      retrying: "Trying again…",
+      sayClosed: (t) => `The gym is closed and opens at ${t}.`,
+      sayOffline: "Offline: no current count.",
     },
   };
-  const L = COPY[LANG];
+  const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
 
   /* ------------------------------------------------------------ day constants */
-  const DAY = 1140;               // 6:00 AM to 1:00 AM next day, gym time (Riyadh)
-  const YMAX = 80;                // chart scale (capacity is owner-private and not drawn)
+  const G = window.EclipseGym;    // the one gym (gym.js)
+  const DAY = G.DAY;              // 6:00 AM to 1:00 AM next day, gym time (Riyadh)
+  const YMAX = 100;               // chart scale, above the day's highest reading (capacity is owner-private and not drawn)
+  const Y_TICKS = [25, 50, 75, 100];
   const GAP0 = 494, GAP1 = 511;   // no reading 2:14 PM - 2:31 PM
   const ZERO_END = 9;             // open, nobody inside 6:00 AM - 6:09 AM
-  const NOW = 822;                // 7:42 PM
-  const STALE_LAST = 809;         // delayed state: last reading 7:29 PM
+  const NOW = G.NOW.minute;       // 7:42 PM
+  const STALE_LAST = NOW - G.NOW.delayedBy; // delayed state: last reading 7:29 PM
+  const CLOSED_NOW = -48;         // closed state: 5:12 AM, 48 minutes before today's opening
   const WIN = 30;                 // the line: centred 30-minute average (15 before, 15 after)
-  const SEED = 15983;
 
   /* ------------------------------------------------------------ time format */
   function clock(m) {
@@ -151,72 +179,50 @@
   const fmtHour = (m) => { const c = clock(m); return `${c.h12} ${suffix(c.pm)}`; };
   const bdi = (s) => `<bdi>${s}</bdi>`;
   const tb = (m) => bdi(fmtTime(m));
-  // Arabic ranges use a plain ASCII hyphen: an en dash would reverse the range. English uses an en dash.
-  const DASH = RTL ? "-" : "–";
+  // Both languages use the en dash (DAT-3, user 2026-10-01). An Arabic hour range reads as the public page's does, «6 – 7 م»:
+  // its first number stands on the right, the dash between thin spaces, and word joiners (U+2060) keep the range on one line.
+  const DASH = "–";
+  const NUMS = (a, b) => (RTL ? `<bdi dir="rtl">${a}\u2060\u2009\u2060${DASH}\u2060\u2009\u2060${b}</bdi>` : `${a}${DASH}${b}`);
   const range = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
   const timeRange = (a, b) => range(fmtTime(a), fmtTime(b));
   const plainRange = (a, b) => `${a} ${DASH} ${b}`;
-  function hourRange(a, b) {
+  const plainSpan = (a, b) => `${a} ${L.spanTo} ${b}`;
+  function hourRange(a, b, fullPeriod = false) {
     const A = clock(a), B = clock(b);
-    return A.pm === B.pm ? bdi(`${A.h12}${DASH}${B.h12} ${suffix(A.pm)}`) : range(fmtHour(a), fmtHour(b));
-  }
-
-  /* -------------------------------------------------------------- simulation */
-  function mulberry32(a) {
-    return function () {
-      a |= 0; a = (a + 0x6d2b79f5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  const ss = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
-  const bump = (m, mu, sl, sr) => { const z = (m - mu) / (m < mu ? sl : sr); return Math.exp(-0.5 * z * z); };
-  function target(m, p) {
-    if (m < 10) return 0;
-    const ramp = ss((m - 9) / 22);
-    const base = 7 * ss((m - 10) / 60) * (1 - ss((m - 1000) / 140));
-    return ramp * (p.am * bump(m, p.amAt, 34, 44) + p.mid * bump(m, 420, 70, 70) + p.pm * bump(m, p.pmAt, 105, 125)) + base;
-  }
-  // Whole-person count process: entries ~ Poisson(lambda), exits ~ Binomial(occupancy, 1/64), one step per minute.
-  function simulateDay(seed, p) {
-    const rnd = mulberry32(seed);
-    const poisson = (l) => { if (l <= 0) return 0; const lim = Math.exp(-l); let k = 0, q = 1; do { k++; q *= rnd(); } while (q > lim); return k - 1; };
-    const occ = new Array(DAY).fill(0), ent = new Array(DAY).fill(0);
-    let o = 0, prevT = 0;
-    for (let m = 0; m < DAY; m++) {
-      const T = target(m, p);
-      let lam = m < 10 ? 0 : Math.max(0, T - prevT * (63 / 64));
-      if (m === 10) lam = Math.max(lam, 1.2);
-      let x = 0;
-      for (let i = 0; i < o; i++) if (rnd() < 1 / 64) x++;
-      const e = poisson(lam);
-      o = o - x + e;
-      occ[m] = o; ent[m] = e; prevT = T;
+    // Decision 28: this card's one period word belongs to the ending hour, even across noon or midnight.
+    if (fullPeriod && RTL) {
+      const h = ((360 + b) % 1440 + 1440) % 1440 / 60;
+      const period = h < 2 ? "ليلًا" : h < 12 ? "صباحًا" : h < 14 ? "ظهرًا" : "مساءً";
+      return bdi(`${NUMS(A.h12, B.h12)} ${period}`);
     }
-    return { occ, ent };
+    return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range(`${A.h12} ${suffix(A.pm)}`, `${B.h12} ${suffix(B.pm)}`);
   }
-  // The whole synthetic day is simulated up front; readings after "now" are only revealed one minute at a time by
-  // the tuner's "New reading" (motion section), so a simulated live update never invents a point.
-  const today = simulateDay(SEED, { am: 22, amAt: 82, mid: 8, pm: 53, pmAt: 752 });
+  /* A span in words (decision 8, user 2026-10-01): one sentence, the words first, «لا قراءات من 2:14 م إلى 2:31 م» /
+   * "No readings from 2:14 PM to 2:31 PM". It replaces the range first and the dotted mark. It wraps only between its
+   * words: the words stay together, each time keeps its preposition and never breaks inside (DAT-4). */
+  const spanNote = (words, a, b) => `<span class="gapnote"><span class="w">${words}</span> <span class="nw"><span class="w">${L.spanFrom}</span> <span class="rg">${tb(a)}</span></span> <span class="nw"><span class="w">${L.spanTo}</span> <span class="rg">${tb(b)}</span></span></span>`;
+  const spanText = (words, a, b) => `${words} ${L.spanFrom} ${fmtTime(a)} ${L.spanTo} ${fmtTime(b)}`;
+  // In a tooltip the sentence keeps the tooltip's two lines, the words first: the words, then "from … to …", both in the
+  // word's type and colour (one size and one colour for the whole sentence, decision 9, user 2026-10-02).
+  const tipLines = (words, second) => `<div class="tip-main"><span class="tip-word">${words}</span></div><div class="tip-main tip-span"><span class="tip-word">${second}</span></div>`;
+  const spanTip = (words, a, b) => tipLines(words, `<span class="nw">${L.spanFrom} ${tb(a)}</span> <span class="nw">${L.spanTo} ${tb(b)}</span>`);
+  // Waiting for readings (unavailable): «بانتظار القراءات» then «منذ 3:00 م», and the same sentence for assistive
+  // technology, «بانتظار القراءات منذ 3:00 م»; the current time is not printed (decision 12, user 2026-10-02).
+  const waitTip = (a) => tipLines(L.ro.waiting, `<span class="nw">${L.spanSince} ${tb(a)}</span>`);
+  const waitText = (a) => `${L.ro.waiting} ${L.spanSince} ${fmtTime(a)}`;
+
+  /* -------------------------------------------------------------- the day's readings
+   * gym.js simulates the whole day up front; readings after "now" are only revealed one minute at a time by the
+   * key-driven live moments (motion section), so a simulated live update never invents a point. */
+  const DN = G.NOW.dn;
+  const today = G.day(DN);
   // The last 4 Wednesdays (16, 9, 2 Sep and 26 Aug). Complete days.
-  const PAST_WED = [
-    { f: 0.78, a: 0.95, at: 762 },
-    { f: 0.74, a: 1.0, at: 747 },
-    { f: 0.8, a: 0.98, at: 757 },
-    { f: 0.76, a: 1.03, at: 752 },
-  ].map((w, i) => simulateDay(SEED + 1000 * (i + 1), { am: 22 * w.a, amAt: 82, mid: 8, pm: 53 * w.f, pmAt: w.at }));
-  const RECENT = [
-    simulateDay(SEED + 11, { am: 22 * 0.9, amAt: 84, mid: 8, pm: 53 * 0.78, pmAt: 740 }),
-    simulateDay(SEED + 12, { am: 22 * 0.35, amAt: 100, mid: 8 * 0.6, pm: 53 * 0.85, pmAt: 800 }),
-    simulateDay(SEED + 13, { am: 22 * 0.8, amAt: 90, mid: 8, pm: 53 * 0.9, pmAt: 760 }),
-    simulateDay(SEED + 14, { am: 22 * 1.05, amAt: 80, mid: 8, pm: 53 * 1.02, pmAt: 750 }),
-    simulateDay(SEED + 15, { am: 22 * 1.0, amAt: 82, mid: 8, pm: 53 * 1.05, pmAt: 755 }),
-    simulateDay(SEED + 16, { am: 22 * 0.95, amAt: 82, mid: 8, pm: 53 * 0.95, pmAt: 748 }),
-  ];
+  const PAST_WED = [7, 14, 21, 28].map((k) => G.day(DN - k));
+  // The seven complete days before today (16 to 22 Sep): the busiest time's "Last 7 days", Reports' Last 7 days too.
+  const LAST7 = [7, 6, 5, 4, 3, 2, 1].map((k) => DN - k);
 
   const occ = today.occ;
-  const levelOf = (v) => (v <= 24 ? 0 : v <= 48 ? 1 : v <= 68 ? 2 : 3);
+  const levelOf = G.levelOf;
 
   // The line: a centred 30-minute average. At each observed minute it is the mean of the readings from 15 minutes
   // before to 15 minutes after, with the window cut short at opening, at both edges of the missing span and at the
@@ -224,8 +230,8 @@
   // its own segment and stays exactly zero.
   const HALF = WIN / 2;
   // Triangular weights inside the same 15-before/15-after window (the middle minute counts most). A plain box mean
-  // puts this day's crest at 6:38 PM, 9 minutes after the true 6:29 PM peak, because the peak is a spike on a
-  // broad plateau; the triangular weights put it at 6:31 PM. It is still shape-preserving and never overshoots.
+  // puts a day's crest minutes after its true peak when the peak is a spike on a broad plateau; the triangular weights
+  // keep the crest beside it. It is still shape-preserving and never overshoots.
   const centred = (series, m, lo, hi) => {
     let s = 0, n = 0;
     for (let w = Math.max(lo, m - HALF); w <= Math.min(hi, m + HALF); w++) { const k = HALF + 1 - Math.abs(w - m); s += series[w] * k; n += k; }
@@ -308,20 +314,11 @@
     // Usual entries by the latest reading: the last 4 Wednesdays' entries up to the same minute, averaged.
     const usualEntries = Math.round(PAST_WED.reduce((a, d) => a + d.ent.slice(0, last + 1).reduce((x, y) => x + y, 0), 0) / PAST_WED.length);
 
-    // Busiest time: the busiest 2-hour window over the last 7 days (six full days plus today so far).
-    const busiest = (() => {
-      const hourMean = [];
-      for (let h = 0; h < 19; h++) {
-        const vals = RECENT.map((d) => { let s = 0; for (let m = h * 60; m < h * 60 + 60; m++) s += d.occ[m]; return s / 60; });
-        let s = 0, n = 0;
-        for (let m = h * 60; m < h * 60 + 60 && m <= last; m++) if (obs(m)) { s += occ[m]; n++; }
-        if (n) vals.push(s / n);
-        hourMean.push(vals.reduce((a, b) => a + b, 0) / vals.length);
-      }
-      let best = -1, bh = 0;
-      for (let h = 0; h < 18; h++) { const v = (hourMean[h] + hourMean[h + 1]) / 2; if (v > best) { best = v; bh = h; } }
-      return { from: bh * 60, to: bh * 60 + 120, avg: Math.round(best) };
-    })();
+    // Busiest time (GLO-12, Q7; K-21, step 3; DECISIONS item 111): the one-hour slot, on the hour, with the highest
+    // average inside over the seven complete days before today, each day where it was open and read: gym.js's one
+    // function, which Reports' Last 7 days asks for the same days. Every slot averages at least 3 days, Q5's minimum,
+    // since only Friday and Saturday have shorter hours.
+    const busiest = (({ from, to, mean }) => ({ from, to, avg: Math.round(mean) }))(G.busiestHour(LAST7));
 
     const knotSet = new Set();
     for (let m = 0; m <= last; m += STEP) if (obs(m)) knotSet.add(m);
@@ -377,92 +374,64 @@
 
     return { last, nowM, obs, peak, peakM, entries, observed, avg, crestM, usualEntries, busiest, knots, segments, splines, lineAt, compare, usualLatest, checks };
   }
-  const START = { last: STATE === "delayed" ? STALE_LAST : NOW, nowM: NOW };
+  // Closed (before today's opening) and unavailable have no reading today: the latest reading is "none" (-1).
+  const START = { last: STATE === "delayed" ? STALE_LAST : CLOSED || UNAV ? -1 : NOW, nowM: CLOSED ? CLOSED_NOW : NOW };
   let M = compute(START.last, START.nowM);
+  // Unavailable (user 2026-10-01, proposal 4): the edge went offline after its reading at 3:00 PM. The chart draws the
+  // live demo's own line from opening to that reading, and nothing after it; M (the cards' truth) stays "no reading".
+  const UNAV_LAST = 540;                                   // 3:00 PM
+  const LIVE = UNAV ? compute(NOW, NOW) : null;
 
   /* ---------------------------------------------------------------- icons */
   const ICON = {
-    clock: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 2"/></svg>`,
+    clock: EclipseFrame.icons.clock,
     up: `<svg class="trend" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 16.5l5.2-5.2 3.6 3.6L20 7.7"/><path d="M14.6 7.7H20v5.4"/></svg>`,
     down: `<svg class="trend" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7.5l5.2 5.2 3.6-3.6L20 16.3"/><path d="M14.6 16.3H20v-5.4"/></svg>`,
     same: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9.5h14M5 14.5h14"/></svg>`,
     info: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/></svg>`,
+    // The states' marks (step 3, second part): offline is a circle struck through; an error is the alert mark. Neither
+    // mirrors (ICO-5). Closed is a hollow ring the live dot's size (.dot.ring, CSS).
+    offline: EclipseFrame.icons.offline,
+    alert: EclipseFrame.icons.error,
   };
 
   /* ------------------------------------------------------------ motion settings
-   * Motion is on unless the system asks for reduced motion, the URL says ?motion=off, or the tuner's stored
-   * choice turned it off (stored choices are ignored with ?tuner=0). Nothing waits for it: the page is complete at
-   * first paint either way. */
+   * Motion is on unless the system asks for reduced motion or the URL says ?motion=off. Nothing waits for it: the
+   * page is complete at first paint either way. */
   const params = new URLSearchParams(location.search);
   const URL_OFF = params.get("motion") === "off";
-  const TUNER_OFF = params.get("tuner") === "0";
-  // The tuner's Motion group keeps three values in this key: the Motion switch; the hover speed (Round 7 step 2), a
-  // multiplier on the chart marker's follow (1 is the reference clip's feel; 2 settles twice as fast); and the intro
-  // speed (Round 7 step 3), a multiplier on the first-open intro (1 is the designed length; 2 plays it twice as fast).
-  const MOTION_STORE = "fitway.eclipse.v3.motion";
-  const MOTION_DEFAULTS = { motion: true, hoverSpeed: 1, introSpeed: 1 };
-  const HOVER_SPEED = { min: 0.5, max: 2 };
-  const clampSpeed = (v) => Math.min(HOVER_SPEED.max, Math.max(HOVER_SPEED.min, v));
-  const INTRO_SPEED = { min: 0.5, max: 2 };
-  const clampIntroSpeed = (v) => Math.min(INTRO_SPEED.max, Math.max(INTRO_SPEED.min, v));
+  const KEY_MOMENTS = params.get("live-keys") === "1";
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
-  let opts = (() => {
-    const o = { ...MOTION_DEFAULTS };
-    if (TUNER_OFF) return o;
-    try {
-      const raw = JSON.parse(localStorage.getItem(MOTION_STORE));
-      if (raw && typeof raw.motion === "boolean") o.motion = raw.motion;
-      if (raw && Number.isFinite(raw.hoverSpeed)) o.hoverSpeed = clampSpeed(raw.hoverSpeed);
-      if (raw && Number.isFinite(raw.introSpeed)) o.introSpeed = clampIntroSpeed(raw.introSpeed);
-    } catch (e) { /* storage unavailable: defaults */ }
-    return o;
-  })();
-  const motionOn = () => opts.motion && !URL_OFF && !mqReduce.matches;
+  const motionOn = () => !URL_OFF && !mqReduce.matches;
   root.dataset.motion = motionOn() ? "on" : "off";
+  // The interaction motion every Owner page shares (motion.js: the status's details, the phone's menu, a label).
+  const Motion = window.EclipseMotion;
 
   /* ---------------------------------------------------------------- shell */
-  document.title = L.docTitle;
-  document.querySelectorAll("[data-t]").forEach((el) => { const v = L[el.dataset.t]; if (typeof v === "string") el.innerHTML = v; });
-  const rail = $("#rail"), brand = $("#brand");
-  rail.setAttribute("aria-label", L.railLabel);
-  brand.setAttribute("aria-label", L.brand);
-  document.querySelectorAll(".rail-item[data-nav]").forEach((a) => {
-    const key = a.dataset.nav, name = L.nav[key];
-    $(".rail-name", a).textContent = name;
-    a.setAttribute("aria-label", key === "lang" ? L.langAria : name);
-    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
-  });
-  $("#lang-glyph").textContent = L.langGlyph;
-  $("#lang-glyph").setAttribute("lang", "en");
-  {
-    const p = new URLSearchParams(location.search);
-    p.set("lang", RTL ? "en" : "ar");
-    const link = $("#lang-link");
-    link.setAttribute("href", `?${p.toString()}`);
-    link.setAttribute("hreflang", RTL ? "en" : "ar");
-    $(".rail-name", link).setAttribute("lang", RTL ? "en" : "ar");
-  }
-  let railOpen = false;
-  const setRail = (open) => {
-    if (open === railOpen) return;
-    endIntro("rail"); // the intro yields to the owner: it settles at once (motion section)
-    railOpen = open;
-    brand.setAttribute("aria-expanded", String(open));
-    animateRail(open); // motion section; without motion it only switches data-open
+  const DAILY_STATUS = {
+    error: () => ({ cls: "is-err", mark: ICON.alert, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
+    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: L.closed, line: L.opens(tb(0)) }),
+    offline: () => ({ cls: "is-off", mark: ICON.offline, word: L.offline, line: L.noCount }),
+    delayed: (m = M.last) => ({ cls: "is-delayed", mark: ICON.clock, word: L.delayed, line: `${L.lastReading} ${tb(m)}`, ago: true }),
+    live: (m = M.last) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${tb(m)}` }),
   };
-  brand.addEventListener("click", () => setRail(!railOpen));
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && railOpen) { setRail(false); brand.focus(); } });
-  document.addEventListener("pointerdown", (e) => { if (railOpen && !rail.contains(e.target)) setRail(false); });
-
-  $("#sub").innerHTML = `${L.date}<span class="sep" aria-hidden="true">·</span>${L.hours} ${timeRange(0, DAY)}`;
-
-  const status = $("#status");
-  if (STATE === "delayed") {
-    status.classList.add("is-delayed");
-    status.innerHTML = `${ICON.clock}<span class="strong">${L.delayed}</span><span>· ${L.lastReading} ${tb(M.last)}</span>`;
-  } else {
-    status.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="strong">${L.live}</span><span>· ${L.lastReading} ${tb(M.last)}</span>`;
-  }
+  const dailyStatusKey = (p) => p === "error" || p === "retrying" ? "error" : CLOSED ? "closed" : UNAV ? "offline" : STATE === "delayed" ? "delayed" : "live";
+  const frame = EclipseFrame.init({
+    L, RTL, motionOn, Motion, URL_OFF,
+    links: (() => { const p = new URLSearchParams({ lang: LANG }); if (URL_OFF) p.set("motion", "off"); return {
+      reports: `reports.html?${p}`, activity: `activity.html?${p}`, access: `access.html?${p}`, settings: `settings.html?${p}`,
+    }; })(),
+    beforeRail: () => endIntro("rail"),
+    status: {
+      phase: () => phase, key: dailyStatusKey, states: DAILY_STATUS, reserveMinute: 284, buttonAria: false,
+      detail: (s) => s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${SR_SEP}${L.ago(M.nowM - M.last)}</span>` : ""),
+      hours: () => `${L.hours} ${timeRange(0, DAY)}`,
+    },
+  });
+  const { mqPhone } = frame;
+  $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${SR_SEP}${L.hours} ${timeRange(0, DAY)}</span>`;
+  frame.renderStatus();
+  frame.renderOps();
 
   /* ---------------------------------------------------------------- cards */
   const levelChip = (v) => {
@@ -473,37 +442,153 @@
   const cmpChip = (c) => (c === "busier" || c === "quieter"
     ? `<span class="cmp cmp-${c}">${c === "busier" ? ICON.up : c === "quieter" ? ICON.down : ICON.same}${L.cmp[c]}</span>`
     : "");
-  // The tuner can simulate a crowd-level change on the Inside now card (a value across the nearest level boundary);
-  // null means the card shows the latest reading. A new reading or "Reset readings" clears it.
+  // A key-driven crowd change can show a value across the nearest level boundary; null means the card shows the
+  // latest reading. A new reading or reset clears it.
   let crowdShown = null;
   const shownNow = () => (crowdShown == null ? occ[M.last] : crowdShown);
-  const cardNow = $("#card-now");
-  $("#now-v").textContent = String(occ[M.last]);
-  if (STATE === "delayed") {
-    cardNow.classList.add("is-stale");
-    $("#now-label").innerHTML = `${L.staleTitle} ${tb(M.last)}`;
-    $("#now-meta").classList.add("warn");
-    $("#now-meta").innerHTML = `${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span>`;
-  } else {
-    $("#now-label").textContent = L.nowTitle;
-    $("#now-meta").innerHTML = `<span class="live-dot" aria-hidden="true"></span>${tb(M.last)}`;
+  const cardNow = $("#card-now"), chartCard = $("section.chart");
+  // The two lights (LGT-6). A card whose content is not current is drawn plain (D1, LGT-7, LGT-8): in the four states
+  // of step 3's second part both lights are out, and they come back, at once (LGT-1), with a live value.
+  const LIGHTS = [[cardNow, "lit-card"], [chartCard, "lit-chart"]].map(([el, kind]) => ({ el, kind, lamp: $(".lamp", el) }));
+  function setLights(on) {
+    LIGHTS.forEach(({ el, kind, lamp }) => {
+      if (on && !el.contains(lamp)) { el.prepend(lamp); el.classList.add("lit", kind); }
+      if (!on && el.contains(lamp)) { lamp.remove(); el.classList.remove("lit", kind); }
+    });
   }
-  $("#now-foot").innerHTML = levelChip(occ[M.last]) + cmpChip(M.compare);
-  $("#peak-meta").innerHTML = tb(M.peakM);
-  $("#peak-v").textContent = String(M.peak);
-  $("#peak-foot").innerHTML = levelChip(M.peak);
-  $("#entries-v").textContent = String(M.entries);
-  $("#entries-usual").innerHTML = HAS_HISTORY ? L.usualEntries(bdi(M.usualEntries)) : "";
-  $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
-  $("#busy-v").innerHTML = hourRange(M.busiest.from, M.busiest.to);
-  $("#busy-note").innerHTML = L.busiestNote(bdi(M.busiest.avg));
+  // The live, delayed and no-history cards (step 3 phase B), unchanged; called at once, or when a payload arrives.
+  function fillCards() {
+    $("#now-v").textContent = String(occ[M.last]);
+    if (STATE === "delayed") {
+      // D1 (LGT-7, LGT-8; K-12, step 3): a card whose value is not current is drawn plain; the light returns with a live
+      // value. Its level badge dims with the value (LVL-6; K-06).
+      cardNow.classList.add("is-stale");
+      setLights(false); // both lights out, as Unavailable draws them (LGT-7, LGT-8): Inside now's and the chart card's
+      $("#now-label").innerHTML = `${L.staleTitle} ${tb(M.last)}`;
+      $("#now-meta").classList.add("warn");
+      $("#now-meta").innerHTML = `${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span>`;
+    } else {
+      $("#now-label").textContent = L.nowTitle;
+      $("#now-meta").innerHTML = `<span class="live-dot" aria-hidden="true"></span>${tb(M.last)}`;
+    }
+    $("#now-foot").innerHTML = levelChip(occ[M.last]) + cmpChip(M.compare);
+    $("#peak-meta").innerHTML = tb(M.peakM);
+    $("#peak-v").textContent = String(M.peak);
+    $("#peak-foot").innerHTML = levelChip(M.peak);
+    $("#entries-v").textContent = String(M.entries);
+    $("#entries-usual").innerHTML = HAS_HISTORY ? L.usualEntries(bdi(M.usualEntries)) : "";
+    $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
+    fillBusiest();
+  }
   $("#cards").setAttribute("aria-labelledby", "cards-title");
+  // Decisions 28 and 29: the period is shared; the phone average follows its hours, the desktop foot is a label.
+  const busiestRange = () => hourRange(M.busiest.from, M.busiest.to, true);
+  function fillBusiest() {
+    $("#busy-v").innerHTML = busiestRange();
+    $("#busy-note").innerHTML = RTL && mqPhone.matches ? `بمعدّل ${bdi(M.busiest.avg)}` : L.busiestNote(bdi(M.busiest.avg));
+  }
+
+  /* ---- Daily's states (step 3, second part; STA-10, K-02). Every card keeps its slots and its height in every state
+   * (CRD-9): the head with its name, the value's line (46 px; the busiest time's 36) and the foot (42) or note (34). A
+   * state writes into those slots and never adds a line, so no card changes height, and the arrival of the payload
+   * fills the same slots with nothing moving (DESIGN_GUIDE §6). What a state adds is kept in `added`, and what it sets
+   * aside in `setAside`, so clearState() returns every card to its bare slots.
+   *   loading      a placeholder stands where a value is awaited, and only there: the value (the digits' ink band, 33 px;
+   *                the time range's 22), the "when" in the meta slot and the note (9 px), the level badge (its 26 px box).
+   *                Names, the busiest time's "Last 7 days" and the unit-less heads are real text from the first paint.
+   *   closed       Inside now says "Closed" as a value in words and the next opening at its foot; today's peak and
+   *                entries are "Still ahead"; the busiest time over the last 7 days stays (history, not a reading).
+   *   unavailable  Inside now says "No current count" and where to look; today's peak and entries "Pending"; the
+   *                busiest time stays.
+   *   error        Inside now carries the alert and the one retry; the other cards keep their names and nothing else. */
+  const added = [], setAside = [];
+  const keep = (node) => { added.push(node); return node; };
+  const aside = (el) => { if (!el.hidden) { el.hidden = true; setAside.push(el); } };
+  const make = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstChild; };
+  const SLOTS = {
+    now: { meta: $("#now-meta"), v: $("#now-v"), unit: $("#card-now .unit"), foot: $("#now-foot"), w: 56 },
+    peak: { meta: $("#peak-meta"), v: $("#peak-v"), foot: $("#peak-foot"), w: 56 },
+    entries: { v: $("#entries-v"), note: $("#entries-usual"), w: 80 },
+    busiest: { v: $("#busy-v"), note: $("#busy-note"), w: 88 },
+  };
+  const bar = (w) => `<i class="ph-bar" style="--w:${w}px"></i>`;
+  function clearState() {
+    added.splice(0).forEach((n) => n.remove());
+    setAside.splice(0).forEach((el) => { el.hidden = false; });
+    for (const s of Object.values(SLOTS)) { if (s.foot) s.foot.innerHTML = ""; if (s.note) s.note.innerHTML = ""; if (s.meta) s.meta.innerHTML = ""; }
+  }
+  // A value's slot holds `node` in place of the value (the value and its unit are set aside).
+  function sayInValue(s, node) {
+    aside(s.v);
+    if (s.unit) aside(s.unit);
+    if (node) s.v.after(keep(node));
+  }
+  function pendCards() {
+    clearState();
+    $("#now-label").textContent = L.nowTitle;
+    $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
+    for (const s of Object.values(SLOTS)) {
+      if (s.meta) { aside(s.meta); s.meta.after(keep(make(`<span class="stat-meta ph-slot" aria-hidden="true">${bar(40)}</span>`))); }
+      sayInValue(s, make(`<span class="num${s === SLOTS.busiest ? " word" : ""} ph-slot" aria-hidden="true">${bar(s.w)}</span>`));
+      if (s.foot) s.foot.innerHTML = `<i class="ph-box" aria-hidden="true"></i>`;
+      if (s.note) s.note.innerHTML = bar(56);
+    }
+  }
+  const sentence = (text) => make(`<span class="stat-say">${text}</span>`);
+  function stateCards() {
+    clearState();
+    $("#now-label").textContent = L.nowTitle;
+    aside(SLOTS.now.meta);
+    aside(SLOTS.peak.meta);
+    if (CLOSED) {
+      sayInValue(SLOTS.now, make(`<span class="stat-word">${L.closed}</span>`));
+      SLOTS.now.foot.innerHTML = `<span class="stat-foot-note">${L.opens(tb(0))}</span>`;
+      sayInValue(SLOTS.peak, sentence(L.ro.ahead));
+      sayInValue(SLOTS.entries, sentence(L.ro.ahead));
+    } else {
+      sayInValue(SLOTS.now, sentence(L.noCount));
+      SLOTS.now.foot.innerHTML = `<span class="stat-foot-note">${L.checkOps}</span>`;
+      sayInValue(SLOTS.peak, sentence(L.ro.pending));
+      sayInValue(SLOTS.entries, sentence(L.ro.pending));
+    }
+    // The busiest time over the last 7 days is history, not a reading: it stays (GLO-12; its basis is the 7 complete days
+    // before today).
+    $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
+    fillBusiest();
+  }
+  // Error (EMP-2, EMP-3): no reading is kept. Inside now, the page's first answer, holds the alert and its one retry, in
+  // the value's line and the foot together (46 + 42 px), so the card keeps its height; the other cards keep only their
+  // names (and the busiest time's "Last 7 days"). The retry takes focus.
+  let retryBtn = null, errSay = null;
+  function errorCards() {
+    clearState();
+    $("#now-label").textContent = L.nowTitle;
+    $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
+    for (const s of Object.values(SLOTS)) { if (s.meta) aside(s.meta); sayInValue(s, null); }
+    const value = $("#card-now .stat-value");
+    aside(value);
+    aside(SLOTS.now.foot);
+    const box = keep(make(`<div class="stat-alert"><p class="stat-say is-err" id="err-say" role="alert"></p><button class="btn btn-primary" id="retry" type="button"></button></div>`));
+    value.after(box);
+    errSay = $("#err-say", box);
+    retryBtn = $("#retry", box);
+    // Its two labels share one cell, so it keeps its width while it runs (BTN-9); the new label rolls in (motion.js).
+    retryBtn.innerHTML = `<span class="rb-stack"><span class="rb-l">${L.retry}</span><span class="rb-l" aria-hidden="true">${L.retrying}</span></span>`;
+    retryBtn.addEventListener("click", retry);
+  }
+  // The page's cards as it opens: the payload's values, a closed or unavailable page, or (loading, error) the states'
+  // slots, which the lifecycle section sets up with the chart.
+  if (phase === "ready" && !CLOSED && !UNAV) fillCards();
+  else if (CLOSED || UNAV) { stateCards(); setLights(false); }
+  mqPhone.addEventListener("change", () => { if (phase === "ready") fillBusiest(); });
 
   // After a live change only the values that changed move: digits roll, level bars fill or empty, and words swap
   // at once (motion section). Everything ends on exactly the markup the page renders at load.
   function updateCards(prev) {
     const dt = Math.sign(M.last - prev.last);
-    rollTo($("#status bdi"), fmtTime(M.last), dt);
+    rollTo($("#ops-btn .hb-line bdi"), fmtTime(M.last), dt);
+    frame.renderOps(); // the details take the new time at once
+
     rollTo($("#now-v"), String(shownNow()));
     if (STATE === "delayed") rollTo($("#now-meta span"), L.ago(M.nowM - M.last));
     else rollTo($("#now-meta bdi"), fmtTime(M.last), dt);
@@ -513,19 +598,29 @@
     setFoot($("#peak-foot"), M.peak, "");
     rollTo($("#entries-v"), String(M.entries));
     if (HAS_HISTORY) rollTo($("#entries-usual bdi"), String(M.usualEntries));
-    rollTo($("#busy-v"), hourRange(M.busiest.from, M.busiest.to));
+    rollTo($("#busy-v"), busiestRange());
     rollTo($("#busy-note bdi"), String(M.busiest.avg));
   }
 
   /* --------------------------------------------------------------- legend */
+  // The legend drops its box (CHP-3; K-10). Q1 (proposal, step 3; D2): a third entry names the ring, which marks a
+  // single reading, so the peak's ring above the averaged line reads as what it is.
+  // With no history the note comes last, after the ring's key, so the phone's legend keeps live's rows (user 2026-10-01, review F1).
   $("#key").innerHTML = `<li><span class="sw sw-line" aria-hidden="true"></span><span>${L.keyLine}</span></li>` +
-    (HAS_HISTORY
-      ? `<li><span class="sw sw-usual" aria-hidden="true"></span><span>${L.keyUsual}</span></li>`
-      : `<li class="key-note">${ICON.info}<span>${L.noHistory}</span></li>`);
+    (HAS_HISTORY ? `<li><span class="sw sw-usual" aria-hidden="true"></span><span>${L.keyUsual}</span></li>` : "") +
+    `<li><span class="sw-ring" aria-hidden="true"></span><span>${L.keyPeak}</span></li>` +
+    (HAS_HISTORY ? "" : `<li class="key-note">${ICON.info}<span>${L.noHistory}</span></li>`);
   $("#key").setAttribute("aria-label", L.chartTitle);
+  // STA-14: reserve the live legend’s rows on a phone even when the no-history key is shorter.
+  if (!HAS_HISTORY) {
+    $("#key").after(make(`<ul class="key key-reserve" aria-hidden="true"><li><span class="sw sw-line"></span><span>${L.keyLine}</span></li><li><span class="sw sw-usual"></span><span>${L.keyUsual}</span></li><li><span class="sw-ring"></span><span>${L.keyPeak}</span></li></ul>`));
+  }
 
   /* ---------------------------------------------------------------- chart */
   const plot = $("#plot"), svgHost = $("#plot-svg"), labels = $("#plot-labels"), tip = $("#tip"), hit = $("#plot-hit");
+  // The phone's reading in the band above the plot (720 px and below; "the finger" below).
+  const band = $("#band"), bandRead = $("#band-read"), bandActs = $("#band-acts");
+  const bandBtn = { close: $("#band-close"), prev: $("#band-prev"), next: $("#band-next") };
   const f = (n) => n.toFixed(2);
   let geo = null;
   const endPoint = () => (geo ? { x: geo.X(M.last), y: geo.Y(M.avg[M.last]) } : null);
@@ -551,6 +646,11 @@
     const W = Math.round(plot.clientWidth), H = Math.round(plot.clientHeight);
     if (!W || !H) return;
     const { last, nowM, peak, peakM, avg, splines, lineAt } = M;
+    // Step 3, second part: while the first payload is loading, after an error and during its retry the plot is an empty
+    // frame, the grid and both axes in the live geometry and nothing else (DESIGN_GUIDE §6: a chart placeholder never
+    // imitates data), so a line that arrives draws into a frame that does not move. Closed and unavailable have no
+    // reading today: no line, no peak and no end point; their usual line stays (history).
+    const frameOnly = phase !== "ready";
     const gut = 40;                           // y labels sit on the inline-start side
     const span = W - gut - 6;
     const x0 = RTL ? W - gut : gut;           // opening time
@@ -560,7 +660,7 @@
     geo = { W, H, X, span };
     buildStops();
     const laneBottom = LANE.top + laneTall;
-    const yt = laneBottom + LANE.gap + 9;     // the "80" label's box (18px tall) starts LANE.gap below the lane
+    const yt = laneBottom + LANE.gap + 9;     // the top label's box (18px tall) starts LANE.gap below the lane
     const yb = H - 36;
     const Y = (v) => yb - (v / YMAX) * (yb - yt);
     Object.assign(geo, { Y, yt, yb, laneBottom });
@@ -576,51 +676,76 @@
     </defs>`);
 
     // Faint horizontal grid. The time axis (0) is a touch stronger and breaks into dots over the missing span.
-    [20, 40, 60, 80].forEach((v) => s.push(`<path d="M${f(xL)},${Math.round(Y(v)) + 0.5}H${f(xR)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`));
+    Y_TICKS.forEach((v) => s.push(`<path d="M${f(xL)},${Math.round(Y(v)) + 0.5}H${f(xR)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`));
     const by = Math.round(Y(0)) + 0.5;
     const ga = X(GAP0 - 0.5), gb = X(GAP1 + 0.5), gl = Math.min(ga, gb), gr = Math.max(ga, gb);
-    if (last >= GAP0) {
+    if (last >= GAP0 && !frameOnly) {
       s.push(`<path d="M${f(xL)},${by}H${f(gl)}M${f(gr)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
       for (let x = gl + 2.5; x <= gr - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
+    } else if (UNAV) {
+      // Unavailable: the earlier missing span as live draws it, then the missing span from the last reading (3:00 PM) to
+      // now (STA-4) along the axis; the rest of the day is still ahead.
+      const [ul, ur] = unavSpan();
+      s.push(`<path d="M${f(xL)},${by}H${f(gl)}M${f(gr)},${by}H${f(ul)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      if (ur < xR) s.push(`<path d="M${f(ur)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      for (let x = gl + 2.5; x <= gr - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
+      for (let x = ul + 2.5; x <= ur - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
     } else {
       s.push(`<path d="M${f(xL)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
     }
 
-    s.push(hairlines(-Infinity, last, lineAt));
+    if (!frameOnly) s.push(hairlines(-Infinity, UNAV ? UNAV_LAST - 0.5 : last, UNAV ? LIVE.lineAt : lineAt)); // unavailable: none at or after 3:00 PM
 
     // The tooltip's connector (the lane, 2026-09-28): under the usual line and today's line, so where it crosses the usual
     // line the data draws over it. Filled by paintMarker; the marker group ends the SVG.
     s.push(`<g id="conn" aria-hidden="true"><path class="cn-line" d="" fill="none"/><path class="cn-head" d=""/></g>`);
 
     // Usual Wednesday (dashed): up to now, then fainter to closing time.
-    if (HAS_HISTORY) {
+    if (HAS_HISTORY && !frameOnly) {
       const d = usual.path(X, Y);
       s.push(`<path id="us-past" d="${d}" fill="none" stroke="rgba(245,243,242,0.55)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-past)"/>`);
-      s.push(`<path id="us-ahead" d="${d}" fill="none" stroke="rgba(245,243,242,0.24)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-ahead)"/>`);
+      s.push(`<path id="us-ahead" d="${d}" fill="none" stroke="rgba(245,243,242,0.36)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-ahead)"/>`);
     }
 
     // Today: the 30-minute average, thick and bright, with round caps where it stops.
-    splines.forEach((sp, i) => s.push(`<path id="ln-${i}" d="${sp.path(X, Y)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`));
+    const drawn = !frameOnly && last >= 0;
+    if (UNAV && !frameOnly) {
+      // The live demo's line up to the 3:00 PM reading, the same curves cut at that knot, drawn as live draws them: no end
+      // point, halo, peak ring or peak tag.
+      LIVE.splines.forEach((sp, i) => {
+        const seg = LIVE.segments[i], k = seg.indexOf(UNAV_LAST);
+        if (seg[0] > UNAV_LAST) return;
+        s.push(`<path id="ln-${i}" d="${sp.path(X, Y, k >= 0 ? k : seg.length - 1)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
+      });
+    }
+    if (drawn) splines.forEach((sp, i) => s.push(`<path id="ln-${i}" d="${sp.path(X, Y)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`));
 
     // The true peak: its own marker, joined to the line by a faint dotted drop.
-    const px = X(peakM), py = Y(peak), ly = Y(lineAt(peakM));
-    if (ly - py > 14) s.push(`<path id="pk-drop" d="M${f(px)},${f(py + 7)}V${f(ly - 4)}" stroke="rgba(245,243,242,0.4)" stroke-width="1" stroke-dasharray="1.5 3" stroke-linecap="round"/>`);
-    s.push(`<circle class="peak-dot" id="pk-dot" cx="${f(px)}" cy="${f(py)}" r="4.6" fill="#0f0e0f" stroke="#f5f3f2" stroke-width="2"/>`);
+    const px = X(peakM), py = Y(peak);
+    if (drawn) {
+      const ly = Y(lineAt(peakM));
+      if (ly - py > 14) s.push(`<path id="pk-drop" d="M${f(px)},${f(py + 7)}V${f(ly - 4)}" stroke="rgba(245,243,242,0.4)" stroke-width="1" stroke-dasharray="1.5 3" stroke-linecap="round"/>`);
+      s.push(`<circle class="peak-dot" id="pk-dot" cx="${f(px)}" cy="${f(py)}" r="4.6" fill="#0f0e0f" stroke="#f5f3f2" stroke-width="2"/>`);
 
-    // The end of the line: live has a red end point with a thin halo; delayed ends on a neutral point.
-    const ex = X(last), ey = Y(avg[last]);
-    s.push(STATE === "delayed"
-      ? `<circle id="end-dot" cx="${f(ex)}" cy="${f(ey)}" r="4.4" fill="#8f898b" stroke="#0f0e0f" stroke-width="2"/>`
-      : `<circle id="end-halo" cx="${f(ex)}" cy="${f(ey)}" r="9" fill="none" stroke="rgba(255,41,70,0.32)" stroke-width="1"/><circle id="end-dot" cx="${f(ex)}" cy="${f(ey)}" r="4.4" fill="#ff2946" stroke="#0f0e0f" stroke-width="2"/>`);
+      // The end of the line: live has a red end point with a thin halo; delayed ends on a neutral point.
+      const ex = X(last), ey = Y(avg[last]);
+      s.push(STATE === "delayed"
+        ? `<circle id="end-dot" cx="${f(ex)}" cy="${f(ey)}" r="4.4" fill="#8f898b" stroke="#0f0e0f" stroke-width="2"/>`
+        : `<circle id="end-halo" cx="${f(ex)}" cy="${f(ey)}" r="9" fill="none" stroke="rgba(255,41,70,0.32)" stroke-width="1"/><circle id="end-dot" cx="${f(ex)}" cy="${f(ey)}" r="4.4" fill="#ff2946" stroke="#0f0e0f" stroke-width="2"/>`);
+    }
     s.push(`<g id="sel"></g></svg>`);
     svgHost.innerHTML = s.join("");
 
     // HTML labels (so bidi and fonts behave), placed on the same geometry.
     const lab = [];
-    [0, 20, 40, 60, 80].forEach((v) => lab.push(`<span class="ax-y" style="inset-inline-start:0;top:${f(Y(v))}px;transform:translateY(-50%)">${bdi(String(v))}</span>`));
-    for (let h = 0; h <= 18; h += 2) lab.push(`<span class="ax-x" style="left:${f(X(h * 60))}px;top:${f(yb + 13)}px;transform:translateX(-50%)">${bdi(fmtHour(h * 60))}</span>`);
-    lab.push(`<span class="ax-x" style="left:${f(X(DAY))}px;top:${f(yb + 13)}px;transform:translateX(${RTL ? "0" : "-100%"})">${bdi(fmtHour(DAY))}</span>`);
-    lab.push(`<span class="peak-tag" id="peak-tag" style="left:${f(px)}px;top:${f(py - 12)}px;transform:translate(-50%,-100%)">${L.peakTag}<b>${bdi(String(peak))}</b></span>`);
+    [0, ...Y_TICKS].forEach((v) => lab.push(`<span class="ax-y" style="inset-inline-start:1px;top:${f(Y(v))}px;transform:translateY(-50%)">${bdi(String(v))}</span>`));
+    // Q2 (proposal, step 3; K-15): one rhythm along the time axis. The step is the shortest of 2, 3, 4 and 6 hours that
+    // keeps 64 px between labels (2 at 1024 px and wider, 3 at 768, 6 on a phone); labels run from opening to midnight,
+    // and closing is the axis's end, with no label of its own one hour after midnight.
+    const stepH = [2, 3, 4, 6].find((k) => (span / DAY) * 60 * k >= 64) || 6;
+    for (let h = 0; h <= 18; h += stepH) lab.push(`<span class="ax-x" style="left:${f(X(h * 60))}px;top:${f(yb + 13)}px;transform:translateX(-50%)">${bdi(fmtHour(h * 60))}</span>`);
+    geo.stepH = stepH;
+    if (drawn) lab.push(`<span class="peak-tag" id="peak-tag" style="left:${f(px)}px;top:${f(py - 12)}px;transform:translate(-50%,-100%)">${L.peakTag}<b>${bdi(String(peak))}</b></span>`);
     labels.innerHTML = lab.join("");
     peakTagBox = null;
     restoreSelection(easeSelection);
@@ -631,7 +756,7 @@
   /* ------------------------------------------------------ chart inspection
    * Round 6: the reading snaps to stops. A stop every half hour from opening (6:00 AM) to closing (1:00 AM), aligned
    * with the drawn line, plus two of their own: the true peak and the latest reading. A half-hour stop within FOLD
-   * minutes of either is folded into it (the peak at 6:29 PM takes the 6:30 PM stop). The missing span has one stop
+   * minutes of either is folded into it (a peak at 6:29 PM would take the 6:30 PM stop). The missing span has one stop
    * of its own, "no reading", and no normal stop. Values are the line's own (the centred average it draws, never a
    * raw minute), except at the peak, whose marker is the true reading. After now a stop shows "still ahead" and the
    * usual value. Minute detail stays in View details. */
@@ -639,13 +764,31 @@
   const MAGNET = 10;  // px: the pointer takes the peak or the latest reading when this close to it
   let stops = [];
   let sel = null;     // the selected stop, or null
+  // The unavailable state's missing span, the last reading (3:00 PM) to now, in plot pixels as the axis mark draws it
+  // (inside the plot).
+  function unavSpan() {
+    const { X } = geo, a = X(UNAV_LAST + 0.5), b = X(M.nowM + 0.5);
+    const xL = Math.min(X(0), X(DAY)), xR = Math.max(X(0), X(DAY));
+    return [Math.max(xL, Math.min(a, b)), Math.min(xR, Math.max(a, b))];
+  }
+  // A gap stop centred on the dotted mark as render() draws it (dots every 4px from 2.5px inside the span), so the
+  // brackets frame what the eye sees. a and b are the span's minutes.
+  function gapStop(gl, gr, a, b) {
+    const first = gl + 2.5, lastDot = first + 4 * Math.floor((gr - 1.5 - first) / 4);
+    return { key: "gap", kind: "gap", m: (a + b) / 2, a, b, gl, gr, x: (first + lastDot) / 2, w: lastDot - first + 2, value: null, track: null, lift: 0 };
+  }
   function buildStops() {
-    const { last, nowM, peakM, segments, lineAt } = M;
+    const { nowM } = M;
+    // Unavailable reads the live demo's readings up to 3:00 PM: no peak stop, no latest stop (nothing marks 3:00 PM).
+    const { last, peakM, segments, lineAt } = UNAV ? { last: UNAV_LAST, peakM: -1, segments: LIVE.segments, lineAt: LIVE.lineAt } : M;
     const { X } = geo;
+    // Loading, an error and its retry: an empty frame has no stops (the plot's keyboard stop is set aside too).
+    if (phase !== "ready") { stops = []; measureTipWidth(); return; }
     const segOf = (m) => segments.findIndex((sg) => m >= sg[0] && m <= sg[sg.length - 1]);
-    const specials = peakM >= 0 ? [peakM, last] : [last];
+    const specials = UNAV || last < 0 ? [] : peakM >= 0 ? [peakM, last] : [last];
     const out = [];
     for (let m = 0; m <= DAY; m += 30) {
+      if (UNAV && m > UNAV_LAST && m <= nowM) continue;                   // unavailable: one stop for 3:00 PM to now
       if (m <= last && m >= GAP0 && m <= GAP1) continue;                 // inside the missing span
       if (specials.some((sp) => Math.abs(sp - m) < FOLD)) continue;      // folded into the peak or the latest reading
       if (m <= last) {
@@ -658,17 +801,17 @@
       }
     }
     if (last > GAP1) {
-      // Centred on the dotted mark as render() draws it (dots every 4px from 2.5px inside the span), so the brackets
-      // frame what the eye sees.
-      const gl = Math.min(X(GAP0 - 0.5), X(GAP1 + 0.5)), gr = Math.max(X(GAP0 - 0.5), X(GAP1 + 0.5));
-      const first = gl + 2.5, lastDot = first + 4 * Math.floor((gr - 1.5 - first) / 4);
-      out.push({ key: "gap", kind: "gap", m: (GAP0 + GAP1) / 2, x: (first + lastDot) / 2, w: lastDot - first + 2, value: null, track: null, lift: 0 });
+      const early = gapStop(Math.min(X(GAP0 - 0.5), X(GAP1 + 0.5)), Math.max(X(GAP0 - 0.5), X(GAP1 + 0.5)), GAP0, GAP1);
+      if (UNAV) early.key = "gap-early";                                 // "gap" is the span to now
+      out.push(early);
     }
+    // Unavailable: 3:00 PM to now is one span waiting for readings, with one stop (STA-4); it is where focus starts.
+    if (UNAV) out.push({ ...gapStop(...unavSpan(), UNAV_LAST, nowM), waiting: true });
     if (peakM >= 0) out.push({ key: "peak", kind: "peak", m: peakM, x: X(peakM), value: M.peak, track: `L${segOf(peakM)}`, lift: 1 });
     // Round 7 decision 1: the latest stop shows the latest reading itself, the same number as the Inside now card
-    // (live 49, Busy at 7:42 PM; while delayed, the stale reading the delayed card shows), not the line's value there.
-    // The marker still sits on the line's end point.
-    out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: occ[last], track: `L${segOf(last)}`, lift: 0 });
+    // (live 70, Busy at 7:42 PM; while delayed, the stale reading the delayed card shows), not the line's value there.
+    // The marker still sits on the line's end point. Closed and unavailable have no reading today, so no latest stop.
+    if (last >= 0 && !UNAV) out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: occ[last], track: `L${segOf(last)}`, lift: 0 });
     out.sort((a, b) => a.m - b.m || (a.kind === "peak" ? -1 : b.kind === "peak" ? 1 : 0));
     out.forEach((st, i) => { st.i = i; });
     stops = out;
@@ -682,7 +825,7 @@
     const u = HAS_HISTORY ? `${sepc}${L.ro.usual} ${usualAt(st.m)}` : "";
     const lvl = (v) => L.crowdIs(L.levels[levelOf(v)]);
     switch (st.kind) {
-      case "gap": return `${plainRange(fmtTime(GAP0), fmtTime(GAP1))}${sepc}${L.ro.noReading}`;
+      case "gap": return st.waiting ? waitText(st.a) : spanText(L.ro.noReading, st.a, st.b);
       case "wait": return `${t}${sepc}${L.ro.noReadingYet}${u}`;
       case "ahead": return `${t}${sepc}${L.ro.ahead}${u}`;
       case "zero": return `${t}${sepc}0${sepc}${L.ro.empty}`;
@@ -693,7 +836,8 @@
     }
   }
   function tipHTML(st) {
-    if (st.kind === "gap") return `<div class="tip-t">${timeRange(GAP0, GAP1)}</div><div class="tip-main"><span class="tip-word">${L.ro.noReading}</span></div>`;
+    // A span with no readings is one sentence, the words first (decision 8); waiting for readings too (decision 12).
+    if (st.kind === "gap") return st.waiting ? waitTip(st.a) : spanTip(L.ro.noReading, st.a, st.b);
     const usualRow = HAS_HISTORY && st.kind !== "zero" ? `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></div>` : "";
     const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
     // One start-aligned arrangement for every tooltip: at the peak and the latest the label chip comes first, then
@@ -733,7 +877,11 @@
    * tooltip among the chart's current stops (measured with the width, on the same hidden copies), so it is as tall as the
    * box needs and no taller. The scale starts LANE.gap below it (render: yt), which is what the lane costs the chart. */
   const LANE = { top: 2, gap: 8 };
-  let laneTall = 0;        // the tallest tooltip among the current stops (px, rounded up to a whole pixel)
+  const laneProbe = () => `<div class="tip-t"><span class="tip-flag">${L.ro.latest}</span>${tb(NOW)}</div>` +
+    `<div class="tip-main is-stale"><span class="tip-v">${bdi(88)}</span><span class="tip-l">${L.levels[3]}</span></div>` +
+    `<div class="tip-ago">${ICON.clock}<span>${L.ago(13)}</span></div>` +
+    `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(88)}</span></div>`;
+  let laneTall = 0;       // the tallest tooltip among the current stops (px, rounded up to a whole pixel)
   const laneMeasured = { tallestKey: null, tallestPx: null };
   function measureTipWidth() {
     const numbered = stops.filter((st) => st.kind !== "gap" && (HAS_HISTORY || (st.kind !== "wait" && st.kind !== "ahead")));
@@ -742,18 +890,21 @@
     if (key === tipWKey) return;
     tipWKey = key;
     const t0 = performance.now();
-    tipMeasure.innerHTML = parts.join("");
+    // Q2 (proposal, step 3; K-15): the lane is sized once for the tallest tooltip any state can show (the delayed latest
+    // reading, with its age and the usual row), so the scale never moves between live, delayed and no history. The
+    // probe counts for the lane's height only, never for the width.
+    tipMeasure.innerHTML = parts.join("") + `<div class="tip">${laneProbe()}</div>`;
     let widest = 0, at = -1, tall = 0, tallAt = -1;
     [...tipMeasure.children].forEach((c, i) => {
       const b = c.getBoundingClientRect();
       if (b.height > tall) { tall = b.height; tallAt = i; }
-      if (numbered.includes(stops[i]) && b.width > widest) { widest = b.width; at = i; }
+      if (i < stops.length && numbered.includes(stops[i]) && b.width > widest) { widest = b.width; at = i; }
     });
     tipMeasure.textContent = "";
     const w = Math.ceil(widest + 2);
     Object.assign(tipMeasured, { widthPx: w, widestPx: widest, widestKey: at >= 0 ? stops[at].key : null, numbered: numbered.length, measures: tipMeasured.measures + 1, ms: performance.now() - t0 });
     laneTall = Math.ceil(tall);
-    Object.assign(laneMeasured, { tallestKey: tallAt >= 0 ? stops[tallAt].key : null, tallestPx: tall });
+    Object.assign(laneMeasured, { tallestKey: tallAt >= stops.length ? "probe" : tallAt >= 0 ? stops[tallAt].key : null, tallestPx: tall });
     if (w === tipW) return;
     tipW = w;
     tip.style.setProperty("--tip-w", `${w}px`);
@@ -952,7 +1103,7 @@
     } else if (form === "gap") {
       key = "gap";
       // The dotted mark as render() draws it: dots every 4px from 2.5px inside the span, lit in chalk.
-      const gl = Math.min(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5)), gr = Math.max(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5));
+      const { gl, gr } = st;
       const dots = [];
       for (let dx = gl + 2.5; dx <= gr - 1.5; dx += 4) dots.push(dx - st.x);
       // The connector's column is the lit dot nearest the stop's centre (at most 2px from it), as painted (both numbers
@@ -1119,6 +1270,7 @@
     const to = restPoint(st);
     if (moving) followTo(to, st, prev);
     else { tipShown = null; paintMarker(to, st, true); }
+    syncBand();
   }
   function clearSelection() {
     stopFollow();
@@ -1126,6 +1278,7 @@
     clearMarker();
     tip.hidden = true;
     tipShown = null;
+    syncBand();
   }
   function restoreSelection(ease = false) {
     const moving = ease && sel && !tip.hidden && motionOn() && tipShown;
@@ -1150,6 +1303,7 @@
     const to = restPoint(st);
     tipEaseFrom(to ? to.x : st.x, vx);
     paintMarker(to, st, true);
+    syncBand();
   }
 
   // Slider semantics for keyboard inspection. The same readout follows the pointer, a tap, or the arrow keys.
@@ -1173,15 +1327,34 @@
     });
     return pull || best;
   }
+  // pinned: a reading that stays after the pointer leaves (a tap from 721 px; on a phone, a kept reading, with its buttons).
   let pinned = false;
-  hit.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && !pinned) selectStop(stopAt(e.clientX)); });
+  hit.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && !pinned) selectStop(mqPhone.matches ? stopForFinger(e.clientX) : stopAt(e.clientX)); });
   hit.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse" && !pinned && document.activeElement !== hit) clearSelection(); });
-  hit.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { pinned = true; selectStop(stopAt(e.clientX)); } });
-  hit.addEventListener("focus", () => { if (!sel) selectStop(stopBy("latest"), true); });
-  hit.addEventListener("blur", () => { pinned = false; clearSelection(); });
+  hit.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" && !mqPhone.matches) { pinned = true; selectStop(stopAt(e.clientX)); } });
+  // Focus starts at the latest reading; with none today, at the present: the stop for opening to now (unavailable) or
+  // the first stop still ahead (closed). End goes to the latest reading, or with none today to the day's last stop.
+  const homeStop = () => stopBy("latest") || stopBy("gap") || stops[0] || null;
+  let quietFocus = false; // focus returned to the plot when a kept reading closes: no reading comes back with it
+  hit.addEventListener("focus", () => {
+    if (quietFocus || !stops.length) return;
+    if (!sel) selectStop(homeStop(), true);
+    // On a phone, keyboard focus keeps the reading with its buttons, so Tab reaches them next.
+    if (mqPhone.matches) { pinned = true; syncBand(); }
+  });
+  hit.addEventListener("blur", (e) => {
+    if (mqPhone.matches) {
+      // On a phone the reading stays while focus moves to its buttons, or to nothing (a tap outside the chart closes it,
+      // below); focus moving to anything else closes it.
+      const to = e.relatedTarget;
+      if (!to || band.contains(to)) return;
+    }
+    pinned = false;
+    clearSelection();
+  });
   hit.addEventListener("keydown", (e) => {
     if (!stops.length) return;
-    const latest = stopBy("latest").i;
+    const latest = homeStop().i;
     const i = sel ? sel.i : latest;
     const later = RTL ? "ArrowLeft" : "ArrowRight", earlier = RTL ? "ArrowRight" : "ArrowLeft";
     let j;
@@ -1190,29 +1363,299 @@
     else if (e.key === "PageUp") j = i + 4;
     else if (e.key === "PageDown") j = i - 4;
     else if (e.key === "Home") j = 0;
-    else if (e.key === "End") j = latest;
-    else if (e.key === "Escape") { clearSelection(); return; }
+    else if (e.key === "End") j = stopBy("latest") || UNAV ? latest : stops.length - 1; // no reading today: the day's last stop
+    else if (e.key === "Escape") { if (mqPhone.matches) pinned = false; clearSelection(); return; }
     else return;
     e.preventDefault();
+    if (mqPhone.matches) pinned = true; // on a phone the keys keep the reading, with its buttons, as focus does
     selectStop(stops[Math.max(0, Math.min(stops.length - 1, j))]);
+    syncBand();
   });
+
+  /* ---- the finger (720 px and below; DECISIONS item 20, the user's picks for a trial, 2026-10-03). The page keeps its
+   * arrangement; only how a finger moves through the chart changes, and 721 px and up are untouched.
+   *   A swipe that starts on the plot, in any direction, is the page's: it scrolls and reads nothing (a finger that moves
+   *   more than FINGER.slop px before the hold is let go; the browser owns its scroll and pinch).
+   *   A press held still for FINGER.hold ms starts the reading; from then on the page does not scroll (the touch's moves
+   *   are cancelled) and a drag moves the reading stop by stop. Lifting the finger ends it: the band is empty again.
+   *   A quick tap reads that time and keeps it, with its buttons: the previous and the next time, and close (in that Tab
+   *   order since decision 25: along the lower row, then up to close). A tap outside the chart, Escape, or close ends it.
+   *   The reading stands in the band above the plot (the tooltip's lane), large, at the band's inline start; the tooltip
+   *   box and its connector are set aside on a phone (CSS). Inside now never changes.
+   *   Every stop has an equal share of the plot's width under a finger (stopForFinger), so the peak and the latest reading
+   *   no longer take the half hours beside them (MAGNET is for the mouse from 721 px).
+   * The hold is 300 ms: longer than a tap (about 100-200 ms), so a quick tap never starts it, and shorter than the system's
+   * own long press (about 400-500 ms, the text and link menus), so the reading always comes first. */
+  const FINGER = { hold: 300, slop: 10 };
+  // The stop for a finger at clientX: the stops share the span from the first to the last in equal slots, in their order;
+  // beyond either end, the end stop.
+  function stopForFinger(clientX) {
+    if (!geo || !stops.length) return null;
+    const n = stops.length, x0 = stops[0].x, x1 = stops[n - 1].x;
+    if (n === 1 || x1 === x0) return stops[0];
+    const t = (clientX - plot.getBoundingClientRect().left - x0) / (x1 - x0);
+    return stops[Math.round(Math.max(0, Math.min(1, t)) * (n - 1))];
+  }
+  // Decision 29: a 44 px circle centred on the peak ring reads the peak. Holds keep the equal-share mapping.
+  function stopForTap(clientX, clientY) {
+    const ring = $("#pk-dot");
+    if (ring && geo) {
+      const p = ring.getBoundingClientRect(), x = (p.left + p.right) / 2, y = (p.top + p.bottom) / 2;
+      const radius = Math.max(22, p.width / 2 + parseFloat(getComputedStyle(ring).strokeWidth) / 2);
+      if (Math.hypot(clientX - x, clientY - y) <= radius) return stops.find((st) => st.kind === "peak") || stopForFinger(clientX);
+    }
+    return stopForFinger(clientX);
+  }
+  // The band: the selected stop, large. The time first (with the peak's or the latest's flag), then the value with its
+  // level word (LVL-3: a moment's level, never a badge), then the usual value; while delayed the latest reading is muted
+  // and its age stands before the usual value, in the delayed colour. A span with no readings, and waiting for readings,
+  // is its one sentence on two lines, the words first (decisions 8, 9 and 12).
+  function bandHTML(st, tight = false) {
+    if (st.kind === "gap") {
+      const second = st.waiting ? `<span class="nw">${L.spanSince} ${tb(st.a)}</span>` : `<span class="nw">${L.spanFrom} ${tb(st.a)}</span> <span class="nw">${L.spanTo} ${tb(st.b)}</span>`;
+      // Where the words would pass the buttons (English "Waiting for readings" at 320 px, decision 25), they wrap between
+      // words instead, so the sentence keeps the reading's 8 px from the buttons.
+      return `<div class="bd-span"><span${tight ? "" : ' class="nw"'}>${st.waiting ? L.ro.waiting : L.ro.noReading}</span> <span>${second}</span></div>`;
+    }
+    const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
+    const stale = st.kind === "latest" && STATE === "delayed";
+    const head = `<div class="bd-t">${flag ? `<span class="tip-flag">${flag}</span>` : ""}<span class="bd-time">${tb(st.m)}</span></div>`;
+    let main, level = "";
+    if (st.kind === "zero") level = L.ro.empty;
+    else if (st.kind !== "wait" && st.kind !== "ahead") level = L.levels[levelOf(st.value)];
+    if (st.kind === "wait" || st.kind === "ahead") main = `<span class="bd-word">${st.kind === "wait" ? L.ro.noReadingYet : L.ro.ahead}</span>`;
+    else main = `<bdi class="bd-v">${st.kind === "zero" ? 0 : st.value}</bdi>${tight ? "" : `<span class="bd-l">${level}</span>`}`;
+    const foot = [];
+    if (tight && level) foot.push(`<span class="bd-l">${level}</span>`);
+    if (stale) foot.push(`<span class="bd-ago">${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span></span>`);
+    if (HAS_HISTORY && st.kind !== "zero") foot.push(`<span class="bd-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></span>`);
+    return `${head}<div class="bd-main${stale ? " is-stale" : ""}">${main}</div>${foot.length ? `<div class="bd-foot">${foot.join("")}</div>` : ""}`;
+  }
+  let finger = null; // { id, x0, y0, x, on, timer }: a touch on the plot, before its hold (on: false) and during it
+  function syncBand() {
+    const on = mqPhone.matches && Boolean(sel) && !tip.hidden;
+    // At rest, and at every size from 721 px, the band is hidden and empty: nothing in it is written again.
+    if (!on && band.hidden && !bandRead.firstChild) return;
+    const kept = on && pinned && !(finger && finger.on);
+    if (band.hidden !== !on) band.hidden = !on;
+    if (bandActs.hidden !== !kept) bandActs.hidden = !kept;
+    if (on) {
+      bandRead.innerHTML = bandHTML(sel);
+      // The value and its level word on one line, unless they would pass the buttons: then the word leads the next line.
+      const main = $(".bd-main", bandRead), span = $(".bd-span", bandRead);
+      if ((main && main.scrollWidth > main.clientWidth + 0.5) || (span && span.scrollWidth > span.clientWidth + 0.5)) bandRead.innerHTML = bandHTML(sel, true);
+    } else bandRead.textContent = "";
+    if (kept) {
+      bandBtn.prev.setAttribute("aria-disabled", String(sel.i <= 0));
+      bandBtn.next.setAttribute("aria-disabled", String(sel.i >= stops.length - 1));
+    }
+  }
+  bandBtn.prev.setAttribute("aria-label", L.band.prev);
+  bandBtn.next.setAttribute("aria-label", L.band.next);
+  bandBtn.close.setAttribute("aria-label", L.band.close);
+  const bandSay = $("#band-say");
+  function stepBand(d) {
+    if (!stops.length) return;
+    const i = sel ? sel.i : homeStop().i, j = i + d;
+    if (j < 0 || j > stops.length - 1) return; // the first or the last stop: the button says so (aria-disabled)
+    pinned = true;
+    selectStop(stops[j]);
+    // The reading is announced as the plot's own value is when it has focus.
+    bandSay.textContent = valueText(stops[j]);
+  }
+  function closeBand() {
+    const refocus = band.contains(document.activeElement);
+    pinned = false;
+    clearSelection();
+    bandSay.textContent = "";
+    // Focus that was on a button returns to the plot, without bringing a reading back.
+    if (refocus) { quietFocus = true; hit.focus(); quietFocus = false; }
+  }
+  bandBtn.prev.addEventListener("click", () => stepBand(-1));
+  bandBtn.next.addEventListener("click", () => stepBand(1));
+  bandBtn.close.addEventListener("click", closeBand);
+  band.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); closeBand(); } });
+  band.addEventListener("focusout", (e) => {
+    const to = e.relatedTarget;
+    if (mqPhone.matches && to && to !== hit && !band.contains(to)) { pinned = false; clearSelection(); }
+  });
+  // A tap outside the chart closes a kept reading (a scroll is no tap: it fires no click).
+  document.addEventListener("click", (e) => {
+    if (mqPhone.matches && pinned && sel && !chartCard.contains(e.target)) { pinned = false; clearSelection(); }
+  });
+  // A mouse on a phone-sized window (the 200% zoom of 1440): a click keeps the reading, as a tap does. A finger's own taps
+  // fire no click here (their touchend is cancelled), and a tap in the band's lane is the page's (fingerZone).
+  hit.addEventListener("click", (e) => {
+    if (!mqPhone.matches || finger || e.pointerType === "touch") return;
+    pinned = true;
+    selectStop(stopForTap(e.clientX, e.clientY));
+    syncBand();
+    slideClear();
+  });
+
+  /* ---- decision 25 (2026-10-03), after the trial.
+   *   Where a finger reads (A4): from the scale's highest mark down (geo.yt), the plot's data. The band's lane above it
+   *   holds the reading, so a finger that starts there would cover what it reads: a touch in the lane is the page's (it
+   *   scrolls; a tap there does nothing), and the finger always starts at least 28 px under the band's lowest line.
+   *   Decisions 26 and 27: touchstart stays native. Only moves after a still hold are cancelled; each rendered frame
+   *   advances at most one stop toward the latest finger position, continuing after reported movement stops.
+   *   The edges: when a hold or a tap starts while any part of the plot (the band is its top) is outside the screen,
+   *   the page slides once until the plot stands clear of the top and 16 px above the bar (FOC-7); it is not moved by the
+   *   finger, and the reading keeps to the finger's place across the slide. With reduced motion it is instant. */
+  const fingerZone = (y) => !geo || y >= plot.getBoundingClientRect().top + geo.yt;
+  const PAGE_MOVE = { slide: 420, gap: 16 }; // the one visibility slide only; no page pan or fling
+  let pageMove = null;
+  const scrollMax = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  const scrollToY = (y) => window.scrollTo({ top: Math.max(0, Math.min(scrollMax(), y)), behavior: "instant" });
+  function stopPageMove() { if (pageMove) { cancelAnimationFrame(pageMove.raf); pageMove = null; } }
+  // Runs fn(elapsed) each frame until it returns false.
+  function runPageMove(fn) {
+    stopPageMove();
+    const t0 = performance.now(), mv = { raf: 0 };
+    const step = (now) => { if (pageMove !== mv) return; if (fn(Math.max(0, now - t0)) === false) { pageMove = null; return; } mv.raf = requestAnimationFrame(step); };
+    pageMove = mv;
+    mv.raf = requestAnimationFrame(step);
+  }
+  // A signed slide: lower a clipped top, or raise a clipped bottom; the band and data fit between both edges.
+  function slideClear() {
+    if (!mqPhone.matches) return;
+    const bar = $("#tabbar");
+    const barTop = bar && getComputedStyle(bar).display !== "none" ? bar.getBoundingClientRect().top : innerHeight;
+    const pr = plot.getBoundingClientRect();
+    const over = pr.bottom - (barTop - PAGE_MOVE.gap);
+    const by = pr.top < 0 ? pr.top - PAGE_MOVE.gap : Math.min(Math.max(0, over), Math.max(0, pr.top - PAGE_MOVE.gap));
+    const from = scrollY, to = Math.max(0, Math.min(scrollMax(), from + by));
+    if (Math.abs(to - from) < 0.5) return; // both clear already: nothing slides
+    if (!motionOn()) { stopPageMove(); scrollToY(to); return; }
+    // A gentle start and a soft landing (the live tail's ease, read from a clock as the intro's line is): the rail's
+    // sharper ease-out read as a jump on a slide this long.
+    const clock = clockAnim({ duration: PAGE_MOVE.slide, easing: EASE.morph, fill: "both" });
+    runPageMove((ms) => {
+      const p = ms >= PAGE_MOVE.slide ? 1 : clock.effect.getComputedTiming().progress ?? 0;
+      scrollToY(from + (to - from) * p);
+      if (p >= 1) clock.cancel();
+      return p < 1;
+    });
+  }
+  const fingerTouch = (e) => (finger ? [...e.changedTouches].find((t) => t.identifier === finger.id) : null);
+  function followFinger() {
+    if (!finger || !finger.on || finger.raf) return;
+    const held = finger;
+    held.raf = requestAnimationFrame(() => {
+      held.raf = 0;
+      if (finger !== held || !held.on) return;
+      const target = stopForFinger(held.x);
+      if (!target || !sel || target.i === sel.i) return;
+      selectStop(stops[sel.i + Math.sign(target.i - sel.i)]);
+      // One reading per painted frame; do not wait for another touch event to finish the follow.
+      followFinger();
+    });
+  }
+  function endFinger() {
+    if (!finger) return;
+    clearTimeout(finger.timer);
+    cancelAnimationFrame(finger.raf);
+    const was = finger.on;
+    finger = null;
+    if (was) { pinned = false; clearSelection(); }
+  }
+  let laneTouch = null; // a touch that started in the band's lane: the page's, and a tap there does nothing
+  // A pinch may put its second finger outside the plot. Release the hold there too, before either finger moves.
+  document.addEventListener("touchstart", (e) => {
+    if (e.touches.length > 1) { endFinger(); laneTouch = null; }
+  }, { capture: true, passive: true });
+  hit.addEventListener("touchstart", (e) => {
+    if (!mqPhone.matches || !stops.length) return;
+    if (e.touches.length !== 1) { endFinger(); laneTouch = null; return; }
+    const t = e.changedTouches[0];
+    if (!fingerZone(t.clientY)) { laneTouch = { id: t.identifier, x0: t.clientX, y0: t.clientY, moved: false }; return; }
+    laneTouch = null;
+    finger = { id: t.identifier, x0: t.clientX, y0: t.clientY, x: t.clientX, on: false, timer: 0, raf: 0 };
+    finger.timer = setTimeout(() => {
+      if (!finger) return;
+      finger.on = true;
+      pinned = false;
+      selectStop(stopForFinger(finger.x));
+      syncBand();
+      slideClear();
+    }, FINGER.hold);
+  }, { passive: true });
+  hit.addEventListener("touchmove", (e) => {
+    if (e.touches.length !== 1) { endFinger(); laneTouch = null; return; }
+    if (laneTouch) { const t = [...e.changedTouches].find((c) => c.identifier === laneTouch.id); if (t && Math.hypot(t.clientX - laneTouch.x0, t.clientY - laneTouch.y0) > FINGER.slop) laneTouch.moved = true; return; }
+    const t = fingerTouch(e);
+    if (!t) return;
+    if (finger.on) {
+      if (e.cancelable) e.preventDefault();
+      finger.x = t.clientX;
+      followFinger();
+      return;
+    }
+    // Moved before the hold: a swipe, the page's. It reads nothing.
+    if (Math.hypot(t.clientX - finger.x0, t.clientY - finger.y0) > FINGER.slop) {
+      endFinger();
+    } else finger.x = t.clientX;
+  }, { passive: false });
+  hit.addEventListener("touchend", (e) => {
+    if (laneTouch) {
+      const t = [...e.changedTouches].find((c) => c.identifier === laneTouch.id);
+      // A tap in the lane: no click, no focus, nothing read.
+      if (t) { if (!laneTouch.moved && e.cancelable) e.preventDefault(); laneTouch = null; }
+      return;
+    }
+    const t = fingerTouch(e);
+    if (!t) return;
+    // No click, no focus and no mouse events follow the finger's own gestures.
+    if (e.cancelable) e.preventDefault();
+    if (finger.on) { endFinger(); return; }
+    // A tap: that time, kept.
+    clearTimeout(finger.timer);
+    const x = finger.x;
+    finger = null;
+    pinned = true;
+    selectStop(stopForTap(x, t.clientY));
+    syncBand();
+    slideClear();
+  }, { passive: false });
+  hit.addEventListener("touchcancel", (e) => { laneTouch = null; if (fingerTouch(e)) endFinger(); });
+  // The system's long-press menu never opens over the plot on a phone.
+  hit.addEventListener("contextmenu", (e) => { if (mqPhone.matches) e.preventDefault(); });
+  mqPhone.addEventListener("change", () => { laneTouch = null; stopPageMove(); endFinger(); if (!mqPhone.matches && pinned) { pinned = false; clearSelection(); } syncBand(); });
 
   // Text equivalent of the chart.
   function summary() {
     const { last, nowM, peak, peakM } = M;
+    // The chart's text equivalent in every state (step 3, second part): what the plot shows, and nothing it does not.
+    if (phase === "loading") return `${L.loadingSay}.`;
+    if (phase === "error" || phase === "retrying") return `${L.errorFull}.`;
+    if (CLOSED) {
+      return RTL
+        ? `${L.sayClosed(fmtTime(0))} لا قراءات اليوم بعد. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، طوال اليوم من ${plainSpan(fmtTime(0), fmtTime(DAY))}.`
+        : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through the whole day, from ${plainSpan(fmtTime(0), fmtTime(DAY))}.`;
+    }
+    if (UNAV) {
+      const gapSay = waitText(UNAV_LAST);
+      return RTL
+        ? `${L.sayOffline} مخطط خطي لمعدّل الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى الساعة ${fmtTime(UNAV_LAST)}. ` +
+          `الصالة مفتوحة وخالية من ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+          `${gapSay}. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
+        : `${L.sayOffline} Line chart of the average number of people inside today, from opening at ${fmtTime(0)} to ${fmtTime(UNAV_LAST)}. ` +
+          `Open with nobody inside from ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. No readings from ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+          `${gapSay}. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through to closing time. The rest of the day, from ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
+    }
     return RTL
-      ? `مخطط خطي لمتوسط كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
-        `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءة من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+      ? `مخطط خطي لمعدّل الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
+        `الصالة مفتوحة وخالية من ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `أعلى قراءة ${peak} الساعة ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). آخر قراءة ${occ[last]} الساعة ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
-        (STATE === "delayed" ? ` البيانات متأخرة، لا قراءة جديدة منذ ${arMin(nowM - last)}.` : "") +
-        (HAS_HISTORY ? ` يظهر خط متقطع للأربعاء المعتاد، متوسط آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
-        ` بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد. كل الدقائق في عرض التفاصيل.`
-      : `Line chart of the 30-minute average of the approximate number of people inside today, from opening at ${fmtTime(0)} to the latest reading at ${fmtTime(last)}. ` +
-        `Open with nobody inside ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. No reading ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+        (STATE === "delayed" ? ` البيانات متأخرة، لم تصل قراءة جديدة منذ ${arMin(nowM - last)}.` : "") +
+        (HAS_HISTORY ? ` يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
+        ` بقية اليوم من ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد. كل الدقائق في عرض التفاصيل.`
+      : `Line chart of the average number of people inside today, from opening at ${fmtTime(0)} to the latest reading at ${fmtTime(last)}. ` +
+        `Open with nobody inside from ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. No readings from ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `Highest reading ${peak} at ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). Latest reading ${occ[last]} at ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
         (STATE === "delayed" ? ` Data is delayed: no new reading for ${nowM - last} minutes.` : "") +
-        (HAS_HISTORY ? " A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through to closing time." : ` ${L.noHistory}.`) +
-        ` The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead. Every minute is listed under View details.`;
+        (HAS_HISTORY ? " A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through to closing time." : ` ${L.noHistory}.`) +
+        ` The rest of the day, from ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead. Every minute is listed under View details.`;
   }
   $("#chart-summary").textContent = summary();
 
@@ -1231,29 +1674,43 @@
     strip.push(seg("s-ahead", nowM + 1, DAY));
     const axis = [0, 360, 720, DAY].map((m, i, a) => `<span class="${i === 0 ? "first" : i === a.length - 1 ? "last" : ""}" style="inset-inline-start:${pct(m)}">${bdi(fmtHour(m))}</span>`).join("");
     const facts = [];
-    const fact = (k, dt, dd) => facts.push(`<div><dt><span class="k ${k}" aria-hidden="true"></span>${dt}</dt><dd>${dd}</dd></div>`);
-    fact("k-read", L.cov.read, L.covReadVal(bdi(observed), bdi(last + 1)));
-    fact("k-zero", L.cov.zero, `${timeRange(0, ZERO_END)}`);
-    fact("k-miss", L.cov.miss, `${timeRange(GAP0, GAP1)} · ${bdi(minText(GAP1 - GAP0 + 1))}`);
-    if (STATE === "delayed") fact("k-wait", L.cov.wait, `${timeRange(last + 1, nowM)} · ${bdi(minText(nowM - last))}`);
-    fact("k-ahead", L.cov.ahead, timeRange(nowM + 1, DAY));
-    fact("k-none", L.cov.line, L.covLineVal);
+    const fact = (k, dt, dd, span = false) => facts.push(`<div><dt><span class="k ${k}" aria-hidden="true"></span>${dt}</dt><dd${span ? ' class="is-span"' : ""}>${dd}</dd></div>`);
+    // A span's value reads «2:14 م – 2:31 م · 18 دقيقة»: the range with its en dash (decision 14), then a middle dot and
+    // its duration, no brackets (decision 16, user 2026-10-02); in the label's colour (decision 13). The range and
+    // «· 18 دقيقة» are each one unbreakable unit; the line may wrap only between them. The dot is silent; a screen reader
+    // hears a comma.
+    const covSpan = (a, b, n = 0) => `<span class="nw">${timeRange(a, b)}</span>${n ? ` <span class="nw"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">·</span> ${bdi(minText(n))}</span>` : ""}`;
+    fact("k-read", L.cov.read, L.covReadVal(observed, last + 1));
+    fact("k-zero", L.cov.zero, covSpan(0, ZERO_END), true);
+    fact("k-miss", L.cov.miss, covSpan(GAP0, GAP1, GAP1 - GAP0 + 1), true);
+    if (STATE === "delayed") fact("k-wait", L.cov.wait, covSpan(last + 1, nowM, nowM - last), true);
+    fact("k-ahead", L.cov.ahead, covSpan(nowM + 1, DAY), true);
     fact("k-none", L.cov.usual, HAS_HISTORY ? L.covUsualVal : L.covUsualNone);
     $("#coverage").innerHTML = `<h3>${L.coverageTitle}</h3><div class="strip" aria-hidden="true">${strip.join("")}</div><div class="strip-axis" aria-hidden="true">${axis}</div><dl class="facts">${facts.join("")}</dl>`;
 
+    // The minute table (step 3: TBL-1, TBL-3, TBL-12, NUM-2, NUM-5; K-20, K-33). Compact density; the time is the row
+    // header; the numbers whole, in tabular figures, on the physical right edge with their headers in both languages;
+    // a span with no readings is one full-width row, one sentence with the words first (decision 8); notes in a column
+    // of their own, folded into a row under theirs on a phone (TBL-8).
+    const noneRow = (a, b, words) => `<tr class="none"><td colspan="4">${spanNote(words, a, b)}</td></tr>`;
     const rows = [];
     for (let m = 0; m <= last; m++) {
-      const miss = !obs(m);
-      const note = miss ? L.notes.miss : m <= ZERO_END ? L.notes.zero : m === peakM ? L.notes.peak : m === last ? L.notes.latest : "";
-      rows.push(`<tr class="${miss ? "miss" : m === peakM ? "peak" : ""}"><td>${tb(m)}</td><td class="n">${miss ? '<span aria-hidden="true">-</span>' : bdi(occ[m])}</td><td>${miss ? "" : bdi(avg[m].toFixed(1))}</td><td>${note}</td></tr>`);
+      if (m === GAP0) { rows.push(noneRow(GAP0, GAP1, L.notes.miss)); m = GAP1; continue; }
+      const note = m <= ZERO_END ? L.notes.zero : m === peakM ? L.notes.peak : m === last ? L.notes.latest : "";
+      rows.push(`<tr${m === peakM ? ' class="peak"' : ""}${note ? ' data-note' : ""}><th scope="row">${tb(m)}</th><td class="n">${bdi(occ[m])}</td><td class="n">${bdi(Math.round(avg[m]))}</td><td class="notes">${note}</td></tr>`);
+      if (note) rows.push(`<tr class="note-row${m === peakM ? " peak" : ""}"><td colspan="4">${note}</td></tr>`);
     }
+    if (STATE === "delayed") rows.push(noneRow(last + 1, nowM, L.noReadingsYet));
     $("#minutes").innerHTML = `<h3 id="minutes-title">${L.minutesTitle}</h3>
       <div class="scroller" tabindex="0" role="region" aria-labelledby="minutes-title">
         <table class="minutes-table"><caption class="sr-only">${L.minutesAria}</caption>
-        <thead><tr>${L.cols.map((c) => `<th scope="col">${c}</th>`).join("")}</tr></thead>
+        <thead><tr>${L.cols.map((c, i) => `<th scope="col"${i === 1 || i === 2 ? ' class="n"' : i === 3 ? ' class="notes"' : ""}>${c}</th>`).join("")}</tr></thead>
         <tbody>${rows.join("")}</tbody></table>
       </div>`;
   }
+  // View details opens on a day with readings only. While the first payload loads, after an error, closed and unavailable
+  // the button stays in its place, disabled (BTN-4), so nothing moves when readings arrive.
+  const setDetails = (on) => { detailsBtn.disabled = !on; };
   const detailsLabel = $("span", detailsBtn);
   detailsBtn.addEventListener("click", () => {
     const open = details.hidden;
@@ -1273,21 +1730,20 @@
    * the changed digits roll, level bars fill or empty, the line's tail extends) or when the owner acts (the chart's
    * marker follows its stop along the curve, the rail opens). No glyph ever changes opacity: numbers roll inside a
    * clip, words swap at once, and the tooltip appears, changes and leaves at once (then travels with the marker). With prefers-reduced-motion,
-   * ?motion=off or the tuner's Motion switch, every change is instant. At rest no inline style, attribute or extra
+   * ?motion=off, every change is instant. At rest no inline style, attribute or extra
    * element from this section remains (the live pulse is the one exception, and only while live). */
   const EASE = {
     roll: "cubic-bezier(0.25, 1, 0.5, 1)",       // digits: decisive start, soft landing (quart out)
     bar: "cubic-bezier(0.25, 1, 0.5, 1)",        // a level bar fills or empties
     morph: "cubic-bezier(0.4, 0, 0.2, 1)",       // the live tail (a data transition: symmetric)
-    rail: "cubic-bezier(0.22, 1, 0.36, 1)",      // rail opens
-    railClose: "cubic-bezier(0.4, 0, 0.2, 1)",   // rail closes
+    ...EclipseFrame.easings,
     introLine: "cubic-bezier(0.3, 0.2, 0.4, 1)", // the intro's line: a firm start, an even day, a soft landing into now
   };
   const T = {
     roll: 280,
     bar: 200, barStagger: 50,
     morph: 280,
-    railOpen: 240, railClose: 200, railDist: 156, railReveal: 12,
+    ...EclipseFrame.timings,
     pulse: 5000,
   };
   const played = []; // every animation this section started, so motion off can finish them at once
@@ -1471,14 +1927,13 @@
    *     the tooltip, which is then more than half its width from its new place: it moves with the marker rather than
    *     trailing across the plot. A sweep of the pointer never reaches this, because the marker trails the pointer by
    *     far less.
-   *   The hover speed (tuner) divides both time constants. Positions are exact functions of the time since the last
-   *   target, so frame rate never changes the path. */
+   *   Positions are exact functions of the time since the last target, so frame rate never changes the path. */
   const FOLLOW = { tau1: 90, tau2: 15, jumpMinutes: 360, ext: 160, settlePx: 0.1, settleV: 0.003 };
   const follow = { raf: 0, route: null, stop: null, t0: 0, e0: 0, v0: 0, tip: null, hold: null, snap: null, tLast: 0, at: null, settle: false };
   let tipVel = { x: 0, t: 0 };
   const nowMs = () => (follow.hold != null ? follow.hold : performance.now());
   const displayedTipVelocity = () => nowMs() - tipVel.t < 50 ? { x: tipVel.x } : { x: 0 };
-  const taus = () => { const k = opts.hoverSpeed || 1; return [FOLLOW.tau1 / k, FOLLOW.tau2 / k]; };
+  const taus = () => [FOLLOW.tau1, FOLLOW.tau2];
   // The follow's response to a step, from error e0 and velocity v0 (px, px/ms), after dt ms: exact, so any frame rate
   // lands on the same path.
   function spring(e0, v0, dt) {
@@ -1652,18 +2107,11 @@
     if (follow.snap) { const k = follow.snap; Object.assign(follow, { route: k.route, t0: k.t0, e0: k.e0, v0: k.v0, tip: k.tip }); follow.snap = null; }
     loopFollow();
   }
-  // A new hover speed takes effect from now, from where the marker and tooltip are.
-  function rebaseFollow() {
-    const now = nowMs();
-    if (follow.route) { const s = followState(now); follow.t0 = now; follow.e0 = s.e; follow.v0 = s.v; }
-    if (follow.tip) { const o = tipState(now); follow.tip = { t0: now, ox: o.x, vx: o.vx }; }
-  }
-
   /* ---- live: the pulse on the line's end point (live state only; never while delayed). Calmer than Round 5: one
    * thin ring every 5 s, from inside the end point to just past its halo, at 40% at most. */
   let ping = null;
   function startPulse() {
-    if (!motionOn() || STATE === "delayed") return;
+    if (!motionOn() || STATE === "delayed" || phase !== "ready" || M.last < 0) return; // live readings only
     if (!ping) { ping = document.createElement("span"); ping.className = "ping"; ping.setAttribute("aria-hidden", "true"); plot.insertBefore(ping, tip); }
     placePing();
     ping.classList.add("is-on");
@@ -1687,7 +2135,7 @@
     finishLive();
     carryFollowIntoReading();
     const from = M;
-    if (from.nowM >= DAY - 1) return null;
+    if (from.nowM >= DAY - 1 || phase !== "ready" || from.last < 0) return null; // a reading change needs a day with readings
     const reading = STATE !== "delayed"; // delayed: the minute passes and no reading arrives
     const to = compute(reading ? from.last + 1 : from.last, from.nowM + 1);
     M = to;
@@ -1781,6 +2229,7 @@
     return true;
   }
   function resetReadings() {
+    if (phase !== "ready" || M.last < 0) return;
     endIntro("reset readings");
     finishLive();
     const from = M;
@@ -1793,13 +2242,13 @@
     if (!details.hidden) buildDetails();
     render();
   }
-  // Tuner: a crowd-level change on the Inside now card, across the nearest level boundary by the smallest step
-  // (Busy 49 goes down to Moderate 48, or up to Packed 69). Live only: a delayed card never moves.
+  // A crowd-level change on the Inside now card, across the nearest level boundary by the smallest step
+  // (Busy 70 goes down to Moderate 60, or up to Packed 91). Live only: a delayed card never moves.
   function crowdStep(dir) {
-    if (STATE === "delayed") return null;
+    if (STATE === "delayed" || phase !== "ready" || M.last < 0) return null;
     endIntro("crowd change");
     const v = shownNow(), li = levelOf(v);
-    const next = dir > 0 ? (li >= 3 ? null : [25, 49, 69][li]) : (li <= 0 ? null : [24, 48, 68][li - 1]);
+    const next = dir > 0 ? (li >= 3 ? null : G.PEOPLE[li] + 1) : (li <= 0 ? null : G.PEOPLE[li - 1]);
     if (next == null) return null;
     crowdShown = next === occ[M.last] ? null : next;
     rollTo($("#now-v"), String(next));
@@ -1808,66 +2257,12 @@
     return { from: v, to: next, level: L.levels[levelOf(next)], fromLevel: L.levels[li] };
   }
 
-  /* ---- rail: opens with transforms (the width switches at once and is never animated). During the change the
-   * rail's own surface steps aside for three pieces: a fixed start cap, a middle that scales from the inline-start,
-   * and an end cap that slides. The section names never fade: the moving end cap uncovers them (a clip on each name
-   * that keeps 12px inside the moving edge, on the same timing and curve), and covers them again on close. */
-  const railRun = { anims: [], surface: null, open: false };
-  function animateRail(open) {
-    finishRail();
-    if (!motionOn()) { rail.dataset.open = String(open); return; }
-    const s = document.createElement("i");
-    s.className = "rail-surface";
-    s.setAttribute("aria-hidden", "true");
-    s.innerHTML = '<i class="rs-shadow"></i><i class="rs-start"><i></i></i><i class="rs-mid"><i></i></i><i class="rs-end"><i></i></i>';
-    rail.prepend(s);
-    rail.classList.add("is-morph");
-    rail.dataset.open = "true";
-    railRun.surface = s;
-    railRun.open = open;
-    const [shadow, start, mid, end] = s.children;
-    const d = (RTL ? -1 : 1) * T.railDist;
-    const o = open ? { duration: T.railOpen, easing: EASE.rail, fill: "both" } : { duration: T.railClose, easing: EASE.railClose, fill: "both" };
-    const kf = (a, b) => (open ? [a, b] : [b, a]);
-    const an = [];
-    an.push(end.animate(kf({ transform: "translateX(0px)" }, { transform: `translateX(${d}px)` }), o));
-    an.push(mid.animate(kf({ transform: "scaleX(0)" }, { transform: "scaleX(1)" }), o));
-    an.push(shadow.animate(kf({ opacity: 0 }, { opacity: 1 }), o));
-    [start, mid, end].forEach((p) => an.push(p.firstElementChild.animate(kf({ opacity: 0 }, { opacity: 1 }), o)));
-    // Each name is uncovered by the moving edge. The keyframe offsets are points along the eased progress, which is
-    // exactly where the end cap is (it moves linearly in eased progress), so name and edge stay locked together.
-    const rr = rail.getBoundingClientRect(), closedW = rr.width - T.railDist; // the collapsed rail's width (80px)
-    rail.querySelectorAll(".rail-name").forEach((n) => {
-      const b = n.getBoundingClientRect();
-      const a = RTL ? rr.right - b.right : b.left - rr.left, w = b.width; // the name's inline-start offset in the rail
-      const p0 = Math.min(1, Math.max(0, (a + T.railReveal - closedW) / T.railDist));
-      const p1 = Math.min(1, Math.max(p0, (a + w + T.railReveal - closedW) / T.railDist));
-      // Fully hidden: the whole name and its 8px bleed are cut from the inline-end side. Shown: nothing is cut.
-      const clip = (hidden) => { const e = f(hidden ? w + 8 : -8); return RTL ? `inset(-8px -8px -8px ${e}px)` : `inset(-8px ${e}px -8px -8px)`; };
-      const frames = [{ offset: 0, clipPath: clip(1) }, { offset: p0, clipPath: clip(1) }, { offset: p1, clipPath: clip(0) }, { offset: 1, clipPath: clip(0) }];
-      an.push(n.animate(open ? frames : frames.map((k) => ({ ...k, offset: 1 - k.offset })).reverse(), o));
-    });
-    railRun.anims = an.map(track);
-    const run = railRun.anims;
-    Promise.all(run.map((a) => a.finished)).then(() => { if (railRun.anims === run) finishRail(); }).catch(() => {});
-  }
-  function finishRail() {
-    if (!railRun.surface) return;
-    const anims = railRun.anims;
-    railRun.anims = [];
-    anims.forEach((a) => a.cancel());
-    railRun.surface.remove();
-    railRun.surface = null;
-    rail.classList.remove("is-morph");
-    rail.dataset.open = String(railRun.open);
-  }
-
   /* ---- the first-open intro (Round 7 step 3; it amends Round 6 §1, "No load motion").
    * When: only on the first open of the page in a browser tab. A flag in sessionStorage (interface state, never visitor
    *   data) marks the tab as having opened the page, so F5, a reload, the language link or coming back in the same tab
    *   never play it; a new tab or a new browser session starts with empty session storage and plays it. If storage is
-   *   unavailable there is no intro (fail safe). There is none with reduced motion, ?motion=off or the tuner's Motion
-   *   switch off, and the flag is still set then: the intro belongs to the tab's first open only.
+   *   unavailable there is no intro (fail safe). There is none with reduced motion or ?motion=off, and the flag is
+   *   still set then: the intro belongs to the tab's first open only.
    * What is still: every surface (the cards and their lights, the wash, the rail), every label, unit, time of day and
    *   reference value (usual, average), the chart's grid, axes and legend, and the usual Wednesday line are present from
    *   the first paint and never move.
@@ -1881,8 +2276,8 @@
    *      missing span stays a gap throughout: each part of the line is its own path and is never joined.
    *   3. When the line arrives, the end point swells out of the line's tip (live; while delayed the grey point simply
    *      appears), and the peak ring swells into place with its dotted drop and its label (257 ms). The pulse starts then.
-   *   About 1171 ms in all at 1× (the tuner's intro speed divides every duration). Transform, clip and draw only: no glyph
-   *   changes opacity, no element's box changes, and nothing is announced (the live region is untouched).
+   *   About 1171 ms in all. Transform, clip and draw only: no glyph changes opacity, no element's box changes, and
+   *   nothing is announced (the live region is untouched).
    * When it starts: once the page's fonts are loaded (no font swaps mid-intro) and the tab is visible. Until then the
    *   numbers wait out of sight and the line is not drawn; if the fonts are not in within 200 ms of the first paint
    *   (user decision, 2026-09-26; it replaces a 1 s cap), there is no intro: the still page shows at once, its numbers
@@ -1895,14 +2290,14 @@
   const INTRO_STORE = "fitway.eclipse.v3.intro";
   // ms at 1x; the intro has its own roll (the live digit roll on a new reading keeps T.roll). fontCap is not scaled: it counts from the first paint.
   const INTRO_T = { roll: 400, line: 914, mark: 257, fontCap: 200 };
-  // A whole value: 49, 332, or a time with its own AM/PM (6-8 م, 6–8 PM), which is part of the value, unlike a unit.
-  const INTRO_NUM = /\d+(?:[-–:.,]\d+)*(?: (?:ص|م|AM|PM)(?![\p{L}]))?/gu;
+  // A whole value: 70, 332, or a time with its own AM/PM (6–8 م, 6–8 PM), which is part of the value, unlike a unit.
+  const INTRO_NUM = /\d+(?:(?:[-–]\u2060?|[:.,])\d+)*(?: (?:ص|م|AM|PM)(?![\p{L}]))?/gu;
   // The peak's label waits by an empty clip, like the answers' slots: out of sight, but still in the accessibility tree
   // (visibility or display would remove it), and never by opacity.
   const INTRO_HIDE = ";clip-path:inset(50%)";
   const SVGNS = "http://www.w3.org/2000/svg";
   const intro = { state: "off", firstOpen: false, played: false, count: 0, reason: "", yieldedBy: null, nums: [], run: null, tagStyle: null, fontWaitMs: null, startedAt: null, endedAt: null };
-  const introTotal = (k = opts.introSpeed || 1) => (Math.max(INTRO_T.roll, INTRO_T.line) + INTRO_T.mark) / k;
+  const introTotal = () => Math.max(INTRO_T.roll, INTRO_T.line) + INTRO_T.mark;
   function introDecide() {
     let first = false;
     try {
@@ -1912,12 +2307,15 @@
     } catch (e) { intro.reason = "session storage unavailable"; return; }
     intro.firstOpen = first;
     if (!first) { intro.reason = "already opened in this tab"; return; }
+    // Decision 25 (2026-10-03): no intro at 720 px and below. The chart is below the phone's first screen, so only the
+    // numbers moved while everything else stood still. The tab's first open is spent all the same (once per tab).
+    if (mqPhone.matches) { intro.reason = "phone"; return; }
     if (!motionOn()) { intro.reason = URL_OFF ? "motion=off" : mqReduce.matches ? "reduced motion" : "motion switch off"; return; }
     intro.reason = "first open in this tab";
     introPark();
   }
   // Each answer's value becomes one rolling slot (the digit roll's own slot: the value in flow, so its box is final),
-  // clipped out of sight. It inherits the text's own direction, so «6-8 م» keeps its order. Its text is the final value
+  // clipped out of sight. It inherits the text's own direction, so «6–8 م» keeps its order. Its text is the final value
   // throughout, so assistive technology reads the final value from the first paint.
   function introPark() {
     intro.state = "pending";
@@ -1984,8 +2382,8 @@
   }
   function introStart() {
     if (!geo) { endIntro("no chart"); return; }
-    const k = opts.introSpeed || 1;
-    const d = { roll: INTRO_T.roll / k, line: INTRO_T.line / k, mark: INTRO_T.mark / k };
+    if (mqPhone.matches) { endIntro("phone"); return; } // a window brought to 720 px or below before the intro began
+    const d = { roll: INTRO_T.roll, line: INTRO_T.line, mark: INTRO_T.mark };
     intro.state = "running";
     intro.played = true;
     intro.count++;
@@ -2101,6 +2499,8 @@
     intro.run = null;
     if (run) { cancelAnimationFrame(run.raf); run.anims.forEach((a) => a.cancel()); }
     intro.nums.forEach(({ el, html }) => { el.innerHTML = html; });
+    // Saved intro markup must not undo a breakpoint's card form.
+    if (phase === "ready") fillBusiest();
     intro.nums = [];
     introChartClear();
     intro.state = "done";
@@ -2114,17 +2514,8 @@
   // Leaving the tab mid-intro settles it too, so coming back never finds a half-drawn page. (A tab opened in the
   // background keeps its intro waiting until it is first shown; see introWait.)
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") endIntro("hidden"); });
-  // Tuner: replay the intro on the page as it is now (the current reading). Not while motion is off.
-  function replayIntro() {
-    if (!motionOn()) return false;
-    settleAll();
-    clearSelection();
-    stopPulse();
-    introPark();
-    render(); // the chart's start state
-    introStart();
-    return true;
-  }
+  // A window resized across 720 px never starts an intro, and one that plays or waits settles at once (decision 25).
+  mqPhone.addEventListener("change", () => { if (mqPhone.matches) endIntro("phone"); });
   // Held frames: every part of the intro held at `ms` after its start (it can be held again at another time).
   function seekIntro(ms) {
     const run = intro.run;
@@ -2145,20 +2536,15 @@
     return true;
   }
 
-  /* ---- switching motion on and off at runtime (tuner) */
+  /* ---- switching motion on and off when the system preference changes */
   function settleAll() {
     endIntro("settle");
-    finishLive(); stopFollow(); finishRail();
+    finishLive(); stopFollow(); frame.finishRail();
     [...rolls.keys()].forEach(finishRoll);
     [...feet.keys()].forEach(finishFoot);
   }
-  function setOptions(next, persist = true) {
+  function syncMotion() {
     const was = motionOn();
-    if (Number.isFinite(next.hoverSpeed)) { rebaseFollow(); opts.hoverSpeed = clampSpeed(next.hoverSpeed); }
-    // A new intro speed applies to the next intro (a replay, or the next first open), never to one that is playing.
-    if (Number.isFinite(next.introSpeed)) opts.introSpeed = clampIntroSpeed(next.introSpeed);
-    if (typeof next.motion === "boolean") opts.motion = next.motion;
-    if (persist && !TUNER_OFF) { try { localStorage.setItem(MOTION_STORE, JSON.stringify(opts)); } catch (e) { /* storage unavailable */ } }
     const on = motionOn();
     root.dataset.motion = on ? "on" : "off";
     if (was && !on) {
@@ -2168,7 +2554,7 @@
     }
     if (on && !was) startPulse();
   }
-  mqReduce.addEventListener("change", () => setOptions({}, false));
+  mqReduce.addEventListener("change", syncMotion);
 
   /* ------------------------------------------------------------ lifecycle
    * Rendered at once. Without an intro nothing is hidden while the fonts load. On a tab's first open (the intro), the
@@ -2176,14 +2562,170 @@
    * fonts are not in within 200 ms of the first paint there is no intro and the still page shows at once. Every other
    * part of the page is complete at first paint. The chart is measured again when the fonts arrive
    * (the header's text sets the chart's height) and whenever its box changes. */
+  /* ---- the first payload (step 3, second part; DESIGN_GUIDE §6 "Loading behaviour", approved 2026-09-30). The concept
+   * has no network: a timeline stands for the request, counted from the page's opening (performance.now()).
+   *   0-300 ms      the value slots keep their space, empty (data-load="wait"); a payload in time fills them directly.
+   *   300 ms        the skeleton shows (data-load="shown"), static in every motion setting (MOT-1, LGT-1), and the
+   *                 header says "Loading…". Once shown it stays at least 400 ms.
+   *   1000 ms       if still loading, one polite announcement, "Loading today's readings".
+   *   arrival       zero shift: every placeholder stands in its value's own slot; the values, the status and the
+   *                 badge come in as new boxes, the lights come on at once, the line draws into the same frame. On a
+   *                 tab's first open the intro (MOT-10) is the arrival: it never plays over the skeleton.
+   *   10 s          the ceiling: the load becomes Error, with its one retry (a request that fails sooner does too).
+   * The cards and the chart are aria-busy until their content arrives. A retry runs as an action (STA-9): the button
+   * says "Trying again…", keeps focus and is aria-disabled; it arrives into live, or fails back to Error. */
+  const LOAD = { delay: 300, min: 400, say: 1000, ceiling: 10000, retry: 1200 };
+  const ARRIVE = (() => { const a = params.get("arrive"); if (a === "never") return "never"; const n = Number(a); return a != null && a !== "" && Number.isFinite(n) && n >= 0 ? n : null; })();
+  const load = { shownAt: null, arrivedAt: null, failedAt: null, failReason: null, retryAt: null, timers: [], announcements: [] };
+  const later = (ms, fn) => load.timers.push(setTimeout(fn, Math.max(0, ms)));
+  const clearTimers = () => { load.timers.splice(0).forEach(clearTimeout); };
+  const setPhase = (p) => { phase = p; root.dataset.phase = p; };
+  const busy = (on) => [$("#cards"), chartCard].forEach((el) => (on ? el.setAttribute("aria-busy", "true") : el.removeAttribute("aria-busy")));
+  // One polite region in the header (never inside a busy region) says each change of state once: loading when it is
+  // slow, then the figures when they arrive. An error says itself (role=alert).
+  let stateSay = null;
+  function sayRegion() {
+    if (stateSay) return;
+    stateSay = Object.assign(document.createElement("p"), { className: "sr-only", id: "state-say" });
+    stateSay.setAttribute("aria-live", "polite");
+    stateSay.setAttribute("aria-atomic", "true");
+    $(".head-titles").append(stateSay);
+  }
+  function say(text) { sayRegion(); stateSay.textContent = text; load.announcements.push({ t: Math.round(performance.now()), text }); }
+  function startLoading() {
+    setPhase("loading");
+    root.dataset.load = "wait";
+    sayRegion();
+    pendCards();
+    setLights(false);
+    frame.statusLoading(true);
+
+    setDetails(false);
+    hit.hidden = true;
+    busy(true);
+    $("#chart-summary").textContent = summary();
+    const t = performance.now();
+    later(LOAD.delay - t, () => { if (phase === "loading") { root.dataset.load = "shown"; load.shownAt = performance.now(); } });
+    later(LOAD.say - t, () => { if (phase === "loading") say(L.loadingSay); });
+    if (typeof ARRIVE === "number") later(ARRIVE - t, arrive);
+    else if (ARRIVE === "never") later(LOAD.ceiling - t, () => fail("ceiling"));
+  }
+  function arrive() {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    const now = performance.now();
+    // Once shown, a skeleton stays at least 400 ms, so it never flickers.
+    if (phase === "loading" && load.shownAt != null && now - load.shownAt < LOAD.min) { later(load.shownAt + LOAD.min - now, arrive); return false; }
+    clearTimers();
+    const hadFocus = Boolean(retryBtn && document.activeElement === retryBtn);
+    setPhase("ready");
+    delete root.dataset.load;
+    root.dataset.state = STATE;
+    clearState();
+    retryBtn = errSay = null;
+    fillCards();
+    setLights(STATE !== "delayed");
+    frame.statusLoading(false);
+    frame.renderStatus();
+    frame.renderOps();
+    setDetails(true);
+
+    hit.hidden = false;
+    busy(false);
+    $("#chart-summary").textContent = summary();
+    load.arrivedAt = now;
+    // The retry is gone with the alert: focus goes to the figures that replaced it, quietly (no ring on a region).
+    if (hadFocus) { const c = $("#cards"); c.tabIndex = -1; c.focus({ preventScroll: true }); }
+    // The intro (MOT-10) is the arrival on a tab's first open, with motion on and the fonts in: the answers roll into
+    // their slots and the line draws into the frame. Otherwise everything is there at once.
+    introDecide();
+    render();
+    if (intro.state === "pending") {
+      const fontsIn = !document.fonts || ["400", "500"].every((w) => document.fonts.check(`${w} 16px "Readex Pro"`, "العربية FITWAY 0123456789"));
+      if (!fontsIn) endIntro("fonts late");
+      else requestAnimationFrame(() => requestAnimationFrame(() => { if (intro.state === "pending") introStart(); }));
+    } else startPulse();
+    say(L.say(occ[M.last], L.levels[levelOf(occ[M.last])], M.entries));
+    return true;
+  }
+  // The retry's current label: "Try again", or "Trying again…" while it runs (the other is unseen and unread).
+  function retryLabel(trying) {
+    const [idle, busyL] = retryBtn.querySelectorAll(".rb-l");
+    if (trying) { idle.setAttribute("aria-hidden", "true"); busyL.removeAttribute("aria-hidden"); }
+    else { idle.removeAttribute("aria-hidden"); busyL.setAttribute("aria-hidden", "true"); }
+  }
+  // Error: the alert is written a moment after its region is in place, so it is announced once; the retry takes focus.
+  function showError(focus) {
+    if (!retryBtn) errorCards();
+    setLights(false);
+    frame.statusLoading(false);
+    frame.renderStatus();
+    frame.renderOps();
+    setDetails(false);
+    hit.hidden = true;
+    busy(false);
+    retryLabel(false);
+    retryBtn.removeAttribute("aria-disabled");
+    retryBtn.removeAttribute("aria-busy");
+    $("#chart-summary").textContent = summary();
+    const el = errSay;
+    el.textContent = "";
+    setTimeout(() => { if (errSay === el) { el.innerHTML = `${ICON.alert}<span>${L.errorSay}</span>`; load.announcements.push({ t: Math.round(performance.now()), text: L.errorSay, alert: true }); } }, 50);
+    if (focus) retryBtn.focus();
+  }
+  function fail(reason) {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    clearTimers();
+    setPhase("error");
+    delete root.dataset.load;
+    load.failedAt = performance.now();
+    load.failReason = reason;
+    showError(true);
+    render();
+    return true;
+  }
+  function retry() {
+    if (phase !== "error") return false;
+    setPhase("retrying");
+    load.retryAt = performance.now();
+    retryLabel(true);
+    retryBtn.setAttribute("aria-disabled", "true");
+    retryBtn.setAttribute("aria-busy", "true");
+    busy(true);
+    // The concept's retry succeeds after 1.2 s (STA-9 shows its working state at least 400 ms); the ceiling still holds.
+    later(LOAD.retry, arrive);
+    later(LOAD.ceiling, () => fail("ceiling"));
+    return true;
+  }
+
   new ResizeObserver(() => render()).observe(plot);
-  introDecide();
+  if (phase === "loading") startLoading();
+  else if (phase === "error") { sayRegion(); load.failReason = "first payload"; showError(true); }
+  else if (CLOSED || UNAV) { setDetails(false); intro.reason = "no reading to reveal"; }
+  else introDecide();
   render();
   if (intro.state !== "pending") startPulse(); // with an intro, the pulse starts when the end point has landed
   window.__eclipse = {
     ready: false,
     lang: LANG,
     state: STATE,
+    page: PAGE, // the URL's state: loading and error arrive into live
+    get liveKeys() { return KEY_MOMENTS; },
+    get phase() { return phase; },
+    // The first payload (step 3, second part), for the probes: its timeline, what happened when, and what was announced.
+    load: {
+      timeline: LOAD,
+      get arrive() { return ARRIVE; },
+      get shownAt() { return load.shownAt; },
+      get arrivedAt() { return load.arrivedAt; },
+      get failedAt() { return load.failedAt; },
+      get failReason() { return load.failReason; },
+      get retryAt() { return load.retryAt; },
+      get announcements() { return load.announcements.slice(); },
+      show: () => { if (phase !== "loading") return false; root.dataset.load = "shown"; if (load.shownAt == null) load.shownAt = performance.now(); return true; },
+      arrive: () => { load.shownAt = null; return arrive(); },
+      fail: () => fail("script"),
+      retry: () => retry(),
+    },
     get figures() {
       const { last, nowM, peak, peakM, entries, observed, busiest, compare, avg, usualLatest, usualEntries, crestM } = M;
       return { now: occ[last], shownNow: shownNow(), last, nowM, peak, peakM, entries, observed, busiest, compare, avgNow: Math.round(avg[last] * 10) / 10, usualLatest: usualLatest == null ? null : Math.round(usualLatest * 10) / 10, usualEntries, crestM };
@@ -2199,7 +2741,7 @@
     chart: {
       get stops() {
         const pr = plot.getBoundingClientRect();
-        return stops.map((st) => ({ key: st.key, kind: st.kind, m: st.m, time: st.kind === "gap" ? plainRange(fmtTime(GAP0), fmtTime(GAP1)) : fmtTime(Math.round(st.m)), value: st.value, track: st.track, clientX: pr.left + st.x }));
+        return stops.map((st) => ({ key: st.key, kind: st.kind, m: st.m, time: st.kind === "gap" ? plainRange(fmtTime(st.a), fmtTime(st.b)) : fmtTime(Math.round(st.m)), value: st.value, track: st.track, clientX: pr.left + st.x }));
       },
       select: (key) => { const st = stopBy(key); if (!st) return null; selectStop(st); return hit.getAttribute("aria-valuetext"); },
       clear: () => clearSelection(),
@@ -2220,44 +2762,43 @@
       releaseFollow,
       // The follow's response to one step from rest, as fractions of the distance at the given times (ms).
       response: (times = [33, 66, 100, 133, 200, 266, 400]) => times.map((t) => ({ ms: t, fraction: Math.round((1 - spring(1, 0, t).e) * 1000) / 1000 })),
-      get timings() { const [a, b] = taus(); return { tau1: a, tau2: b, hoverSpeed: opts.hoverSpeed, jumpMinutes: FOLLOW.jumpMinutes, settlePx: FOLLOW.settlePx, fold: FOLD, magnet: MAGNET }; },
+      get timings() { const [a, b] = taus(); return { tau1: a, tau2: b, jumpMinutes: FOLLOW.jumpMinutes, settlePx: FOLLOW.settlePx, fold: FOLD, magnet: MAGNET }; },
     },
     motion: {
       get on() { return motionOn(); },
-      get options() { return { ...opts }; },
-      defaults: { ...MOTION_DEFAULTS },
       get urlOff() { return URL_OFF; },
       get systemReduced() { return mqReduce.matches; },
       get liveActive() { return Boolean(liveRun.clock); },
       get rolling() { return rolls.size + feet.size; },
-      get latest() { return fmtTime(M.last); },
+      get latest() { return M.last >= 0 ? fmtTime(M.last) : ""; },
       get atStart() { return M.last === START.last && M.nowM === START.nowM && crowdShown == null; },
-      get canCrowd() { return STATE !== "delayed"; },
+      get canCrowd() { return STATE !== "delayed" && phase === "ready" && M.last >= 0; },
+      // New reading and reset: only on a day with readings (step 3, second part).
+      get canStep() { return phase === "ready" && M.last >= 0; },
       timings: T,
       easings: EASE,
-      // Every motion, as built above (for the capture log and the README).
+      // Every motion, as built above (for the capture log and README.md, "Motion" / "What moves, and when").
       spec: () => [
         { motion: "Load", animates: "nothing but the first-open intro: the surfaces, lights, labels, grid, axes and usual line are complete at first paint (no stagger, no rise, no light entrance)", note: "a reload or a return in the same tab has no intro; only the live pulse runs at rest, and only while live" },
-        { motion: "First-open intro (Round 7 step 3): the answers", animates: "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still", delayMs: 0, durationMs: INTRO_T.roll / (opts.introSpeed || 1), easing: EASE.roll, note: "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced" },
-        { motion: "First-open intro: the line", animates: "stroke-dasharray of today's line parts, drawn by minutes since open from opening to the latest reading (right to left in Arabic), and one clip uncovering the fine vertical lines to the same minute", delayMs: 0, durationMs: INTRO_T.line / (opts.introSpeed || 1), easing: EASE.introLine, note: "the missing span stays a gap throughout; the grid, axes and usual line are still from the first paint" },
-        { motion: "First-open intro: the end point and the peak", animates: "SVG transform scale: the live end point and halo from the line tip's size (0.34) to 1, the peak ring from the same 0.34 to 1; the stale end point, the peak's drop and its label appear at once when the line arrives", delayMs: INTRO_T.line / (opts.introSpeed || 1), durationMs: INTRO_T.mark / (opts.introSpeed || 1), easing: EASE.roll, note: `about ${Math.round(introTotal())} ms in all; it settles at once on any action, a new reading or a resize; the pulse starts when it ends` },
+        { motion: "First-open intro (Round 7 step 3): the answers", animates: "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still", delayMs: 0, durationMs: INTRO_T.roll, easing: EASE.roll, note: "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced" },
+        { motion: "First-open intro: the line", animates: "stroke-dasharray of today's line parts, drawn by minutes since open from opening to the latest reading (right to left in Arabic), and one clip uncovering the fine vertical lines to the same minute", delayMs: 0, durationMs: INTRO_T.line, easing: EASE.introLine, note: "the missing span stays a gap throughout; the grid, axes and usual line are still from the first paint" },
+        { motion: "First-open intro: the end point and the peak", animates: "SVG transform scale: the live end point and halo from the line tip's size (0.34) to 1, the peak ring from the same 0.34 to 1; the stale end point, the peak's drop and its label appear at once when the line arrives", delayMs: INTRO_T.line, durationMs: INTRO_T.mark, easing: EASE.roll, note: `about ${Math.round(introTotal())} ms in all; it settles at once on any action, a new reading or a resize; the pulse starts when it ends` },
         { motion: "Lights", animates: "nothing, ever", note: "no entrance, no pointer-follow, no crowd-dependent light" },
         { motion: "Numbers: digit roll", animates: "transform translateY of the changed digits only, by the height of the digits' ink box (the new digit from below when rising, from above when falling; the old one leaves the other way), clipped to that ink box; the slot's width eases from the old digit's width to the new one's (Readex Pro has no tabular figures)", delayMs: 0, durationMs: T.roll, easing: EASE.roll, note: "no opacity on any glyph; words swap at once; plain markup restored at the end" },
         { motion: "Crowd level: bars", animates: "transform scaleY (from the bottom) of a red fill in each bar that changes", delayMs: `0, +${T.barStagger} per further bar (lower bars first when rising, upper first when falling)`, durationMs: T.bar, easing: EASE.bar, note: "the level word swaps at once" },
-        { motion: "Chart: the marker follows its stop (Round 7 step 2)", animates: "SVG geometry each frame along the drawn path (the ring B and its lit hairline, moved in place); the tooltip, in the lane at the top of the plot, is centred on the ring and moves sideways only (its left), and its connector to the ring follows", delayMs: 0, durationMs: "about 400 ms to settle, whatever the distance", easing: `two first-order lags in series, tau ${FOLLOW.tau1} ms and ${FOLLOW.tau2} ms, divided by the hover speed (${opts.hoverSpeed})`, note: `no restart: a new target keeps the position and velocity; at once (the marker) across the missing span, into the future, onto or off the gap stop, or more than ${FOLLOW.jumpMinutes} minutes away; the tooltip then eases sideways into its new place, or moves with the marker if that is more than half its width away; its text changes at once and it appears and leaves at once` },
+        { motion: "Chart: the marker follows its stop (Round 7 step 2)", animates: "SVG geometry each frame along the drawn path (the ring B and its lit hairline, moved in place); the tooltip, in the lane at the top of the plot, is centred on the ring and moves sideways only (its left), and its connector to the ring follows", delayMs: 0, durationMs: "about 400 ms to settle, whatever the distance", easing: `two first-order lags in series, tau ${FOLLOW.tau1} ms and ${FOLLOW.tau2} ms`, note: `no restart: a new target keeps the position and velocity; at once (the marker) across the missing span, into the future, onto or off the gap stop, or more than ${FOLLOW.jumpMinutes} minutes away; the tooltip then eases sideways into its new place, or moves with the marker if that is more than half its width away; its text changes at once and it appears and leaves at once` },
         { motion: "Live: new reading, tail morph and extension", animates: "SVG path d of the last ~15-30 minutes only, end point cx/cy, the tail's fine lines, the now clip", delayMs: 0, durationMs: T.morph, easing: EASE.morph },
         { motion: "Live: end-point pulse (live state only; none while delayed)", animates: "a 1px ring: opacity 0.4 to 0, transform scale 0.34 to 1 (9.5px to 28px)", delayMs: 1000, durationMs: T.pulse, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", note: "infinite; the ring is visible for the first 48% of each 5 s cycle" },
         { motion: "Rail opens", animates: "end cap translateX (0 to 156px, inline-end), middle scaleX (0 to 1) from the inline-start, darker surface layers and shadow opacity 0 to 1 (no text); each name uncovered by a clip-path that follows the end cap", delayMs: 0, durationMs: T.railOpen, easing: EASE.rail, note: "the width switches at once and is never animated; names never fade" },
         { motion: "Rail closes", animates: "the same in reverse", delayMs: 0, durationMs: T.railClose, easing: EASE.railClose },
       ],
       settle: () => settleAll(),
-      set: (o) => setOptions(o),
       step: stepReading,
       seekLive,
       reset: resetReadings,
       crowd: crowdStep,
     },
-    // The first-open intro (Round 7 step 3), for the tuner and the capture checks.
+    // The first-open intro (Round 7 step 3), for the capture checks.
     intro: {
       get state() { return intro.state; },   // "off" (no intro on this open), "pending", "running" or "done"
       get firstOpen() { return intro.firstOpen; },
@@ -2268,14 +2809,26 @@
       get fontWaitMs() { return intro.fontWaitMs; },
       get startedAt() { return intro.startedAt; },
       get endedAt() { return intro.endedAt; },
-      get timings() { const k = opts.introSpeed || 1; return { speed: k, rollMs: INTRO_T.roll / k, lineMs: INTRO_T.line / k, markMs: INTRO_T.mark / k, totalMs: introTotal(k), fontCapMs: INTRO_T.fontCap, easings: { roll: EASE.roll, line: EASE.introLine, mark: EASE.roll } }; },
-      totalMs: (k) => introTotal(k),
-      replay: replayIntro,
+      get timings() { return { rollMs: INTRO_T.roll, lineMs: INTRO_T.line, markMs: INTRO_T.mark, totalMs: introTotal(), fontCapMs: INTRO_T.fontCap, easings: { roll: EASE.roll, line: EASE.introLine, mark: EASE.roll } }; },
+      totalMs: () => introTotal(),
       seek: seekIntro,
       release: releaseIntro,
       settle: () => endIntro("script"),
     },
   };
+  if (KEY_MOMENTS) {
+    addEventListener("keydown", (e) => {
+      if (e.defaultPrevented || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      let handled = true;
+      if (key === "n") window.__eclipse.motion.step();
+      else if (key === "r") window.__eclipse.motion.reset();
+      else if (key === "u") window.__eclipse.motion.crowd(1);
+      else if (key === "d") window.__eclipse.motion.crowd(-1);
+      else handled = false;
+      if (handled) e.preventDefault();
+    });
+  }
   if (intro.state === "pending") introWait().catch(() => endIntro("error"));
   // The other script's subset of Readex Pro is fetched up front too (the rail's language item is written in it), so
   // opening the rail never swaps a font mid-way; this changes no pixel.

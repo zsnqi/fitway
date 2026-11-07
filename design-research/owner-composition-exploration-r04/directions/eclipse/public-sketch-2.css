@@ -1,0 +1,193 @@
+/* FITWAY public crowd page, sketch 2 of 4: the lit edge. Concept only, synthetic data, a still (phone, Arabic, live).
+ * The phone is FITWAY's lit card. Its light rises from the foot up both sides around a dark disc (the data light's
+ * U, at the scale of the screen) and stops at one of four stations: how far the light has climbed is how full the
+ * gym is. The stations are named up the inline-start edge; the current station's name is the large word, set on
+ * the crest. Derived from the level only (--station 1-4); the word is always written. */
+
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --oxblood: #4d0713;
+  --live: #4be29b;
+  --line-2: rgba(255, 255, 255, 0.1);
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+h1, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* The scale runs from the foot (--base) to just under the header (--top); station n sits n quarters up. */
+.page {
+  --base: 816px;
+  --top: 112px;
+  --crest: calc(var(--base) - (var(--base) - var(--top)) * var(--station) / 4);
+  position: relative;
+  height: 100dvh;
+  min-height: 844px;
+  overflow: clip;
+  padding: 0 20px;
+}
+
+/* ------------------------------------------------------------------ the light */
+.edge { position: absolute; inset: 0; pointer-events: none; }
+.edge-light {
+  position: absolute;
+  inset: 0;
+  --light:
+    linear-gradient(to left, rgb(229 25 53 / 0.8) 0, rgb(229 25 53 / 0.46) 9px, rgb(77 7 19 / 0.9) 30px, rgb(77 7 19 / 0.5) 74px, rgb(77 7 19 / 0) 150px),
+    linear-gradient(to right, rgb(229 25 53 / 0.8) 0, rgb(229 25 53 / 0.46) 9px, rgb(77 7 19 / 0.9) 30px, rgb(77 7 19 / 0.5) 74px, rgb(77 7 19 / 0) 150px),
+    linear-gradient(to top, rgb(229 25 53 / 0.78) 0, rgb(229 25 53 / 0.4) 10px, rgb(77 7 19 / 0.9) 34px, rgb(77 7 19 / 0.45) 96px, rgb(77 7 19 / 0) 190px);
+  background: var(--light);
+  /* The climb: lit below the crest, a short soft edge just under it. The disc: a dark ellipse in front, so the
+   * light reads as a U around the screen's middle. */
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent calc(var(--crest) - 2px), rgb(0 0 0 / 0.75) calc(var(--crest) + 6px), #000 calc(var(--crest) + 36px)),
+    radial-gradient(ellipse 172px 540px at 50% 262px, transparent 0, transparent 84%, rgb(0 0 0 / 0.55) 93%, #000 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent calc(var(--crest) - 2px), rgb(0 0 0 / 0.75) calc(var(--crest) + 6px), #000 calc(var(--crest) + 36px)),
+    radial-gradient(ellipse 172px 540px at 50% 262px, transparent 0, transparent 84%, rgb(0 0 0 / 0.55) 93%, #000 100%);
+  mask-composite: intersect;
+}
+.edge-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.16;
+  -webkit-mask-image: var(--light);
+  mask-image: var(--light);
+}
+/* The crest: a short bright rule on each edge where the light stops; FITWAY's hottest red only on the inline-start
+ * side, where the stations are named. */
+.tip { position: absolute; top: calc(var(--crest) - 1px); width: 30px; height: 2px; }
+.tip-start {
+  inset-inline-start: 0;
+  background: var(--red-hi);
+}
+.tip-start::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: -40px;
+  width: 64px;
+  height: 82px;
+  background: radial-gradient(ellipse 64px 41px at 0% 50%, rgb(255 41 70 / 0.55) 0%, rgb(255 41 70 / 0.2) 45%, rgb(255 41 70 / 0) 100%);
+}
+[dir="rtl"] .tip-start::after { background: radial-gradient(ellipse 64px 41px at 100% 50%, rgb(255 41 70 / 0.55) 0%, rgb(255 41 70 / 0.2) 45%, rgb(255 41 70 / 0) 100%); }
+.tip-end { inset-inline-end: 0; background: var(--red); }
+
+/* ------------------------------------------------------------------ header */
+.top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------------ the stations */
+.station {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 22px;
+  top: calc(var(--base) - (var(--base) - var(--top)) * var(--n) / 4 - 10px);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-3);
+}
+.station::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -22px;
+  top: 10px;
+  width: 12px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.28);
+}
+.station.lit { color: var(--ink-2); }
+.station.lit::before { background: rgba(255, 255, 255, 0.5); }
+.station.now::before { display: none; }
+.s1 { --n: 1; }
+.s2 { --n: 2; }
+.s3 { --n: 3; }
+.s4 { --n: 4; }
+
+/* ------------------------------------------------------------------ the word on the crest, and what follows */
+.word {
+  position: absolute;
+  z-index: 1;
+  inset-inline: 20px;
+  top: calc(var(--crest) - 110px);
+  text-align: center;
+  font-size: 104px;
+  line-height: 128px;
+  font-weight: 500;
+}
+.facts {
+  position: absolute;
+  z-index: 1;
+  inset-inline: 20px;
+  top: calc(var(--crest) + 52px);
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  font-size: 19px;
+  line-height: 28px;
+  color: var(--ink-2);
+}
+.facts .count { color: var(--ink); font-weight: 500; }
+.stamp {
+  position: absolute;
+  z-index: 1;
+  inset-inline: 20px;
+  bottom: 26px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-2);
+}
+.fresh { display: inline-flex; align-items: center; gap: 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); }
+.pct bdi { color: var(--ink); }

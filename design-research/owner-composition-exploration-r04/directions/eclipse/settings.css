@@ -1,0 +1,643 @@
+/* Eclipse Settings: the fifth Eclipse page. Loaded after style.css (the language and the frame) and shared.css (the
+ * buttons, fields, dialog and alert the Owner pages share); every rule here is scoped to the Settings body (.set) or
+ * to a class only this page uses. Concept only, synthetic data.
+ * Arrangement ج (DECISIONS item 80): the header (the title and the frame's status), then, from 1024 px, four cards in
+ * two equal columns, read a row at a time: the crowd and the opening hours, then the business day and the settings
+ * history; the start column holds the crowd over the business day, the end column the hours over the history. Each
+ * value card's «تعديل» opens that card in a window over the page (part 2). 721-1023 px one column in the same order;
+ * on a phone (720 px and below) the four cards stand in that column's order, the history last in its phone form of three
+ * lines a record (DECISIONS item 81); the control under the header, kept from the second skeleton pass, stays for now.
+ * Nothing is lit: the page wash only (LGT-6 allows none).
+ * The components first drawn here, for later screens (DESIGN-SPEC.md §3, marked in SETTINGS-SPEC.md): the value card
+ * (a heading with its edit control, then its values on one module of ruled rows, VAL-1), the value list (VAL-2), the
+ * figure (a value that stands alone, VAL-3), the level key (CHP-5's four bars as a level's mark beside its word, LVL-7),
+ * and the history record that names a change from → to with its reason (LOG-1). */
+
+html:has(> body.set) {
+  color-scheme: dark;
+  scrollbar-gutter: stable;
+  scrollbar-color: rgba(245, 243, 242, 0.2) #070707;
+}
+.set {
+  --err: #ff6b7d;        /* error text and borders: 6.9:1 on the panel */
+  --err-line: rgba(255, 107, 125, 0.5);
+  --field: rgba(255, 255, 255, 0.03);
+  --field-line: rgba(255, 255, 255, 0.34);
+  --ph: rgba(255, 255, 255, 0.06);
+  --row-line: rgba(255, 255, 255, 0.055);
+  --stale: #8f898b;      /* COL-17: "Closed" words, 5.63:1 on the card */
+  /* The module every value card is ruled on: a row is 48 px (TBL-2's default density), its 1 px rule included; a figure
+   * takes two rows. On a phone 40. One module in every card, so rules meet across the gutter. */
+  --row: 48px;
+  /* A value list's label column, one width in every card, so a card's values start on one edge: the widest label and
+   * 16 px to its value, measured in Readex Pro: «شديد الازدحام» with its bars 107 px; "Moderate" with its bars 87.8 px.
+   * The crowd's widest row then needs 298 px in Arabic and 270 in English, inside a card's 388 at 1024. */
+  --lab: 124px;
+}
+html[lang="en"] .set { --lab: 104px; }
+.set ::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+@media (min-width: 721px) { html:has(> body.set) { scroll-padding-block: 16px; } }
+.set [hidden] { display: none !important; }
+/* DAT-4: a date, a time or a range is one unbreakable span. */
+.set .nw { white-space: nowrap; }
+
+/* ------------------------------------------------------------------ page
+ * The header, then the four cards; one 16 px gutter (SPC-5). From 1024 px two equal columns, the rows stretched to
+ * their taller card, so each row's two cards start and end on one line. 721-1023 px and on a phone one column. */
+.set .main { display: flex; flex-direction: column; gap: 16px; padding-block: 8px 24px; }
+.set-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
+@media (max-width: 1023px) { .set-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ------------------------------------------------------------------ the value card (new, VAL-1)
+ * SRF-1's card, padding 24 (16 on a phone), never a card inside a card (SRF-6). Its head: the name in heading type, a
+ * unit beside it where one belongs («توقيت الرياض», the hours' only technical value, item 49) in label type --ink-3 on
+ * its baseline, and «تعديل» (BTN-2) at the head's inline end, centred on the title's line, 44 px. Then, 12 below, its
+ * values on the module: every block ruled from the one above with TBL-2's row line, which runs the card's inner width. */
+.set-card { padding: 24px; container: setcard / inline-size; }
+.set-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; }
+.set-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; min-width: 0; font-size: 19px; line-height: 28.5px; font-weight: 500; color: var(--ink); }
+.set-unit { font-size: 13.5px; line-height: 20px; font-weight: 400; color: var(--ink-3); white-space: nowrap; }
+.set-edit { flex: none; }
+.set-title:focus-visible { border-radius: 8px; }
+
+/* A figure (new, VAL-3): a value that stands alone (capacity, the end of the business day, the reset). Two rows of the
+ * module: its label in label type --ink-2, centred on the first row's line, then 4 below the value in title type at 500,
+ * chalk (TYP-3: a value in words), tabular figures requested; it wraps between words only when its card is too narrow. */
+.set-figs { margin: 12px 0 0; }
+.set-fig { display: flex; flex-direction: column; gap: 4px; box-sizing: border-box; min-height: calc(var(--row) * 2); padding-block: calc((var(--row) - 20px) / 2) 12px; border-block-start: 1px solid var(--row-line); }
+.set-fig > dt { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.set-fig > dd { min-width: 0; margin: 0; font-size: 30px; line-height: 36px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+/* The words that finish a figure (CRD-2's unit): body type at 400, --ink-2, on the figure's baseline, after the space
+ * the figure's own size sets (about 8 px); they wrap whole under the figure when the card is too narrow. */
+.set-fig .fig-u { font-size: 15px; line-height: 22px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
+.set-fig .fig-n { white-space: nowrap; }
+/* A card whose figures are its last block shares its height among them, so a card stretched to its row's taller one
+ * keeps its figures evenly spaced instead of leaving the space at its foot (the business day beside the history). */
+.set-card { display: flex; flex-direction: column; }
+.set-card > .set-figs:last-child { display: flex; flex: 1 0 auto; flex-direction: column; }
+.set-card > .set-figs:last-child > .set-fig { flex: 1 0 auto; }
+
+/* A list's name inside a card («المستويات»): label type --ink-2 on one row of the module, centred, unruled, so it reads
+ * as the head of the rows under it. */
+.set-sub { display: flex; align-items: center; box-sizing: border-box; height: var(--row); margin: 0; font-size: 13.5px; line-height: 20px; font-weight: 400; color: var(--ink-2); }
+
+/* The value list (VAL-2): a definition list, its rows on the list's own columns (subgrid), so a card's figures line up
+ * down it. A row is one module, ruled above; label and value share a baseline, centred in the row. Labels in label type
+ * --ink-2; values in body type at 500, chalk, with tabular figures requested (NUM-2); the words around a value
+ * («حتى», the people, a unit) in label type --ink-2. */
+.set-dl { display: grid; column-gap: 0; margin: 0; }
+.set-card > .set-dl:first-of-type { margin-block-start: 12px; }
+.set-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-content: center; align-items: baseline; box-sizing: border-box; min-height: var(--row); padding-block: 4px; border-block-start: 1px solid var(--row-line); }
+.set-row > dt { grid-column: 1; min-width: 0; padding-inline-end: 16px; font-size: 13.5px; line-height: 22px; color: var(--ink-2); }
+.set-row > dd { display: grid; grid-template-columns: subgrid; grid-column: 2 / -1; align-items: baseline; min-width: 0; margin: 0; }
+.set .v-n { font-size: 15px; line-height: 22px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.set .v-q, .set .v-p { font-size: 13.5px; line-height: 22px; color: var(--ink-2); white-space: nowrap; }
+
+/* The crowd's levels. Columns: the label (the key and the word), the qualifier («حتى», «فوق»), the limit, the people. */
+.dl-levels { grid-template-columns: var(--lab) max-content max-content minmax(0, 1fr); }
+.dl-levels .v-q { padding-inline-end: 6px; }
+.dl-levels .v-p { padding-inline-start: 16px; }
+/* A level's parts closer on a phone (4 after «حتى», 10 before the people), so a gym of up to 999 keeps one line from
+ * 400 px in Arabic and 372 px in English on a phone (overlay scrollbars), from 415 and 387 px with a classic scrollbar
+ * (a card 334 and 306 px inside); narrower, the Packed row keeps its second line where its phrase can wrap (below: in
+ * English only in a card 300 to 305 px inside). A level that wrapped as the values arrived would grow its row, which no
+ * placeholder can know. */
+@media (max-width: 720px) {
+  .dl-levels .v-q { padding-inline-end: 4px; }
+  .dl-levels .v-p { padding-inline-start: 10px; }
+}
+/* The range's ends (a capacity in the millions, «لا يظهر بهذه السعة» at capacity 1 on a phone) wrap within the people's
+ * column, between words, rather than spill the card; a gym of up to 999 keeps one line from 400 px in Arabic and 372 px
+ * in English on a phone (overlay scrollbars), from 415 and 387 px with a classic scrollbar, at its widest (the Packed
+ * row below keeps its second line where its phrase can wrap: in Arabic up to there, in English only in a card 300 to
+ * 305 px inside). */
+.dl-levels .v-p, .dl-levels .v-p .nw { min-width: 0; white-space: normal; }
+/* The Packed row's people hold two lines wherever they can wrap (DECISIONS item 87). The skeleton is drawn before any
+ * value is known (a first load has none; a skeleton that read the values would match only in a concept that knows them),
+ * so it cannot tell whether the Packed row's phrase wraps: the row reserves the worst case in loading and arrived alike,
+ * and the arrival moves nothing for a gym of 1 to 999 with any limits from 0 to 100%. The worst phrase is a capacity of
+ * 999 with Busy at 100% (a count of 1,000 beside the widest limits' column): «أو 1,000 شخص فأكثر», 130 px, wraps in a
+ * card up to 333 px inside in Arabic (a 399 px phone with overlay scrollbars, a 414 px window with a classic
+ * scrollbar; a 414 px phone is 348 px inside and keeps one line), and "or 1,000+ people", 109 px, in English only in a
+ * card of 300 to 305 px inside (a 366 to 371 px phone, a 381 to 386 px window with a classic scrollbar). Under 300 px
+ * inside, where the people stand under the percentage, it wraps in Arabic up to 253 px (a 319 px phone, a 334 px window
+ * with a classic scrollbar) and in English never (not even in a 219 px card), so English reserves nothing there. Each query adds
+ * about 25 px to what was measured, so a font that falls back still holds its line; from 721 px the cards are 379 px
+ * inside or more and never reach it. A gym whose phrase fits leaves the second line empty: 22 px under the row (the row
+ * is 62 for 40 from 300 px inside, 83 for 61 below it). The row keeps the other levels' rhythm: its first line as far
+ * below its rule, and the space under its last line, as theirs (8.5 px of padding each side from 300 px inside; the
+ * narrow card's 8 below it). The other levels are not reserved: a level no count reaches wraps «لا يظهر بهذه السعة» /
+ * "Never shown at this capacity" within the range (SETTINGS-SPEC OWN-S22 reports it), and a capacity of 1,000 or more
+ * is out of it. */
+@container setcard (max-width: 359.98px) {
+  html:not([lang="en"]) .dl-levels .set-row:last-child > dd > .v-p { min-block-size: 2lh; }
+}
+@container setcard (min-width: 300px) and (max-width: 329.98px) {
+  html[lang="en"] .dl-levels .set-row:last-child > dd > .v-p { min-block-size: 2lh; }
+  html[lang="en"] .dl-levels .set-row:last-child { padding-block: calc((var(--row) - 1px - 22px) / 2); }
+}
+@container setcard (min-width: 300px) and (max-width: 359.98px) {
+  html:not([lang="en"]) .dl-levels .set-row:last-child { padding-block: calc((var(--row) - 1px - 22px) / 2); }
+}
+/* The level key (new, LVL-7): CHP-5's four bars (4, 6.5, 9 and 11 px, 3 px wide, 2 apart, radius 1) as the level's
+ * mark before its word, lit to the level's step in --red-hi, unlit white .16; the word carries the level (LVL-4), the
+ * bars repeat it as the visitors' page and Daily draw it. They sit on the word's baseline. */
+.lvl-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; margin-inline-end: 8px; vertical-align: -1px; }
+.lvl-bars i { width: 3px; border-radius: 1px; background: rgba(255, 255, 255, 0.16); }
+.lvl-bars i:nth-child(1) { height: 4px; }
+.lvl-bars i:nth-child(2) { height: 6.5px; }
+.lvl-bars i:nth-child(3) { height: 9px; }
+.lvl-bars i:nth-child(4) { height: 11px; }
+.lvl-bars i.on { background: var(--red-hi); }
+/* Forced colours: the four bars kept in system colours, the lit ones filled (FOC-8, as the level chip's). */
+@media (forced-colors: active) {
+  .lvl-bars i { forced-color-adjust: none; background: Canvas; border: 1px solid CanvasText; }
+  .lvl-bars i.on { background: CanvasText; }
+}
+
+/* The hours: the week from Sunday, a row per day: the day, then its range, «6:00 ص – 1:00 ص» (DAT-4: one unbreakable
+ * span; the en dash `--ink-3`), and a note after it («24 ساعة» when the opening equals the closing). Two edges: every
+ * opening starts on the value edge (the card's values' edge, VAL-2; in Arabic the figures' right edge, TBL-1) and every
+ * closing starts on one edge of its own, so the week reads down both columns. In Readex Pro at 15 / 500 «ص» is 21.8 px
+ * and «م» 8.3, so an opening ending in «م» (Friday's «2:00 م») is 13.4 px shorter than the others: the dash stands in
+ * the middle of what is left between the opening and the closing, 8 px each side at the widest opening, so a shorter
+ * one shares its 13.4 px on both sides of the dash (6.7 each) instead of leaving one hole before it (the columns part 1
+ * dropped) or setting its closing 13.4 px off (part 1's phrase). The opening and its dash are one column (`.v-od`). A
+ * closed day says «مغلق» in COL-17's grey from the value edge. */
+.dl-hours { grid-template-columns: var(--lab) max-content max-content minmax(0, 1fr); }
+.dl-hours .set-row > dd { display: grid; grid-template-columns: subgrid; grid-column: 2 / -1; align-items: baseline; }
+.dl-hours .v-hr { display: contents; }
+.dl-hours .v-od { display: flex; align-items: baseline; white-space: nowrap; }
+.dl-hours .v-dash { flex: 1 0 auto; padding-inline: 8px; font-size: 15px; line-height: 22px; text-align: center; color: var(--ink-3); }
+.dl-hours .v-note { padding-inline-start: 12px; font-size: 12px; line-height: 22px; color: var(--ink-3); white-space: nowrap; }
+.dl-hours .v-closed { grid-column: 1 / -1; font-size: 15px; line-height: 22px; color: var(--stale); }
+
+/* A narrow card (under 300 px inside: a phone under about 360 px): a level's people go under its percentage, starting
+ * where «حتى» starts, in every level alike, so the label column keeps the level's word on one line; the hours take a
+ * day column of their own widest name and 16 px («الأربعاء» 52 px, "Wednesday" 70 px) and a closer dash, so a day's
+ * two times keep one line down to 320 px with a classic scrollbar. */
+@container setcard (max-width: 299.98px) {
+  .dl-levels .set-row { padding-block: 8px; }
+  .dl-levels .set-row > dd { display: flex; flex-wrap: wrap; align-items: baseline; }
+  .dl-levels .v-p { flex-basis: 100%; padding-inline-start: 0; }
+  .dl-hours { grid-template-columns: 76px max-content max-content minmax(0, 1fr); }
+  html[lang="en"] .dl-hours { grid-template-columns: 88px max-content max-content minmax(0, 1fr); }
+  .dl-hours .v-dash { padding-inline: 6px; }
+}
+
+/* ------------------------------------------------------------------ the settings history (the fourth card)
+ * The value card's head with «عرض الكل» in the edit control's place (Access's link, OWN-C15's form: label type
+ * --ink-2 with a chevron, a 44 px target reaching 12 px past its words). Then the list's place, one height whatever the
+ * history holds: three records of two lines (the rule, 12 + 22 + 4 + 22 + 12: 73 px; the last one's foot is the card's
+ * padding), 207 px, so the card is 313 px from 721 px in every state and with every history, and the row it shares with
+ * the business day never follows the records: loading, the arrival and a save keep one geometry (DECISIONS item 82),
+ * and the business day keeps its figures on their rules (VAL-1).
+ * A record (new, LOG-1) is two lines from 721 px (three on a phone, below), so every record fills one slot and the
+ * placeholders wait in the same slots: first its first change, what in label type --ink-2 (one line, up to half the list, cut with «…» beyond),
+ * then the figures in chalk at 500 (from, the arrow along the reading line, 14 px --ink-3, mirrored in Arabic, ICO-5,
+ * to) and after them, --ink-3, how many more changes it made («و9 تغييرات أخرى»); then the reason as typed, in the
+ * page's quotation marks, --ink-2, on one line cut with «…» (at most 62ch), and who and when in caption --ink-3 at the
+ * record's far end on that line's baseline (alone there when no reason was given). The records share their columns
+ * (subgrid), so every record's figures start on one edge: a column down the card, read as one list of changes rather
+ * than three sentences each starting where its name ends. */
+.set .acc-all { display: inline-flex; flex: none; align-items: center; gap: 4px; height: 44px; margin-inline: -12px; padding-inline: 12px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.set .acc-all svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .set .acc-all:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
+.set .acc-all:focus-visible { --focus-ring-offset: -2px; }
+.log-box { display: flex; flex-direction: column; height: calc(3 * 73px - 12px); margin: 12px 0 0; }
+/* The columns every record shares: what (up to half the list), the figures, who and when; 12 px between them, and 12
+ * more before who and when. */
+.log-list { display: grid; flex: none; grid-template-columns: fit-content(50%) minmax(0, 1fr) auto; column-gap: 12px; margin: 0; padding: 0; list-style: none; }
+.log-rec { position: relative; display: grid; grid-template-columns: subgrid; grid-template-rows: 22px 22px; grid-column: 1 / -1; row-gap: 4px; align-items: baseline; padding-block: 12px; border-block-start: 1px solid var(--row-line); font-size: 13.5px; line-height: 22px; }
+.log-what { grid-column: 1; grid-row: 1; min-width: 0; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.log-fig { grid-column: 2 / -1; grid-row: 1; display: flex; align-items: center; min-width: 0; overflow: hidden; color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.log-ft { display: inline-flex; flex: none; align-items: center; column-gap: 6px; }
+.log-from { white-space: nowrap; }
+.log-to { display: inline-flex; align-items: center; column-gap: 6px; white-space: nowrap; }
+.log-arw { width: 14px; height: 14px; flex: none; fill: none; stroke: var(--ink-3); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.log-more { flex: none; margin-inline-start: 8px; font-weight: 400; color: var(--ink-3); white-space: nowrap; }
+/* Folded short (a first change too wide for its line): the name takes the line, its count after it as one phrase,
+ * --ink-3, «ساعات الأحد و6 تغييرات أخرى», the figures left to the window. */
+.log-wm { display: none; color: var(--ink-3); }
+.log-rec.is-short .log-fig { display: none; }
+.log-rec.is-short .log-what { grid-column: 1 / -1; padding-inline-end: 28px; }
+.log-rec.is-short .log-wm { display: inline; }
+.log-why { grid-column: 1 / 3; grid-row: 2; min-width: 0; max-width: 62ch; margin: 0; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[lang="ar"] .log-why q { quotes: "«" "»"; }
+html[lang="en"] .log-why q { quotes: "\201C" "\201D"; }
+.log-meta { grid-column: 3; grid-row: 2; justify-self: end; margin: 0; padding-inline-start: 12px; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+.log-meta .sep { margin-inline: 6px; }
+/* A folded record opens whole in a window over the page (DECISIONS item 83). Access's record row is the form (OWN-C15's
+ * `.rec-a`): the record's whole area is one button laid over its words, reaching 12 px into the card's padding, radius
+ * 12; its mark is Access's chevron, 16 px --ink-3, at the end of the first line, the figures stopping 28 px short of it;
+ * hover lights it .04 and its chevron to chalk; a press lights it only (a row, not a key, MOT-20); the keyboard ring
+ * FOC-2's inset at -2 px, as Access's row. A record with nothing folded has no control and no chevron. */
+.log-open { position: absolute; inset: 1px -12px 0; border-radius: 12px; color: var(--ink-3); -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: box-shadow var(--press-fade); --focus-ring-offset: -2px; }
+.log-open svg { position: absolute; inset-inline-end: 12px; top: 15px; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .log-open:hover { background: rgba(255, 255, 255, 0.04); color: var(--ink); } }
+.log-open:active { box-shadow: inset 0 0 0 100vmax var(--press-lift); transition-duration: 0s; }
+.log-rec.is-folded .log-fig { padding-inline-end: 28px; }
+/* None yet, or the start of the history under its oldest record: the sentence in the middle of the place left, under
+ * its rule, in caption --ink-3, so the card keeps its height and reads finished with any number of records. */
+.log-none, .log-end { display: flex; flex: 1 1 auto; align-items: center; justify-content: center; margin: 0; padding: 0 16px; border-block-start: 1px solid var(--row-line); font-size: 13.5px; line-height: 20px; color: var(--ink-3); text-align: center; }
+
+/* The record's window (new, DLG-14): shared.css's dialog, a bottom sheet at 720 px and below. From 721 px it grows from
+ * DLG-2's 468 px to its widest line of change, up to 600 px, so a change of a day's both ends keeps one line beside a
+ * long name («إغلاق الأحد إلى الثلاثاء»); the reason takes no width of its own (it wraps in what the changes leave).
+ * Its name, how many changes it holds; who and when under it in caption --ink-3, as on the record; then CHG-1's ruled
+ * rows, every change, and the reason whole on the last row, as the conflict view lists «تغييرك». Under 481 px (a phone)
+ * the reason goes under its label, the sheet's whole width, so the widest record (the week's seven days and 240
+ * characters) fits a 390 × 844 phone without scrolling. */
+@media (min-width: 721px) {
+  .set .rec-panel { width: max-content; min-width: min(468px, 100%); max-width: min(600px, 100%); }
+}
+/* Where the window is too short for the record, its body scrolls and the browser makes it a Tab stop: the page's own ring
+ * (the --focus-ring-* tokens, as the time fields), drawn inside the body at -2 px so no edge of the panel cuts it, on the
+ * panel's inner radius (24 px less its 1 px edge). */
+.set .rec-panel .dlg-body:focus-visible { --focus-ring-offset: -2px; border-radius: 23px; }
+.rec-panel .cf-row.is-why .cf-fig { contain: inline-size; }
+/* A change too wide for the figures' column (settings.js fitRecord: English ranges in a 320 px sheet) puts its figures
+ * under its name, across the window, 2 px below, still broken only before the arrow. */
+.rec-panel .cf-row.is-stack { row-gap: 2px; }
+.rec-panel .cf-row.is-stack > .cf-fig { grid-column: 1 / -1; }
+@media (max-width: 480px) {
+  .rec-panel .cf-row.is-why { display: block; }
+  .rec-panel .cf-row.is-why .cf-what { display: block; }
+  .rec-panel .cf-row.is-why .cf-fig { margin-block-start: 4px; }
+}
+.rec-who { margin: 0; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.rec-who .sep { margin-inline: 6px; }
+
+/* ------------------------------------------------------------------ the editor (part 2): a card's window
+ * shared.css's dialog (DLG-1…6): the panel (SRF-4) centred over the page, a bottom sheet at 720 px and below. The window
+ * is the card it opened from: its name (and «توقيت الرياض» beside the hours, in label type --ink-3 on its baseline, as
+ * on the card), 12 px, then its blocks, each ruled from the one above with the card's row line. A figure keeps its label
+ * over its field (FLD-1); a list keeps its rows (57 px: a 44 px field, 6 above and below, its 1 px rule), the field in the value's
+ * column. The crowd and the business day are DLG-2's 468 px; the week is 520, so each day keeps one line from 721 px
+ * (the day, its switch, two 12-hour fields and the note beside the closing): measured in Readex Pro. */
+.ed-hours { width: min(520px, 100%); }
+.set .dlg-head h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; min-width: 0; }
+.set .dlg-head h2:focus-visible { border-radius: 8px; }
+html[data-focus-input="keyboard"] .set .dlg-head h2:focus { border-radius: 8px; }
+.ed-panel .dlg-body { padding-block-start: 12px; container: edbody / inline-size; }
+.set .ico { width: 15px; height: 15px; }
+
+/* A figure in edit: its label in label type --ink-2, 8 px, then its field and the words after it on the field's line. */
+.ed-fig { padding-block: 14px 16px; border-block-start: 1px solid var(--row-line); }
+.ed-lab { display: block; margin-block-end: 8px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.ed-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+/* A count's field holds the contract's largest with its thousands marked, «2,147,483,647» (111 px of digits). */
+.ed-num { flex: none; width: 144px; padding-inline: 14px; }
+.ed-unit { font-size: 15px; line-height: 22px; color: var(--ink-2); white-space: nowrap; }
+.set .field-input.is-invalid { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); --focus-ring-color: var(--err); }
+
+/* The levels: the card's columns (the label column --lab, «حتى», the limit, the people), each row 57 px and ruled. A
+ * limit is a percent field 84 px wide whose sign stays inside after its digits, so the field reads "20%" as the page
+ * writes a percent, in both languages: about 1 px of ink between the last digit and the sign, as the card's «20%»
+ * measures (the input keeps a caret's room after right-aligned digits, so the Arabic sign stands 18 px from the edge,
+ * not 16; in English the sign follows the digits' measured width, half a pixel past them);
+ * the top level's «57%» stands where a field's digits stand, its digits ending (Arabic) or starting (English) on the
+ * fields' digits' edge and its sign on theirs. */
+.ed-list { display: grid; margin: 0; }
+.ed-levels { grid-template-columns: var(--lab) max-content max-content minmax(0, 1fr); }
+.ed-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: center; box-sizing: border-box; min-height: 57px; padding-block: 6px; border-block-start: 1px solid var(--row-line); }
+.ed-rl { min-width: 0; padding-inline-end: 16px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.ed-q { padding-inline-end: 8px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.ed-pct { position: relative; display: block; width: 84px; direction: ltr; }
+.ed-pct .field-input { width: 100%; padding-inline: 12px 30px; text-align: right; }
+.ed-pct-s { position: absolute; inset-block: 0; right: 18px; display: flex; align-items: center; font-size: 16px; line-height: 24px; color: var(--ink-2); pointer-events: none; }
+.ed-pct.is-ro { height: 44px; }
+.ed-pct.is-ro.is-empty .ed-pct-s { visibility: hidden; }
+.ed-pct-v { position: absolute; inset-block: 0; right: 31.25px; display: flex; align-items: center; font-size: 16px; line-height: 24px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+/* English starts its digits at the field's left edge, as its other numbers (DECISIONS item 16), the sign just after
+ * them (settings.js sets --pct-x to the digits' width as they are typed); in Arabic the percent, an LTR isolate, keeps
+ * the field's right edge, its sign on the right of its digits. */
+html[lang="en"] .ed-pct .field-input { padding-inline: 16px 12px; text-align: left; }
+html[lang="en"] .ed-pct-s { right: auto; left: calc(16px + var(--pct-x, 0px) + 0.5px); }
+html[lang="en"] .ed-pct.is-ro { display: flex; align-items: center; padding-inline-start: 17px; box-sizing: border-box; }
+html[lang="en"] .ed-pct.is-ro > span { position: static; }
+.ed-pct-m { position: absolute; visibility: hidden; white-space: pre; font-size: 16px; font-variant-numeric: tabular-nums; pointer-events: none; }
+.ed-ppl { min-width: 0; padding-inline-start: 16px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+/* The people keep their words together where they fit and wrap between them where they do not (a capacity in the
+ * millions in a sheet), as on the card: never past the window's edge (OWN-S11). */
+.ed-ppl .nw { white-space: normal; }
+.ed-row > .field-err { grid-column: 2 / -1; margin-block: 2px 4px; }
+
+/* The week: the day, its switch, the opening, the closing, the note; «يفتح» and «يغلق» head the field columns once, in
+ * caption type --ink-3, unruled. A closed day: «مغلق» in COL-17's grey where its fields stood (they stay, hidden). */
+.ed-week { grid-template-columns: max-content 44px max-content max-content minmax(0, 1fr); column-gap: 8px; }
+.ed-heads { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; padding-block: 2px 6px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.ed-heads.is-idle { visibility: hidden; }
+.ed-heads .eh-o { grid-column: 3; }
+.ed-heads .eh-c { grid-column: 4; }
+.ed-day .ed-rl { padding-inline-end: 8px; }
+.ed-dn .dn-short { display: none; }
+.ed-day > .tf[data-tf$="-open"] { grid-column: 3; grid-row: 1; }
+.ed-day > .tf[data-tf$="-close"] { grid-column: 4; grid-row: 1; }
+.ed-closed { display: none; grid-column: 3 / 5; grid-row: 1; font-size: 15px; line-height: 22px; color: var(--stale); }
+.ed-day.is-off > .tf { visibility: hidden; }
+.ed-day.is-off > .ed-closed { display: block; }
+.ed-note { grid-column: 5; grid-row: 1; padding-inline-start: 4px; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+.ed-day > .field-err { grid-column: 3 / -1; margin-block: 2px 4px; }
+.ed-warns { padding-block-start: 12px; border-block-start: 1px solid var(--row-line); }
+.ed-warns > .ed-warn:first-child { margin-block-start: 0; }
+
+/* The switch in a list (new, SWI-5): SWI-2's track and thumb alone, in a 44 px target with no box of its own, named by
+ * what "on" means («مفتوح يوم الأحد»); the thumb slides (MOT-4); the press lights its 44 px square (STA-16, a dark key). */
+.set .switch { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: var(--ink-2); }
+@media (hover: hover) { .set .switch:hover { background: rgba(255, 255, 255, 0.05); } }
+.set .switch-track { position: relative; width: 32px; height: 18px; border-radius: 9px; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px var(--line-3); }
+.set .switch-thumb { position: absolute; top: 3px; inset-inline-start: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--ink-2); transition: translate 200ms cubic-bezier(0.25, 1, 0.5, 1); }
+.set .switch[aria-checked="true"] .switch-track { background: var(--ink); box-shadow: none; }
+.set .switch[aria-checked="true"] .switch-thumb { background: var(--card-solid); translate: 14px 0; }
+html[dir="rtl"] .set .switch[aria-checked="true"] .switch-thumb { translate: -14px 0; }
+html[data-motion="off"] .set .switch-thumb { transition: none; }
+
+/* The time field (new, FLD-11): one FLD-1 frame of two parts, the time typed (left to right, 16 px, tabular; in Arabic
+ * its digits keep the right edge) and ص / م after it, a native list lying unseen over its face (TYP-6's form: 16 px, so
+ * a phone never zooms) with a small chevron, a 1 px line between them. Each part is a full 44 px target (it reaches over
+ * the frame's 1 px edge) and takes FOC-2's inset ring, two controls edge to edge: 2 px, 2-4 px inside the part, its
+ * corners following the field's 12 px (the ring's outer edge 10, its inner 8), at the seam too, so each ring reads as the
+ * field's own shape, never a square inside a rounded frame. The typed part's ring is its outline over 12 px corners it
+ * otherwise never draws (it has no fill or edge); the list's part, whose seam line must stay straight, draws its ring as
+ * a box of its own. Hover and focus raise the frame's edge (FLD-3); a refusal turns it --err (FLD-4). */
+.tf { display: inline-flex; flex: none; box-sizing: border-box; height: 44px; border: 1px solid var(--field-line); border-radius: 12px; background: var(--field); }
+@media (hover: hover) { .tf:hover { border-color: rgba(255, 255, 255, 0.52); } }
+.tf:focus-within { border-color: rgba(255, 255, 255, 0.52); }
+.tf.is-invalid { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); --focus-ring-color: var(--err); }
+.tf-in { width: 68px; min-width: 0; height: 44px; margin-block: -1px; box-sizing: border-box; padding-inline: 12px; border: 0; border-radius: 12px; background: none; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px; font-variant-numeric: tabular-nums; caret-color: var(--red-hi); --focus-ring-offset: -4px; }
+html[dir="rtl"] .tf-in { text-align: right; }
+.tf-ap { position: relative; display: grid; flex: none; place-items: center start; min-width: 45px; margin-block: -1px; box-sizing: border-box; padding-inline: 8px; border-inline-start: 1px solid rgba(255, 255, 255, 0.14); border-start-end-radius: 11px; border-end-end-radius: 11px; --focus-ring-offset: -4px; }
+.tf-sel { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; border: 0; opacity: 0; font: inherit; font-size: 16px; cursor: pointer; appearance: none; }
+.tf-ap::after { content: ""; position: absolute; inset: 2px; border: 2px solid var(--focus-ring-color, var(--ink)); border-radius: 10px; pointer-events: none; visibility: hidden; }
+html[data-focus-input="keyboard"] .tf-ap:has(.tf-sel:focus)::after { visibility: visible; }
+.tf-face { display: inline-flex; align-items: center; gap: 2px; font-size: 16px; line-height: 24px; color: var(--ink-2); pointer-events: none; }
+.tf-chev { width: 14px; height: 14px; fill: none; stroke: var(--ink-3); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* One width whatever it shows (FLD-11, decision 81): both words share one cell, the shown one seen and the other
+ * `visibility: hidden` (MOT-14's form for a changing label), so the list's part is as wide as its wider word and a change
+ * of ص / م, typed or copied, never moves the week's columns. */
+.tf-w { display: inline-grid; }
+.tf-w > span { grid-area: 1 / 1; }
+.tf-w > span:not(.is-on) { visibility: hidden; }
+@media (hover: hover) { .tf-ap:hover .tf-face { color: var(--ink); } }
+/* Held, the list's part takes a dark key's light (STA-16, MOT-20): it shows the press the unseen list receives. */
+.tf-ap { box-shadow: inset 0 0 0 100vmax var(--press-light, transparent); transition: --press-light var(--press-fade); }
+.tf-ap:has(.tf-sel:active) { --press-light: var(--press-lift); transition-duration: 0s; }
+/* In a figure (the end of the business day) the field is as wide as the number field under it, so their ends meet; the
+ * typed part gives the width, the list's part keeps its face's (it never shrinks under ص and its chevron, whose ring
+ * keeps FOC-3's 4 px from them). */
+.ed-fig .tf { width: 144px; }
+.ed-fig .tf-in { flex: 1 1 auto; width: auto; }
+@media (forced-colors: active) {
+  .tf-sel { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; }
+  .tf-ap { border-inline-start-color: CanvasText; }
+}
+
+/* A sentence about a value that looks like a mistake (new, FLD-12): under its field, 8 px, caption type --ink-2 after a
+ * 15 px information mark in --ink-3; the field keeps its edge, since the value is accepted (DECISIONS item 49). */
+.ed-warn { display: flex; align-items: flex-start; gap: 8px; margin: 8px 0 0; font-size: 12px; line-height: 18px; color: var(--ink-2); }
+.ed-warn .ico { margin-block-start: 1.5px; color: var(--ink-3); }
+.ed-warn span, .ed-panel .field-err span { min-width: 0; overflow-wrap: anywhere; }
+.ed-row > .ed-warn { grid-column: 2 / -1; }
+/* A sentence takes the keyboard focus when a press of «حفظ» stops at it (it has no field to take it): the page's one ring
+ * (FOC-1) in the shape the other text targets give it, radius 8 (the window's title, above), and 2 px from the box, so
+ * the 8 px between two sentences keeps 4 px clear of it (FOC-3). The last one gets 6 px under it in that state only, since
+ * a scroll area clips a ring that goes past its end; with the pointer or a finger there is no ring and no room. */
+.ed-warn { --focus-ring-offset: 2px; }
+.ed-warn:focus-visible,
+html[data-focus-input="keyboard"] .ed-warn:focus { border-radius: 8px; }
+html[data-focus-input="keyboard"] .ed-warns:focus-within { padding-block-end: 6px; }
+
+/* A sheet (the window at 720 px and below, under 430 px inside): the note goes under the closing, its line kept in
+ * every row so a note that comes or goes moves nothing; English takes the short day names (DAT-2). Under 340 px inside
+ * (320 px) a day takes two lines: the day with its switch at the row's end, then its two fields. */
+@container edbody (max-width: 429.98px) {
+  .ed-day { row-gap: 2px; }
+  .ed-note { grid-column: 4; grid-row: 2; padding-inline-start: 0; min-height: 18px; }
+  .ed-day > .field-err { grid-row: 3; }
+  html[lang="en"] .ed-dn .dn-full { display: none; }
+  html[lang="en"] .ed-dn .dn-short { display: inline; }
+  /* Readex Pro's «ص» is 23 px at 16 px, so a time field is 120 px wide from 721 px; a sheet's row takes 112. */
+  .ed-week { column-gap: 6px; }
+  .ed-day .ed-rl { padding-inline-end: 0; }
+  .tf-in { width: 62px; }
+  .tf-ap { padding-inline: 6px; }
+  .tf-chev { width: 12px; height: 12px; }
+}
+@container edbody (max-width: 339.98px) {
+  .ed-week { grid-template-columns: max-content max-content minmax(0, 1fr); }
+  .ed-heads { display: none; }
+  .ed-day > .ed-rl { grid-column: 1; grid-row: 1; }
+  .ed-day > .ed-sw { grid-column: 2; grid-row: 1; justify-self: end; }
+  .ed-day > .tf[data-tf$="-open"] { grid-column: 1; grid-row: 2; }
+  .ed-day > .tf[data-tf$="-close"] { grid-column: 2; grid-row: 2; }
+  .ed-closed { grid-column: 1 / -1; grid-row: 2; }
+  .ed-note { grid-column: 2; grid-row: 3; }
+  .ed-day > .field-err { grid-column: 1 / -1; grid-row: 4; }
+}
+/* The levels in a sheet: the limit 76 px, the people 12 after it; where a row cannot hold its people beside the field
+ * (under 352 px inside: a 375 px phone; the widest, «أو 69 شخصًا فأكثر», ends on the sheet's edge at 390) they go under
+ * the field, starting where «حتى» starts, in every level alike, as on the card under 300 px. A count too long for its
+ * line (capacity in the millions) breaks between the words, never inside the number and its noun. */
+@container edbody (max-width: 429.98px) {
+  .ed-pct { width: 76px; }
+  .ed-ppl { padding-inline-start: 12px; }
+}
+@container edbody (max-width: 351.98px) {
+  .ed-levels .ed-row { padding-block: 8px; }
+  .ed-levels .ed-ppl { grid-column: 2 / -1; padding-inline-start: 0; padding-block-start: 4px; }
+}
+
+/* ------------------------------------------------------------------ the steps after «حفظ» (part 3)
+ * One panel takes the editor's place in its window, in turn: the confirmation, the conflict view, the question before
+ * closing with something typed (Access's two-step dialog). It keeps the editor's width (468 px; the week's 520), so its
+ * edges settle only up and down (MOT-15). Its body: the sentence (DLG-7), then the changes on one grid, so every value
+ * starts on one edge, even across the conflict view's two lists; then the reason (FLD-9) and the alert (EMP-2). */
+.st-panel[data-sec="hours"] { width: min(520px, 100%); }
+/* A title that wraps (English at 320 px) keeps the close button level with its first line, as Access's. */
+.st-panel .dlg-head { align-items: flex-start; }
+.st-panel .dlg-x { margin-block-start: -8px; }
+.st-panel .dlg-head h2 { min-width: 0; overflow-wrap: anywhere; }
+.st-panel .dlg-desc { margin: 0; overflow-wrap: anywhere; }
+
+/* ------------------------------------------------------------------ copying one day's hours (decision 81, OWN-S28)
+ * The tool (BTN-12, LNK-1's form as a button): under the week, ruled from Saturday's row with the card's row line, 12 px
+ * below the rule, 44 px tall, its words starting on the day names' edge (the button reaches 12 px past them), label type
+ * --ink-2 with the copy mark before them, hover chalk on 5% white, held a dark key (data-press="dark", MOT-20). Its keyboard
+ * ring stands 2 px inside its box (LNK-1's), so the end of a scrolling body never clips it. Waiting (every day closed):
+ * --ink-3, no hover, a press doing nothing. A boxed secondary stood over «إلغاء» and «حفظ» and read as a third foot button. */
+.ed-copy { padding-block: 12px 0; border-block-start: 1px solid var(--row-line); }
+.ed-copy-b { display: inline-flex; align-items: center; gap: 8px; height: 44px; margin-inline: -12px; padding-inline: 12px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; --focus-ring-offset: -2px; }
+.ed-copy-b svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .ed-copy-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); } }
+.ed-copy-b[aria-disabled="true"] { color: var(--ink-3); cursor: default; }
+@media (hover: hover) { .ed-copy-b[aria-disabled="true"]:hover { color: var(--ink-3); background: none; } }
+/* The step: «من» as a figure's label over the list field (FLD-14, 120 px) and, 16 px after it, the chosen day's hours as the
+ * card writes them (body type at 500, chalk, the dash --ink-3 with 8 px each side, one unbreakable span); then «إلى» (the
+ * module's row, unruled) and the six other days, a ruled 48 px row each (CHK-1) on columns of the box (20), the day's name
+ * (116, with the box's 20 the list field's 120 and its 16, so every day's opening starts on the source's hours' edge) and
+ * the hours the day holds now (the card's range at 400, --ink-2; a closed day «مغلق» in COL-17's grey across both). */
+.cp-src .ed-line { flex-wrap: nowrap; gap: 16px; }
+.cp-rng { display: inline-flex; align-items: baseline; min-width: 0; }
+.cp-rng .v-dash, .cp-row .v-dash { padding-inline: 8px; font-size: 15px; line-height: 22px; text-align: center; color: var(--ink-3); }
+/* The list field (new, FLD-14): FLD-1's frame, its face the choice in body type 14 px from the start, FLD-11's chevron 12 px
+ * from the end; the native list lies unseen over the whole frame and its 1 px edge, a full 44 px target (TYP-6's form: 16 px, a phone never zooms). Hover and
+ * focus raise the edge (FLD-3); the keyboard ring FOC-1 on the frame while its list has keyboard focus. */
+.cp-sel { position: relative; display: block; flex: none; box-sizing: border-box; width: 120px; height: 44px; border: 1px solid var(--field-line); border-radius: 12px; background: var(--field); }
+@media (hover: hover) { .cp-sel:hover { border-color: rgba(255, 255, 255, 0.52); } }
+.cp-sel:focus-within { border-color: rgba(255, 255, 255, 0.52); }
+.cp-sel-in { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); margin: 0; border: 0; opacity: 0; font: inherit; font-size: 16px; cursor: pointer; appearance: none; }
+.cp-face { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding-inline: 14px 12px; font-size: 16px; line-height: 24px; color: var(--ink); pointer-events: none; }
+.cp-w { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-focus-input="keyboard"] .cp-sel:has(select:focus) { outline: 2px solid var(--focus-ring-color, var(--ink)); outline-offset: 3px; }
+.cp-list { display: grid; grid-template-columns: 20px 116px max-content max-content minmax(0, 1fr); margin: 0; }
+.cp-row { position: relative; display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: center; box-sizing: border-box; height: 48px; border-block-start: 1px solid var(--row-line); cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.cp-dn { grid-column: 2; min-width: 0; box-sizing: border-box; padding-inline: 12px 16px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cp-row .v-od { grid-column: 3; display: flex; align-items: baseline; white-space: nowrap; }
+.cp-row .cp-c { grid-column: 4; }
+.cp-row .v-n { font-weight: 400; color: var(--ink-2); }
+.cp-closed { grid-column: 3 / -1; font-size: 15px; line-height: 22px; color: var(--stale); }
+.cp-row .v-dash { flex: 1 0 auto; }
+.cp-h { display: contents; }
+.cp-err { margin-block-start: 8px; }
+/* The checkbox in a list (new, CHK-1): the row is the control, a native checkbox lying unseen over it (TYP-6's form), so the
+ * target is the row; its face a 20 px square at the row's start, radius 6, a 1.5 px COL-19 edge on the 3% fill (.52 while
+ * the row is hovered); ticked, chalk with a dark check. FOC-1's ring on the face while the box has keyboard focus. Held
+ * anywhere on the row, the face seats as a small square (MOT-20), back in 240 ms, its light out in 120 ms; a tick changes
+ * at once (MOT-18). */
+.cp-chk { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; appearance: none; }
+.cp-box { grid-column: 1; display: grid; place-items: center; box-sizing: border-box; width: 20px; height: 20px; border: 1.5px solid var(--field-line); border-radius: 6px; background: var(--field); box-shadow: inset 0 0 0 100vmax var(--press-light, transparent); transition: scale var(--press-back), --press-light var(--press-fade); }
+.cp-box svg { width: 14px; height: 14px; fill: none; stroke: #0d0c0d; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; visibility: hidden; }
+@media (hover: hover) { .cp-row:hover .cp-box { border-color: rgba(255, 255, 255, 0.52); } }
+.cp-chk:checked ~ .cp-box { border-color: var(--ink); background: var(--ink); }
+.cp-chk:checked ~ .cp-box svg { visibility: visible; }
+.cp-row:active .cp-box { scale: var(--press-scale-sm); --press-light: var(--press-lift); transition-duration: 0s; }
+html[data-motion="off"] .cp-row:active .cp-box { scale: none; }
+@media (prefers-reduced-motion: reduce) { .cp-row:active .cp-box { scale: none; } }
+html[data-focus-input="keyboard"] .cp-row:has(.cp-chk:focus) .cp-box { outline: 2px solid var(--ink); outline-offset: 3px; }
+/* Forced colours: the list stays unseen and its frame keeps its edge; the face in system colours, hollow or filled. */
+@media (forced-colors: active) {
+  .cp-sel { border-color: CanvasText; }
+  .cp-sel-in, .cp-chk { border: 0 !important; background: transparent !important; opacity: 0 !important; outline: none !important; }
+  .cp-box { forced-color-adjust: none; border-color: CanvasText; background: Canvas; box-shadow: none; }
+  .cp-row:hover .cp-box { border-color: CanvasText; }
+  .cp-chk:checked ~ .cp-box { background: CanvasText; border-color: CanvasText; }
+  .cp-box svg { stroke: Canvas; }
+}
+
+/* A sheet's two buttons share its foot in halves (DLG-5) while each label fits its half; where one does not (English's
+ * «Close without saving» beside «Keep editing» at 320 px), each takes the whole width, the first above, so neither is
+ * cut and the sheet never runs past the screen. */
+@media (max-width: 720px) {
+  .set .dlg-foot { flex-wrap: wrap; }
+  .set .dlg-foot .rbtn { flex: 1 0 auto; min-width: calc(50% - 4.5px); }
+}
+
+/* The change list (new, CHG-1): LOG-1's words on the module's ruled rows (44 px, TBL-2's line above each): what in label
+ * type --ink-2 (up to half the width, wrapping between words beyond it), then from, the arrow (14 px --ink-3, along the
+ * reading line) and to, in body type with tabular figures; the new value carries the weight, chalk at 500, the old one
+ * --ink-2 at 400. A figure that wraps breaks only before the arrow, which travels with the new value. */
+.cf-grid { display: grid; grid-template-columns: fit-content(50%) minmax(0, 1fr); column-gap: 16px; margin-block-start: 12px; }
+.cf-grid > * { grid-column: 1 / -1; }
+.cf-list { display: grid; grid-template-columns: subgrid; margin: 0; padding: 0; list-style: none; }
+.cf-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: baseline; box-sizing: border-box; min-height: 44px; padding-block: 11px; border-block-start: 1px solid var(--row-line); }
+.cf-what { min-width: 0; font-size: 13.5px; line-height: 22px; color: var(--ink-2); overflow-wrap: anywhere; }
+.cf-fig { display: inline-flex; flex-wrap: wrap; align-items: center; column-gap: 8px; min-width: 0; font-size: 15px; line-height: 22px; font-variant-numeric: tabular-nums; }
+.cf-from { color: var(--ink-2); white-space: nowrap; }
+.cf-to { display: inline-flex; align-items: center; column-gap: 8px; color: var(--ink); font-weight: 500; white-space: nowrap; }
+/* The people that follow (the crowd's window only): after the changes, unruled and a step quieter, so they read as what
+ * the change does to each level rather than as more changes: 32 px lines in label type, the level --ink-2, the count
+ * before --ink-3 (7.89:1), the count after --ink-2 at 500 (11.12:1); a change's new value stays chalk at 500. */
+.cf-ppl { margin-block-start: 4px; }
+.cf-row.is-ppl { min-height: 32px; padding-block: 6px; border-block-start: 0; }
+.cf-row.is-ppl .cf-fig { font-size: 13.5px; line-height: 20px; }
+.cf-row.is-ppl .cf-what { line-height: 20px; }
+.cf-row.is-ppl .cf-from { color: var(--ink-3); }
+.cf-row.is-ppl .cf-to { color: var(--ink-2); }
+/* The conflict view's two lists' names: label type --ink-2 on their own unruled line, as a card's «المستويات». */
+.cf-sub { margin: 0; padding-block: 12px 8px; font-size: 13.5px; line-height: 20px; font-weight: 400; color: var(--ink-2); }
+.cf-grid > .cf-sub:first-child { padding-block-start: 4px; }
+/* The reason as typed, in the conflict view's «تغييرك»: the page's quotation marks, in its own direction, wrapping. */
+.cf-row.is-why .cf-fig { display: block; font-size: 13.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+html[lang="ar"] .cf-q { quotes: "«" "»"; }
+html[lang="en"] .cf-q { quotes: "\201C" "\201D"; }
+/* The reason (FLD-9, Access's): three lines growing with its words, 240 characters, then what is left from 200. */
+.set .cf-reason { margin-block-start: 16px; }
+.set .cf-reason-in { display: block; height: auto; min-height: 96px; max-height: 248px; padding-block: 11px; resize: none; field-sizing: content; line-height: 24px; font-variant-numeric: normal; text-align: start; overflow-wrap: anywhere; }
+.cf-left { margin: 8px 0 0; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.set .st-alert span { min-width: 0; overflow-wrap: anywhere; }
+/* The destructive commit (BTN-10, Access's): «إغلاق دون حفظ». */
+.set .rbtn-danger { border-color: var(--err-line); background: rgba(255, 107, 125, 0.08); color: var(--err); font-weight: 500; }
+@media (hover: hover) { .set .rbtn-danger:hover { border-color: rgba(255, 107, 125, 0.75); background: rgba(255, 107, 125, 0.14); } }
+/* Working and waiting (STA-15, BTN-4, BTN-9; Access's): the action keeps focus in BTN-4's primary form, the others wait. */
+.set .rbtn[aria-disabled="true"] { cursor: default; }
+.set .rbtn-primary[aria-disabled="true"] { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
+@media (hover: hover) { .set .rbtn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); } }
+.set .rbtn:not(.rbtn-primary):not(.rbtn-danger)[aria-disabled="true"] { border-color: var(--line); background: transparent; color: var(--ink-3); }
+@media (hover: hover) { .set .rbtn:not(.rbtn-primary):not(.rbtn-danger)[aria-disabled="true"]:hover { border-color: var(--line); background: transparent; color: var(--ink-3); } }
+.set .icon-btn[aria-disabled="true"] { background: none; color: var(--ink-3); cursor: default; }
+@media (hover: hover) { .set .icon-btn[aria-disabled="true"]:hover { background: none; color: var(--ink-3); cursor: default; } }
+
+/* The done sentence (EMP-6, Access's DON-1): in the changed card's head, start-aligned; a 16 px check, the sentence in
+ * label type --ink-2, the way to its record a chalk text link with a .42 underline and a 44 px target. 2 px after its
+ * last word, so its keyboard ring (2 px out) keeps FOC-3's 4 px from the link's end. */
+.set .done { width: fit-content; max-width: 100%; margin: 0; padding-block: 12px; text-align: start; padding-inline: 24px 2px; text-indent: -24px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); border-radius: 12px; overflow-wrap: anywhere; }
+.set .done-ico { display: inline-block; width: 16px; height: 16px; margin-inline-end: 8px; vertical-align: -3px; fill: none; stroke: var(--ink-2); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.set .done-a { display: inline-block; margin-inline-start: 12px; padding-block: 12px; margin-block: -12px; line-height: 20px; text-indent: 0; border-radius: 6px; color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(245, 243, 242, 0.42); text-underline-offset: 4px; white-space: nowrap; }
+@media (hover: hover) { .set .done-a:hover { text-decoration-color: var(--ink); } }
+.set .done-a:focus-visible { --focus-ring-offset: 0; }
+.set .done:focus-visible { --focus-ring-offset: 2px; }
+/* In the changed card's head, so the card keeps its height and its rules still meet the neighbour's (settings.js
+ * fitNotice measures which form fits): on the title's line after it, as the hours' unit stands, the edit control at the
+ * end ("line"); where one line has no room, the sentence over its link in the head's 44 px, 2 apart and 2 above the
+ * foot, the link starting where the sentence starts, its 44 px target reaching down past the head ("stack"); for the hours also its unit under its name, 28 + 16 px ("tight"); only where none fits, under the
+ * title's line ("under"). 12 px between the three, so the stacked forms fit the hours at 1024 in both languages. */
+.set-head[data-done] { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "title done edit"; column-gap: 12px; }
+.set-head > .set-title { grid-area: title; }
+.set-head > .done { grid-area: done; justify-self: start; white-space: nowrap; }
+.set-head > .set-edit { grid-area: edit; }
+.set-head:is([data-done="stack"], [data-done="tight"]) > .done { padding-block: 0 2px; border-radius: 8px; }
+.set-head:is([data-done="stack"], [data-done="tight"]) .done-a { display: block; width: fit-content; margin: 2px 0 -24px; padding-block: 0 24px; text-underline-offset: 3px; }
+.set-head[data-done="tight"] > .set-title { flex-direction: column; align-items: flex-start; gap: 0; line-height: 28px; }
+.set-head[data-done="tight"] .set-unit { line-height: 16px; }
+.set-head[data-done="under"] { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title edit" "done done"; row-gap: 4px; }
+.set-head[data-done="under"] > .done { white-space: normal; }
+
+/* ------------------------------------------------------------------ the page's states (part 3)
+ * Loading (STA-10, PH-1…3): each awaited value one flat bar in its own slot (style.css .ph-bar, --ph), as tall as its
+ * digits' ink: 22 px for a figure (title type), 11 px for a value in body type, 9 px for a caption; no motion. The
+ * first load failed: one message in place of the cards (EMP-5's sentence and retry), as Access's and Activity log's. */
+.set .ph-fig { height: 22px; }
+.set .ph-v { height: 11px; border-radius: 4px; }
+.set .ph-c { height: 9px; border-radius: 4px; }
+/* A bar never pushes its slot wider than the card: it shrinks with a narrow column, where the words would wrap. The
+ * crowd's levels wait in the arrived rows' own parts (settings.js crowdPH): «حتى» / «فوق» (words, real at once), a bar
+ * for the limit and one for the people, so under 300 px of card the people's bar goes under the limit's as the people
+ * will, and the history's records wait in theirs (logPH), so every slot keeps its arrived box. */
+.set .ph-bar { max-width: 100%; }
+.set-row > dd > .ph-span { grid-column: 1 / -1; line-height: 22px; }
+.set-msg { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; }
+.set-say { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 52ch; margin: 0; font-size: 15px; line-height: 22.5px; color: var(--ink); }
+.set-say .ico-err { width: 22px; height: 22px; color: var(--err); }
+
+/* --------------------------------------------------------------- the phone (720 px and below)
+ * The four cards, 16 apart, each padding 16, so text stands 16 from its edge as on every page; the module is 40 px.
+ * The history card stands last (DECISIONS item 81), a record in three lines (OWN-S29): its first change; the reason as
+ * typed across the whole line, cut with «…» only past it (in the two-line form at 390 px a reason had about 210 px beside
+ * who and when, and two of the three default reasons were cut and folded); who and when at the line's start in caption
+ * type. A record is 99 px (the rule, 12, 22, 4, 22, 4, 22, 12), so the place is three records less the last one's foot,
+ * 285 px, whatever the history holds, and the card is 375 px. With no reason, who and when take the second line and the
+ * third stays empty, so a record's height never follows what it holds (DECISIONS item 82). */
+@media (max-width: 720px) {
+  .set { --row: 40px; }
+  .set-card { padding: 16px; }
+  .log-box { height: calc(3 * 99px - 12px); }
+  .log-rec { grid-template-rows: 22px 22px 22px; }
+  .log-why { grid-column: 1 / -1; grid-row: 2; max-width: none; }
+  .log-meta { grid-column: 1 / -1; grid-row: 3; justify-self: start; padding-inline-start: 0; line-height: 22px; }
+  .log-rec:not(:has(.log-why)) .log-meta { grid-row: 2; }
+}
+@media (max-width: 359px) {
+  .set[data-frame] .head-acts .hb-chev { display: none; }
+  .set[data-frame] .head-acts .hbadge { padding-inline: 8px; }
+}

@@ -1,10 +1,8 @@
 // Eclipse capture (v3 lights, Round 6 motion). Serves this folder on 127.0.0.1:3173 and records the frames with
-// Playwright chromium (fresh context per frame, so no stored tuning; deviceScaleFactor 1 unless a 2x crop;
-// reducedMotion "reduce" for the still frames). Frames use ?tuner=0 unless they are about the tuner. Preset frames use
-// ?tuner=0&preset=<id>.
+// Playwright chromium (fresh context per frame; deviceScaleFactor 1 unless a 2x crop; reducedMotion "reduce" for
+// the still frames). Frames use the page's own language, state and action parameters.
 // It also measures the lights (OKLab L relative to each card's own dark base, on light-only 1x captures with the
-// card content hidden), renders ../light-study recipe A read-only as a calibration, and checks the tuner from file://
-// (keyboard, presets, drag, copy, reset, ?tuner=0, the Motion group, and a crowd-level change with motion on).
+// card content hidden) and renders ../light-study recipe A read-only as a calibration.
 // Static guard: the still frames (reduced motion) and the ?motion=off frames must equal the pre-motion frames
 // (evidence/pre-motion-hashes.json), except the frames in EXPECTED_TO_CHANGE (since the lane round: every frame that shows
 // the chart's plot, each with its reason), which must instead equal 8ae88f3 everywhere outside the plot element
@@ -25,7 +23,7 @@
 // open() waits for it to end, and the checks that follow start from the still page. The first-paint check is now the
 // intro's: on a first open the intro plays and ends exactly at the still frame (AR and EN, live, delayed and no
 // history), and a reload in the same tab has no intro at all. The intro part also checks when it plays (a second tab,
-// reduced motion, ?motion=off, the tuner's Motion switch, Replay intro, the intro speed), that it yields at once to a
+// reduced motion and ?motion=off), that it yields at once to a
 // hover, keys, the rail, a tap, a new reading and a resize (at 100 and 400 ms), that no box moves, no glyph fades, no
 // long task runs and no font loads during it, and writes held 2x frames on intro-*.png sheets. The intro fix round:
 // every surface is present and unchanged at the first paint and at the intro's first frame, with nothing running but
@@ -51,6 +49,15 @@
 // EXPECTED_TO_CHANGE lists them (each with its reason), the checks that settle to a still frame compare with this run's
 // reduced-motion frame for them, and each must equal 8ae88f3 outside the plot element. The other snapshots, every viewport,
 // the fonts and the motion are swept by the lane round's probes, outside this file.
+// Step 3 (run owner_daily_r04_s17, 2026-10-01): the frame (the rail's fixes, the header's boxless status) and the spec's
+// rules on the Daily page (cards with the icon in the flow, the type scale, spacing and radii, the boxless legend, the
+// 44 px button, the axes in --ink-2, the fixed lane and the one-rhythm time axis of Q2, the ring key of Q1) change every
+// frame outside the plot too, so the comparison with 8ae88f3 outside the plot element is retired for the frames in
+// STEP3_FRAMES (each with its reason): they are held, like every frame that changes by design, to this run's own
+// reduced-motion frame (the ?motion=off frames, the intro's end, the reload, the settled rail). Frames step 3 leaves
+// alone keep their committed hash. The tablet and phone compositions get overflow-only frames (768, 390, 320 and 1024 px),
+// where the page may scroll down but never sideways; their geometry, keyboard and contrast are swept by the step's
+// probes, outside this file.
 // Run from PowerShell at the worktree root:
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir] [--intro-frames=<dir>]
 // --intro-frames=<dir> also writes every full-size held 2x intro frame there (they are large; they are not evidence).
@@ -108,17 +115,16 @@ const server = createServer(async (req, res) => {
 await new Promise((resolve) => server.listen(PORT, "127.0.0.1", resolve));
 
 const FRAMES = [
-  { name: "daily-ar-1440x900", q: "lang=ar&tuner=0" },
-  { name: "daily-en-1440x900", q: "lang=en&tuner=0" },
+  { name: "daily-ar-1440x900", q: "lang=ar" },
+  { name: "daily-en-1440x900", q: "lang=en" },
   // Round 7 step 2: the hover frames show form B, the only form (the step-1 -hover-b frames showed the same at the peak).
-  { name: "daily-ar-1440x900-hover", q: "lang=ar&tuner=0", act: "hover-peak" },
-  { name: "daily-en-1440x900-hover", q: "lang=en&tuner=0", act: "hover-peak" },
-  { name: "daily-ar-1440x900-rail-open", q: "lang=ar&tuner=0", act: "rail-open" },
-  { name: "daily-en-1440x900-rail-open", q: "lang=en&tuner=0", act: "rail-open" },
-  { name: "daily-ar-1440x900-delayed", q: "lang=ar&state=delayed&tuner=0" },
-  { name: "daily-ar-1440x900-nohistory", q: "lang=ar&state=nohistory&tuner=0" },
-  { name: "daily-ar-1440x900-details", q: "lang=ar&tuner=0", act: "details", full: true },
-  { name: "daily-ar-1440x900-tuner-open", q: "lang=ar", act: "tuner-open" },
+  { name: "daily-ar-1440x900-hover", q: "lang=ar", act: "hover-peak" },
+  { name: "daily-en-1440x900-hover", q: "lang=en", act: "hover-peak" },
+  { name: "daily-ar-1440x900-rail-open", q: "lang=ar", act: "rail-open" },
+  { name: "daily-en-1440x900-rail-open", q: "lang=en", act: "rail-open" },
+  { name: "daily-ar-1440x900-delayed", q: "lang=ar&state=delayed" },
+  { name: "daily-ar-1440x900-nohistory", q: "lang=ar&state=nohistory" },
+  { name: "daily-ar-1440x900-details", q: "lang=ar", act: "details", full: true },
 ];
 // These change by design. Since the lane round (2026-09-28) that is every frame that shows the chart's plot: the tooltip
 // lives in a lane at the top of the plot, so the scale starts lower (the lane's height plus a gap, per state), and the
@@ -126,11 +132,10 @@ const FRAMES = [
 // 8ae88f3's frames with the plot's pixel box zeroed (and, with the rail open, the rail's box, whose glass blurs the plot
 // behind it), and each of these frames must equal it (shot(), "outsidePlot"). The level map has no such comparison.
 // Earlier reasons stay: the hover frame (Round 6: the tooltip's value is the line's own; Round 7: marker form B, the hollow
-// ring, replaces the reading sight; the follow-up round: the tooltip's one width) and the tuner (Round 6: its Motion group;
-// Round 7 step 2: the hover speed). The English hover frame has no pre-motion frame. Frames that show no plot (the Inside now
+// ring, replaces the reading sight; the follow-up round: the tooltip's one width). The English hover frame has no
+// pre-motion frame. Frames that show no plot (the Inside now
 // crops, the light-only crops of the chart) are unchanged and are not listed.
 const LANE_REST = "the lane round: the plot's scale starts lower (an 89 px tooltip lane is reserved at the top of the plot, 8 px above the \"80\" label); nothing outside the plot element changes";
-const LANE_CROP = "the lane round: the chart card at 2x, with the plot's scale starting lower (89 px lane); the lights and the card outside the plot are unchanged";
 const EXPECTED_TO_CHANGE = {
   "daily-ar-1440x900": LANE_REST,
   "daily-en-1440x900": LANE_REST,
@@ -141,20 +146,32 @@ const EXPECTED_TO_CHANGE = {
   "daily-ar-1440x900-delayed": "the lane round: the plot's scale starts lower (a 109 px tooltip lane: the delayed latest tooltip has a fourth row); nothing outside the plot element changes",
   "daily-ar-1440x900-nohistory": "the lane round: the plot's scale starts lower (a 69 px tooltip lane: without history no tooltip has the usual row); nothing outside the plot element changes",
   "daily-ar-1440x900-details": LANE_REST,
-  "daily-ar-1440x900-tuner-open": "the lane round: the plot's scale starts lower (89 px lane); earlier: Round 6, the tuner's Motion group; Round 7 step 2, its hover speed (the step-1 Marker group is gone); Round 7 step 3, the intro speed and Replay intro",
-  "preset-v2-ar-1440x900": LANE_REST,
-  "preset-a-like-ar-1440x900": LANE_REST,
-  "preset-recommended-ar-1440x900": LANE_REST,
-  "preset-v2-chart-2x": LANE_CROP,
-  "preset-a-like-chart-2x": LANE_CROP,
-  "preset-recommended-chart-2x": LANE_CROP,
-  "levels-chart": "the lane round: the brightness-level map of preset-recommended-chart-2x, which changes (the plot's scale starts lower)",
+  "levels-chart": "the lane round: the brightness-level map of the chart's 2x crop, which changes (the plot's scale starts lower)",
 };
+// Step 3: the frames that change outside the plot too. Each keeps its earlier reason after this one.
+const STEP3 = "step 3 (run owner_daily_r04_s17): the frame (rail order and fixes, the header's boxless status) and the spec's rules on Daily (cards with the icon in the flow and content-sized, the type scale, spacing and radii, the boxless legend with Q1's ring key, the 44 px button, axes in --ink-2, Q2's fixed 107 px lane and 2-hour axis without the 1 AM label)";
+const STEP3_FRAMES = {};
+for (const name of ["daily-ar-1440x900", "daily-en-1440x900", "daily-ar-1440x900-hover", "daily-en-1440x900-hover", "daily-ar-1440x900-rail-open", "daily-en-1440x900-rail-open", "daily-ar-1440x900-delayed", "daily-ar-1440x900-nohistory", "daily-ar-1440x900-details", "levels-chart", "daily-en-nowcard-2x", "levels-nowcard"]) {
+  const why = /-light$/.test(name)
+    ? "step 3 (run owner_daily_r04_s17): the light-only crop; the light is unchanged, but the card sits 4 px higher (the first screen's top 10 to 8 px, the subtitle's gap 6 to 4) and the chart card 6 px taller, so the page wash behind the glass and the light's box differ"
+    : STEP3;
+  STEP3_FRAMES[name] = EXPECTED_TO_CHANGE[name] ? `${why}; earlier: ${EXPECTED_TO_CHANGE[name]}` : why;
+}
+Object.assign(EXPECTED_TO_CHANGE, STEP3_FRAMES);
 const MARKERS = ["b"];
-const PRESETS = ["v2", "a-like", "recommended"];
 const OVERFLOW_ONLY = [
-  { name: "daily-ar-1280x800", q: "lang=ar&tuner=0" },
-  { name: "daily-en-1280x800", q: "lang=en&tuner=0" },
+  { name: "daily-ar-1280x800", q: "lang=ar" },
+  { name: "daily-en-1280x800", q: "lang=en" },
+  // Step 3: the desktop frame at 1024 and the tablet and phone compositions. Below 1200 px the first screen may grow
+  // past the viewport (the chart keeps 440 px), so these may scroll down; never sideways.
+  { name: "daily-ar-1024x768", q: "lang=ar", w: 1024, h: 768, scrolls: true },
+  { name: "daily-en-1024x768", q: "lang=en", w: 1024, h: 768, scrolls: true },
+  { name: "daily-ar-768x1024", q: "lang=ar", w: 768, h: 1024, scrolls: true },
+  { name: "daily-en-768x1024-delayed", q: "lang=en&state=delayed", w: 768, h: 1024, scrolls: true },
+  { name: "daily-ar-390x844", q: "lang=ar", w: 390, h: 844, scrolls: true },
+  { name: "daily-en-390x844-nohistory", q: "lang=en&state=nohistory", w: 390, h: 844, scrolls: true },
+  { name: "daily-ar-320x640-delayed", q: "lang=ar&state=delayed", w: 320, h: 640, scrolls: true },
+  { name: "daily-en-320x640", q: "lang=en", w: 320, h: 640, scrolls: true },
 ];
 const FACES = [
   ['400 16px "Readex Pro"', "مرحبا"],
@@ -217,7 +234,7 @@ if (PLANT) {
   }
 }
 await mkdir(OUT, { recursive: true });
-// v2 file names that v3 replaced with preset-recommended-* crops.
+// Names from the earlier light frames that the current captures replace.
 for (const stale of ["daily-ar-chart-2x.png", "daily-ar-nowcard-2x.png"]) await rm(join(OUT, stale), { force: true });
 const browser = await chromium.launch();
 const log = [];
@@ -301,16 +318,12 @@ async function act(page, frame) {
     const pt = await page.evaluate(() => window.__eclipse.minuteClient(window.__eclipse.figures.peakM));
     await page.mouse.move(pt.x, pt.y);
   }
-  if (frame.act === "tuner-open") {
-    await page.click(".tuner-toggle");
-    await page.mouse.move(1150, 20);
-  }
 }
 
 async function inspect(page) {
   return page.evaluate((faces) => {
     const el = document.documentElement;
-    const text = [...document.body.childNodes].filter((n) => !(n.classList && n.classList.contains("tuner"))).map((n) => n.innerText || n.textContent || "").join("\n");
+    const text = document.body.innerText || document.body.textContent || "";
     // Anything inside a card that pokes past the card's inline edges.
     const spill = [];
     document.querySelectorAll(".card").forEach((card) => {
@@ -328,7 +341,6 @@ async function inspect(page) {
       lang: el.lang,
       dir: el.dir,
       state: el.dataset.state,
-      tunerPresent: Boolean(document.querySelector(".tuner")),
       fonts: Object.fromEntries(faces.filter(([, sample]) => el.lang === "ar" || !/[؀-ۿ]/.test(sample)).map(([spec, sample]) => [`${spec} ${sample}`, document.fonts.check(spec, sample)])),
       loadedFaces: [...new Set([...document.fonts].filter((f) => f.status === "loaded").map((f) => `${f.family.replace(/"/g, "")} ${f.weight}`))].sort(),
       overflowX: el.scrollWidth - el.clientWidth,
@@ -602,8 +614,9 @@ async function shot(page, name, opts = {}, again = null) {
     buf = m.buf;
     identity.staticFrames[name] = { identical: m.identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}), ...(EXPECTED_TO_CHANGE[name] ? { expectedToChange: EXPECTED_TO_CHANGE[name] } : {}) };
   }
-  // A frame the lane changes must still equal 8ae88f3 everywhere outside the plot element (same box, same pixels).
-  if (EXPECTED_TO_CHANGE[name] && OUTSIDE_PLOT[name]) {
+  // A frame the lane changes must still equal 8ae88f3 everywhere outside the plot element (same box, same pixels), unless
+  // step 3 changed it outside the plot too (STEP3_FRAMES).
+  if (EXPECTED_TO_CHANGE[name] && OUTSIDE_PLOT[name] && !STEP3_FRAMES[name]) {
     const want = OUTSIDE_PLOT[name];
     const boxes = await plotBoxes(page, opts);
     const sameBox = JSON.stringify(boxes) === JSON.stringify(want.boxes);
@@ -853,7 +866,7 @@ const laneMarks = (page) => page.evaluate(() => {
 
 /* ------------------------------------------------------------------ Round 6 checks */
 async function chartChecks(lang, state = "live", marker = "b") {
-  const q = `lang=${lang}&state=${state}&tuner=0`;
+  const q = `lang=${lang}&state=${state}`;
   const { context, page, errors } = await open(q); // reduced motion: every selection is at rest at once
   const res = { url: `index.html?${q}`, marker, markerReported: await page.evaluate(() => window.__eclipse.chart.marker), errors };
   res.stops = await page.evaluate(() => window.__eclipse.chart.stops);
@@ -991,8 +1004,7 @@ async function chartChecks(lang, state = "live", marker = "b") {
 
 /* ------------------------------------------------------------------ Round 7 step 2: form B only
  * B's variants on one enlarged sheet (reduced motion, 3x, tight crops, the tooltip hidden so the shapes can be judged),
- * and that form A and its switch are gone: no Marker group in the tuner, ?marker=a is ignored, no setMarker; plus the
- * hover speed control (its own row in the Motion group, kept in the motion key, ignored with ?tuner=0). */
+ * and that form A and its switch are gone: ?marker=a is ignored and no setMarker remains. */
 async function markerChecks() {
   const out = {};
   const cols = [
@@ -1006,7 +1018,7 @@ async function markerChecks() {
   ];
   const cells = [];
   for (const [state, key, caption] of cols) {
-    const { context, page, errors } = await open(`lang=ar&state=${state}&tuner=0`, { scale: 3 });
+    const { context, page, errors } = await open(`lang=ar&state=${state}`, { scale: 3 });
     await page.addStyleTag({ content: ".tip { visibility: hidden !important; }" });
     await page.evaluate((k) => window.__eclipse.chart.select(k), key);
     const c = await page.evaluate((k) => {
@@ -1045,34 +1057,23 @@ async function markerChecks() {
       reported: await page.evaluate(() => window.__eclipse.chart.marker),
       shown: await page.evaluate(() => document.querySelector("#sel .sg-mark")?.dataset.marker || null),
       setMarker: await page.evaluate(() => typeof window.__eclipse.chart.setMarker),
-      markerGroup: await page.evaluate(() => Boolean(document.querySelector(".tuner-marker"))),
     };
-    await page.click(".tuner-toggle");
-    r.speedRow = await page.evaluate(() => ({ label: document.querySelector("label[for=t-mo-speed]")?.textContent.trim(), out: document.querySelector("output[for=t-mo-speed]")?.textContent, value: document.getElementById("t-mo-speed")?.value }));
-    await page.evaluate(() => { const i = document.getElementById("t-mo-speed"); i.value = "1.5"; i.dispatchEvent(new Event("input")); });
-    r.afterSet = await page.evaluate(() => ({ speed: window.__eclipse.motion.options.hoverSpeed, stored: localStorage.getItem("fitway.eclipse.v3.motion"), tau1: window.__eclipse.chart.timings.tau1 }));
-    await ready(`${FILE_URL}?lang=ar`);
-    r.afterReload = await page.evaluate(() => window.__eclipse.motion.options.hoverSpeed);
-    await ready(`${FILE_URL}?lang=ar&tuner=0`);
-    r.tunerOffIgnoresStored = await page.evaluate(() => window.__eclipse.motion.options.hoverSpeed);
-    await page.evaluate(() => localStorage.removeItem("fitway.eclipse.v3.motion"));
     r.errors = errors;
-    r.pass = r.reported === "b" && r.shown === "b" && r.setMarker === "undefined" && !r.markerGroup && /Hover speed/.test(r.speedRow.label || "") && r.speedRow.value === "1" &&
-      r.afterSet.speed === 1.5 && JSON.parse(r.afterSet.stored || "{}").hoverSpeed === 1.5 && r.afterSet.tau1 === 60 && r.afterReload === 1.5 && r.tunerOffIgnoresStored === 1 && errors.length === 0;
-    out.formAGoneAndSpeed = r;
+    r.pass = r.reported === "b" && r.shown === "b" && r.setMarker === "undefined" && errors.length === 0;
+    out.formAGone = r;
     await context.close();
   }
-  out.pass = out.variantErrors.length === 0 && out.formAGoneAndSpeed.pass;
-  console.log(`marker: variants sheet written; form A gone and hover speed ${out.formAGoneAndSpeed.pass ? "pass" : "FAIL"}`);
+  out.pass = out.variantErrors.length === 0 && out.formAGone.pass;
+  console.log(`marker: variants sheet written; form A gone ${out.formAGone.pass ? "pass" : "FAIL"}`);
   return out;
 }
 
 /* ------------------------------------------------------------------ Round 7 step 3: the first-open intro
  * Every fresh context is a new browser tab, so its first open plays the intro (with motion on). */
 const INTRO_PAGES = [
-  ["daily-ar-1440x900", "lang=ar&tuner=0"], ["daily-en-1440x900", "lang=en&tuner=0"],
-  ["daily-ar-1440x900-delayed", "lang=ar&state=delayed&tuner=0"], ["daily-ar-1440x900-nohistory", "lang=ar&state=nohistory&tuner=0"],
-  ["daily-en-1440x900-delayed", "lang=en&state=delayed&tuner=0"], ["daily-en-1440x900-nohistory", "lang=en&state=nohistory&tuner=0"],
+  ["daily-ar-1440x900", "lang=ar"], ["daily-en-1440x900", "lang=en"],
+  ["daily-ar-1440x900-delayed", "lang=ar&state=delayed"], ["daily-ar-1440x900-nohistory", "lang=ar&state=nohistory"],
+  ["daily-en-1440x900-delayed", "lang=en&state=delayed"], ["daily-en-1440x900-nohistory", "lang=en&state=nohistory"],
 ];
 // The page's rest DOM without the live pulse (the one element motion keeps at rest), and the same page with ?motion=off
 // (the language link carries the page's own query, so ?motion=off appears in it; that is the only expected difference).
@@ -1151,7 +1152,7 @@ const introPerf = (page) => page.evaluate(() => {
 // screen-reader text, how the line is drawn, and every animation with its properties.
 const introProbeNow = (page) => page.evaluate(() => {
   const R = (n) => { const r = n.getBoundingClientRect(); return [r.x, r.y, r.width, r.height].map((v) => Math.round(v * 100) / 100).join(","); };
-  const boxes = [...document.querySelectorAll(".head, #status, .card, .stat-head, .stat-value, .stat-value > *, .stat-foot, .stat-note, .chart-head, #plot, #plot-labels > *, .rail")].map(R);
+  const boxes = [...document.querySelectorAll(".head, #ops-btn, .card, .stat-head, .stat-value, .stat-value > *, .stat-foot, .stat-note, .chart-head, #plot, #plot-labels > *, .rail")].map(R);
   const props = (a) => [...new Set((a.effect?.getKeyframes?.() || []).flatMap((k) => Object.keys(k).filter((x) => !["offset", "easing", "composite", "computedOffset"].includes(x))))];
   return {
     state: window.__eclipse.intro.state, boxes,
@@ -1180,7 +1181,7 @@ async function introSheet(name, title, cells, cols, width) {
 // Held frames of one page's intro at 2x: each part held at `times` ms after the start, then released to its end, which
 // is compared with this run's reduced-motion 2x frame. `crops` names 2x clips taken at some of the times.
 async function introHeld(lang, state, times, crops = null) {
-  const q = `lang=${lang}&state=${state}&tuner=0`;
+  const q = `lang=${lang}&state=${state}`;
   // One held sequence: each part held at every time in `times`, then released to its end. `keep` writes the frames.
   const heldRun = async (keep) => {
     const { context, page, errors } = await newPage({ motion: true, scale: 2 });
@@ -1343,7 +1344,7 @@ async function captureIntro() {
   //     local files are held at their response, including their preloads.)
   const slowFonts = {};
   for (const [lang, name] of [["ar", "daily-ar-1440x900"], ["en", "daily-en-1440x900"]]) {
-    const q = `lang=${lang}&tuner=0`;
+    const q = `lang=${lang}`;
     const domOff = await motionOffDom(q);
     for (const delay of [600, 50]) {
       const { context, page, errors, heldFonts, requests } = await newPage({ motion: true, fontDelayMs: delay });
@@ -1403,7 +1404,7 @@ async function captureIntro() {
     const { context, page, errors } = await newPage({ motion: true });
     const state = (p) => p.evaluate(() => { const I = window.__eclipse.intro; return { played: I.played, state: I.state, reason: I.reason, fontWaitMs: I.fontWaitMs }; });
     const go = async (p, q) => { await p.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" }); await p.waitForFunction(() => window.__eclipse?.ready === true); await introSettled(p); return state(p); };
-    when.newTab = await go(page, "lang=ar&tuner=0");
+    when.newTab = await go(page, "lang=ar");
     when.reloadSameTab = (await page.reload({ waitUntil: "networkidle" }), await page.waitForFunction(() => window.__eclipse?.ready === true), await state(page));
     // Coming back in the same tab: the language link, then the other language's link back.
     await Promise.all([page.waitForURL(/lang=en/), page.click("#lang-link")]);
@@ -1412,114 +1413,35 @@ async function captureIntro() {
     when.sameTabLanguageLink = await state(page);
     const tab2 = await context.newPage();
     tab2.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
-    when.secondTab = await go(tab2, "lang=ar&tuner=0");
-    // The tuner's Motion switch off (kept in localStorage, which the context's tabs share): a new tab has no intro,
-    // and ?tuner=0 ignores the stored switch.
-    const tab3 = await context.newPage();
-    await go(tab3, "lang=ar");
-    await tab3.evaluate(() => window.__eclipse.motion.set({ motion: false }));
-    const tab4 = await context.newPage();
-    when.newTabWithMotionSwitchOff = await go(tab4, "lang=ar");
-    const tab5 = await context.newPage();
-    when.newTabWithSwitchOffButTunerOff = await go(tab5, "lang=ar&tuner=0");
-    await tab5.evaluate(() => localStorage.removeItem("fitway.eclipse.v3.motion"));
+    when.secondTab = await go(tab2, "lang=ar");
     when.errors = errors;
     await context.close();
   }
   {
-    const r = await open("lang=ar&tuner=0");
+    const r = await open("lang=ar");
     when.reducedMotion = await r.page.evaluate(() => { const I = window.__eclipse.intro; return { played: I.played, state: I.state, reason: I.reason, firstOpen: I.firstOpen }; });
     await r.context.close();
-    const o = await open("lang=ar&tuner=0&motion=off", { motion: true });
+    const o = await open("lang=ar&motion=off", { motion: true });
     when.motionOffUrl = await o.page.evaluate(() => { const I = window.__eclipse.intro; return { played: I.played, state: I.state, reason: I.reason, firstOpen: I.firstOpen }; });
     await o.context.close();
   }
-  // Replay intro and the intro speed, from the tuner (motion on). Each replay ends at the still page.
-  {
-    const { context, page, errors } = await newPage({ motion: true });
-    await page.goto(`${ORIGIN}/index.html?lang=ar`, { waitUntil: "networkidle" });
-    await page.waitForFunction(() => window.__eclipse?.ready === true);
-    await introSettled(page);
-    await page.click(".tuner-toggle");
-    const row = () => page.evaluate(() => ({ label: document.querySelector("label[for=t-mo-intro]")?.textContent.trim(), out: document.querySelector("output[for=t-mo-intro]")?.textContent, value: document.getElementById("t-mo-intro")?.value, replay: document.getElementById("t-mo-replay")?.textContent.trim(), replayDisabled: document.getElementById("t-mo-replay")?.disabled }));
-    const r = { row: await row() };
-    const replay = async () => {
-      await page.click("#t-mo-replay");
-      await page.waitForFunction(() => ["running", "done"].includes(window.__eclipse.intro.state));
-      const running = await page.evaluate(() => window.__eclipse.intro.state);
-      await introSettled(page);
-      return { sawRunning: running === "running", ...(await page.evaluate(() => { const I = window.__eclipse.intro; return { count: I.count, yieldedBy: I.yieldedBy, measuredMs: Math.round(I.endedAt - I.startedAt), expectedMs: I.timings.totalMs, speed: I.timings.speed }; })) };
-    };
-    r.replay1x = await replay();
-    const hideTuner = await page.addStyleTag({ content: `${HIDE_PULSE} .tuner { visibility: hidden !important; }` });
-    await page.mouse.move(720, 20);
-    await page.waitForTimeout(80);
-    const replayRef = await stillRef("daily-ar-1440x900", "lang=ar&tuner=0");
-    const replayM = await exact("intro replay end", await page.screenshot(), replayRef.expected, async () => {
-      const n = await newPage({ motion: true });
-      await n.page.goto(`${ORIGIN}/index.html?lang=ar`, { waitUntil: "networkidle" });
-      await n.page.waitForFunction(() => window.__eclipse?.ready === true);
-      await introSettled(n.page);
-      await n.page.click(".tuner-toggle");
-      await n.page.click("#t-mo-replay");
-      await n.page.waitForFunction(() => ["running", "done"].includes(window.__eclipse.intro.state));
-      await introSettled(n.page);
-      await n.page.addStyleTag({ content: `${HIDE_PULSE} .tuner { visibility: hidden !important; }` });
-      await n.page.mouse.move(720, 20);
-      await n.page.waitForTimeout(80);
-      const b = await n.page.screenshot();
-      await n.context.close();
-      return b;
-    }, replayRef.reference);
-    r.replayEndIdenticalToStill = replayM.identical;
-    r.replayEndAttempts = replayM.attempts;
-    await hideTuner.evaluate((n) => n.remove());
-    const setSpeed = (v) => page.evaluate((x) => { const i = document.getElementById("t-mo-intro"); i.value = String(x); i.dispatchEvent(new Event("input")); }, v);
-    await setSpeed(0.5);
-    r.at05 = { out: (await row()).out, ...(await replay()) };
-    await setSpeed(2);
-    r.at2 = { out: (await row()).out, ...(await replay()) };
-    r.stored = await page.evaluate(() => JSON.parse(localStorage.getItem("fitway.eclipse.v3.motion") || "{}"));
-    await page.reload({ waitUntil: "networkidle" });
-    await page.waitForFunction(() => window.__eclipse?.ready === true);
-    r.afterReload = await page.evaluate(() => ({ introSpeed: window.__eclipse.motion.options.introSpeed, played: window.__eclipse.intro.played }));
-    await page.goto(`${ORIGIN}/index.html?lang=ar&tuner=0`, { waitUntil: "networkidle" });
-    await page.waitForFunction(() => window.__eclipse?.ready === true);
-    r.tunerOffIgnoresStored = await page.evaluate(() => window.__eclipse.motion.options.introSpeed);
-    await page.evaluate(() => localStorage.removeItem("fitway.eclipse.v3.motion"));
-    r.errors = errors;
-    await context.close();
-    // With reduced motion, Replay intro is disabled and does nothing.
-    const red = await open("lang=ar");
-    await red.page.click(".tuner-toggle");
-    r.reducedMotion = await red.page.evaluate(() => ({ replayDisabled: document.getElementById("t-mo-replay").disabled, replayReturns: window.__eclipse.intro.replay(), state: window.__eclipse.intro.state }));
-    await red.context.close();
-    const near = (a, b) => Math.abs(a - b) <= Math.max(60, b * 0.12);
-    r.pass = /Intro speed/.test(r.row.label || "") && r.row.value === "1" && /1\.00× · 1171 ms/.test(r.row.out || "") && /Replay intro/.test(r.row.replay || "") && !r.row.replayDisabled &&
-      r.replay1x.sawRunning && r.replay1x.yieldedBy === "complete" && r.replay1x.count === 2 && near(r.replay1x.measuredMs, 1171) && r.replayEndIdenticalToStill &&
-      r.at05.out === "0.50× · 2342 ms" && near(r.at05.measuredMs, 2342) && r.at2.out === "2.00× · 586 ms" && near(r.at2.measuredMs, 586) &&
-      r.stored.introSpeed === 2 && r.afterReload.introSpeed === 2 && r.afterReload.played === false && r.tunerOffIgnoresStored === 1 &&
-      r.reducedMotion.replayDisabled && r.reducedMotion.replayReturns === false && r.reducedMotion.state === "off" && errors.length === 0;
-    when.replayAndSpeed = r;
-  }
   when.pass = when.newTab.played && !when.reloadSameTab.played && when.reloadSameTab.reason === "already opened in this tab" && !when.sameTabLanguageLink.played &&
-    when.secondTab.played && !when.newTabWithMotionSwitchOff.played && when.newTabWithMotionSwitchOff.reason === "motion switch off" && when.newTabWithSwitchOffButTunerOff.played &&
-    !when.reducedMotion.played && when.reducedMotion.reason === "reduced motion" && !when.motionOffUrl.played && when.motionOffUrl.reason === "motion=off" &&
-    when.replayAndSpeed.pass && when.errors.length === 0;
+    when.secondTab.played && !when.reducedMotion.played && when.reducedMotion.reason === "reduced motion" &&
+    !when.motionOffUrl.played && when.motionOffUrl.reason === "motion=off" && when.errors.length === 0;
   out.whenItPlays = when;
-  console.log(`intro when it plays: ${when.pass ? "pass" : "FAIL"} (new tab ${when.newTab.played}, reload ${when.reloadSameTab.played}, same-tab link ${when.sameTabLanguageLink.played}, second tab ${when.secondTab.played}, switch off ${when.newTabWithMotionSwitchOff.played}, reduced ${when.reducedMotion.played}, motion=off ${when.motionOffUrl.played}; replay ${when.replayAndSpeed.replay1x.measuredMs} ms, 0.5x ${when.replayAndSpeed.at05.measuredMs} ms, 2x ${when.replayAndSpeed.at2.measuredMs} ms)`);
+  console.log(`intro when it plays: ${when.pass ? "pass" : "FAIL"} (new tab ${when.newTab.played}, reload ${when.reloadSameTab.played}, same-tab link ${when.sameTabLanguageLink.played}, second tab ${when.secondTab.played}, reduced ${when.reducedMotion.played}, motion=off ${when.motionOffUrl.played})`);
 
   // 3. It yields at once: a hover, keys, the rail, a tap, a new reading and a resize, at 100 and 400 ms into it (AR,
   //    live). The owner sees the still page at once, with the action's own result; nothing waits and nothing is lost.
   const yields = {};
   const yieldCells = [];
   {
-    const railRef = await stillRef("daily-ar-1440x900-rail-open", "lang=ar&tuner=0", async (p) => { await act(p, { act: "rail-open" }); await p.waitForTimeout(200); });
+    const railRef = await stillRef("daily-ar-1440x900-rail-open", "lang=ar", async (p) => { await act(p, { act: "rail-open" }); await p.waitForTimeout(200); });
     let canonStep = null, canonStepDom = null, canon1280 = null;
     // The reference for the resize: a fresh 1280x800 page, rendered in this run (so rendered again on a difference).
-    const fresh1280 = async () => { const c = await open("lang=ar&tuner=0", { width: 1280, height: 800 }); const b = await c.page.screenshot(); await c.context.close(); return b; };
+    const fresh1280 = async () => { const c = await open("lang=ar", { width: 1280, height: 800 }); const b = await c.page.screenshot(); await c.context.close(); return b; };
     {
-      const b = await open("lang=ar&tuner=0");
+      const b = await open("lang=ar");
       await b.page.evaluate(() => window.__eclipse.motion.step());
       await b.page.waitForTimeout(100);
       canonStep = await b.page.screenshot();
@@ -1530,7 +1452,7 @@ async function captureIntro() {
     // A recapture of the rail or resize frame: the same action at the same moment of a fresh first open.
     const yieldAgain = (action, at) => async () => {
       const n = await newPage({ motion: true });
-      await n.page.goto(`${ORIGIN}/index.html?lang=ar&tuner=0`);
+      await n.page.goto(`${ORIGIN}/index.html?lang=ar`);
       await n.page.waitForFunction(() => window.__eclipse?.intro?.state === "running", null, { timeout: 15000 });
       await n.page.waitForFunction((t) => performance.now() - window.__eclipse.intro.startedAt >= t, at, { polling: 5 });
       if (action === "rail") await n.page.click("#brand");
@@ -1545,7 +1467,7 @@ async function captureIntro() {
     for (const action of ["hover", "keys", "rail", "tap", "reading", "resize"]) {
       for (const at of [100, 400]) {
         const { context, page, errors } = await newPage({ motion: true, touch: action === "tap" });
-        await page.goto(`${ORIGIN}/index.html?lang=ar&tuner=0`);
+        await page.goto(`${ORIGIN}/index.html?lang=ar`);
         await page.waitForFunction(() => window.__eclipse?.intro?.state === "running", null, { timeout: 15000 });
         await page.waitForFunction((t) => performance.now() - window.__eclipse.intro.startedAt >= t, at, { polling: 5 });
         const stop = await page.evaluate(() => window.__eclipse.chart.stops.find((s) => s.key === "h720"));
@@ -1669,7 +1591,7 @@ async function captureMotion() {
   // Motion frames from earlier runs (other names and times) would no longer match: start clean.
   for (const f of await readdir(OUT)) if (/^(motion|intro)-.*\.png$/.test(f)) await rm(join(OUT, f), { force: true });
   {
-    const { context, page } = await open("lang=ar&tuner=0", { motion: true });
+    const { context, page } = await open("lang=ar", { motion: true });
     M.spec = await page.evaluate(() => window.__eclipse.motion.spec());
     await context.close();
   }
@@ -1677,7 +1599,6 @@ async function captureMotion() {
   // 1. ?motion=off without reduced motion: every still frame equals its pre-motion frame; the frames that change by
   //    design (and the new English hover frame) equal this run's reduced-motion frame instead.
   for (const frame of FRAMES) {
-    if (frame.act === "tuner-open") continue;
     const q = `${frame.q}&motion=off`;
     const { context, page, errors } = await open(q, { motion: true });
     await act(page, frame);
@@ -1713,14 +1634,19 @@ async function captureMotion() {
     M.chart[`enDelayed${s}`] = await chartChecks("en", "delayed", mk);
     M.chart[`enNoHistory${s}`] = await chartChecks("en", "nohistory", mk);
   }
-  // The follow-up round after step 3 (the 127 px round): the tooltip has one width on every page, in both languages and
-  // every state, except the missing-span stop, which may grow; the widest tooltip that shows a number fits in it.
+  // The follow-up round after step 3 (the 127 px round): the tooltip has one width on every page, in every state, except
+  // the missing-span stop, which may grow; the widest tooltip that shows a number fits in it. Step 3 (run
+  // owner_daily_r04_s17): the width is measured per page from its own stops (CHT-12), and the tooltip's type roles
+  // (TYP-3: the flag at 12 px, the value at 19, 8 px gaps) make it 131 px (Arabic live and no history), 130 px (Arabic
+  // delayed, English): the 127 px coincidence of every page is gone, so the rule is held per page, as CHT-12 states it:
+  // one width at every stop of a page, and that page's widest numbered tooltip fits in it.
   {
     const pages = Object.values(M.chart);
     const widths = [...new Set(pages.flatMap((v) => v.tooltip.widths))];
     const widest = Math.max(...pages.map((v) => v.tooltip.widestContent));
     const at = Object.entries(M.chart).flatMap(([k, v]) => v.perStop.filter((p) => p.tipBox?.numbered && p.tipBox.natural === widest).map((p) => `${k} ${p.key}`));
-    M.tooltipWidth = { widths, gapWidths: [...new Set(pages.flatMap((v) => v.tooltip.gapWidths))], widestNumberedContentPx: widest, widestContentPx: widest, widestAt: at, marginPx: widths.length === 1 ? Math.round((widths[0] - widest) * 100) / 100 : null, pass: widths.length === 1 && widest <= widths[0] && pages.every((v) => v.tooltip.pass) };
+    const perPage = Object.fromEntries(Object.entries(M.chart).map(([k, v]) => [k, { widths: v.tooltip.widths, widestNumberedContentPx: v.tooltip.widestContent, pass: v.tooltip.widths.length === 1 && v.tooltip.widestContent <= v.tooltip.widths[0] }]));
+    M.tooltipWidth = { widths, perPage, gapWidths: [...new Set(pages.flatMap((v) => v.tooltip.gapWidths))], widestNumberedContentPx: widest, widestContentPx: widest, widestAt: at, marginPx: widths.length === 1 ? Math.round((widths[0] - widest) * 100) / 100 : null, pass: Object.values(perPage).every((l) => l.pass) && pages.every((v) => v.tooltip.pass) };
     // The lane round: the lane's rules, per page (AR and EN; live, delayed and no history) at the page's own snapshot.
     M.tooltipLane = { pages: Object.fromEntries(Object.entries(M.chart).map(([k, v]) => [k, v.tooltip.lane])), pass: Object.values(M.chart).every((v) => v.tooltip.lane.pass) };
   }
@@ -1737,7 +1663,7 @@ async function captureMotion() {
   {
     const cells = [];
     for (const lang of ["ar", "en"]) {
-      const { context, page, errors } = await open(`lang=${lang}&tuner=0`, { motion: true, scale: 2 });
+      const { context, page, errors } = await open(`lang=${lang}`, { motion: true, scale: 2 });
       await page.addStyleTag({ content: HIDE_PULSE });
       const response = await page.evaluate(() => window.__eclipse.chart.response());
       const runs = [];
@@ -1784,19 +1710,19 @@ async function captureMotion() {
   }
   M.follow = follow;
 
-  // 5. Numbers roll and level bars (AR and EN): a crowd-level change down and up across a boundary (the tuner's
+  // 5. Numbers roll and level bars (AR and EN): a crowd-level change down and up across a boundary (the
   //    simulation on the Inside now card), and a new reading (Entries and the times). Every animation is listed:
   //    digits move by transform only (the slot's width may ease), bars by scaleY; no glyph ever animates opacity.
   {
     const roll = {};
     for (const lang of ["ar", "en"]) {
-      const { context, page, errors } = await open(`lang=${lang}&tuner=0`, { motion: true, scale: 2 });
+      const { context, page, errors } = await open(`lang=${lang}`, { motion: true, scale: 2 });
       await page.addStyleTag({ content: HIDE_PULSE });
       const card = clipOf(await rectOf(page, "#card-now"));
       const nowClip = { x: card.x + 8, y: card.y + 52, width: card.width - 16, height: card.height - 56 };
       const ent = clipOf(await rectOf(page, "#card-entries"));
       const entClip = { x: ent.x + 8, y: ent.y + 52, width: ent.width - 16, height: 64 };
-      const st = clipOf(await rectOf(page, "#status"));
+      const st = clipOf(await rectOf(page, "#ops-btn"));
       const stClip = { x: st.x - 4, y: st.y - 4, width: st.width + 8, height: st.height + 8 };
       const cells = [], barCells = [];
       const r = { errors };
@@ -1840,7 +1766,7 @@ async function captureMotion() {
       cells.push({ buf: await page.screenshot({ clip: stClip }), caption: "Last reading 7:42 to 7:43, 70 ms" });
       await releaseAll(page);
       r.stepSay = await page.evaluate(() => document.getElementById("live-say").textContent);
-      r.restAfterStep = await page.evaluate(() => ({ nowV: document.getElementById("now-v").innerHTML, entries: document.getElementById("entries-v").innerHTML, status: document.querySelector("#status bdi").innerHTML, rollLeft: document.querySelectorAll(".roll-slot, .roll-run, .lv-fill").length }));
+      r.restAfterStep = await page.evaluate(() => ({ nowV: document.getElementById("now-v").innerHTML, entries: document.getElementById("entries-v").innerHTML, status: document.querySelector("#ops-btn .hb-line bdi").innerHTML, rollLeft: document.querySelectorAll(".roll-slot, .roll-run, .lv-fill").length }));
       const all = [...r.downAnimations, ...r.upAnimations, ...r.stepAnimations];
       const digits = all.filter((a) => /roll-(new|old)/.test(a.target));
       const firstY = (a) => { const m = /translateY\((-?[\d.]+)px\)/.exec(a.keyframes[0].transform || ""); return m ? Number(m[1]) : 0; };
@@ -1876,7 +1802,7 @@ async function captureMotion() {
   // 6. Live: one simulated new reading (the next minute of the same seeded day). The tail morph held at 2x, and the
   //    settled page against the same reading applied without motion (pixels and DOM).
   {
-    const { context, page, errors } = await open("lang=ar&tuner=0", { motion: true, scale: 2 });
+    const { context, page, errors } = await open("lang=ar", { motion: true, scale: 2 });
     await page.addStyleTag({ content: HIDE_PULSE });
     await page.mouse.move(720, 30);
     // A tight crop around the end point (a minute is about 1px wide), enlarged 3x in the sheet.
@@ -1900,7 +1826,7 @@ async function captureMotion() {
     cells.push({ buf: await page.screenshot({ clip: tailClip }), caption: "After (7:43)", zoom: 3 });
     await sheet("motion-live-ar-tail-2x", "A new reading extends the line by one minute, AR, 2x, around the end point (enlarged 3x): only the last 15-30 minutes of the centred average morph (it is cut at the latest reading); nothing earlier moves.", cells, 4);
     await context.close();
-    const a = await open("lang=ar&tuner=0", { motion: true });
+    const a = await open("lang=ar", { motion: true });
     await a.page.mouse.move(720, 30);
     await a.page.evaluate(() => window.__eclipse.motion.step());
     await a.page.waitForTimeout(700);
@@ -1909,7 +1835,7 @@ async function captureMotion() {
     const settledBuf = await a.page.screenshot();
     const domAfter = await a.page.evaluate(() => { const c = document.querySelector(".page").cloneNode(true); c.querySelectorAll(".ping").forEach((n) => n.remove()); return c.outerHTML; });
     await a.context.close();
-    const b = await open("lang=ar&tuner=0");
+    const b = await open("lang=ar");
     await b.page.evaluate(() => window.__eclipse.motion.step());
     await b.page.waitForTimeout(100);
     const canon = await b.page.screenshot();
@@ -1922,7 +1848,7 @@ async function captureMotion() {
   // 7. Delayed: nothing looks live. No pulse, nothing running at rest; a simulated minute passes with no reading: the
   //    line does not move, only "minutes ago" rolls (transform), and then nothing runs.
   {
-    const { context, page, errors } = await open("lang=ar&state=delayed&tuner=0", { motion: true });
+    const { context, page, errors } = await open("lang=ar&state=delayed", { motion: true });
     const before = await page.evaluate(() => ({ figures: window.__eclipse.figures, pulse: Boolean(document.querySelector(".ping")), running: document.getAnimations().filter((a) => a.playState === "running").length, meta: document.getElementById("now-meta").innerText.trim() }));
     const r = await page.evaluate(() => window.__eclipse.motion.step());
     const during = await listAnimations(page);
@@ -1943,7 +1869,7 @@ async function captureMotion() {
   {
     const rail = {};
     for (const lang of ["ar", "en"]) {
-      const { context, page, errors } = await open(`lang=${lang}&tuner=0`, { motion: true });
+      const { context, page, errors } = await open(`lang=${lang}`, { motion: true });
       await page.addStyleTag({ content: HIDE_PULSE });
       await page.click("#brand");
       await pauseAll(page);
@@ -1955,8 +1881,8 @@ async function captureMotion() {
       await page.mouse.move(720, 40);
       await page.waitForTimeout(300);
       if (lang === "ar") {
-        const railRef = await stillRef("daily-ar-1440x900-rail-open", "lang=ar&tuner=0", async (p) => { await act(p, { act: "rail-open" }); await p.waitForTimeout(200); });
-        const railM = await exact("rail AR open, settled", await page.screenshot(), railRef.expected, recapture("lang=ar&tuner=0", { motion: true }, async (p) => {
+        const railRef = await stillRef("daily-ar-1440x900-rail-open", "lang=ar", async (p) => { await act(p, { act: "rail-open" }); await p.waitForTimeout(200); });
+        const railM = await exact("rail AR open, settled", await page.screenshot(), railRef.expected, recapture("lang=ar", { motion: true }, async (p) => {
           await p.addStyleTag({ content: HIDE_PULSE });
           await p.click("#brand");
           await p.mouse.move(720, 40);
@@ -2002,14 +1928,13 @@ async function captureMotion() {
   const fo = Object.values(identity.firstOpen), rl = Object.values(identity.reload);
   console.log(`motion: off-frames identical ${Object.values(identity.motionOffFrames).filter((v) => v.identical).length}/${Object.keys(identity.motionOffFrames).length}; intro end = still frame ${fo.filter((v) => v.endIdenticalToStill).length}/${fo.length}, reload without intro = still frame ${rl.filter((v) => v.pass).length}/${rl.length}; live ends at canonical ${identity.liveUpdateEndsAtCanonical?.identicalWithPulseHidden} (DOM ${identity.liveUpdateEndsAtCanonical?.domEqual})`);
   for (const k of Object.keys(c)) console.log(`chart ${k}: ${c[k].pass ? "pass" : "FAIL"}; stops ${c[k].stops.length}; marker max distance line ${c[k].maxDistancePx.lineStops} px, peak ${c[k].maxDistancePx.peak}, usual ${c[k].maxDistancePx.usualLine}, gap ${c[k].maxDistancePx.gapMark}; pointer ${c[k].pointer.filter((p) => p.pass).length}/${c[k].pointer.length}; keyboard ${c[k].keyboard.pass}`);
-  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; width ${M.tooltipWidth.widths.join("/")} px on every page (the missing-span stop ${M.tooltipWidth.gapWidths.join("/")} px), widest numbered content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")})`);
+  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; one width per page: ${Object.entries(M.tooltipWidth.perPage).map(([k, l]) => `${k} ${l.widths.join("/")}`).join(", ")} px (the missing-span stop ${M.tooltipWidth.gapWidths.join("/")} px), widest numbered content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")})`);
   console.log(`tooltip lane: ${M.tooltipLane.pass ? "pass" : "FAIL"}; ${Object.entries(M.tooltipLane.pages).map(([k, L]) => `${k} top ${L.top} px, height ${L.height} px, scale starts at ${L.scaleStartsAtPx} px, smallest gap to the highest mark ${L.smallestGapToHighestMarkPx} px, x error ${L.maxXErrPx} px, connector to box ${L.connector.maxGapToBoxPx} px and to mark ${L.connector.maxGapToMarkPx} px`).join("; ")}`);
   console.log(`follow: ${Object.entries(M.follow).map(([k, v]) => `${k} ${v.pass}`).join(", ")}; roll: ar ${M.roll.ar.pass}, en ${M.roll.en.pass}; delayed ${M.delayed.pass}; rail ${M.rail.pass}`);
 }
 
-const lights = {};
+let lights = null;
 let calibration = null;
-let tunerCheck = null;
 const motionLog = {};
 try {
   if (!MOTION_ONLY) {
@@ -2023,51 +1948,44 @@ try {
     await context.close();
   }
 
-  // Per preset: the AR frame, 2x crops of both lit cards, and light-only 1x captures that are measured.
-  for (const id of PRESETS) {
-    const q = `lang=ar&tuner=0&preset=${id}`;
-    {
-      const { context, page, errors } = await open(q);
-      const result = await inspect(page);
-      await shot(page, `preset-${id}-ar-1440x900`, {}, recapture(q, {}));
-      const applied = await page.evaluate(() => Object.fromEntries(["--now-int", "--now-core", "--now-disc-size", "--now-disc-x", "--now-soft", "--now-rim", "--now-far", "--now-end", "--chart-int", "--chart-fade", "--chart-side", "--chart-balance", "--chart-soft", "--wash-int", "--grain-o"].map((v) => [v, getComputedStyle(document.documentElement).getPropertyValue(v).trim()])));
-      record(`preset-${id}-ar-1440x900`, { url: `index.html?${q}`, viewport: "1440x900", deviceScaleFactor: 1, appliedLightSettings: applied }, result, errors);
-      await page.addStyleTag({ content: HIDE_CONTENT });
-      await page.waitForTimeout(80);
-      const hidden = async (p) => { await p.addStyleTag({ content: HIDE_CONTENT }); await p.waitForTimeout(80); };
-      const now = await shot(page, `preset-${id}-nowcard-light`, { clip: clipOf(await rectOf(page, "#card-now")) }, recapture(q, {}, hidden, async (p) => ({ clip: clipOf(await rectOf(p, "#card-now")) })));
-      const chart = await shot(page, `preset-${id}-chart-light`, { clip: clipOf(await rectOf(page, ".chart")) }, recapture(q, {}, hidden, async (p) => ({ clip: clipOf(await rectOf(p, ".chart")) })));
-      lights[id] = { settings: applied, chart: await measure(chart, "chart", true), insideNow: await measure(now, "now", true) };
-      await context.close();
-    }
-    {
-      const { context, page, errors } = await open(q, { scale: 2 });
-      for (const [sel, part] of [["#card-now", "nowcard"], [".chart", "chart"]]) {
-        const box = await rectOf(page, sel);
-        await shot(page, `preset-${id}-${part}-2x`, { clip: clipOf(box) }, recapture(q, { scale: 2 }, null, async (p) => ({ clip: clipOf(await rectOf(p, sel)) })));
-      }
-      if (id === "recommended") {
-        log.push({ frame: "levels", levelsNowcard: await levels(join(OUT, "preset-recommended-nowcard-2x.png"), join(OUT, "levels-nowcard.png")), levelsChart: await levels(join(OUT, "preset-recommended-chart-2x.png"), join(OUT, "levels-chart.png")), errors });
-        await hashFile("levels-nowcard", "preset-recommended-nowcard-2x");
-        await hashFile("levels-chart", "preset-recommended-chart-2x");
-      }
-      await context.close();
-    }
-    const m = lights[id];
-    console.log(`light ${id.padEnd(12)} chart dark/haze/lit ${m.chart.pureDarkPct}/${m.chart.hazePct}/${m.chart.litPct} fade ${m.chart.fadeToBlackPctOfHeight.min}-${m.chart.fadeToBlackPctOfHeight.max}% corners ${m.chart.lowerCornerPeakL.inlineEnd}/${m.chart.lowerCornerPeakL.inlineStart} | now peak ${m.insideNow.peakL}`);
-  }
-
-  // LTR mirror of the Inside now card, 2x (Recommended).
+  // The static lights at AR 1440: 2x crops of both lit cards, and light-only 1x captures that are measured.
   {
-    const { context, page, errors } = await open("lang=en&tuner=0", { scale: 2 });
-    const box = await rectOf(page, "#card-now");
-    await shot(page, "daily-en-nowcard-2x", { clip: clipOf(box) }, recapture("lang=en&tuner=0", { scale: 2 }, null, async (p) => ({ clip: clipOf(await rectOf(p, "#card-now")) })));
+    const q = "lang=ar";
+    const { context, page, errors } = await open(q);
+    const applied = await page.evaluate(() => Object.fromEntries(["--now-int", "--now-core", "--now-disc-size", "--now-disc-x", "--now-soft", "--now-rim", "--now-far", "--now-end", "--chart-int", "--chart-fade", "--chart-side", "--chart-balance", "--chart-soft", "--wash-int", "--grain-o"].map((v) => [v, getComputedStyle(document.documentElement).getPropertyValue(v).trim()])));
+    await page.addStyleTag({ content: HIDE_CONTENT });
+    await page.waitForTimeout(80);
+    const hidden = async (p) => { await p.addStyleTag({ content: HIDE_CONTENT }); await p.waitForTimeout(80); };
+    const now = await shot(page, "daily-ar-nowcard-light", { clip: clipOf(await rectOf(page, "#card-now")) }, recapture(q, {}, hidden, async (p) => ({ clip: clipOf(await rectOf(p, "#card-now")) })));
+    const chart = await shot(page, "daily-ar-chart-light", { clip: clipOf(await rectOf(page, ".chart")) }, recapture(q, {}, hidden, async (p) => ({ clip: clipOf(await rectOf(p, ".chart")) })));
+    lights = { settings: applied, chart: await measure(chart, "chart", true), insideNow: await measure(now, "now", true) };
     await context.close();
-    const l = await open("lang=en&tuner=0");
+  }
+  {
+    const q = "lang=ar";
+    const { context, page, errors } = await open(q, { scale: 2 });
+    for (const [sel, part] of [["#card-now", "nowcard"], [".chart", "chart"]]) {
+      const box = await rectOf(page, sel);
+      await shot(page, `daily-ar-${part}-2x`, { clip: clipOf(box) }, recapture(q, { scale: 2 }, null, async (p) => ({ clip: clipOf(await rectOf(p, sel)) })));
+    }
+    log.push({ frame: "levels", levelsNowcard: await levels(join(OUT, "daily-ar-nowcard-2x.png"), join(OUT, "levels-nowcard.png")), levelsChart: await levels(join(OUT, "daily-ar-chart-2x.png"), join(OUT, "levels-chart.png")), errors });
+    await hashFile("levels-nowcard", "daily-ar-nowcard-2x");
+    await hashFile("levels-chart", "daily-ar-chart-2x");
+    await context.close();
+  }
+  console.log(`light static chart dark/haze/lit ${lights.chart.pureDarkPct}/${lights.chart.hazePct}/${lights.chart.litPct} fade ${lights.chart.fadeToBlackPctOfHeight.min}-${lights.chart.fadeToBlackPctOfHeight.max}% corners ${lights.chart.lowerCornerPeakL.inlineEnd}/${lights.chart.lowerCornerPeakL.inlineStart} | now peak ${lights.insideNow.peakL}`);
+
+  // LTR mirror of the Inside now card, 2x.
+  {
+    const { context, page, errors } = await open("lang=en", { scale: 2 });
+    const box = await rectOf(page, "#card-now");
+    await shot(page, "daily-en-nowcard-2x", { clip: clipOf(box) }, recapture("lang=en", { scale: 2 }, null, async (p) => ({ clip: clipOf(await rectOf(p, "#card-now")) })));
+    await context.close();
+    const l = await open("lang=en");
     await l.page.addStyleTag({ content: HIDE_CONTENT });
     await l.page.waitForTimeout(80);
     const png = await l.page.screenshot({ clip: clipOf(await rectOf(l.page, "#card-now")) });
-    lights.recommendedLtrInsideNow = await measure(png, "now", false);
+    lights.ltrInsideNow = await measure(png, "now", false);
     log.push({ frame: "daily-en-nowcard-2x", viewport: "1440x900", deviceScaleFactor: 2, clip: box, errors: [...errors, ...l.errors] });
     await l.context.close();
   }
@@ -2085,170 +2003,12 @@ try {
   }
   } // end of the static part (skipped with --motion-only)
 
-  // The tuner from file:// (no server): change one control by keyboard, confirm the custom property and the
-  // rendered pixels change, Copy values gives valid JSON (clipboard path and textarea fallback), the value
-  // persists across a reload, ?tuner=0 shows no tuner and ignores the stored value, and Reset restores it.
-  {
-    const { context, page, errors } = await newPage();
-    await context.addInitScript(() => {
-      window.__copied = null;
-      const mode = () => sessionStorage.getItem("clipMode") || "ok";
-      Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: (t) => (mode() === "fail" ? Promise.reject(new Error("blocked")) : ((window.__copied = t), Promise.resolve())) } });
-    });
-    await page.goto(`${FILE_URL}?lang=ar`, { waitUntil: "networkidle" });
-    await page.waitForFunction(() => window.__eclipse?.ready === true);
-    const cssVar = (v) => page.evaluate((n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), v);
-    const cardClip = clipOf(await rectOf(page, "#card-now"));
-    const shotCard = () => page.screenshot({ clip: cardClip });
-    const t = { url: `${FILE_URL}?lang=ar`, protocol: await page.evaluate(() => location.protocol) };
-    t.collapsedByDefault = await page.evaluate(() => ({ toggle: Boolean(document.querySelector(".tuner-toggle")), expanded: document.querySelector(".tuner-toggle").getAttribute("aria-expanded"), panelHidden: document.getElementById("tuner-panel").hidden }));
-    t.toggleRect = await rectOf(page, ".tuner-toggle");
-    t.before = { "--now-int": await cssVar("--now-int") };
-    const pngBefore = await shotCard();
-    await page.click(".tuner-toggle");
-    await page.focus("#t-nowInt");
-    for (let i = 0; i < 6; i++) await page.keyboard.press("ArrowDown");
-    await page.waitForTimeout(80);
-    t.after = { "--now-int": await cssVar("--now-int"), inputValue: await page.inputValue("#t-nowInt"), output: await page.textContent("#tuner-panel output[for='t-nowInt']") };
-    const pngAfter = await shotCard();
-    t.pixelsChanged = await (async () => {
-      const { context: c2, page: p2 } = await newPage({ width: 400, height: 300 });
-      const diff = await p2.evaluate(async ([a, b]) => {
-        const load = async (s) => { const i = new Image(); i.src = s; await i.decode(); const c = document.createElement("canvas"); c.width = i.naturalWidth; c.height = i.naturalHeight; const g = c.getContext("2d"); g.drawImage(i, 0, 0); return g.getImageData(0, 0, c.width, c.height).data; };
-        const A = await load(a), B = await load(b);
-        let changed = 0, sum = 0;
-        for (let i = 0; i < A.length; i += 4) { const d = Math.abs(A[i] - B[i]) + Math.abs(A[i + 1] - B[i + 1]) + Math.abs(A[i + 2] - B[i + 2]); sum += d; if (d > 6) changed++; }
-        return { changedPixels: changed, meanAbsRgbDiff: Math.round((sum / (A.length / 4)) * 100) / 100 };
-      }, [`data:image/png;base64,${pngBefore.toString("base64")}`, `data:image/png;base64,${pngAfter.toString("base64")}`]);
-      await c2.close();
-      return diff;
-    })();
-    await page.click("text=نسخ القيم");
-    await page.waitForTimeout(80);
-    const copied = await page.evaluate(() => window.__copied);
-    try { const j = JSON.parse(copied); t.copyClipboard = { validJson: true, preset: j.preset, nowInt: j.values.nowInt, cssNowInt: j.css["--now-int"], keys: Object.keys(j.values).length, status: await page.textContent(".tuner-status") }; } catch (e) { t.copyClipboard = { validJson: false, error: String(e) }; }
-    await page.evaluate(() => sessionStorage.setItem("clipMode", "fail"));
-    await page.click("text=نسخ القيم");
-    await page.waitForTimeout(80);
-    const fb = await page.evaluate(() => { const ta = document.querySelector(".tuner-json"); return { visible: !ta.hidden, value: ta.value, status: document.querySelector(".tuner-status").textContent, focused: document.activeElement === ta }; });
-    try { JSON.parse(fb.value); t.copyFallback = { textareaVisible: fb.visible, validJson: true, focused: fb.focused, status: fb.status }; } catch (e) { t.copyFallback = { textareaVisible: fb.visible, validJson: false, error: String(e) }; }
-    await page.keyboard.press("Escape");
-    t.escapeCloses = await page.evaluate(() => ({ panelHidden: document.getElementById("tuner-panel").hidden, focusOnToggle: document.activeElement === document.querySelector(".tuner-toggle") }));
-    await page.reload({ waitUntil: "networkidle" });
-    await page.waitForFunction(() => window.__eclipse?.ready === true);
-    t.persistedAfterReload = { "--now-int": await cssVar("--now-int"), tunerValue: await page.evaluate(() => window.__tuner.values.nowInt) };
-    await page.goto(`${FILE_URL}?lang=ar&tuner=0`, { waitUntil: "networkidle" });
-    await page.waitForFunction(() => window.__eclipse?.ready === true);
-    t.tunerOff = { tunerElement: await page.evaluate(() => Boolean(document.querySelector(".tuner"))), "--now-int": await cssVar("--now-int") };
-    await page.goto(`${FILE_URL}?lang=ar`, { waitUntil: "networkidle" });
-    await page.waitForFunction(() => window.__eclipse?.ready === true);
-    await page.click(".tuner-toggle");
-    await page.click("text=إعادة المقترح");
-    t.reset = { "--now-int": await cssVar("--now-int"), preset: await page.evaluate(() => window.__tuner.snapshot().preset), inlineOverrides: await page.evaluate(() => document.documentElement.getAttribute("style") || "") };
-    // Presets: v2 applies its own values; Recommended returns to the stylesheet's defaults.
-    await page.click("button[data-preset='v2']");
-    t.presetV2 = { preset: await page.evaluate(() => window.__tuner.snapshot().preset), "--now-int": await cssVar("--now-int"), expected: String(await page.evaluate(() => window.__tuner.presets.v2.nowInt)) };
-    await page.click("button[data-preset='recommended']");
-    t.presetRecommended = { preset: await page.evaluate(() => window.__tuner.snapshot().preset), "--now-int": await cssVar("--now-int"), inlineOverrides: await page.evaluate(() => document.documentElement.getAttribute("style") || "") };
-    // Drag: the toggle and the panel move together by the pointer's distance; a drag never presses the toggle; Home
-    // on the grip returns the unit to its original spot.
-    {
-      await page.keyboard.press("Escape");
-      const r0 = await rectOf(page, ".tuner-toggle");
-      const open0 = await page.evaluate(() => document.querySelector(".tuner-toggle").getAttribute("aria-expanded"));
-      await page.mouse.move(r0.x + r0.width / 2, r0.y + r0.height / 2);
-      await page.mouse.down();
-      await page.mouse.move(r0.x + r0.width / 2 - 200, r0.y + r0.height / 2 + 120, { steps: 8 });
-      await page.mouse.up();
-      await page.waitForTimeout(60);
-      const r1 = await rectOf(page, ".tuner-toggle");
-      const open1 = await page.evaluate(() => document.querySelector(".tuner-toggle").getAttribute("aria-expanded"));
-      const stored = await page.evaluate(() => localStorage.getItem("fitway.eclipse.v3.tuner-pos"));
-      await page.click(".tuner-toggle");
-      await page.focus(".tuner-grip");
-      await page.keyboard.press("Home");
-      await page.waitForTimeout(60);
-      const r2 = await rectOf(page, ".tuner-toggle"); // the panel stays open for the Motion group below
-      t.drag = { moved: { dx: Math.round(r1.x - r0.x), dy: Math.round(r1.y - r0.y) }, expanded: [open0, open1], storedPosition: stored, homeReturns: Math.abs(r2.x - r0.x) < 1 && Math.abs(r2.y - r0.y) < 1 };
-      t.drag.pass = Math.abs(t.drag.moved.dx + 200) <= 1 && Math.abs(t.drag.moved.dy - 120) <= 1 && open0 === open1 && Boolean(stored) && t.drag.homeReturns;
-    }
-    // The Motion group (Round 6): "New reading", "Reset readings", the crowd-level buttons and the Motion switch; no
-    // "Replay load", pointer-follow, "switch on at load" or crowd-light controls remain. This context has reduced
-    // motion, so the switch is disabled with a note and every change is instant. The switch's stored choice lives in
-    // its own key, persists across a reload and is ignored with ?tuner=0.
-    {
-      const m = {};
-      m.defaults = await page.evaluate(() => window.__eclipse.motion.defaults);
-      m.group = await page.evaluate(() => ({ present: Boolean(document.querySelector(".tuner-motion")), switches: [...document.querySelectorAll(".tuner-motion input[type=checkbox]")].map((b) => ({ id: b.id, checked: b.checked, disabled: b.disabled })), buttons: [...document.querySelectorAll(".tuner-motion button")].map((b) => b.textContent.trim()), note: document.querySelector(".tuner-motion .t-note")?.textContent || "" }));
-      // Round 5's "Replay load" stays gone; Round 7 step 3's "Replay intro" is the first-open intro's own control.
-      m.noObsoleteControls = !m.group.buttons.some((b) => /Replay load|إعادة حركة/.test(b)) && m.group.switches.length === 1;
-      m.introControls = await page.evaluate(() => ({ speed: document.getElementById("t-mo-intro")?.value, out: document.querySelector("output[for=t-mo-intro]")?.textContent, replay: document.getElementById("t-mo-replay")?.textContent.trim(), replayDisabledWithReducedMotion: document.getElementById("t-mo-replay")?.disabled }));
-      const before = await page.evaluate(() => window.__eclipse.figures);
-      await page.click("text=قراءة جديدة");
-      await page.waitForTimeout(80);
-      const after = await page.evaluate(() => window.__eclipse.figures);
-      m.newReading = { lastBefore: before.last, lastAfter: after.last, entriesBefore: before.entries, entriesAfter: after.entries, statusTime: await page.evaluate(() => document.querySelector("#status bdi").textContent), latestAfter: await page.evaluate(() => window.__eclipse.motion.latest), tunerStatus: await page.textContent(".t-latest") };
-      await page.click("text=مستوى أدنى");
-      await page.waitForTimeout(60);
-      m.levelDown = { value: await page.textContent("#now-v"), level: await page.evaluate(() => document.querySelector("#now-foot .level").textContent), tunerStatus: await page.textContent(".t-latest"), say: await page.textContent("#live-say") };
-      await page.click("text=مستوى أعلى");
-      await page.waitForTimeout(60);
-      m.levelUp = { value: await page.textContent("#now-v"), level: await page.evaluate(() => document.querySelector("#now-foot .level").textContent) };
-      await page.evaluate(() => window.__eclipse.motion.set({ motion: false }));
-      m.stored = await page.evaluate(() => ({ motion: localStorage.getItem("fitway.eclipse.v3.motion"), lightsKeyStillSeparate: localStorage.getItem("fitway.eclipse.v3.lights") !== null }));
-      await page.reload({ waitUntil: "networkidle" });
-      await page.waitForFunction(() => window.__eclipse?.ready === true);
-      m.persistedAfterReload = await page.evaluate(() => ({ motion: window.__eclipse.motion.options.motion, dayRestartsAt: window.__eclipse.figures.last }));
-      await page.goto(`${FILE_URL}?lang=ar&tuner=0`, { waitUntil: "networkidle" });
-      await page.waitForFunction(() => window.__eclipse?.ready === true);
-      m.tunerOffIgnoresStored = await page.evaluate(() => window.__eclipse.motion.options.motion === window.__eclipse.motion.defaults.motion);
-      await page.evaluate(() => localStorage.removeItem("fitway.eclipse.v3.motion"));
-      m.pass = m.group.present && m.noObsoleteControls && m.group.switches[0]?.id === "t-mo-motion" && m.group.switches[0]?.disabled === true && Boolean(m.group.note) &&
-        m.introControls.speed === "1" && /Replay intro/.test(m.introControls.replay || "") && m.introControls.replayDisabledWithReducedMotion === true &&
-        m.newReading.lastAfter === m.newReading.lastBefore + 1 && m.newReading.statusTime === m.newReading.latestAfter &&
-        m.levelDown.value === "48" && /متوسط/.test(m.levelDown.level) && /48/.test(m.levelDown.say) && m.levelUp.value === "49" && /مزدحم/.test(m.levelUp.level) &&
-        JSON.parse(m.stored.motion || "{}").motion === false && m.stored.lightsKeyStillSeparate && m.persistedAfterReload.motion === false && m.tunerOffIgnoresStored;
-      t.motionGroup = m;
-    }
-    t.errors = errors;
-    // Expectations follow the stylesheet's default (the Recommended values change when the user's tuning is
-    // adopted): six ArrowDown steps of 0.05 lower --now-int by 0.3 from whatever the default is.
-    const def = t.before["--now-int"];
-    const exp = String(Math.round((Number(def) - 0.3) * 100) / 100);
-    t.expected = { default: def, afterSixSteps: exp };
-    t.pass = t.collapsedByDefault.expanded === "false" && t.collapsedByDefault.panelHidden && def !== "" && t.after["--now-int"] === exp && t.pixelsChanged.changedPixels > 100 &&
-      t.copyClipboard.validJson && t.copyClipboard.nowInt === Number(exp) && t.copyFallback.validJson && t.copyFallback.textareaVisible && t.escapeCloses.panelHidden &&
-      t.persistedAfterReload["--now-int"] === exp && !t.tunerOff.tunerElement && t.tunerOff["--now-int"] === def && t.reset["--now-int"] === def && t.reset.preset === "recommended" &&
-      t.presetV2.preset === "v2" && t.presetV2["--now-int"] === t.presetV2.expected && t.presetRecommended.preset === "recommended" && t.presetRecommended["--now-int"] === def && t.drag.pass && errors.length === 0;
-    await context.close();
-    // With motion (no reduced motion), still from file://: the tuner's crowd-level buttons roll the Inside now number
-    // (transform only) and change the bars; nothing on the page ever moves a light.
-    {
-      const { context: c3, page: p3, errors: e3 } = await newPage({ motion: true });
-      await p3.goto(`${FILE_URL}?lang=ar`, { waitUntil: "networkidle" });
-      await p3.waitForFunction(() => window.__eclipse?.ready === true);
-      await introSettled(p3); // a new tab: the first-open intro plays first (from file:// too)
-      const introFromFile = await p3.evaluate(() => ({ played: window.__eclipse.intro.played, yieldedBy: window.__eclipse.intro.yieldedBy }));
-      await p3.click(".tuner-toggle");
-      await p3.click("text=مستوى أدنى");
-      const anims = await listAnimations(p3);
-      const r = { introFromFile, motionOn: await p3.evaluate(() => window.__eclipse.motion.on), animations: anims.map((a) => `${a.target} ${a.properties.join("+")}`), lightAnimations: anims.filter((a) => /lamp|wash/.test(a.target)).length, glyphOpacity: glyphOpacity(anims).length };
-      await p3.waitForTimeout(500);
-      r.value = await p3.textContent("#now-v");
-      r.errors = e3;
-      r.pass = r.motionOn && anims.some((a) => /roll-new/.test(a.target)) && anims.some((a) => /lv-fill/.test(a.target)) && r.lightAnimations === 0 && r.glyphOpacity === 0 && r.value === "48" && e3.length === 0;
-      t.crowdFromFile = r;
-      await c3.close();
-    }
-    tunerCheck = t;
-    console.log(`tuner file:// check: ${t.pass ? "pass" : "FAIL"} (--now-int ${t.before["--now-int"]} -> ${t.after["--now-int"]}, changed px ${t.pixelsChanged.changedPixels}, copy ${t.copyClipboard.validJson}/${t.copyFallback.validJson}, presets ${t.presetV2.preset}/${t.presetRecommended.preset}, drag ${t.drag.pass}); motion group: ${t.motionGroup.pass ? "pass" : "FAIL"}; crowd change from file:// with motion: ${t.crowdFromFile.pass ? "pass" : "FAIL"}`);
-  }
-
   if (!MOTION_ONLY) {
     for (const frame of OVERFLOW_ONLY) {
-      const { context, page, errors } = await open(frame.q, { width: 1280, height: 800 });
+      const w = frame.w || 1280, h = frame.h || 800;
+      const { context, page, errors } = await open(frame.q, { width: w, height: h });
       const result = await inspect(page);
-      record(frame.name, { url: `index.html?${frame.q}`, viewport: "1280x800", screenshot: false }, result, errors);
+      record(frame.name, { url: `index.html?${frame.q}`, viewport: `${w}x${h}`, screenshot: false, ...(frame.scrolls ? { scrollsDown: true } : {}) }, result, errors);
       await context.close();
     }
   }
@@ -2296,16 +2056,14 @@ const motionSummary = {
   ...motionLog,
 };
 if (MOTION_ONLY) console.log(JSON.stringify({ ...motionSummary, identity: undefined, spec: undefined, chart: undefined }, null, 1));
-else await writeFile(join(OUT, "capture-log.json"), `${JSON.stringify({ capturedAt: new Date().toISOString(), port: PORT, duplicateFontRequests, motion: motionSummary, lightMeasurement: { method: "OKLab L relative to the card's own base on light-only 1x captures (content hidden); see capture.mjs measure()", targets, presets: lights, calibration }, tunerFileCheck: tunerCheck, frames: log }, null, 2)}\n`);
-const bad = log.filter((e) => e.fontsOk === false || e.overflowX > 0 || (e.overflowY > 0 && !e.fullPage) || (e.spill && e.spill.length) || (e.errors && e.errors.length) || e.easternDigits || e.enDashInArabic || (e.checks && (e.checks.overshoot || !e.checks.withinAverage || !e.checks.zeroKept || !e.checks.lineStopsAtGap || !e.checks.lineEndsAtLast || Math.abs(e.checks.crestMinusPeakMinutes) > 5)));
+else await writeFile(join(OUT, "capture-log.json"), `${JSON.stringify({ capturedAt: new Date().toISOString(), port: PORT, duplicateFontRequests, motion: motionSummary, lightMeasurement: { method: "OKLab L relative to the card's own base on light-only 1x captures (content hidden); see capture.mjs measure()", targets, lights, calibration }, frames: log }, null, 2)}\n`);
+const bad = log.filter((e) => e.fontsOk === false || e.overflowX > 0 || (e.overflowY > 0 && !e.fullPage && !e.scrollsDown) || (e.spill && e.spill.length) || (e.errors && e.errors.length) || e.easternDigits || e.enDashInArabic || (e.checks && (e.checks.overshoot || !e.checks.withinAverage || !e.checks.zeroKept || !e.checks.lineStopsAtGap || !e.checks.lineEndsAtLast || Math.abs(e.checks.crestMinusPeakMinutes) > 5)));
 console.log(bad.length ? `\n${bad.length} frame(s) need attention: ${bad.map((e) => e.frame).join(", ")}` : "\nAll frames: no overflow or spill, fonts loaded, no errors, Western digits only, line checks pass.");
-if (!tunerCheck?.pass) console.log("Tuner file:// check did not pass; see tunerFileCheck in the log.");
-if (!tunerCheck?.motionGroup?.pass) console.log("Tuner Motion group check did not pass; see tunerFileCheck.motionGroup.");
-if (!tunerCheck?.crowdFromFile?.pass) console.log("Tuner crowd change from file:// with motion did not pass; see tunerFileCheck.crowdFromFile.");
 // The static guard: with reduced motion (the still frames) and with ?motion=off, every frame except the ones that change
 // by design must equal its pre-motion frame. A difference fails the run (exit code 1).
 // The lane round: a frame the lane changes must still equal 8ae88f3 outside the plot element (and must have been compared).
-const changed = Object.entries(identity.staticFrames).filter(([k, v]) => (!v.identical && !v.expectedToChange) || (v.expectedToChange && ((v.outsidePlot && !v.outsidePlot.identical) || (OUTSIDE_PLOT[k] && !v.outsidePlot)))).map(([k]) => k);
+// Step 3: the frames in STEP3_FRAMES are no longer compared with 8ae88f3 outside the plot (see the header).
+const changed = Object.entries(identity.staticFrames).filter(([k, v]) => (!v.identical && !v.expectedToChange) || (v.expectedToChange && !STEP3_FRAMES[k] && ((v.outsidePlot && !v.outsidePlot.identical) || (OUTSIDE_PLOT[k] && !v.outsidePlot)))).map(([k]) => k);
 const changedOff = Object.entries(identity.motionOffFrames).filter(([, v]) => !v.identical).map(([k]) => k);
 // Round 7 step 3: the first-paint rule is now the intro's. A first open plays it and ends exactly at the still frame
 // (pixels and DOM, only the pulse running after it); a reload in the same tab has no intro and is the still frame.
@@ -2322,4 +2080,4 @@ const round6 = motionLog.chart ? [motionLog.tooltipWidth?.pass, motionLog.toolti
 if (round6.some((v) => !v)) console.log("A Round 6 or Round 7 check did not pass; see motion.chart, follow, marker, roll, delayed, rail and liveUpdateEndsAtCanonical in the log.");
 const introOk = Boolean(motionLog.intro?.pass);
 if (!introOk) console.log("An intro check did not pass; see motion.intro (slowFonts, whenItPlays, yields, held) and motion.identity.firstOpen / reload in the log.");
-if (duplicateFontRequests.length || changed.length || changedOff.length || firstPaintBad.length || round6.some((v) => !v) || !introOk || !tunerCheck?.pass || !tunerCheck?.motionGroup?.pass || !tunerCheck?.crowdFromFile?.pass || bad.length) process.exitCode = 1;
+if (duplicateFontRequests.length || changed.length || changedOff.length || firstPaintBad.length || round6.some((v) => !v) || !introOk || bad.length) process.exitCode = 1;

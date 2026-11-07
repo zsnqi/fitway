@@ -1,0 +1,980 @@
+/* Eclipse Activity log: FITWAY Owner Activity log concept (the third Eclipse page). Synthetic data only; not production.
+ * It answers "who changed what, when, and why": one stream of every record, newest first, a calendar day at a time
+ * (DECISIONS item 32: the 1:05 AM reset sits under the day it happened; Daily and Reports keep the business day), with
+ * the kind shortcuts (all, the nightly resets, access, settings), who did it, the dates (the date picker, picker.js),
+ * and the magnifier that opens the search in the reasons. Older records come 25 at a time; the stream ends with
+ * «لا توجد سجلات أقدم» / "No older records". The log never refreshes by itself: the time of the last load and a refresh
+ * button stand on the log's first line (DECISIONS item 31; the review's O1). Complete at first paint: no intro, no
+ * rolling digits (item 4). Nothing on it is lit: every record is a past fact (LGT-6 allows none).
+ * The data follows the owner-only audit read contract (packages/api/src/audit/list.ts) and ADR-008: no one changes the
+ * count by hand, so the count's only records are the automatic reset after each closing; access and settings records
+ * are written by an owner, named by the actor's displayName (two owner accounts); an optional reason of at most 240
+ * characters (the two deactivations' too, DECISIONS item 34); a prior count that may be "not recorded" (never 0);
+ * gym-local times, newest first, keyset pages of 25 with no total.
+ * Query: lang=ar|en; kind=count|access|settings; person=o1|o2|system (an owner principal, or the automatic system);
+ * from, to=YYYY-MM-DD; reason=<words>; find=1 (the search open); state=loading|error|empty; arrive=<ms>|never (with
+ * state=loading); older=fail|hold (the first "Show older" fails, or keeps working); refresh=fail|hold; case=wide (the
+ * widest counts the contract allows); record=<id> (the record Access's done sentence links to, which the log opens
+ * at; with case=long|short, Access's name-range fixtures); ops=delayed|closed|offline (the frame's status, for review);
+ * log=none|one|every|week (Settings' history switches, settings-history.js, so the settings records match); motion=off.
+ * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules
+ * and no fetch), so the page works from file:// too. */
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const root = document.documentElement;
+
+  const LANG = root.lang === "en" ? "en" : "ar";
+  const RTL = LANG === "ar";
+  const params = new URLSearchParams(location.search);
+  // A middle dot between two parts of a line is silent; a screen reader hears this comma instead (decision 25).
+  const SR_SEP = `<span class="sr-only">${RTL ? "، " : ", "}</span>`;
+  const PAGE = root.dataset.page || "live";
+  // The first payload: "ready", "loading", "error", or "retrying" (the error's one retry running).
+  let phase = PAGE === "loading" ? "loading" : PAGE === "error" ? "error" : "ready";
+
+  /* ------------------------------------------------------------------ copy */
+  const bdi = (s) => `<bdi>${s}</bdi>`;
+  const ltr = (s) => `<bdi dir="ltr">${s}</bdi>`;
+  const nw = (html) => `<span class="nw">${html}</span>`;
+  const COPY = {
+    ar: {
+      docTitle: "سجل النشاط · FITWAY",
+      title: "سجل النشاط",
+      // The controls.
+      kindName: "نوع السجل",
+      // The count's kind holds only the automatic reset after each closing (ADR-008; DECISIONS item 32).
+      kinds: { all: "الكل", count: "التصفير", access: "الحسابات", settings: "الإعدادات" },
+      kindsName: { count: "التصفير بعد الإغلاق" },
+      personName: "المنفِّذ",
+      everyone: "الجميع",
+      datesName: "التواريخ",
+      allDates: "كل التواريخ",
+      find: "البحث في الأسباب",
+      findSet: (t) => `البحث في الأسباب: ${t}`,
+      reasonLabel: "السبب يحتوي على",
+      reasonClear: "مسح نص السبب",
+      loaded: (t) => `آخر تحميل ${t}`,
+      refreshing: "جارٍ التحديث…",
+      refresh: "تحديث السجل",
+      logTitle: "السجلات",
+      // The records.
+      today: "اليوم",
+      yesterday: "أمس",
+      actors: { staff: "مكتب الاستقبال", system: "النظام التلقائي" },
+      adjBy: (d) => `تعديل العدد بمقدار ${d}`,
+      setTo: (n) => `ضبط العدد على ${n}`,
+      reset: "تصفير العدد",
+      pinCreated: "إنشاء رمز مكتب الاستقبال",
+      pinChanged: "تغيير رمز مكتب الاستقبال",
+      pinOff: "تعطيل رمز مكتب الاستقبال",
+      acctCreated: (n) => `إنشاء حساب ${n}`,
+      acctOff: (n) => `تعطيل حساب ${n}`,
+      acctOn: (n) => `إعادة تفعيل حساب ${n}`,
+      signin: (n) => `تعيين كلمة مرور لـ${n}`,
+      pwChanged: (n) => `تغيير كلمة مرور ${n}`,
+      settings: "تحديث الإعدادات",
+      resetAfter: "تصفير بعد الإغلاق",
+      notRecorded: "غير مسجّل",
+      floored: `توقّف عند ${bdi(0)}`,
+      figSay: (a, b) => `من ${a} إلى ${b}`,
+      figSayNoPrior: (b) => `السابق غير مسجّل، والجديد ${b}`,
+      noReason: "بلا سبب",
+      reasonSay: "السبب: ",
+      showOlder: "عرض الأقدم",
+      loadingOlder: "جارٍ التحميل…",
+      // EMP-2: what happened, and that the records shown are kept (the review's O4).
+      olderFailed: "تعذّر تحميل السجلات الأقدم، والسجلات المعروضة باقية كما هي.",
+      retry: "إعادة المحاولة",
+      retrying: "جارٍ المحاولة…",
+      endLine: "لا توجد سجلات أقدم",
+      noMatch: "لا سجلات تطابق التصفية",
+      clearFilters: "مسح التصفية",
+      noRecords: "لا سجلات بعد",
+      refreshFail: "تعذّر التحديث",
+      refreshFailed: (t) => `تعذّر التحديث. السجلات المعروضة من تحميل ${t}.`,
+      listSay: "حُدّثت القائمة",
+      olderSay: "حُمّلت سجلات أقدم",
+      // The page's states: the status words are the Daily page's (STW-1, STW-2).
+      errorFull: "تعذّر تحميل سجل النشاط",
+      errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
+      errorDates: (a, b) => `تعذّر تحميل السجلات من ${a} إلى ${b}`,
+      errorDay: (a) => `تعذّر تحميل سجلات ${a}`,
+      loadingSay: "جارٍ تحميل سجل النشاط",
+      // The dates: the date picker's dialog (picker.js has the picker's own words).
+      datesTitle: "اختر التواريخ",
+      datesApply: "عرض السجلات",
+      datesClear: "مسح التواريخ",
+      datesClearShort: "مسح",
+      cancel: "إلغاء",
+      close: "إغلاق",
+    },
+    en: {
+      docTitle: "Activity log · FITWAY",
+      title: "Activity log",
+      kindName: "Kind of record",
+      kinds: { all: "All", count: "Resets", access: "Access", settings: "Settings" },
+      kindsName: { count: "Resets after closing" },
+      personName: "Done by",
+      everyone: "Everyone",
+      datesName: "Dates",
+      allDates: "All dates",
+      find: "Search reasons",
+      findSet: (t) => `Search reasons: ${t}`,
+      reasonLabel: "Reason contains",
+      reasonClear: "Clear reason text",
+      loaded: (t) => `Last loaded ${t}`,
+      refreshing: "Refreshing…",
+      refresh: "Refresh the log",
+      logTitle: "Records",
+      today: "Today",
+      yesterday: "Yesterday",
+      actors: { staff: "Front desk", system: "Automatic system" },
+      adjBy: (d) => `Count adjusted by ${d}`,
+      setTo: (n) => `Count set to ${n}`,
+      reset: "Count reset to 0",
+      pinCreated: "Front desk code created",
+      pinChanged: "Front desk code changed",
+      pinOff: "Front desk code deactivated",
+      acctCreated: (n) => `Account created for ${n}`,
+      acctOff: (n) => `Account deactivated for ${n}`,
+      acctOn: (n) => `Account reactivated for ${n}`,
+      signin: (n) => `Password reset for ${n}`,
+      pwChanged: (n) => `Password changed by ${n}`,
+      settings: "Settings updated",
+      resetAfter: "Reset after closing",
+      notRecorded: "Not recorded",
+      floored: "Stopped at 0",
+      figSay: (a, b) => `from ${a} to ${b}`,
+      figSayNoPrior: (b) => `previous count not recorded, now ${b}`,
+      noReason: "No reason given",
+      reasonSay: "Reason: ",
+      showOlder: "Show older",
+      loadingOlder: "Loading…",
+      olderFailed: "Couldn't load older records. The records shown are kept.",
+      retry: "Try again",
+      retrying: "Trying again…",
+      endLine: "No older records",
+      noMatch: "No records match these filters",
+      clearFilters: "Clear filters",
+      noRecords: "No records yet",
+      refreshFail: "Couldn't refresh",
+      refreshFailed: (t) => `Couldn't refresh. The records shown are from ${t}.`,
+      listSay: "List updated",
+      olderSay: "Older records loaded",
+      errorFull: "Couldn't load the activity log",
+      errorHint: "Check the connection, then try again.",
+      errorDates: (a, b) => `Couldn't load records from ${a} to ${b}`,
+      errorDay: (a) => `Couldn't load records for ${a}`,
+      loadingSay: "Loading the activity log",
+      datesTitle: "Choose dates",
+      datesApply: "Show records",
+      datesClear: "Clear dates",
+      datesClearShort: "Clear",
+      cancel: "Cancel",
+      close: "Close",
+    },
+  };
+  const L = Object.assign(COPY[LANG], EclipseFrame.copy[LANG]);
+  const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
+
+  /* ------------------------------------------------------------ numbers, time and dates */
+  const fmtInt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  // A signed change: the plus, or the minus as U+2212 (NUM-4), isolated left to right so it never reads "2−".
+  const signed = (n) => ltr(`${n > 0 ? "+" : n < 0 ? "−" : ""}${fmtInt(Math.abs(n))}`);
+  // Gym time (Riyadh), a 12-hour clock: «7:31 م» / "7:31 PM" (DAT-1).
+  const fmtClock = (mins) => {
+    const h = Math.floor(mins / 60) % 24, m = mins % 60;
+    return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${RTL ? (h >= 12 ? "م" : "ص") : h >= 12 ? "PM" : "AM"}`;
+  };
+  const timeText = (mins) => nw(bdi(fmtClock(mins)));
+  const DASH = "–";
+  const range2 = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
+  const WD_AR = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+  const WD_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const MO_AR = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+  const MO_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const MO_EN_L = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  // Dates are gym-local calendar days, handled as whole-day numbers, never as the viewer's local time.
+  const toDn = (iso) => Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5;
+  const isoOf = (dn) => new Date(dn * 864e5).toISOString().slice(0, 10);
+  const partsOf = (dn) => { const d = new Date(dn * 864e5); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate(), wd: d.getUTCDay() }; };
+  const monthOf = (m) => (RTL ? MO_AR : MO_EN)[m];
+  const dateBare = (dn, year = false) => { const p = partsOf(dn); return `${bdi(p.d)} ${monthOf(p.m)}${year ? ` ${bdi(p.y)}` : ""}`; };
+  const dateText = (dn, year = false) => nw(dateBare(dn, year));
+  const plain = (html) => html.replace(/<[^>]+>/g, "");
+
+  /* ------------------------------------------------------------ the gym's log (synthetic, from the contract) */
+  const YEAR = 2026;
+  const GYM = window.EclipseGym, HIST = window.EclipseSettingsHistory.load(); // the one gym (gym.js) and Settings' history (settings-history.js)
+  const TODAY = GYM.NOW.dn;                   // Daily's moment: Wednesday 23 September 2026, 7:42 PM
+  const NOW_MIN = GYM.NOW.clock;
+  const UTC_OFFSET = 3 * 60;                  // Asia/Riyadh, UTC+3 all year
+  const PAGE_N = 25;                          // AUDIT_PAGE_LIMIT_DEFAULT
+  // The log keeps about 12 months (SPEC retention): the date picker reaches back a year from today.
+  const FIRST_PICK = toDn("2025-09-24");
+  const COMMAND = ["correction_delta", "correction_absolute", "reset"];
+  const ACCESS = ["staff_pin_provisioned", "staff_pin_rotated", "staff_pin_deactivated", "owner_provisioned", "owner_deactivated", "owner_reactivated", "credential_reset", "credential_changed"];
+  const KIND_ACTIONS = { count: COMMAND, access: ACCESS, settings: ["settings_updated"] };
+  /* Who: the two owner accounts (principals, named by the actor's displayName; DECISIONS item 32) and the automatic
+   * system. An access or settings record is always written by an owner (the contract), and no one changes the count by
+   * hand (ADR-008), so the shared front desk writes no record: it is the target of the PIN records only. The concept
+   * shows each stored name unchanged in either language. */
+  const BASE_NAMES = { o1: "فهد", o2: "نورة", o3: "Omar Alharbi" };
+  // What the owner saved in this browser (demo-store.js): the owners added and every record. The name fixtures keep to themselves.
+  const DEMO = EclipseDemo.page(["case"]);
+  Object.assign(BASE_NAMES, DEMO.names());
+  const OWNERS = { ...BASE_NAMES };
+  // Record arrivals carry Access's name-range fixtures. Arrivals without record= keep the original log sample.
+  if (params.has("record") && params.get("case") === "long") {
+    OWNERS.o2 = "نورة بنت عبد الله بن عبد الرحمن العبد اللطيف، مديرة العمليات والمرافق في فرعي شمال الرياض والدرعية وفرع الخرج للنساء فقط";
+    OWNERS.o3 = "Abdulrahman bin Abdulaziz Alqahtani, Operations and Facilities Manager, the North Riyadh, Diriyah, and Al Kharj branches";
+  }
+  if (params.has("record") && params.get("case") === "short") { OWNERS.o2 = "لين"; OWNERS.o3 = "Bo"; }
+  const PERSONS = ["o1", "o2", "system"];
+  const R = (ar, en) => ({ ar, en });
+  // The Arabic reason fills the contract's 240-character cap (AUDIT_REASON_MAX_LENGTH); English says the same thing,
+  // the two actions whose reason is optional (DECISIONS item 34).
+  const LONG = R(
+    "انتهى عقد موظف الفترة المسائية اليوم، وكان يعرف رمز مكتب الاستقبال الحالي، فعطّلته على الفور حتى لا يُستخدم بعد أن يغادر. سأنشئ رمزًا جديدًا صباح الغد وأسلّمه بنفسي لموظفي الاستقبال، وحتى ذلك الحين لا يدخل أحد إلى شاشة المكتب إلا عبر حسابي.",
+    "The evening employee's contract ended today and he knew the current front desk code, so I deactivated it right away so it can't be used after he leaves. I'll create a new code tomorrow morning and give it to the desk staff myself.",
+  );
+  /* The owners' records. A reason is stored as it was typed; the concept writes most of them in the page's language so
+   * each page reads naturally, and keeps two as typed in the other language (22 March, Noura's Arabic; 14 September, her
+   * English), which is what a real log looks like. No reason says the gym counts people: it never does. Each row: the
+   * gym-local date and time, the owner, the action, its values, the reason. */
+  const HUMAN = [
+    ["2025-12-28", "16:12:31", "o1", "staff_pin_provisioned", {}, null],
+    ["2025-12-30", "21:05:47", "o1", "owner_provisioned", { target: "o2" }, R("حساب لنورة تتابع منه التقارير وقت سفري", "An account for Noura to follow the reports while I'm away")],
+    ["2026-06-01", "09:48:26", "o1", "staff_pin_rotated", { cv: [1, 2] }, R("دوري", "Routine")],
+    ["2026-08-17", "10:14:40", "o1", "staff_pin_rotated", { cv: [2, 3] }, R("موظف جديد في الفترة الصباحية", "New employee on the morning shift")],
+    ["2026-08-27", "14:03:33", "o1", "owner_deactivated", { target: "o2" }, R("عدتُ من السفر", "I'm back from my trip")],
+    ["2026-09-07", "09:28:03", "o1", "owner_reactivated", { target: "o2" }, null],
+    ["2026-09-07", "09:31:44", "o1", "credential_reset", { target: "o2", cv: [1, 2] }, R("طلبت نورة كلمة مرور جديدة", "Noura asked for a new password")],
+    ["2026-09-14", "13:20:08", "o2", "staff_pin_rotated", { cv: [3, 4] }, { raw: "Shift change", lang: "en" }],
+    ["2026-09-21", "18:02:46", "o1", "staff_pin_deactivated", {}, LONG],
+    ["2026-09-22", "09:15:30", "o1", "staff_pin_provisioned", {}, R("رمز جديد بعد إيقاف القديم", "A new code after deactivating the old one")],
+    // Older than the card's eighth record. Reserve ids so adding history never renumbers existing links or
+    // uses Access's session-local sequence (57 onward, skipping these two reservations).
+    ["2026-01-10", "10:12:00", "o1", "owner_provisioned", { target: "o3", id: 1001 }, null],
+    ["2026-02-01", "12:30:00", "o1", "owner_deactivated", { target: "o3", id: 1002 }, null],
+    // The settings records, Settings' history itself (settings-history.js), each with the lines Settings names its change
+    // by. The record of 19 September, 12:22 AM, is a calendar day's: under Saturday (the business day would have put it under Friday).
+    ...HIST.records().map((v) => [v.date, v.time, v.by, "settings_updated", { lines: v.lines }, v.reason]),
+  ];
+  function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  /* The scheduled reset (SPEC, ADR-008): the automatic system zeroes the count five minutes after each closing, from
+   * the setting of 16 August on: at 1:05 AM, so on the calendar it falls on the next day. Its prior is the count the
+   * edge held at closing (gym.js's day); on 5 September it held none, so the prior is not recorded. Its stored reason is the contract's
+   * machine string, which the page says in plain words and never searches.
+   * ?case=wide: the widest priors, today's the read contract's (Number.MAX_SAFE_INTEGER) and yesterday's the database
+   * column's (2,147,483,647). */
+  const WIDE = params.get("case") === "wide";
+  function buildLog() {
+    if (PAGE === "empty") return [];
+    const rows = [];
+    const at = (date, time) => { const [h, m, s] = time.split(":").map(Number); return { dn: toDn(date), mins: h * 60 + m, sec: s }; };
+    for (const [date, time, actor, action, v, reason] of HUMAN) {
+      const t = at(date, time);
+      const cls = COMMAND.includes(action) ? "command" : ACCESS.includes(action) ? "access" : "settings";
+      const r = { ...t, actor: "owner", principal: actor, actorKind: "owner", action, cls, reason, prior: null, eff: null, delta: null, lines: v.lines };
+      if (v.id) r.id = v.id;
+      if (v.target) r.target = v.target;
+      if (action.startsWith("staff_pin")) r.target = "desk";
+      rows.push(r);
+    }
+    // Today at the demo's clock, in the order they were saved (the second keeps it, newest first).
+    DEMO.log().forEach((s, i) => rows.push({ dn: TODAY, mins: NOW_MIN, sec: i, actor: "owner", principal: s.by, actorKind: "owner", action: s.action, cls: s.kind, target: s.target, id: s.id, reason: s.reason ? { raw: s.reason, lang: s.lang } : null, prior: null, eff: null, delta: null, lines: s.kind === "settings" ? HIST.linesOf(s.id) : null }));
+    const rnd = mulberry32(23);
+    for (let dn = toDn("2026-08-17"); dn <= TODAY; dn++) {
+      let prior = isoOf(dn) === "2026-09-05" ? null : GYM.closingCount(dn - 1);
+      if (WIDE && dn === TODAY) prior = 9007199254740991;
+      if (WIDE && dn === TODAY - 1) prior = 2147483647;
+      const business = dn - 1;
+      rows.push({ dn, mins: 65, sec: 2 + Math.floor(rnd() * 7), actor: "system", principal: "system", actorKind: "system", action: "reset", cls: "command", prior, eff: 0, delta: null, business, machine: `scheduled reset for business day ${isoOf(business)}` });
+    }
+    // The server instant (createdAtUtc) and the keyset order: newest first, a tie broken by the id.
+    for (const r of rows) r.ms = (r.dn * 1440 + r.mins - UTC_OFFSET) * 60000 + r.sec * 1000;
+    rows.sort((a, b) => a.ms - b.ms);
+    let nextId = 1;
+    rows.forEach((r) => { if (!r.id) r.id = nextId++; r.utc = new Date(r.ms).toISOString(); });
+    // The search looks in what the page shows (the review's O5): a person's reason as it reads; never the reset's
+    // machine string, which the page never shows.
+    for (const r of rows) r.shown = r.machine ? null : (r.reason ? (r.reason.raw ?? r.reason[LANG]) : null);
+    return rows.reverse();
+  }
+  const LOG = buildLog();
+  let arrivalId = params.get("record");
+  let arrivalPending = arrivalId !== null;
+  const arrivalRecord = LOG.find((r) => String(r.id) === arrivalId);
+  const arrivalMissing = RTL ? "هذا السجل غير متاح." : "This record isn't available.";
+  const arrivalName = RTL ? "السجل الذي وصلت إليه" : "The record you arrived at";
+
+  /* The read contract's list: the filters (an owner principal or the system's actor kind, actions, the occurred range,
+   * the reason), newest first, a keyset page of 25, and the next cursor only while more rows exist. There is no total.
+   * The occurred range is whole calendar days, gym-local (DECISIONS item 32). */
+  function query(f, cursor = null, limit = PAGE_N) {
+    const acts = f.kind === "all" ? null : KIND_ACTIONS[f.kind];
+    const needle = f.reason ? f.reason.toLowerCase() : null;
+    const rows = LOG.filter((r) => (!acts || acts.includes(r.action)) && (f.person === "all" || r.principal === f.person)
+      && (f.a == null || r.dn >= f.a) && (f.b == null || r.dn <= f.b)
+      && (!needle || (r.shown != null && r.shown.toLowerCase().includes(needle))));
+    let s = 0;
+    if (cursor) { s = rows.findIndex((r) => r.ms < cursor.ms || (r.ms === cursor.ms && r.id < cursor.id)); if (s < 0) s = rows.length; }
+    const entries = rows.slice(s, s + limit), last = entries[entries.length - 1];
+    return { entries, next: rows.length > s + limit && last ? { ms: last.ms, id: last.id } : null };
+  }
+
+  /* ---------------------------------------------------------------- the filters, from the URL
+   * The filters live in the URL, so a reload, the language link and a link from Access or Settings carry them: Access
+   * links to activity.html?kind=access, an owner account's card to ?person=<its principal> ("What Noura changed"),
+   * Settings to ?kind=settings. A range that is reversed, outside the days the log can ask for, or half given is
+   * dropped: the log shows every date. */
+  const parseIso = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s || "") && isoOf(toDn(s)) === s ? toDn(s) : null);
+  const F = (() => {
+    const k = params.get("kind"), p = params.get("person");
+    let a = parseIso(params.get("from")), b = parseIso(params.get("to"));
+    if (a == null || b == null || a > b || b > TODAY || a < FIRST_PICK) { a = null; b = null; }
+    const reason = (params.get("reason") || "").trim().slice(0, 240);
+    return { kind: KIND_ACTIONS[k] ? k : "all", person: PERSONS.includes(p) ? p : "all", a, b, reason };
+  })();
+  if (arrivalId !== null) Object.assign(F, { kind: arrivalRecord?.cls === "command" ? "count" : arrivalRecord?.cls ?? "access", person: "all", a: null, b: null, reason: "" });
+  const filtered = () => F.kind !== "all" || F.person !== "all" || F.a != null || Boolean(F.reason);
+  function urlFor(extra = {}) {
+    const p = new URLSearchParams(location.search);
+    ["kind", "person", "from", "to", "reason"].forEach((k) => p.delete(k));
+    if (F.kind !== "all") p.set("kind", F.kind);
+    if (F.person !== "all") p.set("person", F.person);
+    if (F.a != null) { p.set("from", isoOf(F.a)); p.set("to", isoOf(F.b)); }
+    if (F.reason) p.set("reason", F.reason);
+    Object.entries(extra).forEach(([k, v]) => p.set(k, v));
+    return p;
+  }
+
+  /* ---------------------------------------------------------------- motion */
+  const URL_OFF = params.get("motion") === "off";
+  const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const motionOn = () => !URL_OFF && !mqReduce.matches;
+  root.dataset.motion = motionOn() ? "on" : "off";
+  // The interaction motion (dialogs, popovers, labels) is motion.js's, every Owner page's (DECISIONS item 36).
+  const M = window.EclipseMotion;
+
+  /* ---------------------------------------------------------------- shell */
+  const DAY_OPEN = GYM.WEEK.wed.open * 60, DAY_CLOSE = (GYM.WEEK.wed.close - 24) * 60;
+  const SVG_ERR = EclipseFrame.icons.error;
+  const OPS_STATES = {
+    live: (m = NOW_MIN) => ({ cls: "", mark: '<span class="dot" aria-hidden="true"></span>', word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
+    delayed: (m = NOW_MIN - 13) => ({ cls: "is-delayed", mark: EclipseFrame.icons.clock, word: L.delayed, line: `${L.lastReading} ${timeText(m)}` }),
+    closed: () => ({ cls: "is-closed", mark: '<span class="dot ring" aria-hidden="true"></span>', word: L.closed, line: L.opens(timeText(DAY_OPEN)) }),
+    offline: () => ({ cls: "is-off", mark: EclipseFrame.icons.offline, word: L.offline, line: L.noCount }),
+    error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
+  };
+  const OPS = ["delayed", "closed", "offline"].includes(params.get("ops")) ? params.get("ops") : "live";
+  let openDlg = null;
+  const frame = EclipseFrame.init({
+    L, RTL, motionOn, Motion: M, URL_OFF,
+    links: (() => { const p = new URLSearchParams({ lang: LANG }); if (URL_OFF) p.set("motion", "off"); return {
+      daily: `index.html?${p}`, reports: `reports.html?${p}`, access: `access.html?${p}`, settings: `settings.html?${p}`,
+    }; })(),
+    isDialogOpen: () => !!openDlg,
+    status: {
+      phase: () => phase, key: (p) => p === "error" || p === "retrying" ? "error" : OPS,
+      states: OPS_STATES, reserveMinute: 644,
+      hours: () => `${L.hours} ${nw(`${bdi(fmtClock(DAY_OPEN))} ${DASH} ${bdi(fmtClock(DAY_CLOSE))}`)}`,
+    },
+  });
+  const { mqPhone } = frame;
+  function syncUrl() {
+    const p = urlFor();
+    try { history.replaceState(null, "", `${location.pathname}${p.toString() ? `?${p}` : ""}`); } catch (e) { /* file:// may refuse; links still carry the filters */ }
+    const q = urlFor({ lang: RTL ? "en" : "ar" });
+    frame.refreshLanguage(q);
+  }
+
+  /* ---------------------------------------------------------------- icons */
+  const ICON = {
+    // The kinds wear their section's rail icon: the count is Today's, access is Access's, settings is Settings'.
+    command: `<svg class="rec-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 13.5a7.5 7.5 0 0 1 15 0"/><path d="M12 13.5 15.6 9.9"/><path d="M3.5 18h17"/><circle class="fill" cx="12" cy="13.5" r="1.3"/></svg>`,
+    access: `<svg class="rec-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg>`,
+    settings: `<svg class="rec-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.02 5.6 10.23 3.28A8.9 8.9 0 0 1 13.77 3.28L13.98 5.6A6.7 6.7 0 0 1 15.13 6.07L16.92 4.58A8.9 8.9 0 0 1 19.42 7.08L17.93 8.87A6.7 6.7 0 0 1 18.4 10.02L20.72 10.23A8.9 8.9 0 0 1 20.72 13.77L18.4 13.98A6.7 6.7 0 0 1 17.93 15.13L19.42 16.92A8.9 8.9 0 0 1 16.92 19.42L15.13 17.93A6.7 6.7 0 0 1 13.98 18.4L13.77 20.72A8.9 8.9 0 0 1 10.23 20.72L10.02 18.4A6.7 6.7 0 0 1 8.87 17.93L7.08 19.42A8.9 8.9 0 0 1 4.58 16.92L6.07 15.13A6.7 6.7 0 0 1 5.6 13.98L3.28 13.77A8.9 8.9 0 0 1 3.28 10.23L5.6 10.02A6.7 6.7 0 0 1 6.07 8.87L4.58 7.08A8.9 8.9 0 0 1 7.08 4.58L8.87 6.07A6.7 6.7 0 0 1 10.02 5.6Z"/><circle cx="12" cy="12" r="2.7"/></svg>`,
+    // From → to points along the reading line, so it mirrors in Arabic (ICO-5).
+    arrow: `<svg class="fig-arw mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13.5M13.5 7l5 5-5 5"/></svg>`,
+    info: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/></svg>`,
+    alert: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`,
+  };
+
+  /* ---------------------------------------------------------------- a record
+   * Story 26's five facts: when, who, what, from → to, why. From 960 px of log they stand in five columns; narrower,
+   * who and what share a line and the reason goes under them; on a phone the record stacks (activity.css). */
+  const nameOf = (key) => (key === "desk" ? L.actors.staff : OWNERS[key]);
+  // Who wrote it: an owner by name (the actor's displayName), or the automatic system by the contract's label.
+  const whoOf = (r) => (r.actor === "owner" ? bdi(OWNERS[r.principal]) : L.actors[r.actor]);
+  function actText(r) {
+    switch (r.action) {
+      case "correction_delta": return L.adjBy(signed(r.delta));
+      case "correction_absolute": return L.setTo(ltr(fmtInt(r.eff)));
+      case "reset": return L.reset;
+      case "staff_pin_provisioned": return L.pinCreated;
+      case "staff_pin_rotated": return L.pinChanged;
+      case "staff_pin_deactivated": return L.pinOff;
+      case "owner_provisioned": return L.acctCreated(name(r));
+      case "owner_deactivated": return L.acctOff(name(r));
+      case "owner_reactivated": return L.acctOn(name(r));
+      case "credential_reset": return L.signin(name(r));
+      case "credential_changed": return L.pwChanged(name(r));
+      default: return L.settings;
+    }
+  }
+  // The account's name (an owner principal's display name, as stored) joins the phrase, isolated, so a name in either
+  // script keeps its own direction; it wraps between its words and never leaves a separator at a line's edge.
+  const name = (r) => `<span class="rec-target">${bdi(nameOf(r.target))}</span>`;
+  function figHTML(r) {
+    // A settings record: Settings' own lines for its change, what then from → to, one a line (settings-history.js); a
+    // line too wide for the column puts its figures under its name, and figures too wide break before the arrow.
+    if (r.cls !== "command") return r.lines?.length ? `<div class="rec-fig">${r.lines.map((c) => `<span class="fig is-chg" aria-hidden="true"><span class="fig-what">${c.what}</span><span class="fig-ft"><span class="fig-n">${c.from}</span><span class="fig-to">${ICON.arrow}<span class="fig-n">${c.to}</span></span></span></span><span class="sr-only">${EclipseDemo.esc(c.said)}</span>`).join("")}</div>` : "";
+    const prior = r.prior == null ? `<span class="fig-nr">${L.notRecorded}</span>` : `<bdi class="fig-n">${fmtInt(r.prior)}</bdi>`;
+    const floored = r.action === "correction_delta" && r.prior + r.delta < 0;
+    const said = r.prior == null ? L.figSayNoPrior(fmtInt(r.eff)) : L.figSay(fmtInt(r.prior), fmtInt(r.eff));
+    return `<div class="rec-fig"><span class="fig" aria-hidden="true">${prior}${ICON.arrow}<bdi class="fig-n">${fmtInt(r.eff)}</bdi></span><span class="sr-only">${said}</span>` +
+      (floored ? `<span class="fig-note">${L.floored}</span>` : "") + `</div>`;
+  }
+  function whyHTML(r) {
+    if (!r.reason) return `<p class="rec-why is-none">${L.noReason}</p>`;
+    const text = r.reason.raw ?? r.reason[LANG], lang = r.reason.raw ? r.reason.lang : LANG;
+    return `<p class="rec-why"><span class="sr-only">${L.reasonSay}</span><q><bdi${lang !== LANG ? ` lang="${lang}"` : ""}>${EclipseDemo.esc(text)}</bdi></q></p>`;
+  }
+  function recHTML(r) {
+    const t = `<time class="rec-t" datetime="${isoOf(r.dn)}T${String(Math.floor(r.mins / 60)).padStart(2, "0")}:${String(r.mins % 60).padStart(2, "0")}+03:00">${bdi(fmtClock(r.mins))}</time>`;
+    const who = `<span class="rec-who">${whoOf(r)}</span>`;
+    const what = `<span class="rec-what">${ICON[r.cls]}<span class="rec-act">${actText(r)}</span></span>`;
+    // The night's reset: its stored reason is the contract's machine string ("scheduled reset for business day …"),
+    // said in plain words as part of what happened, so it has no reason of a person's beside it.
+    // Counts of seven digits or more (the contract allows up to 9,007,199,254,740,991) and a settings record's lines take
+    // their own line on a phone.
+    const long = (r.cls === "command" && Math.max(r.prior ?? 0, r.eff ?? 0) >= 1e6) || Boolean(r.lines?.length);
+    const arrived = String(r.id) === arrivalId;
+    if (r.actor === "system") {
+      const act = `<span class="rec-what">${ICON.command}<span class="rec-act">${L.resetAfter}</span></span>`;
+      return `<li class="rec is-auto${long ? " is-long" : ""}${arrived ? " is-arrival" : ""}" data-id="${r.id}"${arrived ? ' tabindex="-1" aria-current="true"' : ""}>${arrived ? `<span class="sr-only">${arrivalName}: </span>` : ""}${t}<div class="rec-main">${who}${act}</div>${figHTML(r)}</li>`;
+    }
+    return `<li class="rec${long ? " is-long" : ""}${arrived ? " is-arrival" : ""}" data-id="${r.id}"${arrived ? ' tabindex="-1" aria-current="true"' : ""}>${arrived ? `<span class="sr-only">${arrivalName}: </span>` : ""}${t}<div class="rec-main">${who}${what}</div>${figHTML(r)}${whyHTML(r)}</li>`;
+  }
+  function dayHeading(dn) {
+    const p = partsOf(dn);
+    const date = RTL ? `${WD_AR[p.wd]} ${bdi(p.d)} ${MO_AR[p.m]}${p.y !== YEAR ? ` ${bdi(p.y)}` : ""}` : `${WD_EN[p.wd]}, ${p.d} ${MO_EN_L[p.m]}${p.y !== YEAR ? ` ${p.y}` : ""}`;
+    const rel = dn === TODAY ? L.today : dn === TODAY - 1 ? L.yesterday : "";
+    return (rel ? `<span class="day-rel">${rel}</span><span class="sep" aria-hidden="true">·</span>${SR_SEP}` : "") + `<span class="day-date">${nw(date)}</span>`;
+  }
+  // A calendar day's records, newest first (gym-local; DECISIONS item 32), so the night's reset at 1:05 AM is the day's
+  // last record, under the day it happened; a day split across two pages stays one day.
+  function daysHTML(entries) {
+    let html = "", cur = null;
+    for (const r of entries) {
+      if (r.dn !== cur) {
+        if (cur !== null) html += "</ol></section>";
+        cur = r.dn;
+        html += `<section class="day" aria-labelledby="day-${r.dn}"><h3 class="day-h" id="day-${r.dn}">${dayHeading(r.dn)}</h3><ol class="recs">`;
+      }
+      html += recHTML(r);
+    }
+    return cur === null ? "" : `${html}</ol></section>`;
+  }
+
+  /* ---------------------------------------------------------------- the page's state */
+  const view = { entries: [], next: null, loadedAt: NOW_MIN, older: "idle", refresh: "idle" };
+  const t0 = performance.now();
+  // The concept's clock: Daily's 7:42 PM when the page opened, moving on with real time.
+  const clockNow = () => NOW_MIN + Math.floor((performance.now() - t0) / 60000);
+  function loadFirst() {
+    const page = query(F);
+    view.entries = page.entries;
+    view.next = page.next;
+    while (arrivalPending && arrivalRecord && !view.entries.some((r) => r.id === arrivalRecord.id) && view.next) {
+      const more = query(F, view.next);
+      view.entries.push(...more.entries);
+      view.next = more.next;
+    }
+    view.older = "idle";
+    view.loadedAt = clockNow();
+  }
+
+  /* ---------------------------------------------------------------- the controls */
+  const kindButtons = $$("#kind-seg .seg-b");
+  kindButtons.forEach((b) => {
+    const k = b.dataset.kind;
+    b.textContent = L.kinds[k];
+    if (L.kindsName[k]) b.setAttribute("aria-label", L.kindsName[k]);
+  });
+  const personSel = $("#person");
+  personSel.innerHTML = [["all", L.everyone], ["o1", OWNERS.o1], ["o2", OWNERS.o2], ["system", L.actors.system]]
+    .map(([k, t]) => `<option value="${k}">${k === "o1" || k === "o2" ? `\u2068${t}\u2069` : t}</option>`).join("");
+  const datesBtn = $("#dates-btn"), findBtn = $("#find-btn"), findPanel = $("#find");
+  const reasonInput = $("#reason"), reasonClear = $("#reason-clear");
+  reasonInput.setAttribute("dir", "auto");
+  reasonClear.setAttribute("aria-label", L.reasonClear);
+  const refreshBtn = $("#refresh");
+  refreshBtn.setAttribute("aria-label", L.refresh);
+  // The search in the reasons opens from the magnifier (DECISIONS item 32); open at load when the URL carries words.
+  let findOpen = params.get("find") === "1" || Boolean(F.reason);
+  function rangeLabel(a, b) {
+    const A = partsOf(a), B = partsOf(b), yr = A.y !== YEAR || B.y !== YEAR;
+    if (a === b) return dateText(a, yr);
+    if (A.y !== B.y) return nw(`${dateBare(a, true)} ${DASH} ${dateBare(b, true)}`);
+    if (A.m === B.m) return nw(`${range2(A.d, B.d)} ${monthOf(A.m)}${yr ? ` ${bdi(A.y)}` : ""}`);
+    return nw(`${dateBare(a)} ${DASH} ${dateBare(b)}${yr ? ` ${bdi(B.y)}` : ""}`);
+  }
+  // Who is as wide as its own choice (with the face's padding: 81 px, or 56 under 360 px where its icon steps aside),
+  // not as its widest name, as a native select is; on a phone that is its least width, so beside a long range the
+  // dates take the next line instead. The select holds 16 px text unseen, so an iPhone does not zoom when it is tapped;
+  // the face shows its choice in label type (activity.css "Who"), written here whenever the choice or its name changes.
+  const personWrap = $("#person-wrap");
+  const personFace = document.createElement("span");
+  personFace.className = "sel-face";
+  personFace.setAttribute("aria-hidden", "true");
+  personSel.after(personFace);
+  function fitSelect() {
+    const text = personSel.options[personSel.selectedIndex].text;
+    if (personFace.textContent !== text) personFace.textContent = text;
+    const m = document.createElement("span");
+    m.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-size:13.5px;line-height:20px";
+    m.textContent = text;
+    personWrap.append(m);
+    const cs = getComputedStyle(personFace), pad = parseFloat(cs.paddingInlineStart) + parseFloat(cs.paddingInlineEnd);
+    personWrap.style.setProperty("--sel-w", `${Math.ceil(m.getBoundingClientRect().width + pad) + 1}px`);
+    m.remove();
+  }
+  matchMedia("(max-width: 359px)").addEventListener("change", fitSelect);
+  function renderControls() {
+    kindButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.kind === F.kind)));
+    personSel.value = F.person;
+    personWrap.classList.toggle("is-set", F.person !== "all");
+    fitSelect();
+    const dl = F.a == null ? L.allDates : rangeLabel(F.a, F.b);
+    $("#dates-label").innerHTML = dl;
+    datesBtn.setAttribute("aria-label", `${L.datesName}: ${plain(dl)}`);
+    datesBtn.classList.toggle("is-set", F.a != null);
+    // The magnifier: open, its panel shows under the row; words in force take the pressed form of a filter in force,
+    // open or not, and its name says them.
+    findPanel.hidden = !findOpen;
+    findBtn.setAttribute("aria-expanded", String(findOpen));
+    findBtn.classList.toggle("is-set", Boolean(F.reason));
+    findBtn.setAttribute("aria-label", F.reason ? L.findSet(F.reason) : L.find);
+    if (document.activeElement !== reasonInput) reasonInput.value = F.reason;
+    reasonClear.hidden = !reasonInput.value;
+  }
+  // The time of the last load and its refresh (DECISIONS item 31), on the log's first line: the log never refreshes by
+  // itself. Its three forms (the time, "refreshing", and a refresh that failed) share one cell, so nothing beside it moves
+  // when the form changes; only the current one is seen and read.
+  function renderLoaded() {
+    const txt = $("#loaded-text");
+    const working = view.refresh === "working", failed = view.refresh === "failed";
+    if (phase === "loading") txt.innerHTML = `<i class="ph-bar ph-lab" style="--w:${RTL ? 78 : 108}px" aria-hidden="true"></i>`;
+    else if (phase !== "ready") txt.innerHTML = "";
+    else {
+      const form = (html, on) => `<span class="ld"${on ? "" : ' aria-hidden="true"'}>${html}</span>`;
+      // A refresh that failed says so where the time stands, with the time of the records still shown beside it, at
+      // every width (the review's O4): DESIGN_GUIDE §6, the last value stays.
+      txt.innerHTML = form(L.loaded(timeText(view.loadedAt)), !working && !failed) + form(L.refreshing, working) +
+        form(`<span class="ac-fail">${ICON.alert}${L.refreshFail}</span><span class="ac-fail-time"><span class="sep" aria-hidden="true">·</span>${nw(L.loaded(timeText(view.loadedAt)))}</span>`, failed);
+    }
+    // The first day's heading leaves the load line its room (activity.css, from 520 px of log).
+    logEl.style.setProperty("--ld-w", `${Math.ceil($("#loaded").getBoundingClientRect().width)}px`);
+    const off = phase !== "ready" || working;
+    refreshBtn.setAttribute("aria-disabled", String(off));
+    refreshBtn.toggleAttribute("aria-busy", working);
+    refreshBtn.classList.toggle("is-off", phase !== "ready");
+  }
+
+  /* ---------------------------------------------------------------- the log */
+  const logEl = $("#log"), bodyEl = $("#log-body");
+  const stackLabels = (a, b, showB) => `<span class="rb-stack"><span class="rb-l"${showB ? ' aria-hidden="true"' : ""}>${a}</span><span class="rb-l"${showB ? "" : ' aria-hidden="true"'}>${b}</span></span>`;
+  function endHTML() {
+    if (!view.entries.length) return "";
+    if (!view.next) return `<p class="ac-end"><span>${L.endLine}</span></p>`;
+    if (view.older === "failed") {
+      return `<div class="ac-tail"><div class="alert" role="alert">${ICON.alert}<span>${L.olderFailed}</span></div>` +
+        `<button class="rbtn rbtn-primary ac-older" id="older-retry" type="button">${stackLabels(L.retry, L.retrying, false)}</button></div>`;
+    }
+    const working = view.older === "working";
+    return `<div class="ac-tail"><button class="rbtn ac-older" id="older" type="button"${working ? ' aria-disabled="true" aria-busy="true"' : ""}>${stackLabels(L.showOlder, L.loadingOlder, working)}</button></div>`;
+  }
+  function emptyHTML() {
+    return filtered()
+      ? `<div class="ac-empty">${ICON.info}<p tabindex="-1">${L.noMatch}</p><button class="rbtn" id="clear-filters" type="button">${L.clearFilters}</button></div>`
+      : `<div class="ac-empty">${ICON.info}<p tabindex="-1">${L.noRecords}</p></div>`;
+  }
+  // The skeleton (STA-10, PH-1…3): a day's heading and six records, each awaited value a flat bar in its own slot.
+  // The heading's bar sits in the heading's 20 px line (activity.css, .day.is-ph .day-h), so the heading keeps its arrived height.
+  const ph = (w) => `<i class="ph-bar ph-lab" style="--w:${w}px" aria-hidden="true"></i>`;
+  function skeletonHTML() {
+    const W = RTL ? [[34, 64, 116, 54, 190], [34, 40, 132, 0, 150], [34, 64, 96, 54, 220], [34, 40, 140, 0, 120], [34, 82, 108, 54, 0], [34, 40, 124, 0, 170]]
+      : [[46, 66, 150, 60, 230], [46, 44, 170, 0, 180], [46, 66, 130, 60, 260], [46, 44, 180, 0, 150], [46, 96, 140, 60, 0], [46, 44, 160, 0, 200]];
+    const rows = W.map(([t, w, a, f, y]) => `<li class="rec is-ph${y ? "" : " is-auto"}"><span class="rec-t">${ph(t)}</span><div class="rec-main"><span class="rec-who">${ph(w)}</span><span class="rec-what">${ph(a)}</span></div>` +
+      (f ? `<div class="rec-fig">${ph(f)}</div>` : "") + (y ? `<p class="rec-why">${ph(y)}</p>` : "") + `</li>`).join("");
+    return `<section class="day is-ph"><p class="day-h">${ph(RTL ? 112 : 190)}</p><ol class="recs" aria-hidden="true">${rows}</ol></section>`;
+  }
+  function renderList() {
+    $("#page-msg")?.remove();
+    logEl.hidden = false;
+    if (phase === "loading") {
+      bodyEl.innerHTML = skeletonHTML();
+      return;
+    }
+    if (phase === "error" || phase === "retrying") { paintError(); return; }
+    const missing = arrivalId !== null && !arrivalRecord ? `<p class="ac-arrival-note" id="arrival-note" tabindex="-1">${arrivalMissing}</p>` : "";
+    bodyEl.innerHTML = missing + (view.entries.length ? daysHTML(view.entries) + endHTML() : emptyHTML());
+    wireList();
+    fitFigs();
+  }
+  function wireList() {
+    $("#older")?.addEventListener("click", older);
+    $("#older-retry")?.addEventListener("click", older);
+    $("#clear-filters")?.addEventListener("click", () => {
+      Object.assign(F, { kind: "all", person: "all", a: null, b: null, reason: "" });
+      findOpen = false;
+      apply();
+      kindButtons[0].focus();
+    });
+  }
+  // The figures' column is as wide as the widest from → to on the page (at most 200 px; a wider one wraps at its
+  // arrow), so every record's figures start on one edge.
+  function fitFigs() {
+    // Each figure's natural width, whether or not it wraps: its parts and the 6 px gaps between them.
+    const natural = (f) => [...f.children].reduce((s, c) => s + c.getBoundingClientRect().width, 0) + 6 * (f.children.length - 1);
+    const widths = $$(".fig", bodyEl).map(natural).concat($$(".fig-note", bodyEl).map((n) => n.scrollWidth));
+    bodyEl.style.setProperty("--fw", `${Math.ceil(Math.min(200, Math.max(64, ...widths)))}px`);
+  }
+  function renderAll() {
+    renderControls();
+    renderLoaded();
+    renderList();
+    frame.refreshStatus();
+    root.dataset.phase = phase;
+    logEl.toggleAttribute("aria-busy", phase === "loading" || phase === "retrying");
+  }
+
+  /* ---------------------------------------------------------------- filtering */
+  function apply(announce = true) {
+    if (arrivalId !== null) {
+      arrivalId = null;
+      arrivalPending = false;
+      Object.assign(OWNERS, BASE_NAMES);
+      for (const key of ["o1", "o2"]) $(`option[value="${key}"]`, personSel).textContent = `\u2068${OWNERS[key]}\u2069`;
+      const current = new URL(location.href);
+      current.searchParams.delete("record");
+      history.replaceState(null, "", current);
+    }
+    syncUrl();
+    view.refresh = "idle";
+    $("#refresh-alert").textContent = "";
+    // A new filter is a new request: while the log could not load, asking for another is its retry.
+    if (phase === "error") { startLoading(LOAD.retry); return; }
+    if (phase !== "ready") { renderControls(); return; }
+    loadFirst();
+    renderAll();
+    if (announce) say(view.entries.length ? L.listSay : filtered() ? L.noMatch : L.noRecords);
+  }
+  kindButtons.forEach((b) => b.addEventListener("click", () => { if (F.kind === b.dataset.kind) return; F.kind = b.dataset.kind; apply(); }));
+  personSel.addEventListener("change", () => { F.person = personSel.value; apply(); });
+  // The magnifier opens the search and puts the caret in it; pressed again, or Escape in the search (the review's O6),
+  // it closes and focus is back on the magnifier. Words in force stay in force when it closes: the pressed magnifier
+  // says so.
+  const closeFind = () => { findOpen = false; renderControls(); findBtn.focus(); };
+  findBtn.addEventListener("click", () => {
+    if (findOpen) { closeFind(); return; }
+    findOpen = true;
+    renderControls();
+    reasonInput.focus();
+  });
+  findPanel.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); commitReason(); closeFind(); } });
+  let reasonTimer = 0;
+  const commitReason = () => {
+    clearTimeout(reasonTimer);
+    const v = reasonInput.value.trim().slice(0, 240);
+    if (v === F.reason) return;
+    F.reason = v;
+    apply();
+  };
+  reasonInput.addEventListener("input", () => {
+    reasonClear.hidden = !reasonInput.value;
+    clearTimeout(reasonTimer);
+    reasonTimer = setTimeout(commitReason, 450);
+  });
+  reasonInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    commitReason();
+    // On a touch screen, Enter (the keyboard's search key) also puts the keyboard away so the results show.
+    if (matchMedia("(pointer: coarse)").matches) reasonInput.blur();
+  });
+  reasonClear.addEventListener("click", () => { reasonInput.value = ""; reasonClear.hidden = true; commitReason(); reasonInput.focus(); });
+
+  /* ---------------------------------------------------------------- older records, refresh */
+  const OLDER = params.get("older"), REFRESH = params.get("refresh");
+  let olderFailedOnce = false, refreshFailedOnce = false;
+  function older() {
+    if (view.older === "working" || !view.next || phase !== "ready") return;
+    view.older = "working";
+    const btn = $("#older") || $("#older-retry");
+    if (btn && btn.id === "older") {
+      // Working (STA-9): its words change at once, it keeps its width and focus, and a press does nothing.
+      const [idle, busy] = btn.querySelectorAll(".rb-l");
+      idle.setAttribute("aria-hidden", "true");
+      busy.removeAttribute("aria-hidden");
+      btn.setAttribute("aria-disabled", "true");
+      btn.setAttribute("aria-busy", "true");
+    } else {
+      bodyEl.querySelector(".ac-tail").outerHTML = endHTML();
+      wireList();
+      $("#older").focus();
+    }
+    if (OLDER === "hold") return;
+    later(700, () => {
+      if (view.older !== "working") return;
+      if (OLDER === "fail" && !olderFailedOnce) {
+        olderFailedOnce = true;
+        view.older = "failed";
+        bodyEl.querySelector(".ac-tail").outerHTML = endHTML();
+        wireList();
+        $("#older-retry").focus();
+        return;
+      }
+      const page = query(F, view.next);
+      const firstNew = page.entries[0];
+      view.entries = view.entries.concat(page.entries);
+      view.next = page.next;
+      view.older = "idle";
+      renderList();
+      // Focus moves to the first record that arrived, quietly, so a screen reader goes on from there; Tab goes on to
+      // "Show older" again.
+      const li = firstNew && bodyEl.querySelector(`.rec[data-id="${firstNew.id}"]`);
+      if (li) { li.tabIndex = -1; li.focus({ preventScroll: true }); li.scrollIntoView({ block: "nearest" }); }
+      say(view.next ? L.olderSay : `${L.olderSay}. ${L.endLine}`);
+    });
+  }
+  function refresh() {
+    if (phase !== "ready" || view.refresh === "working") return;
+    $("#refresh-alert").textContent = "";
+    view.refresh = "working";
+    renderLoaded();
+    if (REFRESH === "hold") return;
+    later(800, () => {
+      if (REFRESH === "fail" && !refreshFailedOnce) {
+        // A refresh that fails is not an error: the records shown stay, and say which load they are (DESIGN_GUIDE §6).
+        refreshFailedOnce = true;
+        view.refresh = "failed";
+        renderLoaded();
+        const a = $("#refresh-alert");
+        a.textContent = "";
+        setTimeout(() => { a.textContent = plain(L.refreshFailed(fmtClock(view.loadedAt))); }, 50);
+        return;
+      }
+      view.refresh = "idle";
+      loadFirst();
+      renderAll();
+      say(plain(L.loaded(fmtClock(view.loadedAt))));
+    });
+  }
+  refreshBtn.addEventListener("click", () => { if (refreshBtn.getAttribute("aria-disabled") !== "true") refresh(); });
+
+  /* ---------------------------------------------------------------- the page's states
+   *   loading  0-300 ms the slots wait empty (data-load="wait"); from 300 ms the skeleton, at least 400 ms; one
+   *            announcement at 1 s; the 10 s ceiling turns it into Error. ?arrive=<ms> brings the payload that many ms
+   *            after the page opened; ?arrive=never lets the ceiling run; without it the skeleton is held, for review.
+   *            The controls, the day's words and the frame are real from the first paint.
+   *   error    the first payload could not be loaded: the header's Error, and one message for the page in place of the
+   *            log (Reports' option C): the mark, one sentence naming what is missing (and its dates when the dates
+   *            are chosen), one action. The retry takes focus and runs as an action (STA-9), then arrives.
+   *   empty    the log holds no record yet. A filter that matches nothing is the filtered-empty state. */
+  const LOAD = { delay: 300, min: 400, say: 1000, ceiling: 10000, retry: 1200 };
+  const ARRIVE = (() => { const a = params.get("arrive"); if (a === "never") return "never"; const n = Number(a); return a != null && a !== "" && Number.isFinite(n) && n >= 0 ? n : null; })();
+  const load = { shownAt: null, timers: [] };
+  const later = (ms, fn) => load.timers.push(setTimeout(fn, Math.max(0, ms)));
+  const clearTimers = () => { load.timers.splice(0).forEach(clearTimeout); };
+  let retryBtn = null, focusAlert = phase === "error";
+  function periodSentence(a, b, span, single) {
+    const A = partsOf(a), B = partsOf(b);
+    return a === b ? single(dateText(b, true))
+      : A.y !== B.y ? span(dateText(a, true), dateText(b, true))
+      : A.m === B.m ? span(nw(bdi(A.d)), dateText(b, true))
+      : span(dateText(a), dateText(b, true));
+  }
+  function paintError() {
+    logEl.hidden = true;
+    let msg = $("#page-msg");
+    if (!msg) {
+      msg = Object.assign(document.createElement("section"), { className: "card ac-msg", id: "page-msg" });
+      logEl.after(msg);
+    }
+    const sentence = F.a == null ? L.errorFull : periodSentence(F.a, F.b, L.errorDates, L.errorDay);
+    const trying = phase === "retrying";
+    msg.innerHTML = `<p class="ac-say" aria-hidden="true">${SVG_ERR}<span>${sentence}</span></p><span class="sr-only" id="err-say" role="alert"></span>` +
+      `<button class="rbtn rbtn-primary" id="retry" type="button"${trying ? ' aria-disabled="true" aria-busy="true"' : ""}>${stackLabels(L.retry, L.retrying, trying)}</button>`;
+    retryBtn = $("#retry", msg);
+    retryBtn.addEventListener("click", retry);
+    const sayEl = $("#err-say", msg);
+    if (!trying) setTimeout(() => { if (sayEl.isConnected) sayEl.innerHTML = sentence; }, 50);
+    if (focusAlert) { retryBtn.focus(); focusAlert = false; }
+  }
+  function startLoading(arriveAfter) {
+    clearTimers();
+    phase = "loading";
+    root.dataset.load = "wait";
+    load.shownAt = null;
+    view.entries = [];
+    view.next = null;
+    renderAll();
+    later(LOAD.delay, () => { if (phase === "loading") { root.dataset.load = "shown"; load.shownAt = performance.now(); } });
+    later(LOAD.say, () => { if (phase === "loading") say(L.loadingSay); });
+    // The 10 s ceiling runs whenever a payload is awaited (STA-10; the review's F3): one that would come later never
+    // arrives into the log, it turns into Error. Without ?arrive the skeleton is held, for review, as on Daily.
+    if (typeof arriveAfter === "number" && arriveAfter < LOAD.ceiling) later(arriveAfter, arrive);
+    if (arriveAfter === "never" || typeof arriveAfter === "number") later(LOAD.ceiling, fail);
+  }
+  function arrive() {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    const now = performance.now();
+    // Once shown, a skeleton stays at least 400 ms, so it never flickers.
+    if (phase === "loading" && load.shownAt != null && now - load.shownAt < LOAD.min) { later(load.shownAt + LOAD.min - now, arrive); return false; }
+    clearTimers();
+    const hadFocus = Boolean(retryBtn && document.activeElement === retryBtn);
+    phase = "ready";
+    delete root.dataset.load;
+    loadFirst();
+    renderAll();
+    // Focus goes on where the log begins, with its ring when a key moved it and none after a pointer (F2, OWN-C9), as
+    // after "Show older": the first record, or the sentence that says nothing matched.
+    if (hadFocus) {
+      const first = $(".rec", bodyEl) || $(".ac-empty p", bodyEl);
+      if (first) { first.tabIndex = -1; first.focus({ preventScroll: true }); }
+    }
+    focusArrival();
+    say(view.entries.length ? L.listSay : filtered() ? L.noMatch : L.noRecords);
+    return true;
+  }
+  function fail() {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    clearTimers();
+    phase = "error";
+    delete root.dataset.load;
+    focusAlert = true;
+    renderAll();
+    return true;
+  }
+  function retry() {
+    if (phase !== "error") return false;
+    phase = "retrying";
+    const [idle, busy] = retryBtn.querySelectorAll(".rb-l");
+    idle.setAttribute("aria-hidden", "true");
+    busy.removeAttribute("aria-hidden");
+    retryBtn.setAttribute("aria-disabled", "true");
+    retryBtn.setAttribute("aria-busy", "true");
+    logEl.setAttribute("aria-busy", "true");
+    later(LOAD.retry, arrive);
+    later(LOAD.ceiling, fail);
+    return true;
+  }
+
+  /* ---------------------------------------------------------------- the dialog system (Reports')
+   * showModal (the page behind is inert), a scrim and a panel; a bottom sheet at 720 px and below (DLG-5). Initial
+   * focus on the first field (DLG-3: a dialog that asks the owner to choose). Tab wraps; Escape and the scrim close it;
+   * focus returns to the control that opened it. The movement is motion.js's (MOT-9): focus moves in and out at once,
+   * and a closing dialog is closed at once while its picture leaves as an inert copy. */
+  const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
+    .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length);
+  function openDialog(dlg, opener, first) {
+    if (openDlg) closeDialog(openDlg.dlg, true);
+    if (frame.state.railOpen) frame.setRail(false);
+    openDlg = { dlg, opener };
+    dlg.showModal();
+    dlg.classList.add("is-open");
+    // Focus moves first, while nothing is moving yet: a focus into a panel still being moved could scroll the dialog
+    // to reach it and cancel the movement out. first may be the element, or a function that moves focus (the picker).
+    if (typeof first === "function") first(); else (first || focusables($(".dlg-panel", dlg))[0]).focus();
+    M.dialogOpen(dlg);
+  }
+  function closeDialog(dlg, instant = false, back = null) {
+    if (!openDlg || openDlg.dlg !== dlg) return;
+    const { opener } = openDlg;
+    openDlg = null;
+    M.dialogClose(dlg, { instant });
+    dlg.classList.remove("is-open");
+    if (dlg.open) dlg.close();
+    const to = back || (opener && opener.isConnected ? opener : $("#main"));
+    to.focus();
+  }
+  $$(".dlg").forEach((dlg) => {
+    dlg.addEventListener("cancel", (e) => { e.preventDefault(); closeDialog(dlg); });
+    dlg.addEventListener("click", (e) => { if (e.target.closest("[data-close]")) { e.preventDefault(); closeDialog(dlg); } });
+    dlg.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      const list = focusables($(".dlg-panel", dlg));
+      if (!list.length) return;
+      const first = list[0], last = list[list.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !dlg.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !dlg.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    });
+  });
+
+  /* ---- the dates: the date picker (picker.js, PCK), calendar days, gym-local, inclusive, from a year back to today.
+   * "Clear" in the dialog's head while days are picked: nothing picked shows every date. */
+  const dlgDates = $("#dlg-dates");
+  const datesClear = $("#dates-clear");
+  datesClear.setAttribute("aria-label", L.datesClear);
+  const picker = window.EclipsePicker.create($("#dates-picker"), {
+    lang: LANG, min: FIRST_PICK, max: TODAY, today: TODAY, value: null,
+    onChange: (v) => { datesClear.hidden = !v; },
+  });
+  function openDatesDialog() {
+    picker.set(F.a == null ? null : { a: F.a, b: F.b });
+    datesClear.hidden = F.a == null;
+    openDialog(dlgDates, datesBtn, () => picker.focus());
+  }
+  datesBtn.addEventListener("click", openDatesDialog);
+  $("#dates-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = picker.validate();
+    if (v.error) { picker.focus(); return; }
+    const a = v.empty ? null : v.a, b = v.empty ? null : v.b;
+    closeDialog(dlgDates);
+    if (F.a === a && F.b === b) return;
+    F.a = a; F.b = b;
+    apply();
+  });
+  // Clearing keeps the dialog open: the owner sees the days let go, and "Show records" then shows every date. Focus
+  // goes to the grid, since "Clear" leaves with the days.
+  datesClear.addEventListener("click", () => { picker.clear(); datesClear.hidden = true; picker.focus(); });
+
+  /* ---------------------------------------------------------------- start */
+  if (phase === "ready") loadFirst();
+  syncUrl();
+  renderAll();
+  if (phase === "loading") startLoading(ARRIVE);
+  // Font metrics change the figures' widths: measure again once the faces are in.
+  function focusArrival() {
+    if (!arrivalPending || phase !== "ready") return;
+    const el = arrivalRecord ? $(`.rec[data-id="${arrivalRecord.id}"]`, bodyEl) : $("#arrival-note");
+    if (!el) return;
+    arrivalPending = false;
+    el.focus({ preventScroll: true });
+    el.scrollIntoView({ block: "center", behavior: "instant" });
+  }
+  document.fonts.ready.then(() => { fitSelect(); renderLoaded(); if (phase === "ready") { fitFigs(); focusArrival(); } });
+  // Hooks for the capture script.
+  window.__activity = {
+    ready: true,
+    get phase() { return phase; },
+    get view() { return view; },
+    filters: F,
+    arrive, fail, older, refresh,
+    openDates: () => openDatesDialog(),
+    picker,
+    setKind: (k) => { F.kind = k; apply(); },
+    setPerson: (p) => { F.person = p; apply(); },
+    setDates: (a, b) => { F.a = a == null ? null : toDn(a); F.b = b == null ? null : toDn(b); apply(); },
+    setReason: (s) => { F.reason = s; findOpen = true; apply(); },
+    loadAll: () => { while (view.next) { const p = query(F, view.next); view.entries = view.entries.concat(p.entries); view.next = p.next; } renderList(); },
+    count: () => LOG.length,
+  };
+})();

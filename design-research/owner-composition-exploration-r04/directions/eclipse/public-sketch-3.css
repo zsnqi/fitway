@@ -1,0 +1,193 @@
+/* FITWAY public crowd page, sketch 3 of 4: the strip of the four words. Concept only, synthetic data, a still
+ * (phone, Arabic, live).
+ * The four level words stand in one line in reading order, at display size, and the phone is a window on that line,
+ * centred on the current word: the level below runs off the inline-start edge, the level above off the inline-end
+ * edge. A track under the line carries the same order (the levels passed in deep red, the current one at FITWAY's
+ * hottest red, the one above in graphite), and FITWAY's light pools under the current word. Derived from the level
+ * only; the current word is always whole. */
+
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --deep: #a3112a;
+  --oxblood: #4d0713;
+  --graphite: rgba(255, 255, 255, 0.16);
+  --live: #4be29b;
+  --line-2: rgba(255, 255, 255, 0.1);
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+h1, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 0 20px 20px;
+}
+
+/* A quiet page wash from the top inline-start corner. */
+.wash {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 300px;
+  pointer-events: none;
+  background: radial-gradient(ellipse 520px 200px at 100% 0%, rgb(229 25 53 / 0.42) 0%, rgb(229 25 53 / 0.24) 9%, rgb(77 7 19 / 0.7) 28%, rgb(77 7 19 / 0.3) 58%, rgb(8 9 10 / 0) 100%);
+  -webkit-mask-image: radial-gradient(ellipse 470px 240px at 26% 250px, transparent 0, transparent 72%, rgb(0 0 0 / 0.5) 87%, #000 100%);
+  mask-image: radial-gradient(ellipse 470px 240px at 26% 250px, transparent 0, transparent 72%, rgb(0 0 0 / 0.5) 87%, #000 100%);
+}
+[dir="ltr"] .wash { background-position: 0 0; }
+
+.top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+main {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 0.62fr auto auto 1fr auto;
+}
+
+/* ------------------------------------------------------------------ the strip */
+/* The row is centred on the screen; both sides are the same width, so its centre is the current word's centre. */
+.strip {
+  grid-row: 2;
+  grid-column: 1;
+  position: relative;
+  z-index: 1;
+  margin-inline: -20px;
+  height: 134px;
+  overflow: hidden;
+  font-size: 80px;
+  line-height: 112px;
+  font-weight: 500;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, rgb(0 0 0 / 0.55) 12px, #000 34px, #000 calc(100% - 34px), rgb(0 0 0 / 0.55) calc(100% - 12px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, rgb(0 0 0 / 0.55) 12px, #000 34px, #000 calc(100% - 34px), rgb(0 0 0 / 0.55) calc(100% - 12px), transparent 100%);
+}
+.row {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+}
+.side, .current { position: relative; display: flex; gap: 28px; padding-bottom: 20px; flex: none; }
+.side { width: 640px; }
+.before { justify-content: flex-end; padding-inline-end: 14px; color: rgba(245, 243, 242, 0.42); }
+.after { justify-content: flex-start; padding-inline-start: 14px; color: rgba(245, 243, 242, 0.28); }
+.current { padding-inline: 14px; color: var(--ink); }
+.side > span, .current > span { flex: none; }
+
+/* The track: one line under the strip, broken where the levels meet. */
+.side::after, .current::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  border-radius: 1px;
+}
+.before::after { inset-inline: 0 3px; background: var(--deep); }
+.after::after { inset-inline: 3px 0; background: var(--graphite); }
+.current::after { inset-inline: 3px; height: 4px; bottom: -1px; background: var(--red-hi); }
+
+/* FITWAY's light, pooled under the current word: FITWAY's hottest red only just under the track. */
+.glow {
+  grid-row: 3 / 5;
+  grid-column: 1;
+  align-self: start;
+  margin-inline: -20px;
+  height: 340px;
+  pointer-events: none;
+  --light: radial-gradient(ellipse 230px 190px at 50% 0%, rgb(255 41 70 / 0.5) 0%, rgb(229 25 53 / 0.36) 16%, rgb(77 7 19 / 0.82) 42%, rgb(77 7 19 / 0.34) 70%, rgb(77 7 19 / 0) 100%);
+  background: var(--light);
+  position: relative;
+}
+.glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.16;
+  -webkit-mask-image: var(--light);
+  mask-image: var(--light);
+}
+
+/* ------------------------------------------------------------------ the facts */
+.facts {
+  grid-row: 3;
+  grid-column: 1;
+  position: relative;
+  z-index: 1;
+  margin-top: 120px;
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  font-size: 19px;
+  line-height: 28px;
+  color: var(--ink-2);
+}
+.facts .count { color: var(--ink); font-weight: 500; }
+.stamp {
+  grid-row: 5;
+  grid-column: 1;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-3);
+}
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); }
+.pct bdi { color: var(--ink-2); }

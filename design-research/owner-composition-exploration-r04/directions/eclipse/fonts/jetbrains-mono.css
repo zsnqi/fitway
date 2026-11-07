@@ -1,0 +1,20 @@
+/* JetBrains Mono (SIL OFL 1.1, OFL-jetbrains-mono.txt), version 2.304, the front desk's code only: its one-time view
+ * (500) and the field where the owner types it (400). It tells I, l and 1 apart and O from 0 (a dotted zero), where
+ * Readex Pro draws I and l alike and O close to 0 (TYP-1's one exception, DECISIONS item 34). Subset to printable ASCII
+ * (U+0020-007E) with its layout features removed (no contextual forms: "0x" stays as typed); hinting kept. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(jetbrains-mono-400.woff2) format('woff2');
+  unicode-range: U+0020-007E;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(jetbrains-mono-500.woff2) format('woff2');
+  unicode-range: U+0020-007E;
+}

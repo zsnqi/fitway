@@ -1,0 +1,4543 @@
+{
+  "schema": 1,
+  "pages": {
+    "access.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "access.html",
+            "line": 119
+          },
+          "covers": [
+            "#ops-pop"
+          ],
+          "unreachable": [
+            {
+              "when": {
+                "state": "loading"
+              },
+              "reason": "Status details are unavailable while the first payload is loading; its button is hidden by design.",
+              "proof": {
+                "selector": "#ops-btn",
+                "hidden": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "access.html",
+            "line": 141
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "access.html",
+            "line": 53
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "language",
+          "marker": "lang-link",
+          "actions": [
+            "activate:#lang-link"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "wide",
+          "what": "language",
+          "reach": "activate:#lang-link",
+          "source": {
+            "file": "access.html",
+            "line": 92
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
+        },
+        {
+          "id": "phone-language",
+          "marker": "menu-lang",
+          "actions": [
+            "activate:#menu-btn",
+            "activate:#menu-lang"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "phone",
+          "what": "phone-language",
+          "reach": "activate:#menu-btn → activate:#menu-lang",
+          "source": {
+            "file": "access.html",
+            "line": 149
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
+        },
+        {
+          "id": "pinCreate",
+          "marker": "data-act=\"pinCreate\"",
+          "actions": [
+            "activate:[data-act=\"pinCreate\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-pin[open]",
+            "visible": true
+          },
+          "query": {
+            "pin": "none"
+          },
+          "what": "pinCreate",
+          "reach": "access.html?pin=none",
+          "source": {
+            "file": "access.js",
+            "line": 712
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "pinChange",
+          "marker": "data-act=\"pinChange\"",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-pin[open]",
+            "visible": true
+          },
+          "what": "pinChange",
+          "reach": "activate:[data-act=\"pinChange\"]",
+          "source": {
+            "file": "access.js",
+            "line": 710
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "pinOff",
+          "marker": "data-act=\"pinOff\"",
+          "actions": [
+            "activate:[data-act=\"pinOff\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-pinoff[open]",
+            "visible": true
+          },
+          "what": "pinOff",
+          "reach": "activate:[data-act=\"pinOff\"]",
+          "source": {
+            "file": "access.js",
+            "line": 711
+          },
+          "covers": [
+            "#dlg-pin",
+            "#dlg-pinoff"
+          ]
+        },
+        {
+          "id": "add",
+          "marker": "data-act=\"add\"",
+          "actions": [
+            "activate:[data-act=\"add\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-add[open]",
+            "visible": true
+          },
+          "what": "add",
+          "reach": "activate:[data-act=\"add\"]",
+          "source": {
+            "file": "access.js",
+            "line": 761
+          },
+          "covers": [
+            "#dlg-add"
+          ]
+        },
+        {
+          "id": "reset",
+          "marker": "\"reset\"",
+          "actions": [
+            "activate:[data-act=\"reset\"][data-id=\"o2\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-reset[open]",
+            "visible": true
+          },
+          "what": "reset",
+          "reach": "activate:[data-act=\"reset\"][data-id=\"o2\"]",
+          "source": {
+            "file": "access.js",
+            "line": 176
+          },
+          "covers": [
+            "#dlg-reset",
+            "[data-act=\"reset\"]"
+          ]
+        },
+        {
+          "id": "off",
+          "marker": "\"off\"",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-off[open]",
+            "visible": true
+          },
+          "what": "off",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"]",
+          "source": {
+            "file": "motion.js",
+            "line": 26
+          },
+          "covers": [
+            "#dlg-off",
+            "[data-act=\"off\"]"
+          ]
+        },
+        {
+          "id": "on",
+          "marker": "\"on\"",
+          "actions": [
+            "activate:[data-act=\"on\"][data-id=\"o3\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-on[open]",
+            "visible": true
+          },
+          "what": "on",
+          "reach": "activate:[data-act=\"on\"][data-id=\"o3\"]",
+          "source": {
+            "file": "access.js",
+            "line": 408
+          },
+          "covers": [
+            "#dlg-on",
+            "[data-act=\"on\"]"
+          ]
+        },
+        {
+          "id": "mine",
+          "marker": "\"mine\"",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-mine[open]",
+            "visible": true
+          },
+          "what": "mine",
+          "reach": "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+          "source": {
+            "file": "access.js",
+            "line": 728
+          },
+          "covers": [
+            "#dlg-mine",
+            "[data-act=\"mine\"]"
+          ]
+        },
+        {
+          "id": "pin-view",
+          "marker": "pin-view",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-pin[data-locked=\"true\"]",
+            "visible": true
+          },
+          "what": "pin-view",
+          "reach": "activate:[data-act=\"pinChange\"] → type:#pin-code=Verify123 → activate:#pin-confirm .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 966
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "pin-cancel",
+          "marker": "pin-undo",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "activate:#pin-undo"
+          ],
+          "proof": {
+            "selector": "#dlg-pin",
+            "hidden": true
+          },
+          "what": "pin-cancel",
+          "reach": "activate:[data-act=\"pinChange\"] → type:#pin-code=Verify123 → activate:#pin-confirm .acc-do → activate:#pin-undo",
+          "source": {
+            "file": "access.js",
+            "line": 976
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "pin-commit",
+          "marker": "pin-saved",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "pin-commit",
+          "reach": "activate:[data-act=\"pinChange\"] → type:#pin-code=Verify123 → activate:#pin-confirm .acc-do → wait:600 → activate:#pin-saved",
+          "source": {
+            "file": "access.js",
+            "line": 977
+          },
+          "covers": []
+        },
+        {
+          "id": "pin-failure",
+          "marker": "pin-view-alert",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#pin-view-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "fail": "1"
+          },
+          "what": "pin-failure",
+          "reach": "access.html?fail=1",
+          "source": {
+            "file": "access.js",
+            "line": 973
+          },
+          "covers": [
+            "#pin-view"
+          ]
+        },
+        {
+          "id": "pin-working",
+          "marker": "pin-saved",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#dlg-pin",
+            "attribute": "data-busy",
+            "value": "true"
+          },
+          "query": {
+            "hold": "1"
+          },
+          "what": "pin-working",
+          "reach": "access.html?hold=1",
+          "source": {
+            "file": "access.js",
+            "line": 977
+          },
+          "covers": [
+            "#dlg-pin"
+          ]
+        },
+        {
+          "id": "password-reveal",
+          "marker": "pw-eye",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "activate:#dlg-mine .pw-eye"
+          ],
+          "proof": {
+            "selector": "#dlg-mine .pw-eye",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "password-reveal",
+          "reach": "activate:[data-act=\"mine\"][data-id=\"o1\"] → activate:#dlg-mine .pw-eye",
+          "source": {
+            "file": "access.js",
+            "line": 940
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "validate-pinChange",
+          "marker": "\"pinChange\"",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "activate:#dlg-pin .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-pin [aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "validate-pinChange",
+          "reach": "activate:[data-act=\"pinChange\"] → activate:#dlg-pin .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 407
+          },
+          "covers": [
+            "#dlg-pin",
+            ".field-err"
+          ]
+        },
+        {
+          "id": "validate-add",
+          "marker": "\"add\"",
+          "actions": [
+            "activate:[data-act=\"add\"]",
+            "activate:#dlg-add .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-add [aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "validate-add",
+          "reach": "activate:[data-act=\"add\"] → activate:#dlg-add .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 409
+          },
+          "covers": [
+            "#dlg-add"
+          ]
+        },
+        {
+          "id": "validate-reset",
+          "marker": "\"reset\"",
+          "actions": [
+            "activate:[data-act=\"reset\"][data-id=\"o2\"]",
+            "activate:#dlg-reset .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-reset [aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "validate-reset",
+          "reach": "activate:[data-act=\"reset\"][data-id=\"o2\"] → activate:#dlg-reset .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 176
+          },
+          "covers": [
+            "#dlg-reset"
+          ]
+        },
+        {
+          "id": "validate-mine",
+          "marker": "\"mine\"",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "activate:#dlg-mine .acc-do"
+          ],
+          "proof": {
+            "selector": "#dlg-mine [aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "validate-mine",
+          "reach": "activate:[data-act=\"mine\"][data-id=\"o1\"] → activate:#dlg-mine .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 728
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "confirm-pinOff",
+          "marker": "\"pinOff\"",
+          "actions": [
+            "activate:[data-act=\"pinOff\"]",
+            "activate:#dlg-pinoff .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "confirm-pinOff",
+          "reach": "activate:[data-act=\"pinOff\"] → activate:#dlg-pinoff .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 172
+          },
+          "covers": [
+            "#dlg-pin",
+            "#dlg-pinoff"
+          ]
+        },
+        {
+          "id": "confirm-off",
+          "marker": "\"off\"",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "confirm-off",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] → activate:#dlg-off .acc-do",
+          "source": {
+            "file": "motion.js",
+            "line": 26
+          },
+          "covers": [
+            "#dlg-off"
+          ]
+        },
+        {
+          "id": "confirm-on",
+          "marker": "\"on\"",
+          "actions": [
+            "activate:[data-act=\"on\"][data-id=\"o3\"]",
+            "activate:#dlg-on .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "confirm-on",
+          "reach": "activate:[data-act=\"on\"][data-id=\"o3\"] → activate:#dlg-on .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 408
+          },
+          "covers": [
+            "#dlg-on"
+          ]
+        },
+        {
+          "id": "page-retry",
+          "marker": "retry",
+          "actions": [
+            "activate:#retry"
+          ],
+          "proof": {
+            "selector": "#retry",
+            "hidden": true
+          },
+          "query": {
+            "state": "error"
+          },
+          "what": "page-retry",
+          "reach": "access.html?state=error",
+          "source": {
+            "file": "access.js",
+            "line": 40
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "state": "error"
+              }
+            }
+          ]
+        },
+        {
+          "id": "add-owner",
+          "marker": "add-name",
+          "actions": [
+            "activate:[data-act=\"add\"]",
+            "type:#add-name=Verification owner",
+            "type:#add-email=verification@example.test",
+            "type:#add-pw=VerifyPassword123!",
+            "activate:#dlg-add .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "add-owner",
+          "reach": "activate:[data-act=\"add\"] → type:#add-name=Verification owner → type:#add-email=verification@example.test → type:#add-pw=VerifyPassword123! → activate:#dlg-add .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 983
+          },
+          "covers": [
+            "#dlg-add"
+          ]
+        },
+        {
+          "id": "add-owner-retry",
+          "marker": "add-name",
+          "actions": [
+            "activate:[data-act=\"add\"]",
+            "type:#add-name=Verification owner",
+            "type:#add-email=verification@example.test",
+            "type:#add-pw=VerifyPassword123!",
+            "activate:#dlg-add .acc-do",
+            "waitFor:#dlg-add .acc-dlg-alert:not([hidden])",
+            "activate:#dlg-add .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "query": {
+            "fail": "1"
+          },
+          "what": "add-owner-retry",
+          "reach": "access.html?fail=1",
+          "source": {
+            "file": "access.js",
+            "line": 983
+          },
+          "covers": [
+            "#dlg-add"
+          ]
+        },
+        {
+          "id": "reset-password",
+          "marker": "reset-pw",
+          "actions": [
+            "activate:[data-act=\"reset\"][data-id=\"o2\"]",
+            "type:#reset-pw=VerifyPassword123!",
+            "activate:#dlg-reset .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "reset-password",
+          "reach": "activate:[data-act=\"reset\"][data-id=\"o2\"] → type:#reset-pw=VerifyPassword123! → activate:#dlg-reset .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 988
+          },
+          "covers": [
+            "#dlg-reset"
+          ]
+        },
+        {
+          "id": "reset-password-retry",
+          "marker": "reset-pw",
+          "actions": [
+            "activate:[data-act=\"reset\"][data-id=\"o2\"]",
+            "type:#reset-pw=VerifyPassword123!",
+            "activate:#dlg-reset .acc-do",
+            "waitFor:#dlg-reset .acc-dlg-alert:not([hidden])",
+            "activate:#dlg-reset .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "query": {
+            "fail": "1"
+          },
+          "what": "reset-password-retry",
+          "reach": "access.html?fail=1",
+          "source": {
+            "file": "access.js",
+            "line": 988
+          },
+          "covers": [
+            "#dlg-reset"
+          ]
+        },
+        {
+          "id": "my-password",
+          "marker": "mine-new",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "type:#mine-current=CurrentSynthetic",
+            "type:#mine-new=VerifyPassword123!",
+            "activate:#dlg-mine .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "what": "my-password",
+          "reach": "activate:[data-act=\"mine\"][data-id=\"o1\"] → type:#mine-current=CurrentSynthetic → type:#mine-new=VerifyPassword123! → activate:#dlg-mine .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 996
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "my-password-retry",
+          "marker": "mine-new",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "type:#mine-current=CurrentSynthetic",
+            "type:#mine-new=VerifyPassword123!",
+            "activate:#dlg-mine .acc-do",
+            "waitFor:#dlg-mine .acc-dlg-alert:not([hidden])",
+            "activate:#dlg-mine .acc-do"
+          ],
+          "proof": {
+            "selector": "#notice.done",
+            "visible": true
+          },
+          "query": {
+            "fail": "1"
+          },
+          "what": "my-password-retry",
+          "reach": "access.html?fail=1",
+          "source": {
+            "file": "access.js",
+            "line": 996
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "records-retry",
+          "marker": "rec-retry",
+          "actions": [
+            "activate:#rec-retry"
+          ],
+          "proof": {
+            "selector": "#rec-retry",
+            "hidden": true
+          },
+          "query": {
+            "records": "error"
+          },
+          "what": "Retry Access records; the records card is intentionally absent below 721px by design (access.html:169; access.css:45-48)",
+          "reach": "access.html?records=error",
+          "source": {
+            "file": "access.js",
+            "line": 807
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "records": "error"
+              }
+            }
+          ],
+          "widths": "wide"
+        },
+        {
+          "id": "record-navigation",
+          "marker": "rec-a",
+          "actions": [
+            "activate:.rec-a"
+          ],
+          "proof": {
+            "path": "activity.html",
+            "selector": ".rec:focus",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "record-navigation",
+          "reach": "activate:.rec-a",
+          "source": {
+            "file": "access.js",
+            "line": 788
+          },
+          "covers": [],
+          "changesState": true
+        },
+        {
+          "id": "pin-copy",
+          "marker": "pin-copy",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "activate:#pin-copy"
+          ],
+          "proof": {
+            "oneOf": [
+              {
+                "selector": "#pin-copy[data-state=\"1\"]",
+                "visible": true
+              },
+              {
+                "selector": "#pin-copy-fail",
+                "visible": true
+              }
+            ]
+          },
+          "what": "pin-copy",
+          "reach": "activate:[data-act=\"pinChange\"] → type:#pin-code=Verify123 → activate:#pin-confirm .acc-do → activate:#pin-copy",
+          "source": {
+            "file": "access.js",
+            "line": 970
+          },
+          "covers": [
+            "#pin-copy-fail"
+          ]
+        },
+        {
+          "id": "pin-refused",
+          "marker": "pin-view-alert",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#pin-view-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "refuse": "staff_pin_not_active"
+          },
+          "what": "pin-refused",
+          "reach": "access.html?refuse=staff_pin_not_active",
+          "source": {
+            "file": "access.js",
+            "line": 973
+          },
+          "covers": [
+            "#pin-view"
+          ]
+        },
+        {
+          "id": "password-refused",
+          "marker": "mine-current",
+          "actions": [
+            "activate:[data-act=\"mine\"][data-id=\"o1\"]",
+            "type:#mine-current=CurrentSynthetic",
+            "type:#mine-new=VerifyPassword123!",
+            "activate:#dlg-mine .acc-do"
+          ],
+          "proof": {
+            "selector": "#mine-current[aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "query": {
+            "refuse": "current_password_incorrect"
+          },
+          "what": "password-refused",
+          "reach": "access.html?refuse=current_password_incorrect",
+          "source": {
+            "file": "access.js",
+            "line": 995
+          },
+          "covers": [
+            "#dlg-mine"
+          ]
+        },
+        {
+          "id": "refused-not_an_owner",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#off-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the not_an_owner refusal after its user action",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] -> activate:#dlg-off .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "not_an_owner"
+          }
+        },
+        {
+          "id": "refused-owner_already_inactive",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#off-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the owner_already_inactive refusal after its user action",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] -> activate:#dlg-off .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_already_inactive"
+          }
+        },
+        {
+          "id": "refused-owner_last_active",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#off-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the owner_last_active refusal after its user action",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] -> activate:#dlg-off .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_last_active"
+          }
+        },
+        {
+          "id": "refused-owner_self_deactivation",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"off\"][data-id=\"o2\"]",
+            "activate:#dlg-off .acc-do"
+          ],
+          "proof": {
+            "selector": "#off-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the owner_self_deactivation refusal after its user action",
+          "reach": "activate:[data-act=\"off\"][data-id=\"o2\"] -> activate:#dlg-off .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_self_deactivation"
+          }
+        },
+        {
+          "id": "refused-owner_already_active",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"on\"][data-id=\"o3\"]",
+            "activate:#dlg-on .acc-do"
+          ],
+          "proof": {
+            "selector": "#on-alert",
+            "nonemptyText": true
+          },
+          "what": "Show the owner_already_active refusal after its user action",
+          "reach": "activate:[data-act=\"on\"][data-id=\"o3\"] -> activate:#dlg-on .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_already_active"
+          }
+        },
+        {
+          "id": "refused-owner_email_taken",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"add\"]",
+            "type:#add-name=Verification owner",
+            "type:#add-email=verification@example.test",
+            "type:#add-pw=VerifyPassword123!",
+            "activate:#dlg-add .acc-do"
+          ],
+          "proof": {
+            "selector": "#add-email[aria-invalid=\"true\"]",
+            "visible": true
+          },
+          "what": "Show the owner_email_taken refusal after its user action",
+          "reach": "activate:[data-act=\"add\"] -> type:#add-name=Verification owner -> type:#add-email=verification@example.test -> type:#add-pw=VerifyPassword123! -> activate:#dlg-add .acc-do",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "query": {
+            "refuse": "owner_email_taken"
+          }
+        },
+        {
+          "id": "refused-staff_pin_already_active",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"pinCreate\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#pin-view-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "refuse": "staff_pin_already_active",
+            "pin": "none"
+          },
+          "what": "Show the staff_pin_already_active refusal after its user action",
+          "reach": "activate:[data-act=\"pinCreate\"] -> type:#pin-code=Verify123 -> activate:#pin-confirm .acc-do -> wait:600 -> activate:#pin-saved",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "pin": "none"
+              }
+            }
+          ]
+        },
+        {
+          "id": "refused-unauthorized",
+          "marker": "const CAN",
+          "actions": [
+            "activate:[data-act=\"pinChange\"]",
+            "type:#pin-code=Verify123",
+            "activate:#pin-confirm .acc-do",
+            "wait:600",
+            "activate:#pin-saved"
+          ],
+          "proof": {
+            "selector": "#pin-view-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "refuse": "unauthorized"
+          },
+          "what": "Show the unauthorized refusal after its user action",
+          "reach": "activate:[data-act=\"pinChange\"] -> type:#pin-code=Verify123 -> activate:#pin-confirm .acc-do -> wait:600 -> activate:#pin-saved",
+          "source": {
+            "file": "access.js",
+            "line": 1151
+          },
+          "covers": []
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "pin": "none"
+          },
+          "shows": "Front desk has no PIN; its create action is available",
+          "proof": {
+            "expression": "window.__access?.desk === 'none' && !!document.querySelector('[data-act=\\\"pinCreate\\\"]')"
+          }
+        },
+        {
+          "when": {
+            "fail": "1"
+          },
+          "shows": "Deferred scenario fail=1 has no initial visual change; visible result proved by pin-failure, add-owner-retry, reset-password-retry, my-password-retry",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('fail') === '1'"
+          }
+        },
+        {
+          "when": {
+            "hold": "1"
+          },
+          "shows": "Deferred scenario hold=1 has no initial visual change; visible result proved by pin-working",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('hold') === '1'"
+          }
+        },
+        {
+          "when": {
+            "state": "error"
+          },
+          "shows": "Access page load error is visible with retry",
+          "proof": {
+            "selector": "#retry",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "records": "error"
+          },
+          "shows": "The Access records payload holds its failed phase; records-retry proves the visible desktop/tablet retry",
+          "proof": {
+            "expression": "window.__access?.records.phase === 'error'"
+          }
+        },
+        {
+          "when": {
+            "refuse": "staff_pin_not_active"
+          },
+          "shows": "Deferred scenario refuse=staff_pin_not_active has no initial visual change; visible result proved by pin-refused",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('refuse') === 'staff_pin_not_active'"
+          }
+        },
+        {
+          "when": {
+            "refuse": "current_password_incorrect"
+          },
+          "shows": "Deferred scenario refuse=current_password_incorrect has no initial visual change; visible result proved by password-refused",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('refuse') === 'current_password_incorrect'"
+          }
+        },
+        {
+          "when": {
+            "case": "long"
+          },
+          "shows": "The longest owner name and email are visible in Access",
+          "proof": {
+            "expression": "document.querySelector('#owners')?.textContent.includes('north-riyadh')"
+          }
+        },
+        {
+          "when": {
+            "case": "short"
+          },
+          "shows": "The short owner fixture is visible in Access",
+          "proof": {
+            "expression": "document.querySelector('#owners')?.textContent.includes('l@example.com')"
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Access document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Access document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Access records the URL motion switch as off",
+          "proof": {
+            "expression": "document.documentElement.dataset.motion === 'off'"
+          }
+        },
+        {
+          "when": {
+            "ops": "live"
+          },
+          "shows": "Access header visibly holds Operations live status",
+          "proof": {
+            "expression": "!document.querySelector('#ops-btn')?.classList.contains('is-delayed') && !document.querySelector('#ops-btn')?.classList.contains('is-closed') && !document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "ops": "delayed"
+          },
+          "shows": "Access header visibly holds Operations delayed status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "ops": "closed"
+          },
+          "shows": "Access header visibly holds Operations closed status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-closed')"
+          }
+        },
+        {
+          "when": {
+            "ops": "offline"
+          },
+          "shows": "Access header visibly holds Operations offline status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "owners": "last"
+          },
+          "shows": "Only the signed-in owner remains active in Access",
+          "proof": {
+            "expression": "window.__access?.owners?.length === 3 && window.__access.owners.find(o => o.id === 'o2')?.active === false"
+          }
+        },
+        {
+          "when": {
+            "owners": "many"
+          },
+          "shows": "The expanded eight-owner Access list is visible",
+          "proof": {
+            "expression": "window.__access?.owners?.length === 8 && document.querySelectorAll('#owners .prs').length >= 8"
+          }
+        },
+        {
+          "when": {
+            "pin": "active"
+          },
+          "shows": "Front desk PIN state active is rendered",
+          "proof": {
+            "expression": "window.__access?.desk === 'active' && !!document.querySelector('#desk-title .mk')"
+          }
+        },
+        {
+          "when": {
+            "pin": "off"
+          },
+          "shows": "Front desk PIN state off is rendered",
+          "proof": {
+            "expression": "window.__access?.desk === 'off' && !!document.querySelector('#desk-title .mk')"
+          }
+        },
+        {
+          "when": {
+            "records": "ok"
+          },
+          "shows": "Access records state ok is rendered",
+          "proof": {
+            "expression": "window.__access?.records?.phase === 'ready' && window.__access.records.ids.length > 0"
+          }
+        },
+        {
+          "when": {
+            "records": "none"
+          },
+          "shows": "Access records state none is rendered",
+          "proof": {
+            "expression": "window.__access?.records?.phase === 'ready' && window.__access.records.ids.length === 0 && !!document.querySelector('.rec-none')"
+          }
+        },
+        {
+          "when": {
+            "state": "loading"
+          },
+          "shows": "Access loading state shows its loading badge and hidden status button",
+          "proof": {
+            "expression": "window.__access?.phase === 'loading' && !!document.querySelector('.hb-load') && document.querySelector('#ops-btn')?.hidden === true && document.documentElement.dataset.load === 'shown'"
+          }
+        },
+        {
+          "when": {
+            "refuse": "not_an_owner"
+          },
+          "shows": "Deferred scenario refuse=not_an_owner has no initial visual change; visible result proved by refused-not_an_owner",
+          "proof": {
+            "query": {
+              "refuse": "not_an_owner"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_already_active"
+          },
+          "shows": "Deferred scenario refuse=owner_already_active has no initial visual change; visible result proved by refused-owner_already_active",
+          "proof": {
+            "query": {
+              "refuse": "owner_already_active"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_already_inactive"
+          },
+          "shows": "Deferred scenario refuse=owner_already_inactive has no initial visual change; visible result proved by refused-owner_already_inactive",
+          "proof": {
+            "query": {
+              "refuse": "owner_already_inactive"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_email_taken"
+          },
+          "shows": "Deferred scenario refuse=owner_email_taken has no initial visual change; visible result proved by refused-owner_email_taken",
+          "proof": {
+            "query": {
+              "refuse": "owner_email_taken"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_last_active"
+          },
+          "shows": "Deferred scenario refuse=owner_last_active has no initial visual change; visible result proved by refused-owner_last_active",
+          "proof": {
+            "query": {
+              "refuse": "owner_last_active"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "owner_self_deactivation"
+          },
+          "shows": "Deferred scenario refuse=owner_self_deactivation has no initial visual change; visible result proved by refused-owner_self_deactivation",
+          "proof": {
+            "query": {
+              "refuse": "owner_self_deactivation"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "staff_pin_already_active"
+          },
+          "shows": "Deferred scenario refuse=staff_pin_already_active has no initial visual change; visible result proved by refused-staff_pin_already_active",
+          "proof": {
+            "query": {
+              "refuse": "staff_pin_already_active"
+            }
+          }
+        },
+        {
+          "when": {
+            "refuse": "unauthorized"
+          },
+          "shows": "Deferred scenario refuse=unauthorized has no initial visual change; visible result proved by refused-unauthorized",
+          "proof": {
+            "query": {
+              "refuse": "unauthorized"
+            }
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      }
+    },
+    "activity.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "activity.html",
+            "line": 115
+          },
+          "covers": [
+            "#ops-pop"
+          ],
+          "unreachable": [
+            {
+              "when": {
+                "state": "loading"
+              },
+              "reason": "Status details are unavailable while the first payload is loading; its button is hidden by design.",
+              "proof": {
+                "selector": "#ops-btn",
+                "hidden": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "activity.html",
+            "line": 137
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "activity.html",
+            "line": 49
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "language",
+          "marker": "lang-link",
+          "actions": [
+            "activate:#lang-link"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "wide",
+          "what": "language",
+          "reach": "activate:#lang-link",
+          "source": {
+            "file": "activity.html",
+            "line": 88
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
+        },
+        {
+          "id": "phone-language",
+          "marker": "menu-lang",
+          "actions": [
+            "activate:#menu-btn",
+            "activate:#menu-lang"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "phone",
+          "what": "phone-language",
+          "reach": "activate:#menu-btn → activate:#menu-lang",
+          "source": {
+            "file": "activity.html",
+            "line": 145
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
+        },
+        {
+          "id": "kind-all",
+          "marker": "kind-seg",
+          "actions": [
+            "activate:#kind-seg [data-kind=\"all\"]"
+          ],
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"all\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "kind-all",
+          "reach": "activate:#kind-seg [data-kind=\"all\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 158
+          },
+          "covers": []
+        },
+        {
+          "id": "kind-count",
+          "marker": "kind-seg",
+          "actions": [
+            "activate:#kind-seg [data-kind=\"count\"]"
+          ],
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"count\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "kind-count",
+          "reach": "activate:#kind-seg [data-kind=\"count\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 158
+          },
+          "covers": []
+        },
+        {
+          "id": "kind-access",
+          "marker": "kind-seg",
+          "actions": [
+            "activate:#kind-seg [data-kind=\"access\"]"
+          ],
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"access\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "kind-access",
+          "reach": "activate:#kind-seg [data-kind=\"access\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 158
+          },
+          "covers": []
+        },
+        {
+          "id": "kind-settings",
+          "marker": "kind-seg",
+          "actions": [
+            "activate:#kind-seg [data-kind=\"settings\"]"
+          ],
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"settings\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "kind-settings",
+          "reach": "activate:#kind-seg [data-kind=\"settings\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 158
+          },
+          "covers": []
+        },
+        {
+          "id": "person-all",
+          "marker": "id=\"person\"",
+          "actions": [
+            "select:#person=all"
+          ],
+          "proof": {
+            "selector": "#person",
+            "inputValue": "all"
+          },
+          "what": "person-all",
+          "reach": "select:#person=all",
+          "source": {
+            "file": "activity.html",
+            "line": 168
+          },
+          "covers": []
+        },
+        {
+          "id": "person-o1",
+          "marker": "id=\"person\"",
+          "actions": [
+            "select:#person=o1"
+          ],
+          "proof": {
+            "selector": "#person",
+            "inputValue": "o1"
+          },
+          "what": "person-o1",
+          "reach": "select:#person=o1",
+          "source": {
+            "file": "activity.html",
+            "line": 168
+          },
+          "covers": []
+        },
+        {
+          "id": "person-o2",
+          "marker": "id=\"person\"",
+          "actions": [
+            "select:#person=o2"
+          ],
+          "proof": {
+            "selector": "#person",
+            "inputValue": "o2"
+          },
+          "what": "person-o2",
+          "reach": "select:#person=o2",
+          "source": {
+            "file": "activity.html",
+            "line": 168
+          },
+          "covers": []
+        },
+        {
+          "id": "person-system",
+          "marker": "id=\"person\"",
+          "actions": [
+            "select:#person=system"
+          ],
+          "proof": {
+            "selector": "#person",
+            "inputValue": "system"
+          },
+          "what": "person-system",
+          "reach": "select:#person=system",
+          "source": {
+            "file": "activity.html",
+            "line": 168
+          },
+          "covers": []
+        },
+        {
+          "id": "dates",
+          "marker": "dates-btn",
+          "actions": [
+            "activate:#dates-btn"
+          ],
+          "proof": {
+            "selector": "#dlg-dates[open]",
+            "visible": true
+          },
+          "what": "dates",
+          "reach": "activate:#dates-btn",
+          "source": {
+            "file": "activity.html",
+            "line": 172
+          },
+          "covers": [
+            "#dlg-dates"
+          ]
+        },
+        {
+          "id": "search",
+          "marker": "find-btn",
+          "actions": [
+            "activate:#find-btn"
+          ],
+          "proof": {
+            "selector": "#reason",
+            "visible": true
+          },
+          "what": "search",
+          "reach": "activate:#find-btn",
+          "source": {
+            "file": "activity.html",
+            "line": 176
+          },
+          "covers": [
+            "#find"
+          ]
+        },
+        {
+          "id": "search-reason",
+          "marker": "reason-clear",
+          "actions": [
+            "activate:#find-btn",
+            "type:#reason=verification",
+            "press:Enter"
+          ],
+          "proof": {
+            "allOf": [
+              {
+                "selector": "#reason",
+                "inputValue": "verification"
+              },
+              {
+                "expression": "window.__activity?.filters.reason === 'verification' && !!document.querySelector('#clear-filters')"
+              }
+            ]
+          },
+          "what": "search-reason",
+          "reach": "activate:#find-btn → type:#reason=verification → press:Enter",
+          "source": {
+            "file": "activity.html",
+            "line": 186
+          },
+          "covers": [
+            "#find"
+          ]
+        },
+        {
+          "id": "clear-search",
+          "marker": "reason-clear",
+          "actions": [
+            "activate:#reason-clear"
+          ],
+          "proof": {
+            "selector": "#reason",
+            "inputValue": ""
+          },
+          "query": {
+            "find": "1",
+            "reason": "verification"
+          },
+          "what": "clear-search",
+          "reach": "activity.html?find=1&reason=verification",
+          "source": {
+            "file": "activity.html",
+            "line": 186
+          },
+          "covers": [
+            "#reason-clear"
+          ],
+          "ends": [
+            {
+              "when": {
+                "find": "1",
+                "reason": "verification"
+              }
+            },
+            {
+              "when": {
+                "reason": "verification"
+              }
+            }
+          ]
+        },
+        {
+          "id": "older",
+          "marker": "id=\"older\"",
+          "actions": [
+            "activate:#older"
+          ],
+          "proof": {
+            "countIncreased": ".rec"
+          },
+          "what": "older",
+          "reach": "activate:#older",
+          "source": {
+            "file": "activity.js",
+            "line": 817
+          },
+          "covers": []
+        },
+        {
+          "id": "older-failure",
+          "marker": "older-retry",
+          "actions": [
+            "activate:#older"
+          ],
+          "proof": {
+            "selector": "#older-retry",
+            "visible": true
+          },
+          "query": {
+            "older": "fail"
+          },
+          "what": "older-failure",
+          "reach": "activity.html?older=fail",
+          "source": {
+            "file": "activity.js",
+            "line": 814
+          },
+          "covers": []
+        },
+        {
+          "id": "older-working",
+          "marker": "older-retry",
+          "actions": [
+            "activate:#older"
+          ],
+          "proof": {
+            "selector": "#older",
+            "attribute": "aria-busy",
+            "value": "true"
+          },
+          "query": {
+            "older": "hold"
+          },
+          "what": "older-working",
+          "reach": "activity.html?older=hold",
+          "source": {
+            "file": "activity.js",
+            "line": 814
+          },
+          "covers": []
+        },
+        {
+          "id": "refresh",
+          "marker": "refresh-alert",
+          "actions": [
+            "activate:#refresh"
+          ],
+          "proof": {
+            "selector": "#refresh",
+            "attribute": "aria-busy",
+            "value": null
+          },
+          "what": "refresh",
+          "reach": "activate:#refresh",
+          "source": {
+            "file": "activity.html",
+            "line": 199
+          },
+          "covers": []
+        },
+        {
+          "id": "refresh-failure",
+          "marker": "refresh-alert",
+          "actions": [
+            "activate:#refresh"
+          ],
+          "proof": {
+            "selector": "#refresh-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "refresh": "fail"
+          },
+          "what": "refresh-failure",
+          "reach": "activity.html?refresh=fail",
+          "source": {
+            "file": "activity.html",
+            "line": 199
+          },
+          "covers": []
+        },
+        {
+          "id": "refresh-working",
+          "marker": "refresh-alert",
+          "actions": [
+            "activate:#refresh"
+          ],
+          "proof": {
+            "selector": "#refresh",
+            "attribute": "aria-busy",
+            "value": ""
+          },
+          "query": {
+            "refresh": "hold"
+          },
+          "what": "refresh-working",
+          "reach": "activity.html?refresh=hold",
+          "source": {
+            "file": "activity.html",
+            "line": 199
+          },
+          "covers": []
+        },
+        {
+          "id": "page-retry",
+          "marker": "retry",
+          "actions": [
+            "activate:#retry"
+          ],
+          "proof": {
+            "selector": "#retry",
+            "hidden": true
+          },
+          "query": {
+            "state": "error"
+          },
+          "what": "page-retry",
+          "reach": "activity.html?state=error",
+          "source": {
+            "file": "activity.js",
+            "line": 33
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "state": "error"
+              }
+            }
+          ]
+        },
+        {
+          "id": "older-retry",
+          "marker": "older-retry",
+          "actions": [
+            "activate:#older",
+            "waitFor:#older-retry",
+            "activate:#older-retry"
+          ],
+          "proof": {
+            "countIncreased": ".rec"
+          },
+          "query": {
+            "older": "fail"
+          },
+          "what": "older-retry",
+          "reach": "activity.html?older=fail",
+          "source": {
+            "file": "activity.js",
+            "line": 814
+          },
+          "covers": []
+        },
+        {
+          "id": "picker-dates-choose",
+          "marker": "dlg-dates",
+          "actions": [
+            "activate:#dates-btn",
+            "activate:#dlg-dates .dp-day[aria-disabled=\"false\"]",
+            "activate:#dlg-dates .dp-day[aria-disabled=\"false\"]",
+            "activate:#dates-form [type=\"submit\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-dates",
+            "hidden": true
+          },
+          "what": "picker-dates-choose",
+          "reach": "activate:#dates-btn → activate:#dlg-dates .dp-day[aria-disabled=\"false\"] → activate:#dlg-dates .dp-day[aria-disabled=\"false\"] → activate:#dates-form [type=\"submit\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 239
+          },
+          "covers": [
+            "#dlg-dates"
+          ]
+        },
+        {
+          "id": "picker-dates-keyboard",
+          "marker": "dlg-dates",
+          "actions": [
+            "activate:#dates-btn",
+            "focus:#dlg-dates .dp-day[tabindex=\"0\"]",
+            "press:PageUp",
+            "press:PageDown",
+            "press:Home",
+            "press:ArrowDown",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#dlg-dates .dp-day[tabindex=\"0\"]",
+            "focused": true
+          },
+          "what": "picker-dates-keyboard",
+          "reach": "activate:#dates-btn → focus:#dlg-dates .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
+          "source": {
+            "file": "activity.html",
+            "line": 239
+          },
+          "covers": [
+            "#dlg-dates",
+            ".dp-err"
+          ]
+        },
+        {
+          "id": "picker-dates-month",
+          "marker": "dlg-dates",
+          "actions": [
+            "activate:#dates-btn",
+            "activate:#dlg-dates .dp-step[data-step=\"-1\"]",
+            "activate:#dlg-dates .dp-step[data-step=\"1\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-dates .dp-day[tabindex=\"0\"]",
+            "visible": true
+          },
+          "what": "picker-dates-month",
+          "reach": "activate:#dates-btn → activate:#dlg-dates .dp-step[data-step=\"-1\"] → activate:#dlg-dates .dp-step[data-step=\"1\"]",
+          "source": {
+            "file": "activity.html",
+            "line": 239
+          },
+          "covers": [
+            "#dlg-dates"
+          ]
+        },
+        {
+          "id": "picker-dates-dismiss",
+          "marker": "dlg-dates",
+          "actions": [
+            "activate:#dates-btn",
+            "press:Escape"
+          ],
+          "proof": {
+            "selector": "#dlg-dates",
+            "hidden": true
+          },
+          "what": "picker-dates-dismiss",
+          "reach": "activate:#dates-btn → press:Escape",
+          "source": {
+            "file": "activity.html",
+            "line": 239
+          },
+          "covers": [
+            "#dlg-dates"
+          ]
+        },
+        {
+          "id": "dates-clear",
+          "marker": "dates-clear",
+          "actions": [
+            "activate:#dates-btn",
+            "activate:#dlg-dates .dp-day[aria-disabled=\"false\"]",
+            "activate:#dates-clear"
+          ],
+          "proof": {
+            "selector": "#dates-clear",
+            "hidden": true
+          },
+          "what": "dates-clear",
+          "reach": "activate:#dates-btn → activate:#dlg-dates .dp-day[aria-disabled=\"false\"] → activate:#dates-clear",
+          "source": {
+            "file": "activity.html",
+            "line": 245
+          },
+          "covers": [
+            "#dlg-dates",
+            "#dates-clear"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "case": "long"
+          },
+          "shows": "Long Arabic and Latin owner names wrap in visible Activity records",
+          "proof": {
+            "expression": "Array.from(document.querySelectorAll('.rec')).some(el=>(document.documentElement.lang === 'en' ? el.textContent.includes('Abdulrahman bin Abdulaziz') : el.textContent.includes('نورة بنت عبد الله بن عبد الرحمن العبد اللطيف، مديرة العمليات والمرافق في فرعي شمال الرياض والدرعية وفرع الخرج للنساء فقط')) && el.getBoundingClientRect().bottom>0 && el.getBoundingClientRect().top<innerHeight)"
+          }
+        },
+        {
+          "when": {
+            "record": "1001"
+          },
+          "shows": "Arrival record 1001 is focused in the activity stream",
+          "proof": {
+            "selector": ".rec:focus",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "find": "1"
+          },
+          "shows": "Activity search panel is open",
+          "proof": {
+            "selector": "#find",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "older": "fail"
+          },
+          "shows": "Deferred scenario older=fail has no initial visual change; visible result proved by older-failure, older-retry",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('older') === 'fail'"
+          }
+        },
+        {
+          "when": {
+            "older": "hold"
+          },
+          "shows": "Deferred scenario older=hold has no initial visual change; visible result proved by older-working",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('older') === 'hold'"
+          }
+        },
+        {
+          "when": {
+            "refresh": "fail"
+          },
+          "shows": "Deferred scenario refresh=fail has no initial visual change; visible result proved by refresh-failure",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('refresh') === 'fail'"
+          }
+        },
+        {
+          "when": {
+            "refresh": "hold"
+          },
+          "shows": "Deferred scenario refresh=hold has no initial visual change; visible result proved by refresh-working",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('refresh') === 'hold'"
+          }
+        },
+        {
+          "when": {
+            "state": "error"
+          },
+          "shows": "Activity page load error is visible with retry",
+          "proof": {
+            "selector": "#retry",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "find": "1",
+            "reason": "verification"
+          },
+          "shows": "Activity search contains the verification reason",
+          "proof": {
+            "selector": "#reason",
+            "visible": true,
+            "inputValue": "verification"
+          }
+        },
+        {
+          "when": {
+            "case": "short"
+          },
+          "shows": "The short Activity fixture is visible",
+          "proof": {
+            "expression": "document.querySelector('#person option[value=\"o2\"]')?.textContent.includes('\\u0644\\u064a\\u0646') && document.querySelector('.rec[data-id=\"1001\"]')?.textContent.includes('Bo')"
+          }
+        },
+        {
+          "when": {
+            "case": "wide"
+          },
+          "shows": "The widest Activity prior values are visible",
+          "proof": {
+            "expression": "document.querySelector('#log')?.textContent.includes('9,007,199,254,740,991')"
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Activity document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Activity document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Activity records the URL motion switch as off",
+          "proof": {
+            "expression": "document.documentElement.dataset.motion === 'off'"
+          }
+        },
+        {
+          "when": {
+            "ops": "live"
+          },
+          "shows": "Activity header visibly holds Operations live status",
+          "proof": {
+            "expression": "!document.querySelector('#ops-btn')?.classList.contains('is-delayed') && !document.querySelector('#ops-btn')?.classList.contains('is-closed') && !document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "ops": "delayed"
+          },
+          "shows": "Activity header visibly holds Operations delayed status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "ops": "closed"
+          },
+          "shows": "Activity header visibly holds Operations closed status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-closed')"
+          }
+        },
+        {
+          "when": {
+            "ops": "offline"
+          },
+          "shows": "Activity header visibly holds Operations offline status",
+          "proof": {
+            "expression": "document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "kind": "all"
+          },
+          "shows": "Activity kind filter all is selected",
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"all\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "kind": "count"
+          },
+          "shows": "Activity kind filter count is selected",
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"count\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "kind": "access"
+          },
+          "shows": "Activity kind filter access is selected",
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"access\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "kind": "settings"
+          },
+          "shows": "Activity kind filter settings is selected",
+          "proof": {
+            "selector": "#kind-seg [data-kind=\"settings\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "person": "all"
+          },
+          "shows": "Activity person filter all is selected",
+          "proof": {
+            "selector": "#person",
+            "inputValue": "all"
+          }
+        },
+        {
+          "when": {
+            "person": "o1"
+          },
+          "shows": "Activity person filter o1 is selected",
+          "proof": {
+            "selector": "#person",
+            "inputValue": "o1"
+          }
+        },
+        {
+          "when": {
+            "person": "o2"
+          },
+          "shows": "Activity person filter o2 is selected",
+          "proof": {
+            "selector": "#person",
+            "inputValue": "o2"
+          }
+        },
+        {
+          "when": {
+            "person": "system"
+          },
+          "shows": "Activity person filter system is selected",
+          "proof": {
+            "selector": "#person",
+            "inputValue": "system"
+          }
+        },
+        {
+          "when": {
+            "reason": ""
+          },
+          "shows": "Activity reason filter is empty and rendered",
+          "proof": {
+            "expression": "window.__activity?.filters?.reason === ''"
+          }
+        },
+        {
+          "when": {
+            "reason": "verification"
+          },
+          "shows": "Activity reason filter visibly contains verification",
+          "proof": {
+            "selector": "#reason",
+            "visible": true,
+            "inputValue": "verification"
+          }
+        },
+        {
+          "when": {
+            "record": "missing"
+          },
+          "shows": "Activity shows the missing arrival notice",
+          "proof": {
+            "selector": "#arrival-note",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "state": "loading"
+          },
+          "shows": "Activity page state loading is visible",
+          "proof": {
+            "selector": ".hb-load",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "state": "empty"
+          },
+          "shows": "Activity page state empty is visible",
+          "proof": {
+            "selector": ".ac-empty",
+            "visible": true
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      },
+      "defaults": {
+        "record": "1001"
+      }
+    },
+    "components.html": {
+      "features": [
+        {
+          "id": "date-dialog",
+          "marker": "open-dlg",
+          "actions": [
+            "activate:#open-dlg"
+          ],
+          "proof": {
+            "selector": "#cx-dlg[open]",
+            "visible": true
+          },
+          "what": "date-dialog",
+          "reach": "activate:#open-dlg",
+          "source": {
+            "file": "components.js",
+            "line": 795
+          },
+          "covers": [
+            "#cx-dlg"
+          ]
+        },
+        {
+          "id": "numbers",
+          "marker": "numbers",
+          "actions": [
+            "activate:#numbers"
+          ],
+          "proof": {
+            "selector": "#numbers",
+            "attribute": "aria-checked",
+            "value": "true"
+          },
+          "what": "numbers",
+          "reach": "activate:#numbers",
+          "source": {
+            "file": "picker.js",
+            "line": 15
+          },
+          "covers": []
+        },
+        {
+          "id": "language-ar",
+          "marker": "lang-seg",
+          "actions": [
+            "activate:#lang-seg [data-lang=\"ar\"]"
+          ],
+          "proof": {
+            "language": "ar"
+          },
+          "what": "language-ar",
+          "reach": "activate:#lang-seg [data-lang=\"ar\"]",
+          "source": {
+            "file": "components.html",
+            "line": 45
+          },
+          "covers": []
+        },
+        {
+          "id": "language-en",
+          "marker": "lang-seg",
+          "actions": [
+            "activate:#lang-seg [data-lang=\"en\"]"
+          ],
+          "proof": {
+            "language": "en"
+          },
+          "what": "language-en",
+          "reach": "activate:#lang-seg [data-lang=\"en\"]",
+          "source": {
+            "file": "components.html",
+            "line": 45
+          },
+          "covers": []
+        },
+        {
+          "id": "heat",
+          "marker": "heat-tip",
+          "actions": [
+            "activate:#heat .cx-hc"
+          ],
+          "proof": {
+            "selector": "#heat-tip",
+            "visible": true
+          },
+          "what": "heat",
+          "reach": "activate:#heat .cx-hc",
+          "source": {
+            "file": "components.js",
+            "line": 597
+          },
+          "covers": [
+            "#heat-tip"
+          ]
+        },
+        {
+          "id": "header-ops",
+          "marker": "data-layer",
+          "actions": [
+            "activate:.cx-live-frame [data-layer=\"ops\"]"
+          ],
+          "proof": {
+            "selector": ".cx-live-frame [data-pop=\"ops\"]",
+            "visible": true
+          },
+          "what": "header-ops",
+          "reach": "activate:.cx-live-frame [data-layer=\"ops\"]",
+          "source": {
+            "file": "components.js",
+            "line": 878
+          },
+          "covers": [
+            ".fw-pop.ops-pop"
+          ],
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"dialog\"][data-layer=\"ops\"]",
+              "file": "components.js",
+              "marker": "const hbadge ="
+            }
+          ]
+        },
+        {
+          "id": "header-menu",
+          "marker": "data-layer",
+          "actions": [
+            "activate:.cx-live-frame [data-layer=\"menu\"]"
+          ],
+          "proof": {
+            "selector": ".cx-live-frame [data-pop=\"menu\"]",
+            "visible": true
+          },
+          "what": "header-menu",
+          "reach": "activate:.cx-live-frame [data-layer=\"menu\"]",
+          "source": {
+            "file": "components.js",
+            "line": 878
+          },
+          "covers": [
+            ".fw-pop.menu-pop"
+          ],
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"menu\"][data-layer=\"menu\"]",
+              "file": "components.js",
+              "marker": "const hmenu ="
+            }
+          ]
+        },
+        {
+          "id": "picker-specimen-choose",
+          "marker": "cx-dlg",
+          "actions": [
+            "activate:#open-dlg",
+            "activate:#cx-dlg .dp-day[aria-disabled=\"false\"]",
+            "activate:#cx-dlg .dp-day[aria-disabled=\"false\"]",
+            "activate:#cx-dlg-form [type=\"submit\"]"
+          ],
+          "proof": {
+            "selector": "#cx-dlg",
+            "hidden": true
+          },
+          "what": "picker-specimen-choose",
+          "reach": "activate:#open-dlg → activate:#cx-dlg .dp-day[aria-disabled=\"false\"] → activate:#cx-dlg .dp-day[aria-disabled=\"false\"] → activate:#cx-dlg-form [type=\"submit\"]",
+          "source": {
+            "file": "components.html",
+            "line": 60
+          },
+          "covers": [
+            "#cx-dlg"
+          ]
+        },
+        {
+          "id": "picker-specimen-keyboard",
+          "marker": "cx-dlg",
+          "actions": [
+            "activate:#open-dlg",
+            "focus:#cx-dlg .dp-day[tabindex=\"0\"]",
+            "press:PageUp",
+            "press:PageDown",
+            "press:Home",
+            "press:ArrowDown",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#cx-dlg .dp-day[tabindex=\"0\"]",
+            "focused": true
+          },
+          "what": "picker-specimen-keyboard",
+          "reach": "activate:#open-dlg → focus:#cx-dlg .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
+          "source": {
+            "file": "components.html",
+            "line": 60
+          },
+          "covers": [
+            "#cx-dlg",
+            ".dp-err"
+          ]
+        },
+        {
+          "id": "picker-specimen-month",
+          "marker": "cx-dlg",
+          "actions": [
+            "activate:#open-dlg",
+            "activate:#cx-dlg .dp-step[data-step=\"-1\"]",
+            "activate:#cx-dlg .dp-step[data-step=\"1\"]"
+          ],
+          "proof": {
+            "selector": "#cx-dlg .dp-day[tabindex=\"0\"]",
+            "visible": true
+          },
+          "what": "picker-specimen-month",
+          "reach": "activate:#open-dlg → activate:#cx-dlg .dp-step[data-step=\"-1\"] → activate:#cx-dlg .dp-step[data-step=\"1\"]",
+          "source": {
+            "file": "components.html",
+            "line": 60
+          },
+          "covers": [
+            "#cx-dlg"
+          ]
+        },
+        {
+          "id": "picker-specimen-dismiss",
+          "marker": "cx-dlg",
+          "actions": [
+            "activate:#open-dlg",
+            "press:Escape"
+          ],
+          "proof": {
+            "selector": "#cx-dlg",
+            "hidden": true
+          },
+          "what": "picker-specimen-dismiss",
+          "reach": "activate:#open-dlg → press:Escape",
+          "source": {
+            "file": "components.html",
+            "line": 60
+          },
+          "covers": [
+            "#cx-dlg"
+          ]
+        },
+        {
+          "id": "segment-popup-specimen",
+          "source": {
+            "file": "components.js",
+            "line": 726
+          },
+          "actions": [],
+          "proof": {
+            "selector": "button.cx-seg-b[aria-haspopup=\"dialog\"]",
+            "visible": true
+          },
+          "covers": [],
+          "unreachable": [
+            {
+              "when": {},
+              "reason": "Presentation specimen has no popup handler; live component controls have separate recipes.",
+              "proof": {
+                "selector": "button.cx-seg-b[aria-haspopup=\"dialog\"]",
+                "visible": true
+              }
+            }
+          ],
+          "reach": "Visible presentation specimen; no opening action in source",
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"dialog\"].cx-seg-b",
+              "file": "components.js",
+              "marker": "const seg ="
+            }
+          ]
+        },
+        {
+          "id": "wide-status-popup-specimen",
+          "source": {
+            "file": "components.js",
+            "line": 830
+          },
+          "actions": [],
+          "proof": {
+            "selector": "button.hbadge.cx-hstatus[aria-haspopup=\"dialog\"]",
+            "visible": true
+          },
+          "covers": [],
+          "unreachable": [
+            {
+              "when": {},
+              "reason": "Presentation specimen has no popup handler; live component controls have separate recipes.",
+              "proof": {
+                "selector": "button.hbadge.cx-hstatus[aria-haspopup=\"dialog\"]",
+                "visible": true
+              }
+            }
+          ],
+          "reach": "Visible presentation specimen; no opening action in source",
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"dialog\"].hbadge.cx-hstatus",
+              "file": "components.js",
+              "marker": "const hstatus ="
+            }
+          ]
+        },
+        {
+          "id": "state-status-popup-specimen",
+          "source": {
+            "file": "components.js",
+            "line": 956
+          },
+          "actions": [],
+          "proof": {
+            "selector": "button.hbadge[aria-haspopup=\"dialog\"][tabindex=\"-1\"]",
+            "visible": true
+          },
+          "covers": [],
+          "unreachable": [
+            {
+              "when": {},
+              "reason": "Presentation specimen has no popup handler; live component controls have separate recipes.",
+              "proof": {
+                "selector": "button.hbadge[aria-haspopup=\"dialog\"][tabindex=\"-1\"]",
+                "visible": true
+              }
+            }
+          ],
+          "reach": "Visible presentation specimen; no opening action in source",
+          "coversOpeners": [
+            {
+              "selector": "button[aria-haspopup=\"dialog\"].hbadge",
+              "file": "components.js",
+              "marker": "const stBadge ="
+            }
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Components document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Components document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Components motion attribute is off",
+          "proof": {
+            "selector": "html",
+            "attribute": "data-motion",
+            "value": "off"
+          }
+        },
+        {
+          "when": {
+            "motion": "on"
+          },
+          "shows": "Components motion attribute is on",
+          "proof": {
+            "selector": "html",
+            "attribute": "data-motion",
+            "value": "on"
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      }
+    },
+    "index.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "index.html",
+            "line": 120
+          },
+          "covers": [
+            "#ops-pop"
+          ],
+          "unreachable": [
+            {
+              "when": {
+                "state": "loading"
+              },
+              "reason": "Status details are unavailable while the first payload is loading; its button is hidden by design.",
+              "proof": {
+                "selector": "#ops-btn",
+                "hidden": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "index.html",
+            "line": 142
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "index.html",
+            "line": 49
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "language",
+          "marker": "lang-link",
+          "actions": [
+            "activate:#lang-link"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "wide",
+          "what": "language",
+          "reach": "activate:#lang-link",
+          "source": {
+            "file": "index.html",
+            "line": 88
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
+        },
+        {
+          "id": "phone-language",
+          "marker": "menu-lang",
+          "actions": [
+            "activate:#menu-btn",
+            "activate:#menu-lang"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "phone",
+          "what": "phone-language",
+          "reach": "activate:#menu-btn → activate:#menu-lang",
+          "source": {
+            "file": "index.html",
+            "line": 150
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
+        },
+        {
+          "id": "details",
+          "marker": "details-btn",
+          "actions": [
+            "activate:#details-btn"
+          ],
+          "proof": {
+            "selector": "#details",
+            "visible": true
+          },
+          "what": "details",
+          "reach": "activate:#details-btn",
+          "source": {
+            "file": "index.html",
+            "line": 212
+          },
+          "covers": [
+            "#details"
+          ]
+        },
+        {
+          "id": "chart",
+          "marker": "plot-hit",
+          "actions": [
+            "activate:#plot-hit",
+            "focus:#plot-hit",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#plot-hit",
+            "attribute": "aria-valuetext",
+            "nonempty": true
+          },
+          "what": "chart",
+          "reach": "activate:#plot-hit → focus:#plot-hit → press:End",
+          "source": {
+            "file": "index.html",
+            "line": 222
+          },
+          "covers": [
+            "#tip",
+            "#band",
+            "#band-acts"
+          ]
+        },
+        {
+          "id": "page-retry",
+          "marker": "retry",
+          "actions": [
+            "activate:#retry"
+          ],
+          "proof": {
+            "selector": "#retry",
+            "hidden": true
+          },
+          "query": {
+            "state": "error"
+          },
+          "what": "page-retry",
+          "reach": "index.html?state=error",
+          "source": {
+            "file": "daily.js",
+            "line": 24
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "state": "error"
+              }
+            }
+          ]
+        },
+        {
+          "id": "new-reading",
+          "marker": "live-keys",
+          "actions": [
+            "press:n"
+          ],
+          "proof": {
+            "expression": "window.__eclipse.figures.last === 823"
+          },
+          "query": {
+            "live-keys": "1"
+          },
+          "what": "new reading (key)",
+          "reach": "index.html?live-keys=1 -> press:n",
+          "source": {
+            "file": "daily.js",
+            "line": 456
+          },
+          "covers": []
+        },
+        {
+          "id": "reset-readings",
+          "marker": "live-keys",
+          "actions": [
+            "press:n",
+            "press:r"
+          ],
+          "proof": {
+            "expression": "window.__eclipse.figures.last === 822"
+          },
+          "query": {
+            "live-keys": "1"
+          },
+          "what": "reset readings (key)",
+          "reach": "index.html?live-keys=1 -> press:n -> press:r",
+          "source": {
+            "file": "daily.js",
+            "line": 456
+          },
+          "covers": []
+        },
+        {
+          "id": "level-up",
+          "marker": "live-keys",
+          "actions": [
+            "press:u"
+          ],
+          "proof": {
+            "expression": "window.__eclipse.figures.shownNow !== window.__eclipse.figures.now"
+          },
+          "query": {
+            "live-keys": "1"
+          },
+          "what": "crowd level up (key)",
+          "reach": "index.html?live-keys=1 -> press:u",
+          "source": {
+            "file": "daily.js",
+            "line": 456
+          },
+          "covers": []
+        },
+        {
+          "id": "level-down",
+          "marker": "live-keys",
+          "actions": [
+            "press:d"
+          ],
+          "proof": {
+            "expression": "window.__eclipse.figures.shownNow !== window.__eclipse.figures.now"
+          },
+          "query": {
+            "live-keys": "1"
+          },
+          "what": "crowd level down (key)",
+          "reach": "index.html?live-keys=1 -> press:d",
+          "source": {
+            "file": "daily.js",
+            "line": 456
+          },
+          "covers": []
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "state": "live"
+          },
+          "shows": "Live badge and a visible current numeric reading",
+          "proof": {
+            "expression": "!document.querySelector('#now-v').hidden && /^\\d+$/.test(document.querySelector('#now-v').textContent.trim()) && !document.querySelector('#ops-btn').classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "state": "delayed"
+          },
+          "shows": "Delayed badge and the retained numeric reading",
+          "proof": {
+            "expression": "!document.querySelector('#now-v').hidden && /^\\d+$/.test(document.querySelector('#now-v').textContent.trim()) && document.querySelector('#ops-btn').classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "state": "nohistory"
+          },
+          "shows": "Current reading remains; historical comparison is absent",
+          "proof": {
+            "expression": "!document.querySelector('#now-v').hidden && /^\\d+$/.test(document.querySelector('#now-v').textContent.trim()) && document.querySelector('#entries-usual').textContent.trim()===''"
+          }
+        },
+        {
+          "when": {
+            "state": "loading"
+          },
+          "shows": "Loading word, hidden status button, flat placeholders instead of readings",
+          "proof": {
+            "allOf": [
+              {
+                "selector": ".hb-load",
+                "visible": true
+              },
+              {
+                "selector": "#card-now .ph-slot",
+                "visible": true
+              },
+              {
+                "selector": "#ops-btn",
+                "hidden": true
+              },
+              {
+                "expression": "document.documentElement.dataset.phase==='loading' && document.querySelector('#now-v').hidden && document.documentElement.dataset.load==='shown'"
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "state": "closed"
+          },
+          "shows": "Closed word replaces current reading; peak and entries are still ahead",
+          "proof": {
+            "allOf": [
+              {
+                "selector": "#card-now .stat-word",
+                "visible": true
+              },
+              {
+                "selector": "#card-peak .stat-say",
+                "visible": true
+              },
+              {
+                "selector": "#now-v",
+                "hidden": true
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "state": "unavailable"
+          },
+          "shows": "No current count; peak and entries are pending; history remains",
+          "proof": {
+            "allOf": [
+              {
+                "selector": "#card-now .stat-say",
+                "visible": true
+              },
+              {
+                "selector": "#card-entries .stat-say",
+                "visible": true
+              },
+              {
+                "selector": "#now-v",
+                "hidden": true
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "state": "error"
+          },
+          "shows": "Error message and a visible retry replace readings",
+          "proof": {
+            "allOf": [
+              {
+                "selector": "#retry",
+                "visible": true
+              },
+              {
+                "selector": "#err-say",
+                "visible": true
+              },
+              {
+                "selector": "#now-v",
+                "hidden": true
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "live-keys": "1"
+          },
+          "shows": "Daily key-driven live moments are armed",
+          "proof": {
+            "expression": "window.__eclipse.liveKeys === true"
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Daily document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Daily document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Daily records the URL motion switch as off",
+          "proof": {
+            "expression": "document.documentElement.dataset.motion === 'off'"
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      }
+    },
+    "reports.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "reports.html",
+            "line": 121
+          },
+          "covers": [
+            "#ops-pop"
+          ],
+          "unreachable": [
+            {
+              "when": {
+                "state": "loading"
+              },
+              "reason": "Status details are unavailable while the first payload is loading; its button is hidden by design.",
+              "proof": {
+                "selector": "#ops-btn",
+                "hidden": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "reports.html",
+            "line": 143
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "reports.html",
+            "line": 52
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "language",
+          "marker": "lang-link",
+          "actions": [
+            "activate:#lang-link"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "wide",
+          "what": "language",
+          "reach": "activate:#lang-link",
+          "source": {
+            "file": "reports.html",
+            "line": 91
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
+        },
+        {
+          "id": "phone-language",
+          "marker": "menu-lang",
+          "actions": [
+            "activate:#menu-btn",
+            "activate:#menu-lang"
+          ],
+          "proof": {
+            "languageChanged": true
+          },
+          "widths": "phone",
+          "what": "phone-language",
+          "reach": "activate:#menu-btn → activate:#menu-lang",
+          "source": {
+            "file": "reports.html",
+            "line": 151
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "lang": "ar"
+              }
+            },
+            {
+              "when": {
+                "lang": "en"
+              }
+            }
+          ]
+        },
+        {
+          "id": "range",
+          "marker": "dlg-range",
+          "actions": [],
+          "proof": {
+            "selector": "#dlg-range[open]",
+            "visible": true
+          },
+          "query": {
+            "dialog": "range"
+          },
+          "what": "range",
+          "reach": "reports.html?dialog=range",
+          "source": {
+            "file": "reports.html",
+            "line": 297
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "export",
+          "marker": "dlg-export",
+          "actions": [],
+          "proof": {
+            "selector": "#dlg-export[open]",
+            "visible": true
+          },
+          "query": {
+            "dialog": "export"
+          },
+          "what": "export",
+          "reach": "reports.html?dialog=export",
+          "source": {
+            "file": "reports.html",
+            "line": 318
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        },
+        {
+          "id": "period-7d",
+          "marker": "range-seg",
+          "actions": [
+            "activate:#range-seg [data-range=\"7d\"]"
+          ],
+          "proof": {
+            "selector": "#range-seg [data-range=\"7d\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "period-7d",
+          "reach": "activate:#range-seg [data-range=\"7d\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 165
+          },
+          "covers": []
+        },
+        {
+          "id": "period-28d",
+          "marker": "range-seg",
+          "actions": [
+            "activate:#range-seg [data-range=\"28d\"]"
+          ],
+          "proof": {
+            "selector": "#range-seg [data-range=\"28d\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          },
+          "what": "period-28d",
+          "reach": "activate:#range-seg [data-range=\"28d\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 165
+          },
+          "covers": []
+        },
+        {
+          "id": "custom-period",
+          "marker": "range-form",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-range[open]",
+            "visible": true
+          },
+          "what": "custom-period",
+          "reach": "activate:#range-seg [data-range=\"custom\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 299
+          },
+          "covers": [
+            "#dlg-range",
+            "button[aria-haspopup=\"dialog\"][data-range=\"custom\"]"
+          ]
+        },
+        {
+          "id": "export-open",
+          "marker": "export-btn",
+          "actions": [
+            "activate:#export-btn"
+          ],
+          "proof": {
+            "selector": "#dlg-export[open]",
+            "visible": true
+          },
+          "what": "export-open",
+          "reach": "activate:#export-btn",
+          "source": {
+            "file": "reports.html",
+            "line": 171
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        },
+        {
+          "id": "export-ready",
+          "marker": "export-go",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#export-go"
+          ],
+          "proof": {
+            "selector": "#export-save",
+            "visible": true
+          },
+          "what": "export-ready",
+          "reach": "activate:#export-btn → activate:#export-go",
+          "source": {
+            "file": "reports.html",
+            "line": 341
+          },
+          "covers": [
+            "#export-save",
+            "#export-progress",
+            "#export-done"
+          ]
+        },
+        {
+          "id": "export-failure",
+          "marker": "export-alert",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#export-go"
+          ],
+          "proof": {
+            "selector": "#export-alert",
+            "nonemptyText": true
+          },
+          "query": {
+            "export": "fail"
+          },
+          "what": "export-failure",
+          "reach": "reports.html?export=fail",
+          "source": {
+            "file": "reports.html",
+            "line": 336
+          },
+          "covers": [
+            "#export-alert"
+          ]
+        },
+        {
+          "id": "minute-download",
+          "marker": "export-save",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#export-go",
+            "download:#export-save"
+          ],
+          "proof": {
+            "download": true
+          },
+          "what": "minute-download",
+          "reach": "activate:#export-btn → activate:#export-go → download:#export-save",
+          "source": {
+            "file": "reports.html",
+            "line": 342
+          },
+          "covers": [
+            "#export-save"
+          ]
+        },
+        {
+          "id": "table-download",
+          "marker": "table-export",
+          "actions": [
+            "download:#table-export"
+          ],
+          "proof": {
+            "download": true
+          },
+          "what": "table-download",
+          "reach": "download:#table-export",
+          "source": {
+            "file": "reports.html",
+            "line": 252
+          },
+          "covers": []
+        },
+        {
+          "id": "numbers",
+          "marker": "numbers",
+          "actions": [
+            "activate:#numbers"
+          ],
+          "proof": {
+            "selector": "#numbers",
+            "attribute": "aria-checked",
+            "value": "true"
+          },
+          "minWidth": 1280,
+          "what": "numbers",
+          "reach": "activate:#numbers",
+          "source": {
+            "file": "reports.html",
+            "line": 228
+          },
+          "covers": []
+        },
+        {
+          "id": "pattern-grid",
+          "marker": "heat-tip",
+          "actions": [
+            "activate:#heat .hc"
+          ],
+          "proof": {
+            "selector": "#heat-tip",
+            "visible": true
+          },
+          "minWidth": 1280,
+          "what": "pattern-grid",
+          "reach": "activate:#heat .hc",
+          "source": {
+            "file": "reports.html",
+            "line": 240
+          },
+          "covers": [
+            "#heat-tip"
+          ]
+        },
+        {
+          "id": "pattern-day",
+          "marker": "wk-b",
+          "actions": [
+            "activate:#pday [data-wd=\"0\"]"
+          ],
+          "proof": {
+            "selector": "#pday [data-wd=\"0\"]",
+            "attribute": "aria-checked",
+            "value": "true"
+          },
+          "maxWidth": 1279,
+          "what": "pattern-day",
+          "reach": "activate:#pday [data-wd=\"0\"]",
+          "source": {
+            "file": "reports.js",
+            "line": 1079
+          },
+          "covers": [
+            "#pday"
+          ]
+        },
+        {
+          "id": "sort-table",
+          "marker": "data-sort",
+          "actions": [
+            "activate:#days-table [data-sort=\"peak\"]"
+          ],
+          "proof": {
+            "selector": "#days-table th:has([data-sort=\"peak\"])",
+            "attribute": "aria-sort",
+            "nonempty": true
+          },
+          "minWidth": 721,
+          "what": "sort-table",
+          "reach": "activate:#days-table [data-sort=\"peak\"]",
+          "source": {
+            "file": "reports.js",
+            "line": 1292
+          },
+          "covers": []
+        },
+        {
+          "id": "sort-list",
+          "marker": "dl-sort",
+          "actions": [
+            "select:#dl-sort=peak-desc"
+          ],
+          "proof": {
+            "selector": "#dl-sort",
+            "inputValue": "peak-desc"
+          },
+          "maxWidth": 720,
+          "what": "sort-list",
+          "reach": "select:#dl-sort=peak-desc",
+          "source": {
+            "file": "reports.js",
+            "line": 1380
+          },
+          "covers": []
+        },
+        {
+          "id": "expand-days",
+          "marker": "dl-all",
+          "actions": [
+            "activate:#dl-all"
+          ],
+          "proof": {
+            "selector": "#dl-all",
+            "attribute": "aria-expanded",
+            "value": "true"
+          },
+          "maxWidth": 720,
+          "what": "expand-days",
+          "reach": "activate:#dl-all",
+          "source": {
+            "file": "reports.js",
+            "line": 1382
+          },
+          "covers": [
+            "#day-list",
+            "#dlist"
+          ]
+        },
+        {
+          "id": "page-retry",
+          "marker": "retry",
+          "actions": [
+            "activate:#retry"
+          ],
+          "proof": {
+            "selector": "#retry",
+            "hidden": true
+          },
+          "query": {
+            "state": "error"
+          },
+          "what": "page-retry",
+          "reach": "reports.html?state=error",
+          "source": {
+            "file": "reports.js",
+            "line": 98
+          },
+          "covers": [],
+          "ends": [
+            {
+              "when": {
+                "state": "error"
+              }
+            }
+          ]
+        },
+        {
+          "id": "export-retry",
+          "marker": "export-go",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#export-go",
+            "waitFor:#export-alert:not([hidden])",
+            "activate:#export-go"
+          ],
+          "proof": {
+            "selector": "#export-save",
+            "visible": true
+          },
+          "query": {
+            "export": "fail"
+          },
+          "what": "export-retry",
+          "reach": "reports.html?export=fail",
+          "source": {
+            "file": "reports.html",
+            "line": 341
+          },
+          "covers": [
+            "#export-alert",
+            "#export-save"
+          ]
+        },
+        {
+          "id": "picker-range-choose",
+          "marker": "dlg-range",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]",
+            "activate:#dlg-range .dp-day[aria-disabled=\"false\"]",
+            "activate:#dlg-range .dp-day[aria-disabled=\"false\"]",
+            "activate:#range-form [type=\"submit\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-range",
+            "hidden": true
+          },
+          "what": "picker-range-choose",
+          "reach": "activate:#range-seg [data-range=\"custom\"] → activate:#dlg-range .dp-day[aria-disabled=\"false\"] → activate:#dlg-range .dp-day[aria-disabled=\"false\"] → activate:#range-form [type=\"submit\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 297
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "picker-range-keyboard",
+          "marker": "dlg-range",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]",
+            "focus:#dlg-range .dp-day[tabindex=\"0\"]",
+            "press:PageUp",
+            "press:PageDown",
+            "press:Home",
+            "press:ArrowDown",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#dlg-range .dp-day[tabindex=\"0\"]",
+            "focused": true
+          },
+          "what": "picker-range-keyboard",
+          "reach": "activate:#range-seg [data-range=\"custom\"] → focus:#dlg-range .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
+          "source": {
+            "file": "reports.html",
+            "line": 297
+          },
+          "covers": [
+            "#dlg-range",
+            ".dp-err"
+          ]
+        },
+        {
+          "id": "picker-range-month",
+          "marker": "dlg-range",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]",
+            "activate:#dlg-range .dp-step[data-step=\"-1\"]",
+            "activate:#dlg-range .dp-step[data-step=\"1\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-range .dp-day[tabindex=\"0\"]",
+            "visible": true
+          },
+          "what": "picker-range-month",
+          "reach": "activate:#range-seg [data-range=\"custom\"] → activate:#dlg-range .dp-step[data-step=\"-1\"] → activate:#dlg-range .dp-step[data-step=\"1\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 297
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "picker-range-dismiss",
+          "marker": "dlg-range",
+          "actions": [
+            "activate:#range-seg [data-range=\"custom\"]",
+            "press:Escape"
+          ],
+          "proof": {
+            "selector": "#dlg-range",
+            "hidden": true
+          },
+          "what": "picker-range-dismiss",
+          "reach": "activate:#range-seg [data-range=\"custom\"] → press:Escape",
+          "source": {
+            "file": "reports.html",
+            "line": 297
+          },
+          "covers": [
+            "#dlg-range"
+          ]
+        },
+        {
+          "id": "picker-export-choose",
+          "marker": "dlg-export",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#dlg-export .dp-day[aria-disabled=\"false\"]",
+            "activate:#dlg-export .dp-day[aria-disabled=\"false\"]",
+            "activate:#export-form [type=\"submit\"]"
+          ],
+          "proof": {
+            "selector": "#export-save",
+            "visible": true
+          },
+          "what": "picker-export-choose",
+          "reach": "activate:#export-btn → activate:#dlg-export .dp-day[aria-disabled=\"false\"] → activate:#dlg-export .dp-day[aria-disabled=\"false\"] → activate:#export-form [type=\"submit\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 318
+          },
+          "covers": [
+            "#dlg-export",
+            "#export-save"
+          ]
+        },
+        {
+          "id": "picker-export-keyboard",
+          "marker": "dlg-export",
+          "actions": [
+            "activate:#export-btn",
+            "focus:#dlg-export .dp-day[tabindex=\"0\"]",
+            "press:PageUp",
+            "press:PageDown",
+            "press:Home",
+            "press:ArrowDown",
+            "press:End"
+          ],
+          "proof": {
+            "selector": "#dlg-export .dp-day[tabindex=\"0\"]",
+            "focused": true
+          },
+          "what": "picker-export-keyboard",
+          "reach": "activate:#export-btn → focus:#dlg-export .dp-day[tabindex=\"0\"] → press:PageUp → press:PageDown → press:Home → press:ArrowDown → press:End",
+          "source": {
+            "file": "reports.html",
+            "line": 318
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        },
+        {
+          "id": "picker-export-month",
+          "marker": "dlg-export",
+          "actions": [
+            "activate:#export-btn",
+            "activate:#dlg-export .dp-step[data-step=\"-1\"]",
+            "activate:#dlg-export .dp-step[data-step=\"1\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-export .dp-day[tabindex=\"0\"]",
+            "visible": true
+          },
+          "what": "picker-export-month",
+          "reach": "activate:#export-btn → activate:#dlg-export .dp-step[data-step=\"-1\"] → activate:#dlg-export .dp-step[data-step=\"1\"]",
+          "source": {
+            "file": "reports.html",
+            "line": 318
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        },
+        {
+          "id": "picker-export-dismiss",
+          "marker": "dlg-export",
+          "actions": [
+            "activate:#export-btn",
+            "press:Escape"
+          ],
+          "proof": {
+            "selector": "#dlg-export",
+            "hidden": true
+          },
+          "what": "picker-export-dismiss",
+          "reach": "activate:#export-btn → press:Escape",
+          "source": {
+            "file": "reports.html",
+            "line": 318
+          },
+          "covers": [
+            "#dlg-export"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "dialog": "range"
+          },
+          "shows": "Range dialog is open",
+          "proof": {
+            "selector": "#dlg-range[open]",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "dialog": "export"
+          },
+          "shows": "Export dialog is open",
+          "proof": {
+            "selector": "#dlg-export[open]",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "export": "fail"
+          },
+          "shows": "Deferred scenario export=fail has no initial visual change; visible result proved by export-failure, export-retry",
+          "proof": {
+            "expression": "new URL(location.href).searchParams.get('export') === 'fail'"
+          }
+        },
+        {
+          "when": {
+            "state": "error"
+          },
+          "shows": "Reports page load error is visible with retry",
+          "proof": {
+            "selector": "#retry",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Reports document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Reports document language is en",
+          "proof": {
+            "language": "en"
+          }
+        },
+        {
+          "when": {
+            "motion": "off"
+          },
+          "shows": "Reports records the URL motion switch as off",
+          "proof": {
+            "expression": "document.documentElement.dataset.motion === 'off'"
+          }
+        },
+        {
+          "when": {
+            "range": "28d"
+          },
+          "shows": "Reports range 28d is selected",
+          "proof": {
+            "selector": "#range-seg [data-range=\"28d\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "range": "7d"
+          },
+          "shows": "Reports range 7d is selected",
+          "proof": {
+            "selector": "#range-seg [data-range=\"7d\"]",
+            "attribute": "aria-pressed",
+            "value": "true"
+          }
+        },
+        {
+          "when": {
+            "state": "full"
+          },
+          "shows": "Reports layout state full is rendered",
+          "proof": {
+            "expression": "document.documentElement.dataset.state === 'full'"
+          }
+        },
+        {
+          "when": {
+            "state": "short"
+          },
+          "shows": "Reports layout state short is rendered",
+          "proof": {
+            "expression": "document.documentElement.dataset.state === 'short'"
+          }
+        },
+        {
+          "when": {
+            "state": "loading"
+          },
+          "shows": "Reports page state loading is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.phase === 'loading' && !!document.querySelector('.hb-load') && document.documentElement.dataset.load === 'shown'"
+          }
+        },
+        {
+          "when": {
+            "state": "closed"
+          },
+          "shows": "Reports page state closed is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.page === 'closed' && document.querySelector('#ops-btn')?.classList.contains('is-closed')"
+          }
+        },
+        {
+          "when": {
+            "state": "delayed"
+          },
+          "shows": "Reports page state delayed is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.page === 'delayed' && document.querySelector('#ops-btn')?.classList.contains('is-delayed')"
+          }
+        },
+        {
+          "when": {
+            "state": "unavailable"
+          },
+          "shows": "Reports page state unavailable is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.page === 'unavailable' && document.querySelector('#ops-btn')?.classList.contains('is-off')"
+          }
+        },
+        {
+          "when": {
+            "state": "pending"
+          },
+          "shows": "Reports page state pending is visibly rendered",
+          "proof": {
+            "expression": "window.__reports?.page === 'pending' && document.querySelector('#ops-btn')?.classList.contains('is-off') && !!document.querySelector('.is-wait')"
+          }
+        }
+      ],
+      "samples": {
+        "arrive": [
+          "0",
+          "500",
+          "never"
+        ],
+        "from": [
+          "2026-09-01"
+        ],
+        "to": [
+          "2026-09-10"
+        ],
+        "reason": [
+          "verification"
+        ],
+        "record": [
+          "1001",
+          "missing"
+        ],
+        "lang": [
+          "ar",
+          "en"
+        ]
+      }
+    },
+    "settings.html": {
+      "features": [
+        {
+          "id": "status",
+          "marker": "ops-btn",
+          "actions": [
+            "activate:#ops-btn"
+          ],
+          "proof": {
+            "selector": "#ops-pop",
+            "visible": true
+          },
+          "what": "status",
+          "reach": "activate:#ops-btn",
+          "source": {
+            "file": "settings.html",
+            "line": 113
+          },
+          "covers": [
+            "#ops-pop"
+          ]
+        },
+        {
+          "id": "menu",
+          "marker": "menu-btn",
+          "actions": [
+            "activate:#menu-btn"
+          ],
+          "proof": {
+            "selector": "#menu-pop",
+            "visible": true
+          },
+          "widths": "phone",
+          "what": "menu",
+          "reach": "activate:#menu-btn",
+          "source": {
+            "file": "settings.html",
+            "line": 135
+          },
+          "covers": [
+            "#menu-pop"
+          ]
+        },
+        {
+          "id": "rail",
+          "marker": "brand",
+          "actions": [
+            "activate:#brand"
+          ],
+          "proof": {
+            "selector": "#rail[data-open=\"true\"]",
+            "visible": true
+          },
+          "widths": "wide",
+          "what": "rail",
+          "reach": "activate:#brand",
+          "source": {
+            "file": "settings.html",
+            "line": 48
+          },
+          "covers": [
+            "#rail",
+            "#rail-scrim"
+          ]
+        },
+        {
+          "id": "edit-crowd",
+          "marker": "data-edit",
+          "actions": [
+            "activate:[data-edit=\"crowd\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-crowd[open]",
+            "visible": true
+          },
+          "what": "edit-crowd",
+          "reach": "activate:[data-edit=\"crowd\"]",
+          "source": {
+            "file": "settings.js",
+            "line": 656
+          },
+          "covers": [
+            "#dlg-crowd"
+          ]
+        },
+        {
+          "id": "edit-hours",
+          "marker": "data-edit",
+          "actions": [
+            "activate:[data-edit=\"hours\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-hours[open]",
+            "visible": true
+          },
+          "what": "edit-hours",
+          "reach": "activate:[data-edit=\"hours\"]",
+          "source": {
+            "file": "settings.js",
+            "line": 656
+          },
+          "covers": [
+            "#dlg-hours"
+          ]
+        },
+        {
+          "id": "edit-day",
+          "marker": "data-edit",
+          "actions": [
+            "activate:[data-edit=\"day\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-day[open]",
+            "visible": true
+          },
+          "what": "edit-day",
+          "reach": "activate:[data-edit=\"day\"]",
+          "source": {
+            "file": "settings.js",
+            "line": 656
+          },
+          "covers": [
+            "#dlg-day"
+          ]
+        },
+        {
+          "id": "week-warning",
+          "marker": "ed-week-warns",
+          "actions": [
+            "activate:[data-edit=\"hours\"]",
+            "type:[name=\"ed-sun-close\"]=5:00",
+            "press:Tab"
+          ],
+          "proof": {
+            "selector": "#ed-week-warns",
+            "visible": true
+          },
+          "what": "week-warning",
+          "reach": "activate:[data-edit=\"hours\"] → type:[name=\"ed-sun-close\"]=5:00 → press:Tab",
+          "source": {
+            "file": "settings.js",
+            "line": 1128
+          },
+          "covers": [
+            "#dlg-hours",
+            "#ed-week-warns"
+          ]
+        },
+        {
+          "id": "record",
+          "marker": "log-open",
+          "actions": [
+            "activate:.log-open[data-rec=\"10\"]"
+          ],
+          "proof": {
+            "selector": "#dlg-rec[open]",
+            "visible": true
+          },
+          "query": {
+            "log": "every"
+          },
+          "what": "record",
+          "reach": "activate:.log-open[data-rec=\"10\"]",
+          "source": {
+            "file": "settings.js",
+            "line": 752
+          },
+          "covers": [
+            "#dlg-rec"
+          ]
+        },
+        {
+          "id": "copy-hours",
+          "marker": "ed-copy",
+          "actions": [
+            "activate:[data-edit=\"hours\"]",
+            "activate:#ed-copy"
+          ],
+          "proof": {
+            "selector": "#cp-list",
+            "visible": true
+          },
+          "what": "copy-hours",
+          "reach": "activate:[data-edit=\"hours\"] → activate:#ed-copy",
+          "source": {
+            "file": "settings.js",
+            "line": 1127
+          },
+          "covers": [
+            "#dlg-hours"
+          ]
+        },
+        {
+          "id": "copy-none",
+          "marker": "cp-err",
+          "actions": [
+            "activate:[data-edit=\"hours\"]",
+            "activate:#ed-copy",
+            "wait:600",
+            "activate:.cp-row[data-day=\"mon\"]",
+            "activate:.cp-row[data-day=\"tue\"]",
+            "activate:.cp-row[data-day=\"wed\"]",
+            "activate:.cp-row[data-day=\"thu\"]",
+            "activate:.cp-row[data-day=\"fri\"]",
+            "activate:.cp-row[data-day=\"sat\"]",
+            "activate:.st-do"
+          ],
+          "proof": {
+            "selector": "#cp-err",
+            "visible": true
+          },
+          "what": "copy-none",
+          "reach": "activate:[data-edit=\"hours\"] → activate:#ed-copy → wait:600 → activate:.cp-row[data-day=\"mon\"] → activate:.cp-row[data-day=\"tue\"] → activate:.cp-row[data-day=\"wed\"] → activate:.cp-row[data-day=\"thu\"] → activate:.cp-row[data-day=\"fri\"] → activate:.cp-row[data-day=\"sat\"] → activate:.st-do",
+          "source": {
+            "file": "settings.js",
+            "line": 1730
+          },
+          "covers": [
+            "#cp-err"
+          ],
+          "keyboardActions": [
+            "activate:[data-edit=\"hours\"]",
+            "activate:#ed-copy",
+            "wait:600",
+            "focus:.cp-row[data-day=\"mon\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"tue\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"wed\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"thu\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"fri\"] .cp-chk",
+            "press:Space",
+            "focus:.cp-row[data-day=\"sat\"] .cp-chk",
+            "press:Space",
+            "activate:.st-do"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "when": {},
+          "shows": "Initialized page content is visible",
+          "proof": {
+            "selector": "main",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "log": "every"
+          },
+          "shows": "The settings history holds the ninth change today, with its record of many changes",
+          "proof": {
+            "expression": "window.__settings?.version === 10 && !!document.querySelector('.log-rec[data-v=\"10\"]')"
+          }
+        },
+        {
+          "when": {
+            "record": "latest"
+          },
+          "shows": "The newest settings record is open in its window",
+          "proof": {
+            "selector": "#dlg-rec[open]",
+            "visible": true
+          }
+        },
+        {
+          "when": {
+            "lang": "ar"
+          },
+          "shows": "Settings document language is ar",
+          "proof": {
+            "language": "ar"
+          }
+        },
+        {
+          "when": {
+            "lang": "en"
+          },
+          "shows": "Settings document language is en",
+          "proof": {
+            "language": "en"
+          }
+        }
+      ]
+    }
+  }
+}

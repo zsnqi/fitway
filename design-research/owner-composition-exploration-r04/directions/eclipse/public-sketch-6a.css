@@ -1,0 +1,196 @@
+/* FITWAY public crowd page, direction 6a from sketch 1: the ember. Concept only, synthetic data, a still (phone,
+ * Arabic, live; ?level=packed for the highest level).
+ * Sketch 1's light had no job. Here it is the level: one light, kept at sketch 1's corner, burns at four strengths,
+ * so a quiet gym leaves an ember in the corner and a packed one sets the top of the page alight. The word stands
+ * inside that light. The hairline under it becomes the light's four heats in reading order, lit up to the current
+ * one. Derived from the level only (data-level 1-4); the word is always written. */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --graphite: rgba(255, 255, 255, 0.14);
+  --live: #4be29b;
+  --line-2: rgba(255, 255, 255, 0.1);
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  /* The light's four heats, one per level. */
+  --heat-1: #6b0b1c;
+  --heat-2: #a3112a;
+  --heat-3: #e51935;
+  --heat-4: #ff2946;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+h1, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 0 20px 22px;
+}
+
+/* The light. One source just past the top inline-start corner; its strength is the level. Each level sets how hot
+ * the light burns (colour and opacity along FITWAY's red ramp) and how far it carries. */
+.light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  --at: calc(100% + 40px) -60px;
+}
+[dir="ltr"] .light { --at: -40px -60px; }
+.light .glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse var(--rx) var(--ry) at var(--at), var(--ramp));
+}
+.light .core { background: radial-gradient(ellipse var(--cx) var(--cy) at var(--at), var(--core)); mix-blend-mode: screen; }
+.light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.16;
+  -webkit-mask-image: radial-gradient(ellipse var(--rx) var(--ry) at var(--at), #000 0, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse var(--rx) var(--ry) at var(--at), #000 0, #000 40%, transparent 100%);
+}
+
+/* Quiet: an ember in the corner. */
+.page[data-level="1"] .light {
+  --rx: 440px; --ry: 360px;
+  --ramp: rgb(107 11 28 / 0.72) 0%, rgb(77 7 19 / 0.4) 40%, rgb(8 8 8 / 0) 100%;
+  --cx: 1px; --cy: 1px; --core: transparent 0%, transparent 100%;
+}
+/* Moderate: a low deep-red glow. */
+.page[data-level="2"] .light {
+  --rx: 640px; --ry: 540px;
+  --ramp: rgb(163 17 42 / 0.82) 0%, rgb(130 13 34 / 0.62) 30%, rgb(77 7 19 / 0.38) 62%, rgb(8 8 8 / 0) 100%;
+  --cx: 1px; --cy: 1px; --core: transparent 0%, transparent 100%;
+}
+/* Busy: FITWAY red, burning down to the word. */
+.page[data-level="3"] .light {
+  --rx: 800px; --ry: 680px;
+  --ramp: rgb(229 25 53 / 0.86) 0%, rgb(200 20 46 / 0.7) 22%, rgb(140 14 36 / 0.54) 46%, rgb(77 7 19 / 0.38) 72%, rgb(8 8 8 / 0) 100%;
+  --cx: 280px; --cy: 220px; --core: rgb(255 41 70 / 0.4) 0%, rgb(255 41 70 / 0) 100%;
+}
+/* Packed: the same light at its hottest; a pale heart off the corner. Reach barely grows: the heat does. */
+.page[data-level="4"] .light {
+  --rx: 860px; --ry: 740px;
+  --ramp: rgb(255 41 70 / 1) 0%, rgb(248 34 62 / 0.94) 24%, rgb(205 22 50 / 0.78) 48%, rgb(120 12 30 / 0.52) 74%, rgb(8 8 8 / 0) 100%;
+  --cx: 440px; --cy: 360px; --core: rgb(255 176 186 / 0.5) 0%, rgb(255 70 96 / 0.32) 42%, rgb(255 41 70 / 0) 100%;
+}
+
+.top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: 13px; line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(7, 7, 7, 0.28);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* The sign keeps sketch 1's place: the light fills the room above the word and ends just past it. */
+.sign {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: 1.2fr auto auto auto 0.8fr auto;
+}
+.word {
+  grid-row: 2;
+  font-size: 118px;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-inline-start: -6px; /* optical: the first letter's side bearing */
+}
+.page[data-level="4"] .word { font-size: 100px; line-height: 1.14; }
+
+/* The four heats, in reading order: each lit segment burns in its own heat; the current one burns brightest and
+ * throws a little light; the levels above it are unlit. */
+.heat {
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  align-items: center;
+  margin-block: 40px 28px;
+}
+.heat i { display: block; height: 3px; border-radius: 2px; background: var(--graphite); }
+.page[data-level] .heat i:nth-child(1) { --h: var(--heat-1); }
+.page[data-level] .heat i:nth-child(2) { --h: var(--heat-2); }
+.page[data-level] .heat i:nth-child(3) { --h: var(--heat-3); }
+.page[data-level] .heat i:nth-child(4) { --h: var(--heat-4); }
+.page[data-level="1"] .heat i:nth-child(-n+1),
+.page[data-level="2"] .heat i:nth-child(-n+2),
+.page[data-level="3"] .heat i:nth-child(-n+3),
+.page[data-level="4"] .heat i:nth-child(-n+4) { background: var(--h); }
+.page[data-level="1"] .heat i:nth-child(1),
+.page[data-level="2"] .heat i:nth-child(2),
+.page[data-level="3"] .heat i:nth-child(3),
+.page[data-level="4"] .heat i:nth-child(4) { height: 6px; box-shadow: 0 0 14px 1px var(--h), 0 0 3px var(--h); }
+
+.facts {
+  grid-row: 4;
+  display: grid;
+  gap: 4px;
+  font-size: 19px;
+  line-height: 28px;
+  color: var(--ink-2);
+}
+.facts .count { color: var(--ink); font-weight: 500; }
+
+.stamp {
+  grid-row: 6;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-3);
+}
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); }
+.pct bdi { color: var(--ink-2); }

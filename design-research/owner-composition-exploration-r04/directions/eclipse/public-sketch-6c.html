@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#070707">
+  <title>FITWAY</title>
+  <meta name="description" content="FITWAY public crowd page, direction 6c from sketch 1 (public-redesign-r01): the dated sign. Concept only, synthetic data, a still. Not production.">
+  <link rel="stylesheet" href="public-sketch-6c.css">
+</head>
+<body>
+  <div class="page" data-level="3">
+    <div class="wash" aria-hidden="true"></div>
+    <header class="top">
+      <span class="brand" lang="en">
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
+          <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
+          <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
+          <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
+        </svg>
+        <span class="wordmark">FITWAY</span>
+      </span>
+      <a class="lang" href="#" lang="en">English</a>
+    </header>
+
+    <main class="sign">
+      <h1 class="word"><span class="sr-only">الازدحام الآن: </span><span data-k="word" data-probe="word">مزدحم</span></h1>
+      <div class="rule" role="img" aria-label="مستوى الازدحام: مزدحم" data-k="mark" data-probe="mark">
+        <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+      </div>
+      <p class="when" data-probe="when">
+        <span class="time"><bdi class="num">7:41</bdi><span class="ampm"> م</span></span>
+        <span class="fresh"><i class="dot" aria-hidden="true"></i>مباشر · آخر قراءة</span>
+      </p>
+      <p class="facts" data-probe="facts">
+        <span class="line"><bdi class="num count" data-k="count">70</bdi> داخل الصالة الآن · تقريبًا</span>
+        <span class="line">مفتوح حتى <bdi class="num">1:00</bdi> ص</span>
+        <span class="line pct">نسبة الامتلاء <bdi class="num" data-k="pct">58%</bdi></span>
+      </p>
+    </main>
+  </div>
+  <script>
+    // A still. ?level=packed shows the same page at the highest level, with values that agree with it.
+    (function () {
+      if (!/[?&]level=packed(&|$)/.test(location.search)) return;
+      var v = { word: "شديد الازدحام", count: "106", pct: "88%" };
+      document.querySelector(".page").setAttribute("data-level", "4");
+      document.querySelectorAll("[data-k]").forEach(function (el) {
+        var k = el.getAttribute("data-k");
+        if (k === "mark") el.setAttribute("aria-label", "مستوى الازدحام: " + v.word);
+        else if (v[k]) el.textContent = v[k];
+      });
+    })();
+    // Ready once the Readex Pro weights in use have loaded.
+    Promise.all(["200", "300", "400", "500"].map(function (w) {
+      return document.fonts.load(w + ' 16px "Readex Pro"', "العربية FITWAY 0123456789").catch(function () {});
+    })).then(function () { window.__sketch = { ready: true }; });
+  </script>
+</body>
+</html>

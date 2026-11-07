@@ -63,9 +63,9 @@ reviewer views the user did not take up are left out.
 - **Do not use a warm, orange-leaning core (recipe B) or a neutral grey-white frost (recipe C).** B was too strong,
   and C did not read as red. *H "Backlight, reference study, and lighting test (2026-09-24)"; B "Round 3" §1.*
 - **Do not give an Owner screen a light field.** The user called Iron & Chalk pretty but said it does not suit them
-  because it is light. The handoff records this as a steer toward dark rather than a formal rejection. Public stays
-  light, as `FITWAY_PRODUCT.md` says. *H "Iron & Chalk and three dark directions (2026-09-23)"; B "What the user
-  wants".*
+  because it is light. The handoff records this as a steer toward dark rather than a formal rejection. The public
+  page is dark too (public-redesign DECISIONS item 3). *H "Iron & Chalk and three dark directions (2026-09-23)"; B
+  "What the user wants".*
 - **Do not draw a light as a round blob or a blurry circle behind the page.** The user named Backlight's round red
   light, and rejected the lighting test's blob that bulged into the card. A light wraps around a large dark disc and is
   clipped to its element. *H "Backlight, reference study, and lighting test (2026-09-24)"; B "Round 3" §3, "Round 5"

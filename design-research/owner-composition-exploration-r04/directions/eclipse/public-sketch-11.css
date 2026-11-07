@@ -1,0 +1,271 @@
+/* FITWAY public crowd page, sketch 11 (public-redesign-r01): sketch 10 with today's day designed again. Concept only,
+ * synthetic data, a still: English, live. The level's word leads in the page's ink, one size for all four levels; the
+ * count and the percentage side by side; today from opening to now (?chart=, "The forms"); when it is usually quieter;
+ * the live stamp and the open line. On the phone the day stands under the facts; on the computer, beside the word.
+ * The identity is public.css's: its colours, its two Readex Pro faces, its corner light (--ramp, --glow) and grain, at
+ * sketch 9's reach. Red is in two places only: the light, and the mark at "Now".
+ * Everything is placed from the inline-start edge, and the day by minutes since opening, so dir="rtl" mirrors it.
+ * Nothing moves. */
+
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-arabic.woff2) format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "Readex Pro"; font-style: normal; font-weight: 160 700; font-display: swap; src: url(fonts/readex-pro-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+
+:root {
+  --page: #070707;
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #a29c9e;
+  --red-hi: #ff2946;
+  --live: #4be29b;
+  --line: rgb(255 255 255 / 0.12);
+  --chalk: 245 243 242; /* the ink as channels, for the day's marks at their strengths */
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page); color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgb(229 25 53 / 0.55); color: #fff; }
+h1, p, figure { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* The page. Each fluid size is the phone's at 390 px and the computer's at 1440 px, in a straight line between. */
+.page {
+  --pad: clamp(20px, 4.5vw, 80px);
+  --pad-end: clamp(22px, calc(0.952vw + 18.29px), 32px);
+  --top-h: clamp(64px, calc(3.2vw + 50px), 96px);
+  --fs-count: clamp(48px, calc(0.762vw + 45.03px), 56px);
+  --fs-pct: clamp(32px, calc(0.571vw + 29.77px), 38px);
+  --fs-text: clamp(17px, calc(0.19vw + 16.26px), 19px);
+  --fs-small: clamp(14px, calc(0.19vw + 13.26px), 16px);
+  --fs-axis: clamp(13px, calc(0.095vw + 12.63px), 14px);
+  /* The corner light's unit, wider than it grows tall (public.css). */
+  --ux: clamp(1px, calc(0.10476vw + 0.5914px), 2.1px);
+  --uy: clamp(1px, calc(0.014286vw + 0.94429px), 1.15px);
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  padding: env(safe-area-inset-top) max(var(--pad), env(safe-area-inset-right)) max(var(--pad-end), env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
+}
+
+.top, .sign { position: relative; z-index: 1; width: 100%; max-width: 1600px; margin-inline: auto; }
+.top { display: flex; align-items: center; justify-content: space-between; height: var(--top-h); }
+.brand { display: inline-flex; align-items: center; gap: clamp(10px, calc(0.19vw + 9.26px), 12px); }
+.brand svg { width: clamp(28px, calc(0.381vw + 26.51px), 32px); height: clamp(28px, calc(0.381vw + 26.51px), 32px); }
+.brand .mk { fill: none; stroke: var(--ink); }
+.brand .mk-dot { fill: var(--ink); }
+.wordmark { font-size: clamp(13px, calc(0.095vw + 12.63px), 14px); line-height: 20px; font-weight: 500; letter-spacing: 0.12em; }
+.lang {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  height: clamp(40px, calc(0.381vw + 38.51px), 44px);
+  padding-inline: clamp(14px, calc(0.381vw + 12.51px), 18px);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+.lang::after { content: ""; position: absolute; inset: -3px; }
+.lang:hover { color: var(--ink); border-color: rgb(255 255 255 / 0.22); }
+
+/* The sign, in reading order: the word, the facts, the day, when it is quieter, the stamp. It is the column the word
+ * is sized against (a container). On the phone the day takes the height the sign leaves (--plot-h, from the screen's
+ * height), so the word rises into the light and the band above it stays short; the rest of the free space goes above
+ * the word (0.6) and between the facts and the day (0.4).
+ * One size for all four levels (--fs-word): 76 px on the phone and about 90 px on the computer, in a straight line
+ * between; where the column is narrower than the longest English word, "Moderate", needs (4.6 times the size), the
+ * column sets it. */
+.sign {
+  container-type: inline-size;
+  --fs-word: clamp(48px, min(100cqi / 4.6, calc(1.333vw + 70.8px)), 96px);
+  --plot-h: clamp(180px, calc(100dvh - 520px), 440px);
+  display: grid;
+  grid-template-rows: minmax(16px, 0.6fr) auto auto minmax(28px, 0.4fr) auto auto auto;
+}
+.lead { display: contents; } /* the word and its facts; one block beside the day on the computer */
+
+.word {
+  grid-row: 2;
+  font-size: var(--fs-word);
+  font-weight: 700;
+  line-height: 0.96;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+/* The first letter's stem on the column's edge: a Latin first letter's side bearing, so the mirror check (?dir=rtl),
+ * whose word ends at the start edge, keeps none. */
+[dir="ltr"] .word { margin-inline-start: -0.06em; }
+
+/* The count and the percentage side by side, each number leading its words; the percentage parted by a hairline. */
+.facts {
+  grid-row: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: clamp(16px, calc(1.524vw + 10.1px), 32px);
+  margin-block-start: calc(var(--fs-word) * 0.1 + 6px); /* clear of the word's descender (Busy's y, Quiet's Q) */
+  font-size: var(--fs-text);
+  line-height: 1.2;
+  color: var(--ink-2);
+}
+.count-line .count, .pct .num { color: var(--ink); font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
+.count-line .count { font-size: var(--fs-count); margin-inline: 0.06em; }
+.pct { padding-inline-start: clamp(16px, calc(1.524vw + 10.1px), 32px); border-inline-start: 1px solid var(--line); }
+.pct .num { font-size: var(--fs-pct); margin-inline-end: 0.08em; }
+/* Where the column is too narrow for both on a line, the percentage goes under the count, without its hairline
+ * (data-wrap: a longer count on a wider column, public-sketch-11.js). */
+@container (max-width: 339px) {
+  .pct { flex-basis: 100%; padding-inline-start: 0; border-inline-start: 0; margin-block-start: 6px; }
+}
+.facts[data-wrap] .pct { flex-basis: 100%; padding-inline-start: 0; border-inline-start: 0; margin-block-start: 6px; }
+
+/* The day: today from opening (6:00 AM) to now, each hour at its middle by minutes since opening over the open day's
+ * 1140 minutes, from the inline-start edge; drawn by public-sketch-11.js into .today. Its height is a count over a top
+ * that is the same at every level and never the gym's capacity. Nothing is drawn after now. */
+.day {
+  grid-row: 5;
+  --span: 1140;
+  --stroke: 2.25px; /* the line */
+  --now-r: 6;       /* the mark at now, in px */
+  --dot-r: 3.5;     /* a reading, in px */
+  --tick: 5;        /* an hour's tick, in px */
+  --air: 10;        /* room above the top for the mark at now, in px */
+  display: flex;
+  flex-direction: column;
+}
+.plot { position: relative; height: var(--plot-h); }
+.plot::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: -1px; height: 1px; background: var(--line); }
+.today { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* The axis names an hour under its middle; the first and the last stand on the column's edges. */
+.axis { position: relative; height: 34px; font-size: var(--fs-axis); line-height: 18px; color: var(--ink-3); }
+.axis .t {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-start: calc(var(--m) / var(--span) * 100%);
+  width: 0;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+}
+.axis .t-start { justify-content: flex-start; }
+.axis .t-end { justify-content: flex-end; }
+.axis .t-now { color: var(--ink); font-weight: 500; }
+.axis .t[data-yield] { visibility: hidden; } /* an hour too close to now gives its place to "Now" (public-sketch-11.js) */
+
+.best { grid-row: 6; margin-block-start: clamp(12px, calc(0.762vw + 9px), 20px); font-size: var(--fs-text); line-height: 1.4; color: var(--ink-2); }
+.best .num { color: var(--ink); }
+
+/* The foot: the live stamp at the start, the open line at the end, under a hairline; where the column is too narrow
+ * for both on a line, both stand at the start, one under the other. */
+.stamp {
+  grid-row: 7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-block-start: clamp(18px, calc(1.143vw + 13.5px), 30px);
+  padding-block-start: clamp(14px, calc(0.381vw + 12.5px), 18px);
+  border-block-start: 1px solid var(--line);
+  font-size: var(--fs-small);
+  line-height: 20px;
+  color: var(--ink-3);
+}
+.stamp > p { white-space: nowrap; }
+.stamp .open .num { color: var(--ink-2); }
+.fresh { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; }
+@container (max-width: 339px) {
+  .stamp { flex-direction: column; align-items: flex-start; }
+  .stamp .open { padding-inline-start: 16px; }
+}
+
+/* The computer: the word and its facts in the light at the start, the day beside them on the dark, and "Usually
+ * quieter after 10 PM" at the foot of the start column, on the axis's line; the stamp across the foot. The body stands
+ * in the middle of the free height. */
+@media (min-width: 1024px) {
+  .sign {
+    --plot-h: clamp(260px, calc(100dvh - 460px), 460px);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: minmax(16px, 1fr) auto minmax(16px, 1fr) auto;
+    grid-template-areas: ". ." "lead day" ". ." "stamp stamp";
+    column-gap: clamp(48px, 5vw, 96px);
+  }
+  .lead { display: block; grid-area: lead; align-self: start; }
+  .day { grid-area: day; --stroke: 2.5px; --now-r: 7; --dot-r: 4; --tick: 6; --air: 12; }
+  .best { grid-area: lead; align-self: end; margin-block: 0 3.5px; } /* its baseline on the axis labels' (1024 to 1440) */
+  .stamp { grid-area: stamp; }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * The forms (?chart=). Both draw today only, in the page's ink, with the hour now stands in as the only red, ringed in
+ * the page's black where it meets the day; nothing after now, so nothing there can look like a reading. Both stand on
+ * one top for all four levels, so Packed rides high, Busy lower, Quiet along the floor.
+ * --------------------------------------------------------------------------------------------------------------- */
+
+/* line (the default): today as one line through each hour's middle; at now a red point on a hairline that rises from
+ * "Now" on the axis, so the point, the word "Now" and the rest of the day's open dark read as one moment. */
+.today .trace { fill: none; stroke: var(--ink); stroke-width: var(--stroke); stroke-linejoin: round; stroke-linecap: round; }
+.today .now-rule { stroke: rgb(var(--chalk) / 0.2); stroke-width: 1px; }
+.today .now { fill: var(--red-hi); stroke: var(--page); stroke-width: 3px; paint-order: stroke; }
+
+/* dots: one reading per hour, a point over its hour's tick; the ticks run on to closing, the hours still to come. */
+.today .reading { fill: var(--ink); }
+.today .tick { stroke: rgb(var(--chalk) / 0.36); stroke-width: 1px; } /* 3:1 on the page, a graphic that places a reading */
+
+/* The light: the page's light as public.css draws it: an arc from the top inline-start corner, a dark disc in front
+ * so it reads as a rim, the grain where it is lit; at sketch 9's reach (1.25 across, 1.7 down), so the sign stands in
+ * it and the day on the dark. */
+.light {
+  --lx: calc(var(--ux) * 1.25);
+  --ly: calc(var(--uy) * 1.7);
+  --at: 100% 0%;
+  --disc-at: calc(100% - 320 * var(--lx)) calc(430 * var(--ly));
+  --ramp: rgb(255 41 70 / 0.62) 0%, rgb(229 25 53 / 0.45) 10%, rgb(77 7 19 / 0.85) 30%, rgb(77 7 19 / 0.45) 58%, rgb(8 9 10 / 0) 100%;
+  --glow: radial-gradient(ellipse calc(760 * var(--lx)) calc(420 * var(--ly)) at var(--at), var(--ramp));
+  --disc: radial-gradient(ellipse calc(560 * var(--lx)) calc(360 * var(--ly)) at var(--disc-at), transparent 0, transparent 70%, rgb(0 0 0 / 0.5) 86%, #000 100%);
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(560 * var(--ly));
+  pointer-events: none;
+  background: var(--glow);
+  -webkit-mask-image: var(--disc);
+  mask-image: var(--disc);
+}
+[dir="ltr"] .light { --at: 0% 0%; --disc-at: calc(320 * var(--lx)) calc(430 * var(--ly)); }
+.light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: 0.15;
+  -webkit-mask-image: var(--glow);
+  mask-image: var(--glow);
+}
+
+/* The mirror check (?dir=rtl): each English line keeps its own order inside the mirrored page (public-sketch-11.js). */
+.en-run { unicode-bidi: isolate; direction: ltr; }
+
+/* The owner turned the percentage off: the count stands alone on its line. */
+.page[data-pct="off"] .facts { column-gap: 0; }
