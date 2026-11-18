@@ -37,3 +37,27 @@
 - **Reading:** on this brief GPT-6.2 Sol reached the best row count yet with about a fifth of the tokens and a fifth
   of the time of the 6.1 arm, kept the static proof the others lost, wrote the cleanest diff, and still narrowed the
   guide guard and claimed a row it missed. One run each.
+
+## The B8/B9 builds replayed on GPT-6.2 Sol (2026-11-18, level `high` as in October)
+
+- **card-1 could not be replayed:** the brief's drawn target, the designer's copy under
+  `D:/fitway-temp/owner-r04-busiest-card/`, no longer holds its `index.html` and `style.css`. Sol 6.2 (brief copy
+  `D:/fitway-temp/eval-b89-card-62/BRIEF.md`, a clone holding only `bd8bada`'s history) checked both files, found them
+  missing and stopped as the brief directs, naming the gap and an unchanged HEAD, in about 2.5 minutes (432k input,
+  3k output). The copy was not rebuilt from `0fcd3e3`: that would change the target the October arms had.
+- **touch-1 in its place** (`D:/fitway-temp/eval-b89-touch-62/BRIEF.md`, the "with Intent" arm X's brief, only the
+  clone, branch, run folder and port changed): result `8fbeaf4` on `eval-b89-touch-62` in that clone (not in this
+  repository), five files, all in the concept folder; about 26 minutes, 7.3M input (7.1M cached) and 41k output. Its
+  report marks every row PASS.
+- **Blind grade** (`D:/fitway-temp/grade-touch-62/`, a Sonnet grader given the arm as "Z", the held-out rows H1-H10
+  and S1, no report): every row PASS. Recorded with them: H3 holds per touchmove, but Chromium's slop leaves the
+  first interval 3-4 stops; H4 holds for a continuous drag, and a stall of 80 ms or more resumes the paused top slide
+  (13-16 px under a held finger); H8 adds a document-level Escape that closes a kept reading; H9 is met by meaning
+  ("belongs to the browser", "one stop at a time"), not the words. The grader could not write its report (the tool
+  refused a subagent file); its table is the hand-back.
+- **The coordinator's check of H10** (`scripts/coord-h10.mjs` there): at 1000 px/s, 390 AR and 320 EN, both
+  directions, the reading was on the finger's stop 238-377 ms after the last touchmove, offset 0 in 8 of 8 runs. The
+  baseline also ends at offset 0 (it jumps to the finger), so it is no failing control; October's arm Y failed the
+  same row with 22 and 27 stops behind.
+- **Against October** (same brief, a different grader and scripts): arm X failed H3 as worded, arm Y failed H10 and
+  changed a file outside its scope; this result fails none, and leaves the stall leak above.
