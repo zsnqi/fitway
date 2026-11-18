@@ -12,6 +12,8 @@ const HELP_MODULES = [
 	"concept-source.mjs",
 	"core.mjs",
 	"compare.mjs",
+	"compare-items.mjs",
+	"compare-report.mjs",
 	"image-diff.mjs",
 	"runner.mjs",
 	"viewport-capture.mjs",

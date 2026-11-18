@@ -77,18 +77,41 @@
 		".agents/skills/verify-fitway/capture-records.mjs": {
 			"duplication": 1
 		},
+		".agents/skills/verify-fitway/cli-hold.test.mjs": {
+			"duplication": 3,
+			"longFunctions": 1
+		},
+		".agents/skills/verify-fitway/cli-map.test.mjs": {
+			"suppressions": 1
+		},
+		".agents/skills/verify-fitway/cli-preview.test.mjs": {
+			"duplication": 2
+		},
+		".agents/skills/verify-fitway/cli-recipe-checks.test.mjs": {
+			"duplication": 25,
+			"longFunctions": 2
+		},
+		".agents/skills/verify-fitway/cli-state-proofs.test.mjs": {
+			"duplication": 16,
+			"longFunctions": 1
+		},
+		".agents/skills/verify-fitway/cli-test-runner-fixture.mjs": {
+			"duplication": 1
+		},
+		".agents/skills/verify-fitway/cli-timeline.test.mjs": {
+			"duplication": 13,
+			"longFunctions": 3
+		},
 		".agents/skills/verify-fitway/cli.mjs": {
 			"longFunctions": 2,
 			"longFunctionLines": 228,
 			"emptyBlocks": 2
 		},
-		".agents/skills/verify-fitway/cli.test.mjs": {
-			"duplication": 61,
-			"suppressions": 1,
-			"longFunctions": 8
+		".agents/skills/verify-fitway/compare-items.mjs": {
+			"duplication": 1
 		},
 		".agents/skills/verify-fitway/compare-parallel.test.mjs": {
-			"duplication": 9,
+			"duplication": 8,
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare-runtime.mjs": {
@@ -101,9 +124,9 @@
 			"longFunctions": 1
 		},
 		".agents/skills/verify-fitway/compare.mjs": {
-			"duplication": 6,
+			"duplication": 5,
 			"longFunctions": 1,
-			"longFunctionLines": 799
+			"longFunctionLines": 746
 		},
 		".agents/skills/verify-fitway/core.mjs": {
 			"longFunctions": 1,
@@ -792,12 +815,11 @@
 			"longFunctionLines": 129
 		},
 		"scripts/agent-environment/check-brief.test.ts": {
-			"duplication": 1,
 			"typeEscapes": 5,
 			"longFunctions": 1
 		},
 		"scripts/agent-environment/code-health-ratchet.test.ts": {
-			"duplication": 10
+			"duplication": 9
 		},
 		"scripts/agent-environment/codex-execution.mjs": {
 			"duplication": 1,
@@ -829,9 +851,6 @@
 		"scripts/agent-environment/new-handoff.test.ts": {
 			"duplication": 3
 		},
-		"scripts/agent-environment/path-tokens.test.ts": {
-			"duplication": 1
-		},
 		"scripts/agent-environment/quiet-tooling.test.ts": {
 			"duplication": 1
 		},
@@ -840,7 +859,7 @@
 			"longFunctionLines": 99
 		},
 		"scripts/agent-environment/resume-point.test.ts": {
-			"duplication": 5
+			"duplication": 4
 		},
 		"scripts/agent-environment/start-load.mjs": {
 			"emptyBlocks": 1
@@ -848,14 +867,24 @@
 		"scripts/agent-environment/start-load.test.ts": {
 			"duplication": 1
 		},
+		"scripts/check-agent-context-authorities.test.ts": {
+			"duplication": 4
+		},
+		"scripts/check-agent-context-ui-packets.test.ts": {
+			"duplication": 12,
+			"longFunctions": 1
+		},
+		"scripts/check-agent-context.fixture.ts": {
+			"duplication": 5,
+			"typeEscapes": 5
+		},
 		"scripts/check-agent-context.mjs": {
 			"longFunctions": 1,
 			"longFunctionLines": 111
 		},
 		"scripts/check-agent-context.test.ts": {
-			"duplication": 22,
-			"typeEscapes": 6,
-			"longFunctions": 1
+			"duplication": 3,
+			"typeEscapes": 1
 		},
 		"scripts/check-concept-css.mjs": {
 			"longFunctions": 1,
@@ -900,7 +929,7 @@
 			"duplication": 1
 		},
 		"scripts/run-vitest.test.ts": {
-			"duplication": 6
+			"duplication": 5
 		},
 		"scripts/show-agent-context.mjs": {
 			"longFunctions": 1,
@@ -909,19 +938,22 @@
 		"scripts/show-agent-context.test.ts": {
 			"longFunctions": 1
 		},
+		"scripts/verify-repository.invariants.test.ts": {
+			"duplication": 6,
+			"longFunctions": 1
+		},
 		"scripts/verify-repository.mjs": {
 			"longFunctions": 2,
 			"longFunctionLines": 249
 		},
 		"scripts/verify-repository.schema.test.ts": {
-			"duplication": 18,
-			"longFunctions": 1
+			"duplication": 12
 		},
 		"scripts/verify.mjs": {
 			"duplication": 3
 		},
 		"scripts/verify.test.ts": {
-			"duplication": 8,
+			"duplication": 7,
 			"longFunctions": 1
 		},
 		"scripts/visual-authority.mjs": {
@@ -1063,8 +1095,8 @@
 			"expectCalls": 542
 		},
 		"scripts/agent-environment": {
-			"testCases": 419,
-			"expectCalls": 1088
+			"testCases": 424,
+			"expectCalls": 1102
 		},
 		"scripts/demo": {
 			"testCases": 17,

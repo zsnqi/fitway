@@ -443,11 +443,11 @@ Verifier rules (one canonical statement):
 | custom page action or scoped rewrite | `rewrite-page.test.mjs` and a `run` check in the run folder |
 | public frame matrix or names | `frame-plan.test.mjs` |
 | public sheet rows, density, refusals or scale | `sheet-plan.test.mjs` |
-| options this guide writes | the V5 and Y1 cases in `cli.test.mjs`, with `guide-options.mjs` |
+| options this guide writes | the V5 and Y1 cases in `cli-skill-options.test.mjs`, with `guide-options.mjs` |
 | command help, arguments and provenance | `tool-contract.test.ts`, `blocked-command-options.test.ts`, `skill-navigation.test.mjs` and `output-manifest.test.mjs` |
-| exact pair image diff | `diff-folders.test.mjs`, using the fake child shape from `cli.test.mjs` |
+| exact pair image diff | `diff-folders.test.mjs`, using the fake child shape from `cli-timeline.test.mjs` |
 | compare capture, verdict, or cache | `comparison-capture.test.mjs`, `compare-parallel.test.mjs`, or `invalidationCases` |
-| preview, port pair, or lease | the existing port and lifecycle cases in `cli.test.mjs` |
+| preview, port pair, or lease | the existing port and lifecycle cases in `cli-preview.test.mjs` |
 | commit extraction | `concept-extraction-cache.test.mjs` |
 | output folder or provenance | `output-manifest.test.mjs`, which runs each command through `fake-cli.mjs` |
 | this location map | `skill-navigation.test.mjs` |

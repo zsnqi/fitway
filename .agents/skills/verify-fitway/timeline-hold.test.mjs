@@ -18,7 +18,7 @@ after(async () => {
 	if (scratch) await rm(scratch, { recursive: true, force: true });
 });
 
-// Browser-boundary contract, following cli.test.mjs. These synthetic RGBA samples
+// Browser-boundary contract, following cli-timeline.test.mjs. These synthetic RGBA samples
 // are not browser screenshots or CSS integration evidence. Production observation,
 // scheduling, capture and comparison run unchanged; actual CSS proof is external.
 function fixture() {
