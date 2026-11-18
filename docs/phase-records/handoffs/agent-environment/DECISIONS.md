@@ -342,3 +342,15 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - F119, F122 and F126 stay open after the closure. No environment milestone follows: the gardener counts them, and
       the next round that touches verify-fitway or the fast ladder takes them. The review's gardener findings are
       F127 and F128.
+30. **Moved debt enters the baseline in new files (the user, 2026-11-18, for the giant-file split; «موافق», then
+    directly in the splitting session).** The five giant files whose `giantFiles` exceptions expired on 2026-11-15
+    could not be split under the ratchet: `refusedChanges` refused every per-file rise, so tests moved into a new file
+    took their duplication, long-function and type-escape counts there from 0 and were refused, though no total rose.
+    - A rise in one file's measure is accepted only when all three hold: the file is new (in neither the previous
+      baseline's `files` nor the HEAD tree); the measure's total over all files does not rise against the previous
+      baseline; the measure is not a giant size (`giantFiles` or `giantDocuments`), so a giant file stays refused
+      everywhere. A rise in an existing file stays refused even when totals fall; directory floors are unchanged.
+    - The moved count is baselined in the new file and ratchets down from there. `movedIntoNewFile` in
+      `scripts/agent-environment/code-health-ratchet.mjs` holds the rule; `checkCodeHealth`'s working-baseline
+      inflation check applies the same rule, so a baseline the command writes passes the check before it is
+      committed. Four planted controls in `code-health-ratchet.test.ts` cover it.

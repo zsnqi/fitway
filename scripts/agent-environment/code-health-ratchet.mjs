@@ -442,6 +442,16 @@ export function readGit(root, args, { input, encoding = "utf8" } = {}) {
 	});
 }
 
+// The paths HEAD's tree holds; a repository without a commit holds none.
+export function readCommittedFiles(root = process.cwd()) {
+	if (readGit(root, ["rev-parse", "--verify", "--quiet", "HEAD"]).status !== 0)
+		return new Set();
+	const listed = readGit(root, ["ls-tree", "-r", "-z", "--name-only", "HEAD"]);
+	if (listed.status !== 0)
+		throw new Error(`git ls-tree HEAD failed: ${listed.stderr.trim()}`);
+	return new Set(listed.stdout.split(" ").filter(Boolean));
+}
+
 // Only a repository without a commit, or a HEAD without the baseline, has no
 // committed baseline; any other Git failure stops the command.
 export function readCommittedCodeHealthBaseline(root = process.cwd()) {
@@ -552,7 +562,44 @@ export function directoryExcepted(snapshot, change, today) {
 	);
 }
 
-export function refusedChanges(previous, snapshot, today) {
+function measureTotal(files, measure) {
+	return Object.values(files ?? {}).reduce(
+		(total, record) => total + measureValue(record, measure),
+		0,
+	);
+}
+
+// A split moves debt into a new file: a file-measure rise there is accepted only when the file is in neither
+// the previous baseline nor the HEAD tree, the measure is not a giant size, and the measure's total over all files
+// does not rise. The moved count is baselined and ratchets down from there (agent-environment DECISIONS item 30).
+// Without the HEAD file list no file counts as new.
+export function movedIntoNewFile(
+	change,
+	previous,
+	currentFiles,
+	committedFiles,
+) {
+	if (change.scope !== "file" || change.direction !== "rise" || !change.file)
+		return false;
+	if (
+		change.measure === GIANT_FILE_MEASURE ||
+		change.measure === GIANT_DOCUMENT_MEASURE
+	)
+		return false;
+	if (!committedFiles || committedFiles.has(change.file)) return false;
+	if (Object.hasOwn(previous?.files ?? {}, change.file)) return false;
+	return (
+		measureTotal(currentFiles, change.measure) <=
+		measureTotal(previous?.files, change.measure)
+	);
+}
+
+export function refusedChanges(
+	previous,
+	snapshot,
+	today,
+	{ committedFiles } = {},
+) {
 	const established = establishedMeasures(previous);
 	const previousRoots = new Set(previous?.giantRoots ?? []);
 	const introducedRoots = (snapshot.giantRoots ?? []).filter(
@@ -566,6 +613,8 @@ export function refusedChanges(previous, snapshot, today) {
 				!directoryExcepted(snapshot, change, today)
 			);
 		if (change.direction === "fall") return false;
+		if (movedIntoNewFile(change, previous, snapshot.counts, committedFiles))
+			return false;
 		return !(
 			change.file &&
 			introducedRoots.some((root) => pathWithin(change.file, root))

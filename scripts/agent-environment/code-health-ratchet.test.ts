@@ -635,3 +635,66 @@ describe("code-health ratchet commands", () => {
 		expect(restored.stdout).toContain("PASS: code health");
 	});
 });
+
+// Moved debt (agent-environment DECISIONS item 30): a new file takes a split's counts only while the total holds.
+describe("code-health ratchet: debt a split moves into a new file", () => {
+	const twoEscapes = "const one: any = 1;\nconst two: any = 2;\n";
+	const oneEscape = "const one: any = 1;\n";
+
+	function committed(files: Record<string, string>) {
+		const root = fixture();
+		for (const [file, text] of Object.entries(files)) write(root, file, text);
+		writeBaseline(root);
+		git(root, "add", "--all");
+		git(root, "commit", "-qm", "baseline");
+		return root;
+	}
+
+	it("baselines a split's moved count in a new file when the total is flat", () => {
+		const root = committed({ "scripts/a.ts": twoEscapes });
+		write(root, "scripts/a.ts", oneEscape);
+		write(root, "scripts/b.ts", oneEscape);
+		const baseline = writeBaseline(root);
+		expect(baseline.files["scripts/a.ts"]).toEqual({ typeEscapes: 1 });
+		expect(baseline.files["scripts/b.ts"]).toEqual({ typeEscapes: 1 });
+		const check = run(checkScript, root);
+		expect(check.status, `${check.stdout}\n${check.stderr}`).toBe(0);
+		expect(check.stdout).toContain("PASS: code health");
+	});
+
+	it("refuses the same new file when the total rises", () => {
+		const root = committed({ "scripts/a.ts": twoEscapes });
+		write(root, "scripts/b.ts", oneEscape);
+		const refused = run(baselineScript, root);
+		expect(refused.status, refused.stdout).toBe(1);
+		expect(refused.stderr).toContain(
+			"scripts/b.ts: typeEscapes baseline=0 current=1",
+		);
+	});
+
+	it("refuses a rise in an existing file while another file falls", () => {
+		const root = committed({
+			"scripts/a.ts": twoEscapes,
+			"scripts/c.ts": "export const clean = 1;\n",
+		});
+		write(root, "scripts/a.ts", oneEscape);
+		write(root, "scripts/c.ts", oneEscape);
+		const refused = run(baselineScript, root);
+		expect(refused.status, refused.stdout).toBe(1);
+		expect(refused.stderr).toContain(
+			"scripts/c.ts: typeEscapes baseline=0 current=1",
+		);
+	});
+
+	it("refuses a new giant file even when the giant total is flat", () => {
+		const giant = sourceLines(801, "giant");
+		const root = committed({ "scripts/old.ts": giant });
+		git(root, "rm", "-q", "scripts/old.ts");
+		write(root, "scripts/new.ts", giant);
+		const refused = run(baselineScript, root);
+		expect(refused.status, refused.stdout).toBe(1);
+		expect(refused.stderr).toContain(
+			"scripts/new.ts: giantFiles baseline=0 current=801",
+		);
+	});
+});

@@ -19,10 +19,12 @@ import {
 	date,
 	directoryExcepted,
 	HEALTH_ROOTS,
+	movedIntoNewFile,
 	normalizePath,
 	pathWithin,
 	readCodeHealthBaseline,
 	readCommittedCodeHealthBaseline,
+	readCommittedFiles,
 	refusedChanges,
 	selectCodeHealthPath,
 	snapshotCodeHealth,
@@ -156,7 +158,9 @@ export function writeCodeHealthBaseline({
 	);
 	const changes = previous ? compareCodeHealth(previous, snapshot) : [];
 	const refused = previous
-		? refusedChanges(previous, snapshot, today).filter(
+		? refusedChanges(previous, snapshot, today, {
+				committedFiles: readCommittedFiles(root),
+			}).filter(
 				(change) =>
 					!(
 						change.scope === "file" &&
@@ -186,6 +190,7 @@ export function checkCodeHealth({ root = process.cwd(), today = date() } = {}) {
 		);
 	const snapshot = snapshotCodeHealth(readCodeHealthFiles(root), { today });
 	const committed = readCommittedCodeHealthBaseline(root);
+	const committedFiles = committed ? readCommittedFiles(root) : null;
 	const inflation = committed
 		? compareCodeHealth(committed, {
 				counts: baseline.files,
@@ -197,7 +202,13 @@ export function checkCodeHealth({ root = process.cwd(), today = date() } = {}) {
 					? change.direction === "fall" &&
 						!directoryExcepted(snapshot, change, today)
 					: change.direction === "rise" &&
-						!namedCurrentAdmission(baseline, change, snapshot),
+						!namedCurrentAdmission(baseline, change, snapshot) &&
+						!movedIntoNewFile(
+							change,
+							committed,
+							baseline.files,
+							committedFiles,
+						),
 			)
 		: [];
 	return {
