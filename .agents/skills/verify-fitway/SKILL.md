@@ -39,6 +39,11 @@ A page recipe can declare `dependencies: [{switch, value, requires}]` for a swit
 cannot see; these merge with source-found dependencies, and a conflicting declaration is refused. A state rule can
 set `afterActions: true` when its effect appears only after the feature's actions; that proof must read the page
 with a selector or expression and is checked after those actions.
+For a spontaneous arrival, put `arrivesFrom: { state: "loading" }` on the arrival rule, matching the exact `when`
+of its starting state rule. Use a read-only Boolean expression in each rule. The starting expression must prove
+the visible starting phase, and the arrival expression must become true only when that phase ends. Capture
+checks the starting expression and the absence of arrival on both sides of the before screenshot. It then
+waits for the page's arrival before proceeding with the feature and capturing its result.
 A source edit alone is not drift. Uncovered openings/openers and vanished recipe selectors/markers fail
 with their names and source file/line; repair the recipe or source on the concept branch, then run:
 
@@ -269,7 +274,8 @@ Personally inspect exact named rendered frames
 at the required sizes and languages; logs/hashes do not establish visual quality or human acceptance.
 
 `measure --tool focus|motion|a11y|probe|perf|capture|sheet|diff --out <folder> -- <tool arguments>` delegates to
-ui-forensics. `measure --colors forced` passes `--forced-colors active`; tool arguments can supply it directly.
+ui-forensics. `measure --colors forced` selects the tool's active forced colours. To pass the option directly,
+use `measure --tool capture --out <folder> -- --forced-colors active <capture arguments>`.
 Forced requests in tool arguments and frame/probe matrices also require 1.2.0 before delegation. Read that tool's help for advanced measurements. Extend this path when an adapter is missing instead
 of writing another server, launcher or capture loop. The concept is synthetic; preserve privacy and data semantics.
 

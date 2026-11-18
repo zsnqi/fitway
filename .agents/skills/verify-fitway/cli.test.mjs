@@ -1931,12 +1931,13 @@ async function runnerFixture(name, features, options = {}) {
 import {appendFile,writeFile} from "node:fs/promises";
 import {createContext,runInContext} from "node:vm";
 const motion=${JSON.stringify(options.scriptMotion || null)}, phase=${JSON.stringify(options.scriptPhase || 0)};
+const arrival=${JSON.stringify(options.scriptArrival || null)};
 const capture=async(via,options,picture)=>{await appendFile(${JSON.stringify(resolve(root, "captures.jsonl"))},JSON.stringify({via,options})+"\\n");return Buffer.from(picture)};
 export const launchChromium=async(loaded,options)=>{await writeFile(${JSON.stringify(resolve(root, "launch.json"))},JSON.stringify(options||null));return {close:async()=>{}}};
 export async function newContext(browser, options) {
  let focus="body", open=false;
  let now=0, next=0; const frames=new Map();
- const sandbox={position:0,document:{getAnimations:()=>[]},
+ const sandbox={position:0,phase:"loading",document:{getAnimations:()=>[]},
  requestAnimationFrame:(callback)=>{const id=++next;frames.set(id,callback);return id},
  cancelAnimationFrame:(id)=>frames.delete(id)};
  sandbox.window=sandbox; createContext(sandbox);
@@ -1944,11 +1945,20 @@ export async function newContext(browser, options) {
  const tick=()=>{now+=16;for(const id of [...frames.keys()]){const callback=frames.get(id);if(callback){frames.delete(id);callback.call(sandbox,now)}}};
 const page={setDefaultTimeout(){},addInitScript:async(fn)=>{await appendFile(${JSON.stringify(resolve(root, "init.jsonl"))},"observer\\n");if(motion)run(fn)},
  startMotion:()=>{if(motion){runInContext('function move(){position++;if('+JSON.stringify(motion==='forever')+'||position<20)requestAnimationFrame(move)};requestAnimationFrame(move)',sandbox);for(let i=0;i<phase;i++)tick()}},
- tick,picture:()=>motion?JSON.stringify({x:sandbox.position}):"fixture",
- waitForFunction:async(fn,arg,options)=>{if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}},
- screenshot:async(options)=>capture("native",options,page.picture()),
+ tick,picture:()=>arrival?sandbox.phase:motion?JSON.stringify({x:sandbox.position}):"fixture",
+ beforeCapture:()=>{if(arrival==="during-capture")sandbox.phase="ready"},
+ waitForFunction:async(fn,arg,options)=>{
+  if(arrival&&typeof fn==="string"){
+   if(runInContext(fn,sandbox))return;
+   if(arrival==="after-capture"&&fn==="phase === 'ready'")sandbox.phase="ready";
+   if(!runInContext(fn,sandbox))throw new Error("State predicate remained false: "+fn);
+   return;
+  }
+  if(!motion)return;if(!Number.isFinite(options.timeout)||options.timeout<=0)throw new Error('Motion wait must have a finite positive bound');let remaining=options.timeout;while(!run(fn)){if(remaining<=0)throw new Error('Timeout '+options.timeout+' ms: script motion still schedules frames');tick();remaining-=16}
+ },
+ screenshot:async(options)=>{page.beforeCapture();return capture("native",options,page.picture())},
 context:()=>({newCDPSession:async()=>({send:async(method)=>method==="Runtime.evaluate"?{result:{objectId:"focus"}}:method==="Accessibility.getPartialAXTree"?{nodes:[{role:{value:"button"},name:{value:"Open details"}}]}:{},detach:async()=>{}})}),
-  evaluate:async(fn)=>fn.toString().includes("coarse")
+  evaluate:async(fn)=>arrival&&typeof fn==="string" ? runInContext(fn,sandbox) : fn.toString().includes("coarse")
    ? {language:"en",direction:"ltr",coarse:false,touchPoints:0}
    : fn.toString().includes("Canvas") ? {active:true,background:"rgb(0, 0, 0)",canvas:"rgb(0, 0, 0)"}
 : fn.toString().includes("document.activeElement") ? {selector:focus,tag:focus==="body"?"body":"button",page:focus==="body",text:"Whole page text must never appear in a focus message"} : motion&&fn.toString().includes("document.getAnimations")?run(fn):{},
@@ -1964,7 +1974,7 @@ evaluate:async()=>focus===selector,ariaSnapshot:async()=>selector==="body"?"body
 }
 export const withParams=(url)=>url;
 export const preparePage=async(page)=>{page.startMotion();return {ready:true}};
-export const screenshot=async(page,options)=>capture("adapter",options,page.picture());
+export const screenshot=async(page,options)=>{page.beforeCapture();return capture("adapter",options,page.picture())};
 export const twoFrames=async(page)=>{page.tick();page.tick()};
 export const injectProbe=async()=>{};
 export const renderSheet=async()=>{};
@@ -2019,6 +2029,78 @@ catch(error){if(!(core.ReportedFailure && error instanceof core.ReportedFailure)
 		}),
 	};
 }
+
+test("Timed captures prove the initial and arrived frames; a transition during capture fails", async () => {
+	const features = [{ id: "page", proof: { selector: "main", visible: true } }];
+	const loading = {
+		when: { state: "loading" },
+		shows: "Loading shown",
+		proof: { expression: "phase === 'loading'" },
+	};
+	const arrival = {
+		when: { arrive: "500" },
+		arrivesFrom: loading.when,
+		shows: "Payload arrived",
+		proof: { expression: "phase === 'ready'" },
+	};
+	const switches = [{ name: "state" }, { name: "arrive" }];
+	for (const comparisonCapture of [false, true]) {
+		for (const scriptArrival of [
+			"after-capture",
+			"during-capture",
+			"never",
+			"stable",
+		]) {
+			const stable = scriptArrival === "stable";
+			const succeeds = scriptArrival === "after-capture";
+			const { result, out } = await runnerFixture(
+				`arrival-${comparisonCapture}-${scriptArrival}`,
+				features,
+				{
+					switches,
+					states: stable ? "state=loading" : "state=loading&arrive=500",
+					mapStates: stable ? [loading] : [loading, arrival],
+					scriptArrival: stable ? "during-capture" : scriptArrival,
+					comparisonCapture,
+					inputs: "mouse",
+				},
+			);
+			assert.equal(
+				result.status,
+				succeeds ? 0 : 1,
+				result.stdout + result.stderr,
+			);
+			const {
+				items: [item],
+			} = JSON.parse(await readFile(resolve(out, "manifest.json"), "utf8"));
+			if (succeeds) {
+				assert.deepEqual(item.stateProof, [loading.shows, arrival.shows]);
+				assert.equal(
+					await readFile(resolve(out, item.files[0]), "utf8"),
+					"loading",
+				);
+				assert.equal(
+					await readFile(resolve(out, item.files[1]), "utf8"),
+					"ready",
+				);
+			} else if (scriptArrival === "during-capture") {
+				assert.deepEqual(
+					item.files.map((file) => file.split("-").at(-1)),
+					["error.png"],
+				);
+				assert.match(
+					item.problems.join("\n"),
+					/State changed during the before capture/,
+				);
+			} else {
+				assert.match(
+					item.problems.join("\n"),
+					/State predicate remained false/,
+				);
+			}
+		}
+	}
+});
 
 test("R20 V1: colours multiply states and reach the context, manifest and FRAME; default stays normal", async () => {
 	const features = [{ id: "page", proof: { selector: "main", visible: true } }];
@@ -3064,17 +3146,68 @@ test("V7: navigation settles before the action returns and a wrong destination f
 	assert.equal(focusReads, 2);
 });
 
+const optionPattern = /--[A-Za-z0-9_][A-Za-z0-9_-]*/g;
+const measureTools = new Set(
+	/\bmeasure --tool ([\w|]+)/.exec(help)[1].split("|"),
+);
+
+function commandOptions(command) {
+	const tokens =
+		command.match(
+			/"(?:`.|[^"])*"|'(?:''|[^'])*'|#[^\n]*|[;|&{}()]|[^\s;|&{}()]+/g,
+		) || [];
+	const commands = [[]];
+	for (const token of tokens) {
+		if (token.startsWith("#")) commands.push([token]);
+		else if (/^[;|&{}()]$/.test(token)) commands.push([]);
+		else commands.at(-1).push(token.replace(/^(['"])(.*)\1$/, "$2"));
+	}
+	return commands.flatMap((args) => {
+		if (args[0] === "pnpm") return [];
+		const offset = args[0] === "node" && args[1] === "$cli" ? 2 : 0;
+		const separator = args.indexOf("--");
+		const tool = args.indexOf("--tool");
+		const delegates =
+			args[offset] === "measure" &&
+			tool > offset &&
+			tool + 1 < separator &&
+			measureTools.has(args[tool + 1]);
+		const cliArgs = delegates ? args.slice(0, separator) : args;
+		return cliArgs.flatMap((arg) => arg.match(optionPattern) || []);
+	});
+}
+
+function checkGuideOptions(skill, cliOptions) {
+	for (const [i, part] of skill
+		.split(/(```[^\n]*\n[\s\S]*?```|`[^`\n]*`)/g)
+		.entries()) {
+		const options =
+			i % 2 === 0
+				? part.match(optionPattern) || []
+				: part.startsWith("```")
+					? part
+							.slice(part.indexOf("\n") + 1, -3)
+							.replace(/`\r?\n/g, " ")
+							.split(/\r?\n/)
+							.flatMap(commandOptions)
+					: commandOptions(part.slice(1, -1));
+		for (const option of options)
+			assert.ok(cliOptions.has(option), `${option} is not a CLI option`);
+	}
+}
+
 test("V5: SKILL names CLI options, ports and rendered artifacts without drift", async () => {
 	const skill = await readFile(
 		fileURLToPath(new URL("./SKILL.md", import.meta.url)),
 		"utf8",
 	);
-	const cliOptions = new Set(help.match(/--[a-z][a-z0-9-]*/g) || []);
-	for (const option of cliOptions)
+	const helpOptions = new Set(help.match(optionPattern));
+	for (const option of helpOptions)
 		assert.ok(skill.includes(option), `${option} is missing from SKILL.md`);
-	const beforeAdvanced = skill.split("## Evidence and advanced tools")[0];
-	for (const option of beforeAdvanced.match(/--[a-z][a-z0-9-]*/g) || [])
-		assert.ok(cliOptions.has(option), `${option} is not a CLI option`);
+	const cliOptions = new Set(helpOptions);
+	for (const toolOption of ["--dir", "--frozen-lockfile", "--forced-colors"])
+		cliOptions.delete(toolOption);
+	checkGuideOptions(skill, cliOptions);
 	for (const pair of skill.match(/\b31\d\d-31\d\d\b/g) || [])
 		if (pair !== "3178-3185")
 			assert.ok(
@@ -3089,6 +3222,38 @@ test("V5: SKILL names CLI options, ports and rendered artifacts without drift", 
 			"utf8",
 		),
 		/comparisonCapture[\s\S]*break/,
+	);
+});
+
+test("V5: option checks cover advanced prose and scope tool arguments to their command", () => {
+	const cliOptions = new Set(["--tool", "--out", "--page"]);
+	const heading = "## Evidence and advanced tools\n\n";
+	const tool =
+		"node $cli measure --tool capture --out folder -- --forced-colors active";
+	const fence = (command) => `\`\`\`powershell\n${command}\n\`\`\`\n`;
+	const invalid = [
+		`\`--made-up\`\n\n${heading}`,
+		`${heading}Use \`--made-up\` here.`,
+		heading + fence("node $cli drive --made-up value"),
+		heading + fence("node $cli drive --UPPERCASE value"),
+		fence("pnpm --dir folder install; node $cli drive --dir folder"),
+		fence("pnpm --dir folder install # --made-up"),
+		fence("pnpm --dir (node $cli drive --made-up) install"),
+		fence(`${tool}; node $cli drive --forced-colors active`),
+		fence("node $cli measure --tool capture --forced-colors active -- x"),
+		fence("node $cli drive -- --made-up"),
+	];
+	for (const skill of invalid)
+		assert.throws(
+			() => checkGuideOptions(skill, cliOptions),
+			/is not a CLI option/,
+		);
+	assert.doesNotThrow(() =>
+		checkGuideOptions(
+			heading +
+				fence(`pnpm --dir folder install; ${tool}; node $cli drive --page all`),
+			cliOptions,
+		),
 	);
 });
 

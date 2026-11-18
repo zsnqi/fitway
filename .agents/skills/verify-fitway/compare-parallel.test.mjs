@@ -10,9 +10,11 @@ import {
 	symlink,
 	writeFile,
 } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { after, before, test as nodeTest } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { isolateFixtureCache } from "./compare-test-cache.mjs";
 import { verificationTest } from "./skip-gate.mjs";
 
 const test = verificationTest(nodeTest);
@@ -20,9 +22,7 @@ const skill = dirname(fileURLToPath(import.meta.url));
 const repository = resolve(skill, "../../..");
 let scratch;
 before(async () => {
-	const root = "D:/fitway-temp/owner-r04-vf-fixes/parallel";
-	await mkdir(root, { recursive: true });
-	scratch = await mkdtemp(resolve(root, "fixtures-"));
+	scratch = await mkdtemp(resolve(tmpdir(), "verify-fitway-parallel-"));
 });
 after(async () => {
 	await rm(scratch, { recursive: true, force: true });
@@ -36,13 +36,9 @@ async function fixture(name, mutation) {
 		(f) => f.endsWith(".mjs") && !f.endsWith(".test.mjs"),
 	))
 		await cp(resolve(skill, file), resolve(clone, file));
-	const cacheFile = resolve(clone, "baseline-cache.mjs");
-	await writeFile(
-		cacheFile,
-		(await readFile(cacheFile, "utf8")).replace(
-			'export const cacheRoot = "D:/fitway-verify-captures";',
-			`export const cacheRoot = ${JSON.stringify(resolve(root, "cache"))};`,
-		),
+	await isolateFixtureCache(
+		resolve(clone, "baseline-cache.mjs"),
+		resolve(root, "cache"),
 	);
 	await cp(resolve(skill, "../gardener"), resolve(clone, "../gardener"), {
 		recursive: true,

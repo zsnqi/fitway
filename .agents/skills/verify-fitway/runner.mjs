@@ -156,6 +156,35 @@ function requestedProofs(page, state, language) {
 	return rules;
 }
 
+function arrivalProof(rules, beforeRules) {
+	const arrivals = rules.filter((rule) => Object.hasOwn(rule, "arrivesFrom"));
+	if (!arrivals.length) return null;
+	const [arrival] = arrivals;
+	const from = Object.entries(arrival.arrivesFrom || {});
+	const starts = beforeRules.filter(
+		(rule) =>
+			Object.keys(rule.when || {}).length === from.length &&
+			from.every(([key, value]) => rule.when[key] === value),
+	);
+	const [start] = starts;
+	if (
+		arrivals.length !== 1 ||
+		arrival.afterActions ||
+		!from.length ||
+		starts.length !== 1 ||
+		typeof start.proof?.expression !== "string" ||
+		typeof arrival.proof?.expression !== "string"
+	)
+		throw new Error(
+			"An arrival needs exactly one arrivesFrom state rule and separate before and arrival proof expressions.",
+		);
+	return {
+		start,
+		arrival,
+		before: `(${start.proof.expression}) && !(${arrival.proof.expression})`,
+	};
+}
+
 const safe = (value) => value.replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 120);
 const captureIdentity = (item) =>
 	JSON.stringify([
@@ -546,18 +575,24 @@ export async function drive(options) {
 											);
 										else if (options.comparisonCapture)
 											await current.page.addInitScript(observeComparisonFrames);
-										const save = async (suffix) => {
+										const save = async (suffix, expression) => {
 											const name = `${stem}-${suffix}.png`;
-											await writeFile(
-												await outputFile(out, name),
-												options.comparisonCapture
-													? await captureComparison(current.page)
-													: await ui.screenshot(current.page, {
-															method: "playwright",
-															fullPage: false,
-															animations: "allow",
-														}),
-											);
+											const file = await outputFile(out, name);
+											const frame = options.comparisonCapture
+												? await captureComparison(current.page)
+												: await ui.screenshot(current.page, {
+														method: "playwright",
+														fullPage: false,
+														animations: "allow",
+													});
+											if (
+												expression &&
+												!(await current.page.evaluate(expression))
+											)
+												throw new Error(
+													`State changed during the ${suffix} capture`,
+												);
+											await writeFile(file, frame);
 											entry.files.push(name);
 										};
 										try {
@@ -639,18 +674,32 @@ export async function drive(options) {
 												language,
 											);
 											const beforeRules = rules.filter(
-												(rule) => !rule.afterActions,
+												(rule) =>
+													!rule.afterActions &&
+													!Object.hasOwn(rule, "arrivesFrom"),
 											);
 											const afterRules = rules.filter(
 												(rule) => rule.afterActions,
 											);
+											const transition = arrivalProof(rules, beforeRules);
+											const stableRules = beforeRules.filter(
+												(rule) => rule !== transition?.start,
+											);
 											entry.stateProof = [];
-											for (const rule of beforeRules) {
+											for (const rule of stableRules) {
 												await prove(current.page, rule.proof, language);
 												entry.stateProof.push(rule.shows);
 											}
-											await save("before");
-											for (const rule of beforeRules)
+											if (transition)
+												await prove(
+													current.page,
+													{ expression: transition.before },
+													language,
+												);
+											await save("before", transition?.before);
+											if (transition)
+												entry.stateProof.push(transition.start.shows);
+											for (const rule of stableRules)
 												await prove(current.page, rule.proof, language);
 											const unavailable =
 												(feature.widths === "phone" && cssWidth > 720) ||
@@ -660,14 +709,23 @@ export async function drive(options) {
 											const absent = (feature.unreachable || []).find((rule) =>
 												matches(rule, effective.query, language),
 											);
+											if (absent)
+												await prove(current.page, absent.proof, language);
+											if (transition) {
+												await prove(
+													current.page,
+													transition.arrival.proof,
+													language,
+												);
+												entry.stateProof.push(transition.arrival.shows);
+											}
+											const arrived = transition?.arrival.proof.expression;
 											if (unavailable || absent) {
-												if (absent)
-													await prove(current.page, absent.proof, language);
 												entry.status = "not-reachable";
 												entry.problems.push(
 													`State/feature cannot be reached: ${absent?.reason || `Feature path unavailable at ${cssWidth} CSS pixels by its recipe`}`,
 												);
-												await save("after");
+												await save("after", arrived);
 											} else {
 												const actionRecipe =
 													feature.fullMotion && motion === "reduce"
@@ -887,11 +945,14 @@ export async function drive(options) {
 													);
 												await ui.twoFrames(current.page);
 												if (!feature.changesState)
-													for (const rule of beforeRules)
+													for (const rule of stableRules)
 														await prove(current.page, rule.proof, language);
-												await save("after");
+												await save(
+													"after",
+													feature.changesState ? undefined : arrived,
+												);
 												if (!feature.changesState)
-													for (const rule of beforeRules)
+													for (const rule of stableRules)
 														await prove(current.page, rule.proof, language);
 												// A flow may change a state (retry/navigation). Its end proof owns that result;
 												// the requested state was proved before the first user action.
