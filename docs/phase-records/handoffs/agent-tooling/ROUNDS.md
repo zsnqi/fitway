@@ -147,3 +147,4 @@ in `docs/phase-records/handoffs/agent-tooling/rounds/<round>.md`, listed here.
 - agent-tooling-r01 public-frames: `briefs/codex-public-frames.md`, result `45e66009` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/public-frames.md`
 - agent-tooling-r01 working-tools: `briefs/codex-working-tools.md`, result `ca0e12da` (level max, one builder) `docs/phase-records/handoffs/agent-tooling/rounds/working-tools.md`
 - agent-tooling-r01 lesson-commands: `briefs/codex-lesson-commands.md`, result `0aeebde8` (level max, one fixer) `docs/phase-records/handoffs/agent-tooling/rounds/lesson-commands.md`
+- r04 vf-runner on GPT-6.2 Sol (a replay of the Sol arm): `../owner-design-exploration/r04/briefs/codex-vf-runner-62.md`, result `45e488de` on `owner-r04-vf-runner-62`, level `xhigh` `docs/phase-records/handoffs/agent-tooling/rounds/vf-runner-sol62.md`
