@@ -1,4 +1,4 @@
-<!-- brief-format: v1 role: codex -->
+<!-- brief-format: v1 role: codex delivers: commit -->
 # Codex brief: states that change with time captured, test roots of their own, and the whole guide held to the CLI (owner-design-exploration-r04, vf-runner)
 
 - **Worktree:** `D:/Projects/fitway-worktrees/owner-r04-vf-runner-62`, branch `owner-r04-vf-runner-62`, HEAD `c699d3fb`
