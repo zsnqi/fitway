@@ -1,17 +1,17 @@
 # Vendored skills: where they come from
 
 These skills are committed so that Claude Code cloud sessions, which see only committed files, have them. They
-are copies taken on 2026-09-25, and their licences travel with them.
+are copies taken on 2026-09-25 (Impeccable updated to 4.10.0 on 2026-11-21), and their licences travel with them.
 
 **The only change is whitespace.** Trailing whitespace and final blank lines were removed from four Markdown
-files, 27 lines in all, so that the repository's `git diff --check` invariant passes. The files are
+files (27 lines in 2026-09; the same three Impeccable files again after the 4.10.0 update), so that the repository's `git diff --check` invariant passes. The files are
 `impeccable/reference/extract.md`, `harden.md` and `optimize.md`, and
 `ux-araby/references/arabic-huroof-reference.md`. No wording changed. Biome excludes this folder
 (`biome.json`), so its code is never reformatted.
 
 | Skill | Source | Version | Licence |
 | --- | --- | --- | --- |
-| `impeccable/` | the Claude Code plugin `impeccable` from the marketplace `pbakaus/impeccable` (https://github.com/pbakaus/impeccable) | 4.3.1 | Apache-2.0 (`impeccable/LICENSE`, `impeccable/NOTICE.md`) |
+| `impeccable/` | the Claude Code plugin `impeccable` from the marketplace `pbakaus/impeccable` (https://github.com/pbakaus/impeccable) | 4.10.0 (from npm `impeccable update --project --no-hooks`, 2026-11-21) | Apache-2.0 (`impeccable/LICENSE`, `impeccable/NOTICE.md`) |
 | `ux-araby/` | the user's local skill set (`~/.agents/skills/ux-araby`) | as installed | MIT (`ux-araby/LICENSE`) |
 
 **Impeccable's shipped agents.** The skill calls them by name. They are copied from the same plugin, unmodified,
@@ -29,3 +29,5 @@ exception, before `pnpm check:design-context` can pass there.
 **Policy.** `AGENTS.md` names Impeccable as FITWAY's single broad design skill, so no competing design or taste
 skill is vendored here. `ux-araby` is for writing Arabic interface copy, not visual design. Nothing in `.claude/`
 is normative (see `CLAUDE.md`).
+
+**The 4.10.0 update dropped `LICENSE` and `NOTICE.md` from the skill folder; they were restored from the 4.3.1 copy (Apache-2.0 is unchanged).**
