@@ -386,10 +386,10 @@ it("prints the command's usage without starting Codex", () => {
 	);
 	expect(result.stdout).toContain("resumes automatically up to 10 times");
 	expect(result.stdout).toContain(
-		"Models: deepseek-v4.1-flash (default), gpt-6.1-sol, gpt-6.2-sol.",
+		"Models: deepseek-v4.1-flash (default), gpt-6.1-sol, gpt-6.2-sol, gpt-6.2-astra.",
 	);
 	expect(result.stdout).toContain(
-		"Levels: deepseek-v4.1-flash: high, max (default max); gpt-6.1-sol and gpt-6.2-sol: medium, high, xhigh, max.",
+		"Levels: deepseek-v4.1-flash: high, max (default max); gpt-6.1-sol, gpt-6.2-sol and gpt-6.2-astra: medium, high, xhigh, max.",
 	);
 	expect(existsSync(f.capture)).toBe(false);
 });

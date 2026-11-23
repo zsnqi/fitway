@@ -20,6 +20,7 @@ import { pathKey } from "./path-identity.mjs";
 const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
 const GPT_MODEL = "gpt-6.1-sol";
 const GPT_62_MODEL = "gpt-6.2-sol";
+const ASTRA_MODEL = "gpt-6.2-astra";
 const DEEPSEEK_MODEL = "deepseek-v4.1-flash";
 const GPT_LEVELS = new Set(["medium", "high", "xhigh", "max"]);
 const DEEPSEEK_LEVELS = new Set(["high", "max"]);
@@ -32,6 +33,7 @@ const MODEL_LEVELS = new Map([
 	[DEEPSEEK_MODEL, DEEPSEEK_LEVELS],
 	[GPT_MODEL, GPT_LEVELS],
 	[GPT_62_MODEL, GPT_LEVELS],
+	[ASTRA_MODEL, GPT_LEVELS],
 ]);
 
 function resolvePath(value) {
@@ -110,7 +112,7 @@ function validateModelLevel(model, level) {
 }
 
 function modelArgs(model, level, catalogPath) {
-	if (model === GPT_MODEL || model === GPT_62_MODEL)
+	if ([GPT_MODEL, GPT_62_MODEL, ASTRA_MODEL].includes(model))
 		return ["-m", model, "-c", `model_reasoning_effort=${level}`];
 	if (model === DEEPSEEK_MODEL) {
 		if (!catalogPath) throw new Error("DeepSeek requires a model catalog");

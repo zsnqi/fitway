@@ -67,16 +67,19 @@ describe("D1 model choice, catalog, and resume", () => {
 		).toMatchObject({ model: GPT_MODEL, level: "max" });
 	});
 
-	it("accepts GPT-6.2 Sol at xhigh with the same GPT arguments", () => {
+	it.each([
+		["GPT-6.2 Sol", "gpt-6.2-sol", "xhigh"],
+		["GPT-6.2 Astra", "gpt-6.2-astra", "high"],
+	])("accepts %s with the same GPT arguments", (_name, model, level) => {
 		const f = fixture();
 		const result = f.invoke(
-			[f.brief, "xhigh", "--model", "gpt-6.2-sol", "--run", f.run],
+			[f.brief, level, "--model", model, "--run", f.run],
 			{ OPENDESIGN_API_KEY: "" },
 		);
 		expect(result.status, result.output).toBe(0);
 		const args = f.captured().args;
-		expect(args).toContain("gpt-6.2-sol");
-		expect(args).toContain("model_reasoning_effort=xhigh");
+		expect(args).toContain(model);
+		expect(args).toContain(`model_reasoning_effort=${level}`);
 		expect(args.some((value) => value.startsWith("model_provider="))).toBe(
 			false,
 		);
