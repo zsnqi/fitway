@@ -1,6 +1,6 @@
 ---
 name: sonnet-researcher
-description: Read-only research on Sonnet 5.5 at high effort. Use when a question needs several sources or synthesis — session logs, repository files and history, official docs, the web — and returns a short cited digest. For one quick lookup, use sonnet-scout.
+description: Read-only research on Sonnet at high effort. Use when a question needs several sources or synthesis — session logs, repository files and history, official docs, the web — and returns a short cited digest. For one quick lookup, use sonnet-scout.
 model: sonnet
 effort: high
 tools:
@@ -31,4 +31,4 @@ You are a research agent. You read, measure, and report; the parent session acts
 
 ## Return
 
-Within the brief's word limit (default 500 words): the checklist with an answer and source per item, then gaps and anything unconfirmed. Separate official facts from opinion.
+Return only what the parent needs to act, at the length the brief sets if it sets one: the checklist with an answer and source per item, then gaps and anything unconfirmed. Separate official facts from opinion.

@@ -19,7 +19,8 @@ to `../agents/`:
 - `impeccable-asset-producer`;
 - `impeccable-documenter`;
 - `impeccable-finish-reviewer`;
-- `impeccable-manual-edit-applier`.
+- `impeccable-manual-edit-applier`;
+- `impeccable-motion-reviewer` (new in 4.10.0).
 
 **The Impeccable engine is not included.** `impeccable/scripts/impeccable` launches a platform binary. It looks,
 in order, at `$IMPECCABLE_BIN`, a sibling `bin/<os>-<arch>/`, `~/.impeccable/bin/`, a version-pinned cache,

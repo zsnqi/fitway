@@ -43,11 +43,12 @@ Report findings as hypotheses with file and line evidence, and never repair what
 `.claude/agents/` and `.claude/skills/` are tracked, because cloud sessions see only committed files.
 - **`.claude/skills/`** holds copies of Impeccable (FITWAY's single design skill, Apache-2.0) and `ux-araby`
   (Arabic interface copy, MIT). They are unchanged apart from trailing whitespace; see
-  `.claude/skills/SOURCES.md`.
+  `.claude/skills/SOURCES.md`. It also holds pointers to the shared `gardener` and `verify-fitway` skills in
+  `.agents/skills/`.
 - **`.claude/agents/`** holds Impeccable's shipped agents, the Owner-direction definitions, a reading-direction
   reviewer, two Sonnet research definitions and a Haiku lookup definition.
 
-Each definition sets one model and a default effort level, and the coordinator picks by task:
+Each definition below sets one model and a default effort level, and the coordinator picks by task:
 
 | Definition | Model | Effort | Use |
 | --- | --- | --- | --- |
@@ -60,17 +61,18 @@ Each definition sets one model and a default effort level, and the coordinator p
 | `sonnet-scout` | Sonnet | `medium` | a lookup `haiku-scout` could not answer from a source it cited |
 | `haiku-scout` | Haiku 5.5 | `medium` | one quick read-only lookup with named places to look |
 
-Every definition names its tools, so none loads the session's connectors (DECISIONS item 21 in
-`docs/phase-records/handoffs/agent-environment/DECISIONS.md`). The five owner-direction and reviewer definitions work
+Every definition in the table names its tools, so none of them loads the session's connectors (DECISIONS item 21 in
+`docs/phase-records/handoffs/agent-environment/DECISIONS.md`). Impeccable's shipped agents are outside the table and
+follow their own files. The five owner-direction and reviewer definitions work
 through files, shells and skills, not the Browser pane, and a tool one of them reports missing goes back on its list. An edit to a
 definition takes effect in a new session; try a change mid-session under a new, temporary name. Only
 `owner-direction-verifier` keeps a one-hour prompt cache (`experimental.cacheTtl`), because its renders wait past five
 minutes; for every other definition the longer cache costs more (DECISIONS item 25).
 
-The Agent tool's `effort` (Claude Code 2.1.292 and later) overrides a definition's level for one call. Pass it
+The Agent tool's `effort` overrides a definition's level for one call. Pass it
 only in these cases:
-- `owner-direction-designer` at `max` for a whole Owner screen in one pass (the user's trial,
-  `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` item 6);
+- `owner-direction-designer` at `max` for a whole Owner screen in one pass (`docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`,
+  "How this milestone's rounds run", item 6);
 - `owner-direction-verifier` at `xhigh` where evidence shows `high` misses something;
 - `haiku-scout` at `high` for an extract across several named files;
 - the built-in `claude-code-guide`, which runs Haiku 5.5, at `medium`.

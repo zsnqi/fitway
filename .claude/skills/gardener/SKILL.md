@@ -1,6 +1,6 @@
 ---
 name: gardener
-description: Read the shared FITWAY environment gardener guide.
+description: Survey FITWAY environment drift and sediment, make at most one bounded correction and report to the coordinator. Use weekly, at milestone closure, or when a review repeats a known finding class.
 ---
 
 Read and follow the canonical skill:

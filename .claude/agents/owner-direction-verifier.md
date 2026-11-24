@@ -44,4 +44,4 @@ names the brief, the checklist, the baseline, and your output folder. Read them 
   that item must not run beneath another of its columns. A row's count passing and no boxes intersecting do not
   settle it. A row or item of its own (a merged "no readings" row, Daily's gap row) and a record's body under its own
   head line (Activity, Settings history) are not this problem. (r04 DECISIONS 93: a camera-gap note ran under the peak
-  column at 320 px and passed every check; scope narrowed 2026-10-28)
+  column at 320 px and passed every check)

@@ -154,6 +154,15 @@ ambiguity, and any action outside authorization go to the coordinator as
 proposals. Folder deletion always belongs to the user. Remote branch deletion
 needs explicit authorization; the survey does not fetch or push.
 
+A change to `CLAUDE.md`, `.claude/agents/**` or `.claude/skills/**` needs the
+user's word, so a stale fact there is never the pass's bounded change. List each
+one in the report under `## Agent configuration corrections`, one bullet per
+fact with its `path:line`, the current text, the replacement and the evidence,
+so the coordinator can put the whole list to the user for one answer. Only text
+that no longer matches the repository or the installed tool belongs there. A
+change that adds, loosens or removes a rule, tool or permission is a separate
+policy proposal.
+
 - **clean:** collection and all six assessments complete, no actionable
   findings, no correction needed.
 - **changed:** one authorized correction verified, collection complete, and

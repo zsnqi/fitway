@@ -1,6 +1,6 @@
 ---
 name: verify-fitway
-description: Read the shared Owner verification guide.
+description: Launch, inspect, drive and compare the FITWAY Owner Eclipse concept, with source discovery and observable state proofs. Use for Owner verification and evidence capture.
 ---
 
 Read and follow the canonical skill:
