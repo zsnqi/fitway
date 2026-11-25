@@ -822,9 +822,7 @@
 			"duplication": 9
 		},
 		"scripts/agent-environment/codex-execution.mjs": {
-			"duplication": 1,
-			"longFunctions": 1,
-			"longFunctionLines": 90
+			"duplication": 1
 		},
 		"scripts/agent-environment/codex-review-launch.mjs": {
 			"duplication": 1,
@@ -1095,8 +1093,8 @@
 			"expectCalls": 542
 		},
 		"scripts/agent-environment": {
-			"testCases": 424,
-			"expectCalls": 1102
+			"testCases": 430,
+			"expectCalls": 1117
 		},
 		"scripts/demo": {
 			"testCases": 17,

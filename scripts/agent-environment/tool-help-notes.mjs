@@ -80,6 +80,7 @@ export const CODEX_ROUND_NOTES = Object.freeze([
 	"",
 	"Models: deepseek-v4.1-flash (default), gpt-6.1-sol, gpt-6.2-sol, gpt-6.2-astra.",
 	"Levels: deepseek-v4.1-flash: high, max (default max); gpt-6.1-sol, gpt-6.2-sol and gpt-6.2-astra: medium, high, xhigh, max.",
+	"GPT speed: Fast on a ChatGPT Business account through 2026-12-31, Standard on any other.",
 	"Relative brief and run paths start at the repository root, in either shell.",
 	`Default run folder: ${process.platform === "win32" ? "D:/fitway-temp" : tmpdir()}/codex-round-<id>.`,
 	"Launch runs the REVIEW.md review when absent and stops for coordinator dispositions.",

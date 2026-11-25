@@ -618,6 +618,8 @@ export function expectedArgs(
 		"gpt-6.1-sol",
 		"-c",
 		"model_reasoning_effort=high",
+		"-c",
+		"service_tier=default",
 		"--json",
 		"-o",
 		path.join(f.run, last),
@@ -663,7 +665,9 @@ export function expectedDeepSeekArgs(
 export async function argumentKeys(args: string[]) {
 	return Promise.all(
 		args.map((value, index) =>
-			index === 3 || index === 10 ? pathKey(value) : value,
+			args[index - 1] === "-C" || args[index - 1] === "-o"
+				? pathKey(value)
+				: value,
 		),
 	);
 }

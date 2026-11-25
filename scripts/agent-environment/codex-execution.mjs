@@ -13,6 +13,7 @@ import { recordTurn, reportClaimFailures } from "./codex-commit-records.mjs";
 import {
 	codexOptions,
 	DEEPSEEK_MODEL,
+	GPT_MODELS,
 	MAX_AUTO_RESUMES,
 	modelArgs,
 	sha256,
@@ -27,28 +28,41 @@ import {
 	recordRequiredChanges,
 	recordStartLoad,
 } from "./codex-session.mjs";
+import { accountSpeed } from "./codex-speed.mjs";
 import { resolveToolArguments, toolFailure } from "./tool-contract.mjs";
 
-async function runCodex(options, prepared, input, resume) {
-	const output = await capture(options.run, resume);
-	const { environment, metadata, executable, thread } = prepared;
+async function launchSpeed(model, environment) {
+	return GPT_MODELS.has(model) ? accountSpeed(environment) : undefined;
+}
+
+function launchArgs(options, prepared, account, last, resume) {
+	const { metadata, thread } = prepared;
 	const catalogPath =
 		metadata.model === DEEPSEEK_MODEL
 			? path.join(options.run, "model-catalog.json")
 			: undefined;
-	const args = [
+	return [
 		"exec",
 		"--approve-for-me",
 		"-C",
 		metadata.worktree,
-		...modelArgs(metadata.model, metadata.level, catalogPath),
+		...modelArgs(metadata.model, metadata.level, catalogPath, account?.speed),
 		"--json",
 		"-o",
-		output.last,
+		last,
 		...(resume ? ["resume", thread] : []),
 		"-",
 	];
+}
+
+async function runCodex(options, prepared, input, resume) {
+	const output = await capture(options.run, resume);
+	const { environment, metadata, executable, thread } = prepared;
+	const account = await launchSpeed(metadata.model, environment);
+	const args = launchArgs(options, prepared, account, output.last, resume);
 	console.log(`Run folder: ${options.run}`);
+	if (account)
+		console.log(`Speed: ${account.speed} (Codex plan: ${account.plan})`);
 	const stream = output.file.createWriteStream();
 	const errorFile = await open(output.stderr, "wx");
 	const errorStream = errorFile.createWriteStream();

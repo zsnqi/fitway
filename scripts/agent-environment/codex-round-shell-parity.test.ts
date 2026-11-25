@@ -216,9 +216,10 @@ describe("L4 shell and byte parity", () => {
 			const run = path.join(f.root, "run & %PATH% !literal! ^ (space)");
 			const result = f.invoke([f.brief, "high", "--run", run]);
 			expect(result.status, result.output).toBe(0);
+			const { args } = f.captured();
 			expect(
 				await samePath(
-					f.captured().args[10],
+					args[args.indexOf("-o") + 1],
 					path.join(run, "last-message.md"),
 				),
 			).toBe(true);

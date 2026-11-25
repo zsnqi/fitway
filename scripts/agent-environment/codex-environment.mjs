@@ -14,6 +14,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { TextDecoder } from "node:util";
+import { STANDARD_SPEED } from "./codex-speed.mjs";
 import { readGit } from "./git-context.mjs";
 import { pathKey } from "./path-identity.mjs";
 
@@ -22,6 +23,7 @@ const GPT_MODEL = "gpt-6.1-sol";
 const GPT_62_MODEL = "gpt-6.2-sol";
 const ASTRA_MODEL = "gpt-6.2-astra";
 const DEEPSEEK_MODEL = "deepseek-v4.1-flash";
+const GPT_MODELS = new Set([GPT_MODEL, GPT_62_MODEL, ASTRA_MODEL]);
 const GPT_LEVELS = new Set(["medium", "high", "xhigh", "max"]);
 const DEEPSEEK_LEVELS = new Set(["high", "max"]);
 const DEFAULT_MODEL = DEEPSEEK_MODEL;
@@ -111,9 +113,16 @@ function validateModelLevel(model, level) {
 	return level;
 }
 
-function modelArgs(model, level, catalogPath) {
-	if ([GPT_MODEL, GPT_62_MODEL, ASTRA_MODEL].includes(model))
-		return ["-m", model, "-c", `model_reasoning_effort=${level}`];
+function modelArgs(model, level, catalogPath, speed = STANDARD_SPEED) {
+	if (GPT_MODELS.has(model))
+		return [
+			"-m",
+			model,
+			"-c",
+			`model_reasoning_effort=${level}`,
+			"-c",
+			`service_tier=${speed}`,
+		];
 	if (model === DEEPSEEK_MODEL) {
 		if (!catalogPath) throw new Error("DeepSeek requires a model catalog");
 		return [
@@ -380,6 +389,7 @@ export {
 	DEEPSEEK_MODEL,
 	decodeMessageFile,
 	findCodex,
+	GPT_MODELS,
 	MAX_AUTO_RESUMES,
 	modelArgs,
 	readDeepSeekCatalog,

@@ -2,7 +2,7 @@
 # agent-tooling-r01: resume point
 
 - **As of:** `codex/owner-redesign-r04` at the commit that last changed this text, 2026-11-07 (item 28: round merge-evidence merged)
-- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-28; 28 last; 25 on in `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`), `docs/agent-context/WORKING_AGREEMENTS.md`
+- **Standing decisions:** `docs/phase-records/handoffs/agent-tooling/DECISIONS.md` (items 1-29; 29 last; 25 on in `docs/phase-records/handoffs/agent-tooling/decisions/025-040.md`), `docs/agent-context/WORKING_AGREEMENTS.md`
 
 ## State
 

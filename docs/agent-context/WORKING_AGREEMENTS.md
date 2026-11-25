@@ -105,8 +105,14 @@ latest wording; never copy an entry into a resume point.
   <name> --until <epoch>` for a direct `codex exec` (a Sol review), and
   `D:/fitway-temp/resume-auto.sh <run folder> <message> [limit-first]` for a stopped round, which
   resumes it on its thread and waits for the earliest reset only when every account is limited. The
-  user signs in and saves each account (`node D:/fitway-temp/codex-accounts.mjs save`); the agent
-  never signs in. (user, 2026-10-05, 2026-10-07 and 2026-10-13)
+  user signs in and picks the account in the Codex app; the agent never signs in. Before a GPT launch
+  the coordinator runs `node D:/fitway-temp/codex-accounts.mjs start`, which uses that account and
+  saves a new one by itself, so the user types nothing. (user, 2026-10-05, 2026-10-07, 2026-10-13 and
+  2026-11-25)
+- GPT runs use Codex's Fast speed on a ChatGPT Business account and Standard on every other, until
+  OpenAI's offer ends (2026-12-31). `pnpm codex:round` picks it from the signed-in account at each launch
+  and resume; a direct GPT `codex exec` passes `-c service_tier=priority` or `-c service_tier=default`.
+  (user, 2026-11-25)
 - The coordinator launches Codex from a tracked brief with `pnpm codex:round <brief>` (DeepSeek at `max`;
   `--model gpt-6.1-sol <level>` for GPT) in a harness background shell. The command runs `pnpm brief:check` first and launches nothing on a
   failure, adds the launch note when the brief's own commit sits on the HEAD it names (Codex rightly

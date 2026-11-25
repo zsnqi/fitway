@@ -362,3 +362,4 @@ through these pointers, not copied here.
 26. **The retrospective's tooling lessons** `decisions/025-040.md`
 27. **CI's four quick fixes** `decisions/025-040.md`
 28. **The pre-commit evidence check understands a merge** `decisions/025-040.md`
+29. **GPT rounds run at Fast on a Business account only** `decisions/025-040.md`
